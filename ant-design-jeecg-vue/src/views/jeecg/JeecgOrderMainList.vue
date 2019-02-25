@@ -296,7 +296,7 @@
     }
   }
 </script>
-<style>
+<style scoped>
   .ant-card-body .table-operator{
     margin-bottom: 18px;
   }
