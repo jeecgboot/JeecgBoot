@@ -126,9 +126,9 @@ yarn run lint
 
 - [Vue](https://cn.vuejs.org/v2/guide)
 
-- [路由/菜单说明](https://github.com/zhangdaiscott/jeecg-boot/ant-design-jeecg-vue/blob/master/src/router/README.md)
+- [路由/菜单说明](https://github.com/zhangdaiscott/jeecg-boot/tree/master/ant-design-jeecg-vue/src/router/README.md)
 
-- [ANTD 默认配置项](https://github.com/zhangdaiscott/jeecg-boot/ant-design-jeecg-vue/blob/master/src/defaultSettings.js)
+- [ANTD 默认配置项](https://github.com/zhangdaiscott/jeecg-boot/tree/master/ant-design-jeecg-vue/src/defaultSettings.js)
 
 - 其他待补充...
 
