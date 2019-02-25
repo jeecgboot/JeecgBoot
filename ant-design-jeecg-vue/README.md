@@ -5,39 +5,26 @@ Jeecg-Boot 快速开发平台(前后端分离版本)
 
 项目介绍：
 -----------------------------------
-Jeecg-boot 一个全新的版本，采用前后端分离方案，提供强大代码生成器的快速开发平台
+Jeecg-boot 一个全新的版本，采用前后端分离方案，提供强大代码生成器的快速开发平台。
 前端页面代码和后端功能代码一键生成，不需要写任何代码，保持jeecg一贯的强大！！
 
 
 技术架构：
 -----------------------------------
 后端技术： SpringBoot + Mybatis-plus + Shiro + Jwt + Swagger-ui + Redis
+
 前端技术： Ant-design-vue + Vue + Webpack
+
 其他技术： Druid（数据库连接池）、Logback（日志工具） 、poi（Excel工具）、
            Quartz（定时任务）、lombok（简化代码）
+		   
 项目构建： Maven、Jdk8
 
 
-前端开发必读文档：
 
-前端UI组件： Ant Design of Vue
-https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn
-报表UI组件：viser-vue
-https://viserjs.github.io/demo.html#/viser/bar/basic-bar
-VUE基础知识：
-https://cn.vuejs.org/v2/guide
-
-
-
-Overview
+系统效果
 ----
 
-基于 [Ant Design of Vue](https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn/) 实现的 Vue 版
-
-[预览地址](http://boot.jeecg.org)  **附带一些后台基础用到的列表展示例子**
-效果抢先看:
-
-1. 系统效果
 ![输入图片说明](https://static.oschina.net/uploads/img/201902/25154007_icdX.png "在这里输入图片标题")
 ![输入图片说明](https://static.oschina.net/uploads/img/201902/25153956_Q752.png "在这里输入图片标题")
 ![输入图片说明](https://static.oschina.net/uploads/img/201901/07154149_555Q.png "在这里输入图片标题")
@@ -54,8 +41,8 @@ Overview
 
 技术文档
 -----------------------------------
-* [在线演示](http://boot.jeecg.org)
-* [官方文档](http://jeecg-boot.mydoc.io)
+* 在线演示: [http://boot.jeecg.org](http://boot.jeecg.org)
+* 官方文档: [http://jeecg-boot.mydoc.io](http://jeecg-boot.mydoc.io)
 * QQ交流群：284271917
 
 
@@ -133,10 +120,15 @@ yarn run lint
 
 附属文档
 ----
+- [Ant Design Vue](https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn)
 
-- [路由/菜单说明](https://github.com/sendya/ant-design-pro-vue/blob/master/src/router/README.md)
+- [报表 viser-vue](https://viserjs.github.io/demo.html#/viser/bar/basic-bar)
 
-- [ANTD 默认配置项](https://github.com/sendya/ant-design-pro-vue/blob/master/src/defaultSettings.js)
+- [Vue](https://cn.vuejs.org/v2/guide)
+
+- [路由/菜单说明](https://github.com/zhangdaiscott/jeecg-boot/tree/master/ant-design-jeecg-vue/src/router/README.md)
+
+- [ANTD 默认配置项](https://github.com/zhangdaiscott/jeecg-boot/tree/master/ant-design-jeecg-vue/src/defaultSettings.js)
 
 - 其他待补充...
 
