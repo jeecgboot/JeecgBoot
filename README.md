@@ -46,6 +46,16 @@ Jeecg-boot 一个全新的版本，采用前后端分离方案，提供强大代
 * QQ交流群：284271917
 
 
+后台开发环境和依赖
+----
+- java
+- maven
+- jdk8
+- mysql
+- 数据库脚步：\jeecg-boot\docs\dbsys-init-20190225.sql
+- 下载代码默认系统账号： admin/123456
+
+
 前端开发环境和依赖
 ----
 - node
