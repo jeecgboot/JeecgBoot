@@ -1,0 +1,60 @@
+@import "../index";
+
+@avatar-list-prefix-cls: ~"@{ant-pro-prefix}-avatar-list";
+@avatar-list-item-prefix-cls: ~"@{ant-pro-prefix}-avatar-list-item";
+
+.@{avatar-list-prefix-cls} {
+  display: inline-block;
+
+  ul {
+    list-style: none;
+    display: inline-block;
+    padding: 0;
+    margin: 0 0 0 8px;
+    font-size: 0;
+  }
+}
+
+.@{avatar-list-item-prefix-cls} {
+  display: inline-block;
+  font-size: @font-size-base;
+  margin-left: -8px;
+  width: @avatar-size-base;
+  height: @avatar-size-base;
+
+  :global {
+    .ant-avatar {
+      border: 1px solid #fff;
+      cursor: pointer;
+    }
+  }
+
+  &.large {
+    width: @avatar-size-lg;
+    height: @avatar-size-lg;
+  }
+
+  &.small {
+    width: @avatar-size-sm;
+    height: @avatar-size-sm;
+  }
+
+  &.mini {
+    width: 20px;
+    height: 20px;
+
+    :global {
+      .ant-avatar {
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+
+        .ant-avatar-string {
+          font-size: 12px;
+          line-height: 18px;
+        }
+      }
+    }
+  }
+}
+
