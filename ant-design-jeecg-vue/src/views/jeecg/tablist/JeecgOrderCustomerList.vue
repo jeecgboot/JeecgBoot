@@ -285,7 +285,7 @@
     }
   }
 </script>
-<style>
+<style scoped>
   .ant-card{
     margin-left: -30px;
     margin-right: -30px;
