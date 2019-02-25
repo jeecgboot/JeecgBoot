@@ -29,15 +29,9 @@ https://cn.vuejs.org/v2/guide
 
 
 
-Overview
+系统效果
 ----
 
-基于 [Ant Design of Vue](https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn/) 实现的 Vue 版
-
-[预览地址](http://boot.jeecg.org)  **附带一些后台基础用到的列表展示例子**
-效果抢先看:
-
-1. 系统效果
 ![输入图片说明](https://static.oschina.net/uploads/img/201902/25154007_icdX.png "在这里输入图片标题")
 ![输入图片说明](https://static.oschina.net/uploads/img/201902/25153956_Q752.png "在这里输入图片标题")
 ![输入图片说明](https://static.oschina.net/uploads/img/201901/07154149_555Q.png "在这里输入图片标题")
@@ -54,8 +48,8 @@ Overview
 
 技术文档
 -----------------------------------
-* [在线演示](http://boot.jeecg.org)
-* [官方文档](http://jeecg-boot.mydoc.io)
+* 在线演示: [http://boot.jeecg.org](http://boot.jeecg.org)
+* 官方文档: [http://jeecg-boot.mydoc.io](http://jeecg-boot.mydoc.io)
 * QQ交流群：284271917
 
 
