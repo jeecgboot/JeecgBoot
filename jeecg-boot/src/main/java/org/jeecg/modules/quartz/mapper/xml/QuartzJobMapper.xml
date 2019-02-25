@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.quartz.mapper.QuartzJobMapper">
+
+	<!-- 根据jobClassName查询 -->
+	<select id="findByJobClassName" resultType="org.jeecg.modules.quartz.entity.QuartzJob">
+		select * from  sys_quartz_job  where job_class_name = #{jobClassName}
+	</select>
+</mapper>

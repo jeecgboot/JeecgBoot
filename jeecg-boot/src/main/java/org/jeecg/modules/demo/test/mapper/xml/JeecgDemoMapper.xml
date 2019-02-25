@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.demo.test.mapper.JeecgDemoMapper">
+
+	<!-- 根据用户名查询 -->
+	<select id="getDemoByName" resultType="org.jeecg.modules.demo.test.entity.JeecgDemo">
+		select * from  demo  where name = #{name}
+	</select>
+</mapper>
