@@ -72,12 +72,12 @@
                 </a-popconfirm>
               </a-menu-item>
               <a-menu-item v-if="record.sendStatus == 0">
-                <a-popconfirm title="确定发布该系统公告吗?" @confirm="() => releaseData(record.id)">
+                <a-popconfirm title="确定发布吗?" @confirm="() => releaseData(record.id)">
                   <a>发布</a>
                 </a-popconfirm>
               </a-menu-item>
               <a-menu-item v-if="record.sendStatus == 1">
-                <a-popconfirm title="确定撤销该系统公告吗?" @confirm="() => reovkeData(record.id)">
+                <a-popconfirm title="确定撤销吗?" @confirm="() => reovkeData(record.id)">
                   <a>撤销</a>
                 </a-popconfirm>
               </a-menu-item>
@@ -386,7 +386,7 @@
     }
   }
 </script>
-<style>
+<style scoped>
   .ant-card-body .table-operator{
     margin-bottom: 18px;
   }

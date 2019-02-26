@@ -98,6 +98,8 @@
   import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
   import { mapActions } from "vuex"
   import { timeFix } from "@/utils/util"
+  import Vue from 'vue'
+  import { ACCESS_TOKEN } from "@/store/mutation-types"
 
   export default {
     components: {
@@ -126,6 +128,7 @@
       }
     },
     created () {
+      Vue.ls.remove(ACCESS_TOKEN)
       // update-begin- --- author:scott ------ date:20190225 ---- for:暂时注释，未实现登录验证码功能
 //      this.$http.get('/auth/2step-code')
 //        .then(res => {

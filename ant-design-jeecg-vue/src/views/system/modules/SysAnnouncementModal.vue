@@ -14,44 +14,32 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="标题"
-          hasFeedback >
+          label="标题">
           <a-input placeholder="请输入标题" v-decorator="['titile', validatorRules.title]" :readOnly="disableSubmit" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="内容"
-          hasFeedback >
+          label="内容">
           <!--<a-input placeholder="请输入内容" v-decorator="['msgContent', {}]" />-->
           <a-textarea :rows="5" placeholder="..." v-decorator="[ 'msgContent', {} ]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="开始时间"
-          hasFeedback >
+          label="开始时间">
           <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss" v-decorator="[ 'startTime', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="结束时间"
-          hasFeedback >
+          label="结束时间">
           <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss" v-decorator="[ 'endTime', {}]" />
         </a-form-item>
-        <!--<a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="发布人"
-          hasFeedback >
-          <a-input placeholder="请输入发布人" v-decorator="['sender', {}]" />
-        </a-form-item>-->
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="优先级"
-          hasFeedback >
+          label="优先级">
           <a-select
             v-decorator="[ 'priority', {}]"
             placeholder="请选择优先级"
@@ -64,8 +52,7 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="通告对象类型"
-          hasFeedback >
+          label="通告对象类型">
           <a-select
             v-decorator="[ 'msgType', {}]"
             placeholder="请选择通告对象类型"
@@ -79,7 +66,6 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="指定用户"
-          hasFeedback
           v-if="userType">
           <a-input placeholder="请选择用户" v-decorator="['userIds',{}]" @click="selectUserIds" disabled="true" />
         </a-form-item>
@@ -113,6 +99,7 @@
       return {
         title:"操作",
         visible: false,
+        disableSubmit:false,
         model: {},
         labelCol: {
           xs: { span: 24 },
@@ -148,12 +135,10 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'titile','msgContent','sender','priority','msgType','sendStatus','delFlag'))
-		  //时间格式化
+          this.form.setFieldsValue(pick(this.model,'titile','msgContent','priority','msgType'))
+		      //时间格式化
           this.form.setFieldsValue({startTime:this.model.startTime?moment(this.model.startTime):null})
           this.form.setFieldsValue({endTime:this.model.endTime?moment(this.model.endTime):null})
-          this.form.setFieldsValue({sendTime:this.model.sendTime?moment(this.model.sendTime):null})
-          this.form.setFieldsValue({cancelTime:this.model.cancelTime?moment(this.model.cancelTime):null})
         });
 
       },
@@ -180,9 +165,7 @@
             //时间格式化
             formData.startTime = formData.startTime?formData.startTime.format('YYYY-MM-DD HH:mm:ss'):null;
             formData.endTime = formData.endTime?formData.endTime.format('YYYY-MM-DD HH:mm:ss'):null;
-            formData.sendTime = formData.sendTime?formData.sendTime.format('YYYY-MM-DD HH:mm:ss'):null;
-            formData.cancelTime = formData.cancelTime?formData.cancelTime.format('YYYY-MM-DD HH:mm:ss'):null;
-            
+
             console.log(formData)
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){

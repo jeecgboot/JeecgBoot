@@ -9,12 +9,12 @@
     :okButtonProps="{ props: {disabled: disableSubmit} }"
     cancelText="关闭"
     wrapClassName="ant-modal-cust-warp"
-    style="top:5%;height: 85%;overflow-y: hidden">
+    style="top:5%;height: 95%;">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
         <a-form-item label="菜单类型" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-          <a-radio-group @change="onChangeMenuType" v-model="localMenuType" v-decorator="['menuType',{'initialValue':1}]">
+          <a-radio-group @change="onChangeMenuType" v-decorator="['menuType',{'initialValue':1}]">
             <a-radio :value="0">一级菜单</a-radio>
             <a-radio :value="1">子菜单</a-radio>
             <a-radio :value="2">按钮</a-radio>
@@ -165,9 +165,12 @@
         var that = this;
         queryTreeList().then((res)=>{
           if(res.success){
+            console.log('----queryTreeList---')
+            console.log(res)
             that.treeData = [];
-            for(let a=0;a<res.result.length;a++){
-              let temp = res.result[a];
+            let treeList = res.result.treeList
+            for(let a=0;a<treeList.length;a++){
+              let temp = treeList[a];
               temp.isLeaf = temp.leaf;
               that.treeData.push(temp);
             }
@@ -202,7 +205,7 @@
 
         this.visible = true;
         this.loadTree();
-        let fieldsVal = pick(this.model,'name','perms','icon','component','url','sortNo','menuType');
+        let fieldsVal = pick(this.model,'name','perms','component','url','sortNo','menuType');
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldsVal)
         });
@@ -253,7 +256,8 @@
         }
       },
       onChangeMenuType(e) {
-        //console.log('radio1 checked', e.target.value)
+        console.log('localMenuType checked', e.target.value)
+        this.localMenuType=e.target.value
         if(e.target.value == 2){
           this.show = false;
           this.menuLabel = '按钮名称';

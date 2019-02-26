@@ -36,7 +36,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="排序值">
-          <a-input-number :min="1" v-decorator="['sortOrder']"/> 值越小越靠前，支持小数
+          <a-input-number :min="1" v-decorator="['sortOrder',{'initialValue':1}]"/> 值越小越靠前，支持小数
         </a-form-item>
 
         <a-form-item
@@ -100,7 +100,7 @@
         this.model.status = this.status;
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'dictId','itemText','itemValue','description','sortOrder','status'))
+          this.form.setFieldsValue(pick(this.model,'itemText','itemValue','description','sortOrder'))
         });
       },
       onChose(checked) {

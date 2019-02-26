@@ -200,7 +200,7 @@
         });
       },
       setThisExpandedKeys(node){
-        if(node.children.length>0){
+        if(node.children && node.children.length>0){
           this.iExpandedKeys.push(node.key);
           for(let a=0;a<node.children.length;a++){
             this.setThisExpandedKeys(node.children[a]);
@@ -289,7 +289,7 @@
         this.selectedKeys = [record.key];
         this.model.parentId = record.parentId;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(record,'parentId','departName','departNameEn','departNameAbbr','departOrder','description','orgType','orgCode','mobile','fax','address','memo','status','delFlag'))
+          this.form.setFieldsValue(pick(record,'departName','departOrder','mobile','fax','address','memo'))
         });
 
       },

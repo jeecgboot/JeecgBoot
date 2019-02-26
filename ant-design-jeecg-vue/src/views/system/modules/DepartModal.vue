@@ -34,7 +34,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="电话">
-          <a-input placeholder="请输入电话" v-decorator="['mobile',validatorRules.mobile]" v-model="model.mobile" />
+          <a-input placeholder="请输入电话" v-decorator="['mobile',validatorRules.mobile]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -139,9 +139,9 @@
           this.model = Object.assign({}, {});
           this.visible = true;
           this.loadTreeData();
-          this.model.parentId = record.toString();
+          this.model.parentId = record!=null?record.toString():null;
           this.$nextTick(() => {
-            this.form.setFieldsValue(pick(this.model,'parentId','departName','departNameEn','departNameAbbr','departOrder','description','orgType','orgCode','mobile','fax','address','memo','status','delFlag'))
+            this.form.setFieldsValue(pick(this.model,'departName','departNameEn','departNameAbbr','departOrder','description','orgType','orgCode','mobile','fax','address','memo','status','delFlag'))
           });
       },
       close () {
