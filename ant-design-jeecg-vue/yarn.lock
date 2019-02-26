@@ -990,7 +990,7 @@
     webpack "^4.26.1"
     webpack-bundle-analyzer "^3.0.3"
     webpack-chain "^4.11.0"
-    webpack-dev-server "^3.1.10"
+    webpack-dev-server "^3.1.14"
     webpack-merge "^4.1.4"
     yorkie "^2.0.0"
 
@@ -9168,7 +9168,7 @@ webpack-dev-middleware@3.4.0:
     range-parser "^1.0.3"
     webpack-log "^2.0.0"
 
-webpack-dev-server@^3.1.10:
+webpack-dev-server@^3.1.14:
   version "3.1.10"
   resolved "https://registry.yarnpkg.com/webpack-dev-server/-/webpack-dev-server-3.1.10.tgz#507411bee727ee8d2fdffdc621b66a64ab3dea2b"
   integrity sha512-RqOAVjfqZJtQcB0LmrzJ5y4Jp78lv9CK0MZ1YJDTaTmedMZ9PU9FLMQNrMCfVu8hHzaVLVOJKBlGEHMN10z+ww==
