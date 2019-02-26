@@ -49,11 +49,9 @@ router.beforeEach((to, from, next) => {
               message: '系统提示',
               description: '请求用户信息失败，请重试！'
             })
-            // update-begin- --- author:scott ------ date:20190225 ---- for:Token失效跳转登录逻辑修改----
-            // store.dispatch('Logout').then(() => {
-            //   next({ path: '/user/login', query: { redirect: to.fullPath } })
-            // })
-            // update-end- --- author:scott ------ date:20190225 ---- for:Token失效跳转登录逻辑修改----
+            store.dispatch('Logout').then(() => {
+              next({ path: '/user/login', query: { redirect: to.fullPath } })
+            })
           })
       } else {
         next()
