@@ -11,14 +11,52 @@ Jeecg-boot 一个全新的版本，采用前后端分离方案，提供强大代
 
 技术架构：
 -----------------------------------
-后端技术： SpringBoot + Mybatis-plus + Shiro + Jwt + Swagger-ui + Redis
 
-前端技术： Ant-design-vue + Vue + Webpack
+#### 后端
+- 基础框架：Spring Boot 2.0.3.RELEASE
 
-其他技术： Druid（数据库连接池）、Logback（日志工具） 、poi（Excel工具）、
-           Quartz（定时任务）、lombok（简化代码）
-		   
-项目构建： Maven、Jdk8
+- 持久层框架：Mybatis-plus_3.0.6
+
+- 安全框架：Apache Shiro 1.4.0-RC2
+
+- JWT：Jwt_3.4.1
+
+- 数据库连接池：阿里巴巴Druid 1.1.10
+
+- 缓存框架：redis
+
+- 日志打印：logback
+
+- 其他：fastjson，poi，Swagger-ui，quartz, lombok（简化代码）等。
+
+
+#### 前端
+ 
+- 基础框架：Ant-design-vue
+- JavaScript框架：vue
+- Webpack
+- node
+- yarn
+- eslint
+- @vue/cli 3.2.1
+- [ant-design-vue](https://github.com/vueComponent/ant-design-vue) - Ant Design Of Vue 实现
+- [vue-cropper](https://github.com/xyxiao001/vue-cropper) - 头像裁剪组件
+- [@antv/g2](https://antv.alipay.com/zh-cn/index.html) - Alipay AntV 数据可视化图表
+- [Viser-vue](https://viserjs.github.io/docs.html#/viser/guide/installation)  - antv/g2 封装实现
+
+
+#### 开发环境
+
+- 语言：Java 8
+
+- IDE：Eclipse Oxygen & IDEA 2018.1.4(Ultimate Edition)
+
+- 依赖管理：Maven
+
+- 数据库：MySQL5.7  &  Oracle 11g
+
+- 版本管理：SVN，git
+
 
 
 
