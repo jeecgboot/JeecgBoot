@@ -58,17 +58,17 @@ Jeecg-boot 一个全新的版本，采用前后端分离方案，提供强大代
 
 
 
-技术文档
------------------------------------
-- 在线演示：  [http://boot.jeecg.org](http://boot.jeecg.org)
+#### 技术文档
 
-- 官方文档：  [http://jeecg-boot.mydoc.io](http://jeecg-boot.mydoc.io)
+- 在线演示 ：  [http://boot.jeecg.org](http://boot.jeecg.org)
 
-- QQ交流群：  284271917
+- 官方文档 ：  [http://jeecg-boot.mydoc.io](http://jeecg-boot.mydoc.io)
 
-- 视频教程：  https://pan.baidu.com/s/1Il0TS50I70vH1AG1y40wtw 提取码：hok5
+- QQ交流群 ：  284271917
+
+- 视频教程 ：  https://pan.baidu.com/s/1Il0TS50I70vH1AG1y40wtw 提取码：hok5
  
-- 开发工具：  https://pan.baidu.com/s/1kFIJcn5GSlSJWAQKeCowrg 提取码：ilmc 
+- 开发工具 ：  https://pan.baidu.com/s/1kFIJcn5GSlSJWAQKeCowrg 提取码：ilmc 
  
  
 
