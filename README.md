@@ -60,15 +60,15 @@ Jeecg-boot 一个全新的版本，采用前后端分离方案，提供强大代
 
 技术文档
 -----------------------------------
-* 在线演示: [http://boot.jeecg.org](http://boot.jeecg.org)
+* 在线演示:    [http://boot.jeecg.org](http://boot.jeecg.org)
 
-* 官方文档: [http://jeecg-boot.mydoc.io](http://jeecg-boot.mydoc.io)
+* 官方文档:    [http://jeecg-boot.mydoc.io](http://jeecg-boot.mydoc.io)
 
-* QQ交流群：284271917
+* QQ交流群：    284271917
 
-* 视频教程： https://pan.baidu.com/s/1Il0TS50I70vH1AG1y40wtw 提取码：hok5
+* 视频教程：    https://pan.baidu.com/s/1Il0TS50I70vH1AG1y40wtw 提取码：hok5
  
-* 开发工具： https://pan.baidu.com/s/1kFIJcn5GSlSJWAQKeCowrg 提取码：ilmc 
+* 开发工具：    https://pan.baidu.com/s/1kFIJcn5GSlSJWAQKeCowrg 提取码：ilmc 
  
  
 
@@ -104,9 +104,8 @@ Jeecg-boot 一个全新的版本，采用前后端分离方案，提供强大代
    
    
 
-###系统效果
-
-
+系统效果
+----
 ![输入图片说明](https://static.oschina.net/uploads/img/201902/25154007_icdX.png "在这里输入图片标题")
 ![输入图片说明](https://static.oschina.net/uploads/img/201902/25153956_Q752.png "在这里输入图片标题")
 ![输入图片说明](https://static.oschina.net/uploads/img/201901/07154149_555Q.png "在这里输入图片标题")
