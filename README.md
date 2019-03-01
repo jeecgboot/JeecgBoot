@@ -159,7 +159,10 @@ JeecgBoot的宗旨是降低前后端分离的开发成本，提高UI能力的同
 ```bash
 git clone https://github.com/zhangdaiscott/jeecg-boot.git
 cd  jeecg-boot/ant-design-jeecg-vue
+```
 
+1. 安装node.js
+2. 切换到ant-design-jeecg-vue文件夹下
 ```
 # 安装yarn
 npm install -g yarn
