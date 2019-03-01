@@ -172,7 +172,7 @@ npm install -g yarn
 yarn install
 
 # 启动
-yarn start
+yarn run serve
 
 # 编译项目
 yarn run build
