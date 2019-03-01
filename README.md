@@ -40,7 +40,7 @@ JeecgBoot的宗旨是降低前后端分离的开发成本，提高UI能力的同
 - [vue-cropper](https://github.com/xyxiao001/vue-cropper) - 头像裁剪组件
 - [@antv/g2](https://antv.alipay.com/zh-cn/index.html) - Alipay AntV 数据可视化图表
 - [Viser-vue](https://viserjs.github.io/docs.html#/viser/guide/installation)  - antv/g2 封装实现
-- eslint，@vue/cli ~3
+- - eslint，[@vue/cli 3.2.1](https://cli.vuejs.org/zh/guide)
 
 
 #### 开发环境
