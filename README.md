@@ -134,8 +134,9 @@ JeecgBoot的宗旨是降低前后端分离的开发成本，提高UI能力的同
 - maven
 - jdk8
 - mysql
-- 数据库脚步：\jeecg-boot\docs\dbsys-init-20190225.sql
-- 下载代码默认系统账号： admin/123456
+- redis
+- 数据库脚步：jeecg-boot\docs\dbsys-init-20190225.sql
+- 默认登录账号： admin/123456
 
 
 前端开发环境和依赖
