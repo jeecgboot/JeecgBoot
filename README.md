@@ -18,9 +18,7 @@ JeecgBoot的宗旨是降低前后端分离的开发成本，提高UI能力的同
 
 - 持久层框架：Mybatis-plus_3.0.6
 
-- 安全框架：Apache Shiro 1.4.0-RC2
-
-- JWT：Jwt_3.4.1
+- 安全框架：Apache Shiro 1.4.0-RC2，Jwt_3.4.1
 
 - 数据库连接池：阿里巴巴Druid 1.1.10
 
