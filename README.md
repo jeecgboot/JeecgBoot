@@ -49,13 +49,13 @@ JeecgBoot的宗旨是降低前后端分离的开发成本，提高UI能力的同
 
 - 语言：Java 8
 
-- IDE：Eclipse Oxygen & IDEA 2018.1.4(Ultimate Edition)
+- IDE： Eclipse安装lombok插件 或者 IDEA
 
 - 依赖管理：Maven
 
-- 数据库：MySQL5.7  &  Oracle 11g
+- 数据库：MySQL5.0  &  Oracle 11g
 
-- 版本管理：SVN，git
+- 缓存：Redis
 
 
 
