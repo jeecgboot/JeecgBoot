@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.xmlunit:xmlunit-core:2.5.1">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/xmlunit/xmlunit-core/2.5.1/xmlunit-core-2.5.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/xmlunit/xmlunit-core/2.5.1/xmlunit-core-2.5.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/xmlunit/xmlunit-core/2.5.1/xmlunit-core-2.5.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

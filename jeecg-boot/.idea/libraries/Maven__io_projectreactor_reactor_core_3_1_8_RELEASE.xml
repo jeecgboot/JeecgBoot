@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: io.projectreactor:reactor-core:3.1.8.RELEASE">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/io/projectreactor/reactor-core/3.1.8.RELEASE/reactor-core-3.1.8.RELEASE.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/io/projectreactor/reactor-core/3.1.8.RELEASE/reactor-core-3.1.8.RELEASE-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/io/projectreactor/reactor-core/3.1.8.RELEASE/reactor-core-3.1.8.RELEASE-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: io.lettuce:lettuce-core:5.0.4.RELEASE">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/io/lettuce/lettuce-core/5.0.4.RELEASE/lettuce-core-5.0.4.RELEASE.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/io/lettuce/lettuce-core/5.0.4.RELEASE/lettuce-core-5.0.4.RELEASE-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/io/lettuce/lettuce-core/5.0.4.RELEASE/lettuce-core-5.0.4.RELEASE-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

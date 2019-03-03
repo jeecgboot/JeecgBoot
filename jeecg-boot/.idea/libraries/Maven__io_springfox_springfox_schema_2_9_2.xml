@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: io.springfox:springfox-schema:2.9.2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/io/springfox/springfox-schema/2.9.2/springfox-schema-2.9.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/io/springfox/springfox-schema/2.9.2/springfox-schema-2.9.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/io/springfox/springfox-schema/2.9.2/springfox-schema-2.9.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
