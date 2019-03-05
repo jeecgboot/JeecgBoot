@@ -63,15 +63,13 @@ JeecgBoot的宗旨是降低前后端分离的开发成本，提高UI能力的同
 
 - 官方文档 ：  [http://jeecg-boot.mydoc.io](http://jeecg-boot.mydoc.io)
 
-- 常见问题 ：  [http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&page=1&extra=#pid21237](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&page=1&extra=#pid21237)
-
 - QQ交流群 ：  284271917
 
 - 视频教程 ：  https://pan.baidu.com/s/1Il0TS50I70vH1AG1y40wtw 提取码：hok5
  
-- 开发工具 ：  https://pan.baidu.com/s/1kFIJcn5GSlSJWAQKeCowrg 提取码：ilmc 
+- 学习思路 ：  [跟着我们零基础学习前后端分离开发](http://jeecg-boot.mydoc.io/?t=340820)
  
- 
+- 常见问题 ：  [http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&page=1&extra=#pid21237](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&page=1&extra=#pid21237)
 
 ### 功能模块
 ```
