@@ -45,7 +45,9 @@ JeecgBoot的宗旨是降低前后端分离的开发成本，提高UI能力的同
 
 - 语言：Java 8
 
-- IDE： Eclipse安装lombok插件 或者 IDEA
+- IDE(JAVA)： Eclipse安装lombok插件 或者 IDEA
+
+- IDE(前端)： WebStorm 或者 IDEA
 
 - 依赖管理：Maven
 
