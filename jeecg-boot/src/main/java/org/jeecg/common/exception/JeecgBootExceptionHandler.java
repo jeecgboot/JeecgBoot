@@ -12,9 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 异常处理器
  * 
- * @author chenshun
- * @email sunlightcs@gmail.com
- * @date 2016年10月27日 下午10:16:19
+ * @author scott
+ * @date 2019
  */
 @RestControllerAdvice
 @Slf4j

@@ -1,18 +1,23 @@
 package org.jeecg.modules.system.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.netty.util.internal.StringUtil;
-import org.jeecg.modules.system.controller.FindsDepartsChildrenUtil;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
 import org.jeecg.common.util.YouBianCodeUtil;
+import org.jeecg.modules.system.controller.FindsDepartsChildrenUtil;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.mapper.SysDepartMapper;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.*;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
+import io.netty.util.internal.StringUtil;
 
 /**
  * <p>
@@ -25,13 +30,6 @@ import java.util.*;
 @Service
 public class SysDepartServiceImpl<T> extends ServiceImpl<SysDepartMapper, SysDepart> implements ISysDepartService {
 
-	@Autowired
-	private ISysDepartService sysDepartService;
-
-	// 该集合用来存储部门下的所有数据
-	private List<SysDepart> globalList = new ArrayList<>();
-
-
 	/**
 	 * queryTreeList 对应 queryTreeList 查询所有的部门数据,以树结构形式响应给前端
 	 */
@@ -40,8 +38,7 @@ public class SysDepartServiceImpl<T> extends ServiceImpl<SysDepartMapper, SysDep
 		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
 		query.eq(SysDepart::getDelFlag, 0);
 		query.orderByAsc(SysDepart::getDepartOrder);
-		List<SysDepart> list = sysDepartService.list(query);
-		globalList = list;
+		List<SysDepart> list = this.list(query);
 		// 调用wrapTreeDataToTreeList方法生成树状数据
 		List<SysDepartTreeModel> listResult = FindsDepartsChildrenUtil.wrapTreeDataToTreeList(list);
 		return listResult;
@@ -68,7 +65,7 @@ public class SysDepartServiceImpl<T> extends ServiceImpl<SysDepartMapper, SysDep
 			sysDepart.setOrgType(String.valueOf(orgType));
 			sysDepart.setCreateTime(new Date());
 			sysDepart.setDelFlag("0");
-			sysDepartService.save(sysDepart);
+			this.save(sysDepart);
 		}
 
 	}
@@ -99,7 +96,7 @@ public class SysDepartServiceImpl<T> extends ServiceImpl<SysDepartMapper, SysDep
 					// 线判断数据库中的表是否为空,空则直接返回初始编码
 					query1.eq(SysDepart::getParentId, "");
 					query1.orderByDesc(SysDepart::getOrgCode);
-					departList = sysDepartService.list(query1);
+					departList = this.list(query1);
 					if(departList == null || departList.size() == 0) {
 						strArray[0] = YouBianCodeUtil.getNextYouBianCode(null);
 						strArray[1] = "1";
@@ -116,9 +113,9 @@ public class SysDepartServiceImpl<T> extends ServiceImpl<SysDepartMapper, SysDep
 					// 降序排序
 					query.orderByDesc(SysDepart::getOrgCode);
 					// 查询出同级部门的集合
-					List<SysDepart> parentList = sysDepartService.list(query);
+					List<SysDepart> parentList = this.list(query);
 					// 查询出父级部门
-					SysDepart depart = sysDepartService.getById(parentId);
+					SysDepart depart = this.getById(parentId);
 					// 获取父级部门的Code
 					String parentCode = depart.getOrgCode();
 					// 根据父级部门类型算出当前部门的类型
@@ -151,7 +148,7 @@ public class SysDepartServiceImpl<T> extends ServiceImpl<SysDepartMapper, SysDep
 	 * 
 	 * @Transactional public boolean removeDepartDataById(String id) {
 	 * System.out.println("要删除的ID 为=============================>>>>>"+id); boolean
-	 * flag = sysDepartService.removeById(id); return flag; }
+	 * flag = this.removeById(id); return flag; }
 	 */
 
 	/**
@@ -163,7 +160,7 @@ public class SysDepartServiceImpl<T> extends ServiceImpl<SysDepartMapper, SysDep
 		if (sysDepart != null && username != null) {
 			sysDepart.setUpdateTime(new Date());
 			sysDepart.setUpdateBy(username);
-			sysDepartService.updateById(sysDepart);
+			this.updateById(sysDepart);
 			return true;
 		} else {
 			return false;
@@ -181,9 +178,9 @@ public class SysDepartServiceImpl<T> extends ServiceImpl<SysDepartMapper, SysDep
 	public List<SysDepartTreeModel> searhBy(String keyWord) {
 		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
 		query.like(SysDepart::getDepartName, keyWord);
-		List<SysDepart> departList = this.sysDepartService.list(query);
+		List<SysDepart> departList = this.list(query);
 		List<SysDepartTreeModel> newList = new ArrayList<>();
-		if(departList.size() > 0 || sysDepartService != null) {
+		if(departList.size() > 0) {
 			for(SysDepart depart : departList) {
 				newList.add(new SysDepartTreeModel(depart));
 			}
