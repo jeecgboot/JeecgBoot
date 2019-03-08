@@ -225,3 +225,10 @@ yarn run lint
 ----
 
 > @vue/cli 升级后，eslint 规则更新了。由于影响到全部 .vue 文件，需要逐个验证。既暂时关闭部分原本不验证的规则，后期维护时，在逐步修正这些 rules
+
+
+## 捐赠 
+
+如果觉得还不错，请作者喝杯咖啡吧 ☺
+
+![](http://www.jeecg.org/data/attachment/forum/201903/08/063502tq0qibqavda0qaiv.png)
