@@ -146,6 +146,7 @@ JeecgBoot的宗旨是降低前后端分离的开发成本，提高UI能力的同
 - [vue-cropper](https://github.com/xyxiao001/vue-cropper) - 头像裁剪组件
 - [@antv/g2](https://antv.alipay.com/zh-cn/index.html) - Alipay AntV 数据可视化图表
 - [Viser-vue](https://viserjs.github.io/docs.html#/viser/guide/installation)  - antv/g2 封装实现
+- vue-print-nb - 打印
 
 
 
@@ -231,4 +232,4 @@ yarn run lint
 
 如果觉得还不错，请作者喝杯咖啡吧 ☺
 
-![](http://www.jeecg.org/data/attachment/forum/201903/08/063502tq0qibqavda0qaiv.png)
+![](https://static.oschina.net/uploads/img/201903/08155608_0EFX.png)
