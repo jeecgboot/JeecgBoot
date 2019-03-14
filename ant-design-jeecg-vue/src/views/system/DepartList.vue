@@ -6,7 +6,7 @@
         <a-button @click="handleAdd(2)" style="margin-left: 18px" type="primary" icon="plus">添加子部门</a-button>
         <a-button @click="handleAdd(1)" type="default" icon="plus">添加一级部门</a-button>
         <a-button title="删除多条数据" @click="batchDel" type="default" icon="delete">批量删除</a-button>
-        <a-button @click="refresh" type="default" icon="reload">刷新</a-button>
+        <a-button @click="refresh" type="default" icon="reload" :loading="loading">刷新</a-button>
       </div>
     </a-layout-header>
 
@@ -143,6 +143,7 @@
     data(){
       return {
         iExpandedKeys:[],
+        loading:false,
         autoExpandParent:true,
         currFlowId:"",
         currFlowName:"",
@@ -196,6 +197,7 @@
               that.setThisExpandedKeys(temp);
               console.log(temp.id)
             }
+            this.loading = false;
           }
         });
       },
@@ -208,6 +210,7 @@
         }
       },
       refresh(){
+        this.loading = true;
         this.loadTree();
       },
       onExpand (expandedKeys) {
