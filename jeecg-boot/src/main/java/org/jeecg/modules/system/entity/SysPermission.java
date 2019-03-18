@@ -3,7 +3,6 @@ package org.jeecg.modules.system.entity;
 import java.io.Serializable;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -75,10 +74,9 @@ public class SysPermission implements Serializable {
 	private Integer menuType;
 
 	/**
-	 * 是否叶子节点: 1:是  0:不是
+	 * 是否叶子节点: 1:是 0:不是
 	 */
-	@TableField(value="is_leaf")
-	private boolean leaf;
+	private Integer isLeaf;
 
 	/**
 	 * 描述
