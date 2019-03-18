@@ -78,7 +78,7 @@ public class SysPermissionController {
 	
 	
 	/**
-	 *  查询用户的权限
+	 *  查询用户拥有的菜单权限和按钮权限（根据用户账号）
 	 * @return
 	 */
 	@RequestMapping(value = "/queryByUser", method = RequestMethod.GET)
@@ -118,7 +118,7 @@ public class SysPermissionController {
 	
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	@RequiresRoles({"admin"})
-	public Result<SysPermission> eidt(@RequestBody SysPermission permission) {
+	public Result<SysPermission> edit(@RequestBody SysPermission permission) {
 		Result<SysPermission> result = new Result<>();
 		try {
 			sysPermissionService.editPermission(permission);
@@ -264,12 +264,12 @@ public class SysPermissionController {
 			SysPermissionTree tree = new SysPermissionTree(permission);
 			if(temp==null && oConvertUtils.isEmpty(tempPid)) {
 				treeList.add(tree);
-				if(tree.getIsLeaf()==0) {
+				if(!tree.getIsLeaf()) {
 					getTreeList(treeList, metaList, tree);
 				}
 			}else if(temp!=null && tempPid!=null && tempPid.equals(temp.getId())){
 				temp.getChildren().add(tree);
-				if(tree.getIsLeaf()==0) {
+				if(!tree.getIsLeaf()) {
 					getTreeList(treeList, metaList, tree);
 				}
 			}
@@ -283,12 +283,12 @@ public class SysPermissionController {
 			TreeModel tree = new TreeModel(permission);
 			if(temp==null && oConvertUtils.isEmpty(tempPid)) {
 				treeList.add(tree);
-				if(permission.getIsLeaf()==0) {
+				if(!tree.getIsLeaf()) {
 					getTreeModelList(treeList, metaList, tree);
 				}
 			}else if(temp!=null && tempPid!=null && tempPid.equals(temp.getKey())){
 				temp.getChildren().add(tree);
-				if(permission.getIsLeaf()==0) {
+				if(!tree.getIsLeaf()) {
 					getTreeModelList(treeList, metaList, tree);
 				}
 			}
@@ -310,11 +310,12 @@ public class SysPermissionController {
 			JSONObject json = getPermissionJsonObject(permission);
 			if(parentJson==null && oConvertUtils.isEmpty(tempPid)) {
 				jsonArray.add(json);
-				if(permission.getIsLeaf()==0) {
+				if(!permission.isLeaf()) {
 					getPermissionJsonArray(jsonArray, metaList, json);
 				}
 			}else if(parentJson!=null && oConvertUtils.isNotEmpty(tempPid) && tempPid.equals(parentJson.getString("id"))){
-				if(permission.getMenuType()==0) {
+				//类型( 0：一级菜单 1：子菜单  2：按钮 )
+				if(permission.getMenuType()==2) {
 					JSONObject metaJson = parentJson.getJSONObject("meta");
 					if(metaJson.containsKey("permissionList")) {
 						metaJson.getJSONArray("permissionList").add(json);
@@ -323,8 +324,8 @@ public class SysPermissionController {
 						permissionList.add(json);
 						metaJson.put("permissionList", permissionList);
 					}
-					
-				}else if(permission.getMenuType()==1) {
+				//类型( 0：一级菜单 1：子菜单  2：按钮 )
+				}else if(permission.getMenuType()==1|| permission.getMenuType()==0) {
 					if(parentJson.containsKey("children")) {
 						parentJson.getJSONArray("children").add(json);
 					}else {
@@ -333,7 +334,7 @@ public class SysPermissionController {
 						parentJson.put("children", children);
 					}
 					
-					if(permission.getIsLeaf()==0) {
+					if(!permission.isLeaf()) {
 						getPermissionJsonArray(jsonArray, metaList, json);
 					}
 				}
