@@ -8,7 +8,7 @@
     @cancel="handleCancel"
     cancelText="关闭"
     wrapClassName="ant-modal-cust-warp"
-    style="top:5%;height: 95%;overflow-y: hidden">
+    style="top:5%;height: auto;overflow-y: hidden">
 
     <template slot="title">
       <div style="width: 100%;">
