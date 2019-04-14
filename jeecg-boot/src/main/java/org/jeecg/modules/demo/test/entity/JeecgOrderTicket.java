@@ -1,12 +1,12 @@
 package org.jeecg.modules.demo.test.entity;
 
 import java.io.Serializable;
-import java.util.Date;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
@@ -24,10 +24,12 @@ public class JeecgOrderTicket implements Serializable {
 	@TableId(type = IdType.UUID)
 	private java.lang.String id;
 	/**航班号*/
+	@Excel(name="航班号",width=15)
 	private java.lang.String ticketCode;
 	/**航班时间*/
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@Excel(name="航班时间",width=15,format = "yyyy-MM-dd")
 	private java.util.Date tickectDate;
 	/**外键*/
 	private java.lang.String orderId;

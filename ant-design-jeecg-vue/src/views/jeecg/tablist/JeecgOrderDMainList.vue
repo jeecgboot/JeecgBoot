@@ -6,21 +6,21 @@
       <a-form layout="inline">
         <a-row :gutter="24">
 
-          <a-col :span="6">
+          <a-col :md="6" :sm="24">
             <a-form-item label="订单号">
               <a-input placeholder="请输入订单号" v-model="queryParam.orderCode"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="6">
+          <a-col :md="6" :sm="24">
             <a-form-item label="订单类型">
-              <a-select placeholder="请输入订单类型"  v-model="queryParam.ctype">
+              <a-select placeholder="请输入订单类型" v-model="queryParam.ctype">
                 <a-select-option value="1">国内订单</a-select-option>
                 <a-select-option value="2">国际订单</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
 
-          <a-col :span="8" >
+          <a-col :md="6" :sm="24">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -38,9 +38,14 @@
 
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+          <a-menu-item key="1" @click="batchDel">
+            <a-icon type="delete"/>
+            删除
+          </a-menu-item>
         </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+        <a-button style="margin-left: 8px"> 批量操作
+          <a-icon type="down"/>
+        </a-button>
       </a-dropdown>
     </div>
 
@@ -53,7 +58,7 @@
 
       <a-table
         ref="table"
-        size="default"
+        size="middle"
         bordered
         rowKey="id"
         filterMultiple="filterMultiple"
@@ -68,7 +73,7 @@
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
-          <a-divider type="vertical" />
+          <a-divider type="vertical"/>
           <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
             <a>删除</a>
           </a-popconfirm>
@@ -88,7 +93,7 @@
     </a-tabs>
 
     <!-- 表单区域 -->
-    <jeecgOrderDMain-modal ref="JeecgOrderDMainModal" @ok="modalFormOk"></jeecgOrderDMain-modal>
+    <jeecgOrderDMain-modal ref="modalForm" @ok="modalFormOk"></jeecgOrderDMain-modal>
 
   </a-card>
 </template>
@@ -97,13 +102,14 @@
   import JeecgOrderDMainModal from './form/JeecgOrderDMainModal'
   import JeecgOrderCustomerList from './JeecgOrderCustomerList'
   import JeecgOrderTicketList from './JeecgOrderTicketList'
-  import { filterObj } from '@/utils/util'
-  import { deleteAction,getAction } from '@/api/manage'
+  import {deleteAction} from '@/api/manage'
   import JeecgOrderCustomerModal from './form/JeecgOrderCustomerModal'
   import JeecgOrderTicketModal from './form/JeecgOrderTicketModal'
+  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
 
   export default {
     name: "JeecgOrderDMainList",
+    mixins: [JeecgListMixin],
     components: {
       JeecgOrderTicketModal,
       JeecgOrderCustomerModal,
@@ -111,30 +117,40 @@
       JeecgOrderCustomerList,
       JeecgOrderTicketList,
     },
-    data () {
+    data() {
       return {
         description: '订单管理页面',
-        // 查询条件
-        queryParam: {},
+        /* 分页参数 */
+        ipagination:{
+          current: 1,
+          pageSize: 5,
+          pageSizeOptions: ['5', '10', '20'],
+          showTotal: (total, range) => {
+            return range[0] + "-" + range[1] + " 共" + total + "条"
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0
+        },
         // 表头
-        columns: [          {
+        columns: [{
           title: '#',
           dataIndex: '',
-          key:'rowIndex',
-          width:60,
-          align:"center",
-          customRender:function (t,r,index) {
-            return parseInt(index)+1;
+          key: 'rowIndex',
+          width: 60,
+          align: "center",
+          customRender: function (t, r, index) {
+            return parseInt(index) + 1;
           }
         },
           {
             title: '订单号',
-            align:"center",
+            align: "center",
             dataIndex: 'orderCode'
           },
           {
             title: '订单类型',
-            align:"center",
+            align: "center",
             dataIndex: 'ctype',
             customRender: (text) => {
               let re = "";
@@ -148,47 +164,27 @@
           },
           {
             title: '订单日期',
-            align:"center",
+            align: "center",
             dataIndex: 'orderDate'
           },
           {
             title: '订单金额',
-            align:"center",
+            align: "center",
             dataIndex: 'orderMoney'
           },
           {
             title: '订单备注',
-            align:"center",
+            align: "center",
             dataIndex: 'content'
           },
           {
             title: '操作',
             dataIndex: 'action',
-            align:"center",
-            scopedSlots: { customRender: 'action' },
+            align: "center",
+            scopedSlots: {customRender: 'action'},
           }],
-        //数据集
-        dataSource:[],
         // 分页参数
         type: "radio",
-        ipagination:{
-          current: 1,
-          pageSize: 10,
-          pageSizeOptions: ['10', '20', '30'],
-          showTotal: (total, range) => {
-            return range[0] + "-" + range[1] + " 共" + total + "条"
-          },
-          showQuickJumper: true,
-          showSizeChanger: true,
-          total: 0
-        },
-        isorter:{
-          column: 'createTime',
-          order: 'desc',
-        },
-        loading:false,
-        selectedRowKeys: [],
-        selectedRows: [],
         url: {
           list: "/test/order/orderList",
           delete: "/test/order/delete",
@@ -196,152 +192,93 @@
         },
       }
     },
-    created() {
-      this.loadData();
-    },
     methods: {
-      loadData (arg){
-        //加载数据 若传入参数1则加载第一页的内容
-        if(arg===1){
-          this.ipagination.current = 1;
-        }
-        var params = this.getQueryParams();//查询条件
-        getAction(this.url.list,params).then((res)=>{
-          if(res.success){
-            this.dataSource = res.result.records;
-            this.ipagination.total = res.result.total;
-          }
-        })
-      },
-      getQueryParams(){
-        var param = Object.assign({}, this.queryParam,this.isorter);
-        param.field = this.getQueryField();
-        param.pageNo = this.ipagination.current;
-        param.pageSize = this.ipagination.pageSize;
-        return filterObj(param);
-      },
-      getQueryField(){
-        //TODO 字段权限控制
-        var str = "id,";
-        for(var a = 0;a<this.columns.length;a++){
-          str+=","+this.columns[a].dataIndex;
-        }
-        return str;
-      },
-      clickThenCheck(record){
+      clickThenCheck(record) {
         return {
           on: {
             click: () => {
-              this.onSelectChange(record.id.split(","),[record]);
+              this.onSelectChange(record.id.split(","), [record]);
             }
           }
         };
       },
-      onSelectChange (selectedRowKeys,selectionRows) {
+      onSelectChange(selectedRowKeys, selectionRows) {
         this.selectedRowKeys = selectedRowKeys;
         this.selectionRows = selectionRows;
         this.$refs.JeecgOrderCustomerList.getOrderMain(this.selectedRowKeys[0]);
         this.$refs.JeecgOrderTicketList.getOrderMain(this.selectedRowKeys[0]);
       },
-      onClearSelected(){
+      onClearSelected() {
         this.selectedRowKeys = [];
         this.selectionRows = [];
-        this.$refs.JeecgOrderCustomerList.queryParam.orderId = null;
-        this.$refs.JeecgOrderTicketList.queryParam.orderId = null;
+        this.$refs.JeecgOrderCustomerList.queryParam.mainId = null;
+        this.$refs.JeecgOrderTicketList.queryParam.mainId = null;
         this.$refs.JeecgOrderCustomerList.loadData();
         this.$refs.JeecgOrderTicketList.loadData();
+        this.$refs.JeecgOrderCustomerList.selectedRowKeys = [];
+        this.$refs.JeecgOrderCustomerList.selectionRows = [];
+        this.$refs.JeecgOrderTicketList.selectedRowKeys = [];
+        this.$refs.JeecgOrderTicketList.selectionRows = [];
       },
-      searchQuery(){
-        this.loadData(1);
-      },
-      searchReset(){
+
+      handleDelete: function (id) {
         var that = this;
-        that.queryParam={};
-        that.loadData(1);
-      },
-      batchDel: function(){
-        if(this.selectedRowKeys.length<=0){
-          this.$message.warning('请选择一条记录！');
-          return ;
-        }else{
-          var ids = "";
-          for(var a =0;a<this.selectedRowKeys.length;a++){
-            ids+=this.selectedRowKeys[a]+",";
-          }
-          var that = this;
-          this.$confirm({
-            title:"确认删除",
-            content:"是否删除选中数据?",
-            onOk: function(){
-              deleteAction(that.url.deleteBatch,{ids: ids}).then((res)=>{
-                if(res.success){
-                  that.$message.success(res.message);
-                  that.loadData();
-                  that.onClearSelected();
-                  this.$refs.JeecgOrderCustomerList.loadData();
-                  this.$refs.JeecgOrderTicketList.loadData();
-                }else{
-                  that.$message.warning(res.message);
-                }
-              });
-            }
-          });
-        }
-      },
-      handleDelete: function(id){
-        var that = this;
-        deleteAction(that.url.delete,{id: id}).then((res)=>{
-          if(res.success){
+        deleteAction(that.url.delete, {id: id}).then((res) => {
+          if (res.success) {
             that.$message.success(res.message);
             that.loadData();
             this.$refs.JeecgOrderCustomerList.loadData();
             this.$refs.JeecgOrderTicketList.loadData();
-          }else{
+          } else {
             that.$message.warning(res.message);
           }
         });
       },
-      handleEdit: function(record){
-        this.$refs.JeecgOrderDMainModal.edit(record);
-        this.$refs.JeecgOrderDMainModal.title="编辑";
-      },
-      handleAdd: function(){
-        this.$refs.JeecgOrderDMainModal.add();
-        this.$refs.JeecgOrderDMainModal.title="新增";
-      },
-      handleTableChange(pagination, filters, sorter){
-        //分页、排序、筛选变化时触发
-        console.log(sorter);
-        //TODO 筛选
-        if (Object.keys(sorter).length>0){
-          this.isorter.column = sorter.field;
-          this.isorter.order = "ascend"==sorter.order?"asc":"desc"
-        }
-        this.ipagination = pagination;
-        this.loadData();
-      },
-      modalFormOk () {
-        // 新增/修改 成功时，重载列表
+      searchQuery:function(){
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
+        this.$refs.JeecgOrderCustomerList.queryParam.mainId = null;
+        this.$refs.JeecgOrderTicketList.queryParam.mainId = null;
+        this.$refs.JeecgOrderCustomerList.loadData();
+        this.$refs.JeecgOrderTicketList.loadData();
+        this.$refs.JeecgOrderCustomerList.selectedRowKeys = [];
+        this.$refs.JeecgOrderCustomerList.selectionRows = [];
+        this.$refs.JeecgOrderTicketList.selectedRowKeys = [];
+        this.$refs.JeecgOrderTicketList.selectionRows = [];
         this.loadData();
       }
     }
   }
 </script>
 <style scoped>
-  .ant-card-body .table-operator{
+  .ant-card-body .table-operator {
     margin-bottom: 18px;
   }
-  .ant-layout-content{
-    margin:12px 16px 0 !important;
-  }
-  .ant-table-tbody .ant-table-row td{
-    padding-top:15px;
-    padding-bottom:15px;
-  }
-  .anty-row-operator button{margin: 0 5px}
-  .ant-btn-danger{background-color: #ffffff}
 
-  .ant-modal-cust-warp{height: 100%}
-  .ant-modal-cust-warp .ant-modal-body{height:calc(100% - 110px) !important;overflow-y: auto}
-  .ant-modal-cust-warp .ant-modal-content{height:90% !important;overflow-y: hidden}
+  .ant-table-tbody .ant-table-row td {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  .anty-row-operator button {
+    margin: 0 5px
+  }
+
+  .ant-btn-danger {
+    background-color: #ffffff
+  }
+
+  .ant-modal-cust-warp {
+    height: 100%
+  }
+
+  .ant-modal-cust-warp .ant-modal-body {
+    height: calc(100% - 110px) !important;
+    overflow-y: auto
+  }
+
+  .ant-modal-cust-warp .ant-modal-content {
+    height: 90% !important;
+    overflow-y: hidden
+  }
 </style>

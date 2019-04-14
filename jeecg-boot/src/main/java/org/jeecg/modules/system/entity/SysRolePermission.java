@@ -39,6 +39,11 @@ public class SysRolePermission implements Serializable {
      * 权限id
      */
     private String permissionId;
+    
+    /**
+     * 数据权限
+     */
+    private String dataRuleIds;
 
     public SysRolePermission() {
    	}

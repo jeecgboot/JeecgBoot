@@ -1,6 +1,8 @@
 package org.jeecg.modules.system.entity;
 
 import java.util.Date;
+
+import org.jeecg.common.aspect.annotation.Dict;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -98,6 +100,7 @@ public class SysLog implements Serializable {
 	/**
 	 * 日志类型（1登录日志，2操作日志）
 	 */
+	@Dict(dicCode = "log_type")
 	private Integer logType;
 
 	/**

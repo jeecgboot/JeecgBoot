@@ -15,5 +15,25 @@
 		   where s.dict_id = (select id from sys_dict where dict_code = #{code})
 		   and s.item_value = #{key}
 	</select>
+
+
+	<!--通过查询指定table的 text code 获取字典-->
+	<select id="queryTableDictItemsByCode" parameterType="String"  resultType="java.util.HashMap">
+		   select ${text} as 'text',${code} as 'value' from ${table}
+	</select>
 	
+	<!--通过查询指定table的 text code key 获取字典值-->
+	<select id="queryTableDictTextByKey" parameterType="String"  resultType="java.util.HashMap">
+		   select ${code} as 'value', ${text} as 'text' from ${table} where ${code}= #{key}
+	</select>
+
+	<!-- 重复校验 sql语句 -->
+	<select id="duplicateCheckCountSql" resultType="Long" parameterType="org.jeecg.modules.system.model.DuplicateCheckVo">
+		SELECT COUNT(*) FROM ${tableName} WHERE ${fieldName} = #{fieldVal} and id != #{dataId}
+	</select>
+	
+	<!-- 重复校验 sql语句 -->
+	<select id="duplicateCheckCountSqlNoDataId" resultType="Long" parameterType="org.jeecg.modules.system.model.DuplicateCheckVo">
+		SELECT COUNT(*) FROM ${tableName} WHERE ${fieldName} = #{fieldVal}
+	</select>
 </mapper>

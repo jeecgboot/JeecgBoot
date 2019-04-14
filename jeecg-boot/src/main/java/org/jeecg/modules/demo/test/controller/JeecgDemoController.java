@@ -1,24 +1,30 @@
 package org.jeecg.modules.demo.test.controller;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.common.util.superSearch.ObjectParseUtil;
-import org.jeecg.common.util.superSearch.QueryRuleEnum;
-import org.jeecg.common.util.superSearch.QueryRuleVo;
 import org.jeecg.modules.demo.test.entity.JeecgDemo;
 import org.jeecg.modules.demo.test.service.IJeecgDemoService;
+import org.jeecgframework.poi.excel.ExcelImportUtil;
+import org.jeecgframework.poi.excel.def.NormalExcelConstants;
+import org.jeecgframework.poi.excel.entity.ExportParams;
+import org.jeecgframework.poi.excel.entity.ImportParams;
+import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,14 +33,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +82,7 @@ public class JeecgDemoController {
 	public Result<IPage<JeecgDemo>> list(JeecgDemo jeecgDemo, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
 			HttpServletRequest req) {
 		Result<IPage<JeecgDemo>> result = new Result<IPage<JeecgDemo>>();
-		QueryWrapper<JeecgDemo> queryWrapper = null;
+		/*QueryWrapper<JeecgDemo> queryWrapper = null;
 		//================================================================================
 		//高级组合查询
 		try {
@@ -106,7 +117,10 @@ public class JeecgDemoController {
 			} else {
 				queryWrapper.orderByDesc(oConvertUtils.camelToUnderline(column));
 			}
-		}
+		}*/
+		
+		QueryWrapper<JeecgDemo> queryWrapper = QueryGenerator.initQueryWrapper(jeecgDemo, req.getParameterMap());
+		Page<JeecgDemo> page = new Page<JeecgDemo>(pageNo, pageSize);
 		
 		IPage<JeecgDemo> pageList = jeecgDemoService.page(page, queryWrapper);
 //		log.info("查询当前页：" + pageList.getCurrent());
@@ -224,6 +238,78 @@ public class JeecgDemoController {
 	}
 	
 
+	/**
+	 * 导出excel
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value = "/exportXls")
+	public ModelAndView exportXls(HttpServletRequest request, HttpServletResponse response) {
+		// Step.1 组装查询条件
+		QueryWrapper<JeecgDemo> queryWrapper = null;
+		try {
+			String paramsStr = request.getParameter("paramsStr");
+			if (oConvertUtils.isNotEmpty(paramsStr)) {
+				String deString = URLDecoder.decode(paramsStr, "UTF-8");
+				JeecgDemo jeecgDemo = JSON.parseObject(deString, JeecgDemo.class);
+				queryWrapper = QueryGenerator.initQueryWrapper(jeecgDemo, request.getParameterMap());
+				log.info(paramsStr);
+				log.info(jeecgDemo.toString());
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		//Step.2 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		List<JeecgDemo> pageList = jeecgDemoService.list(queryWrapper);
+		//导出文件名称
+		mv.addObject(NormalExcelConstants.FILE_NAME,"Excel导出文件名字");
+		//注解对象Class
+		mv.addObject(NormalExcelConstants.CLASS,JeecgDemo.class);
+		//自定义表格参数
+		mv.addObject(NormalExcelConstants.PARAMS,new ExportParams("自定义导出Excel模板内容标题","导出人:Jeecg","导出信息"));
+		//导出数据列表
+		mv.addObject(NormalExcelConstants.DATA_LIST,pageList);
+		return mv;
+	}
+	
+	/**
+	 * 通过excel导入数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
+	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
+		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+		for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+			MultipartFile file = entity.getValue();// 获取上传文件对象
+			ImportParams params = new ImportParams();
+			params.setTitleRows(2);
+			params.setHeadRows(1);
+			params.setNeedSave(true);
+			try {
+				List<JeecgDemo> listJeecgDemos = ExcelImportUtil.importExcel(file.getInputStream(), JeecgDemo.class, params);
+				for (JeecgDemo jeecgDemoExcel : listJeecgDemos) {
+					jeecgDemoService.save(jeecgDemoExcel);
+				}
+				return Result.ok("文件导入成功！数据行数：" + listJeecgDemos.size());
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				return Result.error("文件导入失败！");
+			} finally {
+				try {
+					file.getInputStream().close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return Result.ok("文件导入失败！");
+	}
+	
 	// ================================================================================================================
 	/**
 	 * redis操作 -- set
@@ -292,5 +378,15 @@ public class JeecgDemoController {
 	}
 
 	// ================================================================================================================
+	
+	
+	// ==========================================动态表单 JSON接收测试===========================================//
+	@PostMapping(value = "/testOnlineAdd")
+	public Result<JeecgDemo> testOnlineAdd(@RequestBody JSONObject json) {
+		Result<JeecgDemo> result = new Result<JeecgDemo>();
+		log.info(json.toJSONString());
+		result.success("添加成功！");
+		return result;
+	}
 
 }

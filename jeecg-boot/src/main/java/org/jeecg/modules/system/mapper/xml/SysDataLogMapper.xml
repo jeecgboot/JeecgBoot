@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysDataLogMapper">
+	<!-- 通过表名及数据Id获取最大版本 -->
+	<select id="queryMaxDataVer" parameterType="String"  resultType="String">
+		select max(data_version) as mvn from sys_data_log 
+		where data_table = #{tableName} and data_id =#{dataId}
+	</select>
+
+</mapper>

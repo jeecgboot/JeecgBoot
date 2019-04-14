@@ -38,7 +38,7 @@ public class MybatisInterceptor implements Interceptor {
 		log.debug("------sqlId------" + sqlId);
 		SqlCommandType sqlCommandType = mappedStatement.getSqlCommandType();
 		Object parameter = invocation.getArgs()[1];
-		log.info("------sqlCommandType------" + sqlCommandType);
+		log.debug("------sqlCommandType------" + sqlCommandType);
 
 		if (parameter == null) {
 			return invocation.proceed();

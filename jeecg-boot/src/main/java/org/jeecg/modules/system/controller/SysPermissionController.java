@@ -2,6 +2,8 @@ package org.jeecg.modules.system.controller;
 
 
 import java.util.ArrayList;
+
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,11 +16,14 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.util.MD5Util;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysPermission;
+import org.jeecg.modules.system.entity.SysPermissionDataRule;
 import org.jeecg.modules.system.entity.SysRolePermission;
 import org.jeecg.modules.system.model.SysPermissionTree;
 import org.jeecg.modules.system.model.TreeModel;
+import org.jeecg.modules.system.service.ISysPermissionDataRuleService;
 import org.jeecg.modules.system.service.ISysPermissionService;
 import org.jeecg.modules.system.service.ISysRolePermissionService;
+import org.jeecg.modules.system.util.PermissionDataUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +57,9 @@ public class SysPermissionController {
 	@Autowired
 	private ISysRolePermissionService sysRolePermissionService;
 	
+	@Autowired
+	private ISysPermissionDataRuleService sysPermissionDataRuleService;
+	
 	
 	/**
 	 * 加载数据节点
@@ -59,7 +67,6 @@ public class SysPermissionController {
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<List<SysPermissionTree>> list() {
-		//@RequestParam(name="pid",required=false) String parentId
 		Result<List<SysPermissionTree>> result = new Result<>();
 		try {
 			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
@@ -78,7 +85,7 @@ public class SysPermissionController {
 	
 	
 	/**
-	 *  查询用户的权限
+	 *  查询用户拥有的菜单权限和按钮权限（根据用户账号）
 	 * @return
 	 */
 	@RequestMapping(value = "/queryByUser", method = RequestMethod.GET)
@@ -102,10 +109,11 @@ public class SysPermissionController {
 	
 	
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	@RequiresRoles({"admin"})
+	
 	public Result<SysPermission> add(@RequestBody SysPermission permission) {
 		Result<SysPermission> result = new Result<SysPermission>();
 		try {
+			permission = PermissionDataUtil.intelligentProcessData(permission);
 			sysPermissionService.addPermission(permission);
 			result.success("添加成功！");
 		} catch (Exception e) {
@@ -117,10 +125,11 @@ public class SysPermissionController {
 	}
 	
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
-	@RequiresRoles({"admin"})
-	public Result<SysPermission> eidt(@RequestBody SysPermission permission) {
+	
+	public Result<SysPermission> edit(@RequestBody SysPermission permission) {
 		Result<SysPermission> result = new Result<>();
 		try {
+			permission = PermissionDataUtil.intelligentProcessData(permission);
 			sysPermissionService.editPermission(permission);
 			result.success("修改成功！");
 		} catch (Exception e) {
@@ -132,11 +141,12 @@ public class SysPermissionController {
 	}
 	
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-	@RequiresRoles({"admin"})
+	
 	public Result<SysPermission> delete(@RequestParam(name="id",required=true) String id) {
 		Result<SysPermission> result = new Result<>();
 		try {
 			sysPermissionService.deletePermission(id);
+			sysPermissionService.deletePermRuleByPermId(id);
 			result.success("删除成功!");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -147,7 +157,7 @@ public class SysPermissionController {
 	
 	
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
-	@RequiresRoles({"admin"})
+	
 	public Result<SysPermission> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<SysPermission> result = new Result<>();
 		try {
@@ -182,8 +192,6 @@ public class SysPermissionController {
 			for(SysPermission sysPer : list) {
 				ids.add(sysPer.getId());
 			}
-			
-			System.out.println(list.size());
 			List<TreeModel> treeList = new ArrayList<>();
 			getTreeModelList(treeList, list, null);
 			
@@ -243,6 +251,7 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequestMapping(value = "/saveRolePermission", method = RequestMethod.POST)
+	
 	public Result<String> saveRolePermission(@RequestBody JSONObject json) {
 		Result<String> result = new Result<>();
 		try {
@@ -264,12 +273,12 @@ public class SysPermissionController {
 			SysPermissionTree tree = new SysPermissionTree(permission);
 			if(temp==null && oConvertUtils.isEmpty(tempPid)) {
 				treeList.add(tree);
-				if(tree.getIsLeaf()==0) {
+				if(!tree.getIsLeaf()) {
 					getTreeList(treeList, metaList, tree);
 				}
 			}else if(temp!=null && tempPid!=null && tempPid.equals(temp.getId())){
 				temp.getChildren().add(tree);
-				if(tree.getIsLeaf()==0) {
+				if(!tree.getIsLeaf()) {
 					getTreeList(treeList, metaList, tree);
 				}
 			}
@@ -283,12 +292,12 @@ public class SysPermissionController {
 			TreeModel tree = new TreeModel(permission);
 			if(temp==null && oConvertUtils.isEmpty(tempPid)) {
 				treeList.add(tree);
-				if(permission.getIsLeaf()==0) {
+				if(!tree.getIsLeaf()) {
 					getTreeModelList(treeList, metaList, tree);
 				}
 			}else if(temp!=null && tempPid!=null && tempPid.equals(temp.getKey())){
 				temp.getChildren().add(tree);
-				if(permission.getIsLeaf()==0) {
+				if(!tree.getIsLeaf()) {
 					getTreeModelList(treeList, metaList, tree);
 				}
 			}
@@ -310,11 +319,12 @@ public class SysPermissionController {
 			JSONObject json = getPermissionJsonObject(permission);
 			if(parentJson==null && oConvertUtils.isEmpty(tempPid)) {
 				jsonArray.add(json);
-				if(permission.getIsLeaf()==0) {
+				if(!permission.isLeaf()) {
 					getPermissionJsonArray(jsonArray, metaList, json);
 				}
 			}else if(parentJson!=null && oConvertUtils.isNotEmpty(tempPid) && tempPid.equals(parentJson.getString("id"))){
-				if(permission.getMenuType()==0) {
+				//类型( 0：一级菜单 1：子菜单  2：按钮 )
+				if(permission.getMenuType()==2) {
 					JSONObject metaJson = parentJson.getJSONObject("meta");
 					if(metaJson.containsKey("permissionList")) {
 						metaJson.getJSONArray("permissionList").add(json);
@@ -323,8 +333,8 @@ public class SysPermissionController {
 						permissionList.add(json);
 						metaJson.put("permissionList", permissionList);
 					}
-					
-				}else if(permission.getMenuType()==1) {
+				//类型( 0：一级菜单 1：子菜单  2：按钮 )
+				}else if(permission.getMenuType()==1|| permission.getMenuType()==0) {
 					if(parentJson.containsKey("children")) {
 						parentJson.getJSONArray("children").add(json);
 					}else {
@@ -333,7 +343,7 @@ public class SysPermissionController {
 						parentJson.put("children", children);
 					}
 					
-					if(permission.getIsLeaf()==0) {
+					if(!permission.isLeaf()) {
 						getPermissionJsonArray(jsonArray, metaList, json);
 					}
 				}
@@ -351,14 +361,24 @@ public class SysPermissionController {
 			json.put("describe", permission.getName());
 		}else if(permission.getMenuType()==0||permission.getMenuType()==1) {
 			json.put("id", permission.getId());
-			if(permission.getUrl()!=null&&(permission.getUrl().startsWith("http://")||permission.getUrl().startsWith("https://"))) {
+			if(permission.isRoute()) {
+				json.put("route", "1");//表示生成路由
+			}else {
+				json.put("route", "0");//表示不生成路由
+			}
+			
+			if(isWWWHttpUrl(permission.getUrl())) {
 				json.put("path", MD5Util.MD5Encode(permission.getUrl(), "utf-8"));
 			}else {
 				json.put("path", permission.getUrl());
 			}
 			
 			//重要规则：路由name (通过URL生成路由name,路由name供前端开发，页面跳转使用)
-			json.put("name", urlToRouteName(permission.getUrl()));
+			if(oConvertUtils.isNotEmpty(permission.getComponentName())) {
+				json.put("name", permission.getComponentName());
+			}else {
+				json.put("name", urlToRouteName(permission.getUrl()));
+			}
 			
 			//是否隐藏路由，默认都是显示的
 			if(permission.isHidden()) {
@@ -370,21 +390,41 @@ public class SysPermissionController {
 			}
 			json.put("component", permission.getComponent());
 			JSONObject meta = new JSONObject();
+			//默认所有的菜单都加路由缓存，提高系统性能
+			meta.put("keepAlive", "true");
 			meta.put("title", permission.getName());
 			if(oConvertUtils.isEmpty(permission.getParentId())) {
 				//一级菜单跳转地址
 				json.put("redirect",permission.getRedirect());
-				meta.put("icon", oConvertUtils.getString(permission.getIcon(), ""));
+				if(oConvertUtils.isNotEmpty(permission.getIcon())) {
+					meta.put("icon", permission.getIcon());
+				}
 			}else {
-				meta.put("icon", oConvertUtils.getString(permission.getIcon(), ""));
+				if(oConvertUtils.isNotEmpty(permission.getIcon())) {
+					meta.put("icon", permission.getIcon());
+				}
 			}
-			if(permission.getUrl()!=null&&(permission.getUrl().startsWith("http://")||permission.getUrl().startsWith("https://"))) {
+			if(isWWWHttpUrl(permission.getUrl())) {
 				meta.put("url", permission.getUrl());
 			}
 			json.put("meta", meta);
 		}
 		
 		return json;
+	}
+	
+	/**
+	 * 判断是否外网URL 例如： http://localhost:8080/jeecg-boot/swagger-ui.html#/
+	 *                 支持特殊格式：     {{ window._CONFIG['domianURL'] }}/druid/
+	 *                 {{ JS代码片段 }}，前台解析会自动执行JS代码片段
+	 * 
+	 * @return
+	 */
+	private boolean isWWWHttpUrl(String url) {
+		if (url != null && (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("{{"))) {
+			return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -399,10 +439,104 @@ public class SysPermissionController {
 				url = url.substring(1);
 			}
 			url = url.replace("/", "-");
+			
+			//特殊标记
+			url = url.replace(":", "@");
 			return url;
 		}else {
 			return null;
 		}
+	}
+	
+	/**
+	 * 根据菜单id来获取其对应的权限数据
+	 * 
+	 * @param sysPermissionDataRule
+	 * @return
+	 */
+	@RequestMapping(value = "/getPermRuleListByPermId", method = RequestMethod.GET)
+	public Result<List<SysPermissionDataRule>> getPermRuleListByPermId(SysPermissionDataRule sysPermissionDataRule) {
+		List<SysPermissionDataRule> permRuleList = sysPermissionDataRuleService.getPermRuleListByPermId(sysPermissionDataRule.getPermissionId());
+		Result<List<SysPermissionDataRule>> result = new Result<>();
+		result.setSuccess(true);
+		result.setResult(permRuleList);
+		return result;
+	}
+
+	/**
+	 * 添加菜单权限数据
+	 * 
+	 * @param sysPermissionDataRule
+	 * @return
+	 */
+	@RequestMapping(value = "/addPermissionRule", method = RequestMethod.POST)
+	public Result<SysPermissionDataRule> addPermissionRule(@RequestBody SysPermissionDataRule sysPermissionDataRule) {
+		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
+		try {
+			sysPermissionDataRule.setCreateTime(new Date());
+			sysPermissionDataRuleService.save(sysPermissionDataRule);
+			result.success("添加成功！");
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			result.error500("操作失败");
+		}
+		return result;
+	}
+
+	@RequestMapping(value = "/editPermissionRule", method = { RequestMethod.PUT, RequestMethod.POST })
+	public Result<SysPermissionDataRule> editPermissionRule(@RequestBody SysPermissionDataRule sysPermissionDataRule) {
+		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
+		try {
+			sysPermissionDataRuleService.saveOrUpdate(sysPermissionDataRule);
+			result.success("更新成功！");
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			result.error500("操作失败");
+		}
+		return result;
+	}
+
+	/**
+	 * 删除菜单权限数据
+	 * 
+	 * @param sysPermissionDataRule
+	 * @return
+	 */
+	@RequestMapping(value = "/deletePermissionRule", method = RequestMethod.DELETE)
+	public Result<SysPermissionDataRule> deletePermissionRule(@RequestParam(name = "id", required = true) String id) {
+		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
+		try {
+			sysPermissionDataRuleService.removeById(id);
+			result.success("删除成功！");
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			result.error500("操作失败");
+		}
+		return result;
+	}
+
+	/**
+	 * 查询菜单权限数据
+	 * 
+	 * @param sysPermissionDataRule
+	 * @return
+	 */
+	@RequestMapping(value = "/queryPermissionRule", method = RequestMethod.GET)
+	public Result<List<SysPermissionDataRule>> queryPermissionRule(SysPermissionDataRule sysPermissionDataRule) {
+		Result<List<SysPermissionDataRule>> result = new Result<>();
+		try {
+			List<SysPermissionDataRule> permRuleList = sysPermissionDataRuleService.queryPermissionRule(sysPermissionDataRule);
+			result.setResult(permRuleList);
+			result.success("查询成功！");
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			result.error500("操作失败");
+		}
+		return result;
 	}
 	
 }

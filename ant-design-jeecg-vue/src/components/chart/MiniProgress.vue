@@ -1,26 +1,26 @@
 <template>
   <div class="chart-mini-progress">
     <div class="target" :style="{ left: target + '%'}">
-      <span :style="{ backgroundColor: color }" />
+      <span :style="{ backgroundColor: color }"/>
       <span :style="{ backgroundColor: color }"/>
     </div>
     <div class="progress-wrapper">
-      <div class="progress" :style="{ backgroundColor: color, width: percentage + '%', height: height }"></div>
+      <div class="progress" :style="{ backgroundColor: color, width: percentage + '%', height: height+'px' }"></div>
     </div>
   </div>
 </template>
 
 <script>
   export default {
-    name: "MiniProgress",
+    name: 'MiniProgress',
     props: {
       target: {
         type: Number,
         default: 0
       },
       height: {
-        type: String,
-        default: '10px'
+        type: Number,
+        default: 10
       },
       color: {
         type: String,
@@ -64,7 +64,7 @@
       position: relative;
 
       .progress {
-        transition: all .4s cubic-bezier(.08,.82,.17,1) 0s;
+        transition: all .4s cubic-bezier(.08, .82, .17, 1) 0s;
         border-radius: 1px 0 0 1px;
         background-color: #1890ff;
         width: 0;

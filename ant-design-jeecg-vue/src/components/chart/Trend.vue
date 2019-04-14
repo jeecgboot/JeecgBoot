@@ -10,11 +10,13 @@
   export default {
     name: "Trend",
     props: {
+      // 同title
       term: {
         type: String,
         default: '',
         required: true
       },
+      // 百分比
       percentage: {
         type: Number,
         default: null

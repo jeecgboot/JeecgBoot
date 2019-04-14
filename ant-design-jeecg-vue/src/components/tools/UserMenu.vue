@@ -1,13 +1,13 @@
 <template>
-  <div class="user-wrapper">
+  <div class="user-wrapper" :class="theme">
     <span class="action">
       <a-icon type="question-circle-o"></a-icon>
     </span>
     <header-notice class="action"/>
     <a-dropdown>
-      <span class="action ant-dropdown-link user-dropdown-menu">
+      <span class="action action-full ant-dropdown-link user-dropdown-menu">
         <a-avatar class="avatar" size="small" :src="getAvatar()"/>
-        <span>欢迎您，{{ nickname() }}</span>
+        <span v-if="isDesktop()">欢迎您，{{ nickname() }}</span>
       </span>
       <a-menu slot="overlay" class="user-dropdown-menu-wrapper">
         <a-menu-item key="0">
@@ -38,7 +38,7 @@
     <span class="action">
       <a class="logout_title" href="javascript:;" @click="handleLogout">
         <a-icon type="logout"/>
-        <span> 退出登录</span>
+        <span v-if="isDesktop()">&nbsp;退出登录</span>
       </a>
     </span>
   </div>
@@ -47,19 +47,26 @@
 <script>
   import HeaderNotice from './HeaderNotice'
   import { mapActions, mapGetters } from 'vuex'
-  import {imgView} from '@/api/api'
-
+  import { mixinDevice } from '@/utils/mixin.js'
   export default {
     name: "UserMenu",
+    mixins: [mixinDevice],
     components: {
       HeaderNotice
+    },
+    props: {
+      theme: {
+        type: String,
+        required: false,
+        default: 'dark'
+      }
     },
     methods: {
       ...mapActions(["Logout"]),
       ...mapGetters(["nickname", "avatar"]),
       getAvatar(){
-        console.log('url = '+ imgView+this.avatar())
-        return imgView+this.avatar()
+        console.log('url = '+ window._CONFIG['imgDomainURL']+"/"+this.avatar())
+        return window._CONFIG['imgDomainURL']+"/"+this.avatar()
       },
       handleLogout() {
         const that = this
@@ -69,7 +76,8 @@
           content: '真的要注销登录吗 ?',
           onOk() {
             return that.Logout({}).then(() => {
-              window.location.reload()
+                window.location.href="/";
+              //window.location.reload()
             }).catch(err => {
               that.$message.error({
                 title: '错误',
@@ -86,8 +94,8 @@
 </script>
 
 <style scoped>
-  .logout_title{
-    color: rgba(0, 0, 0, 0.65);
-    text-decoration:none;
+  .logout_title {
+    color: inherit;
+    text-decoration: none;
   }
 </style>

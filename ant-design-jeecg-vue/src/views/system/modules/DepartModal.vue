@@ -120,7 +120,6 @@
             for (let i = 0; i < res.result.length; i++) {
               let temp = res.result[i];
               that.departTree.push(temp);
-              console.log(temp.id)
             }
           }
 

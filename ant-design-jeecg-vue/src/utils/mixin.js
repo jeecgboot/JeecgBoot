@@ -11,6 +11,7 @@ const mixin = {
       navTheme: state => state.app.theme,
       primaryColor: state => state.app.color,
       colorWeak: state => state.app.weak,
+      multipage: state => state.app.multipage,//多页签设置
       fixedHeader: state => state.app.fixedHeader,
       fixSiderbar: state => state.app.fixSiderbar,
       contentWidth: state => state.app.contentWidth,

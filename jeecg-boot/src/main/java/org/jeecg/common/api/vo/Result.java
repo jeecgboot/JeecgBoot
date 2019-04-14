@@ -20,23 +20,27 @@ public class Result<T> implements Serializable {
 	/**
 	 * 成功标志
 	 */
-	private boolean success;
+	private boolean success = true;
 
 	/**
 	 * 返回处理消息
 	 */
-	private String message;
+	private String message = "操作成功！";
 
 	/**
 	 * 返回代码
 	 */
-	private Integer code;
+	private Integer code = 0;
 	
 	/**
 	 * 返回数据对象 data
 	 */
 	private T result;
 
+	public Result() {
+		
+	}
+	
 	/**
 	 * 时间戳
 	 */
@@ -74,11 +78,11 @@ public class Result<T> implements Serializable {
 		return r;
 	}
 	
-	public static Result<Object> ok(Object obj) {
+	public static Result<Object> ok(Object data) {
 		Result<Object> r = new Result<Object>();
 		r.setSuccess(true);
 		r.setCode(CommonConstant.SC_OK_200);
-		r.setResult(obj);
+		r.setResult(data);
 		return r;
 	}
 }

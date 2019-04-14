@@ -26,7 +26,7 @@ const app = {
     autoHideHeader: false,
     color: null,
     weak: false,
-    multipage: true
+    multipage: true //默认多页签模式
   },
   mutations: {
     SET_SIDEBAR_TYPE: (state, type) => {
@@ -74,8 +74,8 @@ const app = {
       Vue.ls.set(DEFAULT_COLOR_WEAK, flag)
       state.weak = flag
     },
-    setMultipage (state, multipage) {
-      state.multipage = multipage
+    SET_MULTI_PAGE (state, multipageFlag) {
+      state.multipage = multipageFlag
     }
   },
   actions: {
@@ -114,6 +114,9 @@ const app = {
     },
     ToggleWeak({ commit }, weakFlag) {
       commit('TOGGLE_WEAK', weakFlag)
+    },
+    ToggleMultipage({ commit }, multipageFlag) {
+      commit('SET_MULTI_PAGE', multipageFlag)
     }
   }
 }
