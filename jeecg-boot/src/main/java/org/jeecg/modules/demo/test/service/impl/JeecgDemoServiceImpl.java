@@ -26,6 +26,7 @@ public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo
 	 * 事务控制在service层面
 	 * 加上注解：@Transactional，声明的方法就是一个独立的事务（有异常DB操作全部回滚）
 	 */
+	@Override
 	@Transactional
 	public void testTran() {
 		JeecgDemo pp = new JeecgDemo();
@@ -51,9 +52,11 @@ public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo
 	/**
 	 * 缓存注解测试： redis
 	 */
+	@Override
 	@Cacheable(cacheNames="jeecgDemo", key="#id")
 	public JeecgDemo getByIdCacheable(String id) {
 		JeecgDemo t = jeecgDemoMapper.selectById(id);
+		System.err.println("---未读缓存，读取数据库---");
 		System.err.println(t);
 		return t;
 	}

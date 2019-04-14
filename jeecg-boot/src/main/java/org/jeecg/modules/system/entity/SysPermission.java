@@ -3,10 +3,12 @@ package org.jeecg.modules.system.entity;
 import java.io.Serializable;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecg.common.aspect.annotation.Dict;
 
 /**
  * <p>
@@ -53,6 +55,11 @@ public class SysPermission implements Serializable {
 	 * 组件
 	 */
 	private String component;
+	
+	/**
+	 * 组件名字
+	 */
+	private String componentName;
 
 	/**
 	 * 路径
@@ -71,12 +78,20 @@ public class SysPermission implements Serializable {
 	/**
 	 * 类型（0：一级菜单；1：子菜单 ；2：按钮权限）
 	 */
+	@Dict(dicCode = "menu_type")
 	private Integer menuType;
 
 	/**
-	 * 是否叶子节点: 1:是 0:不是
+	 * 是否叶子节点: 1:是  0:不是
 	 */
-	private Integer isLeaf;
+	@TableField(value="is_leaf")
+	private boolean leaf;
+	
+	/**
+	 * 是否路由菜单: 0:不是  1:是（默认值1）
+	 */
+	@TableField(value="is_route")
+	private boolean route;
 
 	/**
 	 * 描述

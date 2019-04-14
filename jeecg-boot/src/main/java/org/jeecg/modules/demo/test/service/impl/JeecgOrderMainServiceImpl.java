@@ -26,46 +26,54 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 @Service
 public class JeecgOrderMainServiceImpl extends ServiceImpl<JeecgOrderMainMapper, JeecgOrderMain> implements IJeecgOrderMainService {
 
-	@Autowired
-	private JeecgOrderMainMapper jeecgOrderMainMapper;
-	@Autowired
-	private JeecgOrderCustomerMapper jeecgOrderCustomerMapper;
-	@Autowired
-	private JeecgOrderTicketMapper jeecgOrderTicketMapper;
-	
-	@Override
-	@Transactional
-	public void saveMain(JeecgOrderMain jeecgOrderMain, List<JeecgOrderCustomer> jeecgOrderCustomerList, List<JeecgOrderTicket> jeecgOrderTicketList) {
-		jeecgOrderMainMapper.insert(jeecgOrderMain);
-		for(JeecgOrderCustomer entity:jeecgOrderCustomerList) {
-			entity.setOrderId(jeecgOrderMain.getId());
-			jeecgOrderCustomerMapper.insert(entity);
-		}
-		for(JeecgOrderTicket entity:jeecgOrderTicketList) {
-			entity.setOrderId(jeecgOrderMain.getId());
-			jeecgOrderTicketMapper.insert(entity);
-		}
-	}
+    @Autowired
+    private JeecgOrderMainMapper jeecgOrderMainMapper;
+    @Autowired
+    private JeecgOrderCustomerMapper jeecgOrderCustomerMapper;
+    @Autowired
+    private JeecgOrderTicketMapper jeecgOrderTicketMapper;
 
-	@Override
-	@Transactional
-	public void updateMain(JeecgOrderMain jeecgOrderMain, List<JeecgOrderCustomer> jeecgOrderCustomerList, List<JeecgOrderTicket> jeecgOrderTicketList) {
-		jeecgOrderMainMapper.updateById(jeecgOrderMain);
-		
-		//1.先删除子表数据
-		jeecgOrderTicketMapper.deleteTicketsByMainId(jeecgOrderMain.getId());
-		jeecgOrderCustomerMapper.deleteCustomersByMainId(jeecgOrderMain.getId());
-		
-		//2.子表数据重新插入
-		for(JeecgOrderCustomer entity:jeecgOrderCustomerList) {
-			entity.setOrderId(jeecgOrderMain.getId());
-			jeecgOrderCustomerMapper.insert(entity);
-		}
-		for(JeecgOrderTicket entity:jeecgOrderTicketList) {
-			entity.setOrderId(jeecgOrderMain.getId());
-			jeecgOrderTicketMapper.insert(entity);
-		}
-	}
+    @Override
+    @Transactional
+    public void saveMain(JeecgOrderMain jeecgOrderMain, List<JeecgOrderCustomer> jeecgOrderCustomerList, List<JeecgOrderTicket> jeecgOrderTicketList) {
+        jeecgOrderMainMapper.insert(jeecgOrderMain);
+        if (jeecgOrderCustomerList != null) {
+            for (JeecgOrderCustomer entity : jeecgOrderCustomerList) {
+                entity.setOrderId(jeecgOrderMain.getId());
+                jeecgOrderCustomerMapper.insert(entity);
+            }
+        }
+        if (jeecgOrderTicketList != null) {
+            for (JeecgOrderTicket entity : jeecgOrderTicketList) {
+                entity.setOrderId(jeecgOrderMain.getId());
+                jeecgOrderTicketMapper.insert(entity);
+            }
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateMain(JeecgOrderMain jeecgOrderMain, List<JeecgOrderCustomer> jeecgOrderCustomerList, List<JeecgOrderTicket> jeecgOrderTicketList) {
+        jeecgOrderMainMapper.updateById(jeecgOrderMain);
+
+        //1.先删除子表数据
+        jeecgOrderTicketMapper.deleteTicketsByMainId(jeecgOrderMain.getId());
+        jeecgOrderCustomerMapper.deleteCustomersByMainId(jeecgOrderMain.getId());
+
+        //2.子表数据重新插入
+        if (jeecgOrderCustomerList != null) {
+            for (JeecgOrderCustomer entity : jeecgOrderCustomerList) {
+                entity.setOrderId(jeecgOrderMain.getId());
+                jeecgOrderCustomerMapper.insert(entity);
+            }
+        }
+        if (jeecgOrderTicketList != null) {
+            for (JeecgOrderTicket entity : jeecgOrderTicketList) {
+                entity.setOrderId(jeecgOrderMain.getId());
+                jeecgOrderTicketMapper.insert(entity);
+            }
+        }
+    }
 
 	@Override
 	@Transactional

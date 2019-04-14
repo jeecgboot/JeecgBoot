@@ -29,10 +29,10 @@ public class oConvertUtils {
 		if (object == null) {
 			return (true);
 		}
-		if (object.equals("")) {
+		if ("".equals(object)) {
 			return (true);
 		}
-		if (object.equals("null")) {
+		if ("null".equals(object)) {
 			return (true);
 		}
 		return (false);
@@ -64,8 +64,9 @@ public class oConvertUtils {
 
 	private static String code2code(String strIn, String sourceCode, String targetCode) {
 		String strOut = null;
-		if (strIn == null || (strIn.trim()).equals(""))
+		if (strIn == null || (strIn.trim()).equals("")) {
 			return strIn;
+		}
 		try {
 			byte[] b = strIn.getBytes(sourceCode);
 			for (int i = 0; i < b.length; i++) {
@@ -158,6 +159,17 @@ public class oConvertUtils {
 			return (Integer.parseInt(object.toString()));
 		} catch (NumberFormatException e) {
 			return (defval);
+		}
+	}
+	
+	public static Integer getInt(Object object) {
+		if (isEmpty(object)) {
+			return null;
+		}
+		try {
+			return (Integer.parseInt(object.toString()));
+		} catch (NumberFormatException e) {
+			return null;
 		}
 	}
 

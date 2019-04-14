@@ -101,13 +101,10 @@
             if(this.userId == null){
               getAction(this.url.userId).then((res)=>{
                 if(res.success){
-                  that.$message.success(res.message);
                   let formData = {userId:res.result,
-                    departIdList:this.departList}
+                  departIdList:this.departList}
                   console.log(formData)
                   that.$emit('ok', formData);
-                }else{
-                  that.$message.warning("添加失败!");
                 }
               }).finally(() => {
                 that.departList = [];

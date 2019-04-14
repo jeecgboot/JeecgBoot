@@ -12,9 +12,9 @@ import 'ant-design-vue/dist/antd.less';  // or 'ant-design-vue/dist/antd.less'
 
 import '@/permission' // permission control
 import '@/utils/filter' // base filter
-import DictSelectTag from './components/dict/index.js'
-import Print from 'vue-print-nb'
+import Print from 'vue-print-nb-jeecg'
 /*import '@babel/polyfill'*/
+import VueApexCharts from 'vue-apexcharts'
 
 import {
   ACCESS_TOKEN,
@@ -30,17 +30,19 @@ import {
 } from "@/store/mutation-types"
 import config from '@/defaultSettings'
 
+import JDictSelectTag from './components/dict/index.js'
 import hasPermission from '@/utils/hasPermission'
 
 Vue.config.productionTip = false
-
 Vue.use(Storage, config.storageOptions)
 Vue.use(Antd)
 Vue.use(VueAxios, router)
 Vue.use(Viser)
 Vue.use(hasPermission)
-Vue.use(DictSelectTag)
+Vue.use(JDictSelectTag)
 Vue.use(Print)
+Vue.use(VueApexCharts)
+Vue.component('apexchart', VueApexCharts)
 
 new Vue({
   router,

@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/sys/common")
 public class CommonController {
 
-	@Value(value = "${uploadpath}")
+	@Value(value = "${jeecg.path.upload}")
 	private String uploadpath;
 
 	@PostMapping(value = "/upload")

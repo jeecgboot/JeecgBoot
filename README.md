@@ -1,7 +1,7 @@
 Jeecg-Boot 快速开发平台(前后端分离版本)
 ===============
 
-当前最新版本： 1.0（发布日期：20190304）
+当前最新版本： 1.1（发布日期：20190415）
 
 项目介绍：
 -----------------------------------
@@ -79,28 +79,85 @@ JeecgBoot的宗旨是降低前后端分离的开发成本，提高UI能力的同
 ├─系统管理
 │  ├─用户管理
 │  ├─角色管理
-│  ├─菜单管理（权限设置）
+│  ├─菜单管理
+│  ├─权限设置（支持按钮权限、数据权限）
 │  ├─部门管理
 │  └─字典管理
 ├─智能化功能
-│  ├─代码生成器功能（一键生成，包括前端页面也可以生成，绝对是后端开发福音）
+│  ├─代码生成器功能（一键生成前后端代码，生成后无需修改直接用，绝对是后端开发福音）
+│  ├─代码生成器模板（提供4套模板，分别支持单表和一对多模型，不同风格选择）
+│  ├─代码生成器模板（生成代码，自带excel导入导出）
+│  ├─查询过滤器（查询逻辑无需编码，系统根据页面配置自动生成）
+│  ├─高级查询器（弹窗自动组合查询条件）
+│  ├─Excel导入导出工具集成（支持单表，一对多 导入导出）
+│  ├─平台移动自适应支持
+├─Online在线开发
+│  ├─Online在线表单
+│  ├─Online在线图表
+│  ├─Online在线报表
+│  ├─消息中心（支持短信、邮件、微信推送等等）
 ├─系统监控
+│  ├─性能扫描监控
+│  │  ├─监控 Redis
+│  │  ├─Tomcat
+│  │  ├─jvm
+│  │  ├─服务器信息
+│  │  ├─请求追踪
 │  ├─定时任务
 │  ├─系统日志
+│  ├─数据日志（记录数据变更情况，可进行版本对比查看数据变更记录）
 │  ├─系统通知
 │  ├─SQL监控
 │  ├─swagger-ui(在线接口文档)
+│─报表示例
+│  ├─曲线图
+│  └─饼状图
+│  └─柱状图
+│  └─折线图
+│  └─面积图
+│  └─雷达图
+│  └─仪表图
+│  └─进度条
+│  └─排名列表
+│  └─等等
 │─常用示例
 │  ├─单表模型例子
 │  └─一对多模型例子
 │  └─打印例子
 │  └─一对多TAB例子
+│  └─内嵌table例子
+│  └─常用选择组件
+│  └─一对多JEditable
+│  └─接口模拟测试
+│  └─一对多JEditable
+│─封装通用组件	
+│  ├─行编辑表格JEditableTable
+│  └─省略显示组件
+│  └─时间控件
+│  └─高级查询
+│  └─通用选择用户组件
+│  └─通过组织机构选择用户组件
+│  └─报表组件封装
+│  └─等等组件
 │─更多页面模板
 │  ├─各种高级表单
 │  ├─各种列表效果
 │  └─结果页面
 │  └─异常页面
 │  └─个人页面
+│─流程模块功能
+│  ├─在线流程设计
+│  ├─在线表单设计
+│  └─我的任务
+│  └─历史流程
+│  └─历史流程
+│  └─流程实例管理
+│  └─流程监听管理
+│  └─流程表达式
+│  └─我发起的流程
+│  └─我的抄送
+│  └─流程委派、抄送、跳转
+│  └─。。。
 └─其他模块
    └─其他
    
@@ -110,19 +167,31 @@ JeecgBoot的宗旨是降低前后端分离的开发成本，提高UI能力的同
 
 系统效果
 ----
-![输入图片说明](https://static.oschina.net/uploads/img/201902/25154007_icdX.png "在这里输入图片标题")
-![输入图片说明](https://static.oschina.net/uploads/img/201902/25153956_Q752.png "在这里输入图片标题")
-![输入图片说明](https://static.oschina.net/uploads/img/201901/07154149_555Q.png "在这里输入图片标题")
-![输入图片说明](https://static.oschina.net/uploads/img/201902/25154209_qlCg.png "在这里输入图片标题")
-![输入图片说明](https://static.oschina.net/uploads/img/201902/25154251_XoW9.png "在这里输入图片标题")
-![输入图片说明](https://static.oschina.net/uploads/img/201902/25154331_0ndT.png "在这里输入图片标题")
-![输入图片说明](https://static.oschina.net/uploads/img/201902/25154414_ckFS.png "在这里输入图片标题")
-![输入图片说明](https://static.oschina.net/uploads/img/201902/25155155_Hm6H.png "在这里输入图片标题")
-![输入图片说明](https://static.oschina.net/uploads/img/201902/25155213_T04n.png "在这里输入图片标题")
-![输入图片说明](https://static.oschina.net/uploads/img/201902/25155224_MRLU.png "在这里输入图片标题")
-![输入图片说明](https://static.oschina.net/uploads/img/201902/25155234_7zCP.png "在这里输入图片标题")
-![输入图片说明](https://static.oschina.net/uploads/img/201902/25155242_K7Sw.png "在这里输入图片标题")
 
+![输入图片说明](https://static.oschina.net/uploads/img/201902/25154007_icdX.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14155402_AmlV.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160623_8fwk.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160633_u59G.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160643_kCJ7.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160650_fcgw.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160657_cHwb.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160705_NAJn.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160751_bsO9.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160801_2AhS.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160813_KmXS.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160828_pkFr.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160834_Lo23.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160842_QK7B.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160849_GBm5.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160858_6RAM.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160905_RGJ5.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160917_9Ftz.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160926_PUDV.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160935_Nibs.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160947_gfoN.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160957_hN3X.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14161004_bxQ4.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14161013_zW5n.png "在这里输入图片标题")
 
 
 
@@ -134,7 +203,7 @@ JeecgBoot的宗旨是降低前后端分离的开发成本，提高UI能力的同
 - jdk8
 - mysql
 - redis
-- 数据库脚步：jeecg-boot\docs\dbsys-init-20190225.sql
+- 数据库脚步：jeecg-boot\docs\jeecg-boot_1.1.0-20190415.sql
 - 默认登录账号： admin/123456
 
 

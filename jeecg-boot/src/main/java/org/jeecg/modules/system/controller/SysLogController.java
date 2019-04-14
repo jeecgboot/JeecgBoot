@@ -6,6 +6,7 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysLog;
 import org.jeecg.modules.system.entity.SysRole;
@@ -50,25 +51,8 @@ public class SysLogController {
 	public Result<IPage<SysLog>> queryPageList(SysLog syslog,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
 		Result<IPage<SysLog>> result = new Result<IPage<SysLog>>();
-		QueryWrapper<SysLog> queryWrapper = new QueryWrapper<SysLog>(syslog);
-		Page<SysLog> page = new Page<SysLog>(pageNo,pageSize);
-		//开始结束时间
-		String beginTime = req.getParameter("createTime_begin");
-		String endTime = req.getParameter("createTime_end");
-		if(oConvertUtils.isNotEmpty(beginTime) && oConvertUtils.isNotEmpty(endTime)) {
-			queryWrapper.ge(oConvertUtils.camelToUnderline("createTime"), beginTime);
-			queryWrapper.le(oConvertUtils.camelToUnderline("createTime"), endTime);
-		}
-		//排序逻辑 处理
-		String column = req.getParameter("column");
-		String order = req.getParameter("order");
-		if(oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
-			if("asc".equals(order)) {
-				queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));
-			}else {
-				queryWrapper.orderByDesc(oConvertUtils.camelToUnderline(column));
-			}
-		}
+		QueryWrapper<SysLog> queryWrapper = QueryGenerator.initQueryWrapper(syslog, req.getParameterMap());
+		Page<SysLog> page = new Page<SysLog>(pageNo, pageSize);
 		//日志关键词
 		String keyWord = req.getParameter("keyWord");
 		if(oConvertUtils.isNotEmpty(keyWord)) {

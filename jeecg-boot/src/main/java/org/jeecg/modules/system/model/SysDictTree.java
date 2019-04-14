@@ -36,6 +36,12 @@ public class SysDictTree implements Serializable {
      */
     @TableId(type = IdType.UUID)
     private String id;
+    /**
+     * 字典类型,0 string,1 number类型,2 boolean
+     * 前端js对stirng类型和number类型 boolean 类型敏感，需要区分。在select 标签匹配的时候会用到
+     * 默认为string类型
+     */
+    private Integer type;
     
     /**
      * 字典名称
@@ -84,6 +90,7 @@ public class SysDictTree implements Serializable {
 		this.dictCode = node.getDictCode();
 		this.description = node.getDescription();
 		this.delFlag = node.getDelFlag();
+		this.type = node.getType();
 	}
     
 }

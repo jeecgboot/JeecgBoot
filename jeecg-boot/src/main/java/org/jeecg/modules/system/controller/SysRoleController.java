@@ -1,25 +1,57 @@
 package org.jeecg.modules.system.controller;
 
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.system.entity.SysPermission;
+import org.jeecg.modules.system.entity.SysPermissionDataRule;
 import org.jeecg.modules.system.entity.SysRole;
+import org.jeecg.modules.system.entity.SysRolePermission;
+import org.jeecg.modules.system.model.TreeModel;
+import org.jeecg.modules.system.service.ISysPermissionDataRuleService;
+import org.jeecg.modules.system.service.ISysPermissionService;
+import org.jeecg.modules.system.service.ISysRolePermissionService;
 import org.jeecg.modules.system.service.ISysRoleService;
+import org.jeecgframework.poi.excel.ExcelImportUtil;
+import org.jeecgframework.poi.excel.def.NormalExcelConstants;
+import org.jeecgframework.poi.excel.entity.ExportParams;
+import org.jeecgframework.poi.excel.entity.ImportParams;
+import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -36,6 +68,15 @@ import lombok.extern.slf4j.Slf4j;
 public class SysRoleController {
 	@Autowired
 	private ISysRoleService sysRoleService;
+	
+	@Autowired
+	private ISysPermissionDataRuleService sysPermissionDataRuleService;
+	
+	@Autowired
+	private ISysRolePermissionService sysRolePermissionService;
+	
+	@Autowired
+	private ISysPermissionService sysPermissionService;
 
 	/**
 	  * 分页列表查询
@@ -51,27 +92,9 @@ public class SysRoleController {
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									  HttpServletRequest req) {
 		Result<IPage<SysRole>> result = new Result<IPage<SysRole>>();
-		QueryWrapper<SysRole> queryWrapper = new QueryWrapper<SysRole>(role);
-		Page<SysRole> page = new Page<SysRole>(pageNo,pageSize);
-		//排序逻辑 处理
-		String column = req.getParameter("column");
-		String order = req.getParameter("order");
-		if(oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
-			if("asc".equals(order)) {
-				queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));
-			}else {
-				queryWrapper.orderByDesc(oConvertUtils.camelToUnderline(column));
-			}
-		}
-		//TODO 过滤逻辑处理
-		//TODO begin、end逻辑处理
-		//TODO 一个强大的功能，前端传一个字段字符串，后台只返回这些字符串对应的字段
-		//创建时间/创建人的赋值
+		QueryWrapper<SysRole> queryWrapper = QueryGenerator.initQueryWrapper(role, req.getParameterMap());
+		Page<SysRole> page = new Page<SysRole>(pageNo, pageSize);
 		IPage<SysRole> pageList = sysRoleService.page(page, queryWrapper);
-		log.info("查询当前页："+pageList.getCurrent());
-		log.info("查询当前页数量："+pageList.getSize());
-		log.info("查询结果数量："+pageList.getRecords().size());
-		log.info("数据总数："+pageList.getTotal());
 		result.setSuccess(true);
 		result.setResult(pageList);
 		return result;
@@ -103,8 +126,8 @@ public class SysRoleController {
 	 * @return
 	 */
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
-	@RequiresRoles({"admin"})
-	public Result<SysRole> eidt(@RequestBody SysRole role) {
+	
+	public Result<SysRole> edit(@RequestBody SysRole role) {
 		Result<SysRole> result = new Result<SysRole>();
 		SysRole sysrole = sysRoleService.getById(role.getId());
 		if(sysrole==null) {
@@ -127,7 +150,7 @@ public class SysRoleController {
 	 * @return
 	 */
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-	@RequiresRoles({"admin"})
+	
 	public Result<SysRole> delete(@RequestParam(name="id",required=true) String id) {
 		Result<SysRole> result = new Result<SysRole>();
 		SysRole sysrole = sysRoleService.getById(id);
@@ -149,7 +172,7 @@ public class SysRoleController {
 	 * @return
 	 */
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
-	@RequiresRoles({"admin"})
+	
 	public Result<SysRole> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<SysRole> result = new Result<SysRole>();
 		if(ids==null || "".equals(ids.trim())) {
@@ -229,5 +252,187 @@ public class SysRoleController {
 		result.setSuccess(true);
 		return result;
 	}
+
+	/**
+	 * 导出excel
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value = "/exportXls")
+	public ModelAndView exportXls(HttpServletRequest request, HttpServletResponse response) {
+		// Step.1 组装查询条件
+		QueryWrapper<SysRole> queryWrapper = null;
+		try {
+			String paramsStr = request.getParameter("paramsStr");
+			if (oConvertUtils.isNotEmpty(paramsStr)) {
+				String deString = URLDecoder.decode(paramsStr, "UTF-8");
+				SysRole sysRole = JSON.parseObject(deString, SysRole.class);
+				queryWrapper = QueryGenerator.initQueryWrapper(sysRole, request.getParameterMap());
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		//Step.2 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		List<SysRole> pageList = sysRoleService.list(queryWrapper);
+		//导出文件名称
+		mv.addObject(NormalExcelConstants.FILE_NAME,"角色列表");
+		mv.addObject(NormalExcelConstants.CLASS,SysRole.class);
+		mv.addObject(NormalExcelConstants.PARAMS,new ExportParams("角色列表数据","导出人:Jeecg","导出信息"));
+		mv.addObject(NormalExcelConstants.DATA_LIST,pageList);
+		return mv;
+	}
+
+	/**
+	 * 通过excel导入数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
+	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
+		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+		for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+			MultipartFile file = entity.getValue();// 获取上传文件对象
+			ImportParams params = new ImportParams();
+			params.setTitleRows(2);
+			params.setHeadRows(1);
+			params.setNeedSave(true);
+			try {
+				List<SysRole> listSysRoles = ExcelImportUtil.importExcel(file.getInputStream(), SysRole.class, params);
+				for (SysRole sysRoleExcel : listSysRoles) {
+					sysRoleService.save(sysRoleExcel);
+				}
+				return Result.ok("文件导入成功！数据行数：" + listSysRoles.size());
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				return Result.error("文件导入失败！");
+			} finally {
+				try {
+					file.getInputStream().close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return Result.ok("文件导入失败！");
+	}
+	
+	/**
+	 * 查询数据规则数据
+	 */
+	@GetMapping(value = "/datarule/{permissionId}/{roleId}")
+	public Result<?> loadDatarule(@PathVariable("permissionId") String permissionId,@PathVariable("roleId") String roleId) {
+		List<SysPermissionDataRule> list = sysPermissionDataRuleService.getPermRuleListByPermId(permissionId);
+		if(list==null || list.size()==0) {
+			return Result.error("未找到权限配置信息");
+		}else {
+			Map<String,Object> map = new HashMap<>();
+			map.put("datarule", list);
+			LambdaQueryWrapper<SysRolePermission> query = new LambdaQueryWrapper<SysRolePermission>()
+					.eq(SysRolePermission::getPermissionId, permissionId)
+					.eq(SysRolePermission::getRoleId,roleId);
+			SysRolePermission sysRolePermission = sysRolePermissionService.getOne(query);
+			if(sysRolePermission==null) {
+				//return Result.error("未找到角色菜单配置信息");
+			}else {
+				String drChecked = sysRolePermission.getDataRuleIds();
+				if(oConvertUtils.isNotEmpty(drChecked)) {
+					map.put("drChecked", drChecked.endsWith(",")?drChecked.substring(0, drChecked.length()-1):drChecked);
+				}
+			}
+			return Result.ok(map);
+			//TODO 以后按钮权限的查询也走这个请求 无非在map中多加两个key
+		}
+	}
+	
+	/**
+	 * 保存数据规则至角色菜单关联表
+	 */
+	@PostMapping(value = "/datarule")
+	public Result<?> saveDatarule(@RequestBody JSONObject jsonObject) {
+		try {
+			String permissionId = jsonObject.getString("permissionId");
+			String roleId = jsonObject.getString("roleId");
+			String dataRuleIds = jsonObject.getString("dataRuleIds");
+			log.info("保存数据规则>>"+"菜单ID:"+permissionId+"角色ID:"+ roleId+"数据权限ID:"+dataRuleIds);
+			LambdaQueryWrapper<SysRolePermission> query = new LambdaQueryWrapper<SysRolePermission>()
+					.eq(SysRolePermission::getPermissionId, permissionId)
+					.eq(SysRolePermission::getRoleId,roleId);
+			SysRolePermission sysRolePermission = sysRolePermissionService.getOne(query);
+			if(sysRolePermission==null) {
+				return Result.error("请先保存角色菜单权限!");
+			}else {
+				sysRolePermission.setDataRuleIds(dataRuleIds);
+				this.sysRolePermissionService.updateById(sysRolePermission);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("SysRoleController.saveDatarule()发生异常：" + e.getMessage());
+			return Result.error("保存失败");
+		}
+		return Result.ok("保存成功!");
+	}
+	
+	
+	/**
+	 * 用户角色授权功能，查询菜单权限树
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/queryTreeList", method = RequestMethod.GET)
+	public Result<Map<String,Object>> queryTreeList(HttpServletRequest request) {
+		Result<Map<String,Object>> result = new Result<>();
+		//全部权限ids
+		List<String> ids = new ArrayList<>();
+		try {
+			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
+			query.eq(SysPermission::getDelFlag, 0);
+			query.orderByAsc(SysPermission::getSortNo);
+			List<SysPermission> list = sysPermissionService.list(query);
+			for(SysPermission sysPer : list) {
+				//查询菜单数据规则配置如果有数据 则需要在前端显示一个小图标
+				int dtCount = sysPermissionDataRuleService.count(new LambdaQueryWrapper<SysPermissionDataRule>().eq(SysPermissionDataRule::getPermissionId, sysPer.getId()));
+				if(dtCount>0) {
+					sysPer.setIcon("1");
+				}else {
+					sysPer.setIcon(null);
+				}
+				ids.add(sysPer.getId());
+			}
+			List<TreeModel> treeList = new ArrayList<>();
+			getTreeModelList(treeList, list, null);
+			Map<String,Object> resMap = new HashMap<String,Object>();
+			resMap.put("treeList", treeList); //全部树节点数据
+			resMap.put("ids", ids);//全部树ids
+			result.setResult(resMap);
+			result.setSuccess(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	private void getTreeModelList(List<TreeModel> treeList,List<SysPermission> metaList,TreeModel temp) {
+		for (SysPermission permission : metaList) {
+			String tempPid = permission.getParentId();
+			TreeModel tree = new TreeModel(permission.getId(), tempPid, permission.getName(),permission.getIcon(), permission.isLeaf());
+			if(temp==null && oConvertUtils.isEmpty(tempPid)) {
+				treeList.add(tree);
+				if(!tree.getIsLeaf()) {
+					getTreeModelList(treeList, metaList, tree);
+				}
+			}else if(temp!=null && tempPid!=null && tempPid.equals(temp.getKey())){
+				temp.getChildren().add(tree);
+				if(!tree.getIsLeaf()) {
+					getTreeModelList(treeList, metaList, tree);
+				}
+			}
+			
+		}
+	}
+	
 	
 }

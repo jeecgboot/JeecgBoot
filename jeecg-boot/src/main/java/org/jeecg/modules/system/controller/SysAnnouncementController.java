@@ -1,17 +1,31 @@
 package org.jeecg.modules.system.controller;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.alibaba.fastjson.JSON;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.CommonSendStatus;
+import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.shiro.authc.util.JwtUtil;
 import org.jeecg.modules.system.entity.SysAnnouncement;
 import org.jeecg.modules.system.entity.SysDict;
+import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysAnnouncementService;
+import org.jeecgframework.poi.excel.ExcelImportUtil;
+import org.jeecgframework.poi.excel.def.NormalExcelConstants;
+import org.jeecgframework.poi.excel.entity.ExportParams;
+import org.jeecgframework.poi.excel.entity.ImportParams;
+import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,12 +36,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.servlet.ModelAndView;
 
- /**
+/**
  * @Title: Controller
  * @Description: 系统通告表
  * @author： jeecg-boot
- * @date：   2019-01-02
+ * @date： 2019-01-02
  * @version： V1.0
  */
 @RestController
@@ -36,7 +53,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SysAnnouncementController {
 	@Autowired
 	private ISysAnnouncementService sysAnnouncementService;
-	
+
 	/**
 	  * 分页列表查询
 	 * @param sysAnnouncement
@@ -52,28 +69,14 @@ public class SysAnnouncementController {
 									  HttpServletRequest req) {
 		Result<IPage<SysAnnouncement>> result = new Result<IPage<SysAnnouncement>>();
 		sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
-		QueryWrapper<SysAnnouncement> queryWrapper = new QueryWrapper<SysAnnouncement>(sysAnnouncement);
-		Page<SysAnnouncement> page = new Page<SysAnnouncement>(pageNo,pageSize);
-		//排序逻辑 处理
-		String column = req.getParameter("column");
-		String order = req.getParameter("order");
-		if(oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
-			if("asc".equals(order)) {
-				queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));
-			}else {
-				queryWrapper.orderByDesc(oConvertUtils.camelToUnderline(column));
-			}
-		}
+		QueryWrapper<SysAnnouncement> queryWrapper = QueryGenerator.initQueryWrapper(sysAnnouncement, req.getParameterMap());
+		Page<SysAnnouncement> page = new Page<SysAnnouncement>(pageNo, pageSize);
 		IPage<SysAnnouncement> pageList = sysAnnouncementService.page(page, queryWrapper);
-		log.info("查询当前页："+pageList.getCurrent());
-		log.info("查询当前页数量："+pageList.getSize());
-		log.info("查询结果数量："+pageList.getRecords().size());
-		log.info("数据总数："+pageList.getTotal());
 		result.setSuccess(true);
 		result.setResult(pageList);
 		return result;
 	}
-	
+
 	/**
 	  *   添加
 	 * @param sysAnnouncement
@@ -94,14 +97,14 @@ public class SysAnnouncementController {
 		}
 		return result;
 	}
-	
+
 	/**
 	  *  编辑
 	 * @param sysAnnouncement
 	 * @return
 	 */
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
-	public Result<SysAnnouncement> eidt(@RequestBody SysAnnouncement sysAnnouncement) {
+	public Result<SysAnnouncement> edit(@RequestBody SysAnnouncement sysAnnouncement) {
 		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
 		SysAnnouncement sysAnnouncementEntity = sysAnnouncementService.getById(sysAnnouncement.getId());
 		if(sysAnnouncementEntity==null) {
@@ -113,10 +116,10 @@ public class SysAnnouncementController {
 				result.success("修改成功!");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	  *   通过id删除
 	 * @param id
@@ -135,10 +138,10 @@ public class SysAnnouncementController {
 				result.success("删除成功!");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	  *  批量删除
 	 * @param ids
@@ -160,7 +163,7 @@ public class SysAnnouncementController {
 		}
 		return result;
 	}
-	
+
 	/**
 	  * 通过id查询
 	 * @param id
@@ -178,7 +181,7 @@ public class SysAnnouncementController {
 		}
 		return result;
 	}
-	
+
 	/**
 	 *	 更新发布操作
 	 * @param id
@@ -200,10 +203,10 @@ public class SysAnnouncementController {
 				result.success("该系统通知发布成功");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 *	 更新撤销操作
 	 * @param id
@@ -223,8 +226,79 @@ public class SysAnnouncementController {
 				result.success("该系统通知撤销成功");
 			}
 		}
-		
+
 		return result;
 	}
 
+    /**
+     * 导出excel
+     *
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "/exportXls")
+    public ModelAndView exportXls(HttpServletRequest request, HttpServletResponse response) {
+        // Step.1 组装查询条件
+        QueryWrapper<SysAnnouncement> queryWrapper = null;
+        try {
+            String paramsStr = request.getParameter("paramsStr");
+            if (oConvertUtils.isNotEmpty(paramsStr)) {
+                String deString = URLDecoder.decode(paramsStr, "UTF-8");
+                SysAnnouncement sysAnnouncement = JSON.parseObject(deString, SysAnnouncement.class);
+                queryWrapper = QueryGenerator.initQueryWrapper(sysAnnouncement, request.getParameterMap());
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        //Step.2 AutoPoi 导出Excel
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        List<SysAnnouncement> pageList = sysAnnouncementService.list(queryWrapper);
+        //导出文件名称
+        mv.addObject(NormalExcelConstants.FILE_NAME, "系统通告列表");
+        mv.addObject(NormalExcelConstants.CLASS, SysAnnouncement.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("系统通告列表数据", "导出人:Jeecg", "导出信息"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
+        return mv;
+    }
+
+    /**
+     * 通过excel导入数据
+     *
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
+    public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+        for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+            MultipartFile file = entity.getValue();// 获取上传文件对象
+            ImportParams params = new ImportParams();
+            params.setTitleRows(2);
+            params.setHeadRows(1);
+            params.setNeedSave(true);
+            try {
+                List<SysAnnouncement> listSysAnnouncements = ExcelImportUtil.importExcel(file.getInputStream(), SysAnnouncement.class, params);
+                for (SysAnnouncement sysAnnouncementExcel : listSysAnnouncements) {
+                	if(sysAnnouncementExcel.getDelFlag()==null){
+                		sysAnnouncementExcel.setDelFlag("0");
+					}
+                    sysAnnouncementService.save(sysAnnouncementExcel);
+                }
+                return Result.ok("文件导入成功！数据行数：" + listSysAnnouncements.size());
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                return Result.error("文件导入失败！");
+            } finally {
+                try {
+                    file.getInputStream().close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return Result.ok("文件导入失败！");
+    }
 }

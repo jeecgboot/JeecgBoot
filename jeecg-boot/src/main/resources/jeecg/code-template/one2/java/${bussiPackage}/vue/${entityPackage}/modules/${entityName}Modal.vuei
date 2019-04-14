@@ -7,10 +7,10 @@
     @ok="handleOk"
     @cancel="handleCancel"
     cancelText="关闭">
-    
+
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-      
+
 <#list columns as po><#rt/>
 <#if po.fieldName !='id'><#rt/>
         <a-form-item
@@ -29,7 +29,7 @@
         </a-form-item>
 </#if>
 </#list>
-		
+
       </a-form>
     </a-spin>
   </a-modal>
@@ -122,7 +122,7 @@
             formData.${po.fieldName} = formData.${po.fieldName}?formData.${po.fieldName}.format('YYYY-MM-DD HH:mm:ss'):null;
             </#if>
             </#list>
-            
+
             console.log(formData)
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){

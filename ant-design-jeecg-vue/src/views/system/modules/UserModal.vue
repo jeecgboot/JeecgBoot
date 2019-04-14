@@ -1,20 +1,19 @@
 <template>
-  <a-modal
-    :width="modalWidth"
+  <a-drawer
+    :title="title"
+    :maskClosable="true"
+    :width="drawerWidth"
+    placement="right"
+    :closable="true"
+    @close="handleCancel"
     :visible="visible"
-    :confirmLoading="confirmLoading"
-    :okButtonProps="{ props: {disabled: disableSubmit} }"
-    @ok="handleSubmit"
-    @cancel="handleCancel"
-    cancelText="关闭"
-    wrapClassName="ant-modal-cust-warp"
-    style="top:5%;height: auto;overflow-y: hidden">
+    style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
 
     <template slot="title">
       <div style="width: 100%;">
         <span>{{ title }}</span>
-        <span style="display:inline-block;width:calc(100% - 56px);padding-top: 2px;padding-right:10px;text-align: right">
-          <a-button @click="togglescreen" style="height:18px;width:18px;padding: 0;border-width: 2px">&nbsp;&nbsp;</a-button>
+        <span style="display:inline-block;width:calc(100% - 51px);padding-right:10px;text-align: right">
+          <a-button @click="toggleScreen" icon="appstore" style="height:20px;width:20px;border:0px"></a-button>
         </span>
       </div>
 
@@ -23,25 +22,25 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
-        <a-form-item label="用户账号" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback>
+        <a-form-item label="用户账号" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input placeholder="请输入用户账号" v-decorator="[ 'username', validatorRules.username]" :readOnly="!!model.id"/>
         </a-form-item>
 
         <template v-if="!model.id">
-          <a-form-item label="登陆密码" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
+          <a-form-item label="登陆密码" :labelCol="labelCol" :wrapperCol="wrapperCol" >
             <a-input type="password" placeholder="请输入登陆密码" v-decorator="[ 'password', validatorRules.password]" />
           </a-form-item>
 
-          <a-form-item label="确认密码" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
+          <a-form-item label="确认密码" :labelCol="labelCol" :wrapperCol="wrapperCol" >
             <a-input type="password" @blur="handleConfirmBlur" placeholder="请重新输入登陆密码" v-decorator="[ 'confirmpassword', validatorRules.confirmpassword]"/>
           </a-form-item>
         </template>
 
-        <a-form-item label="用户名称" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
+        <a-form-item label="用户名字" :labelCol="labelCol" :wrapperCol="wrapperCol" >
           <a-input placeholder="请输入用户名称" v-decorator="[ 'realname', validatorRules.realname]" />
         </a-form-item>
 
-        <a-form-item label="角色分配" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
+        <a-form-item label="角色分配" :labelCol="labelCol" :wrapperCol="wrapperCol" >
           <a-select
             mode="multiple"
             style="width: 100%"
@@ -50,14 +49,18 @@
             <a-select-option v-for="(role,roleindex) in roleList" :key="roleindex.toString()" :value="role.id">
               {{ role.roleName }}
             </a-select-option>
-
-
           </a-select>
-
         </a-form-item>
-
-
-
+        <!--部门分配-->
+        <a-form-item label="部门分配" :labelCol="labelCol" :wrapperCol="wrapperCol" >
+          <a-input-search
+            placeholder="点击右侧按钮选择部门"
+            v-model="checkedDepartNameString"
+            disabled
+            @search="onSearch">
+            <a-button slot="enterButton" icon="search">选择</a-button>
+          </a-input-search>
+        </a-form-item>
 
         <a-form-item label="头像" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-upload
@@ -78,50 +81,68 @@
           </a-upload>
         </a-form-item>
 
-        <a-form-item label="生日" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
+        <a-form-item label="生日" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-date-picker
             style="width: 100%"
             placeholder="请选择生日"
             v-decorator="['birthday', {initialValue:!model.birthday?null:moment(model.birthday,dateFormat)}]"/>
         </a-form-item>
 
-        <a-form-item label="性别" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
-          <a-select
-            v-decorator="[ 'sex', {initialValue:model.sex && model.sex.toString()}]"
-            placeholder="请选择性别">
-            <a-select-option value="1">男</a-select-option>
-            <a-select-option value="2">女</a-select-option>
+        <a-form-item label="性别" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-select v-decorator="[ 'sex', {}]" placeholder="请选择性别">
+            <a-select-option :value="1">男</a-select-option>
+            <a-select-option :value="2">女</a-select-option>
           </a-select>
         </a-form-item>
 
-        <a-form-item label="邮箱" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
+        <a-form-item label="邮箱" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input placeholder="请输入邮箱" v-decorator="[ 'email', validatorRules.email]" />
         </a-form-item>
 
-        <a-form-item label="手机号码" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
+        <a-form-item label="手机号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input placeholder="请输入手机号码" v-decorator="[ 'phone', validatorRules.phone]" />
         </a-form-item>
 
       </a-form>
     </a-spin>
-  </a-modal>
+    <depart-window ref="departWindow" @ok="modalFormOk"></depart-window>
+
+    <div class="drawer-bootom-button" v-show="!disableSubmit">
+      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
+        <a-button style="margin-right: .8rem">取消</a-button>
+      </a-popconfirm>
+      <a-button @click="handleSubmit" type="primary" :loading="confirmLoading">提交</a-button>
+    </div>
+  </a-drawer>
 </template>
 
 <script>
   import pick from 'lodash.pick'
   import moment from 'moment'
   import Vue from 'vue'
+  // 引入搜索部门弹出框的组件
+  import departWindow from './DepartWindow'
   import { ACCESS_TOKEN } from "@/store/mutation-types"
-  import {doMian,addUser,editUser,queryUserRole,queryall,checkUsername} from '@/api/api'
-
+  import { getAction, httpAction } from '@/api/manage'
+  import {addUser,editUser,queryUserRole,queryall,checkUsername } from '@/api/api'
   export default {
     name: "RoleModal",
+    components: {
+      departWindow,
+    },
     data () {
       return {
         modalWidth:800,
+        drawerWidth:700,
         modaltoggleFlag:true,
         confirmDirty: false,
+        selectedDepartKeys:[], //保存用户选择部门id
+        checkedDepartKeys:[],
+        checkedDepartNames:[], // 保存部门的名称 =>title
+        checkedDepartNameString:"", // 保存部门的名称 =>title
+        userId:"", //保存用户id
         disableSubmit:false,
+        userDepartModel:{userId:'',departIdList:[]}, // 保存SysUserDepart的用户部门中间表数据需要的对象
         dateFormat:"YYYY-MM-DD",
         validatorRules:{
           username:{
@@ -169,8 +190,11 @@
         headers:{},
         form:this.$form.createForm(this),
         url: {
-          fileUpload:doMian+"sys/common/upload",
-          imgerver:doMian+"sys/common/view",
+          addUDepartIds:"/sys/user/addUDepartIds", // 引入为用户添加部门信息需要的url
+          editUDepartIds:"/sys/user/editUDepartIds", // 引入为用户更新部门信息需要的url
+          fileUpload: window._CONFIG['domianURL']+"/sys/common/upload",
+          imgerver: window._CONFIG['domianURL']+"/sys/common/view",
+          userWithDepart: "/sys/user/userDepartList", // 引入为指定用户查看部门信息需要的url
         },
       }
     },
@@ -185,8 +209,8 @@
       }
     },
     methods: {
-
-      togglescreen(){
+      //窗口最大化切换
+      toggleScreen(){
         if(this.modaltoggleFlag){
           this.modalWidth = window.innerWidth;
         }else{
@@ -212,29 +236,59 @@
           }
         });
       },
+      refresh () {
+          this.selectedDepartKeys=[]
+          this.checkedDepartKeys=[]
+          this.checkedDepartNames=[]
+         this.checkedDepartNameString = ""
+          this.userId=""
+      },
       add () {
+        this.refresh()
         this.edit({});
       },
       edit (record) {
-        this.initialRoleList();
-        this.form.resetFields();
+        this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
+        let that = this;
+        that.initialRoleList();
+        that.checkedDepartNameString = "";
+        that.form.resetFields();
         if(record.hasOwnProperty("id")){
-          this.loadUserRoles(record.id);
+          that.loadUserRoles(record.id);
         }
-        this.visible = true;
-        this.model = Object.assign({}, record);
-        let filedsVal = pick(this.model,'username','password','realname','email','phone');
-        filedsVal.confirmpassword = this.model.password;
-        this.$nextTick(() => {
-          this.form.setFieldsValue(filedsVal);
+        that.userId = record.id;
+        that.visible = true;
+        that.model = Object.assign({}, record);
+        that.$nextTick(() => {
+          that.form.setFieldsValue(pick(this.model,'username','sex','realname','email','phone'))
         });
-
+        // 调用查询用户对应的部门信息的方法
+        that.checkedDepartKeys = [];
+        that.loadCheckedDeparts();
+      },
+      //
+      loadCheckedDeparts(){
+        let that = this;
+        getAction(that.url.userWithDepart,{userId:that.userId}).then((res)=>{
+          that.checkedDepartNames = [];
+          if(res.success){
+            for (let i = 0; i < res.result.length; i++) {
+              that.checkedDepartNames.push(res.result[i].title);
+              this.checkedDepartNameString = this.checkedDepartNames.join(",");
+              that.checkedDepartKeys.push(res.result[i].key);
+            }
+          }else{
+            console.log(res.message);
+          }
+        })
       },
       close () {
         this.$emit('close');
         this.visible = false;
         this.disableSubmit = false;
         this.selectedRole = [];
+        this.userDepartModel = {};
+        this.checkedDepartNames = [];
       },
       moment,
       handleSubmit () {
@@ -252,8 +306,11 @@
             let formData = Object.assign(this.model, values);
             formData.avatar = avatar;
             formData.selectedroles = this.selectedRole.length>0?this.selectedRole.join(","):'';
+
+            that.addDepartsToUser(that,formData); // 调用根据当前用户添加部门信息的方法
             let obj;
             if(!this.model.id){
+              formData.id = this.userId;
               obj=addUser(formData);
             }else{
               obj=editUser(formData);
@@ -267,6 +324,7 @@
               }
             }).finally(() => {
               that.confirmLoading = false;
+              that.checkedDepartNames = [];
               that.close();
             })
 
@@ -275,6 +333,26 @@
       },
       handleCancel () {
         this.close()
+      },
+
+      // 根据当前用户添加部门信息的方法
+      addDepartsToUser(that,formData){
+        let httpurl = '';
+        let method = '';
+        if(this.userDepartModel.userId != formData.id){
+          httpurl+=this.url.addUDepartIds;
+          method = 'post';
+        }else{
+          httpurl+=this.url.editUDepartIds;
+          method = 'put';
+        }
+        httpAction(httpurl,this.userDepartModel,method).then((res)=>{
+          if(res.success){
+            this.userDepartModel = {};
+          }else{
+            that.$message.warning(res.message);
+          }
+        })
       },
       validateToNextPassword  (rule, value, callback) {
         const form = this.form;
@@ -350,7 +428,33 @@
       getAvatarView(){
         return this.url.imgerver +"/"+ this.model.avatar;
       },
+      // 搜索用户对应的部门API
+      onSearch(){
+        this.$refs.departWindow.add(this.checkedDepartKeys,this.userId);
+      },
 
+      // 获取用户对应部门弹出框提交给返回的数据
+      modalFormOk (formData) {
+        this.checkedDepartNames = [];
+        this.selectedDepartKeys = [];
+        this.userId = formData.userId;
+        this.userDepartModel.userId = formData.userId;
+        for (let i = 0; i < formData.departIdList.length; i++) {
+          this.selectedDepartKeys.push(formData.departIdList[i].key);
+          this.checkedDepartNames.push(formData.departIdList[i].title);
+          this.checkedDepartNameString = this.checkedDepartNames.join(",");
+        }
+        this.userDepartModel.departIdList = this.selectedDepartKeys;
+       },
+      // 根据屏幕变化,设置抽屉尺寸
+      resetScreenSize(){
+        let screenWidth = document.body.clientWidth;
+        if(screenWidth < 500){
+          this.drawerWidth = screenWidth;
+        }else{
+          this.drawerWidth = 700;
+        }
+      },
     }
   }
 </script>
@@ -375,4 +479,15 @@
     padding-bottom:10px;
   }
 
+  .drawer-bootom-button {
+    position: absolute;
+    bottom: -8px;
+    width: 100%;
+    border-top: 1px solid #e8e8e8;
+    padding: 10px 16px;
+    text-align: right;
+    left: 0;
+    background: #fff;
+    border-radius: 0 0 2px 2px;
+  }
 </style>

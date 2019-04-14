@@ -10,10 +10,12 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecg.common.aspect.annotation.Dict;
+import org.jeecgframework.poi.excel.annotation.Excel;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author zhangweijian
@@ -31,7 +33,7 @@ public class SysDictItem implements Serializable {
      */
     @TableId(type = IdType.UUID)
     private String id;
-    
+
     /**
      * 字典id
      */
@@ -40,26 +42,32 @@ public class SysDictItem implements Serializable {
     /**
      * 字典项文本
      */
+    @Excel(name = "字典项文本", width = 20)
     private String itemText;
 
     /**
      * 字典项值
      */
+    @Excel(name = "字典项值", width = 30)
     private String itemValue;
 
     /**
      * 描述
      */
+    @Excel(name = "描述", width = 40)
     private String description;
 
     /**
      * 排序
      */
-    private BigDecimal sortOrder;
+    @Excel(name = "排序", width = 15,type=4)
+    private Integer sortOrder;
+
 
     /**
      * 状态（1启用 0不启用）
      */
+    @Dict(dicCode = "dict_item_status")
     private Integer status;
 
     private String createBy;

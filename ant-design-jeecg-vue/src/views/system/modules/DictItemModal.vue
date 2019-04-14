@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="title"
-    :width="600"
+    :width="800"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
@@ -15,7 +15,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="名称">
-          <a-input placeholder="请输入名称" v-decorator="['itemText', validatorRules.itemText]" />
+          <a-input placeholder="请输入名称" v-decorator="['itemText', validatorRules.itemText]"/>
         </a-form-item>
 
         <a-form-item
@@ -36,14 +36,15 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="排序值">
-          <a-input-number :min="1" v-decorator="['sortOrder',{'initialValue':1}]"/> 值越小越靠前，支持小数
+          <a-input-number :min="1" v-decorator="['sortOrder',{'initialValue':1}]"/>
+          值越小越靠前，支持小数
         </a-form-item>
 
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="是否启用"
-          hasFeedback >
+          hasFeedback>
           <a-switch checkedChildren="启用" unCheckedChildren="禁用" @change="onChose" v-model="visibleCheck"/>
         </a-form-item>
 
@@ -54,45 +55,45 @@
 
 <script>
   import pick from 'lodash.pick'
-  import {addDictItem,editDictItem} from '@/api/api'
+  import {addDictItem, editDictItem, getDictItemList} from '@/api/api'
 
   export default {
     name: "DictItemModal",
-    data () {
+    data() {
       return {
-        title:"操作",
+        title: "操作",
         visible: false,
         visibleCheck: true,
         model: {},
-        dictId:"",
-        status:1,
+        dictId: "",
+        status: 1,
         labelCol: {
-          xs: { span: 24 },
-          sm: { span: 5 },
+          xs: {span: 24},
+          sm: {span: 5},
         },
         wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 },
+          xs: {span: 24},
+          sm: {span: 16},
         },
         confirmLoading: false,
         form: this.$form.createForm(this),
-        validatorRules:{
-          itemText:{rules: [{ required: true, message: '请输入名称!' }]},
-          itemValue:{rules: [{ required: true, message: '请输入数据值!' }]},
+        validatorRules: {
+          itemText: {rules: [{required: true, message: '请输入名称!'}]},
+          itemValue: {rules: [{required: true, message: '请输入数据值!'}]},
         },
       }
     },
-    created () {
+    created() {
     },
     methods: {
-      add (dictId) {
+      add(dictId) {
         this.dictId = dictId;
         this.edit({});
       },
-      edit (record) {
-        if(record.id){
+      edit(record) {
+        if (record.id) {
           this.dictId = record.dictId;
-          this.visibleCheck = (record.status == 1)?true:false;
+          this.visibleCheck = (record.status == 1) ? true : false;
         }
         this.form.resetFields();
         this.model = Object.assign({}, record);
@@ -100,20 +101,34 @@
         this.model.status = this.status;
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'itemText','itemValue','description','sortOrder'))
+          this.form.setFieldsValue(pick(this.model, 'itemText', 'itemValue', 'description', 'sortOrder'))
         });
       },
+      // 将查询字典对象数据的方法拆分出来,需要的时候再加载
+      getDictItemList() {
+        // 查询字典数据
+        var params = this.getQueryParams();//查询条件
+        getDictItemList(params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+            console.log(this.dataSource)
+            this.ipagination.total = res.result.total;
+            this.loadrefresh = false;
+            this.loading = false;
+          }
+        })
+      },
       onChose(checked) {
-        if(checked){
-          this.status=1;
-          this.visibleCheck=true;
-        }else{
-          this.status=0;
-          this.visibleCheck=false;
+        if (checked) {
+          this.status = 1;
+          this.visibleCheck = true;
+        } else {
+          this.status = 0;
+          this.visibleCheck = false;
         }
       },
       // 确定
-      handleOk () {
+      handleOk() {
         const that = this;
         // 触发表单验证
         this.form.validateFields((err, values) => {
@@ -122,16 +137,16 @@
             let formData = Object.assign(this.model, values);
             formData.status = this.status;
             let obj;
-            if(!this.model.id){
-              obj=addDictItem(formData);
-            }else{
-              obj=editDictItem(formData);
+            if (!this.model.id) {
+              obj = addDictItem(formData);
+            } else {
+              obj = editDictItem(formData);
             }
-            obj.then((res)=>{
-              if(res.success){
+            obj.then((res) => {
+              if (res.success) {
                 that.$message.success(res.message);
                 that.$emit('ok');
-              }else{
+              } else {
                 that.$message.warning(res.message);
               }
             }).finally(() => {
@@ -142,10 +157,10 @@
         })
       },
       // 关闭
-      handleCancel () {
+      handleCancel() {
         this.close();
       },
-      close () {
+      close() {
         this.$emit('close');
         this.visible = false;
       },

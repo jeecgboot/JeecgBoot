@@ -36,7 +36,7 @@
             <a-icon type="info-circle-o" />
           </a-tooltip>
           <div>
-            <mini-bar />
+            <mini-bar :height="40" />
           </div>
           <template slot="footer">转化率 <span>60%</span></template>
         </chart-card>
@@ -47,7 +47,7 @@
             <a-icon type="info-circle-o" />
           </a-tooltip>
           <div>
-            <mini-progress color="rgb(19, 194, 194)" :target="80" :percentage="78" height="8px" />
+            <mini-progress color="rgb(19, 194, 194)" :target="80" :percentage="78" :height="8" />
           </div>
           <template slot="footer">
             <trend flag="down" style="margin-right: 16px;">
@@ -78,7 +78,7 @@
           <a-tab-pane loading="true" tab="销售额" key="1">
             <a-row>
               <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
-                <bar title="销售额排行" />
+                <bar title="销售额排行" :dataSource="barData"/>
               </a-col>
               <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
                 <rank-list title="门店销售排行榜" :list="rankList"/>
@@ -88,7 +88,7 @@
           <a-tab-pane tab="访问量" key="2">
             <a-row>
               <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
-                <bar title="销售额趋势" />
+                <bar title="销售额趋势" :dataSource="barData"/>
               </a-col>
               <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
                 <rank-list title="门店销售排行榜" :list="rankList"/>
@@ -173,7 +173,7 @@
   import RankList from '@/components/chart/RankList'
   import Bar from '@/components/chart/Bar'
   import Trend from '@/components/Trend'
-  import {getLoginfo} from '@/api/api.js'
+  import {getLoginfo} from '@/api/api'
 
   const rankList = []
   for (let i = 0; i < 7; i++) {
@@ -182,7 +182,13 @@
       total: 1234.56 - i * 100
     })
   }
-
+  const barData = []
+  for (let i = 0; i < 12; i += 1) {
+    barData.push({
+      x: `${i + 1}月`,
+      y: Math.floor(Math.random() * 1000) + 200
+    })
+  }
   export default {
     name: "Analysis",
     components: {
@@ -199,7 +205,9 @@
     data() {
       return {
         loading: true,
+        center: null,
         rankList,
+        barData,
         loginfo:{},
       }
     },

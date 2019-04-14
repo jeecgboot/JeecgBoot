@@ -1,12 +1,12 @@
 <template>
   <a-modal
     :title="title"
-    :width="1000"
+    :width="1200"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel">
-    
+
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <!-- 主表单区域 -->
@@ -35,7 +35,7 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="订单日期">
-              <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'orderDate',{}]"/>
+              <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss" v-decorator="[ 'orderDate',{}]"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -237,9 +237,11 @@
             let orderMainData = Object.assign(this.orderMainModel, values);
             //时间格式化
             orderMainData.orderDate = orderMainData.orderDate?orderMainData.orderDate.format('YYYY-MM-DD HH:mm:ss'):null;
-            let formData = {jeecgOrderMain:orderMainData,
-                            jeecgOrderCustomerList:orderMainData.jeecgOrderCustomerList,
-                            jeecgOrderTicketList:orderMainData.jeecgOrderTicketList}
+            let formData = {
+              ...orderMainData,
+              jeecgOrderCustomerList: orderMainData.jeecgOrderCustomerList,
+              jeecgOrderTicketList: orderMainData.jeecgOrderTicketList
+            }
 
             console.log(formData)
             httpAction(httpurl,formData,method).then((res)=>{

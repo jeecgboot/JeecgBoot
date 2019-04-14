@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.online.cgreport.mapper.OnlCgreportHeadMapper">
+
+	<!-- 执行select sql语句 -->
+	<select id="executeSelete" resultType="map" parameterType="java.lang.String">
+		${_parameter}
+	</select>
+	
+	<!-- 执行select count语句 -->
+	<select id="queryCountBySql" parameterType="java.lang.String" resultType="java.lang.Long">
+		${_parameter}
+	</select>
+	
+	<!-- 执行select sql语句 -->
+	<select id="findForListMap" resultType="map" parameterType="map">
+		${_parameter}
+	</select>
+	
+	<!-- 查询报表配置主信息 -->
+	<select id="queryCgReportMainConfig" resultType="map" parameterType="java.lang.String">
+		select 
+			ch.id as id,
+			ch.code as code,
+			ch.name as name,
+			ch.cgr_sql as cgreport_sql,
+			ch.content as content,
+			ch.db_source,
+			ch.return_type
+	   from onl_cgreport_head ch
+			where ch.id =#{reportId,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 查询报表配置字段信息 -->
+	<select id="queryCgReportItems" resultType="map" parameterType="java.lang.String">
+		select 
+			ci.id as id,
+			ci.field_name as field_name,
+			ci.field_txt as field_txt,
+			ci.field_href as field_href,
+			ci.is_show as is_show,
+			ci.field_type as field_type,
+			ci.replace_val as replace_value,
+			ci.dict_code as dict_code,
+			ci.is_search  as search_flag,
+			ci.search_mode as search_mode,
+			ci.cgrhead_id as cgreport_head_id
+	   from  onl_cgreport_item ci
+	   where ci.cgrhead_id = #{cgrheadId,jdbcType=VARCHAR}
+			 order by ci.order_num asc
+	</select>
+	
+	<!-- 查询报表配置参数信息 -->
+	<select id="queryCgReportParams" resultType="map" parameterType="java.lang.String">
+		select * from onl_cgreport_param where cgrhead_id = #{cgrheadId,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

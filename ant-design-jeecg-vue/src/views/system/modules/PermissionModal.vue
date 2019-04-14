@@ -1,23 +1,21 @@
 <template>
-  <a-modal
+  <a-drawer
     :title="title"
-    :width="900"
+    :width="drawerWidth"
+    @close="handleCancel"
     :visible="visible"
     :confirmLoading="confirmLoading"
-    @ok="handleOk"
-    @cancel="handleCancel"
-    :okButtonProps="{ props: {disabled: disableSubmit} }"
-    cancelText="关闭"
-    wrapClassName="ant-modal-cust-warp"
-    style="top:5%;height: 95%;">
+    :wrapStyle="{height: 'calc(100% - 108px)',overflow: 'auto',paddingBottom: '108px'}"
+  >
+    <div :style="{width: '100%',border: '1px solid #e9e9e9',padding: '10px 16px',background: '#fff',}">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
         <a-form-item label="菜单类型" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-          <a-radio-group @change="onChangeMenuType" v-decorator="['menuType',{'initialValue':1}]">
+          <a-radio-group @change="onChangeMenuType" v-decorator="['menuType',{'initialValue':0}]">
             <a-radio :value="0">一级菜单</a-radio>
             <a-radio :value="1">子菜单</a-radio>
-            <a-radio :value="2">按钮</a-radio>
+            <a-radio :value="2">按钮/数据权限</a-radio>
           </a-radio-group>
         </a-form-item>
 
@@ -98,6 +96,14 @@
           v-show="show"
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
+          label="是否路由菜单">
+          <a-switch checkedChildren="是" unCheckedChildren="否" v-model="routeSwitch"/>
+        </a-form-item>
+
+        <a-form-item
+          v-show="show"
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
           label="隐藏路由">
           <a-switch checkedChildren="是" unCheckedChildren="否" v-model="menuHidden"/>
         </a-form-item>
@@ -116,7 +122,14 @@
       <!-- 选择图标 -->
       <icons @choose="handleIconChoose" @close="handleIconCancel" :iconChooseVisible="iconChooseVisible"></icons>
     </a-spin>
-  </a-modal>
+      <a-row :style="{textAlign:'right'}">
+        <a-button :style="{marginRight: '8px'}" @click="handleCancel">
+          关闭
+        </a-button>
+        <a-button :disabled="disableSubmit" @click="handleOk" type="primary">确定</a-button>
+      </a-row>
+    </div>
+  </a-drawer>
 </template>
 
 <script>
@@ -129,6 +142,7 @@
     components: {Icons},
     data () {
       return {
+        drawerWidth:700,
         treeData:[],
         treeValue: '0-0-4',
         title:"操作",
@@ -138,6 +152,7 @@
         localMenuType:'1',
         alwaysShow:false,//表单元素-聚合路由
         menuHidden:false,//表单元素-隐藏路由
+        routeSwitch:true, //是否路由菜单
         show:true,//根据菜单类型，动态显示隐藏表单元素
         menuLabel:'菜单名称',
         labelCol: {
@@ -181,17 +196,20 @@
         this.edit();
       },
       edit (record) {
+        this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
         this.form.resetFields();
         this.model = Object.assign({}, record);
-        //菜单类型切换
+        //--------------------------------------------------------------------------------------------------
+        //根据菜单类型，动态展示页面字段
         if(record){
           console.log(record)
           this.alwaysShow = !record.alwaysShow?false:true;
           this.menuHidden = !record.hidden?false:true;
+          this.routeSwitch = record.route;
 
           //console.log('record.menuType', record.menuType);
           this.show = record.menuType==2?false:true;
-          this.menuLabel = record.menuType==2?'按钮名称':'菜单名称';
+          this.menuLabel = record.menuType==2?'按钮/权限名称':'菜单名称';
 
           if(this.model.parentId){
             this.localMenuType = 1;
@@ -199,9 +217,15 @@
             this.localMenuType = 0;
           }
         }else{
+          if(this.model.parentId){
+            this.localMenuType = 1;
+          }else{
+            this.localMenuType = 0;
+          }
           this.show = true;
           this.menuLabel = '菜单名称';
         }
+        //----------------------------------------------------------------------------------------------
 
         this.visible = true;
         this.loadTree();
@@ -223,6 +247,7 @@
             that.confirmLoading = true;
             this.model.alwaysShow = this.alwaysShow;
             this.model.hidden = this.menuHidden;
+            this.model.route = this.routeSwitch;
             let formData = Object.assign(this.model, values);
             console.log(formData);
             let obj;
@@ -260,7 +285,7 @@
         this.localMenuType=e.target.value
         if(e.target.value == 2){
           this.show = false;
-          this.menuLabel = '按钮名称';
+          this.menuLabel = '按钮/权限名称';
         }else{
           this.show = true;
           this.menuLabel = '菜单名称';
@@ -277,6 +302,15 @@
         this.model.icon = value
         this.form.icon = value
         this.iconChooseVisible = false
+      },
+      // 根据屏幕变化,设置抽屉尺寸
+      resetScreenSize(){
+        let screenWidth = document.body.clientWidth;
+        if(screenWidth < 500){
+          this.drawerWidth = screenWidth;
+        }else{
+          this.drawerWidth = 700;
+        }
       },
     }
   }

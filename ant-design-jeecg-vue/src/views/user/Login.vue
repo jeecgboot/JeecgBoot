@@ -73,7 +73,7 @@
         </a-button>
       </a-form-item>
 
-      <div class="user-login-other">
+     <!-- <div class="user-login-other">
         <span>其他登陆方式</span>
         <a><a-icon class="item-icon" type="alipay-circle"></a-icon></a>
         <a><a-icon class="item-icon" type="taobao-circle"></a-icon></a>
@@ -81,7 +81,7 @@
         <router-link class="register" :to="{ name: 'register' }">
           注册账户
         </router-link>
-      </div>
+      </div>-->
     </a-form>
 
     <two-step-captcha

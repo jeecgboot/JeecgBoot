@@ -2,6 +2,7 @@ package org.jeecg.modules.quartz.entity;
 
 import java.io.Serializable;
 
+import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -40,13 +41,18 @@ public class QuartzJob implements Serializable {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private java.util.Date updateTime;
 	/**任务类名*/
+	@Excel(name="任务类名",width=40)
 	private java.lang.String jobClassName;
 	/**cron表达式*/
+	@Excel(name="cron表达式",width=30)
 	private java.lang.String cronExpression;
 	/**参数*/
+	@Excel(name="参数",width=15)
 	private java.lang.String parameter;
 	/**描述*/
+	@Excel(name="描述",width=40)
 	private java.lang.String description;
 	/**状态 0正常 -1停止*/
+	@Excel(name="状态",width=15)
 	private java.lang.Integer status;
 }

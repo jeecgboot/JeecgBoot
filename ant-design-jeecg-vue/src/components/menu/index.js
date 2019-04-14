@@ -62,18 +62,38 @@ export default {
         : h(Icon, { props: { type: icon !== undefined ? icon : '' } })
     },
     renderMenuItem: function (h, menu, pIndex, index) {
-      return h(Item, { key: menu.path ? menu.path : 'item_' + pIndex + '_' + index },
-        [
-          h(
-            'router-link',
-            { attrs: { to: { name: menu.name } } },
-            [
-              this.renderIcon(h, menu.meta.icon),
-              h('span', [ menu.meta.title ])
-            ]
-          )
-        ]
-      )
+      // 判断是否带参数路由URL,是的话，采用path跳转方式
+      if(menu.route && menu.route === '0'){
+        return h(Item, { key: menu.path ? menu.path : 'item_' + pIndex + '_' + index },
+          [
+            h(
+              'router-link',
+              //--update-begin----author:scott---date:20190320------for:改造菜单路由跳转规则，原来是跳转到组件，现在改造成跳转URL（为了支持参数URL菜单）------
+              { attrs: { to: { path: menu.path } } },
+              //--update-end----author:scott---date:20190320------for:改造菜单路由跳转规则，原来是跳转到组件，现在改造成跳转URL（为了支持参数URL菜单）------
+              [
+                this.renderIcon(h, menu.meta.icon),
+                h('span', [ menu.meta.title ])
+              ]
+            )
+          ]
+        )
+      }else{
+        // 默认采用组件跳转方式
+        return h(Item, { key: menu.path ? menu.path : 'item_' + pIndex + '_' + index },
+          [
+            h(
+              'router-link',
+              { attrs: { to: { name: menu.name } } },
+              [
+                this.renderIcon(h, menu.meta.icon),
+                h('span', [ menu.meta.title ])
+              ]
+            )
+          ]
+        )
+      }
+
     },
     renderSubMenu: function (h, menu, pIndex, index) {
       const this2_ = this;

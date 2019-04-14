@@ -31,4 +31,18 @@ public interface ISysPermissionService extends IService<SysPermission> {
 	public void editPermission(SysPermission sysPermission) throws JeecgBootException;
 	
 	public List<SysPermission> queryByUser(String username);
+	
+	/**
+	 * 根据permissionId删除其关联的SysPermissionDataRule表中的数据
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public void deletePermRuleByPermId(String id);
+	
+	/**
+	  * 查询出带有特殊符号的菜单地址的集合
+	 * @return
+	 */
+	public List<String> queryPermissionUrlWithStar();
 }
