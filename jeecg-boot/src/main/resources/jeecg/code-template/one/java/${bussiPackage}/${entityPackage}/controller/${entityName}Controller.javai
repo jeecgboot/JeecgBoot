@@ -1,6 +1,9 @@
 package ${bussiPackage}.${entityPackage}.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.io.IOException;
@@ -9,11 +12,12 @@ import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.util.oConvertUtils;
 import ${bussiPackage}.${entityPackage}.entity.${entityName};
 import ${bussiPackage}.${entityPackage}.service.I${entityName}Service;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -39,6 +43,7 @@ import com.alibaba.fastjson.JSON;
  * @date：   ${.now?string["yyyy-MM-dd"]}
  * @version： V1.0
  */
+@Api("${tableVo.ftlDescription}")
 @RestController
 @RequestMapping("/${entityPackage}/${entityName?uncap_first}")
 @Slf4j
@@ -54,6 +59,8 @@ public class ${entityName}Controller {
 	 * @param req
 	 * @return
 	 */
+	@AutoLog(value = "${tableVo.ftlDescription}-分页列表查询")
+	@ApiOperation(value="${tableVo.ftlDescription}-分页列表查询", notes="${tableVo.ftlDescription}-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<IPage<${entityName}>> queryPageList(${entityName} ${entityName?uncap_first},
 									  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -73,6 +80,8 @@ public class ${entityName}Controller {
 	 * @param ${entityName?uncap_first}
 	 * @return
 	 */
+	@AutoLog(value = "${tableVo.ftlDescription}-添加")
+	@ApiOperation(value="${tableVo.ftlDescription}-添加", notes="${tableVo.ftlDescription}-添加")
 	@PostMapping(value = "/add")
 	public Result<${entityName}> add(@RequestBody ${entityName} ${entityName?uncap_first}) {
 		Result<${entityName}> result = new Result<${entityName}>();
@@ -92,6 +101,8 @@ public class ${entityName}Controller {
 	 * @param ${entityName?uncap_first}
 	 * @return
 	 */
+	@AutoLog(value = "${tableVo.ftlDescription}-编辑")
+	@ApiOperation(value="${tableVo.ftlDescription}-编辑", notes="${tableVo.ftlDescription}-编辑")
 	@PutMapping(value = "/edit")
 	public Result<${entityName}> edit(@RequestBody ${entityName} ${entityName?uncap_first}) {
 		Result<${entityName}> result = new Result<${entityName}>();
@@ -114,6 +125,8 @@ public class ${entityName}Controller {
 	 * @param id
 	 * @return
 	 */
+	@AutoLog(value = "${tableVo.ftlDescription}-通过id删除")
+	@ApiOperation(value="${tableVo.ftlDescription}-通过id删除", notes="${tableVo.ftlDescription}-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<${entityName}> delete(@RequestParam(name="id",required=true) String id) {
 		Result<${entityName}> result = new Result<${entityName}>();
@@ -135,6 +148,8 @@ public class ${entityName}Controller {
 	 * @param ids
 	 * @return
 	 */
+	@AutoLog(value = "${tableVo.ftlDescription}-批量删除")
+	@ApiOperation(value="${tableVo.ftlDescription}-批量删除", notes="${tableVo.ftlDescription}-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<${entityName}> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<${entityName}> result = new Result<${entityName}>();
@@ -152,6 +167,8 @@ public class ${entityName}Controller {
 	 * @param id
 	 * @return
 	 */
+	@AutoLog(value = "${tableVo.ftlDescription}-通过id查询")
+	@ApiOperation(value="${tableVo.ftlDescription}-通过id查询", notes="${tableVo.ftlDescription}-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<${entityName}> queryById(@RequestParam(name="id",required=true) String id) {
 		Result<${entityName}> result = new Result<${entityName}>();
@@ -171,6 +188,8 @@ public class ${entityName}Controller {
    * @param request
    * @param response
    */
+  @AutoLog(value = "${tableVo.ftlDescription}-导出excel")
+  @ApiOperation(value="${tableVo.ftlDescription}-导出excel", notes="${tableVo.ftlDescription}-导出excel")
   @RequestMapping(value = "/exportXls")
   public ModelAndView exportXls(HttpServletRequest request, HttpServletResponse response) {
       // Step.1 组装查询条件
@@ -204,6 +223,8 @@ public class ${entityName}Controller {
    * @param response
    * @return
    */
+  @AutoLog(value = "${tableVo.ftlDescription}-通过excel导入数据")
+  @ApiOperation(value="${tableVo.ftlDescription}-通过excel导入数据", notes="${tableVo.ftlDescription}-通过excel导入数据")
   @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
   public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
       MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;

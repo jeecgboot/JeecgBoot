@@ -1,3 +1,10 @@
 spring:
   profiles:
     active: dev
+
+swagger:
+  production: false
+  basic:
+    enable: true
+    username: hemiao100
+    password: hemiao1314

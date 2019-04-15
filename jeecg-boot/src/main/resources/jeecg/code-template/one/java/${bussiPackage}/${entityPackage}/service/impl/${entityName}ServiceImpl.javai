@@ -1,5 +1,6 @@
 package ${bussiPackage}.${entityPackage}.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import ${bussiPackage}.${entityPackage}.entity.${entityName};
 import ${bussiPackage}.${entityPackage}.mapper.${entityName}Mapper;
 import ${bussiPackage}.${entityPackage}.service.I${entityName}Service;
@@ -13,6 +14,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
  * @date：   ${.now?string["yyyy-MM-dd"]}
  * @version： V1.0
  */
+@DS(
 @Service
 public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, ${entityName}> implements I${entityName}Service {
 
