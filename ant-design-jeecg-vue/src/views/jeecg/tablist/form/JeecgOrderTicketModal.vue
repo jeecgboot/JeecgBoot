@@ -16,14 +16,17 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="航班号"
-          hasFeedback >
-          <a-input placeholder="请输入航班号" v-decorator="['ticketCode', {rules:[{ required: true,message: '请输入航班号!'}]}]" :readOnly="disableSubmit"/>
+          hasFeedback>
+          <a-input
+            placeholder="请输入航班号"
+            :readOnly="disableSubmit"
+            v-decorator="['ticketCode', {rules:[{ required: true,message: '请输入航班号!'}]}]"/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="航班时间"
-          hasFeedback >
+          hasFeedback>
           <j-date v-decorator="['tickectDate',{trigger:'input',rules:[{ required: true,message: '请输入航班号!'}]}]"></j-date>
         </a-form-item>
         <a-form-item
@@ -32,7 +35,7 @@
           label="订单号码"
           v-model="this.orderId"
           :hidden="hiding"
-          hasFeedback >
+          hasFeedback>
           <a-input v-decorator="[ 'orderId', {}]" disabled="disabled"/>
         </a-form-item>
         <a-form-item
@@ -40,7 +43,7 @@
           :wrapperCol="wrapperCol"
           label="创建人"
           :hidden="hiding"
-          hasFeedback >
+          hasFeedback>
           <a-input v-decorator="[ 'createBy', {}]" :readOnly="disableSubmit"/>
         </a-form-item>
         <a-form-item
@@ -48,7 +51,7 @@
           :wrapperCol="wrapperCol"
           label="创建时间"
           :hidden="hiding"
-          hasFeedback >
+          hasFeedback>
           <a-input v-decorator="[ 'createTime', {}]" :readOnly="disableSubmit"/>
         </a-form-item>
       </a-form>
@@ -57,7 +60,7 @@
 </template>
 
 <script>
-  import { httpAction } from '@/api/manage'
+  import {httpAction} from '@/api/manage'
   import pick from 'lodash.pick'
   import moment from 'moment'
   import JDate from '@/components/jeecg/JDate'
@@ -66,80 +69,71 @@
     components: {
       JDate
     },
-    name: "JeecgOrderTicketModal",
-    data () {
+    name: 'JeecgOrderTicketModal',
+    data() {
       return {
-        title:"操作",
+        title: '操作',
         visible: false,
         model: {},
         labelCol: {
-          xs: { span: 24 },
-          sm: { span: 5 },
+          xs: {span: 24},
+          sm: {span: 5}
         },
         wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 },
+          xs: {span: 24},
+          sm: {span: 16}
         },
         moment,
-        format:"YYYY-MM-DD HH:mm:ss",
+        format: 'YYYY-MM-DD HH:mm:ss',
         disableSubmit: false,
-        orderId:"",
+        orderId: '',
         hiding: false,
         confirmLoading: false,
         form: this.$form.createForm(this),
-        validatorRules:{
-        },
+        validatorRules: {},
         url: {
-          add: "/test/order/addTicket",
-          edit: "/test/order/editTicket",
-        },
+          add: '/test/order/addTicket',
+          edit: '/test/order/editTicket'
+        }
       }
     },
-    created () {
+    created() {
     },
     methods: {
-      add (orderId) {
-        if(orderId){
-          this.orderId = orderId;
-          this.edit({},'');
-        }else{
-          this.$message.warning("请选择一条航班数据");
+      add(orderId) {
+        if (orderId) {
+          this.edit({orderId}, '')
+        } else {
+          this.$message.warning('请选择一条航班数据')
         }
       },
-      detail(record){
-        this.edit(record,'d');
+      detail(record) {
+        this.edit(record, 'd')
       },
-      edit (record,v) {
-        if(v == 'e'){
+      edit(record, v) {
+        if (v == 'e') {
           this.hiding = false;
           this.disableSubmit = false;
-        }else if(v == 'd'){
+        } else if (v == 'd') {
           this.hiding = false;
           this.disableSubmit = true;
-        }else{
+        } else {
           this.hiding = true;
           this.disableSubmit = false;
         }
         this.form.resetFields();
+        this.orderId = record.orderId;
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'ticketCode','tickectDate','orderId','createBy','createTime','updateBy','updateTime'))
-        });
+          this.form.setFieldsValue(pick(this.model, 'ticketCode', 'tickectDate', 'orderId', 'createBy', 'createTime', 'updateBy', 'updateTime'))
+        })
       },
-      onChange(value, dateString) {
-        console.log('Selected Time: ', value);
-        console.log('Formatted Selected Time: ', dateString);
-        this.model.tickectDate = dateString;
-      },
-      onOk(value) {
-        console.log('onOk: ', value);
-      },
-      close () {
+      close() {
         this.$emit('close');
         this.visible = false;
       },
-      handleOk () {
+      handleOk() {
         const that = this;
         // 触发表单验证
         this.form.validateFields((err, values) => {
@@ -147,22 +141,20 @@
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
-            if(!this.model.id){
-              httpurl+=this.url.add;
+            if (!this.model.id) {
+              httpurl += this.url.add;
               method = 'post';
-            }else{
-              httpurl+=this.url.edit;
+            } else {
+              httpurl += this.url.edit;
               method = 'put';
             }
             let formData = Object.assign(this.model, values);
-            //时间格式化
-            formData.orderId = this.orderId;
-            console.log(formData)
-            httpAction(httpurl,formData,method).then((res)=>{
-              if(res.success){
+            formData.mainId = this.orderId;
+            httpAction(httpurl, formData, method).then((res) => {
+              if (res.success) {
                 that.$message.success(res.message);
-                that.$emit('ok');
-              }else{
+                that.$emit('ok')
+              } else {
                 that.$message.warning(res.message);
               }
             }).finally(() => {
@@ -172,9 +164,9 @@
           }
         })
       },
-      handleCancel () {
+      handleCancel() {
         this.close()
-      },
+      }
     }
   }
 </script>

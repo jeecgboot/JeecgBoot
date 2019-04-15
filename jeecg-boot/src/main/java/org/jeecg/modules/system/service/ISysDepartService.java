@@ -49,4 +49,11 @@ public interface ISysDepartService extends IService<SysDepart>{
      */
     List<SysDepartTreeModel> searhBy(String keyWord);
     
+    /**
+     * 根据部门id删除并删除其可能存在的子级部门
+     * @param id
+     * @return
+     */
+    boolean delete(String id);
+    
 }

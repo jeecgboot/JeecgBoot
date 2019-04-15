@@ -9,7 +9,7 @@
 
 <script>
   export default {
-    name: "Logo",
+    name: 'Logo',
     props: {
       title: {
         type: String,
@@ -26,8 +26,26 @@
 </script>
 <style lang="scss" scoped>
   /*缩小首页布 局顶部的高度*/
-  .sider .logo {
-    height: 59px!important;
-    line-height: 59px!important;
+  $height: 59px;
+
+  .sider {
+    box-shadow: none !important;
+    .logo {
+      height: $height !important;
+      line-height: $height !important;
+      box-shadow: none !important;
+      transition: background 300ms;
+
+      a {
+        color: white;
+        &:hover {
+          color: rgba(255, 255, 255, 0.8);
+        }
+      }
+    }
+
+    &.light .logo {
+      background-color: #1890ff;
+    }
   }
 </style>

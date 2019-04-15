@@ -21,11 +21,11 @@
     <div>
       <a-row :gutter="24">
         <a-col :xl="16" :lg="24" :md="24" :sm="24" :xs="24">
-          <a-card 
-            class="project-list" 
-            :loading="loading" 
-            style="margin-bottom: 24px;" 
-            :bordered="false" 
+          <a-card
+            class="project-list"
+            :loading="loading"
+            style="margin-bottom: 24px;"
+            :bordered="false"
             title="进行中的项目"
             :body-style="{ padding: 0 }">
             <a slot="extra">全部项目</a>
@@ -67,12 +67,12 @@
             </a-list>
           </a-card>
         </a-col>
-        <a-col 
-          style="padding: 0 12px" 
-          :xl="8" 
-          :lg="24" 
-          :md="24" 
-          :sm="24" 
+        <a-col
+          style="padding: 0 12px"
+          :xl="8"
+          :lg="24"
+          :md="24"
+          :sm="24"
           :xs="24">
           <a-card title="快速开始 / 便捷导航" style="margin-bottom: 24px" :bordered="false" :body-style="{padding: 0}">
             <div class="item-group">
@@ -116,9 +116,7 @@
   import PageLayout from '@/components/page/PageLayout'
   import HeadInfo from '@/components/tools/HeadInfo'
   import Radar from '@/components/chart/Radar'
-
   import { getRoleList, getServiceList } from "@/api/manage"
-  import {imgView} from '@/api/api'
 
   const DataSet = require('@antv/data-set')
 
@@ -187,7 +185,8 @@
     },
     created() {
       this.user = this.userInfo
-      this.avatar = imgView + this.userInfo.avatar
+      this.avatar = window._CONFIG['imgDomainURL'] +"/"+ this.userInfo.avatar
+      console.log('this.avatar :'+ this.avatar)
 
       getRoleList().then(res => {
         console.log('workplace -> call getRoleList()', res)

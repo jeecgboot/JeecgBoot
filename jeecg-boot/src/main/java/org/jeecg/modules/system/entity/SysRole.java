@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -38,16 +39,19 @@ public class SysRole implements Serializable {
     /**
      * 角色名称
      */
+    @Excel(name="角色名",width=15)
     private String roleName;
     
     /**
      * 角色编码
      */
+    @Excel(name="角色编码",width=15)
     private String roleCode;
     
     /**
           * 描述
      */
+    @Excel(name="描述",width=60)
     private String description;
 
     /**

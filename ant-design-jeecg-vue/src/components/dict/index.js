@@ -1,7 +1,7 @@
-import T from './DictSelectTag.vue'
-const DictSelectTag = {
+import T from './JDictSelectTag.vue'
+const JDictSelectTag = {
   install: function (Vue) {
-    Vue.component('DictSelectTag',T);
+    Vue.component('JDictSelectTag',T);
   }
 }
-export default DictSelectTag;
+export default JDictSelectTag;

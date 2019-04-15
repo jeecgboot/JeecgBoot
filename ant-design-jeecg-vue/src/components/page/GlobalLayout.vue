@@ -9,6 +9,7 @@
         @close="() => this.collapsed = false"
         :closable="false"
         :visible="collapsed"
+        width="200px"
       >
         <side-menu
           mode="inline"
@@ -36,6 +37,7 @@
         @close="() => this.collapsed = false"
         :closable="false"
         :visible="collapsed"
+        width="200px"
       >
         <side-menu
           mode="inline"
@@ -47,25 +49,27 @@
       </a-drawer>
     </template>
 
-    <a-layout :class="[layoutMode, `content-width-${contentWidth}`]" :style="{ paddingLeft: fixSiderbar && isDesktop() ? `${sidebarOpened ? 256 : 80}px` : '0' }">
+    <a-layout
+      :class="[layoutMode, `content-width-${contentWidth}`]"
+      :style="{ paddingLeft: fixSiderbar && isDesktop() ? `${sidebarOpened ? 200 : 80}px` : '0' }">
       <!-- layout header -->
-      <global-header 
-        :mode="layoutMode" 
-        :menus="menus" 
-        :theme="navTheme" 
-        :collapsed="collapsed" 
-        :device="device" 
+      <global-header
+        :mode="layoutMode"
+        :menus="menus"
+        :theme="navTheme"
+        :collapsed="collapsed"
+        :device="device"
         @toggle="toggle"
       />
 
       <!-- layout content -->
-      <a-layout-content :style="{ margin: '10px 24px 0', height: '100%', paddingTop: fixedHeader ? '64px' : '0' }">
+      <a-layout-content :style="{ height: '100%', paddingTop: fixedHeader ? '59px' : '0' }">
         <slot></slot>
       </a-layout-content>
 
       <!-- layout footer -->
       <a-layout-footer style="padding: 0px">
-        <global-footer />
+        <global-footer/>
       </a-layout-footer>
     </a-layout>
 
@@ -83,7 +87,7 @@
   import { mixin, mixinDevice } from '@/utils/mixin.js'
 
   export default {
-    name: "GlobalLayout",
+    name: 'GlobalLayout',
     components: {
       SideMenu,
       GlobalHeader,
@@ -91,7 +95,7 @@
       SettingDrawer
     },
     mixins: [mixin, mixinDevice],
-    data () {
+    data() {
       return {
         collapsed: false,
         menus: []
@@ -100,16 +104,26 @@
     computed: {
       ...mapState({
         // 主路由
-        mainMenu: state => state.permission.addRouters,
+        mainRouters: state => state.permission.addRouters,
+        // 后台菜单
+        permissionMenuList: state => state.user.permissionList
       })
     },
     watch: {
       sidebarOpened(val) {
         this.collapsed = !val
-      },
+      }
     },
     created() {
-      this.menus = this.mainMenu.find((item) => item.path === '/').children
+      //--update-begin----author:scott---date:20190320------for:根据后台菜单配置，判断是否路由菜单字段，动态选择是否生成路由（为了支持参数URL菜单）------
+      //this.menus = this.mainRouters.find((item) => item.path === '/').children;
+      this.menus = this.permissionMenuList
+      // 根据后台配置菜单，重新排序加载路由信息
+      console.log('----加载菜单逻辑----')
+      console.log(this.mainRouters)
+      console.log(this.permissionMenuList)
+      console.log('----navTheme------'+this.navTheme)
+      //--update-end----author:scott---date:20190320------for:根据后台菜单配置，判断是否路由菜单字段，动态选择是否生成路由（为了支持参数URL菜单）------
     },
     methods: {
       ...mapActions(['setSidebar']),
@@ -123,7 +137,7 @@
           this.collapsed = false
         }
       }
-    },
+    }
   }
 </script>
 
@@ -138,7 +152,7 @@
   }
 
   .layout {
-    min-height: 100vh;
+    min-height: 100vh !important;
     overflow-x: hidden;
 
     &.mobile {
@@ -165,7 +179,7 @@
       .sidemenu {
         .ant-header-fixedHeader {
 
-          &.ant-header-side-opened, &.ant-header-side-closed  {
+          &.ant-header-side-opened, &.ant-header-side-closed {
             width: 100%
           }
         }
@@ -179,6 +193,11 @@
           }
         }
       }
+      .header, .top-nav-header-index {
+        .user-wrapper .action {
+          padding: 0 12px;
+        }
+      }
     }
 
     &.ant-layout-has-sider {
@@ -186,13 +205,14 @@
     }
 
     .trigger {
-      font-size: 20px;
-      line-height: 64px;
-      padding: 0 24px;
+      font-size: 22px;
+      line-height: 42px;
+      padding: 0 18px;
       cursor: pointer;
-      transition: color .3s;
+      transition: color 300ms, background 300ms;
+
       &:hover {
-        background: rgba(0, 0, 0, 0.025);
+        background: rgba(255, 255, 255, 0.3);
       }
     }
 
@@ -237,7 +257,7 @@
         transition: width .2s;
 
         &.ant-header-side-opened {
-          width: calc(100% - 256px)
+          width: calc(100% - 200px)
         }
 
         &.ant-header-side-closed {
@@ -245,8 +265,6 @@
         }
       }
     }
-
-
 
     .header {
       height: 64px;
@@ -264,22 +282,27 @@
 
         .action {
           cursor: pointer;
-          padding: 0 12px;
+          padding: 0 14px;
           display: inline-block;
           transition: all .3s;
-          height: 100%;
+
+          height: 70%;
+          line-height: 46px;
+
+          &.action-full {
+            height: 100%;
+          }
 
           &:hover {
-            background: rgba(0, 0, 0, 0.025);
+            background: rgba(255, 255, 255, 0.3);
           }
 
           .avatar {
-            margin: 20px 8px 20px 0;
+            margin: 20px 10px 20px 0;
             color: #1890ff;
             background: hsla(0, 0%, 100%, .85);
             vertical-align: middle;
           }
-
 
           .icon {
             font-size: 16px;
@@ -292,10 +315,10 @@
         .user-wrapper {
 
           .action {
-            color: rgba(255, 255, 255, 0.85);
+            color: black;
 
             &:hover {
-              background: rgba(255, 255, 255, 0.16);
+              background: rgba(0, 0, 0, 0.05);
             }
           }
         }
@@ -322,6 +345,10 @@
           }
         }
 
+        .user-wrapper .action .avatar {
+          margin: 20px 0;
+        }
+
         &.light {
 
           .header-index-wide {
@@ -346,7 +373,7 @@
           .header-index-left {
             .logo > a {
               overflow: hidden;
-              text-overflow:ellipsis;
+              text-overflow: ellipsis;
               white-space: nowrap;
             }
           }
@@ -355,18 +382,17 @@
 
     }
 
-
     .top-nav-header-index {
-      box-shadow: 0 1px 4px rgba(0,21,41,.08);
+      box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
       position: relative;
-      transition: background .3s,width .2s;
+      transition: background .3s, width .2s;
 
       .header-index-wide {
-        max-width: 1200px;
+        width: 100%;
         margin: auto;
-        padding-left: 0;
+        padding: 0 20px 0 0;
         display: flex;
-        height: 64px;
+        height: 59px;
 
         .ant-menu.ant-menu-horizontal {
           border: none;
@@ -405,8 +431,11 @@
 
         .header-index-right {
           float: right;
-          height: 64px;
+          height: 59px;
           overflow: hidden;
+          .action:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+          }
         }
       }
 
@@ -423,13 +452,29 @@
           }
         }
       }
-    }
 
+      &.dark {
+
+        .user-wrapper {
+
+          .action {
+            color: white;
+
+            &:hover {
+              background: rgba(255, 255, 255, 0.3);
+            }
+          }
+        }
+        .header-index-wide .header-index-left .trigger:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+      }
+
+    }
 
     // 内容区
     .layout-content {
       margin: 24px 24px 0px;
-      height: 100%;
       height: 64px;
       padding: 0 12px 0 0;
     }
@@ -438,8 +483,8 @@
 
   .topmenu {
     .page-header-index-wide {
-      max-width: 1200px;
       margin: 0 auto;
+      width: 100%;
     }
   }
 
@@ -468,7 +513,7 @@
 
   // 菜单样式
   .sider {
-    box-shadow: 2px 0 6px rgba(0, 21, 41, .35);
+    box-shadow: 2px 116px 6px 0 rgba(0, 21, 41, .35);
     position: relative;
     z-index: 10;
 
@@ -498,8 +543,8 @@
 
       h1 {
         color: #fff;
-        font-size: 20px;
-        margin: 0 0 0 12px;
+        font-size: 18px;
+        margin: 0 0 0 8px;
         font-family: "Chinese Quote", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
         font-weight: 600;
       }
@@ -507,11 +552,11 @@
 
     &.light {
       background-color: #fff;
-      box-shadow: 2px 0px 8px 0px rgba(29, 35, 41, 0.05);
+      box-shadow: 2px 116px 8px 0 rgba(29, 35, 41, 0.05);
 
       .logo {
         background: #fff;
-        box-shadow: 1px 1px 0px 0px #e8e8e8;
+        box-shadow: 1px 1px 0 0 #e8e8e8;
 
         h1 {
           color: unset;
@@ -563,7 +608,7 @@
           vertical-align: middle;
         }
 
-        >.ant-form-item-label {
+        > .ant-form-item-label {
           line-height: 32px;
           padding-right: 8px;
           width: auto;

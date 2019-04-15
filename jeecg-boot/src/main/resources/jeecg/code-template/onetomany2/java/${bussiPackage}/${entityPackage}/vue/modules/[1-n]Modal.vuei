@@ -1,0 +1,183 @@
+<#list subTables as subTab>
+#segment#${subTab.entityName}Modal.vue
+<template>
+  <a-modal
+    :title="title"
+    :width="800"
+    :visible="visible"
+    :okButtonProps="{ props: {disabled: disableSubmit} }"
+    :confirmLoading="confirmLoading"
+    @ok="handleOk"
+    @cancel="handleCancel"
+    cancelText="关闭">
+    <a-spin :spinning="confirmLoading">
+      <a-form :form="form">
+<#list subTab.colums as po><#rt/>
+
+<#if po.fieldName !='id'><#rt/>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="${po.filedComment}"
+          <#if subTab.foreignKeys[0]?uncap_first == po.fieldName>
+          :hidden="hiding"
+          </#if>
+          hasFeedback>
+          <#if po.fieldType =='date'>
+          <a-date-picker v-decorator="[ '${po.fieldName}', <#if po.nullable =='N'>validatorRules.${po.fieldName} <#else>{}</#if>]" />
+          <#elseif po.fieldType =='datetime'>
+          <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss" v-decorator="[ '${po.fieldName}', <#if po.nullable =='N'>validatorRules.${po.fieldName} <#else>{}</#if>]" />
+          <#elseif "int,decimal,double,"?contains(po.fieldType)>
+          <a-input-number v-decorator="[ '${po.fieldName}', <#if po.nullable =='N'>validatorRules.${po.fieldName} <#else>{}</#if>]" />
+          <#else>
+          <#if subTab.foreignKeys[0]?uncap_first == po.fieldName>
+          <a-input placeholder="请输入${po.filedComment}" v-decorator="['${po.fieldName}', {'initialValue':this.mainId}]" />
+          <#else>
+          <a-input placeholder="请输入${po.filedComment}" v-decorator="['${po.fieldName}', <#if po.nullable =='N'>validatorRules.${po.fieldName} <#else>{}</#if>]" />
+          </#if>
+          </#if>
+        </a-form-item>
+</#if>
+</#list>
+      </a-form>
+    </a-spin>
+  </a-modal>
+</template>
+
+<script>
+  import {httpAction} from '@/api/manage'
+  import pick from 'lodash.pick'
+  import moment from 'moment'
+  import JDate from '@/components/jeecg/JDate'
+
+  export default {
+    components: {
+      JDate
+    },
+    name: '${subTab.entityName}Modal',
+    data() {
+      return {
+        title: '操作',
+        visible: false,
+        model: {},
+        labelCol: {
+          xs: {span: 24},
+          sm: {span: 5}
+        },
+        wrapperCol: {
+          xs: {span: 24},
+          sm: {span: 16}
+        },
+        moment,
+        format: 'YYYY-MM-DD HH:mm:ss',
+        disableSubmit: false,
+        mainId: '',
+        hiding: false,
+        confirmLoading: false,
+        form: this.$form.createForm(this),
+        validatorRules: {
+  <#list subTab.colums as po>
+  <#if po.fieldName !='id' && subTab.foreignKeys[0]?uncap_first != po.fieldName>
+    <#if po.nullable =='N'>
+          ${po.fieldName}: { rules: [{ required: true, message: '请输入${po.filedComment}!' }] },
+    </#if>
+  </#if>
+</#list>
+        },
+        url: {
+          add: '/${entityPackage}/${entityName?uncap_first}/add${subTab.entityName}',
+          edit: '/${entityPackage}/${entityName?uncap_first}/edit${subTab.entityName}'
+        }
+      }
+    },
+    created() {
+    },
+    methods: {
+      add(mainId) {
+        if (mainId) {
+          this.edit({mainId}, '')
+        } else {
+          this.$message.warning('请选择一条数据')
+        }
+      },
+      detail(record) {
+        this.edit(record, 'd')
+      },
+      edit(record, v) {
+        if (v == 'e') {
+          this.hiding = false;
+          this.disableSubmit = false;
+        } else if (v == 'd') {
+          this.hiding = false;
+          this.disableSubmit = true;
+        } else {
+          this.hiding = true;
+          this.disableSubmit = false;
+        }
+        this.form.resetFields();
+        this.mainId = record.mainId;
+        this.model = Object.assign({}, record);
+        this.visible = true;
+        this.$nextTick(() => {
+          this.form.setFieldsValue(pick(this.model, <#list subTab.colums as col>'${col.fieldName}', </#list>))
+          // 时间格式化
+<#list subTab.colums as col><#rt/>
+	<#if col.fieldName !='id' && (col.fieldType =='date' || col.fieldType =='datetime')>
+          this.form.setFieldsValue({ ${col.fieldName}: this.model.${col.fieldName} ? moment(this.model.${col.fieldName}) : null })
+	</#if>
+</#list>  
+        })
+      },
+      close() {
+        this.$emit('close');
+        this.visible = false;
+      },
+      handleOk() {
+        const that = this;
+        // 触发表单验证
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            that.confirmLoading = true;
+            let httpurl = '';
+            let method = '';
+            if (!this.model.id) {
+              httpurl += this.url.add;
+              method = 'post';
+            } else {
+              httpurl += this.url.edit;
+              method = 'put';
+            }
+            let formData = Object.assign(this.model, values);
+            //时间格式化
+            <#list subTab.colums as po>
+            <#if po.fieldName !='id' && po.fieldType =='date'>
+            formData.${po.fieldName} = formData.${po.fieldName}?formData.${po.fieldName}.format():null;
+            <#elseif po.fieldName !='id' && po.fieldType =='datetime'>
+            formData.${po.fieldName} = formData.${po.fieldName}?formData.${po.fieldName}.format('YYYY-MM-DD HH:mm:ss'):null;
+            </#if>
+            </#list>
+            httpAction(httpurl, formData, method).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message);
+                that.$emit('ok');
+              } else {
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
+          }
+        })
+      },
+      handleCancel() {
+        this.close();
+      }
+    }
+  }
+</script>
+
+<style scoped>
+
+</style>
+</#list>

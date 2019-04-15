@@ -1,15 +1,29 @@
 package org.jeecg.modules.quartz.controller;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.alibaba.fastjson.JSON;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
+import org.jeecg.modules.system.entity.SysUser;
+import org.jeecgframework.poi.excel.ExcelImportUtil;
+import org.jeecgframework.poi.excel.def.NormalExcelConstants;
+import org.jeecgframework.poi.excel.entity.ExportParams;
+import org.jeecgframework.poi.excel.entity.ImportParams;
+import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.Job;
@@ -33,6 +47,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * @Title: Controller
@@ -63,23 +80,9 @@ public class QuartzJobController {
 	public Result<IPage<QuartzJob>> queryPageList(QuartzJob quartzJob, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
 		Result<IPage<QuartzJob>> result = new Result<IPage<QuartzJob>>();
-		QueryWrapper<QuartzJob> queryWrapper = new QueryWrapper<QuartzJob>(quartzJob);
+		QueryWrapper<QuartzJob> queryWrapper = QueryGenerator.initQueryWrapper(quartzJob, req.getParameterMap());
 		Page<QuartzJob> page = new Page<QuartzJob>(pageNo, pageSize);
-		// 排序逻辑 处理
-		String column = req.getParameter("column");
-		String order = req.getParameter("order");
-		if (oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
-			if ("asc".equals(order)) {
-				queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));
-			} else {
-				queryWrapper.orderByDesc(oConvertUtils.camelToUnderline(column));
-			}
-		}
 		IPage<QuartzJob> pageList = quartzJobService.page(page, queryWrapper);
-//		log.info("查询当前页：" + pageList.getCurrent());
-//		log.info("查询当前页数量：" + pageList.getSize());
-//		log.info("查询结果数量：" + pageList.getRecords().size());
-//		log.info("数据总数：" + pageList.getTotal());
 		result.setSuccess(true);
 		result.setResult(pageList);
 		return result;
@@ -294,4 +297,70 @@ public class QuartzJobController {
 		return (Job) class1.newInstance();
 	}
 
+	/**
+	 * 导出excel
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value = "/exportXls")
+	public ModelAndView exportXls(HttpServletRequest request, HttpServletResponse response) {
+		// Step.1 组装查询条件
+		QueryWrapper<QuartzJob> queryWrapper = null;
+		try {
+			String paramsStr = request.getParameter("paramsStr");
+			if (oConvertUtils.isNotEmpty(paramsStr)) {
+				String deString = URLDecoder.decode(paramsStr, "UTF-8");
+				QuartzJob quartzJob = JSON.parseObject(deString, QuartzJob.class);
+				queryWrapper = QueryGenerator.initQueryWrapper(quartzJob, request.getParameterMap());
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		//Step.2 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		List<QuartzJob> pageList = quartzJobService.list(queryWrapper);
+		//导出文件名称
+		mv.addObject(NormalExcelConstants.FILE_NAME,"定时任务列表");
+		mv.addObject(NormalExcelConstants.CLASS,QuartzJob.class);
+		mv.addObject(NormalExcelConstants.PARAMS,new ExportParams("定时任务列表数据","导出人:Jeecg","导出信息"));
+		mv.addObject(NormalExcelConstants.DATA_LIST,pageList);
+		return mv;
+	}
+
+	/**
+	 * 通过excel导入数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
+	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
+		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+		for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+			MultipartFile file = entity.getValue();// 获取上传文件对象
+			ImportParams params = new ImportParams();
+			params.setTitleRows(2);
+			params.setHeadRows(1);
+			params.setNeedSave(true);
+			try {
+				List<QuartzJob> listQuartzJobs = ExcelImportUtil.importExcel(file.getInputStream(), QuartzJob.class, params);
+				for (QuartzJob quartzJobExcel : listQuartzJobs) {
+					quartzJobService.save(quartzJobExcel);
+				}
+				return Result.ok("文件导入成功！数据行数：" + listQuartzJobs.size());
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				return Result.error("文件导入失败！");
+			} finally {
+				try {
+					file.getInputStream().close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return Result.ok("文件导入失败！");
+	}
 }

@@ -8,43 +8,102 @@ export const asyncRouterMap = [
 
   {
     path: '/',
-    name: 'index',
+    name: 'dashboard',
     component: TabLayout,
     meta: { title: '首页' },
     redirect: '/dashboard/workplace',
     children: [
 
-      //系统管理
-      {
-        path: '/system',
-        name: 'system',
-        redirect: '/isystem/user',
-        component: RouteView,
-        meta: { title: '系统管理', icon: 'dashboard', permission: [ 'dashboard' ] },
-        children: [
-          {
-            path: '/system/user',
-            name: 'user',
-            component: () => import('@/views/system/UserList'),
-            meta: { title: '用户管理', permission: [ 'dashboard' ] }
-          },
-
-          {
-            path: '/system/role',
-            name: 'role',
-            component: () => import('@/views/system/RoleList'),
-            meta: { title: '角色管理', permission: [ 'dashboard' ] }
-          },
-          {
-            path: '/system/log',
-            name: 'log',
-            component: () => import('@/views/system/LogList'),
-            meta: { title: '日志管理', permission: [ 'dashboard' ] }
-          },
-
-
-        ]
-      },
+     
+      // //系统监控
+      // {
+      //   path: '/sysmonitor',
+      //   name: 'sysmonitor',
+      //   redirect: '/sysmonitor',
+      //   component: RouteView,
+      //   meta: { title: '系统监控', icon: 'dashboard', permission: [ 'dashboard' ] },
+      //   children: [
+      //     {
+      //       path: '/sys/dataLog-list',
+      //       name: 'DataLogList',
+      //       component: () => import('@/views/system/DataLogList'),
+      //       meta: { title: '数据日志', permission: [ 'dashboard' ] }
+      //     },
+      //     {
+      //       path: 'http://localhost:8080/jeecg-boot/druid/',
+      //       name: 'druid',
+      //       component: () => import('@/views/jeecg/tablist/JeecgOrderDMainList'),
+      //       meta: { title: 'SQL监控', permission: [ 'dashboard' ] }
+      //     },
+      //     {
+      //       path: '/isystem/QuartzJobList',
+      //       name: 'QuartzJobList',
+      //       component: () => import('@/views/system/QuartzJobList'),
+      //       meta: { title: '定时任务', permission: [ 'dashboard' ] }
+      //     },
+      //   ]
+      // },
+      //
+      //
+      // //jeecg demo
+      // {
+      //   path: '/jeecg',
+      //   name: 'jeecg',
+      //   redirect: '/jeecg',
+      //   component: RouteView,
+      //   meta: { title: 'JEECG案例', icon: 'dashboard', permission: [ 'dashboard' ] },
+      //   children: [
+      //     {
+      //       path: '/jeecg/JeecgDemoList',
+      //       name: 'DemoList',
+      //       component: () => import('@/views/jeecg/JeecgDemoList'),
+      //       meta: { title: '单表模型示例', permission: [ 'dashboard' ] }
+      //     },
+      //     {
+      //       path: '/jeecg/tablist/JeecgOrderDMainList',
+      //       name: 'JeecgOrderDMainList',
+      //       component: () => import('@/views/jeecg/tablist/JeecgOrderDMainList'),
+      //       meta: { title: '一对多Tab示例', permission: [ 'dashboard' ] }
+      //     },
+      //     {
+      //       path: '/jeecg/FlowTest',
+      //       name: 'FlowTest',
+      //       component: () => import('@/views/jeecg/FlowTest'),
+      //       meta: { title: '数据回执模拟', permission: [ 'dashboard' ] }
+      //     },
+      //     {
+      //       path: '/jeecg/PrintDemo',
+      //       name: 'PrintDemo',
+      //       component: () => import('@/views/jeecg/PrintDemo'),
+      //       meta: { title: '打印测试', permission: [ 'dashboard' ] }
+      //     },
+      //     {
+      //       path: '/jeecg/JeecgOrderMainList',
+      //       name: 'JeecgOrderMainList',
+      //       component: () => import('@/views/jeecg/JeecgOrderMainList'),
+      //       meta: { title: '一对多示例', permission: [ 'dashboard' ] }
+      //     },
+      //     {
+      //       path: 'http://www.baidu.com',
+      //       name: 'baidu',
+      //       component: () => import('@/components/layouts/IframePageView'),
+      //       meta: { title: '百度', permission: [ 'dashboard' ] }
+      //     },
+      //     {
+      //       path: 'http://localhost:8080/jeecg-boot/auto/cgform/list',
+      //       name: 'cgformtest',
+      //       component: () => import('@/components/layouts/IframePageView'),
+      //       meta: { title: 'online表单测试', permission: [ 'dashboard' ] }
+      //     },
+      //     {
+      //       path: '/jeecg/helloworld',
+      //       name: 'helloworld',
+      //       hidden : true,
+      //       component: () => import('@/views/jeecg/helloworld'),
+      //       meta: { title: 'helloworld', permission: [ 'dashboard' ] }
+      //     },
+      //   ]
+      // },
 
       // dashboard
       {
@@ -76,29 +135,6 @@ export const asyncRouterMap = [
         ]
       },
 
-      //jeecg
-      {
-        path: '/jeecg',
-        name: 'jeecg',
-        redirect: '/jeecg',
-        component: RouteView,
-        meta: { title: 'JEECG案例', icon: 'dashboard', permission: [ 'dashboard' ] },
-        children: [
-          {
-            path: '/jeecg/JeecgDemoList',
-            name: 'DemoList',
-            component: () => import('@/views/jeecg/JeecgDemoList'),
-            meta: { title: '列表例子', permission: [ 'dashboard' ] }
-          },
-          {
-            path: '/jeecg/helloworld',
-            name: 'helloworld',
-            hidden : true,
-            component: () => import('@/views/jeecg/helloworld'),
-            meta: { title: 'helloworld', permission: [ 'dashboard' ] }
-          }
-        ]
-      },
       // forms
       {
         path: '/form',
@@ -369,9 +405,33 @@ export const constantRouterMap = [
         path: 'register-result',
         name: 'registerResult',
         component: () => import(/* webpackChunkName: "user" */ '@/views/user/RegisterResult')
-      }
+      },
     ]
   },
+
+  // {
+  //   path: '/',
+  //   name: 'index',
+  //   component: TabLayout,
+  //   meta: {title: '首页'},
+  //   redirect: '/dashboard/workplace',
+  //   children: [
+  //     {
+  //       path: '/online',
+  //       name: 'online',
+  //       redirect: '/online',
+  //       component: RouteView,
+  //       meta: {title: '在线开发', icon: 'dashboard', permission: ['dashboard']},
+  //       children: [
+  //         {
+  //           path: '/online/auto/:code',
+  //           name: 'report',
+  //           component: () => import('@/views/modules/online/cgreport/OnlCgreportAutoList')
+  //         },
+  //       ]
+  //     },
+  //   ]
+  // },
 
   {
     path: '/test',
@@ -385,7 +445,6 @@ export const constantRouterMap = [
       }
     ]
   },
-
   {
     path: '/404',
     component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')

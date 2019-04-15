@@ -1,12 +1,13 @@
 package org.jeecg.modules.demo.test.entity;
 
 import java.io.Serializable;
-import java.util.Date;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
@@ -24,14 +25,17 @@ public class JeecgOrderCustomer implements Serializable {
 	@TableId(type = IdType.UUID)
 	private java.lang.String id;
 	/**客户名*/
+	@Excel(name="客户名字",width=15)
 	private java.lang.String name;
 	/**性别*/
 	private java.lang.String sex;
 	/**身份证号码*/
+	@Excel(name="身份证号码",width=15)
 	private java.lang.String idcard;
 	/**身份证扫描件*/
 	private java.lang.String idcardPic;
 	/**电话1*/
+	@Excel(name="电话",width=15)
 	private java.lang.String telphone;
 	/**外键*/
 	private java.lang.String orderId;

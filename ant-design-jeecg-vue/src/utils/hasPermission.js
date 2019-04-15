@@ -3,10 +3,11 @@ const hasPermission = {
         console.log(options);
           Vue.directive('has', {
             inserted: (el, binding, vnode)=>{
-              //console.log("页面权限----",el);
+              console.log("页面权限----",el);
               let permissionList = vnode.context.$route.meta.permissionList;
               if (permissionList === null || permissionList === "" || permissionList === undefined) {
                 el.parentNode.removeChild(el)
+                return
               }
               let permissions = [];
               for (var item of permissionList) {

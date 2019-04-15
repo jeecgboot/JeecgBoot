@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysUserDepartMapper">
+    <select id="getUserDepartByUid" parameterType="String" resultType="org.jeecg.modules.system.entity.SysUserDepart">
+		SELECT *
+		FROM sys_user_depart
+		WHERE user_id = #{userId, jdbcType=VARCHAR}
+    </select>
+</mapper>

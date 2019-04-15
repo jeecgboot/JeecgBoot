@@ -1,21 +1,20 @@
 <template>
-  <div class="antv-chart-mini">
-    <div class="chart-wrapper" :style="{ height: 46 }">
-      <v-chart :force-fit="true" :height="height" :data="datasource" :padding="[36, 5, 18, 5]">
-        <v-tooltip />
-        <v-bar position="x*y" />
-      </v-chart>
-    </div>
+  <div :style="{'width':width==null?'auto':width+'px'}">
+    <v-chart :forceFit="width==null" :height="height" :data="data" padding="0">
+      <v-tooltip/>
+      <v-bar position="x*y"/>
+    </v-chart>
   </div>
 </template>
 
 <script>
   import moment from 'dayjs'
-  const data = []
+
+  const sourceData = []
   const beginDay = new Date().getTime()
 
   for (let i = 0; i < 10; i++) {
-    data.push({
+    sourceData.push({
       x: moment(new Date(beginDay + 1000 * 60 * 60 * 24 * i)).format('YYYY-MM-DD'),
       y: Math.round(Math.random() * 10)
     })
@@ -40,24 +39,33 @@
   }]
 
   export default {
-    name: "MiniBar",
-    props:{
-      datasource:{
+    name: 'MiniBar',
+    props: {
+      dataSource: {
         type: Array,
-        default:()=>[]
+        default: () => []
+      },
+      width: {
+        type: Number,
+        default: null
+      },
+      height: {
+        type: Number,
+        default: 200
       }
     },
-    created(){
-      if(this.datasource.length==0){
-        this.datasource = data;
+    created() {
+      if (this.dataSource.length === 0) {
+        this.data = sourceData
+      } else {
+        this.data = this.dataSource
       }
     },
-    data () {
+    data() {
       return {
-        data,
         tooltip,
-        scale,
-        height: 100
+        data: [],
+        scale
       }
     }
   }

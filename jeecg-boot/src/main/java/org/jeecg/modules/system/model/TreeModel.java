@@ -2,7 +2,9 @@ package org.jeecg.modules.system.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jeecg.modules.system.entity.SysPermission;
 
@@ -14,10 +16,22 @@ public class TreeModel implements Serializable {
 	
 	private String title;
 	
+	private String slotTitle;
+	
 	private boolean isLeaf;
 	
 	private String icon;
 	
+	private Map<String,String> scopedSlots;
+	
+	public Map<String, String> getScopedSlots() {
+		return scopedSlots;
+	}
+
+	public void setScopedSlots(Map<String, String> scopedSlots) {
+		this.scopedSlots = scopedSlots;
+	}
+
 	public String getKey() {
 		return key;
 	}
@@ -34,11 +48,11 @@ public class TreeModel implements Serializable {
 		this.title = title;
 	}
 
-	public boolean isLeaf() {
+	public boolean getIsLeaf() {
 		return isLeaf;
 	}
 
-	public void setLeaf(boolean isLeaf) {
+	public void setIsLeaf(boolean isLeaf) {
 		this.isLeaf = isLeaf;
 	}
 
@@ -64,13 +78,31 @@ public class TreeModel implements Serializable {
 		
 	}
 	
-	 public TreeModel(SysPermission permission) {
-    	this.key = permission.getId();
-    	this.icon = permission.getIcon();
-    	this.parentId = permission.getParentId();
-    	this.title = permission.getName();
-    	this.value = permission.getId();
-    	if(permission.getIsLeaf()==0) {
+	public TreeModel(SysPermission permission) {
+		this.key = permission.getId();
+		this.icon = permission.getIcon();
+		this.parentId = permission.getParentId();
+		this.title = permission.getName();
+		this.slotTitle =  permission.getName();
+		this.value = permission.getId();
+		this.isLeaf = permission.isLeaf();
+		this.label = permission.getName();
+		if(!permission.isLeaf()) {
+			this.children = new ArrayList<TreeModel>();
+		}
+	}
+	 
+	 public TreeModel(String key,String parentId,String slotTitle,String icon,boolean isLeaf) {
+    	this.key = key;
+    	this.parentId = parentId;
+    	this.icon=icon;
+    	this.slotTitle =  slotTitle;
+    	Map<String,String> map = new HashMap<String,String>();
+    	map.put("title", "hasDatarule");
+    	this.scopedSlots = map;
+    	this.isLeaf = isLeaf;
+    	this.value = key;
+    	if(!isLeaf) {
     		this.children = new ArrayList<TreeModel>();
     	}
     }
@@ -117,8 +149,14 @@ public class TreeModel implements Serializable {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
-	
 
+	public String getSlotTitle() {
+		return slotTitle;
+	}
+
+	public void setSlotTitle(String slotTitle) {
+		this.slotTitle = slotTitle;
+	}
+	
 
 }

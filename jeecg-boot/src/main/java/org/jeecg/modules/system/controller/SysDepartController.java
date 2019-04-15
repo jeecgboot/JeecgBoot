@@ -9,6 +9,7 @@ import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
+import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,7 +57,7 @@ public class SysDepartController {
 	 * @return
 	 */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	@RequiresRoles({"admin"})
+	
 	public Result<SysDepart> add(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
 		Result<SysDepart> result = new Result<SysDepart>();
 		String username = JwtUtil.getUserNameByToken(request);
@@ -79,8 +80,8 @@ public class SysDepartController {
 	 * @return
 	 */
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
-	@RequiresRoles({"admin"})
-	public Result<SysDepart> eidt(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
+	
+	public Result<SysDepart> edit(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
 
 		String username = JwtUtil.getUserNameByToken(request);
 		sysDepart.setUpdateBy(username);
@@ -104,7 +105,7 @@ public class SysDepartController {
     * @return
     */
    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-   @RequiresRoles({"admin"})
+   
    public Result<SysDepart> delete(@RequestParam(name="id",required=true) String id) {
 
        Result<SysDepart> result = new Result<SysDepart>();
@@ -112,7 +113,7 @@ public class SysDepartController {
        if(sysDepart==null) {
            result.error500("未找到对应实体");
        }else {
-           boolean ok = sysDepartService.removeById(id);
+           boolean ok = sysDepartService.delete(id);
            if(ok) {
                result.success("删除成功!");
            }
@@ -128,7 +129,7 @@ public class SysDepartController {
 	 * @return
 	 */
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
-	@RequiresRoles({"admin"})
+	
 	public Result<SysDepart> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 
 		Result<SysDepart> result = new Result<SysDepart>();
@@ -146,13 +147,19 @@ public class SysDepartController {
 	 * 
 	 * @return
 	 */
-
 	  @RequestMapping(value = "/queryIdTree", method = RequestMethod.GET) 
 	  public Result<List<DepartIdModel>> queryIdTree() {	  
 		 Result<List<DepartIdModel>> result = new Result<List<DepartIdModel>>(); 
+		 List<DepartIdModel> idList;
 		 try {
-		 List<DepartIdModel> idList = FindsDepartsChildrenUtil.wrapDepartIdModel();
+			 idList = FindsDepartsChildrenUtil.wrapDepartIdModel();
+		 if(idList != null && idList.size() > 0) {
 		 result.setResult(idList); result.setSuccess(true);
+		 }else {
+			 sysDepartService.queryTreeList();
+			 idList = FindsDepartsChildrenUtil.wrapDepartIdModel();
+			 result.setResult(idList); result.setSuccess(true);
+		 }
 		 return result; 
 		 } catch(Exception e) {
 			  e.printStackTrace(); result.setSuccess(false); 

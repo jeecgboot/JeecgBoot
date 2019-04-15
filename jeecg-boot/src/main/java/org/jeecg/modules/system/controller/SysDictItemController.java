@@ -7,10 +7,12 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.service.ISysDictItemService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -51,29 +53,10 @@ public class SysDictItemController {
 	public Result<IPage<SysDictItem>> queryPageList(SysDictItem sysDictItem,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
 		Result<IPage<SysDictItem>> result = new Result<IPage<SysDictItem>>();
-		QueryWrapper<SysDictItem> queryWrapper = new QueryWrapper<SysDictItem>(sysDictItem);
-		Page<SysDictItem> page = new Page<SysDictItem>(pageNo,pageSize);
-		//update-begin--Author:zhangweijian Date:20190103 for：新增排序处理
-		//排序逻辑 处理
-		String column = req.getParameter("column");
-		String order = req.getParameter("order");
-		if(oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
-			if("asc".equals(order)) {
-				queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));
-			}else {
-				queryWrapper.orderByDesc(oConvertUtils.camelToUnderline(column));
-			}
-		}
-		//update-end--Author:zhangweijian Date:20190103 for：根据业务配置id查询
-		//TODO 过滤逻辑处理
-		//TODO begin、end逻辑处理
-		//TODO 一个强大的功能，前端传一个字段字符串，后台只返回这些字符串对应的字段
-		//创建时间/创建人的赋值
+		QueryWrapper<SysDictItem> queryWrapper = QueryGenerator.initQueryWrapper(sysDictItem, req.getParameterMap());
+		queryWrapper.orderByAsc("sort_order");
+		Page<SysDictItem> page = new Page<SysDictItem>(pageNo, pageSize);
 		IPage<SysDictItem> pageList = sysDictItemService.page(page, queryWrapper);
-		log.info("查询当前页："+pageList.getCurrent());
-		log.info("查询当前页数量："+pageList.getSize());
-		log.info("查询结果数量："+pageList.getRecords().size());
-		log.info("数据总数："+pageList.getTotal());
 		result.setSuccess(true);
 		result.setResult(pageList);
 		return result;
@@ -85,6 +68,7 @@ public class SysDictItemController {
 	 * @return
 	 */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
+	@CacheEvict(value="dictCache", allEntries=true)
 	public Result<SysDictItem> add(@RequestBody SysDictItem sysDictItem) {
 		Result<SysDictItem> result = new Result<SysDictItem>();
 		try {
@@ -105,6 +89,7 @@ public class SysDictItemController {
 	 * @return
 	 */
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
+	@CacheEvict(value="dictCache", allEntries=true)
 	public Result<SysDictItem> edit(@RequestBody SysDictItem sysDictItem) {
 		Result<SysDictItem> result = new Result<SysDictItem>();
 		SysDictItem sysdict = sysDictItemService.getById(sysDictItem.getId());
@@ -127,6 +112,7 @@ public class SysDictItemController {
 	 * @return
 	 */
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+	@CacheEvict(value="dictCache", allEntries=true)
 	public Result<SysDictItem> delete(@RequestParam(name="id",required=true) String id) {
 		Result<SysDictItem> result = new Result<SysDictItem>();
 		SysDictItem joinSystem = sysDictItemService.getById(id);
@@ -147,6 +133,7 @@ public class SysDictItemController {
 	 * @return
 	 */
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
+	@CacheEvict(value="dictCache", allEntries=true)
 	public Result<SysDictItem> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<SysDictItem> result = new Result<SysDictItem>();
 		if(ids==null || "".equals(ids.trim())) {

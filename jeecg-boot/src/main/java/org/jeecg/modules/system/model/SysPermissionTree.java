@@ -16,6 +16,7 @@ public class SysPermissionTree implements Serializable {
 	private String id;
 
 	private String key;
+	private String title;
 
 	/**
 	 * 父id
@@ -65,7 +66,12 @@ public class SysPermissionTree implements Serializable {
 	/**
 	 * 是否叶子节点: 1:是 0:不是
 	 */
-	private Integer isLeaf;
+	private boolean isLeaf;
+	
+	/**
+	 * 是否路由菜单: 0:不是  1:是（默认值1）
+	 */
+	private boolean route;
 
 	/**
 	 * 描述
@@ -116,7 +122,7 @@ public class SysPermissionTree implements Serializable {
 		this.delFlag = permission.getDelFlag();
 		this.description = permission.getDescription();
 		this.icon = permission.getIcon();
-		this.isLeaf = permission.getIsLeaf();
+		this.isLeaf = permission.isLeaf();
 		this.menuType = permission.getMenuType();
 		this.name = permission.getName();
 		this.parentId = permission.getParentId();
@@ -126,10 +132,20 @@ public class SysPermissionTree implements Serializable {
 		this.redirect = permission.getRedirect();
 		this.url = permission.getUrl();
 		this.hidden = permission.isHidden();
+		this.route = permission.isRoute();
 		this.alwaysShow= permission.isAlwaysShow();
-		if (permission.getIsLeaf() == 0) {
+		this.title=permission.getName();
+		if (!permission.isLeaf()) {
 			this.children = new ArrayList<SysPermissionTree>();
 		}
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	private List<SysPermissionTree> children;
@@ -237,6 +253,14 @@ public class SysPermissionTree implements Serializable {
 		this.description = description;
 	}
 
+	public boolean isRoute() {
+		return route;
+	}
+
+	public void setRoute(boolean route) {
+		this.route = route;
+	}
+
 	public Integer getDelFlag() {
 		return delFlag;
 	}
@@ -293,11 +317,11 @@ public class SysPermissionTree implements Serializable {
 		this.perms = perms;
 	}
 
-	public Integer getIsLeaf() {
+	public boolean getIsLeaf() {
 		return isLeaf;
 	}
 
-	public void setIsLeaf(Integer isLeaf) {
+	public void setIsLeaf(boolean isLeaf) {
 		this.isLeaf = isLeaf;
 	}
 

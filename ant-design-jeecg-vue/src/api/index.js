@@ -1,6 +1,6 @@
 const api = {
     Login: '/sys/login',
-    Logout: '/auth/logout',
+    Logout: '/sys/logout',
     ForgePassword: '/auth/forge-password',
     Register: '/auth/register',
     SendSms: '/account/sms',

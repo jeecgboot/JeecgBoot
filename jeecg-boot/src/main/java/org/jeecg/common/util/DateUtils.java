@@ -222,7 +222,7 @@ public class DateUtils extends PropertyEditorSupport {
 	 * @return 系统当前的时间戳
 	 */
 	public static Timestamp getTimestamp() {
-		return new Timestamp(new Date().getTime());
+		return new Timestamp(System.currentTimeMillis());
 	}
 
 	/**
@@ -274,7 +274,7 @@ public class DateUtils extends PropertyEditorSupport {
 	 * @return 系统时间的毫秒数
 	 */
 	public static long getMillis() {
-		return new Date().getTime();
+		return System.currentTimeMillis();
 	}
 
 	/**
@@ -591,6 +591,7 @@ public class DateUtils extends PropertyEditorSupport {
 	 * String类型 转换为Date, 如果参数长度为10 转换格式”yyyy-MM-dd“ 如果参数长度为19 转换格式”yyyy-MM-dd
 	 * HH:mm:ss“ * @param text String类型的时间值
 	 */
+	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.hasText(text)) {
 			try {

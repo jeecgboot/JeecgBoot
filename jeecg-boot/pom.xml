@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jeecgframework.boot</groupId>
 	<artifactId>jeecg-boot</artifactId>
-	<version>1.0.1</version>
+	<version>1.1.0</version>
 
 	<parent>
 	    <groupId>org.springframework.boot</groupId>
@@ -39,6 +39,7 @@
         <mybatis-plus.version>3.0.6</mybatis-plus.version>
         <druid.version>1.1.10</druid.version>
         <jwt.version>0.9.1</jwt.version>
+        <commons.version>2.6</commons.version>
     </properties>
     
 	<dependencies>
@@ -46,6 +47,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+    		<groupId>org.springframework.boot</groupId>
+    		<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 		<dependency>
 	        <groupId>org.springframework.boot</groupId>
@@ -56,32 +61,48 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
-	    
-		<!-- Lombok get set 构造方法 toString logger 自动生成工具-->
-        <!--注意：需要IDE也安装对应插件，可直接在plugins里面搜，不安装，语法报错但不影响编译和运行-->
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-		</dependency>
-		<dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+	    <!-- <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
+		</dependency> -->
+		
+		<!-- commons -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commons.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>${commons.version}</version>
+		</dependency>
+		
+		<!-- freemarker -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-freemarker</artifactId>
 		</dependency>
-
+		
+		<!-- Lombok -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+		
 		<!-- mybatis-plus -->
 		 <dependency>
 	        <groupId>com.baomidou</groupId>
 	        <artifactId>mybatis-plus-boot-starter</artifactId>
 	        <version>${mybatis-plus.version}</version>
 	    </dependency>
-		<!-- mybatis-plus -->
 		
-		<!-- druid阿里巴巴数据库连接池 -->
+		<!-- druid -->
        <dependency>
 		   <groupId>com.alibaba</groupId>
 		   <artifactId>druid-spring-boot-starter</artifactId>
@@ -140,7 +161,8 @@
 		    <artifactId>springfox-swagger-ui</artifactId>
 		    <version>2.9.2</version>
 		</dependency>
-		<!-- redis -->
+		
+		<!-- Redis -->
 		<dependency>
 			 <groupId>org.springframework.boot</groupId>
 			  <artifactId>spring-boot-starter-data-redis</artifactId>
@@ -149,13 +171,34 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
         </dependency>
-		<!-- jeecg-boot 代码生成器 -->
+        
+		<!-- 代码生成器 -->
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>codegenerate</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.2</version>
 		</dependency>
-	
+		
+        <!-- AutoPoi Excel工具类-->
+		<dependency>
+			<groupId>org.jeecgframework</groupId>
+			<artifactId>autopoi-web</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		  
+		<!-- Hibernate -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>4.1.0.Final</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-collections</groupId>
+					<artifactId>commons-collections</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		  
 	</dependencies>
 
 	<build>
@@ -174,6 +217,14 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+            <!-- 打包跳过测试 -->
+            <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-surefire-plugin</artifactId>
+		        <configuration>
+		          <skipTests>true</skipTests>
+		        </configuration>
+	        </plugin>
 		</plugins>
 		<resources>
 			<resource>
@@ -185,6 +236,7 @@
 				<includes>
 					<include>**/*.xml</include>
 					<include>**/*.json</include>
+					<include>**/*.ftl</include>
 				</includes>
 			</resource>
 		</resources>

@@ -20,7 +20,6 @@
       },
       value:{
         type: String,
-        default: '',
         required: false
       },
       dateFormat:{
@@ -71,4 +70,5 @@
       }
     }
   }
+  //note: do not set the prop value one default property
 </script>

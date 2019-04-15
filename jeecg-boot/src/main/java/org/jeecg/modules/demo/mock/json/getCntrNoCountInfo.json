@@ -1,0 +1,27 @@
+{
+	"success": true,
+	"message": "查询成功",
+	"code": null,
+	"result": [{
+		"resultIndex": 0,
+		"yearcount": null,
+		"year": 0,
+		"month": null,
+		"monthcount": null,
+		"classifyname": "证明类",
+		"cntrnocount": 4,
+		"cabinetname": null,
+		"cabinetcocunt": 0
+	}, {
+		"resultIndex": 0,
+		"yearcount": null,
+		"year": 0,
+		"month": null,
+		"monthcount": null,
+		"classifyname": "产权类",
+		"cntrnocount": 9,
+		"cabinetname": null,
+		"cabinetcocunt": 0
+	}],
+	"timestamp": 1554285003594
+}

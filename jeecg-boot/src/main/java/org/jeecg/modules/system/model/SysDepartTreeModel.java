@@ -28,8 +28,9 @@ public class SysDepartTreeModel implements Serializable{
 
     /** 对应depart_name字段,前端数据树中的title*/
     private String title;
-    
 
+
+    private boolean isLeaf;
     // 以下所有字段均与SysDepart相同
     
     private String id;
@@ -101,8 +102,15 @@ public class SysDepartTreeModel implements Serializable{
         this.updateBy = sysDepart.getUpdateBy();
         this.updateTime = sysDepart.getUpdateTime();
     }
-    
-    
+
+    public boolean getIsLeaf() {
+        return isLeaf;
+    }
+
+    public void setIsLeaf(boolean isleaf) {
+         this.isLeaf = isleaf;
+    }
+
     public String getKey() {
 		return key;
 	}
@@ -146,6 +154,9 @@ public class SysDepartTreeModel implements Serializable{
     }
 
     public void setChildren(List<SysDepartTreeModel> children) {
+        if (children==null){
+            this.isLeaf=true;
+        }
         this.children = children;
     }
 
@@ -304,8 +315,12 @@ public class SysDepartTreeModel implements Serializable{
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+			return true;
+		}
+        if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
         SysDepartTreeModel model = (SysDepartTreeModel) o;
         return Objects.equals(id, model.id) &&
                 Objects.equals(parentId, model.parentId) &&

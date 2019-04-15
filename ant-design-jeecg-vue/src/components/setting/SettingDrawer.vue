@@ -134,6 +134,12 @@
                   <div slot="title">色弱模式</div>
                 </a-list-item-meta>
               </a-list-item>
+              <a-list-item>
+                <a-switch slot="actions" size="small" :defaultChecked="multipage" @change="onMultipageWeak" />
+                <a-list-item-meta>
+                  <div slot="title">多页签模式</div>
+                </a-list-item-meta>
+              </a-list-item>
             </a-list>
           </div>
         </div>
@@ -161,6 +167,7 @@
   import config from '@/defaultSettings'
   import { updateTheme, updateColorWeak, colorList } from '@/components/tools/setting'
   import { mixin, mixinDevice } from '@/utils/mixin.js'
+  import { triggerWindowResizeEvent } from '@/utils/util'
 
   export default {
     components: {
@@ -189,6 +196,9 @@
       if (this.colorWeak !== config.colorWeak) {
         updateColorWeak(this.colorWeak)
       }
+      if (this.multipage !== config.multipage) {
+        this.$store.dispatch('ToggleMultipage', this.multipage)
+      }
     },
     methods: {
       showDrawer() {
@@ -204,14 +214,18 @@
         this.$store.dispatch('ToggleWeak', checked)
         updateColorWeak(checked)
       },
+      onMultipageWeak (checked) {
+        this.$store.dispatch('ToggleMultipage', checked)
+      },
       handleMenuTheme (theme) {
         this.$store.dispatch('ToggleTheme', theme)
       },
       handleLayout (mode) {
         this.$store.dispatch('ToggleLayoutMode', mode)
         // 因为顶部菜单不能固定左侧菜单栏，所以强制关闭
-        //
-        this.handleFixSiderbar(false);
+        this.handleFixSiderbar(false)
+        // 触发窗口resize事件
+        triggerWindowResizeEvent()
       },
       handleContentWidthChange (type) {
         this.$store.dispatch('ToggleContentWidth', type)

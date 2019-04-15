@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.UUID;
 
 import org.jeecg.common.util.YouBianCodeUtil;
-import org.jeecg.modules.system.controller.FindsDepartsChildrenUtil;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.mapper.SysDepartMapper;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
+import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -187,6 +187,35 @@ public class SysDepartServiceImpl<T> extends ServiceImpl<SysDepartMapper, SysDep
 			return newList;
 		}
 		return null;
+	}
+
+	/**
+	 * 根据部门id删除并且删除其可能存在的子级任何部门
+	 */
+	@Override
+	public boolean delete(String id) {
+		List<String> idList = new ArrayList<>();
+		idList.add(id);
+		this.checkChildrenExists(id, idList);
+		boolean ok = this.removeByIds(idList);
+		return ok;
+	}
+	
+	/**
+	 * delete 方法调用
+	 * @param id
+	 * @param idList
+	 */
+	private void checkChildrenExists(String id, List<String> idList) {	
+		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
+		query.eq(SysDepart::getParentId,id);
+		List<SysDepart> departList = this.list(query);
+		if(departList != null && departList.size() > 0) {
+			for(SysDepart depart : departList) {
+				idList.add(depart.getId());
+				this.checkChildrenExists(depart.getId(), idList);
+			}
+		}
 	}
 	
 

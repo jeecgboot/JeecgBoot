@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysPermissionDataRuleMapper">
+
+	<!--  查询权限 TODO 这里是不是可以不关联查找 sys_role 表 -->
+	<select id="queryDataRuleIds" resultType="java.lang.String">
+		select data_rule_ids 
+			from sys_role_permission a 
+			join sys_permission b on a.permission_id = b.id
+			join sys_role c on a.role_id = c.id
+			join sys_user_role d on d.role_id = c.id
+			join sys_user e on d.user_id = e.id
+			where e.username = #{username} and b.id =  #{permissionId}
+	</select>
+
+</mapper>
