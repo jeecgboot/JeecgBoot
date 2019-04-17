@@ -2392,3 +2392,4 @@ INSERT INTO `sys_user_role` VALUES ('6ec01b4aaab790eac4ddb33d7a524a58', 'e9ca23d
 INSERT INTO `sys_user_role` VALUES ('d2233e5be091d39da5abb0073c766224', 'f0019fdebedb443c98dcb17d88222c38', 'ee8626f80f7c2619917b6236f3a7f02b');
 
 UPDATE `sys_permission` SET `component`='/jeecg/PrintDemo' WHERE (`id`='e6bfd1fcabfd7942fdd05f076d1dad38');
+delete from sys_permission where id = '700b7f95165c46cc7a78bf227aa8fed3'
