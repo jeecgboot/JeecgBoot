@@ -109,7 +109,6 @@ public class SysPermissionController {
 	
 	
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	
 	public Result<SysPermission> add(@RequestBody SysPermission permission) {
 		Result<SysPermission> result = new Result<SysPermission>();
 		try {
@@ -125,7 +124,6 @@ public class SysPermissionController {
 	}
 	
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
-	
 	public Result<SysPermission> edit(@RequestBody SysPermission permission) {
 		Result<SysPermission> result = new Result<>();
 		try {
@@ -141,7 +139,6 @@ public class SysPermissionController {
 	}
 	
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-	
 	public Result<SysPermission> delete(@RequestParam(name="id",required=true) String id) {
 		Result<SysPermission> result = new Result<>();
 		try {
@@ -157,7 +154,6 @@ public class SysPermissionController {
 	
 	
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
-	
 	public Result<SysPermission> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<SysPermission> result = new Result<>();
 		try {
@@ -251,7 +247,6 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequestMapping(value = "/saveRolePermission", method = RequestMethod.POST)
-	
 	public Result<String> saveRolePermission(@RequestBody JSONObject json) {
 		Result<String> result = new Result<>();
 		try {
