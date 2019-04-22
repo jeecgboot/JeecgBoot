@@ -91,7 +91,6 @@ public class SysUserController {
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	
 	public Result<SysUser> add(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
 		String selectedRoles = jsonObject.getString("selectedroles");
@@ -115,7 +114,6 @@ public class SysUserController {
 	}
 
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
-	
 	public Result<SysUser> edit(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
 		try {
@@ -140,7 +138,6 @@ public class SysUserController {
 	}
 
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-	
 	public Result<SysUser> delete(@RequestParam(name="id",required=true) String id) {
 		Result<SysUser> result = new Result<SysUser>();
 		// 定义SysUserDepart实体类的数据库查询LambdaQueryWrapper
@@ -162,7 +159,6 @@ public class SysUserController {
 	}
 
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
-	
 	public Result<SysUser> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		// 定义SysUserDepart实体类的数据库查询对象LambdaQueryWrapper
 		LambdaQueryWrapper<SysUserDepart> query = new LambdaQueryWrapper<SysUserDepart>();
@@ -292,7 +288,6 @@ public class SysUserController {
      * 修改密码
      */
     @RequestMapping(value = "/changPassword", method = RequestMethod.PUT)
-    
     public Result<SysUser> changPassword(@RequestBody SysUser sysUser) {
         Result<SysUser> result = new Result<SysUser>();
         String password = sysUser.getPassword();
