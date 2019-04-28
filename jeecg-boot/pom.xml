@@ -173,6 +173,7 @@
         </dependency>
         
 		<!-- 代码生成器 -->
+		<!-- 如果下载失败，看这个链接http://jeecg-boot.mydoc.io/?t=344850 -->
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>codegenerate</artifactId>
