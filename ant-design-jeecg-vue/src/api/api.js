@@ -1,7 +1,7 @@
 import { getAction,deleteAction,putAction,postAction} from '@/api/manage'
 
 ////根路径
-// const doMian = "/jeecg-boot/";
+// const doMain = "/jeecg-boot/";
 ////图片预览请求地址
 // const imgView = "http://localhost:8080/jeecg-boot/sys/common/view/";
 
@@ -89,7 +89,7 @@ const duplicateCheck = (params)=>getAction("/sys/duplicate/check",params);
 
 export {
   // imgView,
-  // doMian,
+  // doMain,
   addRole,
   editRole,
   checkRoleCode,

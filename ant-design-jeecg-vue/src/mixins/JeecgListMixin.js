@@ -200,7 +200,7 @@ export const JeecgListMixin = {
     /* 导出 */
     handleExportXls(){
       let paramsStr = encodeURI(JSON.stringify(this.getQueryParams()));
-      let url = `${window._CONFIG['domianURL']}/${this.url.exportXlsUrl}?paramsStr=${paramsStr}`;
+      let url = `${window._CONFIG['domainURL']}/${this.url.exportXlsUrl}?paramsStr=${paramsStr}`;
       window.location.href = url;
     },
     /* 导入 */

@@ -104,7 +104,7 @@
     data () {
       return {
         description: '订单管理页面',
-        importExcelUrl:`${window._CONFIG['domianURL']}/test/jeecgOrderMain/importExcel`,
+        importExcelUrl:`${window._CONFIG['domainURL']}/test/jeecgOrderMain/importExcel`,
         // 表头
         columns: [
           {
@@ -170,7 +170,7 @@
       exportXls(){
         let paramsStr = encodeURI(JSON.stringify(this.getQueryParams()));
         console.log('paramsStr: ' + paramsStr)
-        let url = `${window._CONFIG['domianURL']}/test/jeecgOrderMain/exportXls?paramsStr=${paramsStr}`;
+        let url = `${window._CONFIG['domainURL']}/test/jeecgOrderMain/exportXls?paramsStr=${paramsStr}`;
         window.location.href = url;
       },
       handleImportExcel(info){
