@@ -1,7 +1,7 @@
 <template>
   <a-drawer
     title="数据规则/按钮权限配置"
-    width=365
+    width="365"
     :closable="false"
     @close="onClose"
     :visible="visible"
@@ -75,8 +75,7 @@
       },
       saveDataruleForRole(){
         if(!this.dataruleChecked || this.dataruleChecked.length==0){
-          this.$message.warning("请现勾选数据权限然后保存!")
-          return false;
+          this.$message.warning("请注意，现未勾选任何数据权限!")
         }
         let params = {
           permissionId:this.functionId,

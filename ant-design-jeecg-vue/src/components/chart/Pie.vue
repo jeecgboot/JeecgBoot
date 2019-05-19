@@ -11,20 +11,6 @@
 <script>
   const DataSet = require('@antv/data-set')
 
-  const sourceData = [
-    { item: '事例一', percent: 40 },
-    { item: '事例二', percent: 21 },
-    { item: '事例三', percent: 17 },
-    { item: '事例四', percent: 13 },
-    { item: '事例五', percent: 9 }
-  ]
-
-  const scale = [{
-    dataKey: 'percent',
-    min: 0,
-    formatter: '.0%'
-  }]
-
   export default {
     props: {
       title: {
@@ -37,37 +23,22 @@
       },
       dataSource: {
         type: Array,
-        default: () => []
-      }
-    },
-    created() {
-      this.change()
-    },
-    watch: {
-      'dataSource': function() {
-        this.change()
-      }
-    },
-    methods: {
-      change() {
-        if (this.dataSource.length === 0) {
-          this.data = sourceData
-        } else {
-          const dv = new DataSet.View().source(this.dataSource)
-          dv.transform({
-            type: 'percent',
-            field: 'count',
-            dimension: 'item',
-            as: 'percent'
-          })
-          this.data = dv.rows
-        }
+        default: () => [
+          { item: '示例一', count: 40 },
+          { item: '示例二', count: 21 },
+          { item: '示例三', count: 17 },
+          { item: '示例四', count: 13 },
+          { item: '示例五', count: 9 }
+        ]
       }
     },
     data() {
       return {
-        data: '',
-        scale,
+        scale: [{
+          dataKey: 'percent',
+          min: 0,
+          formatter: '.0%'
+        }],
         pieStyle: {
           stroke: '#fff',
           lineWidth: 1
@@ -77,6 +48,19 @@
             return item.point.item + ': ' + val
           }
         }]
+      }
+    },
+    computed: {
+      data() {
+        let dv = new DataSet.View().source(this.dataSource)
+        // 计算数据百分比
+        dv.transform({
+          type: 'percent',
+          field: 'count',
+          dimension: 'item',
+          as: 'percent'
+        })
+        return dv.rows
       }
     }
   }

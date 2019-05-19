@@ -61,8 +61,8 @@
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-button type="primary" icon="plus" @click="jump">创建单据</a-button>
       <a-button type="primary" icon="plus" @click="onetomany">一对多</a-button>
-      <a-button type="primary" icon="download" @click="exportXls">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :action="importExcelUrl" @change="handleImportExcel">
+      <a-button type="primary" icon="download" @click="handleExportXls('demo')">导出</a-button>
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
       <a-dropdown v-if="selectedRowKeys.length > 0">
@@ -231,28 +231,12 @@
           list: "/test/jeecgDemo/list",
           delete: "/test/jeecgDemo/delete",
           deleteBatch: "/test/jeecgDemo/deleteBatch",
+          exportXlsUrl: "/test/jeecgDemo/exportXls"
         },
         fieldList:superQueryFieldList
       }
     },
     methods: {
-      exportXls(){
-        let paramsStr = encodeURI(JSON.stringify(this.getQueryParams()));
-        console.log('paramsStr: ' + paramsStr)
-        let url = `${window._CONFIG['domianURL']}/test/jeecgDemo/exportXls?paramsStr=${paramsStr}`;
-        window.location.href = url;
-      },
-      handleImportExcel(info){
-        if (info.file.status !== 'uploading') {
-          console.log(info.file, info.fileList);
-        }
-        if (info.file.status === 'done') {
-          this.$message.success(`${info.file.name} 文件上传成功`);
-          this.loadData();
-        } else if (info.file.status === 'error') {
-          this.$message.error(`${info.file.name} 文件上传失败.`);
-        }
-      },
       initDictConfig() {
         console.log("--我才是真的方法!--")
         //初始化字典 - 性别

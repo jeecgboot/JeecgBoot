@@ -9,10 +9,10 @@
     <!-- 抽屉内容的border -->
     <div
       :style="{
-          padding:'10px',
-          border: '1px solid #e9e9e9',
-          background: '#fff',
-        }">
+        padding:'10px',
+        border: '1px solid #e9e9e9',
+        background: '#fff',
+      }">
       <div class="table-page-search-wrapper">
         <a-form>
           <a-row :gutter="12">
@@ -27,10 +27,10 @@
               </a-form-item>
             </a-col>
             <a-col :md="7" :sm="8">
-            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-            </span>
+              <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+                <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+                <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              </span>
             </a-col>
           </a-row>
           <a-row>
@@ -46,14 +46,15 @@
           size="middle"
           :columns="columns"
           :dataSource="dataSource"
-          :loading="loading">
+          :loading="loading"
+          :rowClassName="getRowClassname">
           <span slot="action" slot-scope="text, record">
             <a @click="handleEdit(record)">
               <a-icon type="edit"/>编辑
             </a>
             <a-divider type="vertical"/>
             <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
+              <a>删除</a>
             </a-popconfirm>
           </span>
         </a-table>
@@ -167,10 +168,18 @@
           this.drawerWidth = 650
         }
       },
+      getRowClassname(record){
+        if(record.status!=1){
+          return "data-rule-invalid"
+        }
+      }
     }
   }
 </script>
 
-<style scoped>
-
+<style>
+  .data-rule-invalid{
+    background: #f4f4f4;
+    color: #bababa;
+  }
 </style>

@@ -136,8 +136,8 @@ function  generateChildRouters (data) {
     //--update-begin----author:scott---date:20190320------for:根据后台菜单配置，判断是否路由菜单字段，动态选择是否生成路由（为了支持参数URL菜单）------
     //判断是否生成路由
     if(item.route && item.route === '0'){
-      console.log(' 不生成路由 item.route：  '+item.route);
-      console.log(' 不生成路由 item.path：  '+item.path);
+      //console.log(' 不生成路由 item.route：  '+item.route);
+      //console.log(' 不生成路由 item.path：  '+item.path);
     }else{
       routers.push(menu);
     }
@@ -157,12 +157,30 @@ export function cloneObject(obj) {
 
 /**
  * 随机生成数字
- * @param min 最小值
- * @param max 最大值
+ *
+ * 示例：生成长度为 12 的随机数：randomNumber(12)
+ * 示例：生成 3~23 之间的随机数：randomNumber(3, 23)
+ *
+ * @param1 最小值 | 长度
+ * @param2 最大值
  * @return int 生成后的数字
  */
-export function randomNumber(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min)
+export function randomNumber() {
+  // 生成 最小值 到 最大值 区间的随机数
+  const random = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+  }
+  if (arguments.length === 1) {
+    let [length] = arguments
+  // 生成指定长度的随机数字，首位一定不是 0
+    let nums = [...Array(length).keys()].map((i) => (i > 0 ? random(0, 9) : random(1, 9)))
+    return parseInt(nums.join(''))
+  } else if (arguments.length >= 2) {
+    let [min, max] = arguments
+    return random(min, max)
+  } else {
+    return Number.NaN
+  }
 }
 
 /**
@@ -192,35 +210,12 @@ export function randomUUID() {
 }
 
 /**
- * 【顶部导航栏模式】
- *  @date 2019-04-08
- *  顶部导航栏滚动条位置滚动到选中的菜单处
- * @param doc document 对象
+ * 下划线转驼峰
+ * @param string
+ * @returns {*}
  */
-export function topNavScrollToSelectItem(doc) {
-  let scrollWidth = doc.getElementById('top-nav-scroll-width')
-  if (scrollWidth == null) return
-  let menu = scrollWidth.getElementsByClassName('ant-menu')[0]
-  if (menu) {
-    let menuItems = menu.getElementsByTagName('li')
-    for (let item of menuItems) {
-      let index1 = item.className.indexOf('ant-menu-item-selected') !== -1
-      let index2 = item.className.indexOf('ant-menu-submenu-selected') !== -1
-      if (index1 || index2) {
-        // scrollLeft = 选中项left - 选中项width - (第一个隐藏的div的宽度)
-        let scrollLeft = (item.offsetLeft - item.offsetWidth - (index1 ? 100 : 60))
-        let scrollView = doc.getElementById('top-nav-scroll-view')
-        // scrollTo() 方法存在兼容性问题
-        if (typeof scrollView.scrollTo === 'function') {
-          scrollView.scrollTo({
-            left: scrollLeft,
-            behavior: 'smooth'
-          })
-        } else {
-          scrollView.scrollLeft = scrollLeft
-        }
-        break
-      }
-    }
-  }
+export function underLine2CamelCase(string){
+  return string.replace( /_([a-z])/g, function( all, letter ) {
+    return letter.toUpperCase();
+  });
 }

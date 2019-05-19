@@ -22,17 +22,15 @@
             </span>
           </a-col>
         </a-row>
-        <a-row>
-          <a-col :md="24" :sm="24">
-            <a-button style="margin-bottom: 20px" @click="handleAdd" type="primary" icon="plus">添加</a-button>
-            <a-button type="primary" icon="download" @click="handleExportXls">导出</a-button>
-            <a-upload name="file" :showUploadList="false" :multiple="false" :action="importExcelUrl"
-                      @change="handleImportExcel">
-              <a-button type="primary" icon="import">导入</a-button>
-            </a-upload>
-          </a-col>
-        </a-row>
       </a-form>
+
+      <div class="table-operator" style="border-top: 5px">
+        <a-button @click="handleAdd" type="primary" icon="plus">添加</a-button>
+        <a-button type="primary" icon="download" @click="handleExportXls('字典信息')">导出</a-button>
+        <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
+          <a-button type="primary" icon="import">导入</a-button>
+        </a-upload>
+      </div>
 
       <a-table
         ref="table"
@@ -43,16 +41,18 @@
         :pagination="ipagination"
         :loading="loading"
         @change="handleTableChange">
-          <span slot="action" slot-scope="text, record">
-            <a @click="handleEdit(record)">
-              <a-icon type="edit"/>
-              编辑
-            </a>
-            <a-divider type="vertical"/>
-            <a @click="editDictItem(record)"><a-icon type="setting"/> 字典配置</a>
-            <a-divider type="vertical"/>
-            <a @click="handleDelete(record.id)">删除</a>
-          </span>
+        <span slot="action" slot-scope="text, record">
+          <a @click="handleEdit(record)">
+            <a-icon type="edit"/>
+            编辑
+          </a>
+          <a-divider type="vertical"/>
+          <a @click="editDictItem(record)"><a-icon type="setting"/> 字典配置</a>
+          <a-divider type="vertical"/>
+          <a-popconfirm title="确定删除吗?" @confirm="() =>handleDelete(record.id)">
+            <a>删除</a>
+          </a-popconfirm>
+        </span>
       </a-table>
 
     </div>
@@ -66,7 +66,6 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import DictModal from './modules/DictModal'
   import DictItemList from './DictItemList'
-  import {delDict} from '@/api/api'
 
   export default {
     name: "DictList",
@@ -145,25 +144,6 @@
         param.pageSize = this.ipagination.pageSize;
         return filterObj(param);
       },
-      //删除字典类型
-      handleDel(record) {
-        let that = this;
-        that.$confirm({
-          title: "确认删除",
-          content: "您确定要删除 " + record.dictName + " 字典类型?",
-          onOk: function () {
-            delDict({id: record.id}).then((res) => {
-              if (res.success) {
-                that.$message.success(res.message);
-                that.loadData();
-                that.cancelDict();
-              } else {
-                that.$message.warning(res.message);
-              }
-            });
-          },
-        });
-      },
       //取消选择
       cancelDict() {
         this.dict = "";
@@ -189,18 +169,6 @@
     },
   }
 </script>
-
 <style scoped>
-  /** Button按钮间距 */
-  .ant-btn {
-    margin-left: 3px
-  }
-
-  .table-operator {
-    margin-bottom: 10px
-  }
-
-  .ant-tree li span.ant-tree-switcher, .ant-tree li span.ant-tree-iconEle {
-    width: 0px
-  }
+  @import '~@assets/less/common.less'
 </style>

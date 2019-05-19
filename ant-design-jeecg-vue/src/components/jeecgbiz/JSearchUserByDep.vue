@@ -29,7 +29,7 @@
           用户账号:
           <a-input-search
             :style="{width:'150px',marginBottom:'15px'}"
-            placeholder="请输入用户名搜索"
+            placeholder="请输入用户账号"
             v-model="queryParam.username"
             @search="onSearch"
           ></a-input-search>
@@ -194,13 +194,13 @@
       },
       searchReset(num) {
         let that = this;
+        if(num !== 0){
+          that.queryParam = {};
+          that.loadData(1);
+        }
         that.selectedRowKeys = [];
         that.userNameArr = [];
-        that.queryParam = {};
         that.selectedKeys = [];
-        if(num !== 0){
-          that.loadData();
-        }
       },
       close() {
         this.searchReset(0);

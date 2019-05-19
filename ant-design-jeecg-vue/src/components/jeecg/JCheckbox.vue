@@ -15,6 +15,7 @@
         required: false,
         default: false
       },
+      /*label value*/
       options:{
         type: Array,
         required: true

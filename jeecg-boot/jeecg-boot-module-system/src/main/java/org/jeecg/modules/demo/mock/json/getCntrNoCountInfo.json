@@ -1,0 +1,63 @@
+{
+	"success": true,
+	"message": "查询成功",
+	"code": null,
+	"result": [
+		{
+			"resultIndex": 0,
+			"yearcount": 623,
+			"year": 2016,
+			"month": "四月",
+			"monthcount": 3255,
+			"classifyname": "证明类",
+			"cntrnocount": 24,
+			"cabinetname": "一号柜",
+			"cabinetcocunt": 12
+		},
+		{
+			"resultIndex": 1,
+			"yearcount": 243,
+			"year": 2017,
+			"month": "五月",
+			"monthcount": 5673,
+			"classifyname": "产权类",
+			"cntrnocount": 52,
+			"cabinetname": "二号柜",
+			"cabinetcocunt": 52
+		},
+		{
+			"resultIndex": 2,
+			"yearcount": 345,
+			"year": 2018,
+			"month": "六月",
+			"monthcount": 2673,
+			"classifyname": "知识类",
+			"cntrnocount": 85,
+			"cabinetname": "三号柜",
+			"cabinetcocunt": 24
+		},
+		{
+			"resultIndex": 3,
+			"yearcount": 452,
+			"year": 2019,
+			"month": "七月",
+			"monthcount": 2341,
+			"classifyname": "技术类",
+			"cntrnocount": 67,
+			"cabinetname": "四号柜",
+			"cabinetcocunt": 45
+		},
+		{
+			"resultIndex": 4,
+			"yearcount": 645,
+			"year": 2020,
+			"month": "八月",
+			"monthcount": 7473,
+			"classifyname": "工具类",
+			"cntrnocount": 93,
+			"cabinetname": "五号柜",
+			"cabinetcocunt": 94
+		}
+	],
+	"timestamp": 1554285003594
+}

@@ -6,13 +6,13 @@
       <a-form layout="inline">
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
-            <a-form-item label="推送标题">
-              <a-input placeholder="请输入推送标题" v-model="queryParam.esTitle"></a-input>
+            <a-form-item label="消息标题">
+              <a-input placeholder="请输入消息标题" v-model="queryParam.esTitle"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="推送内容">
-              <a-input placeholder="请输入推送内容" v-model="queryParam.esContent"></a-input>
+            <a-form-item label="发送内容">
+              <a-input placeholder="请输入发送内容" v-model="queryParam.esContent"></a-input>
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
@@ -40,8 +40,8 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" v-show="show" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" v-show="show" icon="download" @click="handleExportXls">导出</a-button>
-      <a-upload v-show="show" name="file" :showUploadList="false" :multiple="false" :action="importExcelUrl"
+      <a-button type="primary" v-show="show" icon="download" @click="handleExportXls('消息')">导出</a-button>
+      <a-upload v-show="show" name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl"
                 @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
@@ -84,14 +84,13 @@
         </span>
 
         <span slot="action" slot-scope="text, record">
-          <a v-show="show" @click="handleEdit(record)">编辑</a>
-
+          <a href="javascript:;" @click="handleDetail(record)">详情</a>
           <a-divider type="vertical"/>
           <a-dropdown>
             <a class="ant-dropdown-link">更多<a-icon type="down"/></a>
             <a-menu slot="overlay">
-               <a-menu-item>
-                <a href="javascript:;" @click="handleDetail(record)">详情</a>
+               <a-menu-item v-show="show">
+                <a  @click="handleEdit(record)">编辑</a>
               </a-menu-item>
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
@@ -163,19 +162,8 @@
           },
           {
             title: '发送状态',
-            align: "center",
-            dataIndex: 'esSendStatus',
-            customRender: function (text) {
-              if(text=='0') {
-                return "未发送";
-              }
-              if(text=='1') {
-                return "发送成功";
-              }
-              if(text=='2') {
-                return "发送失败";
-              }
-            }
+            align: 'center',
+            dataIndex: 'esSendStatus_dictText'
           },
           {
             title: '发送时间',
@@ -184,19 +172,8 @@
           },
           {
             title: '发送方式',
-            align: "center",
-            dataIndex: 'esType',
-            customRender: function (text) {
-              if(text=='1') {
-                return "短信";
-              }
-              if(text=='2') {
-                return "邮件";
-              }
-              if(text=='3') {
-                return "微信";
-              }
-            }
+            align: 'center',
+            dataIndex: 'esType_dictText'
           },
           {
             title: '操作',

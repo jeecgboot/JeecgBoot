@@ -17,7 +17,8 @@
           label="模板CODE">
           <a-input
             :disabled="disable"
-            v-decorator="['templateCode', {} ]"
+            placeholder="请输入模板编码"
+            v-decorator="['templateCode', validatorRules.templateCode ]"
           />
         </a-form-item>
         <a-form-item
@@ -29,23 +30,31 @@
             v-decorator="['templateName', validatorRules.templateName]"
           />
         </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="模板内容">
-          <a-textarea
-            placeholder="请输入模板内容"
-            v-decorator="['templateContent', validatorRules.templateContent ]"
-            :autosize="{ minRows: 8, maxRows: 8 }"
-          />
-        </a-form-item>
+
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="模板类型">
-          <j-dict-select-tag :triggerChange="true" dictCode="msgType" v-decorator="['templateType', validatorRules.templateType ]" placeholder="请选择模板类型">
+          <j-dict-select-tag @change="handleChangeTemplateType" :triggerChange="true" dictCode="msgType" v-decorator="['templateType', validatorRules.templateType ]" placeholder="请选择模板类型">
           </j-dict-select-tag>
         </a-form-item>
+
+        <a-form-item
+          v-show="!useEditor"
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="模板内容">
+          <a-textarea placeholder="请输入模板内容" v-decorator="['templateContent', validatorRules.templateContent ]" :autosize="{ minRows: 8, maxRows: 8 }" />
+        </a-form-item>
+
+        <a-form-item
+          v-show="useEditor"
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="模板内容">
+          <j-editor v-model="templateEditorContent"></j-editor>
+        </a-form-item>
+
       </a-form>
     </a-spin>
   </a-modal>
@@ -54,9 +63,14 @@
 <script>
   import {httpAction} from '@/api/manage'
   import pick from 'lodash.pick'
+  import { duplicateCheck } from '@/api/api'
+  import JEditor from '@/components/jeecg/JEditor'
 
   export default {
     name: "SysMessageTemplateModal",
+    components:{
+      JEditor
+    },
     data() {
       return {
         title: "操作",
@@ -74,14 +88,17 @@
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules: {
-          templateName: {rules: [{required: true, message: '请输入模板标题!'}]},
-          templateContent: {rules: [{required: true, message: '请输入模板内容!'}]},
-          templateType: {rules: [{required: true, message: '请输入模板类型!'}]},
+        templateCode: {rules: [{required: true, message: '请输入模板CODE!' },{validator: this.validateTemplateCode}]},
+        templateName: {rules: [{required: true, message: '请输入模板标题!'}]},
+        templateContent: {rules: []},
+        templateType: {rules: [{required: true, message: '请输入模板类型!'}]},
         },
         url: {
           add: "/message/sysMessageTemplate/add",
           edit: "/message/sysMessageTemplate/edit",
         },
+        useEditor:false,
+        templateEditorContent:""
       }
     },
     created() {
@@ -94,12 +111,20 @@
       edit(record) {
         this.form.resetFields();
         this.model = Object.assign({}, record);
+        this.useEditor = (record.templateType==2)
+        if(this.useEditor){
+          this.templateEditorContent=record.templateContent
+        }else{
+          this.templateEditorContent=''
+        }
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'templateCode', 'templateContent', 'templateName', 'templateTestJson', 'templateType'))
-          //时间格式化
+          if(this.useEditor){
+            this.form.setFieldsValue(pick(this.model, 'templateCode', 'templateName', 'templateTestJson', 'templateType'))
+          }else{
+            this.form.setFieldsValue(pick(this.model, 'templateCode', 'templateContent', 'templateName', 'templateTestJson', 'templateType'))
+          }
         });
-
       },
       close() {
         this.$emit('close');
@@ -125,6 +150,9 @@
             let formData = Object.assign(this.model, values);
             //时间格式化
 
+            if(this.useEditor){
+              formData.templateContent=this.templateEditorContent
+            }
             console.log(formData)
             httpAction(httpurl, formData, method).then((res) => {
               if (res.success) {
@@ -142,10 +170,29 @@
           }
         })
       },
+      validateTemplateCode(rule, value, callback){
+        var params = {
+          tableName: "sys_sms_template",
+          fieldName: "template_code",
+          fieldVal: value,
+          dataId: this.model.id
+        }
+        duplicateCheck(params).then((res)=>{
+          if(res.success){
+            callback();
+          }else{
+            callback(res.message);
+          }
+        })
+
+      },
       handleCancel() {
         this.close()
       },
-
+      handleChangeTemplateType(value){
+        //如果是邮件类型那么则改变模板内容是富文本编辑器
+        this.useEditor = value==2
+      }
 
     }
   }
