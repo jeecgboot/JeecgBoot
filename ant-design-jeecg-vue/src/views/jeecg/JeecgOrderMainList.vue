@@ -34,8 +34,8 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="exportXls">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :action="importExcelUrl" @change="handleImportExcel">
+      <a-button type="primary" icon="download" @click="handleExportXls('一对多示例')">导出</a-button>
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
 
@@ -163,27 +163,11 @@
           list: "/test/jeecgOrderMain/list",
           delete: "/test/jeecgOrderMain/delete",
           deleteBatch: "/test/jeecgOrderMain/deleteBatch",
+          exportXlsUrl: "/test/jeecgOrderMain/exportXls",
         }
       }
     },
     methods: {
-      exportXls(){
-        let paramsStr = encodeURI(JSON.stringify(this.getQueryParams()));
-        console.log('paramsStr: ' + paramsStr)
-        let url = `${window._CONFIG['domianURL']}/test/jeecgOrderMain/exportXls?paramsStr=${paramsStr}`;
-        window.location.href = url;
-      },
-      handleImportExcel(info){
-        if (info.file.status !== 'uploading') {
-          console.log(info.file, info.fileList);
-        }
-        if (info.file.status === 'done') {
-          this.$message.success(`${info.file.name} 文件上传成功`);
-          this.loadData();
-        } else if (info.file.status === 'error') {
-          this.$message.error(`${info.file.name} 文件上传失败.`);
-        }
-      }
     }
   }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <global-layout>
+  <global-layout @dynamicRouterShow="dynamicRouterShow">
     <contextmenu :itemList="menuItemList" :visible.sync="menuVisible" @select="onMenuSelect"/>
     <a-tabs
       @contextmenu.native="e => onContextmenu(e)"
@@ -15,7 +15,7 @@
         <span slot="tab" :pagekey="page.fullPath">{{ page.meta.title }}</span>
       </a-tab-pane>
     </a-tabs>
-    <div style="margin: 24px 24px 0;">
+    <div style="margin: 12px 12px 0;">
       <transition name="page-toggle">
         <keep-alive v-if="multipage">
           <router-view/>
@@ -30,7 +30,6 @@
   import GlobalLayout from '@/components/page/GlobalLayout'
   import Contextmenu from '@/components/menu/Contextmenu'
   import { mixin, mixinDevice } from '@/utils/mixin.js'
-  import { topNavScrollToSelectItem } from '@/utils/util'
 
   const indexKey = '/dashboard/analysis'
 
@@ -86,23 +85,20 @@
         this.activePage = newRoute.fullPath
         if (!this.multipage) {
           this.linkList = [newRoute.fullPath]
-          this.pageList = [newRoute]
+          this.pageList = [Object.assign({},newRoute)]
         } else if (this.linkList.indexOf(newRoute.fullPath) < 0) {
           this.linkList.push(newRoute.fullPath)
-          this.pageList.push(newRoute)
+          this.pageList.push(Object.assign({},newRoute))
         } else if (this.linkList.indexOf(newRoute.fullPath) >= 0) {
           let oldIndex = this.linkList.indexOf(newRoute.fullPath)
-          this.pageList.splice(oldIndex, 1, newRoute)
+          let oldPositionRoute = this.pageList[oldIndex]
+          this.pageList.splice(oldIndex, 1, Object.assign({},newRoute,{meta:oldPositionRoute.meta}))
         }
       },
       'activePage': function(key) {
         let index = this.linkList.lastIndexOf(key)
-        var waitRouter = this.pageList[index]
-        this.$router.push({
-          path: waitRouter.path,
-          name: waitRouter.name,
-          params: waitRouter.params
-        })
+        let waitRouter = this.pageList[index]
+        this.$router.push(Object.assign({},waitRouter));
       },
       'multipage': function(newVal) {
         if (!newVal) {
@@ -114,12 +110,6 @@
     methods: {
       changePage(key) {
         this.activePage = key
-        // 只有当前模式是顶部菜单时才执行定位
-        if (this.layoutMode === 'topmenu') {
-          setTimeout(() => {
-            topNavScrollToSelectItem(document)
-          }, 100)
-        }
       },
       editPage(key, action) {
         this[action](key)
@@ -208,7 +198,17 @@
         if (this.linkList.indexOf(this.activePage < 0)) {
           this.activePage = this.linkList[this.linkList.length - 1]
         }
+      },
+      //update-begin-author:taoyan date:20190430 for:动态路由title显示配置的菜单title而不是其对应路由的title
+      dynamicRouterShow(key,title){
+        let keyIndex = this.linkList.indexOf(key)
+        if(keyIndex>=0){
+          let currRouter = this.pageList[keyIndex]
+          let meta = Object.assign({},currRouter.meta,{title:title})
+          this.pageList.splice(keyIndex, 1, Object.assign({},currRouter,{meta:meta}))
+        }
       }
+      //update-end-author:taoyan date:20190430 for:动态路由title显示配置的菜单title而不是其对应路由的title
     }
   }
 </script>

@@ -16,6 +16,9 @@ import Print from 'vue-print-nb-jeecg'
 /*import '@babel/polyfill'*/
 import VueApexCharts from 'vue-apexcharts'
 
+import preview from 'vue-photo-preview'
+import 'vue-photo-preview/dist/skin.css'
+
 import {
   ACCESS_TOKEN,
   DEFAULT_COLOR,
@@ -26,12 +29,14 @@ import {
   DEFAULT_FIXED_HEADER,
   DEFAULT_FIXED_HEADER_HIDDEN,
   DEFAULT_FIXED_SIDEMENU,
-  DEFAULT_CONTENT_WIDTH_TYPE
+  DEFAULT_CONTENT_WIDTH_TYPE,
+  DEFAULT_MULTI_PAGE
 } from "@/store/mutation-types"
 import config from '@/defaultSettings'
 
 import JDictSelectTag from './components/dict/index.js'
 import hasPermission from '@/utils/hasPermission'
+import vueBus from '@/utils/vueBus';
 
 Vue.config.productionTip = false
 Vue.use(Storage, config.storageOptions)
@@ -43,6 +48,8 @@ Vue.use(JDictSelectTag)
 Vue.use(Print)
 Vue.use(VueApexCharts)
 Vue.component('apexchart', VueApexCharts)
+Vue.use(preview)
+Vue.use(vueBus);
 
 new Vue({
   router,
@@ -58,6 +65,7 @@ new Vue({
     store.commit('TOGGLE_WEAK', Vue.ls.get(DEFAULT_COLOR_WEAK, config.colorWeak))
     store.commit('TOGGLE_COLOR', Vue.ls.get(DEFAULT_COLOR, config.primaryColor))
     store.commit('SET_TOKEN', Vue.ls.get(ACCESS_TOKEN))
+    store.commit('SET_MULTI_PAGE',Vue.ls.get(DEFAULT_MULTI_PAGE,true))
   },
   render: h => h(App)
 }).$mount('#app')

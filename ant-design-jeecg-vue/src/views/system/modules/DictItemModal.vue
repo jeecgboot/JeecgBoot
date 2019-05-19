@@ -55,7 +55,7 @@
 
 <script>
   import pick from 'lodash.pick'
-  import {addDictItem, editDictItem, getDictItemList} from '@/api/api'
+  import {addDictItem, editDictItem} from '@/api/api'
 
   export default {
     name: "DictItemModal",
@@ -104,20 +104,6 @@
           this.form.setFieldsValue(pick(this.model, 'itemText', 'itemValue', 'description', 'sortOrder'))
         });
       },
-      // 将查询字典对象数据的方法拆分出来,需要的时候再加载
-      getDictItemList() {
-        // 查询字典数据
-        var params = this.getQueryParams();//查询条件
-        getDictItemList(params).then((res) => {
-          if (res.success) {
-            this.dataSource = res.result.records;
-            console.log(this.dataSource)
-            this.ipagination.total = res.result.total;
-            this.loadrefresh = false;
-            this.loading = false;
-          }
-        })
-      },
       onChose(checked) {
         if (checked) {
           this.status = 1;
@@ -134,6 +120,9 @@
         this.form.validateFields((err, values) => {
           if (!err) {
             that.confirmLoading = true;
+            values.itemText = (values.itemText || '').trim()
+            values.itemValue = (values.itemValue || '').trim()
+            values.description = (values.description || '').trim()
             let formData = Object.assign(this.model, values);
             formData.status = this.status;
             let obj;

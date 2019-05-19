@@ -20,8 +20,8 @@
           @select="onTreeNodeSelect"
           :expandedKeys="expandedKeysss"
           :checkStrictly="checkStrictly">
-          <span slot="hasDatarule" slot-scope="{slotTitle,icon}">
-            {{ slotTitle }}<a-icon v-if="icon" type="align-left" style="margin-left:5px;color: red;"></a-icon>
+          <span slot="hasDatarule" slot-scope="{slotTitle,ruleFlag}">
+            {{ slotTitle }}<a-icon v-if="ruleFlag" type="align-left" style="margin-left:5px;color: red;"></a-icon>
           </span>
         </a-tree>
       </a-form-item>
@@ -132,8 +132,9 @@
       handleSubmit(){
         let that = this;
         let params =  {
+          roleId:that.roleId,
           permissionIds:that.checkedKeys.join(","),
-          roleId:that.roleId
+          lastpermissionIds:that.defaultCheckedKeys.join(","),
         };
         that.loading = true;
         console.log("请求参数：",params);

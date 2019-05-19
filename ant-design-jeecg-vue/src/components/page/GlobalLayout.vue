@@ -24,6 +24,7 @@
         v-else
         mode="inline"
         :menus="menus"
+        @menuSelect="myMenuSelect"
         :theme="navTheme"
         :collapsed="collapsed"
         :collapsible="true"></side-menu>
@@ -98,6 +99,7 @@
     data() {
       return {
         collapsed: false,
+        activeMenu:{},
         menus: []
       }
     },
@@ -136,9 +138,26 @@
         if (!this.isDesktop()) {
           this.collapsed = false
         }
+      },
+      //update-begin-author:taoyan date:20190430 for:动态路由title显示配置的菜单title而不是其对应路由的title
+      myMenuSelect(value){
+        //此处触发动态路由被点击事件
+        this.findMenuBykey(this.menus,value.key)
+        this.$emit("dynamicRouterShow",value.key,this.activeMenu.meta.title)
+      },
+      findMenuBykey(menus,key){
+        for(let i of menus){
+          if(i.path==key){
+            this.activeMenu = {...i}
+          }else if(i.children && i.children.length>0){
+            this.findMenuBykey(i.children,key)
+          }
+        }
       }
+      //update-end-author:taoyan date:20190430 for:动态路由title显示配置的菜单title而不是其对应路由的title
     }
   }
+
 </script>
 
 <style lang="scss">

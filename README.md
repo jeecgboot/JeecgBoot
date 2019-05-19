@@ -1,7 +1,7 @@
 Jeecg-Boot 快速开发平台(前后端分离版本)
 ===============
 
-当前最新版本： 1.1（发布日期：20190415）
+当前最新版本： 2.0.0（发布日期：20190520）
 
 项目介绍：
 -----------------------------------
@@ -52,11 +52,11 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 -----------------------------------
 
 #### 后端
-- 基础框架：Spring Boot 2.0.3.RELEASE
+- 基础框架：Spring Boot 2.1.3.RELEASE
 
 - 持久层框架：Mybatis-plus_3.0.6
 
-- 安全框架：Apache Shiro 1.4.0-RC2，Jwt_3.4.1
+- 安全框架：Apache Shiro 1.4.0，Jwt_3.7.0
 
 - 数据库连接池：阿里巴巴Druid 1.1.10
 
@@ -89,7 +89,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 依赖管理：Maven
 
-- 数据库：MySQL5.0  &  Oracle 11g
+- 数据库：MySQL5.0  &  Oracle 11g & Sqlserver2005
 
 - 缓存：Redis
 
@@ -242,7 +242,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 - jdk8
 - mysql
 - redis
-- 数据库脚步：jeecg-boot\docs\jeecg-boot_1.1.0-20190415.sql
+- 数据库脚步：jeecg-boot\docs\jeecg-boot-mysql.sql
 - 默认登录账号： admin/123456
 
 

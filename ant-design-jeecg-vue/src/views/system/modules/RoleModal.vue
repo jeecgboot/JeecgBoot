@@ -41,7 +41,7 @@
 
 <script>
   import pick from 'lodash.pick'
-  import {addRole,editRole,checkRoleCode } from '@/api/api'
+  import {addRole,editRole,duplicateCheck } from '@/api/api'
 
   export default {
     name: "RoleModal",
@@ -133,14 +133,16 @@
           callback("角色编码不可输入汉字!");
         }else{
           var params = {
-            id:this.model.id,
-            roleCode:value
+            tableName: "sys_role",
+            fieldName: "role_code",
+            fieldVal: value,
+            dataId: this.model.id,
           };
-          checkRoleCode(params).then((res)=>{
+          duplicateCheck(params).then((res)=>{
             if(res.success){
               callback();
             }else{
-              callback("角色编码已存在！");
+              callback(res.message);
             }
           });
         }

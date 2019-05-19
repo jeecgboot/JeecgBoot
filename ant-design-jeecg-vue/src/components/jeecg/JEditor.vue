@@ -30,6 +30,11 @@
         type: String,
         required:false
       },
+      triggerChange:{
+        type: Boolean,
+        default: false,
+        required:false
+      },
       disabled: {
         type: Boolean,
         default: false
@@ -82,7 +87,13 @@
       },
       myValue(newValue) {
         console.log(newValue)
-        this.$emit('input', newValue)
+        if(this.triggerChange){
+          console.log(1)
+          this.$emit('change', newValue)
+        }else{
+          console.log(2)
+          this.$emit('input', newValue)
+        }
       }
     }
   }

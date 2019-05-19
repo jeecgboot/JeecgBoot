@@ -5,7 +5,6 @@ import { getAction,deleteAction,putAction,postAction} from '@/api/manage'
 ////图片预览请求地址
 // const imgView = "http://localhost:8080/jeecg-boot/sys/common/view/";
 
-
 //角色管理
 const addRole = (params)=>postAction("/sys/role/add",params);
 const editRole = (params)=>putAction("/sys/role/edit",params);
@@ -39,7 +38,8 @@ const queryTreeListForRole = (params)=>getAction("/sys/role/queryTreeList",param
 const queryListAsync = (params)=>getAction("/sys/permission/queryListAsync",params);
 const queryRolePermission = (params)=>getAction("/sys/permission/queryRolePermission",params);
 const saveRolePermission = (params)=>postAction("/sys/permission/saveRolePermission",params);
-const queryPermissionsByUser = (params)=>getAction("/sys/permission/queryByUser",params);
+//const queryPermissionsByUser = (params)=>getAction("/sys/permission/queryByUser",params);
+const queryPermissionsByUser = (params)=>getAction("/sys/permission/getUserPermissionByToken",params);
 const loadAllRoleIds = (params)=>getAction("/sys/permission/loadAllRoleIds",params);
 const getPermissionRuleList = (params)=>getAction("/sys/permission/getPermRuleListByPermId",params);
 const queryPermissionRule = (params)=>getAction("/sys/permission/queryPermissionRule",params);
@@ -130,7 +130,7 @@ export {
   queryUserByDepId,
   queryUserRoleMap,
   duplicateCheck,
-  queryTreeListForRole
+  queryTreeListForRole,
 }
 
 

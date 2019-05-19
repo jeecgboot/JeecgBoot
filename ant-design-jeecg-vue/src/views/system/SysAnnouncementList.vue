@@ -11,11 +11,11 @@
               <a-input placeholder="请输入标题" v-model="queryParam.titile"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="6">
+          <!--<a-col :span="6">
             <a-form-item label="内容">
               <a-input placeholder="请输入内容" v-model="queryParam.msgContent"></a-input>
             </a-form-item>
-          </a-col>
+          </a-col>-->
 
           <a-col :span="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -31,8 +31,8 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :action="importExcelUrl" @change="handleImportExcel">
+      <a-button type="primary" icon="download" @click="handleExportXls('系统通告')">导出</a-button>
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
       <a-dropdown v-if="selectedRowKeys.length > 0">
@@ -136,12 +136,21 @@
             align: "center",
             dataIndex: 'titile'
           },
-          /*{
-                title: '内容',
-                align:"center",
-                dataIndex: 'msgContent'
-              },*/
           {
+            title: '消息类型',
+            align: "center",
+            dataIndex: 'msgCategory',
+            customRender: function (text) {
+              if (text == '1') {
+                return "通知公告";
+              } else if (text == "2") {
+                return "系统消息";
+              } else {
+                return text;
+              }
+            }
+          },
+          /*{
             title: '开始时间',
             align: "center",
             dataIndex: 'startTime'
@@ -150,7 +159,7 @@
             title: '结束时间',
             align: "center",
             dataIndex: 'endTime'
-          },
+          },*/
           {
             title: '发布人',
             align: "center",
@@ -173,7 +182,7 @@
             }
           },
           {
-            title: '通告对象类型',
+            title: '通告对象',
             align: "center",
             dataIndex: 'msgType',
             customRender: function (text) {
@@ -270,38 +279,5 @@
   }
 </script>
 <style scoped>
-  /** Button按钮间距 */
-  .ant-btn {
-    margin-left: 3px
-  }
-  .ant-card-body .table-operator {
-    margin-bottom: 18px;
-  }
-
-  .ant-table-tbody .ant-table-row td {
-    padding-top: 15px;
-    padding-bottom: 15px;
-  }
-
-  .anty-row-operator button {
-    margin: 0 5px
-  }
-
-  .ant-btn-danger {
-    background-color: #ffffff
-  }
-
-  .ant-modal-cust-warp {
-    height: 100%
-  }
-
-  .ant-modal-cust-warp .ant-modal-body {
-    height: calc(100% - 110px) !important;
-    overflow-y: auto
-  }
-
-  .ant-modal-cust-warp .ant-modal-content {
-    height: 90% !important;
-    overflow-y: hidden
-  }
+  @import '~@assets/less/common.less'
 </style>

@@ -1,0 +1,19 @@
+package ${bussiPackage}.service.${entityPackage}.impl;
+
+import ${bussiPackage}.entity.${entityPackage}.${entityName};
+import ${bussiPackage}.mapper.${entityPackage}.${entityName}Mapper;
+import ${bussiPackage}.service.${entityPackage}.I${entityName}Service;
+import org.springframework.stereotype.Service;
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
+/**
+ * @Description: ${tableVo.ftlDescription}
+ * @Author: jeecg-boot
+ * @Date:   ${.now?string["yyyy-MM-dd"]}
+ * @Version: V1.0
+ */
+@Service
+public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, ${entityName}> implements I${entityName}Service {
+
+}

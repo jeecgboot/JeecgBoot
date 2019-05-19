@@ -237,10 +237,6 @@
     margin-bottom: 18px;
   }
 
-  .ant-layout-content {
-    margin: 12px 16px 0 !important;
-  }
-
   .ant-table-tbody .ant-table-row td {
     padding-top: 15px;
     padding-bottom: 15px;

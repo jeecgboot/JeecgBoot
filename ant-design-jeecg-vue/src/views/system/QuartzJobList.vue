@@ -35,9 +35,8 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :action="importExcelUrl"
-                @change="handleImportExcel">
+      <a-button type="primary" icon="download" @click="handleExportXls('定时任务信息')">导出</a-button>
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
       <a-dropdown v-if="selectedRowKeys.length > 0">
@@ -92,7 +91,7 @@
         </span>
 
         <!-- 状态渲染模板 -->
-        <template slot="customRenderStatus" slot-scope="status, record">
+        <template slot="customRenderStatus" slot-scope="status">
           <a-tag v-if="status==0" color="green">已启动</a-tag>
           <a-tag v-if="status==-1" color="orange">已暂停</a-tag>
         </template>
@@ -107,7 +106,7 @@
 
 <script>
   import QuartzJobModal from './modules/QuartzJobModal'
-  import { postAction } from '@/api/manage'
+  import { getAction } from '@/api/manage'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import JEllipsis from "@/components/jeecg/JEllipsis";
 
@@ -219,7 +218,7 @@
           title:"确认暂停",
           content:"是否暂停选中任务?",
           onOk: function(){
-            postAction(that.url.pause,record).then((res)=>{
+            getAction(that.url.pause,{jobClassName:record.jobClassName}).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.loadData();
@@ -239,7 +238,7 @@
           title:"确认启动",
           content:"是否启动选中任务?",
           onOk: function(){
-            postAction(that.url.resume,record).then((res)=>{
+            getAction(that.url.resume,{jobClassName:record.jobClassName}).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.loadData();
@@ -255,22 +254,5 @@
   }
 </script>
 <style scoped>
-  /** Button按钮间距 */
-  .ant-btn {
-    margin-left: 3px
-  }
-
-  .ant-card-body .table-operator {
-    margin-bottom: 18px;
-  }
-  .ant-table-tbody .ant-table-row td{
-    padding-top:10px;
-    padding-bottom:10px;
-  }
-  .anty-row-operator button{margin: 0 5px}
-  .ant-btn-danger{background-color: #ffffff}
-
-  .ant-modal-cust-warp{height: 100%}
-  .ant-modal-cust-warp .ant-modal-body{height:calc(100% - 110px) !important;overflow-y: auto}
-  .ant-modal-cust-warp .ant-modal-content{height:90% !important;overflow-y: hidden}
+  @import '~@assets/less/common.less'
 </style>
