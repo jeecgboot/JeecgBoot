@@ -127,7 +127,6 @@ public class SysRoleController {
 	 * @param role
 	 * @return
 	 */
-	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
 	public Result<SysRole> edit(@RequestBody SysRole role) {
 		Result<SysRole> result = new Result<SysRole>();
@@ -151,7 +150,6 @@ public class SysRoleController {
 	 * @param id
 	 * @return
 	 */
-	@RequiresRoles({"admin"})
 	@CacheEvict(value="loginUser_cacheRules", allEntries=true)
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<SysRole> delete(@RequestParam(name="id",required=true) String id) {
@@ -174,7 +172,6 @@ public class SysRoleController {
 	 * @param ids
 	 * @return
 	 */
-	@RequiresRoles({"admin"})
 	@CacheEvict(value="loginUser_cacheRules", allEntries=true)
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysRole> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
