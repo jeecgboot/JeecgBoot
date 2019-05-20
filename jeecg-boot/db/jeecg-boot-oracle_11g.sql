@@ -34,7 +34,8 @@ CREATE TABLE "DEMO" (
 "CREATE_BY" NVARCHAR2(32) NULL ,
 "CREATE_TIME" DATE NULL ,
 "UPDATE_BY" NVARCHAR2(32) NULL ,
-"UPDATE_TIME" DATE NULL 
+"UPDATE_TIME" DATE NULL ,
+"SYS_ORG_CODE" NVARCHAR2(64) NULL 
 )
 LOGGING
 NOCOMPRESS
@@ -56,6 +57,8 @@ COMMENT ON COLUMN "DEMO"."CREATE_BY" IS '创建人';
 COMMENT ON COLUMN "DEMO"."CREATE_TIME" IS '创建时间';
 COMMENT ON COLUMN "DEMO"."UPDATE_BY" IS '修改人';
 COMMENT ON COLUMN "DEMO"."UPDATE_TIME" IS '修改时间';
+COMMENT ON COLUMN "DEMO"."SYS_ORG_CODE" IS '所属部门编码';
+
 
 -- ----------------------------
 -- Table structure for JEECG_MONTHLY_GROWTH_ANALYSIS
@@ -2024,28 +2027,28 @@ Date: 2019-05-18 12:07:18
 -- ----------------------------
 -- Records of DEMO
 -- ----------------------------
-INSERT INTO "DEMO" VALUES ('08375a2dff80e821d5a158dd98302b23', '导入小虎', null, null, null, null, '2', '28', null, null, null, 'jeecg-boot', TO_DATE('2019-04-10 11:42:57', 'YYYY-MM-DD HH24:MI:SS'), null, null);
-INSERT INTO "DEMO" VALUES ('1c2ba51b29a42d9de02bbd708ea8121a', '777777', '777', TO_DATE('2018-12-07 19:43:17', 'YYYY-MM-DD HH24:MI:SS'), null, null, null, '7', TO_DATE('2018-12-07 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), null, null, null, null, 'admin', TO_DATE('2019-02-21 18:26:04', 'YYYY-MM-DD HH24:MI:SS'));
-INSERT INTO "DEMO" VALUES ('1dc29e80be14d1400f165b5c6b30c707', 'zhang daihao', null, null, null, null, '2', null, null, 'zhangdaiscott@163.com', null, null, null, null, null);
-INSERT INTO "DEMO" VALUES ('304e651dc769d5c9b6e08fb30457a602', '小白兔', null, null, null, null, '2', '28', null, null, null, 'scott', TO_DATE('2019-01-19 13:12:53', 'YYYY-MM-DD HH24:MI:SS'), 'qinfeng', TO_DATE('2019-01-19 13:13:12', 'YYYY-MM-DD HH24:MI:SS'));
-INSERT INTO "DEMO" VALUES ('4', 'Sandy', '开源，很好', TO_DATE('2018-12-15 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), null, null, '2', '21', TO_DATE('2018-12-15 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'test4@baomidou.com', '聪明00', null, null, 'admin', TO_DATE('2019-02-25 16:29:27', 'YYYY-MM-DD HH24:MI:SS'));
-INSERT INTO "DEMO" VALUES ('42c08b1a2e5b2a96ffa4cc88383d4b11', '秦50090', null, TO_DATE('2019-01-05 20:33:31', 'YYYY-MM-DD HH24:MI:SS'), null, null, null, '28', TO_DATE('2019-01-05 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), null, null, 'admin', TO_DATE('2019-01-19 20:33:54', 'YYYY-MM-DD HH24:MI:SS'), 'admin', TO_DATE('2019-01-19 20:34:29', 'YYYY-MM-DD HH24:MI:SS'));
-INSERT INTO "DEMO" VALUES ('4436302a0de50bb83025286bc414d6a9', 'zhang daihao', null, null, null, null, null, null, null, 'zhangdaiscott@163.com', null, 'admin', TO_DATE('2019-01-19 15:39:04', 'YYYY-MM-DD HH24:MI:SS'), null, null);
-INSERT INTO "DEMO" VALUES ('4981637bf71b0c1ed1365241dfcfa0ea', '小虎', null, null, null, null, '2', '28', null, null, null, 'scott', TO_DATE('2019-01-19 13:12:53', 'YYYY-MM-DD HH24:MI:SS'), 'qinfeng', TO_DATE('2019-01-19 13:13:12', 'YYYY-MM-DD HH24:MI:SS'));
-INSERT INTO "DEMO" VALUES ('5c16e6a5c31296bcd3f1053d5d118815', '导入zhangdaiscott', null, null, null, null, '1', null, TO_DATE('2019-01-03 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), null, null, 'jeecg-boot', TO_DATE('2019-04-10 11:42:57', 'YYYY-MM-DD HH24:MI:SS'), null, null);
-INSERT INTO "DEMO" VALUES ('7', 'zhangdaiscott', null, null, null, null, '1', null, TO_DATE('2019-01-03 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), null, null, null, null, null, null);
-INSERT INTO "DEMO" VALUES ('73bc58611012617ca446d8999379e4ac', '郭靖11a', '777', TO_DATE('2018-12-07 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), null, null, null, null, null, null, null, 'jeecg-boot', TO_DATE('2019-03-28 18:16:39', 'YYYY-MM-DD HH24:MI:SS'), null, null);
-INSERT INTO "DEMO" VALUES ('917e240eaa0b1b2d198ae869b64a81c3', 'zhang daihao', null, null, null, null, '2', '0', TO_DATE('2018-11-29 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'zhangdaiscott@163.com', null, null, null, null, null);
-INSERT INTO "DEMO" VALUES ('94420c5d8fc4420dde1e7196154b3a24', '秦111', null, null, null, null, null, null, null, null, null, 'scott', TO_DATE('2019-01-19 12:54:58', 'YYYY-MM-DD HH24:MI:SS'), 'qinfeng', TO_DATE('2019-01-19 13:12:10', 'YYYY-MM-DD HH24:MI:SS'));
-INSERT INTO "DEMO" VALUES ('95740656751c5f22e5932ab0ae33b1e4', '杨康22a', '奸臣', null, null, null, null, null, null, null, null, 'jeecg-boot', TO_DATE('2019-03-28 18:16:39', 'YYYY-MM-DD HH24:MI:SS'), null, null);
-INSERT INTO "DEMO" VALUES ('b86897900c770503771c7bb88e5d1e9b', 'scott1', '开源、很好、hello', null, null, null, '1', null, null, 'zhangdaiscott@163.com', null, 'scott', TO_DATE('2019-01-19 12:22:34', 'YYYY-MM-DD HH24:MI:SS'), null, null);
-INSERT INTO "DEMO" VALUES ('c0b7c3de7c62a295ab715943de8a315d', '秦风555', null, null, null, null, null, null, null, null, null, 'admin', TO_DATE('2019-01-19 13:18:30', 'YYYY-MM-DD HH24:MI:SS'), 'admin', TO_DATE('2019-01-19 13:18:50', 'YYYY-MM-DD HH24:MI:SS'));
-INSERT INTO "DEMO" VALUES ('c28fa8391ef81d6fabd8bd894a7615aa', '小麦', null, null, null, null, '2', null, null, 'zhangdaiscott@163.com', null, 'jeecg-boot', TO_DATE('2019-04-04 17:18:09', 'YYYY-MM-DD HH24:MI:SS'), null, null);
-INSERT INTO "DEMO" VALUES ('c2c0d49e3c01913067cf8d1fb3c971d2', 'zhang daihao', null, null, null, null, '2', null, null, 'zhangdaiscott@163.com', null, 'admin', TO_DATE('2019-01-19 23:37:18', 'YYYY-MM-DD HH24:MI:SS'), 'admin', TO_DATE('2019-01-21 16:49:06', 'YYYY-MM-DD HH24:MI:SS'));
-INSERT INTO "DEMO" VALUES ('c96279c666b4b82e3ef1e4e2978701ce', '报名时间', null, null, null, null, null, null, null, null, null, 'jeecg-boot', TO_DATE('2019-03-28 18:00:52', 'YYYY-MM-DD HH24:MI:SS'), null, null);
-INSERT INTO "DEMO" VALUES ('d24668721446e8478eeeafe4db66dcff', 'zhang daihao999', null, null, null, null, '1', null, null, 'zhangdaiscott@163.com', null, null, null, null, null);
-INSERT INTO "DEMO" VALUES ('eaa6c1116b41dc10a94eae34cf990133', 'zhang daihao', null, null, null, null, null, null, null, 'zhangdaiscott@163.com', null, null, null, null, null);
-INSERT INTO "DEMO" VALUES ('ffa9da1ad40632dfcabac51d766865bd', '秦999', null, null, null, null, null, null, null, null, null, 'admin', TO_DATE('2019-01-19 23:36:34', 'YYYY-MM-DD HH24:MI:SS'), 'admin', TO_DATE('2019-02-14 17:30:43', 'YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO "DEMO" VALUES ('08375a2dff80e821d5a158dd98302b23', '导入小虎', null, null, null, null, '2', '28', null, null, null, 'jeecg-boot', TO_DATE('2019-04-10 11:42:57', 'YYYY-MM-DD HH24:MI:SS'), null, null, null);
+INSERT INTO "DEMO" VALUES ('1c2ba51b29a42d9de02bbd708ea8121a', '777777', '777', TO_DATE('2018-12-07 19:43:17', 'YYYY-MM-DD HH24:MI:SS'), null, null, null, '7', TO_DATE('2018-12-07 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), null, null, null, null, 'admin', TO_DATE('2019-02-21 18:26:04', 'YYYY-MM-DD HH24:MI:SS'), null);
+INSERT INTO "DEMO" VALUES ('1dc29e80be14d1400f165b5c6b30c707', 'zhang daihao', null, null, null, null, '2', null, null, 'zhangdaiscott@163.com', null, null, null, null, null, null);
+INSERT INTO "DEMO" VALUES ('304e651dc769d5c9b6e08fb30457a602', '小白兔', null, null, null, null, '2', '28', null, null, null, 'scott', TO_DATE('2019-01-19 13:12:53', 'YYYY-MM-DD HH24:MI:SS'), 'qinfeng', TO_DATE('2019-01-19 13:13:12', 'YYYY-MM-DD HH24:MI:SS'), null);
+INSERT INTO "DEMO" VALUES ('4', 'Sandy', '开源，很好', TO_DATE('2018-12-15 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), null, null, '2', '21', TO_DATE('2018-12-15 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'test4@baomidou.com', '聪明00', null, null, 'admin', TO_DATE('2019-02-25 16:29:27', 'YYYY-MM-DD HH24:MI:SS'), null);
+INSERT INTO "DEMO" VALUES ('42c08b1a2e5b2a96ffa4cc88383d4b11', '秦50090', null, TO_DATE('2019-01-05 20:33:31', 'YYYY-MM-DD HH24:MI:SS'), null, null, null, '28', TO_DATE('2019-01-05 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), null, null, 'admin', TO_DATE('2019-01-19 20:33:54', 'YYYY-MM-DD HH24:MI:SS'), 'admin', TO_DATE('2019-01-19 20:34:29', 'YYYY-MM-DD HH24:MI:SS'), null);
+INSERT INTO "DEMO" VALUES ('4436302a0de50bb83025286bc414d6a9', 'zhang daihao', null, null, null, null, null, null, null, 'zhangdaiscott@163.com', null, 'admin', TO_DATE('2019-01-19 15:39:04', 'YYYY-MM-DD HH24:MI:SS'), null, null, null);
+INSERT INTO "DEMO" VALUES ('4981637bf71b0c1ed1365241dfcfa0ea', '小虎', null, null, null, null, '2', '28', null, null, null, 'scott', TO_DATE('2019-01-19 13:12:53', 'YYYY-MM-DD HH24:MI:SS'), 'qinfeng', TO_DATE('2019-01-19 13:13:12', 'YYYY-MM-DD HH24:MI:SS'), null);
+INSERT INTO "DEMO" VALUES ('5c16e6a5c31296bcd3f1053d5d118815', '导入zhangdaiscott', null, null, null, null, '1', null, TO_DATE('2019-01-03 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), null, null, 'jeecg-boot', TO_DATE('2019-04-10 11:42:57', 'YYYY-MM-DD HH24:MI:SS'), null, null, null);
+INSERT INTO "DEMO" VALUES ('7', 'zhangdaiscott', null, null, null, null, '1', null, TO_DATE('2019-01-03 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), null, null, null, null, null, null, null);
+INSERT INTO "DEMO" VALUES ('73bc58611012617ca446d8999379e4ac', '郭靖11a', '777', TO_DATE('2018-12-07 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), null, null, null, null, null, null, null, 'jeecg-boot', TO_DATE('2019-03-28 18:16:39', 'YYYY-MM-DD HH24:MI:SS'), null, null, null);
+INSERT INTO "DEMO" VALUES ('917e240eaa0b1b2d198ae869b64a81c3', 'zhang daihao', null, null, null, null, '2', '0', TO_DATE('2018-11-29 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'zhangdaiscott@163.com', null, null, null, null, null, null);
+INSERT INTO "DEMO" VALUES ('94420c5d8fc4420dde1e7196154b3a24', '秦111', null, null, null, null, null, null, null, null, null, 'scott', TO_DATE('2019-01-19 12:54:58', 'YYYY-MM-DD HH24:MI:SS'), 'qinfeng', TO_DATE('2019-01-19 13:12:10', 'YYYY-MM-DD HH24:MI:SS'), null);
+INSERT INTO "DEMO" VALUES ('95740656751c5f22e5932ab0ae33b1e4', '杨康22a', '奸臣', null, null, null, null, null, null, null, null, 'jeecg-boot', TO_DATE('2019-03-28 18:16:39', 'YYYY-MM-DD HH24:MI:SS'), null, null, null);
+INSERT INTO "DEMO" VALUES ('b86897900c770503771c7bb88e5d1e9b', 'scott1', '开源、很好、hello', null, null, null, '1', null, null, 'zhangdaiscott@163.com', null, 'scott', TO_DATE('2019-01-19 12:22:34', 'YYYY-MM-DD HH24:MI:SS'), null, null, null);
+INSERT INTO "DEMO" VALUES ('c0b7c3de7c62a295ab715943de8a315d', '秦风555', null, null, null, null, null, null, null, null, null, 'admin', TO_DATE('2019-01-19 13:18:30', 'YYYY-MM-DD HH24:MI:SS'), 'admin', TO_DATE('2019-01-19 13:18:50', 'YYYY-MM-DD HH24:MI:SS'), null);
+INSERT INTO "DEMO" VALUES ('c28fa8391ef81d6fabd8bd894a7615aa', '小麦', null, null, null, null, '2', null, null, 'zhangdaiscott@163.com', null, 'jeecg-boot', TO_DATE('2019-04-04 17:18:09', 'YYYY-MM-DD HH24:MI:SS'), null, null, null);
+INSERT INTO "DEMO" VALUES ('c2c0d49e3c01913067cf8d1fb3c971d2', 'zhang daihao', null, null, null, null, '2', null, null, 'zhangdaiscott@163.com', null, 'admin', TO_DATE('2019-01-19 23:37:18', 'YYYY-MM-DD HH24:MI:SS'), 'admin', TO_DATE('2019-01-21 16:49:06', 'YYYY-MM-DD HH24:MI:SS'), null);
+INSERT INTO "DEMO" VALUES ('c96279c666b4b82e3ef1e4e2978701ce', '报名时间', null, null, null, null, null, null, null, null, null, 'jeecg-boot', TO_DATE('2019-03-28 18:00:52', 'YYYY-MM-DD HH24:MI:SS'), null, null, null);
+INSERT INTO "DEMO" VALUES ('d24668721446e8478eeeafe4db66dcff', 'zhang daihao999', null, null, null, null, '1', null, null, 'zhangdaiscott@163.com', null, null, null, null, null, null);
+INSERT INTO "DEMO" VALUES ('eaa6c1116b41dc10a94eae34cf990133', 'zhang daihao', null, null, null, null, null, null, null, 'zhangdaiscott@163.com', null, null, null, null, null, null);
+INSERT INTO "DEMO" VALUES ('ffa9da1ad40632dfcabac51d766865bd', '秦999', null, null, null, null, null, null, null, null, null, 'admin', TO_DATE('2019-01-19 23:36:34', 'YYYY-MM-DD HH24:MI:SS'), 'admin', TO_DATE('2019-02-14 17:30:43', 'YYYY-MM-DD HH24:MI:SS'), null);
 
 
 -- ----------------------------
@@ -3194,7 +3197,6 @@ INSERT INTO "SYS_PERMISSION" VALUES ('9502685863ab87f0ad1134142788a385', null, '
 INSERT INTO "SYS_PERMISSION" VALUES ('97c8629abc7848eccdb6d77c24bb3ebb', '700b7f95165c46cc7a78bf227aa8fed3', '磁盘监控', '/monitor/Disk', 'modules/monitor/DiskMonitoring', null, null, '1', null, null, '6', '0', null, '1', '1', '0', null, 'admin', TO_DATE('2019-04-25 14:30:06', 'YYYY-MM-DD HH24:MI:SS'), 'admin', TO_DATE('2019-05-05 14:37:14', 'YYYY-MM-DD HH24:MI:SS'), '0', '0', null);
 INSERT INTO "SYS_PERMISSION" VALUES ('9a90363f216a6a08f32eecb3f0bf12a3', '2a470fc0c3954d9dbb61de6d80846549', '常用选择组件', '/jeecg/SelectDemo', 'jeecg/SelectDemo', null, null, '1', null, null, '1', '0', null, '1', '1', '0', null, 'admin', TO_DATE('2019-03-19 11:19:05', 'YYYY-MM-DD HH24:MI:SS'), 'admin', TO_DATE('2019-04-10 15:36:50', 'YYYY-MM-DD HH24:MI:SS'), '0', '0', null);
 INSERT INTO "SYS_PERMISSION" VALUES ('9cb91b8851db0cf7b19d7ecc2a8193dd', '1939e035e803a99ceecb6f5563570fb2', '我的任务表单', '/modules/bpm/task/form/FormModule', 'modules/bpm/task/form/FormModule', null, null, '1', null, null, '1', '0', null, '1', '1', '0', null, 'admin', TO_DATE('2019-03-08 16:49:05', 'YYYY-MM-DD HH24:MI:SS'), 'admin', TO_DATE('2019-03-08 18:37:56', 'YYYY-MM-DD HH24:MI:SS'), '0', '0', null);
-INSERT INTO "SYS_PERMISSION" VALUES ('a2b11669e98c5fe54a53c3e3c4f35d14', 'f0675b52d89100ee88472b6800754a08', '类别统计报表', '/report/Analysis', 'jeecg/report/Analysis', null, null, '1', null, null, '1', '0', null, '1', '1', '0', null, 'admin', TO_DATE('2019-04-03 19:03:56', 'YYYY-MM-DD HH24:MI:SS'), 'admin', TO_DATE('2019-04-03 19:05:26', 'YYYY-MM-DD HH24:MI:SS'), '0', '0', null);
 INSERT INTO "SYS_PERMISSION" VALUES ('a400e4f4d54f79bf5ce160ae432231af', '2a470fc0c3954d9dbb61de6d80846549', '百度', 'http://www.baidu.com', 'layouts/IframePageView', null, null, '1', null, null, '4', '0', null, '1', '1', '0', null, 'admin', TO_DATE('2019-01-29 19:44:06', 'YYYY-MM-DD HH24:MI:SS'), 'admin', TO_DATE('2019-02-15 16:25:02', 'YYYY-MM-DD HH24:MI:SS'), '0', '0', null);
 INSERT INTO "SYS_PERMISSION" VALUES ('ae4fed059f67086fd52a73d913cf473d', '540a2936940846cb98114ffb0d145cb8', '内联编辑表格', '/list/edit-table', 'list/TableInnerEditList', null, null, '1', null, null, '2', null, null, '1', '1', null, null, null, TO_DATE('2018-12-25 20:34:38', 'YYYY-MM-DD HH24:MI:SS'), null, null, '0', '0', null);
 INSERT INTO "SYS_PERMISSION" VALUES ('aedbf679b5773c1f25e9f7b10111da73', '08e6b9dc3c04489c8e1ff2ce6f105aa4', 'SQL监控', '{{ window._CONFIG[''domianURL''] }}/druid/', 'layouts/IframePageView', null, null, '1', null, null, '1', '0', null, '1', '1', '0', null, 'admin', TO_DATE('2019-01-30 09:43:22', 'YYYY-MM-DD HH24:MI:SS'), 'admin', TO_DATE('2019-03-23 19:00:46', 'YYYY-MM-DD HH24:MI:SS'), '0', '0', null);
