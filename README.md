@@ -98,19 +98,17 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 #### 技术文档
 
 
+- 在线演示 ：  [http://boot.jeecg.org](http://boot.jeecg.org)
+
 - 官方文档 ：  [http://jeecg-boot.mydoc.io](http://jeecg-boot.mydoc.io)
 
-- 零基础入门：  [http://jeecg-boot.mydoc.io/?t=344845](http://jeecg-boot.mydoc.io/?t=344845)
- 
-- 常见问题 ：  [新手入门常见问题汇总](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&page=1&extra=#pid21237)
-
-- 在线演示 ：  [http://boot.jeecg.org](http://boot.jeecg.org)
+- 入门必看：  [http://jeecg-boot.mydoc.io/?t=344845](http://jeecg-boot.mydoc.io/?t=344845)
 
 - QQ交流群 ：  284271917
 
-- 视频教程（视频可能有点老，以1.1文档为准） ：  https://pan.baidu.com/s/1Il0TS50I70vH1AG1y40wtw 提取码：hok5
+- 视频教程（视频有点老，以文档为准） ：  https://pan.baidu.com/s/1Il0TS50I70vH1AG1y40wtw 提取码：hok5
 
-- Angular版本 ：[如果你更熟悉Angular，请点击这里找到jeecg-boot的对应版本](https://gitee.com/dangzhenghui/jeecg-boot)
+- Angular版本 ：[如果你更熟悉Angular，请点击这里](https://gitee.com/dangzhenghui/jeecg-boot)
  
 
 ### 功能模块
