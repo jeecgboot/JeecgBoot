@@ -289,6 +289,7 @@
       //
       loadCheckedDeparts(){
         let that = this;
+        if(!that.userId){return}
         getAction(that.url.userWithDepart,{userId:that.userId}).then((res)=>{
           that.checkedDepartNames = [];
           if(res.success){
