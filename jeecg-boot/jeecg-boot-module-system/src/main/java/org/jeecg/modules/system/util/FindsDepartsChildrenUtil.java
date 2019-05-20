@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.util;
 
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
@@ -31,7 +32,7 @@ public class FindsDepartsChildrenUtil {
         List<SysDepartTreeModel> records = new ArrayList<>();
         for (int i = 0; i < recordList.size(); i++) {
             SysDepart depart = recordList.get(i);
-            records.add(new SysDepartTreeModel(recordList.get(i)));
+            records.add(new SysDepartTreeModel(depart));
         }
         List<SysDepartTreeModel> tree = findChildren(records, idList);
         setEmptyChildrenAsNull(tree);
@@ -52,7 +53,7 @@ public class FindsDepartsChildrenUtil {
         List<SysDepartTreeModel> treeList = new ArrayList<>();
         for (int i = 0; i < recordList.size(); i++) {
             SysDepartTreeModel branch = recordList.get(i);
-            if ("".equals(branch.getParentId())) {
+            if (oConvertUtils.isEmpty(branch.getParentId())) {
                 treeList.add(branch);
                 DepartIdModel departIdModel = new DepartIdModel().convert(branch);
                 idList.add(departIdModel);
@@ -73,7 +74,7 @@ public class FindsDepartsChildrenUtil {
             DepartIdModel idModel = idList.get(i);
             for (int i1 = 0; i1 < recordList.size(); i1++) {
                 SysDepartTreeModel m = recordList.get(i1);
-                if (m.getParentId().equals(model.getId())) {
+                if (m.getParentId()!=null && m.getParentId().equals(model.getId())) {
                     model.getChildren().add(m);
                     DepartIdModel dim = new DepartIdModel().convert(m);
                     idModel.getChildren().add(dim);
