@@ -13,8 +13,6 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.PasswordUtil;
@@ -24,7 +22,6 @@ import org.jeecg.modules.system.entity.SysUserDepart;
 import org.jeecg.modules.system.entity.SysUserRole;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysUserDepartsVO;
-import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserDepartService;
 import org.jeecg.modules.system.service.ISysUserRoleService;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -71,9 +68,6 @@ public class SysUserController {
 	@Autowired
 	private ISysUserService sysUserService;
 
-    @Autowired
-    private ISysDepartService sysDepartService;
-
 	@Autowired
 	private ISysUserRoleService sysUserRoleService;
 
@@ -96,7 +90,6 @@ public class SysUserController {
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	@RequiresPermissions("user:add")
 	public Result<SysUser> add(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
 		String selectedRoles = jsonObject.getString("selectedroles");
@@ -119,7 +112,6 @@ public class SysUserController {
 	}
 
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
-	@RequiresPermissions("user:edit")
 	public Result<SysUser> edit(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
 		try {
@@ -145,7 +137,6 @@ public class SysUserController {
 	/**
 	 * 删除用户
 	 */
-	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<SysUser> delete(@RequestParam(name="id",required=true) String id) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -170,7 +161,6 @@ public class SysUserController {
 	/**
 	 * 批量删除用户
 	 */
-	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysUser> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		// 定义SysUserDepart实体类的数据库查询对象LambdaQueryWrapper
@@ -196,7 +186,6 @@ public class SysUserController {
 	 * @param jsonObject
 	 * @return
 	 */
-	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/frozenBatch", method = RequestMethod.PUT)
 	public Result<SysUser> frozenBatch(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -300,7 +289,6 @@ public class SysUserController {
     /**
      * 修改密码
      */
-    @RequiresRoles({"admin"})
     @RequestMapping(value = "/changPassword", method = RequestMethod.PUT)
     public Result<SysUser> changPassword(@RequestBody SysUser sysUser) {
         Result<SysUser> result = new Result<SysUser>();
@@ -475,7 +463,6 @@ public class SysUserController {
      * @return
      */
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
-    @RequiresPermissions("user:import")
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
@@ -528,7 +515,6 @@ public class SysUserController {
 	/**
 	 * 首页密码修改
 	 */
-	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/updatePassword", method = RequestMethod.PUT)
 	public Result<SysUser> changPassword(@RequestBody JSONObject json) {
 		Result<SysUser> result = new Result<SysUser>();
