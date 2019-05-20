@@ -1,0 +1,29 @@
+{
+	"status": 200,
+	"success": true,
+	"message": "ok",
+	"result": [
+		{
+			"id": 11,
+			"name": "首页",
+			"component": "dashboard/Analysis",
+			"orderNum": 1,
+			"hasChildren": false
+		},
+		{
+			"id": 12,
+			"name": "系统管理",
+			"component": "layouts/RouteView",
+			"orderNum": 2,
+			"hasChildren": true
+		},
+		{
+			"id": 13,
+			"name": "常见案例",
+			"component": "layouts/RouteView",
+			"orderNum": 3,
+			"hasChildren": true
+		}
+	],
+	"timestamp": 1554950583837
+}

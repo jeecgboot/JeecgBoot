@@ -6,6 +6,7 @@
     :value="momVal"
     :showTime="showTime"
     :format="dateFormat"
+    :getCalendarContainer="getCalendarContainer"
   />
 </template>
 <script>
@@ -41,6 +42,10 @@
         type: Boolean,
         required: false,
         default: false
+      },
+      getCalendarContainer: {
+        type: Function,
+        default: () => document.body
       }
     },
     data () {

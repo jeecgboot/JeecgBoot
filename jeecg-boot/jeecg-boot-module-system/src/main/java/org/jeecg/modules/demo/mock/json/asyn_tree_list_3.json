@@ -1,0 +1,29 @@
+{
+	"status": 200,
+	"success": true,
+	"message": "ok",
+	"result": [
+		{
+			"id": 31,
+			"name": "性能监控",
+			"component": "layouts/RouteView",
+			"orderNum": 1,
+			"hasChildren": true
+		},
+		{
+			"id": 32,
+			"name": "在线文档",
+			"component": "layouts/IframePageView",
+			"orderNum": 2,
+			"hasChildren": false
+		},
+		{
+			"id": 33,
+			"name": "工作台",
+			"component": "dashboard/Workplace",
+			"orderNum": 3,
+			"hasChildren": false
+		}
+	],
+	"timestamp": 1554950583837
+}

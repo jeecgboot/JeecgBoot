@@ -12,7 +12,7 @@
             </a-radio-group>
           </a-col>
           <a-col :span="14">
-            <a-form v-if="barType === 'month'" layout="inline" style="margin-top: -4px">
+            <a-form v-if="barType === 'month' && false" layout="inline" style="margin-top: -4px">
               <a-form-item label="月份区间">
                 <a-range-picker
                   :placeholder="['开始月份', '结束月份']"
@@ -25,7 +25,7 @@
               <a-button style="margin-top: 2px;margin-left: 8px" type="primary" icon="reload" @click="searchReset">重置</a-button>
             </a-form>
           </a-col>
-          <bar class="statistic" title="档案统计" :dataSource="countSource"/>
+          <bar class="statistic" title="档案统计" :dataSource="countSource" :height="400"/>
         </a-row>
       </a-tab-pane>
 
@@ -40,7 +40,7 @@
             </a-radio-group>
           </a-col>
           <a-col :span="14">
-            <a-form v-if="pieType === 'month'" layout="inline" style="margin-top: -4px">
+            <a-form v-if="pieType === 'month' && false" layout="inline" style="margin-top: -4px">
               <a-row :gutter="24">
                 <a-form-item label="月份区间">
                   <a-range-picker
@@ -55,7 +55,7 @@
               </a-row>
             </a-form>
           </a-col>
-          <pie class="statistic" title="档案统计" :dataSource="countSource"/>
+          <pie class="statistic" title="档案统计" :dataSource="countSource" :height="450"/>
         </a-row>
       </a-tab-pane>
     </a-tabs>

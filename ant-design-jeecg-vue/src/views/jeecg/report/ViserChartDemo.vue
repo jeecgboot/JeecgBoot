@@ -63,6 +63,10 @@
       <a-tab-pane tab="Liquid" key="14">
         <liquid :height="height"/>
       </a-tab-pane>
+      <!-- BarAndLine -->
+      <a-tab-pane tab="BarAndLine" key="15">
+        <bar-and-line :height="height"/>
+      </a-tab-pane>
     </a-tabs>
   </a-card>
 </template>
@@ -82,13 +86,14 @@
   import RankList from '@/components/chart/RankList'
   import TransferBar from '@/components/chart/TransferBar'
   import Trend from '@/components/chart/Trend'
+  import BarAndLine from '@/components/chart/BarAndLine'
 
   export default {
     name: 'ViserChartDemo',
     components: {
       Bar, MiniBar, BarMultid, AreaChartTy, LineChartMultid,
       Pie, Radar, DashChartDemo, MiniProgress, RankList,
-      TransferBar, Trend, Liquid, MiniArea
+      TransferBar, Trend, Liquid, MiniArea, BarAndLine
     },
     data() {
       return {

@@ -22,7 +22,7 @@ router.beforeEach((to, from, next) => {
     } else {
       if (store.getters.permissionList.length === 0) {
         store.dispatch('GetPermissionList').then(res => {
-              const menuData = res.result;
+              const menuData = res.result.menu;
               console.log(res.message)
               if (menuData === null || menuData === "" || menuData === undefined) {
                 return;
@@ -45,10 +45,10 @@ router.beforeEach((to, from, next) => {
               })
             })
           .catch(() => {
-            notification.error({
+           /* notification.error({
               message: '系统提示',
               description: '请求用户信息失败，请重试！'
-            })
+            })*/
             store.dispatch('Logout').then(() => {
               next({ path: '/user/login', query: { redirect: to.fullPath } })
             })

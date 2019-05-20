@@ -107,6 +107,7 @@
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules: {},
+        disableSubmit: true,
         url: {
           add: "/message/sysMessage/add",
           edit: "/message/sysMessage/edit",

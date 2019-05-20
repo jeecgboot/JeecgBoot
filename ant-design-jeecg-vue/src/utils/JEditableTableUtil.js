@@ -5,7 +5,9 @@ const FormTypes = {
   checkbox: 'checkbox',
   select: 'select',
   date: 'date',
-  datetime: 'datetime'
+  datetime: 'datetime',
+  upload: 'upload',
+  slot: 'slot'
 }
 const VALIDATE_NO_PASSED = Symbol()
 export { FormTypes, VALIDATE_NO_PASSED }

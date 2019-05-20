@@ -15,16 +15,16 @@
 
 ### columns 参数详解
 
-| 参数            | 类型     | 必填 | 说明                                                                   |
-|---------------|--------|----|----------------------------------------------------------------------|
-| title         | string | ✔️ | 表格列头显示的问题                                                            |
-| key           | string | ✔️ | 列数据在数据项中对应的 key，必须是唯一的                                               |
-| type          | string | ✔️ | 表单的类型，可以通过`JEditableTableUtil.FormTypes`赋值                           |
+| 参数            | 类型     | 必填 | 说明                                                                              |
+|---------------|--------|----|---------------------------------------------------------------------------------|
+| title         | string | ✔️ | 表格列头显示的问题                                                                       |
+| key           | string | ✔️ | 列数据在数据项中对应的 key，必须是唯一的                                                          |
+| type          | string | ✔️ | 表单的类型，可以通过`JEditableTableUtil.FormTypes`赋值                                      |
 | width         | string |    | 列的宽度，可以是百分比，也可以是`px`或其他单位，建议设置为百分比，且每一列的宽度加起来不应超过100%，否则可能会不能达到预期的效果。留空会自动计算百分比 |
-| placeholder   | string |    | 表单预期值的提示信息，可以使用`${...}`变量替换文本（详见`${...} 变量使用方式`）                               |
-| defaultValue  | string |    | 默认值，在新增一行时生效                                                         |
-| validateRules | array  |    | 表单验证规则，配置方式见[validateRules 配置规则](#validaterules-配置规则)                |
-| props         | object |    | 设置添加给表单元素的自定义属性，例如:`props:{title: 'show title'}`                     |
+| placeholder   | string |    | 表单预期值的提示信息，可以使用`${...}`变量替换文本（详见`${...} 变量使用方式`）                                |
+| defaultValue  | string |    | 默认值，在新增一行时生效                                                                    |
+| validateRules | array  |    | 表单验证规则，配置方式见[validateRules 配置规则](#validaterules-配置规则)                           |
+| props         | object |    | 设置添加给表单元素的自定义属性，例如:`props:{title: 'show title'}`                                |
 
 #### 当 type=checkbox 时所需的参数
 
@@ -41,10 +41,25 @@
 
 ##### options 所需参数
 
-| 参数    | 类型     | 必填 | 说明   |
-|-------|--------|----|------|
-| title | string | ✔️ | 显示标题 |
-| value | string | ✔️ | 真实值  |
+| 参数        | 类型         | 必填 | 说明                                            |
+|-----------|------------|----|-----------------------------------------------|
+| text      | string     | ✔️ | 显示标题                                          |
+| value     | string     | ✔️ | 真实值                                           |
+| ~~title~~ | ~~string~~ |    | ~~显示标题（已废弃，若同时填写了 title 和 text 那么优先使用 text）~~ |
+
+#### 当 type=upload 时所需的参数
+
+| 参数           | 类型      | 必填 | 说明                                             |
+|--------------|---------|----|------------------------------------------------|
+| action       | string  | ✔️ | 上传文件路径                                         |
+| token        | boolean |    | 上传的时候是否传递token                                 |
+| responseName | string  | ✔️ | 若要从上传成功后从response中取出返回的文件名，那么这里填后台返回的包含文件名的字段名 |
+
+#### 当 type=slot 时所需的参数
+
+| 参数           | 类型      | 必填 | 说明                                             |
+|--------------|---------|----|------------------------------------------------|
+| slot       | string  | ✔️ | slot的名称                                         |
 
 ### validateRules 配置规则
 
@@ -128,8 +143,42 @@
 |----------|----------|----|-----------------------------------------------------------------------------------------------|
 | callback | function | ✔️ | 获取值的回调方法，会传入`error`和`values`两个参数。`error`：未通过验证的数量，当等于`0`时代表验证通过；`values`：获取的值（即使未通过验证该字段也有数据） |
 | validate | boolean  |    | 是否进行表单验证，默认为`true`，设为`false`则代表忽略表单验证                                                         |
+| rowIds   | array    |    | 默认返回所有行的数据，如果传入了`rowIds`，那么就会只返回与该`rowIds`相匹配的数据，如果没有匹配的数据，就会返回空数组                            |
 
 - `返回值:` 无
+
+
+### getValuesSync
+
+`getValues`的同步版，会直接将获取到的数据返回
+
+- `参数:` 
+
+| 参数名     | 类型     | 必填 | 说明          |
+|---------|--------|----|-------------|
+| options | object |    | 选项，详见下方所需参数 |
+
+- - `options` 所需参数
+
+| 参数名      | 类型      | 必填 | 说明                                                                 |
+|----------|---------|----|--------------------------------------------------------------------|
+| validate | boolean |    | 是否进行表单验证，默认为`true`，设为`false`则代表忽略表单验证                              |
+| rowIds   | array   |    | 默认返回所有行的数据，如果传入了`rowIds`，那么就会只返回与该`rowIds`相匹配的数据，如果没有匹配的数据，就会返回空数组 |
+
+- `返回值:` object
+    - `error` 未通过验证的数量，当等于`0`时代表验证通过
+    - `values` 获取的值（即使未通过验证该字段也有数据）
+
+- `使用示例`
+
+```js
+let { error, values } = this.$refs.editableTable.getValuesSync({ validate: true, rowIds: ['rowId1', 'rowId2'] })
+if (error === 0) {
+    console.log('表单验证通过，数据：', values);
+} else {
+    console.log('未通过表单验证，数据：', values);
+}
+```
 
 ### getValuesPromise
 
@@ -137,9 +186,10 @@
 
 - `参数:`
 
-| 参数名      | 类型      | 必填 | 说明                        |
-|----------|---------|----|---------------------------|
-| validate | boolean |    | 同`getValues`的`validate`参数 |
+| 参数名      | 类型      | 必填 | 说明                                                                 |
+|----------|---------|----|--------------------------------------------------------------------|
+| validate | boolean |    | 同`getValues`的`validate`参数                                          |
+| rowIds   | array   |    | 默认返回所有行的数据，如果传入了`rowIds`，那么就会只返回与该`rowIds`相匹配的数据，如果没有匹配的数据，就会返回空数组 |
 
 - `返回值:` Promise
 
@@ -219,6 +269,8 @@ setValues([
 - `select` 显示选择器（下拉框）
 - `date` 日期选择器
 - `datetime` 日期时间选择器
+- `upload` 上传组件（文件域）
+- `slot` 自定义插槽
 
 ### VALIDATE_NO_PASSED
 
@@ -284,7 +336,7 @@ validateTables(cases).then((all) => {
 ### 为什么使用了ATab组件后，切换选项卡会导致白屏或滚动条位置会归零？
 
 在ATab组件中确实会导致滚动条位置归零，且不会触发`onscroll`方法，所以无法动态加载行，导致白屏的问题出现。
-解决方法是在ATab组件的`onChange`事件触发时执行`resetScrollTop()`即可，但是需要注意的是：代码主动改变ATab的`activeKey`不会触发`onChange`事件，还需要你手动调用下
+解决方法是在ATab组件的`onChange`事件触发时执行实例提供的`resetScrollTop()`方法即可，但是需要注意的是：代码主动改变ATab的`activeKey`不会触发`onChange`事件，还需要你手动调用下。
 
 - `示例`
 
@@ -322,7 +374,11 @@ methods: {
 /*--- 忽略部分代码片段 ---*/
 ```
 
-----
+### slot(自定义插槽)如何使用？
+
+代码示例请看：[示例四(slot)](#示例四(slot))
+
+----------------------------------------------------------------------------------------
 
 ## 示例一
 
@@ -393,4 +449,57 @@ this.$refs.editableTable.getValues((error, values) => {
         this.$message.error('验证未通过')
     }
 })
+```
+
+## 示例四(slot)
+
+```html
+<template>
+    <j-editable-table :columns="columns" :dataSource="dataSource">
+        <!-- 定义插槽 -->
+        <!-- 这种定义插槽的写法是vue推荐的新版写法（https://cn.vuejs.org/v2/guide/components-slots.html#具名插槽），旧版已被废弃的写法不再支持 -->
+        <!-- 若webstorm这样写报错，请看这篇文章：https://blog.csdn.net/lxq_9532/article/details/81870651 -->
+        <template v-slot:action="props">
+            <a @click="handleDelete(props)">删除</a>
+        </template>
+    </j-editable-table>
+</template>
+<script>
+    import { FormTypes } from '@/utils/JEditableTableUtil'
+    import JEditableTable from '@/components/jeecg/JEditableTable'
+    export default {
+        components: { JEditableTable },
+        data() {
+            return {
+                columns: [
+                    // ...
+                    {
+                        title: '操作',
+                        key: 'action',
+                        width: '8%',
+                        type: FormTypes.slot, // 定义该列为 自定义插值列 
+                        slot: 'action' // slot 的名称，对应 v-slot 冒号后面和等号前面的内容
+                    }
+                ]
+            }
+        },
+        methods: {
+            /* a 标签的点击事件，删除当前选中的行 */
+            handleDelete(props) {
+                // 参数解释
+                // props.text ：当前值，可能是defaultValue定义的值，也可能是从dataSource中取出的值
+                // props.rowId ：当前选中行的id，如果是新增行则是临时id
+                // props.column ：当前操作的列
+                // props.getValue ：这是一个function，执行后可以获取当前行的所有值（禁止在template中使用）
+                //                  例：const value = props.getValue()
+                // props.target ：触发当前事件的实例，可直接调用该实例内的方法（禁止在template中使用）
+                //                  例：target.add()
+
+                // 使用实例：删除当前操作的行
+                let { rowId, target } = props
+                target.removeRows(rowId)
+            }
+        }
+    }
+</script>
 ```

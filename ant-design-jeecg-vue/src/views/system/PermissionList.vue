@@ -6,7 +6,6 @@
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-button
         @click="batchDel"
-        style="margin-left:8px"
         v-if="selectedRowKeys.length > 0"
         ghost
         type="primary"
@@ -57,11 +56,11 @@
           </a-dropdown>
         </span>
         <!-- 字符串超长截取省略号显示 -->
-        <span slot="url" slot-scope="text, record">
+        <span slot="url" slot-scope="text">
           <j-ellipsis :value="text" :length="25"/>
         </span>
         <!-- 字符串超长截取省略号显示-->
-        <span slot="component" slot-scope="text, record">
+        <span slot="component" slot-scope="text">
           <j-ellipsis :value="text"/>
         </span>
       </a-table>
@@ -176,5 +175,5 @@
   }
 </script>
 <style scoped>
-  @import '../../assets/less/common.css';
+  @import '~@assets/less/common.less'
 </style>

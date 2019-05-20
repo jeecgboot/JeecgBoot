@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysDictMapper">
+
+	<!-- 通过字典code获取字典数据 -->
+	<select id="queryDictItemsByCode" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		   select s.item_value value,s.item_text text from sys_dict_item s 
+		   where dict_id = (select id from sys_dict where dict_code = #{code})
+		   order by s.sort_order asc
+	</select>
+	
+	<!-- 通过字典code获取字典数据 -->
+	<select id="queryDictTextByKey" parameterType="String"  resultType="String">
+		   select s.item_text from sys_dict_item s 
+		   where s.dict_id = (select id from sys_dict where dict_code = #{code})
+		   and s.item_value = #{key}
+	</select>
+
+
+	<!--通过查询指定table的 text code 获取字典-->
+	<select id="queryTableDictItemsByCode" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		   select ${text} as 'text',${code} as 'value' from ${table}
+	</select>
+	
+	<!--通过查询指定table的 text code key 获取字典值-->
+	<select id="queryTableDictTextByKey" parameterType="String"  resultType="String">
+		   select ${text} as 'text' from ${table} where ${code}= #{key}
+	</select>
+
+	<!-- 重复校验 sql语句 -->
+	<select id="duplicateCheckCountSql" resultType="Long" parameterType="org.jeecg.modules.system.model.DuplicateCheckVo">
+		SELECT COUNT(*) FROM ${tableName} WHERE ${fieldName} = #{fieldVal} and id != #{dataId}
+	</select>
+	
+	<!-- 重复校验 sql语句 -->
+	<select id="duplicateCheckCountSqlNoDataId" resultType="Long" parameterType="org.jeecg.modules.system.model.DuplicateCheckVo">
+		SELECT COUNT(*) FROM ${tableName} WHERE ${fieldName} = #{fieldVal}
+	</select>
+		
+	<!-- 查询部门信息 作为字典数据 -->
+	<select id="queryAllDepartBackDictModel" resultType="org.jeecg.common.system.vo.DictModel">
+		select id as value,depart_name as text from sys_depart where del_flag = '0'
+	</select>
+	
+		<!-- 查询部门信息 作为字典数据 -->
+	<select id="queryAllUserBackDictModel" resultType="org.jeecg.common.system.vo.DictModel">
+		select username as value,realname as text from sys_depart where del_flag = '0'
+	</select>
+</mapper>

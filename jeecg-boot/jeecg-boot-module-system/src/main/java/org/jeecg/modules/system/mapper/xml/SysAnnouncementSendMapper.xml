@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysAnnouncementSendMapper">
+	
+	<resultMap id="AnnouncementSendModel" type="org.jeecg.modules.system.model.AnnouncementSendModel" >
+		<result column="id" property="id" jdbcType="VARCHAR"/>
+		<result column="annt_id" property="anntId" jdbcType="VARCHAR"/>
+		<result column="user_id" property="userId" jdbcType="VARCHAR"/>
+		<result column="titile" property="titile" jdbcType="VARCHAR"/>
+		<result column="msg_content" property="msgContent" jdbcType="VARCHAR"/>
+		<result column="sender" property="sender" jdbcType="VARCHAR"/>
+		<result column="priority" property="priority" jdbcType="VARCHAR"/>
+		<result column="msg_category" property="msgCategory" jdbcType="VARCHAR"/>
+		<result column="send_time" property="sendTime" jdbcType="TIMESTAMP"/>
+	</resultMap>
+	
+	<select id="queryByUserId" parameterType="String"  resultType="String">
+	   select sas.annt_id from sys_announcement_send sas 
+	   where sas.user_id = #{userId}
+	</select>
+	
+	<select id="getMyAnnouncementSendList" parameterType="Object"  resultMap="AnnouncementSendModel">
+	   select 
+	   		sas.id,
+	   		sas.annt_id,
+	   		sas.user_id,
+	   		sas.read_flag,
+	   		sa.titile as titile,
+	   		sa.msg_content as msg_content,
+	   		sa.sender as sender,
+	   		sa.priority as priority,
+	   		sa.msg_category,
+	   		sa.send_time as send_time
+	   from sys_announcement_send sas 
+	   left join sys_announcement sa ON sas.annt_id = sa.id
+	   where sa.send_status = '1'
+	   and sa.del_flag = '0'
+	   and sas.user_id = #{announcementSendModel.userId}
+	   <if test="announcementSendModel.titile !=null and announcementSendModel.titile != ''">
+	   		and sa.titile = #{announcementSendModel.titile}
+	   </if>
+	   <if test="announcementSendModel.sender !=null and announcementSendModel.sender != ''">
+	   		and sa.sender = #{announcementSendModel.sender}
+	   </if>
+	   order by sa.send_time desc
+	</select>
+	
+</mapper>

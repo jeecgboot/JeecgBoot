@@ -113,6 +113,11 @@
       },
       validateToNextPassword  (rule, value, callback) {
         const form = this.form;
+        const confirmpassword=form.getFieldValue('confirmpassword');
+        console.log("confirmpassword==>",confirmpassword);
+        if (value && confirmpassword && value !== confirmpassword) {
+          callback('两次输入的密码不一样！');
+        }
         if (value && this.confirmDirty) {
           form.validateFields(['confirm'], { force: true })
         }
@@ -130,7 +135,6 @@
         const value = e.target.value
         this.confirmDirty = this.confirmDirty || !!value
       }
-
     }
   }
 </script>

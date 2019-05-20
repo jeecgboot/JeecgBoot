@@ -196,3 +196,87 @@ this.$refs.superQueryModal.show();
         modaltoggleFlag:true,
 ```
 
+# <a-select/> 下拉选项滚动错位的解决方法
+
+## 问题描述
+
+当使用了 `a-modal` 或其他带有滚动条的组件时，使用`a-select`组件并打开下拉框时滚动滚动条，就会导致错位的问题产生。
+
+## 解决方法
+
+大多数情况下，在 `a-select` 上添加一个 `getPopupContainer` 属性，值为`node => node.parentNode`即可解决。
+但是如果遇到 `a-select` 标签层级过深的情况，可能仍然会显示异常，只需要多加几个`.parentNode` （例：node => node.parentNode.parentNode.parentNode）多尝试几次直到解决问题即可。
+
+### 代码示例
+
+```html
+<a-select
+    placeholder="请选择展示模板"
+    :options="dicts.displayTemplate"
+    :getPopupContainer="node => node.parentNode"
+/>
+```
+
+# JAsyncTreeList 异步数列表组件使用说明
+
+## 引入组件
+
+```js
+import JTreeTable from '@/components/jeecg/JTreeTable'
+export default {
+  components: { JTreeTable }
+}
+```
+
+## 所需参数
+
+| 参数          | 类型     | 必填  | 说明                                                 |
+|-------------|--------|-----|------------------------------------------------------------|
+| rowKey      | String | 非必填 | 表格行 key 的取值，默认为"id" |
+| columns     | Array  | 必填   | 表格列的配置描述，具体见Antd官方文档                   |
+| url         | String | 必填   | 数据查询url                                            |
+| childrenUrl | String | 非必填 | 查询子级时的url，若不填则使用url参数查询子级           |
+| tableProps  | Object | 非必填 | 自定义给内部table绑定的props                           |
+
+## 代码示例
+
+```html
+<template>
+  <a-card :bordered="false">
+    <j-tree-table :url="url" :columns="columns" :tableProps="tableProps"/>
+  </a-card>
+</template>
+
+<script>
+  import JTreeTable from '@/components/jeecg/JTreeTable'
+
+  export default {
+    name: 'AsyncTreeTable',
+    components: { JTreeTable },
+    data() {
+      return {
+        url: '/api/asynTreeList',
+        columns: [
+          { title: '菜单名称', dataIndex: 'name' },
+          { title: '组件', dataIndex: 'component' },
+          { title: '排序', dataIndex: 'orderNum' }
+        ],
+        selectedRowKeys: []
+      }
+    },
+     computed: {
+       tableProps() {
+         let _this = this
+         return {
+           // 列表项是否可选择
+           // 配置项见：https://vue.ant.design/components/table-cn/#rowSelection
+           rowSelection: {
+             selectedRowKeys: _this.selectedRowKeys,
+             onChange: (selectedRowKeys) => _this.selectedRowKeys = selectedRowKeys
+           }
+         }
+       }
+     }
+  }
+</script>
+```

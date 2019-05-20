@@ -1,7 +1,9 @@
 <template>
   <div class="user-wrapper" :class="theme">
     <span class="action">
-      <a-icon type="question-circle-o"></a-icon>
+      <a class="logout_title" target="_blank" href="http://jeecg-boot.mydoc.io">
+        <a-icon type="question-circle-o"></a-icon>
+      </a>
     </span>
     <header-notice class="action"/>
     <a-dropdown>
@@ -17,10 +19,14 @@
           </router-link>
         </a-menu-item>
         <a-menu-item key="1">
-          <router-link :to="{ name: 'account-settings' }">
+          <router-link :to="{ name: 'account-settings-base' }">
             <a-icon type="setting"/>
             <span>账户设置</span>
           </router-link>
+        </a-menu-item>
+        <a-menu-item key="2" @click="updatePassword">
+          <a-icon type="setting"/>
+          <span>密码修改</span>
         </a-menu-item>
        <!-- <a-menu-item key="2" disabled>
           <a-icon type="setting"/>
@@ -41,18 +47,22 @@
         <span v-if="isDesktop()">&nbsp;退出登录</span>
       </a>
     </span>
+    <user-password ref="userPassword"></user-password>
   </div>
 </template>
 
 <script>
   import HeaderNotice from './HeaderNotice'
+  import UserPassword from './UserPassword'
   import { mapActions, mapGetters } from 'vuex'
   import { mixinDevice } from '@/utils/mixin.js'
+
   export default {
     name: "UserMenu",
     mixins: [mixinDevice],
     components: {
-      HeaderNotice
+      HeaderNotice,
+      UserPassword
     },
     props: {
       theme: {
@@ -63,7 +73,7 @@
     },
     methods: {
       ...mapActions(["Logout"]),
-      ...mapGetters(["nickname", "avatar"]),
+      ...mapGetters(["nickname", "avatar","userInfo"]),
       getAvatar(){
         console.log('url = '+ window._CONFIG['imgDomainURL']+"/"+this.avatar())
         return window._CONFIG['imgDomainURL']+"/"+this.avatar()
@@ -88,6 +98,10 @@
           onCancel() {
           },
         });
+      },
+      updatePassword(){
+        let username = this.userInfo().username
+        this.$refs.userPassword.show(username)
       },
     }
   }

@@ -1,7 +1,7 @@
 Jeecg-Boot 快速开发平台(前后端分离版本)
 ===============
 
-当前最新版本： 1.1（发布日期：20190415）
+当前最新版本： 2.0.0（发布日期：20190520）
 
 项目介绍：
 -----------------------------------
@@ -52,11 +52,11 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 -----------------------------------
 
 #### 后端
-- 基础框架：Spring Boot 2.0.3.RELEASE
+- 基础框架：Spring Boot 2.1.3.RELEASE
 
 - 持久层框架：Mybatis-plus_3.0.6
 
-- 安全框架：Apache Shiro 1.4.0-RC2，Jwt_3.4.1
+- 安全框架：Apache Shiro 1.4.0，Jwt_3.7.0
 
 - 数据库连接池：阿里巴巴Druid 1.1.10
 
@@ -89,7 +89,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 依赖管理：Maven
 
-- 数据库：MySQL5.0  &  Oracle 11g
+- 数据库：MySQL5.0  &  Oracle 11g & Sqlserver2005
 
 - 缓存：Redis
 
@@ -98,19 +98,17 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 #### 技术文档
 
 
+- 在线演示 ：  [http://boot.jeecg.org](http://boot.jeecg.org)
+
 - 官方文档 ：  [http://jeecg-boot.mydoc.io](http://jeecg-boot.mydoc.io)
 
-- 零基础入门：  [http://jeecg-boot.mydoc.io/?t=344845](http://jeecg-boot.mydoc.io/?t=344845)
- 
-- 常见问题 ：  [新手入门常见问题汇总](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&page=1&extra=#pid21237)
-
-- 在线演示 ：  [http://boot.jeecg.org](http://boot.jeecg.org)
+- 入门必看：  [http://jeecg-boot.mydoc.io/?t=344845](http://jeecg-boot.mydoc.io/?t=344845)
 
 - QQ交流群 ：  284271917
 
-- 视频教程（视频可能有点老，以1.1文档为准） ：  https://pan.baidu.com/s/1Il0TS50I70vH1AG1y40wtw 提取码：hok5
+- 视频教程（视频有点老，以文档为准） ：  https://pan.baidu.com/s/1Il0TS50I70vH1AG1y40wtw 提取码：hok5
 
-- Angular版本 ：[如果你更熟悉Angular，请点击这里找到jeecg-boot的对应版本](https://gitee.com/dangzhenghui/jeecg-boot)
+- Angular版本 ：[如果你更熟悉Angular，请点击这里](https://gitee.com/dangzhenghui/jeecg-boot)
  
 
 ### 功能模块
@@ -120,6 +118,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  ├─角色管理
 │  ├─菜单管理
 │  ├─权限设置（支持按钮权限、数据权限）
+│  ├─表单权限（控制字段禁用、隐藏）
 │  ├─部门管理
 │  └─字典管理
 ├─智能化功能
@@ -130,11 +129,11 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  ├─高级查询器（弹窗自动组合查询条件）
 │  ├─Excel导入导出工具集成（支持单表，一对多 导入导出）
 │  ├─平台移动自适应支持
-├─Online在线开发
-│  ├─Online在线表单(暂未开源)
-│  ├─Online在线图表(暂未开源)
+├─Online在线开发(暂未开源)
+│  ├─Online在线表单
+│  ├─Online在线图表
+│  ├─Online图表模板配置
 │  ├─Online在线报表
-│  ├─消息中心（支持短信、邮件、微信推送等等）
 ├─系统监控
 │  ├─性能扫描监控
 │  │  ├─监控 Redis
@@ -142,9 +141,11 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  │  ├─jvm
 │  │  ├─服务器信息
 │  │  ├─请求追踪
+│  │  ├─磁盘监控
 │  ├─定时任务
 │  ├─系统日志
-│  ├─数据日志（记录数据变更情况，可进行版本对比查看数据变更记录）
+│  ├─消息中心（支持短信、邮件、微信推送等等）
+│  ├─数据日志（记录数据快照，可对比快照，查看数据变更情况）
 │  ├─系统通知
 │  ├─SQL监控
 │  ├─swagger-ui(在线接口文档)
@@ -166,9 +167,14 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  └─一对多TAB例子
 │  └─内嵌table例子
 │  └─常用选择组件
-│  └─一对多JEditable
+│  └─异步树table
 │  └─接口模拟测试
 │  └─一对多JEditable
+│  └─图片拖拽排序
+│  └─图片翻页
+│  └─图片预览
+│  └─PDF预览
+│  └─分屏功能
 │─封装通用组件	
 │  ├─行编辑表格JEditableTable
 │  └─省略显示组件
@@ -177,7 +183,15 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  └─通用选择用户组件
 │  └─通过组织机构选择用户组件
 │  └─报表组件封装
-│  └─等等组件
+│  └─字典组件
+│  └─下拉多选组件
+│  └─选人组件
+│  └─选部门组件
+│  └─通过部门选人组件
+│  └─封装曲线、柱状图、饼状图、折线图等等报表的组件（经过封装，使用简单）
+│  └─在线code编辑器
+│  └─上传文件组件
+│  └─等等
 │─更多页面模板
 │  ├─各种高级表单
 │  ├─各种列表效果
@@ -242,7 +256,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 - jdk8
 - mysql
 - redis
-- 数据库脚步：jeecg-boot\docs\jeecg-boot_1.1.0-20190415.sql
+- 数据库脚步：jeecg-boot\docs\jeecg-boot-mysql.sql
 - 默认登录账号： admin/123456
 
 

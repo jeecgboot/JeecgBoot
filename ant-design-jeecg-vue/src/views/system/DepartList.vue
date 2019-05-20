@@ -2,12 +2,17 @@
   <a-row :gutter="10">
     <a-col :md="12" :sm="24">
       <a-card :bordered="false">
+
         <!-- 按钮操作区域 -->
         <a-row style="margin-left: 14px">
-          <a-button @click="handleAdd(2)" type="primary">添加子部门</a-button>
-          <a-button @click="handleAdd(1)" type="default">添加一级部门</a-button>
+          <!--<a-button @click="handleAdd(2)" type="primary">添加子部门</a-button>-->
+          <a-button @click="handleAdd(1)" type="primary">添加一级部门</a-button>
+          <a-button type="primary" icon="download" @click="handleExportXls('部门信息')">导出</a-button>
+          <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
+            <a-button type="primary" icon="import">导入</a-button>
+          </a-upload>
           <a-button title="删除多条数据" @click="batchDel" type="default">批量删除</a-button>
-          <a-button @click="refresh" type="default" icon="reload" :loading="loading">刷新</a-button>
+          <!--<a-button @click="refresh" type="default" icon="reload" :loading="loading">刷新</a-button>-->
         </a-row>
         <div style="background: #fff;padding-left:16px;height: 100%; margin-top: 5px">
           <a-alert type="info" :showIcon="true">
@@ -71,6 +76,12 @@
           <a-form-item
             :labelCol="labelCol"
             :wrapperCol="wrapperCol"
+            label="机构编码">
+            <a-input disabled placeholder="请输入机构编码" v-decorator="['orgCode', validatorRules.orgCode ]"/>
+          </a-form-item>
+          <a-form-item
+            :labelCol="labelCol"
+            :wrapperCol="wrapperCol"
             label="排序">
             <a-input-number v-decorator="[ 'departOrder',{'initialValue':0}]"/>
           </a-form-item>
@@ -105,8 +116,9 @@
 <script>
   import DepartModal from './modules/DepartModal'
   import pick from 'lodash.pick'
-  import { queryDepartTreeList, searchByKeywords, deleteByDepartId } from '@/api/api'
-  import { httpAction, deleteAction } from '@/api/manage'
+  import {queryDepartTreeList, searchByKeywords, deleteByDepartId} from '@/api/api'
+  import {httpAction, deleteAction} from '@/api/manage'
+  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   // 表头
   const columns = [
     {
@@ -120,7 +132,7 @@
     },
     {
       title: '机构编码',
-      dataIndex: 'orgCode'
+      dataIndex: 'orgCode',
     },
     {
       title: '手机号',
@@ -143,11 +155,12 @@
       title: '操作',
       align: 'center',
       dataIndex: 'action',
-      scopedSlots: { customRender: 'action' }
+      scopedSlots: {customRender: 'action'}
     }
   ]
   export default {
     name: 'DepartList',
+    mixins: [JeecgListMixin],
     components: {
       DepartModal
     },
@@ -175,30 +188,40 @@
         currSelected: {},
         form: this.$form.createForm(this),
         labelCol: {
-          xs: { span: 24 },
-          sm: { span: 5 }
+          xs: {span: 24},
+          sm: {span: 5}
         },
         wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 }
+          xs: {span: 24},
+          sm: {span: 16}
         },
         graphDatasource: {
           nodes: [],
           edges: []
         },
         validatorRules: {
-          departName: { rules: [{ required: true, message: '请输入机构/部门名称!' }] },
-          orgCode: { rules: [{ required: true, message: '请输入机构编码!' }] },
-          mobile: { rules: [{ validator: this.validateMobile }] }
+          departName: {rules: [{required: true, message: '请输入机构/部门名称!'}]},
+          orgCode: {rules: [{required: true, message: '请输入机构编码!'}]},
+          mobile: {rules: [{validator: this.validateMobile}]}
         },
         url: {
           delete: '/sysdepart/sysDepart/delete',
           edit: '/sysdepart/sysDepart/edit',
-          deleteBatch: '/sysdepart/sysDepart/deleteBatch'
-        }
+          deleteBatch: '/sysdepart/sysDepart/deleteBatch',
+          exportXlsUrl: "sysdepart/sysDepart/exportXls",
+          importExcelUrl: "sysdepart/sysDepart/importExcel",
+        },
+      }
+    },
+    computed: {
+      importExcelUrl: function () {
+        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
       }
     },
     methods: {
+      loadData() {
+        this.refresh();
+      },
       loadTree() {
         var that = this
         that.treeData = []
@@ -257,7 +280,7 @@
       addRootNode() {
         this.$refs.nodeModal.add(this.currFlowId, '')
       },
-      batchDel: function() {
+      batchDel: function () {
         console.log(this.checkedKeys)
         if (this.checkedKeys.length <= 0) {
           this.$message.warning('请选择一条记录！')
@@ -270,8 +293,8 @@
           this.$confirm({
             title: '确认删除',
             content: '确定要删除所选中的 ' + this.checkedKeys.length + ' 条数据?',
-            onOk: function() {
-              deleteAction(that.url.deleteBatch, { ids: ids }).then((res) => {
+            onOk: function () {
+              deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
                 if (res.success) {
                   that.$message.success(res.message)
                   that.loadTree()
@@ -287,7 +310,7 @@
       onSearch(value) {
         let that = this
         if (value) {
-          searchByKeywords({ keyWord: value }).then((res) => {
+          searchByKeywords({keyWord: value}).then((res) => {
             if (res.success) {
               that.departTree = []
               for (let i = 0; i < res.result.length; i++) {
@@ -332,8 +355,8 @@
       },
       // 触发onSelect事件时,为部门树右侧的form表单赋值
       setValuesToForm(record) {
-        this.form.getFieldDecorator('fax', { initialValue: '' })
-        this.form.setFieldsValue(pick(record, 'departName', 'departOrder', 'mobile', 'fax', 'address', 'memo'))
+        this.form.getFieldDecorator('fax', {initialValue: ''})
+        this.form.setFieldsValue(pick(record, 'departName', 'orgCode', 'departOrder', 'mobile', 'fax', 'address', 'memo'))
       },
       getCurrSelectedTitle() {
         return !this.currSelected.title ? '' : this.currSelected.title
@@ -368,6 +391,8 @@
               if (res.success) {
                 this.$message.success('保存成功!')
                 this.loadTree()
+              } else {
+                this.$message.error(res.message)
               }
             })
           }
@@ -404,7 +429,7 @@
         }
       },
       handleDelete() {
-        deleteByDepartId({ id: this.rightClickSelectedKey }).then((resp) => {
+        deleteByDepartId({id: this.rightClickSelectedKey}).then((resp) => {
           if (resp.success) {
             this.$message.success('删除成功!')
             this.loadTree()
@@ -415,7 +440,7 @@
       },
       selectDirectiveOk(record) {
         console.log('选中指令数据', record)
-        this.nodeSettingForm.setFieldsValue({ directiveCode: record.directiveCode })
+        this.nodeSettingForm.setFieldsValue({directiveCode: record.directiveCode})
         this.currSelected.sysCode = record.sysCode
       },
       getFlowGraphData(node) {
@@ -433,17 +458,21 @@
             this.getFlowGraphData(temp)
           }
         }
-      }
+      },
     },
     created() {
       this.currFlowId = this.$route.params.id
       this.currFlowName = this.$route.params.name
-      this.loadTree()
-    }
+      // this.loadTree()
+    },
 
   }
 </script>
 <style scoped>
+  .ant-card-body .table-operator {
+    margin: 15px;
+  }
+
   .anty-form-btn {
     width: 100%;
     text-align: center;
@@ -451,10 +480,6 @@
 
   .anty-form-btn button {
     margin: 0 5px;
-  }
-
-  .anty-node-layout .ant-layout-content {
-    margin: 0 !important;
   }
 
   .anty-node-layout .ant-layout-header {

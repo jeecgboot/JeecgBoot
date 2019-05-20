@@ -1,7 +1,15 @@
 <template>
-  <a-select :placeholder="placeholder" :value="value" @change="handleInput">
+  <a-radio-group v-if="tagType=='radio'" @change="handleInput" :value="value" :disabled="disabled">
+    <a-radio v-for="(item, key) in dictOptions" :key="key" :value="item.value">{{ item.text }}</a-radio>
+  </a-radio-group>
+
+  <a-select v-else-if="tagType=='select'" :placeholder="placeholder" :disabled="disabled" :value="value" @change="handleInput">
     <a-select-option value="">请选择</a-select-option>
-    <a-select-option v-for="(item, key) in dictOptions" :key="key" :value="item.value">{{ item.text }}</a-select-option>
+    <a-select-option v-for="(item, key) in dictOptions" :key="key" :value="item.value">
+      <span style="display: inline-block;width: 100%" :title=" item.text || item.label ">
+        {{ item.text || item.label }}
+      </span>
+    </a-select-option>
   </a-select>
 </template>
 
@@ -14,15 +22,23 @@
       dictCode: String,
       placeholder: String,
       triggerChange: Boolean,
-      value: String,// 1.接收一个 value prop
+      disabled: Boolean,
+      value: String,
+      type: String
     },
     data() {
       return {
         dictOptions: [],
+        tagType:""
       }
     },
     created() {
       console.log(this.dictCode);
+      if(!this.type || this.type==="list"){
+        this.tagType = "select"
+      }else{
+        this.tagType = this.type
+      }
       //获取字典数据
       this.initDictData();
     },
@@ -36,13 +52,25 @@
           }
         })
       },
-      handleInput(val) {
+      handleInput(e) {
+        let val;
+        if(this.tagType=="radio"){
+          val = e.target.value
+        }else{
+          val = e
+        }
         console.log(val);
         if(this.triggerChange){
           this.$emit('change', val);
         }else{
           this.$emit('input', val);
         }
+      },
+      setCurrentDictOptions(dictOptions){
+        this.dictOptions = dictOptions
+      },
+      getCurrentDictOptions(){
+        return this.dictOptions
       }
     }
   }

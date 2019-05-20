@@ -65,9 +65,8 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
       <a-button @click="handleAdd" v-has="'user:add'" type="primary" icon="plus">添加用户</a-button>
-      <a-button @click="handleSyncUser" type="primary" icon="plus">重新同步流程用户</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :action="importExcelUrl" @change="handleImportExcel">
+      <a-button type="primary" icon="download" @click="handleExportXls('用户信息')">导出</a-button>
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
       <a-dropdown v-if="selectedRowKeys.length > 0">
@@ -113,7 +112,7 @@
 
         <template slot="avatarslot" slot-scope="text, record, index">
           <div class="anty-img-wrap">
-            <img :src="getAvatarView(record.avatar)"/>
+            <a-avatar shape="square" :src="getAvatarView(record.avatar)" icon="user"/>
           </div>
         </template>
 
@@ -153,6 +152,10 @@
                 </a-popconfirm>
               </a-menu-item>
 
+              <a-menu-item>
+                <a href="javascript:;" @click="handleAgentSettings(record.username)">代理人</a>
+              </a-menu-item>
+
             </a-menu>
           </a-dropdown>
         </span>
@@ -166,6 +169,7 @@
 
     <password-modal ref="passwordmodal" @ok="passwordModalOk"></password-modal>
 
+    <sys-user-agent-modal ref="sysUserAgentModal"></sys-user-agent-modal>
   </a-card>
 </template>
 
@@ -175,11 +179,13 @@
   import {putAction} from '@/api/manage';
   import {frozenBatch} from '@/api/api'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import SysUserAgentModal from "./modules/SysUserAgentModal";
 
   export default {
     name: "UserList",
     mixins: [JeecgListMixin],
     components: {
+      SysUserAgentModal,
       UserModal,
       PasswordModal
     },
@@ -269,7 +275,7 @@
           list: "/sys/user/list",
           delete: "/sys/user/delete",
           deleteBatch: "/sys/user/deleteBatch",
-          exportXlsUrl: "sys/user/exportXls",
+          exportXlsUrl: "/sys/user/exportXls",
           importExcelUrl: "sys/user/importExcel",
         },
       }
@@ -334,15 +340,9 @@
       handleChangePassword(username) {
         this.$refs.passwordmodal.show(username);
       },
-      handleSyncUser() {
-        var that = this;
-        putAction(that.url.syncUser, {}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-          } else {
-            that.$message.warning(res.message);
-          }
-        })
+      handleAgentSettings(username){
+        this.$refs.sysUserAgentModal.agentSettings(username);
+        this.$refs.sysUserAgentModal.title = "用户代理人设置";
       },
       passwordModalOk() {
         //TODO 密码修改完成 不需要刷新页面，可以把datasource中的数据更新一下
@@ -352,52 +352,5 @@
   }
 </script>
 <style scoped>
-  /** Button按钮间距 */
-  .ant-btn {
-    margin-left: 3px
-  }
-  .ant-card-body {
-    margin-bottom: 18px;
-  }
-
-  .table-operator button {
-    margin-bottom: 18px;
-    margin-right: 5px;
-  }
-
-  .ant-table-tbody .ant-table-row td {
-    padding-top: 15px;
-    padding-bottom: 15px;
-  }
-
-  .anty-row-operator button {
-    margin: 0 5px
-  }
-
-  .ant-btn-danger {
-    background-color: #ffffff
-  }
-
-  .ant-modal-cust-warp {
-    height: 100%
-  }
-
-  .ant-modal-cust-warp .ant-modal-body {
-    height: calc(100% - 110px) !important;
-    overflow-y: auto
-  }
-
-  .ant-modal-cust-warp .ant-modal-content {
-    height: 90% !important;
-    overflow-y: hidden
-  }
-
-  .anty-img-wrap {
-    height: 25px;
-    position: relative;
-  }
-
-  .anty-img-wrap > img {
-    max-height: 100%;
-  }
+  @import '~@assets/less/common.less'
 </style>
