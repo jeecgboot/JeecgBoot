@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50037
 File Encoding         : 65001
 
-Date: 2019-05-20 14:34:39
+Date: 2019-05-20 15:18:21
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -850,15 +850,12 @@ INSERT INTO `sys_dict_item` VALUES ('aa0d8a8042a18715a17f0a888d360aa4', 'ac2f7c0
 INSERT INTO `sys_dict_item` VALUES ('adcf2a1fe93bb99a84833043f475fe0b', '4e4602b3e3686f0911384e188dc7efb4', '包含', 'IN', '包含', '8', '1', 'admin', '2019-04-01 16:45:47', 'admin', '2019-04-01 17:49:24');
 INSERT INTO `sys_dict_item` VALUES ('b029a41a851465332ee4ee69dcf0a4c2', '0b5d19e1fce4b2e6647e6b4a17760c14', '系统消息', '2', null, '1', '1', 'admin', '2019-02-22 18:02:08', 'admin', '2019-04-22 18:02:13');
 INSERT INTO `sys_dict_item` VALUES ('b2a8b4bb2c8e66c2c4b1bb086337f393', '3486f32803bb953e7155dab3513dc68b', '正常', '0', null, null, '1', 'admin', '2022-10-18 21:46:48', 'admin', '2019-03-28 22:22:20');
-INSERT INTO `sys_dict_item` VALUES ('b4a887dc3ff01d2daadaa412e63189ed', '4f69be5f507accea8d5df5f11346181a', '邮件', '2', null, '2', '1', 'admin', '2021-05-11 14:29:03', 'admin', '2019-04-11 14:29:25');
 INSERT INTO `sys_dict_item` VALUES ('b57f98b88363188daf38d42f25991956', '6b78e3f59faec1a4750acff08030a79b', '22', '222', null, null, '0', 'admin', '2019-02-21 19:59:43', 'admin', '2019-03-11 21:23:27');
 INSERT INTO `sys_dict_item` VALUES ('b5f3bd5f66bb9a83fecd89228c0d93d1', '68168534ff5065a152bfab275c2136f8', '无效', '0', '无效', '1', '1', 'admin', '2019-04-26 19:21:49', null, null);
 INSERT INTO `sys_dict_item` VALUES ('b9fbe2a3602d4a27b45c100ac5328484', '78bda155fe380b1b3f175f1e88c284c6', '待提交', '1', '待提交', '1', '1', 'admin', '2019-05-09 16:32:35', null, null);
 INSERT INTO `sys_dict_item` VALUES ('ba27737829c6e0e582e334832703d75e', '236e8a4baff0db8c62c00dd95632834f', '同步', '1', '同步', '1', '1', 'admin', '2019-05-15 15:28:15', null, null);
 INSERT INTO `sys_dict_item` VALUES ('cbfcc5b88fc3a90975df23ffc8cbe29c', 'c5a14c75172783d72cbee6ee7f5df5d1', '曲线图', 'line', null, '2', '1', 'admin', '2019-05-12 17:05:30', 'admin', '2019-04-12 17:06:06');
-INSERT INTO `sys_dict_item` VALUES ('d1cee7b0dcccff0b07da7325110fcad4', '4f69be5f507accea8d5df5f11346181a', '微信', '3', '', '3', '1', 'admin', '2035-02-28 10:50:53', 'admin', '2019-04-28 10:58:51');
 INSERT INTO `sys_dict_item` VALUES ('d217592908ea3e00ff986ce97f24fb98', 'c5a14c75172783d72cbee6ee7f5df5d1', '数据列表', 'table', null, '4', '1', 'admin', '2019-04-12 17:05:56', null, null);
-INSERT INTO `sys_dict_item` VALUES ('d75b5b3666d0742f08027af0255b4400', '4f69be5f507accea8d5df5f11346181a', '短信', '1', null, '1', '1', 'admin', '2019-04-11 14:28:49', null, null);
 INSERT INTO `sys_dict_item` VALUES ('df168368dcef46cade2aadd80100d8aa', '3d9a351be3436fbefb1307d4cfb49bf2', '男', '1', null, '1', '1', null, '2027-08-04 14:56:49', 'admin', '2019-03-23 22:44:44');
 INSERT INTO `sys_dict_item` VALUES ('e6329e3a66a003819e2eb830b0ca2ea0', '4e4602b3e3686f0911384e188dc7efb4', '小于', '<', '小于', '2', '1', 'admin', '2019-04-01 16:44:15', 'admin', '2019-04-01 17:48:34');
 INSERT INTO `sys_dict_item` VALUES ('e94eb7af89f1dbfa0d823580a7a6e66a', '236e8a4baff0db8c62c00dd95632834f', '不同步', '0', '不同步', '2', '1', 'admin', '2019-05-15 15:28:28', null, null);
@@ -1676,6 +1673,9 @@ INSERT INTO `sys_log` VALUES ('57264fff74c4f857bddf5d766951f3c9', '2', '添加�
 INSERT INTO `sys_log` VALUES ('eef5b90eea8e7394193443cfd7476529', '2', '删除测试DEMO', null, 'admin', '管理员', '127.0.0.1', 'org.jeecg.modules.demo.test.controller.JeecgDemoController.delete()', null, '[\"dcb45a2fc661e5cdc341b806e5914873\"]', null, '9', 'admin', '2019-05-19 18:36:02', null, null);
 INSERT INTO `sys_log` VALUES ('488fc8f3d040fa75c6802898ea88f7d6', '1', '用户名: admin,登录成功！', null, null, null, '127.0.0.1', null, null, null, null, null, 'jeecg', '2019-05-20 11:38:38', null, null);
 INSERT INTO `sys_log` VALUES ('6c99cfe2774c15ad030b83723f81d70d', '1', '用户名: admin,登录成功！', null, null, null, '127.0.0.1', null, null, null, null, null, 'jeecg', '2019-05-20 14:07:25', null, null);
+INSERT INTO `sys_log` VALUES ('1bf5c5603b79f749d4ee75965b3698db', '1', '用户名: admin,登录成功！', null, null, null, '127.0.0.1', null, null, null, null, null, 'jeecg', '2019-05-20 14:54:39', null, null);
+INSERT INTO `sys_log` VALUES ('5bca377b50c362009738d612cac82006', '1', '用户名: admin,登录成功！', null, null, null, '127.0.0.1', null, null, null, null, null, 'jeecg', '2019-05-20 14:54:38', null, null);
+INSERT INTO `sys_log` VALUES ('2255d6f5e2a3d0839b8b9cfc67816c5c', '1', '用户名: admin,登录成功！', null, null, null, '127.0.0.1', null, null, null, null, null, 'jeecg', '2019-05-20 15:01:51', null, null);
 
 -- ----------------------------
 -- Table structure for sys_permission
@@ -2356,7 +2356,7 @@ CREATE TABLE `sys_user` (
 -- ----------------------------
 INSERT INTO `sys_user` VALUES ('42d153bffeea74f72a9c1697874fa4a7', 'test22', '23232', 'ac52e15671a377cf', '5FMD48RM', 'user/20190314/ly-plate-e_1552531617500.png', '2019-02-09 00:00:00', '1', 'zhangdaiscott@163.com', '18611782222', null, '1', '0', '1', 'admin', '2019-01-26 18:01:10', 'admin', '2019-03-23 15:05:50');
 INSERT INTO `sys_user` VALUES ('a75d45a015c44384a04449ee80dc3503', 'jeecg', 'jeecg', '3dd8371f3cf8240e', 'vDDkDzrK', 'user/20190220/e1fe9925bc315c60addea1b98eb1cb1349547719_1550656892940.jpg', null, '2', null, null, null, '1', '0', '1', 'admin', '2019-02-13 16:02:36', 'admin', '2019-04-09 15:47:36');
-INSERT INTO `sys_user` VALUES ('e9ca23d68d884d4ebb19d07889727dae', 'admin', '管理员', 'cb362cfeefbf3d8d', 'RCGTeGiH', 'user/20190119/logo-2_1547868176839.png', '2018-12-05 00:00:00', '1', '11@qq.com', '18566666666', 'A01', '1', '0', '1', null, '2018-12-21 17:54:10', 'admin', '2019-02-26 17:55:02');
+INSERT INTO `sys_user` VALUES ('e9ca23d68d884d4ebb19d07889727dae', 'admin', '管理员', 'cb362cfeefbf3d8d', 'RCGTeGiH', 'user/20190119/logo-2_1547868176839.png', '2018-12-05 00:00:00', '1', '11@qq.com', '18566666666', 'A01', '1', '0', '1', null, '2034-06-21 17:54:10', 'admin', '2019-05-20 15:17:49');
 INSERT INTO `sys_user` VALUES ('f0019fdebedb443c98dcb17d88222c38', 'zhagnxiao', '张小红', 'f898134e5e52ae11a2ffb2c3b57a4e90', 'go3jJ4zX', 'user/20190401/20180607175028Fn1Lq7zw_1554118444672.png', '2019-04-01 00:00:00', null, null, null, null, '1', '0', '1', 'admin', '2023-10-01 19:34:10', 'admin', '2019-04-10 22:00:22');
 
 -- ----------------------------
@@ -2409,8 +2409,7 @@ CREATE TABLE `sys_user_depart` (
 INSERT INTO `sys_user_depart` VALUES ('0c42ba309c2c4cad35836ec2336676fa', '42d153bffeea74f72a9c1697874fa4a7', '6d35e179cd814e3299bd588ea7daed3f');
 INSERT INTO `sys_user_depart` VALUES ('2835834d133f9118ee87a666e0f5501e', 'a75d45a015c44384a04449ee80dc3503', 'a7d7e77e06c84325a40932163adcdaa6');
 INSERT INTO `sys_user_depart` VALUES ('1f3a0267811327b9eca86b0cc2b956f3', 'bcbe1290783a469a83ae3bd8effe15d4', '5159cde220114246b045e574adceafe9');
-INSERT INTO `sys_user_depart` VALUES ('577ae220081f78ceaf8cb26eb75330ab', 'e9ca23d68d884d4ebb19d07889727dae', '4f1765520d6346f9bd9c79e2479e5b12');
-INSERT INTO `sys_user_depart` VALUES ('15e0d72bcbab86a41e38222b1f09428e', 'e9ca23d68d884d4ebb19d07889727dae', 'c6d7cb4deeac411cb3384b1b31278596');
+INSERT INTO `sys_user_depart` VALUES ('2859701380c604f9ed213c677a543d27', 'e9ca23d68d884d4ebb19d07889727dae', 'c6d7cb4deeac411cb3384b1b31278596');
 INSERT INTO `sys_user_depart` VALUES ('ac52f23ae625eb6560c9227170b88166', 'f0019fdebedb443c98dcb17d88222c38', '57197590443c44f083d42ae24ef26a2c');
 INSERT INTO `sys_user_depart` VALUES ('179660a8b9a122f66b73603799a10924', 'f0019fdebedb443c98dcb17d88222c38', '67fc001af12a4f9b8458005d3f19934a');
 
@@ -2445,7 +2444,7 @@ INSERT INTO `sys_user_role` VALUES ('8d7846ec783e157174e4ce2949231a65', '7ee6630
 INSERT INTO `sys_user_role` VALUES ('79d66ef7aa137cfa9957081a1483009d', '9a668858c4c74cf5a2b25ad9608ba095', 'ee8626f80f7c2619917b6236f3a7f02b');
 INSERT INTO `sys_user_role` VALUES ('f3a4ca33848daba3e43490707ae859e7', 'a75d45a015c44384a04449ee80dc3503', 'e51758fa916c881624b046d26bd09230');
 INSERT INTO `sys_user_role` VALUES ('fe38580871c5061ba59d5c03a0840b0e', 'a75d45a015c44384a04449ee80dc3503', 'ee8626f80f7c2619917b6236f3a7f02b');
-INSERT INTO `sys_user_role` VALUES ('6ec01b4aaab790eac4ddb33d7a524a58', 'e9ca23d68d884d4ebb19d07889727dae', 'f6817f48af4fb3af11b9e8bf182f618b');
+INSERT INTO `sys_user_role` VALUES ('14c2c4f0273ab530bc987d14648930ba', 'e9ca23d68d884d4ebb19d07889727dae', 'f6817f48af4fb3af11b9e8bf182f618b');
 INSERT INTO `sys_user_role` VALUES ('d2233e5be091d39da5abb0073c766224', 'f0019fdebedb443c98dcb17d88222c38', 'ee8626f80f7c2619917b6236f3a7f02b');
 
 -- ----------------------------
