@@ -102,7 +102,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 官方文档 ：  [http://jeecg-boot.mydoc.io](http://jeecg-boot.mydoc.io)
 
-- 入门必看：  [http://jeecg-boot.mydoc.io/?t=344845](http://jeecg-boot.mydoc.io/?t=344845)
+- 入门必看：  [http://jeecg-boot.mydoc.io/?t=345660](http://jeecg-boot.mydoc.io/?t=345660)
 
 - QQ交流群 ：  284271917
 
