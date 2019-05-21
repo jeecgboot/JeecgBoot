@@ -23,17 +23,14 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 在线演示 ：  [http://boot.jeecg.org](http://boot.jeecg.org)
 
-- 官方文档 ：  [http://jeecg-boot.mydoc.io](http://jeecg-boot.mydoc.io)
+- 在线文档 ：  [http://jeecg-boot.mydoc.io](http://jeecg-boot.mydoc.io)
 
-- 入门必看：  [http://jeecg-boot.mydoc.io/?t=345660](http://jeecg-boot.mydoc.io/?t=345660)
+- 入门教程：  [http://jeecg-boot.mydoc.io/?t=345660](http://jeecg-boot.mydoc.io/?t=345660)
 
 - 入门必看：  [JeecgBoot常见问题大全](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
 
 - QQ交流群 ：  284271917
 
-- 视频教程（视频有点老，以文档为准） ：  https://pan.baidu.com/s/1Il0TS50I70vH1AG1y40wtw 提取码：hok5
-
-- Angular版本 ：[如果你更熟悉Angular，请点击这里](https://gitee.com/dangzhenghui/jeecg-boot)
 
 
 
@@ -100,6 +97,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 - [Viser-vue](https://viserjs.github.io/docs.html#/viser/guide/installation)  - antv/g2 封装实现
 - eslint，[@vue/cli 3.2.1](https://cli.vuejs.org/zh/guide)
 - vue-print-nb - 打印
+
 
 #### 开发环境
 
@@ -279,7 +277,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 - [vue-cropper](https://github.com/xyxiao001/vue-cropper) - 头像裁剪组件
 - [@antv/g2](https://antv.alipay.com/zh-cn/index.html) - Alipay AntV 数据可视化图表
 - [Viser-vue](https://viserjs.github.io/docs.html#/viser/guide/installation)  - antv/g2 封装实现
-
+- [jeecg-boot-angular 版本](https://gitee.com/dangzhenghui/jeecg-boot)
 
 
 项目下载和运行
