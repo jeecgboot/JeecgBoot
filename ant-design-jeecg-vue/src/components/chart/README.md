@@ -35,6 +35,45 @@ import Bar from '@/components/chart/Bar'
 ]
 ```
 
+##### 代码示例
+
+```html
+<template>
+    <bar title="柱状图" :dataSource="dataSource" :height="420"/>
+</template>
+
+<script>
+    import Bar from '@/components/chart/Bar'
+
+    export default {
+        name: 'ChartDemo',
+        components: {
+            Bar
+        },
+        data() {
+            return {
+                dataSource: [
+                    {
+                        "x": "1月",
+                        "y": 320
+                    },
+                    {
+                        "x": "2月",
+                        "y": 457
+                    },
+                    {
+                        "x": "3月",
+                        "y": 182
+                    }
+                ]
+            }
+        }
+    }
+</script>
+
+<style></style>
+```
+
 ## 多列柱状图
 
 ##### 引用方式

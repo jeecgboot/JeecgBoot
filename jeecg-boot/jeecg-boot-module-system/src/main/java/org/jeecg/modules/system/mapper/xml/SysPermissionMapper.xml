@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysPermissionMapper">
+
+
+	<resultMap id="TreeModel" type="org.jeecg.modules.system.model.TreeModel" >
+		<result column="id" property="key" jdbcType="VARCHAR"/>
+		<result column="name" property="title" jdbcType="VARCHAR"/>
+		<result column="icon" property="icon" jdbcType="VARCHAR"/>
+		<result column="parent_id" property="parentId" jdbcType="VARCHAR"/>
+		<result column="leaf_flag" property="isLeaf" jdbcType="INTEGER"/>
+	</resultMap>
+	
+	<!-- 通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap id="SysPermission" type="org.jeecg.modules.system.entity.SysPermission">
+	   <!-- result属性映射非匹配字段 -->
+	    <result column="is_route" property="route"/>
+	    <result column="is_leaf" property="leaf"/>
+	</resultMap>
+	
+	
+	<select id="queryListByParentId" parameterType="Object"  resultMap="TreeModel">
+		   SELECT   
+                   id
+                   ,parent_id
+                   ,name
+                   ,icon
+                   ,leaf_flag
+		   FROM   sys_permission
+		   WHERE 1=1
+		    <choose>
+		   		<when test="parentId != null and parentId != ''">
+		   			AND parent_id =  #{parentId,jdbcType=VARCHAR}
+		   		</when>
+		   		<otherwise>
+		   			AND parent_id is null
+		   		</otherwise>
+		    </choose>
+	</select>
+	
+	<!-- 获取登录用户拥有的权限 -->
+	<select id="queryByUser" parameterType="Object"  resultMap="SysPermission">
+		   SELECT p.*
+		   FROM  sys_permission p
+		   WHERE exists(
+		   		select a.id from sys_role_permission a
+		   		join sys_role b on a.role_id = b.id
+		   		join sys_user_role c on c.role_id = b.id
+		   		join sys_user d on d.id = c.user_id 
+		   		where p.id = a.permission_id AND d.username = #{username,jdbcType=VARCHAR}
+		   )
+		   and p.del_flag = 0
+		   order by p.sort_no ASC
+	</select>
+	
+	
+
+</mapper>

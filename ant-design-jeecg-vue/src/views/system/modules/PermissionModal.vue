@@ -15,7 +15,7 @@
           <a-radio-group @change="onChangeMenuType" v-decorator="['menuType',{'initialValue':0}]">
             <a-radio :value="0">一级菜单</a-radio>
             <a-radio :value="1">子菜单</a-radio>
-            <a-radio :value="2">按钮/数据权限</a-radio>
+            <a-radio :value="2">按钮/权限</a-radio>
           </a-radio-group>
         </a-form-item>
 
@@ -72,6 +72,24 @@
           :wrapperCol="wrapperCol"
           label="授权标识">
           <a-input placeholder="多个用逗号分隔, 如: user:list,user:create" v-decorator="[ 'perms', {}]" :readOnly="disableSubmit"/>
+        </a-form-item>
+
+        <a-form-item
+          v-show="!show"
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="授权策略">
+          <j-dict-select-tag  v-decorator="['permsType', {}]" placeholder="请选择授权策略" :type="'radio'" :triggerChange="true" dictCode="global_perms_type"/>
+
+
+        </a-form-item>
+        <a-form-item
+          v-show="!show"
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="状态">
+          <j-dict-select-tag  v-decorator="['status', {}]" placeholder="请选择状态" :type="'radio'" :triggerChange="true" dictCode="valid_status"/>
+
         </a-form-item>
 
         <a-form-item
@@ -136,6 +154,7 @@
   import {addPermission,editPermission,queryTreeList} from '@/api/api'
   import Icons from './icon/Icons'
   import pick from 'lodash.pick'
+  import { initDictOptions } from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "PermissionModal",
@@ -168,12 +187,14 @@
         form: this.$form.createForm(this),
         validatorRules:{
           name:{rules: [{ required: true, message: '请输入菜单标题!' }]},
+          permsType:{rules: [{ required: true, message: '请输入授权策略!' }]},
           sortNo:{rules: [{validator: this.validateNumber}]},
         },
         iconChooseVisible: false,
       }
     },
     created () {
+      this.initDictConfig();
     },
     methods: {
       loadTree(){
@@ -193,7 +214,7 @@
         });
       },
       add () {
-        this.edit();
+        this.edit({status:'1',permsType:'1'});
       },
       edit (record) {
         this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
@@ -224,12 +245,13 @@
           }
           this.show = true;
           this.menuLabel = '菜单名称';
+          this.routeSwitch = true;
         }
         //----------------------------------------------------------------------------------------------
 
         this.visible = true;
         this.loadTree();
-        let fieldsVal = pick(this.model,'name','perms','component','url','sortNo','menuType');
+        let fieldsVal = pick(this.model,'name','perms','permsType','component','url','sortNo','menuType','status');
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldsVal)
         });
@@ -311,6 +333,8 @@
         }else{
           this.drawerWidth = 700;
         }
+      },
+      initDictConfig() {
       },
     }
   }

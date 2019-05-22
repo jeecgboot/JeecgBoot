@@ -194,14 +194,5 @@
   }
 </script>
 <style scoped>
-  .ant-card-body .table-operator{
-    margin-bottom: 18px;
-  }
-  .ant-table-tbody .ant-table-row td{
-    padding-top:15px;
-    padding-bottom:15px;
-  }
-  .anty-row-operator button{margin: 0 5px}
-  .ant-btn-danger{background-color: #ffffff}
-  .ant-divider-horizontal{margin: 10px 0;}
+  @import '~@assets/less/common.less'
 </style>

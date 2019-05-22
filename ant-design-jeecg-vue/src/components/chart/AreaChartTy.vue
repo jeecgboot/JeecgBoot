@@ -1,12 +1,12 @@
 <template>
-  <div :style="{ padding: '0 0 32px 32px' }">
+  <div :style="{ padding: '0' }">
     <h4 :style="{ marginBottom: '20px' }">{{ title }}</h4>
 
     <v-chart ref="chart" :forceFit="true" :height="height" :data="dataSource" :scale="scale">
-      <v-tooltip/>
+      <v-tooltip :shared="false"/>
       <v-axis/>
-      <v-line position="x*y" :size="lineSize"/>
-      <v-area position="x*y"/>
+      <v-line position="x*y" :size="lineSize" :color="lineColor"/>
+      <v-area position="x*y" :color="color"/>
     </v-chart>
 
   </div>
@@ -38,6 +38,16 @@
         type: String,
         default: 'y'
       },
+      // Y轴最小值
+      min: {
+        type: Number,
+        default: 0
+      },
+      // Y轴最大值
+      max: {
+        type: Number,
+        default: null
+      },
       // 图表高度
       height: {
         type: Number,
@@ -47,13 +57,23 @@
       lineSize: {
         type: Number,
         default: 2
+      },
+      // 面积的颜色
+      color: {
+        type: String,
+        default: ''
+      },
+      // 线的颜色
+      lineColor: {
+        type: String,
+        default: ''
       }
     },
     computed: {
       scale() {
         return [
           { dataKey: 'x', title: this.x, alias: this.x },
-          { dataKey: 'y', title: this.y, alias: this.y }
+          { dataKey: 'y', title: this.y, alias: this.y, min: this.min, max: this.max }
         ]
       }
     },

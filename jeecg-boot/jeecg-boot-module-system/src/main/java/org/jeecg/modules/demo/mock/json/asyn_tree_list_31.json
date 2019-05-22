@@ -1,0 +1,29 @@
+{
+	"status": 200,
+	"success": true,
+	"message": "ok",
+	"result": [
+		{
+			"id": 311,
+			"name": "Redis监控",
+			"component": "modules/monitor/RedisInfo",
+			"orderNum": 1,
+			"hasChildren": false
+		},
+		{
+			"id": 312,
+			"name": "JVM信息",
+			"component": "modules/monitor/JvmInfo",
+			"orderNum": 2,
+			"hasChildren": false
+		},
+		{
+			"id": 313,
+			"name": "Tomcat信息",
+			"component": "modules/monitor/TomcatInfo",
+			"orderNum": 3,
+			"hasChildren": false
+		}
+	],
+	"timestamp": 1554950583837
+}

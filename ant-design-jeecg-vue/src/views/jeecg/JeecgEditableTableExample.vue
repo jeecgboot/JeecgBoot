@@ -23,18 +23,23 @@
       :rowSelection="true"
       :actionButton="true"
       style="margin-top: 8px;"
-      @selectRowChange="handleSelectRowChange"/>
+      @selectRowChange="handleSelectRowChange">
+
+      <template v-slot:action="props">
+        <a @click="handleDelete(props)">{{ props.text }}</a>
+      </template>
+
+    </j-editable-table>
 
   </a-card>
 
 </template>
 
 <script>
-
-
+  import moment from 'moment'
   import JEditableTable from '@/components/jeecg/JEditableTable'
   import { FormTypes } from '@/utils/JEditableTableUtil'
-  import { randomUUID, randomString, randomNumber } from '@/utils/util'
+  import { randomUUID, randomNumber } from '@/utils/util'
 
   export default {
     name: 'JeecgEditableTableExample',
@@ -48,7 +53,8 @@
           {
             title: '字段名称',
             key: 'dbFieldName',
-            width: '19%',
+            // width: '19%',
+            width: '300px',
             type: FormTypes.input,
             defaultValue: '',
             placeholder: '请输入${title}',
@@ -64,18 +70,21 @@
             ]
           },
           {
-            title: '字段备注',
-            key: 'dbFieldTxt',
-            width: '19%',
-            type: FormTypes.input,
-            defaultValue: '',
-            placeholder: '请输入${title}',
-            validateRules: [{ required: true, message: '请输入${title}' }]
+            title: '文件域',
+            key: 'upload',
+            type: FormTypes.upload,
+            // width: '19%',
+            width: '300px',
+            placeholder: '点击上传',
+            token: true,
+            responseName: 'message',
+            action: window._CONFIG['domianURL'] + '/sys/common/upload'
           },
           {
             title: '字段类型',
             key: 'dbFieldType',
-            width: '18%',
+            // width: '18%',
+            width: '300px',
             type: FormTypes.select,
             options: [ // 下拉选项
               { title: 'String', value: 'string' },
@@ -86,32 +95,61 @@
             defaultValue: '',
             placeholder: '请选择${title}',
             validateRules: [{ required: true, message: '请选择${title}' }]
+          }, {
+            title: '多选测试',
+            key: 'multipleSelect',
+            // width: '18%',
+            width: '300px',
+            type: FormTypes.select,
+            props: { 'mode': 'multiple' }, // 支持多选
+            options: [
+              { title: 'String', value: 'string' },
+              { title: 'Integer', value: 'int' },
+              { title: 'Double', value: 'double' },
+              { title: 'Boolean', value: 'boolean' }
+            ],
+            defaultValue: ['int', 'boolean'], // 多个默认项
+            // defaultValue: 'string,double,int', // 也可使用这种方式
+            placeholder: '这里可以多选',
+            validateRules: [{ required: true, message: '请选择${title}' }]
           },
           {
             title: '字段长度',
             key: 'dbLength',
-            width: '8%',
+            // width: '8%',
+            width: '100px',
             type: FormTypes.inputNumber,
             defaultValue: 32,
             placeholder: '${title}',
             validateRules: [{ required: true, message: '请输入${title}' }]
           },
           {
-            title: '默认值',
-            key: 'dbDefaultVal',
-            width: '22%',
-            type: FormTypes.input,
-            defaultValue: '',
-            placeholder: '请输入${title}',
-            validateRules: [{ required: true, message: '请输入${title}' }]
+            title: '日期',
+            key: 'datetime',
+            // width: '22%',
+            width: '320px',
+            type: FormTypes.datetime,
+            defaultValue: '2019-4-30 14:52:22',
+            placeholder: '请选择${title}',
+            validateRules: [{ required: true, message: '请选择${title}' }]
           },
           {
             title: '可以为空',
             key: 'isNull',
-            width: '8%',
+            // width: '8%',
+            width: '100px',
             type: FormTypes.checkbox,
             customValue: ['Y', 'N'], // true ,false
             defaultChecked: false
+          },
+          {
+            title: '操作',
+            key: 'action',
+            // width: '8%',
+            width: '100px',
+            type: FormTypes.slot,
+            slot: 'action',
+            defaultValue:"删除"
           }
 
         ],
@@ -161,26 +199,44 @@
       randomData(size, loading = false) {
         if (loading) {
           this.loading = true
-          setTimeout(() => {
-            this.loading = false
-          }, 3000)
         }
 
+        let randomDatetime = () => {
+          let time = parseInt(randomNumber(1000, 9999999999999))
+          return moment(new Date(time)).format('YYYY-MM-DD HH:mm:ss')
+        }
+
+        let begin = Date.now()
         let values = []
         for (let i = 0; i < size; i++) {
           values.push({
             id: randomUUID(),
             dbFieldName: `name_${i + 1}`,
-            dbFieldTxt: randomString(10),
+            // dbFieldTxt: randomString(10),
+            multipleSelect: ['string', ['int', 'double', 'boolean'][randomNumber(0, 2)]],
             dbFieldType: ['string', 'int', 'double', 'boolean'][randomNumber(0, 3)],
             dbLength: randomNumber(0, 233),
-            dbDefaultVal: randomString(8),
+            datetime: randomDatetime(),
             isNull: ['Y', 'N'][randomNumber(0, 1)]
           })
         }
-        this.dataSource = values
-      }
 
+        this.dataSource = values
+        let end = Date.now()
+        let diff = end - begin
+
+        if (loading && diff < size) {
+          setTimeout(() => {
+            this.loading = false
+          }, size - diff)
+        }
+
+      },
+
+      handleDelete(props) {
+        let { rowId, target } = props
+        target.removeRows(rowId)
+      }
 
     }
   }

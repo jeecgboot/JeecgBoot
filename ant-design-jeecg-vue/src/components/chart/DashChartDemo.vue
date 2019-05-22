@@ -1,6 +1,6 @@
 <template>
   <div :style="{ padding: '0 0 32px 32px' }">
-    <v-chart :forceFit="true" :height="height" :data="data" :scale="scale">
+    <v-chart :forceFit="true" :height="350" :data="chartData" :scale="scale">
       <v-coord type="polar" :startAngle="-202.5" :endAngle="22.5" :radius="0.75"></v-coord>
       <v-axis
         dataKey="value"
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-  import {registerShape} from 'viser-vue';
+  import { registerShape } from 'viser-vue';
 
   registerShape('point', 'pointer', {
     draw(cfg, container) {
@@ -87,67 +87,64 @@
     nice: false,
   }];
 
-  const sourceData = [
-    {value: 6.7},
+  const data = [
+    { value: 7.0 },
   ];
 
   export default {
-    name: "DashChartDemo",
-    props: {
-      value: {
+    name:"DashChartDemo",
+    props:{
+      datasource:{
         type: Number,
-        default: 6.7
+        default:7
       },
       title: {
         type: String,
         default: ''
-      },
-      height: {
-        type: Number,
-        default: 254
       }
     },
-    created() {
-      if (!this.value) {
-        this.data = sourceData;
-      } else {
-        this.data = [
-          {value: this.value},
+    created(){
+      if(!this.datasource){
+        this.chartData = data;
+      }else{
+        this.chartData = [
+          { value: this.datasource },
         ];
       }
-      this.getData()
+      this.getChartData()
     },
     watch: {
-      'value': function (val) {
-        this.data = [
-          {value: val},
+      'datasource': function (val) {
+        this.chartData = [
+          { value: val},
         ];
-        this.getData();
+        this.getChartData();
       }
     },
-    methods: {
-      getData() {
-        if (this.data && this.data.length > 0) {
-          this.abcd = this.data[0].value * 10
-        } else {
+    methods:{
+      getChartData(){
+        if(this.chartData && this.chartData.length>0){
+          this.abcd = this.chartData[0].value * 10
+        }else{
           this.abcd = 70
         }
       },
-      getHtmlGuideHtml() {
+      getHtmlGuideHtml(){
         return '<div style="width: 300px;text-align: center;">\n' +
-          '<p style="font-size: 14px;color: #545454;margin: 0;">' + this.title + '</p>\n' +
-          '<p style="font-size: 36px;color: #545454;margin: 0;">' + this.abcd + '%</p>\n' +
+          '<p style="font-size: 14px;color: #545454;margin: 0;">'+this.title+'</p>\n' +
+          '<p style="font-size: 36px;color: #545454;margin: 0;">'+this.abcd+'%</p>\n' +
           '</div>'
       },
-      getArcGuide2End() {
-        return [this.data[0].value, 0.945]
+      getArcGuide2End(){
+        return [this.chartData[0].value, 0.945]
       }
     },
     data() {
       return {
-        data: [],
+        chartData:[],
+        height: 400,
         scale: scale,
-        abcd: 70,
+        abcd:70,
         axisLabel: {
           offset: -16,
           textStyle: {

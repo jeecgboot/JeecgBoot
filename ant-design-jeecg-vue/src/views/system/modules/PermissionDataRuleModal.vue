@@ -36,12 +36,23 @@
           label="规则值">
           <a-input placeholder="请输入规则值" v-decorator="['ruleValue', validatorRules.ruleValue]"/>
         </a-form-item>
+
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="状态">
+          <a-radio-group buttonStyle="solid" v-decorator="['status',{initialValue:'1'}]">
+            <a-radio-button value="1">有效</a-radio-button>
+            <a-radio-button value="0">无效</a-radio-button>
+          </a-radio-group>
+        </a-form-item>
+
       </a-form>
     </a-spin>
   </a-modal>
 </template>
 <script>
-  import {httpAction, getAction} from '@/api/manage'
+  import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
 
   export default {
@@ -96,7 +107,7 @@
         this.visible = true
         this.initRuleCondition()
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'ruleName', 'ruleColumn', 'ruleConditions', 'ruleValue'))
+          this.form.setFieldsValue(pick(this.model, 'status','ruleName', 'ruleColumn', 'ruleConditions', 'ruleValue'))
         })
       },
       close() {
@@ -119,6 +130,12 @@
               method = 'put'
             }
             let formData = Object.assign(this.model, values)
+            if(formData.ruleColumn && formData.ruleColumn.length>0){
+              formData.ruleColumn = formData.ruleColumn.trim()
+            }
+            if(formData.ruleValue && formData.ruleValue.length>0){
+              formData.ruleValue = formData.ruleValue.trim()
+            }
             httpAction(httpurl, formData, method).then((res) => {
               if (res.success) {
                 that.$message.success(res.message)
