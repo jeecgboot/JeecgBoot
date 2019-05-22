@@ -4,8 +4,14 @@ import java.io.Serializable;
 import java.util.List;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+@NoArgsConstructor
 public class SysUserDepartsVO implements Serializable{
 	private static final long serialVersionUID = 1L;
 	

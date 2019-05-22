@@ -80,3 +80,6 @@ v1.1升级到v2.0 升级不兼容问题
 
    5.所有页面样式没有scoped的加上
    <style scoped>
+
+   6.获取用户共通方法变更
+    V2.0版本：    LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();

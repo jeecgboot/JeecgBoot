@@ -42,7 +42,7 @@ import io.swagger.annotations.ApiOperation;
  * @Version: V1.0
  */
 @Slf4j
-@Api("${tableVo.ftlDescription}")
+@Api(tags="${tableVo.ftlDescription}")
 @RestController
 @RequestMapping("/${entityPackage}/${entityName?uncap_first}")
 public class ${entityName}Controller {
