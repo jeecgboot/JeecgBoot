@@ -65,7 +65,6 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
       <a-button @click="handleAdd" v-has="'user:add'" type="primary" icon="plus">添加用户</a-button>
-      <a-button @click="handleSyncUser" type="primary" icon="plus">重新同步流程用户</a-button>
       <a-button type="primary" icon="download" @click="handleExportXls('用户信息')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
@@ -118,9 +117,9 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)" v-has="'user:edit'">编辑</a>
+          <a @click="handleEdit(record)">编辑</a>
 
-          <a-divider type="vertical" v-has="'user:edit'"/>
+          <a-divider type="vertical"/>
 
           <a-dropdown>
             <a class="ant-dropdown-link">
@@ -344,16 +343,6 @@
       handleAgentSettings(username){
         this.$refs.sysUserAgentModal.agentSettings(username);
         this.$refs.sysUserAgentModal.title = "用户代理人设置";
-      },
-      handleSyncUser() {
-        var that = this;
-        putAction(that.url.syncUser, {}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-          } else {
-            that.$message.warning(res.message);
-          }
-        })
       },
       passwordModalOk() {
         //TODO 密码修改完成 不需要刷新页面，可以把datasource中的数据更新一下

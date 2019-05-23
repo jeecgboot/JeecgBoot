@@ -83,7 +83,6 @@ public class SysDepartController {
 	 * @param sysDepart
 	 * @return
 	 */
-	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysDepart> add(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
 		Result<SysDepart> result = new Result<SysDepart>();
@@ -105,7 +104,6 @@ public class SysDepartController {
 	 * @param sysDepart
 	 * @return
 	 */
-	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
 	public Result<SysDepart> edit(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
 		String username = JwtUtil.getUserNameByToken(request);
@@ -129,7 +127,6 @@ public class SysDepartController {
     * @param id
     * @return
     */
-	@RequiresRoles({"admin"})
    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
    public Result<SysDepart> delete(@RequestParam(name="id",required=true) String id) {
 
@@ -153,7 +150,6 @@ public class SysDepartController {
 	 * @param ids
 	 * @return
 	 */
-	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysDepart> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 

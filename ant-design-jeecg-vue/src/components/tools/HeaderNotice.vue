@@ -116,17 +116,20 @@
         },60000)
       },
       loadData (){
-        // 获取系统消息
-        getAction(this.url.listCementByUser).then((res)=>{
-          if(res.success){
-            this.announcement1 = res.result.anntMsgList;
-            this.msg1Count = res.result.anntMsgTotal;
-            this.msg1Title = "通知("+res.result.anntMsgTotal+")";
-            this.announcement2 = res.result.sysMsgList;
-            this.msg2Count = res.result.sysMsgTotal;
-            this.msg2Title = "系统消息("+res.result.sysMsgTotal+")";
-          }
-        });
+        try {
+          // 获取系统消息
+          getAction(this.url.listCementByUser).then((res) => {
+            if (res.success) {
+              this.announcement1 = res.result.anntMsgList;
+              this.msg1Count = res.result.anntMsgTotal;
+              this.msg1Title = "通知(" + res.result.anntMsgTotal + ")";
+              this.announcement2 = res.result.sysMsgList;
+              this.msg2Count = res.result.sysMsgTotal;
+              this.msg2Title = "系统消息(" + res.result.sysMsgTotal + ")";
+            }
+          });
+        } catch (err) {
+        }
       },
       fetchNotice () {
         if (this.loadding) {

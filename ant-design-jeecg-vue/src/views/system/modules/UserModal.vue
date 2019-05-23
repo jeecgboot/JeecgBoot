@@ -289,6 +289,7 @@
       //
       loadCheckedDeparts(){
         let that = this;
+        if(!that.userId){return}
         getAction(that.url.userWithDepart,{userId:that.userId}).then((res)=>{
           that.checkedDepartNames = [];
           if(res.success){
@@ -346,8 +347,6 @@
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');
-                //同步用户到工作流
-                this.handleSyncUser(this.model.username);
               }else{
                 that.$message.warning(res.message);
               }
@@ -389,8 +388,6 @@
                   if (res.success) {
                     that.$message.success(res.message);
                     that.$emit('ok');
-                    //同步用户到工作流
-                    this.handleSyncUser(this.model.username);
                   } else {
                     that.$message.warning(res.message);
                   }
@@ -435,8 +432,6 @@
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');
-                //同步用户到工作流
-                this.handleSyncUser(this.model.username);
               }else{
                 that.$message.warning(res.message);
               }
@@ -595,18 +590,6 @@
         }else{
           this.drawerWidth = 700;
         }
-      },
-      handleSyncUser(userName) {
-        try{
-          var that = this;
-          putAction(that.url.syncUserByUserName, {userName:userName}).then((res) => {
-            //if (res.success) {
-            //that.$message.success(res.message);
-            // } else {
-            //that.$message.warning(res.message);
-            //}
-          })
-        }catch (e){}
       },
     }
   }

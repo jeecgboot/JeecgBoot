@@ -3,14 +3,14 @@ Navicat MySQL Data Transfer
 
 Source Server         : mysql
 Source Server Version : 50037
-Source Host           : 127.0.0.1:3306
-Source Database       : jeecg-boot2
+Source Host           : localhost:3306
+Source Database       : jeecg-boot-2_0-20150518
 
 Target Server Type    : MYSQL
 Target Server Version : 50037
 File Encoding         : 65001
 
-Date: 2019-05-18 11:37:41
+Date: 2019-05-20 16:00:28
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -35,8 +35,35 @@ CREATE TABLE `demo` (
   `create_time` datetime default NULL COMMENT '创建时间',
   `update_by` varchar(32) default NULL COMMENT '修改人',
   `update_time` datetime default NULL COMMENT '修改时间',
+  `sys_org_code` varchar(64) default NULL COMMENT '所属部门编码',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of demo
+-- ----------------------------
+INSERT INTO `demo` VALUES ('08375a2dff80e821d5a158dd98302b23', '导入小虎', null, null, null, null, '2', '28', null, null, null, 'jeecg-boot', '2019-04-10 11:42:57', null, null, null);
+INSERT INTO `demo` VALUES ('1c2ba51b29a42d9de02bbd708ea8121a', '777777', '777', '2018-12-07 19:43:17', null, null, null, '7', '2018-12-07', null, null, null, null, 'admin', '2019-02-21 18:26:04', null);
+INSERT INTO `demo` VALUES ('1dc29e80be14d1400f165b5c6b30c707', 'zhang daihao', null, null, null, null, '2', null, null, 'zhangdaiscott@163.com', null, null, null, null, null, null);
+INSERT INTO `demo` VALUES ('304e651dc769d5c9b6e08fb30457a602', '小白兔', null, null, null, null, '2', '28', null, null, null, 'scott', '2019-01-19 13:12:53', 'qinfeng', '2019-01-19 13:13:12', null);
+INSERT INTO `demo` VALUES ('4', 'Sandy', '开源，很好', '2018-12-15 00:00:00', null, null, '2', '21', '2018-12-15', 'test4@baomidou.com', '聪明00', null, null, 'admin', '2019-02-25 16:29:27', null);
+INSERT INTO `demo` VALUES ('42c08b1a2e5b2a96ffa4cc88383d4b11', '秦50090', null, '2019-01-05 20:33:31', null, null, null, '28', '2019-01-05', null, null, 'admin', '2019-01-19 20:33:54', 'admin', '2019-01-19 20:34:29', null);
+INSERT INTO `demo` VALUES ('4436302a0de50bb83025286bc414d6a9', 'zhang daihao', null, null, null, null, null, null, null, 'zhangdaiscott@163.com', null, 'admin', '2019-01-19 15:39:04', null, null, null);
+INSERT INTO `demo` VALUES ('4981637bf71b0c1ed1365241dfcfa0ea', '小虎', null, null, null, null, '2', '28', null, null, null, 'scott', '2019-01-19 13:12:53', 'qinfeng', '2019-01-19 13:13:12', null);
+INSERT INTO `demo` VALUES ('5c16e6a5c31296bcd3f1053d5d118815', '导入zhangdaiscott', null, null, null, null, '1', null, '2019-01-03', null, null, 'jeecg-boot', '2019-04-10 11:42:57', 'admin', '2019-05-19 18:35:51', null);
+INSERT INTO `demo` VALUES ('7', 'zhangdaiscott', null, null, null, null, '1', null, '2019-01-03', null, null, null, null, null, null, null);
+INSERT INTO `demo` VALUES ('73bc58611012617ca446d8999379e4ac', '郭靖11a', '777', '2018-12-07 00:00:00', null, null, null, null, null, null, null, 'jeecg-boot', '2019-03-28 18:16:39', null, null, null);
+INSERT INTO `demo` VALUES ('917e240eaa0b1b2d198ae869b64a81c3', 'zhang daihao', null, null, null, null, '2', '0', '2018-11-29', 'zhangdaiscott@163.com', null, null, null, null, null, null);
+INSERT INTO `demo` VALUES ('94420c5d8fc4420dde1e7196154b3a24', '秦111', null, null, null, null, null, null, null, null, null, 'scott', '2019-01-19 12:54:58', 'qinfeng', '2019-01-19 13:12:10', null);
+INSERT INTO `demo` VALUES ('95740656751c5f22e5932ab0ae33b1e4', '杨康22a', '奸臣', null, null, null, null, null, null, null, null, 'jeecg-boot', '2019-03-28 18:16:39', null, null, null);
+INSERT INTO `demo` VALUES ('b86897900c770503771c7bb88e5d1e9b', 'scott1', '开源、很好、hello', null, null, null, '1', null, null, 'zhangdaiscott@163.com', null, 'scott', '2019-01-19 12:22:34', null, null, null);
+INSERT INTO `demo` VALUES ('c0b7c3de7c62a295ab715943de8a315d', '秦风555', null, null, null, null, null, null, null, null, null, 'admin', '2019-01-19 13:18:30', 'admin', '2019-01-19 13:18:50', null);
+INSERT INTO `demo` VALUES ('c28fa8391ef81d6fabd8bd894a7615aa', '小麦', null, null, null, null, '2', null, null, 'zhangdaiscott@163.com', null, 'jeecg-boot', '2019-04-04 17:18:09', null, null, null);
+INSERT INTO `demo` VALUES ('c2c0d49e3c01913067cf8d1fb3c971d2', 'zhang daihao', null, null, null, null, '2', null, null, 'zhangdaiscott@163.com', null, 'admin', '2019-01-19 23:37:18', 'admin', '2019-01-21 16:49:06', null);
+INSERT INTO `demo` VALUES ('c96279c666b4b82e3ef1e4e2978701ce', '报名时间', null, null, null, null, null, null, null, null, null, 'jeecg-boot', '2019-03-28 18:00:52', null, null, null);
+INSERT INTO `demo` VALUES ('d24668721446e8478eeeafe4db66dcff', 'zhang daihao999', null, null, null, null, '1', null, null, 'zhangdaiscott@163.com', null, null, null, null, null, null);
+INSERT INTO `demo` VALUES ('eaa6c1116b41dc10a94eae34cf990133', 'zhang daihao', null, null, null, null, null, null, null, 'zhangdaiscott@163.com', null, null, null, null, null, null);
+INSERT INTO `demo` VALUES ('ffa9da1ad40632dfcabac51d766865bd', '秦999', null, null, null, null, null, null, null, null, null, 'admin', '2019-01-19 23:36:34', 'admin', '2019-02-14 17:30:43', null);
 
 -- ----------------------------
 -- Table structure for jeecg_monthly_growth_analysis
@@ -50,709 +77,6 @@ CREATE TABLE `jeecg_monthly_growth_analysis` (
   `other_income` decimal(18,2) default '0.00' COMMENT '其他收入',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for jeecg_order_customer
--- ----------------------------
-DROP TABLE IF EXISTS `jeecg_order_customer`;
-CREATE TABLE `jeecg_order_customer` (
-  `id` varchar(32) NOT NULL COMMENT '主键',
-  `name` varchar(100) NOT NULL COMMENT '客户名',
-  `sex` varchar(4) default NULL COMMENT '性别',
-  `idcard` varchar(18) default NULL COMMENT '身份证号码',
-  `idcard_pic` varchar(500) default NULL COMMENT '身份证扫描件',
-  `telphone` varchar(32) default NULL COMMENT '电话1',
-  `order_id` varchar(32) NOT NULL COMMENT '外键',
-  `create_by` varchar(32) default NULL COMMENT '创建人',
-  `create_time` datetime default NULL COMMENT '创建时间',
-  `update_by` varchar(32) default NULL COMMENT '修改人',
-  `update_time` datetime default NULL COMMENT '修改时间',
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for jeecg_order_main
--- ----------------------------
-DROP TABLE IF EXISTS `jeecg_order_main`;
-CREATE TABLE `jeecg_order_main` (
-  `id` varchar(32) NOT NULL COMMENT '主键',
-  `order_code` varchar(50) default NULL COMMENT '订单号',
-  `ctype` varchar(500) default NULL COMMENT '订单类型',
-  `order_date` datetime default NULL COMMENT '订单日期',
-  `order_money` double(10,3) default NULL COMMENT '订单金额',
-  `content` varchar(500) default NULL COMMENT '订单备注',
-  `create_by` varchar(32) default NULL COMMENT '创建人',
-  `create_time` datetime default NULL COMMENT '创建时间',
-  `update_by` varchar(32) default NULL COMMENT '修改人',
-  `update_time` datetime default NULL COMMENT '修改时间',
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for jeecg_order_ticket
--- ----------------------------
-DROP TABLE IF EXISTS `jeecg_order_ticket`;
-CREATE TABLE `jeecg_order_ticket` (
-  `id` varchar(32) NOT NULL COMMENT '主键',
-  `ticket_code` varchar(100) NOT NULL COMMENT '航班号',
-  `tickect_date` datetime default NULL COMMENT '航班时间',
-  `order_id` varchar(32) NOT NULL COMMENT '外键',
-  `create_by` varchar(32) default NULL COMMENT '创建人',
-  `create_time` datetime default NULL COMMENT '创建时间',
-  `update_by` varchar(32) default NULL COMMENT '修改人',
-  `update_time` datetime default NULL COMMENT '修改时间',
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for jeecg_project_nature_income
--- ----------------------------
-DROP TABLE IF EXISTS `jeecg_project_nature_income`;
-CREATE TABLE `jeecg_project_nature_income` (
-  `id` int(11) NOT NULL auto_increment,
-  `nature` varchar(50) NOT NULL COMMENT '项目性质',
-  `insurance_fee` decimal(18,2) default '0.00' COMMENT '保险经纪佣金费',
-  `risk_consulting_fee` decimal(18,2) default '0.00' COMMENT '风险咨询费',
-  `evaluation_fee` decimal(18,2) default '0.00' COMMENT '承保公估评估费',
-  `insurance_evaluation_fee` decimal(18,2) default '0.00' COMMENT '保险公估费',
-  `bidding_consulting_fee` decimal(18,2) default '0.00' COMMENT '投标咨询费',
-  `interol_consulting_fee` decimal(18,2) default '0.00' COMMENT '内控咨询费',
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for joa_demo
--- ----------------------------
-DROP TABLE IF EXISTS `joa_demo`;
-CREATE TABLE `joa_demo` (
-  `id` varchar(32) default NULL COMMENT 'ID',
-  `name` varchar(100) default NULL COMMENT '请假人',
-  `days` int(11) default NULL COMMENT '请假天数',
-  `begin_date` datetime default NULL COMMENT '开始时间',
-  `end_date` datetime default NULL COMMENT '请假结束时间',
-  `reason` varchar(500) default NULL COMMENT '请假原因',
-  `bpm_status` varchar(50) default '1' COMMENT '流程状态',
-  `create_by` varchar(32) default NULL COMMENT '创建人id',
-  `create_time` datetime default NULL COMMENT '创建时间',
-  `update_time` datetime default NULL COMMENT '修改时间',
-  `update_by` varchar(32) default NULL COMMENT '修改人id'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='流程测试';
-
--- ----------------------------
--- Table structure for qrtz_blob_triggers
--- ----------------------------
-DROP TABLE IF EXISTS `qrtz_blob_triggers`;
-CREATE TABLE `qrtz_blob_triggers` (
-  `SCHED_NAME` varchar(120) NOT NULL,
-  `TRIGGER_NAME` varchar(200) NOT NULL,
-  `TRIGGER_GROUP` varchar(200) NOT NULL,
-  `BLOB_DATA` blob,
-  PRIMARY KEY  (`SCHED_NAME`,`TRIGGER_NAME`,`TRIGGER_GROUP`),
-  CONSTRAINT `qrtz_blob_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) REFERENCES `qrtz_triggers` (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 504832 kB; (`SCHED_NAME` `TRIGGER_NAME` `TRIGGE';
-
--- ----------------------------
--- Table structure for qrtz_calendars
--- ----------------------------
-DROP TABLE IF EXISTS `qrtz_calendars`;
-CREATE TABLE `qrtz_calendars` (
-  `SCHED_NAME` varchar(120) NOT NULL,
-  `CALENDAR_NAME` varchar(200) NOT NULL,
-  `CALENDAR` blob NOT NULL,
-  PRIMARY KEY  (`SCHED_NAME`,`CALENDAR_NAME`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for qrtz_cron_triggers
--- ----------------------------
-DROP TABLE IF EXISTS `qrtz_cron_triggers`;
-CREATE TABLE `qrtz_cron_triggers` (
-  `SCHED_NAME` varchar(120) NOT NULL,
-  `TRIGGER_NAME` varchar(200) NOT NULL,
-  `TRIGGER_GROUP` varchar(200) NOT NULL,
-  `CRON_EXPRESSION` varchar(200) NOT NULL,
-  `TIME_ZONE_ID` varchar(80) default NULL,
-  PRIMARY KEY  (`SCHED_NAME`,`TRIGGER_NAME`,`TRIGGER_GROUP`),
-  CONSTRAINT `qrtz_cron_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) REFERENCES `qrtz_triggers` (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 504832 kB; (`SCHED_NAME` `TRIGGER_NAME` `TRIGGE';
-
--- ----------------------------
--- Table structure for qrtz_fired_triggers
--- ----------------------------
-DROP TABLE IF EXISTS `qrtz_fired_triggers`;
-CREATE TABLE `qrtz_fired_triggers` (
-  `SCHED_NAME` varchar(120) NOT NULL,
-  `ENTRY_ID` varchar(95) NOT NULL,
-  `TRIGGER_NAME` varchar(200) NOT NULL,
-  `TRIGGER_GROUP` varchar(200) NOT NULL,
-  `INSTANCE_NAME` varchar(200) NOT NULL,
-  `FIRED_TIME` bigint(13) NOT NULL,
-  `SCHED_TIME` bigint(13) NOT NULL,
-  `PRIORITY` int(11) NOT NULL,
-  `STATE` varchar(16) NOT NULL,
-  `JOB_NAME` varchar(200) default NULL,
-  `JOB_GROUP` varchar(200) default NULL,
-  `IS_NONCONCURRENT` varchar(1) default NULL,
-  `REQUESTS_RECOVERY` varchar(1) default NULL,
-  PRIMARY KEY  (`SCHED_NAME`,`ENTRY_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for qrtz_job_details
--- ----------------------------
-DROP TABLE IF EXISTS `qrtz_job_details`;
-CREATE TABLE `qrtz_job_details` (
-  `SCHED_NAME` varchar(120) NOT NULL,
-  `JOB_NAME` varchar(200) NOT NULL,
-  `JOB_GROUP` varchar(200) NOT NULL,
-  `DESCRIPTION` varchar(250) default NULL,
-  `JOB_CLASS_NAME` varchar(250) NOT NULL,
-  `IS_DURABLE` varchar(1) NOT NULL,
-  `IS_NONCONCURRENT` varchar(1) NOT NULL,
-  `IS_UPDATE_DATA` varchar(1) NOT NULL,
-  `REQUESTS_RECOVERY` varchar(1) NOT NULL,
-  `JOB_DATA` blob,
-  PRIMARY KEY  (`SCHED_NAME`,`JOB_NAME`,`JOB_GROUP`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for qrtz_locks
--- ----------------------------
-DROP TABLE IF EXISTS `qrtz_locks`;
-CREATE TABLE `qrtz_locks` (
-  `SCHED_NAME` varchar(120) NOT NULL,
-  `LOCK_NAME` varchar(40) NOT NULL,
-  PRIMARY KEY  (`SCHED_NAME`,`LOCK_NAME`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for qrtz_paused_trigger_grps
--- ----------------------------
-DROP TABLE IF EXISTS `qrtz_paused_trigger_grps`;
-CREATE TABLE `qrtz_paused_trigger_grps` (
-  `SCHED_NAME` varchar(120) NOT NULL,
-  `TRIGGER_GROUP` varchar(200) NOT NULL,
-  PRIMARY KEY  (`SCHED_NAME`,`TRIGGER_GROUP`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for qrtz_scheduler_state
--- ----------------------------
-DROP TABLE IF EXISTS `qrtz_scheduler_state`;
-CREATE TABLE `qrtz_scheduler_state` (
-  `SCHED_NAME` varchar(120) NOT NULL,
-  `INSTANCE_NAME` varchar(200) NOT NULL,
-  `LAST_CHECKIN_TIME` bigint(13) NOT NULL,
-  `CHECKIN_INTERVAL` bigint(13) NOT NULL,
-  PRIMARY KEY  (`SCHED_NAME`,`INSTANCE_NAME`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for qrtz_simple_triggers
--- ----------------------------
-DROP TABLE IF EXISTS `qrtz_simple_triggers`;
-CREATE TABLE `qrtz_simple_triggers` (
-  `SCHED_NAME` varchar(120) NOT NULL,
-  `TRIGGER_NAME` varchar(200) NOT NULL,
-  `TRIGGER_GROUP` varchar(200) NOT NULL,
-  `REPEAT_COUNT` bigint(7) NOT NULL,
-  `REPEAT_INTERVAL` bigint(12) NOT NULL,
-  `TIMES_TRIGGERED` bigint(10) NOT NULL,
-  PRIMARY KEY  (`SCHED_NAME`,`TRIGGER_NAME`,`TRIGGER_GROUP`),
-  CONSTRAINT `qrtz_simple_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) REFERENCES `qrtz_triggers` (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 504832 kB; (`SCHED_NAME` `TRIGGER_NAME` `TRIGGE';
-
--- ----------------------------
--- Table structure for qrtz_simprop_triggers
--- ----------------------------
-DROP TABLE IF EXISTS `qrtz_simprop_triggers`;
-CREATE TABLE `qrtz_simprop_triggers` (
-  `SCHED_NAME` varchar(120) NOT NULL,
-  `TRIGGER_NAME` varchar(200) NOT NULL,
-  `TRIGGER_GROUP` varchar(200) NOT NULL,
-  `STR_PROP_1` varchar(512) default NULL,
-  `STR_PROP_2` varchar(512) default NULL,
-  `STR_PROP_3` varchar(512) default NULL,
-  `INT_PROP_1` int(11) default NULL,
-  `INT_PROP_2` int(11) default NULL,
-  `LONG_PROP_1` bigint(20) default NULL,
-  `LONG_PROP_2` bigint(20) default NULL,
-  `DEC_PROP_1` decimal(13,4) default NULL,
-  `DEC_PROP_2` decimal(13,4) default NULL,
-  `BOOL_PROP_1` varchar(1) default NULL,
-  `BOOL_PROP_2` varchar(1) default NULL,
-  PRIMARY KEY  (`SCHED_NAME`,`TRIGGER_NAME`,`TRIGGER_GROUP`),
-  CONSTRAINT `qrtz_simprop_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) REFERENCES `qrtz_triggers` (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 504832 kB; (`SCHED_NAME` `TRIGGER_NAME` `TRIGGE';
-
--- ----------------------------
--- Table structure for qrtz_triggers
--- ----------------------------
-DROP TABLE IF EXISTS `qrtz_triggers`;
-CREATE TABLE `qrtz_triggers` (
-  `SCHED_NAME` varchar(120) NOT NULL,
-  `TRIGGER_NAME` varchar(200) NOT NULL,
-  `TRIGGER_GROUP` varchar(200) NOT NULL,
-  `JOB_NAME` varchar(200) NOT NULL,
-  `JOB_GROUP` varchar(200) NOT NULL,
-  `DESCRIPTION` varchar(250) default NULL,
-  `NEXT_FIRE_TIME` bigint(13) default NULL,
-  `PREV_FIRE_TIME` bigint(13) default NULL,
-  `PRIORITY` int(11) default NULL,
-  `TRIGGER_STATE` varchar(16) NOT NULL,
-  `TRIGGER_TYPE` varchar(8) NOT NULL,
-  `START_TIME` bigint(13) NOT NULL,
-  `END_TIME` bigint(13) default NULL,
-  `CALENDAR_NAME` varchar(200) default NULL,
-  `MISFIRE_INSTR` smallint(2) default NULL,
-  `JOB_DATA` blob,
-  PRIMARY KEY  (`SCHED_NAME`,`TRIGGER_NAME`,`TRIGGER_GROUP`),
-  KEY `SCHED_NAME` USING BTREE (`SCHED_NAME`,`JOB_NAME`,`JOB_GROUP`),
-  CONSTRAINT `qrtz_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `JOB_NAME`, `JOB_GROUP`) REFERENCES `qrtz_job_details` (`SCHED_NAME`, `JOB_NAME`, `JOB_GROUP`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 504832 kB; (`SCHED_NAME` `JOB_NAME` `JOB_GROUP`';
-
--- ----------------------------
--- Table structure for sys_announcement
--- ----------------------------
-DROP TABLE IF EXISTS `sys_announcement`;
-CREATE TABLE `sys_announcement` (
-  `id` varchar(32) NOT NULL,
-  `titile` varchar(100) default NULL COMMENT '标题',
-  `msg_content` text COMMENT '内容',
-  `start_time` datetime default NULL COMMENT '开始时间',
-  `end_time` datetime default NULL COMMENT '结束时间',
-  `sender` varchar(100) default NULL COMMENT '发布人',
-  `priority` varchar(255) default NULL COMMENT '优先级（L低，M中，H高）',
-  `msg_category` varchar(10) NOT NULL default '2' COMMENT '消息类型1:通知公告2:系统消息',
-  `msg_type` varchar(10) default NULL COMMENT '通告对象类型（USER:指定用户，ALL:全体用户）',
-  `send_status` varchar(10) default NULL COMMENT '发布状态（0未发布，1已发布，2已撤销）',
-  `send_time` datetime default NULL COMMENT '发布时间',
-  `cancel_time` datetime default NULL COMMENT '撤销时间',
-  `del_flag` varchar(1) default NULL COMMENT '删除状态（0，正常，1已删除）',
-  `create_by` varchar(32) default NULL COMMENT '创建人',
-  `create_time` datetime default NULL COMMENT '创建时间',
-  `update_by` varchar(32) default NULL COMMENT '更新人',
-  `update_time` datetime default NULL COMMENT '更新时间',
-  `user_ids` text COMMENT '指定用户',
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统通告表';
-
--- ----------------------------
--- Table structure for sys_announcement_send
--- ----------------------------
-DROP TABLE IF EXISTS `sys_announcement_send`;
-CREATE TABLE `sys_announcement_send` (
-  `id` varchar(32) default NULL,
-  `annt_id` varchar(32) default NULL COMMENT '通告ID',
-  `user_id` varchar(32) default NULL COMMENT '用户id',
-  `read_flag` varchar(10) default NULL COMMENT '阅读状态（0未读，1已读）',
-  `read_time` datetime default NULL COMMENT '阅读时间',
-  `create_by` varchar(32) default NULL COMMENT '创建人',
-  `create_time` datetime default NULL COMMENT '创建时间',
-  `update_by` varchar(32) default NULL COMMENT '更新人',
-  `update_time` datetime default NULL COMMENT '更新时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户通告阅读标记表';
-
--- ----------------------------
--- Table structure for sys_data_log
--- ----------------------------
-DROP TABLE IF EXISTS `sys_data_log`;
-CREATE TABLE `sys_data_log` (
-  `id` varchar(32) NOT NULL COMMENT 'id',
-  `create_by` varchar(32) default NULL COMMENT '创建人登录名称',
-  `create_time` datetime default NULL COMMENT '创建日期',
-  `update_by` varchar(32) default NULL COMMENT '更新人登录名称',
-  `update_time` datetime default NULL COMMENT '更新日期',
-  `data_table` varchar(32) default NULL COMMENT '表名',
-  `data_id` varchar(32) default NULL COMMENT '数据ID',
-  `data_content` text COMMENT '数据内容',
-  `data_version` int(11) default NULL COMMENT '版本号',
-  PRIMARY KEY  (`id`),
-  KEY `sindex` USING BTREE (`data_table`,`data_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for sys_depart
--- ----------------------------
-DROP TABLE IF EXISTS `sys_depart`;
-CREATE TABLE `sys_depart` (
-  `id` varchar(32) NOT NULL COMMENT 'ID',
-  `parent_id` varchar(32) default NULL COMMENT '父机构ID',
-  `depart_name` varchar(100) NOT NULL COMMENT '机构/部门名称',
-  `depart_name_en` varchar(500) default NULL COMMENT '英文名',
-  `depart_name_abbr` varchar(500) default NULL COMMENT '缩写',
-  `depart_order` int(11) default '0' COMMENT '排序',
-  `description` text COMMENT '描述',
-  `org_type` varchar(10) default NULL COMMENT '机构类型 1一级部门 2子部门',
-  `org_code` varchar(64) NOT NULL COMMENT '机构编码',
-  `mobile` varchar(32) default NULL COMMENT '手机号',
-  `fax` varchar(32) default NULL COMMENT '传真',
-  `address` varchar(100) default NULL COMMENT '地址',
-  `memo` varchar(500) default NULL COMMENT '备注',
-  `status` varchar(1) default NULL COMMENT '状态（1启用，0不启用）',
-  `del_flag` varchar(1) default NULL COMMENT '删除状态（0，正常，1已删除）',
-  `create_by` varchar(32) default NULL COMMENT '创建人',
-  `create_time` datetime default NULL COMMENT '创建日期',
-  `update_by` varchar(32) default NULL COMMENT '更新人',
-  `update_time` datetime default NULL COMMENT '更新日期',
-  PRIMARY KEY  (`id`),
-  KEY `index_depart_parent_id` USING BTREE (`parent_id`),
-  KEY `index_depart_depart_order` USING BTREE (`depart_order`),
-  KEY `index_depart_org_code` USING BTREE (`org_code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='组织机构表';
-
--- ----------------------------
--- Table structure for sys_dict
--- ----------------------------
-DROP TABLE IF EXISTS `sys_dict`;
-CREATE TABLE `sys_dict` (
-  `id` varchar(32) NOT NULL,
-  `dict_name` varchar(100) default NULL COMMENT '字典名称',
-  `dict_code` varchar(100) default NULL COMMENT '字典编码',
-  `description` varchar(255) default NULL COMMENT '描述',
-  `del_flag` int(1) default NULL COMMENT '删除状态',
-  `create_by` varchar(32) default NULL COMMENT '创建人',
-  `create_time` datetime default NULL COMMENT '创建时间',
-  `update_by` varchar(32) default NULL COMMENT '更新人',
-  `update_time` datetime default NULL COMMENT '更新时间',
-  `type` int(1) unsigned zerofill default '0' COMMENT '字典类型0为string,1为number',
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `indextable_dict_code` USING BTREE (`dict_code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for sys_dict_item
--- ----------------------------
-DROP TABLE IF EXISTS `sys_dict_item`;
-CREATE TABLE `sys_dict_item` (
-  `id` varchar(32) NOT NULL,
-  `dict_id` varchar(32) default NULL COMMENT '字典id',
-  `item_text` varchar(100) default NULL COMMENT '字典项文本',
-  `item_value` varchar(100) default NULL COMMENT '字典项值',
-  `description` varchar(255) default NULL COMMENT '描述',
-  `sort_order` int(10) default NULL COMMENT '排序',
-  `status` int(11) default NULL COMMENT '状态（1启用 0不启用）',
-  `create_by` varchar(32) default NULL,
-  `create_time` datetime default NULL,
-  `update_by` varchar(32) default NULL,
-  `update_time` datetime default NULL,
-  PRIMARY KEY  (`id`),
-  KEY `index_table_dict_id` USING BTREE (`dict_id`),
-  KEY `index_table_sort_order` USING BTREE (`sort_order`),
-  KEY `index_table_dict_status` USING BTREE (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for sys_log
--- ----------------------------
-DROP TABLE IF EXISTS `sys_log`;
-CREATE TABLE `sys_log` (
-  `id` varchar(32) NOT NULL,
-  `log_type` int(2) default NULL COMMENT '日志类型（1登录日志，2操作日志）',
-  `log_content` varchar(1000) default NULL COMMENT '日志内容',
-  `operate_type` int(2) default NULL COMMENT '操作类型',
-  `userid` varchar(32) default NULL COMMENT '操作用户账号',
-  `username` varchar(100) default NULL COMMENT '操作用户名称',
-  `ip` varchar(100) default NULL COMMENT 'IP',
-  `method` varchar(500) default NULL COMMENT '请求java方法',
-  `request_url` varchar(255) default NULL COMMENT '请求路径',
-  `request_param` varchar(255) default NULL COMMENT '请求参数',
-  `request_type` varchar(10) default NULL COMMENT '请求类型',
-  `cost_time` bigint(20) default NULL COMMENT '耗时',
-  `create_by` varchar(32) default NULL COMMENT '创建人',
-  `create_time` datetime default NULL COMMENT '创建时间',
-  `update_by` varchar(32) default NULL COMMENT '更新人',
-  `update_time` datetime default NULL COMMENT '更新时间',
-  PRIMARY KEY  (`id`),
-  KEY `index_table_userid` USING BTREE (`userid`),
-  KEY `index_logt_ype` USING BTREE (`log_type`),
-  KEY `index_operate_type` USING BTREE (`operate_type`),
-  KEY `index_log_type` USING BTREE (`log_type`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='系统日志表';
-
--- ----------------------------
--- Table structure for sys_permission
--- ----------------------------
-DROP TABLE IF EXISTS `sys_permission`;
-CREATE TABLE `sys_permission` (
-  `id` varchar(32) NOT NULL COMMENT '主键id',
-  `parent_id` varchar(32) default NULL COMMENT '父id',
-  `name` varchar(100) default NULL COMMENT '菜单标题',
-  `url` varchar(255) default NULL COMMENT '路径',
-  `component` varchar(255) default NULL COMMENT '组件',
-  `component_name` varchar(100) default NULL COMMENT '组件名字',
-  `redirect` varchar(255) default NULL COMMENT '一级菜单跳转地址',
-  `menu_type` int(11) default NULL COMMENT '菜单类型(0:一级菜单; 1:子菜单:2:按钮权限)',
-  `perms` varchar(255) default NULL COMMENT '菜单权限编码',
-  `perms_type` varchar(10) default '0' COMMENT '权限策略1显示2禁用',
-  `sort_no` int(10) default NULL COMMENT '菜单排序',
-  `always_show` tinyint(1) default NULL COMMENT '聚合子路由: 1是0否',
-  `icon` varchar(100) default NULL COMMENT '菜单图标',
-  `is_route` tinyint(1) default '1' COMMENT '是否路由菜单: 0:不是  1:是（默认值1）',
-  `is_leaf` tinyint(1) default NULL COMMENT '是否叶子节点:    1:是   0:不是',
-  `hidden` int(2) default '0' COMMENT '是否隐藏路由: 0否,1是',
-  `description` varchar(255) default NULL COMMENT '描述',
-  `create_by` varchar(32) default NULL COMMENT '创建人',
-  `create_time` datetime default NULL COMMENT '创建时间',
-  `update_by` varchar(32) default NULL COMMENT '更新人',
-  `update_time` datetime default NULL COMMENT '更新时间',
-  `del_flag` int(1) default '0' COMMENT '删除状态 0正常 1已删除',
-  `rule_flag` int(3) default '0' COMMENT '是否添加数据权限1是0否',
-  `status` varchar(2) default NULL COMMENT '按钮权限状态(0无效1有效)',
-  PRIMARY KEY  (`id`),
-  KEY `index_prem_pid` USING BTREE (`parent_id`),
-  KEY `index_prem_is_route` USING BTREE (`is_route`),
-  KEY `index_prem_is_leaf` USING BTREE (`is_leaf`),
-  KEY `index_prem_sort_no` USING BTREE (`sort_no`),
-  KEY `index_prem_del_flag` USING BTREE (`del_flag`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='菜单权限表';
-
--- ----------------------------
--- Table structure for sys_permission_data_rule
--- ----------------------------
-DROP TABLE IF EXISTS `sys_permission_data_rule`;
-CREATE TABLE `sys_permission_data_rule` (
-  `id` varchar(32) NOT NULL COMMENT 'ID',
-  `permission_id` varchar(32) default NULL COMMENT '菜单ID',
-  `rule_name` varchar(50) default NULL COMMENT '规则名称',
-  `rule_column` varchar(50) default NULL COMMENT '字段',
-  `rule_conditions` varchar(50) default NULL COMMENT '条件',
-  `rule_value` varchar(300) default NULL COMMENT '规则值',
-  `status` varchar(3) default NULL COMMENT '权限有效状态1有0否',
-  `create_time` datetime default NULL COMMENT '创建时间',
-  `create_by` varchar(32) default NULL,
-  `update_time` datetime default NULL COMMENT '修改时间',
-  `update_by` varchar(32) default NULL COMMENT '修改人',
-  PRIMARY KEY  (`id`),
-  KEY `index_fucntionid` USING BTREE (`permission_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for sys_quartz_job
--- ----------------------------
-DROP TABLE IF EXISTS `sys_quartz_job`;
-CREATE TABLE `sys_quartz_job` (
-  `id` varchar(32) NOT NULL,
-  `create_by` varchar(32) default NULL COMMENT '创建人',
-  `create_time` datetime default NULL COMMENT '创建时间',
-  `del_flag` int(1) default NULL COMMENT '删除状态',
-  `update_by` varchar(32) default NULL COMMENT '修改人',
-  `update_time` datetime default NULL COMMENT '修改时间',
-  `job_class_name` varchar(255) default NULL COMMENT '任务类名',
-  `cron_expression` varchar(255) default NULL COMMENT 'cron表达式',
-  `parameter` varchar(255) default NULL COMMENT '参数',
-  `description` varchar(255) default NULL COMMENT '描述',
-  `status` int(1) default NULL COMMENT '状态 0正常 -1停止',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for sys_role
--- ----------------------------
-DROP TABLE IF EXISTS `sys_role`;
-CREATE TABLE `sys_role` (
-  `id` varchar(32) NOT NULL COMMENT '主键id',
-  `role_name` varchar(200) default NULL COMMENT '角色名称',
-  `role_code` varchar(100) NOT NULL COMMENT '角色编码',
-  `description` varchar(255) default NULL COMMENT '描述',
-  `create_by` varchar(32) default NULL COMMENT '创建人',
-  `create_time` datetime default NULL COMMENT '创建时间',
-  `update_by` varchar(32) default NULL COMMENT '更新人',
-  `update_time` datetime default NULL COMMENT '更新时间',
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `index_role_code` USING BTREE (`role_code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='角色表';
-
--- ----------------------------
--- Table structure for sys_role_permission
--- ----------------------------
-DROP TABLE IF EXISTS `sys_role_permission`;
-CREATE TABLE `sys_role_permission` (
-  `id` varchar(32) NOT NULL,
-  `role_id` varchar(32) default NULL COMMENT '角色id',
-  `permission_id` varchar(32) default NULL COMMENT '权限id',
-  `data_rule_ids` varchar(1000) default NULL,
-  PRIMARY KEY  (`id`),
-  KEY `index_group_role_per_id` USING BTREE (`role_id`,`permission_id`),
-  KEY `index_group_role_id` USING BTREE (`role_id`),
-  KEY `index_group_per_id` USING BTREE (`permission_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='角色权限表';
-
--- ----------------------------
--- Table structure for sys_sms
--- ----------------------------
-DROP TABLE IF EXISTS `sys_sms`;
-CREATE TABLE `sys_sms` (
-  `id` varchar(32) NOT NULL COMMENT 'ID',
-  `es_title` varchar(100) default NULL COMMENT '消息标题',
-  `es_type` varchar(1) default NULL COMMENT '发送方式：1短信 2邮件 3微信',
-  `es_receiver` varchar(50) default NULL COMMENT '接收人',
-  `es_param` varchar(1000) default NULL COMMENT '发送所需参数Json格式',
-  `es_content` longtext COMMENT '推送内容',
-  `es_send_time` datetime default NULL COMMENT '推送时间',
-  `es_send_status` varchar(1) default NULL COMMENT '推送状态 0未推送 1推送成功 2推送失败 -1失败不再发送',
-  `es_send_num` int(11) default NULL COMMENT '发送次数 超过5次不再发送',
-  `es_result` varchar(255) default NULL COMMENT '推送失败原因',
-  `remark` varchar(500) default NULL COMMENT '备注',
-  `create_by` varchar(32) default NULL COMMENT '创建人登录名称',
-  `create_time` datetime default NULL COMMENT '创建日期',
-  `update_by` varchar(32) default NULL COMMENT '更新人登录名称',
-  `update_time` datetime default NULL COMMENT '更新日期',
-  PRIMARY KEY  (`id`),
-  KEY `index_type` USING BTREE (`es_type`),
-  KEY `index_receiver` USING BTREE (`es_receiver`),
-  KEY `index_sendtime` USING BTREE (`es_send_time`),
-  KEY `index_status` USING BTREE (`es_send_status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for sys_sms_template
--- ----------------------------
-DROP TABLE IF EXISTS `sys_sms_template`;
-CREATE TABLE `sys_sms_template` (
-  `id` varchar(32) NOT NULL COMMENT '主键',
-  `template_name` varchar(50) default NULL COMMENT '模板标题',
-  `template_code` varchar(32) NOT NULL COMMENT '模板CODE',
-  `template_type` varchar(1) NOT NULL COMMENT '模板类型：1短信 2邮件 3微信',
-  `template_content` varchar(1000) NOT NULL COMMENT '模板内容',
-  `template_test_json` varchar(1000) default NULL COMMENT '模板测试json',
-  `create_time` datetime default NULL COMMENT '创建日期',
-  `create_by` varchar(32) default NULL COMMENT '创建人登录名称',
-  `update_time` datetime default NULL COMMENT '更新日期',
-  `update_by` varchar(32) default NULL COMMENT '更新人登录名称',
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `uniq_templatecode` USING BTREE (`template_code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for sys_user
--- ----------------------------
-DROP TABLE IF EXISTS `sys_user`;
-CREATE TABLE `sys_user` (
-  `id` varchar(32) NOT NULL COMMENT '主键id',
-  `username` varchar(100) default NULL COMMENT '登录账号',
-  `realname` varchar(100) default NULL COMMENT '真实姓名',
-  `password` varchar(255) default NULL COMMENT '密码',
-  `salt` varchar(45) default NULL COMMENT 'md5密码盐',
-  `avatar` varchar(255) default NULL COMMENT '头像',
-  `birthday` datetime default NULL COMMENT '生日',
-  `sex` int(11) default NULL COMMENT '性别（1：男 2：女）',
-  `email` varchar(45) default NULL COMMENT '电子邮件',
-  `phone` varchar(45) default NULL COMMENT '电话',
-  `org_code` varchar(100) default NULL COMMENT '部门code',
-  `status` int(2) default NULL COMMENT '状态(1：正常  2：冻结 ）',
-  `del_flag` varchar(1) default NULL COMMENT '删除状态（0，正常，1已删除）',
-  `activiti_sync` varchar(6) default NULL COMMENT '同步工作流引擎1同步0不同步',
-  `create_by` varchar(32) default NULL COMMENT '创建人',
-  `create_time` datetime default NULL COMMENT '创建时间',
-  `update_by` varchar(32) default NULL COMMENT '更新人',
-  `update_time` datetime default NULL COMMENT '更新时间',
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `index_user_name` USING BTREE (`username`),
-  KEY `index_user_status` USING BTREE (`status`),
-  KEY `index_user_del_flag` USING BTREE (`del_flag`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
-
--- ----------------------------
--- Table structure for sys_user_agent
--- ----------------------------
-DROP TABLE IF EXISTS `sys_user_agent`;
-CREATE TABLE `sys_user_agent` (
-  `id` varchar(32) NOT NULL COMMENT '序号',
-  `user_name` varchar(100) default NULL COMMENT '用户名',
-  `agent_user_name` varchar(100) default NULL COMMENT '代理人用户名',
-  `start_time` datetime default NULL COMMENT '代理开始时间',
-  `end_time` datetime default NULL COMMENT '代理结束时间',
-  `status` varchar(2) default NULL COMMENT '状态0无效1有效',
-  `create_name` varchar(50) default NULL COMMENT '创建人名称',
-  `create_by` varchar(50) default NULL COMMENT '创建人登录名称',
-  `create_time` datetime default NULL COMMENT '创建日期',
-  `update_name` varchar(50) default NULL COMMENT '更新人名称',
-  `update_by` varchar(50) default NULL COMMENT '更新人登录名称',
-  `update_time` datetime default NULL COMMENT '更新日期',
-  `sys_org_code` varchar(50) default NULL COMMENT '所属部门',
-  `sys_company_code` varchar(50) default NULL COMMENT '所属公司',
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `uniq_username` USING BTREE (`user_name`),
-  KEY `statux_index` USING BTREE (`status`),
-  KEY `begintime_index` USING BTREE (`start_time`),
-  KEY `endtime_index` USING BTREE (`end_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户代理人设置';
-
--- ----------------------------
--- Table structure for sys_user_depart
--- ----------------------------
-DROP TABLE IF EXISTS `sys_user_depart`;
-CREATE TABLE `sys_user_depart` (
-  `ID` varchar(32) NOT NULL COMMENT 'id',
-  `user_id` varchar(32) default NULL COMMENT '用户id',
-  `dep_id` varchar(32) default NULL COMMENT '部门id',
-  PRIMARY KEY  (`ID`),
-  KEY `index_depart_groupk_userid` USING BTREE (`user_id`),
-  KEY `index_depart_groupkorgid` USING BTREE (`dep_id`),
-  KEY `index_depart_groupk_uidanddid` USING BTREE (`user_id`,`dep_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for sys_user_role
--- ----------------------------
-DROP TABLE IF EXISTS `sys_user_role`;
-CREATE TABLE `sys_user_role` (
-  `id` varchar(32) NOT NULL COMMENT '主键id',
-  `user_id` varchar(32) default NULL COMMENT '用户id',
-  `role_id` varchar(32) default NULL COMMENT '角色id',
-  PRIMARY KEY  (`id`),
-  KEY `index2_groupuu_user_id` USING BTREE (`user_id`),
-  KEY `index2_groupuu_ole_id` USING BTREE (`role_id`),
-  KEY `index2_groupuu_useridandroleid` USING BTREE (`user_id`,`role_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户角色表';
-
--- ----------------------------
--- Table structure for test_person
--- ----------------------------
-DROP TABLE IF EXISTS `test_person`;
-CREATE TABLE `test_person` (
-  `id` varchar(36) NOT NULL,
-  `create_by` varchar(50) default NULL COMMENT '创建人',
-  `create_time` datetime default NULL COMMENT '创建日期',
-  `update_by` varchar(50) default NULL COMMENT '更新人',
-  `update_time` datetime default NULL COMMENT '更新日期',
-  `sex` varchar(32) default NULL COMMENT '性别',
-  `name` varchar(200) default NULL COMMENT '用户名',
-  `content` longtext COMMENT '请假原因',
-  `be_date` datetime default NULL COMMENT '请假时间',
-  `qj_days` int(11) default NULL COMMENT '请假天数',
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-
-
--- ----------------------------
--- Records of demo
--- ----------------------------
-INSERT INTO `demo` VALUES ('08375a2dff80e821d5a158dd98302b23', '导入小虎', null, null, null, null, '2', '28', null, null, null, 'jeecg-boot', '2019-04-10 11:42:57', null, null);
-INSERT INTO `demo` VALUES ('1c2ba51b29a42d9de02bbd708ea8121a', '777777', '777', '2018-12-07 19:43:17', null, null, null, '7', '2018-12-07', null, null, null, null, 'admin', '2019-02-21 18:26:04');
-INSERT INTO `demo` VALUES ('1dc29e80be14d1400f165b5c6b30c707', 'zhang daihao', null, null, null, null, '2', null, null, 'zhangdaiscott@163.com', null, null, null, null, null);
-INSERT INTO `demo` VALUES ('304e651dc769d5c9b6e08fb30457a602', '小白兔', null, null, null, null, '2', '28', null, null, null, 'scott', '2019-01-19 13:12:53', 'qinfeng', '2019-01-19 13:13:12');
-INSERT INTO `demo` VALUES ('4', 'Sandy', '开源，很好', '2018-12-15 00:00:00', null, null, '2', '21', '2018-12-15', 'test4@baomidou.com', '聪明00', null, null, 'admin', '2019-02-25 16:29:27');
-INSERT INTO `demo` VALUES ('42c08b1a2e5b2a96ffa4cc88383d4b11', '秦50090', null, '2019-01-05 20:33:31', null, null, null, '28', '2019-01-05', null, null, 'admin', '2019-01-19 20:33:54', 'admin', '2019-01-19 20:34:29');
-INSERT INTO `demo` VALUES ('4436302a0de50bb83025286bc414d6a9', 'zhang daihao', null, null, null, null, null, null, null, 'zhangdaiscott@163.com', null, 'admin', '2019-01-19 15:39:04', null, null);
-INSERT INTO `demo` VALUES ('4981637bf71b0c1ed1365241dfcfa0ea', '小虎', null, null, null, null, '2', '28', null, null, null, 'scott', '2019-01-19 13:12:53', 'qinfeng', '2019-01-19 13:13:12');
-INSERT INTO `demo` VALUES ('5c16e6a5c31296bcd3f1053d5d118815', '导入zhangdaiscott', null, null, null, null, '1', null, '2019-01-03', null, null, 'jeecg-boot', '2019-04-10 11:42:57', null, null);
-INSERT INTO `demo` VALUES ('7', 'zhangdaiscott', null, null, null, null, '1', null, '2019-01-03', null, null, null, null, null, null);
-INSERT INTO `demo` VALUES ('73bc58611012617ca446d8999379e4ac', '郭靖11a', '777', '2018-12-07 00:00:00', null, null, null, null, null, null, null, 'jeecg-boot', '2019-03-28 18:16:39', null, null);
-INSERT INTO `demo` VALUES ('917e240eaa0b1b2d198ae869b64a81c3', 'zhang daihao', null, null, null, null, '2', '0', '2018-11-29', 'zhangdaiscott@163.com', null, null, null, null, null);
-INSERT INTO `demo` VALUES ('94420c5d8fc4420dde1e7196154b3a24', '秦111', null, null, null, null, null, null, null, null, null, 'scott', '2019-01-19 12:54:58', 'qinfeng', '2019-01-19 13:12:10');
-INSERT INTO `demo` VALUES ('95740656751c5f22e5932ab0ae33b1e4', '杨康22a', '奸臣', null, null, null, null, null, null, null, null, 'jeecg-boot', '2019-03-28 18:16:39', null, null);
-INSERT INTO `demo` VALUES ('b86897900c770503771c7bb88e5d1e9b', 'scott1', '开源、很好、hello', null, null, null, '1', null, null, 'zhangdaiscott@163.com', null, 'scott', '2019-01-19 12:22:34', null, null);
-INSERT INTO `demo` VALUES ('c0b7c3de7c62a295ab715943de8a315d', '秦风555', null, null, null, null, null, null, null, null, null, 'admin', '2019-01-19 13:18:30', 'admin', '2019-01-19 13:18:50');
-INSERT INTO `demo` VALUES ('c28fa8391ef81d6fabd8bd894a7615aa', '小麦', null, null, null, null, '2', null, null, 'zhangdaiscott@163.com', null, 'jeecg-boot', '2019-04-04 17:18:09', null, null);
-INSERT INTO `demo` VALUES ('c2c0d49e3c01913067cf8d1fb3c971d2', 'zhang daihao', null, null, null, null, '2', null, null, 'zhangdaiscott@163.com', null, 'admin', '2019-01-19 23:37:18', 'admin', '2019-01-21 16:49:06');
-INSERT INTO `demo` VALUES ('c96279c666b4b82e3ef1e4e2978701ce', '报名时间', null, null, null, null, null, null, null, null, null, 'jeecg-boot', '2019-03-28 18:00:52', null, null);
-INSERT INTO `demo` VALUES ('d24668721446e8478eeeafe4db66dcff', 'zhang daihao999', null, null, null, null, '1', null, null, 'zhangdaiscott@163.com', null, null, null, null, null);
-INSERT INTO `demo` VALUES ('eaa6c1116b41dc10a94eae34cf990133', 'zhang daihao', null, null, null, null, null, null, null, 'zhangdaiscott@163.com', null, null, null, null, null);
-INSERT INTO `demo` VALUES ('ffa9da1ad40632dfcabac51d766865bd', '秦999', null, null, null, null, null, null, null, null, null, 'admin', '2019-01-19 23:36:34', 'admin', '2019-02-14 17:30:43');
 
 -- ----------------------------
 -- Records of jeecg_monthly_growth_analysis
@@ -781,6 +105,25 @@ INSERT INTO `jeecg_monthly_growth_analysis` VALUES ('21', '2019', '9月', '0.00'
 INSERT INTO `jeecg_monthly_growth_analysis` VALUES ('22', '2019', '10月', '0.00', '0.00');
 INSERT INTO `jeecg_monthly_growth_analysis` VALUES ('23', '2019', '11月', '0.00', '0.00');
 INSERT INTO `jeecg_monthly_growth_analysis` VALUES ('24', '2019', '12月', '0.00', '0.00');
+
+-- ----------------------------
+-- Table structure for jeecg_order_customer
+-- ----------------------------
+DROP TABLE IF EXISTS `jeecg_order_customer`;
+CREATE TABLE `jeecg_order_customer` (
+  `id` varchar(32) NOT NULL COMMENT '主键',
+  `name` varchar(100) NOT NULL COMMENT '客户名',
+  `sex` varchar(4) default NULL COMMENT '性别',
+  `idcard` varchar(18) default NULL COMMENT '身份证号码',
+  `idcard_pic` varchar(500) default NULL COMMENT '身份证扫描件',
+  `telphone` varchar(32) default NULL COMMENT '电话1',
+  `order_id` varchar(32) NOT NULL COMMENT '外键',
+  `create_by` varchar(32) default NULL COMMENT '创建人',
+  `create_time` datetime default NULL COMMENT '创建时间',
+  `update_by` varchar(32) default NULL COMMENT '修改人',
+  `update_time` datetime default NULL COMMENT '修改时间',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of jeecg_order_customer
@@ -852,6 +195,24 @@ INSERT INTO `jeecg_order_customer` VALUES ('f5d2605e844192d9e548f9bd240ac908', '
 INSERT INTO `jeecg_order_customer` VALUES ('f6db6547382126613a3e46e7cd58a5f2', '导入scott', null, null, null, null, 'a2cce75872cc8fcc47f78de9ffd378c2', 'jeecg-boot', '2019-03-29 18:43:59', null, null);
 
 -- ----------------------------
+-- Table structure for jeecg_order_main
+-- ----------------------------
+DROP TABLE IF EXISTS `jeecg_order_main`;
+CREATE TABLE `jeecg_order_main` (
+  `id` varchar(32) NOT NULL COMMENT '主键',
+  `order_code` varchar(50) default NULL COMMENT '订单号',
+  `ctype` varchar(500) default NULL COMMENT '订单类型',
+  `order_date` datetime default NULL COMMENT '订单日期',
+  `order_money` double(10,3) default NULL COMMENT '订单金额',
+  `content` varchar(500) default NULL COMMENT '订单备注',
+  `create_by` varchar(32) default NULL COMMENT '创建人',
+  `create_time` datetime default NULL COMMENT '创建时间',
+  `update_by` varchar(32) default NULL COMMENT '修改人',
+  `update_time` datetime default NULL COMMENT '修改时间',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
 -- Records of jeecg_order_main
 -- ----------------------------
 INSERT INTO `jeecg_order_main` VALUES ('163e2efcbc6d7d54eb3f8a137da8a75a', 'B100', null, null, '3000.000', null, 'jeecg-boot', '2019-03-29 18:43:59', null, null);
@@ -872,6 +233,22 @@ INSERT INTO `jeecg_order_main` VALUES ('f618a85b17e2c4dd58d268220c8dd9a1', 'N001
 INSERT INTO `jeecg_order_main` VALUES ('f71f7f8930b5b6b1703d9948d189982b', 'BY911', null, '2019-04-06 19:08:39', null, null, 'admin', '2019-04-01 16:36:02', 'admin', '2019-04-01 16:36:08');
 INSERT INTO `jeecg_order_main` VALUES ('f8889aaef6d1bccffd98d2889c0aafb5', 'A100', null, '2018-10-10 00:00:00', '6000.000', null, 'jeecg-boot', '2019-03-29 18:43:59', null, null);
 INSERT INTO `jeecg_order_main` VALUES ('fe81ee5d19bbf9eef2066d4f29dfbe0f', 'uuuu', null, null, null, null, 'jeecg-boot', '2019-04-03 11:00:39', null, null);
+
+-- ----------------------------
+-- Table structure for jeecg_order_ticket
+-- ----------------------------
+DROP TABLE IF EXISTS `jeecg_order_ticket`;
+CREATE TABLE `jeecg_order_ticket` (
+  `id` varchar(32) NOT NULL COMMENT '主键',
+  `ticket_code` varchar(100) NOT NULL COMMENT '航班号',
+  `tickect_date` datetime default NULL COMMENT '航班时间',
+  `order_id` varchar(32) NOT NULL COMMENT '外键',
+  `create_by` varchar(32) default NULL COMMENT '创建人',
+  `create_time` datetime default NULL COMMENT '创建时间',
+  `update_by` varchar(32) default NULL COMMENT '修改人',
+  `update_time` datetime default NULL COMMENT '修改时间',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of jeecg_order_ticket
@@ -931,6 +308,22 @@ INSERT INTO `jeecg_order_ticket` VALUES ('fa759dc104d0371f8aa28665b323dab6', '88
 INSERT INTO `jeecg_order_ticket` VALUES ('ff197da84a9a3af53878eddc91afbb2e', '33', null, '54e739bef5b67569c963c38da52581ec', 'admin', '2019-03-15 16:50:15', null, null);
 
 -- ----------------------------
+-- Table structure for jeecg_project_nature_income
+-- ----------------------------
+DROP TABLE IF EXISTS `jeecg_project_nature_income`;
+CREATE TABLE `jeecg_project_nature_income` (
+  `id` int(11) NOT NULL auto_increment,
+  `nature` varchar(50) NOT NULL COMMENT '项目性质',
+  `insurance_fee` decimal(18,2) default '0.00' COMMENT '保险经纪佣金费',
+  `risk_consulting_fee` decimal(18,2) default '0.00' COMMENT '风险咨询费',
+  `evaluation_fee` decimal(18,2) default '0.00' COMMENT '承保公估评估费',
+  `insurance_evaluation_fee` decimal(18,2) default '0.00' COMMENT '保险公估费',
+  `bidding_consulting_fee` decimal(18,2) default '0.00' COMMENT '投标咨询费',
+  `interol_consulting_fee` decimal(18,2) default '0.00' COMMENT '内控咨询费',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
 -- Records of jeecg_project_nature_income
 -- ----------------------------
 INSERT INTO `jeecg_project_nature_income` VALUES ('1', '市场化-电商业务', '4865.41', '0.00', '0.00', '0.00', '0.00', '0.00');
@@ -943,9 +336,270 @@ INSERT INTO `jeecg_project_nature_income` VALUES ('7', '市场化-海外业务',
 INSERT INTO `jeecg_project_nature_income` VALUES ('8', '市场化-风险咨询', '910183.93', '0.00', '0.00', '0.00', '0.00', '226415.09');
 
 -- ----------------------------
+-- Table structure for joa_demo
+-- ----------------------------
+DROP TABLE IF EXISTS `joa_demo`;
+CREATE TABLE `joa_demo` (
+  `id` varchar(32) default NULL COMMENT 'ID',
+  `name` varchar(100) default NULL COMMENT '请假人',
+  `days` int(11) default NULL COMMENT '请假天数',
+  `begin_date` datetime default NULL COMMENT '开始时间',
+  `end_date` datetime default NULL COMMENT '请假结束时间',
+  `reason` varchar(500) default NULL COMMENT '请假原因',
+  `bpm_status` varchar(50) default '1' COMMENT '流程状态',
+  `create_by` varchar(32) default NULL COMMENT '创建人id',
+  `create_time` datetime default NULL COMMENT '创建时间',
+  `update_time` datetime default NULL COMMENT '修改时间',
+  `update_by` varchar(32) default NULL COMMENT '修改人id'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='流程测试';
+
+-- ----------------------------
+-- Records of joa_demo
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for qrtz_blob_triggers
+-- ----------------------------
+DROP TABLE IF EXISTS `qrtz_blob_triggers`;
+CREATE TABLE `qrtz_blob_triggers` (
+  `SCHED_NAME` varchar(120) NOT NULL,
+  `TRIGGER_NAME` varchar(200) NOT NULL,
+  `TRIGGER_GROUP` varchar(200) NOT NULL,
+  `BLOB_DATA` blob,
+  PRIMARY KEY  (`SCHED_NAME`,`TRIGGER_NAME`,`TRIGGER_GROUP`),
+  CONSTRAINT `qrtz_blob_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) REFERENCES `qrtz_triggers` (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 504832 kB; (`SCHED_NAME` `TRIGGER_NAME` `TRIGGE';
+
+-- ----------------------------
+-- Records of qrtz_blob_triggers
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for qrtz_calendars
+-- ----------------------------
+DROP TABLE IF EXISTS `qrtz_calendars`;
+CREATE TABLE `qrtz_calendars` (
+  `SCHED_NAME` varchar(120) NOT NULL,
+  `CALENDAR_NAME` varchar(200) NOT NULL,
+  `CALENDAR` blob NOT NULL,
+  PRIMARY KEY  (`SCHED_NAME`,`CALENDAR_NAME`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of qrtz_calendars
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for qrtz_cron_triggers
+-- ----------------------------
+DROP TABLE IF EXISTS `qrtz_cron_triggers`;
+CREATE TABLE `qrtz_cron_triggers` (
+  `SCHED_NAME` varchar(120) NOT NULL,
+  `TRIGGER_NAME` varchar(200) NOT NULL,
+  `TRIGGER_GROUP` varchar(200) NOT NULL,
+  `CRON_EXPRESSION` varchar(200) NOT NULL,
+  `TIME_ZONE_ID` varchar(80) default NULL,
+  PRIMARY KEY  (`SCHED_NAME`,`TRIGGER_NAME`,`TRIGGER_GROUP`),
+  CONSTRAINT `qrtz_cron_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) REFERENCES `qrtz_triggers` (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 504832 kB; (`SCHED_NAME` `TRIGGER_NAME` `TRIGGE';
+
+-- ----------------------------
+-- Records of qrtz_cron_triggers
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for qrtz_fired_triggers
+-- ----------------------------
+DROP TABLE IF EXISTS `qrtz_fired_triggers`;
+CREATE TABLE `qrtz_fired_triggers` (
+  `SCHED_NAME` varchar(120) NOT NULL,
+  `ENTRY_ID` varchar(95) NOT NULL,
+  `TRIGGER_NAME` varchar(200) NOT NULL,
+  `TRIGGER_GROUP` varchar(200) NOT NULL,
+  `INSTANCE_NAME` varchar(200) NOT NULL,
+  `FIRED_TIME` bigint(13) NOT NULL,
+  `SCHED_TIME` bigint(13) NOT NULL,
+  `PRIORITY` int(11) NOT NULL,
+  `STATE` varchar(16) NOT NULL,
+  `JOB_NAME` varchar(200) default NULL,
+  `JOB_GROUP` varchar(200) default NULL,
+  `IS_NONCONCURRENT` varchar(1) default NULL,
+  `REQUESTS_RECOVERY` varchar(1) default NULL,
+  PRIMARY KEY  (`SCHED_NAME`,`ENTRY_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of qrtz_fired_triggers
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for qrtz_job_details
+-- ----------------------------
+DROP TABLE IF EXISTS `qrtz_job_details`;
+CREATE TABLE `qrtz_job_details` (
+  `SCHED_NAME` varchar(120) NOT NULL,
+  `JOB_NAME` varchar(200) NOT NULL,
+  `JOB_GROUP` varchar(200) NOT NULL,
+  `DESCRIPTION` varchar(250) default NULL,
+  `JOB_CLASS_NAME` varchar(250) NOT NULL,
+  `IS_DURABLE` varchar(1) NOT NULL,
+  `IS_NONCONCURRENT` varchar(1) NOT NULL,
+  `IS_UPDATE_DATA` varchar(1) NOT NULL,
+  `REQUESTS_RECOVERY` varchar(1) NOT NULL,
+  `JOB_DATA` blob,
+  PRIMARY KEY  (`SCHED_NAME`,`JOB_NAME`,`JOB_GROUP`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of qrtz_job_details
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for qrtz_locks
+-- ----------------------------
+DROP TABLE IF EXISTS `qrtz_locks`;
+CREATE TABLE `qrtz_locks` (
+  `SCHED_NAME` varchar(120) NOT NULL,
+  `LOCK_NAME` varchar(40) NOT NULL,
+  PRIMARY KEY  (`SCHED_NAME`,`LOCK_NAME`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
 -- Records of qrtz_locks
 -- ----------------------------
 INSERT INTO `qrtz_locks` VALUES ('quartzScheduler', 'TRIGGER_ACCESS');
+
+-- ----------------------------
+-- Table structure for qrtz_paused_trigger_grps
+-- ----------------------------
+DROP TABLE IF EXISTS `qrtz_paused_trigger_grps`;
+CREATE TABLE `qrtz_paused_trigger_grps` (
+  `SCHED_NAME` varchar(120) NOT NULL,
+  `TRIGGER_GROUP` varchar(200) NOT NULL,
+  PRIMARY KEY  (`SCHED_NAME`,`TRIGGER_GROUP`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of qrtz_paused_trigger_grps
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for qrtz_scheduler_state
+-- ----------------------------
+DROP TABLE IF EXISTS `qrtz_scheduler_state`;
+CREATE TABLE `qrtz_scheduler_state` (
+  `SCHED_NAME` varchar(120) NOT NULL,
+  `INSTANCE_NAME` varchar(200) NOT NULL,
+  `LAST_CHECKIN_TIME` bigint(13) NOT NULL,
+  `CHECKIN_INTERVAL` bigint(13) NOT NULL,
+  PRIMARY KEY  (`SCHED_NAME`,`INSTANCE_NAME`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of qrtz_scheduler_state
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for qrtz_simple_triggers
+-- ----------------------------
+DROP TABLE IF EXISTS `qrtz_simple_triggers`;
+CREATE TABLE `qrtz_simple_triggers` (
+  `SCHED_NAME` varchar(120) NOT NULL,
+  `TRIGGER_NAME` varchar(200) NOT NULL,
+  `TRIGGER_GROUP` varchar(200) NOT NULL,
+  `REPEAT_COUNT` bigint(7) NOT NULL,
+  `REPEAT_INTERVAL` bigint(12) NOT NULL,
+  `TIMES_TRIGGERED` bigint(10) NOT NULL,
+  PRIMARY KEY  (`SCHED_NAME`,`TRIGGER_NAME`,`TRIGGER_GROUP`),
+  CONSTRAINT `qrtz_simple_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) REFERENCES `qrtz_triggers` (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 504832 kB; (`SCHED_NAME` `TRIGGER_NAME` `TRIGGE';
+
+-- ----------------------------
+-- Records of qrtz_simple_triggers
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for qrtz_simprop_triggers
+-- ----------------------------
+DROP TABLE IF EXISTS `qrtz_simprop_triggers`;
+CREATE TABLE `qrtz_simprop_triggers` (
+  `SCHED_NAME` varchar(120) NOT NULL,
+  `TRIGGER_NAME` varchar(200) NOT NULL,
+  `TRIGGER_GROUP` varchar(200) NOT NULL,
+  `STR_PROP_1` varchar(512) default NULL,
+  `STR_PROP_2` varchar(512) default NULL,
+  `STR_PROP_3` varchar(512) default NULL,
+  `INT_PROP_1` int(11) default NULL,
+  `INT_PROP_2` int(11) default NULL,
+  `LONG_PROP_1` bigint(20) default NULL,
+  `LONG_PROP_2` bigint(20) default NULL,
+  `DEC_PROP_1` decimal(13,4) default NULL,
+  `DEC_PROP_2` decimal(13,4) default NULL,
+  `BOOL_PROP_1` varchar(1) default NULL,
+  `BOOL_PROP_2` varchar(1) default NULL,
+  PRIMARY KEY  (`SCHED_NAME`,`TRIGGER_NAME`,`TRIGGER_GROUP`),
+  CONSTRAINT `qrtz_simprop_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) REFERENCES `qrtz_triggers` (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 504832 kB; (`SCHED_NAME` `TRIGGER_NAME` `TRIGGE';
+
+-- ----------------------------
+-- Records of qrtz_simprop_triggers
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for qrtz_triggers
+-- ----------------------------
+DROP TABLE IF EXISTS `qrtz_triggers`;
+CREATE TABLE `qrtz_triggers` (
+  `SCHED_NAME` varchar(120) NOT NULL,
+  `TRIGGER_NAME` varchar(200) NOT NULL,
+  `TRIGGER_GROUP` varchar(200) NOT NULL,
+  `JOB_NAME` varchar(200) NOT NULL,
+  `JOB_GROUP` varchar(200) NOT NULL,
+  `DESCRIPTION` varchar(250) default NULL,
+  `NEXT_FIRE_TIME` bigint(13) default NULL,
+  `PREV_FIRE_TIME` bigint(13) default NULL,
+  `PRIORITY` int(11) default NULL,
+  `TRIGGER_STATE` varchar(16) NOT NULL,
+  `TRIGGER_TYPE` varchar(8) NOT NULL,
+  `START_TIME` bigint(13) NOT NULL,
+  `END_TIME` bigint(13) default NULL,
+  `CALENDAR_NAME` varchar(200) default NULL,
+  `MISFIRE_INSTR` smallint(2) default NULL,
+  `JOB_DATA` blob,
+  PRIMARY KEY  (`SCHED_NAME`,`TRIGGER_NAME`,`TRIGGER_GROUP`),
+  KEY `SCHED_NAME` USING BTREE (`SCHED_NAME`,`JOB_NAME`,`JOB_GROUP`),
+  CONSTRAINT `qrtz_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `JOB_NAME`, `JOB_GROUP`) REFERENCES `qrtz_job_details` (`SCHED_NAME`, `JOB_NAME`, `JOB_GROUP`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 504832 kB; (`SCHED_NAME` `JOB_NAME` `JOB_GROUP`';
+
+-- ----------------------------
+-- Records of qrtz_triggers
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for sys_announcement
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_announcement`;
+CREATE TABLE `sys_announcement` (
+  `id` varchar(32) NOT NULL,
+  `titile` varchar(100) default NULL COMMENT '标题',
+  `msg_content` text COMMENT '内容',
+  `start_time` datetime default NULL COMMENT '开始时间',
+  `end_time` datetime default NULL COMMENT '结束时间',
+  `sender` varchar(100) default NULL COMMENT '发布人',
+  `priority` varchar(255) default NULL COMMENT '优先级（L低，M中，H高）',
+  `msg_category` varchar(10) NOT NULL default '2' COMMENT '消息类型1:通知公告2:系统消息',
+  `msg_type` varchar(10) default NULL COMMENT '通告对象类型（USER:指定用户，ALL:全体用户）',
+  `send_status` varchar(10) default NULL COMMENT '发布状态（0未发布，1已发布，2已撤销）',
+  `send_time` datetime default NULL COMMENT '发布时间',
+  `cancel_time` datetime default NULL COMMENT '撤销时间',
+  `del_flag` varchar(1) default NULL COMMENT '删除状态（0，正常，1已删除）',
+  `create_by` varchar(32) default NULL COMMENT '创建人',
+  `create_time` datetime default NULL COMMENT '创建时间',
+  `update_by` varchar(32) default NULL COMMENT '更新人',
+  `update_time` datetime default NULL COMMENT '更新时间',
+  `user_ids` text COMMENT '指定用户',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统通告表';
 
 -- ----------------------------
 -- Records of sys_announcement
@@ -957,11 +611,44 @@ INSERT INTO `sys_announcement` VALUES ('93a9060a1c20e4bf98b3f768a02c2ff9', '111'
 INSERT INTO `sys_announcement` VALUES ('de1dc57f31037079e1e55c8347fe6ef7', '222', '2222', '2019-02-06 17:28:26', '2019-02-23 17:28:28', 'admin', 'M', '2', 'ALL', '1', '2019-03-29 17:19:56', null, '1', 'admin', '2019-02-26 17:28:36', 'admin', '2019-02-26 17:28:40', null);
 INSERT INTO `sys_announcement` VALUES ('e52f3eb6215f139cb2224c52517af3bd', '334', '334', null, null, null, null, '2', null, '0', null, null, '1', 'admin', '2019-03-30 12:40:28', 'admin', '2019-03-30 12:40:32', null);
 
+-- ----------------------------
+-- Table structure for sys_announcement_send
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_announcement_send`;
+CREATE TABLE `sys_announcement_send` (
+  `id` varchar(32) default NULL,
+  `annt_id` varchar(32) default NULL COMMENT '通告ID',
+  `user_id` varchar(32) default NULL COMMENT '用户id',
+  `read_flag` varchar(10) default NULL COMMENT '阅读状态（0未读，1已读）',
+  `read_time` datetime default NULL COMMENT '阅读时间',
+  `create_by` varchar(32) default NULL COMMENT '创建人',
+  `create_time` datetime default NULL COMMENT '创建时间',
+  `update_by` varchar(32) default NULL COMMENT '更新人',
+  `update_time` datetime default NULL COMMENT '更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户通告阅读标记表';
 
 -- ----------------------------
 -- Records of sys_announcement_send
 -- ----------------------------
 INSERT INTO `sys_announcement_send` VALUES ('646c0c405ec643d4dc4160db2446f8ff', '93a9060a1c20e4bf98b3f768a02c2ff9', 'e9ca23d68d884d4ebb19d07889727dae', '0', null, 'admin', '2019-05-17 11:50:56', null, null);
+
+-- ----------------------------
+-- Table structure for sys_data_log
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_data_log`;
+CREATE TABLE `sys_data_log` (
+  `id` varchar(32) NOT NULL COMMENT 'id',
+  `create_by` varchar(32) default NULL COMMENT '创建人登录名称',
+  `create_time` datetime default NULL COMMENT '创建日期',
+  `update_by` varchar(32) default NULL COMMENT '更新人登录名称',
+  `update_time` datetime default NULL COMMENT '更新日期',
+  `data_table` varchar(32) default NULL COMMENT '表名',
+  `data_id` varchar(32) default NULL COMMENT '数据ID',
+  `data_content` text COMMENT '数据内容',
+  `data_version` int(11) default NULL COMMENT '版本号',
+  PRIMARY KEY  (`id`),
+  KEY `sindex` USING BTREE (`data_table`,`data_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of sys_data_log
@@ -985,6 +672,36 @@ INSERT INTO `sys_data_log` VALUES ('4028ef81550c1a7901550c1cd7850002', 'admin', 
 INSERT INTO `sys_data_log` VALUES ('4028ef81568c31ec01568c3307080004', 'admin', '2016-08-15 11:16:09', null, null, 'jeecg_demo', '4028ef81550c1a7901550c1cd6e70001', '{\"mobilePhone\":\"\",\"officePhone\":\"\",\"email\":\"\",\"createDate\":\"Jun 23, 2016 12:00:00 PM\",\"sex\":\"1\",\"depId\":\"402880e447e99cf10147e9a03b320003\",\"userName\":\"9001\",\"status\":\"1\",\"content\":\"111\",\"id\":\"4028ef81550c1a7901550c1cd6e70001\"}', '2');
 
 -- ----------------------------
+-- Table structure for sys_depart
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_depart`;
+CREATE TABLE `sys_depart` (
+  `id` varchar(32) NOT NULL COMMENT 'ID',
+  `parent_id` varchar(32) default NULL COMMENT '父机构ID',
+  `depart_name` varchar(100) NOT NULL COMMENT '机构/部门名称',
+  `depart_name_en` varchar(500) default NULL COMMENT '英文名',
+  `depart_name_abbr` varchar(500) default NULL COMMENT '缩写',
+  `depart_order` int(11) default '0' COMMENT '排序',
+  `description` text COMMENT '描述',
+  `org_type` varchar(10) default NULL COMMENT '机构类型 1一级部门 2子部门',
+  `org_code` varchar(64) NOT NULL COMMENT '机构编码',
+  `mobile` varchar(32) default NULL COMMENT '手机号',
+  `fax` varchar(32) default NULL COMMENT '传真',
+  `address` varchar(100) default NULL COMMENT '地址',
+  `memo` varchar(500) default NULL COMMENT '备注',
+  `status` varchar(1) default NULL COMMENT '状态（1启用，0不启用）',
+  `del_flag` varchar(1) default NULL COMMENT '删除状态（0，正常，1已删除）',
+  `create_by` varchar(32) default NULL COMMENT '创建人',
+  `create_time` datetime default NULL COMMENT '创建日期',
+  `update_by` varchar(32) default NULL COMMENT '更新人',
+  `update_time` datetime default NULL COMMENT '更新日期',
+  PRIMARY KEY  (`id`),
+  KEY `index_depart_parent_id` USING BTREE (`parent_id`),
+  KEY `index_depart_depart_order` USING BTREE (`depart_order`),
+  KEY `index_depart_org_code` USING BTREE (`org_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='组织机构表';
+
+-- ----------------------------
 -- Records of sys_depart
 -- ----------------------------
 INSERT INTO `sys_depart` VALUES ('4f1765520d6346f9bd9c79e2479e5b12', 'c6d7cb4deeac411cb3384b1b31278596', '市场部', null, null, '0', null, '2', 'A01A03', null, null, null, null, null, '0', 'admin', '2019-02-20 17:15:34', 'admin', '2019-02-26 16:36:18');
@@ -995,6 +712,25 @@ INSERT INTO `sys_depart` VALUES ('6d35e179cd814e3299bd588ea7daed3f', '', '卓尔
 INSERT INTO `sys_depart` VALUES ('743ba9dbdc114af8953a11022ef3096a', 'f28c6f53abd841ac87ead43afc483433', '财务部', null, null, '0', null, '2', 'A03A01', null, null, null, null, null, '0', 'admin', '2019-03-22 16:45:43', null, null);
 INSERT INTO `sys_depart` VALUES ('a7d7e77e06c84325a40932163adcdaa6', '6d35e179cd814e3299bd588ea7daed3f', '财务部', null, null, '0', null, '2', 'A02A01', null, null, null, null, null, '0', 'admin', '2019-02-26 16:36:47', 'admin', '2019-02-26 16:37:25');
 INSERT INTO `sys_depart` VALUES ('c6d7cb4deeac411cb3384b1b31278596', '', '北京国炬公司', null, null, '0', null, '1', 'A01', null, null, null, null, null, '0', 'admin', '2019-02-11 14:21:51', 'admin', '2019-03-22 16:47:19');
+
+-- ----------------------------
+-- Table structure for sys_dict
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_dict`;
+CREATE TABLE `sys_dict` (
+  `id` varchar(32) NOT NULL,
+  `dict_name` varchar(100) default NULL COMMENT '字典名称',
+  `dict_code` varchar(100) default NULL COMMENT '字典编码',
+  `description` varchar(255) default NULL COMMENT '描述',
+  `del_flag` int(1) default NULL COMMENT '删除状态',
+  `create_by` varchar(32) default NULL COMMENT '创建人',
+  `create_time` datetime default NULL COMMENT '创建时间',
+  `update_by` varchar(32) default NULL COMMENT '更新人',
+  `update_time` datetime default NULL COMMENT '更新时间',
+  `type` int(1) unsigned zerofill default '0' COMMENT '字典类型0为string,1为number',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `indextable_dict_code` USING BTREE (`dict_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of sys_dict
@@ -1027,6 +763,28 @@ INSERT INTO `sys_dict` VALUES ('c36169beb12de8a71c8683ee7c28a503', '部门状态
 INSERT INTO `sys_dict` VALUES ('c5a14c75172783d72cbee6ee7f5df5d1', 'Online图表类型', 'online_graph_type', 'Online图表类型', '1', 'admin', '2019-04-12 17:04:06', null, null, '0');
 INSERT INTO `sys_dict` VALUES ('d6e1152968b02d69ff358c75b48a6ee1', '流程类型', 'bpm_process_type', null, '1', 'admin', '2021-02-22 19:26:54', 'admin', '2019-03-30 18:14:44', '0');
 INSERT INTO `sys_dict` VALUES ('fc6cd58fde2e8481db10d3a1e68ce70c', '用户状态', 'user_status', null, '1', 'admin', '2019-03-18 21:57:25', 'admin', '2019-03-18 23:11:58', '1');
+
+-- ----------------------------
+-- Table structure for sys_dict_item
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_dict_item`;
+CREATE TABLE `sys_dict_item` (
+  `id` varchar(32) NOT NULL,
+  `dict_id` varchar(32) default NULL COMMENT '字典id',
+  `item_text` varchar(100) default NULL COMMENT '字典项文本',
+  `item_value` varchar(100) default NULL COMMENT '字典项值',
+  `description` varchar(255) default NULL COMMENT '描述',
+  `sort_order` int(10) default NULL COMMENT '排序',
+  `status` int(11) default NULL COMMENT '状态（1启用 0不启用）',
+  `create_by` varchar(32) default NULL,
+  `create_time` datetime default NULL,
+  `update_by` varchar(32) default NULL,
+  `update_time` datetime default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `index_table_dict_id` USING BTREE (`dict_id`),
+  KEY `index_table_sort_order` USING BTREE (`sort_order`),
+  KEY `index_table_dict_status` USING BTREE (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of sys_dict_item
@@ -1092,15 +850,12 @@ INSERT INTO `sys_dict_item` VALUES ('aa0d8a8042a18715a17f0a888d360aa4', 'ac2f7c0
 INSERT INTO `sys_dict_item` VALUES ('adcf2a1fe93bb99a84833043f475fe0b', '4e4602b3e3686f0911384e188dc7efb4', '包含', 'IN', '包含', '8', '1', 'admin', '2019-04-01 16:45:47', 'admin', '2019-04-01 17:49:24');
 INSERT INTO `sys_dict_item` VALUES ('b029a41a851465332ee4ee69dcf0a4c2', '0b5d19e1fce4b2e6647e6b4a17760c14', '系统消息', '2', null, '1', '1', 'admin', '2019-02-22 18:02:08', 'admin', '2019-04-22 18:02:13');
 INSERT INTO `sys_dict_item` VALUES ('b2a8b4bb2c8e66c2c4b1bb086337f393', '3486f32803bb953e7155dab3513dc68b', '正常', '0', null, null, '1', 'admin', '2022-10-18 21:46:48', 'admin', '2019-03-28 22:22:20');
-INSERT INTO `sys_dict_item` VALUES ('b4a887dc3ff01d2daadaa412e63189ed', '4f69be5f507accea8d5df5f11346181a', '邮件', '2', null, '2', '1', 'admin', '2021-05-11 14:29:03', 'admin', '2019-04-11 14:29:25');
 INSERT INTO `sys_dict_item` VALUES ('b57f98b88363188daf38d42f25991956', '6b78e3f59faec1a4750acff08030a79b', '22', '222', null, null, '0', 'admin', '2019-02-21 19:59:43', 'admin', '2019-03-11 21:23:27');
 INSERT INTO `sys_dict_item` VALUES ('b5f3bd5f66bb9a83fecd89228c0d93d1', '68168534ff5065a152bfab275c2136f8', '无效', '0', '无效', '1', '1', 'admin', '2019-04-26 19:21:49', null, null);
 INSERT INTO `sys_dict_item` VALUES ('b9fbe2a3602d4a27b45c100ac5328484', '78bda155fe380b1b3f175f1e88c284c6', '待提交', '1', '待提交', '1', '1', 'admin', '2019-05-09 16:32:35', null, null);
 INSERT INTO `sys_dict_item` VALUES ('ba27737829c6e0e582e334832703d75e', '236e8a4baff0db8c62c00dd95632834f', '同步', '1', '同步', '1', '1', 'admin', '2019-05-15 15:28:15', null, null);
 INSERT INTO `sys_dict_item` VALUES ('cbfcc5b88fc3a90975df23ffc8cbe29c', 'c5a14c75172783d72cbee6ee7f5df5d1', '曲线图', 'line', null, '2', '1', 'admin', '2019-05-12 17:05:30', 'admin', '2019-04-12 17:06:06');
-INSERT INTO `sys_dict_item` VALUES ('d1cee7b0dcccff0b07da7325110fcad4', '4f69be5f507accea8d5df5f11346181a', '微信', '3', '', '3', '1', 'admin', '2035-02-28 10:50:53', 'admin', '2019-04-28 10:58:51');
 INSERT INTO `sys_dict_item` VALUES ('d217592908ea3e00ff986ce97f24fb98', 'c5a14c75172783d72cbee6ee7f5df5d1', '数据列表', 'table', null, '4', '1', 'admin', '2019-04-12 17:05:56', null, null);
-INSERT INTO `sys_dict_item` VALUES ('d75b5b3666d0742f08027af0255b4400', '4f69be5f507accea8d5df5f11346181a', '短信', '1', null, '1', '1', 'admin', '2019-04-11 14:28:49', null, null);
 INSERT INTO `sys_dict_item` VALUES ('df168368dcef46cade2aadd80100d8aa', '3d9a351be3436fbefb1307d4cfb49bf2', '男', '1', null, '1', '1', null, '2027-08-04 14:56:49', 'admin', '2019-03-23 22:44:44');
 INSERT INTO `sys_dict_item` VALUES ('e6329e3a66a003819e2eb830b0ca2ea0', '4e4602b3e3686f0911384e188dc7efb4', '小于', '<', '小于', '2', '1', 'admin', '2019-04-01 16:44:15', 'admin', '2019-04-01 17:48:34');
 INSERT INTO `sys_dict_item` VALUES ('e94eb7af89f1dbfa0d823580a7a6e66a', '236e8a4baff0db8c62c00dd95632834f', '不同步', '0', '不同步', '2', '1', 'admin', '2019-05-15 15:28:28', null, null);
@@ -1111,6 +866,34 @@ INSERT INTO `sys_dict_item` VALUES ('f37f90c496ec9841c4c326b065e00bb2', '83bfb33
 INSERT INTO `sys_dict_item` VALUES ('f753aff60ff3931c0ecb4812d8b5e643', '4c03fca6bf1f0299c381213961566349', '双排布局', 'double', null, '3', '1', 'admin', '2019-04-12 17:43:51', null, null);
 INSERT INTO `sys_dict_item` VALUES ('fcec03570f68a175e1964808dc3f1c91', '4c03fca6bf1f0299c381213961566349', 'Tab风格', 'tab', null, '1', '1', 'admin', '2019-04-12 17:43:31', null, null);
 INSERT INTO `sys_dict_item` VALUES ('fe50b23ae5e68434def76f67cef35d2d', '78bda155fe380b1b3f175f1e88c284c6', '已作废', '4', '已作废', '4', '1', 'admin', '2021-09-09 16:33:43', 'admin', '2019-05-09 16:34:40');
+
+-- ----------------------------
+-- Table structure for sys_log
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_log`;
+CREATE TABLE `sys_log` (
+  `id` varchar(32) NOT NULL,
+  `log_type` int(2) default NULL COMMENT '日志类型（1登录日志，2操作日志）',
+  `log_content` varchar(1000) default NULL COMMENT '日志内容',
+  `operate_type` int(2) default NULL COMMENT '操作类型',
+  `userid` varchar(32) default NULL COMMENT '操作用户账号',
+  `username` varchar(100) default NULL COMMENT '操作用户名称',
+  `ip` varchar(100) default NULL COMMENT 'IP',
+  `method` varchar(500) default NULL COMMENT '请求java方法',
+  `request_url` varchar(255) default NULL COMMENT '请求路径',
+  `request_param` varchar(255) default NULL COMMENT '请求参数',
+  `request_type` varchar(10) default NULL COMMENT '请求类型',
+  `cost_time` bigint(20) default NULL COMMENT '耗时',
+  `create_by` varchar(32) default NULL COMMENT '创建人',
+  `create_time` datetime default NULL COMMENT '创建时间',
+  `update_by` varchar(32) default NULL COMMENT '更新人',
+  `update_time` datetime default NULL COMMENT '更新时间',
+  PRIMARY KEY  (`id`),
+  KEY `index_table_userid` USING BTREE (`userid`),
+  KEY `index_logt_ype` USING BTREE (`log_type`),
+  KEY `index_operate_type` USING BTREE (`operate_type`),
+  KEY `index_log_type` USING BTREE (`log_type`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='系统日志表';
 
 -- ----------------------------
 -- Records of sys_log
@@ -1884,6 +1667,52 @@ INSERT INTO `sys_log` VALUES ('8143ce0b35bfe6e7b8113e1ecc066acd', '1', '用户�
 INSERT INTO `sys_log` VALUES ('2bca2d6666c1f6630225252c7b31326c', '1', '用户名: 管理员,退出成功！', null, 'admin', '管理员', '127.0.0.1', null, null, null, null, null, 'admin', '2019-05-17 18:30:48', null, null);
 INSERT INTO `sys_log` VALUES ('11695a9dcf44859cda97a4226bebe21b', '1', '用户名: admin,登录成功！', null, null, null, '127.0.0.1', null, null, null, null, null, 'jeecg', '2019-05-17 18:30:57', null, null);
 INSERT INTO `sys_log` VALUES ('40209016cadff6b571a8150c6218cfa8', '1', '用户名: admin,登录成功！', null, null, null, '127.0.0.1', null, null, null, null, null, 'jeecg', '2019-05-18 11:33:28', null, null);
+INSERT INTO `sys_log` VALUES ('23a314588249752842447e4f98783be4', '1', '用户名: admin,登录成功！', null, null, null, '127.0.0.1', null, null, null, null, null, 'jeecg', '2019-05-19 18:28:48', null, null);
+INSERT INTO `sys_log` VALUES ('5f0a5e85efbe9c79645ffc0c15fcee1a', '2', '添加测试DEMO', null, 'admin', '管理员', '127.0.0.1', 'org.jeecg.modules.demo.test.controller.JeecgDemoController.add()', null, '[{\"createBy\":\"admin\",\"createTime\":1558261833637,\"id\":\"94f78b1c9753dfb1202d731f540666e1\",\"keyWord\":\"1\",\"name\":\"1\",\"sysOrgCode\":\"A01\"}]', null, '30', 'admin', '2019-05-19 18:30:33', null, null);
+INSERT INTO `sys_log` VALUES ('57264fff74c4f857bddf5d766951f3c9', '2', '添加测试DEMO', null, 'admin', '管理员', '127.0.0.1', 'org.jeecg.modules.demo.test.controller.JeecgDemoController.add()', null, '[{\"createBy\":\"admin\",\"createTime\":1558262155067,\"id\":\"dcb45a2fc661e5cdc341b806e5914873\",\"name\":\"111\",\"sysOrgCode\":\"A01\"}]', null, '5', 'admin', '2019-05-19 18:35:55', null, null);
+INSERT INTO `sys_log` VALUES ('eef5b90eea8e7394193443cfd7476529', '2', '删除测试DEMO', null, 'admin', '管理员', '127.0.0.1', 'org.jeecg.modules.demo.test.controller.JeecgDemoController.delete()', null, '[\"dcb45a2fc661e5cdc341b806e5914873\"]', null, '9', 'admin', '2019-05-19 18:36:02', null, null);
+INSERT INTO `sys_log` VALUES ('488fc8f3d040fa75c6802898ea88f7d6', '1', '用户名: admin,登录成功！', null, null, null, '127.0.0.1', null, null, null, null, null, 'jeecg', '2019-05-20 11:38:38', null, null);
+INSERT INTO `sys_log` VALUES ('6c99cfe2774c15ad030b83723f81d70d', '1', '用户名: admin,登录成功！', null, null, null, '127.0.0.1', null, null, null, null, null, 'jeecg', '2019-05-20 14:07:25', null, null);
+INSERT INTO `sys_log` VALUES ('1bf5c5603b79f749d4ee75965b3698db', '1', '用户名: admin,登录成功！', null, null, null, '127.0.0.1', null, null, null, null, null, 'jeecg', '2019-05-20 14:54:39', null, null);
+INSERT INTO `sys_log` VALUES ('5bca377b50c362009738d612cac82006', '1', '用户名: admin,登录成功！', null, null, null, '127.0.0.1', null, null, null, null, null, 'jeecg', '2019-05-20 14:54:38', null, null);
+INSERT INTO `sys_log` VALUES ('2255d6f5e2a3d0839b8b9cfc67816c5c', '1', '用户名: admin,登录成功！', null, null, null, '127.0.0.1', null, null, null, null, null, 'jeecg', '2019-05-20 15:01:51', null, null);
+
+-- ----------------------------
+-- Table structure for sys_permission
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_permission`;
+CREATE TABLE `sys_permission` (
+  `id` varchar(32) NOT NULL COMMENT '主键id',
+  `parent_id` varchar(32) default NULL COMMENT '父id',
+  `name` varchar(100) default NULL COMMENT '菜单标题',
+  `url` varchar(255) default NULL COMMENT '路径',
+  `component` varchar(255) default NULL COMMENT '组件',
+  `component_name` varchar(100) default NULL COMMENT '组件名字',
+  `redirect` varchar(255) default NULL COMMENT '一级菜单跳转地址',
+  `menu_type` int(11) default NULL COMMENT '菜单类型(0:一级菜单; 1:子菜单:2:按钮权限)',
+  `perms` varchar(255) default NULL COMMENT '菜单权限编码',
+  `perms_type` varchar(10) default '0' COMMENT '权限策略1显示2禁用',
+  `sort_no` int(10) default NULL COMMENT '菜单排序',
+  `always_show` tinyint(1) default NULL COMMENT '聚合子路由: 1是0否',
+  `icon` varchar(100) default NULL COMMENT '菜单图标',
+  `is_route` tinyint(1) default '1' COMMENT '是否路由菜单: 0:不是  1:是（默认值1）',
+  `is_leaf` tinyint(1) default NULL COMMENT '是否叶子节点:    1:是   0:不是',
+  `hidden` int(2) default '0' COMMENT '是否隐藏路由: 0否,1是',
+  `description` varchar(255) default NULL COMMENT '描述',
+  `create_by` varchar(32) default NULL COMMENT '创建人',
+  `create_time` datetime default NULL COMMENT '创建时间',
+  `update_by` varchar(32) default NULL COMMENT '更新人',
+  `update_time` datetime default NULL COMMENT '更新时间',
+  `del_flag` int(1) default '0' COMMENT '删除状态 0正常 1已删除',
+  `rule_flag` int(3) default '0' COMMENT '是否添加数据权限1是0否',
+  `status` varchar(2) default NULL COMMENT '按钮权限状态(0无效1有效)',
+  PRIMARY KEY  (`id`),
+  KEY `index_prem_pid` USING BTREE (`parent_id`),
+  KEY `index_prem_is_route` USING BTREE (`is_route`),
+  KEY `index_prem_is_leaf` USING BTREE (`is_leaf`),
+  KEY `index_prem_sort_no` USING BTREE (`sort_no`),
+  KEY `index_prem_del_flag` USING BTREE (`del_flag`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='菜单权限表';
 
 -- ----------------------------
 -- Records of sys_permission
@@ -1944,7 +1773,6 @@ INSERT INTO `sys_permission` VALUES ('9502685863ab87f0ad1134142788a385', '', '�
 INSERT INTO `sys_permission` VALUES ('97c8629abc7848eccdb6d77c24bb3ebb', '700b7f95165c46cc7a78bf227aa8fed3', '磁盘监控', '/monitor/Disk', 'modules/monitor/DiskMonitoring', null, null, '1', null, null, '6', '0', null, '1', '1', '0', null, 'admin', '2019-04-25 14:30:06', 'admin', '2019-05-05 14:37:14', '0', '0', null);
 INSERT INTO `sys_permission` VALUES ('9a90363f216a6a08f32eecb3f0bf12a3', '2a470fc0c3954d9dbb61de6d80846549', '常用选择组件', '/jeecg/SelectDemo', 'jeecg/SelectDemo', null, null, '1', null, null, '1', '0', null, '1', '1', '0', null, 'admin', '2019-03-19 11:19:05', 'admin', '2019-04-10 15:36:50', '0', '0', null);
 INSERT INTO `sys_permission` VALUES ('9cb91b8851db0cf7b19d7ecc2a8193dd', '1939e035e803a99ceecb6f5563570fb2', '我的任务表单', '/modules/bpm/task/form/FormModule', 'modules/bpm/task/form/FormModule', null, null, '1', null, null, '1', '0', null, '1', '1', '0', null, 'admin', '2019-03-08 16:49:05', 'admin', '2019-03-08 18:37:56', '0', '0', null);
-INSERT INTO `sys_permission` VALUES ('a2b11669e98c5fe54a53c3e3c4f35d14', 'f0675b52d89100ee88472b6800754a08', '类别统计报表', '/report/Analysis', 'jeecg/report/Analysis', null, '', '1', null, null, '1', '0', null, '1', '1', '0', null, 'admin', '2019-04-03 19:03:56', 'admin', '2019-04-03 19:05:26', '0', '0', null);
 INSERT INTO `sys_permission` VALUES ('a400e4f4d54f79bf5ce160ae432231af', '2a470fc0c3954d9dbb61de6d80846549', '百度', 'http://www.baidu.com', 'layouts/IframePageView', null, null, '1', null, null, '4', '0', null, '1', '1', '0', null, 'admin', '2019-01-29 19:44:06', 'admin', '2019-02-15 16:25:02', '0', '0', null);
 INSERT INTO `sys_permission` VALUES ('ae4fed059f67086fd52a73d913cf473d', '540a2936940846cb98114ffb0d145cb8', '内联编辑表格', '/list/edit-table', 'list/TableInnerEditList', null, null, '1', null, null, '2', null, null, '1', '1', null, null, null, '2018-12-25 20:34:38', null, null, '0', '0', null);
 INSERT INTO `sys_permission` VALUES ('aedbf679b5773c1f25e9f7b10111da73', '08e6b9dc3c04489c8e1ff2ce6f105aa4', 'SQL监控', '{{ window._CONFIG[\'domianURL\'] }}/druid/', 'layouts/IframePageView', null, null, '1', null, null, '1', '0', null, '1', '1', '0', null, 'admin', '2019-01-30 09:43:22', 'admin', '2019-03-23 19:00:46', '0', '0', null);
@@ -1968,7 +1796,7 @@ INSERT INTO `sys_permission` VALUES ('e5973686ed495c379d829ea8b2881fc6', 'e3c136
 INSERT INTO `sys_permission` VALUES ('e6bfd1fcabfd7942fdd05f076d1dad38', '2a470fc0c3954d9dbb61de6d80846549', '打印测试', '/jeecg/PrintDemo', 'jeecg/PrintDemo', null, null, '1', null, null, '3', '0', null, '1', '1', '0', null, 'admin', '2019-02-19 15:58:48', 'admin', '2019-05-07 20:14:39', '0', '0', null);
 INSERT INTO `sys_permission` VALUES ('e8af452d8948ea49d37c934f5100ae6a', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '角色管理', '/isystem/role', 'system/RoleList', null, null, '1', null, null, '2', null, null, '1', '1', null, null, null, '2018-12-25 20:34:38', null, null, '0', '0', null);
 INSERT INTO `sys_permission` VALUES ('ec8d607d0156e198b11853760319c646', '6e73eb3c26099c191bf03852ee1310a1', '安全设置', '/account/settings/security', 'account/settings/Security', null, null, '1', 'SecuritySettings', null, null, null, null, '1', '1', null, null, null, '2018-12-26 18:59:52', null, null, '0', '0', null);
-INSERT INTO `sys_permission` VALUES ('f0675b52d89100ee88472b6800754a08', '', '统计报表', '/report', 'layouts/RouteView', null, null, '0', null, null, '7', '0', 'bar-chart', '1', '0', '0', null, 'admin', '2019-04-03 18:32:02', 'admin', '2019-04-11 19:48:39', '0', '0', null);
+INSERT INTO `sys_permission` VALUES ('f0675b52d89100ee88472b6800754a08', '', '统计报表', '/report', 'layouts/RouteView', null, null, '0', null, null, '1', '0', 'bar-chart', '1', '0', '0', null, 'admin', '2019-04-03 18:32:02', 'admin', '2019-05-19 18:34:13', '0', '0', null);
 INSERT INTO `sys_permission` VALUES ('f1cb187abf927c88b89470d08615f5ac', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '数据字典', '/isystem/dict', 'system/DictList', null, null, '1', null, null, '5', null, null, '1', '1', null, null, null, '2018-12-28 13:54:43', null, '2018-12-28 15:37:54', '0', '0', null);
 INSERT INTO `sys_permission` VALUES ('f23d9bfff4d9aa6b68569ba2cff38415', '540a2936940846cb98114ffb0d145cb8', '标准列表', '/list/basic-list', 'list/StandardList', null, null, '1', null, null, '6', null, null, '1', '1', null, null, null, '2018-12-25 20:34:38', null, null, '0', '0', null);
 INSERT INTO `sys_permission` VALUES ('f780d0d3083d849ccbdb1b1baee4911d', '5c8042bd6c601270b2bbd9b20bccc68b', '模板管理', '/modules/message/sysMessageTemplateList', 'modules/message/SysMessageTemplateList', null, null, '1', null, null, '1', '0', null, '1', '1', '0', null, 'admin', '2019-04-09 11:50:31', 'admin', '2019-04-12 10:16:34', '0', '0', null);
@@ -1976,6 +1804,26 @@ INSERT INTO `sys_permission` VALUES ('fb07ca05a3e13674dbf6d3245956da2e', '540a29
 INSERT INTO `sys_permission` VALUES ('fb367426764077dcf94640c843733985', '2a470fc0c3954d9dbb61de6d80846549', '一对多示例', '/jeecg/JeecgOrderMainList', 'jeecg/JeecgOrderMainList', null, null, '1', null, null, '2', '0', null, '1', '1', '0', null, 'admin', '2019-02-15 16:24:11', 'admin', '2019-02-18 10:50:14', '0', '0', null);
 INSERT INTO `sys_permission` VALUES ('fc810a2267dd183e4ef7c71cc60f4670', '700b7f95165c46cc7a78bf227aa8fed3', '请求追踪', '/monitor/HttpTrace', 'modules/monitor/HttpTrace', null, null, '1', null, null, '4', '0', null, '1', '1', '0', null, 'admin', '2019-04-02 09:46:19', 'admin', '2019-04-02 11:37:27', '0', '0', null);
 INSERT INTO `sys_permission` VALUES ('fedfbf4420536cacc0218557d263dfea', '6e73eb3c26099c191bf03852ee1310a1', '新消息通知', '/account/settings/notification', 'account/settings/Notification', null, null, '1', 'NotificationSettings', null, null, null, '', '1', '1', null, null, null, '2018-12-26 19:02:05', null, null, '0', '0', null);
+
+-- ----------------------------
+-- Table structure for sys_permission_data_rule
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_permission_data_rule`;
+CREATE TABLE `sys_permission_data_rule` (
+  `id` varchar(32) NOT NULL COMMENT 'ID',
+  `permission_id` varchar(32) default NULL COMMENT '菜单ID',
+  `rule_name` varchar(50) default NULL COMMENT '规则名称',
+  `rule_column` varchar(50) default NULL COMMENT '字段',
+  `rule_conditions` varchar(50) default NULL COMMENT '条件',
+  `rule_value` varchar(300) default NULL COMMENT '规则值',
+  `status` varchar(3) default NULL COMMENT '权限有效状态1有0否',
+  `create_time` datetime default NULL COMMENT '创建时间',
+  `create_by` varchar(32) default NULL,
+  `update_time` datetime default NULL COMMENT '修改时间',
+  `update_by` varchar(32) default NULL COMMENT '修改人',
+  PRIMARY KEY  (`id`),
+  KEY `index_fucntionid` USING BTREE (`permission_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of sys_permission_data_rule
@@ -2006,6 +1854,25 @@ INSERT INTO `sys_permission_data_rule` VALUES ('a7d661ef5ac168b2b162420c6804dac5
 INSERT INTO `sys_permission_data_rule` VALUES ('f852d85d47f224990147f2284c0c0005', null, '小于', 'test', '<=', '11', '1', '2014-08-20 14:43:52', '8a8ab0b246dc81120146dc8181950052', null, null);
 
 -- ----------------------------
+-- Table structure for sys_quartz_job
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_quartz_job`;
+CREATE TABLE `sys_quartz_job` (
+  `id` varchar(32) NOT NULL,
+  `create_by` varchar(32) default NULL COMMENT '创建人',
+  `create_time` datetime default NULL COMMENT '创建时间',
+  `del_flag` int(1) default NULL COMMENT '删除状态',
+  `update_by` varchar(32) default NULL COMMENT '修改人',
+  `update_time` datetime default NULL COMMENT '修改时间',
+  `job_class_name` varchar(255) default NULL COMMENT '任务类名',
+  `cron_expression` varchar(255) default NULL COMMENT 'cron表达式',
+  `parameter` varchar(255) default NULL COMMENT '参数',
+  `description` varchar(255) default NULL COMMENT '描述',
+  `status` int(1) default NULL COMMENT '状态 0正常 -1停止',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- ----------------------------
 -- Records of sys_quartz_job
 -- ----------------------------
 INSERT INTO `sys_quartz_job` VALUES ('df26ecacf0f75d219d746750fe84bbee', null, null, '0', 'admin', '2019-01-19 15:09:41', 'org.jeecg.modules.quartz.job.SampleParamJob', '0/1 * * * * ?', 'scott', '带参测试 后台将每隔1秒执行输出日志', '-1');
@@ -2013,11 +1880,43 @@ INSERT INTO `sys_quartz_job` VALUES ('a253cdfc811d69fa0efc70d052bc8128', 'admin'
 INSERT INTO `sys_quartz_job` VALUES ('5b3d2c087ad41aa755fc4f89697b01e7', 'admin', '2019-04-11 19:04:21', '0', 'admin', '2019-04-11 19:49:49', 'org.jeecg.modules.message.job.SendMsgJob', '0/60 * * * * ?', null, null, '-1');
 
 -- ----------------------------
+-- Table structure for sys_role
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_role`;
+CREATE TABLE `sys_role` (
+  `id` varchar(32) NOT NULL COMMENT '主键id',
+  `role_name` varchar(200) default NULL COMMENT '角色名称',
+  `role_code` varchar(100) NOT NULL COMMENT '角色编码',
+  `description` varchar(255) default NULL COMMENT '描述',
+  `create_by` varchar(32) default NULL COMMENT '创建人',
+  `create_time` datetime default NULL COMMENT '创建时间',
+  `update_by` varchar(32) default NULL COMMENT '更新人',
+  `update_time` datetime default NULL COMMENT '更新时间',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `index_role_code` USING BTREE (`role_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='角色表';
+
+-- ----------------------------
 -- Records of sys_role
 -- ----------------------------
-INSERT INTO `sys_role` VALUES ('e51758fa916c881624b046d26bd09230', '人力资源部', 'hr', null, 'admin', '2019-01-21 18:07:24', 'admin', '2019-03-17 18:30:41');
+INSERT INTO `sys_role` VALUES ('e51758fa916c881624b046d26bd09230', '人力资源部', 'hr', null, 'admin', '2019-01-21 18:07:24', 'admin', '2019-05-20 11:50:01');
 INSERT INTO `sys_role` VALUES ('ee8626f80f7c2619917b6236f3a7f02b', '临时角色', 'test', '这是新建的临时角色123', null, '2018-12-20 10:59:04', 'admin', '2019-02-19 15:08:37');
-INSERT INTO `sys_role` VALUES ('f6817f48af4fb3af11b9e8bf182f618b', '管理员', 'admin', '管理员', null, '2018-12-21 18:03:39', 'admin', '2019-02-22 19:49:42');
+INSERT INTO `sys_role` VALUES ('f6817f48af4fb3af11b9e8bf182f618b', '管理员', 'admin', '管理员', null, '2018-12-21 18:03:39', 'admin', '2019-05-20 11:40:26');
+
+-- ----------------------------
+-- Table structure for sys_role_permission
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_role_permission`;
+CREATE TABLE `sys_role_permission` (
+  `id` varchar(32) NOT NULL,
+  `role_id` varchar(32) default NULL COMMENT '角色id',
+  `permission_id` varchar(32) default NULL COMMENT '权限id',
+  `data_rule_ids` varchar(1000) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `index_group_role_per_id` USING BTREE (`role_id`,`permission_id`),
+  KEY `index_group_role_id` USING BTREE (`role_id`),
+  KEY `index_group_per_id` USING BTREE (`permission_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='角色权限表';
 
 -- ----------------------------
 -- Records of sys_role_permission
@@ -2094,11 +1993,11 @@ INSERT INTO `sys_role_permission` VALUES ('4dab5a06acc8ef3297889872caa74747', 'f
 INSERT INTO `sys_role_permission` VALUES ('4e0a37ed49524df5f08fc6593aee875c', 'f6817f48af4fb3af11b9e8bf182f618b', 'f23d9bfff4d9aa6b68569ba2cff38415', null);
 INSERT INTO `sys_role_permission` VALUES ('4ea403fc1d19feb871c8bdd9f94a4ecc', 'f6817f48af4fb3af11b9e8bf182f618b', '2e42e3835c2b44ec9f7bc26c146ee531', null);
 INSERT INTO `sys_role_permission` VALUES ('4f254549d9498f06f4cc9b23f3e2c070', 'f6817f48af4fb3af11b9e8bf182f618b', '93d5cfb4448f11e9916698e7f462b4b6', null);
+INSERT INTO `sys_role_permission` VALUES ('4f2fd4a190db856e21476de2704bbd99', 'f6817f48af4fb3af11b9e8bf182f618b', '1a0811914300741f4e11838ff37a1d3a', null);
 INSERT INTO `sys_role_permission` VALUES ('4faad8ff93cb2b5607cd3d07c1b624ee', 'a799c3b1b12dd3ed4bd046bfaef5fe6e', '70b8f33da5f39de1981bf89cf6c99792', null);
 INSERT INTO `sys_role_permission` VALUES ('504e326de3f03562cdd186748b48a8c7', 'f6817f48af4fb3af11b9e8bf182f618b', '027aee69baee98a0ed2e01806e89c891', null);
 INSERT INTO `sys_role_permission` VALUES ('51b11ce979730f8ce8606da16e4d69bb', 'f6817f48af4fb3af11b9e8bf182f618b', 'e8af452d8948ea49d37c934f5100ae6a', null);
 INSERT INTO `sys_role_permission` VALUES ('520b5989e6fe4a302a573d4fee12a40a', 'f6817f48af4fb3af11b9e8bf182f618b', '6531cf3421b1265aeeeabaab5e176e6d', null);
-INSERT INTO `sys_role_permission` VALUES ('529953da30b8c7a20034f3a2a90dd5b2', 'f6817f48af4fb3af11b9e8bf182f618b', '190c2b43bec6a5f7a4194a85db67d96a', null);
 INSERT INTO `sys_role_permission` VALUES ('54fdf85e52807bdb32ce450814abc256', 'f6817f48af4fb3af11b9e8bf182f618b', 'cc50656cf9ca528e6f2150eba4714ad2', null);
 INSERT INTO `sys_role_permission` VALUES ('57c0b3a547b815ea3ec8e509b08948b3', '1750a8fb3e6d90cb7957c02de1dc8e59', '3f915b2769fc80648e92d04e84ca059d', null);
 INSERT INTO `sys_role_permission` VALUES ('593ee05c4fe4645c7826b7d5e14f23ec', '52b0cf022ac4187b2a70dfa4f8b2d940', '8fb8172747a78756c11916216b8b8066', null);
@@ -2362,6 +2261,33 @@ INSERT INTO `sys_role_permission` VALUES ('fd86f6b08eb683720ba499f9d9421726', 'e
 INSERT INTO `sys_role_permission` VALUES ('fed41a4671285efb266cd404f24dd378', '52b0cf022ac4187b2a70dfa4f8b2d940', '00a2a0ae65cdca5e93209cdbde97cbe6', null);
 
 -- ----------------------------
+-- Table structure for sys_sms
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_sms`;
+CREATE TABLE `sys_sms` (
+  `id` varchar(32) NOT NULL COMMENT 'ID',
+  `es_title` varchar(100) default NULL COMMENT '消息标题',
+  `es_type` varchar(1) default NULL COMMENT '发送方式：1短信 2邮件 3微信',
+  `es_receiver` varchar(50) default NULL COMMENT '接收人',
+  `es_param` varchar(1000) default NULL COMMENT '发送所需参数Json格式',
+  `es_content` longtext COMMENT '推送内容',
+  `es_send_time` datetime default NULL COMMENT '推送时间',
+  `es_send_status` varchar(1) default NULL COMMENT '推送状态 0未推送 1推送成功 2推送失败 -1失败不再发送',
+  `es_send_num` int(11) default NULL COMMENT '发送次数 超过5次不再发送',
+  `es_result` varchar(255) default NULL COMMENT '推送失败原因',
+  `remark` varchar(500) default NULL COMMENT '备注',
+  `create_by` varchar(32) default NULL COMMENT '创建人登录名称',
+  `create_time` datetime default NULL COMMENT '创建日期',
+  `update_by` varchar(32) default NULL COMMENT '更新人登录名称',
+  `update_time` datetime default NULL COMMENT '更新日期',
+  PRIMARY KEY  (`id`),
+  KEY `index_type` USING BTREE (`es_type`),
+  KEY `index_receiver` USING BTREE (`es_receiver`),
+  KEY `index_sendtime` USING BTREE (`es_send_time`),
+  KEY `index_status` USING BTREE (`es_send_status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
 -- Records of sys_sms
 -- ----------------------------
 INSERT INTO `sys_sms` VALUES ('402880e74dc2f361014dc2f8411e0001', '消息推送测试333', '2', '411944058@qq.com', null, '张三你好，你的订单4028d881436d514601436d521ae80165已付款!', '2015-06-05 17:06:01', '3', null, null, '认证失败错误的用户名或者密码', 'admin', '2015-06-05 17:05:59', 'admin', '2015-11-19 22:30:39');
@@ -2373,17 +2299,109 @@ INSERT INTO `sys_sms` VALUES ('402881f3646a472b01646a4a5af00001', '催办：HR�
 INSERT INTO `sys_sms` VALUES ('402881f3647da06c01647da43a940014', '催办：HR审批', '3', 'admin', null, 'admin，您好！\r\n请前待办任务办理事项！HR审批\r\n\r\n\r\n===========================\r\n此消息由系统发出', '2018-07-09 14:04:32', '2', null, null, null, 'admin', '2018-07-09 14:04:32', 'admin', '2018-07-09 18:51:30');
 
 -- ----------------------------
+-- Table structure for sys_sms_template
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_sms_template`;
+CREATE TABLE `sys_sms_template` (
+  `id` varchar(32) NOT NULL COMMENT '主键',
+  `template_name` varchar(50) default NULL COMMENT '模板标题',
+  `template_code` varchar(32) NOT NULL COMMENT '模板CODE',
+  `template_type` varchar(1) NOT NULL COMMENT '模板类型：1短信 2邮件 3微信',
+  `template_content` varchar(1000) NOT NULL COMMENT '模板内容',
+  `template_test_json` varchar(1000) default NULL COMMENT '模板测试json',
+  `create_time` datetime default NULL COMMENT '创建日期',
+  `create_by` varchar(32) default NULL COMMENT '创建人登录名称',
+  `update_time` datetime default NULL COMMENT '更新日期',
+  `update_by` varchar(32) default NULL COMMENT '更新人登录名称',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `uniq_templatecode` USING BTREE (`template_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
 -- Records of sys_sms_template
 -- ----------------------------
 INSERT INTO `sys_sms_template` VALUES ('4028608164691b000164693108140003', '催办：${taskName}', 'SYS001', '3', '${userName}，您好！\r\n请前待办任务办理事项！${taskName}\r\n\r\n\r\n===========================\r\n此消息由系统发出', '{\r\n\"taskName\":\"HR审批\",\r\n\"userName\":\"admin\"\r\n}', '2018-07-05 14:46:18', 'admin', '2018-07-05 18:31:34', 'admin');
+
+-- ----------------------------
+-- Table structure for sys_user
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_user`;
+CREATE TABLE `sys_user` (
+  `id` varchar(32) NOT NULL COMMENT '主键id',
+  `username` varchar(100) default NULL COMMENT '登录账号',
+  `realname` varchar(100) default NULL COMMENT '真实姓名',
+  `password` varchar(255) default NULL COMMENT '密码',
+  `salt` varchar(45) default NULL COMMENT 'md5密码盐',
+  `avatar` varchar(255) default NULL COMMENT '头像',
+  `birthday` datetime default NULL COMMENT '生日',
+  `sex` int(11) default NULL COMMENT '性别（1：男 2：女）',
+  `email` varchar(45) default NULL COMMENT '电子邮件',
+  `phone` varchar(45) default NULL COMMENT '电话',
+  `org_code` varchar(100) default NULL COMMENT '部门code',
+  `status` int(2) default NULL COMMENT '状态(1：正常  2：冻结 ）',
+  `del_flag` varchar(1) default NULL COMMENT '删除状态（0，正常，1已删除）',
+  `activiti_sync` varchar(6) default NULL COMMENT '同步工作流引擎1同步0不同步',
+  `create_by` varchar(32) default NULL COMMENT '创建人',
+  `create_time` datetime default NULL COMMENT '创建时间',
+  `update_by` varchar(32) default NULL COMMENT '更新人',
+  `update_time` datetime default NULL COMMENT '更新时间',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `index_user_name` USING BTREE (`username`),
+  KEY `index_user_status` USING BTREE (`status`),
+  KEY `index_user_del_flag` USING BTREE (`del_flag`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
 
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
 INSERT INTO `sys_user` VALUES ('42d153bffeea74f72a9c1697874fa4a7', 'test22', '23232', 'ac52e15671a377cf', '5FMD48RM', 'user/20190314/ly-plate-e_1552531617500.png', '2019-02-09 00:00:00', '1', 'zhangdaiscott@163.com', '18611782222', null, '1', '0', '1', 'admin', '2019-01-26 18:01:10', 'admin', '2019-03-23 15:05:50');
 INSERT INTO `sys_user` VALUES ('a75d45a015c44384a04449ee80dc3503', 'jeecg', 'jeecg', '3dd8371f3cf8240e', 'vDDkDzrK', 'user/20190220/e1fe9925bc315c60addea1b98eb1cb1349547719_1550656892940.jpg', null, '2', null, null, null, '1', '0', '1', 'admin', '2019-02-13 16:02:36', 'admin', '2019-04-09 15:47:36');
-INSERT INTO `sys_user` VALUES ('e9ca23d68d884d4ebb19d07889727dae', 'admin', '管理员', 'cb362cfeefbf3d8d', 'RCGTeGiH', 'user/20190119/logo-2_1547868176839.png', '2018-12-05 00:00:00', '1', '11@qq.com', '18566666666', 'A01', '1', '0', '1', null, '2018-12-21 17:54:10', 'admin', '2019-02-26 17:55:02');
+INSERT INTO `sys_user` VALUES ('e9ca23d68d884d4ebb19d07889727dae', 'admin', '管理员', 'cb362cfeefbf3d8d', 'RCGTeGiH', 'user/20190119/logo-2_1547868176839.png', '2018-12-05 00:00:00', '1', '11@qq.com', '18566666661', 'A01', '1', '0', '1', null, '2038-06-21 17:54:10', 'admin', '2019-05-20 15:59:56');
 INSERT INTO `sys_user` VALUES ('f0019fdebedb443c98dcb17d88222c38', 'zhagnxiao', '张小红', 'f898134e5e52ae11a2ffb2c3b57a4e90', 'go3jJ4zX', 'user/20190401/20180607175028Fn1Lq7zw_1554118444672.png', '2019-04-01 00:00:00', null, null, null, null, '1', '0', '1', 'admin', '2023-10-01 19:34:10', 'admin', '2019-04-10 22:00:22');
+
+-- ----------------------------
+-- Table structure for sys_user_agent
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_user_agent`;
+CREATE TABLE `sys_user_agent` (
+  `id` varchar(32) NOT NULL COMMENT '序号',
+  `user_name` varchar(100) default NULL COMMENT '用户名',
+  `agent_user_name` varchar(100) default NULL COMMENT '代理人用户名',
+  `start_time` datetime default NULL COMMENT '代理开始时间',
+  `end_time` datetime default NULL COMMENT '代理结束时间',
+  `status` varchar(2) default NULL COMMENT '状态0无效1有效',
+  `create_name` varchar(50) default NULL COMMENT '创建人名称',
+  `create_by` varchar(50) default NULL COMMENT '创建人登录名称',
+  `create_time` datetime default NULL COMMENT '创建日期',
+  `update_name` varchar(50) default NULL COMMENT '更新人名称',
+  `update_by` varchar(50) default NULL COMMENT '更新人登录名称',
+  `update_time` datetime default NULL COMMENT '更新日期',
+  `sys_org_code` varchar(50) default NULL COMMENT '所属部门',
+  `sys_company_code` varchar(50) default NULL COMMENT '所属公司',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `uniq_username` USING BTREE (`user_name`),
+  KEY `statux_index` USING BTREE (`status`),
+  KEY `begintime_index` USING BTREE (`start_time`),
+  KEY `endtime_index` USING BTREE (`end_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户代理人设置';
+
+-- ----------------------------
+-- Records of sys_user_agent
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for sys_user_depart
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_user_depart`;
+CREATE TABLE `sys_user_depart` (
+  `ID` varchar(32) NOT NULL COMMENT 'id',
+  `user_id` varchar(32) default NULL COMMENT '用户id',
+  `dep_id` varchar(32) default NULL COMMENT '部门id',
+  PRIMARY KEY  (`ID`),
+  KEY `index_depart_groupk_userid` USING BTREE (`user_id`),
+  KEY `index_depart_groupkorgid` USING BTREE (`dep_id`),
+  KEY `index_depart_groupk_uidanddid` USING BTREE (`user_id`,`dep_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of sys_user_depart
@@ -2391,10 +2409,23 @@ INSERT INTO `sys_user` VALUES ('f0019fdebedb443c98dcb17d88222c38', 'zhagnxiao', 
 INSERT INTO `sys_user_depart` VALUES ('0c42ba309c2c4cad35836ec2336676fa', '42d153bffeea74f72a9c1697874fa4a7', '6d35e179cd814e3299bd588ea7daed3f');
 INSERT INTO `sys_user_depart` VALUES ('2835834d133f9118ee87a666e0f5501e', 'a75d45a015c44384a04449ee80dc3503', 'a7d7e77e06c84325a40932163adcdaa6');
 INSERT INTO `sys_user_depart` VALUES ('1f3a0267811327b9eca86b0cc2b956f3', 'bcbe1290783a469a83ae3bd8effe15d4', '5159cde220114246b045e574adceafe9');
-INSERT INTO `sys_user_depart` VALUES ('577ae220081f78ceaf8cb26eb75330ab', 'e9ca23d68d884d4ebb19d07889727dae', '4f1765520d6346f9bd9c79e2479e5b12');
-INSERT INTO `sys_user_depart` VALUES ('15e0d72bcbab86a41e38222b1f09428e', 'e9ca23d68d884d4ebb19d07889727dae', 'c6d7cb4deeac411cb3384b1b31278596');
+INSERT INTO `sys_user_depart` VALUES ('2859701380c604f9ed213c677a543d27', 'e9ca23d68d884d4ebb19d07889727dae', 'c6d7cb4deeac411cb3384b1b31278596');
 INSERT INTO `sys_user_depart` VALUES ('ac52f23ae625eb6560c9227170b88166', 'f0019fdebedb443c98dcb17d88222c38', '57197590443c44f083d42ae24ef26a2c');
 INSERT INTO `sys_user_depart` VALUES ('179660a8b9a122f66b73603799a10924', 'f0019fdebedb443c98dcb17d88222c38', '67fc001af12a4f9b8458005d3f19934a');
+
+-- ----------------------------
+-- Table structure for sys_user_role
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_user_role`;
+CREATE TABLE `sys_user_role` (
+  `id` varchar(32) NOT NULL COMMENT '主键id',
+  `user_id` varchar(32) default NULL COMMENT '用户id',
+  `role_id` varchar(32) default NULL COMMENT '角色id',
+  PRIMARY KEY  (`id`),
+  KEY `index2_groupuu_user_id` USING BTREE (`user_id`),
+  KEY `index2_groupuu_ole_id` USING BTREE (`role_id`),
+  KEY `index2_groupuu_useridandroleid` USING BTREE (`user_id`,`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户角色表';
 
 -- ----------------------------
 -- Records of sys_user_role
@@ -2413,8 +2444,26 @@ INSERT INTO `sys_user_role` VALUES ('8d7846ec783e157174e4ce2949231a65', '7ee6630
 INSERT INTO `sys_user_role` VALUES ('79d66ef7aa137cfa9957081a1483009d', '9a668858c4c74cf5a2b25ad9608ba095', 'ee8626f80f7c2619917b6236f3a7f02b');
 INSERT INTO `sys_user_role` VALUES ('f3a4ca33848daba3e43490707ae859e7', 'a75d45a015c44384a04449ee80dc3503', 'e51758fa916c881624b046d26bd09230');
 INSERT INTO `sys_user_role` VALUES ('fe38580871c5061ba59d5c03a0840b0e', 'a75d45a015c44384a04449ee80dc3503', 'ee8626f80f7c2619917b6236f3a7f02b');
-INSERT INTO `sys_user_role` VALUES ('6ec01b4aaab790eac4ddb33d7a524a58', 'e9ca23d68d884d4ebb19d07889727dae', 'f6817f48af4fb3af11b9e8bf182f618b');
+INSERT INTO `sys_user_role` VALUES ('c4972b1661ef3c926bb5526798af4f2e', 'e9ca23d68d884d4ebb19d07889727dae', 'f6817f48af4fb3af11b9e8bf182f618b');
 INSERT INTO `sys_user_role` VALUES ('d2233e5be091d39da5abb0073c766224', 'f0019fdebedb443c98dcb17d88222c38', 'ee8626f80f7c2619917b6236f3a7f02b');
+
+-- ----------------------------
+-- Table structure for test_person
+-- ----------------------------
+DROP TABLE IF EXISTS `test_person`;
+CREATE TABLE `test_person` (
+  `id` varchar(36) NOT NULL,
+  `create_by` varchar(50) default NULL COMMENT '创建人',
+  `create_time` datetime default NULL COMMENT '创建日期',
+  `update_by` varchar(50) default NULL COMMENT '更新人',
+  `update_time` datetime default NULL COMMENT '更新日期',
+  `sex` varchar(32) default NULL COMMENT '性别',
+  `name` varchar(200) default NULL COMMENT '用户名',
+  `content` longtext COMMENT '请假原因',
+  `be_date` datetime default NULL COMMENT '请假时间',
+  `qj_days` int(11) default NULL COMMENT '请假天数',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of test_person
