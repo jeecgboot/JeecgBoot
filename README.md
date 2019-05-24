@@ -6,8 +6,8 @@ Jeecg-Boot 快速开发平台(前后端分离版本)
 [![AUR](https://img.shields.io/aur/license/yaourt.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-Scott-orange.svg)](https://blog.csdn.net/zhangdaiscott)
 [![](https://img.shields.io/badge/version-2.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
-[![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/x-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
-[![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/x-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
+[![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
+[![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
 
 
