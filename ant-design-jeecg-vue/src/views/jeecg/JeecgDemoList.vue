@@ -6,40 +6,65 @@
       <a-form layout="inline">
         <a-row :gutter="24">
 
-          <a-col :span="6">
+          <a-col :md="6" :sm="8">
             <a-form-item label="名称">
               <a-input placeholder="请输入名称查询" v-model="queryParam.name"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="6">
+          <a-col :md="6" :sm="8">
             <a-form-item label="年龄">
               <a-input placeholder="请输入名称查询" v-model="queryParam.age"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="6">
-            <a-form-item label="性别">
-              <DictSelectTag v-model="queryParam.sex" placeholder="请输入用户性别" dictCode="sex"/>
-            </a-form-item>
-          </a-col>
+          <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="字典下拉">
+                <j-dict-select-tag v-model="queryParam.sex" placeholder="请选择用户名称" dictCode="sex"/>
+              </a-form-item>
+            </a-col>
 
-          <a-col :span="6" >
-            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="字典表下拉">
+                <j-dict-select-tag v-model="queryParam.realname" placeholder="请选择用户" dictCode="sys_user,realname,id"/>
+              </a-form-item>
+            </a-col>
+          </template>
+          <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+            <a-col :md="6" :sm="24">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>
-            </span>
-          </a-col>
+            </a-col>
+          </span>
+          <a-col :md="6" :sm="24">
 
+            <template v-if="superQueryFlag">
+              <a-tooltip title="已有高级查询条件生效!">
+                <button :disabled="false" class="ant-btn ant-btn-primary" @click="superQuery">
+                  <a-icon type="appstore" theme="twoTone" spin="true"></a-icon>
+                  <span>高级查询</span>
+                </button>
+              </a-tooltip>
+            </template>
+            <a-button v-else type="primary" @click="superQuery" icon="filter">高级查询</a-button>
+
+            <a @click="handleToggleSearch" style="margin-left: 8px">
+              {{ toggleSearchStatus ? '收起' : '展开' }}
+              <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+            </a>
+          </a-col>
         </a-row>
       </a-form>
     </div>
 
     <!-- 操作按钮区域 -->
-    <div class="table-operator">
+    <div class="table-operator" style="margin-top: 5px">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-button type="primary" icon="plus" @click="jump">创建单据</a-button>
       <a-button type="primary" icon="plus" @click="onetomany">一对多</a-button>
-
+      <a-button type="primary" icon="download" @click="handleExportXls('demo')">导出</a-button>
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
+        <a-button type="primary" icon="import">导入</a-button>
+      </a-upload>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel">
@@ -94,38 +119,51 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <jeecgDemo-modal ref="jeecgDemoModal" @ok="modalFormOk"></jeecgDemo-modal>
+    <jeecgDemo-modal ref="modalForm" @ok="modalFormOk"></jeecgDemo-modal>
 
     <!-- 一对多表单区域 -->
     <JeecgDemoTabsModal ref="jeecgDemoTabsModal" @ok="modalFormOk"></JeecgDemoTabsModal>
 
     <!-- 高级查询区域 -->
-    <superQueryModal ref="superQueryModal" @ok="modalFormOk" @handleSuperQuery="handleSuperQuery"></superQueryModal>
+    <j-super-query :fieldList="fieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
   </a-card>
 </template>
 
 <script>
   import JeecgDemoModal from './modules/JeecgDemoModal'
-  import SuperQueryModal from './modules/SuperQueryModal'
+  import JSuperQuery from '@/components/jeecg/JSuperQuery.vue';
   import JeecgDemoTabsModal from './modules/JeecgDemoTabsModal'
-  import {filterObj} from '@/utils/util'
-  import {deleteAction, getAction, postAction} from '@/api/manage'
-  import {initDictOptions, filterDictText} from '@/components/dict/DictSelectUtil'
+  import {initDictOptions, filterDictText} from '@/components/dict/JDictSelectUtil'
+  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 
+  //高级查询modal需要参数
+  const superQueryFieldList=[{
+    type:"date",
+    value:"birthday",
+    text:"生日"
+  },{
+    type:"string",
+    value:"name",
+    text:"用户名"
+  },{
+    type:"int",
+    value:"age",
+    text:"年龄"
+  }]
   export default {
     name: "JeecgDemoList",
+    mixins:[JeecgListMixin],
     components: {
       JeecgDemoModal,
-      SuperQueryModal,
+      JSuperQuery,
       JeecgDemoTabsModal,
     },
     data() {
       return {
         description: '用户管理页面',
-        // 查询条件
-        queryParam: {},
         //字典数组缓存
         sexDictOptions: [],
+        importExcelUrl:`${window._CONFIG['domianURL']}/test/jeecgDemo/importExcel`,
         // 表头
         columns: [
           {
@@ -157,7 +195,7 @@
             title: '性别',
             align: "center",
             dataIndex: 'sex',
-            customRender: (text, record, index) => {
+            customRender: (text) => {
               //字典值替换通用方法
               return filterDictText(this.sexDictOptions, text);
             }
@@ -189,66 +227,18 @@
             scopedSlots: {customRender: 'action'},
           }
         ],
-        //数据集
-        dataSource: [],
-        // 分页参数
-        ipagination: {
-          current: 1,
-          pageSize: 10,
-          pageSizeOptions: ['10', '20', '30'],
-          showTotal: (total, range) => {
-            return range[0] + "-" + range[1] + " 共" + total + "条"
-          },
-          showQuickJumper: true,
-          showSizeChanger: true,
-          total: 0
-        },
-        isorter: {
-          column: 'createTime',
-          order: 'desc',
-        },
-        loading: false,
-        selectedRowKeys: [],
-        selectedRows: [],
         url: {
           list: "/test/jeecgDemo/list",
           delete: "/test/jeecgDemo/delete",
           deleteBatch: "/test/jeecgDemo/deleteBatch",
+          exportXlsUrl: "/test/jeecgDemo/exportXls"
         },
-
+        fieldList:superQueryFieldList
       }
     },
-    created() {
-      this.loadData();
-      //初始化字典配置
-      this.initDictConfig();
-    },
     methods: {
-      loadData(arg) {
-        //加载数据 若传入参数1则加载第一页的内容
-        if (arg === 1) {
-          this.ipagination.current = 1;
-        }
-        var params = this.getQueryParams();//查询条件
-        getAction(this.url.list, params).then((res) => {
-          if (res.success) {
-            this.dataSource = res.result.records;
-            this.ipagination.total = res.result.total;
-          }
-        })
-      },
-      handleSuperQuery(arg) {//高级查询方法
-        let params = {'superQueryParams':encodeURI(JSON.stringify(arg))};
-        getAction(this.url.list, params).then((res) => {
-          if (res.success) {
-            this.dataSource = res.result.records;
-            this.ipagination.total = res.result.total;
-          }else{
-            that.$message.warn(res.message);
-          }
-        })
-      },
       initDictConfig() {
+        console.log("--我才是真的方法!--")
         //初始化字典 - 性别
         initDictOptions('sex').then((res) => {
           if (res.success) {
@@ -256,104 +246,9 @@
           }
         });
       },
-      getQueryParams() {
-        var param = Object.assign({}, this.queryParam, this.isorter);
-        param.field = this.getQueryField();
-        param.pageNo = this.ipagination.current;
-        param.pageSize = this.ipagination.pageSize;
-        return filterObj(param);
-      },
-      getQueryField() {
-        //TODO 字段权限控制
-        var str = "id,";
-        this.columns.forEach(function (value, index) {
-          str += "," + value.dataIndex;
-        });
-        return str;
-      },
-      onSelectChange(selectedRowKeys, selectionRows) {
-        this.selectedRowKeys = selectedRowKeys;
-        this.selectionRows = selectionRows;
-      },
-      onClearSelected() {
-        this.selectedRowKeys = [];
-        this.selectionRows = [];
-      },
-      searchQuery() {
-        this.loadData(1);
-      },
-      superQuery() {
-        this.$refs.superQueryModal.show();
-      },
-      searchReset() {
-        var that = this;
-        that.queryParam = {}
-        that.loadData(1);
-      },
-      batchDel: function () {
-        if (this.selectedRowKeys.length <= 0) {
-          this.$message.warning('请选择一条记录！');
-          return;
-        } else {
-          var ids = "";
-          for (var a = 0; a < this.selectedRowKeys.length; a++) {
-            ids += this.selectedRowKeys[a] + ",";
-          }
-          var that = this;
-          this.$confirm({
-            title: "确认删除",
-            content: "是否删除选中数据?",
-            onOk: function () {
-              deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
-                if (res.success) {
-                  that.$message.success(res.message);
-                  that.loadData();
-                  that.onClearSelected();
-                } else {
-                  that.$message.warning(res.message);
-                }
-              });
-            }
-          });
-        }
-      },
-      handleDelete: function (id) {
-        var that = this;
-        deleteAction(that.url.delete, {id: id}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-            that.loadData();
-          } else {
-            that.$message.warning(res.message);
-          }
-        });
-      },
-      handleEdit: function (record) {
-        this.$refs.jeecgDemoModal.edit(record);
-        this.$refs.jeecgDemoModal.title = "编辑";
-      },
-      onetomany: function (record) {
+      onetomany: function () {
         this.$refs.jeecgDemoTabsModal.add();
         this.$refs.jeecgDemoTabsModal.title = "编辑";
-      },
-      handleAdd: function () {
-        this.$refs.jeecgDemoModal.add();
-        this.$refs.jeecgDemoModal.title = "新增";
-      },
-      handleTableChange(pagination, filters, sorter) {
-        //分页、排序、筛选变化时触发
-        console.log(sorter);
-        //TODO 筛选
-        if (Object.keys(sorter).length > 0) {
-          this.isorter.column = sorter.field;
-          this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
-        }
-        this.ipagination = pagination;
-        this.loadData();
-      },
-      modalFormOk() {
-        // 新增/修改 成功时，重载列表
-        this.loadData();
       },
       //跳转单据页面
       jump() {
@@ -365,10 +260,6 @@
 <style scoped>
   .ant-card-body .table-operator {
     margin-bottom: 18px;
-  }
-
-  .ant-layout-content {
-    margin: 12px 16px 0 !important;
   }
 
   .ant-table-tbody .ant-table-row td {

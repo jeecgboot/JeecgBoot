@@ -1,57 +1,50 @@
 <template>
   <div :style="{ padding: '0 0 32px 32px' }">
     <h4 :style="{ marginBottom: '20px' }">{{ title }}</h4>
-    <v-chart
-      height="254"
-      :data="data"
-      :forceFit="true"
-      :padding="['auto', 'auto', '40', '50']">
-      <v-tooltip />
-      <v-axis />
+    <v-chart :forceFit="true" :height="height" :data="dataSource" :scale="scale" :padding="padding">
+      <v-tooltip/>
+      <v-axis/>
       <v-bar position="x*y"/>
     </v-chart>
   </div>
 </template>
 
 <script>
-  const data = []
-  for (let i = 0; i < 12; i += 1) {
-    data.push({
-      x: `${i + 1}月`,
-      y: Math.floor(Math.random() * 1000) + 200
-    })
-  }
-  const tooltip = [
-    'x*y',
-    (x, y) => ({
-      name: x,
-      value: y
-    })
-  ]
-  const scale = [{
-    dataKey: 'x',
-    min: 2
-  }, {
-    dataKey: 'y',
-    title: '时间',
-    min: 1,
-    max: 22
-  }]
+  import { triggerWindowResizeEvent } from '@/utils/util'
 
   export default {
-    name: "Bar",
+    name: 'Bar',
     props: {
+      dataSource: {
+        type: Array,
+        required: true
+      },
+      yaxisText: {
+        type: String,
+        default: 'y'
+      },
       title: {
         type: String,
         default: ''
+      },
+      height: {
+        type: Number,
+        default: 254
       }
     },
-    data () {
-      return {
-        data,
-        scale,
-        tooltip
+    data() {
+      return { padding: ['auto', 'auto', '40', '50'] }
+    },
+    computed: {
+      scale() {
+        return [{
+          dataKey: 'y',
+          alias: this.yaxisText
+        }]
       }
+    },
+    mounted() {
+      triggerWindowResizeEvent()
     }
   }
 </script>

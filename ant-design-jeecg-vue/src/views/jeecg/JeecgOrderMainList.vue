@@ -6,12 +6,12 @@
       <a-form layout="inline">
         <a-row :gutter="24">
 
-          <a-col :span="6">
+          <a-col :md="6" :sm="24">
             <a-form-item label="订单号">
               <a-input placeholder="请输入订单号" v-model="queryParam.orderCode"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="6">
+          <a-col :md="6" :sm="24">
             <a-form-item label="订单类型">
               <a-select placeholder="请输入订单类型"  v-model="queryParam.ctype">
                 <a-select-option value="1">国内订单</a-select-option>
@@ -20,7 +20,7 @@
             </a-form-item>
           </a-col>
 
-          <a-col :span="8" >
+          <a-col :md="6" :sm="24" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -34,6 +34,10 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('一对多示例')">导出</a-button>
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
+        <a-button type="primary" icon="import">导入</a-button>
+      </a-upload>
 
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
@@ -83,25 +87,24 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <jeecgOrderMain-modal ref="jeecgOrderMainModal" @ok="modalFormOk"></jeecgOrderMain-modal>
+    <jeecgOrderMain-modal ref="modalForm" @ok="modalFormOk"></jeecgOrderMain-modal>
   </a-card>
 </template>
 
 <script>
   import JeecgOrderMainModal from './modules/JeecgOrderMainModal'
-  import { filterObj } from '@/utils/util'
-  import { deleteAction,getAction } from '@/api/manage'
+  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 
   export default {
     name: "JeecgOrderMainList",
+    mixins: [JeecgListMixin],
     components: {
       JeecgOrderMainModal
     },
     data () {
       return {
         description: '订单管理页面',
-        // 查询条件
-        queryParam: {},
+        importExcelUrl:`${window._CONFIG['domianURL']}/test/jeecgOrderMain/importExcel`,
         // 表头
         columns: [
           {
@@ -114,12 +117,12 @@
               return parseInt(index)+1;
             }
           },
-		  {
+          {
             title: '订单号',
             align:"center",
             dataIndex: 'orderCode'
           },
-		  {
+          {
             title: '订单类型',
             align:"center",
             dataIndex: 'ctype',
@@ -133,17 +136,17 @@
               return re;
             }
           },
-		  {
+          {
             title: '订单日期',
             align:"center",
             dataIndex: 'orderDate'
           },
-		  {
+          {
             title: '订单金额',
             align:"center",
             dataIndex: 'orderMoney'
           },
-		  {
+          {
             title: '订单备注',
             align:"center",
             dataIndex: 'content'
@@ -155,153 +158,26 @@
             scopedSlots: { customRender: 'action' },
           }
         ],
-        //数据集
-        dataSource:[],
-        // 分页参数
-        ipagination:{
-          current: 1,
-          pageSize: 10,
-          pageSizeOptions: ['10', '20', '30'],
-          showTotal: (total, range) => {
-            return range[0] + "-" + range[1] + " 共" + total + "条"
-          },
-          showQuickJumper: true,
-          showSizeChanger: true,
-          total: 0
-        },
-        isorter:{
-          column: 'createTime',
-          order: 'desc',
-        },
-        loading:false,
-        selectedRowKeys: [],
-        selectedRows: [],
+
 		url: {
           list: "/test/jeecgOrderMain/list",
           delete: "/test/jeecgOrderMain/delete",
           deleteBatch: "/test/jeecgOrderMain/deleteBatch",
-        },
-        
+          exportXlsUrl: "/test/jeecgOrderMain/exportXls",
+        }
       }
-    },
-    created() {
-      this.loadData();
     },
     methods: {
-      loadData (arg){
-        //加载数据 若传入参数1则加载第一页的内容
-        if(arg===1){
-          this.ipagination.current = 1;
-        }
-        var params = this.getQueryParams();//查询条件
-        getAction(this.url.list,params).then((res)=>{
-          if(res.success){
-            this.dataSource = res.result.records;
-            this.ipagination.total = res.result.total;
-          }
-        })
-      },
-      getQueryParams(){
-        var param = Object.assign({}, this.queryParam,this.isorter);
-        param.field = this.getQueryField();
-        param.pageNo = this.ipagination.current;
-        param.pageSize = this.ipagination.pageSize;
-        return filterObj(param);
-      },
-      getQueryField(){
-        //TODO 字段权限控制
-        var str = "id,";
-        for(var a = 0;a<this.columns.length;a++){
-          str+=","+this.columns[a].dataIndex;
-        }
-        return str;
-      },
-      onSelectChange (selectedRowKeys,selectionRows) {
-        this.selectedRowKeys = selectedRowKeys;
-        this.selectionRows = selectionRows;
-      },
-      onClearSelected(){
-        this.selectedRowKeys = [];
-        this.selectionRows = [];
-      },
-      searchQuery(){
-        this.loadData(1);
-      },
-      searchReset(){
-        var that = this;
-        that.queryParam={};
-        that.loadData(1);
-      },
-      batchDel: function(){
-        if(this.selectedRowKeys.length<=0){
-          this.$message.warning('请选择一条记录！');
-          return ;
-        }else{
-          var ids = "";
-          for(var a =0;a<this.selectedRowKeys.length;a++){
-            ids+=this.selectedRowKeys[a]+",";
-          }
-          var that = this;
-          this.$confirm({
-            title:"确认删除",
-            content:"是否删除选中数据?",
-            onOk: function(){
-              deleteAction(that.url.deleteBatch,{ids: ids}).then((res)=>{
-                if(res.success){
-                  that.$message.success(res.message);
-                  that.loadData();
-                  that.onClearSelected();
-                }else{
-                  that.$message.warning(res.message);
-                }
-              });
-            }
-          });
-        }
-      },
-      handleDelete: function(id){
-        var that = this;
-        deleteAction(that.url.delete,{id: id}).then((res)=>{
-          if(res.success){
-            that.$message.success(res.message);
-            that.loadData();
-          }else{
-            that.$message.warning(res.message);
-          }
-        });
-      },
-      handleEdit: function(record){
-        this.$refs.jeecgOrderMainModal.edit(record);
-        this.$refs.jeecgOrderMainModal.title="编辑";
-      },
-      handleAdd: function(){
-        this.$refs.jeecgOrderMainModal.add();
-        this.$refs.jeecgOrderMainModal.title="新增";
-      },
-      handleTableChange(pagination, filters, sorter){
-        //分页、排序、筛选变化时触发
-        console.log(sorter);
-        //TODO 筛选
-        if (Object.keys(sorter).length>0){
-          this.isorter.column = sorter.field;
-          this.isorter.order = "ascend"==sorter.order?"asc":"desc"
-        }
-        this.ipagination = pagination;
-        this.loadData();
-      },
-      modalFormOk () {
-        // 新增/修改 成功时，重载列表
-        this.loadData();
-      }
     }
   }
 </script>
 <style scoped>
+  /** Button按钮间距 */
+  .ant-btn {
+    margin-left: 3px
+  }
   .ant-card-body .table-operator{
     margin-bottom: 18px;
-  }
-  .ant-layout-content{
-    margin:12px 16px 0 !important;
   }
   .ant-table-tbody .ant-table-row td{
     padding-top:15px;

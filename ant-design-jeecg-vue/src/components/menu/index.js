@@ -34,129 +34,155 @@ export default {
     }
   },
   computed: {
-    rootSubmenuKeys: (vm) => {
-      let keys = []
+    rootSubmenuKeys: vm => {
+      const keys = []
       vm.menu.forEach(item => keys.push(item.path))
       return keys
     }
   },
-  created () {
+  mounted () {
     this.updateMenu()
   },
   watch: {
     collapsed (val) {
       if (val) {
-        this.cachedOpenKeys = this.openKeys
+        this.cachedOpenKeys = this.openKeys.concat()
         this.openKeys = []
       } else {
         this.openKeys = this.cachedOpenKeys
       }
     },
-    '$route': function () {
+    $route: function () {
       this.updateMenu()
     }
   },
   methods: {
-    renderIcon: function (h, icon) {
-      return icon === 'none' || icon === undefined ? null
-        : h(Icon, { props: { type: icon !== undefined ? icon : '' } })
-    },
-    renderMenuItem: function (h, menu, pIndex, index) {
-      return h(Item, { key: menu.path ? menu.path : 'item_' + pIndex + '_' + index },
-        [
-          h(
-            'router-link',
-            { attrs: { to: { name: menu.name } } },
-            [
-              this.renderIcon(h, menu.meta.icon),
-              h('span', [ menu.meta.title ])
-            ]
-          )
-        ]
-      )
-    },
-    renderSubMenu: function (h, menu, pIndex, index) {
-      const this2_ = this;
-      let subItem = [ h('span',
-        { slot: 'title' },
-        [
-          this.renderIcon(h, menu.meta.icon),
-          h('span', [ menu.meta.title ])
-        ]
-      ) ]
-      let itemArr = []
-      let pIndex_ = pIndex + '_' + index
-      if (!menu.alwaysShow) {
-        menu.children.forEach(function (item, i) {
-          itemArr.push(this2_.renderItem(h, item, pIndex_, i))
-        })
-      }
-      return h(
-        SubMenu,
-        { key: menu.path ? menu.path : 'submenu_' + pIndex + '_' + index },
-        subItem.concat(itemArr)
-      )
-    },
-    renderItem: function (h, menu, pIndex, index) {
-      if (!menu.hidden) {
-        return menu.children && !menu.alwaysShow ? this.renderSubMenu(h, menu, pIndex, index) : this.renderMenuItem(h, menu, pIndex, index)
-      }
-    },
-    renderMenu: function (h, menuTree) {
-      const this2_ = this
-      let menuArr = []
-      menuTree.forEach(function (menu, i) {
-        if (!menu.hidden) {
-          menuArr.push(this2_.renderItem(h, menu, '0', i))
-        }
-      })
-      return menuArr
-    },
+    // select menu item
     onOpenChange (openKeys) {
-      const latestOpenKey = openKeys.find(key => this.openKeys.indexOf(key) === -1)
-      if (this.rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
+
+      // 在水平模式下时执行，并且不再执行后续
+      if (this.mode === 'horizontal') {
+        this.openKeys = openKeys
+        return
+      }
+      // 非水平模式时
+      const latestOpenKey = openKeys.find(key => !this.openKeys.includes(key))
+      if (!this.rootSubmenuKeys.includes(latestOpenKey)) {
         this.openKeys = openKeys
       } else {
-        this.openKeys = latestOpenKey ? [ latestOpenKey ] : []
+        this.openKeys = latestOpenKey ? [latestOpenKey] : []
       }
     },
     updateMenu () {
-      let routes = this.$route.matched.concat()
-      if (routes.length >= 4 && this.$route.meta.hidden) {
+      const routes = this.$route.matched.concat()
+      const { hidden } = this.$route.meta
+      if (routes.length >= 3 && hidden) {
         routes.pop()
-        this.selectedKeys = [ routes[2].path ]
+        this.selectedKeys = [routes[routes.length - 1].path]
       } else {
-        this.selectedKeys = [ routes.pop().path ]
+        this.selectedKeys = [routes.pop().path]
       }
-
-      let openKeys = []
+      const openKeys = []
       if (this.mode === 'inline') {
-        routes.forEach((item) => {
+        routes.forEach(item => {
           openKeys.push(item.path)
         })
       }
+      //update-begin-author:taoyan date:20190510 for:online表单菜单点击展开的一级目录不对
+      if(!this.selectedKeys || this.selectedKeys[0].indexOf(":")<0){
+        this.collapsed ? (this.cachedOpenKeys = openKeys) : (this.openKeys = openKeys)
+      }
+      //update-end-author:taoyan date:20190510 for:online表单菜单点击展开的一级目录不对
+    },
 
-      this.collapsed ? this.cachedOpenKeys = openKeys : this.openKeys = openKeys
+    // render
+    renderItem (menu) {
+      if (!menu.hidden) {
+        return menu.children && !menu.hideChildrenInMenu ? this.renderSubMenu(menu) : this.renderMenuItem(menu)
+      }
+      return null
+    },
+    renderMenuItem (menu) {
+      const target = menu.meta.target || null
+      const tag = target && 'a' || 'router-link'
+      let props = { to: { name: menu.name } }
+      if(menu.route && menu.route === '0'){
+        props = { to: { path: menu.path } }
+      }
+
+      const attrs = { href: menu.path, target: menu.meta.target }
+
+      if (menu.children && menu.hideChildrenInMenu) {
+        // 把有子菜单的 并且 父菜单是要隐藏子菜单的
+        // 都给子菜单增加一个 hidden 属性
+        // 用来给刷新页面时， selectedKeys 做控制用
+        menu.children.forEach(item => {
+          item.meta = Object.assign(item.meta, { hidden: true })
+        })
+      }
+
+      return (
+        <Item {...{ key: menu.path }}>
+          <tag {...{ props, attrs }}>
+            {this.renderIcon(menu.meta.icon)}
+            <span>{menu.meta.title}</span>
+          </tag>
+        </Item>
+      )
+    },
+    renderSubMenu (menu) {
+      const itemArr = []
+      if (!menu.hideChildrenInMenu) {
+        menu.children.forEach(item => itemArr.push(this.renderItem(item)))
+      }
+      return (
+        <SubMenu {...{ key: menu.path }}>
+          <span slot="title">
+            {this.renderIcon(menu.meta.icon)}
+            <span>{menu.meta.title}</span>
+          </span>
+          {itemArr}
+        </SubMenu>
+      )
+    },
+    renderIcon (icon) {
+      if (icon === 'none' || icon === undefined) {
+        return null
+      }
+      const props = {}
+      typeof (icon) === 'object' ? props.component = icon : props.type = icon
+      return (
+        <Icon {... { props } }/>
+      )
     }
   },
-  render (h) {
-    return h(
-      Menu,
-      {
-        props: {
-          theme: this.$props.theme,
-          mode: this.$props.mode,
-          openKeys: this.openKeys,
-          selectedKeys: this.selectedKeys
-        },
-        on: {
-          openChange: this.onOpenChange,
-          select: (obj) => {
-            this.selectedKeys = obj.selectedKeys
-            this.$emit('select', obj)
-          }
-        }
-      }, this.renderMenu(h, this.menu)
+
+  render () {
+    const { mode, theme, menu } = this
+    const props = {
+      mode: mode,
+      theme: theme,
+      openKeys: this.openKeys
+    }
+    const on = {
+      select: obj => {
+        this.selectedKeys = obj.selectedKeys
+        this.$emit('select', obj)
+      },
+      openChange: this.onOpenChange
+    }
+
+    const menuTree = menu.map(item => {
+      if (item.hidden) {
+        return null
+      }
+      return this.renderItem(item)
+    })
+    // {...{ props, on: on }}
+    return (
+      <Menu vModel={this.selectedKeys} {...{ props, on: on }}>
+        {menuTree}
+      </Menu>
     )
   }
 }

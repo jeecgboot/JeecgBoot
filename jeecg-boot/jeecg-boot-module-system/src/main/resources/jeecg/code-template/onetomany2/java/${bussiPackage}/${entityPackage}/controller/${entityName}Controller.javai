@@ -1,0 +1,377 @@
+package ${bussiPackage}.${entityPackage}.controller;
+
+import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.jeecgframework.poi.excel.ExcelImportUtil;
+import org.jeecgframework.poi.excel.def.NormalExcelConstants;
+import org.jeecgframework.poi.excel.entity.ExportParams;
+import org.jeecgframework.poi.excel.entity.ImportParams;
+import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
+
+import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.util.oConvertUtils;
+<#list subTables as sub>
+import ${bussiPackage}.${entityPackage}.entity.${sub.entityName};
+</#list>
+import ${bussiPackage}.${entityPackage}.entity.${entityName};
+import ${bussiPackage}.${entityPackage}.vo.${entityName}Page;
+import ${bussiPackage}.${entityPackage}.service.I${entityName}Service;
+<#list subTables as sub>
+import ${bussiPackage}.${entityPackage}.service.I${sub.entityName}Service;
+</#list>
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
+import com.alibaba.fastjson.JSON;
+
+ /**
+ * @Description: ${tableVo.ftlDescription}
+ * @Author: jeecg-boot
+ * @Date:   ${.now?string["yyyy-MM-dd"]}
+ * @Version: V1.0
+ */
+@RestController
+@RequestMapping("/${entityPackage}/${entityName?uncap_first}")
+@Slf4j
+public class ${entityName}Controller {
+	@Autowired
+	private I${entityName}Service ${entityName?uncap_first}Service;
+	<#list subTables as sub>
+	@Autowired
+	private I${sub.entityName}Service ${sub.entityName?uncap_first}Service;
+	</#list>
+	
+	/**
+	  * 分页列表查询
+	 * @param ${entityName?uncap_first}
+	 * @param pageNo
+	 * @param pageSize
+	 * @param req
+	 * @return
+	 */
+	@GetMapping(value = "/list")
+	public Result<IPage<${entityName}>> queryPageList(${entityName} ${entityName?uncap_first},
+									  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									  HttpServletRequest req) {
+		Result<IPage<${entityName}>> result = new Result<IPage<${entityName}>>();
+		QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap());
+		Page<${entityName}> page = new Page<${entityName}>(pageNo, pageSize);
+		IPage<${entityName}> pageList = ${entityName?uncap_first}Service.page(page, queryWrapper);
+		result.setSuccess(true);
+		result.setResult(pageList);
+		return result;
+	}
+	
+	/**
+	  *   添加
+	 * @param ${entityName?uncap_first}Page
+	 * @return
+	 */
+	@PostMapping(value = "/add")
+	public Result<${entityName}> add(@RequestBody ${entityName}Page ${entityName?uncap_first}Page) {
+		Result<${entityName}> result = new Result<${entityName}>();
+		try {
+			${entityName} ${entityName?uncap_first} = new ${entityName}();
+			BeanUtils.copyProperties(${entityName?uncap_first}Page, ${entityName?uncap_first});
+			
+			${entityName?uncap_first}Service.save(${entityName?uncap_first});
+			result.success("添加成功！");
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+			result.error500("操作失败");
+		}
+		return result;
+	}
+	
+	/**
+	  *  编辑
+	 * @param ${entityName?uncap_first}Page
+	 * @return
+	 */
+	@PutMapping(value = "/edit")
+	public Result<${entityName}> edit(@RequestBody ${entityName}Page ${entityName?uncap_first}Page) {
+		Result<${entityName}> result = new Result<${entityName}>();
+		${entityName} ${entityName?uncap_first} = new ${entityName}();
+		BeanUtils.copyProperties(${entityName?uncap_first}Page, ${entityName?uncap_first});
+		${entityName} ${entityName?uncap_first}Entity = ${entityName?uncap_first}Service.getById(${entityName?uncap_first}.getId());
+		if(${entityName?uncap_first}Entity==null) {
+			result.error500("未找到对应实体");
+		}else {
+			${entityName?uncap_first}Service.updateById(${entityName?uncap_first});
+			result.success("修改成功!");
+		}
+		
+		return result;
+	}
+	
+	/**
+	  *   通过id删除
+	 * @param id
+	 * @return
+	 */
+	@DeleteMapping(value = "/delete")
+	public Result<${entityName}> delete(@RequestParam(name="id",required=true) String id) {
+		Result<${entityName}> result = new Result<${entityName}>();
+		${entityName} ${entityName?uncap_first} = ${entityName?uncap_first}Service.getById(id);
+		if(${entityName?uncap_first}==null) {
+			result.error500("未找到对应实体");
+		}else {
+			${entityName?uncap_first}Service.delMain(id);
+			result.success("删除成功!");
+		}
+		
+		return result;
+	}
+	
+	/**
+	  *  批量删除
+	 * @param ids
+	 * @return
+	 */
+	@DeleteMapping(value = "/deleteBatch")
+	public Result<${entityName}> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
+		Result<${entityName}> result = new Result<${entityName}>();
+		if(ids==null || "".equals(ids.trim())) {
+			result.error500("参数不识别！");
+		}else {
+			this.${entityName?uncap_first}Service.removeByIds(Arrays.asList(ids.split(",")));
+			result.success("删除成功!");
+		}
+		return result;
+	}
+	
+	/**
+	  * 通过id查询
+	 * @param id
+	 * @return
+	 */
+	@GetMapping(value = "/queryById")
+	public Result<${entityName}> queryById(@RequestParam(name="id",required=true) String id) {
+		Result<${entityName}> result = new Result<${entityName}>();
+		${entityName} ${entityName?uncap_first} = ${entityName?uncap_first}Service.getById(id);
+		if(${entityName?uncap_first}==null) {
+			result.error500("未找到对应实体");
+		}else {
+			result.setResult(${entityName?uncap_first});
+			result.setSuccess(true);
+		}
+		return result;
+	}
+	
+	//===========================以下是子表信息操作相关API====================================
+	
+	<#list subTables as sub>
+	/**
+	  * 通过主表id查询${sub.ftlDescription}
+	 * @param mainId
+	 * @return
+	 */
+	@GetMapping(value = "/list${sub.entityName}ByMainId")
+	public Result<List<${sub.entityName}>> query${sub.entityName}ListByMainId(@RequestParam(name="mainId",required=false) String mainId) {
+		Result<List<${sub.entityName}>> result = new Result<List<${sub.entityName}>>();
+		List<${sub.entityName}> ${sub.entityName?uncap_first}List = null;
+		if (mainId != null) {
+			${sub.entityName?uncap_first}List = ${sub.entityName?uncap_first}Service.selectByMainId(mainId);
+            result.setResult(${sub.entityName?uncap_first}List);
+            result.setSuccess(true);
+            return result;
+		}else return null;	
+	}
+	
+	/**
+     * 添加${sub.ftlDescription}
+     *
+     * @param ${sub.entityName?uncap_first}
+     * @return
+     */
+    @PostMapping(value = "/add${sub.entityName}")
+    public Result<${sub.entityName}> add${sub.entityName}(@RequestBody ${sub.entityName} ${sub.entityName?uncap_first}) {
+        Result<${sub.entityName}> result = new Result<>();
+        try {
+            boolean ok = ${sub.entityName?uncap_first}Service.save(${sub.entityName?uncap_first});
+            if (ok) {
+                result.setSuccess(true);
+                result.setMessage("添加${sub.ftlDescription}成功.");
+            } else {
+                result.setSuccess(false);
+                result.setMessage("添加${sub.ftlDescription}失败!");
+            }
+            return result;
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            result.setSuccess(false);
+            result.setMessage("添加${sub.ftlDescription}过程中出现了异常: " + e.getMessage());
+            return result;
+        }
+    }
+    
+    /**
+     * 编辑${sub.ftlDescription}
+     *
+     * @param ${sub.entityName?uncap_first}
+     * @return
+     */
+    @PutMapping("/edit${sub.entityName}")
+    public Result<${sub.entityName}> edit${sub.entityName}(@RequestBody ${sub.entityName} ${sub.entityName?uncap_first}) {
+        Result<${sub.entityName}> result = new Result<>();
+        try {
+            boolean ok = ${sub.entityName?uncap_first}Service.updateById(${sub.entityName?uncap_first});
+            if (ok) {
+                result.setSuccess(true);
+                result.setMessage("更新${sub.ftlDescription}成功.");
+            } else {
+                result.setSuccess(false);
+                result.setMessage("更新${sub.ftlDescription}失败!");
+            }
+            return result;
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setMessage("更新数据过程中出现异常啦: " + e.getMessage());
+            return result;
+        }
+    }
+    
+    /**
+     * 通过id删除${sub.ftlDescription}
+     *
+     * @param id
+     * @return
+     */
+    @DeleteMapping(value = "/delete${sub.entityName}")
+    public Result<${sub.entityName}> delete${sub.entityName}(@RequestParam(name = "id", required = true) String id) {
+        Result<${sub.entityName}> result = new Result<>();
+        try {
+            boolean ok = ${sub.entityName?uncap_first}Service.removeById(id);
+            if (ok) {
+                result.setSuccess(true);
+                result.setMessage("删除${sub.ftlDescription}成功.");
+            } else {
+                result.setSuccess(false);
+                result.setMessage("删除${sub.ftlDescription}失败!");
+            }
+            return result;
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setMessage("删除${sub.ftlDescription}过程中出现异常啦: " + e.getMessage());
+            return result;
+        }
+    }
+	
+	/**
+     * 批量删除${sub.ftlDescription}
+     *
+     * @param ids
+     * @return
+     */
+    @DeleteMapping(value = "/deleteBatch${sub.entityName}")
+    public Result<${sub.entityName}> deleteBatch${sub.entityName}(@RequestParam(name = "ids", required = true) String ids) {
+        Result<${sub.entityName}> result = new Result<${sub.entityName}>();
+        if (ids == null || "".equals(ids.trim())) {
+            result.error500("参数不识别！");
+        } else {
+            this.${sub.entityName?uncap_first}Service.removeByIds(Arrays.asList(ids.split(",")));
+            result.success("删除成功!");
+        }
+        return result;
+    }
+    
+	</#list>
+
+    /**
+     * 导出excel
+     *
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "/exportXls")
+    public ModelAndView exportXls(HttpServletRequest request, HttpServletResponse response) {
+        // Step.1 组装查询条件
+        QueryWrapper<${entityName}> queryWrapper = null;
+        try {
+            String paramsStr = request.getParameter("paramsStr");
+            if (oConvertUtils.isNotEmpty(paramsStr)) {
+                String deString = URLDecoder.decode(paramsStr, "UTF-8");
+                ${entityName} ${entityName?uncap_first} = JSON.parseObject(deString, ${entityName}.class);
+                queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, request.getParameterMap());
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        //Step.2 AutoPoi 导出Excel
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        List<${entityName}Page> pageList = new ArrayList<${entityName}Page>();
+        List<${entityName}> ${entityName?uncap_first}List = ${entityName?uncap_first}Service.list(queryWrapper);
+        for (${entityName} ${entityName?uncap_first} : ${entityName?uncap_first}List) {
+            ${entityName}Page vo = new ${entityName}Page();
+            BeanUtils.copyProperties(${entityName?uncap_first}, vo);
+            <#list subTables as sub>
+            List<${sub.entityName}> ${sub.entityName?uncap_first}List = ${sub.entityName?uncap_first}Service.selectByMainId(${entityName?uncap_first}.getId());
+            vo.set${sub.entityName}List(${sub.entityName?uncap_first}List);
+            </#list>
+            pageList.add(vo);
+        }
+        //导出文件名称
+        mv.addObject(NormalExcelConstants.FILE_NAME, "${tableVo.ftlDescription}列表");
+        mv.addObject(NormalExcelConstants.CLASS, ${entityName}Page.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("${tableVo.ftlDescription}列表数据", "导出人:Jeecg", "导出信息"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
+        return mv;
+    }
+
+    /**
+     * 通过excel导入数据
+     *
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
+    public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+        for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+            MultipartFile file = entity.getValue();// 获取上传文件对象
+            ImportParams params = new ImportParams();
+            params.setTitleRows(2);
+            params.setHeadRows(1);
+            params.setNeedSave(true);
+            try {
+                List<${entityName}Page> list = ExcelImportUtil.importExcel(file.getInputStream(), ${entityName}Page.class, params);
+                for (${entityName}Page page : list) {
+                    ${entityName} po = new ${entityName}();
+                    BeanUtils.copyProperties(page, po);
+                    ${entityName?uncap_first}Service.saveMain(po, <#list subTables as sub>page.get${sub.entityName}List()<#if sub_has_next>,</#if></#list>);
+                }
+                return Result.ok("文件导入成功！数据行数:" + list.size());
+            } catch (Exception e) {
+                log.error(e.getMessage(),e);
+                return Result.error("文件导入失败:"+e.getMessage());
+            } finally {
+                try {
+                    file.getInputStream().close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return Result.ok("文件导入失败！");
+    }
+}

@@ -38,12 +38,13 @@ export function getInfo() {
   })
 }
 
-export function logout() {
+export function logout(logoutToken) {
   return axios({
-    url: '/api/auth/logout',
+    url: '/sys/logout',
     method: 'post',
     headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
+      'Content-Type': 'application/json;charset=UTF-8',
+      'X-Access-Token':  logoutToken
     }
   })
 }

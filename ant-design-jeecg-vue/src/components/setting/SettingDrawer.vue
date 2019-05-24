@@ -114,7 +114,7 @@
                 </a-list-item-meta>
               </a-list-item>
               <a-list-item >
-                <a-switch slot="actions" size="small" :disabled="(layoutMode === 'topmenu')" :defaultChecked="fixSiderbar" @change="handleFixSiderbar" />
+                <a-switch slot="actions" size="small" :disabled="(layoutMode === 'topmenu')" :checked="dataFixSiderbar" @change="handleFixSiderbar" />
                 <a-list-item-meta>
                   <div slot="title" :style="{ textDecoration: layoutMode === 'topmenu' ? 'line-through' : 'unset' }">固定侧边菜单</div>
                 </a-list-item-meta>
@@ -132,6 +132,12 @@
                 <a-switch slot="actions" size="small" :defaultChecked="colorWeak" @change="onColorWeak" />
                 <a-list-item-meta>
                   <div slot="title">色弱模式</div>
+                </a-list-item-meta>
+              </a-list-item>
+              <a-list-item>
+                <a-switch slot="actions" size="small" :defaultChecked="multipage" @change="onMultipageWeak" />
+                <a-list-item-meta>
+                  <div slot="title">多页签模式</div>
                 </a-list-item-meta>
               </a-list-item>
             </a-list>
@@ -161,6 +167,7 @@
   import config from '@/defaultSettings'
   import { updateTheme, updateColorWeak, colorList } from '@/components/tools/setting'
   import { mixin, mixinDevice } from '@/utils/mixin.js'
+  import { triggerWindowResizeEvent } from '@/utils/util'
 
   export default {
     components: {
@@ -172,7 +179,8 @@
       return {
         visible: true,
         colorList,
-      }
+        dataFixSiderbar: false
+    }
     },
     watch: {
 
@@ -189,6 +197,9 @@
       if (this.colorWeak !== config.colorWeak) {
         updateColorWeak(this.colorWeak)
       }
+      if (this.multipage !== config.multipage) {
+        this.$store.dispatch('ToggleMultipage', this.multipage)
+      }
     },
     methods: {
       showDrawer() {
@@ -204,14 +215,18 @@
         this.$store.dispatch('ToggleWeak', checked)
         updateColorWeak(checked)
       },
+      onMultipageWeak (checked) {
+        this.$store.dispatch('ToggleMultipage', checked)
+      },
       handleMenuTheme (theme) {
         this.$store.dispatch('ToggleTheme', theme)
       },
       handleLayout (mode) {
         this.$store.dispatch('ToggleLayoutMode', mode)
         // 因为顶部菜单不能固定左侧菜单栏，所以强制关闭
-        //
-        this.handleFixSiderbar(false);
+        this.handleFixSiderbar(false)
+        // 触发窗口resize事件
+        triggerWindowResizeEvent()
       },
       handleContentWidthChange (type) {
         this.$store.dispatch('ToggleContentWidth', type)
@@ -230,9 +245,9 @@
       },
       handleFixSiderbar (fixed) {
         if (this.layoutMode === 'topmenu') {
-          this.$store.dispatch('ToggleFixSiderbar', false)
-          return;
+          fixed = false
         }
+        this.dataFixSiderbar = fixed
         this.$store.dispatch('ToggleFixSiderbar', fixed)
       }
     },

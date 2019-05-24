@@ -6,6 +6,7 @@
     :value="momVal"
     :showTime="showTime"
     :format="dateFormat"
+    :getCalendarContainer="getCalendarContainer"
   />
 </template>
 <script>
@@ -20,7 +21,6 @@
       },
       value:{
         type: String,
-        default: '',
         required: false
       },
       dateFormat:{
@@ -42,6 +42,10 @@
         type: Boolean,
         required: false,
         default: false
+      },
+      getCalendarContainer: {
+        type: Function,
+        default: () => document.body
       }
     },
     data () {
@@ -71,4 +75,5 @@
       }
     }
   }
+  //note: do not set the prop value one default property
 </script>

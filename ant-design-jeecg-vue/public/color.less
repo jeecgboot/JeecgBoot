@@ -2175,9 +2175,8 @@ this.tinycolor = tinycolor;
 .globalFooter .copyright {
   color: rgba(0, 0, 0, 0.45);
 }
-.header {
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+.layout .header {
+  background-color: @primary-color !important;
 }
 i.trigger:hover {
   background: rgba(0, 0, 0, 0.025);
@@ -2342,24 +2341,22 @@ i.trigger:hover {
   border-radius: 2px;
   color: #fff;
 }
-.logo {
-}
 .logo h1 {
   color: white;
 }
 .sider {
-  box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
+  box-shadow: 2px 116px 6px rgba(0, 21, 41, 0.35);
 }
 .sider.light {
-  box-shadow: 2px 0 8px 0 rgba(29, 35, 41, 0.05);
+  box-shadow: 2px 116px 8px 0 rgba(29, 35, 41, 0.05);
   background-color: white;
 }
 .sider.light .logo {
-  background: white;
+  background-color: @primary-color !important;
   box-shadow: 1px 1px 0 0 #e8e8e8;
 }
 .sider.light .logo h1 {
-  color: @primary-color;
+  color: white;
 }
 .sider.light :global(.ant-menu-light) {
   border-right-color: transparent;
@@ -6808,7 +6805,7 @@ tr.ant-table-expanded-row:hover {
 }
 .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
   background: #fff;
-  border-color: #e8e8e8;
+  border-color: @primary-color !important;
   color: @primary-color;
 }
 .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab .ant-tabs-close-x {

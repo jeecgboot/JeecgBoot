@@ -1,0 +1,184 @@
+<template>
+  <a-modal
+    :title="title"
+    :width="1200"
+    :visible="visible"
+    :maskClosable="false"
+    :confirmLoading="confirmLoading"
+    @ok="handleOk"
+    @cancel="handleCancel">
+    <a-spin :spinning="confirmLoading">
+      <!-- 主表单区域 -->
+      <a-form :form="form">
+<#list columns as po><#rt/>
+  <#if po_index % 2 == 0 ><#rt/>
+        <a-row>
+    <#if po.fieldName !='id'>
+      <#list [po_index, po_index+1] as idx><#rt/>
+        <#if idx lt columns?size>
+          <a-col :span="12" :gutter="8">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="${columns[idx].filedComment}">
+            <#if columns[idx].fieldType =='date'>
+              <a-date-picker
+                placeholder="请输入${columns[idx].filedComment}"
+                style="width:100%"
+                v-decorator="[ '${columns[idx].fieldName}', <#if columns[idx].nullable =='N'>validatorRules.${columns[idx].fieldName} <#else>{}</#if>]"/>
+            <#elseif columns[idx].fieldType =='datetime'>
+              <a-date-picker
+                placeholder="请输入${columns[idx].filedComment}"
+                style="width:100%"
+                :showTime="true"
+                format="YYYY-MM-DD HH:mm:ss"
+                v-decorator="[ '${columns[idx].fieldName}', <#if columns[idx].nullable =='N'>validatorRules.${columns[idx].fieldName} <#else>{}</#if>]"/>
+            <#elseif "int,decimal,double,"?contains(columns[idx].fieldType)>
+              <a-input-number placeholder="请输入${columns[idx].filedComment}" style="width:100%" v-decorator="[ '${columns[idx].fieldName}', <#if columns[idx].nullable =='N'>validatorRules.${columns[idx].fieldName} <#else>{}</#if>]"/>
+            <#else>
+              <a-input placeholder="请输入${columns[idx].filedComment}" v-decorator="['${columns[idx].fieldName}', <#if columns[idx].nullable =='N'>validatorRules.${columns[idx].fieldName} <#else>{}</#if>]"/>
+            </#if>
+            </a-form-item>
+          </a-col>
+        </#if>
+      </#list><#rt/>
+    </#if><#rt/>
+        </a-row>
+  </#if><#rt/>
+</#list>
+      </a-form>
+
+      <!-- 子表单区域 -->
+      <a-tabs v-model="activeKey" @change="handleChangeTabs">
+<#list subTables as sub><#rt/>
+        <a-tab-pane tab="${sub.ftlDescription}" :key="refKeys[${sub_index}]" :forceRender="true">
+          <j-editable-table
+            :ref="refKeys[${sub_index}]"
+            :loading="${sub.entityName?uncap_first}Table.loading"
+            :columns="${sub.entityName?uncap_first}Table.columns"
+            :dataSource="${sub.entityName?uncap_first}Table.dataSource"
+            :maxHeight="300"
+            :rowNumber="true"
+            :rowSelection="true"
+            :actionButton="true"/>
+        </a-tab-pane>
+</#list>
+      </a-tabs>
+
+    </a-spin>
+  </a-modal>
+</template>
+
+<script>
+
+  import moment from 'moment'
+  import pick from 'lodash.pick'
+  import { FormTypes } from '@/utils/JEditableTableUtil'
+  import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
+
+  export default {
+    name: '${entityName}Modal',
+    mixins: [JEditableTableMixin],
+    data() {
+      return {
+        // 新增时子表默认添加几行空数据
+        addDefaultRowNum: 1,
+        validatorRules: {
+<#list columns as po>
+  <#if po.fieldName !='id'>
+    <#if po.nullable =='N'>
+          ${po.fieldName}: { rules: [{ required: true, message: '请输入${po.filedComment}!' }] },
+    </#if>
+  </#if>
+</#list>
+        },
+        refKeys: [<#list subTables as sub>'${sub.entityName?uncap_first}', </#list>],
+        activeKey: '${subTables[0].entityName?uncap_first}',
+<#list subTables as sub><#rt/>
+        // ${sub.ftlDescription}
+        ${sub.entityName?uncap_first}Table: {
+          loading: false,
+          dataSource: [],
+          columns: [
+<#list sub.colums as col><#rt/>
+    <#if col.filedComment !='外键'>
+            {
+              title: '${col.filedComment}',
+              key: '${col.fieldName}',
+      <#if col.fieldType =='date'>
+              type: FormTypes.date,
+      <#elseif col.fieldType =='datetime'>
+              type: FormTypes.datetime,
+      <#elseif "int,decimal,double,"?contains(col.fieldType)>
+              type: FormTypes.inputNumber,
+      <#else>
+              type: FormTypes.input,
+      </#if>
+              defaultValue: '',
+              placeholder: '请输入${'$'}{title}',
+      <#if col.nullable =='N'>
+              validateRules: [{ required: true, message: '${'$'}{title}不能为空' }],
+      </#if>
+            },
+    </#if>
+</#list>
+          ]
+        },
+</#list>
+        url: {
+          add: "/${entityPackage}/${entityName?uncap_first}/add",
+          edit: "/${entityPackage}/${entityName?uncap_first}/edit",
+<#list subTables as sub><#rt/>
+          ${sub.entityName?uncap_first}: {
+            list: '/${entityPackage}/${entityName?uncap_first}/query${sub.entityName}ByMainId'
+          },
+</#list>
+        }
+      }
+    },
+    methods: {
+ 
+      /** 调用完edit()方法之后会自动调用此方法 */
+      editAfter() {
+        this.$nextTick(() => {
+          this.form.setFieldsValue(pick(this.model, <#list columns as col>'${col.fieldName}', </#list>))
+          // 时间格式化
+<#list columns as col><#rt/>
+	<#if col.fieldName !='id' && (col.fieldType =='date' || col.fieldType =='datetime')>
+          this.form.setFieldsValue({ ${col.fieldName}: this.model.${col.fieldName} ? moment(this.model.${col.fieldName}) : null })
+	</#if>
+</#list>  
+        })
+        // 加载子表数据
+        if (this.model.id) {
+          let params = { id: this.model.id }
+<#list subTables as sub><#rt/>
+          this.requestSubTableData(this.url.${sub.entityName?uncap_first}.list, params, this.${sub.entityName?uncap_first}Table)
+</#list>
+        }
+      },
+ 
+      /** 整理成formData */
+      classifyIntoFormData(allValues) {
+        let main = Object.assign(this.model, allValues.formValue)
+        //时间格式化
+<#list columns as col><#rt/>
+	<#if col.fieldName !='id' && col.fieldType =='date'>
+        main.${col.fieldName} = main.${col.fieldName} ? main.${col.fieldName}.format() : null;
+	<#elseif col.fieldName !='id' && col.fieldType =='datetime'>
+        main.${col.fieldName} = main.${col.fieldName} ? main.${col.fieldName}.format('YYYY-MM-DD HH:mm:ss') : null;
+	</#if>
+</#list>
+        return {
+          ...main, // 展开
+<#list subTables as sub><#rt/>
+          ${sub.entityName?uncap_first}List: allValues.tablesValue[${sub_index}].values,
+</#list>
+        }
+      }
+    }
+  }
+</script>
+
+<style scoped>
+</style>

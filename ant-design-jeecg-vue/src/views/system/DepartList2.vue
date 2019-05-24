@@ -2,17 +2,22 @@
   <a-card :bordered="false">
 
     <!-- 查询区域 -->
- <!--
--->
+    <!--
+   -->
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
 
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+          <a-menu-item key="1" @click="batchDel">
+            <a-icon type="delete"/>
+            删除
+          </a-menu-item>
         </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+        <a-button style="margin-left: 8px"> 批量操作
+          <a-icon type="down"/>
+        </a-button>
       </a-dropdown>
     </div>
 
@@ -37,9 +42,9 @@
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
 
-          <a-divider type="vertical" />
+          <a-divider type="vertical"/>
           <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
+            <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
             <a-menu slot="overlay">
               <a-menu-item>
                 <a href="javascript:;" @click="handleDetail(record)">详情</a>
@@ -64,85 +69,85 @@
 
 <script>
   import SysDepartModal from './modules/DepartModal'
-/*  import { filterObj } from '@/utils/util'
-  , queryByFactories*/
-  import { queryDepartTreeList} from '@/api/api'
-  import { deleteAction } from '@/api/manage'
+  /*  import { filterObj } from '@/utils/util'
+    , queryByFactories*/
+  import {queryDepartTreeList} from '@/api/api'
+  import {deleteAction} from '@/api/manage'
 
-        // 表头
-        const columns = [
-          {
-            title: '机构名称',
-            dataIndex: 'departName',
-          },
-          {
-            title: '机构类型',
-            align:"center",
-            dataIndex: 'orgType'
-          },
-          {
-            title: '机构编码',
-            dataIndex: 'orgCode'
-          },
-          {
-            title: '手机号',
-            dataIndex: 'mobile'
-          },
-          {
-            title: '传真',
-            dataIndex: 'fax'
-          },
-          {
-            title: '地址',
-            dataIndex: 'address'
-          },
-          {
-            title:'排序',
-            align:'center',
-            dataIndex:'departOrder'
-          },
-          {
-            title: '操作',
-            align:"center",
-            dataIndex: 'action',
-            scopedSlots: { customRender: 'action' },
-          }
-        ];
+  // 表头
+  const columns = [
+    {
+      title: '机构名称',
+      dataIndex: 'departName',
+    },
+    {
+      title: '机构类型',
+      align: "center",
+      dataIndex: 'orgType'
+    },
+    {
+      title: '机构编码',
+      dataIndex: 'orgCode'
+    },
+    {
+      title: '手机号',
+      dataIndex: 'mobile'
+    },
+    {
+      title: '传真',
+      dataIndex: 'fax'
+    },
+    {
+      title: '地址',
+      dataIndex: 'address'
+    },
+    {
+      title: '排序',
+      align: 'center',
+      dataIndex: 'departOrder'
+    },
+    {
+      title: '操作',
+      align: "center",
+      dataIndex: 'action',
+      scopedSlots: {customRender: 'action'},
+    }
+  ];
 
   export default {
     name: "DepartList2",
     components: {
       SysDepartModal
     },
-    data () {
-    return {
-      description: 'jeecg 生成SysDepart代码管理页面',
-      // 查询条件
-      queryParam: {},
+    data() {
+      return {
+        description: 'jeecg 生成SysDepart代码管理页面',
+        // 查询条件
+        queryParam: {},
         //数据集
-      factories:'',
-      dataSource:[],
-      columns:columns,
+        factories: '',
+        dataSource: [],
+        columns: columns,
         // 分页参数
-/*        ipagination:{
-          current: 1,
-          pageSize: 5,
-          pageSizeOptions: ['5', '10', '20'],
-          showTotal: (total, range) => {
-            return range[0] + "-" + range[1] + " 共" + total + "条"
-          },
-          showQuickJumper: true,
-          showSizeChanger: true,
-          total: 0
-        },*/
-        isorter:{
+        /*        ipagination:{
+                  current: 1,
+                  pageSize: 5,
+                  pageSizeOptions: ['5', '10', '20'],
+                  showTotal: (total, range) => {
+                    return range[0] + "-" + range[1] + " 共" + total + "条"
+                  },
+                  showQuickJumper: true,
+                  showSizeChanger: true,
+                  total: 0
+                },*/
+        isorter: {
           column: 'createTime',
           order: 'desc',
         },
-        loading:false,
+        loading: false,
         selectedRowKeys: [],
         selectedRows: [],
-		url: {
+        url: {
           list: "/sysdepart/sysDepart/list",
           delete: "/sysdepart/sysDepart/delete",
           deleteBatch: "/sysdepart/sysDepart/deleteBatch",
@@ -154,69 +159,69 @@
       this.loadData();
     },
     methods: {
-      loadData (){
+      loadData() {
         this.dataSource = [];
-          queryDepartTreeList().then((res)=>{
-            if(res.success){
-              this.dataSource = res.result;
-            }
-          })
+        queryDepartTreeList().then((res) => {
+          if (res.success) {
+            this.dataSource = res.result;
+          }
+        })
 
       },
 
-      getQueryField(){
+      getQueryField() {
         //TODO 字段权限控制
         var str = "id,";
-        for(var a = 0;a<this.columns.length;a++){
-          str+=","+this.columns[a].dataIndex;
+        for (var a = 0; a < this.columns.length; a++) {
+          str += "," + this.columns[a].dataIndex;
         }
         return str;
       },
-      onSelectChange (selectedRowKeys,selectionRows) {
+      onSelectChange(selectedRowKeys, selectionRows) {
         this.selectedRowKeys = selectedRowKeys;
         this.selectionRows = selectionRows;
       },
-      onClearSelected(){
+      onClearSelected() {
         this.selectedRowKeys = [];
         this.selectionRows = [];
       },
 //TODO getQueryParams
-      handleDelete:function(id){
+      handleDelete: function (id) {
         var that = this;
-        deleteAction(that.url.delete,{id: id}).then((res)=>{
-          if(res.success){
+        deleteAction(that.url.delete, {id: id}).then((res) => {
+          if (res.success) {
             that.$message.success(res.message);
             that.loadData();
-          }else{
+          } else {
             that.$message.warning(res.message);
           }
         });
       },
-      handleDetail(record){
+      handleDetail(record) {
         this.$refs.sysDepartModal.edit(record);
-        this.$refs.sysDepartModal.title="详情";
+        this.$refs.sysDepartModal.title = "详情";
         this.$refs.sysDepartModal.disableSubmit = true;
       },
-      batchDel: function(){
-        if(this.selectedRowKeys.length<=0){
+      batchDel: function () {
+        if (this.selectedRowKeys.length <= 0) {
           this.$message.warning('请选择一条记录！');
-          return ;
-        }else{
+          return;
+        } else {
           var ids = "";
-          for(var a =0;a<this.selectedRowKeys.length;a++){
-            ids+=this.selectedRowKeys[a]+",";
+          for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            ids += this.selectedRowKeys[a] + ",";
           }
           var that = this;
           this.$confirm({
-            title:"确认删除",
-            content:"是否删除选中数据?",
-            onOk: function(){
-              deleteAction(that.url.deleteBatch,{ids: ids}).then((res)=>{
-                if(res.success){
+            title: "确认删除",
+            content: "是否删除选中数据?",
+            onOk: function () {
+              deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
+                if (res.success) {
                   that.$message.success(res.message);
                   that.loadData();
                   that.onClearSelected();
-                }else{
+                } else {
                   that.$message.warning(res.message);
                 }
               });
@@ -224,26 +229,26 @@
           });
         }
       },
-      handleEdit:function(record){
+      handleEdit: function (record) {
         this.$refs.sysDepartModal.edit(record);
-        this.$refs.sysDepartModal.title="编辑";
+        this.$refs.sysDepartModal.title = "编辑";
       },
-      handleAdd(){
+      handleAdd() {
         this.$refs.sysDepartModal.add();
-        this.$refs.sysDepartModal.title="新增";
+        this.$refs.sysDepartModal.title = "新增";
       },
-      handleTableChange(pagination, filters, sorter){
+      handleTableChange(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发
         console.log(sorter);
         //TODO 筛选
-        if (Object.keys(sorter).length>0){
+        if (Object.keys(sorter).length > 0) {
           this.isorter.column = sorter.field;
-          this.isorter.order = "ascend"==sorter.order?"asc":"desc"
+          this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
         }
         /*this.ipagination = pagination;*/
         this.loadData();
       },
-      modalFormOk () {
+      modalFormOk() {
         // 新增/修改 成功时，重载列表
         this.loadData();
       }
@@ -251,20 +256,5 @@
   }
 </script>
 <style scoped>
-  .ant-card-body .table-operator{
-    margin-bottom: 18px;
-  }
-  .ant-layout-content{
-    margin:12px 16px 0 !important;
-  }
-  .ant-table-tbody .ant-table-row td{
-    padding-top:15px;
-    padding-bottom:15px;
-  }
-  .anty-row-operator button{margin: 0 5px}
-  .ant-btn-danger{background-color: #ffffff}
-
-  .ant-modal-cust-warp{height: 100%}
-  .ant-modal-cust-warp .ant-modal-body{height:calc(100% - 110px) !important;overflow-y: auto}
-  .ant-modal-cust-warp .ant-modal-content{height:90% !important;overflow-y: hidden}
+  @import '~@assets/less/common.less'
 </style>

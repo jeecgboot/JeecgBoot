@@ -9,18 +9,23 @@
     :visible="visible"
     style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
 
-  <a-form>
-    <a-form-item label='所拥有的权限'>
-      <a-tree
-        checkable
-        @check="onCheck"
-        :checkedKeys="checkedKeys"
-        :treeData="treeData"
-        @expand="onExpand"
-        :expandedKeys="expandedKeysss"
-        :checkStrictly="checkStrictly"/>
-    </a-form-item>
-  </a-form>
+    <a-form>
+      <a-form-item label='所拥有的权限'>
+        <a-tree
+          checkable
+          @check="onCheck"
+          :checkedKeys="checkedKeys"
+          :treeData="treeData"
+          @expand="onExpand"
+          @select="onTreeNodeSelect"
+          :expandedKeys="expandedKeysss"
+          :checkStrictly="checkStrictly">
+          <span slot="hasDatarule" slot-scope="{slotTitle,ruleFlag}">
+            {{ slotTitle }}<a-icon v-if="ruleFlag" type="align-left" style="margin-left:5px;color: red;"></a-icon>
+          </span>
+        </a-tree>
+      </a-form-item>
+    </a-form>
 
     <div class="drawer-bootom-button">
       <a-dropdown style="float: left" :trigger="['click']" placement="topCenter">
@@ -41,13 +46,21 @@
       </a-popconfirm>
       <a-button @click="handleSubmit" type="primary" :loading="loading">提交</a-button>
     </div>
+
+    <role-datarule-modal ref="datarule"></role-datarule-modal>
+
   </a-drawer>
 
 </template>
 <script>
-  import {queryTreeList,queryRolePermission,saveRolePermission} from '@/api/api'
+  import {queryTreeListForRole,queryRolePermission,saveRolePermission} from '@/api/api'
+  import RoleDataruleModal from './RoleDataruleModal.vue'
+
   export default {
     name: "RoleModal",
+    components:{
+      RoleDataruleModal
+    },
     data(){
       return {
         roleId:"",
@@ -64,6 +77,9 @@
       }
     },
     methods: {
+      onTreeNodeSelect(id){
+        this.$refs.datarule.show(id[0],this.roleId)
+      },
       onCheck (o) {
         if(this.checkStrictly){
           this.checkedKeys = o.checked;
@@ -116,8 +132,9 @@
       handleSubmit(){
         let that = this;
         let params =  {
+          roleId:that.roleId,
           permissionIds:that.checkedKeys.join(","),
-          roleId:that.roleId
+          lastpermissionIds:that.defaultCheckedKeys.join(","),
         };
         that.loading = true;
         console.log("请求参数：",params);
@@ -137,7 +154,7 @@
   watch: {
     visible () {
       if (this.visible) {
-        queryTreeList().then((res) => {
+        queryTreeListForRole().then((res) => {
           this.treeData = res.result.treeList
           this.allTreeKeys = res.result.ids
           queryRolePermission({roleId:this.roleId}).then((res)=>{
@@ -165,4 +182,5 @@
     background: #fff;
     border-radius: 0 0 2px 2px;
   }
+
 </style>

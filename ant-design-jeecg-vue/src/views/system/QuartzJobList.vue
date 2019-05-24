@@ -6,14 +6,14 @@
       <a-form layout="inline">
         <a-row :gutter="24">
 
-          <a-col :span="6">
+          <a-col :md="6" :sm="10">
             <a-form-item label="任务类名">
               <a-input placeholder="请输入任务类名" v-model="queryParam.jobClassName"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="6">
+          <a-col :md="6" :sm="10">
             <a-form-item label="任务状态">
-              <a-select style="width: 150px" v-model="queryParam.status" placeholder="请选择状态">
+              <a-select style="width: 220px" v-model="queryParam.status" placeholder="请选择状态">
                 <a-select-option value="">全部</a-select-option>
                 <a-select-option value="0">正常</a-select-option>
                 <a-select-option value="-1">停止</a-select-option>
@@ -21,7 +21,7 @@
             </a-form-item>
           </a-col>
 
-          <a-col :span="8" >
+          <a-col :md="6" :sm="10" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -35,7 +35,10 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-
+      <a-button type="primary" icon="download" @click="handleExportXls('定时任务信息')">导出</a-button>
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
+        <a-button type="primary" icon="import">导入</a-button>
+      </a-upload>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -63,6 +66,12 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
+        <!-- 字符串超长截取省略号显示-->
+        <span slot="description" slot-scope="text">
+          <j-ellipsis :value="text" :length="25" />
+        </span>
+
+
         <span slot="action" slot-scope="text, record">
           <a @click="resumeJob(record)" v-if="record.status==-1">启动</a>
           <a @click="pauseJob(record)" v-if="record.status==0">停止</a>
@@ -82,7 +91,7 @@
         </span>
 
         <!-- 状态渲染模板 -->
-        <template slot="customRenderStatus" slot-scope="status, record">
+        <template slot="customRenderStatus" slot-scope="status">
           <a-tag v-if="status==0" color="green">已启动</a-tag>
           <a-tag v-if="status==-1" color="orange">已暂停</a-tag>
         </template>
@@ -91,19 +100,22 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <quartzJob-modal ref="quartzJobModal" @ok="modalFormOk"></quartzJob-modal>
+    <quartzJob-modal ref="modalForm" @ok="modalFormOk"></quartzJob-modal>
   </a-card>
 </template>
 
 <script>
   import QuartzJobModal from './modules/QuartzJobModal'
-  import { filterObj } from '@/utils/util'
-  import { deleteAction,getAction,postAction } from '@/api/manage'
+  import { getAction } from '@/api/manage'
+  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import JEllipsis from "@/components/jeecg/JEllipsis";
 
   export default {
     name: "QuartzJobList",
+    mixins:[JeecgListMixin],
     components: {
-      QuartzJobModal
+      QuartzJobModal,
+      JEllipsis
     },
     data () {
       return {
@@ -122,33 +134,38 @@
               return parseInt(index)+1;
             }
           },
-          
-		  {
+          {
             title: '任务类名',
             align:"center",
             dataIndex: 'jobClassName',
-            sorter: true
+            sorter: true,
+/*            customRender:function (text) {
+              return "*"+text.substring(9,text.length);
+            }*/
           },
-		  {
+          {
             title: 'cron表达式',
             align:"center",
             dataIndex: 'cronExpression'
           },
-		  {
+          {
             title: '参数',
             align:"center",
             dataIndex: 'parameter'
           },
-		  {
+          {
             title: '描述',
             align:"center",
-            dataIndex: 'description'
+            width: 300,
+            dataIndex: 'description',
+            scopedSlots: {customRender: 'description'},
           },
-		  {
+          {
             title: '状态',
             align:"center",
             dataIndex: 'status',
             scopedSlots: { customRender: 'customRenderStatus' },
+            filterMultiple: false,
             filters: [
               { text: '已启动', value: '0' },
               { text: '已暂停', value: '-1' },
@@ -158,131 +175,41 @@
             title: '操作',
             dataIndex: 'action',
             align:"center",
+            width:180,
             scopedSlots: { customRender: 'action' },
           }
         ],
-        //数据集
-        dataSource:[],
-        // 分页参数
-        ipagination:{
-          current: 1,
-          pageSize: 10,
-          pageSizeOptions: ['10', '20', '30'],
-          showTotal: (total, range) => {
-            return range[0] + "-" + range[1] + " 共" + total + "条"
-          },
-          showQuickJumper: true,
-          showSizeChanger: true,
-          total: 0
-        },
-        isorter:{
-          column: 'createTime',
-          order: 'desc',
-        },
-        loading:false,
-        selectedRowKeys: [],
-        selectedRows: [],
 		url: {
           list: "/sys/quartzJob/list",
           delete: "/sys/quartzJob/delete",
           deleteBatch: "/sys/quartzJob/deleteBatch",
           pause: "/sys/quartzJob/pause",
           resume: "/sys/quartzJob/resume",
+          exportXlsUrl: "sys/quartzJob/exportXls",
+          importExcelUrl: "sys/quartzJob/importExcel",
         },
-        
       }
     },
-    created() {
-      this.loadData();
+    computed: {
+      importExcelUrl: function () {
+        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+      }
     },
+
     methods: {
-      loadData (arg){
-        //加载数据 若传入参数1则加载第一页的内容
-        if(arg===1){
-          this.ipagination.current = 1;
+
+      //筛选需要重写handleTableChange
+      handleTableChange(pagination, filters, sorter) {
+        //分页、排序、筛选变化时触发
+        //TODO 筛选
+        if (Object.keys(sorter).length > 0) {
+          this.isorter.column = sorter.field;
+          this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
         }
-        var params = this.getQueryParams();//查询条件
-        getAction(this.url.list,params).then((res)=>{
-          if(res.success){
-            this.dataSource = res.result.records;
-            this.ipagination.total = res.result.total;
-          }
-        })
-      },
-      getQueryParams(){
-        var param = Object.assign({}, this.queryParam,this.isorter);
-        param.field = this.getQueryField();
-        param.pageNo = this.ipagination.current;
-        param.pageSize = this.ipagination.pageSize;
-        return filterObj(param);
-      },
-      getQueryField(){
-        //TODO 字段权限控制
-        var str = "id,";
-        for(var a = 0;a<this.columns.length;a++){
-          str+=","+this.columns[a].dataIndex;
-        }
-        return str;
-      },
-      onSelectChange (selectedRowKeys,selectionRows) {
-        this.selectedRowKeys = selectedRowKeys;
-        this.selectionRows = selectionRows;
-      },
-      onClearSelected(){
-        this.selectedRowKeys = [];
-        this.selectionRows = [];
-      },
-      searchQuery(){
-        this.loadData(1);
-      },
-      searchReset(){
-        var that = this;
-        for(var a in that.queryParam){
-          that.queryParam[a] = '';
-        }
-        that.loadData(1);
-      },
-      batchDel: function(){
-        if(this.selectedRowKeys.length<=0){
-          this.$message.warning('请选择一条记录！');
-          return ;
-        }else{
-          var ids = "";
-          for(var a =0;a<this.selectedRowKeys.length;a++){
-            ids+=this.selectedRowKeys[a]+",";
-          }
-          var that = this;
-          this.$confirm({
-            title:"确认删除",
-            content:"是否删除选中数据?",
-            onOk: function(){
-              deleteAction(that.url.deleteBatch,{ids: ids}).then((res)=>{
-                if(res.success){
-                  that.$message.success(res.message);
-                  that.loadData();
-                  that.onClearSelected();
-                }else{
-                  that.$message.warning(res.message);
-                }
-              });
-            }
-          });
-        }
-      },
-      handleDelete: function(id){
-        var that = this;
-        deleteAction(that.url.delete,{id: id}).then((res)=>{
-          if(res.success){
-            that.$message.success(res.message);
-            that.loadData();
-          }else{
-            that.$message.warning(res.message);
-          }
-        });
-      },
-      handleEdit: function(record){
-        this.$refs.quartzJobModal.edit(record);
-        this.$refs.quartzJobModal.title="编辑";
+        //这种筛选方式只支持单选
+        this.filters.status = filters.status[0];
+        this.ipagination = pagination;
+        this.loadData();
       },
       pauseJob: function(record){
         var that = this;
@@ -291,7 +218,7 @@
           title:"确认暂停",
           content:"是否暂停选中任务?",
           onOk: function(){
-            postAction(that.url.pause,record).then((res)=>{
+            getAction(that.url.pause,{jobClassName:record.jobClassName}).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.loadData();
@@ -308,10 +235,10 @@
         var that = this;
         //恢复定时任务
         this.$confirm({
-          title:"确认暂停",
-          content:"是否暂停选中任务?",
+          title:"确认启动",
+          content:"是否启动选中任务?",
           onOk: function(){
-            postAction(that.url.resume,record).then((res)=>{
+            getAction(that.url.resume,{jobClassName:record.jobClassName}).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.loadData();
@@ -323,43 +250,9 @@
           }
         });
       },
-      handleAdd: function(){
-        this.$refs.quartzJobModal.add();
-        this.$refs.quartzJobModal.title="新增";
-      },
-      handleTableChange(pagination, filters, sorter){
-        //分页、排序、筛选变化时触发
-        console.log(sorter);
-        //TODO 筛选
-        if (Object.keys(sorter).length>0){
-          this.isorter.column = sorter.field;
-          this.isorter.order = "ascend"==sorter.order?"asc":"desc"
-        }
-        this.ipagination = pagination;
-        this.loadData();
-      },
-      modalFormOk () {
-        // 新增/修改 成功时，重载列表
-        this.loadData();
-      }
     }
   }
 </script>
 <style scoped>
-  .ant-card-body .table-operator{
-    margin-bottom: 18px;
-  }
-  .ant-layout-content{
-    margin:12px 16px 0 !important;
-  }
-  .ant-table-tbody .ant-table-row td{
-    padding-top:10px;
-    padding-bottom:10px;
-  }
-  .anty-row-operator button{margin: 0 5px}
-  .ant-btn-danger{background-color: #ffffff}
-
-  .ant-modal-cust-warp{height: 100%}
-  .ant-modal-cust-warp .ant-modal-body{height:calc(100% - 110px) !important;overflow-y: auto}
-  .ant-modal-cust-warp .ant-modal-content{height:90% !important;overflow-y: hidden}
+  @import '~@assets/less/common.less'
 </style>

@@ -33,5 +33,5 @@ const VueAxios = {
 export {
     VueAxios,
     // eslint-disable-next-line no-undef
-    instance as axios
+    //instance as axios
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysAnnouncementMapper">
+
+	<resultMap id="SysAnnouncement" type="org.jeecg.modules.system.entity.SysAnnouncement" >
+		<result column="id" property="id" jdbcType="VARCHAR"/>
+		<result column="titile" property="titile" jdbcType="VARCHAR"/>
+		<result column="msg_content" property="msgContent" jdbcType="VARCHAR"/>
+		<result column="start_time" property="startTime" jdbcType="TIMESTAMP"/>
+		<result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+		<result column="sender" property="sender" jdbcType="VARCHAR"/>
+		<result column="priority" property="priority" jdbcType="VARCHAR"/>
+		<result column="msg_category" property="msgCategory" jdbcType="VARCHAR"/>
+		<result column="msg_type" property="msgType" jdbcType="VARCHAR"/>
+		<result column="send_status" property="sendStatus" jdbcType="VARCHAR"/>
+		<result column="send_time" property="sendTime" jdbcType="VARCHAR"/>
+		<result column="cancel_time" property="cancelTime" jdbcType="VARCHAR"/>
+		<result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
+		<result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="user_ids" property="userIds" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	
+	<select id="querySysCementListByUserId" parameterType="String"  resultMap="SysAnnouncement">
+	   select sa.* from sys_announcement sa,sys_announcement_send sas 
+	   where sa.id = sas.annt_id 
+	   and sa.send_status = '1'
+	   and sa.del_flag = '0'
+	   and sas.user_id = #{userId}
+	   and sa.msg_category = #{msgCategory}
+	   and sas.read_flag = '0'
+	</select>
+
+</mapper>

@@ -6,13 +6,13 @@
       <a-form layout="inline">
         <a-row :gutter="24">
 
-          <a-col :span="6">
+          <a-col :md="6" :sm="12">
             <a-form-item label="账号">
               <a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>
             </a-form-item>
           </a-col>
 
-          <a-col :span="6">
+          <a-col :md="6" :sm="8">
             <a-form-item label="性别">
               <a-select v-model="queryParam.sex" placeholder="请选择性别查询">
                 <a-select-option value="">请选择性别查询</a-select-option>
@@ -24,19 +24,19 @@
 
 
           <template v-if="toggleSearchStatus">
-            <a-col :span="6">
+            <a-col :md="6" :sm="8">
               <a-form-item label="邮箱">
                 <a-input placeholder="请输入邮箱查询" v-model="queryParam.email"></a-input>
               </a-form-item>
             </a-col>
 
-            <a-col :span="6">
+            <a-col :md="6" :sm="8">
               <a-form-item label="手机号码">
                 <a-input placeholder="请输入手机号码查询" v-model="queryParam.phone"></a-input>
               </a-form-item>
             </a-col>
 
-            <a-col :span="6">
+            <a-col :md="6" :sm="8">
               <a-form-item label="状态">
                 <a-select v-model="queryParam.status" placeholder="请选择用户状态查询">
                   <a-select-option value="">请选择用户状态</a-select-option>
@@ -47,9 +47,9 @@
             </a-col>
           </template>
 
-          <a-col :span="6" >
+          <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-              <a-button type="primary" @click="searchByquery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
               <a @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
@@ -63,25 +63,30 @@
     </div>
 
     <!-- 操作按钮区域 -->
-    <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">添加用户</a-button>
-      <!--<a-button
-
-        style="margin-left:8px"
-        v-if="selectedRowKeys.length > 0"
-        ghost
-        type="primary"
-        icon="delete">批量删除</a-button>-->
-
-
+    <div class="table-operator" style="border-top: 5px">
+      <a-button @click="handleAdd" v-has="'user:add'" type="primary" icon="plus">添加用户</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('用户信息')">导出</a-button>
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
+        <a-button type="primary" icon="import">导入</a-button>
+      </a-upload>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay" @click="handleMenuClick">
-          <a-menu-item key="1"><a-icon type="delete" @click="batchdel"/>删除</a-menu-item>
-          <a-menu-item key="2"><a-icon type="lock" @click="batchFrozen('2')"/>冻结</a-menu-item>
-          <a-menu-item key="3"><a-icon type="unlock" @click="batchFrozen('1')"/>解冻</a-menu-item>
+          <a-menu-item key="1">
+            <a-icon type="delete" @click="batchDel"/>
+            删除
+          </a-menu-item>
+          <a-menu-item key="2">
+            <a-icon type="lock" @click="batchFrozen('2')"/>
+            冻结
+          </a-menu-item>
+          <a-menu-item key="3">
+            <a-icon type="unlock" @click="batchFrozen('1')"/>
+            解冻
+          </a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px">
-          批量操作 <a-icon type="down" />
+          批量操作
+          <a-icon type="down"/>
         </a-button>
       </a-dropdown>
     </div>
@@ -89,8 +94,7 @@
     <!-- table区域-begin -->
     <div>
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i>
-        已选择&nbsp;<a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项&nbsp;&nbsp;
+        <i class="anticon anticon-info-circle ant-alert-icon"></i>已选择&nbsp;<a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项&nbsp;&nbsp;
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
 
@@ -108,34 +112,26 @@
 
         <template slot="avatarslot" slot-scope="text, record, index">
           <div class="anty-img-wrap">
-            <img :src="getAvatarView(record.avatar)"/>
+            <a-avatar shape="square" :src="getAvatarView(record.avatar)" icon="user"/>
           </div>
-
         </template>
-
-        <!--<span slot="action" slot-scope="text, record" class="anty-row-operator">
-          <a-button type="primary" size="small" icon="setting">角色配置</a-button>
-          <a-button type="default" size="small" icon="edit" @click="handleEdit(record)">编辑</a-button>
-          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-            <a-button type="danger" size="small" icon="delete">删除</a-button>
-          </a-popconfirm>
-        </span>-->
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
 
-          <a-divider type="vertical" />
+          <a-divider type="vertical"/>
+
           <a-dropdown>
             <a class="ant-dropdown-link">
-              更多 <a-icon type="down" />
+              更多 <a-icon type="down"/>
             </a>
             <a-menu slot="overlay">
-              <a-menu-item >
+              <a-menu-item>
                 <a href="javascript:;" @click="handleDetail(record)">详情</a>
               </a-menu-item>
 
-              <a-menu-item >
-                <a href="javascript:;" @click="handleChangePassword(record.username)">修改密码</a>
+              <a-menu-item>
+                <a href="javascript:;" @click="handleChangePassword(record.username)">密码</a>
               </a-menu-item>
 
               <a-menu-item>
@@ -156,6 +152,10 @@
                 </a-popconfirm>
               </a-menu-item>
 
+              <a-menu-item>
+                <a href="javascript:;" @click="handleAgentSettings(record.username)">代理人</a>
+              </a-menu-item>
+
             </a-menu>
           </a-dropdown>
         </span>
@@ -165,27 +165,31 @@
     </div>
     <!-- table区域-end -->
 
-    <user-modal ref="modal" @ok="modalFormOk"></user-modal>
+    <user-modal ref="modalForm" @ok="modalFormOk"></user-modal>
 
     <password-modal ref="passwordmodal" @ok="passwordModalOk"></password-modal>
 
+    <sys-user-agent-modal ref="sysUserAgentModal"></sys-user-agent-modal>
   </a-card>
 </template>
 
 <script>
-  import { filterObj } from '@/utils/util';
   import UserModal from './modules/UserModal'
   import PasswordModal from './modules/PasswordModal'
-
-  import {doMian,getUserList,deleteUser,deleteUserList,frozenBatch} from '@/api/api'
+  import {putAction} from '@/api/manage';
+  import {frozenBatch} from '@/api/api'
+  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import SysUserAgentModal from "./modules/SysUserAgentModal";
 
   export default {
     name: "UserList",
+    mixins: [JeecgListMixin],
     components: {
+      SysUserAgentModal,
       UserModal,
       PasswordModal
     },
-    data () {
+    data() {
       return {
         description: '这是用户管理页面',
         queryParam: {},
@@ -202,180 +206,110 @@
           },*/
           {
             title: '用户账号',
-            align:"center",
+            align: "center",
             dataIndex: 'username',
-            fixed:'left',
-            width:200
+            width: 120
           },
           {
             title: '真实姓名',
-            align:"center",
+            align: "center",
+            width: 100,
             dataIndex: 'realname',
           },
           {
             title: '头像',
-            align:"center",
+            align: "center",
+            width: 120,
             dataIndex: 'avatar',
-            scopedSlots:{customRender:"avatarslot"}
+            scopedSlots: {customRender: "avatarslot"}
           },
 
           {
             title: '性别',
-            align:"center",
-            dataIndex: 'sex',
-            customRender:function (text) {
-              if(text==1){
-                return "男";
-              }else if(text==2){
-                return "女";
-              }else{
-                return text;
-              }
-            }
+            align: "center",
+            width: 80,
+            dataIndex: 'sex_dictText'
           },
           {
             title: '生日',
-            align:"center",
+            align: "center",
+            width: 180,
             dataIndex: 'birthday'
           },
           {
             title: '手机号码',
-            align:"center",
+            align: "center",
+            width: 100,
             dataIndex: 'phone'
           },
           {
             title: '邮箱',
-            align:"center",
+            align: "center",
             dataIndex: 'email'
           },
           {
             title: '状态',
-            align:"center",
-            dataIndex: 'status',
-            customRender:function (text) {
-              if(text==1){
-                return "正常";
-              }else if(text==2){
-                return "冻结";
-              }else{
-                return text;
-              }
-            }
+            align: "center",
+            width: 80,
+            dataIndex: 'status_dictText'
           },
-          {
+         /* {
             title: '创建时间',
-            align:"center",
+            align: "center",
+            width: 150,
             dataIndex: 'createTime',
-            sorter:true
-          },
+            sorter: true
+          },*/
           {
             title: '操作',
             dataIndex: 'action',
-            scopedSlots: { customRender: 'action' },
-            fixed:"right",
-            align:"center",
-            width:150
+            scopedSlots: {customRender: 'action'},
+            align: "center",
+            width: 170
           }
 
         ],
-        dataSource:[],
-        ipagination:{
-          current: 1,
-          pageSize: 10,
-          pageSizeOptions: ['10', '20', '30'],
-          showTotal: (total, range) => {
-            return range[0] + "-" + range[1] + " 共" + total + "条"
-          },
-          showQuickJumper: true,
-          showSizeChanger: true,
-          total: 0
-        },
-        isorter:{
-          column: 'createTime',
-          order: 'desc',
-        },
-        loading:false,
-        selectedRowKeys: [],
-        selectedRows: [],
-        toggleSearchStatus:false,
         url: {
-          imgerver:doMian+"/sys/common/view"
+          imgerver: window._CONFIG['domianURL'] + "/sys/common/view",
+          syncUser: "/process/extActProcess/doSyncUser",
+          list: "/sys/user/list",
+          delete: "/sys/user/delete",
+          deleteBatch: "/sys/user/deleteBatch",
+          exportXlsUrl: "/sys/user/exportXls",
+          importExcelUrl: "sys/user/importExcel",
         },
-
       }
     },
-    created() {
-      this.loadData();
+    computed: {
+      importExcelUrl: function(){
+        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+      }
     },
-
     methods: {
-      loadData (arg){
-        if(arg===1){
-          this.ipagination.current = 1;
-        }
-        let params = this.getQueryParams();//查询条件
-        getUserList(params).then((res)=>{
-          if(res.success){
-            this.dataSource = res.result.records;
-            this.ipagination.total = res.result.total;
-          }
-        })
+      getAvatarView: function (avatar) {
+        return this.url.imgerver + "/" + avatar;
       },
-      getQueryParams(){
-        let param = Object.assign({}, this.queryParam,this.isorter);
-        param.field = this.getQueryField();
-        param.current = this.ipagination.current;
-        param.pageSize = this.ipagination.pageSize;
-        return filterObj(param);
-      },
-      getQueryField(){
-        let str = "id,";
-        for(let a = 0;a<this.columns.length;a++){
-          str+=","+this.columns[a].dataIndex;
-        }
-        return str;
-      },
-      getAvatarView:function(avatar){
-        return this.url.imgerver +"/"+ avatar;
-      },
-      onSelectChange (selectedRowKeys,selectionRows) {
-        this.selectedRowKeys = selectedRowKeys;
-        this.selectionRows = selectionRows;
-      },
-      onClearSelected(){
-        this.selectedRowKeys = [];
-        this.selectionRows = [];
-      },
-      searchByquery(){
-        this.loadData(1);
-      },
-      searchReset(){
-        let that = this;
-        Object.keys(that.queryParam).forEach(function(key){
-          that.queryParam[key] = '';
-        });
-        that.loadData(1);
-      },
-      batchFrozen:function(status){
-        if(this.selectedRowKeys.length<=0){
+
+      batchFrozen: function (status) {
+        if (this.selectedRowKeys.length <= 0) {
           this.$message.warning('请选择一条记录！');
           return false;
-        }else{
+        } else {
           let ids = "";
           let that = this;
-          that.selectedRowKeys.forEach(function(val) {
-            ids+=val+",";
+          that.selectedRowKeys.forEach(function (val) {
+            ids += val + ",";
           });
           that.$confirm({
-            title:"确认操作",
-            content:"是否"+(status==1?"解冻":"冻结")+"选中账号?",
-            onOk: function(){
-              frozenBatch({ids: ids,status:status}).then((res)=>{
-                if(res.success){
+            title: "确认操作",
+            content: "是否" + (status == 1 ? "解冻" : "冻结") + "选中账号?",
+            onOk: function () {
+              frozenBatch({ids: ids, status: status}).then((res) => {
+                if (res.success) {
                   that.$message.success(res.message);
                   that.loadData();
                   that.onClearSelected();
-                }else{
+                } else {
                   that.$message.warning(res.message);
                 }
               });
@@ -383,96 +317,34 @@
           });
         }
       },
-      batchdel: function(){
-        if(this.selectedRowKeys.length<=0){
-          this.$message.warning('请选择一条记录！');
-          return false;
-        }else{
-          let ids = "";
-          let that = this;
-          that.selectedRowKeys.forEach(function(val) {
-            ids+=val+",";
-          });
-          that.$confirm({
-            title:"确认删除",
-            content:"是否删除选中数据?",
-            onOk: function(){
-              deleteUserList({ids: ids}).then((res)=>{
-                if(res.success){
-                  that.$message.success(res.message);
-                  that.loadData();
-                  that.onClearSelected();
-                }else{
-                  that.$message.warning(res.message);
-                }
-              });
-            }
-          });
-        }
-      },
-      handleMenuClick(e){
-        if(e.key==1){
-          this.batchdel();
-        }else if(e.key==2){
+      handleMenuClick(e) {
+        if (e.key == 1) {
+          this.batchDel();
+        } else if (e.key == 2) {
           this.batchFrozen(2);
-        }else if(e.key==3){
+        } else if (e.key == 3) {
           this.batchFrozen(1);
         }
       },
-      handleDelete: function(id){
+      handleFrozen: function (id, status) {
         let that = this;
-        deleteUser({id: id}).then((res)=>{
-          if(res.success){
+        frozenBatch({ids: id, status: status}).then((res) => {
+          if (res.success) {
             that.$message.success(res.message);
             that.loadData();
-          }else{
+          } else {
             that.$message.warning(res.message);
           }
         });
       },
-      handleFrozen: function(id,status){
-        let that = this;
-        frozenBatch({ids: id,status:status}).then((res)=>{
-          if(res.success){
-            that.$message.success(res.message);
-            that.loadData();
-          }else{
-            that.$message.warning(res.message);
-          }
-        });
-      },
-      handleEdit: function(record){
-        this.$refs.modal.edit(record);
-        this.$refs.modal.title="编辑";
-      },
-      handleAdd: function(){
-        this.$refs.modal.add();
-        this.$refs.modal.title="新增";
-      },
-      handleDetail:function(record){
-        this.$refs.modal.edit(record);
-        this.$refs.modal.title="详情";
-        this.$refs.modal.disableSubmit = true;
-      },
-      handleTableChange(pagination, filters, sorter){
-        //TODO 筛选
-        if (Object.keys(sorter).length>0){
-          this.isorter.column = sorter.field;
-          this.isorter.order = "ascend"==sorter.order?"asc":"desc"
-        }
-        this.ipagination = pagination;
-        this.loadData();
-      },
-      handleToggleSearch(){
-        this.toggleSearchStatus = !this.toggleSearchStatus;
-      },
-      handleChangePassword(username){
+      handleChangePassword(username) {
         this.$refs.passwordmodal.show(username);
       },
-      modalFormOk () {
-        this.loadData();
+      handleAgentSettings(username){
+        this.$refs.sysUserAgentModal.agentSettings(username);
+        this.$refs.sysUserAgentModal.title = "用户代理人设置";
       },
-      passwordModalOk(){
+      passwordModalOk() {
         //TODO 密码修改完成 不需要刷新页面，可以把datasource中的数据更新一下
       }
     }
@@ -480,23 +352,5 @@
   }
 </script>
 <style scoped>
-  .ant-card-body .table-operator{
-    margin-bottom: 18px;
-  }
-  .ant-layout-content{
-    margin:12px 16px 0 !important;
-  }
-  .ant-table-tbody .ant-table-row td{
-    padding-top:15px;
-    padding-bottom:15px;
-  }
-  .anty-row-operator button{margin: 0 5px}
-  .ant-btn-danger{background-color: #ffffff}
-
-  .ant-modal-cust-warp{height: 100%}
-  .ant-modal-cust-warp .ant-modal-body{height:calc(100% - 110px) !important;overflow-y: auto}
-  .ant-modal-cust-warp .ant-modal-content{height:90% !important;overflow-y: hidden}
-
-  .anty-img-wrap{height:25px;position: relative;}
-  .anty-img-wrap > img{max-height:100%;}
+  @import '~@assets/less/common.less'
 </style>

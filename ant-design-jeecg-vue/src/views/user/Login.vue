@@ -1,43 +1,73 @@
 <template>
   <div class="main">
-    <a-form class="user-layout-login" ref="formLogin" :autoFormCreate="(form)=>{this.form = form}" id="formLogin">
+    <a-form :form="form" class="user-layout-login" ref="formLogin" id="formLogin">
       <a-tabs
         :activeKey="customActiveKey"
         :tabBarStyle="{ textAlign: 'center', borderBottom: 'unset' }"
         @change="handleTabClick">
         <a-tab-pane key="tab1" tab="账号密码登陆">
 
-          <a-form-item
-            fieldDecoratorId="username"
-            :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入帐户名或邮箱' }, { validator: this.handleUsernameOrEmail }], validateTrigger: 'change'}">
-            <a-input size="large" type="text" placeholder="请输入帐户名 / jeecg">
+          <a-form-item>
+            <a-input
+              size="large"
+              v-decorator="['username',validatorRules.username,{ validator: this.handleUsernameOrEmail }]"
+              type="text"
+              placeholder="请输入帐户名 / jeecg">
               <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
             </a-input>
           </a-form-item>
 
-          <a-form-item
-            fieldDecoratorId="password"
-            :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入密码' }], validateTrigger: 'blur'}">
-            <a-input size="large" type="password" autocomplete="false" placeholder="密码 / 123456">
+          <a-form-item>
+            <a-input
+              v-decorator="['password',validatorRules.password]"
+              size="large"
+              type="password"
+              autocomplete="false"
+              placeholder="密码 / 123456">
               <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
             </a-input>
           </a-form-item>
+
+          <a-row :gutter="0">
+            <a-col :span="14">
+              <a-form-item>
+                <a-input
+                  v-decorator="['inputCode',validatorRules.inputCode]"
+                  size="large"
+                  type="text"
+                  @change="inputCodeChange"
+                  placeholder="请输入验证码">
+                  <a-icon slot="prefix" v-if=" inputCodeContent==verifiedCode " type="smile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+                  <a-icon slot="prefix" v-else type="frown" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+                </a-input>
+              </a-form-item>
+            </a-col>
+            <a-col  :span="10">
+              <j-graphic-code @success="generateCode" style="float: right"></j-graphic-code>
+            </a-col>
+          </a-row>
+
+
         </a-tab-pane>
         <a-tab-pane key="tab2" tab="手机号登陆">
-          <a-form-item
-            fieldDecoratorId="mobile"
-            :fieldDecoratorOptions="{rules: [{ required: true, pattern: /^1[34578]\d{9}$/, message: '请输入正确的手机号' }], validateTrigger: 'change'}">
-            <a-input size="large" type="text" placeholder="手机号">
+          <a-form-item>
+            <a-input
+              v-decorator="['mobile',validatorRules.mobile]"
+              size="large"
+              type="text"
+              placeholder="手机号">
               <a-icon slot="prefix" type="mobile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
             </a-input>
           </a-form-item>
 
           <a-row :gutter="16">
             <a-col class="gutter-row" :span="16">
-              <a-form-item
-                fieldDecoratorId="captcha"
-                :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}">
-                <a-input size="large" type="text" placeholder="验证码">
+              <a-form-item>
+                <a-input
+                  v-decorator="['captcha',validatorRules.captcha]"
+                  size="large"
+                  type="text"
+                  placeholder="请输入验证码">
                   <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
                 </a-input>
               </a-form-item>
@@ -73,7 +103,7 @@
         </a-button>
       </a-form-item>
 
-      <div class="user-login-other">
+      <!-- <div class="user-login-other">
         <span>其他登陆方式</span>
         <a><a-icon class="item-icon" type="alipay-circle"></a-icon></a>
         <a><a-icon class="item-icon" type="taobao-circle"></a-icon></a>
@@ -81,7 +111,7 @@
         <router-link class="register" :to="{ name: 'register' }">
           注册账户
         </router-link>
-      </div>
+      </div>-->
     </a-form>
 
     <two-step-captcha
@@ -89,6 +119,46 @@
       :visible="stepCaptchaVisible"
       @success="stepCaptchaSuccess"
       @cancel="stepCaptchaCancel"></two-step-captcha>
+
+    <a-modal
+      title="登录部门选择"
+      :width="450"
+      :visible="departVisible"
+      :closable="false"
+      :maskClosable="false">
+
+      <template slot="footer">
+        <a-button type="primary" @click="departOk">确认</a-button>
+      </template>
+
+      <a-form>
+        <a-form-item
+          :labelCol="{span:4}"
+          :wrapperCol="{span:20}"
+          style="margin-bottom:10px"
+          :validate-status="validate_status">
+          <a-tooltip placement="topLeft" >
+            <template slot="title">
+              <span>您隶属于多部门，请选择登录部门</span>
+            </template>
+            <a-avatar style="backgroundColor:#87d068" icon="gold" />
+          </a-tooltip>
+          <a-select @change="departChange" :class="{'valid-error':validate_status=='error'}" placeholder="请选择登录部门" style="margin-left:10px;width: 80%">
+            <a-icon slot="suffixIcon" type="gold" />
+            <a-select-option
+              v-for="d in departList"
+              :key="d.id"
+              :value="d.orgCode">
+              {{ d.departName }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+      </a-form>
+
+
+
+    </a-modal>
+
   </div>
 </template>
 
@@ -100,10 +170,13 @@
   import { timeFix } from "@/utils/util"
   import Vue from 'vue'
   import { ACCESS_TOKEN } from "@/store/mutation-types"
+  import JGraphicCode from '@/components/jeecg/JGraphicCode'
+  import { putAction } from '@/api/manage'
 
   export default {
     components: {
-      TwoStepCaptcha
+      TwoStepCaptcha,
+      JGraphicCode
     },
     data () {
       return {
@@ -113,7 +186,7 @@
         loginType: 0,
         requiredTwoStepCaptcha: false,
         stepCaptchaVisible: false,
-        form: null,
+        form: this.$form.createForm(this),
         state: {
           time: 60,
           smsSendBtn: false,
@@ -125,6 +198,22 @@
           mobile: "",
           rememberMe: true
         },
+        validatorRules:{
+          username:{rules: [{ required: true, message: '请输入用户名!',validator: 'click'}]},
+          password:{rules: [{ required: true, message: '请输入密码!',validator: 'click'}]},
+          mobile:{rules: [{validator:this.validateMobile}]},
+          captcha:{rule: [{ required: true, message: '请输入验证码!'}]},
+          inputCode:{rules: [{ required: true, message: '请输入验证码!'},{validator: this.validateInputCode}]}
+        },
+        verifiedCode:"",
+        inputCodeContent:"",
+        inputCodeNull:true,
+
+        departList:[],
+        departVisible:false,
+        departSelected:"",
+        currentUsername:"",
+        validate_status:""
       }
     },
     created () {
@@ -137,8 +226,8 @@
 //          console.log('2step-code:', err)
 //        })
       // update-end- --- author:scott ------ date:20190225 ---- for:暂时注释，未实现登录验证码功能
-     // this.requiredTwoStepCaptcha = true
-      
+      // this.requiredTwoStepCaptcha = true
+
     },
     methods: {
       ...mapActions([ "Login", "Logout" ]),
@@ -158,46 +247,43 @@
       },
       handleSubmit () {
         let that = this
-        let flag = false
-
         let loginParams = {
           remember_me: that.formLogin.rememberMe
         };
 
         // 使用账户密码登陆
         if (that.customActiveKey === 'tab1') {
-          that.form.validateFields([ 'username', 'password' ], { force: true }, (err, values) => {
+          that.form.validateFields([ 'username', 'password','inputCode' ], { force: true }, (err, values) => {
             if (!err) {
-              flag = true
-              loginParams[!that.loginType ? 'email' : 'username'] = values.username
+              loginParams.username = values.username
               //loginParams.password = md5(values.password)
               loginParams.password = values.password
+              that.Login(loginParams).then((res) => {
+                this.departConfirm(res)
+              }).catch((err) => {
+                that.requestFailed(err);
+              })
+
             }
           })
-        // 使用手机号登陆
+          // 使用手机号登陆
         } else {
           that.form.validateFields([ 'mobile', 'captcha' ], { force: true }, (err, values) => {
             if (!err) {
-              flag = true
               loginParams = Object.assign(loginParams, values)
+              that.loginBtn = true
+              that.Login(loginParams).then(() => {
+                if (that.requiredTwoStepCaptcha) {
+                  that.stepCaptchaVisible = true
+                } else {
+                  that.loginSuccess()
+                }
+              }).catch((err) => {
+                that.requestFailed(err);
+              })
             }
           })
         }
-
-        if (!flag) return
-
-        that.loginBtn = true
-
-        that.Login(loginParams).then(() => {
-          if (that.requiredTwoStepCaptcha) {
-            that.stepCaptchaVisible = true
-          } else {
-            that.loginSuccess()
-          }
-        }).catch((err) => {
-          that.requestFailed(err);
-        })
-
       },
       getCaptcha (e) {
         e.preventDefault()
@@ -262,6 +348,88 @@
         });
         this.loginBtn = false;
       },
+      validateMobile(rule,value,callback){
+        if (!value || new RegExp(/^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$/).test(value)){
+          callback();
+        }else{
+          callback("您的手机号码格式不正确!");
+        }
+
+      },
+      validateInputCode(rule,value,callback){
+        if(!value || this.verifiedCode==this.inputCodeContent){
+          callback();
+        }else{
+          callback("您输入的验证码不正确!");
+        }
+      },
+      generateCode(value){
+        this.verifiedCode = value.toLowerCase()
+      },
+      inputCodeChange(e){
+        this.inputCodeContent = e.target.value
+        if(!e.target.value||0==e.target.value){
+          this.inputCodeNull=true
+        }else{
+          this.inputCodeContent = this.inputCodeContent.toLowerCase()
+          this.inputCodeNull=false
+        }
+      },
+      departConfirm(res){
+        if(res.success){
+          let multi_depart = res.result.multi_depart
+          //0:无部门 1:一个部门 2:多个部门
+          if(multi_depart==0){
+            this.loginSuccess()
+            this.$notification.warn({
+              message: '提示',
+              description: `您尚未归属部门,请确认账号信息`,
+              duration:3
+            });
+          }else if(multi_depart==2){
+            this.departVisible=true
+            this.currentUsername=this.form.getFieldValue("username")
+            this.departList = res.result.departs
+          }else {
+            this.loginSuccess()
+          }
+        }else{
+          this.requestFailed(res)
+          this.Logout();
+        }
+      },
+      departOk(){
+        if(!this.departSelected){
+          this.validate_status='error'
+          return false
+        }
+       let obj = {
+          orgCode:this.departSelected,
+          username:this.form.getFieldValue("username")
+        }
+        putAction("/sys/selectDepart",obj).then(res=>{
+          if(res.success){
+            this.departClear()
+            this.loginSuccess()
+          }else{
+            this.requestFailed(res)
+            this.Logout().then(()=>{
+              this.departClear()
+            });
+          }
+        })
+      },
+      departClear(){
+        this.departList=[]
+        this.departSelected=""
+        this.currentUsername=""
+        this.departVisible=false
+        this.validate_status=''
+      },
+      departChange(value){
+        this.validate_status='success'
+        this.departSelected = value
+      }
     }
   }
 </script>
@@ -314,4 +482,9 @@
     }
   }
 
+</style>
+<style>
+  .valid-error .ant-select-selection__placeholder{
+    color: #f5222d;
+  }
 </style>

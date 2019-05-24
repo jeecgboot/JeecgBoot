@@ -23,7 +23,7 @@ const err = (error) => {
         break
       case 500:
         //notification.error({ message: '系统提示', description:'Token失效，请重新登录!',duration: 4})
-        if(data.message=="Token失效，请重新登录"){
+        if(token && data.message=="Token失效，请重新登录"){
           // update-begin- --- author:scott ------ date:20190225 ---- for:Token失效采用弹框模式，不直接跳转----
           // store.dispatch('Logout').then(() => {
           //     window.location.reload()
@@ -35,6 +35,7 @@ const err = (error) => {
             mask: false,
             onOk: () => {
               store.dispatch('Logout').then(() => {
+                Vue.ls.remove(ACCESS_TOKEN)
                 window.location.reload()
               })
             }
@@ -75,6 +76,12 @@ service.interceptors.request.use(config => {
   const token = Vue.ls.get(ACCESS_TOKEN)
   if (token) {
     config.headers[ 'X-Access-Token' ] = token // 让每个请求携带自定义 token 请根据实际情况自行修改
+  }
+  if(config.method=='get'){
+    config.params = {
+      _t: Date.parse(new Date())/1000,
+      ...config.params
+    }
   }
   return config
 },(error) => {

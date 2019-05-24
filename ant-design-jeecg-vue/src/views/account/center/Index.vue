@@ -93,8 +93,6 @@
   import PageLayout from '@/components/page/PageLayout'
   import RouteView from "@/components/layouts/RouteView"
   import { AppPage, ArticlePage, ProjectPage } from './page'
-  import {imgView} from '@/api/api'
-
   import { mapGetters } from 'vuex'
 
   export default {
@@ -135,7 +133,7 @@
     methods: {
       ...mapGetters(["nickname", "avatar"]),
       getAvatar(){
-          return imgView+this.avatar();
+          return window._CONFIG['imgDomainURL']+"/"+this.avatar();
       },
       getTeams() {
         this.$http.get('/api/workplace/teams')
