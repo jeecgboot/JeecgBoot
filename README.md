@@ -125,7 +125,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 依赖管理：Maven
 
-- 数据库：MySQL5.0  &  Oracle 11g & Sqlserver2005
+- 数据库：MySQL5.0+  &  Oracle 11g & Sqlserver2008
 
 - 缓存：Redis
 
