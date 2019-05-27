@@ -60,6 +60,10 @@ public class JeecgOneToMainUtil {
 		mainTable.setSubTables(subTables);
 		
 		//第三步：一对多(父子表)数据模型,代码生成
-		new CodeGenerateOneToMany(mainTable,subTables).generateCodeFile();
+		try {
+			new CodeGenerateOneToMany(mainTable,subTables).generateCodeFile();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
