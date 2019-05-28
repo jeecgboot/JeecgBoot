@@ -1,7 +1,20 @@
-Jeecg-Boot 快速开发平台(前后端分离版本)
+
+![JEECG](https://static.oschina.net/uploads/img/201905/24164523_XDhg.png "JeecgBoot快速开发平台")
+
+
+
+Jeecg-Boot 快速开发平台（前后端分离版本）
 ===============
 
 当前最新版本： 2.0.0（发布日期：20190520）
+
+[![AUR](https://img.shields.io/badge/license/Apache-2.0.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
+[![](https://img.shields.io/badge/Author-Scott-orange.svg)](https://blog.csdn.net/zhangdaiscott)
+[![](https://img.shields.io/badge/version-2.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
+[![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
+
+
 
 项目介绍：
 -----------------------------------
@@ -30,6 +43,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - QQ交流群 ：  284271917
 
+- 技术论坛：  [http://www.jeecg.org](http://www.jeecg.org)
 
 
 
