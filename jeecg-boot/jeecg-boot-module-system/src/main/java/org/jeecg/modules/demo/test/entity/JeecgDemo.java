@@ -1,5 +1,7 @@
 package org.jeecg.modules.demo.test.entity;
 
+import java.io.Serializable;
+
 import org.jeecg.common.system.base.entity.JeecgEntity;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,8 +26,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @ApiModel(value="测试DEMO对象", description="测试DEMO")
 @TableName("demo")
-public class JeecgDemo extends JeecgEntity {
-
+public class JeecgDemo extends JeecgEntity implements Serializable {
+	private static final long serialVersionUID = 1L;
 	/** 部门编码 */
 	@Excel(name="部门编码",width=25)
 	@ApiModelProperty(value = "部门编码")
