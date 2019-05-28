@@ -214,7 +214,8 @@
         });
       },
       add () {
-        this.edit({status:'1',permsType:'1'});
+        // 默认值
+        this.edit({status:'1',permsType:'1',route:true});
       },
       edit (record) {
         this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
@@ -222,30 +223,21 @@
         this.model = Object.assign({}, record);
         //--------------------------------------------------------------------------------------------------
         //根据菜单类型，动态展示页面字段
-        if(record){
-          console.log(record)
-          this.alwaysShow = !record.alwaysShow?false:true;
-          this.menuHidden = !record.hidden?false:true;
-          this.routeSwitch = record.route;
+        console.log(record)
+        this.alwaysShow = !record.alwaysShow?false:true;
+        this.menuHidden = !record.hidden?false:true;
+        if(record.route!=null){
+          this.routeSwitch = record.route?true:false;
+        }
 
-          //console.log('record.menuType', record.menuType);
-          this.show = record.menuType==2?false:true;
-          this.menuLabel = record.menuType==2?'按钮/权限名称':'菜单名称';
+        //console.log('record.menuType', record.menuType);
+        this.show = record.menuType==2?false:true;
+        this.menuLabel = record.menuType==2?'按钮/权限':'菜单名称';
 
-          if(this.model.parentId){
-            this.localMenuType = 1;
-          }else{
-            this.localMenuType = 0;
-          }
+        if(this.model.parentId){
+          this.localMenuType = 1;
         }else{
-          if(this.model.parentId){
-            this.localMenuType = 1;
-          }else{
-            this.localMenuType = 0;
-          }
-          this.show = true;
-          this.menuLabel = '菜单名称';
-          this.routeSwitch = true;
+          this.localMenuType = 0;
         }
         //----------------------------------------------------------------------------------------------
 
@@ -303,11 +295,11 @@
         }
       },
       onChangeMenuType(e) {
-        console.log('localMenuType checked', e.target.value)
+        //console.log('localMenuType checked', e.target.value)
         this.localMenuType=e.target.value
         if(e.target.value == 2){
           this.show = false;
-          this.menuLabel = '按钮/权限名称';
+          this.menuLabel = '按钮/权限';
         }else{
           this.show = true;
           this.menuLabel = '菜单名称';
