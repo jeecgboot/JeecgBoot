@@ -166,7 +166,9 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 				//b.判断老的菜单下是否还有其他子菜单，没有的话则设置为叶子节点
 				int cc = this.count(new QueryWrapper<SysPermission>().lambda().eq(SysPermission::getParentId, p.getParentId()));
 				if(cc==0) {
-					this.sysPermissionMapper.setMenuLeaf(p.getParentId(), 1);
+					if(oConvertUtils.isNotEmpty(p.getParentId())) {
+						this.sysPermissionMapper.setMenuLeaf(p.getParentId(), 1);
+					}
 				}
 				
 			}
