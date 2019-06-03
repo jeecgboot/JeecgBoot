@@ -6,7 +6,7 @@
 Jeecg-Boot 快速开发平台（前后端分离版本）
 ===============
 
-当前最新版本： 2.0.0（发布日期：20190520）
+当前最新版本： 2.0.1（发布日期：20190603）
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-Scott-orange.svg)](https://blog.csdn.net/zhangdaiscott)
