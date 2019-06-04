@@ -12,6 +12,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.Dict;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -49,7 +50,7 @@ public class DictAspect {
         long time2=System.currentTimeMillis();
         log.debug("获取JSON数据 耗时："+(time2-time1)+"ms");
         long start=System.currentTimeMillis();
-        parseDictText(result);
+        this.parseDictText(result);
         long end=System.currentTimeMillis();
         log.debug("解析注入JSON数据  耗时"+(end-start)+"ms");
         return result;
@@ -91,18 +92,24 @@ public class DictAspect {
                         log.error("json解析失败"+e.getMessage(),e);
                     }
                     JSONObject item = JSONObject.parseObject(json);
-                    for (Field field : record.getClass().getDeclaredFields()) {
+                    //update-begin--Author:scott -- Date:20190603 ----for：解决继承实体字段无法翻译问题------
+                    //for (Field field : record.getClass().getDeclaredFields()) {
+                    for (Field field : oConvertUtils.getAllFields(record)) {
+                    //update-end--Author:scott  -- Date:20190603 ----for：解决继承实体字段无法翻译问题------
                         if (field.getAnnotation(Dict.class) != null) {
                             String code = field.getAnnotation(Dict.class).dicCode();
                             String text = field.getAnnotation(Dict.class).dicText();
                             String table = field.getAnnotation(Dict.class).dictTable();
                             String key = String.valueOf(item.get(field.getName()));
                             String textValue=null;
+                            log.info(" 字典 key : "+ key);
                             if (!StringUtils.isEmpty(table)){
                                 textValue= dictService.queryTableDictTextByKey(table,text,code,key);
                             }else {
                                 textValue = dictService.queryDictTextByKey(code, key);
                             }
+                            log.info(" 字典Val : "+ textValue);
+                            log.info(" __翻译字典字段__ "+field.getName() + "_dictText： "+ textValue);
                             item.put(field.getName() + "_dictText", textValue);
                         }
                         //date类型默认转换string格式化日期
