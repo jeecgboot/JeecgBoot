@@ -52,6 +52,9 @@
       this.initDictData();
     },
     watch:{
+      options: function(val){
+        this.setCurrentDictOptions(val);
+      },
       value (val) {
         if(!val){
           this.arrayValue = []
