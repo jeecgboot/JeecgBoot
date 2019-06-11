@@ -305,6 +305,7 @@ Online初体验
 > 视频一：演示如何通过JSON数据，快速的配置一个图形报表，支持曲线、柱状图、饼状图等
 
 ![输入图片说明](http://jeecg.org/gif/online-graphic-02.gif "在这里输入图片标题")
+
 > 视频二： 演示如何通过SQL查询数据库，快速的配置一个图形报表，支持曲线、柱状图、饼状图等
 
 ![输入图片说明](https://oscimg.oschina.net/oscnet/bb180e13a62abd3d3b7cece57900a6d774e.jpg "在这里输入图片标题")
