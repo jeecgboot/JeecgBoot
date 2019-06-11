@@ -299,10 +299,18 @@ yarn run lint
 
 Online初体验
 ----
-![输入图片说明](http://jeecg.org/gif/online-graphic-01.gif "在这里输入图片标题")
+![输入图片说明](https://oscimg.oschina.net/oscnet/220b8d5cbb4df49218db7ecb6bc6348cce5.jpg "在这里输入图片标题")
+
+> 视频一：演示如何通过JSON数据，快速的配置一个图形报表，支持曲线、柱状图、饼状图等
+
 ![输入图片说明](http://jeecg.org/gif/online-graphic-02.gif "在这里输入图片标题")
-![输入图片说明](http://jeecg.org/gif/online-graphic-03.gif "在这里输入图片标题")
-![输入图片说明](http://jeecg.org/gif/online-graphic-04.gif "在这里输入图片标题")
+> 视频二： 演示如何通过SQL查询数据库，快速的配置一个图形报表，支持曲线、柱状图、饼状图等
+
+![输入图片说明](https://oscimg.oschina.net/oscnet/bb180e13a62abd3d3b7cece57900a6d774e.jpg "在这里输入图片标题")
+> 视频三： 演示如何实现一个复杂的报表模板，从不同的数据源取数据，展示不同的图表内容，组合展示
+
+![输入图片说明](https://oscimg.oschina.net/oscnet/8cc56a48abc7fabae0257da9d81cbae9934.jpg "在这里输入图片标题")
+> 视频四： 演示如何实现图表的多种排版布局，支持单排、双排、组合、TAB
 
 
 系统效果
