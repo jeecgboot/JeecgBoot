@@ -46,6 +46,8 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - QQ交流群 ：  284271917
 
+- 参与开源：  [JEECG团队需要你，共同打造最火开源项目](http://www.jeecg.org/forum.php?mod=viewthread&tid=7828&page=1&extra=#pid21274)
+
 - 技术论坛：  [http://www.jeecg.org](http://www.jeecg.org)
 
 
