@@ -303,8 +303,6 @@ Online初体验
 ![输入图片说明](https://wx2.sinaimg.cn/large/7087dfcbly1g3xkz0lkgyg211y0lce81.gif "在这里输入图片标题")
 > 演示如何通过JSON数据，快速的配置一个图形报表，支持曲线、柱状图、饼状图等
 
-![输入图片说明](https://wx2.sinaimg.cn/large/7087dfcbly1g3xkxkcaq4g211y0lce8e.gif "在这里输入图片标题")
-> 演示如何通过SQL查询数据库，快速的配置一个图形报表，支持曲线、柱状图、饼状图等
 
 ![输入图片说明](https://wx2.sinaimg.cn/large/7087dfcbly1g3xkz9aduxg211y0lc4mx.gif "在这里输入图片标题")
 > 演示如何实现一个复杂的报表模板，从不同的数据源取数据，展示不同的图表内容，组合展示
