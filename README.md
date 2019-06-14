@@ -46,11 +46,11 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - QQ交流群 ：  284271917
 
-- 参与开源：  [JEECG团队需要你，共同打造最火开源项目](http://www.jeecg.org/forum.php?mod=viewthread&tid=7828&page=1&extra=#pid21274)
+- 参与开源：  [欢迎技术爱好者，加入JEECG开源团队](http://jeecg.com/#/doc/canyu-os)
 
 - 技术论坛：  [http://www.jeecg.org](http://www.jeecg.org)
 
-- 版本日志：  [http://www.jeecg.com/#/doc/changelog](http://www.jeecg.com/#/doc/changelog)
+- 版本日志：  [版本发布日志](http://www.jeecg.com/#/doc/changelog)
 
 
 
