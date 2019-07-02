@@ -269,7 +269,9 @@ public class SysAnnouncementController {
 		querySaWrapper.eq(SysAnnouncement::getDelFlag,CommonConstant.DEL_FLAG_0);  // 未删除
 		querySaWrapper.eq(SysAnnouncement::getSendStatus, CommonConstant.HAS_SEND); //已发布
 		querySaWrapper.notIn(SysAnnouncement::getId, anntIds);
-		List<SysAnnouncement> announcements = sysAnnouncementService.list(querySaWrapper);
+		if (!anntIds.isEmpty()) {
+		    querySaWrapper.notIn(SysAnnouncement::getId, anntIds);
+		}
 		if(announcements.size()>0) {
 			for(int i=0;i<announcements.size();i++) {
 				SysAnnouncementSend announcementSend = new SysAnnouncementSend();
