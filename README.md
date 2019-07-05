@@ -19,7 +19,7 @@ Jeecg-Boot 快速开发平台（前后端分离版本）
 项目介绍：
 -----------------------------------
 
-<h4 align="center">Java RAD framework for enterprise web applications</h4>
+<h3 align="center">Java RAD framework for enterprise web applications</h3>
 
 Jeecg-Boot 是一款基于SpringBoot+代码生成器的快速开发平台！前后端分离架构：SpringBoot,Ant Design Vue,Mybatis,Shiro,JWT。强大的代码生成器让前端和后台代码一键生成，不需要写任何代码，保持jeecg一贯的强大，绝对是全栈开发福音！！ JeecgBoot在提高UI能力的同时，降低了前后分离的开发成本，JeecgBoot还独创在线开发模式（No代码概念），一系列在线智能开发：在线配置表单、在线配置报表、在线图表设计、在线设计流程等等。
 
