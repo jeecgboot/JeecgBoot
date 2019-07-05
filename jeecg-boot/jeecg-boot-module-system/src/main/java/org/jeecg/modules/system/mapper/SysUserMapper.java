@@ -44,4 +44,19 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 * @param departId
 	 */
 	void updateUserDepart(@Param("username") String username,@Param("orgCode") String orgCode);
+	
+	/**
+	 * 根据手机号查询用户信息
+	 * @param phone
+	 * @return
+	 */
+	public SysUser getUserByPhone(@Param("phone") String phone);
+	
+	
+	/**
+	 * 根据邮箱查询用户信息
+	 * @param email
+	 * @return
+	 */
+	public SysUser getUserByEmail(@Param("email")String email);
 }

@@ -1,9 +1,8 @@
 package org.jeecg.modules.system.controller;
 
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -11,18 +10,19 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.alibaba.fastjson.JSON;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CacheConstant;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.demo.test.entity.JeecgOrderCustomer;
-import org.jeecg.modules.demo.test.entity.JeecgOrderMain;
-import org.jeecg.modules.demo.test.entity.JeecgOrderTicket;
-import org.jeecg.modules.demo.test.vo.JeecgOrderMainPage;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.model.SysDictTree;
+import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecg.modules.system.service.ISysDictItemService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.vo.SysDictPage;
@@ -40,6 +40,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -47,9 +50,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  * <p>
@@ -75,13 +75,12 @@ public class SysDictController {
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
 		Result<IPage<SysDict>> result = new Result<IPage<SysDict>>();
 		QueryWrapper<SysDict> queryWrapper = QueryGenerator.initQueryWrapper(sysDict, req.getParameterMap());
-		queryWrapper.eq("del_flag", "1");
 		Page<SysDict> page = new Page<SysDict>(pageNo, pageSize);
 		IPage<SysDict> pageList = sysDictService.page(page, queryWrapper);
-		log.info("查询当前页："+pageList.getCurrent());
-		log.info("查询当前页数量："+pageList.getSize());
-		log.info("查询结果数量："+pageList.getRecords().size());
-		log.info("数据总数："+pageList.getTotal());
+		log.debug("查询当前页："+pageList.getCurrent());
+		log.debug("查询当前页数量："+pageList.getSize());
+		log.debug("查询结果数量："+pageList.getRecords().size());
+		log.debug("数据总数："+pageList.getTotal());
 		result.setSuccess(true);
 		result.setResult(pageList);
 		return result;
@@ -106,7 +105,6 @@ public class SysDictController {
 		if(oConvertUtils.isNotEmpty(dictName)) {
 			query.like(true, SysDict::getDictName, dictName);
 		}
-		query.eq(true, SysDict::getDelFlag, "1");
 		query.orderByDesc(true, SysDict::getCreateTime);
 		List<SysDict> list = sysDictService.list(query);
 		List<SysDictTree> treeList = new ArrayList<>();
@@ -133,11 +131,25 @@ public class SysDictController {
 			if(dictCode.indexOf(",")!=-1) {
 				//关联表字典（举例：sys_user,realname,id）
 				String[] params = dictCode.split(",");
-				if(params.length!=3) {
+				
+				if(params.length<3) {
 					result.error500("字典Code格式不正确！");
 					return result;
 				}
-				ls = sysDictService.queryTableDictItemsByCode(params[0],params[1],params[2]);
+				//SQL注入校验（只限制非法串改数据库）
+				final String[] sqlInjCheck = {params[0],params[1],params[2]};
+				SqlInjectionUtil.filterContent(sqlInjCheck);
+				
+				if(params.length==4) {
+					//SQL注入校验（查询条件SQL 特殊check，此方法仅供此处使用）
+					SqlInjectionUtil.specialFilterContent(params[3]);
+					ls = sysDictService.queryTableDictItemsByCodeAndFilter(params[0],params[1],params[2],params[3]);
+				}else if (params.length==3) {
+					ls = sysDictService.queryTableDictItemsByCode(params[0],params[1],params[2]);
+				}else{
+					result.error500("字典Code格式不正确！");
+					return result;
+				}
 			}else {
 				//字典表
 				 ls = sysDictService.queryDictItemsByCode(dictCode);
@@ -187,6 +199,7 @@ public class SysDictController {
 		Result<SysDict> result = new Result<SysDict>();
 		try {
 			sysDict.setCreateTime(new Date());
+			sysDict.setDelFlag(CommonConstant.DEL_FLAG_0);
 			sysDictService.save(sysDict);
 			result.success("保存成功！");
 		} catch (Exception e) {
@@ -224,19 +237,14 @@ public class SysDictController {
 	 * @return
 	 */
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-	@CacheEvict(value="dictCache", allEntries=true)
+	@CacheEvict(value=CacheConstant.DICT_CACHE, allEntries=true)
 	public Result<SysDict> delete(@RequestParam(name="id",required=true) String id) {
 		Result<SysDict> result = new Result<SysDict>();
-		SysDict sysDict = sysDictService.getById(id);
-		if(sysDict==null) {
-			result.error500("未找到对应实体");
-		}else {
-			//update-begin--Author:huangzhilin  Date:20140417 for：[bugfree号]数据字典增加级联删除功能--------------------
-			boolean ok = sysDictService.deleteByDictId(sysDict);
-			//update-begin--Author:huangzhilin  Date:20140417 for：[bugfree号]数据字典增加级联删除功能--------------------
-			if(ok) {
-				result.success("删除成功!");
-			}
+		boolean ok = sysDictService.removeById(id);
+		if(ok) {
+			result.success("删除成功!");
+		}else{
+			result.error500("删除失败!");
 		}
 		return result;
 	}
@@ -247,18 +255,13 @@ public class SysDictController {
 	 * @return
 	 */
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
-	@CacheEvict(value="dictCache", allEntries=true)
+	@CacheEvict(value= CacheConstant.DICT_CACHE, allEntries=true)
 	public Result<SysDict> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<SysDict> result = new Result<SysDict>();
-		if(ids==null || "".equals(ids.trim())) {
+		if(oConvertUtils.isEmpty(ids)) {
 			result.error500("参数不识别！");
 		}else {
-			String[] id=ids.split(",");
-			for(int i=0;i<id.length;i++) {
-				SysDict sysDict = sysDictService.getById(id[i]);
-				sysDict.setDelFlag(2);
-				sysDictService.updateById(sysDict);
-			}
+			sysDictService.removeByIds(Arrays.asList(ids.split(",")));
 			result.success("删除成功!");
 		}
 		return result;
@@ -293,7 +296,8 @@ public class SysDictController {
 		// 注解对象Class
 		mv.addObject(NormalExcelConstants.CLASS, SysDictPage.class);
 		// 自定义表格参数
-		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("数据字典列表", "导出人:Jeecg", "数据字典"));
+		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("数据字典列表", "导出人:"+user.getRealname(), "数据字典"));
 		// 导出数据列表
 		mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
 		return mv;
@@ -339,6 +343,84 @@ public class SysDictController {
 			}
 		}
 		return Result.error("文件导入失败！");
+	}
+	
+	/**
+	 * 大数据量的字典表 走异步加载  即前端输入内容过滤数据 
+	 * @param dictCode
+	 * @return
+	 */
+	@RequestMapping(value = "/loadDict/{dictCode}", method = RequestMethod.GET)
+	public Result<List<DictModel>> loadDict(@PathVariable String dictCode,@RequestParam(name="keyword") String keyword) {
+		log.info(" 加载字典表数据,加载关键字: "+ keyword);
+		Result<List<DictModel>> result = new Result<List<DictModel>>();
+		List<DictModel> ls = null;
+		try {
+			if(dictCode.indexOf(",")!=-1) {
+				String[] params = dictCode.split(",");
+				if(params.length!=3) {
+					result.error500("字典Code格式不正确！");
+					return result;
+				}
+				ls = sysDictService.queryTableDictItems(params[0],params[1],params[2],keyword);
+				result.setSuccess(true);
+				result.setResult(ls);
+				log.info(result.toString());
+			}else {
+				result.error500("字典Code格式不正确！");
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+			result.error500("操作失败");
+			return result;
+		}
+
+		return result;
+	}
+	
+	/**
+	 * 根据字典code加载字典text 返回
+	 */
+	@RequestMapping(value = "/loadDictItem/{dictCode}", method = RequestMethod.GET)
+	public Result<String> loadDictItem(@PathVariable String dictCode,@RequestParam(name="key") String key) {
+		Result<String> result = new Result<String>();
+		try {
+			if(dictCode.indexOf(",")!=-1) {
+				String[] params = dictCode.split(",");
+				if(params.length!=3) {
+					result.error500("字典Code格式不正确！");
+					return result;
+				}
+				String text = sysDictService.queryTableDictTextByKey(params[0], params[1], params[2], key);
+				result.setSuccess(true);
+				result.setResult(text);
+				log.info(result.toString());
+			}else {
+				result.error500("字典Code格式不正确！");
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+			result.error500("操作失败");
+			return result;
+		}
+
+		return result;
+	}
+	
+	/**
+	 * 根据表名——显示字段-存储字段 pid 加载树形数据
+	 */
+	@RequestMapping(value = "/loadTreeData", method = RequestMethod.GET)
+	public Result<List<TreeSelectModel>> loadDict(@RequestParam(name="pid") String pid,@RequestParam(name="pidField") String pidField,
+			@RequestParam(name="tableName") String tbname,
+			@RequestParam(name="text") String text,
+			@RequestParam(name="code") String code,
+			@RequestParam(name="hasChildField") String hasChildField) {
+		Result<List<TreeSelectModel>> result = new Result<List<TreeSelectModel>>();
+		List<TreeSelectModel> ls = sysDictService.queryTreeList(tbname, text, code, pidField, pid,hasChildField);
+		result.setSuccess(true);
+		result.setResult(ls);
+		return result;
 	}
 
 }

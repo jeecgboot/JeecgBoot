@@ -10,8 +10,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysUserAgent;
 import org.jeecg.modules.system.service.ISysUserAgentService;
@@ -210,7 +212,8 @@ public class SysUserAgentController {
       //导出文件名称
       mv.addObject(NormalExcelConstants.FILE_NAME, "用户代理人设置列表");
       mv.addObject(NormalExcelConstants.CLASS, SysUserAgent.class);
-      mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("用户代理人设置列表数据", "导出人:Jeecg", "导出信息"));
+      LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+      mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("用户代理人设置列表数据", "导出人:"+user.getRealname(), "导出信息"));
       mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
       return mv;
   }

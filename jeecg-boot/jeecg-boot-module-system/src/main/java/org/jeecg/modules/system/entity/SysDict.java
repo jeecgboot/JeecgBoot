@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -57,6 +58,7 @@ public class SysDict implements Serializable {
     /**
      * 删除状态
      */
+    @TableLogic
     private Integer delFlag;
 
     /**

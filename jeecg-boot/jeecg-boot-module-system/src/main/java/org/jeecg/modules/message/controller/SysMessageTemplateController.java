@@ -207,10 +207,11 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 			return result;
 		}
 		boolean is_sendSuccess = pushMsgUtil.sendMessage(msgParams.getMsgType(), msgParams.getTemplateCode(), map, msgParams.getReceiver());
-		if (is_sendSuccess)
+		if (is_sendSuccess) {
 			result.success("发送消息任务添加成功！");
-		else
+		} else {
 			result.error500("发送消息任务添加失败！");
+		}
 		return result;
 	}
 }

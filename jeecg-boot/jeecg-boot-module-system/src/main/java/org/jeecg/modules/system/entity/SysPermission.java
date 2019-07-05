@@ -98,6 +98,13 @@ public class SysPermission implements Serializable {
 	@TableField(value="is_route")
 	private boolean route;
 
+
+	/**
+	 * 是否缓存页面: 0:不是  1:是（默认值1）
+	 */
+	@TableField(value="keep_alive")
+	private boolean keepAlive;
+
 	/**
 	 * 描述
 	 */
@@ -160,6 +167,7 @@ public class SysPermission implements Serializable {
         	this.delFlag=0;
         	this.alwaysShow=false;
         	this.route=true;
+        	this.keepAlive=true;
         	this.leaf=true;
         	this.hidden=false;
     	}

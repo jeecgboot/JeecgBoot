@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.model.DuplicateCheckVo;
+import org.jeecg.modules.system.model.TreeSelectModel;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -27,6 +28,7 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	
 	public List<DictModel> queryDictItemsByCode(@Param("code") String code);
 	public List<DictModel> queryTableDictItemsByCode(@Param("table") String table,@Param("text") String text,@Param("code") String code);
+	public List<DictModel> queryTableDictItemsByCodeAndFilter(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("filterSql") String filterSql);
 
 
 	public String queryDictTextByKey(@Param("code") String code,@Param("key") String key);
@@ -45,5 +47,26 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @return
 	 */
 	public List<DictModel> queryAllUserBackDictModel();
+	
+	/**
+	 * 通过关键字查询出字典表
+	 * @param table
+	 * @param text
+	 * @param code
+	 * @param keyword
+	 * @return
+	 */
+	public List<DictModel> queryTableDictItems(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("keyword") String keyword); 
+
+	/**
+	  * 根据表名、显示字段名、存储字段名 查询树
+	 * @param table
+	 * @param text
+	 * @param code
+	 * @param pid
+	 * @param hasChildField
+	 * @return
+	 */
+	List<TreeSelectModel> queryTreeList(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("pidField") String pidField,@Param("pid") String pid,@Param("hasChildField") String hasChildField);
 
 }

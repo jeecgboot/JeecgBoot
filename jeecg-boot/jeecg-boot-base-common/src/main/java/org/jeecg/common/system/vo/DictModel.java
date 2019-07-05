@@ -11,6 +11,14 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class DictModel implements Serializable{
 	private static final long serialVersionUID = 1L;
+
+	public DictModel() {
+	}
+	
+	public DictModel(String value, String text) {
+		this.value = value;
+		this.text = text;
+	}
 	
 	/**
 	 * 字典value
@@ -28,4 +36,5 @@ public class DictModel implements Serializable{
 	public String getTitle() {
 		return this.text;
 	}
+
 }

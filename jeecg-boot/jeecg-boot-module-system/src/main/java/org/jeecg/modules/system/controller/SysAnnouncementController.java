@@ -266,9 +266,11 @@ public class SysAnnouncementController {
 		Collection<String> anntIds = sysAnnouncementSendService.queryByUserId(userId);
 		LambdaQueryWrapper<SysAnnouncement> querySaWrapper = new LambdaQueryWrapper<SysAnnouncement>();
 		querySaWrapper.eq(SysAnnouncement::getMsgType,CommonConstant.MSG_TYPE_ALL); // 全部人员
-		querySaWrapper.eq(SysAnnouncement::getDelFlag,CommonConstant.DEL_FLAG_0);  // 未删除
+		querySaWrapper.eq(SysAnnouncement::getDelFlag,CommonConstant.DEL_FLAG_0.toString());  // 未删除
 		querySaWrapper.eq(SysAnnouncement::getSendStatus, CommonConstant.HAS_SEND); //已发布
-		querySaWrapper.notIn(SysAnnouncement::getId, anntIds);
+		if(anntIds!=null&&anntIds.size()>0) {
+			querySaWrapper.notIn(SysAnnouncement::getId, anntIds);
+		}
 		List<SysAnnouncement> announcements = sysAnnouncementService.list(querySaWrapper);
 		if(announcements.size()>0) {
 			for(int i=0;i<announcements.size();i++) {
@@ -311,7 +313,8 @@ public class SysAnnouncementController {
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "系统通告列表");
         mv.addObject(NormalExcelConstants.CLASS, SysAnnouncement.class);
-        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("系统通告列表数据", "导出人:Jeecg", "导出信息"));
+        LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("系统通告列表数据", "导出人:"+user.getRealname(), "导出信息"));
         mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
         return mv;
     }
@@ -337,7 +340,7 @@ public class SysAnnouncementController {
                 List<SysAnnouncement> listSysAnnouncements = ExcelImportUtil.importExcel(file.getInputStream(), SysAnnouncement.class, params);
                 for (SysAnnouncement sysAnnouncementExcel : listSysAnnouncements) {
                 	if(sysAnnouncementExcel.getDelFlag()==null){
-                		sysAnnouncementExcel.setDelFlag("0");
+                		sysAnnouncementExcel.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
 					}
                     sysAnnouncementService.save(sysAnnouncementExcel);
                 }

@@ -4,12 +4,12 @@
 
 	<!-- 根据用户名查询 -->
 	<select id="getUserByName" resultType="org.jeecg.modules.system.entity.SysUser">
-		select * from  sys_user  where username = #{username}
+		select * from  sys_user  where username = #{username} and del_flag = '0'
 	</select>
 
 	<!-- 根据部门Id查询 -->
 	<select id="getUserByDepId" resultType="org.jeecg.modules.system.entity.SysUser">
-		select * from sys_user where id in (select user_id from sys_user_depart where dep_id=#{departId})
+		select * from sys_user where del_flag = '0' and id in (select user_id from sys_user_depart where dep_id=#{departId})
 		<if test="username!=null and username!=''">
 			and username = #{username}
 		</if>
@@ -17,7 +17,7 @@
 
 	<!-- 根据角色Id查询 -->
 	<select id="getUserByRoleId" resultType="org.jeecg.modules.system.entity.SysUser">
-		select * from sys_user where id in (select user_id from sys_user_role where role_id=#{roleId})
+		select * from sys_user where del_flag = '0' and id in (select user_id from sys_user_role where role_id=#{roleId})
 		<if test="username!=null and username!=''">
 			and username = #{username}
 		</if>
@@ -28,4 +28,14 @@
 		UPDATE sys_user SET org_code = #{orgCode} where username = #{username}
 	</update>
 
+	<!-- 根据手机号查询 -->
+	<select id="getUserByPhone"  resultType="org.jeecg.modules.system.entity.SysUser">
+		select * from  sys_user  where phone = #{phone} and del_flag = '0'
+	</select>
+	
+	<!-- 根据邮箱查询用户信息 -->
+	<select id="getUserByEmail" resultType="org.jeecg.modules.system.entity.SysUser">
+	select * from  sys_user  where email = #{email} and del_flag = '0'
+	</select>
+	
 </mapper>

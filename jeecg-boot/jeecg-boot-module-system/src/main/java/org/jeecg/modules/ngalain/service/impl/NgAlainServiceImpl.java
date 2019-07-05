@@ -57,11 +57,11 @@ public class NgAlainServiceImpl implements NgAlainService {
             menu.put("text",meta.get("title"));
             menu.put("reuse",true);
             if (jsonObject.get("children")!=null){
-              JSONArray child=  parseNgAlain((JSONArray) jsonObject.get("children"));
-              menu.put("children",child);
-              JSONObject icon=new JSONObject();
+                JSONArray child=  parseNgAlain((JSONArray) jsonObject.get("children"));
+                menu.put("children",child);
+                JSONObject icon=new JSONObject();
                 icon.put("type", "icon");
-                icon.put("value", "appstore");
+                icon.put("value", meta.get("icon"));
                 menu.put("icon",icon);
             }else {
                 menu.put("link",path);

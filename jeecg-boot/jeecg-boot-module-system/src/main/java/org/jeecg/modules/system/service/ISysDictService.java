@@ -7,6 +7,7 @@ import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.modules.system.entity.SysDict;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysDictItem;
+import org.jeecg.modules.system.model.TreeSelectModel;
 
 /**
  * <p>
@@ -21,6 +22,8 @@ public interface ISysDictService extends IService<SysDict> {
     public List<DictModel> queryDictItemsByCode(String code);
 
     List<DictModel> queryTableDictItemsByCode(String table, String text, String code);
+    
+	public List<DictModel> queryTableDictItemsByCodeAndFilter(String table, String text, String code, String filterSql);
 
     public String queryDictTextByKey(String code, String key);
 
@@ -50,5 +53,27 @@ public interface ISysDictService extends IService<SysDict> {
 	 * @return
 	 */
 	public List<DictModel> queryAllUserBackDictModel();
+	
+	/**
+	 * 通过关键字查询字典表
+	 * @param table
+	 * @param text
+	 * @param code
+	 * @param keyword
+	 * @return
+	 */
+	public List<DictModel> queryTableDictItems(String table, String text, String code,String keyword);
+	
+	/**
+	  * 根据表名、显示字段名、存储字段名 查询树
+	 * @param table
+	 * @param text
+	 * @param code
+	 * @param pidField
+	 * @param pid
+	 * @param hasChildField
+	 * @return
+	 */
+	List<TreeSelectModel> queryTreeList(String table, String text, String code, String pidField,String pid,String hasChildField);
 
 }

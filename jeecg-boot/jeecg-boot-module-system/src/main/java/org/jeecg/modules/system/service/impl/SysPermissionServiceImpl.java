@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.oConvertUtils;
@@ -50,17 +51,19 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 	 */
 	@Override
 	@Transactional
-	@CacheEvict(value = "permission",allEntries=true)
+	@CacheEvict(value = CacheConstant.PERMISSION_CACHE,allEntries=true)
 	public void deletePermission(String id) throws JeecgBootException {
 		SysPermission sysPermission = this.getById(id);
 		if(sysPermission==null) {
 			throw new JeecgBootException("未找到菜单信息");
 		}
 		String pid = sysPermission.getParentId();
-		int count = this.count(new QueryWrapper<SysPermission>().lambda().eq(SysPermission::getParentId, pid));
-		if(count==1) {
-			//若父节点无其他子节点，则该父节点是叶子节点
-			this.sysPermissionMapper.setMenuLeaf(pid, 1);
+		if(oConvertUtils.isNotEmpty(pid)) {
+			int count = this.count(new QueryWrapper<SysPermission>().lambda().eq(SysPermission::getParentId, pid));
+			if(count==1) {
+				//若父节点无其他子节点，则该父节点是叶子节点
+				this.sysPermissionMapper.setMenuLeaf(pid, 1);
+			}
 		}
 		sysPermissionMapper.deleteById(id);
 		// 该节点可能是子节点但也可能是其它节点的父节点,所以需要级联删除
@@ -99,8 +102,8 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 	  * 逻辑删除
 	 */
 	@Override
-	@CacheEvict(value = "permission",allEntries=true)
-	//@CacheEvict(value = "permission",allEntries=true,condition="#sysPermission.menuType==2")
+	@CacheEvict(value = CacheConstant.PERMISSION_CACHE,allEntries=true)
+	//@CacheEvict(value = CacheConstant.PERMISSION_CACHE,allEntries=true,condition="#sysPermission.menuType==2")
 	public void deletePermissionLogical(String id) throws JeecgBootException {
 		SysPermission sysPermission = this.getById(id);
 		if(sysPermission==null) {
@@ -117,7 +120,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 	}
 
 	@Override
-	@CacheEvict(value = "permission",allEntries=true)
+	@CacheEvict(value = CacheConstant.PERMISSION_CACHE,allEntries=true)
 	public void addPermission(SysPermission sysPermission) throws JeecgBootException {
 		//----------------------------------------------------------------------
 		//判断是否是一级菜单，是的话清空父菜单
@@ -137,7 +140,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 	}
 
 	@Override
-	@CacheEvict(value = "permission",allEntries=true)
+	@CacheEvict(value = CacheConstant.PERMISSION_CACHE,allEntries=true)
 	public void editPermission(SysPermission sysPermission) throws JeecgBootException {
 		SysPermission p = this.getById(sysPermission.getId());
 		//TODO 该节点判断是否还有子节点
@@ -198,7 +201,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 	  *   获取模糊匹配规则的数据权限URL
 	 */
 	@Override
-	@Cacheable(value = "permission")
+	@Cacheable(value = CacheConstant.PERMISSION_CACHE)
 	public List<String> queryPermissionUrlWithStar() {
 		return this.baseMapper.queryPermissionUrlWithStar();
 	}

@@ -15,6 +15,7 @@
 	<resultMap id="SysPermission" type="org.jeecg.modules.system.entity.SysPermission">
 	   <!-- result属性映射非匹配字段 -->
 	    <result column="is_route" property="route"/>
+	    <result column="keep_alive" property="keepAlive"/>
 	    <result column="is_leaf" property="leaf"/>
 	</resultMap>
 	

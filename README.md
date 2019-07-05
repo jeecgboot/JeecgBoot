@@ -6,7 +6,7 @@
 Jeecg-Boot 快速开发平台（前后端分离版本）
 ===============
 
-当前最新版本： 2.0.1（发布日期：20190603）
+当前最新版本： 2.0.2（发布日期：20190708）
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-Scott-orange.svg)](https://blog.csdn.net/zhangdaiscott)
@@ -21,7 +21,7 @@ Jeecg-Boot 快速开发平台（前后端分离版本）
 
 <h4 align="center">Java RAD framework for enterprise web applications</h4>
 
-Jeecg-Boot 是一款基于代码生成器的智能开发平台！采用前后端分离架构：SpringBoot，Mybatis，Shiro，JWT，Vue&Ant Design。强大的代码生成器让前端和后台代码一键生成，不需要写任何代码，保持jeecg一贯的强大，绝对是全栈开发福音！！ JeecgBoot在提高UI能力的同时，降低了前后分离的开发成本，JeecgBoot还独创在线开发模式（No代码概念），一系列在线智能开发：在线配置表单、在线配置报表、在线图表设计、在线设计流程等等。
+Jeecg-Boot 是一款基于SpringBoot+代码生成器的快速开发平台！前后端分离架构：SpringBoot,Ant Design Vue,Mybatis,Shiro,JWT。强大的代码生成器让前端和后台代码一键生成，不需要写任何代码，保持jeecg一贯的强大，绝对是全栈开发福音！！ JeecgBoot在提高UI能力的同时，降低了前后分离的开发成本，JeecgBoot还独创在线开发模式（No代码概念），一系列在线智能开发：在线配置表单、在线配置报表、在线图表设计、在线设计流程等等。
 
 JEECG宗旨是: 简单功能由Online Coding配置实现（在线配置表单、在线配置报表、在线图表设计、在线设计流程、在线设计表单），复杂功能由代码生成器生成进行手工Merge，既保证了智能又兼顾了灵活; 
 业务流程采用工作流来实现、扩展出任务接口，供开发编写业务逻辑，表单提供多种解决方案： 表单设计器、online配置表单、编码表单。同时实现了流程与表单的分离设计（松耦合）、并支持任务节点灵活配置，既保证了公司流程的保密性，又减少了开发人员的工作量。
@@ -44,7 +44,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 入门必看：  [JeecgBoot常见问题大全](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
 
-- QQ交流群 ：  ②769925425、①284271917
+- QQ交流群 ：  ①284271917、②769925425
 
 - 参与开源：  [欢迎技术爱好者，加入JEECG开源团队](http://jeecg.com/#/doc/canyu-os)
 
@@ -72,7 +72,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 * 14.在线流程设计，采用开源Activiti流程引擎，实现在线画流程,自定义表单,表单挂靠,业务流转
 * 15.多数据源：及其简易的使用方式，在线配置数据源配置，便捷的从其他数据抓取数据；
 * 16.国际化：支持多语言，开发国际化项目非常方便；
-* 17.自定义表单，支持用户自定义表单布局，支持单表，一对多表单、支持select、radio、checkbox、textarea、date、popup、列表、宏等控件
+* 17.表单设计器，支持用户自定义表单布局，支持单表，一对多表单、支持select、radio、checkbox、textarea、date、popup、列表、宏等控件
 * 18.专业接口对接机制，统一采用restful接口方式，集成swagger-ui在线接口文档，Jwt token安全验证，方便客户端对接
 * 19.接口安全机制，可细化控制接口授权，非常简便实现不同客户端只看自己数据等控制
 * 20.高级组合查询功能，在线配置支持主子表关联查询，可保存查询历史
@@ -96,7 +96,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 #### 后端
 - 基础框架：Spring Boot 2.1.3.RELEASE
 
-- 持久层框架：Mybatis-plus_3.0.6
+- 持久层框架：Mybatis-plus_3.1.2
 
 - 安全框架：Apache Shiro 1.4.0，Jwt_3.7.0
 
@@ -111,7 +111,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 #### 前端
  
-- [Vue 2.5.22](https://cn.vuejs.org/),[Vuex](https://vuex.vuejs.org/zh/),[Vue Router](https://router.vuejs.org/zh/)
+- [Vue 2.6.10](https://cn.vuejs.org/),[Vuex](https://vuex.vuejs.org/zh/),[Vue Router](https://router.vuejs.org/zh/)
 - [Axios](https://github.com/axios/axios)
 - [ant-design-vue](https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn/)
 - [webpack](https://www.webpackjs.com/),[yarn](https://yarnpkg.com/zh-Hans/)
@@ -150,6 +150,12 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  ├─表单权限（控制字段禁用、隐藏）
 │  ├─部门管理
 │  └─字典管理
+│  └─树分类字典
+│  └─系统公告
+│  └─我的组织机构
+├─消息中心
+│  ├─消息管理
+│  ├─模板管理
 ├─智能化功能
 │  ├─代码生成器功能（一键生成前后端代码，生成后无需修改直接用，绝对是后端开发福音）
 │  ├─代码生成器模板（提供4套模板，分别支持单表和一对多模型，不同风格选择）
@@ -204,8 +210,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  └─省略显示组件
 │  └─时间控件
 │  └─高级查询
-│  └─通用选择用户组件
-│  └─通过组织机构选择用户组件
+│  └─用户选择组件
 │  └─报表组件封装
 │  └─字典组件
 │  └─下拉多选组件
@@ -215,6 +220,9 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  └─封装曲线、柱状图、饼状图、折线图等等报表的组件（经过封装，使用简单）
 │  └─在线code编辑器
 │  └─上传文件组件
+│  └─验证码组件
+│  └─树列表组件
+│  └─表单禁用组件
 │  └─等等
 │─更多页面模板
 │  ├─各种高级表单
