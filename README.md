@@ -38,11 +38,9 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 在线演示 ：  [http://boot.jeecg.org](http://boot.jeecg.org)
 
-- 在线文档 ：  [http://jeecg-boot.mydoc.io](http://jeecg-boot.mydoc.io)
+- 在线教程：  [http://jeecg-boot.mydoc.io/?t=345660](http://jeecg-boot.mydoc.io/?t=345660)
 
-- 入门教程：  [http://jeecg-boot.mydoc.io/?t=345660](http://jeecg-boot.mydoc.io/?t=345660)
-
-- 入门必看：  [JeecgBoot常见问题大全](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
+- 常见问题：  [入门常见问题大全](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
 
 - QQ交流群 ：  ①284271917、②769925425
 
@@ -50,7 +48,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 更新日志：  [版本日志](http://www.jeecg.com/#/doc/changelog)
 
-- Online初体验：  [1分钟学习](https://segmentfault.com/a/1190000019448442)
+- Online初体验：  [1分钟快速学习](https://segmentfault.com/a/1190000019448442)
 
 - 如何参与：  [欢迎技术爱好者，加入JEECG开团队](http://jeecg.com/#/doc/canyu-os)
 
