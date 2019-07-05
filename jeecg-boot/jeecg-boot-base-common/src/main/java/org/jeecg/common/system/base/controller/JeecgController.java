@@ -81,9 +81,13 @@ public class JeecgController<T extends JeecgEntity, S extends JeecgService<T>> {
 			params.setNeedSave(true);
 			try {
 				List<T> list = ExcelImportUtil.importExcel(file.getInputStream(), clazz, params);
-				for (T t : list) {
-					service.save(t);
-				}
+				//update-begin-author:taoyan date:20190528 for:批量插入数据
+				long start = System.currentTimeMillis();
+				service.saveBatch(list);
+				//400条 saveBatch消耗时间1592毫秒  循环插入消耗时间1947毫秒
+				//1200条  saveBatch消耗时间3687毫秒 循环插入消耗时间5212毫秒
+				log.info("消耗时间"+(System.currentTimeMillis()-start)+"毫秒");
+				//update-end-author:taoyan date:20190528 for:批量插入数据
 				return Result.ok("文件导入成功！数据行数：" + list.size());
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);

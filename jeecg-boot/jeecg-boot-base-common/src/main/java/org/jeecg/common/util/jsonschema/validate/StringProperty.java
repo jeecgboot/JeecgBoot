@@ -22,6 +22,11 @@ public class StringProperty extends CommonProperty {
 	 */
 	private String pattern;
 	
+	/**
+	 * 错误提示信息
+	 */
+	private String errorInfo;
+	
 	public Integer getMaxLength() {
 		return maxLength;
 	}
@@ -46,6 +51,16 @@ public class StringProperty extends CommonProperty {
 	public void setPattern(String pattern) {
 		this.pattern = pattern;
 	}
+	
+	public String getErrorInfo() {
+		return errorInfo;
+	}
+
+
+	public void setErrorInfo(String errorInfo) {
+		this.errorInfo = errorInfo;
+	}
+
 
 	public StringProperty() {}
 	
@@ -93,6 +108,9 @@ public class StringProperty extends CommonProperty {
 		}
 		if(pattern!=null) {
 			prop.put("pattern",pattern);
+		}
+		if(errorInfo!=null) {
+			prop.put("errorInfo",errorInfo);
 		}
 		map.put("prop",prop);
 		return map;

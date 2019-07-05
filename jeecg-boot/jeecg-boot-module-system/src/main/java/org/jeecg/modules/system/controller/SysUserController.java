@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -13,15 +14,22 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.PasswordUtil;
+import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserDepart;
 import org.jeecg.modules.system.entity.SysUserRole;
 import org.jeecg.modules.system.model.DepartIdModel;
-import org.jeecg.modules.system.model.SysUserDepartsVO;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserDepartService;
 import org.jeecg.modules.system.service.ISysUserRoleService;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -33,6 +41,8 @@ import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -68,6 +78,9 @@ public class SysUserController {
 	@Autowired
 	private ISysUserService sysUserService;
 
+    @Autowired
+    private ISysDepartService sysDepartService;
+
 	@Autowired
 	private ISysUserRoleService sysUserRoleService;
 
@@ -77,7 +90,11 @@ public class SysUserController {
 	@Autowired
 	private ISysUserRoleService userRoleService;
 
+	@Autowired
+	private RedisUtil redisUtil;
+	
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	//@RequiresPermissions("sys:user:list")
 	public Result<IPage<SysUser>> queryPageList(SysUser user,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
 		Result<IPage<SysUser>> result = new Result<IPage<SysUser>>();
@@ -90,9 +107,11 @@ public class SysUserController {
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
+	@RequiresPermissions("user:add")
 	public Result<SysUser> add(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
 		String selectedRoles = jsonObject.getString("selectedroles");
+		String selectedDeparts = jsonObject.getString("selecteddeparts");
 		try {
 			SysUser user = JSON.parseObject(jsonObject.toJSONString(), SysUser.class);
 			user.setCreateTime(new Date());//设置创建时间
@@ -103,6 +122,7 @@ public class SysUserController {
 			user.setStatus(1);
 			user.setDelFlag("0");
 			sysUserService.addUserWithRole(user, selectedRoles);
+            sysUserService.addUserWithDepart(user, selectedDeparts);
 			result.success("添加成功！");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -112,6 +132,7 @@ public class SysUserController {
 	}
 
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
+//	@RequiresPermissions("user:edit")
 	public Result<SysUser> edit(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
 		try {
@@ -124,7 +145,9 @@ public class SysUserController {
 				//String passwordEncode = PasswordUtil.encrypt(user.getUsername(), user.getPassword(), sysUser.getSalt());
 				user.setPassword(sysUser.getPassword());
 				String roles = jsonObject.getString("selectedroles");
+                String departs = jsonObject.getString("selecteddeparts");
 				sysUserService.editUserWithRole(user, roles);
+                sysUserService.editUserWithDepart(user, departs);
 				result.success("修改成功!");
 			}
 		} catch (Exception e) {
@@ -240,45 +263,28 @@ public class SysUserController {
 
 
     /**
-     * 校验用户账号是否唯一<br>
-     * 可以校验其他 需要检验什么就传什么。。。
+	  *  校验用户账号是否唯一<br>
+	  *  可以校验其他 需要检验什么就传什么。。。
      *
      * @param sysUser
      * @return
      */
     @RequestMapping(value = "/checkOnlyUser", method = RequestMethod.GET)
-    public Result<Boolean> checkUsername(SysUser sysUser) {
+    public Result<Boolean> checkOnlyUser(SysUser sysUser) {
         Result<Boolean> result = new Result<>();
-        result.setResult(true);//如果此参数为false则程序发生异常
-        String id = sysUser.getId();
-        log.info("--验证用户信息是否唯一---id:" + id);
+        //如果此参数为false则程序发生异常
+        result.setResult(true);
         try {
-            SysUser oldUser = null;
-            if (oConvertUtils.isNotEmpty(id)) {
-                oldUser = sysUserService.getById(id);
-            } else {
-                sysUser.setId(null);
-            }
             //通过传入信息查询新的用户信息
-            SysUser newUser = sysUserService.getOne(new QueryWrapper<SysUser>(sysUser));
-            if (newUser != null) {
-                //如果根据传入信息查询到用户了，那么就需要做校验了。
-                if (oldUser == null) {
-                    //oldUser为空=>新增模式=>只要用户信息存在则返回false
-                    result.setSuccess(false);
-                    result.setMessage("用户账号已存在");
-                    return result;
-                } else if (!id.equals(newUser.getId())) {
-                    //否则=>编辑模式=>判断两者ID是否一致-
-                    result.setSuccess(false);
-                    result.setMessage("用户账号已存在");
-                    return result;
-                }
+            SysUser user = sysUserService.getOne(new QueryWrapper<SysUser>(sysUser));
+            if (user != null) {
+                result.setSuccess(false);
+                result.setMessage("用户账号已存在");
+                return result;
             }
 
         } catch (Exception e) {
             result.setSuccess(false);
-            result.setResult(false);
             result.setMessage(e.getMessage());
             return result;
         }
@@ -335,53 +341,6 @@ public class SysUserController {
             return result;
         }
 
-    }
-
-    /**
-     * 给指定用户添加对应的部门
-     *
-     * @param sysUserDepartsVO
-     * @return
-     */
-    @RequestMapping(value = "/addUDepartIds", method = RequestMethod.POST)
-    public Result<String> addSysUseWithrDepart(@RequestBody SysUserDepartsVO sysUserDepartsVO) {
-        boolean ok = this.sysUserDepartService.addSysUseWithrDepart(sysUserDepartsVO);
-        Result<String> result = new Result<String>();
-        try {
-            if (ok) {
-                result.setMessage("添加成功!");
-                result.setSuccess(true);
-            } else {
-                throw new Exception("添加失败!");
-            }
-            return result;
-        } catch (Exception e) {
-        	log.error(e.getMessage(), e);
-            result.setSuccess(true);
-            result.setMessage("添加数据的过程中出现市场了: " + e.getMessage());
-            return result;
-        }
-
-    }
-
-    /**
-     * 根据用户id编辑对应的部门信息
-     *
-     * @param sysUserDepartsVO
-     * @return
-     */
-    @RequestMapping(value = "/editUDepartIds", method = RequestMethod.PUT)
-    public Result<String> editSysUserWithDepart(@RequestBody SysUserDepartsVO sysUserDepartsVO) {
-        Result<String> result = new Result<String>();
-        boolean ok = sysUserDepartService.editSysUserWithDepart(sysUserDepartsVO);
-        if (ok) {
-            result.setMessage("更新成功!");
-            result.setSuccess(true);
-            return result;
-        }
-        result.setMessage("更新失败!");
-        result.setSuccess(false);
-        return result;
     }
 
     /**
@@ -450,7 +409,8 @@ public class SysUserController {
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "用户列表");
         mv.addObject(NormalExcelConstants.CLASS, SysUser.class);
-        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("用户列表数据", "导出人:Jeecg", "导出信息"));
+		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("用户列表数据", "导出人:"+user.getRealname(), "导出信息"));
         mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
         return mv;
     }
@@ -463,6 +423,7 @@ public class SysUserController {
      * @return
      */
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
+    @RequiresPermissions("user:import")
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
@@ -582,7 +543,6 @@ public class SysUserController {
                 }
 
             }
-
             result.setMessage("添加成功!");
             result.setSuccess(true);
             return result;
@@ -671,7 +631,6 @@ public class SysUserController {
                     sysUserDepartService.save(sysUserDepart);
                 }
             }
-
             result.setMessage("添加成功!");
             result.setSuccess(true);
             return result;
@@ -722,5 +681,180 @@ public class SysUserController {
         }
         return result;
     }
+    
+    /**
+         *  查询当前用户的所有部门/当前部门编码
+     * @return
+     */
+    @RequestMapping(value = "/getCurrentUserDeparts", method = RequestMethod.GET)
+    public Result<Map<String,Object>> getCurrentUserDeparts() {
+        Result<Map<String,Object>> result = new Result<Map<String,Object>>();
+        try {
+        	LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+            List<SysDepart> list = this.sysDepartService.queryUserDeparts(sysUser.getId());
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("list", list);
+            map.put("orgCode", sysUser.getOrgCode());
+            result.setSuccess(true);
+            result.setResult(map);
+        }catch(Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("查询失败！");
+        }
+        return result;
+    }
 
+    
+
+
+	/**
+	 * 用户注册接口
+	 * 
+	 * @param jsonObject
+	 * @param user
+	 * @return
+	 */
+	@PostMapping("/register")
+	public Result<JSONObject> userRegister(@RequestBody JSONObject jsonObject, SysUser user) {
+		Result<JSONObject> result = new Result<JSONObject>();
+		String phone = jsonObject.getString("phone");
+		String smscode = jsonObject.getString("smscode");
+		Object code = redisUtil.get(phone);
+		String username = jsonObject.getString("username");
+		String password = jsonObject.getString("password");
+		String email = jsonObject.getString("email");
+		SysUser sysUser1 = sysUserService.getUserByName(username);
+		if (sysUser1 != null) {
+			result.setMessage("用户名已注册");
+			result.setSuccess(false);
+			return result;
+		}
+		SysUser sysUser2 = sysUserService.getUserByPhone(phone);
+
+		if (sysUser2 != null) {
+			result.setMessage("该手机号已注册");
+			result.setSuccess(false);
+			return result;
+		}
+		SysUser sysUser3 = sysUserService.getUserByEmail(email);
+		if (sysUser3 != null) {
+			result.setMessage("邮箱已被注册");
+			result.setSuccess(false);
+			return result;
+		}
+
+		if (!smscode.equals(code)) {
+			result.setMessage("手机验证码错误");
+			result.setSuccess(false);
+			return result;
+		}
+
+		try {
+			user.setCreateTime(new Date());// 设置创建时间
+			String salt = oConvertUtils.randomGen(8);
+			String passwordEncode = PasswordUtil.encrypt(username, password, salt);
+			user.setSalt(salt);
+			user.setUsername(username);
+			user.setPassword(passwordEncode);
+			user.setEmail(email);
+			user.setPhone(phone);
+			user.setStatus(1);
+			user.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
+			user.setActivitiSync(CommonConstant.ACT_SYNC_1);
+			sysUserService.save(user);
+			result.success("注册成功");
+		} catch (Exception e) {
+			result.error500("注册失败");
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * @param 根据用户名或手机号查询用户信息
+	 * @return
+	 */
+	@GetMapping("/querySysUser")
+	public Result<Map<String, Object>> querySysUser(SysUser sysUser) {
+		String phone = sysUser.getPhone();
+		String username = sysUser.getUsername();
+		Result<Map<String, Object>> result = new Result<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (oConvertUtils.isNotEmpty(phone)) { 
+			SysUser userList = sysUserService.getUserByPhone(phone);
+			map.put("username",userList.getUsername());
+			map.put("phone",userList.getPhone());
+			result.setSuccess(true);
+			result.setResult(map);
+			return result;
+		}
+		if (oConvertUtils.isNotEmpty(username)) {
+			SysUser userList = sysUserService.getUserByName(username);
+			map.put("username",userList.getUsername());
+			map.put("phone",userList.getPhone());
+			result.setSuccess(true);
+			result.setResult(map);
+			return result;
+		}
+		result.setSuccess(false);
+		result.setMessage("验证失败");
+		return result;
+	}
+	
+	/**
+	 * 用户手机号验证
+	 */
+	@PostMapping("/phoneVerification")
+	public Result<String> phoneVerification(@RequestBody JSONObject jsonObject) {
+		Result<String> result = new Result<String>();
+		String phone = jsonObject.getString("phone");
+		String smscode = jsonObject.getString("smscode");
+		Object code = redisUtil.get(phone);
+		if (!smscode.equals(code)) {
+			result.setMessage("手机验证码错误");
+			result.setSuccess(false);
+			return result;
+		}
+		redisUtil.set(phone, smscode);
+		result.setResult(smscode);
+		result.setSuccess(true);
+		return result;
+	}
+	
+	/**
+	 * 用户更改密码
+	 */
+	@GetMapping("/passwordChange")
+	public Result<SysUser> passwordChange(@RequestParam(name="username")String username,
+										  @RequestParam(name="password")String password,
+			                              @RequestParam(name="smscode")String smscode,
+			                              @RequestParam(name="phone") String phone) {
+        Result<SysUser> result = new Result<SysUser>();
+        SysUser sysUser=new SysUser();
+        Object object= redisUtil.get(phone);
+        if(null==object) {
+        	result.setMessage("更改密码失败");
+            result.setSuccess(false);
+        }
+        if(!smscode.equals(object)) {
+        	result.setMessage("更改密码失败");
+            result.setSuccess(false);
+        }
+        sysUser = this.sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername,username));
+        if (sysUser == null) {
+            result.setMessage("未找到对应实体");
+            result.setSuccess(false);
+            return result;
+        } else {
+            String salt = oConvertUtils.randomGen(8);
+            sysUser.setSalt(salt);
+            String passwordEncode = PasswordUtil.encrypt(sysUser.getUsername(), password, salt);
+            sysUser.setPassword(passwordEncode);
+            this.sysUserService.updateById(sysUser);
+            result.setSuccess(true);
+            result.setMessage("密码修改完成！");
+            return result;
+        }
+    }
+	
 }

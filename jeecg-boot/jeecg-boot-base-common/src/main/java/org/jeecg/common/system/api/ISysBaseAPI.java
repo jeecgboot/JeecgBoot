@@ -2,6 +2,7 @@ package org.jeecg.common.system.api;
 
 import java.sql.SQLException;
 import java.util.List;
+
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
 
@@ -49,6 +50,9 @@ public interface ISysBaseAPI {
 	 */
 	public List<DictModel> queryDictItemsByCode(String code);
 
+	/** 查询所有的父级字典，按照create_time排序 */
+	public List<DictModel> queryAllDict();
+
 	/**
 	  * 获取表数据字典
 	 * @param table
@@ -72,4 +76,5 @@ public interface ISysBaseAPI {
 	 * @param msgContent  消息内容
 	 */
 	public void sendSysAnnouncement(String fromUser,String toUser,String title, String msgContent);
+	
 }

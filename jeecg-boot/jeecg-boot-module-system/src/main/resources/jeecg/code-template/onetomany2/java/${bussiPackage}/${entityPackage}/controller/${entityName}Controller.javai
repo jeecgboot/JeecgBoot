@@ -128,17 +128,14 @@ public class ${entityName}Controller {
 	 * @return
 	 */
 	@DeleteMapping(value = "/delete")
-	public Result<${entityName}> delete(@RequestParam(name="id",required=true) String id) {
-		Result<${entityName}> result = new Result<${entityName}>();
-		${entityName} ${entityName?uncap_first} = ${entityName?uncap_first}Service.getById(id);
-		if(${entityName?uncap_first}==null) {
-			result.error500("未找到对应实体");
-		}else {
+	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
+		try {
 			${entityName?uncap_first}Service.delMain(id);
-			result.success("删除成功!");
+		} catch (Exception e) {
+			log.error("删除失败",e.getMessage());
+			return Result.error("删除失败!");
 		}
-		
-		return result;
+		return Result.ok("删除成功!");
 	}
 	
 	/**

@@ -7,6 +7,7 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDictItem;
@@ -68,7 +69,7 @@ public class SysDictItemController {
 	 * @return
 	 */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	@CacheEvict(value="dictCache", allEntries=true)
+	@CacheEvict(value= CacheConstant.DICT_CACHE, allEntries=true)
 	public Result<SysDictItem> add(@RequestBody SysDictItem sysDictItem) {
 		Result<SysDictItem> result = new Result<SysDictItem>();
 		try {
@@ -88,7 +89,7 @@ public class SysDictItemController {
 	 * @return
 	 */
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
-	@CacheEvict(value="dictCache", allEntries=true)
+	@CacheEvict(value=CacheConstant.DICT_CACHE, allEntries=true)
 	public Result<SysDictItem> edit(@RequestBody SysDictItem sysDictItem) {
 		Result<SysDictItem> result = new Result<SysDictItem>();
 		SysDictItem sysdict = sysDictItemService.getById(sysDictItem.getId());
@@ -111,7 +112,7 @@ public class SysDictItemController {
 	 * @return
 	 */
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-	@CacheEvict(value="dictCache", allEntries=true)
+	@CacheEvict(value=CacheConstant.DICT_CACHE, allEntries=true)
 	public Result<SysDictItem> delete(@RequestParam(name="id",required=true) String id) {
 		Result<SysDictItem> result = new Result<SysDictItem>();
 		SysDictItem joinSystem = sysDictItemService.getById(id);
@@ -132,7 +133,7 @@ public class SysDictItemController {
 	 * @return
 	 */
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
-	@CacheEvict(value="dictCache", allEntries=true)
+	@CacheEvict(value=CacheConstant.DICT_CACHE, allEntries=true)
 	public Result<SysDictItem> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<SysDictItem> result = new Result<SysDictItem>();
 		if(ids==null || "".equals(ids.trim())) {

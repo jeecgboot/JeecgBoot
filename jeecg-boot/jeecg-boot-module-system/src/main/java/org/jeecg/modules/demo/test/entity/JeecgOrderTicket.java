@@ -21,7 +21,7 @@ public class JeecgOrderTicket implements Serializable {
     private static final long serialVersionUID = 1L;
     
 	/**主键*/
-	@TableId(type = IdType.UUID)
+    @TableId(type = IdType.ID_WORKER_STR)
 	private java.lang.String id;
 	/**航班号*/
 	@Excel(name="航班号",width=15)

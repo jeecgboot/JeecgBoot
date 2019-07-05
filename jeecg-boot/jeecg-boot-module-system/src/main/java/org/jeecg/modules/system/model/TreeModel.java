@@ -8,6 +8,9 @@ import java.util.Map;
 
 import org.jeecg.modules.system.entity.SysPermission;
 
+/**
+  * 树形列表用到
+ */
 public class TreeModel implements Serializable {
 	
 	private static final long serialVersionUID = 4013193970046502756L;

@@ -1,5 +1,6 @@
 package org.jeecg.common.system.base.entity;
 
+import java.io.Serializable;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -21,10 +22,11 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class JeecgEntity {
+public class JeecgEntity implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	/** ID */
-	@TableId(type = IdType.UUID)
+	@TableId(type = IdType.ID_WORKER_STR)
 	@ApiModelProperty(value = "ID")
 	private java.lang.String id;
 	/** 创建人 */

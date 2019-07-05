@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysPermission;
@@ -77,7 +78,7 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 		if(set.size()==0) {
 			return null;
 		}
-		return this.baseMapper.selectList(new QueryWrapper<SysPermissionDataRule>().in("id", set).eq("status","1"));
+		return this.baseMapper.selectList(new QueryWrapper<SysPermissionDataRule>().in("id", set).eq("status",CommonConstant.STATUS_1));
 	}
 
 	@Override
@@ -85,8 +86,8 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 	public void savePermissionDataRule(SysPermissionDataRule sysPermissionDataRule) {
 		this.save(sysPermissionDataRule);
 		SysPermission permission = sysPermissionMapper.selectById(sysPermissionDataRule.getPermissionId());
-		if(permission!=null && (permission.getRuleFlag()==null || permission.getRuleFlag()==0)) {
-			permission.setRuleFlag(1);
+		if(permission!=null && (permission.getRuleFlag()==null || permission.getRuleFlag()==CommonConstant.RULE_FLAG_0)) {
+			permission.setRuleFlag(CommonConstant.RULE_FLAG_1);
 			sysPermissionMapper.updateById(permission);
 		}
 	}
@@ -101,8 +102,8 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 			//注:同一个事务中删除后再查询是会认为数据已被删除的 若事务回滚上述删除无效
 			if(count==null || count==0) {
 				SysPermission permission = sysPermissionMapper.selectById(dataRule.getPermissionId());
-				if(permission!=null && permission.getRuleFlag()==1) {
-					permission.setRuleFlag(0);
+				if(permission!=null && permission.getRuleFlag()==CommonConstant.RULE_FLAG_1) {
+					permission.setRuleFlag(CommonConstant.RULE_FLAG_0);
 					sysPermissionMapper.updateById(permission);
 				}
 			}

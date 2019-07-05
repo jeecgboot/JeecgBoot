@@ -1,6 +1,8 @@
 package org.jeecg.modules.system.service.impl;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -49,4 +51,9 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
 		return sysLogMapper.findTodayIp(dayStart,dayEnd);
 	}
 	//update-end--Author:zhangweijian  Date:20190428 for：传入开始时间，结束时间参数
+
+	@Override
+	public List<Map<String,Object>> findVisitCount(Date dayStart, Date dayEnd) {
+		return sysLogMapper.findVisitCount(dayStart, dayEnd);
+	}
 }

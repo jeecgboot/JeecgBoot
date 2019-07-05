@@ -8,7 +8,6 @@ import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserDepart;
 import org.jeecg.modules.system.mapper.SysUserDepartMapper;
 import org.jeecg.modules.system.model.DepartIdModel;
-import org.jeecg.modules.system.model.SysUserDepartsVO;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserDepartService;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -32,31 +31,6 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 	@Autowired
 	private ISysUserService sysUserService;
 	
-	/**
-	 *根据用户id添加部门信息
-	 */
-	@Override
-	public boolean addSysUseWithrDepart(SysUserDepartsVO sysUserDepartsVO) {
-		LambdaQueryWrapper<SysUserDepart> query = new LambdaQueryWrapper<SysUserDepart>();
-		if(sysUserDepartsVO != null) {
-			String userId = sysUserDepartsVO.getUserId();
-			List<String> departIdList = sysUserDepartsVO.getDepartIdList();
-			if(departIdList != null && departIdList.size() > 0) {
-				for(String depId : departIdList) {
-					query.eq(SysUserDepart::getDepId, depId);
-					query.eq(SysUserDepart::getUserId, userId);
-					List<SysUserDepart> uDepList = this.list(query);
-					if(uDepList == null || uDepList.size() == 0) {
-						this.save(new SysUserDepart("",userId,depId));
-					}
-				}
-			}
-			return true;
-		}else {
-			return false;
-		}
-		
-	}
 
 	/**
 	 * 根据用户id查询部门信息
@@ -91,27 +65,6 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 		
 	}
 
-	/**
-	 * 根据用户id修改部门信息
-	 */
-	@Override
-	public boolean editSysUserWithDepart(SysUserDepartsVO sysUserDepartsVO) {
-		LambdaQueryWrapper<SysUserDepart> queryDep = new LambdaQueryWrapper<SysUserDepart>();
-		List<String> depIdList = sysUserDepartsVO.getDepartIdList();
-		if(depIdList != null && depIdList.size() > 0) {
-			queryDep.eq(SysUserDepart::getUserId, sysUserDepartsVO.getUserId());	
-			boolean ok = this.remove(queryDep);
-			if(ok) {
-				for(String str : depIdList) {
-					this.save(new SysUserDepart("", sysUserDepartsVO.getUserId(), str));
-				}
-			return ok;
-			}
-		}
-		queryDep.eq(SysUserDepart::getUserId, sysUserDepartsVO.getUserId());
-		boolean ok = this.remove(queryDep);
-		return ok;
-	}
 
 	/**
 	 * 根据部门id查询用户信息

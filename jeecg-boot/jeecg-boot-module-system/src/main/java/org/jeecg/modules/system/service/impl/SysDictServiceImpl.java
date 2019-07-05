@@ -2,11 +2,14 @@ package org.jeecg.modules.system.service.impl;
 
 import java.util.List;
 
+import org.jeecg.common.constant.CacheConstant;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.mapper.SysDictItemMapper;
 import org.jeecg.modules.system.mapper.SysDictMapper;
+import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -40,7 +43,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	 * @return
 	 */
 	@Override
-	@Cacheable(value = "dictCache",key = "#code")
+	@Cacheable(value = CacheConstant.DICT_CACHE,key = "#code")
 	public List<DictModel> queryDictItemsByCode(String code) {
 		log.info("无缓存dictCache的时候调用这里！");
 		return sysDictMapper.queryDictItemsByCode(code);
@@ -54,7 +57,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	 */
 
 	@Override
-	@Cacheable(value = "dictCache")
+	@Cacheable(value = CacheConstant.DICT_CACHE)
 	public String queryDictTextByKey(String code, String key) {
 		log.info("无缓存dictText的时候调用这里！");
 		return sysDictMapper.queryDictTextByKey(code, key);
@@ -75,6 +78,12 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		return sysDictMapper.queryTableDictItemsByCode(table,text,code);
 	}
 
+	@Override
+	public List<DictModel> queryTableDictItemsByCodeAndFilter(String table, String text, String code, String filterSql) {
+		log.info("无缓存dictTableList的时候调用这里！");
+		return sysDictMapper.queryTableDictItemsByCodeAndFilter(table,text,code,filterSql);
+	}
+	
 	/**
 	 * 通过查询指定table的 text code 获取字典值text
 	 * dictTableCache采用redis缓存有效期10分钟
@@ -96,7 +105,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
      */
     @Override
     public boolean deleteByDictId(SysDict sysDict) {
-        sysDict.setDelFlag(2);
+        sysDict.setDelFlag(CommonConstant.DEL_FLAG_1);
         return  this.updateById(sysDict);
     }
 
@@ -121,6 +130,16 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Override
 	public List<DictModel> queryAllUserBackDictModel() {
 		return baseMapper.queryAllUserBackDictModel();
+	}
+	
+	@Override
+	public List<DictModel> queryTableDictItems(String table, String text, String code, String keyword) {
+		return baseMapper.queryTableDictItems(table, text, code, "%"+keyword+"%");
+	}
+
+	@Override
+	public List<TreeSelectModel> queryTreeList(String table, String text, String code, String pidField,String pid,String hasChildField) {
+		return baseMapper.queryTreeList(table, text, code, pidField, pid,hasChildField);
 	}
 
 }
