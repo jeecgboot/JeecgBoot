@@ -1,0 +1,108 @@
+{
+  "name": "ant-design-vue-jeecg",
+   "version": "2.0.2",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve --open",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "test:unit": "vue-cli-service test:unit",
+    "test:e2e": "vue-cli-service test:e2e"
+  },
+  "dependencies": {
+    "@antv/data-set": "^0.10.2",
+    "@tinymce/tinymce-vue": "^2.0.0",
+    "ant-design-vue": "^1.3.9",
+    "apexcharts": "^3.6.5",
+    "axios": "^0.18.0",
+    "clipboard": "^2.0.4",
+    "codemirror": "^5.46.0",
+    "dayjs": "^1.8.0",
+    "enquire.js": "^2.1.6",
+    "js-cookie": "^2.2.0",
+    "lodash.get": "^4.4.2",
+    "lodash.pick": "^4.4.0",
+    "md5": "^2.2.1",
+    "nprogress": "^0.2.0",
+    "tinymce": "^5.0.2",
+    "viser-vue": "^2.4.4",
+    "vue": "^2.6.10",
+    "vue-apexcharts": "^1.3.2",
+    "vue-class-component": "^6.0.0",
+    "vue-cropper": "^0.4.8",
+    "vue-i18n": "^8.7.0",
+    "vue-loader": "^15.7.0",
+    "vue-ls": "^3.2.0",
+    "vue-photo-preview": "^1.1.3",
+    "vue-print-nb-jeecg": "^1.0.8",
+    "vue-property-decorator": "^7.3.0",
+    "vue-router": "^3.0.1",
+    "vue-splitpane": "^1.0.4",
+    "vuedraggable": "^2.20.0",
+    "vuex": "^3.0.1",
+    "vuex-class": "^0.3.1"
+  },
+  "devDependencies": {
+    "@babel/polyfill": "^7.2.5",
+    "@vue/cli-plugin-babel": "^3.3.0",
+    "@vue/cli-plugin-eslint": "^3.3.0",
+    "@vue/cli-service": "^3.3.0",
+    "@vue/eslint-config-standard": "^4.0.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.16.0",
+    "eslint-plugin-vue": "^5.1.0",
+    "less": "^3.9.0",
+    "less-loader": "^4.1.0",
+    "node-sass": "^4.11.0",
+    "sass-loader": "^7.0.1",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/strongly-recommended",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {
+      "generator-star-spacing": "off",
+      "no-mixed-operators": 0,
+      "vue/max-attributes-per-line": [
+        2,
+        {
+          "singleline": 5,
+          "multiline": {
+            "max": 1,
+            "allowFirstLine": false
+          }
+        }
+      ],
+      "vue/attribute-hyphenation": 0,
+      "vue/html-self-closing": 0,
+      "vue/component-name-in-template-casing": 0,
+      "vue/html-closing-bracket-spacing": 0,
+      "vue/singleline-html-element-content-newline": 0,
+      "vue/no-unused-components": 0,
+      "vue/multiline-html-element-content-newline": 0,
+      "vue/no-use-v-if-with-v-for": 0,
+      "vue/html-closing-bracket-newline": 0,
+      "vue/no-parsing-error": 0,
+      "no-console": 0
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}

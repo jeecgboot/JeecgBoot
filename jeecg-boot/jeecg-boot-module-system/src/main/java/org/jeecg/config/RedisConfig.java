@@ -2,6 +2,7 @@ package org.jeecg.config;
 
 import java.lang.reflect.Method;
 import java.time.Duration;
+import java.util.Arrays;
 
 import javax.annotation.Resource;
 
@@ -36,17 +37,16 @@ public class RedisConfig extends CachingConfigurerSupport {
 	 *              只需要讲注解上keyGenerator的值设置为keyGenerator即可</br>
 	 * @return 自定义策略生成的key
 	 */
+	@Override
 	@Bean
 	public KeyGenerator keyGenerator() {
 		return new KeyGenerator() {
 			@Override
 			public Object generate(Object target, Method method, Object... params) {
-				StringBuffer sb = new StringBuffer();
+				StringBuilder sb = new StringBuilder();
 				sb.append(target.getClass().getName());
-				sb.append(method.getName());
-				for (Object obj : params) {
-					sb.append(obj.toString());
-				}
+				sb.append(method.getDeclaringClass().getName());
+				Arrays.stream(params).map(Object::toString).forEach(sb::append);
 				return sb.toString();
 			}
 		};
@@ -82,18 +82,8 @@ public class RedisConfig extends CachingConfigurerSupport {
 	public CacheManager cacheManager(LettuceConnectionFactory factory) {
 		// 以锁写入的方式创建RedisCacheWriter对象
 		RedisCacheWriter writer = RedisCacheWriter.lockingRedisCacheWriter(factory);
-		/**
-		 * 设置CacheManager的Value序列化方式为JdkSerializationRedisSerializer,
-		 * 但其实RedisCacheConfiguration默认就是使用 StringRedisSerializer序列化key，
-		 * JdkSerializationRedisSerializer序列化value, 所以以下注释代码就是默认实现，没必要写，直接注释掉
-		 */
-		// RedisSerializationContext.SerializationPair pair =
-		// RedisSerializationContext.SerializationPair.fromSerializer(new
-		// JdkSerializationRedisSerializer(this.getClass().getClassLoader()));
-		// RedisCacheConfiguration config =
-		// RedisCacheConfiguration.defaultCacheConfig().serializeValuesWith(pair);
 		// 创建默认缓存配置对象
-		RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(1)); // 设置缓存有效期一小时;
+		RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(3)); //设置缓存默认有效期3小时;
 		RedisCacheManager cacheManager = new RedisCacheManager(writer, config);
 		return cacheManager;
 	}

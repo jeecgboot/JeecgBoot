@@ -103,12 +103,12 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 		SysAnnouncement announcement = new SysAnnouncement();
 		announcement.setTitile(title);
 		announcement.setMsgContent(msgContent);
-		announcement.setSender("共享平台");
+		announcement.setSender("JEECG BOOT");
 		announcement.setPriority(CommonConstant.PRIORITY_L);
 		announcement.setMsgType(CommonConstant.MSG_TYPE_ALL);
 		announcement.setSendStatus(CommonConstant.HAS_SEND);
 		announcement.setSendTime(new Date());
-		announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
+		announcement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
 		sysAnnouncementMapper.insert(announcement);
 	}
 

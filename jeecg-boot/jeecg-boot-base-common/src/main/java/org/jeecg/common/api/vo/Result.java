@@ -1,11 +1,9 @@
 package org.jeecg.common.api.vo;
 
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.jeecg.common.constant.CommonConstant;
-
 import lombok.Data;
 
 /**
@@ -43,10 +41,6 @@ public class Result<T> implements Serializable {
 	 */
 	@ApiModelProperty(value = "返回数据对象")
 	private T result;
-
-	public Result() {
-		
-	}
 	
 	/**
 	 * 时间戳
@@ -54,29 +48,24 @@ public class Result<T> implements Serializable {
 	@ApiModelProperty(value = "时间戳")
 	private long timestamp = System.currentTimeMillis();
 
-	public void error500(String message) {
+	public Result() {
+		
+	}
+	
+	public Result<T> error500(String message) {
 		this.message = message;
 		this.code = CommonConstant.SC_INTERNAL_SERVER_ERROR_500;
 		this.success = false;
+		return this;
 	}
-
-	public void success(String message) {
+	
+	public Result<T> success(String message) {
 		this.message = message;
 		this.code = CommonConstant.SC_OK_200;
 		this.success = true;
+		return this;
 	}
 	
-	public static Result<Object> error(String msg) {
-		return error(CommonConstant.SC_INTERNAL_SERVER_ERROR_500, msg);
-	}
-	
-	public static Result<Object> error(int code, String msg) {
-		Result<Object> r = new Result<Object>();
-		r.setCode(code);
-		r.setMessage(msg);
-		r.setSuccess(false);
-		return r;
-	}
 	
 	public static Result<Object> ok() {
 		Result<Object> r = new Result<Object>();
@@ -100,5 +89,24 @@ public class Result<T> implements Serializable {
 		r.setCode(CommonConstant.SC_OK_200);
 		r.setResult(data);
 		return r;
+	}
+	
+	public static Result<Object> error(String msg) {
+		return error(CommonConstant.SC_INTERNAL_SERVER_ERROR_500, msg);
+	}
+	
+	public static Result<Object> error(int code, String msg) {
+		Result<Object> r = new Result<Object>();
+		r.setCode(code);
+		r.setMessage(msg);
+		r.setSuccess(false);
+		return r;
+	}
+	
+	/**
+	 * 无权限访问返回结果
+	 */
+	public static Result<Object> noauth(String msg) {
+		return error(CommonConstant.SC_JEECG_NO_AUTHZ, msg);
 	}
 }

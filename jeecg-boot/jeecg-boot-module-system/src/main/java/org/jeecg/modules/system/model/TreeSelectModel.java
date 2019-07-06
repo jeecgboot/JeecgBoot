@@ -1,9 +1,12 @@
 package org.jeecg.modules.system.model;
 
 import java.io.Serializable;
+import java.util.List;
 
+/**
+  * 树形下拉框
+ */
 public class TreeSelectModel implements Serializable {
-	
 
 	private static final long serialVersionUID = 9016390975325574747L;
 
@@ -18,6 +21,8 @@ public class TreeSelectModel implements Serializable {
 	private String parentId;
 	
 	private String value;
+	
+	private String code;
 	
 	public String getValue() {
 		return value;
@@ -66,7 +71,23 @@ public class TreeSelectModel implements Serializable {
 	public void setIcon(String icon) {
 		this.icon = icon;
 	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 	
-	
+	private List<TreeSelectModel> children;
+
+	public List<TreeSelectModel> getChildren() {
+		return children;
+	}
+
+	public void setChildren(List<TreeSelectModel> children) {
+		this.children = children;
+	}
 
 }

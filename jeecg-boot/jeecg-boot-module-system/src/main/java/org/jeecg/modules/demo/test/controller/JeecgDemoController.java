@@ -168,19 +168,14 @@ public class JeecgDemoController extends JeecgController<JeecgDemo,IJeecgDemoSer
 	@AutoLog(value = "删除测试DEMO")
 	@DeleteMapping(value = "/delete")
 	@ApiOperation(value = "通过ID删除DEMO", notes = "通过ID删除DEMO")
-	public Result<JeecgDemo> delete(@RequestParam(name = "id", required = true) String id) {
-		Result<JeecgDemo> result = new Result<JeecgDemo>();
-		JeecgDemo jeecgDemo = jeecgDemoService.getById(id);
-		if (jeecgDemo == null) {
-			result.error500("未找到对应实体");
-		} else {
-			boolean ok = jeecgDemoService.removeById(id);
-			if (ok) {
-				result.success("删除成功!");
-			}
+	public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
+		try {
+			jeecgDemoService.removeById(id);
+		} catch (Exception e) {
+			log.error("删除失败",e.getMessage());
+			return Result.error("删除失败!");
 		}
-
-		return result;
+		return Result.ok("删除成功!");
 	}
 
 	/**

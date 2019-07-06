@@ -125,19 +125,14 @@ public class ${entityName}Controller {
 	@AutoLog(value = "${tableVo.ftlDescription}-通过id删除")
 	@ApiOperation(value="${tableVo.ftlDescription}-通过id删除", notes="${tableVo.ftlDescription}-通过id删除")
 	@DeleteMapping(value = "/delete")
-	public Result<${entityName}> delete(@RequestParam(name="id",required=true) String id) {
-		Result<${entityName}> result = new Result<${entityName}>();
-		${entityName} ${entityName?uncap_first} = ${entityName?uncap_first}Service.getById(id);
-		if(${entityName?uncap_first}==null) {
-			result.error500("未找到对应实体");
-		}else {
-			boolean ok = ${entityName?uncap_first}Service.removeById(id);
-			if(ok) {
-				result.success("删除成功!");
-			}
+	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
+		try {
+			${entityName?uncap_first}Service.removeById(id);
+		} catch (Exception e) {
+			log.error("删除失败",e.getMessage());
+			return Result.error("删除失败!");
 		}
-		
-		return result;
+		return Result.ok("删除成功!");
 	}
 	
 	/**
@@ -230,9 +225,7 @@ public class ${entityName}Controller {
           params.setNeedSave(true);
           try {
               List<${entityName}> list${entityName}s = ExcelImportUtil.importExcel(file.getInputStream(), ${entityName}.class, params);
-              for (${entityName} ${entityName?uncap_first}Excel : list${entityName}s) {
-                  ${entityName?uncap_first}Service.save(${entityName?uncap_first}Excel);
-              }
+              ${entityName?uncap_first}Service.saveBatch(list${entityName}s);
               return Result.ok("文件导入成功！数据行数:" + list${entityName}s.size());
           } catch (Exception e) {
               log.error(e.getMessage(),e);

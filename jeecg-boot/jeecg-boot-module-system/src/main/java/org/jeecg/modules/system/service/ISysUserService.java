@@ -6,6 +6,7 @@ import java.util.Set;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.modules.system.entity.SysUser;
 
@@ -88,4 +89,38 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param orgCode
 	 */
 	void updateUserDepart(String username,String orgCode);
+	
+	/**
+	 * 根据手机号获取用户名和密码
+	 */
+	public SysUser getUserByPhone(String phone);
+
+
+	/**
+	 * 根据邮箱获取用户
+	 */
+	public SysUser getUserByEmail(String email);
+
+
+	/**
+	 * 添加用户和用户部门关系
+	 * @param user
+	 * @param selectedParts
+	 */
+	void addUserWithDepart(SysUser user, String selectedParts);
+
+	/**
+	 * 编辑用户和用户部门关系
+	 * @param user
+	 * @param departs
+	 */
+	void editUserWithDepart(SysUser user, String departs);
+	
+	/**
+	   * 校验用户是否有效
+	 * @param sysUser
+	 * @return
+	 */
+	Result checkUserIsEffective(SysUser sysUser);
+
 }

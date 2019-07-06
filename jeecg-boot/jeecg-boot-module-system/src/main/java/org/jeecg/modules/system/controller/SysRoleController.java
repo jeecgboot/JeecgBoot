@@ -2,8 +2,6 @@ package org.jeecg.modules.system.controller;
 
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -14,16 +12,16 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CacheConstant;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.entity.SysPermissionDataRule;
 import org.jeecg.modules.system.entity.SysRole;
 import org.jeecg.modules.system.entity.SysRolePermission;
-import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.TreeModel;
 import org.jeecg.modules.system.service.ISysPermissionDataRuleService;
 import org.jeecg.modules.system.service.ISysPermissionService;
@@ -47,8 +45,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.alibaba.fastjson.JSON;
+import org.jeecg.common.system.vo.LoginUser;
+import org.apache.shiro.SecurityUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -150,7 +148,7 @@ public class SysRoleController {
 	 * @param id
 	 * @return
 	 */
-	@CacheEvict(value="loginUser_cacheRules", allEntries=true)
+	@CacheEvict(value= CacheConstant.LOGIN_USER_RULES_CACHE, allEntries=true)
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<SysRole> delete(@RequestParam(name="id",required=true) String id) {
 		Result<SysRole> result = new Result<SysRole>();
@@ -172,7 +170,7 @@ public class SysRoleController {
 	 * @param ids
 	 * @return
 	 */
-	@CacheEvict(value="loginUser_cacheRules", allEntries=true)
+	@CacheEvict(value=CacheConstant.LOGIN_USER_RULES_CACHE, allEntries=true)
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysRole> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<SysRole> result = new Result<SysRole>();
@@ -269,7 +267,8 @@ public class SysRoleController {
 		//导出文件名称
 		mv.addObject(NormalExcelConstants.FILE_NAME,"角色列表");
 		mv.addObject(NormalExcelConstants.CLASS,SysRole.class);
-		mv.addObject(NormalExcelConstants.PARAMS,new ExportParams("角色列表数据","导出人:Jeecg","导出信息"));
+		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		mv.addObject(NormalExcelConstants.PARAMS,new ExportParams("角色列表数据","导出人:"+user.getRealname(),"导出信息"));
 		mv.addObject(NormalExcelConstants.DATA_LIST,pageList);
 		return mv;
 	}
@@ -378,7 +377,7 @@ public class SysRoleController {
 		List<String> ids = new ArrayList<>();
 		try {
 			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
-			query.eq(SysPermission::getDelFlag, 0);
+			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
 			query.orderByAsc(SysPermission::getSortNo);
 			List<SysPermission> list = sysPermissionService.list(query);
 			for(SysPermission sysPer : list) {

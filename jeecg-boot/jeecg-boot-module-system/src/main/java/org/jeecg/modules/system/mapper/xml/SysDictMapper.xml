@@ -4,7 +4,7 @@
 
 	<!-- 通过字典code获取字典数据 -->
 	<select id="queryDictItemsByCode" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
-		   select s.item_value value,s.item_text text from sys_dict_item s 
+		   select s.item_value as value,s.item_text as text from sys_dict_item s 
 		   where dict_id = (select id from sys_dict where dict_code = #{code})
 		   order by s.sort_order asc
 	</select>
@@ -22,6 +22,11 @@
 		   select ${text} as 'text',${code} as 'value' from ${table}
 	</select>
 	
+	<!--通过查询指定table的 text code 获取字典（指定查询条件）-->
+	<select id="queryTableDictItemsByCodeAndFilter" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		   select ${text} as 'text',${code} as 'value' from ${table} where ${filterSql}
+	</select>
+	
 	<!--通过查询指定table的 text code key 获取字典值-->
 	<select id="queryTableDictTextByKey" parameterType="String"  resultType="String">
 		   select ${text} as 'text' from ${table} where ${code}= #{key}
@@ -29,7 +34,7 @@
 
 	<!-- 重复校验 sql语句 -->
 	<select id="duplicateCheckCountSql" resultType="Long" parameterType="org.jeecg.modules.system.model.DuplicateCheckVo">
-		SELECT COUNT(*) FROM ${tableName} WHERE ${fieldName} = #{fieldVal} and id != #{dataId}
+		SELECT COUNT(*) FROM ${tableName} WHERE ${fieldName} = #{fieldVal} and id &lt;&gt; #{dataId}
 	</select>
 	
 	<!-- 重复校验 sql语句 -->
@@ -46,4 +51,22 @@
 	<select id="queryAllUserBackDictModel" resultType="org.jeecg.common.system.vo.DictModel">
 		select username as value,realname as text from sys_depart where del_flag = '0'
 	</select>
+	
+	<!--通过查询指定table的 text code 获取字典数据，且支持关键字查询 -->
+	<select id="queryTableDictItems" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		select ${text} as 'text',${code} as 'value' from ${table} where ${text} like #{keyword}
+	</select>
+	
+	<!-- 根据表名、显示字段名、存储字段名、父ID查询树 -->
+	<select id="queryTreeList" parameterType="String"  resultType="org.jeecg.modules.system.model.TreeSelectModel">
+		select ${text} as 'title',
+			   ${code} as 'key',
+			   <if test="hasChildField != null and hasChildField != ''">
+			   (case ${hasChildField} when '1' then 0 else 1 end) as 'isLeaf',
+			   </if>
+			   ${pidField} as parentId
+			   from ${table} where ${pidField} = #{pid}
+	</select>
+	
+	
 </mapper>

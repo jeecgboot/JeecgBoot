@@ -43,6 +43,8 @@ public class NumberProperty extends CommonProperty {
 	 * 大于等于
 	 */
 	private Integer exclusiveMinimum;
+	
+	private String pattern;
 
 	public Integer getMultipleOf() {
 		return multipleOf;
@@ -82,6 +84,14 @@ public class NumberProperty extends CommonProperty {
 
 	public void setExclusiveMinimum(Integer exclusiveMinimum) {
 		this.exclusiveMinimum = exclusiveMinimum;
+	}
+	
+	public String getPattern() {
+		return pattern;
+	}
+
+	public void setPattern(String pattern) {
+		this.pattern = pattern;
 	}
 
 	public NumberProperty() {}
@@ -133,6 +143,9 @@ public class NumberProperty extends CommonProperty {
 		}
 		if(exclusiveMinimum!=null) {
 			prop.put("exclusiveMinimum",exclusiveMinimum);
+		}
+		if(pattern!=null) {
+			prop.put("pattern",pattern);
 		}
 		map.put("prop",prop);
 		return map;

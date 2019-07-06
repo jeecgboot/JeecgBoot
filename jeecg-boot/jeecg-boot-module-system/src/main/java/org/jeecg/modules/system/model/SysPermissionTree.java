@@ -77,6 +77,13 @@ public class SysPermissionTree implements Serializable {
 	 */
 	private boolean route;
 
+
+	/**
+	 * 是否路缓存页面: 0:不是  1:是（默认值1）
+	 */
+	private boolean keepAlive;
+
+
 	/**
 	 * 描述
 	 */
@@ -141,6 +148,7 @@ public class SysPermissionTree implements Serializable {
 		this.url = permission.getUrl();
 		this.hidden = permission.isHidden();
 		this.route = permission.isRoute();
+		this.keepAlive = permission.isKeepAlive();
 		this.alwaysShow= permission.isAlwaysShow();
 		this.title=permission.getName();
 		if (!permission.isLeaf()) {
@@ -158,6 +166,22 @@ public class SysPermissionTree implements Serializable {
 	}
 
 	private List<SysPermissionTree> children;
+
+	public boolean isLeaf() {
+		return isLeaf;
+	}
+
+	public void setLeaf(boolean leaf) {
+		isLeaf = leaf;
+	}
+
+	public boolean isKeepAlive() {
+		return keepAlive;
+	}
+
+	public void setKeepAlive(boolean keepAlive) {
+		this.keepAlive = keepAlive;
+	}
 
 	public boolean isAlwaysShow() {
 		return alwaysShow;

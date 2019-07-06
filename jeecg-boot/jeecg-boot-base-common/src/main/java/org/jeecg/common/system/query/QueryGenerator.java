@@ -16,8 +16,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.util.JeecgDataAutorUtils;
 import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysPermissionDataRule;
 import org.springframework.util.NumberUtils;
@@ -174,6 +176,13 @@ public class QueryGenerator {
 		}
 		log.debug("排序规则>>列:"+column+",排序方式:"+order);
 		if (oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
+			//字典字段，去掉字典翻译文本后缀
+			if(column.endsWith(CommonConstant.DICT_TEXT_SUFFIX)) {
+				column = column.substring(0, column.lastIndexOf(CommonConstant.DICT_TEXT_SUFFIX));
+			}
+			//SQL注入check
+			SqlInjectionUtil.filterContent(column); 
+			
 			if (order.toUpperCase().indexOf(ORDER_TYPE_ASC)>=0) {
 				queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));
 			} else {

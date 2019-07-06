@@ -5,18 +5,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CacheConstant;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.system.entity.SysDepart;
-import org.jeecg.modules.system.entity.SysPermission;
-import org.jeecg.modules.system.entity.SysUser;
-import org.jeecg.modules.system.entity.SysUserRole;
-import org.jeecg.modules.system.mapper.SysDepartMapper;
-import org.jeecg.modules.system.mapper.SysPermissionMapper;
-import org.jeecg.modules.system.mapper.SysUserMapper;
-import org.jeecg.modules.system.mapper.SysUserRoleMapper;
+import org.jeecg.modules.system.entity.*;
+import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -50,6 +47,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	@Autowired
 	private SysUserRoleMapper sysUserRoleMapper;
 	@Autowired
+	private SysUserDepartMapper sysUserDepartMapper;
+	@Autowired
 	private ISysBaseAPI sysBaseAPI;
 	@Autowired
 	private SysDepartMapper sysDepartMapper;
@@ -74,7 +73,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	}
 
 	@Override
-	@CacheEvict(value="loginUser_cacheRules", allEntries=true)
+	@CacheEvict(value= CacheConstant.LOGIN_USER_RULES_CACHE, allEntries=true)
 	@Transactional
 	public void editUserWithRole(SysUser user, String roles) {
 		this.updateById(user);
@@ -101,7 +100,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return 角色集合
 	 */
 	@Override
-	@Cacheable(value = "loginUser_cacheRules",key = "'Roles_'+#username")
+	@Cacheable(value = CacheConstant.LOGIN_USER_RULES_CACHE,key = "'Roles_'+#username")
 	public Set<String> getUserRolesSet(String username) {
 		// 查询用户拥有的角色集合
 		List<String> roles = sysUserRoleMapper.getRoleByUserName(username);
@@ -116,7 +115,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	 * @return 权限集合
 	 */
 	@Override
-	@Cacheable(value = "loginUser_cacheRules",key = "'Permissions_'+#username")
+	@Cacheable(value = CacheConstant.LOGIN_USER_RULES_CACHE,key = "'Permissions_'+#username")
 	public Set<String> getUserPermissionsSet(String username) {
 		Set<String> permissionSet = new HashSet<>();
 		List<SysPermission> permissionList = sysPermissionMapper.queryByUser(username);
@@ -187,4 +186,75 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		baseMapper.updateUserDepart(username, orgCode);
 	}
 
+
+	@Override
+	public SysUser getUserByPhone(String phone) {
+		return userMapper.getUserByPhone(phone);
+	}
+
+
+	@Override
+	public SysUser getUserByEmail(String email) {
+		return userMapper.getUserByEmail(email);
+	}
+
+	@Override
+	@Transactional
+	public void addUserWithDepart(SysUser user, String selectedParts) {
+//		this.save(user);  //保存角色的时候已经添加过一次了
+		if(oConvertUtils.isNotEmpty(selectedParts)) {
+			String[] arr = selectedParts.split(",");
+			for (String deaprtId : arr) {
+				SysUserDepart userDeaprt = new SysUserDepart(user.getId(), deaprtId);
+				sysUserDepartMapper.insert(userDeaprt);
+			}
+		}
+	}
+
+
+	@Override
+	@Transactional
+	@CacheEvict(value="loginUser_cacheRules", allEntries=true)
+	public void editUserWithDepart(SysUser user, String departs) {
+		this.updateById(user);  //更新角色的时候已经更新了一次了，可以再跟新一次
+		//先删后加
+		sysUserDepartMapper.delete(new QueryWrapper<SysUserDepart>().lambda().eq(SysUserDepart::getUserId, user.getId()));
+		if(oConvertUtils.isNotEmpty(departs)) {
+			String[] arr = departs.split(",");
+			for (String departId : arr) {
+				SysUserDepart userDepart = new SysUserDepart(user.getId(), departId);
+				sysUserDepartMapper.insert(userDepart);
+			}
+		}
+	}
+
+
+	/**
+	   * 校验用户是否有效
+	 * @param sysUser
+	 * @return
+	 */
+	@Override
+	public Result<?> checkUserIsEffective(SysUser sysUser) {
+		Result<?> result = new Result<Object>();
+		//情况1：根据用户信息查询，该用户不存在
+		if (sysUser == null) {
+			result.error500("该用户不存在，请注册");
+			sysBaseAPI.addLog("用户登录失败，用户不存在！", CommonConstant.LOG_TYPE_1, null);
+			return result;
+		}
+		//情况2：根据用户信息查询，该用户已注销
+		if (CommonConstant.DEL_FLAG_1.toString().equals(sysUser.getDelFlag())) {
+			sysBaseAPI.addLog("用户登录失败，用户名:" + sysUser.getUsername() + "已注销！", CommonConstant.LOG_TYPE_1, null);
+			result.error500("该用户已注销");
+			return result;
+		}
+		//情况3：根据用户信息查询，该用户已冻结
+		if (CommonConstant.USER_FREEZE.equals(sysUser.getStatus())) {
+			sysBaseAPI.addLog("用户登录失败，用户名:" + sysUser.getUsername() + "已冻结！", CommonConstant.LOG_TYPE_1, null);
+			result.error500("该用户已冻结");
+			return result;
+		}
+		return result;
+	}
 }
