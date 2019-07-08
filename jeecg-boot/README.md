@@ -33,8 +33,20 @@ Jeecg-Boot 快速开发平台
 
 - 缓存：Redis
 
- 
+
 ## 技术文档
+
+
+- 在线演示 ：  [http://boot.jeecg.org](http://boot.jeecg.org)
+
+- 在线教程：  [http://jeecg-boot.mydoc.io/?t=345660](http://jeecg-boot.mydoc.io/?t=345660)
+
+- 常见问题：  [入门常见问题大全](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
+
+- QQ交流群 ：  ①284271917、②769925425
+
+
+## 专项文档
 
 #### 一、查询过滤器用法
 
