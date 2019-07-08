@@ -34,9 +34,9 @@ Jeecg-Boot 快速开发平台
 - 缓存：Redis
 
  
-## 开发文档
+## 技术文档
 
-- 查询过滤器用法
+#### 一、查询过滤器用法
 
 ```
 QueryWrapper<?> queryWrapper = QueryGenerator.initQueryWrapper(?, req.getParameterMap());
@@ -77,133 +77,22 @@ QueryWrapper<?> queryWrapper = QueryGenerator.initQueryWrapper(?, req.getParamet
 | 多选字段模糊查询     | 上述4 有一个特例，若某一查询字段前后都带逗号 则会将其视为走这种查询方式 ,该查询方式是将查询条件以逗号分割再遍历数组 将每个元素作like查询 用or拼接,例如 现在name传入值 ,a,b,c, 那么结果sql就是 name like '%a%' or name like '%b%' or name like '%c%' |    |
 
 
-- Autopoi使用文档（EXCEL工具类 -  EasyPOI衍变升级重构版本）
+#### 二、AutoPoi(EXCEL工具类-EasyPOI衍变升级重构版本）
  
   [在线文档](https://github.com/zhangdaiscott/autopoi)
   
 
 
+#### 三、代码生成器
 
-- **代码生成器**
-
-** 功能说明**：   一键生成的代码（包括：controller、service、dao、mapper、entity、vue）
+> 功能说明：   一键生成的代码（包括：controller、service、dao、mapper、entity、vue）
  
- **模板位置**： src/main/resources/jeecg/code-template  
+ - 模板位置： src/main/resources/jeecg/code-template
+ - 技术文档： http://jeecg-boot.mydoc.io/?t=345685
 
-**使用方法**： 
- 
- 【**一对一模板**】  
-  
-**1.**先找到**jeecg-boot/src/resources/jeecg**下的  
-**jeecg_config.properties**和**jeecg_database.properties**两个文件。  
-**jeecg_config.properties:** 用来配置文件生成的路径，  
-    
-**jeecg_database.properties:** 用来配置数据库相关配置.  
-         
-         
-**2.**配置好这些配置之后，我们需要找到**jeecg-boot/src/main/java/org/jeecg/JeecgOneGUI.java**类，也就是启动一对一代码生成器的入口；
-  
-    
-**3.**右键运行该类，紧接着会弹出一个窗口，如下图:  
-        ![](https://static.oschina.net/uploads/img/201904/14222638_Svth.png)  
-          
-          
-**4.**然后根据窗口左侧的提示，在右侧填写对应的信息即可.
-     
- 【**一对多模板**】  
-   
-   
-**1.**先找到**jeecg-boot/src/resources/jeecg**下的
-    
-**jeecg_config.properties**和**jeecg_database.properties**两个文件。  
-  
-**jeecg_config.properties:** 是配置文件生成路径的，  
-  
-  
-**jeecg_database.properties:** 是配置数据库相关配置的文件。  
-       
-       
-**2.**接着我们需要找到**jeecg-boot/src/main/java/org/jeecg/JeecgOneToMainUtil.java**这个类。
-     该类是生成一对多模板的启动入口。  
-       
-       
-**3.**该类中需要三个步骤来配置一对多表的信息。  
-  
-    
-  (1) 第一步: 配置主表信息,代码如下:
-  
-```
-		//第一步：设置主表配置
-		MainTableVo mainTable = new MainTableVo();
-		mainTable.setTableName("jeecg_order_main");//表名
-		mainTable.setEntityName("TestOrderMain");	 //实体名
-		mainTable.setEntityPackage("test2");	 //包名
-		mainTable.setFtlDescription("订单");	 //描述
-		
-```
-  (2) 第二步: 配置子表信息，**有多个则配置多个**, 代码如下: 
-     
-  ①比如: 配置子表 1:
-  
-  ```
-		//第二步：设置子表集合配置
-		List<SubTableVo> subTables = new ArrayList<SubTableVo>();
-		//[1].子表一
-		SubTableVo po = new SubTableVo();
-		po.setTableName("jeecg_order_customer");//表名
-		po.setEntityName("TestOrderCustom");	    //实体名
-		po.setEntityPackage("test2");	        //包名
-		po.setFtlDescription("客户明细");       //描述
-		//子表外键参数配置
-		/*说明: 
-		 * a) 子表引用主表主键ID作为外键，外键字段必须以_ID结尾;
-		 * b) 主表和子表的外键字段名字，必须相同（除主键ID外）;
-		 * c) 多个外键字段，采用逗号分隔;
-		*/
-		po.setForeignKeys(new String[]{"order_id"});
-		subTables.add(po);
-  ```
-  ②比如: 配置子表 2:  
-  
-```
-		//[2].子表二
-		SubTableVo po2 = new SubTableVo();
-		po2.setTableName("jeecg_order_ticket");		//表名
-		po2.setEntityName("TestOrderTicket");			//实体名
-		po2.setEntityPackage("test2"); 				//包名
-		po2.setFtlDescription("产品明细");			//描述
-		//子表外键参数配置
-		/*说明: 
-		 * a) 子表引用主表主键ID作为外键，外键字段必须以_ID结尾;
-		 * b) 主表和子表的外键字段名字，必须相同（除主键ID外）;
-		 * c) 多个外键字段，采用逗号分隔;
-		*/
-		po2.setForeignKeys(new String[]{"order_id"});
-		subTables.add(po2);  
-  ```
-  ③将整合了子表VO的subTables添加到主表对象当中去: 
 
-```
-  mainTable.setSubTables(subTables);
-  ```
-  ④需要注意如下代码,该代码的作用是,为子表设置主外键关联,当添加数据时,  
-主表的主键将会添加到子表的"order_id"中:  
-  
-```
-  		po2.setForeignKeys(new String[]{"order_id"});
-  ```
-    
-  (3) 第三步: 启动(run)程序，生成代码, 代码如下:
-  
-  ```
-  		//第三步：一对多(父子表)数据模型,代码生成
-		new CodeGenerateOneToMany(mainTable,subTables).generateCodeFile();
-  ```
- 
-[在线文档](https://github.com/zhangdaiscott/autopoi)  
-  
 
-- **编码排重使用示例**   
+#### 四、编码排重使用示例
 
 重复校验效果：
 ![输入图片说明](https://static.oschina.net/uploads/img/201904/19191836_eGkQ.png "在这里输入图片标题")
