@@ -13,6 +13,10 @@ management:
     include: metrics,httptrace
     
 spring:
+  servlet:
+     multipart: 
+        max-file-size: 10MB
+        max-request-size: 10MB
   mail:
     host: smtp.163.com
     username: jeecgos@163.com
