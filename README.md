@@ -48,7 +48,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 更新日志：  [版本日志](http://www.jeecg.com/#/doc/changelog)
 
-- Online初体验：  [1分钟快速学习](https://segmentfault.com/a/1190000019448442)
+- Online初体验：  [1分钟快速学习](https://my.oschina.net/jeecg/blog/3061917)
 
 - 如何参与：  [欢迎技术爱好者，加入JEECG开团队](http://jeecg.com/#/doc/canyu-os)
 
