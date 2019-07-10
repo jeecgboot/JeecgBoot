@@ -249,6 +249,8 @@ public class LoginController {
 
 		} catch (ClientException e) {
 			e.printStackTrace();
+			result.error500(" 短信接口异常，请联系管理员！");
+			return result;
 		}
 		return result;
 	}
