@@ -19,7 +19,9 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.RedisUtil;
@@ -74,7 +76,9 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/sys/user")
 public class SysUserController {
-
+	@Autowired
+	private ISysBaseAPI sysBaseAPI;
+	
 	@Autowired
 	private ISysUserService sysUserService;
 
@@ -94,7 +98,6 @@ public class SysUserController {
 	private RedisUtil redisUtil;
 	
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	//@RequiresPermissions("sys:user:list")
 	public Result<IPage<SysUser>> queryPageList(SysUser user,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
 		Result<IPage<SysUser>> result = new Result<IPage<SysUser>>();
@@ -132,11 +135,12 @@ public class SysUserController {
 	}
 
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
-//	@RequiresPermissions("user:edit")
+	//@RequiresPermissions("user:edit")
 	public Result<SysUser> edit(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
 		try {
 			SysUser sysUser = sysUserService.getById(jsonObject.getString("id"));
+			sysBaseAPI.addLog("编辑用户，id： " +jsonObject.getString("id") ,CommonConstant.LOG_TYPE_2, 2);
 			if(sysUser==null) {
 				result.error500("未找到对应实体");
 			}else {
@@ -166,6 +170,7 @@ public class SysUserController {
 		// 定义SysUserDepart实体类的数据库查询LambdaQueryWrapper
 		LambdaQueryWrapper<SysUserDepart> query = new LambdaQueryWrapper<SysUserDepart>();
 		SysUser sysUser = sysUserService.getById(id);
+		sysBaseAPI.addLog("删除用户，id： " +id ,CommonConstant.LOG_TYPE_2, 3);
 		if(sysUser==null) {
 			result.error500("未找到对应实体");
 		}else {
@@ -189,6 +194,7 @@ public class SysUserController {
 		// 定义SysUserDepart实体类的数据库查询对象LambdaQueryWrapper
 		LambdaQueryWrapper<SysUserDepart> query = new LambdaQueryWrapper<SysUserDepart>();
 		String[] idArry = ids.split(",");
+		sysBaseAPI.addLog("批量删除用户， id： " +idArry.toString() ,CommonConstant.LOG_TYPE_2, 3);
 		Result<SysUser> result = new Result<SysUser>();
 		if(ids==null || "".equals(ids.trim())) {
 			result.error500("参数不识别！");
@@ -422,8 +428,8 @@ public class SysUserController {
      * @param response
      * @return
      */
-    @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     @RequiresPermissions("user:import")
+    @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
@@ -780,21 +786,25 @@ public class SysUserController {
 		String username = sysUser.getUsername();
 		Result<Map<String, Object>> result = new Result<Map<String, Object>>();
 		Map<String, Object> map = new HashMap<String, Object>();
-		if (oConvertUtils.isNotEmpty(phone)) { 
-			SysUser userList = sysUserService.getUserByPhone(phone);
-			map.put("username",userList.getUsername());
-			map.put("phone",userList.getPhone());
-			result.setSuccess(true);
-			result.setResult(map);
-			return result;
+		if (oConvertUtils.isNotEmpty(phone)) {
+			SysUser user = sysUserService.getUserByPhone(phone);
+			if(user!=null) {
+				map.put("username",user.getUsername());
+				map.put("phone",user.getPhone());
+				result.setSuccess(true);
+				result.setResult(map);
+				return result;
+			}
 		}
 		if (oConvertUtils.isNotEmpty(username)) {
-			SysUser userList = sysUserService.getUserByName(username);
-			map.put("username",userList.getUsername());
-			map.put("phone",userList.getPhone());
-			result.setSuccess(true);
-			result.setResult(map);
-			return result;
+			SysUser user = sysUserService.getUserByName(username);
+			if(user!=null) {
+				map.put("username",user.getUsername());
+				map.put("phone",user.getPhone());
+				result.setSuccess(true);
+				result.setResult(map);
+				return result;
+			}
 		}
 		result.setSuccess(false);
 		result.setMessage("验证失败");
@@ -856,5 +866,41 @@ public class SysUserController {
             return result;
         }
     }
+	
+
+	/**
+	 * 根据TOKEN获取用户的部分信息（返回的数据是可供表单设计器使用的数据）
+	 * 
+	 * @return
+	 */
+	@GetMapping("/getUserSectionInfoByToken")
+	public Result<?> getUserSectionInfoByToken(HttpServletRequest request, @RequestParam(name = "token", required = false) String token) {
+		try {
+			String username = null;
+			// 如果没有传递token，就从header中获取token并获取用户信息
+			if (oConvertUtils.isEmpty(token)) {
+				 username = JwtUtil.getUserNameByToken(request);
+			} else {
+				 username = JwtUtil.getUsername(token);				
+			}
+
+			log.info(" ------ 通过令牌获取部分用户信息，当前用户： " + username);
+
+			// 根据用户名查询用户信息
+			SysUser sysUser = sysUserService.getUserByName(username);
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("sysUserId", sysUser.getId());
+			map.put("sysUserCode", sysUser.getUsername()); // 当前登录用户登录账号
+			map.put("sysUserName", sysUser.getRealname()); // 当前登录用户真实名称
+			map.put("sysOrgCode", sysUser.getOrgCode()); // 当前登录用户部门编号
+
+			log.info(" ------ 通过令牌获取部分用户信息，已获取的用户信息： " + map);
+
+			return Result.ok(map);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			return Result.error(500, "查询失败:" + e.getMessage());
+		}
+	}
 	
 }
