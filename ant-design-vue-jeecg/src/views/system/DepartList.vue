@@ -363,7 +363,7 @@
       },
       onClearSelected() {
         this.hiding = true
-        this.checkedKeys = {}
+        this.checkedKeys = []
         this.currSelected = {}
         this.form.resetFields()
         this.selectedKeys = []
