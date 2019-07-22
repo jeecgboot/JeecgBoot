@@ -86,7 +86,7 @@ public class RedisConfig extends CachingConfigurerSupport {
 		RedisCacheWriter writer = RedisCacheWriter.lockingRedisCacheWriter(factory);
 		// 创建默认缓存配置对象
 		/* 默认配置，设置缓存有效期 1小时*/
-		RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(1)).disableCachingNullValues();
+		RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(1));
 		/* 配置test的超时时间为120s*/
 		RedisCacheManager cacheManager = RedisCacheManager.builder(RedisCacheWriter.lockingRedisCacheWriter(lettuceConnectionFactory)).cacheDefaults(defaultCacheConfig)
 				.withInitialCacheConfigurations(singletonMap("test", RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(120)).disableCachingNullValues()))
