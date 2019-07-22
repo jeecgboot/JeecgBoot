@@ -171,12 +171,11 @@
   import { mapActions } from "vuex"
   import { timeFix } from "@/utils/util"
   import Vue from 'vue'
-  import { ACCESS_TOKEN } from "@/store/mutation-types"
+  import { ACCESS_TOKEN ,ENCRYPTED_STRING} from "@/store/mutation-types"
   import JGraphicCode from '@/components/jeecg/JGraphicCode'
   import { putAction } from '@/api/manage'
   import { postAction } from '@/api/manage'
-  import { getAction} from '@/api/manage'
-  import { encryption } from '@/utils/encryption/aesEncrypt'
+  import { encryption , getEncryptedString } from '@/utils/encryption/aesEncrypt'
 
   export default {
     components: {
@@ -192,6 +191,10 @@
         requiredTwoStepCaptcha: false,
         stepCaptchaVisible: false,
         form: this.$form.createForm(this),
+        encryptedString:{
+          key:"",
+          iv:"",
+        },
         state: {
           time: 60,
           smsSendBtn: false,
@@ -224,6 +227,7 @@
     created () {
       Vue.ls.remove(ACCESS_TOKEN)
       this.getRouterData();
+      this.getEncrypte();
       // update-begin- --- author:scott ------ date:20190225 ---- for:暂时注释，未实现登录验证码功能
 //      this.$http.get('/auth/2step-code')
 //        .then(res => {
@@ -256,23 +260,23 @@
         let loginParams = {
           remember_me: that.formLogin.rememberMe
         };
-
+        that.loginBtn = true;
         // 使用账户密码登陆
         if (that.customActiveKey === 'tab1') {
           that.form.validateFields([ 'username', 'password','inputCode' ], { force: true }, (err, values) => {
             if (!err) {
-              getAction("/sys/getEncryptedString",{}).then((res)=>{
-                loginParams.username = values.username
-                //loginParams.password = md5(values.password)
-                loginParams.password = encryption(values.password,res.result.key,res.result.iv)
-                that.Login(loginParams).then((res) => {
-                  this.departConfirm(res)
-                }).catch((err) => {
-                  that.requestFailed(err);
-                })
+              loginParams.username = values.username
+              //loginParams.password = md5(values.password)
+              loginParams.password = encryption(values.password,that.encryptedString.key,that.encryptedString.iv).replace(/\+/g,"%2B");
+              that.Login(loginParams).then((res) => {
+                this.departConfirm(res)
               }).catch((err) => {
                 that.requestFailed(err);
               });
+
+
+            }else {
+              that.loginBtn = false;
             }
           })
           // 使用手机号登陆
@@ -452,6 +456,17 @@
         'username': this.$route.params.username
       });
     })
+    },
+    //获取密码加密规则
+    getEncrypte(){
+      var encryptedString = Vue.ls.get(ENCRYPTED_STRING);
+      if(encryptedString == null){
+        getEncryptedString().then((data) => {
+          this.encryptedString = data
+        });
+      }else{
+        this.encryptedString = encryptedString;
+      }
     },
     }
   }

@@ -68,7 +68,7 @@ public class LoginController {
 		String username = sysLoginModel.getUsername();
 		String password = sysLoginModel.getPassword();
 		//步骤1：TODO 前端密码加密，后端进行密码解密，防止传输密码篡改等问题，不配就直接提示密码错误，并记录日志后期进行统计分析是否锁定
-		password = AesEncryptUtil.desEncrypt(sysLoginModel.getPassword()).trim();//密码解密
+		password = AesEncryptUtil.desEncrypt(sysLoginModel.getPassword().replaceAll("%2B", "\\+")).trim();//密码解密
 		//1. 校验用户是否有效
 		SysUser sysUser = sysUserService.getUserByName(username);
 		result = sysUserService.checkUserIsEffective(sysUser);
@@ -249,7 +249,7 @@ public class LoginController {
 
 		} catch (ClientException e) {
 			e.printStackTrace();
-			result.error500(" 短信接口异常，请联系管理员！");
+			result.error500(" 短信接口未配置，请联系管理员！");
 			return result;
 		}
 		return result;
