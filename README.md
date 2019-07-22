@@ -38,7 +38,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 在线演示 ：  [http://boot.jeecg.org](http://boot.jeecg.org)
 
-- 在线教程：  [http://jeecg-boot.mydoc.io/?t=345660](http://jeecg-boot.mydoc.io/?t=345660)
+- 入门教程：  [http://jeecg-boot.mydoc.io/?t=345660](http://jeecg-boot.mydoc.io/?t=345660)
 
 - 常见问题：  [入门常见问题大全](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
 
@@ -48,9 +48,9 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 更新日志：  [版本日志](http://www.jeecg.com/#/doc/changelog)
 
-- Online初体验：  [1分钟快速学习](https://my.oschina.net/jeecg/blog/3061917)
+- Online体验：  [1分钟快速学习](https://my.oschina.net/jeecg/blog/3061917)
 
-- 如何参与：  [欢迎技术爱好者，加入JEECG开团队](http://jeecg.com/#/doc/canyu-os)
+- 反馈问题：  [反馈问题请发issue](https://github.com/zhangdaiscott/jeecg-boot/issues/new)
 
 
 为什么选择JEECG-BOOT?
