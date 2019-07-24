@@ -39,6 +39,8 @@ public class QueryGenerator {
 	private static final String STAR = "*";
 	private static final String COMMA = ",";
 	private static final String NOT_EQUAL = "!";
+	/**页面带有规则值查询，空格作为分隔符*/
+	private static final String QUERY_SEPARATE_KEYWORD = " ";
 	/**高级查询前端传来的参数名*/
 	private static final String SUPER_QUERY_PARAMS = "superQueryParams";
 	
@@ -150,6 +152,12 @@ public class QueryGenerator {
 					//根据参数值带什么关键字符串判断走什么类型的查询
 					QueryRuleEnum rule = convert2Rule(value);
 					value = replaceValue(rule,value);
+					// add -begin 添加判断为字符串时设为全模糊查询
+					if( (rule==null || QueryRuleEnum.EQ.equals(rule)) && "class java.lang.String".equals(type)) {
+						// 可以设置左右模糊或全模糊，因人而异
+						rule = QueryRuleEnum.LIKE;
+					}
+					// add -end 添加判断为字符串时设为全模糊查询
 					addEasyQuery(queryWrapper, name, rule, value);
 				}
 				
@@ -221,7 +229,7 @@ public class QueryGenerator {
 	 * @param value
 	 * @return
 	 */
-	public static QueryRuleEnum convert2Rule(Object value) {
+	private static QueryRuleEnum convert2Rule(Object value) {
 		// 避免空数据
 		if (value == null) {
 			return null;
@@ -231,15 +239,23 @@ public class QueryGenerator {
 			return null;
 		}
 		QueryRuleEnum rule =null;
+
+		//update-begin--Author:scott  Date:20190724 for：initQueryWrapper组装sql查询条件错误 #284-------------------
+		//TODO 此处规则，只适用于 le lt ge gt
 		// step 2 .>= =<
-		if (rule == null && val.length() >= 2) {
-			rule = QueryRuleEnum.getByValue(val.substring(0, 2));
+		if (rule == null && val.length() >= 3) {
+			if(QUERY_SEPARATE_KEYWORD.equals(val.substring(2, 3))){
+				rule = QueryRuleEnum.getByValue(val.substring(0, 2));
+			}
 		}
 		// step 1 .> <
-		if (rule == null && val.length() >= 1) {
-			rule = QueryRuleEnum.getByValue(val.substring(0, 1));
+		if (rule == null && val.length() >= 2) {
+			if(QUERY_SEPARATE_KEYWORD.equals(val.substring(1, 2))){
+				rule = QueryRuleEnum.getByValue(val.substring(0, 1));
+			}
 		}
-		
+		//update-end--Author:scott  Date:20190724 for：initQueryWrapper组装sql查询条件错误 #284---------------------
+
 		// step 3 like
 		if (rule == null && val.contains(STAR)) {
 			if (val.startsWith(STAR) && val.endsWith(STAR)) {
@@ -269,7 +285,7 @@ public class QueryGenerator {
 	 * @param value
 	 * @return
 	 */
-	public static Object replaceValue(QueryRuleEnum rule, Object value) {
+	private static Object replaceValue(QueryRuleEnum rule, Object value) {
 		if (rule == null) {
 			return null;
 		}
@@ -286,7 +302,14 @@ public class QueryGenerator {
 		} else if (rule == QueryRuleEnum.IN) {
 			value = val.split(",");
 		} else {
-			value = val.replace(rule.getValue(),"");
+			//update-begin--Author:scott  Date:20190724 for：initQueryWrapper组装sql查询条件错误 #284-------------------
+			if(val.startsWith(rule.getValue())){
+				//TODO 此处逻辑应该注释掉-> 如果查询内容中带有查询匹配规则符号，就会被截取的（比如：>=您好）
+				value = val.replaceFirst(rule.getValue(),"");
+			}else if(val.startsWith(rule.getCondition()+QUERY_SEPARATE_KEYWORD)){
+				value = val.replaceFirst(rule.getCondition()+QUERY_SEPARATE_KEYWORD,"").trim();
+			}
+			//update-end--Author:scott  Date:20190724 for：initQueryWrapper组装sql查询条件错误 #284-------------------
 		}
 		return value;
 	}
