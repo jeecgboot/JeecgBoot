@@ -28,10 +28,10 @@ import org.springframework.context.annotation.DependsOn;
 
 @Configuration
 public class ShiroConfig {
-	
+
 	/**
 	 * Filter Chain定义说明 
-	 * 
+	 *
 	 * 1、一个URL可以配置多个Filter，使用逗号分隔
 	 * 2、当设置多个过滤器时，全部验证通过，才视为通过
 	 * 3、部分过滤器可指定参数，如perms，roles
@@ -43,6 +43,12 @@ public class ShiroConfig {
 		// 拦截器
 		Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
 		// 配置不会被拦截的链接 顺序判断
+
+		filterChainDefinitionMap.put("/bjcl/**", "anon"); //前端首页接口排除
+		filterChainDefinitionMap.put("/bjcl/**/**", "anon"); //前端首页接口排除
+		filterChainDefinitionMap.put("/bjcl/**/**/**", "anon"); //前端首页接口排除
+		filterChainDefinitionMap.put("/jsz/**", "anon"); //前端首页接口排除
+		filterChainDefinitionMap.put("/jsz/**/**", "anon"); //前端首页接口排除
 		filterChainDefinitionMap.put("/sys/login", "anon"); //登录接口排除
 		filterChainDefinitionMap.put("/sys/getEncryptedString", "anon"); //获取加密串
 		filterChainDefinitionMap.put("/sys/sms", "anon");//短信验证码
@@ -71,12 +77,12 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/swagger**/**", "anon");
 		filterChainDefinitionMap.put("/webjars/**", "anon");
 		filterChainDefinitionMap.put("/v2/**", "anon");
-		
+
 		//性能监控
 		filterChainDefinitionMap.put("/actuator/metrics/**", "anon");
 		filterChainDefinitionMap.put("/actuator/httptrace/**", "anon");
 		filterChainDefinitionMap.put("/actuator/redis/**", "anon");
-		
+
 		// 添加自己的过滤器并且取名为jwt
 		Map<String, Filter> filterMap = new HashMap<String, Filter>(1);
 		filterMap.put("jwt", new JwtFilter());

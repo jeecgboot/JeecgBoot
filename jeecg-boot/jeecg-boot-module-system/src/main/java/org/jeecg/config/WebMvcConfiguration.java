@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Spring Boot 2.0 解决跨域问题
- * 
+ *
  * @Author qinfeng
  *
  */
@@ -25,6 +25,10 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 	private String webAppPath;
 	@Value("${spring.resource.static-locations}")
 	private String staticLocations;
+	@Value("${jeecg.path.jinshizi}")
+	private String jsz;
+
+
 
 	@Bean
 	public CorsFilter corsFilter() {
@@ -47,10 +51,12 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 	 */
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/**")
-		.addResourceLocations("file:" + upLoadPath + "//", "file:" + webAppPath + "//")
-		.addResourceLocations(staticLocations.split(","));
+		registry.addResourceHandler("/**","/bjcl/**")
+				.addResourceLocations("file:" + upLoadPath + "//", "file:" + webAppPath + "//","file:" + jsz + "//")
+				.addResourceLocations(staticLocations.split(","));
 	}
+
+
 
 	/**
 	 * 访问根路径默认跳转 index.html页面 （简化部署方案： 可以把前端打包直接放到项目的 webapp，上面的配置）

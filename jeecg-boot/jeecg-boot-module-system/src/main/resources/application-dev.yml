@@ -1,22 +1,22 @@
 server:
-  port: 8080
+  port: 8081
   servlet:
-    context-path: /jeecg-boot
+    context-path: /
     compression:
       enabled: true
       mime-types: application/javascript,application/json,application/xml,text/html,text/xml,text/plain,text/css,image/*
-        
+
 management:
- endpoints:
-  web:
-   exposure:
-    include: metrics,httptrace
-    
+  endpoints:
+    web:
+      exposure:
+        include: metrics,httptrace
+
 spring:
   servlet:
-     multipart: 
-        max-file-size: 10MB
-        max-request-size: 10MB
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   mail:
     host: smtp.163.com
     username: jeecgos@163.com
@@ -54,6 +54,10 @@ spring:
   # 设置静态文件路径，js,css等
   mvc:
     static-path-pattern: /**
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML5
   resource:
     static-locations: classpath:/static/,classpath:/public/
   autoconfigure:
@@ -92,16 +96,16 @@ spring:
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false
+          url: jdbc:mysql://47.106.143.238:3306/jeecg-boot?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true
           username: root
-          password: root
+          password: 123456
           driver-class-name: com.mysql.jdbc.Driver
-          # 多数据源配置
-          #multi-datasource1:
-          #url: jdbc:mysql://localhost:3306/jeecg-boot2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true
-          #username: root
-          #password: root
-          #driver-class-name: com.mysql.jdbc.Driver
+        #           多数据源配置
+        multi-datasource1:
+          url: jdbc:mysql://47.106.143.238:3306/jeecg-boot?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
   #redis 配置
   redis:
     database: 0
@@ -113,7 +117,7 @@ spring:
         max-wait: -1ms  #最大建立连接等待时间。如果超过此时间将接到异常。设为-1表示无限制。
         min-idle: 0     #最小等待连接中的数量,设 0 为没有限制
       shutdown-timeout: 100ms
-    password: ''
+    password:
     port: 6379
 #mybatis plus 设置
 mybatis-plus:
@@ -126,7 +130,7 @@ mybatis-plus:
       id-type: 4
       # 默认数据库表下划线命名
       table-underline: true
-  #configuration:
+    #configuration:
     # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
     #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 #jeecg专用配置
@@ -136,3 +140,5 @@ jeecg :
     upload: D://upFiles
     #webapp文件路径
     webapp: D://webapp
+    jinshizi: E://static
+    url: http://localhost:8080/bjcl/
