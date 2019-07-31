@@ -1,5 +1,5 @@
 <!-- JEditableTable -->
-<!-- @version 1.4.1 -->
+<!-- @version 1.4.2 -->
 <!-- @author sjlei -->
 <template>
   <a-spin :spinning="loading">
@@ -7,7 +7,7 @@
     <!-- 操作按钮 -->
     <div v-if="actionButton" class="action-button">
       <a-button type="primary" icon="plus" @click="handleClickAdd">新增</a-button>
-      <span class="gap"/>
+      <span class="gap"></span>
       <template v-if="selectedRowIds.length>0">
         <a-popconfirm
           :title="`确定要删除这 ${selectedRowIds.length} 项吗?`"
@@ -15,7 +15,7 @@
           <a-button type="primary" icon="minus">删除</a-button>
         </a-popconfirm>
         <template v-if="showClearSelectButton">
-          <span class="gap"/>
+          <span class="gap"></span>
           <a-button icon="delete" @click="handleClickClearSelect">清空选择</a-button>
         </template>
       </template>
@@ -282,6 +282,7 @@
   import { FormTypes, VALIDATE_NO_PASSED } from '@/utils/JEditableTableUtil'
   import { cloneObject, randomString } from '@/utils/util'
   import JDate from '@/components/jeecg/JDate'
+  import { initDictOptions } from '@/components/dict/JDictSelectUtil'
 
   // 行高，需要在实例加载完成前用到
   let rowHeight = 61
@@ -454,7 +455,7 @@
     },
     // 侦听器
     watch: {
-      dataSource: function(newValue) {
+      dataSource: function (newValue) {
         this.initialize()
 
         let rows = []
@@ -556,6 +557,9 @@
                   return {}
                 })
               }
+              if (column.dictCode) {
+                this._loadDictConcatToOptions(column)
+              }
             }
           })
         }
@@ -575,15 +579,15 @@
 
       let vm = this
       /** 监听滚动条事件 */
-      this.el.inputTable.onscroll = function(event) {
+      this.el.inputTable.onscroll = function (event) {
         vm.syncScrollBar(event.target.scrollLeft)
       }
-      this.el.tbody.onscroll = function(event) {
+      this.el.tbody.onscroll = function (event) {
         // vm.recalcTrHiddenItem(event.target.scrollTop)
       }
 
       let { thead, scrollView } = this.$refs
-      scrollView.onscroll = function(event) {
+      scrollView.onscroll = function (event) {
 
         // console.log(event.target.scrollTop, ' - ', event.target.scrollLeft)
 
@@ -1065,7 +1069,32 @@
             } else // 使用 else-if 是为了防止一个 rule 中出现两个规则
             // 验证规则：正则表达式
             if (!!rule.pattern && !isNull) {
-              passed = new RegExp(rule.pattern).test(value)
+
+              // 兼容 online 的规则
+              let foo = [
+                { title: '唯一校验', value: 'only', pattern: null },
+                { title: '6到16位数字', value: 'n6-16', pattern: /\d{6,18}/ },
+                { title: '6到16位任意字符', value: '*6-16', pattern: /^.{6,16}$/ },
+                { title: '网址', value: 'url', pattern: /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/ },
+                { title: '电子邮件', value: 'e', pattern: /^([\w]+\.*)([\w]+)@[\w]+\.\w{3}(\.\w{2}|)$/ },
+                { title: '手机号码', value: 'm', pattern: /^1[3456789]\d{9}$/ },
+                { title: '邮政编码', value: 'p', pattern: /^[1-9]\d{5}$/ },
+                { title: '字母', value: 's', pattern: /^[A-Z|a-z]+$/ },
+                { title: '数字', value: 'n', pattern: /^-?\d+\.?\d*$/ },
+                { title: '整数', value: 'z', pattern: /^[1-9]\d*$/ },
+                { title: '非空', value: '*', pattern: /^.+$/ },
+                { title: '6到18位字符串', value: 's6-18', pattern: /^.{6,18}$/ },
+                { title: '金额', value: 'money', pattern: /^(([1-9][0-9]*)|([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2}))$/ },
+              ]
+              let flag = false
+              for (let item of foo) {
+                if (rule.pattern === item.value && item.pattern) {
+                  passed = new RegExp(item.pattern).test(value)
+                  flag = true
+                  break
+                }
+              }
+              if (!flag) passed = new RegExp(rule.pattern).test(value)
             }
             // 如果没有通过验证，则跳出循环。如果通过了验证，则继续验证下一条规则
             if (!passed) {
@@ -1227,7 +1256,7 @@
             change = false
             value = replace
             target.value = replace
-            if (typeof  selectionStart === 'number') {
+            if (typeof selectionStart === 'number') {
               target.selectionStart = selectionStart - 1
               target.selectionEnd = selectionStart - 1
             }
@@ -1320,6 +1349,19 @@
 
       handleClickDelFile(id) {
         this.uploadValues[id] = null
+      },
+
+      /** 加载数据字典并合并到 options */
+      _loadDictConcatToOptions(column) {
+        initDictOptions(column.dictCode).then((res) => {
+          if (res.success) {
+            column.options = (column.options || []).concat(res.result)
+          } else {
+            console.group(`JEditableTable 查询字典(${column.dictCode})发生异常`)
+            console.log(res.message)
+            console.groupEnd()
+          }
+        })
       },
 
       /* --- common function end --- */
@@ -1483,6 +1525,7 @@
       border-bottom: @border;
 
       /** 隐藏thead的滑块   */
+
       &::-webkit-scrollbar-thumb {
         box-shadow: none !important;
         background-color: transparent !important;
@@ -1588,15 +1631,19 @@
           }
 
           /* 设置placeholder的颜色 */
+
           &::-webkit-input-placeholder { /* WebKit browsers */
             color: #ccc;
           }
+
           &:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
             color: #ccc;
           }
+
           &::-moz-placeholder { /* Mozilla Firefox 19+ */
             color: #ccc;
           }
+
           &:-ms-input-placeholder { /* Internet Explorer 10+ */
             color: #ccc;
           }
@@ -1615,16 +1662,21 @@
     .thead, .thead .tr, .scroll-view {
       @scrollBarSize: 6px;
       /* 定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+
       &::-webkit-scrollbar {
         width: @scrollBarSize;
         height: @scrollBarSize;
         background-color: transparent;
       }
+
       /* 定义滚动条轨道 */
+
       &::-webkit-scrollbar-track {
         background-color: #f0f0f0;
       }
+
       /* 定义滑块 */
+
       &::-webkit-scrollbar-thumb {
         background-color: #eee;
         box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
