@@ -38,19 +38,29 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 在线演示 ：  [http://boot.jeecg.com](http://boot.jeecg.com)
 
-- 入门教程：  [http://jeecg-boot.mydoc.io/?t=345660](http://jeecg-boot.mydoc.io/?t=345660)
+- 技术官网：  [http://www.jeecg.com](http://www.jeecg.com)
+
+- 开发文档：  [http://jeecg-boot.mydoc.io/?t=345660](http://jeecg-boot.mydoc.io/?t=345660)
 
 - 常见问题：  [入门常见问题大全](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
-
-- QQ交流群 ：  ①284271917、②769925425
-
-- 技术论坛：  [http://www.jeecg.org](http://www.jeecg.org)
 
 - 更新日志：  [版本日志](http://www.jeecg.com/#/doc/changelog)
 
 - Online体验：  [1分钟快速学习](https://my.oschina.net/jeecg/blog/3061917)
 
-- 反馈问题：  [反馈问题请发issue](https://github.com/zhangdaiscott/jeecg-boot/issues/new)
+
+
+交流互动
+-----------------------------------
+
+- QQ交流群 ：  ①284271917、②769925425
+
+- 反馈问题：  [反馈问题，请按格式发Issues](https://github.com/zhangdaiscott/jeecg-boot/issues/new)
+
+- 参与开源：  [欢迎加入JEECG开源团队，共同进步！！](http://www.jeecg.com/#/doc/canyu-os)
+
+- 常见问题：  [入门常见问题大全](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
+
 
 
 为什么选择JEECG-BOOT?
