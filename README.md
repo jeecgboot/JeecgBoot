@@ -46,8 +46,6 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 更新日志：  [版本日志](http://www.jeecg.com/#/doc/changelog)
 
-- Online体验：  [1分钟快速学习](https://my.oschina.net/jeecg/blog/3061917)
-
 
 
 交流互动
@@ -59,8 +57,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 参与开源：  [欢迎加入JEECG开源团队，共同进步！！](http://www.jeecg.com/#/doc/canyu-os)
 
-- 常见问题：  [入门常见问题大全](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
-
+- Online一分钟：  [1分钟快速学习](https://my.oschina.net/jeecg/blog/3061917)
 
 
 为什么选择JEECG-BOOT?
