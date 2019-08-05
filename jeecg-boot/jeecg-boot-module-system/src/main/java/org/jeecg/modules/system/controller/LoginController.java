@@ -67,8 +67,11 @@ public class LoginController {
 		Result<JSONObject> result = new Result<JSONObject>();
 		String username = sysLoginModel.getUsername();
 		String password = sysLoginModel.getPassword();
-		//步骤1：TODO 前端密码加密，后端进行密码解密，防止传输密码篡改等问题，不配就直接提示密码错误，并记录日志后期进行统计分析是否锁定
-		password = AesEncryptUtil.desEncrypt(sysLoginModel.getPassword().replaceAll("%2B", "\\+")).trim();//密码解密
+		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
+		//前端密码加密，后端进行密码解密
+		//password = AesEncryptUtil.desEncrypt(sysLoginModel.getPassword().replaceAll("%2B", "\\+")).trim();//密码解密
+		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
+
 		//1. 校验用户是否有效
 		SysUser sysUser = sysUserService.getUserByName(username);
 		result = sysUserService.checkUserIsEffective(sysUser);
@@ -263,7 +266,7 @@ public class LoginController {
 	 * @return
 	 */
 	@PostMapping("/phoneLogin")
-	public Result<JSONObject> login(@RequestBody JSONObject jsonObject) {
+	public Result<JSONObject> phoneLogin(@RequestBody JSONObject jsonObject) {
 		Result<JSONObject> result = new Result<JSONObject>();
 		String phone = jsonObject.getString("mobile");
 		
