@@ -42,7 +42,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 开发文档：  [http://jeecg-boot.mydoc.io/?t=345660](http://jeecg-boot.mydoc.io/?t=345660)
 
-- 视频教程  ：[http://jeecg.com/#/doc/rumen-video](http://jeecg.com/#/doc/rumen-video)
+- 视频教程  ：[JeecgBoot实战入门系列视频](https://space.bilibili.com/454617261/channel/detail?cid=84186)
 
 - 常见问题：  [入门常见问题大全](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
 
