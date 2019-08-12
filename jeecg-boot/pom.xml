@@ -16,7 +16,8 @@
 	<modules>
 		<module>jeecg-boot-base-common</module>
 		<module>jeecg-boot-module-system</module>
-	</modules> 
+        <module>jeecg-boot-module-basic-file</module>
+    </modules>
 	
 	<repositories>
 		<repository>

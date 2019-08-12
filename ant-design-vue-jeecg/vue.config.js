@@ -52,7 +52,7 @@ module.exports = {
   },
 
   devServer: {
-    port: 3000,
+    port: 3333,
     proxy: {
      /* '/api': {
         target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro', //mock API接口系统
@@ -63,7 +63,7 @@ module.exports = {
         }
       },*/
       '/jeecg-boot': {
-        target: 'http://localhost:8080', //请求本地 需要jeecg-boot后台项目
+        target: 'http://localhost:8383', //请求本地 需要jeecg-boot后台项目
         ws: false,
         changeOrigin: true
       },

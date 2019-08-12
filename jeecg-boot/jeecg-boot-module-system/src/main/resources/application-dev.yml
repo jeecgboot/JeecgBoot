@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8383
   servlet:
     context-path: /jeecg-boot
     compression:
