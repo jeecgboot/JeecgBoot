@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.aspect.annotation.PermissionData;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.DateUtils;
@@ -143,7 +144,8 @@ public class JeecgDemoController extends JeecgController<JeecgDemo,IJeecgDemoSer
 	 */
 	@PutMapping(value = "/edit")
 	@ApiOperation(value = "编辑DEMO", notes = "编辑DEMO")
-	public Result<JeecgDemo> eidt(@RequestBody JeecgDemo jeecgDemo) {
+	@AutoLog(value = "编辑DEMO",operateType= CommonConstant.OPERATE_TYPE_3)
+	public Result<JeecgDemo> edit(@RequestBody JeecgDemo jeecgDemo) {
 		Result<JeecgDemo> result = new Result<JeecgDemo>();
 		JeecgDemo jeecgDemoEntity = jeecgDemoService.getById(jeecgDemo.getId());
 		if (jeecgDemoEntity == null) {

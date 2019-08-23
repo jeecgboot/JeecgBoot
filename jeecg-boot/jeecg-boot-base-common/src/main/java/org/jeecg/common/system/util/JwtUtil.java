@@ -155,7 +155,7 @@ public class JwtUtil {
 			}
 		}
 		//替换为系统登录用户真实名字
-		if (key.equals(DataBaseConstant.SYS_USER_NAME)|| key.equals(DataBaseConstant.SYS_USER_NAME_TABLE)) {
+		else if (key.equals(DataBaseConstant.SYS_USER_NAME)|| key.equals(DataBaseConstant.SYS_USER_NAME_TABLE)) {
 			if(user==null) {
 				returnValue = sysUser.getRealname();
 			}else {
@@ -164,7 +164,7 @@ public class JwtUtil {
 		}
 		
 		//替换为系统用户登录所使用的机构编码
-		if (key.equals(DataBaseConstant.SYS_ORG_CODE)|| key.equals(DataBaseConstant.SYS_ORG_CODE_TABLE)) {
+		else if (key.equals(DataBaseConstant.SYS_ORG_CODE)|| key.equals(DataBaseConstant.SYS_ORG_CODE_TABLE)) {
 			if(user==null) {
 				returnValue = sysUser.getOrgCode();
 			}else {
@@ -172,7 +172,7 @@ public class JwtUtil {
 			}
 		}
 		//替换为系统用户所拥有的所有机构编码
-		if (key.equals(DataBaseConstant.SYS_MULTI_ORG_CODE)|| key.equals(DataBaseConstant.SYS_MULTI_ORG_CODE)) {
+		else if (key.equals(DataBaseConstant.SYS_MULTI_ORG_CODE)|| key.equals(DataBaseConstant.SYS_MULTI_ORG_CODE_TABLE)) {
 			if(user.isOneDepart()) {
 				returnValue = user.getSysMultiOrgCode().get(0);
 			}else {
@@ -180,18 +180,23 @@ public class JwtUtil {
 			}
 		}
 		//替换为当前系统时间(年月日)
-		if (key.equals(DataBaseConstant.SYS_DATE)|| key.equals(DataBaseConstant.SYS_DATE_TABLE)) {
+		else if (key.equals(DataBaseConstant.SYS_DATE)|| key.equals(DataBaseConstant.SYS_DATE_TABLE)) {
 			returnValue = user.getSysDate();
 		}
 		//替换为当前系统时间（年月日时分秒）
-		if (key.equals(DataBaseConstant.SYS_TIME)|| key.equals(DataBaseConstant.SYS_TIME_TABLE)) {
+		else if (key.equals(DataBaseConstant.SYS_TIME)|| key.equals(DataBaseConstant.SYS_TIME_TABLE)) {
 			returnValue = user.getSysTime();
 		}
 		//流程状态默认值（默认未发起）
-		if (key.equals(DataBaseConstant.BPM_STATUS_TABLE)|| key.equals(DataBaseConstant.BPM_STATUS_TABLE)) {
+		else if (key.equals(DataBaseConstant.BPM_STATUS)|| key.equals(DataBaseConstant.BPM_STATUS_TABLE)) {
 			returnValue = "1";
 		}
 		if(returnValue!=null){returnValue = returnValue + moshi;}
 		return returnValue;
+	}
+	
+	public static void main(String[] args) {
+		 String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjUzMzY1MTMsInVzZXJuYW1lIjoiYWRtaW4ifQ.xjhud_tWCNYBOg_aRlMgOdlZoWFFKB_givNElHNw3X0";
+		 System.out.println(JwtUtil.getUsername(token));
 	}
 }

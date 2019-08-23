@@ -98,7 +98,7 @@
         } else if (text == 1) {
           return '菜单'
         } else if (text == 2) {
-          return '按钮'
+          return '按钮/权限'
         } else {
           return text
         }

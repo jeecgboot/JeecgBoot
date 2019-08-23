@@ -68,7 +68,7 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 			if(ids==null) {
 				continue;
 			}
-			String arr[] = ids.split(",");
+			String[] arr = ids.split(",");
 			for (String id : arr) {
 				if(oConvertUtils.isNotEmpty(id)) {
 					set.add(id);
@@ -86,7 +86,7 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 	public void savePermissionDataRule(SysPermissionDataRule sysPermissionDataRule) {
 		this.save(sysPermissionDataRule);
 		SysPermission permission = sysPermissionMapper.selectById(sysPermissionDataRule.getPermissionId());
-		if(permission!=null && (permission.getRuleFlag()==null || permission.getRuleFlag()==CommonConstant.RULE_FLAG_0)) {
+		if(permission!=null && (permission.getRuleFlag()==null || permission.getRuleFlag().equals(CommonConstant.RULE_FLAG_0))) {
 			permission.setRuleFlag(CommonConstant.RULE_FLAG_1);
 			sysPermissionMapper.updateById(permission);
 		}
@@ -102,7 +102,7 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 			//注:同一个事务中删除后再查询是会认为数据已被删除的 若事务回滚上述删除无效
 			if(count==null || count==0) {
 				SysPermission permission = sysPermissionMapper.selectById(dataRule.getPermissionId());
-				if(permission!=null && permission.getRuleFlag()==CommonConstant.RULE_FLAG_1) {
+				if(permission!=null && permission.getRuleFlag().equals(CommonConstant.RULE_FLAG_1)) {
 					permission.setRuleFlag(CommonConstant.RULE_FLAG_0);
 					sysPermissionMapper.updateById(permission);
 				}

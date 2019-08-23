@@ -761,13 +761,14 @@ public class SysUserController {
 			String passwordEncode = PasswordUtil.encrypt(username, password, salt);
 			user.setSalt(salt);
 			user.setUsername(username);
+			user.setRealname(username);
 			user.setPassword(passwordEncode);
 			user.setEmail(email);
 			user.setPhone(phone);
 			user.setStatus(1);
 			user.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
 			user.setActivitiSync(CommonConstant.ACT_SYNC_1);
-			sysUserService.save(user);
+			sysUserService.addUserWithRole(user,"ee8626f80f7c2619917b6236f3a7f02b");//默认临时角色 test
 			result.success("注册成功");
 		} catch (Exception e) {
 			result.error500("注册失败");

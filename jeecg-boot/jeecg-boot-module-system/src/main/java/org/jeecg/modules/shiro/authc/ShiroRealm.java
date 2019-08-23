@@ -14,6 +14,7 @@ import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.RedisUtil;
+import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -84,9 +85,9 @@ public class ShiroRealm extends AuthorizingRealm {
 	 */
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
-		log.debug("————身份认证————");
 		String token = (String) auth.getCredentials();
 		if (token == null) {
+			log.info("————————身份认证失败——————————IP地址:  "+ oConvertUtils.getIpAddrByRequest(SpringContextUtils.getHttpServletRequest()));
 			throw new AuthenticationException("token为空!");
 		}
 		// 校验token有效性
@@ -145,7 +146,7 @@ public class ShiroRealm extends AuthorizingRealm {
 		String cacheToken = String.valueOf(redisUtil.get(CommonConstant.PREFIX_USER_TOKEN + token));
 		if (oConvertUtils.isNotEmpty(cacheToken)) {
 			// 校验token有效性
-			if (!JwtUtil.verify(token, userName, passWord)) {
+			if (!JwtUtil.verify(cacheToken, userName, passWord)) {
 				String newAuthorization = JwtUtil.sign(userName, passWord);
 				redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, newAuthorization);
 				// 设置超时时间
