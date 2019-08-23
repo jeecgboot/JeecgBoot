@@ -219,7 +219,7 @@ public class SysPermissionController {
 	public Result<SysPermission> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 		Result<SysPermission> result = new Result<>();
 		try {
-			String arr[] = ids.split(",");
+            String[] arr = ids.split(",");
 			for (String id : arr) {
 				if (oConvertUtils.isNotEmpty(id)) {
 					sysPermissionService.deletePermission(id);

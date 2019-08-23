@@ -12,6 +12,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.IPUtils;
 import org.jeecg.common.util.SpringContextUtils;
@@ -65,12 +66,19 @@ public class AutoLogAspect {
 			//注解上的描述,操作日志内容
 			sysLog.setLogContent(syslog.value());
 			sysLog.setLogType(syslog.logType());
+			
 		}
 
 		//请求的方法名
 		String className = joinPoint.getTarget().getClass().getName();
 		String methodName = signature.getName();
 		sysLog.setMethod(className + "." + methodName + "()");
+		
+		
+		//设置操作类型
+		if (sysLog.getLogType() == CommonConstant.LOG_TYPE_2) {
+			sysLog.setOperateType(getOperateType(methodName, syslog.operateType()));
+		}
 
 		//请求的参数
 		Object[] args = joinPoint.getArgs();
@@ -98,5 +106,32 @@ public class AutoLogAspect {
 		sysLog.setCreateTime(new Date());
 		//保存系统日志
 		sysLogService.save(sysLog);
+	}
+	/**
+	 * 获取操作类型
+	 */
+	private int getOperateType(String methodName,int operateType) {
+		if (operateType > 0) {
+			return operateType;
+		}
+        if (methodName.startsWith("list")) {
+        	return CommonConstant.OPERATE_TYPE_1;
+		}
+        if (methodName.startsWith("add")) {
+        	return CommonConstant.OPERATE_TYPE_2;
+		}
+        if (methodName.startsWith("edit")) {
+        	return CommonConstant.OPERATE_TYPE_3;
+		}
+        if (methodName.startsWith("delete")) {
+        	return CommonConstant.OPERATE_TYPE_4;
+		}
+        if (methodName.startsWith("import")) {
+        	return CommonConstant.OPERATE_TYPE_5;
+		}
+        if (methodName.startsWith("export")) {
+        	return CommonConstant.OPERATE_TYPE_6;
+		}
+		return CommonConstant.OPERATE_TYPE_1;
 	}
 }

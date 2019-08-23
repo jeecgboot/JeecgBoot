@@ -55,7 +55,7 @@ public class QueryGenerator {
 	private static SimpleDateFormat getTime(){
 		SimpleDateFormat time = local.get();
 		if(time == null){
-			time = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+			time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			local.set(time);
 		}
 		return time;

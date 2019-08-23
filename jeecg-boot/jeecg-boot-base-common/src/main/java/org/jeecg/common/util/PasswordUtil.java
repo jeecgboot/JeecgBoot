@@ -88,8 +88,9 @@ public class PasswordUtil {
 			Cipher cipher = Cipher.getInstance(ALGORITHM);
 
 			cipher.init(Cipher.ENCRYPT_MODE, key, parameterSpec);
-
-			encipheredData = cipher.doFinal(plaintext.getBytes());
+			//update-begin-author:sccott date:20180815 for:中文作为用户名时，加密的密码windows和linux会得到不同的结果 gitee/issues/IZUD7
+			encipheredData = cipher.doFinal(plaintext.getBytes("utf-8"));
+			//update-end-author:sccott date:20180815 for:中文作为用户名时，加密的密码windows和linux会得到不同的结果 gitee/issues/IZUD7
 		} catch (Exception e) {
 		}
 		return bytesToHexString(encipheredData);

@@ -205,11 +205,11 @@
           mobile: {rules: [{validator: this.validateMobile}]}
         },
         url: {
-          delete: '/sysdepart/sysDepart/delete',
-          edit: '/sysdepart/sysDepart/edit',
-          deleteBatch: '/sysdepart/sysDepart/deleteBatch',
-          exportXlsUrl: "sysdepart/sysDepart/exportXls",
-          importExcelUrl: "sysdepart/sysDepart/importExcel",
+          delete: '/sys/sysDepart/delete',
+          edit: '/sys/sysDepart/edit',
+          deleteBatch: '/sys/sysDepart/deleteBatch',
+          exportXlsUrl: "sys/sysDepart/exportXls",
+          importExcelUrl: "sys/sysDepart/importExcel",
         },
       }
     },
@@ -292,7 +292,7 @@
           var that = this
           this.$confirm({
             title: '确认删除',
-            content: '确定要删除所选中的 ' + this.checkedKeys.length + ' 条数据?',
+            content: '确定要删除所选中的 ' + this.checkedKeys.length + ' 条数据，以及子节点数据吗?',
             onOk: function () {
               deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
                 if (res.success) {

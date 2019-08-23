@@ -41,7 +41,7 @@
 <script>
   import JGraphicCode from '@/components/jeecg/JGraphicCode'
   import { getAction } from  '@/api/manage'
-  import {duplicateCheck } from '@/api/api'
+  import {checkOnlyUser } from '@/api/api'
   export default {
     name: "Step1",
     components: {
@@ -116,14 +116,12 @@
           callback("请输入用户名和手机号！");
         }
 
+        //判断用户输入账号还是手机号码
         if(reg.test(value)){
           var params = {
-            tableName: 'sys_user',
-            fieldName: 'phone',
-            fieldVal: value,
-            dataId: null
+            phone : value,
           };
-          duplicateCheck(params).then((res) => {
+          checkOnlyUser(params).then((res) => {
             if (res.success) {
             callback("用户名不存在!")
           } else {
@@ -132,18 +130,15 @@
         })
         }else{
           var params = {
-            tableName: 'sys_user',
-            fieldName: 'username',
-            fieldVal: value,
-            dataId: null
+            username: value,
           };
-          duplicateCheck(params).then((res) => {
+          checkOnlyUser(params).then((res) => {
             if (res.success) {
-            callback("用户名不存在!")
-          } else {
-            callback()
-          }
-        })
+              callback("用户名不存在!")
+            } else {
+              callback()
+            }
+          })
         }
       },
 

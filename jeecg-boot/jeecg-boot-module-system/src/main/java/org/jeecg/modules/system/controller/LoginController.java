@@ -1,23 +1,27 @@
 package org.jeecg.modules.system.controller;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.DySmsEnum;
 import org.jeecg.common.util.DySmsHelper;
 import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.RedisUtil;
-import org.jeecg.common.util.encryption.AesEncryptUtil;
-import org.jeecg.common.util.encryption.EncryptedString;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.util.encryption.EncryptedString;
 import org.jeecg.modules.shiro.vo.DefContants;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
@@ -103,19 +107,24 @@ public class LoginController {
 	@RequestMapping(value = "/logout")
 	public Result<Object> logout(HttpServletRequest request,HttpServletResponse response) {
 		//用户退出逻辑
-		Subject subject = SecurityUtils.getSubject();
-		LoginUser sysUser = (LoginUser)subject.getPrincipal();
-		sysBaseAPI.addLog("用户名: "+sysUser.getRealname()+",退出成功！", CommonConstant.LOG_TYPE_1, null);
-		log.info(" 用户名:  "+sysUser.getRealname()+",退出成功！ ");
-	    subject.logout();
-
 	    String token = request.getHeader(DefContants.X_ACCESS_TOKEN);
-	    //清空用户Token缓存
-	    redisUtil.del(CommonConstant.PREFIX_USER_TOKEN + token);
-	    //清空用户权限缓存：权限Perms和角色集合
-	    redisUtil.del(CommonConstant.LOGIN_USER_CACHERULES_ROLE + sysUser.getUsername());
-	    redisUtil.del(CommonConstant.LOGIN_USER_CACHERULES_PERMISSION + sysUser.getUsername());
-		return Result.ok("退出登录成功！");
+	    if(oConvertUtils.isEmpty(token)) {
+	    	return Result.error("退出登录失败！");
+	    }
+	    String username = JwtUtil.getUsername(token);
+	    SysUser sysUser = sysUserService.getUserByName(username);
+	    if(sysUser!=null) {
+	    	sysBaseAPI.addLog("用户名: "+sysUser.getRealname()+",退出成功！", CommonConstant.LOG_TYPE_1, null);
+	    	log.info(" 用户名:  "+sysUser.getRealname()+",退出成功！ ");
+	    	//清空用户Token缓存
+	    	redisUtil.del(CommonConstant.PREFIX_USER_TOKEN + token);
+	    	//清空用户权限缓存：权限Perms和角色集合
+	    	redisUtil.del(CommonConstant.LOGIN_USER_CACHERULES_ROLE + username);
+	    	redisUtil.del(CommonConstant.LOGIN_USER_CACHERULES_PERMISSION + username);
+	    	return Result.ok("退出登录成功！");
+	    }else {
+	    	return Result.error("无效的token");
+	    }
 	}
 	
 	/**
@@ -177,7 +186,8 @@ public class LoginController {
 	 * @return
 	 */
 	@RequestMapping(value = "/selectDepart", method = RequestMethod.PUT)
-	public Result<?> selectDepart(@RequestBody SysUser user) {
+	public Result<JSONObject> selectDepart(@RequestBody SysUser user) {
+		Result<JSONObject> result = new Result<JSONObject>();
 		String username = user.getUsername();
 		if(oConvertUtils.isEmpty(username)) {
 			LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
@@ -185,7 +195,11 @@ public class LoginController {
 		}
 		String orgCode= user.getOrgCode();
 		this.sysUserService.updateUserDepart(username, orgCode);
-		return Result.ok();
+		SysUser sysUser = sysUserService.getUserByName(username);
+		JSONObject obj = new JSONObject();
+		obj.put("userInfo", sysUser);
+		result.setResult(obj);
+		return result;
 	}
 
 	/**
@@ -209,6 +223,8 @@ public class LoginController {
 
 		//随机数
 		String captcha = RandomUtil.randomNumbers(6);
+		JSONObject obj = new JSONObject();
+    	obj.put("code", captcha);
 		try {
 			boolean b = false;
 			//注册模板
@@ -219,7 +235,7 @@ public class LoginController {
 					sysBaseAPI.addLog("手机号已经注册，请直接登录！", CommonConstant.LOG_TYPE_1, null);
 					return result;
 				}
-				b = DySmsHelper.sendSms(mobile, captcha, DySmsHelper.REGISTER_TEMPLATE_CODE);
+				b = DySmsHelper.sendSms(mobile, obj, DySmsEnum.REGISTER_TEMPLATE_CODE);
 			}else {
 				//登录模式，校验用户有效性
 				SysUser sysUser = sysUserService.getUserByPhone(mobile);
@@ -233,10 +249,10 @@ public class LoginController {
 				 */
 				if (CommonConstant.SMS_TPL_TYPE_0.equals(smsmode)) {
 					//登录模板
-					b = DySmsHelper.sendSms(mobile, captcha, DySmsHelper.LOGIN_TEMPLATE_CODE);
+					b = DySmsHelper.sendSms(mobile, obj, DySmsEnum.LOGIN_TEMPLATE_CODE);
 				} else if(CommonConstant.SMS_TPL_TYPE_2.equals(smsmode)) {
 					//忘记密码模板
-					b = DySmsHelper.sendSms(mobile, captcha, DySmsHelper.FORGET_PASSWORD_TEMPLATE_CODE);
+					b = DySmsHelper.sendSms(mobile, obj, DySmsEnum.FORGET_PASSWORD_TEMPLATE_CODE);
 				}
 			}
 
@@ -247,7 +263,9 @@ public class LoginController {
 			}
 			//验证码10分钟内有效
 			redisUtil.set(mobile, captcha, 600);
-			result.setResult(captcha);
+			//update-begin--Author:scott  Date:20190812 for：issues#391
+			//result.setResult(captcha);
+			//update-end--Author:scott  Date:20190812 for：issues#391
 			result.setSuccess(true);
 
 		} catch (ClientException e) {

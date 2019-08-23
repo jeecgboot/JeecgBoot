@@ -85,12 +85,12 @@
 
       <a-form-item>
         <a-checkbox v-model="formLogin.rememberMe">自动登陆</a-checkbox>
-        <router-link :to="{ name: 'alteration'}" class="forge-password" style="float: right;">
+  <!--      <router-link :to="{ name: 'alteration'}" class="forge-password" style="float: right;">
           忘记密码
         </router-link>
         <router-link :to="{ name: 'register'}" class="forge-password" style="float: right;margin-right: 10px" >
           注册账户
-        </router-link>
+        </router-link>-->
       </a-form-item>
 
       <a-form-item style="margin-top:24px">
@@ -176,6 +176,8 @@
   import { putAction } from '@/api/manage'
   import { postAction } from '@/api/manage'
   import { encryption , getEncryptedString } from '@/utils/encryption/aesEncrypt'
+  import store from '@/store/'
+  import { USER_INFO } from "@/store/mutation-types"
 
   export default {
     components: {
@@ -342,7 +344,9 @@
         })
       },
       loginSuccess () {
-        this.loginBtn = false
+        // update-begin- author:sunjianlei --- date:20190812 --- for: 登录成功后不解除禁用按钮，防止多次点击
+        // this.loginBtn = false
+        // update-end- author:sunjianlei --- date:20190812 --- for: 登录成功后不解除禁用按钮，防止多次点击
         this.$router.push({ name: "dashboard" })
         this.$notification.success({
           message: '欢迎',
@@ -425,6 +429,10 @@
         }
         putAction("/sys/selectDepart",obj).then(res=>{
           if(res.success){
+            const userInfo = res.result.userInfo;
+            Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000);
+            store.commit('SET_INFO', userInfo);
+            //console.log("---切换组织机构---userInfo-------",store.getters.userInfo.orgCode);
             this.departClear()
             this.loginSuccess()
           }else{

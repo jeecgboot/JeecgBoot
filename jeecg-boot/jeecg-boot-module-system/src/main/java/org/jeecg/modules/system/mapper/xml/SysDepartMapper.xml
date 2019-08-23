@@ -3,8 +3,6 @@
 <mapper namespace="org.jeecg.modules.system.mapper.SysDepartMapper">
 
 	<select id="queryUserDeparts" parameterType="String" resultType="org.jeecg.modules.system.entity.SysDepart">
-		select a.* from sys_depart a
-			join sys_user_depart b on a.id = b.dep_id
-			where b.user_id = #{userId}
+	   select * from sys_depart where id IN ( select dep_id from sys_user_depart where user_id = #{userId} )
 	</select>
 </mapper>

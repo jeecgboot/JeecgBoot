@@ -148,9 +148,9 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: "/sysdepart/sysDepart/list",
-          delete: "/sysdepart/sysDepart/delete",
-          deleteBatch: "/sysdepart/sysDepart/deleteBatch",
+          list: "/sys/sysDepart/list",
+          delete: "/sys/sysDepart/delete",
+          deleteBatch: "/sys/sysDepart/deleteBatch",
         },
 
       }

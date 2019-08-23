@@ -106,11 +106,13 @@ public class MybatisInterceptor implements Interceptor {
 			Field[] fields = null;
 			if (parameter instanceof ParamMap) {
 				ParamMap<?> p = (ParamMap<?>) parameter;
+				//update-begin-author:scott date:20190729 for:批量更新报错issues/IZA3Q--
 				if (p.containsKey("et")) {
 					parameter = p.get("et");
 				} else {
 					parameter = p.get("param1");
 				}
+				//update-end-author:scott date:20190729 for:批量更新报错issues/IZA3Q-
 				fields = oConvertUtils.getAllFields(parameter);
 			} else {
 				fields = oConvertUtils.getAllFields(parameter);

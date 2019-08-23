@@ -84,7 +84,7 @@
     },
     watch: {
       value(newValue) {
-        this.myValue = newValue
+        this.myValue = (newValue == null ? '' : newValue)
       },
       myValue(newValue) {
         console.log(newValue)
