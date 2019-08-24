@@ -153,10 +153,10 @@ public class QueryGenerator {
 					QueryRuleEnum rule = convert2Rule(value);
 					value = replaceValue(rule,value);
 					// add -begin 添加判断为字符串时设为全模糊查询
-					if( (rule==null || QueryRuleEnum.EQ.equals(rule)) && "class java.lang.String".equals(type)) {
+					//if( (rule==null || QueryRuleEnum.EQ.equals(rule)) && "class java.lang.String".equals(type)) {
 						// 可以设置左右模糊或全模糊，因人而异
-						rule = QueryRuleEnum.LIKE;
-					}
+						//rule = QueryRuleEnum.LIKE;
+					//}
 					// add -end 添加判断为字符串时设为全模糊查询
 					addEasyQuery(queryWrapper, name, rule, value);
 				}
