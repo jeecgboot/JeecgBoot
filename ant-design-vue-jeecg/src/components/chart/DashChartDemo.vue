@@ -32,7 +32,7 @@
         type="arc"
         :zIndex="1"
         :start="arcGuide2Start"
-        :end="getArcGuide2End"
+        :end="getArcGuide2End()"
         :vStyle="arcGuide2Style"
       ></v-guide>
       <v-guide
@@ -88,7 +88,7 @@
   }];
 
   const data = [
-    { value: 7.0 },
+    { value: 0},
   ];
 
   export default {
@@ -96,7 +96,7 @@
     props:{
       datasource:{
         type: Number,
-        default:7
+        default:0
       },
       title: {
         type: String,

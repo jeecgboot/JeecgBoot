@@ -1,14 +1,13 @@
 package org.jeecg.modules.system.controller;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,6 +19,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.message.websocket.WebSocket;
 import org.jeecg.modules.system.entity.SysAnnouncement;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.system.service.ISysAnnouncementSendService;
@@ -39,7 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -62,6 +62,8 @@ public class SysAnnouncementController {
 	private ISysAnnouncementService sysAnnouncementService;
 	@Autowired
 	private ISysAnnouncementSendService sysAnnouncementSendService;
+	@Resource
+    private WebSocket webSocket;
 
 	/**
 	  * 分页列表查询
@@ -223,6 +225,24 @@ public class SysAnnouncementController {
 			boolean ok = sysAnnouncementService.updateById(sysAnnouncement);
 			if(ok) {
 				result.success("该系统通知发布成功");
+				if(sysAnnouncement.getMsgType().equals(CommonConstant.MSG_TYPE_ALL)) {
+					JSONObject obj = new JSONObject();
+			    	obj.put("cmd", "topic");
+					obj.put("msgId", sysAnnouncement.getId());
+					obj.put("msgTxt", sysAnnouncement.getTitile());
+			    	webSocket.sendAllMessage(obj.toJSONString());
+				}else {
+					// 2.插入用户通告阅读标记表记录
+					String userId = sysAnnouncement.getUserIds();
+					String[] userIds = userId.substring(0, (userId.length()-1)).split(",");
+					String anntId = sysAnnouncement.getId();
+					Date refDate = new Date();
+					JSONObject obj = new JSONObject();
+			    	obj.put("cmd", "user");
+					obj.put("msgId", sysAnnouncement.getId());
+					obj.put("msgTxt", sysAnnouncement.getTitile());
+			    	webSocket.sendMoreMessage(userIds, obj.toJSONString());
+				}
 			}
 		}
 		

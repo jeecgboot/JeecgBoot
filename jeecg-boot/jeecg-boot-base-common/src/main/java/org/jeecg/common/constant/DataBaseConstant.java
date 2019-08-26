@@ -12,12 +12,15 @@ public interface DataBaseConstant {
 	/**
 	 * 数据-所属机构编码
 	 */
-	public static final String SYS_MULTI_ORG_CODE = "sysMultiOrgCode";
-	
+	public static final String SYS_ORG_CODE_TABLE = "sys_org_code";
 	/**
 	 * 数据-所属机构编码
 	 */
-	public static final String SYS_ORG_CODE_TABLE = "sys_org_code";
+	public static final String SYS_MULTI_ORG_CODE = "sysMultiOrgCode";
+	/**
+	 * 数据-所属机构编码
+	 */
+	public static final String SYS_MULTI_ORG_CODE_TABLE = "sys_multi_org_code";
 	/**
 	 * 数据-系统用户编码（对应登录用户账号）
 	 */

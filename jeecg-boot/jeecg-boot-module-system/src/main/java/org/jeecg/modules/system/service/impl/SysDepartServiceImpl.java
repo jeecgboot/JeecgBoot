@@ -5,13 +5,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.YouBianCodeUtil;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.mapper.SysDepartMapper;
+import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +37,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	/**
 	 * queryTreeList 对应 queryTreeList 查询所有的部门数据,以树结构形式响应给前端
 	 */
+	@Cacheable(value = CacheConstant.DEPART_INFO_CACHE)
 	@Override
 	public List<SysDepartTreeModel> queryTreeList() {
 		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
@@ -42,6 +46,18 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		List<SysDepart> list = this.list(query);
 		// 调用wrapTreeDataToTreeList方法生成树状数据
 		List<SysDepartTreeModel> listResult = FindsDepartsChildrenUtil.wrapTreeDataToTreeList(list);
+		return listResult;
+	}
+
+	@Cacheable(value = CacheConstant.DEPART_IDMODEL_CACHE)
+	@Override
+	public List<DepartIdModel> queryDepartIdTreeList() {
+		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
+		query.eq(SysDepart::getDelFlag, CommonConstant.DEL_FLAG_0.toString());
+		query.orderByAsc(SysDepart::getDepartOrder);
+		List<SysDepart> list = this.list(query);
+		// 调用wrapTreeDataToTreeList方法生成树状数据
+		List<DepartIdModel> listResult = FindsDepartsChildrenUtil.wrapTreeDataToDepartIdTreeList(list);
 		return listResult;
 	}
 
@@ -75,8 +91,6 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	 * saveDepartData 的调用方法,生成部门编码和部门类型
 	 * 
 	 * @param parentId
-	 * @param strArray
-	 * @param departList
 	 * @return
 	 */
 	private String[] generateOrgCode(String parentId) {	
@@ -168,8 +182,18 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		}
 
 	}
+	
+	@Override
+	@Transactional
+	public void deleteBatchWithChildren(List<String> ids) {
+		List<String> idList = new ArrayList<String>();
+		for(String id: ids) {
+			idList.add(id);
+			this.checkChildrenExists(id, idList);
+		}
+		this.removeByIds(idList);
 
-
+	}
 	/**
 	 * <p>
 	 * 根据关键字搜索相关的部门数据
@@ -203,6 +227,8 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		List<String> idList = new ArrayList<>();
 		idList.add(id);
 		this.checkChildrenExists(id, idList);
+		//清空部门树内存
+		//FindsDepartsChildrenUtil.clearDepartIdModel();
 		boolean ok = this.removeByIds(idList);
 		return ok;
 	}

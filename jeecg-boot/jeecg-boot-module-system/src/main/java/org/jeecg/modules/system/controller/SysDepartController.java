@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
@@ -20,8 +21,6 @@ import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
-import org.jeecg.modules.system.service.ISysUserDepartService;
-import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -29,6 +28,8 @@ import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -50,16 +51,12 @@ import lombok.extern.slf4j.Slf4j;
  * @Author: Steve @Since： 2019-01-22
  */
 @RestController
-@RequestMapping("/sysdepart/sysDepart")
+@RequestMapping("/sys/sysDepart")
 @Slf4j
 public class SysDepartController {
 
 	@Autowired
 	private ISysDepartService sysDepartService;
-	@Autowired
-	private ISysUserService sysUserService;
-	@Autowired
-	private ISysUserDepartService sysUserDepartService;
 
 	/**
 	 * 查询数据 查出所有部门,并以树结构数据格式响应给前端
@@ -70,6 +67,11 @@ public class SysDepartController {
 	public Result<List<SysDepartTreeModel>> queryTreeList() {
 		Result<List<SysDepartTreeModel>> result = new Result<>();
 		try {
+			// 从内存中读取
+//			List<SysDepartTreeModel> list =FindsDepartsChildrenUtil.getSysDepartTreeList();
+//			if (CollectionUtils.isEmpty(list)) {
+//				list = sysDepartService.queryTreeList();
+//			}
 			List<SysDepartTreeModel> list = sysDepartService.queryTreeList();
 			result.setResult(list);
 			result.setSuccess(true);
@@ -86,12 +88,16 @@ public class SysDepartController {
 	 * @return
 	 */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
+	@CacheEvict(value= {CacheConstant.DEPART_INFO_CACHE,CacheConstant.DEPART_IDMODEL_CACHE}, allEntries=true)
 	public Result<SysDepart> add(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
 		Result<SysDepart> result = new Result<SysDepart>();
 		String username = JwtUtil.getUserNameByToken(request);
 		try {
 			sysDepart.setCreateBy(username);
 			sysDepartService.saveDepartData(sysDepart, username);
+			//清除部门树内存
+			// FindsDepartsChildrenUtil.clearSysDepartTreeList();
+			// FindsDepartsChildrenUtil.clearDepartIdModel();
 			result.success("添加成功！");
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
@@ -107,6 +113,7 @@ public class SysDepartController {
 	 * @return
 	 */
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
+	@CacheEvict(value= {CacheConstant.DEPART_INFO_CACHE,CacheConstant.DEPART_IDMODEL_CACHE}, allEntries=true)
 	public Result<SysDepart> edit(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
 		String username = JwtUtil.getUserNameByToken(request);
 		sysDepart.setUpdateBy(username);
@@ -118,6 +125,9 @@ public class SysDepartController {
 			boolean ok = sysDepartService.updateDepartDataById(sysDepart, username);
 			// TODO 返回false说明什么？
 			if (ok) {
+				//清除部门树内存
+				//FindsDepartsChildrenUtil.clearSysDepartTreeList();
+				//FindsDepartsChildrenUtil.clearDepartIdModel();
 				result.success("修改成功!");
 			}
 		}
@@ -129,7 +139,8 @@ public class SysDepartController {
     * @param id
     * @return
     */
-   @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+	@CacheEvict(value= {CacheConstant.DEPART_INFO_CACHE,CacheConstant.DEPART_IDMODEL_CACHE}, allEntries=true)
    public Result<SysDepart> delete(@RequestParam(name="id",required=true) String id) {
 
        Result<SysDepart> result = new Result<SysDepart>();
@@ -139,6 +150,9 @@ public class SysDepartController {
        }else {
            boolean ok = sysDepartService.delete(id);
            if(ok) {
+	            //清除部门树内存
+	   		   //FindsDepartsChildrenUtil.clearSysDepartTreeList();
+	   		   // FindsDepartsChildrenUtil.clearDepartIdModel();
                result.success("删除成功!");
            }
        }
@@ -153,13 +167,14 @@ public class SysDepartController {
 	 * @return
 	 */
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
+	@CacheEvict(value= {CacheConstant.DEPART_INFO_CACHE,CacheConstant.DEPART_IDMODEL_CACHE}, allEntries=true)
 	public Result<SysDepart> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 
 		Result<SysDepart> result = new Result<SysDepart>();
 		if (ids == null || "".equals(ids.trim())) {
 			result.error500("参数不识别！");
 		} else {
-			this.sysDepartService.removeByIds(Arrays.asList(ids.split(",")));
+			this.sysDepartService.deleteBatchWithChildren(Arrays.asList(ids.split(",")));
 			result.success("删除成功!");
 		}
 		return result;
@@ -172,25 +187,34 @@ public class SysDepartController {
 	 */
 	@RequestMapping(value = "/queryIdTree", method = RequestMethod.GET)
 	public Result<List<DepartIdModel>> queryIdTree() {
-		Result<List<DepartIdModel>> result = new Result<List<DepartIdModel>>();
-		List<DepartIdModel> idList;
+//		Result<List<DepartIdModel>> result = new Result<List<DepartIdModel>>();
+//		List<DepartIdModel> idList;
+//		try {
+//			idList = FindsDepartsChildrenUtil.wrapDepartIdModel();
+//			if (idList != null && idList.size() > 0) {
+//				result.setResult(idList);
+//				result.setSuccess(true);
+//			} else {
+//				sysDepartService.queryTreeList();
+//				idList = FindsDepartsChildrenUtil.wrapDepartIdModel();
+//				result.setResult(idList);
+//				result.setSuccess(true);
+//			}
+//			return result;
+//		} catch (Exception e) {
+//			log.error(e.getMessage(),e);
+//			result.setSuccess(false);
+//			return result;
+//		}
+		Result<List<DepartIdModel>> result = new Result<>();
 		try {
-			idList = FindsDepartsChildrenUtil.wrapDepartIdModel();
-			if (idList != null && idList.size() > 0) {
-				result.setResult(idList);
-				result.setSuccess(true);
-			} else {
-				sysDepartService.queryTreeList();
-				idList = FindsDepartsChildrenUtil.wrapDepartIdModel();
-				result.setResult(idList);
-				result.setSuccess(true);
-			}
-			return result;
+			List<DepartIdModel> list = sysDepartService.queryDepartIdTreeList();
+			result.setResult(list);
+			result.setSuccess(true);
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
-			result.setSuccess(false);
-			return result;
 		}
+		return result;
 	}
 	 
 	/**

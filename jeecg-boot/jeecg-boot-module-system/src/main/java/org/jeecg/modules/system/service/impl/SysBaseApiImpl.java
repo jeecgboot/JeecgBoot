@@ -20,6 +20,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.IPUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.message.websocket.WebSocket;
 import org.jeecg.modules.system.entity.SysAnnouncement;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.system.entity.SysDict;
@@ -35,6 +36,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +68,8 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	private SysAnnouncementMapper sysAnnouncementMapper;
 	@Resource
 	private SysAnnouncementSendMapper sysAnnouncementSendMapper;
+	@Resource
+    private WebSocket webSocket;
 	
 	@Override
 	public void addLog(String LogContent, Integer logType, Integer operatetype) {
@@ -167,8 +171,15 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				announcementSend.setUserId(sysUser.getId());
 				announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
 				sysAnnouncementSendMapper.insert(announcementSend);
+				JSONObject obj = new JSONObject();
+		    	obj.put("cmd", "user");
+		    	obj.put("userId", sysUser.getId());
+				obj.put("msgId", announcement.getId());
+				obj.put("msgTxt", announcement.getTitile());
+		    	webSocket.sendOneMessage(sysUser.getId(), obj.toJSONString());
 			}
 		}
+		
 	}
 	/**
 	 * 获取数据库类型

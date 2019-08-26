@@ -233,3 +233,22 @@ export function showDealBtn(bpmStatus){
   }
   return false;
 }
+
+/**
+ * 增强CSS，可以在页面上输出全局css
+ * @param css 要增强的css
+ * @param id style标签的id，可以用来清除旧样式
+ */
+export function cssExpand(css, id) {
+  let style = document.createElement('style')
+  style.type = "text/css"
+  style.innerHTML = `@charset "UTF-8"; ${css}`
+  // 清除旧样式
+  if (id) {
+    let $style = document.getElementById(id)
+    if ($style != null) $style.outerHTML = ''
+    style.id = id
+  }
+  // 应用新样式
+  document.head.appendChild(style)
+}

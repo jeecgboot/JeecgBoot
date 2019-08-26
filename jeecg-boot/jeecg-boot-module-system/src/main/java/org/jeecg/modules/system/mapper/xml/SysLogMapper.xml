@@ -30,7 +30,7 @@
         	   DATE_FORMAT(create_time, '%m-%d') as type
          from sys_log 
          where log_type = 1 and create_time &gt;= #{dayStart} and create_time &lt; #{dayEnd}
-         group by tian
+         group by tian,type
          order by tian asc
     </select>
 

@@ -196,8 +196,12 @@
       getQueryParams(){
         let param = Object.assign({}, this.queryParam,this.isorter);
         param.field = this.getQueryField();
-        param.current = this.ipagination.current;
+        //--update-begin----author:scott---date:20190818------for:新建公告时指定特定用户翻页错误SelectUserListModal #379----
+        // param.current = this.ipagination.current;
+        // param.pageSize = this.ipagination.pageSize;
+        param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
+        //--update-end----author:scott---date:20190818------for:新建公告时指定特定用户翻页错误SelectUserListModal #379---
         return filterObj(param);
       },
       getQueryField(){

@@ -125,9 +125,9 @@
           scopedSlots: { customRender: 'action' },
         }],
 		    url: {
-          list: "/system/sysAnnouncementSend/getMyAnnouncementSend",
-          editCementSend:"system/sysAnnouncementSend/editByAnntIdAndUserId",
-          readAllMsg:"system/sysAnnouncementSend/readAll",
+          list: "/sys/sysAnnouncementSend/getMyAnnouncementSend",
+          editCementSend:"sys/sysAnnouncementSend/editByAnntIdAndUserId",
+          readAllMsg:"sys/sysAnnouncementSend/readAll",
         },
         loading:false,
       }

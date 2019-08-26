@@ -2,30 +2,33 @@
 
 ## 参数配置
 
-| 参数         | 类型    | 必填 | 说明                                                           |
-|--------------|---------|------|----------------------------------------------------------------|
-| columns      | array   | ✔️    | 表格列的配置描述，具体项见下表                                 |
-| dataSource   | array   | ✔️    | 表格数据                                                       |
-| loading      | boolean |      | 是否正在加载，加载中不会显示任何行，默认false                  |
-| actionButton | boolean |      | 是否显示操作按钮，包括"新增"、"删除"，默认false                |
-| rowNumber    | boolean |      | 是否显示行号，默认false                                        |
-| rowSelection | boolean |      | 是否可选择行，默认false                                        |
-| maxHeight    | number  |      | 设定最大高度(px)，默认400                                      |
-| disabledRows | object  |      | 设定禁用的行，被禁用的行无法被选择和编辑，配置方法可以查看示例 |
-| disabled     | boolean |      | 是否禁用所有行，默认false                                      |
+| 参数         | 类型    | 必填 | 说明                                                                            |
+|--------------|---------|------|---------------------------------------------------------------------------------|
+| columns      | array   | ✔️    | 表格列的配置描述，具体项见下表                                                  |
+| dataSource   | array   | ✔️    | 表格数据                                                                        |
+| loading      | boolean |      | 是否正在加载，加载中不会显示任何行，默认false                                   |
+| actionButton | boolean |      | 是否显示操作按钮，包括"新增"、"删除"，默认false                                 |
+| rowNumber    | boolean |      | 是否显示行号，默认false                                                         |
+| rowSelection | boolean |      | 是否可选择行，默认false                                                         |
+| dragSort     | boolean |      | 是否可拖动排序，默认false                                                       |
+| dragSortKey  | string  |      | 拖动排序存储的Key，无需定义在columns内也能在getValues()时获取到值，默认orderNum |
+| maxHeight    | number  |      | 设定最大高度(px)，默认400                                                       |
+| disabledRows | object  |      | 设定禁用的行，被禁用的行无法被选择和编辑，配置方法可以查看示例                  |
+| disabled     | boolean |      | 是否禁用所有行，默认false                                                       |
 
 ### columns 参数详解
 
-| 参数          | 类型   | 必填 | 说明                                                                                                                                                   |
-|---------------|--------|------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| title         | string | ✔️    | 表格列头显示的问题                                                                                                                                     |
-| key           | string | ✔️    | 列数据在数据项中对应的 key，必须是唯一的                                                                                                               |
-| type          | string | ✔️    | 表单的类型，可以通过`JEditableTableUtil.FormTypes`赋值                                                                                                 |
-| width         | string |      | 列的宽度，可以是百分比，也可以是`px`或其他单位，建议设置为百分比，且每一列的宽度加起来不应超过100%，否则可能会不能达到预期的效果。留空会自动计算百分比 |
-| placeholder   | string |      | 表单预期值的提示信息，可以使用`${...}`变量替换文本（详见`${...} 变量使用方式`）                                                                        |
-| defaultValue  | string |      | 默认值，在新增一行时生效                                                                                                                               |
-| validateRules | array  |      | 表单验证规则，配置方式见[validateRules 配置规则](#validaterules-配置规则)                                                                              |
-| props         | object |      | 设置添加给表单元素的自定义属性，例如:`props:{title: 'show title'}`                                                                                     |
+| 参数          | 类型    | 必填 | 说明                                                                                                                                                   |
+|---------------|---------|------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| title         | string  | ✔️    | 表格列头显示的问题                                                                                                                                     |
+| key           | string  | ✔️    | 列数据在数据项中对应的 key，必须是唯一的                                                                                                               |
+| type          | string  | ✔️    | 表单的类型，可以通过`JEditableTableUtil.FormTypes`赋值                                                                                                 |
+| width         | string  |      | 列的宽度，可以是百分比，也可以是`px`或其他单位，建议设置为百分比，且每一列的宽度加起来不应超过100%，否则可能会不能达到预期的效果。留空会自动计算百分比 |
+| placeholder   | string  |      | 表单预期值的提示信息，可以使用`${...}`变量替换文本（详见`${...} 变量使用方式`）                                                                        |
+| defaultValue  | string  |      | 默认值，在新增一行时生效                                                                                                                               |
+| validateRules | array   |      | 表单验证规则，配置方式见[validateRules 配置规则](#validaterules-配置规则)                                                                              |
+| props         | object  |      | 设置添加给表单元素的自定义属性，例如:`props:{title: 'show title'}`                                                                                     |
+| disabled      | boolean |      | 是否禁用当前列，默认false                                                                                                                              |
 
 #### 当 type=checkbox 时所需的参数
 
@@ -36,10 +39,11 @@
 
 #### 当 type=select 时所需的参数
 
-| 参数       | 类型    | 必填 | 说明                                 |
-|------------|---------|------|--------------------------------------|
-| options    | array   | ✔️    | 下拉选项列表，详见下表               |
-| allowInput | boolean |      | 是否允许用户输入内容，并创建新的内容 |
+| 参数       | 类型    | 必填 | 说明                                               |
+|------------|---------|------|----------------------------------------------------|
+| options    | array   | ✔️    | 下拉选项列表，详见下表                             |
+| allowInput | boolean |      | 是否允许用户输入内容，并创建新的内容               |
+| dictCode   | String  |      | 数据字典Code，若options也有值，则拼接在options后面 |
 
 ##### options 所需参数
 
@@ -74,11 +78,12 @@
 
 ## 事件
 
-| 事件名          | 触发时机                                           | 参数                          |
-|-----------------|----------------------------------------------------|-------------------------------|
-| added           | 当添加行操作完成后触发                             |                               |
-| deleted         | 当删除行操作完成后触发（批量删除操作只会触发一次） | `deleteIds` 被逻辑删除的id    |
-| selectRowChange | 当行被选中或取消选中时触发                         | `selectedRowIds` 被选中行的id |
+| 事件名          | 触发时机                                           | 参数                                             |
+|-----------------|----------------------------------------------------|--------------------------------------------------|
+| added           | 当添加行操作完成后触发                             |                                                  |
+| deleted         | 当删除行操作完成后触发（批量删除操作只会触发一次） | `deleteIds` 被逻辑删除的id                       |
+| selectRowChange | 当行被选中或取消选中时触发                         | `selectedRowIds` 被选中行的id                    |
+| valueChange     | 当数据发生改变的时候触发的事件                     | `{ type, row, column, value, target }` Event对象 |
 
 ## 方法
 
@@ -489,6 +494,7 @@ this.$refs.editableTable.getValues((error, values) => {
             /* a 标签的点击事件，删除当前选中的行 */
             handleDelete(props) {
                 // 参数解释
+                // props.index ：当前行的下标
                 // props.text ：当前值，可能是defaultValue定义的值，也可能是从dataSource中取出的值
                 // props.rowId ：当前选中行的id，如果是新增行则是临时id
                 // props.column ：当前操作的列

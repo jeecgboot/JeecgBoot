@@ -7,6 +7,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -64,5 +65,14 @@ public class JeecgBootExceptionHandler {
 		log.error(e.getMessage(), e);
 		return Result.error("没有权限，请联系管理员授权");
 	}
+	
+	 /** 
+	  * spring默认上传大小100MB 超出大小捕获异常MaxUploadSizeExceededException 
+	  */
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public Result<?> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+    	log.error(e.getMessage(), e);
+        return Result.error("文件大小超出10MB限制, 请压缩或降低文件质量! ");
+    }
 
 }

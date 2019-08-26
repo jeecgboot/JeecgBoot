@@ -105,7 +105,7 @@
          mobile:{rules: [{validator:this.validateMobile}]}
         },
         url: {
-          add: "/sysdepart/sysDepart/add",
+          add: "/sys/sysDepart/add",
         },
       }
     },

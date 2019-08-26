@@ -45,6 +45,7 @@
             mode="multiple"
             style="width: 100%"
             placeholder="请选择用户角色"
+            optionFilterProp = "children"
             v-model="selectedRole">
             <a-select-option v-for="(role,roleindex) in roleList" :key="roleindex.toString()" :value="role.id">
               {{ role.roleName }}
@@ -411,7 +412,7 @@
         if(!value){
           callback()
         }else{
-          if(new RegExp(/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/).test(value)){
+          if(new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/).test(value)){
             var params = {
               tableName: 'sys_user',
               fieldName: 'email',

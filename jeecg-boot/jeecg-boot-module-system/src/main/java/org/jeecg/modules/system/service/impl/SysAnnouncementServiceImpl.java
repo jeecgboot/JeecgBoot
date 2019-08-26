@@ -8,6 +8,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysAnnouncement;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.system.mapper.SysAnnouncementMapper;
@@ -67,9 +68,9 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 	public boolean upDateAnnouncement(SysAnnouncement sysAnnouncement) {
 		// 1.更新系统信息表数据
 		sysAnnouncementMapper.updateById(sysAnnouncement);
-		if(sysAnnouncement.getMsgType().equals(CommonConstant.MSG_TYPE_UESR)) {
+		String userId = sysAnnouncement.getUserIds();
+		if(oConvertUtils.isNotEmpty(userId)&&sysAnnouncement.getMsgType().equals(CommonConstant.MSG_TYPE_UESR)) {
 			// 2.补充新的通知用户数据
-			String userId = sysAnnouncement.getUserIds();
 			String[] userIds = userId.substring(0, (userId.length()-1)).split(",");
 			String anntId = sysAnnouncement.getId();
 			Date refDate = new Date();

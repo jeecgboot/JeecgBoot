@@ -1,6 +1,7 @@
 package org.jeecg.config;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.jeecg.modules.shiro.vo.DefContants;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.github.xiaoymin.swaggerbootstrapui.annotations.EnableSwaggerBootstrapUI;
 
 import io.swagger.annotations.ApiOperation;
+import springfox.documentation.service.ApiKey;
 import springfox.documentation.service.Parameter;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -20,6 +22,7 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.SecurityScheme;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -62,9 +65,20 @@ public class Swagger2Config implements WebMvcConfigurer {
 	            .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
 				.paths(PathSelectors.any())
 				.build()
-				.globalOperationParameters(setHeaderToken());
+				.securitySchemes(Collections.singletonList(securityScheme()));
+				//.globalOperationParameters(setHeaderToken());
 	}
 
+	/***
+	 * oauth2配置
+	 * 需要增加swagger授权回调地址
+	 * http://localhost:8888/webjars/springfox-swagger-ui/o2c.html
+	 * @return
+	 */
+	@Bean
+	SecurityScheme securityScheme() {
+		return new ApiKey(DefContants.X_ACCESS_TOKEN, DefContants.X_ACCESS_TOKEN, "header");
+	}
 	/**
 	 * JWT token
 	 * @return
@@ -90,11 +104,11 @@ public class Swagger2Config implements WebMvcConfigurer {
 				.version("1.0")
 //				.termsOfServiceUrl("NO terms of service")
 				// 描述
-				.description("restful 风格接口")
+				.description("后台API接口")
 				// 作者
-//				.contact(new Contact("scott", "http://jeecg.org", "jeecgos@163.com"))
-//                .license("The Apache License, Version 2.0")
-//                .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
+				.contact("JEECG团队")
+                .license("The Apache License, Version 2.0")
+                .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
 				.build();
 	}
 
