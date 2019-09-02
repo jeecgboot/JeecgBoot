@@ -95,9 +95,6 @@
   <#if form_file>
   import JUpload from '@/components/jeecg/JUpload'
   </#if>
-  <#if form_popup>
-  import JPopup from '@/components/jeecgbiz/JPopup'
-  </#if>
   <#if form_sel_depart>
   import JSelectDepart from '@/components/jeecgbiz/JSelectDepart'
   </#if>
@@ -122,9 +119,6 @@
     </#if>
     <#if form_file>
       JUpload,
-    </#if>
-    <#if form_popup>
-      JPopup,
     </#if>
     <#if form_sel_depart>
       JSelectDepart,

@@ -23,7 +23,7 @@ public class ${entityName} implements Serializable {
     <#list originalColumns as po>
 	/**${po.filedComment}*/
 	<#if po.fieldName == primaryKeyField>
-	@TableId(type = IdType.UUID)
+	@TableId(type = IdType.ID_WORKER_STR)
 	<#else>
 		<#if po.fieldDbType =='Date'>
 			<#if po.classType=='date'>
