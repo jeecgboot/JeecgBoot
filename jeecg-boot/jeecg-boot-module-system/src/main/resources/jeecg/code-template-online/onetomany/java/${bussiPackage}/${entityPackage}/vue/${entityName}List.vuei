@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
 <#assign query_field_no=0>
 <#assign query_field_select=false>
@@ -93,7 +93,7 @@
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-button type="primary" icon="download" @click="handleExportXls('${tableVo.ftlDescription}')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :action="importExcelUrl" @change="handleImportExcel">
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
       <a-dropdown v-if="selectedRowKeys.length > 0">
