@@ -49,8 +49,15 @@ public class MybatisInterceptor implements Interceptor {
 			for (Field field : fields) {
 				log.debug("------field.name------" + field.getName());
 				try {
+					//update-begin--Author:scott  Date:20190828 for：关于使用Quzrtz 开启线程任务， #465
 					// 获取登录用户信息
-					LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+					LoginUser sysUser = null;
+					try{
+						sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+					}catch (Exception e){
+						sysUser = null;
+					}
+					//update-end--Author:scott  Date:20190828 for：关于使用Quzrtz 开启线程任务， #465
 					if ("createBy".equals(field.getName())) {
 						field.setAccessible(true);
 						Object local_createBy = field.get(parameter);
