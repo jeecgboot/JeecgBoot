@@ -13,8 +13,6 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.springframework.stereotype.Component;
 
-import com.alibaba.fastjson.JSONObject;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -50,11 +48,7 @@ public class WebSocket {
     
     @OnMessage
     public void onMessage(String message) {
-    	//log.info("【websocket消息】收到客户端消息:"+message);
-    	JSONObject obj = new JSONObject();
-    	obj.put("cmd", "heartcheck");//业务类型
-    	obj.put("msgTxt", "心跳响应");//消息内容
-    	session.getAsyncRemote().sendText(obj.toJSONString());
+    	log.info("【websocket消息】收到客户端消息:"+message);
     }
     
     // 此为广播消息
