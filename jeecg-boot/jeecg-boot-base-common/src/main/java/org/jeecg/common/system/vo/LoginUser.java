@@ -38,6 +38,11 @@ public class LoginUser {
 	 */
 	private String realname;
 
+	/**
+	 * 登录人密码
+	 */
+	private String password;
+
      /**
       * 当前登录部门code
       */

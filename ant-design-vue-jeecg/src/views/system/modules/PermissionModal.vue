@@ -213,7 +213,7 @@
           component:{rules: [{ required: this.show, message: '请输入前端组件!' }]},
           url:{rules: [{ required: this.show, message: '请输入菜单路径!' }]},
           permsType:{rules: [{ required: true, message: '请输入授权策略!' }]},
-          sortNo:{rules: [{initialValue:1.0,validator: this.validateNumber}]},
+          sortNo:{initialValue:1.0,rules: [{validator: this.validateNumber}]},
         }
       }
     },

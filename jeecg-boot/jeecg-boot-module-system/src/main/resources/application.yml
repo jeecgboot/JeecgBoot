@@ -4,6 +4,6 @@ spring:
 swagger:
   production: false
   basic:
-    enable: true
+    enable: false
     username: jeecg
     password: jeecg1314

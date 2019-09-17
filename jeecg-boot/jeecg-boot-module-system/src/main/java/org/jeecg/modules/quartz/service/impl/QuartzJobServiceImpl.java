@@ -117,7 +117,9 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 			scheduler.scheduleJob(jobDetail, trigger);
 		} catch (SchedulerException e) {
 			throw new JeecgBootException("创建定时任务失败", e);
-		} catch (Exception e) {
+		} catch (RuntimeException e) {
+			throw new JeecgBootException(e.getMessage(), e);
+		}catch (Exception e) {
 			throw new JeecgBootException("后台找不到该类名：" + jobClassName, e);
 		}
 	}

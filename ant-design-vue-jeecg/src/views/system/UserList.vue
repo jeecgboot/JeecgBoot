@@ -3,7 +3,7 @@
 
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline">
+      <a-form layout="inline" @submit.prevent="searchQuery">
         <a-row :gutter="24">
 
           <a-col :md="6" :sm="12">
@@ -117,8 +117,9 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
-          <a-divider type="vertical"/>
+          <a @click="handleEdit(record)" v-has="'user:edit'">编辑</a>
+
+          <a-divider type="vertical" v-has="'user:edit'"/>
 
           <a-dropdown>
             <a class="ant-dropdown-link">
@@ -140,13 +141,13 @@
               </a-menu-item>
 
               <a-menu-item v-if="record.status==1">
-                <a-popconfirm title="确定冻结吗?" @confirm="() => handleFrozen(record.id,2)">
+                <a-popconfirm title="确定冻结吗?" @confirm="() => handleFrozen(record.id,2,record.username)">
                   <a>冻结</a>
                 </a-popconfirm>
               </a-menu-item>
 
               <a-menu-item v-if="record.status==2">
-                <a-popconfirm title="确定解冻吗?" @confirm="() => handleFrozen(record.id,1)">
+                <a-popconfirm title="确定解冻吗?" @confirm="() => handleFrozen(record.id,1,record.username)">
                   <a>解冻</a>
                 </a-popconfirm>
               </a-menu-item>
@@ -297,6 +298,16 @@
         } else {
           let ids = "";
           let that = this;
+          let isAdmin = false;
+          that.selectionRows.forEach(function (row) {
+            if (row.username == 'admin') {
+              isAdmin = true;
+            }
+          });
+          if (isAdmin) {
+            that.$message.warning('管理员账号不允许此操作,请重新选择！');
+            return;
+          }
           that.selectedRowKeys.forEach(function (val) {
             ids += val + ",";
           });
@@ -326,8 +337,13 @@
           this.batchFrozen(1);
         }
       },
-      handleFrozen: function (id, status) {
+      handleFrozen: function (id, status, username) {
         let that = this;
+        //TODO 后台校验管理员角色
+        if ('admin' == username) {
+          that.$message.warning('管理员账号不允许此操作！');
+          return;
+        }
         frozenBatch({ids: id, status: status}).then((res) => {
           if (res.success) {
             that.$message.success(res.message);

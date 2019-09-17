@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
  * @Version: V1.0
  */
 @RestController
-@RequestMapping("/system/sysAnnouncementSend")
+@RequestMapping("/sys/sysAnnouncementSend")
 @Slf4j
 public class SysAnnouncementSendController {
 	@Autowired

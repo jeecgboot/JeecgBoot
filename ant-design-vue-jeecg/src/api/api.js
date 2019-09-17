@@ -45,11 +45,11 @@ const getPermissionRuleList = (params)=>getAction("/sys/permission/getPermRuleLi
 const queryPermissionRule = (params)=>getAction("/sys/permission/queryPermissionRule",params);
 
 // 部门管理
-const queryDepartTreeList = (params)=>getAction("/sysdepart/sysDepart/queryTreeList",params);
-const queryIdTree = (params)=>getAction("/sysdepart/sysDepart/queryIdTree",params);
-const queryParentName   = (params)=>getAction("/sysdepart/sysDepart/queryParentName",params);
-const searchByKeywords   = (params)=>getAction("/sysdepart/sysDepart/searchBy",params);
-const deleteByDepartId   = (params)=>deleteAction("/sysdepart/sysDepart/delete",params);
+const queryDepartTreeList = (params)=>getAction("/sys/sysDepart/queryTreeList",params);
+const queryIdTree = (params)=>getAction("/sys/sysDepart/queryIdTree",params);
+const queryParentName   = (params)=>getAction("/sys/sysDepart/queryParentName",params);
+const searchByKeywords   = (params)=>getAction("/sys/sysDepart/searchBy",params);
+const deleteByDepartId   = (params)=>deleteAction("/sys/sysDepart/delete",params);
 
 //日志管理
 //const getLogList = (params)=>getAction("/sys/log/list",params);

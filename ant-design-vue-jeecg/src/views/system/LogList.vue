@@ -19,7 +19,7 @@
             </a-form-item>
           </a-col>
 
-          <a-col :md="8" :sm="10">
+          <a-col :md="6" :sm="10">
             <a-form-item label="创建时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-range-picker
                 style="width: 210px"
@@ -31,13 +31,18 @@
               />
             </a-form-item>
           </a-col>
-
-          <a-col :md="8" :sm="10" >
-            <span style="float: right;" class="table-page-search-submitButtons">
-              <a-button type="primary" style="left: -35px" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary"  @click="searchReset" icon="reload" style="margin-left: 8px;left: -35px">重置</a-button>
-            </span>
+          <a-col :md="5" :sm="8" v-if="tabKey === '2'">
+            <a-form-item label="操作类型" style="left: 10px">
+              <j-dict-select-tag v-model="queryParam.operateType" placeholder="请选择操作类型" dictCode="operate_type"/>
+            </a-form-item>
           </a-col>
+
+          <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+            <a-col :md="6" :sm="24" >
+                <a-button type="primary"  style="left: 10px" @click="searchQuery" icon="search">查询</a-button>
+                <a-button type="primary"  @click="searchReset" icon="reload" style="margin-left: 8px;left: 10px">重置</a-button>
+            </a-col>
+          </span>
 
         </a-row>
       </a-form>
@@ -58,7 +63,10 @@
         <div style="margin-bottom: 5px"><a-badge status="success" style="vertical-align: middle;"/><span style="vertical-align: middle;">请求方法:{{ record.method }}</span></div>
         <div><a-badge status="processing" style="vertical-align: middle;"/><span style="vertical-align: middle;">请求参数:{{ record.requestParam }}</span></div>
       </div>
-
+      <!-- 字符串超长截取省略号显示-->
+      <span slot="logContent" slot-scope="text, record">
+          <j-ellipsis :value="text" :length="40"/>
+        </span>
     </a-table>
     <!-- table区域-end -->
   </a-card>
@@ -67,10 +75,14 @@
 <script>
   import { filterObj } from '@/utils/util';
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import JEllipsis from '@/components/jeecg/JEllipsis'
 
   export default {
     name: "LogList",
     mixins:[JeecgListMixin],
+    components: {
+      JEllipsis
+    },
     data () {
       return {
         description: '这是日志管理页面',
@@ -81,6 +93,7 @@
           logType:'1',
           keyWord:'',
         },
+        tabKey: "1",
         // 表头
         columns: [
           {
@@ -96,6 +109,7 @@
             title: '日志内容',
             align:"left",
             dataIndex: 'logContent',
+            scopedSlots: { customRender: 'logContent' },
             sorter: true
           },
           {
@@ -143,6 +157,12 @@
             sorter: true
           }
         ],
+        operateColumn:
+        {
+          title: '操作类型',
+          dataIndex: 'operateType_dictText',
+          align:"center",
+        },
         labelCol: {
           xs: { span: 1 },
           sm: { span: 2 },
@@ -177,6 +197,17 @@
       },
       // 日志类型
       callback(key){
+
+        // 动态添加操作类型列
+        if (key == 2) {
+          this.tabKey = '2';
+          this.columns.splice(7, 0, this.operateColumn);
+        }else if(this.columns.length == 9)
+        {
+          this.tabKey = '1';
+          this.columns.splice(7,1);
+        }
+
         let that=this;
         that.queryParam.logType=key;
         that.loadData();

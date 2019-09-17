@@ -72,7 +72,13 @@ public class SysCategoryController {
 			sysCategory.setPid("0");
 		}
 		Result<IPage<SysCategory>> result = new Result<IPage<SysCategory>>();
-		QueryWrapper<SysCategory> queryWrapper = QueryGenerator.initQueryWrapper(sysCategory, req.getParameterMap());
+		
+		//--author:os_chengtgen---date:20190804 -----for: 分类字典页面显示错误,issues:377--------start
+		//QueryWrapper<SysCategory> queryWrapper = QueryGenerator.initQueryWrapper(sysCategory, req.getParameterMap());
+		QueryWrapper<SysCategory> queryWrapper = new QueryWrapper<SysCategory>();
+		queryWrapper.eq("pid", sysCategory.getPid());
+		//--author:os_chengtgen---date:20190804 -----for: 分类字典页面显示错误,issues:377--------end
+		
 		Page<SysCategory> page = new Page<SysCategory>(pageNo, pageSize);
 		IPage<SysCategory> pageList = sysCategoryService.page(page, queryWrapper);
 		result.setSuccess(true);

@@ -1,5 +1,7 @@
 server:
     port: 8080
+    tomcat: 
+        max-swallow-size: -1
     servlet:
        context-path: /jeecg-boot
        compression:
@@ -64,6 +66,7 @@ spring:
         enabled: true
         loginUsername: admin
         loginPassword: 123456
+        allow:
       web-stat-filter:
         enabled: true
     dynamic: 
@@ -136,6 +139,13 @@ jeecg :
     upload: D://upFiles
     #webapp文件路径
     webapp: D://webapp
+  #短信秘钥
+  sms:
+     accessKeyId: LTAIpW4gUG7xYDNI
+     accessKeySecret: ???
 logging:
   level:
     org.jeecg.modules.system.mapper : debug
+#cas单点登录
+cas:
+  prefixUrl: http://cas.example.org:8443/cas

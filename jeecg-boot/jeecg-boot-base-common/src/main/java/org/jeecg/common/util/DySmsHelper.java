@@ -2,6 +2,8 @@ package org.jeecg.common.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
@@ -31,32 +33,27 @@ public class DySmsHelper {
     static final String domain = "dysmsapi.aliyuncs.com";
 
     // TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)
-    static final String accessKeyId = "?";
-    static final String accessKeySecret = "?";
-    
-    /**
-         * 登陆时采用的短信发送模板编码
-     */
-    public static final String LOGIN_TEMPLATE_CODE="SMS_167040816";
-    
-    /**
-     * 忘记密码时采用的短信发送模板编码
-     */
-    public static final String FORGET_PASSWORD_TEMPLATE_CODE="SMS_167040816";
-    
-    
-    /**
-     * 注册时采用的短信发送模板编码
-     */
-    public static final String REGISTER_TEMPLATE_CODE="SMS_144146309";
-    
-    /**
-         * 必填:短信签名-可在短信控制台中找到
-     */
-    public static final String signName="JEECG";
+    static  String accessKeyId;
+    static  String accessKeySecret;
+
+    public static void setAccessKeyId(String accessKeyId) {
+        DySmsHelper.accessKeyId = accessKeyId;
+    }
+
+    public static void setAccessKeySecret(String accessKeySecret) {
+        DySmsHelper.accessKeySecret = accessKeySecret;
+    }
+
+    public static String getAccessKeyId() {
+        return accessKeyId;
+    }
+
+    public static String getAccessKeySecret() {
+        return accessKeySecret;
+    }
     
     
-    public static boolean sendSms(String phone,String code,String templateCode) throws ClientException {
+    public static boolean sendSms(String phone,JSONObject templateParamJson,DySmsEnum dySmsEnum) throws ClientException {
     	//可自助调整超时时间
         System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
         System.setProperty("sun.net.client.defaultReadTimeout", "10000");
@@ -66,16 +63,19 @@ public class DySmsHelper {
         DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", product, domain);
         IAcsClient acsClient = new DefaultAcsClient(profile);
         
+        //验证json参数
+        validateParam(templateParamJson,dySmsEnum);
+        
         //组装请求对象-具体描述见控制台-文档部分内容
         SendSmsRequest request = new SendSmsRequest();
         //必填:待发送手机号
         request.setPhoneNumbers(phone);
         //必填:短信签名-可在短信控制台中找到
-        request.setSignName(signName);
+        request.setSignName(dySmsEnum.getSignName());
         //必填:短信模板-可在短信控制台中找到
-        request.setTemplateCode("SMS_167040816");
+        request.setTemplateCode(dySmsEnum.getTemplateCode());
         //可选:模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"时,此处的值为
-        request.setTemplateParam("{\"code\":\""+code+"\"}");
+        request.setTemplateParam(templateParamJson.toJSONString());
         
         //选填-上行短信扩展码(无特殊需求用户请忽略此字段)
         //request.setSmsUpExtendCode("90997");
@@ -96,10 +96,21 @@ public class DySmsHelper {
         
     }
     
+    private static void validateParam(JSONObject templateParamJson,DySmsEnum dySmsEnum) {
+    	String keys = dySmsEnum.getKeys();
+    	String [] keyArr = keys.split(",");
+    	for(String item :keyArr) {
+    		if(!templateParamJson.containsKey(item)) {
+    			throw new RuntimeException("模板缺少参数："+item);
+    		}
+    	}
+    }
+    
 
     public static void main(String[] args) throws ClientException, InterruptedException {
-    	
-    	sendSms("13800138000", "123456", FORGET_PASSWORD_TEMPLATE_CODE);
+    	JSONObject obj = new JSONObject();
+    	obj.put("code", "1234");
+    	sendSms("13800138000", obj, DySmsEnum.FORGET_PASSWORD_TEMPLATE_CODE);
     	
     }
 }

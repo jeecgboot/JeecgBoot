@@ -1,0 +1,105 @@
+package ${bussiPackage}.${entityPackage}.service.impl;
+
+import ${bussiPackage}.${entityPackage}.entity.${entityName};
+<#list subTables as sub>
+import ${bussiPackage}.${entityPackage}.entity.${sub.entityName};
+</#list>
+<#list subTables as sub>
+import ${bussiPackage}.${entityPackage}.mapper.${sub.entityName}Mapper;
+</#list>
+import ${bussiPackage}.${entityPackage}.mapper.${entityName}Mapper;
+import ${bussiPackage}.${entityPackage}.service.I${entityName}Service;
+import org.springframework.stereotype.Service;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Collection;
+
+/**
+ * @Description: ${tableVo.ftlDescription}
+ * @Author: jeecg-boot
+ * @Date:   ${.now?string["yyyy-MM-dd"]}
+ * @Version: V1.0
+ */
+@Service
+public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, ${entityName}> implements I${entityName}Service {
+
+	@Autowired
+	private ${entityName}Mapper ${entityName?uncap_first}Mapper;
+	<#list subTables as sub>
+	@Autowired
+	private ${sub.entityName}Mapper ${sub.entityName?uncap_first}Mapper;
+	</#list>
+	
+	@Override
+	@Transactional
+	public void saveMain(${entityName} ${entityName?uncap_first}, <#list subTables as sub>List<${sub.entityName}> ${sub.entityName?uncap_first}List<#if sub_has_next>,</#if></#list>) {
+		${entityName?uncap_first}Mapper.insert(${entityName?uncap_first});
+		<#list subTables as sub>
+		if(${sub.entityName?uncap_first}List!=null && ${sub.entityName?uncap_first}List.size()>0) {
+			for(${sub.entityName} entity:${sub.entityName?uncap_first}List) {
+				<#list sub.foreignKeys as key>
+				//外键设置
+				<#if key?lower_case?index_of("${primaryKeyField}")!=-1>
+				entity.set${key?cap_first}(${entityName?uncap_first}.get${primaryKeyField?cap_first}());
+				<#else>
+				entity.set${key?cap_first}(${entityName?uncap_first}.get${key}());
+				</#if>
+				</#list>
+				${sub.entityName?uncap_first}Mapper.insert(entity);
+			}
+		}
+		</#list>
+	}
+
+	@Override
+	@Transactional
+	public void updateMain(${entityName} ${entityName?uncap_first},<#list subTables as sub>List<${sub.entityName}> ${sub.entityName?uncap_first}List<#if sub_has_next>,</#if></#list>) {
+		${entityName?uncap_first}Mapper.updateById(${entityName?uncap_first});
+		
+		//1.先删除子表数据
+		<#list subTables as sub>
+		${sub.entityName?uncap_first}Mapper.deleteByMainId(${entityName?uncap_first}.getId());
+		</#list>
+		
+		//2.子表数据重新插入
+		<#list subTables as sub>
+		if(${sub.entityName?uncap_first}List!=null && ${sub.entityName?uncap_first}List.size()>0) {
+			for(${sub.entityName} entity:${sub.entityName?uncap_first}List) {
+				<#list sub.foreignKeys as key>
+				//外键设置
+				<#if key?lower_case?index_of("${primaryKeyField}")!=-1>
+				entity.set${key?cap_first}(${entityName?uncap_first}.get${primaryKeyField?cap_first}());
+				<#else>
+				entity.set${key?cap_first}(${entityName?uncap_first}.get${key}());
+				</#if>
+				</#list>
+				${sub.entityName?uncap_first}Mapper.insert(entity);
+			}
+		}
+		</#list>
+	}
+
+	@Override
+	@Transactional
+	public void delMain(String id) {
+		<#list subTables as sub>
+		${sub.entityName?uncap_first}Mapper.deleteByMainId(id);
+		</#list>
+		${entityName?uncap_first}Mapper.deleteById(id);
+	}
+
+	@Override
+	@Transactional
+	public void delBatchMain(Collection<? extends Serializable> idList) {
+		for(Serializable id:idList) {
+			<#list subTables as sub>
+			${sub.entityName?uncap_first}Mapper.deleteByMainId(id.toString());
+			</#list>
+			${entityName?uncap_first}Mapper.deleteById(id);
+		}
+	}
+	
+}

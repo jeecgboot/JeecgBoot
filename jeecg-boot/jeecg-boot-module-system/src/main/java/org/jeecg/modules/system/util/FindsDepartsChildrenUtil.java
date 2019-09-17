@@ -1,9 +1,12 @@
 package org.jeecg.modules.system.util;
 
+import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +21,11 @@ import java.util.List;
  */
 public class FindsDepartsChildrenUtil {
 
-
-    private static List<DepartIdModel> idList = new ArrayList<>(4);
+	//部门树信息-树结构
+	//private static List<SysDepartTreeModel> sysDepartTreeList = new ArrayList<SysDepartTreeModel>();
+	
+	//部门树id-树结构
+    //private static List<DepartIdModel> idList = new ArrayList<>();
 
 
     /**
@@ -27,8 +33,9 @@ public class FindsDepartsChildrenUtil {
      * 该方法是s将SysDepart类型的list集合转换成SysDepartTreeModel类型的集合
      */
     public static List<SysDepartTreeModel> wrapTreeDataToTreeList(List<SysDepart> recordList) {
-     // 在该方法每请求一次,都要对全局list集合进行一次清理
-        idList.clear();
+        // 在该方法每请求一次,都要对全局list集合进行一次清理
+        //idList.clear();
+    	List<DepartIdModel> idList = new ArrayList<DepartIdModel>();
         List<SysDepartTreeModel> records = new ArrayList<>();
         for (int i = 0; i < recordList.size(); i++) {
             SysDepart depart = recordList.get(i);
@@ -39,7 +46,21 @@ public class FindsDepartsChildrenUtil {
         return tree;
     }
 
-    public static List<DepartIdModel> wrapDepartIdModel() {
+    /**
+     * 获取 DepartIdModel
+     * @param recordList
+     * @return
+     */
+    public static List<DepartIdModel> wrapTreeDataToDepartIdTreeList(List<SysDepart> recordList) {
+        // 在该方法每请求一次,都要对全局list集合进行一次清理
+        //idList.clear();
+        List<DepartIdModel> idList = new ArrayList<DepartIdModel>();
+        List<SysDepartTreeModel> records = new ArrayList<>();
+        for (int i = 0; i < recordList.size(); i++) {
+            SysDepart depart = recordList.get(i);
+            records.add(new SysDepartTreeModel(depart));
+        }
+        findChildren(records, idList);
         return idList;
     }
 
@@ -48,7 +69,7 @@ public class FindsDepartsChildrenUtil {
      * 该方法是找到并封装顶级父类的节点到TreeList集合
      */
     private static List<SysDepartTreeModel> findChildren(List<SysDepartTreeModel> recordList,
-                                                         List<DepartIdModel> idList) {
+                                                         List<DepartIdModel> departIdList) {
 
         List<SysDepartTreeModel> treeList = new ArrayList<>();
         for (int i = 0; i < recordList.size(); i++) {
@@ -56,10 +77,12 @@ public class FindsDepartsChildrenUtil {
             if (oConvertUtils.isEmpty(branch.getParentId())) {
                 treeList.add(branch);
                 DepartIdModel departIdModel = new DepartIdModel().convert(branch);
-                idList.add(departIdModel);
+                departIdList.add(departIdModel);
             }
         }
-        getGrandChildren(treeList,recordList,idList);
+        getGrandChildren(treeList,recordList,departIdList);
+        
+        //idList = departIdList;
         return treeList;
     }
 
@@ -102,5 +125,6 @@ public class FindsDepartsChildrenUtil {
                 model.setIsLeaf(false);
             }
         }
+        // sysDepartTreeList = treeList;
     }
 }

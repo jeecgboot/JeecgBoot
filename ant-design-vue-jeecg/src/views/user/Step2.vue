@@ -30,22 +30,22 @@
       </a-input>
     </a-form-item>
       <a-form-item
+        label="验证码"
         :labelCol="{span: 5}"
         :wrapperCol="{span: 19}"
-       style="margin-left:106px"
         v-if="show">
-          <a-row :gutter="16" >
-            <a-col class="gutter-row" :span="16">
+          <a-row :gutter="16" style="margin-left: 35px">
+            <a-col class="gutter-row" :span="10">
                 <a-input
                   v-decorator="['captcha',validatorRules.captcha]"
                   type="text"
-                  placeholder="请输入验证码" >
+                  placeholder="手机短信验证码" >
                 </a-input>
             </a-col>
             <a-col class="gutter-row" :span="8" >
               <a-button
-                class="getCaptcha"
                 tabindex="-1"
+                size="default"
                 :disabled="state.smsSendBtn"
                 @click.stop.prevent="getCaptcha"
                 v-text="!state.smsSendBtn && '获取验证码' || (state.time+' s')"></a-button>
