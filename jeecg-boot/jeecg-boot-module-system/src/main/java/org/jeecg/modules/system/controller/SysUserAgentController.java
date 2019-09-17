@@ -52,7 +52,7 @@ import lombok.extern.slf4j.Slf4j;
  * @Version: V1.0
  */
 @RestController
-@RequestMapping("/system/sysUserAgent")
+@RequestMapping("/sys/sysUserAgent")
 @Slf4j
 public class SysUserAgentController {
 	@Autowired

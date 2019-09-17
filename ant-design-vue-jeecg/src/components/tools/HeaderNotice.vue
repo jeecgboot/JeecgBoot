@@ -78,6 +78,7 @@
 <script>
   import { getAction,putAction } from '@/api/manage'
   import ShowAnnouncement from './ShowAnnouncement'
+  import store from '@/store/'
 
   export default {
     name: "HeaderNotice",
@@ -89,7 +90,8 @@
         loadding: false,
         url:{
           listCementByUser:"/sys/annountCement/listByUser",
-          editCementSend:"/system/sysAnnouncementSend/editByAnntIdAndUserId",
+          editCementSend:"/sys/sysAnnouncementSend/editByAnntIdAndUserId",
+          queryById:"/sys/annountCement/queryById",
         },
         hovered: false,
         announcement1:[],
@@ -98,6 +100,7 @@
         msg2Count:"0",
         msg1Title:"通知(3)",
         msg2Title:"",
+        stopTimer:false,
       }
     },
     computed:{
@@ -105,15 +108,25 @@
         return parseInt(this.msg1Count)+parseInt(this.msg2Count);
       }
     },
-    created() {
+    mounted() {
       this.loadData();
-      this.timer();
+      //this.timerFun();
+      this.initWebSocket();
+    },
+    destroyed: function () { // 离开页面生命周期函数
+      this.websocketclose();
     },
     methods: {
-      timer() {
-        return setInterval(()=>{
+      timerFun() {
+        this.stopTimer = false;
+        let myTimer = setInterval(()=>{
+          // 停止定时器
+          if (this.stopTimer == true) {
+            clearInterval(myTimer);
+            return;
+          }
           this.loadData()
-        },60000)
+        },6000)
       },
       loadData (){
         try {
@@ -127,8 +140,14 @@
               this.msg2Count = res.result.sysMsgTotal;
               this.msg2Title = "系统消息(" + res.result.sysMsgTotal + ")";
             }
+          }).catch(error => {
+            console.log("系统消息通知异常",error);//这行打印permissionName is undefined
+            this.stopTimer = true;
+            console.log("清理timer");
           });
         } catch (err) {
+          this.stopTimer = true;
+          console.log("通知异常",err);
         }
       },
       fetchNotice () {
@@ -163,6 +182,74 @@
         this.hovered = visible;
       },
 
+      initWebSocket: function () {
+        // WebSocket与普通的请求所用协议有所不同，ws等同于http，wss等同于https
+        var userId = store.getters.userInfo.id;
+        var url = window._CONFIG['domianURL'].replace("https://","wss://").replace("http://","ws://")+"/websocket/"+userId;
+        //console.log(url);
+        this.websock = new WebSocket(url);
+        this.websock.onopen = this.websocketonopen;
+        this.websock.onerror = this.websocketonerror;
+        this.websock.onmessage = this.websocketonmessage;
+        this.websock.onclose = this.websocketclose;
+      },
+      websocketonopen: function () {
+        console.log("WebSocket连接成功");
+      },
+      websocketonerror: function (e) {
+        console.log("WebSocket连接发生错误");
+      },
+      websocketonmessage: function (e) {
+        console.log("-----接收消息-------",e.data);
+        var data = eval("(" + e.data + ")"); //解析对象
+        this.loadData();
+        //if(data.cmd == "topic"){
+          //系统通知
+            this.openNotification(data);
+        //}else if(data.cmd == "user"){
+          //用户消息
+        //  this.openNotification(data);
+        //}
+
+
+      },
+      websocketclose: function (e) {
+        console.log("connection closed (" + e.code + ")");
+      },
+
+      openNotification (data) {
+        var text = data.msgTxt;
+        const key = `open${Date.now()}`;
+        this.$notification.open({
+          message: '消息提醒',
+          placement:'bottomRight',
+          description: text,
+          key,
+          btn: (h)=>{
+            return h('a-button', {
+              props: {
+                type: 'primary',
+                size: 'small',
+              },
+              on: {
+                click: () => this.showDetail(key,data)
+              }
+            }, '查看详情')
+          },
+        });
+      },
+
+      showDetail(key,data){
+        this.$notification.close(key);
+        var id = data.msgId;
+        getAction(this.url.queryById,{id:id}).then((res) => {
+          if (res.success) {
+            var record = res.result;
+            this.showAnnouncement(record);
+          }
+        })
+
+      },
     }
   }
 </script>

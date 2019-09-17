@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    :title="title"
+    :title="currTitle"
     :width="450"
     :visible="visible"
     :closable="false"
@@ -41,6 +41,9 @@
 
 <script>
   import { getAction,putAction } from '@/api/manage'
+  import Vue from 'vue'
+  import store from '@/store/'
+  import { USER_INFO } from "@/store/mutation-types"
 
   export default {
     name: 'DepartSelect',
@@ -70,6 +73,7 @@
     },
     data(){
       return {
+        currTitle:this.title,
         visible:false,
         departList:[],
         departSelected:"",
@@ -100,7 +104,7 @@
               this.departSelected = orgCode
               this.departList  = departs
               if(this.currDepartName){
-                this.title ="部门切换（当前部门 : "+this.currDepartName+"）"
+                this.currTitle ="部门切换（当前部门 : "+this.currDepartName+"）"
               }
 
             }
@@ -122,6 +126,10 @@
         }
         putAction("/sys/selectDepart",obj).then(res=>{
           if(res.success){
+            const userInfo = res.result.userInfo;
+            Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000);
+            store.commit('SET_INFO', userInfo);
+            //console.log("---切换组织机构---userInfo-------",store.getters.userInfo.orgCode);
             this.departClear()
           }
         })

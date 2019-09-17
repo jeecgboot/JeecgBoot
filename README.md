@@ -6,10 +6,10 @@
 Jeecg-Boot 快速开发平台（前后端分离版本）
 ===============
 
-当前最新版本： 2.0.2（发布日期：20190708）
+当前最新版本： 2.1.0（发布日期：20190826）
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
-[![](https://img.shields.io/badge/Author-Scott-orange.svg)](https://blog.csdn.net/zhangdaiscott)
+[![](https://img.shields.io/badge/Author-JEECG团队-orange.svg)](http://www.jeecg.com)
 [![](https://img.shields.io/badge/version-2.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
@@ -36,21 +36,30 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 技术文档
 -----------------------------------
 
-- 在线演示 ：  [http://boot.jeecg.org](http://boot.jeecg.org)
+- 在线演示 ： [http://boot.jeecg.com](http://boot.jeecg.com)
 
-- 在线教程：  [http://jeecg-boot.mydoc.io/?t=345660](http://jeecg-boot.mydoc.io/?t=345660)
+- 技术官网：  [http://www.jeecg.com](http://www.jeecg.com)
+
+- 开发文档：  [http://doc.jeecg.com/1273753](http://doc.jeecg.com/1273753)
+
+- 视频教程  ：[JeecgBoot入门系列视频](https://space.bilibili.com/454617261/channel/detail?cid=84186)
 
 - 常见问题：  [入门常见问题大全](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
 
-- QQ交流群 ：  ①284271917、②769925425
-
-- 技术论坛：  [http://www.jeecg.org](http://www.jeecg.org)
-
 - 更新日志：  [版本日志](http://www.jeecg.com/#/doc/changelog)
 
-- Online初体验：  [1分钟快速学习](https://my.oschina.net/jeecg/blog/3061917)
 
-- 如何参与：  [欢迎技术爱好者，加入JEECG开团队](http://jeecg.com/#/doc/canyu-os)
+
+交流互动
+-----------------------------------
+
+- QQ交流群 ：  ①284271917、②769925425
+
+- 反馈问题：  [反馈问题，请按格式发Issues](https://github.com/zhangdaiscott/jeecg-boot/issues/new)
+
+- 参与开源：  [欢迎加入JEECG开源团队，共同进步！！](http://www.jeecg.com/#/doc/canyu-os)
+
+- Online一分钟：  [1分钟快速学习](https://my.oschina.net/jeecg/blog/3083313)
 
 
 为什么选择JEECG-BOOT?
@@ -70,27 +79,44 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 * 13.集成工作流activiti，并实现了只需在页面配置流程转向，可极大的简化bpm工作流的开发；用bpm的流程设计器画出了流程走向，一个工作流基本就完成了，只需写很少量的java代码；
 * 14.在线流程设计，采用开源Activiti流程引擎，实现在线画流程,自定义表单,表单挂靠,业务流转
 * 15.多数据源：及其简易的使用方式，在线配置数据源配置，便捷的从其他数据抓取数据；
-* 16.国际化：支持多语言，开发国际化项目非常方便；
+* 16.提供单点登录CAS集成方案，项目中已经提供完善的对接代码
 * 17.表单设计器，支持用户自定义表单布局，支持单表，一对多表单、支持select、radio、checkbox、textarea、date、popup、列表、宏等控件
 * 18.专业接口对接机制，统一采用restful接口方式，集成swagger-ui在线接口文档，Jwt token安全验证，方便客户端对接
 * 19.接口安全机制，可细化控制接口授权，非常简便实现不同客户端只看自己数据等控制
 * 20.高级组合查询功能，在线配置支持主子表关联查询，可保存查询历史
 * 21.提供各种系统监控，实时跟踪系统运行情况（监控 Redis、Tomcat、jvm、服务器信息、请求追踪、SQL监控）
 * 22.消息中心（支持短信、邮件、微信推送等等）
-* 22.数据变更记录日志，可记录数据每次变更内容，通过版本对比功能查看历史变化
-* 23.平台UI强大，实现了移动自适应
-* 24.平台首页风格，提供多种组合模式，支持自定义风格
-* 25.提供简单易用的打印插件，支持谷歌、IE浏览器等各种浏览器
-* 26.示例代码丰富，提供很多学习案例参考
-* 27.采用maven分模块开发方式
-* 27.支持菜单动态路由
-* 28.权限控制采用 RBAC（Role-Based Access Control，基于角色的访问控制）
+* 21.集成Websocket消息通知机制
+* 22.提供APP发布方案国际化：
+* 23.支持多语言，提供国际化方案；
+* 24.数据变更记录日志，可记录数据每次变更内容，通过版本对比功能查看历史变化
+* 25.平台UI强大，实现了移动自适应
+* 26.平台首页风格，提供多种组合模式，支持自定义风格
+* 27.提供简单易用的打印插件，支持谷歌、IE浏览器等各种浏览器
+* 28.示例代码丰富，提供很多学习案例参考
+* 29.采用maven分模块开发方式
+* 30.支持菜单动态路由
+* 31.权限控制采用 RBAC（Role-Based Access Control，基于角色的访问控制）
 
  
  
  
 技术架构：
 -----------------------------------
+#### 开发环境
+
+- 语言：Java 8
+
+- IDE(JAVA)： IDEA / Eclipse安装lombok插件 
+
+- IDE(前端)： WebStorm 或者 IDEA
+
+- 依赖管理：Maven
+
+- 数据库：MySQL5.7+  &  Oracle 11g & Sqlserver2017
+
+- 缓存：Redis
+
 
 #### 后端
 - 基础框架：Spring Boot 2.1.3.RELEASE
@@ -119,22 +145,6 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 - [Viser-vue](https://viserjs.github.io/docs.html#/viser/guide/installation)  - antv/g2 封装实现
 - eslint，[@vue/cli 3.2.1](https://cli.vuejs.org/zh/guide)
 - vue-print-nb - 打印
-
-
-#### 开发环境
-
-- 语言：Java 8
-
-- IDE(JAVA)： Eclipse安装lombok插件 或者 IDEA
-
-- IDE(前端)： WebStorm 或者 IDEA
-
-- 依赖管理：Maven
-
-- 数据库：MySQL5.0  &  Oracle 11g & Sqlserver2005
-
-- 缓存：Redis
-
 
 
 
@@ -229,8 +239,13 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  └─结果页面
 │  └─异常页面
 │  └─个人页面
+├─高级功能
+│  ├─提供单点登录CAS集成方案
+│  ├─提供APP发布方案
+│  ├─集成Websocket消息通知机制
 ├─Online在线开发(暂未开源)
-│  ├─Online在线表单
+│  ├─Online在线表单 - 功能已开放
+│  ├─在线代码生成器 - 功能已开放
 │  ├─Online在线图表
 │  ├─Online图表模板配置
 │  ├─Online在线报表
@@ -279,7 +294,6 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 - [Viser-vue](https://viserjs.github.io/docs.html#/viser/guide/installation)  - antv/g2 封装实现
 - [jeecg-boot-angular 版本](https://gitee.com/dangzhenghui/jeecg-boot)
 
-
 项目下载和运行
 ----
 
@@ -320,8 +334,13 @@ yarn run lint
 ![输入图片说明](https://static.oschina.net/uploads/img/201904/14160657_cHwb.png "在这里输入图片标题")
 ![输入图片说明](https://static.oschina.net/uploads/img/201904/14160813_KmXS.png "在这里输入图片标题")
 ![输入图片说明](https://static.oschina.net/uploads/img/201904/14160935_Nibs.png "在这里输入图片标题")
-![输入图片说明](https://static.oschina.net/uploads/img/201904/14160957_hN3X.png "在这里输入图片标题")
 ![输入图片说明](https://static.oschina.net/uploads/img/201904/14161004_bxQ4.png "在这里输入图片标题")
+
+
+##### 在线接口文档
+![输入图片说明](https://static.oschina.net/uploads/img/201908/27095258_M2Xq.png "在这里输入图片标题")
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160957_hN3X.png "在这里输入图片标题")
+
 
 ##### 报表
 ![输入图片说明](https://static.oschina.net/uploads/img/201904/14160828_pkFr.png "在这里输入图片标题")

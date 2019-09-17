@@ -22,5 +22,15 @@ public interface CacheConstant {
 	 */
     public static final String LOGIN_USER_RULES_CACHE = "loginUser_cacheRules";
 
+	/**
+	 * 部门信息缓存
+	 */
+	public static final String DEPART_INFO_CACHE = "departCache_info";
+
+
+	/**
+	 * 部门id信息缓存
+	 */
+	public static final String DEPART_IDMODEL_CACHE = "departCache_idmodel";
 
 }

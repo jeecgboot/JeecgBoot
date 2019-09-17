@@ -323,30 +323,6 @@ export const constantRouterMap = [
     ]
   },
 
-  // {
-  //   path: '/',
-  //   name: 'index',
-  //   component: TabLayout,
-  //   meta: {title: '首页'},
-  //   redirect: '/dashboard/workplace',
-  //   children: [
-  //     {
-  //       path: '/online',
-  //       name: 'online',
-  //       redirect: '/online',
-  //       component: RouteView,
-  //       meta: {title: '在线开发', icon: 'dashboard', permission: ['dashboard']},
-  //       children: [
-  //         {
-  //           path: '/online/auto/:code',
-  //           name: 'report',
-  //           component: () => import('@/views/modules/online/cgreport/OnlCgreportAutoList')
-  //         },
-  //       ]
-  //     },
-  //   ]
-  // },
-
   {
     path: '/test',
     component: BlankLayout,

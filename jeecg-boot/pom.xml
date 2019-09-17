@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>2.0.2</version>
+  <version>2.1.0</version>
   <packaging>pom</packaging>
   
   	<parent>
@@ -16,7 +16,20 @@
 	<modules>
 		<module>jeecg-boot-base-common</module>
 		<module>jeecg-boot-module-system</module>
-	</modules> 
+	</modules>
+	
+	<distributionManagement>
+	  	<repository>
+            <id>jeecg</id>
+            <name>jeecg Repository</name>
+            <url>http://maven.jeecg.com:8090/nexus/content/repositories/jeecg</url>
+        </repository>
+        <snapshotRepository>
+	        <id>jeecg-snapshots</id>
+            <name>jeecg Snapshot Repository</name>
+            <url>http://maven.jeecg.com:8090/nexus/content/repositories/snapshots/</url>
+	    </snapshotRepository>
+	</distributionManagement>
 	
 	<repositories>
 		<repository>
@@ -30,7 +43,7 @@
 		<repository>
             <id>jeecg</id>
             <name>jeecg Repository</name>
-            <url>http://maven.jeecg.org/nexus/content/repositories/jeecg</url>
+            <url>http://maven.jeewx.com/nexus/content/repositories/jeecg</url>
             <snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -38,7 +51,7 @@
 	</repositories>
 	
     <properties>
-        <jeecgboot.common.version>2.0.2</jeecgboot.common.version>
+        <jeecgboot.common.version>2.1.0</jeecgboot.common.version>
         <java.version>1.8</java.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -194,6 +207,17 @@
 			<artifactId>springfox-bean-validators</artifactId>
 			<version>2.9.2</version>
 		</dependency>
+		<!-- # 增加两个配置解决 NumberFormatException -->
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>1.5.22</version>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-models</artifactId>
+			<version>1.5.22</version>
+		</dependency>
 		
 		
 		<!-- Redis -->
@@ -245,6 +269,19 @@
 			<version>${aliyun-java-sdk-core.version}</version>
 		</dependency>
 		
+		<!--HttpClient-->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.3</version>
+		</dependency>
+		
+		<!-- websocket -->
+		<dependency>
+		   <groupId>org.springframework.boot</groupId>
+		   <artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+		
 	</dependencies>
 
 	<dependencyManagement>
@@ -255,6 +292,12 @@
 	    		<artifactId>jeecg-boot-base-common</artifactId>
 	    		<version>${jeecgboot.common.version}</version>
 	    	</dependency>
+	    	<!-- 七牛云SDK -->
+			<dependency>
+				<groupId>com.qiniu</groupId>
+				<artifactId>qiniu-java-sdk</artifactId>
+				<version>7.2.23</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>

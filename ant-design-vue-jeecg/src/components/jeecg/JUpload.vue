@@ -83,7 +83,11 @@
     methods:{
       initFileList(paths){
         if(!paths || paths.length==0){
-          return [];
+          //return [];
+          // update-begin- --- author:os_chengtgen ------ date:20190729 ---- for:issues:326,Jupload组件初始化bug
+          this.fileList = [];
+          return;
+          // update-end- --- author:os_chengtgen ------ date:20190729 ---- for:issues:326,Jupload组件初始化bug
         }
         let fileList = [];
         let arr = paths.split(",")

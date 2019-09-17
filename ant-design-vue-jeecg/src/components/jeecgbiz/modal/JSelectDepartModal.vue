@@ -58,6 +58,16 @@
     watch:{
       departId(){
         this.initDepartComponent()
+      },
+      visible: {
+        handler() {
+          if (this.departId) {
+            this.checkedKeys = this.departId.split(",");
+            console.log('this.departId', this.departId)
+          } else {
+            this.checkedKeys = [];
+          }
+        }
       }
     },
     methods:{

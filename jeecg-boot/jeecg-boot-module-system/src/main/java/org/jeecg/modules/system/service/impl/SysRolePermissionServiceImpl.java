@@ -36,7 +36,7 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 		LambdaQueryWrapper<SysRolePermission> query = new QueryWrapper<SysRolePermission>().lambda().eq(SysRolePermission::getRoleId, roleId);
 		this.remove(query);
 		List<SysRolePermission> list = new ArrayList<SysRolePermission>();
-		String arr[] = permissionIds.split(",");
+        String[] arr = permissionIds.split(",");
 		for (String p : arr) {
 			if(oConvertUtils.isNotEmpty(p)) {
 				SysRolePermission rolepms = new SysRolePermission(roleId, p);
