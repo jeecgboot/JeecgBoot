@@ -2,6 +2,8 @@ package org.jeecg.common.system.vo;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -9,6 +11,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DictModel implements Serializable{
 	private static final long serialVersionUID = 1L;
 

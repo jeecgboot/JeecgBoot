@@ -25,7 +25,7 @@ import lombok.experimental.Accessors;
 public class SysMessage extends JeecgEntity {
 	/**推送内容*/
 	@Excel(name = "推送内容", width = 15)
-	private java.lang.Object esContent;
+	private java.lang.String esContent;
 	/**推送所需参数Json格式*/
 	@Excel(name = "推送所需参数Json格式", width = 15)
 	private java.lang.String esParam;

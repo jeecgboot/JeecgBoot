@@ -148,11 +148,28 @@
 <style lang="scss">
   .ant-menu.ant-menu-root {
     & > .ant-menu-item:first-child {
-      background-color: white;
+      background-color: transparent;
 
       & > a, & > a:hover {
         color: rgba(0, 0, 0, 0.65);
+      }
 
+      &.ant-menu-item-selected {
+        & > a, & > a:hover {
+          color: #1890ff;
+        }
+      }
+    }
+
+    &.ant-menu-dark > .ant-menu-item:first-child {
+      & > a, & > a:hover {
+        color: rgba(255, 255, 255, 0.65);
+      }
+
+      &.ant-menu-item-selected {
+        & > a, & > a:hover {
+          color: rgba(255, 255, 255, 1);
+        }
       }
     }
   }

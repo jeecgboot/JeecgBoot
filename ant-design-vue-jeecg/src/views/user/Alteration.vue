@@ -1,5 +1,5 @@
 <template>
-  <a-card :bordered="false">
+  <a-card :bordered="false" style="width: 160%;text-align: center;margin-left:-25%">
     <a-steps class="steps" :current="currentTab">
       <a-step title="账户信息" />
       <a-step title="身份验证" />

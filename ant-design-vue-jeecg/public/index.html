@@ -242,9 +242,10 @@
   <!-- 全局配置 -->
   <script>
     window._CONFIG = {};
-    window._CONFIG['domianURL'] = 'http://localhost:8080/jeecg-boot';
-    window._CONFIG['imgDomainURL'] = 'http://localhost:8080/jeecg-boot/sys/common/view';
-    window._CONFIG['pdfDomainURL'] = 'http://localhost:8080/jeecg-boot/sys/common/pdf/pdfPreviewIframe';
+    window._CONFIG['domianURL'] = 'http://127.0.0.1:8080/jeecg-boot';
+    window._CONFIG['casPrefixUrl'] = 'http://cas.example.org:8443/cas';
+    window._CONFIG['imgDomainURL'] = window._CONFIG['domianURL'] + '/sys/common/view';
+    window._CONFIG['pdfDomainURL'] =  window._CONFIG['domianURL'] + '/sys/common/pdf/pdfPreviewIframe';
   </script>
 </head>
 
@@ -260,15 +261,6 @@
     </div>
   </div>
 </div>
-
-<!-- update_begin author:sunjianlei date:20190524 for: 去指定页面的加载动画 -->
-<script>
-  // 去指定页面的加载动画
-  if (location.href.indexOf('online/desform/pureview') !== -1) {
-    document.getElementById('loader-wrapper').style.display = 'none'
-  }
-</script>
-<!-- update_end author:sunjianlei date:20190524 for: 去指定页面的加载动画 -->
 
 </body>
 

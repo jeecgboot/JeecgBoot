@@ -49,7 +49,7 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="选择部门">
-              <j-select-depart v-model="departId"></j-select-depart>
+              <j-select-depart v-model="departId" :multi="true"></j-select-depart>
             </a-form-item>
           </a-col>
           <a-col :span="12">选中的部门ID(v-model):{{ departId }}</a-col>
@@ -217,10 +217,8 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="cron表达式">
-              <a-input @click="openModal" placeholder="corn表达式" v-model="cron.label" readOnly >
-                <a-icon slot="prefix" type="schedule" title="corn控件"/>
-              </a-input>
-              <VueCron ref="innerVueCron" :data="cron" @change="changeCron" ></VueCron>
+              <j-cron ref="innerVueCron" v-decorator="['cronExpression', {'initialValue':'0/1 * * * * ?'}]"  @change="setCorn"></j-cron>
+              <!--              <j-cron ref="innerVueCron" v-model="cron" @change="setCorn"></j-cron>-->
             </a-form-item>
           </a-col>
         </a-row>
@@ -245,7 +243,7 @@
   import JSlider from '@/components/jeecg/JSlider'
   import JSelectMultiple from '@/components/jeecg/JSelectMultiple'
   import JTreeDict from "../../components/jeecg/JTreeDict.vue";
-  import VueCron from "./modules/VueCronModal.vue";
+  import JCron from "@/components/jeecg/JCron.vue";
   export default {
     name: 'SelectDemo',
     components: {
@@ -257,7 +255,7 @@
       JCheckbox,
       JCodeEditor,
       JDate, JEditor, JEllipsis, JGraphicCode, JSlider, JSelectMultiple,
-      VueCron
+      JCron
     },
     data() {
       return {
@@ -314,10 +312,7 @@ sayHi('hello, world!')`
           style: { top: '20px' },
           fullScreen: true
         },
-        cron: {
-          label: '',
-          value: {}
-        }
+        cron: '',
       }
     },
     computed: {
@@ -372,14 +367,12 @@ sayHi('hello, world!')`
         }
         this.modal.fullScreen = mode
       },
-      openModal(){
-        this.$refs.innerVueCron.show()
-      },
-      changeCron(val){
-        this.cron=val;
-        console.log(val);
-      }
+      setCorn(data){
 
+        this.$nextTick(() => {
+          this.form.cronExpression = data;
+        })
+      }
     }
   }
 </script>

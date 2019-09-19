@@ -1,0 +1,54 @@
+package ${bussiPackage}.${entityPackage}.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.math.BigDecimal;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.jeecgframework.poi.excel.annotation.Excel;
+import org.jeecg.common.aspect.annotation.Dict;
+
+/**
+ * @Description: ${tableVo.ftlDescription}
+ * @Author: jeecg-boot
+ * @Date:   ${.now?string["yyyy-MM-dd"]}
+ * @Version: V1.0
+ */
+@Data
+@TableName("${tableName}")
+public class ${entityName} implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
+    <#list originalColumns as po>
+	/**${po.filedComment}*/
+	<#if po.fieldName == primaryKeyField>
+	@TableId(type = IdType.ID_WORKER_STR)
+	<#else>
+  		<#if po.fieldDbType =='Date'>
+			<#if po.classType=='date'>
+	@Excel(name = "${po.filedComment}", width = 15, format = "yyyy-MM-dd")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+			<#else>
+	@Excel(name = "${po.filedComment}", width = 20, format = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+			</#if>
+		<#else>
+	@Excel(name = "${po.filedComment}", width = 15)
+  		</#if>
+  		<#--  <#if po.classType!='popup'>
+  			<#if po.dictTable?default("")?trim?length gt 1>
+  	@Dict(dicCode="${po.dictField}",dicText="${po.dictText}",dictTable="${po.dictTable}")
+  			<#elseif po.dictField?default("")?trim?length gt 1>
+  	@Dict(dicCode="${po.dictField}")
+  			</#if>
+  		</#if>-->
+    </#if>
+	private <#if po.fieldType=='java.sql.Blob'>byte[]<#else>${po.fieldType}</#if> ${po.fieldName};
+	</#list>
+}
