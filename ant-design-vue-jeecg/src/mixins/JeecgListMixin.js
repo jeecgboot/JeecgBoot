@@ -21,7 +21,7 @@ export const JeecgListMixin = {
       ipagination:{
         current: 1,
         pageSize: 10,
-        pageSizeOptions: ['10', '20', '30'],
+        pageSizeOptions: ['10', '20', '30','100'],
         showTotal: (total, range) => {
           return range[0] + "-" + range[1] + " 共" + total + "条"
         },
@@ -70,6 +70,7 @@ export const JeecgListMixin = {
       getAction(this.url.list, params).then((res) => {
         if (res.success) {
           this.dataSource = res.result.records;
+          console.log(this.dataSource);
           this.ipagination.total = res.result.total;
         }
         if(res.code===510){
@@ -106,6 +107,7 @@ export const JeecgListMixin = {
     },
     getQueryField() {
       //TODO 字段权限控制
+      
       var str = "id,";
       this.columns.forEach(function (value) {
         str += "," + value.dataIndex;
@@ -188,6 +190,7 @@ export const JeecgListMixin = {
       this.$refs.modalForm.disableSubmit = false;
     },
     handleTableChange(pagination, filters, sorter) {
+      debugger
       //分页、排序、筛选变化时触发
       //TODO 筛选
       if (Object.keys(sorter).length > 0) {

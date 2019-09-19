@@ -120,5 +120,11 @@ public interface CommonConstant {
     
     /**字典翻译文本后缀*/
     public static final String DICT_TEXT_SUFFIX = "_dictText";
-    
+
+
+
+    /**数据比对状态  1 正常  2 异常 */
+    public static final Integer DATA_STATUS_TRUE = 1;
+    public static final Integer DATA_STATUS_FALSE = 2;
+
 }

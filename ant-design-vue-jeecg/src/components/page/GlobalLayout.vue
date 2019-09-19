@@ -434,7 +434,7 @@
             img {
               display: inline-block;
               vertical-align: middle;
-              height: 32px;
+              height: 72px;
             }
 
             h1 {
@@ -557,7 +557,7 @@
       }
 
       img {
-        height: 32px;
+        height: 64px;
       }
 
       h1 {

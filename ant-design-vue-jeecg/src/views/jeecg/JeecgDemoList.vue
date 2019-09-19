@@ -200,6 +200,8 @@
         importExcelUrl:`${window._CONFIG['domianURL']}/test/jeecgDemo/importExcel`,
         //表头
         columns:[],
+        /* 过滤字段集合 */
+        filtersArry:[],
         //列设置
         settingColumns:[],
         //列定义
@@ -241,11 +243,14 @@
           {
             title: '年龄',
             align: "center",
+            sorter: true,
             dataIndex: 'age'
           },
           {
             title: '生日',
             align: "center",
+            sorter: true,
+            filters: this.filtersArry,
             dataIndex: 'birthday'
           },
           {
@@ -283,6 +288,7 @@
         //初始化字典 - 性别
         initDictOptions('sex').then((res) => {
           if (res.success) {
+            debugger
             this.sexDictOptions = res.result;
           }
         });
@@ -295,8 +301,10 @@
       jump() {
         this.$router.push({path: '/jeecg/helloworld'})
       },
+
       //列设置更改事件
       onColSettingsChange (checkedValues) {
+        debugger
         var key = this.$route.name+":colsettings";
         Vue.ls.set(key, checkedValues, 7 * 24 * 60 * 60 * 1000)
         this.settingColumns = checkedValues;
@@ -337,10 +345,19 @@
           })
           this.columns =  cols;
         }
+      },
+      /**
+       * 表头筛选栏目
+       */
+      initFiltersArray(){
+        //this.filtersArry.push(tableHeaderWhere)
       }
     },
     created() {
       this.initColumns();
+    },
+    mounted() {
+      this.initFiltersArray()
     },
   }
 </script>

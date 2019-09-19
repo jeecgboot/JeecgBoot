@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.dataReport.mapper.ContainerTatisticsMapper">
+
+    <select id="getContainerTatistics" resultType="org.jeecg.modules.dataReport.entity.ContainerTatistics">
+
+        SELECT
+	t1.bl_no AS blNo,
+	t1.customs_release_date AS customsReleaseDate,
+	t.container_no AS containerNo,
+	(
+		SELECT
+			NAME
+		FROM
+			base_dict t1
+		WHERE
+			t1.parent_key = 'container_size'
+		AND t.container_spec = t1.dict_key
+	) AS containerSize,
+	(
+		SELECT
+			NAME
+		FROM
+			base_dict t1
+		WHERE
+			t1.parent_key = 'container_spec'
+		AND t.container_spec = t1.dict_key
+	) AS containerSpec,
+	(
+		SELECT
+			tt2.chinese_name
+		FROM
+			base_customer tt2
+		WHERE
+			t1.shipowner_id = tt2.customer_id
+	) AS shipowner,
+	(
+		SELECT
+			tt1.station_name
+		FROM
+			base_station tt1
+		WHERE
+			tt1.station_id = t1.take_container_address
+	) AS takeContainerAddress,
+	(
+		SELECT
+			tt1.station_name
+		FROM
+			base_station tt1
+		WHERE
+			tt1.station_id = t1.drag_container_address
+	) AS dragContainerAddress,
+	(
+		SELECT
+			tt1.station_name
+		FROM
+			base_station tt1
+		WHERE
+			tt1.station_id = t1.return_container_address
+	) AS returnContainerAddress,
+	t.detail_address AS detailAddress,
+	t.order_remark AS orderRemark,
+	t1.business_type AS businessType
+FROM
+	order_container_info t
+LEFT JOIN order_info t1 ON t.order_id = t1.order_id
+WHERE
+	t1.is_valid = 1
+AND t.is_valid = 1
+AND
+${ew.sqlSegment}
+
+
+
+
+
+
+
+
+    </select>
+</mapper>

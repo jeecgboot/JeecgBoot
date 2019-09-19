@@ -1,6 +1,6 @@
 {
   "name": "ant-design-vue-jeecg",
-   "version": "2.0.2",
+  "version": "2.0.2",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --open",
@@ -40,6 +40,7 @@
     "vue-splitpane": "^1.0.4",
     "vuedraggable": "^2.20.0",
     "vuex": "^3.0.1",
+    "vue-particles": "^1.0.9",
     "vuex-class": "^0.3.1"
   },
   "devDependencies": {
@@ -55,6 +56,7 @@
     "less-loader": "^4.1.0",
     "node-sass": "^4.11.0",
     "sass-loader": "^7.0.1",
+    "vue-particles": "^1.0.9",
     "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {

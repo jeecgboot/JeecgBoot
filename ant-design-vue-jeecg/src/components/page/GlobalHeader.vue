@@ -17,8 +17,8 @@
         :type="collapsed ? 'menu-unfold' : 'menu-fold'"
         @click.native="toggle"/>
 
-      <span v-if="device === 'desktop'">欢迎进入 Jeecg-Boot 企业级快速开发平台</span>
-      <span v-else>Jeecg-Boot</span>
+      <span v-if="device === 'desktop'">DaDa-Pro 企业数据中台系统</span>
+      <span v-else>DaDa-Pro 企业数据中台系统</span>
 
       <user-menu :theme="theme"/>
     </div>

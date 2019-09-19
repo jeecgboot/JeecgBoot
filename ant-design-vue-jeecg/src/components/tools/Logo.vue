@@ -1,8 +1,8 @@
 <template>
   <div class="logo">
     <router-link :to="{name:'dashboard'}">
-      <img src="~@/assets/logo.svg" alt="logo">
-      <h1 v-if="showTitle">{{ title }}</h1>
+      <img src="~@/assets/dada.png" alt="logo">
+<!--      <h1 v-if="showTitle">{{ title }}</h1>-->
     </router-link>
   </div>
 </template>
@@ -13,7 +13,7 @@
     props: {
       title: {
         type: String,
-        default: 'Jeecg-Boot Pro',
+        default: 'DADAPro',
         required: false
       },
       showTitle: {

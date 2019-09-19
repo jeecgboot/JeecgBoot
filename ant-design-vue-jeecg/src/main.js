@@ -6,6 +6,8 @@ import store from './store/'
 
 import { VueAxios } from "@/utils/request"
 
+import VueParticles from 'vue-particles'
+
 import Antd from 'ant-design-vue'
 import Viser from 'viser-vue'
 import 'ant-design-vue/dist/antd.less';  // or 'ant-design-vue/dist/antd.less'
@@ -52,6 +54,7 @@ Vue.component('apexchart', VueApexCharts)
 Vue.use(preview)
 Vue.use(vueBus);
 Vue.use(JeecgComponents);
+Vue.use(VueParticles)
 
 new Vue({
   router,

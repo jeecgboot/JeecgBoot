@@ -97,11 +97,16 @@ spring:
           password: root
           driver-class-name: com.mysql.jdbc.Driver
           # 多数据源配置
-          #multi-datasource1:
-          #url: jdbc:mysql://localhost:3306/jeecg-boot2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true
-          #username: root
-          #password: root
-          #driver-class-name: com.mysql.jdbc.Driver
+        tms:
+          url: jdbc:mysql://192.168.9.20:3306/std_dev?characterEncoding=UTF-8&useUnicode=true&useSSL=false
+          username: root
+          password: Std%Mysql_1999#o7o7
+          driver-class-name: com.mysql.jdbc.Driver
+        erp:
+          url: jdbc:oracle:thin:@192.168.9.216:1521:orcl
+          username: shuntdcs
+          password: shuntdcsSSN911S
+          driver-class-name: oracle.jdbc.driver.OracleDriver
   #redis 配置
   redis:
     database: 0
@@ -118,6 +123,8 @@ spring:
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:org/jeecg/modules/**/xml/*Mapper.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     # 关闭MP3.0自带的banner
     banner: false

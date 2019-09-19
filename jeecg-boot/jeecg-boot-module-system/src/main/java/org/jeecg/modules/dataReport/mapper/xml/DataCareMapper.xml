@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.dataReport.mapper.DataCareMapper">
+
+	<select id="getAllBlnoByErp" resultType="org.jeecg.modules.dataReport.entity.BlDataCare">
+		SELECT
+		T .ordercode,
+		T .bolcode,
+		t.ODATE AS ODATE,
+		(
+		SELECT
+		langname1
+		FROM
+		dictinfo
+		WHERE
+		dicticode = 'DISPATCH'
+		AND code IN (
+		SELECT
+		ditype
+		FROM
+		dictinfo
+		WHERE
+		dicticode = 'LOG.OMS.WHARF'
+
+		AND code = T .DEPOT
+		)
+		) AS sched,
+
+		(
+		SELECT
+		SUM (qty) AS cntqty
+		FROM
+		oms_order_container tt2
+		WHERE TT2.ORDERID = t.ORDERID
+
+		) as connum,
+
+		(
+		SELECT
+		wm_concat (qty || '*' || ctnsize || ctntype) AS containertype
+		FROM
+		oms_order_container tt2
+		WHERE TT2.ORDERID = t.ORDERID
+
+		) as containertype,
+
+		t1.langname1 as payer,
+		t2.langname1 as salesman,
+
+		(
+		CASE T .busitype
+		WHEN '10' THEN
+		'进口'
+		ELSE
+		'出口'
+		END
+		) AS salestype,
+		t4.tm_odate AS releasedate,
+		T .DEPOT as wharf
+		FROM
+		oms_order T
+		LEFT JOIN ccode t1 ON T .ARAPCCODE = t1.ccode
+		LEFT JOIN wcode t2 ON T .WCODE = t2.wcode
+		LEFT JOIN task_milestone t4 ON T .bolcode = t4.tm_mblno
+
+		<where>
+			${ew.sqlSegment}
+		</where>
+
+
+
+	</select>
+    <select id="getTmsBlNoDatas" resultType="java.lang.String">
+
+		SELECT
+			bl_no
+		FROM
+			order_info t
+		WHERE
+			t.is_valid = 1 AND t.customs_release_date &gt;= #{startDate} AND t.customs_release_date &lt;= #{endDate}
+		UNION
+			SELECT
+				bl_no
+			FROM
+				order_bulk_info t1
+			WHERE
+				t1.is_valid = 1
+				AND t1.erp_order_id IS NOT NULL
+				AND t1.created_time &gt;= #{startDate} AND t1.created_time &lt;= #{endDate}
+
+	</select>
+</mapper>
