@@ -73,8 +73,8 @@
         <global-footer/>
       </a-layout-footer>
     </a-layout>
-
-    <setting-drawer></setting-drawer>
+    <!-- no need a another setting-drawer here, there is another in UserMenu-->
+    <!-- <setting-drawer></setting-drawer> -->
   </a-layout>
 </template>
 

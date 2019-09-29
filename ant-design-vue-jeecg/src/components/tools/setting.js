@@ -41,22 +41,20 @@ const updateTheme = primaryColor => {
   }
   const hideMessage = message.loading('正在编译主题！', 0);
   function buildIt() {
-    if (!window.less) {
+    if (!window.less || !window.less.modifyVars) {
       return;
     }
-    setTimeout(() => {
-      window.less
-        .modifyVars({
-          '@primary-color': primaryColor,
-        })
-        .then(() => {
-          hideMessage();
-        })
-        .catch(() => {
-          message.error('Failed to update theme');
-          hideMessage();
-        });
-    }, 200);
+    // no need to delay modifyVars
+    window.less.modifyVars({
+        '@primary-color': primaryColor,
+      })
+      .then(() => {
+        hideMessage();
+      })
+      .catch(() => {
+        message.error('Failed to update theme');
+        hideMessage();
+      });
   }
   if (!lessNodesAppended) {
     // insert less.js and color.less
