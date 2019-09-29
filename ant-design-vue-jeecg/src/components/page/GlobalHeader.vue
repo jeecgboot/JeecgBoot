@@ -161,58 +161,56 @@
   }
 </script>
 
-<style lang="scss" scoped>
-  /* update_begin author:scott date:20190220 for: 缩小首页布局顶部的高度*/
+<style lang="less" scoped>
+/* update_begin author:scott date:20190220 for: 缩小首页布局顶部的高度*/
 
-  $height: 59px;
+@height: 59px;
 
-  .layout {
+.layout {
+  .top-nav-header-index {
+    .header-index-wide {
+      margin-left: 10px;
 
-    .top-nav-header-index {
-
-      .header-index-wide {
-        margin-left: 10px;
-
-        .ant-menu.ant-menu-horizontal {
-          height: $height;
-          line-height: $height;
-        }
-      }
-      .trigger {
-        line-height: 64px;
-        &:hover {
-          background: rgba(0, 0, 0, 0.05);
-        }
+      .ant-menu.ant-menu-horizontal {
+        height: @height;
+        line-height: @height;
       }
     }
-
-    .header {
-      z-index: 2;
-      color: white;
-      height: $height;
-      background-color: #1890ff;
-      transition: background 300ms;
-
-      /* dark 样式 */
-      &.dark {
-        color: #000000;
-        box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-        background-color: white !important;
-      }
-    }
-
-    .header, .top-nav-header-index {
-      &.dark .trigger:hover {
+    .trigger {
+      line-height: 64px;
+      &:hover {
         background: rgba(0, 0, 0, 0.05);
       }
     }
   }
 
-  .ant-layout-header {
-    height: $height;
-    line-height: $height;
+  .header {
+    z-index: 2;
+    color: white;
+    height: @height;
+    background-color: @primary-color;
+    transition: background 300ms;
+
+    /* dark 样式 */
+    &.dark {
+      color: #000000;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+      background-color: white !important;
+    }
   }
 
-  /* update_end author:scott date:20190220 for: 缩小首页布局顶部的高度*/
+  .header,
+  .top-nav-header-index {
+    &.dark .trigger:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+  }
+}
 
+.ant-layout-header {
+  height: @height;
+  line-height: @height;
+}
+
+/* update_end author:scott date:20190220 for: 缩小首页布局顶部的高度*/
 </style>
