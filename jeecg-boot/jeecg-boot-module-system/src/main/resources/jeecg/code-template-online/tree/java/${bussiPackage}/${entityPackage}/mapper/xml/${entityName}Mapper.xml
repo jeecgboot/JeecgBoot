@@ -9,7 +9,7 @@
 <mapper namespace="${bussiPackage}.${entityPackage}.mapper.${entityName}Mapper">
 
 	<update id="updateTreeNodeStatus" parameterType="java.lang.String">
-		update ${tableName} set ${hasChildrenField} = ${r'#'}{status} where id = ${r'#'}{id}
+		update ${tableName} set ${Format.humpToUnderline(hasChildrenField)} = ${r'#'}{status} where id = ${r'#'}{id}
 	</update>
-	
+
 </mapper>

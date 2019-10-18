@@ -59,8 +59,13 @@
         this.mouseMoveStata = false;
         var width = e.clientX - this.beginClientX;
         if(width<this.maxwidth){
-          document.getElementsByClassName('handler')[0].style.left = 0 + 'px';
-          document.getElementsByClassName('drag_bg')[0].style.width = 0 + 'px';
+          // ---- update-begin- author:sunjianlei --- date:20191009 --- for: 修复获取不到 handler 的时候报错 ----
+          let handler = document.getElementsByClassName('handler')[0]
+          if (handler) {
+            handler.style.left = 0 + 'px'
+            document.getElementsByClassName('drag_bg')[0].style.width = 0 + 'px'
+          }
+          // ---- update-end- author:sunjianlei --- date:20191009 --- for: 修复获取不到 handler 的时候报错 ----
         }
       }                       //mouseup事件
     },

@@ -133,14 +133,19 @@
         if (arg === 1) {
           this.ipagination.current = 1;
         }
+        //update-begin--Author:kangxiaolin  Date:20190905 for：[442]主子表分开维护，生成的代码子表的分页改为真实的分页--------------------
         var params = this.getQueryParams();
-        getAction(this.url.list, {mainId: params.mainId}).then((res) => {
+        getAction(this.url.list, {orderId: params.mainId, pageNo : this.ipagination.current,
+          pageSize :this.ipagination.pageSize}).then((res) => {
           if (res.success) {
-            this.dataSource = res.result;
+            this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
           } else {
             this.dataSource = null;
           }
         })
+        //update-end--Author:kangxiaolin  Date:20190905 for：[442]主子表分开维护，生成的代码子表的分页改为真实的分页--------------------
+
       },
       getOrderMain(orderId) {
         this.queryParam.mainId = orderId;

@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 public class QueryGenerator {
 	
 	public static final String SQL_RULES_COLUMN = "SQL_RULES_COLUMN";
-	
+
 	private static final String BEGIN = "_begin";
 	private static final String END = "_end";
 	private static final String STAR = "*";
@@ -534,6 +534,10 @@ public class QueryGenerator {
 		}
 		field =  alias+oConvertUtils.camelToUnderline(field);
 		QueryRuleEnum rule = QueryGenerator.convert2Rule(value);
+		return getSingleSqlByRule(rule, field, value, isString);
+	}
+	
+	public static String getSingleSqlByRule(QueryRuleEnum rule,String field,Object value,boolean isString) {
 		String res = "";
 		switch (rule) {
 		case GT:
@@ -614,9 +618,82 @@ public class QueryGenerator {
 		}else if(str.endsWith("*")) {
 			return "'"+str.substring(0,str.length()-1)+"%'";
 		}else {
-			return str;
+			if(str.indexOf("%")>=0) {
+				return str;
+			}else {
+				return "'%"+str+"%'";
+			}
 		}
 	}
 	
+	/**
+	 *   根据权限相关配置生成相关的SQL 语句
+	 * @param searchObj
+	 * @param parameterMap
+	 * @return
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static String installAuthJdbc(Class<?> clazz) {
+		StringBuffer sb = new StringBuffer();
+		//权限查询
+		Map<String,SysPermissionDataRule> ruleMap = getRuleMap();
+		PropertyDescriptor origDescriptors[] = PropertyUtils.getPropertyDescriptors(clazz);
+		String sql_and = " and ";
+		for (String c : ruleMap.keySet()) {
+			if(oConvertUtils.isNotEmpty(c) && c.startsWith(SQL_RULES_COLUMN)){
+				sb.append(sql_and+getSqlRuleValue(ruleMap.get(c).getRuleValue()));
+			}
+		}
+		String name;
+		for (int i = 0; i < origDescriptors.length; i++) {
+			name = origDescriptors[i].getName();
+			if (judgedIsUselessField(name)) {
+				continue;
+			}
+			if(ruleMap.containsKey(name)) {
+				SysPermissionDataRule dataRule = ruleMap.get(name);
+				QueryRuleEnum rule = QueryRuleEnum.getByValue(dataRule.getRuleConditions());
+				Class propType = origDescriptors[i].getPropertyType();
+				boolean isString = propType.equals(String.class);
+				Object value;
+				if(isString) {
+					value = converRuleValue(dataRule.getRuleValue());
+				}else {
+					value = NumberUtils.parseNumber(dataRule.getRuleValue(),propType);
+				}
+				String filedSql = getSingleSqlByRule(rule, oConvertUtils.camelToUnderline(name), value,isString);
+				sb.append(sql_and+filedSql);
+			}
+		}
+		log.info("query auth sql is:"+sb.toString());
+		return sb.toString();
+	}
+	
+	/**
+	  * 根据权限相关配置 组装mp需要的权限
+	 * @param searchObj
+	 * @param parameterMap
+	 * @return
+	 */
+	public static void installAuthMplus(QueryWrapper<?> queryWrapper,Class<?> clazz) {
+		//权限查询
+		Map<String,SysPermissionDataRule> ruleMap = getRuleMap();
+		PropertyDescriptor origDescriptors[] = PropertyUtils.getPropertyDescriptors(clazz);
+		for (String c : ruleMap.keySet()) {
+			if(oConvertUtils.isNotEmpty(c) && c.startsWith(SQL_RULES_COLUMN)){
+				queryWrapper.and(i ->i.apply(getSqlRuleValue(ruleMap.get(c).getRuleValue())));
+			}
+		}
+		String name;
+		for (int i = 0; i < origDescriptors.length; i++) {
+			name = origDescriptors[i].getName();
+			if (judgedIsUselessField(name)) {
+				continue;
+			}
+			if(ruleMap.containsKey(name)) {
+				addRuleToQueryWrapper(ruleMap.get(name), name, origDescriptors[i].getPropertyType(), queryWrapper);
+			}
+		}
+	}
 	
 }

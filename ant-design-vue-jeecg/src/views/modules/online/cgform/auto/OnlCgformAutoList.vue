@@ -89,8 +89,9 @@
         :dataSource="table.dataSource"
         :pagination="table.pagination"
         :loading="table.loading"
-        :rowSelection="{selectedRowKeys:table.selectedRowKeys, onChange: handleChangeInTableSelect}"
+        :rowSelection="rowSelectionConfig"
         @change="handleTableChange"
+        :scroll="table.scroll"
         style="min-height: 300px">
 
         <template slot="dateSlot" slot-scope="text">
@@ -102,19 +103,19 @@
         </template>
 
         <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此图片</span>
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
           <img v-else :src="getImgView(text)" height="25px" alt="图片不存在" style="max-width:80px;font-size: 12px;font-style: italic;"/>
         </template>
 
         <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此文件</span>
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
           <a-button
             v-else
             :ghost="true"
             type="primary"
             icon="download"
             size="small"
-            @click="uploadFile(text)">
+            @click="downloadRowFile(text)">
             下载
           </a-button>
         </template>
@@ -143,6 +144,19 @@
                 <a href="javascript:;" @click="handleDetail(record)">详情</a>
               </a-menu-item>
               <template v-if="hasBpmStatus">
+                <template v-if="record.bpm_status == '1'||record.bpm_status == ''|| record.bpm_status == null">
+                    <a-menu-item>
+                      <a href="javascript:;" @click="startProcess(record)">提交流程</a>
+                    </a-menu-item>
+                    <a-menu-item v-if="buttonSwitch.delete">
+                      <a-popconfirm title="确定删除吗?" @confirm="() => handleDeleteOne(record)">
+                        <a>删除</a>
+                      </a-popconfirm>
+                    </a-menu-item>
+                </template>
+                <template v-else>
+                    <a-menu-item @click="handlePreviewPic(record)">审批进度</a-menu-item>
+                </template>
               </template>
               <template v-else>
                 <a-menu-item v-if="buttonSwitch.delete">
@@ -165,9 +179,10 @@
         </span>
       </a-table>
 
-      <OnlCgformAutoModal @success="handleFormSuccess" ref="modal" :code="code"></OnlCgformAutoModal>
+      <cgform-auto-modal @success="handleFormSuccess" ref="modal" :code="code"></cgform-auto-modal>
 
       <j-import-modal ref="importModal" :url="getImportUrl()" @ok="importOk"></j-import-modal>
+
 
     </div>
   </a-card>
@@ -183,7 +198,7 @@
   export default {
     name: 'OnlCgFormAutoList',
     components: {
-      JImportModal
+      JImportModal,
     },
     data() {
       return {
@@ -197,6 +212,7 @@
           optPre:"/online/cgform/api/form/",
           exportXls:'/online/cgform/api/exportXls/',
           buttonAction:'/online/cgform/api/doButton',
+          startProcess: "/process/extActProcess/startMutilProcess",
         },
         flowCodePre:"onl_",
         isorter:{
@@ -216,6 +232,7 @@
         toggleSearchStatus:false,
         table: {
           loading: true,
+          scroll:{x:false},
           // 表头
           columns: [],
           //数据集
@@ -225,16 +242,19 @@
           selectionRows: [],
           // 分页参数
           pagination: {
-             current: 1,
-             pageSize: 10,
-             pageSizeOptions: ['10', '20', '30'],
-             showTotal: (total, range) => {
-               return range[0] + '-' + range[1] + ' 共' + total + '条'
-             },
-             showQuickJumper: true,
-             showSizeChanger: true,
-             total: 0
+
           }
+        },
+        metaPagination:{
+          current: 1,
+          pageSize: 10,
+          pageSizeOptions: ['10', '20', '30'],
+          showTotal: (total, range) => {
+            return range[0] + '-' + range[1] + ' 共' + total + '条'
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0
         },
         actionColumn:{
           title: '操作',
@@ -256,6 +276,7 @@
           export:true
         },
         hasBpmStatus:false,
+        checkboxFlag:false
       }
     },
     created() {
@@ -270,6 +291,18 @@
         this.initAutoList()
       }
     },
+    computed:{
+      rowSelectionConfig:function() {
+        if(!this.checkboxFlag){
+          return null
+        }
+        return {
+          fixed:true,
+          selectedRowKeys:this.table.selectedRowKeys,
+          onChange: this.handleChangeInTableSelect
+        }
+      }
+    },
     methods: {
       hasBpmStatusFilter(){
         var columnObjs = this.table.columns;
@@ -282,6 +315,30 @@
         }else{
           this.hasBpmStatus = false;
         }
+      },
+      startProcess: function(record){
+        var that = this;
+        this.$confirm({
+          title:"提示",
+          content:"确认提交流程吗?",
+          onOk: function(){
+            var param = {
+              flowCode:that.flowCodePre+that.currentTableName,
+              id:record.id,
+              formUrl:"modules/bpm/task/form/OnlineFormDetail",
+              formUrlMobile:"modules/bpm/task/form/OnlineFormDetail"
+            }
+            postAction(that.url.startProcess,param).then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                that.loadData();
+                that.onClearSelected();
+              }else{
+                that.$message.warning(res.message);
+              }
+            });
+          }
+        });
       },
       initQueryInfo(){
         getAction(`${this.url.getQueryInfo}${this.code}`).then((res)=>{
@@ -302,6 +359,18 @@
         getAction(`${this.url.getColumns}${this.code}`).then((res)=>{
           console.log("--onlineList-加载动态列>>",res);
           if(res.success){
+            if(res.result.checkboxFlag == 'Y'){
+              this.checkboxFlag = true
+            }else{
+              this.checkboxFlag = false
+            }
+
+            if(res.result.paginationFlag=='Y'){
+              this.table.pagination = {...this.metaPagination}
+            }else{
+              this.table.pagination = false
+            }
+
             this.dictOptions = res.result.dictOptions
             this.formTemplate = res.result.formTemplate
             this.description = res.result.description
@@ -313,10 +382,23 @@
             for(let a=0;a<currColumns.length;a++){
               if(currColumns[a].customRender){
                 let dictCode = currColumns[a].customRender;
-                currColumns[a].customRender=(text)=>{
-                  return filterMultiDictText(this.dictOptions[dictCode], text);
+                let replaceFlag = '_replace_text_';
+                if(dictCode.startsWith(replaceFlag)){
+                  let textFieldName = dictCode.replace(replaceFlag,'')
+                  currColumns[a].customRender=(text,record)=>{
+                    return record[textFieldName]
+                  }
+                }else{
+                  currColumns[a].customRender=(text)=>{
+                    return filterMultiDictText(this.dictOptions[dictCode], text);
+                  }
                 }
               }
+            }
+            if(res.result.scrollFlag==1){
+              this.table.scroll = { x :'115%' }
+            }else{
+              this.table.scroll = { x :false }
             }
             currColumns.push(this.actionColumn);
             this.table.columns = [...currColumns]
@@ -329,22 +411,44 @@
         })
       },
       loadData(arg){
-        if(arg==1){
-          this.table.pagination.current=1
+        if(this.table.pagination){
+          if(arg==1){
+            this.table.pagination.current=1
+          }
+          let params = this.getQueryParams();//查询条件
+          console.log("--onlineList-查询条件-->",params)
+          getAction(`${this.url.getData}${this.code}`,params).then((res)=>{
+            console.log("--onlineList-列表数据",res)
+            if(res.success){
+              let result = res.result;
+              if(Number(result.total)>0){
+                this.table.pagination.total = Number(result.total)
+                this.table.dataSource = result.records
+              }else{
+                this.table.pagination.total=0;
+                this.table.dataSource=[]
+                //this.$message.warning("查无数据")
+              }
+            }else{
+              this.$message.warning(res.message)
+            }
+            this.table.loading = false
+          })
+        }else{
+          this.loadDataNoPage()
         }
-        let params = this.getQueryParams();//查询条件
-        console.log("--onlineList-查询条件-->",params)
-        getAction(`${this.url.getData}${this.code}`,params).then((res)=>{
+      },
+      loadDataNoPage(){
+        let param = Object.assign({}, this.queryParam,this.isorter);
+        param['pageSize'] = -521;
+        getAction(`${this.url.getData}${this.code}`,filterObj(param)).then((res)=>{
           console.log("--onlineList-列表数据",res)
           if(res.success){
             let result = res.result;
             if(Number(result.total)>0){
-              this.table.pagination.total = Number(result.total)
               this.table.dataSource = result.records
             }else{
-              this.table.pagination.total=0;
               this.table.dataSource=[]
-              //this.$message.warning("查无数据")
             }
           }else{
             this.$message.warning(res.message)
@@ -361,6 +465,7 @@
       handleChangeInTableSelect(selectedRowKeys, selectionRows) {
         this.table.selectedRowKeys = selectedRowKeys
         this.table.selectionRows = selectionRows
+        this.selectedRowKeys = selectedRowKeys
       },
       handleTableChange(pagination, filters, sorter){
         //TODO 筛选
@@ -453,7 +558,7 @@
         }
         return window._CONFIG['imgDomainURL']+"/"+text
       },
-      uploadFile(text){
+      downloadRowFile(text){
         if(!text){
           this.$message.warning("未知的文件")
           return;
@@ -461,7 +566,7 @@
         if(text.indexOf(",")>0){
           text = text.substring(0,text.indexOf(","))
         }
-        window.open(window._CONFIG['imgDomainURL']+"/"+text);//TODO 下载的方法
+        window.open(window._CONFIG['downloadUrl']+"/"+text);//TODO 下载的方法
       },
       handleDelBatch(){
         if(this.table.selectedRowKeys.length<=0){

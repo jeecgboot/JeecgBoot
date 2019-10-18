@@ -74,7 +74,9 @@
       </a-layout-footer>
     </a-layout>
 
-    <setting-drawer></setting-drawer>
+    <!-- update-start---- author:os_chengtgen -- date:20190830 --  for:issues/463 -编译主题颜色已生效，但还一直转圈，显示主题 正在编译 ---- -->
+    <!--<setting-drawer></setting-drawer>-->
+    <!-- update-end---- author:os_chengtgen -- date:20190830 --  for:issues/463 -编译主题颜色已生效，但还一直转圈，显示主题 正在编译 ---- -->
   </a-layout>
 </template>
 
@@ -82,7 +84,11 @@
   import SideMenu from '@/components/menu/SideMenu'
   import GlobalHeader from '@/components/page/GlobalHeader'
   import GlobalFooter from '@/components/page/GlobalFooter'
-  import SettingDrawer from '@/components/setting/SettingDrawer'
+  // update-start---- author:os_chengtgen -- date:20190830 --  for:issues/463 -编译主题颜色已生效，但还一直转圈，显示主题 正在编译 ------
+  // import SettingDrawer from '@/components/setting/SettingDrawer'
+  // 注释这个因为在个人设置模块已经加载了SettingDrawer页面
+  // update-end ---- author:os_chengtgen -- date:20190830 --  for:issues/463 -编译主题颜色已生效，但还一直转圈，显示主题 正在编译 ------
+
   import { triggerWindowResizeEvent } from '@/utils/util'
   import { mapState, mapActions } from 'vuex'
   import { mixin, mixinDevice } from '@/utils/mixin.js'
@@ -93,7 +99,11 @@
       SideMenu,
       GlobalHeader,
       GlobalFooter,
-      SettingDrawer
+      // update-start---- author:os_chengtgen -- date:20190830 --  for:issues/463 -编译主题颜色已生效，但还一直转圈，显示主题 正在编译 ------
+      // // SettingDrawer
+      // 注释这个因为在个人设置模块已经加载了SettingDrawer页面
+      // update-end ---- author:os_chengtgen -- date:20190830 --  for:issues/463 -编译主题颜色已生效，但还一直转圈，显示主题 正在编译 ------
+
     },
     mixins: [mixin, mixinDevice],
     data() {

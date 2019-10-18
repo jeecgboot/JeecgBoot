@@ -62,6 +62,39 @@
               {
                 pattern: /^[a-z|A-Z][a-z|A-Z\d_-]{0,}$/, // 正则
                 message: '${title}必须以字母开头，可包含数字、下划线、横杠'
+              },
+              {
+                handler(type, value, row, column, callback, target) {
+                  // type 触发校验的类型（input、change、blur）
+                  // value 当前校验的值
+                  // callback(flag, message) 方法必须执行且只能执行一次
+                  //          flag = 是否通过了校验，不填写或者填写 null 代表不进行任何操作
+                  //          message = 提示的类型，默认使用配置的 message
+                  // target 行编辑的实例对象
+
+                  if (type === 'blur') {
+                    let { values } = target.getValuesSync({ validate: false })
+
+                    if (value === 'abc') {
+                      callback(false, '${title}不能是abc')  // false = 未验证
+                      return
+                    }
+
+                    let count = 0
+                    for (let val of values) {
+                      if (val['dbFieldName'] === value) {
+                        if (++count >= 2) {
+                          callback(false, '${title}不能重复==')
+                          return
+                        }
+                      }
+                    }
+                    callback(true) // true = 通过验证
+                  } else {
+                    callback() // 不填写或者填写 null 代表不进行任何操作
+                  }
+                },
+                message: '${title}默认提示'
               }
             ]
           },

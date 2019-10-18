@@ -40,23 +40,23 @@ const updateTheme = primaryColor => {
     return;
   }
   const hideMessage = message.loading('正在编译主题！', 0);
+  console.info(`正在编译主题!`)
   function buildIt() {
-    if (!window.less) {
+    // 正确的判定less是否已经加载less.modifyVars可用
+    if (!window.less || !window.less.modifyVars) {
       return;
     }
-    setTimeout(() => {
-      window.less
-        .modifyVars({
-          '@primary-color': primaryColor,
-        })
-        .then(() => {
-          hideMessage();
-        })
-        .catch(() => {
-          message.error('Failed to update theme');
-          hideMessage();
-        });
-    }, 200);
+    // less.modifyVars可用
+    window.less.modifyVars({
+        '@primary-color': primaryColor,
+      })
+      .then(() => {
+        hideMessage();
+      })
+      .catch(() => {
+        message.error('Failed to update theme');
+        hideMessage();
+      });
   }
   if (!lessNodesAppended) {
     // insert less.js and color.less

@@ -56,7 +56,9 @@
 
         // bar 使用不了 - 和 / 所以替换下
         return dv.rows.map(row => {
-          row.x = row.x.replace(/[-/]/g, '_')
+          if (typeof row.x === 'string') {
+            row.x = row.x.replace(/[-/]/g, '_')
+          }
           return row
         })
 

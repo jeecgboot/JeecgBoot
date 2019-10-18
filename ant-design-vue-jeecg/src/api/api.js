@@ -31,6 +31,11 @@ const changPassword = (params)=>putAction("/sys/user/changPassword",params);
 const addPermission= (params)=>postAction("/sys/permission/add",params);
 const editPermission= (params)=>putAction("/sys/permission/edit",params);
 const getPermissionList = (params)=>getAction("/sys/permission/list",params);
+/*update_begin author:wuxianquan date:20190908 for:添加查询一级菜单和子菜单查询api */
+const getSystemMenuList = (params)=>getAction("/sys/permission/getSystemMenuList",params);
+const getSystemSubmenu = (params)=>getAction("/sys/permission/getSystemSubmenu",params);
+/*update_end author:wuxianquan date:20190908 for:添加查询一级菜单和子菜单查询api */
+
 // const deletePermission = (params)=>deleteAction("/sys/permission/delete",params);
 // const deletePermissionList = (params)=>deleteAction("/sys/permission/deleteBatch",params);
 const queryTreeList = (params)=>getAction("/sys/permission/queryTreeList",params);
@@ -87,6 +92,8 @@ const queryUserByDepId = (params)=>getAction("/sys/user/queryUserByDepId",params
 const queryUserRoleMap = (params)=>getAction("/sys/user/queryUserRoleMap",params);
 // 重复校验
 const duplicateCheck = (params)=>getAction("/sys/duplicate/check",params);
+// 加载分类字典
+const loadCategoryData = (params)=>getAction("/sys/category/loadAllData",params);
 
 export {
   // imgView,
@@ -133,6 +140,9 @@ export {
   queryUserRoleMap,
   duplicateCheck,
   queryTreeListForRole,
+  getSystemMenuList,
+  getSystemSubmenu,
+  loadCategoryData
 }
 
 

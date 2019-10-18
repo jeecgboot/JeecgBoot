@@ -7,6 +7,14 @@ const FormTypes = {
   date: 'date',
   datetime: 'datetime',
   upload: 'upload',
+  file: 'file',
+  image: 'image',
+  popup:'popup',
+  list_multi:"list_multi",
+  sel_search:"sel_search",
+  radio:'radio',
+  checkbox_meta:"checkbox_meta",
+
   slot: 'slot',
   hidden: 'hidden'
 }
