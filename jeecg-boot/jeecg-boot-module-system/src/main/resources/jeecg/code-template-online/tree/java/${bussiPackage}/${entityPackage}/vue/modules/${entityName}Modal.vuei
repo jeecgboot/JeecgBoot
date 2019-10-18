@@ -21,6 +21,7 @@
 <#assign pidFieldName = "">
 
 <#list columns as po>
+<#if po.isShow =='Y'>
 <#assign form_field_dictCode="">
 	<#if po.dictTable?default("")?trim?length gt 1>
 		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
@@ -37,6 +38,7 @@
             v-decorator="['${po.fieldName}', validatorRules.${po.fieldName}]"
             dict="${tableVo.tableName},${tableVo.extendParams.textField},id"
             pidField="${tableVo.extendParams.pidField}"
+            pidValue="0"
             hasChildField="${tableVo.extendParams.hasChildren}">
           </j-tree-select>
 	<#elseif po.classType =='date'>
@@ -77,7 +79,7 @@
           <a-input v-decorator="[ '${po.fieldName}', validatorRules.${po.fieldName}]" placeholder="请输入${po.filedComment}"></a-input>
     </#if>
         </a-form-item>
-          
+</#if>
 </#list>    
         
       </a-form>
@@ -155,11 +157,13 @@
         confirmLoading: false,
         validatorRules:{
         <#list columns as po>
+        <#if po.isShow =='Y'>
         <#if po.fieldName !='id'>
         <#if po.nullable =='N'>
         ${po.fieldName}:{rules: [{ required: true, message: '请输入${po.filedComment}!' }]},
         <#else>
         ${po.fieldName}:{},
+        </#if>
         </#if>
         </#if>
 	    </#list>

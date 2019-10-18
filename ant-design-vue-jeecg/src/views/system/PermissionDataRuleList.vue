@@ -14,7 +14,7 @@
         background: '#fff',
       }">
       <div class="table-page-search-wrapper">
-        <a-form>
+        <a-form @keyup.enter.native="searchQuery">
           <a-row :gutter="12">
             <a-col :md="8" :sm="8">
               <a-form-item label="规则名称" :labelCol="{span: 8}" :wrapperCol="{span: 14, offset: 1}">
@@ -118,6 +118,10 @@
     },
     methods: {
       loadData() {
+        //20190908 scott for: 首次进入菜单列表的时候，不加载权限列表
+        if(!this.permId){
+          return
+        }
         let that = this
         this.dataSource = []
         var params = this.getQueryParams()//查询条件

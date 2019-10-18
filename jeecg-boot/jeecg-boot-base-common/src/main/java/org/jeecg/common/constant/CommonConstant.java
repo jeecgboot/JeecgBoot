@@ -71,15 +71,14 @@ public interface CommonConstant {
     /**访问权限认证未通过 510*/
     public static final Integer SC_JEECG_NO_AUTHZ=510;
 
-    /** 登录用户拥有角色缓存KEY前缀 */
-    public static String LOGIN_USER_CACHERULES_ROLE = "loginUser_cacheRules::Roles_";
-    /** 登录用户拥有权限缓存KEY前缀 */
-    public static String LOGIN_USER_CACHERULES_PERMISSION  = "loginUser_cacheRules::Permissions_";
-    /** 登录用户令牌缓存KEY前缀 */
-    public static final int  TOKEN_EXPIRE_TIME  = 3600; //3600秒即是一小时
+    /** 登录用户Shiro权限缓存KEY前缀 */
+    public static String PREFIX_USER_SHIRO_CACHE  = "shiro:cache:org.jeecg.modules.shiro.authc.ShiroRealm.authorizationCache:";
+    /** 登录用户Token令牌缓存KEY前缀 */
+    public static final String PREFIX_USER_TOKEN  = "prefix_user_token_";
+    /** Token缓存时间：3600秒即一小时 */
+    public static final int  TOKEN_EXPIRE_TIME  = 3600;
     
-    public static final String PREFIX_USER_TOKEN  = "PREFIX_USER_TOKEN_";
-    
+
     /**
      *  0：一级菜单
      */
@@ -150,5 +149,42 @@ public interface CommonConstant {
     
     /**字典翻译文本后缀*/
     public static final String DICT_TEXT_SUFFIX = "_dictText";
-    
+
+    /**
+     * 表单设计器主表类型
+     */
+    public static final Integer DESIGN_FORM_TYPE_MAIN = 1;
+
+    /**
+     * 表单设计器子表表类型
+     */
+    public static final Integer DESIGN_FORM_TYPE_SUB = 2;
+
+    /**
+     * 表单设计器URL授权通过
+     */
+    public static final Integer DESIGN_FORM_URL_STATUS_PASSED = 1;
+
+    /**
+     * 表单设计器URL授权未通过
+     */
+    public static final Integer DESIGN_FORM_URL_STATUS_NOT_PASSED = 2;
+
+    /**
+     * 表单设计器URL授权未通过
+     */
+    public static final String DESIGN_FORM_URL_TYPE_ADD = "add";
+    /**
+     * 表单设计器URL授权未通过
+     */
+    public static final String DESIGN_FORM_URL_TYPE_EDIT = "edit";
+    /**
+     * 表单设计器URL授权未通过
+     */
+    public static final String DESIGN_FORM_URL_TYPE_DETAIL = "detail";
+    /**
+     * 表单设计器URL授权未通过
+     */
+    public static final String DESIGN_FORM_URL_TYPE_VIEW = "view";
+
 }

@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>2.1.0</version>
+  <version>2.1.1</version>
   <packaging>pom</packaging>
   
   	<parent>
@@ -16,7 +16,7 @@
 	<modules>
 		<module>jeecg-boot-base-common</module>
 		<module>jeecg-boot-module-system</module>
-	</modules>
+	</modules> 
 	
 	<distributionManagement>
 	  	<repository>
@@ -43,7 +43,7 @@
 		<repository>
             <id>jeecg</id>
             <name>jeecg Repository</name>
-            <url>http://maven.jeewx.com/nexus/content/repositories/jeecg</url>
+            <url>http://maven.jeecg.org/nexus/content/repositories/jeecg</url>
             <snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -51,7 +51,7 @@
 	</repositories>
 	
     <properties>
-        <jeecgboot.common.version>2.1.0</jeecgboot.common.version>
+        <jeecgboot.common.version>2.1.1</jeecgboot.common.version>
         <java.version>1.8</java.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -61,6 +61,8 @@
         <commons.version>2.6</commons.version>
         <aliyun-java-sdk-core.version>3.2.3</aliyun-java-sdk-core.version>
 		<aliyun-java-sdk-dysmsapi.version>1.0.0</aliyun-java-sdk-dysmsapi.version>
+		<aliyun.oss.version>3.6.0</aliyun.oss.version>
+		<qc.cos.version>5.6.5</qc.cos.version>
     </properties>
     
 	<dependencies>
@@ -129,7 +131,7 @@
 		   <artifactId>druid-spring-boot-starter</artifactId>
 		   <version>${druid.version}</version>
 		</dependency>
-		
+
 		<!-- 动态数据源 -->
 		<dependency>
 		  <groupId>com.baomidou</groupId>
@@ -141,15 +143,15 @@
 		<dependency>
          	<groupId>com.alibaba</groupId>
          	<artifactId>fastjson</artifactId>
-         	<version>1.2.56</version>
+         	<version>1.2.60</version>
         </dependency>
       
 		<!--mysql-->
 		<dependency>
-		   <groupId>mysql</groupId>
-		   <artifactId>mysql-connector-java</artifactId>
-		   <version>5.1.47</version>
-		   <scope>runtime</scope>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.47</version>
+			<scope>runtime</scope>
 		</dependency>
 		<!--  sqlserver-->
 		<dependency>
@@ -165,6 +167,13 @@
 		    <version>11.2.0.3</version>
 			<scope>runtime</scope>
 		</dependency>
+        <!-- postgresql驱动 -->
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.5</version>
+            <scope>runtime</scope>
+        </dependency>
 		
 		 <!-- Quartz定时任务 -->
         <dependency>
@@ -178,13 +187,41 @@
 			<artifactId>java-jwt</artifactId>
 			<version>3.7.0</version>
 		</dependency>
-		
+
+        <!--  online form-->
+        <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>online-form</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
 		<!--shiro-->
 		<dependency>
 		    <groupId>org.apache.shiro</groupId>
 		    <artifactId>shiro-spring-boot-starter</artifactId>
 		    <version>1.4.0</version>
 		</dependency>
+        <dependency>
+            <groupId>org.crazycake</groupId>
+            <artifactId>shiro-redis</artifactId>
+            <version>3.1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.shiro</groupId>
+                    <artifactId>shiro-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 		
 		<!-- Swagger API文档 -->
         <dependency>
@@ -207,17 +244,17 @@
 			<artifactId>springfox-bean-validators</artifactId>
 			<version>2.9.2</version>
 		</dependency>
-		<!-- # 增加两个配置解决 NumberFormatException -->
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-annotations</artifactId>
-			<version>1.5.22</version>
-		</dependency>
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-models</artifactId>
-			<version>1.5.22</version>
-		</dependency>
+        <!-- # 增加两个配置解决 NumberFormatException -->
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>1.5.22</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-models</artifactId>
+            <version>1.5.22</version>
+        </dependency>
 		
 		
 		<!-- Redis -->
@@ -235,14 +272,14 @@
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>codegenerate</artifactId>
-			<version>1.0.5</version>
+			<version>1.0.7</version>
 		</dependency>
 		
         <!-- AutoPoi Excel工具类-->
 		<dependency>
 			<groupId>org.jeecgframework</groupId>
 			<artifactId>autopoi-web</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.4</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-codec</groupId>
@@ -281,7 +318,18 @@
 		   <groupId>org.springframework.boot</groupId>
 		   <artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>com.aliyun.oss</groupId>
+			<artifactId>aliyun-sdk-oss</artifactId>
+			<version>${aliyun.oss.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcloud</groupId>
+			<artifactId>cos_api</artifactId>
+			<version>${qc.cos.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<dependencyManagement>
@@ -305,8 +353,8 @@
 			<!--<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			 指定JDK编译版本 -->
+			</plugin> -->
+			<!--指定JDK编译版本 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

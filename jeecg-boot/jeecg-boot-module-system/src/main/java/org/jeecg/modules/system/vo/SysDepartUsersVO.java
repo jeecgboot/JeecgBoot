@@ -18,6 +18,11 @@ public class SysDepartUsersVO implements Serializable{
 		this.depId = depId;
 		this.userIdList = userIdList;
 	}
-	
-	
+    //update-begin--Author:kangxiaolin  Date:20190908 for：[512][部门管理]点击添加已有用户失败修复--------------------
+
+	public SysDepartUsersVO(){
+
+	}
+    //update-begin--Author:kangxiaolin  Date:20190908 for：[512][部门管理]点击添加已有用户失败修复--------------------
+
 }

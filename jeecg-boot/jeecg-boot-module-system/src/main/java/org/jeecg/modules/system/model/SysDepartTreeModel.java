@@ -46,6 +46,8 @@ public class SysDepartTreeModel implements Serializable{
     private Integer departOrder;
 
     private Object description;
+    
+    private String orgCategory;
 
     private String orgType;
 
@@ -89,6 +91,7 @@ public class SysDepartTreeModel implements Serializable{
         this.departNameAbbr = sysDepart.getDepartNameAbbr();
         this.departOrder = sysDepart.getDepartOrder();
         this.description = sysDepart.getDescription();
+        this.orgCategory = sysDepart.getOrgCategory();
         this.orgType = sysDepart.getOrgType();
         this.orgCode = sysDepart.getOrgCode();
         this.mobile = sysDepart.getMobile();
@@ -179,8 +182,16 @@ public class SysDepartTreeModel implements Serializable{
     public void setDepartName(String departName) {
         this.departName = departName;
     }
+    
+    public String getOrgCategory() {
+		return orgCategory;
+	}
 
-    public String getOrgType() {
+	public void setOrgCategory(String orgCategory) {
+		this.orgCategory = orgCategory;
+	}
+
+	public String getOrgType() {
         return orgType;
     }
 
@@ -329,6 +340,7 @@ public class SysDepartTreeModel implements Serializable{
                 Objects.equals(departNameAbbr, model.departNameAbbr) &&
                 Objects.equals(departOrder, model.departOrder) &&
                 Objects.equals(description, model.description) &&
+                Objects.equals(orgCategory, model.orgCategory) &&
                 Objects.equals(orgType, model.orgType) &&
                 Objects.equals(orgCode, model.orgCode) &&
                 Objects.equals(mobile, model.mobile) &&
@@ -351,7 +363,7 @@ public class SysDepartTreeModel implements Serializable{
     public int hashCode() {
 
         return Objects.hash(id, parentId, departName, departNameEn, departNameAbbr,
-        		departOrder, description, orgType, orgCode, mobile, fax, address, 
+        		departOrder, description, orgCategory, orgType, orgCode, mobile, fax, address, 
         		memo, status, delFlag, createBy, createTime, updateBy, updateTime, 
         		children);
     }

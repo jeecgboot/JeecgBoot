@@ -44,7 +44,7 @@ export function filterDictText(dictOptions, text) {
  * @return String
  */
 export function filterMultiDictText(dictOptions, text) {
-  if(!text){
+  if(!text || !dictOptions || dictOptions.length==0){
     return ""
   }
   let re = "";

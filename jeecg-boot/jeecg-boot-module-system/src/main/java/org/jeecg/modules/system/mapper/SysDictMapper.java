@@ -1,7 +1,12 @@
 package org.jeecg.modules.system.mapper;
 
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.ResultType;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.model.DuplicateCheckVo;
@@ -35,7 +40,8 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 
 	public String queryTableDictTextByKey(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("key") String key);
 
-	
+	public List<DictModel> queryTableDictByKeys(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("keyArray") String[] keyArray);
+
 	/**
 	 * 查询所有部门 作为字典信息 id -->value,departName -->text
 	 * @return
@@ -67,6 +73,28 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @param hasChildField
 	 * @return
 	 */
-	List<TreeSelectModel> queryTreeList(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("pidField") String pidField,@Param("pid") String pid,@Param("hasChildField") String hasChildField);
+	List<TreeSelectModel> queryTreeList(@Param("query") Map<String, String> query,@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("pidField") String pidField,@Param("pid") String pid,@Param("hasChildField") String hasChildField);
+
+	/**
+	 * 删除
+	 * @param id
+	 */
+	@Select("delete from sys_dict where id = #{id}")
+	public void deleteOneById(@Param("id") String id);
+
+	/**
+	 * 查询被逻辑删除的数据
+	 * @return
+	 */
+	@Select("select * from sys_dict where del_flag = 1")
+	public List<SysDict> queryDeleteList();
+
+	/**
+	 * 修改状态值
+	 * @param delFlag
+	 * @param id
+	 */
+	@Update("update sys_dict set del_flag = #{flag,jdbcType=INTEGER} where id = #{id,jdbcType=VARCHAR}")
+	public void updateDictDelFlag(@Param("flag") int delFlag, @Param("id") String id);
 
 }

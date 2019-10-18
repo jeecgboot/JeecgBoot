@@ -112,13 +112,17 @@
           this.ipagination.current = 1;
         }
         var params = this.getQueryParams();
-        getAction(this.url.list, {mainId: params.mainId}).then((res) => {
+        <#-- update-begin--Author:kangxiaolin  Date:20190905 for：[442]主子表分开维护，生成的代码子表的分页改为真实的分页-------------------- -->
+        getAction(this.url.list, {  <#list subTab.foreignKeys as key>  <#if key?lower_case?index_of("${primaryKeyField}")!=-1>${key?uncap_first} </#if>                  </#list>   : params.mainId
+        , pageNo : this.ipagination.current, pageSize :this.ipagination.pageSize}).then((res) => {
           if (res.success) {
-            this.dataSource = res.result;
+           this.dataSource = res.result.records;
+           this.ipagination.total = res.result.total;
           } else {
             this.dataSource = null;
           }
         })
+         <#-- update-end--Author:kangxiaolin  Date:20190905 for：[442]主子表分开维护，生成的代码子表的分页改为真实的分页-------------------- -->
       },
       getMain(mainId) {
         this.queryParam.mainId = mainId;

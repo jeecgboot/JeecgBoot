@@ -85,4 +85,9 @@ public class LoginUser {
      */
     private String activitiSync;
 
+	/**
+	 * 创建时间
+	 */
+	private Date createTime;
+
 }

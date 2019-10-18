@@ -27,7 +27,7 @@
           :wrapperCol="wrapperCol"
           label="航班时间"
           hasFeedback>
-          <j-date v-decorator="['tickectDate',{trigger:'input',rules:[{ required: true,message: '请输入航班号!'}]}]"></j-date>
+          <j-date :trigger-change="true"  v-decorator="['tickectDate',{rules:[{ required: true,message: '请输入航班号!'}]}]"></j-date>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
