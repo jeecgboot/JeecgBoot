@@ -129,7 +129,6 @@
   import Clipboard from 'clipboard'
   import { filterObj } from '@/utils/util';
 
-
   export default {
     name: 'OnlCgformHeadList',
     mixins: [JeecgListMixin],
