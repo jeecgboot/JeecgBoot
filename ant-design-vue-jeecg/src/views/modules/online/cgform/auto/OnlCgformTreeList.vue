@@ -128,7 +128,7 @@
 
       </a-table>
 
-      <cgform-auto-modal @success="handleFormSuccess" ref="modal" :code="code"></cgform-auto-modal>
+      <onl-cgform-auto-modal @success="handleFormSuccess" ref="modal" :code="code"></onl-cgform-auto-modal>
 
       <j-import-modal ref="importModal" :url="getImportUrl()" @ok="importOk"></j-import-modal>
 

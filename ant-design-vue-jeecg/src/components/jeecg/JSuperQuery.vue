@@ -43,7 +43,7 @@
 
               <a-col :span="8">
                 <a-select placeholder="选择查询字段" v-model="item.field" @select="(val,option)=>handleSelected(option,item)">
-                  <a-select-option v-for="(f,fIndex) in fieldList" :key=" 'field'+fIndex" :value="f.value" :data-type="f.type">{{ f.text }}</a-select-option>
+                  <a-select-option v-for="(f,fIndex) in fieldList" :key=" 'field'+fIndex" :value="f.value" :data-idx="fIndex">{{ f.text }}</a-select-option>
                 </a-select>
               </a-col>
 
@@ -63,8 +63,9 @@
               </a-col>
 
               <a-col :span="8">
-                <j-date v-if=" item.type=='date' " v-model="item.val" placeholder="请选择日期"></j-date>
-                <j-date v-else-if=" item.type=='datetime' " v-model="item.val" placeholder="请选择时间" :show-time="true" date-format="YYYY-MM-DD HH:mm:ss"></j-date>
+                <j-dict-select-tag v-if="item.dictCode" v-model="item.val" :dictCode="item.dictCode" placeholder="请选择"/>
+                <j-date v-else-if=" item.type=='date' " v-model="item.val" placeholder="请选择日期" style="width: 100%"></j-date>
+                <j-date v-else-if=" item.type=='datetime' " v-model="item.val" placeholder="请选择时间" :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" style="width: 100%"></j-date>
                 <a-input-number v-else-if=" item.type=='int'||item.type=='number' " style="width: 100%" placeholder="请输入数值" v-model="item.val"/>
                 <a-input v-else v-model="item.val" placeholder="请输入值"/>
               </a-col>
@@ -117,8 +118,14 @@
     name: 'JSuperQuery',
     components: { JDate },
     props: {
-      /*  fieldList:[{value:'',text:'',type:''}]
-      * type:date datetime int number string
+      /*
+       fieldList: [{
+          value:'',
+          text:'',
+          type:'',
+          dictCode:'' // 只要 dictCode 有值，无论 type 是什么，都显示为字典下拉框
+       }]
+       type:date datetime int number string
       * */
       fieldList: {
         type: Array,
@@ -213,7 +220,11 @@
         this.queryParamsModel.splice(index, 1)
       },
       handleSelected(option, item) {
-        item['type'] = option.data.attrs['data-type']
+        let index = option.data.attrs['data-idx']
+
+        let { type, dictCode } = this.fieldList[index]
+        item['type'] = type
+        item['dictCode'] = dictCode
       },
       handleReset() {
         this.queryParamsModel = [{}]
