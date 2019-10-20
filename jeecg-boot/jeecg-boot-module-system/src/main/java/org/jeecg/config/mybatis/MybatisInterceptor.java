@@ -120,6 +120,13 @@ public class MybatisInterceptor implements Interceptor {
 					parameter = p.get("param1");
 				}
 				//update-end-author:scott date:20190729 for:批量更新报错issues/IZA3Q-
+
+				//update-begin-author:scott date:20190729 for:更新指定字段时报错 issues/#516-
+				if (parameter == null) {
+					return invocation.proceed();
+				}
+				//update-end-author:scott date:20190729 for:更新指定字段时报错 issues/#516-
+
 				fields = oConvertUtils.getAllFields(parameter);
 			} else {
 				fields = oConvertUtils.getAllFields(parameter);
