@@ -106,6 +106,3 @@ ADD COLUMN `physic_id`  varchar(32) NULL COMMENT '原始表ID' AFTER `copy_type`
 
 ALTER TABLE `onl_cgform_head`
 ADD COLUMN `scroll`  int(3) NULL DEFAULT 0 COMMENT '是否有横向滚动条' AFTER `form_template_mobile`;
-
-ALTER TABLE `onl_cgreport_item`
-MODIFY COLUMN `dict_code`  varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '字典CODE' AFTER `is_search`;
