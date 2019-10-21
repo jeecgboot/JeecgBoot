@@ -1,9 +1,8 @@
 
--- -author:scott----date:20190829----for:权限策略描述修改，可控制表单或按钮的是否可见和请求的是否可访问-----------------
-UPDATE `sys_dict_item` SET  `item_text` = '可见/可访问(授权后可见/可访问)'  WHERE `id` = '83250269359855501ec4e9c0b7e21596';
----author:scott----date:20190829----for:权限策略描述修改，可控制表单或按钮的是否可见和请求的是否可访问-----------------
 
--- -author:os_chenztao----date:20190828----for:对象存储
+UPDATE `sys_dict_item` SET  `item_text` = '可见/可访问(授权后可见/可访问)'  WHERE `id` = '83250269359855501ec4e9c0b7e21596';
+
+
 -- ----------------------------
 -- Table structure for oss_file
 -- ----------------------------
@@ -19,27 +18,20 @@ CREATE TABLE `oss_file` (
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Oss File';
 INSERT INTO sys_permission(id, parent_id, name, url, component, component_name, redirect, menu_type, perms, perms_type, sort_no, always_show, icon, is_route, is_leaf, keep_alive, hidden, description, create_by, create_time, update_by, update_time, del_flag, rule_flag, status) VALUES ('1166535831146504193', '2a470fc0c3954d9dbb61de6d80846549', '对象存储', '/oss/file', 'modules/oss/OSSFileList', null, null, 1, null, '1', 1, 0, '', 1, 1, 0, 0, null, 'admin', '2019-08-28 02:19:50', 'admin', '2019-08-28 02:20:57', 0, 0, '1');
--- -author:os_chenztao----date:20190828----for:对象存储
 
 
--- -author:wuxianquan----date:20190908----for:增加外链菜单切换模式字段
+
 ALTER TABLE sys_permission
   add COLUMN  internal_or_external  tinyint(1)
   comment '外链菜单打开方式 0/内部打开 1/外部打开';
--- -author:wuxianquan----date:20190908----for:增加外链菜单切换模式字段
 
--- -author:wuxianquan----date:20190908----for:增加菜单
 INSERT INTO `sys_permission` (`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1170592628746878978', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '菜单管理', '/isystem/newPermissionList', 'system/NewPermissionList', NULL, NULL, '1', NULL, '1', '100', '0', NULL, '1', '1', '0', '0', NULL, 'admin', '2019-09-08 15:00:05', 'admin', '2019-09-08 15:02:57', '0', '0', '1', '0');
--- -author:wuxianquan----date:20190908----for:增加菜单
 
--- -author:scott----date:20190908----for:菜单表加载慢，增加索引-------------
 ALTER TABLE `sys_permission`
 ADD INDEX `index_menu_type`(`menu_type`),
 ADD INDEX `index_menu_hidden`(`hidden`),
 ADD INDEX `index_menu_status`(`status`);
--- -author:scott----date:20190908----for:菜单表加载慢，增加索引-------------
 
--- -author:zhoujf----date:20190919----for:机构类别-------------
 ALTER TABLE `sys_depart`
 ADD COLUMN `org_category`  varchar(10) NOT NULL DEFAULT 1 COMMENT '机构类别 1组织机构，2岗位' AFTER `description`;
 
@@ -47,18 +39,13 @@ INSERT INTO `sys_dict` (`id`, `dict_name`, `dict_code`, `description`, `del_flag
 INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1174511197735665665', '1174511106530525185', '组织机构', '1', '组织机构', '1', '1', 'admin', '2019-09-19 10:31:05', NULL, NULL);
 INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1174511244036587521', '1174511106530525185', '岗位', '2', '岗位', '1', '1', 'admin', '2019-09-19 10:31:16', NULL, NULL);
 
--- -author:zhoujf----date:20190919----for:机构类别-------------
-
--- author:sunjianlei----date:20190920----for: 新增职务模块相关数据 -------------
-
--- 用户表新增字段
 ALTER TABLE `sys_user`
   ADD COLUMN `work_no` varchar(100) NULL COMMENT '工号，唯一键' AFTER `activiti_sync`,
   ADD COLUMN `post` varchar(100) NULL COMMENT '职务，关联职务表' AFTER `work_no`,
   ADD COLUMN `telephone` varchar(45) NULL COMMENT '座机号' AFTER `post`,
   ADD UNIQUE INDEX `uniq_sys_user_work_no` (`work_no`);
 
--- 职务表
+
 DROP TABLE IF EXISTS `sys_position`;
 CREATE TABLE `sys_position` (
   `id` varchar(32) NOT NULL,
@@ -89,55 +76,36 @@ INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `descri
 -- 通讯录菜单
 INSERT INTO `sys_permission` (`id`, `parent_id`, `name`, `url`, `component`, `is_route`, `component_name`, `redirect`, `menu_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1174590283938041857', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '通讯录', '/isystem/addressList', 'system/AddressList', '1', NULL, NULL, '1', NULL, '1', '3', '0', NULL, '1', '0', '0', NULL, 'admin', '2019-09-19 15:45:21', NULL, NULL, '0', '0', '1', '0');
 
--- author:sunjianlei----date:20190920----for: 新增职务模块相关数据 -------------
 
--- author:sunjianlei----date:20190923----for: 更新职务职级字典 -------------
 DELETE FROM sys_dict_item WHERE dict_id = "1174509082208395266";
 INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1174509601047994369', '1174509082208395266', '员级', '1', '', '1', '1', 'admin', '2019-09-19 10:24:45', 'admin', '2019-09-23 11:46:39');
 INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1174509667297026049', '1174509082208395266', '助级', '2', '', '2', '1', 'admin', '2019-09-19 10:25:01', 'admin', '2019-09-23 11:46:47');
 INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1174509713568587777', '1174509082208395266', '中级', '3', '', '3', '1', 'admin', '2019-09-19 10:25:12', 'admin', '2019-09-23 11:46:56');
 INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1174509788361416705', '1174509082208395266', '副高级', '4', '', '4', '1', 'admin', '2019-09-19 10:25:30', 'admin', '2019-09-23 11:47:06');
 INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1174509835803189250', '1174509082208395266', '正高级', '5', '', '5', '1', 'admin', '2019-09-19 10:25:41', 'admin', '2019-09-23 11:47:12');
--- author:sunjianlei----date:20190923----for: 更新职务职级字典 -------------
 
--- author:scott----date:20190923----for: 去掉用户表的性别字段默认值 -------------
 ALTER TABLE  sys_user
 MODIFY COLUMN `sex` tinyint(1) NULL COMMENT '性别(0-默认未知,1-男,2-女)' AFTER `birthday`;
--- author:scott----date:20190923----for:去掉用户表的性别字段默认值  -------------
 
--- author:scott----date:20190923----for:菜单排序字段改成浮点型，更灵活  -------------
 ALTER TABLE  sys_permission
 MODIFY COLUMN `sort_no` double(8, 2) NULL DEFAULT NULL COMMENT '菜单排序' AFTER `perms_type`;
--- author:scott----date:20190923----for:菜单排序字段改成浮点型，更灵活-------------
 
--- author:scott----date:20190929----for:表单权限策略字典配置说明，更清晰------------
 INSERT INTO `sys_dict`(`id`, `dict_name`, `dict_code`, `description`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `type`) VALUES ('1178295274528845826', '表单权限策略', 'form_perms_type', '', 0, 'admin', '2019-09-29 21:07:39', 'admin', '2019-09-29 21:08:26', NULL);
 INSERT INTO `sys_dict_item`(`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1178295553450061826', '1178295274528845826', '可编辑(未授权禁用)', '2', '', 2, 1, 'admin', '2019-09-29 21:08:46', 'admin', '2019-09-29 21:09:18');
 INSERT INTO `sys_dict_item`(`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1178295639554928641', '1178295274528845826', '可见(未授权不可见)', '1', '', 1, 1, 'admin', '2019-09-29 21:09:06', 'admin', '2019-09-29 21:09:24');
--- author:scott----date:20190929----for:表单权限策略字典配置说明，更清晰-------------
 
--- author:sunjianlei----date:20191009----for: 给角色编码加上唯一校验 -------------
 ALTER TABLE `sys_role`
   ADD UNIQUE INDEX `uniq_sys_role_role_code` (`role_code`) USING BTREE ;
--- author:sunjianlei----date:20191009----for: 给角色编码加上唯一校验 -------------
 
--- author:taoyan----date:20190829 ----for:online复制表单新增菜单 --需要配置权限
 INSERT INTO `sys_permission` (`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`) VALUES ('f2849d3814fc97993bfc519ae6bbf049', 'e41b69c57a941a3bbcce45032fe57605', 'AUTO复制表单', '/online/copyform/:code', 'modules/online/cgform/OnlCgformCopyList', NULL, NULL, '1', NULL, '1', '1', '0', NULL, '1', '1', '0', '1', NULL, 'admin', '2019-08-29 16:05:37', NULL, NULL, '0', '0', '1');
--- author:taoyan----date:20190829 ----for:online复制表单新增菜单 --需要配置权限
 
--- author:taoyan----date:20190829 ----for:online复制表单功能新增字段
 ALTER TABLE `onl_cgform_head`
 ADD COLUMN `copy_version`  int(11) NULL COMMENT '复制版本号' AFTER `form_template_mobile`,
 ADD COLUMN `copy_type`  int(3) NULL DEFAULT 0 COMMENT '复制表类型1为复制表 0为原始表' AFTER `copy_version`,
 ADD COLUMN `physic_id`  varchar(32) NULL COMMENT '原始表ID' AFTER `copy_type`;
--- author:taoyan----date:20190829 ----for:online复制表单功能新增字段
 
--- author:taoyan----date:20190924 ----for:online 列表支持滚动
 ALTER TABLE `onl_cgform_head`
 ADD COLUMN `scroll`  int(3) NULL DEFAULT 0 COMMENT '是否有横向滚动条' AFTER `form_template_mobile`;
--- author:taoyan----date:20190924 ----for:online 列表支持滚动
 
--- author:sunjianlei----date:20190929 ----for: 修改 Cgreport 字典字段长度
 ALTER TABLE `onl_cgreport_item`
 MODIFY COLUMN `dict_code`  varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '字典CODE' AFTER `is_search`;
--- author:sunjianlei----date:20190929 ----for: 修改 Cgreport 字典字段长度
