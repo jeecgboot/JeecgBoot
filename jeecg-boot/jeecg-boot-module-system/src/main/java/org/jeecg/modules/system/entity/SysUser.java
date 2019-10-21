@@ -3,6 +3,7 @@ package org.jeecg.modules.system.entity;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -53,11 +54,13 @@ public class SysUser implements Serializable {
     /**
      * 密码
      */
+    @JsonIgnore
     private String password;
 
     /**
      * md5密码盐
      */
+    @JsonIgnore
     private String salt;
 
     /**
