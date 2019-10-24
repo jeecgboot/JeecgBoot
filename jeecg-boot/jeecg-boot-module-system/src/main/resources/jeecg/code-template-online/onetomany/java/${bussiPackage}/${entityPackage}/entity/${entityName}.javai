@@ -11,7 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * @Description: ${tableVo.ftlDescription}
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
@@ -19,7 +19,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @TableName("${tableName}")
 public class ${entityName} implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     <#list originalColumns as po>
 	/**${po.filedComment}*/
 	<#if po.fieldName == primaryKeyField>

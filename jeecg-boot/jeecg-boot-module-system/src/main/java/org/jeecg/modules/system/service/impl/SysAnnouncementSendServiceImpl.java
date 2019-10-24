@@ -15,7 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 /**
  * @Description: 用户通告阅读标记表
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2019-02-21
  * @Version: V1.0
  */
@@ -24,7 +24,7 @@ public class SysAnnouncementSendServiceImpl extends ServiceImpl<SysAnnouncementS
 
 	@Resource
 	private SysAnnouncementSendMapper sysAnnouncementSendMapper;
-	
+
 	@Override
 	public List<String> queryByUserId(String userId) {
 		return sysAnnouncementSendMapper.queryByUserId(userId);

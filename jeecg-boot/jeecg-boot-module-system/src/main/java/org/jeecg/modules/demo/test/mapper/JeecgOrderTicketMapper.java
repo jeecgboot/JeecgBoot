@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * @Description: 订单机票
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2019-02-15
  * @Version: V1.0
  */
@@ -22,8 +22,8 @@ public interface JeecgOrderTicketMapper extends BaseMapper<JeecgOrderTicket> {
 	 */
     @Delete("DELETE FROM JEECG_ORDER_TICKET WHERE ORDER_ID = #{mainId}")
 	public boolean deleteTicketsByMainId(String mainId);
-    
-    
+
+
     @Select("SELECT * FROM JEECG_ORDER_TICKET WHERE ORDER_ID = #{mainId}")
 	public List<JeecgOrderTicket> selectTicketsByMainId(String mainId);
 }

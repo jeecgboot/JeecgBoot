@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.dataReport.mapper.BillOrderDataMapper">
+
+    <select id="getBillOrderDateList" resultType="org.jeecg.modules.dataReport.entity.BillOrderData">
+
+        SELECT
+            *
+            FROM
+            (
+                SELECT
+                customs_release_date,
+                actual_ship_date,
+                shipping_date,
+                bl_no,
+            (
+                SELECT
+                tt.chinese_name
+                FROM
+                base_customer tt
+                WHERE
+                t.consignor_id = tt.customer_id
+            ) AS consignor,
+            (
+            SELECT
+            tt1.station_name
+            FROM
+            base_station tt1
+            WHERE
+            tt1.station_id = t.take_container_address
+            ) AS take_container_address,
+            (
+            SELECT
+            tt1.station_name
+            FROM
+            base_station tt1
+            WHERE
+            tt1.station_id = t.drag_container_address
+            ) AS drag_container_address,
+            (
+            SELECT
+            tt1.station_name
+            FROM
+            base_station tt1
+            WHERE
+            tt1.station_id = t.return_container_address
+            ) AS return_container_address,
+            (
+            SELECT
+            tt2.chinese_name
+            FROM
+            base_customer tt2
+            WHERE
+            t.shipowner_id = tt2.customer_id
+            ) AS shipowner,
+            (
+            SELECT
+            tt2.chinese_name
+            FROM
+            base_customer tt2
+            WHERE
+            t.shipping_company_id = tt2.customer_id
+            ) AS shipping_company,
+            big_goods_type AS big_goods_type,
+            container_num AS container_num,
+            container_desc AS container_desc,
+            business_type,
+            (
+            SELECT
+            CASE
+            WHEN take_back = 1 THEN
+            1
+            ELSE
+            2
+            END
+            FROM
+            order_container_info tt6
+            WHERE
+            t.order_id = tt6.order_id
+            LIMIT 1
+            ) AS take_back,
+            service_personnel AS service_personnel,
+            country AS country,
+            CONCAT_WS(' | ',t.exception_remark,t.receive_remark) AS remark
+            FROM
+            order_info t
+            WHERE
+            t.is_valid = 1
+            AND t.dispatch_center IS NULL
+            ORDER BY
+            customs_release_date DESC
+        ) tOrder
+
+
+
+        <choose>
+            <when test="ew.emptyOfWhere == true ">
+
+                ${ew.sqlSegment}
+            </when>
+            <otherwise>
+                WHERE
+                ${ew.sqlSegment}
+            </otherwise>
+        </choose>
+
+
+
+
+
+
+
+
+
+    </select>
+
+
+</mapper>

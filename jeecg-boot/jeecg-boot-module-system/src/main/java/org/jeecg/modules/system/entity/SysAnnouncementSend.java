@@ -11,7 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * @Description: 用户通告阅读标记表
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2019-02-21
  * @Version: V1.0
  */
@@ -19,7 +19,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @TableName("sys_announcement_send")
 public class SysAnnouncementSend implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
 	/**id*/
 	@TableId(type = IdType.UUID)
 	private java.lang.String id;

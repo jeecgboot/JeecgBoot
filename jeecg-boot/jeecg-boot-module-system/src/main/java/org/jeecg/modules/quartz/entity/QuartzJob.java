@@ -15,7 +15,7 @@ import lombok.Data;
 
 /**
  * @Description: 定时任务在线管理
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2019-01-02
  * @Version: V1.0
  */
@@ -23,7 +23,7 @@ import lombok.Data;
 @TableName("sys_quartz_job")
 public class QuartzJob implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
 	/**id*/
 	@TableId(type = IdType.UUID)
 	private java.lang.String id;

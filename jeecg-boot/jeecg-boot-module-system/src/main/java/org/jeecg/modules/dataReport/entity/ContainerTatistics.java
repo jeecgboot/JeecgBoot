@@ -18,7 +18,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 
 /**
  * @Description: 集装箱业务统计表
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   2019-08-16
  * @Version: V1.0
  */
@@ -28,7 +28,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 @Accessors(chain = true)
 @ApiModel(value="container_tatistics对象", description="集装箱业务统计表")
 public class ContainerTatistics {
-    
+
 	/**id*/
 	@TableId(type = IdType.UUID)
     @ApiModelProperty(value = "id")
@@ -80,9 +80,13 @@ public class ContainerTatistics {
     @ApiModelProperty(value = "接单备注")
 	private String orderRemark;
 	/**业务类型*/
-	@Excel(name = "业务类型", width = 15)
-    @ApiModelProperty(value = "业务类型")
-	/**	进出口类型	**/
-	@Dict(dicCode = "businessType")
+	@Excel(name = "进出口类型", width = 15, dicCode = "business_type")
+	@ApiModelProperty(value = "业务类型")
+	@Dict(dicCode = "business_type")
 	private Integer businessType;
+	/**是否退载*/
+	@Excel(name = "是否退载", width = 15, dicCode = "take_back")
+	@ApiModelProperty(value = "是否退载")
+	@Dict(dicCode = "take_back")
+	private Integer takeBack;
 }

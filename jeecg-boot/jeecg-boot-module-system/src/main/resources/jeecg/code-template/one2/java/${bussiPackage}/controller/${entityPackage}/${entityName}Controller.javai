@@ -38,7 +38,7 @@ import com.alibaba.fastjson.JSON;
 
  /**
  * @Description: ${tableVo.ftlDescription}
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
@@ -48,7 +48,7 @@ import com.alibaba.fastjson.JSON;
 public class ${entityName}Controller {
 	@Autowired
 	private I${entityName}Service ${entityName?uncap_first}Service;
-	
+
 	/**
 	  * 分页列表查询
 	 * @param ${entityName?uncap_first}
@@ -70,7 +70,7 @@ public class ${entityName}Controller {
 		result.setResult(pageList);
 		return result;
 	}
-	
+
 	/**
 	  *   添加
 	 * @param ${entityName?uncap_first}
@@ -88,7 +88,7 @@ public class ${entityName}Controller {
 		}
 		return result;
 	}
-	
+
 	/**
 	  *  编辑
 	 * @param ${entityName?uncap_first}
@@ -107,10 +107,10 @@ public class ${entityName}Controller {
 				result.success("修改成功!");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	  *   通过id删除
 	 * @param id
@@ -126,7 +126,7 @@ public class ${entityName}Controller {
 		}
 		return Result.ok("删除成功!");
 	}
-	
+
 	/**
 	  *  批量删除
 	 * @param ids
@@ -143,7 +143,7 @@ public class ${entityName}Controller {
 		}
 		return result;
 	}
-	
+
 	/**
 	  * 通过id查询
 	 * @param id

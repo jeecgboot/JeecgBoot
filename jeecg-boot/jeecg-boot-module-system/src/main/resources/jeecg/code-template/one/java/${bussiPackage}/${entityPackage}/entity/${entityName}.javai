@@ -17,7 +17,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 
 /**
  * @Description: ${tableVo.ftlDescription}
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
@@ -27,7 +27,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 @Accessors(chain = true)
 @ApiModel(value="${tableName}对象", description="${tableVo.ftlDescription}")
 public class ${entityName} {
-    
+
     <#list originalColumns as po>
 	/**${po.filedComment}*/
 	<#if po.fieldName == primaryKeyField>

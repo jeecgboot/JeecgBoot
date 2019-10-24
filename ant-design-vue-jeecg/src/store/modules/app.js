@@ -19,8 +19,8 @@ const app = {
       withoutAnimation: false
     },
     device: 'desktop',
-    theme: '',
-    layout: '',
+    theme: 'light',
+    layout: 'topmenu',
     contentWidth: '',
     fixedHeader: false,
     fixSiderbar: false,

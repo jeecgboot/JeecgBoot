@@ -45,9 +45,9 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Title: Controller
- * @Description: 订单 
- * @Author: jeecg-boot 
- * @Date:2019-02-15 
+ * @Description: 订单
+ * @Author: Zhao
+ * @Date:2019-02-15
  * @Version: V1.0
  */
 @RestController
@@ -63,7 +63,7 @@ public class JeecgOrderMainController {
 
 	/**
 	 * 分页列表查询
-	 * 
+	 *
 	 * @param jeecgOrderMain
 	 * @param pageNo
 	 * @param pageSize
@@ -87,7 +87,7 @@ public class JeecgOrderMainController {
 
 	/**
 	 * 添加
-	 * 
+	 *
 	 * @param jeecgOrderMain
 	 * @return
 	 */
@@ -108,7 +108,7 @@ public class JeecgOrderMainController {
 
 	/**
 	 * 编辑
-	 * 
+	 *
 	 * @param jeecgOrderMain
 	 * @return
 	 */
@@ -130,7 +130,7 @@ public class JeecgOrderMainController {
 
 	/**
 	 * 通过id删除
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -143,12 +143,12 @@ public class JeecgOrderMainController {
 			return Result.error("删除失败!");
 		}
 		return Result.ok("删除成功!");
-		
+
 	}
 
 	/**
 	 * 批量删除
-	 * 
+	 *
 	 * @param ids
 	 * @return
 	 */
@@ -166,7 +166,7 @@ public class JeecgOrderMainController {
 
 	/**
 	 * 通过id查询
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -185,7 +185,7 @@ public class JeecgOrderMainController {
 
 	/**
 	 * 通过id查询
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -200,7 +200,7 @@ public class JeecgOrderMainController {
 
 	/**
 	 * 通过id查询
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -215,7 +215,7 @@ public class JeecgOrderMainController {
 
 	/**
 	 * 导出excel
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 */
@@ -253,7 +253,7 @@ public class JeecgOrderMainController {
 
 	/**
 	 * 通过excel导入数据
-	 * 
+	 *
 	 * @param request
 	 * @param
 	 * @return

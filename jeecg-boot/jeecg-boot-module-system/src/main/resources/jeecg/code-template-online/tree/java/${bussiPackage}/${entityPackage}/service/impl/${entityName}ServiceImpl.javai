@@ -22,7 +22,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 /**
  * @Description: ${tableVo.ftlDescription}
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
@@ -43,7 +43,7 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
 		}
 		baseMapper.insert(${entityName?uncap_first});
 	}
-	
+
 	@Override
 	public void update${entityName}(${entityName} ${entityName?uncap_first}) {
 		${entityName} entity = this.getById(${entityName?uncap_first}.getId());
@@ -63,7 +63,7 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
 		}
 		baseMapper.updateById(${entityName?uncap_first});
 	}
-	
+
 	@Override
 	public void delete${entityName}(String id) throws JeecgBootException {
 		${entityName} ${entityName?uncap_first} = this.getById(id);
@@ -73,9 +73,9 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
 		updateOldParentNode(${entityName?uncap_first}.get${pidFieldName?cap_first}());
 		baseMapper.deleteById(id);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * 根据所传pid查询旧的父级节点的子节点并修改相应状态值
 	 * @param pid

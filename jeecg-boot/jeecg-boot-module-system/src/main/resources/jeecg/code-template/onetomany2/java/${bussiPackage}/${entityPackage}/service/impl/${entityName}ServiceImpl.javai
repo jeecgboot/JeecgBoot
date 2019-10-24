@@ -19,7 +19,7 @@ import java.util.Collection;
 
 /**
  * @Description: ${tableVo.ftlDescription}
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
@@ -32,7 +32,7 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
 	@Autowired
 	private ${sub.entityName}Mapper ${sub.entityName?uncap_first}Mapper;
 	</#list>
-	
+
 	@Override
 	@Transactional
 	public void saveMain(${entityName} ${entityName?uncap_first}, <#list subTables as sub>List<${sub.entityName}> ${sub.entityName?uncap_first}List<#if sub_has_next>,</#if></#list>) {
@@ -56,12 +56,12 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
 	@Transactional
 	public void updateMain(${entityName} ${entityName?uncap_first},<#list subTables as sub>List<${sub.entityName}> ${sub.entityName?uncap_first}List<#if sub_has_next>,</#if></#list>) {
 		${entityName?uncap_first}Mapper.updateById(${entityName?uncap_first});
-		
+
 		//1.先删除子表数据
 		<#list subTables as sub>
 		${sub.entityName?uncap_first}Mapper.deleteByMainId(${entityName?uncap_first}.getId());
 		</#list>
-		
+
 		//2.子表数据重新插入
 		<#list subTables as sub>
 		for(${sub.entityName} entity:${sub.entityName?uncap_first}List) {
@@ -97,5 +97,5 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
 			${entityName?uncap_first}Mapper.deleteById(id);
 		}
 	}
-	
+
 }

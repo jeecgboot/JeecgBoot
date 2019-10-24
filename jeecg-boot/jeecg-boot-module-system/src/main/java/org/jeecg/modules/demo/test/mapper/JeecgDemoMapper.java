@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * @Description: jeecg 测试demo
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2018-12-29
  * @Version: V1.0
  */

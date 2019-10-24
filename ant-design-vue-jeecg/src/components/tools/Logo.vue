@@ -4,7 +4,7 @@
 
       <!-- update-begin- author:sunjianlei --- date:20190814 --- for: logo颜色根据主题颜色变化 -->
       <img v-if="navTheme === 'dark'" src="~@/assets/logo-white.png" alt="logo">
-      <img v-else src="~@/assets/logo.svg" alt="logo">
+      <img style="height: 4.5em" v-else src="~@/assets/dada.png" alt="logo">
       <!-- update-begin- author:sunjianlei --- date:20190814 --- for: logo颜色根据主题颜色变化 -->
 
       <h1 v-if="showTitle">{{ title }}</h1>

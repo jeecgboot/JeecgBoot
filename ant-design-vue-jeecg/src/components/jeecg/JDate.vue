@@ -73,6 +73,7 @@
     methods: {
       moment,
       handleDateChange(mom,dateStr){
+        debugger
         this.$emit('change', dateStr);
       }
     },

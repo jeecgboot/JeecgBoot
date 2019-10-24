@@ -48,7 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Description: 定时任务在线管理
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date: 2019-01-02
  * @Version:V1.0
  */
@@ -64,7 +64,7 @@ public class QuartzJobController {
 
 	/**
 	 * 分页列表查询
-	 * 
+	 *
 	 * @param quartzJob
 	 * @param pageNo
 	 * @param pageSize
@@ -85,7 +85,7 @@ public class QuartzJobController {
 
 	/**
 	 * 添加定时任务
-	 * 
+	 *
 	 * @param quartzJob
 	 * @return
 	 */
@@ -111,7 +111,7 @@ public class QuartzJobController {
 
 	/**
 	 * 更新定时任务
-	 * 
+	 *
 	 * @param quartzJob
 	 * @return
 	 */
@@ -138,7 +138,7 @@ public class QuartzJobController {
 
 	/**
 	 * 通过id删除
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -160,7 +160,7 @@ public class QuartzJobController {
 
 	/**
 	 * 批量删除
-	 * 
+	 *
 	 * @param ids
 	 * @return
 	 */
@@ -181,7 +181,7 @@ public class QuartzJobController {
 
 	/**
 	 * 暂停定时任务
-	 * 
+	 *
 	 * @param job
 	 * @return
 	 */
@@ -205,7 +205,7 @@ public class QuartzJobController {
 
 	/**
 	 * 启动定时任务
-	 * 
+	 *
 	 * @param job
 	 * @return
 	 */
@@ -223,7 +223,7 @@ public class QuartzJobController {
 
 	/**
 	 * 通过id查询
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -242,7 +242,7 @@ public class QuartzJobController {
 
 	/**
 	 * 导出excel
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 */
@@ -263,7 +263,7 @@ public class QuartzJobController {
 
 	/**
 	 * 通过excel导入数据
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 * @return

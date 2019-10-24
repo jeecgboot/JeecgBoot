@@ -12,7 +12,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 
 /**
  * @Description: 用户代理人设置
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2019-04-17
  * @Version: V1.0
  */
@@ -20,7 +20,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 @TableName("sys_user_agent")
 public class SysUserAgent implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
 	/**序号*/
 	@TableId(type = IdType.UUID)
 	private java.lang.String id;

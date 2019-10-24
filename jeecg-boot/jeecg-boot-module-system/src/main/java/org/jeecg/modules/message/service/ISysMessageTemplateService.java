@@ -7,7 +7,7 @@ import org.jeecg.modules.message.entity.SysMessageTemplate;
 
 /**
  * @Description: 消息模板
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2019-04-09
  * @Version: V1.0
  */

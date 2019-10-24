@@ -14,7 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * @Description: 系统通告表
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2019-01-02
  * @Version: V1.0
  */
@@ -63,7 +63,7 @@ public class SysAnnouncement implements Serializable {
     @Excel(name = "优先级", width = 15, dicCode = "priority")
     @Dict(dicCode = "priority")
     private java.lang.String priority;
-    
+
     /**
      * 消息类型1:通知公告2:系统消息
      */

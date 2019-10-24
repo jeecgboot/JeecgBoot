@@ -48,6 +48,7 @@ export function filterObj(obj) {
  * @returns {*}
  */
 export function formatDate(value, fmt) {
+  // alert(isObj(value));
   var regPos = /^\d+(\.\d+)?$/;
   if(regPos.test(value)){
     //如果是数字
@@ -70,7 +71,10 @@ export function formatDate(value, fmt) {
       }
     }
     return fmt;
-  }else{
+  }else if (isObj(value)){
+    return  value.format('YYYY-MM-DD');
+  }
+  else{
     //TODO
     value = value.trim();
     return value.substr(0,fmt.length);
@@ -251,4 +255,27 @@ export function cssExpand(css, id) {
   }
   // 应用新样式
   document.head.appendChild(style)
+}
+
+//Type类型判断
+export function isString (o){//是否字符串
+  return Object.prototype.toString.call(o).slice(8, -1) === 'String'
+}
+export function isObj (o) { //是否对象
+  return Object.prototype.toString.call(o).slice(8, -1) === 'Object'
+}
+export function isNull (o) { //是否为null
+  return Object.prototype.toString.call(o).slice(8, -1) === 'Null'
+}
+export function isUndefined (o) { //是否undefined
+  return Object.prototype.toString.call(o).slice(8, -1) === 'Undefined'
+}
+export function isNumber (o) { //是否数字
+  return Object.prototype.toString.call(o).slice(8, -1) === 'Number'
+}
+export function isArray (o) { //是否数组
+  return Object.prototype.toString.call(o).slice(8, -1) === 'Array'
+}
+export function isDate (o) { //是否时间
+  return Object.prototype.toString.call(o).slice(8, -1) === 'Date'
 }

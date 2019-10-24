@@ -47,7 +47,7 @@ import lombok.extern.slf4j.Slf4j;
  /**
  * @Title: Controller
  * @Description: 用户代理人设置
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2019-04-17
  * @Version: V1.0
  */
@@ -57,7 +57,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SysUserAgentController {
 	@Autowired
 	private ISysUserAgentService sysUserAgentService;
-	
+
 	/**
 	  * 分页列表查询
 	 * @param sysUserAgent
@@ -79,7 +79,7 @@ public class SysUserAgentController {
 		result.setResult(pageList);
 		return result;
 	}
-	
+
 	/**
 	  *   添加
 	 * @param sysUserAgent
@@ -97,7 +97,7 @@ public class SysUserAgentController {
 		}
 		return result;
 	}
-	
+
 	/**
 	  *  编辑
 	 * @param sysUserAgent
@@ -116,10 +116,10 @@ public class SysUserAgentController {
 				result.success("代理人设置成功!");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	  *   通过id删除
 	 * @param id
@@ -137,10 +137,10 @@ public class SysUserAgentController {
 				result.success("删除成功!");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	  *  批量删除
 	 * @param ids
@@ -157,7 +157,7 @@ public class SysUserAgentController {
 		}
 		return result;
 	}
-	
+
 	/**
 	  * 通过id查询
 	 * @param id
@@ -175,7 +175,7 @@ public class SysUserAgentController {
 		}
 		return result;
 	}
-	
+
 	/**
 	  * 通过userName查询
 	 * @param userName

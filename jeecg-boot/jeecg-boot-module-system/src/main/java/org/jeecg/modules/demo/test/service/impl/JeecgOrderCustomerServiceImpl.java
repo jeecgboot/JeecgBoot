@@ -12,7 +12,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 /**
  * @Description: 订单客户
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2019-02-15
  * @Version: V1.0
  */
@@ -21,7 +21,7 @@ public class JeecgOrderCustomerServiceImpl extends ServiceImpl<JeecgOrderCustome
 
 	@Autowired
 	private JeecgOrderCustomerMapper jeecgOrderCustomerMapper;
-	
+
 	@Override
 	public List<JeecgOrderCustomer> selectCustomersByMainId(String mainId) {
 		return jeecgOrderCustomerMapper.selectCustomersByMainId(mainId);

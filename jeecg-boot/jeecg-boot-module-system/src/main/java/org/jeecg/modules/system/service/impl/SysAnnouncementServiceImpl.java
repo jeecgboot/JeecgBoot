@@ -23,7 +23,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 /**
  * @Description: 系统通告表
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2019-01-02
  * @Version: V1.0
  */
@@ -32,10 +32,10 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 
 	@Resource
 	private SysAnnouncementMapper sysAnnouncementMapper;
-	
+
 	@Resource
 	private SysAnnouncementSendMapper sysAnnouncementSendMapper;
-	
+
 	@Transactional
 	@Override
 	public void saveAnnouncement(SysAnnouncement sysAnnouncement) {
@@ -59,7 +59,7 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 			}
 		}
 	}
-	
+
 	/**
 	 * @功能：编辑消息信息
 	 */

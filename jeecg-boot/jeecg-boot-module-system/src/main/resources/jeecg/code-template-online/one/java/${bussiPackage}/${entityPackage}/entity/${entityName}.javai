@@ -14,7 +14,7 @@ import org.jeecg.common.aspect.annotation.Dict;
 
 /**
  * @Description: ${tableVo.ftlDescription}
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
@@ -22,7 +22,7 @@ import org.jeecg.common.aspect.annotation.Dict;
 @TableName("${tableName}")
 public class ${entityName} implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     <#list originalColumns as po>
 	/**${po.filedComment}*/
 	<#if po.fieldName == primaryKeyField>

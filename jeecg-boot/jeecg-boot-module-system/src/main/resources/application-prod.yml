@@ -1,6 +1,6 @@
 server:
   port: 8080
-  tomcat: 
+  tomcat:
     max-swallow-size: -1
   servlet:
     context-path: /jeecg-boot
@@ -13,21 +13,28 @@ management:
   web:
    exposure:
     include: metrics,httptrace
-    
+
 spring:
   servlet:
-     multipart: 
+     multipart:
         max-file-size: 10MB
         max-request-size: 10MB
+
+  rabbitmq:
+    host: 47.104.239.39
+    port: 5672
+    username: std
+    password: std
+
   mail:
     host: smtp.163.com
     username: jeecgos@163.com
     password: ??
     properties:
-      mail: 
-        smtp: 
+      mail:
+        smtp:
           auth: true
-          starttls: 
+          starttls:
             enable: true
             required: true
   ## quartz定时任务,采用数据库方式
@@ -95,9 +102,9 @@ spring:
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false
+          url: jdbc:mysql://192.168.9.45:3306/dada_pro_boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false
           username: root
-          password: root
+          password: 13adca1c850e0f48
           driver-class-name: com.mysql.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
@@ -105,6 +112,21 @@ spring:
           #username: root
           #password: root
           #driver-class-name: com.mysql.jdbc.Driver
+#        tms:
+#          url: jdbc:mysql://192.168.9.217:3306/std_dev?characterEncoding=UTF-8&useUnicode=true&useSSL=false
+#          username: root
+#          password: Root19990707
+#          driver-class-name: com.mysql.jdbc.Driver
+        tms:
+          url: jdbc:mysql://192.168.9.20:3306/std_dev?characterEncoding=UTF-8&useUnicode=true&useSSL=false
+          username: root
+          password: Std%Mysql_1999#o7o7
+          driver-class-name: com.mysql.jdbc.Driver
+        erp:
+          url: jdbc:oracle:thin:@192.168.9.30:1521:orcl
+          username: suntond
+          password: SunT0nd1999o7o7
+          driver-class-name: oracle.jdbc.driver.OracleDriver
   #redis 配置
   redis:
     database: 0
@@ -126,7 +148,7 @@ mybatis-plus:
     banner: false
     db-config:
       #主键类型  0:"数据库ID自增",1:"该类型为未设置主键类型", 2:"用户输入ID",3:"全局唯一ID (数字类型唯一ID)", 4:"全局唯一ID UUID",5:"字符串全局唯一ID (idWorker 的字符串表示)";
-      id-type: 4
+      id-type: 0
       # 默认数据库表下划线命名
       table-underline: true
 #jeecg专用配置

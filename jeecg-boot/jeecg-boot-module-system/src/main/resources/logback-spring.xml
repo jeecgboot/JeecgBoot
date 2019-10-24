@@ -20,7 +20,7 @@
 		<rollingPolicy
 			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!--日志文件输出的文件名 -->
-			<FileNamePattern>${LOG_HOME}/jeecgboot.%d{yyyy-MM-dd}.log
+			<FileNamePattern>${LOG_HOME}/dadaPro.%d{yyyy-MM-dd}.log
 			</FileNamePattern>
 			<!--日志文件保留天数 -->
 			<MaxHistory>30</MaxHistory>
@@ -40,7 +40,7 @@
 	<!-- 生成html格式日志开始 -->
 	<appender name="HTML" class="ch.qos.logback.core.FileAppender">
 		<!-- 过滤器，只记录WARN级别的日志 -->
-		<!-- <filter class="ch.qos.logback.classic.filter.LevelFilter"> <level>info</level> 
+		<!-- <filter class="ch.qos.logback.classic.filter.LevelFilter"> <level>info</level>
 			<onMatch>ACCEPT</onMatch> <onMismatch>DENY</onMismatch> </filter> -->
 
 		<encoder
@@ -59,7 +59,7 @@
 		<rollingPolicy
 			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!--日志文件输出的文件名 -->
-			<FileNamePattern>${LOG_HOME}/jeecgboot.%d{yyyy-MM-dd}.html
+			<FileNamePattern>${LOG_HOME}/dadaPro.%d{yyyy-MM-dd}.html
 			</FileNamePattern>
 			<!--日志文件保留天数 -->
 			<MaxHistory>30</MaxHistory>

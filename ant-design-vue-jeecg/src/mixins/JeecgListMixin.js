@@ -4,9 +4,11 @@
  * data中url定义 list为查询列表  delete为删除单条记录  deleteBatch为批量删除
  */
 import { filterObj } from '@/utils/util';
+import { formatDate } from '@/utils/util';
 import { deleteAction, getAction,downFile } from '@/api/manage'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from "@/store/mutation-types"
+import moment from 'moment';
 
 export const JeecgListMixin = {
   data(){
@@ -46,6 +48,8 @@ export const JeecgListMixin = {
       toggleSearchStatus:false,
       /* 高级查询条件生效状态 */
       superQueryFlag:false,
+      /* 日期格式 */
+      dateFormat: 'YYYY-MM-DD',
       /* 高级查询条件 */
       superQueryParams:""
     }
@@ -56,10 +60,15 @@ export const JeecgListMixin = {
     this.initDictConfig();
   },
   methods:{
+    moment,
     loadData(arg) {
       if(!this.url.list){
         this.$message.error("请设置url.list属性!")
         return
+      }
+      //判断子页面请求是否需要初始化数据，若initData有值则无需初始化
+      if(typeof(this.initData) != "undefined"){
+        return;
       }
       //加载数据 若传入参数1则加载第一页的内容
       if (arg === 1) {
@@ -95,19 +104,61 @@ export const JeecgListMixin = {
     },
     getQueryParams() {
       //获取查询条件
+      debugger
       let sqp = {}
       if(this.superQueryParams){
         sqp['superQueryParams']=encodeURI(this.superQueryParams)
       }
-      var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+      let param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+      param = this.getQueryParamsByProcess(param);
+
       param.field = this.getQueryField();
       param.pageNo = this.ipagination.current;
       param.pageSize = this.ipagination.pageSize;
       return filterObj(param);
     },
+
+    /**
+     * 发送请求时，根据请求参数类型如：date、dict进行数组转换
+     * 适用于直接查询和导出excel
+     * @param param
+     * @returns {*}
+     */
+    getQueryParamsByProcess(param){
+
+      //遍历参数，并将日期区间的数组参数取出之后进行切分begin和end方便后台进行处理
+      for ( let p in param) {
+        if (param[p] instanceof Array ){
+          //若参数名中包含 Date日期字符串
+          if (p.includes('Date') && param[p].length > 0) {
+            //将数组日期进行拆分并进行 日期区间赋值
+            let datebegin = p + "_begin";
+            let dateEnd = p + "_end";
+
+            // param[datebegin] = param[p][0];
+            // param[dateEnd] = param[p][1];
+            param[datebegin] = formatDate(param[p][0],this.dateFormat);
+            param[dateEnd] = formatDate(param[p][1],this.dateFormat)
+            //将数组参数属性从对象中移除
+            param = _.omit(param, p);
+            console.log(param)
+            //若参数名中包含 dictText 字典字符串
+          }else if(p.includes('dictText')){
+            let paramName = p.replace('_dictText','');
+            param[paramName] = param[p].toString();
+            //将数组参数属性从对象中移除
+            param = _.omit(param, p);
+            console.log(param)
+          }
+        }
+      }
+      return param
+
+    },
+
     getQueryField() {
       //TODO 字段权限控制
-      
+
       var str = "id,";
       this.columns.forEach(function (value) {
         str += "," + value.dataIndex;
@@ -197,6 +248,11 @@ export const JeecgListMixin = {
         this.isorter.column = sorter.field;
         this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
       }
+      //筛选filters
+      if (Object.keys(filters).length > 0) {
+        this.filters = filters;
+      }
+
       this.ipagination = pagination;
       this.loadData();
     },
@@ -219,10 +275,17 @@ export const JeecgListMixin = {
       window.location.href = url;
     },
     handleExportXls(fileName){
+      debugger
+      let sqp = {}
       if(!fileName || typeof fileName != "string"){
         fileName = "导出文件"
       }
-      let param = {...this.queryParam};
+      // let param = {...this.queryParam};
+      if(this.superQueryParams){
+        sqp['superQueryParams']=encodeURI(this.superQueryParams)
+      }
+      let param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+      param = this.getQueryParamsByProcess(param);
       if(this.selectedRowKeys && this.selectedRowKeys.length>0){
         param['selections'] = this.selectedRowKeys.join(",")
       }

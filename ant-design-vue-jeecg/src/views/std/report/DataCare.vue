@@ -29,7 +29,7 @@
             <a-form-item label="放行日期" >
               <a-range-picker
                 v-model="queryParam.releasedate"
-                :ranges="{ 昨天: [moment().subtract(1,'day'), moment().endOf('day')], '最近一月': [moment().subtract(1,'months'),moment() ] }"
+                :ranges="{ 昨天: [moment().subtract(1,'day'), moment().endOf('day')], '上月': [moment().month(moment().month() - 1).startOf('month'), moment().month(moment().month() - 1).endOf('month') ] }"
                 @change="onDateChange"
                 :disabledDate="disabledDate"
                 :allowClear="false" @keyup.enter.native="searchQuery">
@@ -45,11 +45,11 @@
                 </a-select>
               </a-form-item>
             </a-col>
-          <a-col :md="3" :sm="5">
+          <!--<a-col :md="3" :sm="5">
             <a-form-item label="付款方">
               <a-input placeholder="请输入付款方查询" v-model="queryParam.payerQuery" @keyup.enter.native="searchQuery"></a-input>
             </a-form-item>
-          </a-col>
+          </a-col>-->
 <!--          <template v-if="toggleSearchStatus">-->
 <!--            <a-col :md="6" :sm="8">-->
 <!--              <a-form-item label="字典下拉">-->
@@ -217,8 +217,8 @@
         sexDictOptions: [],
         /* 排序参数 */
         isorter:{
-          column: 'tm_odate',
-          order: 'desc',
+          column: '',
+          order: '',
         },
         //合计箱量
         connums: '',

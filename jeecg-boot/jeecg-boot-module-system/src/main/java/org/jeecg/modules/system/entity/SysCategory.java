@@ -14,7 +14,7 @@ import lombok.Data;
 
 /**
  * @Description: 分类字典
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   2019-05-29
  * @Version: V1.0
  */
@@ -22,7 +22,7 @@ import lombok.Data;
 @TableName("sys_category")
 public class SysCategory implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
 	/**主键*/
 	@TableId(type = IdType.UUID)
 	private java.lang.String id;

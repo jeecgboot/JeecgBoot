@@ -6,14 +6,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.dataReport.entity.ContainerTatistics;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * @Description: 集装箱业务统计表
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   2019-08-16
  * @Version: V1.0
  */
 public interface IContainerTatisticsService extends IService<ContainerTatistics> {
 
     IPage<ContainerTatistics> getContainerTatistics(Page<ContainerTatistics> page, QueryWrapper<ContainerTatistics> queryWrapper);
+
+    List<ContainerTatistics> getContainerTatistics(QueryWrapper<ContainerTatistics> queryWrapper);
 
 }

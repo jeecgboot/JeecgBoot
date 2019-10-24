@@ -115,7 +115,7 @@
         },
         title: "操作",
         visible: false,
-        screenWidth: 800,
+        screenWidth: '1800',
         model: {},
         dictId: "",
         status: 1,
@@ -149,6 +149,7 @@
         this.edit({});
       },
       edit(record) {
+        debugger
         if (record.id) {
           this.dictId = record.id;
         }
@@ -166,6 +167,7 @@
       },
 
       getQueryParams() {
+        debugger
         var param = Object.assign({}, this.queryParam);
         param.dictId = this.dictId;
         param.field = this.getQueryField();
@@ -189,6 +191,7 @@
       },
       // 抽屉的宽度随着屏幕大小来改变
       resetScreenSize() {
+        debugger
         let screenWidth = document.body.clientWidth;
         if (screenWidth < 600) {
           this.screenWidth = screenWidth;

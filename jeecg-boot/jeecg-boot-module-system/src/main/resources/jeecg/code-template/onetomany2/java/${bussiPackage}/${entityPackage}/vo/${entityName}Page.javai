@@ -13,7 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * @Description: ${tableVo.ftlDescription}
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
@@ -45,5 +45,5 @@ public class ${entityName}Page {
 	@ExcelCollection(name="${sub.ftlDescription}")
 	private List<${sub.entityName}> ${sub.entityName?uncap_first}List;
 	</#list>
-	
+
 }

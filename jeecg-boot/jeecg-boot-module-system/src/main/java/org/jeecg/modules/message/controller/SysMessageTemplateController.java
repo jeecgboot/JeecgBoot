@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Description: 消息模板
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Sate: 2019-04-09
  * @Version: V1.0
  */
@@ -49,7 +49,7 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 
 	/**
 	 * 分页列表查询
-	 * 
+	 *
 	 * @param sysMessageTemplate
 	 * @param pageNo
 	 * @param pageSize
@@ -70,7 +70,7 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 
 	/**
 	 * 添加
-	 * 
+	 *
 	 * @param sysMessageTemplate
 	 * @return
 	 */
@@ -89,7 +89,7 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 
 	/**
 	 * 编辑
-	 * 
+	 *
 	 * @param sysMessageTemplate
 	 * @return
 	 */
@@ -113,7 +113,7 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 
 	/**
 	 * 通过id删除
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -135,7 +135,7 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 
 	/**
 	 * 批量删除
-	 * 
+	 *
 	 * @param ids
 	 * @return
 	 */
@@ -153,7 +153,7 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 
 	/**
 	 * 通过id查询
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */

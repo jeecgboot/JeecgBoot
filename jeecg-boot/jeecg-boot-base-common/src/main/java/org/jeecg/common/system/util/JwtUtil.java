@@ -80,7 +80,7 @@ public class JwtUtil {
 
 	/**
 	 * 根据request中的token获取用户账号
-	 * 
+	 *
 	 * @param request
 	 * @return
 	 * @throws JeecgBootException
@@ -93,7 +93,7 @@ public class JwtUtil {
 		}
 		return username;
 	}
-	
+
 	/**
 	  *  从session中获取变量
 	 * @param key
@@ -118,7 +118,7 @@ public class JwtUtil {
 		if(returnValue!=null){returnValue = returnValue + moshi;}
 		return returnValue;
 	}
-	
+
 	/**
 	  * 从当前用户中获取变量
 	 * @param key
@@ -131,10 +131,10 @@ public class JwtUtil {
 			user = JeecgDataAutorUtils.loadUserInfo();
 		}
 		//#{sys_user_code}%
-		
+
 		// 获取登录用户信息
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		
+
 		String moshi = "";
 		if(key.indexOf("}")!=-1){
 			 moshi = key.substring(key.indexOf("}")+1);
@@ -162,7 +162,7 @@ public class JwtUtil {
 				returnValue = user.getSysUserName();
 			}
 		}
-		
+
 		//替换为系统用户登录所使用的机构编码
 		else if (key.equals(DataBaseConstant.SYS_ORG_CODE)|| key.equals(DataBaseConstant.SYS_ORG_CODE_TABLE)) {
 			if(user==null) {
@@ -194,7 +194,7 @@ public class JwtUtil {
 		if(returnValue!=null){returnValue = returnValue + moshi;}
 		return returnValue;
 	}
-	
+
 	public static void main(String[] args) {
 		 String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjUzMzY1MTMsInVzZXJuYW1lIjoiYWRtaW4ifQ.xjhud_tWCNYBOg_aRlMgOdlZoWFFKB_givNElHNw3X0";
 		 System.out.println(JwtUtil.getUsername(token));

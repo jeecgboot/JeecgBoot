@@ -43,7 +43,7 @@ import com.alibaba.fastjson.JSON;
 
  /**
  * @Description: ${tableVo.ftlDescription}
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
@@ -57,7 +57,7 @@ public class ${entityName}Controller {
 	@Autowired
 	private I${sub.entityName}Service ${sub.entityName?uncap_first}Service;
 	</#list>
-	
+
 	/**
 	  * 分页列表查询
 	 * @param ${entityName?uncap_first}
@@ -79,7 +79,7 @@ public class ${entityName}Controller {
 		result.setResult(pageList);
 		return result;
 	}
-	
+
 	/**
 	  *   添加
 	 * @param ${entityName?uncap_first}Page
@@ -91,7 +91,7 @@ public class ${entityName}Controller {
 		try {
 			${entityName} ${entityName?uncap_first} = new ${entityName}();
 			BeanUtils.copyProperties(${entityName?uncap_first}Page, ${entityName?uncap_first});
-			
+
 			${entityName?uncap_first}Service.saveMain(${entityName?uncap_first}, <#list subTables as sub>${entityName?uncap_first}Page.get${sub.entityName}List()<#if sub_has_next>,</#if></#list>);
 			result.success("添加成功！");
 		} catch (Exception e) {
@@ -100,7 +100,7 @@ public class ${entityName}Controller {
 		}
 		return result;
 	}
-	
+
 	/**
 	  *  编辑
 	 * @param ${entityName?uncap_first}Page
@@ -119,10 +119,10 @@ public class ${entityName}Controller {
 			${entityName?uncap_first}Service.updateMain(${entityName?uncap_first}, <#list subTables as sub>${entityName?uncap_first}Page.get${sub.entityName}List()<#if sub_has_next>,</#if></#list>);
 			result.success("修改成功!");
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	  *   通过id删除
 	 * @param id
@@ -138,7 +138,7 @@ public class ${entityName}Controller {
 		}
 		return Result.ok("删除成功!");
 	}
-	
+
 	/**
 	  *  批量删除
 	 * @param ids
@@ -155,7 +155,7 @@ public class ${entityName}Controller {
 		}
 		return result;
 	}
-	
+
 	/**
 	  * 通过id查询
 	 * @param id
@@ -173,7 +173,7 @@ public class ${entityName}Controller {
 		}
 		return result;
 	}
-	
+
 	<#list subTables as sub>
 	/**
 	  * 通过id查询

@@ -50,7 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @Title: Controller
  * @Description: 系统通告表
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date: 2019-01-02
  * @Version: V1.0
  */
@@ -101,7 +101,7 @@ public class SysAnnouncementController {
 		result.setResult(pageList);
 		return result;
 	}
-	
+
 	/**
 	  *   添加
 	 * @param sysAnnouncement
@@ -121,7 +121,7 @@ public class SysAnnouncementController {
 		}
 		return result;
 	}
-	
+
 	/**
 	  *  编辑
 	 * @param sysAnnouncement
@@ -140,10 +140,10 @@ public class SysAnnouncementController {
 				result.success("修改成功!");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	  *   通过id删除
 	 * @param id
@@ -162,10 +162,10 @@ public class SysAnnouncementController {
 				result.success("删除成功!");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	  *  批量删除
 	 * @param ids
@@ -187,7 +187,7 @@ public class SysAnnouncementController {
 		}
 		return result;
 	}
-	
+
 	/**
 	  * 通过id查询
 	 * @param id
@@ -205,7 +205,7 @@ public class SysAnnouncementController {
 		}
 		return result;
 	}
-	
+
 	/**
 	 *	 更新发布操作
 	 * @param id
@@ -245,10 +245,10 @@ public class SysAnnouncementController {
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 *	 更新撤销操作
 	 * @param id
@@ -268,10 +268,10 @@ public class SysAnnouncementController {
 				result.success("该系统通知撤销成功");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * @功能：补充用户数据，并返回系统消息
 	 * @param id

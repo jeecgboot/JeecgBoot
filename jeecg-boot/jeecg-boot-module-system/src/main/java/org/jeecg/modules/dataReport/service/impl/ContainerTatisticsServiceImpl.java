@@ -12,9 +12,11 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import java.util.List;
+
 /**
  * @Description: 集装箱业务统计表
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   2019-08-16
  * @Version: V1.0
  */
@@ -28,5 +30,11 @@ public class ContainerTatisticsServiceImpl extends ServiceImpl<ContainerTatistic
     @DS("tms")
     public IPage<ContainerTatistics> getContainerTatistics(Page<ContainerTatistics> page, QueryWrapper<ContainerTatistics> queryWrapper) {
         return containerTatisticsMapper.getContainerTatistics(page,queryWrapper);
+    }
+
+    @Override
+    @DS("tms")
+    public List<ContainerTatistics> getContainerTatistics(QueryWrapper<ContainerTatistics> queryWrapper) {
+        return containerTatisticsMapper.getContainerTatistics(queryWrapper);
     }
 }

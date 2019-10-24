@@ -28,6 +28,7 @@ export async function initDictOptions(dictCode) {
  * @return String
  */
 export function filterDictText(dictOptions, text) {
+  debugger
   let re = "";
   dictOptions.forEach(function (option) {
     if (text === option.value) {

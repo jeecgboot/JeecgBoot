@@ -42,9 +42,9 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @Description: 测试demo 
- * @Author: jeecg-boot 
- * @Date:2018-12-29 
+ * @Description: 测试demo
+ * @Author: Zhao
+ * @Date:2018-12-29
  * @Version:V1.0
  */
 @Slf4j
@@ -60,7 +60,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo,IJeecgDemoSer
 
 	/**
 	 * 分页列表查询
-	 * 
+	 *
 	 * @param jeecgDemo
 	 * @param pageNo
 	 * @param pageSize
@@ -90,11 +90,11 @@ public class JeecgDemoController extends JeecgController<JeecgDemo,IJeecgDemoSer
 		 * (UnsupportedEncodingException e) { e.printStackTrace(); }
 		 * //===========================================================================
 		 * =====
-		 * 
+		 *
 		 * // 手工转换实体驼峰字段为下划线分隔表字段 queryWrapper = queryWrapper==null?new
 		 * QueryWrapper<JeecgDemo>(jeecgDemo):queryWrapper; Page<JeecgDemo> page = new
 		 * Page<JeecgDemo>(pageNo, pageSize);
-		 * 
+		 *
 		 * // 排序逻辑 处理 String column = req.getParameter("column"); String order =
 		 * req.getParameter("order"); if (oConvertUtils.isNotEmpty(column) &&
 		 * oConvertUtils.isNotEmpty(order)) { if ("asc".equals(order)) {
@@ -117,7 +117,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo,IJeecgDemoSer
 
 	/**
 	 * 添加
-	 * 
+	 *
 	 * @param jeecgDemo
 	 * @return
 	 */
@@ -138,7 +138,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo,IJeecgDemoSer
 
 	/**
 	 * 编辑
-	 * 
+	 *
 	 * @param jeecgDemo
 	 * @return
 	 */
@@ -163,7 +163,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo,IJeecgDemoSer
 
 	/**
 	 * 通过id删除
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -182,7 +182,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo,IJeecgDemoSer
 
 	/**
 	 * 批量删除
-	 * 
+	 *
 	 * @param ids
 	 * @return
 	 */
@@ -201,7 +201,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo,IJeecgDemoSer
 
 	/**
 	 * 通过id查询
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -221,7 +221,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo,IJeecgDemoSer
 
 	/**
 	 * 导出excel
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 */
@@ -233,7 +233,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo,IJeecgDemoSer
 
 	/**
 	 * 通过excel导入数据
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 * @return
@@ -294,7 +294,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo,IJeecgDemoSer
 
 	/**
 	 * freemaker方式 【页面路径： src/main/resources/templates】
-	 * 
+	 *
 	 * @param modelAndView
 	 * @return
 	 */

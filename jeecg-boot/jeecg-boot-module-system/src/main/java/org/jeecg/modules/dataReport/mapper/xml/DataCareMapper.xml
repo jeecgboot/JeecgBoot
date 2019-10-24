@@ -2,70 +2,131 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.dataReport.mapper.DataCareMapper">
 
-	<select id="getAllBlnoByErp" resultType="org.jeecg.modules.dataReport.entity.BlDataCare">
+    <select id="getAllBlnoByErp" resultType="org.jeecg.modules.dataReport.entity.BlDataCare">
 		SELECT
-		T .ordercode,
-		T .bolcode,
-		t.ODATE AS ODATE,
-		(
-		SELECT
-		langname1
-		FROM
-		dictinfo
-		WHERE
-		dicticode = 'DISPATCH'
-		AND code IN (
-		SELECT
-		ditype
-		FROM
-		dictinfo
-		WHERE
-		dicticode = 'LOG.OMS.WHARF'
+				ordercode,
+				TTT.BOLCODE,
+				ODATE,
+				(
+				CASE sched
+				WHEN '10' THEN
+				'岛内'
+				ELSE
+				'岛外'
+				END
+				) AS sched,
+				(
+				SELECT
+				SUM (qty) AS cntqty
+				FROM
+				oms_order_container tt2
+				WHERE
+				TT2.ORDERID = TTT.ORDERID
+				) AS connum,
+				ctnsum AS containertype,
+				ttt5.langname1 AS payer,
+				ttt6.langname1 AS salesman,
+				(
+				CASE busitype
+				WHEN '10' THEN
+				'进口'
+				ELSE
+				'出口'
+				END
+				) AS salestype,
+				TTT4.tm_odate AS releasedate,
+				DEPOT AS wharf
+				FROM
+				(
+				SELECT
+				orderid,
+				ordercode,
+				bolcode,
+				busitype,
+				ARAPCCODE,
+				sales,
+				ODATE,
+				ctnsum,
+				DEPOT,
+				WCODE,
+				(
+				SELECT
+				code
+				FROM
+				dictinfo
+				WHERE
+				dicticode = 'DISPATCH'
+				AND code IN (
+				SELECT
+				ditype
+				FROM
+				dictinfo
+				WHERE
+				dicticode = 'LOG.OMS.WHARF'
+				AND code = DEPOT
+				)
+				) AS sched,
+				sendstatus
+				FROM
+				oms_order
+				WHERE
+				(
+				(
+				(
+				(
+					sheetcode = 'LOG.OMS.ORDER'
+				)
 
-		AND code = T .DEPOT
-		)
-		) AS sched,
+				)
 
-		(
-		SELECT
-		SUM (qty) AS cntqty
-		FROM
-		oms_order_container tt2
-		WHERE TT2.ORDERID = t.ORDERID
+				)
 
-		) as connum,
+				)
+				AND (
+				orderid IN (
+				SELECT
+				orderid
+				FROM
+				(
+				SELECT
+				tm.tm_odate,
+				oo.orderid,
+				ROW_NUMBER () OVER (
+				PARTITION BY oo.orderid
+				ORDER BY
+				tm.tm_odate DESC
+				) AS s
+				FROM
+				task_milestone tm,
+				oms_task ot,
+				oms_order oo
+				WHERE
+				tm.taskid = ot.taskid
+				AND ot.orderid = oo.orderid
+				AND ot.task_type = 'CU'
+				AND tm.tm_odate IS NOT NULL
+				AND
 
-		(
-		SELECT
-		wm_concat (qty || '*' || ctnsize || ctntype) AS containertype
-		FROM
-		oms_order_container tt2
-		WHERE TT2.ORDERID = t.ORDERID
+				   ${ew.sqlSegment}
 
-		) as containertype,
+				)
+				WHERE
+				s = 1
+				)
+				)
+				AND (
+				innerflags IS NULL
+				OR innerflags = 0
+				)
+				ORDER BY
+				predate DESC
+				) ttt
+				LEFT JOIN task_milestone ttt4 ON ttt.bolcode = ttt4.tm_mblno
+				LEFT JOIN ccode ttt5 ON ttt.ARAPCCODE = ttt5.ccode
+				LEFT JOIN wcode ttt6 ON ttt.WCODE = ttt6.wcode
+				WHERE
+				ttt.sched IN (10, 20)
 
-		t1.langname1 as payer,
-		t2.langname1 as salesman,
-
-		(
-		CASE T .busitype
-		WHEN '10' THEN
-		'进口'
-		ELSE
-		'出口'
-		END
-		) AS salestype,
-		t4.tm_odate AS releasedate,
-		T .DEPOT as wharf
-		FROM
-		oms_order T
-		LEFT JOIN ccode t1 ON T .ARAPCCODE = t1.ccode
-		LEFT JOIN wcode t2 ON T .WCODE = t2.wcode
-		LEFT JOIN task_milestone t4 ON T .bolcode = t4.tm_mblno
-
-		<where>
-			${ew.sqlSegment}
-		</where>
 
 
 
@@ -77,7 +138,7 @@
 		FROM
 			order_info t
 		WHERE
-			t.is_valid = 1 AND t.customs_release_date &gt;= #{startDate} AND t.customs_release_date &lt;= #{endDate}
+			t.is_valid = 1  AND t.dispatch_center IS NULL AND t.customs_release_date &gt;= #{startDate} AND t.customs_release_date &lt;= #{endDate}
 		UNION
 			SELECT
 				bl_no

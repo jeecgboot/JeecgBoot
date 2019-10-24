@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
  /**
  * @Title: Controller
  * @Description: 用户通告阅读标记表
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2019-02-21
  * @Version: V1.0
  */
@@ -45,7 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SysAnnouncementSendController {
 	@Autowired
 	private ISysAnnouncementSendService sysAnnouncementSendService;
-	
+
 	/**
 	  * 分页列表查询
 	 * @param sysAnnouncementSend
@@ -81,7 +81,7 @@ public class SysAnnouncementSendController {
 		result.setResult(pageList);
 		return result;
 	}
-	
+
 	/**
 	  *   添加
 	 * @param sysAnnouncementSend
@@ -99,7 +99,7 @@ public class SysAnnouncementSendController {
 		}
 		return result;
 	}
-	
+
 	/**
 	  *  编辑
 	 * @param sysAnnouncementSend
@@ -118,10 +118,10 @@ public class SysAnnouncementSendController {
 				result.success("修改成功!");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	  *   通过id删除
 	 * @param id
@@ -139,10 +139,10 @@ public class SysAnnouncementSendController {
 				result.success("删除成功!");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	  *  批量删除
 	 * @param ids
@@ -159,7 +159,7 @@ public class SysAnnouncementSendController {
 		}
 		return result;
 	}
-	
+
 	/**
 	  * 通过id查询
 	 * @param id
@@ -177,7 +177,7 @@ public class SysAnnouncementSendController {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * @功能：更新用户系统消息阅读状态
 	 * @param json
@@ -198,7 +198,7 @@ public class SysAnnouncementSendController {
 		result.setSuccess(true);
 		return result;
 	}
-	
+
 	/**
 	 * @功能：获取我的消息
 	 * @return

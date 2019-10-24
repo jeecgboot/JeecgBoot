@@ -29,6 +29,7 @@
                 :ranges="{ 昨天: [moment().subtract(1,'day'), moment().endOf('day')], '上月': [moment().month(moment().month() - 1).startOf('month'), moment().month(moment().month() - 1).endOf('month') ] }"
                 @change="onDateChange"
                 :disabledDate="disabledDate"
+                :format="dateFormat"
                 :allowClear="false" @keyup.enter.native="searchQuery">
                 <a-icon slot="suffixIcon" type="clock-circle" theme="twoTone" v-model="queryParam.customsReleaseDate"/>
               </a-range-picker>
@@ -119,9 +120,16 @@
           <a-tag v-else-if="text === '出口'" color="cyan">{{ text }}</a-tag>
         </template>
 
-        <template slot="blNo" slot-scope="text">
-          <a-tag color="#2db7f5" style="font-weight: 700">{{ text }}</a-tag>
+        <template slot="takeBack" slot-scope="text">
+          <a-tag v-if="text === '是'" color="#A52A2A">{{ text }}</a-tag>
+          <a-tag v-else-if="text === '否'" color="#87d068">{{ text }}</a-tag>
+          <span v-else>{{ text }} ..</span>
         </template>
+
+        <!-- 字符串超长截取省略号显示 -->
+        <span slot="toLong" slot-scope="text">
+          <j-ellipsis :value="text" :length="10"/>
+        </span>
 
 
 
@@ -137,18 +145,22 @@
 </template>
 
 <script>
+  import JEllipsis from '@/components/jeecg/JEllipsis'
   import ContainerTatisticsModal from './modules/ContainerTatisticsModal'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import Vue from 'vue'
   import moment from 'moment';
   import {filterObj} from '@/utils/util';
+
   import {getAction} from '@/api/manage'
 
   export default {
     name: "ContainerTatisticsList",
     mixins: [JeecgListMixin],
     components: {
-      ContainerTatisticsModal
+      JEllipsis,
+      ContainerTatisticsModal,
+
     },
     data() {
       return {
@@ -160,12 +172,15 @@
           column: 'customsReleaseDate',
           order: 'desc',
         },
+        dateFormat: 'YYYY-MM-DD',
         //初始化合并行
         spanArr: [],
         //鼠标移入变色行
         hoverOrderArr: [],
         //时间初始化
         isDateInit: true,
+        //是否默认不做初始化加载
+        initData: 1,
         //列设置
         settingColumns: [],
         //查询条件
@@ -174,6 +189,8 @@
           customsReleaseDate: [],
           containerNoQuery: '',
         },
+        //字典数组缓存
+        businessTypeDictOptions: [],
         // 表头x
         defColumns: [
           {
@@ -190,22 +207,22 @@
             title: '提单号',
             align: "center",
             dataIndex: 'blNo',
-            customRender: (value, row, index) => {
-              const obj = {
-                children: value,
-                attrs: {},
-              };
-              debugger
-              obj.attrs.rowSpan = this.spanArr[index]
-              obj.attrs.colspan = obj.attrs.rowSpan > 0 ? 1 : 0;
-              row.containerNums = obj.attrs.rowSpan;
-              // obj.children = value +  " | 箱数:" + obj.attrs.rowSpan;
-              obj.children = value +  " | 箱数:" + obj.attrs.rowSpan;
-              return obj;
-
-
-            },
-            scopedSlots: {customRender: 'blNo'},
+            // customRender: (value, row, index) => {
+            //   const obj = {
+            //     children: value,
+            //     attrs: {},
+            //   };
+            //   debugger
+            //   obj.attrs.rowSpan = this.spanArr[index]
+            //   obj.attrs.colspan = obj.attrs.rowSpan > 0 ? 1 : 0;
+            //   row.containerNums = obj.attrs.rowSpan;
+            //   // obj.children = value +  " | 箱数:" + obj.attrs.rowSpan;
+            //   obj.children = value +  " | 箱数:" + obj.attrs.rowSpan;
+            //   return obj;
+            //
+            //
+            // },
+            // scopedSlots: {customRender: 'blNo'},
           },
           {
             title: '海关放行日期',
@@ -226,9 +243,15 @@
               {text: '进口', value: '1'},
               {text: '出口', value: '2'},
             ],
+            filterMultiple: false,
+            // customRender: (text) => {
+            //   //字典值替换通用方法
+            //   return filterDictText(this.businessTypeDictOptions, text);
+            // },
             scopedSlots: {customRender: 'businessType'},
-            onFilter: (value, record) => record.businessType + '' === value,
+            // onFilter: (value, record) => record.businessType + '' === value,
           },
+
           {
             title: '尺寸',
             align: "center",
@@ -238,6 +261,17 @@
             title: '规格',
             align: "center",
             dataIndex: 'containerSpec'
+          },
+          {
+            title: '退载自拖',
+            align: "center",
+            dataIndex: 'takeBack_dictText',
+            width:80,
+            // filters: [
+            //   {text: '退载', value: '1'}
+            // ],
+            // filterMultiple: false,
+            scopedSlots: {customRender: 'takeBack'},
           },
           {
             title: '船东',
@@ -262,11 +296,13 @@
           {
             title: '详细地址',
             align: "center",
+            scopedSlots: {customRender: 'toLong'},
             dataIndex: 'detailAddress'
           },
           {
             title: '接单备注',
             align: "center",
+            scopedSlots: {customRender: 'toLong'},
             dataIndex: 'orderRemark'
           }
         ],
@@ -286,6 +322,11 @@
     },
     methods: {
       moment,
+      //跳转单据页面
+      jump(record) {
+        alert(record)
+        this.$router.push({path: '/jeecg/helloworld'})
+      },
       //列设置更改事件
       onColSettingsChange(checkedValues) {
         var key = this.$route.name + ":colsettings";
@@ -339,11 +380,27 @@
 
       },
       getQueryParams() {
-        if (this.isDateInit) (
-          this.defaultValue()
-        )
+        // if (this.isDateInit) (
+        //   this.defaultValue()
+        // )
         this.spanArr = [];
-        var param = Object.assign({}, this.queryParam, this.isorter);
+        var param = Object.assign({}, this.queryParam, this.isorter,this.filters);
+        debugger
+        //遍历参数，并将日期区间的数组参数取出之后进行切分begin和end方便后台进行处理
+        for ( let p in param) {
+          if (param[p] instanceof Array ){
+            //若参数名中包含 Date日期字符串
+            if (p.includes('Date')) {
+              //若参数名中包含 dictText 字典字符串
+            }else if(p.includes('dictText')){
+              let paramName = p.replace('_dictText','');
+              param[paramName] = param[p].toString();
+              //将数组参数属性从对象中移除
+              param = _.omit(param, p);
+              console.log(param)
+            }
+          }
+        }
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
@@ -355,7 +412,8 @@
         return current && current > moment().endOf('day');
       },
       onDateChange: function (value, dateString) {
-        this.queryParam.customsReleaseDate = value;
+        // this.queryParam.customsReleaseDate = value;
+        this.$emit('change', dateString);
         this.queryParam.customsReleaseDate_begin = dateString[0];
         this.queryParam.customsReleaseDate_end = dateString[1];
       },
@@ -366,12 +424,11 @@
           customsReleaseDate: [],
           containerNoQuery: ''
         }; //清空查询区域参数
-        this.defaultValue()
+        // this.defaultValue()
         this.loadData(this.ipagination.current);
       },
       //表尾的合计
       getFooter() {
-        debugger
         let blnoNum = 0 ;//提单数据量
         let data = this.dataSource;
         for (var i = 0; i < data.length; i++) {
@@ -384,6 +441,7 @@
         }
         return "当前页的箱量合计：" + this.ipagination.total + "  ,      当前页的提单数为：" + blnoNum + "条";
       },
+
       getCustomRow(record, index) {
         return {
           props: {},
@@ -412,6 +470,7 @@
     },
     created() {
       this.initColumns();
+      delete this.initData;//创建完毕后删除initData，以保证用户可以正常查询
     },
     watch: {
       dataSource() {

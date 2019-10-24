@@ -35,7 +35,7 @@ import com.alibaba.fastjson.JSON;
 
  /**
  * @Description: ${tableVo.ftlDescription}
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
@@ -51,7 +51,7 @@ import com.alibaba.fastjson.JSON;
 public class ${entityName}Controller {
 	@Autowired
 	private I${entityName}Service ${entityName?uncap_first}Service;
-	
+
 	/**
 	  * 分页列表查询
 	 * @param ${entityName?uncap_first}
@@ -76,7 +76,7 @@ public class ${entityName}Controller {
 		result.setResult(pageList);
 		return result;
 	}
-	
+
 	@GetMapping(value = "/childList")
 	public Result<List<${entityName}>> queryPageList(${entityName} ${entityName?uncap_first},HttpServletRequest req) {
 		Result<List<${entityName}>> result = new Result<List<${entityName}>>();
@@ -86,8 +86,8 @@ public class ${entityName}Controller {
 		result.setResult(list);
 		return result;
 	}
-	
-	
+
+
 	/**
 	  *   添加
 	 * @param ${entityName?uncap_first}
@@ -105,7 +105,7 @@ public class ${entityName}Controller {
 		}
 		return result;
 	}
-	
+
 	/**
 	  *  编辑
 	 * @param ${entityName?uncap_first}
@@ -122,7 +122,7 @@ public class ${entityName}Controller {
 		}
 		return result;
 	}
-	
+
 	/**
 	  *   通过id删除
 	 * @param id
@@ -139,7 +139,7 @@ public class ${entityName}Controller {
 		}
 		return result;
 	}
-	
+
 	/**
 	  *  批量删除
 	 * @param ids
@@ -156,7 +156,7 @@ public class ${entityName}Controller {
 		}
 		return result;
 	}
-	
+
 	/**
 	  * 通过id查询
 	 * @param id

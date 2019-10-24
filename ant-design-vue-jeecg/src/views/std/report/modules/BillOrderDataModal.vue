@@ -1,7 +1,7 @@
 <template>
   <a-drawer
       :title="title"
-      :width="800"
+      :width="screenWidth"
       placement="right"
       :closable="false"
       @close="close"
@@ -10,7 +10,25 @@
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-      
+
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="放行日期">
+          <a-date-picker v-decorator="[ 'customsReleaseDate', {}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="实际到港日期">
+          <a-date-picker v-decorator="[ 'actualShipDate', {}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="预计到港日期">
+          <a-date-picker v-decorator="[ 'shippingDate', {}]" />
+        </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -20,32 +38,8 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="海关放行日期">
-          <a-date-picker v-decorator="[ 'customsReleaseDate', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="箱号（柜号）">
-          <a-input placeholder="请输入箱号（柜号）" v-decorator="['containerNo', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="尺寸(1：20，2：40)">
-          <a-input-number v-decorator="[ 'containerSize', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="规格（1：GP，2：HQ）">
-          <a-input placeholder="请输入规格（1：GP，2：HQ）" v-decorator="['containerSpec', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="船东">
-          <a-input placeholder="请输入船东" v-decorator="['shipowner', {}]" />
+          label="货主(付款方)">
+          <a-input placeholder="请输入货主(付款方)" v-decorator="['consignor', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -56,8 +50,8 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="拖箱地点（出口为装箱地点）">
-          <a-input placeholder="请输入拖箱地点（出口为装箱地点）" v-decorator="['dragContainerAddress', {}]" />
+          label="拖箱地点">
+          <a-input placeholder="请输入拖箱地点" v-decorator="['dragContainerAddress', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -68,22 +62,58 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="详细地址（出口为装箱详细地址）">
-          <a-input placeholder="请输入详细地址（出口为装箱详细地址）" v-decorator="['detailAddress', {}]" />
+          label="船东">
+          <a-input placeholder="请输入船东" v-decorator="['shipowner', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="接单备注">
-          <a-input placeholder="请输入接单备注" v-decorator="['orderRemark', {}]" />
+          label="船代">
+          <a-input placeholder="请输入船代" v-decorator="['shippingCompanyCode', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="业务类型">
+          label="大品名">
+          <a-input placeholder="请输入大品名" v-decorator="['bigGoodsType', {}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="箱量">
+          <a-input-number v-decorator="[ 'containerNum', {}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="箱型箱量">
+          <a-input placeholder="请输入箱型箱量" v-decorator="['containerDesc', {}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="进出口类型">
           <a-input-number v-decorator="[ 'businessType', {}]" />
         </a-form-item>
-		
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="是否退载">
+          <a-input-number v-decorator="[ 'takeBack', {}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="业务员">
+          <a-input placeholder="请输入业务员" v-decorator="['servicePersonnel', {}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="国家">
+          <a-input placeholder="请输入国家" v-decorator="['country', {}]" />
+        </a-form-item>
+
       </a-form>
     </a-spin>
     <a-button type="primary" @click="handleOk">确定</a-button>
@@ -97,11 +127,12 @@
   import moment from "moment"
 
   export default {
-    name: "ContainerTatisticsModal",
+    name: "BillOrderDataModal",
     data () {
       return {
         title:"操作",
         visible: false,
+        screenWidth: '1800',
         model: {},
         labelCol: {
           xs: { span: 24 },
@@ -117,12 +148,14 @@
         validatorRules:{
         },
         url: {
-          add: "/dataReport/containerTatistics/add",
-          edit: "/dataReport/containerTatistics/edit",
+          add: "/org.jeecg.modules.dataReport/billOrderData/add",
+          edit: "/org.jeecg.modules.dataReport/billOrderData/edit",
         },
       }
     },
     created () {
+      // 当页面初始化时,根据屏幕大小来给抽屉设置宽度
+      this.resetScreenSize();
     },
     methods: {
       add () {
@@ -133,9 +166,11 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'blNo','containerNo','containerSize','containerSpec','shipowner','takeContainerAddress','dragContainerAddress','returnContainerAddress','detailAddress','orderRemark','businessType'))
+          this.form.setFieldsValue(pick(this.model,'shippingDate','blNo','consignor','takeContainerAddress','dragContainerAddress','returnContainerAddress','shipowner','shippingCompanyCode','bigGoodsType','containerNum','containerDesc','businessType','takeBack','servicePersonnel','country'))
 		  //时间格式化
           this.form.setFieldsValue({customsReleaseDate:this.model.customsReleaseDate?moment(this.model.customsReleaseDate):null})
+          this.form.setFieldsValue({actualShipDate:this.model.actualShipDate?moment(this.model.actualShipDate):null})
+          this.form.setFieldsValue({shippingDate:this.model.shippingDate?moment(this.model.shippingDate):null})
         });
 
       },
@@ -161,7 +196,9 @@
             let formData = Object.assign(this.model, values);
             //时间格式化
             formData.customsReleaseDate = formData.customsReleaseDate?formData.customsReleaseDate.format():null;
-            
+            formData.actualShipDate = formData.actualShipDate?formData.actualShipDate.format():null;
+            formData.shippingDate = formData.shippingDate?formData.shippingDate.format():null;
+
             console.log(formData)
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
@@ -182,6 +219,16 @@
       },
       handleCancel () {
         this.close()
+      },
+      resetScreenSize() {
+        debugger
+        let screenWidth = document.body.clientWidth;
+        if (screenWidth < 600) {
+          this.screenWidth = screenWidth;
+        } else {
+          // this.screenWidth = screenWidth * 0.85;
+          this.screenWidth = 600;
+        }
       },
 
 

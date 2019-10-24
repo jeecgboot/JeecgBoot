@@ -15,7 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 /**
  * @Description: 分类字典
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   2019-05-29
  * @Version: V1.0
  */
@@ -36,7 +36,7 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 		}
 		baseMapper.insert(sysCategory);
 	}
-	
+
 	@Override
 	public void updateSysCategory(SysCategory sysCategory) {
 		if(oConvertUtils.isEmpty(sysCategory.getPid())){

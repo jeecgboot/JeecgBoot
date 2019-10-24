@@ -11,7 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * @Description: 订单
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2019-02-15
  * @Version: V1.0
  */
@@ -19,7 +19,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @TableName("jeecg_order_main")
 public class JeecgOrderMain implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
 	/**主键*/
     @TableId(type = IdType.ID_WORKER_STR)
 	private java.lang.String id;

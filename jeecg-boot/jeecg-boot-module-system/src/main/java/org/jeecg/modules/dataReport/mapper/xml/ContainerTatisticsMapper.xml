@@ -4,77 +4,89 @@
 
     <select id="getContainerTatistics" resultType="org.jeecg.modules.dataReport.entity.ContainerTatistics">
 
+
         SELECT
-	t1.bl_no AS blNo,
-	t1.customs_release_date AS customsReleaseDate,
-	t.container_no AS containerNo,
-	(
-		SELECT
-			NAME
-		FROM
-			base_dict t1
-		WHERE
-			t1.parent_key = 'container_size'
-		AND t.container_spec = t1.dict_key
-	) AS containerSize,
-	(
-		SELECT
-			NAME
-		FROM
-			base_dict t1
-		WHERE
-			t1.parent_key = 'container_spec'
-		AND t.container_spec = t1.dict_key
-	) AS containerSpec,
-	(
-		SELECT
-			tt2.chinese_name
-		FROM
-			base_customer tt2
-		WHERE
-			t1.shipowner_id = tt2.customer_id
-	) AS shipowner,
-	(
-		SELECT
-			tt1.station_name
-		FROM
-			base_station tt1
-		WHERE
-			tt1.station_id = t1.take_container_address
-	) AS takeContainerAddress,
-	(
-		SELECT
-			tt1.station_name
-		FROM
-			base_station tt1
-		WHERE
-			tt1.station_id = t1.drag_container_address
-	) AS dragContainerAddress,
-	(
-		SELECT
-			tt1.station_name
-		FROM
-			base_station tt1
-		WHERE
-			tt1.station_id = t1.return_container_address
-	) AS returnContainerAddress,
-	t.detail_address AS detailAddress,
-	t.order_remark AS orderRemark,
-	t1.business_type AS businessType
-FROM
-	order_container_info t
-LEFT JOIN order_info t1 ON t.order_id = t1.order_id
-WHERE
-	t1.is_valid = 1
-AND t.is_valid = 1
-AND
-${ew.sqlSegment}
+        t1.bl_no AS blNo,
+        t1.customs_release_date AS customs_release_date,
+        t.container_no AS containerNo,
+        (
+        SELECT
+        NAME
+        FROM
+        base_dict t1
+        WHERE
+        t1.parent_key = 'container_size'
+        AND t.container_spec = t1.dict_key
+        ) AS containerSize,
+        (
+        SELECT
+        NAME
+        FROM
+        base_dict t1
+        WHERE
+        t1.parent_key = 'container_spec'
+        AND t.container_spec = t1.dict_key
+        ) AS containerSpec,
+        (
+        SELECT
+        tt2.chinese_name
+        FROM
+        base_customer tt2
+        WHERE
+        t1.shipowner_id = tt2.customer_id
+        ) AS shipowner,
+        (
+        SELECT
+        tt1.station_name
+        FROM
+        base_station tt1
+        WHERE
+        tt1.station_id = t.take_container_address
+        ) AS takeContainerAddress,
+        (
+        SELECT
+        tt1.station_name
+        FROM
+        base_station tt1
+        WHERE
+        tt1.station_id = t.drag_container_address
+        ) AS dragContainerAddress,
+        (
+        SELECT
+        tt1.station_name
+        FROM
+        base_station tt1
+        WHERE
+        tt1.station_id = t.return_container_address
+        ) AS returnContainerAddress,
+        t.detail_address AS detailAddress,
+        t.order_remark AS orderRemark,
+        t1.business_type AS business_type,
+        CASE
+        WHEN t.take_back = 1 THEN
+        1
+        ELSE
+        2
+        END
+        AS take_back
+        FROM
+        order_container_info t
+        LEFT JOIN order_info t1 ON t.order_id = t1.order_id
+        WHERE
+        t1.is_valid = 1
+        AND t.is_valid = 1
 
 
+        <choose>
+            <when test="ew.emptyOfWhere == true ">
 
-
-
-
+                ${ew.sqlSegment}
+            </when>
+            <otherwise>
+                AND
+                ${ew.sqlSegment}
+            </otherwise>
+        </choose>
 
 
     </select>

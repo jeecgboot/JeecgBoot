@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 /**
  * @Description: 用户代理人设置
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2019-04-17
  * @Version: V1.0
  */

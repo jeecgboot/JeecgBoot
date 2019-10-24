@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.dataReport.mapper.ErpMessageMapper">
+
+
+    <select id="getErpApproveMessage" resultType="org.jeecg.modules.dataReport.entity.ErpMessage">
+
+
+        SELECT
+
+            concat (concat(MM.taskid, MM .ucode),MM.IDX) AS messageId,
+            UU.LANGNAME1 AS approver,
+            uu1.LANGNAME1 AS submitter,
+            MM.TASKTITLE AS title,
+            MM.taskexpl AS taskexpl
+        FROM
+        (
+        SELECT
+            M .taskid AS taskid,
+            M.submitucode,
+            M .ucode AS ucode,
+            M.IDX,
+            M .tasktitle AS tasktitle,
+             M .taskexpl AS taskexpl,
+            ROW_NUMBER () OVER (
+            PARTITION BY M .taskid
+            ORDER BY
+            M .idx DESC
+        ) rn
+        FROM
+        tasklist M
+        LEFT JOIN workflowu U ON M .wfuid = U .wfuid
+        AND M .wfcode = U .wfcode
+        WHERE
+        (M .ucode &lt; &gt;  '*')
+        AND (
+            BITAND (NVL(rflags, 0), 256 + 128) = 0
+        )
+
+        ORDER BY
+        taskid
+        ) MM
+        LEFT JOIN USERS UU ON MM.UCODE = UU.usercode
+        LEFT JOIN USERS UU1 ON MM.submitucode = UU1.usercode
+
+        WHERE rn = 1
+
+
+
+
+    </select>
+</mapper>

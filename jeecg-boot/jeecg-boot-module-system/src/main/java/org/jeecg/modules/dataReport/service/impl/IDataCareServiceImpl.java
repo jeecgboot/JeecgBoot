@@ -29,8 +29,6 @@ public class IDataCareServiceImpl extends JeecgServiceImpl<DataCareMapper, BlDat
     @Override
     @DS("erp")
     public IPage<BlDataCare> getAllBlnoByErp(Page<BlDataCare> page,QueryWrapper<BlDataCare> queryWrapper) {
-        queryWrapper.eq("T.sheetcode","LOG.OMS.ORDER");
-        queryWrapper.eq("T .CORPBCODE","00103076");
         return dataCareMapper.getAllBlnoByErp(page,queryWrapper);
     }
 

@@ -1,13 +1,13 @@
 <template>
-  <a-modal
-    :title="title"
-    :width="800"
-    :visible="visible"
-    :confirmLoading="confirmLoading"
-    @ok="handleOk"
-    @cancel="handleCancel"
-    cancelText="关闭">
-    
+  <a-drawer
+      :title="title"
+      :width="800"
+      placement="right"
+      :closable="false"
+      @close="close"
+      :visible="visible"
+  >
+
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
       
@@ -86,7 +86,9 @@
 		
       </a-form>
     </a-spin>
-  </a-modal>
+    <a-button type="primary" @click="handleOk">确定</a-button>
+    <a-button type="primary" @click="handleCancel">取消</a-button>
+  </a-drawer>
 </template>
 
 <script>
@@ -188,5 +190,10 @@
 </script>
 
 <style lang="less" scoped>
-
+/** Button按钮间距 */
+  .ant-btn {
+    margin-left: 30px;
+    margin-bottom: 30px;
+    float: right;
+  }
 </style>

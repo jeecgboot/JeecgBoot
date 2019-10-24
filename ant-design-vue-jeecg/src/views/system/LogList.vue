@@ -139,7 +139,7 @@
           {
             title: '日志类型',
             dataIndex: 'logType_dictText',
-            /*customRender:function (text) {
+            customRender:function (text) {
               if(text==1){
                 return "登录日志";
               }else if(text==2){
@@ -147,7 +147,7 @@
               }else{
                 return text;
               }
-            },*/
+            },
             align:"center",
           },
           {

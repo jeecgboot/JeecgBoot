@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Description: 定时任务在线管理
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date: 2019-04-28
  * @Version: V1.1
  */
@@ -70,7 +70,7 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 
 	/**
 	 * 编辑&启停定时任务
-	 * @throws SchedulerException 
+	 * @throws SchedulerException
 	 */
 	@Override
 	public boolean editAndScheduleJob(QuartzJob quartzJob) throws SchedulerException {
@@ -95,7 +95,7 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 
 	/**
 	 * 添加定时任务
-	 * 
+	 *
 	 * @param jobClassName
 	 * @param cronExpression
 	 * @param parameter
@@ -126,7 +126,7 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 
 	/**
 	 * 删除定时任务
-	 * 
+	 *
 	 * @param jobClassName
 	 */
 	private void schedulerDelete(String jobClassName) {

@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * @Description: 定时任务在线管理
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2019-01-02
  * @Version: V1.0
  */

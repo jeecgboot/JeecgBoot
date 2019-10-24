@@ -15,13 +15,13 @@ import java.util.Date;
 
 /**
  * @Description: ${tableVo.ftlDescription}
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
 @Data
 public class ${entityName}Page {
-	
+
     <#list originalColumns as po>
 	/**${po.filedComment}*/
 	<#if po.fieldName == primaryKeyField>
@@ -42,10 +42,10 @@ public class ${entityName}Page {
 	</#if>
 	private <#if po.fieldType=='java.sql.Blob'>byte[]<#else>${po.fieldType}</#if> ${po.fieldName};
 	</#list>
-	
+
 	<#list subTables as sub>
 	@ExcelCollection(name="${sub.ftlDescription}")
-	private List<${sub.entityName}> ${sub.entityName?uncap_first}List;	
+	private List<${sub.entityName}> ${sub.entityName?uncap_first}List;
 	</#list>
-	
+
 }

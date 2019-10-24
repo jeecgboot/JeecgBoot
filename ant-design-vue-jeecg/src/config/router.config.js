@@ -1,4 +1,5 @@
 import { UserLayout, TabLayout, RouteView, BlankLayout, PageView } from '@/components/layouts'
+import ContainerTatistics from '@views/std/report/ContainerTatisticsList'
 
 /**
  * 走菜单，走权限控制
@@ -325,6 +326,7 @@ export const constantRouterMap = [
 
   {
     path: '/test',
+    name:'test',
     component: BlankLayout,
     redirect: '/test/home',
     children: [
@@ -334,6 +336,11 @@ export const constantRouterMap = [
         component: () => import('@/views/Home')
       }
     ]
+  },
+  {
+    path: '/dataReport/containerStatistics',
+    name:'containerStatistics',
+    component: ContainerTatistics,
   },
   {
     path: '/404',

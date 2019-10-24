@@ -14,7 +14,7 @@ import lombok.Data;
 
 /**
  * @Description: 流程测试
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   2019-05-14
  * @Version: V1.0
  */
@@ -22,7 +22,7 @@ import lombok.Data;
 @TableName("joa_demo")
 public class JoaDemo implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
 	/**ID*/
 	@TableId(type = IdType.UUID)
 	private java.lang.String id;

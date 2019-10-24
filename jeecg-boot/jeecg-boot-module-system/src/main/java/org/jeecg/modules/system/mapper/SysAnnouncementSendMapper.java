@@ -11,7 +11,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 /**
  * @Description: 用户通告阅读标记表
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2019-02-21
  * @Version: V1.0
  */
@@ -22,8 +22,8 @@ public interface SysAnnouncementSendMapper extends BaseMapper<SysAnnouncementSen
 	/**
 	 * @功能：获取我的消息
 	 * @param announcementSendModel
-	 * @param pageSize 
-	 * @param pageNo 
+	 * @param pageSize
+	 * @param pageNo
 	 * @return
 	 */
 	public List<AnnouncementSendModel> getMyAnnouncementSendList(Page<AnnouncementSendModel> page,@Param("announcementSendModel") AnnouncementSendModel announcementSendModel);

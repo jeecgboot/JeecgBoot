@@ -12,7 +12,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 /**
  * @Description: 订单机票
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:  2019-02-15
  * @Version: V1.0
  */
@@ -20,7 +20,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 public class JeecgOrderTicketServiceImpl extends ServiceImpl<JeecgOrderTicketMapper, JeecgOrderTicket> implements IJeecgOrderTicketService {
 	@Autowired
 	private JeecgOrderTicketMapper jeecgOrderTicketMapper;
-	
+
 	@Override
 	public List<JeecgOrderTicket> selectTicketsByMainId(String mainId) {
 		return jeecgOrderTicketMapper.selectTicketsByMainId(mainId);

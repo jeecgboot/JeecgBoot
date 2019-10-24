@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 
  /**
  * @Description: 流程测试
- * @Author: jeecg-boot
+ * @Author: Zhao
  * @Date:   2019-05-14
  * @Version: V1.0
  */
@@ -53,7 +53,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JoaDemoController {
 	@Autowired
 	private IJoaDemoService joaDemoService;
-	
+
 	/**
 	  * 分页列表查询
 	 * @param joaDemo
@@ -75,7 +75,7 @@ public class JoaDemoController {
 		result.setResult(pageList);
 		return result;
 	}
-	
+
 	/**
 	  *   添加
 	 * @param joaDemo
@@ -93,7 +93,7 @@ public class JoaDemoController {
 		}
 		return result;
 	}
-	
+
 	/**
 	  *  编辑
 	 * @param joaDemo
@@ -112,10 +112,10 @@ public class JoaDemoController {
 				result.success("修改成功!");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	  *   通过id删除
 	 * @param id
@@ -133,10 +133,10 @@ public class JoaDemoController {
 				result.success("删除成功!");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	  *  批量删除
 	 * @param ids
@@ -153,7 +153,7 @@ public class JoaDemoController {
 		}
 		return result;
 	}
-	
+
 	/**
 	  * 通过id查询
 	 * @param id

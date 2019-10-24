@@ -16,9 +16,9 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * @Description: jeecg 测试demo 
- * @Author: jeecg-boot 
- * @Date:	2018-12-29 
+ * @Description: jeecg 测试demo
+ * @Author: Zhao
+ * @Date:	2018-12-29
  * @Version:V1.0
  */
 @Data
