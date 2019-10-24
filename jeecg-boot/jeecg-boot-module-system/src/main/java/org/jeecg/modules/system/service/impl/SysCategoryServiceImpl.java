@@ -1,8 +1,10 @@
 package org.jeecg.modules.system.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.common.util.YouBianCodeUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysCategory;
 import org.jeecg.modules.system.mapper.SysCategoryMapper;
@@ -24,16 +26,47 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 
 	@Override
 	public void addSysCategory(SysCategory sysCategory) {
-		if(oConvertUtils.isEmpty(sysCategory.getPid())){
-			sysCategory.setPid(ISysCategoryService.ROOT_PID_VALUE);
-		}else{
-			//如果当前节点父ID不为空 则设置父节点的hasChild 为1
-			SysCategory parent = baseMapper.selectById(sysCategory.getPid());
-			if(parent!=null && !"1".equals(parent.getHasChild())){
-				parent.setHasChild("1");
-				baseMapper.updateById(parent);
+		String categoryCode = "";
+		String categoryPid = ISysCategoryService.ROOT_PID_VALUE;
+		String parentCode = null;
+		if(oConvertUtils.isNotEmpty(sysCategory.getPid())){
+			categoryPid = sysCategory.getPid();
+
+			//PID 不是根节点 说明需要设置父节点 hasChild 为1
+			if(!ISysCategoryService.ROOT_PID_VALUE.equals(categoryPid)){
+				SysCategory parent = baseMapper.selectById(categoryPid);
+				parentCode = parent.getCode();
+				if(parent!=null && !"1".equals(parent.getHasChild())){
+					parent.setHasChild("1");
+					baseMapper.updateById(parent);
+				}
 			}
 		}
+		/*
+		* 分成三种情况
+		* 1.数据库无数据 调用YouBianCodeUtil.getNextYouBianCode(null);
+		* 2.添加子节点，无兄弟元素 YouBianCodeUtil.getSubYouBianCode(parentCode,null);
+		* 3.添加子节点有兄弟元素 YouBianCodeUtil.getNextYouBianCode(lastCode);
+		* */
+		//找同类 确定上一个最大的code值
+		LambdaQueryWrapper<SysCategory> query = new LambdaQueryWrapper<SysCategory>()
+				.eq(SysCategory::getPid,categoryPid)
+				.orderByDesc(SysCategory::getCode);
+		List<SysCategory> list = baseMapper.selectList(query);
+		if(list==null || list.size()==0){
+			if(ISysCategoryService.ROOT_PID_VALUE.equals(categoryPid)){
+				//情况1
+				categoryCode = YouBianCodeUtil.getNextYouBianCode(null);
+			}else{
+				//情况2
+				categoryCode = YouBianCodeUtil.getSubYouBianCode(parentCode,null);
+			}
+		}else{
+			//情况3
+			categoryCode = YouBianCodeUtil.getNextYouBianCode(list.get(0).getCode());
+		}
+		sysCategory.setCode(categoryCode);
+		sysCategory.setPid(categoryPid);
 		baseMapper.insert(sysCategory);
 	}
 	
@@ -65,7 +98,7 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 			}
 			pid = list.get(0).getId();
 		}
-		return baseMapper.queryListByPid(pid);
+		return baseMapper.queryListByPid(pid,null);
 	}
 
 	@Override
@@ -73,7 +106,20 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 		if(oConvertUtils.isEmpty(pid)) {
 			pid = ROOT_PID_VALUE;
 		}
-		return baseMapper.queryListByPid(pid);
+		return baseMapper.queryListByPid(pid,null);
+	}
+
+	@Override
+	public List<TreeSelectModel> queryListByPid(String pid, Map<String, String> condition) {
+		if(oConvertUtils.isEmpty(pid)) {
+			pid = ROOT_PID_VALUE;
+		}
+		return baseMapper.queryListByPid(pid,condition);
+	}
+
+	@Override
+	public String queryIdByCode(String code) {
+		return baseMapper.queryIdByCode(code);
 	}
 
 }

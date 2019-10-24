@@ -12,7 +12,7 @@
  Target Server Version : 14003223
  File Encoding         : 65001
 
- Date: 26/08/2019 09:27:46
+ Date: 21/10/2019 11:31:47
 */
 
 
@@ -1506,6 +1506,9 @@ GO
 INSERT INTO [dbo].[onl_cgform_enhance_js]  VALUES (N'35d4ef464e5e8c87c9aa82ea89215fc1', N'', N'list', NULL, N'e67d26b610dd414c884c4dbb24e71ce3')
 GO
 
+INSERT INTO [dbo].[onl_cgform_enhance_js]  VALUES (N'90394fbc3d48978cc0937bc56f2d5370', N'', N'list', NULL, N'deea5a8ec619460c9245ba85dbc59e80')
+GO
+
 
 -- ----------------------------
 -- Table structure for onl_cgform_enhance_sql
@@ -1886,6 +1889,9 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'0604945c206e867644e9a44b4c9b20c6', N'fb19fb067cd841f9ae93d4eb3b883dc0', N'2', N'4', NULL, N'0', N'1', N'string', N'32', N'0', N'', N'', N'', N'', N'text', N'', N'120', N'', N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'5', NULL, NULL, N'2019-03-23 11:39:48.0000000', N'admin')
 GO
 
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'0617de6d735b37a3f80f2f35ad5d1511', N'4028839a6de2ebd3016de2ebd3870000', N'size_type', N'尺码类型', N'size_type', N'0', N'1', N'string', N'2', N'0', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'13', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
+GO
+
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'06a1badae6119abf4ec48858a3e94e1c', N'402860816bff91c0016bffa220a9000b', N'sys_org_code', N'组织机构编码', N'sys_org_code', N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'43', N'admin', N'2019-07-22 16:15:32.0000000', N'2019-07-17 19:12:24.0000000', N'admin')
 GO
 
@@ -1905,6 +1911,9 @@ INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'0a4cdcb7e54f614ab952024f6c72bb6d
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'0adc06d9b497684bcbb5a781e044517c', N'1acb6f81a1d9439da6cc4e868617b565', N'supplier', N'供应商', NULL, N'0', N'1', N'String', N'32', N'0', N'', N'air_china_ supplier', N'', N'', N'list', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'15', N'admin', N'2019-06-10 14:47:14.0000000', N'2019-04-24 16:52:00.0000000', N'admin')
+GO
+
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'0b3e833ac4aae3a13ec2f8ae460708f8', N'4028839a6de2ebd3016de2ebd3870000', N'no', N'预算表序号', N'no', N'0', N'1', N'string', N'50', N'0', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'8', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'0ba1bf74e2a6a94a7a63010ec7230706', N'402860816bff91c0016bffa220a9000b', N'update_time', N'更新时间', N'update_time', N'0', N'1', N'Date', N'0', N'0', N'', N'', N'', N'', N'date', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'42', N'admin', N'2019-07-22 16:15:32.0000000', N'2019-07-17 19:12:24.0000000', N'admin')
@@ -1979,6 +1988,9 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'1ed46fdeb289bd7805c9b83332ccd3b4', N'402860816bff91c0016bff91d2810005', N'relation', N'关系', N'relation', N'0', N'1', N'string', N'20', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'4', N'admin', N'2019-07-19 18:05:55.0000000', N'2019-07-17 18:54:35.0000000', N'admin')
 GO
 
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'1f0c6d33b79713fe79fb30373c81f6f7', N'758334cb1e7445e2822b60e807aec4a3', N'update_time', N'更新日期', NULL, N'0', N'1', N'Date', N'20', N'0', N'', N'', N'', N'', N'datetime', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'5', NULL, NULL, N'2019-10-18 18:02:09.0000000', N'admin')
+GO
+
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'1fa5f07b3e70d4925b69b2bf51309421', N'56870166aba54ebfacb20ba6c770bd73', N'update_time', N'更新日期', NULL, N'0', N'1', N'Date', N'20', N'0', N'', N'', N'', N'', N'datetime', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'5', N'admin', N'2019-06-10 16:01:35.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
 GO
 
@@ -2001,6 +2013,12 @@ INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'242cc59b23965a92161eca69ffdbf018
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'265702edb8872e322fe72d3640e34ac5', N'402860816bff91c0016bff91cfea0004', N'from_time', N'开始日期', N'from_time', N'0', N'1', N'Date', N'0', N'0', N'', N'', N'', N'', N'date', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'3', N'admin', N'2019-07-19 18:05:13.0000000', N'2019-07-17 18:54:35.0000000', N'admin')
+GO
+
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'2739ab1ece4d6053ba931bb6572f4ed8', N'4028839a6de2ebd3016de2ebd3870000', N'iz_valid', N'启用状态', N'iz_valid', N'0', N'1', N'string', N'2', N'0', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'9', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
+GO
+
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'283f42283b9d0bf3b95ba3384ab2d255', N'758334cb1e7445e2822b60e807aec4a3', N'update_by', N'更新人', NULL, N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'4', NULL, NULL, N'2019-10-18 18:02:09.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'284864d99fddfdcb00e188e3a512cb28', N'1acb6f81a1d9439da6cc4e868617b565', N'no', N'预算表序号', NULL, N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'10', N'admin', N'2019-06-10 14:47:14.0000000', N'2019-04-23 22:58:19.0000000', N'admin')
@@ -2108,6 +2126,9 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'4312f618c83e07db82e468b81a1eaa45', N'402860816bff91c0016bffa220a9000b', N'photo', N'照片', N'photo', N'0', N'1', N'string', N'255', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'20', N'admin', N'2019-07-22 16:15:32.0000000', N'2019-07-17 19:12:24.0000000', N'admin')
 GO
 
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'435b57180fc995e3c4ec42516963bca3', N'4028839a6de2ebd3016de2ebd3870000', N'wl_code', N'物料编码', N'wl_code', N'0', N'1', N'string', N'60', N'0', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'6', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
+GO
+
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'44bdc595f1e565fc053e01134b92bb47', N'd3ae1c692b9640e0a091f8c46e17bb01', N'update_by', N'更新人', NULL, N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'4', NULL, NULL, N'2019-07-24 14:47:30.0000000', N'admin')
 GO
 
@@ -2186,6 +2207,9 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'56a7800e4e476812c74217c2aad781aa', N'32feeb502544416c9bf41329c10a88f4', N'update_time', N'更新日期', NULL, N'0', N'1', N'Date', N'20', N'0', N'', N'', N'', N'', N'datetime', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'5', N'admin', N'2019-08-23 20:03:40.0000000', N'2019-07-02 18:23:23.0000000', N'admin')
 GO
 
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'56cd0a76f922bf76d982b24a509e4782', N'4028839a6de2ebd3016de2ebd3870000', N'create_time', N'创建日期', N'create_time', N'0', N'1', N'Date', N'0', N'0', NULL, NULL, NULL, NULL, N'date', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'3', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
+GO
+
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'56e247f12d62b49cd9bd537e3efecf16', N'402860816bff91c0016bff91c0cb0000', N'create_by', N'创建人', N'create_by', N'0', N'1', N'string', N'100', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'12', N'admin', N'2019-07-19 18:09:01.0000000', N'2019-07-17 18:54:32.0000000', N'admin')
 GO
 
@@ -2232,6 +2256,9 @@ INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'5e4484b7348dc3e59a0c58bdc3828cc0
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'5e4ac29ac2007ceabf93368330290a42', N'402860816bff91c0016bff91d8830007', N'order_no', N'序号', N'order_no', N'0', N'1', N'int', N'10', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'9', N'admin', N'2019-07-19 18:04:41.0000000', N'2019-07-17 18:54:37.0000000', N'admin')
+GO
+
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'617349b18dab429009ccd304fd7d459c', N'4028839a6de2ebd3016de2ebd3870000', N'update_by', N'更新人', N'update_by', N'0', N'1', N'string', N'50', N'0', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'4', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'61c7a0058c264dd746eb35e6f50fc15b', N'402860816aa5921f016aa5dedcb90009', N'update_time', N'更新日期', N'update_time', N'0', N'1', N'Date', N'0', N'0', N'', N'', N'', N'', N'date', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'group', N'', N'', N'5', N'admin', N'2019-05-11 15:56:47.0000000', N'2019-05-11 15:50:08.0000000', N'admin')
@@ -2285,6 +2312,9 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'7280c56a210e6a47794fda855d0c6abb', N'fbc35f067da94a70adb622ddba259352', N'update_by', N'更新人', NULL, N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'4', NULL, NULL, N'2019-07-03 19:44:23.0000000', N'admin')
 GO
 
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'72e784af5c47bbbc0534b29bf656bd61', N'4028839a6de2ebd3016de2ebd3870000', N'id', N'主键', N'id', N'1', N'0', N'string', N'36', N'0', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'0', N'0', N'group', NULL, NULL, N'1', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
+GO
+
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'7365f05f551092716223d5d449efd8c7', N'beee191324fd40c1afec4fda18bd9d47', N'name', N'ss', NULL, N'0', N'1', N'String', N'32', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'6', N'admin', N'2019-04-13 13:41:13.0000000', N'2019-04-13 13:40:56.0000000', N'admin')
 GO
 
@@ -2306,7 +2336,13 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'75ba781c67711bed71bba1c3e3c68e11', N'8994f2817b5a45d9890aa04497a317c5', N'id', N'主键', NULL, N'1', N'0', N'string', N'36', N'0', N'', N'', N'', N'', N'text', N'', N'120', N'', N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'0', NULL, NULL, N'2019-03-23 11:39:16.0000000', N'admin')
 GO
 
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'75e82f151e8cc12455f7f0d25bf4dac0', N'4028839a6de2ebd3016de2ebd3870000', N'wl_name', N'物料名称', N'wl_name', N'0', N'1', N'string', N'100', N'0', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'7', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
+GO
+
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'7639c1bc4327f1f674ffeab2ca261134', N'32f75e4043ef4070919dbd4337186a3d', N'update_by', N'更新人登录名称', NULL, N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'3', N'admin', N'2019-04-11 10:15:32.0000000', N'2019-03-27 15:54:49.0000000', N'admin')
+GO
+
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'766ca866b72d118f5d8883de46a8c043', N'4028839a6de2ebd3016de2ebd3870000', N'supplier', N'供应商', N'supplier', N'0', N'1', N'string', N'32', N'0', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'15', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'78a40344207c791b8d7ac7de721ce1c4', N'79091e8277c744158530321513119c68', N'create_time', N'创建日期', NULL, N'0', N'1', N'Date', N'20', N'0', N'', N'', N'', N'', N'datetime', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'3', N'admin', N'2019-05-11 15:29:47.0000000', N'2019-05-11 15:27:17.0000000', N'admin')
@@ -2331,6 +2367,9 @@ INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'7b849e57debfb889caea5e0fef09062b
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'7beb639aa9ffda07edb5ce1e49c2287f', N'402860816bff91c0016bff91d2810005', N'update_time', N'更新时间', N'update_time', N'0', N'1', N'Date', N'0', N'0', N'', N'', N'', N'', N'date', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'13', N'admin', N'2019-07-19 18:05:55.0000000', N'2019-07-17 18:54:35.0000000', N'admin')
+GO
+
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'7bf091da401b74d55b107fe9f930ea54', N'4028839a6de2ebd3016de2ebd3870000', N'create_by', N'创建人', N'create_by', N'0', N'1', N'string', N'50', N'0', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'2', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'7c6aecc377816c69147f1193b17dfcc5', N'e9faf717024b4aae95cff224ae9b6d97', N'sex', N'员工性别', NULL, N'0', N'1', N'string', N'32', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'8', N'admin', N'2019-07-03 18:23:49.0000000', N'2019-07-03 18:22:35.0000000', N'admin')
@@ -2402,6 +2441,9 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'8bd4deadc9e96c1a6d7abd77033105f6', N'e67d26b610dd414c884c4dbb24e71ce3', N'update_time', N'更新日期', NULL, N'0', N'1', N'Date', N'20', N'0', N'', N'', N'', N'', N'datetime', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'5', N'admin', N'2019-04-24 11:03:32.0000000', N'2019-04-24 11:02:57.0000000', N'admin')
 GO
 
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'8c6518fec11fc4769ba4eb770c9e00f7', N'4028839a6de2ebd3016de2ebd3870000', N'integral_val', N'积分值', N'integral_val', N'0', N'1', N'int', N'10', N'0', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'11', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
+GO
+
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'8ca56210938fbe649f840e505eb9fd41', N'56870166aba54ebfacb20ba6c770bd73', N'create_by', N'创建人', NULL, N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'2', N'admin', N'2019-06-10 16:01:35.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
 GO
 
@@ -2445,6 +2487,9 @@ INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'960d2847922b61dadeb3518ef55fb0c1
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'9665f02764774fdd77c19923d3ff3c3e', N'4028318169e81b970169e81b97650000', N'cost_time', N'耗时', N'cost_time', N'0', N'1', N'string', N'19', N'0', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'12', NULL, NULL, N'2019-04-04 19:28:36.0000000', N'admin')
+GO
+
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'966a4988298d5cb0be47848735ce8cb7', N'4028839a6de2ebd3016de2ebd3870000', N'xg_shangxian', N'选购上限', N'xg_shangxian', N'0', N'1', N'int', N'10', N'0', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'12', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'96c585a4f71e5c38ed25b9741366365b', N'402860816bff91c0016bff91c7010001', N'sys_org_code', N'组织机构编码', N'sys_org_code', N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'11', N'admin', N'2019-07-19 18:07:47.0000000', N'2019-07-17 18:54:32.0000000', N'admin')
@@ -2508,6 +2553,9 @@ INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'a940adc4585fa3b5bd2114ea9abe8491
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'a94f1d7da64f3aa35c32155ea00ccb2f', N'402860816bff91c0016bffa220a9000b', N'id', N'id', N'id', N'1', N'1', N'string', N'32', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'group', N'', N'', N'1', N'admin', N'2019-07-22 16:15:32.0000000', N'2019-07-17 19:12:24.0000000', N'admin')
+GO
+
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'a9780eace237a15f26931dd6a9ec02e9', N'758334cb1e7445e2822b60e807aec4a3', N'create_time', N'创建日期', NULL, N'0', N'1', N'Date', N'20', N'0', N'', N'', N'', N'', N'datetime', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'3', NULL, NULL, N'2019-10-18 18:02:09.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'aa07931514727913413880b7a2b76dcb', N'd3ae1c692b9640e0a091f8c46e17bb01', N'create_time', N'创建日期', NULL, N'0', N'1', N'Date', N'20', N'0', N'', N'', N'', N'', N'datetime', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'3', NULL, NULL, N'2019-07-24 14:47:30.0000000', N'admin')
@@ -2577,6 +2625,9 @@ INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'b22694cf34ffb967b8717647816ad5df
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'b276facab025f9750b0aff391693cc4b', N'402860816bff91c0016bff91c7010001', N'id', N'id', N'id', N'1', N'1', N'string', N'32', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'group', N'', N'', N'1', N'admin', N'2019-07-19 18:07:47.0000000', N'2019-07-17 18:54:32.0000000', N'admin')
+GO
+
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'b2b0cb30159639bb1190e150322b7541', N'4028839a6de2ebd3016de2ebd3870000', N'wl_unit', N'计量单位', N'wl_unit', N'0', N'1', N'string', N'100', N'0', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'14', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'b3542d3e7908ed885ecc4ba9e7300705', N'4b556f0168f64976a3d20bfb932bc798', N'create_by', N'创建人', NULL, N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'2', NULL, NULL, N'2019-04-12 23:38:28.0000000', N'admin')
@@ -2705,6 +2756,9 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'cc1ddc1304d3eb5d9a189da0a509ccd0', N'32f75e4043ef4070919dbd4337186a3d', N'create_by', N'创建人登录名称', NULL, N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'1', N'admin', N'2019-04-11 10:15:32.0000000', N'2019-03-27 15:54:49.0000000', N'admin')
 GO
 
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'ccf2f331af46ddc411b8039dd187621b', N'4028839a6de2ebd3016de2ebd3870000', N'price', N'单价', N'price', N'0', N'1', N'double', N'10', N'2', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'10', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
+GO
+
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'cee3c1dbf67b4a7d9626b8032897a4c7', N'402860816bff91c0016bff91d8830007', N'employee_id', N'员工ID', N'employee_id', N'0', N'1', N'string', N'32', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'oa_employee_info', N'id', N'2', N'admin', N'2019-07-19 18:04:41.0000000', N'2019-07-17 18:54:37.0000000', N'admin')
 GO
 
@@ -2772,6 +2826,9 @@ INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'd9f9ae6986cb85019a3a4030f62f4d1a
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'db1fb3e12385cb967b63420cfe97cde6', N'402860816bff91c0016bff91cda80003', N'employee_id', N'员工ID', N'employee_id', N'0', N'1', N'string', N'32', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'oa_employee_info', N'id', N'2', N'admin', N'2019-07-19 18:06:36.0000000', N'2019-07-17 18:54:34.0000000', N'admin')
+GO
+
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'dc2bec862a4f0d600751c632d246f0ed', N'4028839a6de2ebd3016de2ebd3870000', N'update_time', N'更新日期', N'update_time', N'0', N'1', N'Date', N'0', N'0', NULL, NULL, NULL, NULL, N'date', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'5', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'dd3e1e13d7429807b83a00a090e060b7', N'402860816bff91c0016bffa220a9000b', N'join_party_info', N'入党（团）时间地点', N'join_party_info', N'0', N'1', N'string', N'255', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'26', N'admin', N'2019-07-22 16:15:32.0000000', N'2019-07-17 19:12:24.0000000', N'admin')
@@ -2909,10 +2966,16 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'f81d7103c0c857e5c744cda2bc4c000a', N'402860816bff91c0016bff91ca7e0002', N'cert_organizations', N'发证机关', N'cert_organizations', N'0', N'1', N'string', N'255', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'6', N'admin', N'2019-07-19 18:07:13.0000000', N'2019-07-17 18:54:33.0000000', N'admin')
 GO
 
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'f82db8edef5babf741914b0fa221329b', N'4028839a6de2ebd3016de2ebd3870000', N'bpm_status', N'流程状态', N'bpm_status', N'0', N'1', N'string', N'2', N'0', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'16', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
+GO
+
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'f8a0fd20a1173270afdfed1129d5c669', N'402860816bff91c0016bffa220a9000b', N'depart_id', N'所在部门id', NULL, N'0', N'1', N'String', N'32', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'44', N'admin', N'2019-07-22 16:15:32.0000000', N'2019-07-19 15:33:44.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'f8cc6be747fec10802eb625ac529c16f', N'402860816bff91c0016bff91cfea0004', N'create_time', N'创建时间', N'create_time', N'0', N'1', N'Date', N'0', N'0', N'', N'', N'', N'', N'date', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'10', N'admin', N'2019-07-19 18:05:13.0000000', N'2019-07-17 18:54:35.0000000', N'admin')
+GO
+
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'f90bcb38fb89988bd40d1618aa75cea0', N'758334cb1e7445e2822b60e807aec4a3', N'id', N'主键', NULL, N'1', N'0', N'string', N'36', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'1', NULL, NULL, N'2019-10-18 18:02:09.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'f94db83e41c69f407d3c9a81c5892269', N'402860816bff91c0016bffa220a9000b', N'first_job_time', N'首次工作时间', N'first_job_time', N'0', N'1', N'Date', N'0', N'0', N'', N'', N'', N'', N'date', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'22', N'admin', N'2019-07-22 16:15:32.0000000', N'2019-07-17 19:12:24.0000000', N'admin')
@@ -2927,6 +2990,9 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'fa8f5a0ba673e0208934567462844eab', N'402860816bff91c0016bff91ca7e0002', N'sys_org_code', N'组织机构编码', N'sys_org_code', N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'13', N'admin', N'2019-07-19 18:07:13.0000000', N'2019-07-17 18:54:33.0000000', N'admin')
 GO
 
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'fafb32cf7e63bca93bbd70b0a0ea11fc', N'758334cb1e7445e2822b60e807aec4a3', N'sys_org_code', N'所属部门', NULL, N'0', N'1', N'string', N'64', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'6', NULL, NULL, N'2019-10-18 18:02:09.0000000', N'admin')
+GO
+
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'fc55d467102c2c782286f546d7820c3d', N'73162c3b8161413e8ecdca7eb288d0c9', N'pid', N'父物料', NULL, N'0', N'1', N'String', N'36', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'9', N'admin', N'2019-07-01 14:23:32.0000000', N'2019-06-10 15:18:34.0000000', N'admin')
 GO
 
@@ -2934,6 +3000,9 @@ INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'fc76a3832d232829852cae6c66e44f67
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'fcd519058d68fa4dab192335602b5d24', N'402860816bff91c0016bffa220a9000b', N'real_name', N'姓名', N'real_name', N'0', N'1', N'string', N'100', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'5', N'admin', N'2019-07-22 16:15:32.0000000', N'2019-07-17 19:12:24.0000000', N'admin')
+GO
+
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'fd0586cae06685959415d9017b2bdf49', N'758334cb1e7445e2822b60e807aec4a3', N'create_by', N'创建人', NULL, N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'2', NULL, NULL, N'2019-10-18 18:02:09.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'fde00160a5d664effaa4b5552e814e74', N'fb7125a344a649b990c12949945cb6c1', N'sex', N'性别', NULL, N'0', N'1', N'string', N'32', N'0', N'', N'', N'', N'', N'text', N'', N'120', N'', N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'6', N'admin', N'2019-03-26 19:24:11.0000000', N'2019-03-26 19:01:52.0000000', N'admin')
@@ -2981,6 +3050,10 @@ CREATE TABLE [dbo].[onl_cgform_head] (
   [form_category] nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
   [form_template] nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
   [form_template_mobile] nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [scroll] int  NULL,
+  [copy_version] int  NULL,
+  [copy_type] int  NULL,
+  [physic_id] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
   [update_by] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
   [update_time] datetime2(7)  NULL,
   [create_by] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
@@ -3139,6 +3212,34 @@ EXEC sp_addextendedproperty
 GO
 
 EXEC sp_addextendedproperty
+'MS_Description', N'是否有横向滚动条',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_cgform_head',
+'COLUMN', N'scroll'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'复制版本号',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_cgform_head',
+'COLUMN', N'copy_version'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'复制表类型1为复制表 0为原始表',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_cgform_head',
+'COLUMN', N'copy_type'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'原始表ID',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_cgform_head',
+'COLUMN', N'physic_id'
+GO
+
+EXEC sp_addextendedproperty
 'MS_Description', N'修改人',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_head',
@@ -3170,13 +3271,13 @@ GO
 -- ----------------------------
 -- Records of onl_cgform_head
 -- ----------------------------
-INSERT INTO [dbo].[onl_cgform_head]  VALUES (N'56870166aba54ebfacb20ba6c770bd73', N'test_order_main', N'2', N'4', N'测试订单主表', N'N', N'Y', N'Y', N'N', NULL, N'UUID', N'single', NULL, N'test_order_product', NULL, NULL, NULL, NULL, N'bdfl_include', N'2', NULL, N'admin', N'2019-04-20 11:39:54.0000000', N'admin', N'2019-04-20 11:38:39.0000000')
+INSERT INTO [dbo].[onl_cgform_head]  VALUES (N'56870166aba54ebfacb20ba6c770bd73', N'test_order_main', N'2', N'4', N'测试订单主表', N'N', N'Y', N'Y', N'N', NULL, N'UUID', N'single', NULL, N'test_order_product', NULL, NULL, NULL, NULL, N'bdfl_include', N'2', NULL, N'0', NULL, N'0', NULL, N'admin', N'2019-04-20 11:39:54.0000000', N'admin', N'2019-04-20 11:38:39.0000000')
 GO
 
-INSERT INTO [dbo].[onl_cgform_head]  VALUES (N'd35109c3632c4952a19ecc094943dd71', N'test_demo', N'1', N'14', N'测试用户表', N'N', N'Y', N'Y', N'N', NULL, N'UUID', N'single', NULL, NULL, NULL, NULL, NULL, NULL, N'bdfl_include', N'1', NULL, N'admin', N'2019-03-22 21:51:35.0000000', N'admin', N'2019-03-15 14:24:35.0000000')
+INSERT INTO [dbo].[onl_cgform_head]  VALUES (N'd35109c3632c4952a19ecc094943dd71', N'test_demo', N'1', N'14', N'测试用户表', N'N', N'Y', N'Y', N'N', NULL, N'UUID', N'single', NULL, NULL, NULL, NULL, NULL, NULL, N'bdfl_include', N'1', NULL, N'0', NULL, N'0', NULL, N'admin', N'2019-03-22 21:51:35.0000000', N'admin', N'2019-03-15 14:24:35.0000000')
 GO
 
-INSERT INTO [dbo].[onl_cgform_head]  VALUES (N'deea5a8ec619460c9245ba85dbc59e80', N'test_order_product', N'3', N'7', N'订单产品明细', N'N', N'Y', N'Y', N'N', NULL, N'UUID', N'single', N'0', NULL, NULL, NULL, NULL, NULL, N'bdfl_include', N'1', NULL, N'admin', N'2019-04-20 11:42:53.0000000', N'admin', N'2019-04-20 11:41:19.0000000')
+INSERT INTO [dbo].[onl_cgform_head]  VALUES (N'deea5a8ec619460c9245ba85dbc59e80', N'test_order_product', N'3', N'7', N'订单产品明细', N'N', N'Y', N'Y', N'N', NULL, N'UUID', N'single', N'0', NULL, NULL, NULL, NULL, NULL, N'bdfl_include', N'1', NULL, N'0', NULL, N'0', NULL, N'admin', N'2019-04-20 11:42:53.0000000', N'admin', N'2019-04-20 11:41:19.0000000')
 GO
 
 
@@ -3264,6 +3365,83 @@ EXEC sp_addextendedproperty
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_index',
 'COLUMN', N'update_time'
+GO
+
+
+-- ----------------------------
+-- Table structure for oss_file
+-- ----------------------------
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[oss_file]') AND type IN ('U'))
+	DROP TABLE [dbo].[oss_file]
+GO
+
+CREATE TABLE [dbo].[oss_file] (
+  [id] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [file_name] nvarchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [url] nvarchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [create_by] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [create_time] datetime2(7)  NULL,
+  [update_by] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [update_time] datetime2(7)  NULL
+)
+GO
+
+ALTER TABLE [dbo].[oss_file] SET (LOCK_ESCALATION = TABLE)
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'主键id',
+'SCHEMA', N'dbo',
+'TABLE', N'oss_file',
+'COLUMN', N'id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'文件名称',
+'SCHEMA', N'dbo',
+'TABLE', N'oss_file',
+'COLUMN', N'file_name'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'文件地址',
+'SCHEMA', N'dbo',
+'TABLE', N'oss_file',
+'COLUMN', N'url'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'创建人登录名称',
+'SCHEMA', N'dbo',
+'TABLE', N'oss_file',
+'COLUMN', N'create_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'创建日期',
+'SCHEMA', N'dbo',
+'TABLE', N'oss_file',
+'COLUMN', N'create_time'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'更新人登录名称',
+'SCHEMA', N'dbo',
+'TABLE', N'oss_file',
+'COLUMN', N'update_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'更新日期',
+'SCHEMA', N'dbo',
+'TABLE', N'oss_file',
+'COLUMN', N'update_time'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Oss File',
+'SCHEMA', N'dbo',
+'TABLE', N'oss_file'
 GO
 
 
@@ -3912,16 +4090,16 @@ GO
 -- ----------------------------
 -- Records of sys_category
 -- ----------------------------
-INSERT INTO [dbo].[sys_category]  VALUES (N'11269338cf80b620350f97688fbdecc7', N'59c67023117dbad7a571b2c21582a04e', N'222', N'222', N'admin', N'2019-08-23 18:52:03.0000000', NULL, NULL, N'A01', NULL)
+INSERT INTO [dbo].[sys_category]  VALUES (N'1185039122143719425', N'0', N'电脑产品', N'A01', N'admin', N'2019-10-18 11:45:18.0000000', N'admin', N'2019-10-18 11:45:31.0000000', N'A01', N'1')
 GO
 
-INSERT INTO [dbo].[sys_category]  VALUES (N'1d4fd1864e90c66ac1de76e68695a808', N'0', N'11', N'111', N'admin', N'2019-08-23 18:51:43.0000000', N'admin', N'2019-08-23 18:51:49.0000000', N'A01', N'1')
+INSERT INTO [dbo].[sys_category]  VALUES (N'1185039176799694850', N'1185039122143719425', N'thinkpad', N'A01A01', N'admin', N'2019-10-18 11:45:31.0000000', NULL, NULL, N'A01', NULL)
 GO
 
-INSERT INTO [dbo].[sys_category]  VALUES (N'59c67023117dbad7a571b2c21582a04e', N'0', N'22', N'22', N'admin', N'2019-08-23 18:51:57.0000000', N'admin', N'2019-08-23 18:52:03.0000000', N'A01', N'1')
+INSERT INTO [dbo].[sys_category]  VALUES (N'1185039255115739138', N'1185039122143719425', N'mackbook', N'A01A02', N'admin', N'2019-10-18 11:45:50.0000000', NULL, NULL, N'A01', NULL)
 GO
 
-INSERT INTO [dbo].[sys_category]  VALUES (N'91d66a2458ef8f21b3bd8325b02150b3', N'1d4fd1864e90c66ac1de76e68695a808', N'111', N'111', N'admin', N'2019-08-23 18:51:49.0000000', NULL, NULL, N'A01', NULL)
+INSERT INTO [dbo].[sys_category]  VALUES (N'1185039299051073537', N'1185039122143719425', N'华为电脑', N'A01A03', N'admin', N'2019-10-18 11:46:01.0000000', NULL, NULL, N'A01', NULL)
 GO
 
 
@@ -4082,6 +4260,7 @@ CREATE TABLE [dbo].[sys_depart] (
   [depart_name_abbr] nvarchar(500) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
   [depart_order] int  NULL,
   [description] nvarchar(max) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [org_category] nvarchar(10) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
   [org_type] nvarchar(10) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
   [org_code] nvarchar(64) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
   [mobile] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
@@ -4147,6 +4326,13 @@ EXEC sp_addextendedproperty
 'SCHEMA', N'dbo',
 'TABLE', N'sys_depart',
 'COLUMN', N'description'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'机构类别 1组织机构，2岗位',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_depart',
+'COLUMN', N'org_category'
 GO
 
 EXEC sp_addextendedproperty
@@ -4243,28 +4429,28 @@ GO
 -- ----------------------------
 -- Records of sys_depart
 -- ----------------------------
-INSERT INTO [dbo].[sys_depart]  VALUES (N'4f1765520d6346f9bd9c79e2479e5b12', N'c6d7cb4deeac411cb3384b1b31278596', N'市场部', NULL, NULL, N'0', NULL, N'2', N'A01A03', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2019-02-20 17:15:34.0000000', N'admin', N'2019-02-26 16:36:18.0000000')
+INSERT INTO [dbo].[sys_depart]  VALUES (N'4f1765520d6346f9bd9c79e2479e5b12', N'c6d7cb4deeac411cb3384b1b31278596', N'市场部', NULL, NULL, N'0', NULL, N'1', N'2', N'A01A03', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2019-02-20 17:15:34.0000000', N'admin', N'2019-02-26 16:36:18.0000000')
 GO
 
-INSERT INTO [dbo].[sys_depart]  VALUES (N'5159cde220114246b045e574adceafe9', N'6d35e179cd814e3299bd588ea7daed3f', N'研发部', NULL, NULL, N'0', NULL, N'2', N'A02A02', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2019-02-26 16:44:38.0000000', N'admin', N'2019-03-07 09:36:53.0000000')
+INSERT INTO [dbo].[sys_depart]  VALUES (N'5159cde220114246b045e574adceafe9', N'6d35e179cd814e3299bd588ea7daed3f', N'研发部', NULL, NULL, N'0', NULL, N'1', N'2', N'A02A02', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2019-02-26 16:44:38.0000000', N'admin', N'2019-03-07 09:36:53.0000000')
 GO
 
-INSERT INTO [dbo].[sys_depart]  VALUES (N'57197590443c44f083d42ae24ef26a2c', N'c6d7cb4deeac411cb3384b1b31278596', N'研发部', NULL, NULL, N'0', NULL, N'2', N'A01A05', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2019-02-21 16:14:41.0000000', N'admin', N'2019-03-27 19:05:49.0000000')
+INSERT INTO [dbo].[sys_depart]  VALUES (N'57197590443c44f083d42ae24ef26a2c', N'c6d7cb4deeac411cb3384b1b31278596', N'研发部', NULL, NULL, N'0', NULL, N'1', N'2', N'A01A05', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2019-02-21 16:14:41.0000000', N'admin', N'2019-03-27 19:05:49.0000000')
 GO
 
-INSERT INTO [dbo].[sys_depart]  VALUES (N'67fc001af12a4f9b8458005d3f19934a', N'c6d7cb4deeac411cb3384b1b31278596', N'财务部', NULL, NULL, N'0', NULL, N'2', N'A01A04', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2019-02-21 16:14:35.0000000', N'admin', N'2019-02-25 12:49:41.0000000')
+INSERT INTO [dbo].[sys_depart]  VALUES (N'67fc001af12a4f9b8458005d3f19934a', N'c6d7cb4deeac411cb3384b1b31278596', N'财务部', NULL, NULL, N'0', NULL, N'1', N'2', N'A01A04', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2019-02-21 16:14:35.0000000', N'admin', N'2019-02-25 12:49:41.0000000')
 GO
 
-INSERT INTO [dbo].[sys_depart]  VALUES (N'6d35e179cd814e3299bd588ea7daed3f', N'', N'卓尔互动公司', NULL, NULL, N'0', NULL, N'1', N'A02', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2019-02-26 16:36:39.0000000', N'admin', N'2019-03-22 16:47:25.0000000')
+INSERT INTO [dbo].[sys_depart]  VALUES (N'6d35e179cd814e3299bd588ea7daed3f', N'', N'卓尔互动公司', NULL, NULL, N'0', NULL, N'1', N'1', N'A02', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2019-02-26 16:36:39.0000000', N'admin', N'2019-03-22 16:47:25.0000000')
 GO
 
-INSERT INTO [dbo].[sys_depart]  VALUES (N'743ba9dbdc114af8953a11022ef3096a', N'f28c6f53abd841ac87ead43afc483433', N'财务部', NULL, NULL, N'0', NULL, N'2', N'A03A01', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2019-03-22 16:45:43.0000000', NULL, NULL)
+INSERT INTO [dbo].[sys_depart]  VALUES (N'743ba9dbdc114af8953a11022ef3096a', N'f28c6f53abd841ac87ead43afc483433', N'财务部', NULL, NULL, N'0', NULL, N'1', N'2', N'A03A01', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2019-03-22 16:45:43.0000000', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_depart]  VALUES (N'a7d7e77e06c84325a40932163adcdaa6', N'6d35e179cd814e3299bd588ea7daed3f', N'财务部', NULL, NULL, N'0', NULL, N'2', N'A02A01', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2019-02-26 16:36:47.0000000', N'admin', N'2019-02-26 16:37:25.0000000')
+INSERT INTO [dbo].[sys_depart]  VALUES (N'a7d7e77e06c84325a40932163adcdaa6', N'6d35e179cd814e3299bd588ea7daed3f', N'财务部', NULL, NULL, N'0', NULL, N'1', N'2', N'A02A01', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2019-02-26 16:36:47.0000000', N'admin', N'2019-02-26 16:37:25.0000000')
 GO
 
-INSERT INTO [dbo].[sys_depart]  VALUES (N'c6d7cb4deeac411cb3384b1b31278596', N'', N'北京国炬公司', NULL, NULL, N'0', NULL, N'1', N'A01', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2019-02-11 14:21:51.0000000', N'admin', N'2019-03-22 16:47:19.0000000')
+INSERT INTO [dbo].[sys_depart]  VALUES (N'c6d7cb4deeac411cb3384b1b31278596', N'', N'北京国炬公司', NULL, NULL, N'0', NULL, N'1', N'1', N'A01', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2019-02-11 14:21:51.0000000', N'admin', N'2019-03-22 16:47:19.0000000')
 GO
 
 
@@ -4360,6 +4546,15 @@ GO
 -- Records of sys_dict
 -- ----------------------------
 INSERT INTO [dbo].[sys_dict]  VALUES (N'0b5d19e1fce4b2e6647e6b4a17760c14', N'通告类型', N'msg_category', N'消息类型1:通知公告2:系统消息', N'0', N'admin', N'2019-04-22 18:01:35.0000000', NULL, NULL, N'0')
+GO
+
+INSERT INTO [dbo].[sys_dict]  VALUES (N'1174509082208395266', N'职务职级', N'position_rank', N'职务表职级字典', N'0', N'admin', N'2019-09-19 10:22:41.0000000', NULL, NULL, N'0')
+GO
+
+INSERT INTO [dbo].[sys_dict]  VALUES (N'1174511106530525185', N'机构类型', N'org_category', N'机构类型 1组织机构，2岗位', N'0', N'admin', N'2019-09-19 10:30:43.0000000', NULL, NULL, N'0')
+GO
+
+INSERT INTO [dbo].[sys_dict]  VALUES (N'1178295274528845826', N'表单权限策略', N'form_perms_type', N'', N'0', N'admin', N'2019-09-29 21:07:39.0000000', N'admin', N'2019-09-29 21:08:26.0000000', NULL)
 GO
 
 INSERT INTO [dbo].[sys_dict]  VALUES (N'236e8a4baff0db8c62c00dd95632834f', N'同步工作流引擎', N'activiti_sync', N'同步工作流引擎', N'0', N'admin', N'2019-05-15 15:27:33.0000000', NULL, NULL, N'0')
@@ -4539,6 +4734,33 @@ GO
 INSERT INTO [dbo].[sys_dict_item]  VALUES (N'1030a2652608f5eac3b49d70458b8532', N'2e02df51611a4b9632828ab7e5338f00', N'禁用', N'2', N'禁用', N'2', N'1', N'admin', N'2021-03-26 18:27:28.0000000', N'admin', N'2019-04-26 18:39:11.0000000')
 GO
 
+INSERT INTO [dbo].[sys_dict_item]  VALUES (N'1174509601047994369', N'1174509082208395266', N'员级', N'1', N'', N'1', N'1', N'admin', N'2019-09-19 10:24:45.0000000', N'admin', N'2019-09-23 11:46:39.0000000')
+GO
+
+INSERT INTO [dbo].[sys_dict_item]  VALUES (N'1174509667297026049', N'1174509082208395266', N'助级', N'2', N'', N'2', N'1', N'admin', N'2019-09-19 10:25:01.0000000', N'admin', N'2019-09-23 11:46:47.0000000')
+GO
+
+INSERT INTO [dbo].[sys_dict_item]  VALUES (N'1174509713568587777', N'1174509082208395266', N'中级', N'3', N'', N'3', N'1', N'admin', N'2019-09-19 10:25:12.0000000', N'admin', N'2019-09-23 11:46:56.0000000')
+GO
+
+INSERT INTO [dbo].[sys_dict_item]  VALUES (N'1174509788361416705', N'1174509082208395266', N'副高级', N'4', N'', N'4', N'1', N'admin', N'2019-09-19 10:25:30.0000000', N'admin', N'2019-09-23 11:47:06.0000000')
+GO
+
+INSERT INTO [dbo].[sys_dict_item]  VALUES (N'1174509835803189250', N'1174509082208395266', N'正高级', N'5', N'', N'5', N'1', N'admin', N'2019-09-19 10:25:41.0000000', N'admin', N'2019-09-23 11:47:12.0000000')
+GO
+
+INSERT INTO [dbo].[sys_dict_item]  VALUES (N'1174511197735665665', N'1174511106530525185', N'组织机构', N'1', N'组织机构', N'1', N'1', N'admin', N'2019-09-19 10:31:05.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_dict_item]  VALUES (N'1174511244036587521', N'1174511106530525185', N'岗位', N'2', N'岗位', N'1', N'1', N'admin', N'2019-09-19 10:31:16.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_dict_item]  VALUES (N'1178295553450061826', N'1178295274528845826', N'可编辑(未授权禁用)', N'2', N'', N'2', N'1', N'admin', N'2019-09-29 21:08:46.0000000', N'admin', N'2019-09-29 21:09:18.0000000')
+GO
+
+INSERT INTO [dbo].[sys_dict_item]  VALUES (N'1178295639554928641', N'1178295274528845826', N'可见(未授权不可见)', N'1', N'', N'1', N'1', N'admin', N'2019-09-29 21:09:06.0000000', N'admin', N'2019-09-29 21:09:24.0000000')
+GO
+
 INSERT INTO [dbo].[sys_dict_item]  VALUES (N'147c48ff4b51545032a9119d13f3222a', N'd6e1152968b02d69ff358c75b48a6ee1', N'测试流程', N'test', NULL, N'1', N'1', N'admin', N'2019-03-22 19:27:05.0000000', NULL, NULL)
 GO
 
@@ -4662,7 +4884,7 @@ GO
 INSERT INTO [dbo].[sys_dict_item]  VALUES (N'81fb2bb0e838dc68b43f96cc309f8257', N'fc6cd58fde2e8481db10d3a1e68ce70c', N'冻结', N'2', NULL, NULL, N'1', N'admin', N'2019-03-18 23:30:37.0000000', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_dict_item]  VALUES (N'83250269359855501ec4e9c0b7e21596', N'4274efc2292239b6f000b153f50823ff', N'显示/访问(授权后显示/可访问)', N'1', N'', N'1', N'1', N'admin', N'2019-05-10 17:54:51.0000000', NULL, NULL)
+INSERT INTO [dbo].[sys_dict_item]  VALUES (N'83250269359855501ec4e9c0b7e21596', N'4274efc2292239b6f000b153f50823ff', N'可见/可访问(授权后可见/可访问)', N'1', N'', N'1', N'1', N'admin', N'2019-05-10 17:54:51.0000000', NULL, NULL)
 GO
 
 INSERT INTO [dbo].[sys_dict_item]  VALUES (N'84778d7e928bc843ad4756db1322301f', N'4e4602b3e3686f0911384e188dc7efb4', N'大于等于', N'>=', N'大于等于', N'5', N'1', N'admin', N'2019-04-01 10:46:02.0000000', N'admin', N'2019-04-01 17:49:05.0000000')
@@ -5091,6 +5313,51 @@ INSERT INTO [dbo].[sys_log]  VALUES (N'11695a9dcf44859cda97a4226bebe21b', N'1', 
 GO
 
 INSERT INTO [dbo].[sys_log]  VALUES (N'11802c7a3644af411bc4e085553cfd4f', N'1', N'用户名: admin,登录成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg-boot', N'2019-03-23 14:46:35.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1185035214331654145', N'1', N'用户名: 管理员,退出成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-10-18 11:29:46.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1185035238713143298', N'1', N'用户名: admin,登录成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-10-18 11:29:52.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1185035239463923713', N'1', N'用户名: 管理员,退出成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-10-18 11:29:53.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1185037047527714817', N'1', N'用户名: admin,登录成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-10-18 11:37:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1185037216109375490', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, NULL, NULL, N'133', N'admin', N'2019-10-18 11:37:44.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1185037734533738497', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, NULL, NULL, N'24', N'admin', N'2019-10-18 11:39:48.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1185037756142792705', N'2', N'编辑用户，id： e9ca23d68d884d4ebb19d07889727dae', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'admin', N'2019-10-18 11:39:53.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1185037829144653825', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, NULL, NULL, N'12', N'admin', N'2019-10-18 11:40:10.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1185039907581669377', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, NULL, NULL, N'6', N'admin', N'2019-10-18 11:48:26.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1185039947956039681', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, NULL, NULL, N'5', N'admin', N'2019-10-18 11:48:35.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1185040064834514945', N'2', N'职务表-添加', N'2', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.add()', NULL, N'[{"code":"devleader","createBy":"admin","createTime":1571370543072,"id":"1185040064792571906","name":"研发部经理","rank":"3","sysOrgCode":"A01"}]', NULL, N'22', N'admin', N'2019-10-18 11:49:03.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1185040066562568193', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, NULL, NULL, N'26', N'admin', N'2019-10-18 11:49:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1185129808478158850', N'1', N'用户名: admin,登录成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-10-18 17:45:39.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1185452151318528001', N'1', N'用户名: 管理员,退出成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-10-19 15:06:32.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1185452231589117953', N'1', N'用户名: admin,登录成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-10-19 15:06:51.0000000', NULL, NULL)
 GO
 
 INSERT INTO [dbo].[sys_log]  VALUES (N'11f511eeeb2e91af86b9d5e05132fc89', N'1', N'用户名: admin,登录成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg-boot', N'2019-02-26 15:13:43.0000000', NULL, NULL)
@@ -7302,7 +7569,7 @@ CREATE TABLE [dbo].[sys_permission] (
   [menu_type] int  NULL,
   [perms] nvarchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
   [perms_type] nvarchar(10) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [sort_no] int  NULL,
+  [sort_no] float(53)  NULL,
   [always_show] tinyint  NULL,
   [icon] nvarchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
   [is_route] tinyint  NULL,
@@ -7316,7 +7583,8 @@ CREATE TABLE [dbo].[sys_permission] (
   [update_time] datetime2(7)  NULL,
   [del_flag] int  NULL,
   [rule_flag] int  NULL,
-  [status] nvarchar(2) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL
+  [status] nvarchar(2) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [internal_or_external] tinyint  NULL
 )
 GO
 
@@ -7499,6 +7767,13 @@ EXEC sp_addextendedproperty
 GO
 
 EXEC sp_addextendedproperty
+'MS_Description', N'外链菜单打开方式 0/内部打开 1/外部打开',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_permission',
+'COLUMN', N'internal_or_external'
+GO
+
+EXEC sp_addextendedproperty
 'MS_Description', N'菜单权限表',
 'SCHEMA', N'dbo',
 'TABLE', N'sys_permission'
@@ -7508,289 +7783,304 @@ GO
 -- ----------------------------
 -- Records of sys_permission
 -- ----------------------------
-INSERT INTO [dbo].[sys_permission]  VALUES (N'00a2a0ae65cdca5e93209cdbde97cbe6', N'2e42e3835c2b44ec9f7bc26c146ee531', N'成功', N'/result/success', N'result/Success', NULL, NULL, N'1', NULL, NULL, N'1', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'00a2a0ae65cdca5e93209cdbde97cbe6', N'2e42e3835c2b44ec9f7bc26c146ee531', N'成功', N'/result/success', N'result/Success', NULL, NULL, N'1', NULL, NULL, N'1', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'020b06793e4de2eee0007f603000c769', N'f0675b52d89100ee88472b6800754a08', N'ViserChartDemo', N'/report/ViserChartDemo', N'jeecg/report/ViserChartDemo', NULL, NULL, N'1', NULL, NULL, N'3', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-03 19:08:53.0000000', N'admin', N'2019-04-03 19:08:53.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'020b06793e4de2eee0007f603000c769', N'f0675b52d89100ee88472b6800754a08', N'ViserChartDemo', N'/report/ViserChartDemo', N'jeecg/report/ViserChartDemo', NULL, NULL, N'1', NULL, NULL, N'3', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-03 19:08:53.0000000', N'admin', N'2019-04-03 19:08:53.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'024f1fd1283dc632458976463d8984e1', N'700b7f95165c46cc7a78bf227aa8fed3', N'Tomcat信息', N'/monitor/TomcatInfo', N'modules/monitor/TomcatInfo', NULL, NULL, N'1', NULL, NULL, N'4', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-02 09:44:29.0000000', N'admin', N'2019-05-07 15:19:10.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'024f1fd1283dc632458976463d8984e1', N'700b7f95165c46cc7a78bf227aa8fed3', N'Tomcat信息', N'/monitor/TomcatInfo', N'modules/monitor/TomcatInfo', NULL, NULL, N'1', NULL, NULL, N'4', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-02 09:44:29.0000000', N'admin', N'2019-05-07 15:19:10.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'043780fa095ff1b2bec4dc406d76f023', N'2a470fc0c3954d9dbb61de6d80846549', N'表格合计', N'/jeecg/tableTotal', N'jeecg/TableTotal', NULL, NULL, N'1', NULL, N'1', N'3', N'0', NULL, N'1', N'1', N'0', N'0', NULL, N'admin', N'2019-08-14 10:28:46.0000000', NULL, NULL, N'0', N'0', N'1')
+INSERT INTO [dbo].[sys_permission]  VALUES (N'043780fa095ff1b2bec4dc406d76f023', N'2a470fc0c3954d9dbb61de6d80846549', N'表格合计', N'/jeecg/tableTotal', N'jeecg/TableTotal', NULL, NULL, N'1', NULL, N'1', N'3', N'0', NULL, N'1', N'1', N'0', N'0', NULL, N'admin', N'2019-08-14 10:28:46.0000000', NULL, NULL, N'0', N'0', N'1', NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'05b3c82ddb2536a4a5ee1a4c46b5abef', N'540a2936940846cb98114ffb0d145cb8', N'用户列表', N'/list/user-list', N'list/UserList', NULL, NULL, N'1', NULL, NULL, N'3', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'05b3c82ddb2536a4a5ee1a4c46b5abef', N'540a2936940846cb98114ffb0d145cb8', N'用户列表', N'/list/user-list', N'list/UserList', NULL, NULL, N'1', NULL, NULL, N'3', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'0620e402857b8c5b605e1ad9f4b89350', N'2a470fc0c3954d9dbb61de6d80846549', N'异步树列表Demo', N'/jeecg/JeecgTreeTable', N'jeecg/JeecgTreeTable', NULL, NULL, N'1', NULL, N'0', N'3', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-05-13 17:30:30.0000000', N'admin', N'2019-05-13 17:32:17.0000000', N'0', N'0', N'1')
+INSERT INTO [dbo].[sys_permission]  VALUES (N'0620e402857b8c5b605e1ad9f4b89350', N'2a470fc0c3954d9dbb61de6d80846549', N'异步树列表Demo', N'/jeecg/JeecgTreeTable', N'jeecg/JeecgTreeTable', NULL, NULL, N'1', NULL, N'0', N'3', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-05-13 17:30:30.0000000', N'admin', N'2019-05-13 17:32:17.0000000', N'0', N'0', N'1', NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'078f9558cdeab239aecb2bda1a8ed0d1', N'fb07ca05a3e13674dbf6d3245956da2e', N'搜索列表（文章）', N'/list/search/article', N'list/TableList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-02-12 14:00:34.0000000', N'admin', N'2019-02-12 14:17:54.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'078f9558cdeab239aecb2bda1a8ed0d1', N'fb07ca05a3e13674dbf6d3245956da2e', N'搜索列表（文章）', N'/list/search/article', N'list/TableList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-02-12 14:00:34.0000000', N'admin', N'2019-02-12 14:17:54.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'08e6b9dc3c04489c8e1ff2ce6f105aa4', N'', N'系统监控', N'/dashboard3', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'6', N'0', N'dashboard', N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-03-31 22:19:58.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'08e6b9dc3c04489c8e1ff2ce6f105aa4', N'', N'系统监控', N'/dashboard3', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'6', N'0', N'dashboard', N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-03-31 22:19:58.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'0ac2ad938963b6c6d1af25477d5b8b51', N'8d4683aacaa997ab86b966b464360338', N'代码生成按钮', NULL, NULL, NULL, NULL, N'2', N'online:goGenerateCode', N'1', N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-06-11 14:20:09.0000000', NULL, NULL, N'0', N'0', N'1')
+INSERT INTO [dbo].[sys_permission]  VALUES (N'0ac2ad938963b6c6d1af25477d5b8b51', N'8d4683aacaa997ab86b966b464360338', N'代码生成按钮', NULL, NULL, NULL, NULL, N'2', N'online:goGenerateCode', N'1', N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-06-11 14:20:09.0000000', NULL, NULL, N'0', N'0', N'1', NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'13212d3416eb690c2e1d5033166ff47a', N'2e42e3835c2b44ec9f7bc26c146ee531', N'失败', N'/result/fail', N'result/Error', NULL, NULL, N'1', NULL, NULL, N'2', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'1166535831146504193', N'2a470fc0c3954d9dbb61de6d80846549', N'对象存储', N'/oss/file', N'modules/oss/OSSFileList', NULL, NULL, N'1', NULL, N'1', N'1', N'0', N'', N'1', N'1', N'0', N'0', NULL, N'admin', N'2019-08-28 02:19:50.0000000', N'admin', N'2019-08-28 02:20:57.0000000', N'0', N'0', N'1', NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'1367a93f2c410b169faa7abcbad2f77c', N'6e73eb3c26099c191bf03852ee1310a1', N'基本设置', N'/account/settings/base', N'account/settings/BaseSetting', NULL, NULL, N'1', N'BaseSettings', NULL, NULL, N'0', NULL, N'1', N'1', NULL, N'1', NULL, NULL, N'2018-12-26 18:58:35.0000000', N'admin', N'2019-03-20 12:57:31.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'1170592628746878978', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'菜单管理', N'/isystem/newPermissionList', N'system/NewPermissionList', NULL, NULL, N'1', NULL, N'1', N'100', N'0', NULL, N'1', N'1', N'0', N'0', NULL, N'admin', N'2019-09-08 15:00:05.0000000', N'admin', N'2019-09-08 15:02:57.0000000', N'0', N'0', N'1', N'0')
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'190c2b43bec6a5f7a4194a85db67d96a', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'角色维护', N'/isystem/roleUserList', N'system/RoleUserList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-17 15:13:56.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'1174506953255182338', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'职务管理', N'/isystem/position', N'system/SysPositionList', NULL, NULL, N'1', NULL, N'1', N'2', N'0', NULL, N'1', N'1', N'0', N'0', NULL, N'admin', N'2019-09-19 10:14:13.0000000', N'admin', N'2019-09-19 10:15:22.0000000', N'0', N'0', N'1', N'0')
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'1a0811914300741f4e11838ff37a1d3a', N'3f915b2769fc80648e92d04e84ca059d', N'手机号禁用', NULL, NULL, NULL, NULL, N'2', N'user:form:phone', N'2', N'1', N'0', NULL, N'0', N'1', NULL, N'0', NULL, N'admin', N'2019-05-11 17:19:30.0000000', N'admin', N'2019-05-11 18:00:22.0000000', N'0', N'0', N'1')
+INSERT INTO [dbo].[sys_permission]  VALUES (N'1174590283938041857', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'通讯录', N'/isystem/addressList', N'system/AddressList', NULL, NULL, N'1', NULL, N'1', N'3', N'0', NULL, N'1', N'1', N'0', N'0', NULL, N'admin', N'2019-09-19 15:45:21.0000000', NULL, NULL, N'0', N'0', N'1', N'0')
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'200006f0edf145a2b50eacca07585451', N'fb07ca05a3e13674dbf6d3245956da2e', N'搜索列表（应用）', N'/list/search/application', N'list/TableList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-02-12 14:02:51.0000000', N'admin', N'2019-02-12 14:14:01.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'13212d3416eb690c2e1d5033166ff47a', N'2e42e3835c2b44ec9f7bc26c146ee531', N'失败', N'/result/fail', N'result/Error', NULL, NULL, N'1', NULL, NULL, N'2', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'22d6a3d39a59dd7ea9a30acfa6bfb0a5', N'e41b69c57a941a3bbcce45032fe57605', N'AUTO动态表单', N'/online/df/:table/:id', N'modules/online/cgform/auto/OnlineDynamicForm', NULL, NULL, N'1', NULL, NULL, N'9', N'0', NULL, N'0', N'1', NULL, N'1', NULL, N'admin', N'2019-04-22 15:15:43.0000000', N'admin', N'2019-04-30 18:18:26.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'1367a93f2c410b169faa7abcbad2f77c', N'6e73eb3c26099c191bf03852ee1310a1', N'基本设置', N'/account/settings/base', N'account/settings/BaseSetting', NULL, NULL, N'1', N'BaseSettings', NULL, NULL, N'0', NULL, N'1', N'1', NULL, N'1', NULL, NULL, N'2018-12-26 18:58:35.0000000', N'admin', N'2019-03-20 12:57:31.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'265de841c58907954b8877fb85212622', N'2a470fc0c3954d9dbb61de6d80846549', N'图片拖拽排序', N'/jeecg/imgDragSort', N'jeecg/ImgDragSort', NULL, NULL, N'1', NULL, NULL, N'4', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-25 10:43:08.0000000', N'admin', N'2019-04-25 10:46:26.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'190c2b43bec6a5f7a4194a85db67d96a', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'角色维护', N'/isystem/roleUserList', N'system/RoleUserList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-17 15:13:56.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'277bfabef7d76e89b33062b16a9a5020', N'e3c13679c73a4f829bcff2aba8fd68b1', N'基础表单', N'/form/base-form', N'form/BasicForm', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-02-26 17:02:08.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'1a0811914300741f4e11838ff37a1d3a', N'3f915b2769fc80648e92d04e84ca059d', N'手机号禁用', NULL, NULL, NULL, NULL, N'2', N'user:form:phone', N'2', N'1', N'0', NULL, N'0', N'1', NULL, N'0', NULL, N'admin', N'2019-05-11 17:19:30.0000000', N'admin', N'2019-05-11 18:00:22.0000000', N'0', N'0', N'1', NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'2a470fc0c3954d9dbb61de6d80846549', N'', N'常见案例', N'/jeecg', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'7', N'0', N'qrcode', N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-04-02 11:46:42.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'200006f0edf145a2b50eacca07585451', N'fb07ca05a3e13674dbf6d3245956da2e', N'搜索列表（应用）', N'/list/search/application', N'list/TableList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-02-12 14:02:51.0000000', N'admin', N'2019-02-12 14:14:01.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'2aeddae571695cd6380f6d6d334d6e7d', N'f0675b52d89100ee88472b6800754a08', N'布局统计报表', N'/report/ArchivesStatisticst', N'jeecg/report/ArchivesStatisticst', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-03 18:32:48.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'22d6a3d39a59dd7ea9a30acfa6bfb0a5', N'e41b69c57a941a3bbcce45032fe57605', N'AUTO动态表单', N'/online/df/:table/:id', N'modules/online/cgform/auto/OnlineDynamicForm', NULL, NULL, N'1', NULL, NULL, N'9', N'0', NULL, N'0', N'1', NULL, N'1', NULL, N'admin', N'2019-04-22 15:15:43.0000000', N'admin', N'2019-04-30 18:18:26.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'2dbbafa22cda07fa5d169d741b81fe12', N'08e6b9dc3c04489c8e1ff2ce6f105aa4', N'在线文档', N'{{ window._CONFIG[''domianURL''] }}/doc.html', N'layouts/IframePageView', NULL, NULL, N'1', NULL, NULL, N'3', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-01-30 10:00:01.0000000', N'admin', N'2019-03-23 19:44:43.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'265de841c58907954b8877fb85212622', N'2a470fc0c3954d9dbb61de6d80846549', N'图片拖拽排序', N'/jeecg/imgDragSort', N'jeecg/ImgDragSort', NULL, NULL, N'1', NULL, NULL, N'4', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-25 10:43:08.0000000', N'admin', N'2019-04-25 10:46:26.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'2e42e3835c2b44ec9f7bc26c146ee531', N'', N'结果页', N'/result', N'layouts/PageView', NULL, NULL, N'0', NULL, NULL, N'8', N'0', N'check-circle-o', N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-04-02 11:46:56.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'277bfabef7d76e89b33062b16a9a5020', N'e3c13679c73a4f829bcff2aba8fd68b1', N'基础表单', N'/form/base-form', N'form/BasicForm', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-02-26 17:02:08.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'339329ed54cf255e1f9392e84f136901', N'2a470fc0c3954d9dbb61de6d80846549', N'helloworld', N'/jeecg/helloworld', N'jeecg/helloworld', NULL, NULL, N'1', NULL, NULL, N'4', N'0', NULL, N'1', N'1', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-02-15 16:24:56.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'2a470fc0c3954d9dbb61de6d80846549', N'', N'常见案例', N'/jeecg', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'7', N'0', N'qrcode', N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-04-02 11:46:42.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'3f915b2769fc80648e92d04e84ca059d', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'用户管理', N'/isystem/user', N'system/UserList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-03-16 11:20:33.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'2aeddae571695cd6380f6d6d334d6e7d', N'f0675b52d89100ee88472b6800754a08', N'布局统计报表', N'/report/ArchivesStatisticst', N'jeecg/report/ArchivesStatisticst', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-03 18:32:48.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'3fac0d3c9cd40fa53ab70d4c583821f8', N'2a470fc0c3954d9dbb61de6d80846549', N'分屏', N'/jeecg/splitPanel', N'jeecg/SplitPanel', NULL, NULL, N'1', NULL, NULL, N'6', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-25 16:27:06.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'2dbbafa22cda07fa5d169d741b81fe12', N'08e6b9dc3c04489c8e1ff2ce6f105aa4', N'在线文档', N'{{ window._CONFIG[''domianURL''] }}/doc.html', N'layouts/IframePageView', NULL, NULL, N'1', NULL, NULL, N'3', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-01-30 10:00:01.0000000', N'admin', N'2019-03-23 19:44:43.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'4148ec82b6acd69f470bea75fe41c357', N'2a470fc0c3954d9dbb61de6d80846549', N'单表模型示例', N'/jeecg/jeecgDemoList', N'jeecg/JeecgDemoList', N'DemoList', NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, NULL, N'2018-12-28 15:57:30.0000000', N'admin', N'2019-02-15 16:24:37.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'2e42e3835c2b44ec9f7bc26c146ee531', N'', N'结果页', N'/result', N'layouts/PageView', NULL, NULL, N'0', NULL, NULL, N'8', N'0', N'check-circle-o', N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-04-02 11:46:56.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'418964ba087b90a84897b62474496b93', N'540a2936940846cb98114ffb0d145cb8', N'查询表格', N'/list/query-list', N'list/TableList', NULL, NULL, N'1', NULL, NULL, N'1', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'339329ed54cf255e1f9392e84f136901', N'2a470fc0c3954d9dbb61de6d80846549', N'helloworld', N'/jeecg/helloworld', N'jeecg/helloworld', NULL, NULL, N'1', NULL, NULL, N'4', N'0', NULL, N'1', N'1', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-02-15 16:24:56.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'4356a1a67b564f0988a484f5531fd4d9', N'2a470fc0c3954d9dbb61de6d80846549', N'内嵌Table', N'/jeecg/TableExpandeSub', N'jeecg/TableExpandeSub', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-04 22:48:13.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'3f915b2769fc80648e92d04e84ca059d', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'用户管理', N'/isystem/user', N'system/UserList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-03-16 11:20:33.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'45c966826eeff4c99b8f8ebfe74511fc', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'部门管理', N'/isystem/depart', N'system/DepartList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-01-29 18:47:40.0000000', N'admin', N'2019-03-07 19:23:16.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'3fac0d3c9cd40fa53ab70d4c583821f8', N'2a470fc0c3954d9dbb61de6d80846549', N'分屏', N'/jeecg/splitPanel', N'jeecg/SplitPanel', NULL, NULL, N'1', NULL, NULL, N'6', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-25 16:27:06.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'4875ebe289344e14844d8e3ea1edd73f', N'', N'详情页', N'/profile', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'8', N'0', N'profile', N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-04-02 11:46:48.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'4148ec82b6acd69f470bea75fe41c357', N'2a470fc0c3954d9dbb61de6d80846549', N'单表模型示例', N'/jeecg/jeecgDemoList', N'jeecg/JeecgDemoList', N'DemoList', NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, NULL, N'2018-12-28 15:57:30.0000000', N'admin', N'2019-02-15 16:24:37.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'4f66409ef3bbd69c1d80469d6e2a885e', N'6e73eb3c26099c191bf03852ee1310a1', N'账户绑定', N'/account/settings/binding', N'account/settings/Binding', NULL, NULL, N'1', N'BindingSettings', NULL, NULL, NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-26 19:01:20.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'418964ba087b90a84897b62474496b93', N'540a2936940846cb98114ffb0d145cb8', N'查询表格', N'/list/query-list', N'list/TableList', NULL, NULL, N'1', NULL, NULL, N'1', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'4f84f9400e5e92c95f05b554724c2b58', N'540a2936940846cb98114ffb0d145cb8', N'角色列表', N'/list/role-list', N'list/RoleList', NULL, NULL, N'1', NULL, NULL, N'4', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'4356a1a67b564f0988a484f5531fd4d9', N'2a470fc0c3954d9dbb61de6d80846549', N'内嵌Table', N'/jeecg/TableExpandeSub', N'jeecg/TableExpandeSub', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-04 22:48:13.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'53a9230444d33de28aa11cc108fb1dba', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'我的消息', N'/isps/userAnnouncement', N'system/UserAnnouncementList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-19 10:16:00.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'45c966826eeff4c99b8f8ebfe74511fc', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'部门管理', N'/isystem/depart', N'system/DepartList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-01-29 18:47:40.0000000', N'admin', N'2019-03-07 19:23:16.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'54097c6a3cf50fad0793a34beff1efdf', N'e41b69c57a941a3bbcce45032fe57605', N'AUTO在线表单', N'/online/cgformList/:code', N'modules/online/cgform/auto/OnlCgformAutoList', NULL, NULL, N'1', NULL, NULL, N'9', N'0', NULL, N'1', N'1', NULL, N'1', NULL, N'admin', N'2019-03-19 16:03:06.0000000', N'admin', N'2019-04-30 18:19:03.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'4875ebe289344e14844d8e3ea1edd73f', N'', N'详情页', N'/profile', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'8', N'0', N'profile', N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-04-02 11:46:48.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'540a2936940846cb98114ffb0d145cb8', N'', N'列表页', N'/list', N'layouts/PageView', NULL, N'/list/query-list', N'0', NULL, NULL, N'9', N'0', N'table', N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-03-31 22:20:20.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'4f66409ef3bbd69c1d80469d6e2a885e', N'6e73eb3c26099c191bf03852ee1310a1', N'账户绑定', N'/account/settings/binding', N'account/settings/Binding', NULL, NULL, N'1', N'BindingSettings', NULL, NULL, NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-26 19:01:20.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'54dd5457a3190740005c1bfec55b1c34', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'菜单管理', N'/isystem/permission', N'system/PermissionList', NULL, NULL, N'1', NULL, NULL, N'3', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'4f84f9400e5e92c95f05b554724c2b58', N'540a2936940846cb98114ffb0d145cb8', N'角色列表', N'/list/role-list', N'list/RoleList', NULL, NULL, N'1', NULL, NULL, N'4', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'58857ff846e61794c69208e9d3a85466', N'08e6b9dc3c04489c8e1ff2ce6f105aa4', N'日志管理', N'/isystem/log', N'system/LogList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', N'', N'1', N'1', NULL, N'0', NULL, NULL, N'2018-12-26 10:11:18.0000000', N'admin', N'2019-04-02 11:38:17.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'53a9230444d33de28aa11cc108fb1dba', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'我的消息', N'/isps/userAnnouncement', N'system/UserAnnouncementList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-19 10:16:00.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'58b9204feaf07e47284ddb36cd2d8468', N'2a470fc0c3954d9dbb61de6d80846549', N'图片翻页', N'/jeecg/imgTurnPage', N'jeecg/ImgTurnPage', NULL, NULL, N'1', NULL, NULL, N'4', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-25 11:36:42.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'54097c6a3cf50fad0793a34beff1efdf', N'e41b69c57a941a3bbcce45032fe57605', N'AUTO在线表单', N'/online/cgformList/:code', N'modules/online/cgform/auto/OnlCgformAutoList', NULL, NULL, N'1', NULL, NULL, N'9', N'0', NULL, N'1', N'1', NULL, N'1', NULL, N'admin', N'2019-03-19 16:03:06.0000000', N'admin', N'2019-04-30 18:19:03.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'5c2f42277948043026b7a14692456828', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'我的部门', N'/isystem/departUserList', N'system/DepartUserList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-17 15:12:24.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'540a2936940846cb98114ffb0d145cb8', N'', N'列表页', N'/list', N'layouts/PageView', NULL, N'/list/query-list', N'0', NULL, NULL, N'9', N'0', N'table', N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-03-31 22:20:20.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'5c8042bd6c601270b2bbd9b20bccc68b', N'', N'消息中心', N'/message', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'6', N'0', N'message', N'1', N'0', NULL, N'0', NULL, N'admin', N'2019-04-09 11:05:04.0000000', N'admin', N'2019-04-11 19:47:54.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'54dd5457a3190740005c1bfec55b1c34', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'菜单管理', N'/isystem/permission', N'system/PermissionList', NULL, NULL, N'1', NULL, NULL, N'3', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'6531cf3421b1265aeeeabaab5e176e6d', N'e3c13679c73a4f829bcff2aba8fd68b1', N'分步表单', N'/form/step-form', N'form/stepForm/StepForm', NULL, NULL, N'1', NULL, NULL, N'2', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'58857ff846e61794c69208e9d3a85466', N'08e6b9dc3c04489c8e1ff2ce6f105aa4', N'日志管理', N'/isystem/log', N'system/LogList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', N'', N'1', N'1', NULL, N'0', NULL, NULL, N'2018-12-26 10:11:18.0000000', N'admin', N'2019-04-02 11:38:17.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'655563cd64b75dcf52ef7bcdd4836953', N'2a470fc0c3954d9dbb61de6d80846549', N'图片预览', N'/jeecg/ImagPreview', N'jeecg/ImagPreview', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-17 11:18:45.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'58b9204feaf07e47284ddb36cd2d8468', N'2a470fc0c3954d9dbb61de6d80846549', N'图片翻页', N'/jeecg/imgTurnPage', N'jeecg/ImgTurnPage', NULL, NULL, N'1', NULL, NULL, N'4', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-25 11:36:42.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'65a8f489f25a345836b7f44b1181197a', N'c65321e57b7949b7a975313220de0422', N'403', N'/exception/403', N'exception/403', NULL, NULL, N'1', NULL, NULL, N'1', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'5c2f42277948043026b7a14692456828', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'我的部门', N'/isystem/departUserList', N'system/DepartUserList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-17 15:12:24.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'6ad53fd1b220989a8b71ff482d683a5a', N'2a470fc0c3954d9dbb61de6d80846549', N'一对多Tab示例', N'/jeecg/tablist/JeecgOrderDMainList', N'jeecg/tablist/JeecgOrderDMainList', NULL, NULL, N'1', NULL, NULL, N'2', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-02-20 14:45:09.0000000', N'admin', N'2019-02-21 16:26:21.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'5c8042bd6c601270b2bbd9b20bccc68b', N'', N'消息中心', N'/message', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'6', N'0', N'message', N'1', N'0', NULL, N'0', NULL, N'admin', N'2019-04-09 11:05:04.0000000', N'admin', N'2019-04-11 19:47:54.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'6e73eb3c26099c191bf03852ee1310a1', N'717f6bee46f44a3897eca9abd6e2ec44', N'个人设置', N'/account/settings/base', N'account/settings/Index', NULL, NULL, N'1', NULL, NULL, N'2', N'1', NULL, N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-04-19 09:41:05.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'6531cf3421b1265aeeeabaab5e176e6d', N'e3c13679c73a4f829bcff2aba8fd68b1', N'分步表单', N'/form/step-form', N'form/stepForm/StepForm', NULL, NULL, N'1', NULL, NULL, N'2', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'700b7f95165c46cc7a78bf227aa8fed3', N'08e6b9dc3c04489c8e1ff2ce6f105aa4', N'性能监控', N'/monitor', N'layouts/RouteView', NULL, NULL, N'1', NULL, NULL, N'0', N'0', NULL, N'1', N'0', NULL, N'0', NULL, N'admin', N'2019-04-02 11:34:34.0000000', N'admin', N'2019-05-05 17:49:47.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'655563cd64b75dcf52ef7bcdd4836953', N'2a470fc0c3954d9dbb61de6d80846549', N'图片预览', N'/jeecg/ImagPreview', N'jeecg/ImagPreview', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-17 11:18:45.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'717f6bee46f44a3897eca9abd6e2ec44', NULL, N'个人页', N'/account', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'9', N'0', N'user', N'1', N'0', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'65a8f489f25a345836b7f44b1181197a', N'c65321e57b7949b7a975313220de0422', N'403', N'/exception/403', N'exception/403', NULL, NULL, N'1', NULL, NULL, N'1', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'73678f9daa45ed17a3674131b03432fb', N'540a2936940846cb98114ffb0d145cb8', N'权限列表', N'/list/permission-list', N'list/PermissionList', NULL, NULL, N'1', NULL, NULL, N'5', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'6ad53fd1b220989a8b71ff482d683a5a', N'2a470fc0c3954d9dbb61de6d80846549', N'一对多Tab示例', N'/jeecg/tablist/JeecgOrderDMainList', N'jeecg/tablist/JeecgOrderDMainList', NULL, NULL, N'1', NULL, NULL, N'2', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-02-20 14:45:09.0000000', N'admin', N'2019-02-21 16:26:21.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'7593c9e3523a17bca83b8d7fe8a34e58', N'3f915b2769fc80648e92d04e84ca059d', N'添加用户按钮', N'', NULL, NULL, NULL, N'2', N'user:add', N'1', N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-03-16 11:20:33.0000000', N'admin', N'2019-05-17 18:31:25.0000000', N'0', N'0', N'1')
+INSERT INTO [dbo].[sys_permission]  VALUES (N'6e73eb3c26099c191bf03852ee1310a1', N'717f6bee46f44a3897eca9abd6e2ec44', N'个人设置', N'/account/settings/base', N'account/settings/Index', NULL, NULL, N'1', NULL, NULL, N'2', N'1', NULL, N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-04-19 09:41:05.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'7960961b0063228937da5fa8dd73d371', N'2a470fc0c3954d9dbb61de6d80846549', N'JEditableTable示例', N'/jeecg/JEditableTable', N'jeecg/JeecgEditableTableExample', NULL, NULL, N'1', NULL, NULL, N'7', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-03-22 15:22:18.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'700b7f95165c46cc7a78bf227aa8fed3', N'08e6b9dc3c04489c8e1ff2ce6f105aa4', N'性能监控', N'/monitor', N'layouts/RouteView', NULL, NULL, N'1', NULL, NULL, N'0', N'0', NULL, N'1', N'0', NULL, N'0', NULL, N'admin', N'2019-04-02 11:34:34.0000000', N'admin', N'2019-05-05 17:49:47.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'7ac9eb9ccbde2f7a033cd4944272bf1e', N'540a2936940846cb98114ffb0d145cb8', N'卡片列表', N'/list/card', N'list/CardList', NULL, NULL, N'1', NULL, NULL, N'7', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'717f6bee46f44a3897eca9abd6e2ec44', NULL, N'个人页', N'/account', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'9', N'0', N'user', N'1', N'0', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'841057b8a1bef8f6b4b20f9a618a7fa6', N'08e6b9dc3c04489c8e1ff2ce6f105aa4', N'数据日志', N'/sys/dataLog-list', N'system/DataLogList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-03-11 19:26:49.0000000', N'admin', N'2019-03-12 11:40:47.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'73678f9daa45ed17a3674131b03432fb', N'540a2936940846cb98114ffb0d145cb8', N'权限列表', N'/list/permission-list', N'list/PermissionList', NULL, NULL, N'1', NULL, NULL, N'5', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'882a73768cfd7f78f3a37584f7299656', N'6e73eb3c26099c191bf03852ee1310a1', N'个性化设置', N'/account/settings/custom', N'account/settings/Custom', NULL, NULL, N'1', N'CustomSettings', NULL, NULL, NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-26 19:00:46.0000000', NULL, N'2018-12-26 21:13:25.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'7593c9e3523a17bca83b8d7fe8a34e58', N'3f915b2769fc80648e92d04e84ca059d', N'添加用户按钮', N'', NULL, NULL, NULL, N'2', N'user:add', N'1', N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-03-16 11:20:33.0000000', N'admin', N'2019-05-17 18:31:25.0000000', N'0', N'0', N'1', NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'8b3bff2eee6f1939147f5c68292a1642', N'700b7f95165c46cc7a78bf227aa8fed3', N'服务器信息', N'/monitor/SystemInfo', N'modules/monitor/SystemInfo', NULL, NULL, N'1', NULL, NULL, N'4', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-02 11:39:19.0000000', N'admin', N'2019-04-02 15:40:02.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'7960961b0063228937da5fa8dd73d371', N'2a470fc0c3954d9dbb61de6d80846549', N'JEditableTable示例', N'/jeecg/JEditableTable', N'jeecg/JeecgEditableTableExample', NULL, NULL, N'1', NULL, NULL, N'7', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-03-22 15:22:18.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'8d1ebd663688965f1fd86a2f0ead3416', N'700b7f95165c46cc7a78bf227aa8fed3', N'Redis监控', N'/monitor/redis/info', N'modules/monitor/RedisInfo', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-02 13:11:33.0000000', N'admin', N'2019-05-07 15:18:54.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'7ac9eb9ccbde2f7a033cd4944272bf1e', N'540a2936940846cb98114ffb0d145cb8', N'卡片列表', N'/list/card', N'list/CardList', NULL, NULL, N'1', NULL, NULL, N'7', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'8d4683aacaa997ab86b966b464360338', N'e41b69c57a941a3bbcce45032fe57605', N'Online表单开发', N'/online/cgform', N'modules/online/cgform/OnlCgformHeadList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'0', NULL, N'0', NULL, N'admin', N'2019-03-12 15:48:14.0000000', N'admin', N'2019-06-11 14:19:17.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'841057b8a1bef8f6b4b20f9a618a7fa6', N'08e6b9dc3c04489c8e1ff2ce6f105aa4', N'数据日志', N'/sys/dataLog-list', N'system/DataLogList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-03-11 19:26:49.0000000', N'admin', N'2019-03-12 11:40:47.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'8fb8172747a78756c11916216b8b8066', N'717f6bee46f44a3897eca9abd6e2ec44', N'工作台', N'/dashboard/workplace', N'dashboard/Workplace', NULL, NULL, N'1', NULL, NULL, N'3', N'0', NULL, N'1', N'1', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-04-02 11:45:02.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'882a73768cfd7f78f3a37584f7299656', N'6e73eb3c26099c191bf03852ee1310a1', N'个性化设置', N'/account/settings/custom', N'account/settings/Custom', NULL, NULL, N'1', N'CustomSettings', NULL, NULL, NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-26 19:00:46.0000000', NULL, N'2018-12-26 21:13:25.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'944abf0a8fc22fe1f1154a389a574154', N'5c8042bd6c601270b2bbd9b20bccc68b', N'消息管理', N'/modules/message/sysMessageList', N'modules/message/SysMessageList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-09 11:27:53.0000000', N'admin', N'2019-04-09 19:31:23.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'8b3bff2eee6f1939147f5c68292a1642', N'700b7f95165c46cc7a78bf227aa8fed3', N'服务器信息', N'/monitor/SystemInfo', N'modules/monitor/SystemInfo', NULL, NULL, N'1', NULL, NULL, N'4', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-02 11:39:19.0000000', N'admin', N'2019-04-02 15:40:02.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'9502685863ab87f0ad1134142788a385', N'', N'首页', N'/dashboard/analysis', N'dashboard/Analysis', NULL, NULL, N'0', NULL, NULL, N'0', N'0', N'home', N'1', N'1', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-03-29 11:04:13.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'8d1ebd663688965f1fd86a2f0ead3416', N'700b7f95165c46cc7a78bf227aa8fed3', N'Redis监控', N'/monitor/redis/info', N'modules/monitor/RedisInfo', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-02 13:11:33.0000000', N'admin', N'2019-05-07 15:18:54.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'97c8629abc7848eccdb6d77c24bb3ebb', N'700b7f95165c46cc7a78bf227aa8fed3', N'磁盘监控', N'/monitor/Disk', N'modules/monitor/DiskMonitoring', NULL, NULL, N'1', NULL, NULL, N'6', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-25 14:30:06.0000000', N'admin', N'2019-05-05 14:37:14.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'8d4683aacaa997ab86b966b464360338', N'e41b69c57a941a3bbcce45032fe57605', N'Online表单开发', N'/online/cgform', N'modules/online/cgform/OnlCgformHeadList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'0', NULL, N'0', NULL, N'admin', N'2019-03-12 15:48:14.0000000', N'admin', N'2019-06-11 14:19:17.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'9a90363f216a6a08f32eecb3f0bf12a3', N'2a470fc0c3954d9dbb61de6d80846549', N'常用选择组件', N'/jeecg/SelectDemo', N'jeecg/SelectDemo', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-03-19 11:19:05.0000000', N'admin', N'2019-04-10 15:36:50.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'8fb8172747a78756c11916216b8b8066', N'717f6bee46f44a3897eca9abd6e2ec44', N'工作台', N'/dashboard/workplace', N'dashboard/Workplace', NULL, NULL, N'1', NULL, NULL, N'3', N'0', NULL, N'1', N'1', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-04-02 11:45:02.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'9cb91b8851db0cf7b19d7ecc2a8193dd', N'1939e035e803a99ceecb6f5563570fb2', N'我的任务表单', N'/modules/bpm/task/form/FormModule', N'modules/bpm/task/form/FormModule', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-03-08 16:49:05.0000000', N'admin', N'2019-03-08 18:37:56.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'944abf0a8fc22fe1f1154a389a574154', N'5c8042bd6c601270b2bbd9b20bccc68b', N'消息管理', N'/modules/message/sysMessageList', N'modules/message/SysMessageList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-09 11:27:53.0000000', N'admin', N'2019-04-09 19:31:23.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'a400e4f4d54f79bf5ce160ae432231af', N'2a470fc0c3954d9dbb61de6d80846549', N'百度', N'http://www.baidu.com', N'layouts/IframePageView', NULL, NULL, N'1', NULL, NULL, N'4', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-01-29 19:44:06.0000000', N'admin', N'2019-02-15 16:25:02.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'9502685863ab87f0ad1134142788a385', N'', N'首页', N'/dashboard/analysis', N'dashboard/Analysis', NULL, NULL, N'0', NULL, NULL, N'0', N'0', N'home', N'1', N'1', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-03-29 11:04:13.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'ae4fed059f67086fd52a73d913cf473d', N'540a2936940846cb98114ffb0d145cb8', N'内联编辑表格', N'/list/edit-table', N'list/TableInnerEditList', NULL, NULL, N'1', NULL, NULL, N'2', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'97c8629abc7848eccdb6d77c24bb3ebb', N'700b7f95165c46cc7a78bf227aa8fed3', N'磁盘监控', N'/monitor/Disk', N'modules/monitor/DiskMonitoring', NULL, NULL, N'1', NULL, NULL, N'6', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-25 14:30:06.0000000', N'admin', N'2019-05-05 14:37:14.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'aedbf679b5773c1f25e9f7b10111da73', N'08e6b9dc3c04489c8e1ff2ce6f105aa4', N'SQL监控', N'{{ window._CONFIG[''domianURL''] }}/druid/', N'layouts/IframePageView', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-01-30 09:43:22.0000000', N'admin', N'2019-03-23 19:00:46.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'9a90363f216a6a08f32eecb3f0bf12a3', N'2a470fc0c3954d9dbb61de6d80846549', N'常用选择组件', N'/jeecg/SelectDemo', N'jeecg/SelectDemo', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-03-19 11:19:05.0000000', N'admin', N'2019-04-10 15:36:50.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'b1cb0a3fedf7ed0e4653cb5a229837ee', N'08e6b9dc3c04489c8e1ff2ce6f105aa4', N'定时任务', N'/isystem/QuartzJobList', N'system/QuartzJobList', NULL, NULL, N'1', NULL, NULL, N'3', N'0', NULL, N'1', N'1', NULL, N'0', NULL, NULL, N'2019-01-03 09:38:52.0000000', N'admin', N'2019-04-02 10:24:13.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'9cb91b8851db0cf7b19d7ecc2a8193dd', N'1939e035e803a99ceecb6f5563570fb2', N'我的任务表单', N'/modules/bpm/task/form/FormModule', N'modules/bpm/task/form/FormModule', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-03-08 16:49:05.0000000', N'admin', N'2019-03-08 18:37:56.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'b3c824fc22bd953e2eb16ae6914ac8f9', N'4875ebe289344e14844d8e3ea1edd73f', N'高级详情页', N'/profile/advanced', N'profile/advanced/Advanced', NULL, NULL, N'1', NULL, NULL, N'2', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'a400e4f4d54f79bf5ce160ae432231af', N'2a470fc0c3954d9dbb61de6d80846549', N'百度', N'http://www.baidu.com', N'layouts/IframePageView', NULL, NULL, N'1', NULL, NULL, N'4', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-01-29 19:44:06.0000000', N'admin', N'2019-02-15 16:25:02.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'b4dfc7d5dd9e8d5b6dd6d4579b1aa559', N'c65321e57b7949b7a975313220de0422', N'500', N'/exception/500', N'exception/500', NULL, NULL, N'1', NULL, NULL, N'3', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'ae4fed059f67086fd52a73d913cf473d', N'540a2936940846cb98114ffb0d145cb8', N'内联编辑表格', N'/list/edit-table', N'list/TableInnerEditList', NULL, NULL, N'1', NULL, NULL, N'2', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'b6bcee2ccc854052d3cc3e9c96d90197', N'71102b3b87fb07e5527bbd2c530dd90a', N'加班申请', N'/modules/extbpm/joa/JoaOvertimeList', N'modules/extbpm/joa/JoaOvertimeList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-03 15:33:10.0000000', N'admin', N'2019-04-03 15:34:48.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'aedbf679b5773c1f25e9f7b10111da73', N'08e6b9dc3c04489c8e1ff2ce6f105aa4', N'SQL监控', N'{{ window._CONFIG[''domianURL''] }}/druid/', N'layouts/IframePageView', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-01-30 09:43:22.0000000', N'admin', N'2019-03-23 19:00:46.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'c431130c0bc0ec71b0a5be37747bb36a', N'2a470fc0c3954d9dbb61de6d80846549', N'一对多JEditable', N'/jeecg/JeecgOrderMainListForJEditableTable', N'jeecg/JeecgOrderMainListForJEditableTable', NULL, NULL, N'1', NULL, NULL, N'3', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-03-29 10:51:59.0000000', N'admin', N'2019-04-04 20:09:39.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'b1cb0a3fedf7ed0e4653cb5a229837ee', N'08e6b9dc3c04489c8e1ff2ce6f105aa4', N'定时任务', N'/isystem/QuartzJobList', N'system/QuartzJobList', NULL, NULL, N'1', NULL, NULL, N'3', N'0', NULL, N'1', N'1', NULL, N'0', NULL, NULL, N'2019-01-03 09:38:52.0000000', N'admin', N'2019-04-02 10:24:13.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'c65321e57b7949b7a975313220de0422', NULL, N'异常页', N'/exception', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'8', NULL, N'warning', N'1', N'0', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'b3c824fc22bd953e2eb16ae6914ac8f9', N'4875ebe289344e14844d8e3ea1edd73f', N'高级详情页', N'/profile/advanced', N'profile/advanced/Advanced', NULL, NULL, N'1', NULL, NULL, N'2', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'c6cf95444d80435eb37b2f9db3971ae6', N'2a470fc0c3954d9dbb61de6d80846549', N'数据回执模拟', N'/jeecg/InterfaceTest', N'jeecg/InterfaceTest', NULL, NULL, N'1', NULL, NULL, N'6', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-02-19 16:02:23.0000000', N'admin', N'2019-02-21 16:25:45.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'b4dfc7d5dd9e8d5b6dd6d4579b1aa559', N'c65321e57b7949b7a975313220de0422', N'500', N'/exception/500', N'exception/500', NULL, NULL, N'1', NULL, NULL, N'3', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'cc50656cf9ca528e6f2150eba4714ad2', N'4875ebe289344e14844d8e3ea1edd73f', N'基础详情页', N'/profile/basic', N'profile/basic/Index', NULL, NULL, N'1', NULL, NULL, N'1', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'b6bcee2ccc854052d3cc3e9c96d90197', N'71102b3b87fb07e5527bbd2c530dd90a', N'加班申请', N'/modules/extbpm/joa/JoaOvertimeList', N'modules/extbpm/joa/JoaOvertimeList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-03 15:33:10.0000000', N'admin', N'2019-04-03 15:34:48.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'd07a2c87a451434c99ab06296727ec4f', N'700b7f95165c46cc7a78bf227aa8fed3', N'JVM信息', N'/monitor/JvmInfo', N'modules/monitor/JvmInfo', NULL, NULL, N'1', NULL, NULL, N'4', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-01 23:07:48.0000000', N'admin', N'2019-04-02 11:37:16.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'c431130c0bc0ec71b0a5be37747bb36a', N'2a470fc0c3954d9dbb61de6d80846549', N'一对多JEditable', N'/jeecg/JeecgOrderMainListForJEditableTable', N'jeecg/JeecgOrderMainListForJEditableTable', NULL, NULL, N'1', NULL, NULL, N'3', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-03-29 10:51:59.0000000', N'admin', N'2019-04-04 20:09:39.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'd2bbf9ebca5a8fa2e227af97d2da7548', N'c65321e57b7949b7a975313220de0422', N'404', N'/exception/404', N'exception/404', NULL, NULL, N'1', NULL, NULL, N'2', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'c65321e57b7949b7a975313220de0422', NULL, N'异常页', N'/exception', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'8', NULL, N'warning', N'1', N'0', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'', N'系统管理', N'/isystem', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'4', N'0', N'setting', N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-03-31 22:19:52.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'c6cf95444d80435eb37b2f9db3971ae6', N'2a470fc0c3954d9dbb61de6d80846549', N'数据回执模拟', N'/jeecg/InterfaceTest', N'jeecg/InterfaceTest', NULL, NULL, N'1', NULL, NULL, N'6', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-02-19 16:02:23.0000000', N'admin', N'2019-02-21 16:25:45.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'd86f58e7ab516d3bc6bfb1fe10585f97', N'717f6bee46f44a3897eca9abd6e2ec44', N'个人中心', N'/account/center', N'account/center/Index', NULL, NULL, N'1', NULL, NULL, N'1', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'cc50656cf9ca528e6f2150eba4714ad2', N'4875ebe289344e14844d8e3ea1edd73f', N'基础详情页', N'/profile/basic', N'profile/basic/Index', NULL, NULL, N'1', NULL, NULL, N'1', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'de13e0f6328c069748de7399fcc1dbbd', N'fb07ca05a3e13674dbf6d3245956da2e', N'搜索列表（项目）', N'/list/search/project', N'list/TableList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-02-12 14:01:40.0000000', N'admin', N'2019-02-12 14:14:18.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'd07a2c87a451434c99ab06296727ec4f', N'700b7f95165c46cc7a78bf227aa8fed3', N'JVM信息', N'/monitor/JvmInfo', N'modules/monitor/JvmInfo', NULL, NULL, N'1', NULL, NULL, N'4', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-01 23:07:48.0000000', N'admin', N'2019-04-02 11:37:16.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'e08cb190ef230d5d4f03824198773950', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'系统通告', N'/isystem/annountCement', N'system/SysAnnouncementList', NULL, NULL, N'1', N'annountCement', NULL, N'6', NULL, N'', N'1', N'1', NULL, NULL, NULL, NULL, N'2019-01-02 17:23:01.0000000', NULL, N'2019-01-02 17:31:23.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'd2bbf9ebca5a8fa2e227af97d2da7548', N'c65321e57b7949b7a975313220de0422', N'404', N'/exception/404', N'exception/404', NULL, NULL, N'1', NULL, NULL, N'2', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'e1979bb53e9ea51cecc74d86fd9d2f64', N'2a470fc0c3954d9dbb61de6d80846549', N'PDF预览', N'/jeecg/jeecgPdfView', N'jeecg/JeecgPdfView', NULL, NULL, N'1', NULL, NULL, N'3', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-25 10:39:35.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'', N'系统管理', N'/isystem', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'4', N'0', N'setting', N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-03-31 22:19:52.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'e3c13679c73a4f829bcff2aba8fd68b1', N'', N'表单页', N'/form', N'layouts/PageView', NULL, NULL, N'0', NULL, NULL, N'9', N'0', N'form', N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-03-31 22:20:14.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'd86f58e7ab516d3bc6bfb1fe10585f97', N'717f6bee46f44a3897eca9abd6e2ec44', N'个人中心', N'/account/center', N'account/center/Index', NULL, NULL, N'1', NULL, NULL, N'1', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'e41b69c57a941a3bbcce45032fe57605', N'', N'在线开发', N'/online', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'5', N'0', N'cloud', N'1', N'0', NULL, N'0', NULL, N'admin', N'2019-03-08 10:43:10.0000000', N'admin', N'2019-05-11 10:36:01.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'de13e0f6328c069748de7399fcc1dbbd', N'fb07ca05a3e13674dbf6d3245956da2e', N'搜索列表（项目）', N'/list/search/project', N'list/TableList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-02-12 14:01:40.0000000', N'admin', N'2019-02-12 14:14:18.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'e5973686ed495c379d829ea8b2881fc6', N'e3c13679c73a4f829bcff2aba8fd68b1', N'高级表单', N'/form/advanced-form', N'form/advancedForm/AdvancedForm', NULL, NULL, N'1', NULL, NULL, N'3', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'e08cb190ef230d5d4f03824198773950', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'系统通告', N'/isystem/annountCement', N'system/SysAnnouncementList', NULL, NULL, N'1', N'annountCement', NULL, N'6', NULL, N'', N'1', N'1', NULL, NULL, NULL, NULL, N'2019-01-02 17:23:01.0000000', NULL, N'2019-01-02 17:31:23.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'e6bfd1fcabfd7942fdd05f076d1dad38', N'2a470fc0c3954d9dbb61de6d80846549', N'打印测试', N'/jeecg/PrintDemo', N'jeecg/PrintDemo', NULL, NULL, N'1', NULL, NULL, N'3', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-02-19 15:58:48.0000000', N'admin', N'2019-05-07 20:14:39.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'e1979bb53e9ea51cecc74d86fd9d2f64', N'2a470fc0c3954d9dbb61de6d80846549', N'PDF预览', N'/jeecg/jeecgPdfView', N'jeecg/JeecgPdfView', NULL, NULL, N'1', NULL, NULL, N'3', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-25 10:39:35.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'e8af452d8948ea49d37c934f5100ae6a', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'角色管理', N'/isystem/role', N'system/RoleList', NULL, NULL, N'1', NULL, NULL, N'2', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'e3c13679c73a4f829bcff2aba8fd68b1', N'', N'表单页', N'/form', N'layouts/PageView', NULL, NULL, N'0', NULL, NULL, N'9', N'0', N'form', N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-03-31 22:20:14.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'ebb9d82ea16ad864071158e0c449d186', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'分类字典', N'/isys/category', N'system/SysCategoryList', NULL, NULL, N'1', NULL, N'1', N'5', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-05-29 18:48:07.0000000', N'admin', N'2019-05-29 18:48:27.0000000', N'0', N'0', N'1')
+INSERT INTO [dbo].[sys_permission]  VALUES (N'e41b69c57a941a3bbcce45032fe57605', N'', N'在线开发', N'/online', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'5', N'0', N'cloud', N'1', N'0', NULL, N'0', NULL, N'admin', N'2019-03-08 10:43:10.0000000', N'admin', N'2019-05-11 10:36:01.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'ec8d607d0156e198b11853760319c646', N'6e73eb3c26099c191bf03852ee1310a1', N'安全设置', N'/account/settings/security', N'account/settings/Security', NULL, NULL, N'1', N'SecuritySettings', NULL, NULL, NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-26 18:59:52.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'e5973686ed495c379d829ea8b2881fc6', N'e3c13679c73a4f829bcff2aba8fd68b1', N'高级表单', N'/form/advanced-form', N'form/advancedForm/AdvancedForm', NULL, NULL, N'1', NULL, NULL, N'3', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'f0675b52d89100ee88472b6800754a08', N'', N'统计报表', N'/report', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'1', N'0', N'bar-chart', N'1', N'0', NULL, N'0', NULL, N'admin', N'2019-04-03 18:32:02.0000000', N'admin', N'2019-05-19 18:34:13.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'e6bfd1fcabfd7942fdd05f076d1dad38', N'2a470fc0c3954d9dbb61de6d80846549', N'打印测试', N'/jeecg/PrintDemo', N'jeecg/PrintDemo', NULL, NULL, N'1', NULL, NULL, N'3', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-02-19 15:58:48.0000000', N'admin', N'2019-05-07 20:14:39.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'f1cb187abf927c88b89470d08615f5ac', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'数据字典', N'/isystem/dict', N'system/DictList', NULL, NULL, N'1', NULL, NULL, N'5', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-28 13:54:43.0000000', NULL, N'2018-12-28 15:37:54.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'e8af452d8948ea49d37c934f5100ae6a', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'角色管理', N'/isystem/role', N'system/RoleList', NULL, NULL, N'1', NULL, NULL, N'2', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'f23d9bfff4d9aa6b68569ba2cff38415', N'540a2936940846cb98114ffb0d145cb8', N'标准列表', N'/list/basic-list', N'list/StandardList', NULL, NULL, N'1', NULL, NULL, N'6', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'ebb9d82ea16ad864071158e0c449d186', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'分类字典', N'/isys/category', N'system/SysCategoryList', NULL, NULL, N'1', NULL, N'1', N'5', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-05-29 18:48:07.0000000', N'admin', N'2019-05-29 18:48:27.0000000', N'0', N'0', N'1', NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'f780d0d3083d849ccbdb1b1baee4911d', N'5c8042bd6c601270b2bbd9b20bccc68b', N'模板管理', N'/modules/message/sysMessageTemplateList', N'modules/message/SysMessageTemplateList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-09 11:50:31.0000000', N'admin', N'2019-04-12 10:16:34.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'ec8d607d0156e198b11853760319c646', N'6e73eb3c26099c191bf03852ee1310a1', N'安全设置', N'/account/settings/security', N'account/settings/Security', NULL, NULL, N'1', N'SecuritySettings', NULL, NULL, NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-26 18:59:52.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'fb07ca05a3e13674dbf6d3245956da2e', N'540a2936940846cb98114ffb0d145cb8', N'搜索列表', N'/list/search', N'list/search/SearchLayout', NULL, N'/list/search/article', N'1', NULL, NULL, N'8', N'0', NULL, N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-02-12 15:09:13.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'f0675b52d89100ee88472b6800754a08', N'', N'统计报表', N'/report', N'layouts/RouteView', NULL, NULL, N'0', NULL, NULL, N'1', N'0', N'bar-chart', N'1', N'0', NULL, N'0', NULL, N'admin', N'2019-04-03 18:32:02.0000000', N'admin', N'2019-05-19 18:34:13.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'fb367426764077dcf94640c843733985', N'2a470fc0c3954d9dbb61de6d80846549', N'一对多示例', N'/jeecg/JeecgOrderMainList', N'jeecg/JeecgOrderMainList', NULL, NULL, N'1', NULL, NULL, N'2', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-02-15 16:24:11.0000000', N'admin', N'2019-02-18 10:50:14.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'f1cb187abf927c88b89470d08615f5ac', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'数据字典', N'/isystem/dict', N'system/DictList', NULL, NULL, N'1', NULL, NULL, N'5', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-28 13:54:43.0000000', NULL, N'2018-12-28 15:37:54.0000000', N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'fba41089766888023411a978d13c0aa4', N'e41b69c57a941a3bbcce45032fe57605', N'AUTO树表单列表', N'/online/cgformTreeList/:code', N'modules/online/cgform/auto/OnlCgformTreeList', NULL, NULL, N'1', NULL, N'1', N'9', N'0', NULL, N'1', N'1', NULL, N'1', NULL, N'admin', N'2019-05-21 14:46:50.0000000', N'admin', N'2019-06-11 13:52:52.0000000', N'0', N'0', N'1')
+INSERT INTO [dbo].[sys_permission]  VALUES (N'f23d9bfff4d9aa6b68569ba2cff38415', N'540a2936940846cb98114ffb0d145cb8', N'标准列表', N'/list/basic-list', N'list/StandardList', NULL, NULL, N'1', NULL, NULL, N'6', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'fc810a2267dd183e4ef7c71cc60f4670', N'700b7f95165c46cc7a78bf227aa8fed3', N'请求追踪', N'/monitor/HttpTrace', N'modules/monitor/HttpTrace', NULL, NULL, N'1', NULL, NULL, N'4', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-02 09:46:19.0000000', N'admin', N'2019-04-02 11:37:27.0000000', N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'f2849d3814fc97993bfc519ae6bbf049', N'e41b69c57a941a3bbcce45032fe57605', N'AUTO复制表单', N'/online/copyform/:code', N'modules/online/cgform/OnlCgformCopyList', NULL, NULL, N'1', NULL, N'1', N'1', N'0', NULL, N'1', N'1', N'0', N'1', NULL, N'admin', N'2019-08-29 16:05:37.0000000', NULL, NULL, N'0', N'0', N'1', NULL)
 GO
 
-INSERT INTO [dbo].[sys_permission]  VALUES (N'fedfbf4420536cacc0218557d263dfea', N'6e73eb3c26099c191bf03852ee1310a1', N'新消息通知', N'/account/settings/notification', N'account/settings/Notification', NULL, NULL, N'1', N'NotificationSettings', NULL, NULL, NULL, N'', N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-26 19:02:05.0000000', NULL, NULL, N'0', N'0', NULL)
+INSERT INTO [dbo].[sys_permission]  VALUES (N'f780d0d3083d849ccbdb1b1baee4911d', N'5c8042bd6c601270b2bbd9b20bccc68b', N'模板管理', N'/modules/message/sysMessageTemplateList', N'modules/message/SysMessageTemplateList', NULL, NULL, N'1', NULL, NULL, N'1', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-09 11:50:31.0000000', N'admin', N'2019-04-12 10:16:34.0000000', N'0', N'0', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_permission]  VALUES (N'fb07ca05a3e13674dbf6d3245956da2e', N'540a2936940846cb98114ffb0d145cb8', N'搜索列表', N'/list/search', N'list/search/SearchLayout', NULL, N'/list/search/article', N'1', NULL, NULL, N'8', N'0', NULL, N'1', N'0', NULL, N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2019-02-12 15:09:13.0000000', N'0', N'0', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_permission]  VALUES (N'fb367426764077dcf94640c843733985', N'2a470fc0c3954d9dbb61de6d80846549', N'一对多示例', N'/jeecg/JeecgOrderMainList', N'jeecg/JeecgOrderMainList', NULL, NULL, N'1', NULL, NULL, N'2', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-02-15 16:24:11.0000000', N'admin', N'2019-02-18 10:50:14.0000000', N'0', N'0', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_permission]  VALUES (N'fba41089766888023411a978d13c0aa4', N'e41b69c57a941a3bbcce45032fe57605', N'AUTO树表单列表', N'/online/cgformTreeList/:code', N'modules/online/cgform/auto/OnlCgformTreeList', NULL, NULL, N'1', NULL, N'1', N'9', N'0', NULL, N'1', N'1', NULL, N'1', NULL, N'admin', N'2019-05-21 14:46:50.0000000', N'admin', N'2019-06-11 13:52:52.0000000', N'0', N'0', N'1', NULL)
+GO
+
+INSERT INTO [dbo].[sys_permission]  VALUES (N'fc810a2267dd183e4ef7c71cc60f4670', N'700b7f95165c46cc7a78bf227aa8fed3', N'请求追踪', N'/monitor/HttpTrace', N'modules/monitor/HttpTrace', NULL, NULL, N'1', NULL, NULL, N'4', N'0', NULL, N'1', N'1', NULL, N'0', NULL, N'admin', N'2019-04-02 09:46:19.0000000', N'admin', N'2019-04-02 11:37:27.0000000', N'0', N'0', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_permission]  VALUES (N'fedfbf4420536cacc0218557d263dfea', N'6e73eb3c26099c191bf03852ee1310a1', N'新消息通知', N'/account/settings/notification', N'account/settings/Notification', NULL, NULL, N'1', N'NotificationSettings', NULL, NULL, NULL, N'', N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-26 19:02:05.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
 
@@ -7963,6 +8253,101 @@ INSERT INTO [dbo].[sys_permission_data_rule]  VALUES (N'a7d661ef5ac168b2b162420c
 GO
 
 INSERT INTO [dbo].[sys_permission_data_rule]  VALUES (N'f852d85d47f224990147f2284c0c0005', NULL, N'小于', N'test', N'<=', N'11', N'1', N'2014-08-20 14:43:52.0000000', N'8a8ab0b246dc81120146dc8181950052', NULL, NULL)
+GO
+
+
+-- ----------------------------
+-- Table structure for sys_position
+-- ----------------------------
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[sys_position]') AND type IN ('U'))
+	DROP TABLE [dbo].[sys_position]
+GO
+
+CREATE TABLE [dbo].[sys_position] (
+  [id] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [code] nvarchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [name] nvarchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [rank] nvarchar(2) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [company_id] nvarchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [create_by] nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [create_time] datetime2(7)  NULL,
+  [update_by] nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [update_time] datetime2(7)  NULL,
+  [sys_org_code] nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL
+)
+GO
+
+ALTER TABLE [dbo].[sys_position] SET (LOCK_ESCALATION = TABLE)
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'职务编码',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_position',
+'COLUMN', N'code'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'职务名称',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_position',
+'COLUMN', N'name'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'职级',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_position',
+'COLUMN', N'rank'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'公司id',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_position',
+'COLUMN', N'company_id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'创建人',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_position',
+'COLUMN', N'create_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'创建时间',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_position',
+'COLUMN', N'create_time'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'修改人',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_position',
+'COLUMN', N'update_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'修改时间',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_position',
+'COLUMN', N'update_time'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'组织机构编码',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_position',
+'COLUMN', N'sys_org_code'
+GO
+
+
+-- ----------------------------
+-- Records of sys_position
+-- ----------------------------
+INSERT INTO [dbo].[sys_position]  VALUES (N'1185040064792571906', N'devleader', N'研发部经理', N'3', NULL, N'admin', N'2019-10-18 11:49:03.0000000', NULL, NULL, N'A01')
 GO
 
 
@@ -8163,7 +8548,7 @@ GO
 -- ----------------------------
 -- Records of sys_role
 -- ----------------------------
-INSERT INTO [dbo].[sys_role]  VALUES (N'e51758fa916c881624b046d26bd09230', N'人力资源部', N'hr', NULL, N'admin', N'2019-01-21 18:07:24.0000000', N'admin', N'2019-05-20 11:50:01.0000000')
+INSERT INTO [dbo].[sys_role]  VALUES (N'e51758fa916c881624b046d26bd09230', N'人力资源部', N'hr', NULL, N'admin', N'2019-01-21 18:07:24.0000000', N'admin', N'2019-10-18 11:39:43.0000000')
 GO
 
 INSERT INTO [dbo].[sys_role]  VALUES (N'ee8626f80f7c2619917b6236f3a7f02b', N'临时角色', N'test', N'这是新建的临时角色123', NULL, N'2018-12-20 10:59:04.0000000', N'admin', N'2019-02-19 15:08:37.0000000')
@@ -8242,9 +8627,6 @@ GO
 INSERT INTO [dbo].[sys_role_permission]  VALUES (N'0dec36b68c234767cd35466efef3b941', N'ee8626f80f7c2619917b6236f3a7f02b', N'54dd5457a3190740005c1bfec55b1c34', NULL)
 GO
 
-INSERT INTO [dbo].[sys_role_permission]  VALUES (N'0e139e6c1b5b73eee81381ddf0b5a9f3', N'f6817f48af4fb3af11b9e8bf182f618b', N'277bfabef7d76e89b33062b16a9a5020', NULL)
-GO
-
 INSERT INTO [dbo].[sys_role_permission]  VALUES (N'0e1469997af2d3b97fff56a59ee29eeb', N'f6817f48af4fb3af11b9e8bf182f618b', N'e41b69c57a941a3bbcce45032fe57605', NULL)
 GO
 
@@ -8255,6 +8637,15 @@ INSERT INTO [dbo].[sys_role_permission]  VALUES (N'105c2ac10741e56a618a82cd58c46
 GO
 
 INSERT INTO [dbo].[sys_role_permission]  VALUES (N'115a6673ae6c0816d3f60de221520274', N'21c5a3187763729408b40afb0d0fdfa8', N'63b551e81c5956d5c861593d366d8c57', NULL)
+GO
+
+INSERT INTO [dbo].[sys_role_permission]  VALUES (N'1185039870491439105', N'f6817f48af4fb3af11b9e8bf182f618b', N'1174506953255182338', NULL)
+GO
+
+INSERT INTO [dbo].[sys_role_permission]  VALUES (N'1185039870529187841', N'f6817f48af4fb3af11b9e8bf182f618b', N'1174590283938041857', NULL)
+GO
+
+INSERT INTO [dbo].[sys_role_permission]  VALUES (N'1185039870537576450', N'f6817f48af4fb3af11b9e8bf182f618b', N'1166535831146504193', NULL)
 GO
 
 INSERT INTO [dbo].[sys_role_permission]  VALUES (N'126ea9faebeec2b914d6d9bef957afb6', N'f6817f48af4fb3af11b9e8bf182f618b', N'f1cb187abf927c88b89470d08615f5ac', NULL)
@@ -9556,6 +9947,9 @@ CREATE TABLE [dbo].[sys_user] (
   [status] tinyint  NULL,
   [del_flag] tinyint  NULL,
   [activiti_sync] tinyint  NULL,
+  [work_no] nvarchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [post] nvarchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [telephone] nvarchar(45) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
   [create_by] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
   [create_time] datetime2(7)  NULL,
   [update_by] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
@@ -9665,6 +10059,27 @@ EXEC sp_addextendedproperty
 GO
 
 EXEC sp_addextendedproperty
+'MS_Description', N'工号，唯一键',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_user',
+'COLUMN', N'work_no'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'职务，关联职务表',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_user',
+'COLUMN', N'post'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'座机号',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_user',
+'COLUMN', N'telephone'
+GO
+
+EXEC sp_addextendedproperty
 'MS_Description', N'创建人',
 'SCHEMA', N'dbo',
 'TABLE', N'sys_user',
@@ -9702,16 +10117,16 @@ GO
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
-INSERT INTO [dbo].[sys_user]  VALUES (N'42d153bffeea74f72a9c1697874fa4a7', N'test22', N'23232', N'ac52e15671a377cf', N'5FMD48RM', N'user/20190314/ly-plate-e_1552531617500.png', N'2019-02-09 00:00:00.0000000', N'1', N'zhangdaiscott@163.com', N'18611782222', NULL, N'1', N'0', N'1', N'admin', N'2019-01-26 18:01:10.0000000', N'admin', N'2019-03-23 15:05:50.0000000')
+INSERT INTO [dbo].[sys_user]  VALUES (N'42d153bffeea74f72a9c1697874fa4a7', N'test22', N'23232', N'ac52e15671a377cf', N'5FMD48RM', N'user/20190314/ly-plate-e_1552531617500.png', N'2019-02-09 00:00:00.0000000', N'1', N'zhangdaiscott@163.com', N'18611782222', NULL, N'1', N'0', N'1', NULL, NULL, NULL, N'admin', N'2019-01-26 18:01:10.0000000', N'admin', N'2019-03-23 15:05:50.0000000')
 GO
 
-INSERT INTO [dbo].[sys_user]  VALUES (N'a75d45a015c44384a04449ee80dc3503', N'jeecg', N'jeecg', N'3dd8371f3cf8240e', N'vDDkDzrK', N'user/20190220/e1fe9925bc315c60addea1b98eb1cb1349547719_1550656892940.jpg', NULL, N'2', NULL, NULL, NULL, N'1', N'0', N'1', N'admin', N'2019-02-13 16:02:36.0000000', N'admin', N'2019-04-09 15:47:36.0000000')
+INSERT INTO [dbo].[sys_user]  VALUES (N'a75d45a015c44384a04449ee80dc3503', N'jeecg', N'jeecg', N'3dd8371f3cf8240e', N'vDDkDzrK', N'user/20190220/e1fe9925bc315c60addea1b98eb1cb1349547719_1550656892940.jpg', NULL, N'2', NULL, NULL, NULL, N'1', N'0', N'1', NULL, NULL, NULL, N'admin', N'2019-02-13 16:02:36.0000000', N'admin', N'2019-04-09 15:47:36.0000000')
 GO
 
-INSERT INTO [dbo].[sys_user]  VALUES (N'e9ca23d68d884d4ebb19d07889727dae', N'admin', N'管理员', N'cb362cfeefbf3d8d', N'RCGTeGiH', N'user/20190119/logo-2_1547868176839.png', N'2018-12-05 00:00:00.0000000', N'1', N'11@qq.com', N'18566666661', N'A01', N'1', N'0', N'1', NULL, N'2038-06-21 17:54:10.0000000', N'admin', N'2019-07-05 14:47:22.0000000')
+INSERT INTO [dbo].[sys_user]  VALUES (N'e9ca23d68d884d4ebb19d07889727dae', N'admin', N'管理员', N'cb362cfeefbf3d8d', N'RCGTeGiH', N'user/20190119/logo-2_1547868176839.png', N'2018-12-05 00:00:00.0000000', N'1', N'11@qq.com', N'18566666661', N'A01', N'1', N'0', N'1', N'111', N'', NULL, NULL, N'2038-06-21 17:54:10.0000000', N'admin', N'2019-10-18 11:39:53.0000000')
 GO
 
-INSERT INTO [dbo].[sys_user]  VALUES (N'f0019fdebedb443c98dcb17d88222c38', N'zhagnxiao', N'张小红', N'f898134e5e52ae11a2ffb2c3b57a4e90', N'go3jJ4zX', N'user/20190401/20180607175028Fn1Lq7zw_1554118444672.png', N'2019-04-01 00:00:00.0000000', NULL, NULL, NULL, NULL, N'1', N'0', N'1', N'admin', N'2023-10-01 19:34:10.0000000', N'admin', N'2019-04-10 22:00:22.0000000')
+INSERT INTO [dbo].[sys_user]  VALUES (N'f0019fdebedb443c98dcb17d88222c38', N'zhagnxiao', N'张小红', N'f898134e5e52ae11a2ffb2c3b57a4e90', N'go3jJ4zX', N'user/20190401/20180607175028Fn1Lq7zw_1554118444672.png', N'2019-04-01 00:00:00.0000000', NULL, NULL, NULL, NULL, N'1', N'0', N'1', NULL, NULL, NULL, N'admin', N'2023-10-01 19:34:10.0000000', N'admin', N'2019-04-10 22:00:22.0000000')
 GO
 
 
@@ -9899,7 +10314,7 @@ GO
 INSERT INTO [dbo].[sys_user_depart]  VALUES (N'1f3a0267811327b9eca86b0cc2b956f3', N'bcbe1290783a469a83ae3bd8effe15d4', N'5159cde220114246b045e574adceafe9')
 GO
 
-INSERT INTO [dbo].[sys_user_depart]  VALUES (N'ff9c8c6e06514fcf26c108b1395cc876', N'e9ca23d68d884d4ebb19d07889727dae', N'c6d7cb4deeac411cb3384b1b31278596')
+INSERT INTO [dbo].[sys_user_depart]  VALUES (N'1185037756700635138', N'e9ca23d68d884d4ebb19d07889727dae', N'c6d7cb4deeac411cb3384b1b31278596')
 GO
 
 INSERT INTO [dbo].[sys_user_depart]  VALUES (N'ac52f23ae625eb6560c9227170b88166', N'f0019fdebedb443c98dcb17d88222c38', N'57197590443c44f083d42ae24ef26a2c')
@@ -9999,7 +10414,7 @@ GO
 INSERT INTO [dbo].[sys_user_role]  VALUES (N'fe38580871c5061ba59d5c03a0840b0e', N'a75d45a015c44384a04449ee80dc3503', N'ee8626f80f7c2619917b6236f3a7f02b')
 GO
 
-INSERT INTO [dbo].[sys_user_role]  VALUES (N'b694da35692bbfa1fff0e9d5b2dcf311', N'e9ca23d68d884d4ebb19d07889727dae', N'f6817f48af4fb3af11b9e8bf182f618b')
+INSERT INTO [dbo].[sys_user_role]  VALUES (N'1185037756495114241', N'e9ca23d68d884d4ebb19d07889727dae', N'f6817f48af4fb3af11b9e8bf182f618b')
 GO
 
 INSERT INTO [dbo].[sys_user_role]  VALUES (N'd2233e5be091d39da5abb0073c766224', N'f0019fdebedb443c98dcb17d88222c38', N'ee8626f80f7c2619917b6236f3a7f02b')
@@ -10128,7 +10543,7 @@ GO
 -- ----------------------------
 -- Records of test_demo
 -- ----------------------------
-INSERT INTO [dbo].[test_demo]  VALUES (N'4028810c6aed99e1016aed9b31b40002', NULL, NULL, N'admin', N'2019-05-29 17:09:25.0000000', N'jeecg', N'2', N'55', N'5', N'2019-05-15 00:00:00.0000000', NULL, NULL, NULL)
+INSERT INTO [dbo].[test_demo]  VALUES (N'4028810c6aed99e1016aed9b31b40002', NULL, NULL, N'admin', N'2019-10-19 15:37:27.0000000', N'jeecg', N'2', N'55', N'5', N'2019-05-15 00:00:00.0000000', NULL, N'', N'')
 GO
 
 INSERT INTO [dbo].[test_demo]  VALUES (N'4028810c6b02cba2016b02cba21f0000', N'admin', N'2019-05-29 16:53:48.0000000', N'admin', N'2019-08-23 23:45:21.0000000', N'张小红', N'1', N'8222', N'8', N'2019-04-01 00:00:00.0000000', NULL, N'', N'')
@@ -10452,7 +10867,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table demo
 -- ----------------------------
-ALTER TABLE [dbo].[demo] ADD CONSTRAINT [PK__demo__3213E83F05A38480] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[demo] ADD CONSTRAINT [PK__demo__3213E83F58C4AAAA] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10461,7 +10876,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_monthly_growth_analysis
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_monthly_growth_analysis] ADD CONSTRAINT [PK__jeecg_mo__3213E83F32808E62] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_monthly_growth_analysis] ADD CONSTRAINT [PK__jeecg_mo__3213E83F46A5861E] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10470,7 +10885,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_order_customer
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_order_customer] ADD CONSTRAINT [PK__jeecg_or__3213E83F04D4FDA6] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_order_customer] ADD CONSTRAINT [PK__jeecg_or__3213E83F15054910] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10479,7 +10894,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_order_main
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_order_main] ADD CONSTRAINT [PK__jeecg_or__3213E83FCFA3FDB8] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_order_main] ADD CONSTRAINT [PK__jeecg_or__3213E83FCBC62783] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10488,7 +10903,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_order_ticket
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_order_ticket] ADD CONSTRAINT [PK__jeecg_or__3213E83FF6ECE4C8] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_order_ticket] ADD CONSTRAINT [PK__jeecg_or__3213E83FC3E87D4C] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10497,7 +10912,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_project_nature_income
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_project_nature_income] ADD CONSTRAINT [PK__jeecg_pr__3213E83F918BE96A] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_project_nature_income] ADD CONSTRAINT [PK__jeecg_pr__3213E83FF169ED46] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10534,7 +10949,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_button
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_button] ADD CONSTRAINT [PK__onl_cgfo__3214EC27DD8FC75E] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[onl_cgform_button] ADD CONSTRAINT [PK__onl_cgfo__3214EC27081F99A1] PRIMARY KEY CLUSTERED ([ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10565,7 +10980,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_enhance_java
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_enhance_java] ADD CONSTRAINT [PK__onl_cgfo__3214EC275D4DFED2] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[onl_cgform_enhance_java] ADD CONSTRAINT [PK__onl_cgfo__3214EC27E1042610] PRIMARY KEY CLUSTERED ([ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10590,7 +11005,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_enhance_js
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_enhance_js] ADD CONSTRAINT [PK__onl_cgfo__3214EC2702C6A5DC] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[onl_cgform_enhance_js] ADD CONSTRAINT [PK__onl_cgfo__3214EC2782E94D10] PRIMARY KEY CLUSTERED ([ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10609,7 +11024,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_enhance_sql
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_enhance_sql] ADD CONSTRAINT [PK__onl_cgfo__3214EC277FCEABD9] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[onl_cgform_enhance_sql] ADD CONSTRAINT [PK__onl_cgfo__3214EC277840F99D] PRIMARY KEY CLUSTERED ([ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10628,7 +11043,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_field
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_field] ADD CONSTRAINT [PK__onl_cgfo__3213E83FB58A28CA] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgform_field] ADD CONSTRAINT [PK__onl_cgfo__3213E83FCEFA63A3] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10665,7 +11080,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_head
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_head] ADD CONSTRAINT [PK__onl_cgfo__3213E83F51DF7A09] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgform_head] ADD CONSTRAINT [PK__onl_cgfo__3213E83F91EBCC6E] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10684,7 +11099,16 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_index
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_index] ADD CONSTRAINT [PK__onl_cgfo__3213E83FB3A9D6C0] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgform_index] ADD CONSTRAINT [PK__onl_cgfo__3213E83FE2822735] PRIMARY KEY CLUSTERED ([id])
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
+ON [PRIMARY]
+GO
+
+
+-- ----------------------------
+-- Primary Key structure for table oss_file
+-- ----------------------------
+ALTER TABLE [dbo].[oss_file] ADD CONSTRAINT [PK__oss_file__3213E83F71710982] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10693,7 +11117,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_blob_triggers
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_blob_triggers] ADD CONSTRAINT [PK__qrtz_blo__20F4F101DFFA2098] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[qrtz_blob_triggers] ADD CONSTRAINT [PK__qrtz_blo__20F4F101B4D0DD1C] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10702,7 +11126,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_calendars
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_calendars] ADD CONSTRAINT [PK__qrtz_cal__DEBD34E014D2924C] PRIMARY KEY CLUSTERED ([SCHED_NAME], [CALENDAR_NAME])
+ALTER TABLE [dbo].[qrtz_calendars] ADD CONSTRAINT [PK__qrtz_cal__DEBD34E0A34833C4] PRIMARY KEY CLUSTERED ([SCHED_NAME], [CALENDAR_NAME])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10711,7 +11135,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_cron_triggers
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_cron_triggers] ADD CONSTRAINT [PK__qrtz_cro__20F4F1017C12A35C] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[qrtz_cron_triggers] ADD CONSTRAINT [PK__qrtz_cro__20F4F101ECECB5DB] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10720,7 +11144,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_fired_triggers
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_fired_triggers] ADD CONSTRAINT [PK__qrtz_fir__7793D06D8CC47C38] PRIMARY KEY CLUSTERED ([SCHED_NAME], [ENTRY_ID])
+ALTER TABLE [dbo].[qrtz_fired_triggers] ADD CONSTRAINT [PK__qrtz_fir__7793D06DFD6D2A33] PRIMARY KEY CLUSTERED ([SCHED_NAME], [ENTRY_ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10729,7 +11153,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_job_details
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_job_details] ADD CONSTRAINT [PK__qrtz_job__E0CAAB8A7F426DA6] PRIMARY KEY CLUSTERED ([SCHED_NAME], [JOB_NAME], [JOB_GROUP])
+ALTER TABLE [dbo].[qrtz_job_details] ADD CONSTRAINT [PK__qrtz_job__E0CAAB8AFB4BC10C] PRIMARY KEY CLUSTERED ([SCHED_NAME], [JOB_NAME], [JOB_GROUP])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10738,7 +11162,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_locks
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_locks] ADD CONSTRAINT [PK__qrtz_loc__7D2E9A03E7FD0B56] PRIMARY KEY CLUSTERED ([SCHED_NAME], [LOCK_NAME])
+ALTER TABLE [dbo].[qrtz_locks] ADD CONSTRAINT [PK__qrtz_loc__7D2E9A0316F89ADE] PRIMARY KEY CLUSTERED ([SCHED_NAME], [LOCK_NAME])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10747,7 +11171,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_paused_trigger_grps
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_paused_trigger_grps] ADD CONSTRAINT [PK__qrtz_pau__696155E9DA88690C] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[qrtz_paused_trigger_grps] ADD CONSTRAINT [PK__qrtz_pau__696155E980D271F2] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_GROUP])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10756,7 +11180,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_scheduler_state
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_scheduler_state] ADD CONSTRAINT [PK__qrtz_sch__C8C3A19E65CE055E] PRIMARY KEY CLUSTERED ([SCHED_NAME], [INSTANCE_NAME])
+ALTER TABLE [dbo].[qrtz_scheduler_state] ADD CONSTRAINT [PK__qrtz_sch__C8C3A19E582C5C62] PRIMARY KEY CLUSTERED ([SCHED_NAME], [INSTANCE_NAME])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10765,7 +11189,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_simple_triggers
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_simple_triggers] ADD CONSTRAINT [PK__qrtz_sim__20F4F1018613ED2F] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[qrtz_simple_triggers] ADD CONSTRAINT [PK__qrtz_sim__20F4F101109EE8A1] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10774,7 +11198,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_simprop_triggers
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_simprop_triggers] ADD CONSTRAINT [PK__qrtz_sim__20F4F10189A4D4AA] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[qrtz_simprop_triggers] ADD CONSTRAINT [PK__qrtz_sim__20F4F10139F6F7EC] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10795,7 +11219,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_triggers
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_triggers] ADD CONSTRAINT [PK__qrtz_tri__20F4F101516E2AE9] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[qrtz_triggers] ADD CONSTRAINT [PK__qrtz_tri__20F4F1012BCB670C] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10804,7 +11228,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_announcement
 -- ----------------------------
-ALTER TABLE [dbo].[sys_announcement] ADD CONSTRAINT [PK__sys_anno__3213E83F0038093C] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_announcement] ADD CONSTRAINT [PK__sys_anno__3213E83FF2AA335A] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10813,7 +11237,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_category
 -- ----------------------------
-ALTER TABLE [dbo].[sys_category] ADD CONSTRAINT [PK__sys_cate__3213E83FC262CCBE] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_category] ADD CONSTRAINT [PK__sys_cate__3213E83FE3C11840] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10833,7 +11257,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_data_log
 -- ----------------------------
-ALTER TABLE [dbo].[sys_data_log] ADD CONSTRAINT [PK__sys_data__3213E83F6B590A0C] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_data_log] ADD CONSTRAINT [PK__sys_data__3213E83FFBFCC6EE] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10864,7 +11288,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_depart
 -- ----------------------------
-ALTER TABLE [dbo].[sys_depart] ADD CONSTRAINT [PK__sys_depa__3213E83FC530B809] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_depart] ADD CONSTRAINT [PK__sys_depa__3213E83FF062DD3B] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10883,7 +11307,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_dict
 -- ----------------------------
-ALTER TABLE [dbo].[sys_dict] ADD CONSTRAINT [PK__sys_dict__3213E83FA1E74F4E] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_dict] ADD CONSTRAINT [PK__sys_dict__3213E83F476EE7C3] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10914,7 +11338,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_dict_item
 -- ----------------------------
-ALTER TABLE [dbo].[sys_dict_item] ADD CONSTRAINT [PK__sys_dict__3213E83FCB854FA3] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_dict_item] ADD CONSTRAINT [PK__sys_dict__3213E83FB485AC00] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10951,7 +11375,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_log
 -- ----------------------------
-ALTER TABLE [dbo].[sys_log] ADD CONSTRAINT [PK__sys_log__3213E83FD7D1DEBC] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_log] ADD CONSTRAINT [PK__sys_log__3213E83FB0899BBE] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10990,11 +11414,29 @@ ON [dbo].[sys_permission] (
 )
 GO
 
+CREATE NONCLUSTERED INDEX [index_menu_type]
+ON [dbo].[sys_permission] (
+  [menu_type] ASC
+)
+GO
+
+CREATE NONCLUSTERED INDEX [index_menu_hidden]
+ON [dbo].[sys_permission] (
+  [hidden] ASC
+)
+GO
+
+CREATE NONCLUSTERED INDEX [index_menu_status]
+ON [dbo].[sys_permission] (
+  [status] ASC
+)
+GO
+
 
 -- ----------------------------
 -- Primary Key structure for table sys_permission
 -- ----------------------------
-ALTER TABLE [dbo].[sys_permission] ADD CONSTRAINT [PK__sys_perm__3213E83F5632CFB1] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_permission] ADD CONSTRAINT [PK__sys_perm__3213E83F6DADEF24] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11013,7 +11455,16 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_permission_data_rule
 -- ----------------------------
-ALTER TABLE [dbo].[sys_permission_data_rule] ADD CONSTRAINT [PK__sys_perm__3213E83FB9B7C57B] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_permission_data_rule] ADD CONSTRAINT [PK__sys_perm__3213E83FA692365A] PRIMARY KEY CLUSTERED ([id])
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
+ON [PRIMARY]
+GO
+
+
+-- ----------------------------
+-- Primary Key structure for table sys_position
+-- ----------------------------
+ALTER TABLE [dbo].[sys_position] ADD CONSTRAINT [PK__sys_posi__3213E83F56DE265D] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11022,7 +11473,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_quartz_job
 -- ----------------------------
-ALTER TABLE [dbo].[sys_quartz_job] ADD CONSTRAINT [PK__sys_quar__3213E83F0B9F77FB] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_quartz_job] ADD CONSTRAINT [PK__sys_quar__3213E83F68491362] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11037,11 +11488,17 @@ ON [dbo].[sys_role] (
 )
 GO
 
+CREATE NONCLUSTERED INDEX [uniq_sys_role_role_code]
+ON [dbo].[sys_role] (
+  [role_code] ASC
+)
+GO
+
 
 -- ----------------------------
 -- Primary Key structure for table sys_role
 -- ----------------------------
-ALTER TABLE [dbo].[sys_role] ADD CONSTRAINT [PK__sys_role__3213E83FB3FA27CA] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_role] ADD CONSTRAINT [PK__sys_role__3213E83F1D18F7EF] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11073,7 +11530,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_role_permission
 -- ----------------------------
-ALTER TABLE [dbo].[sys_role_permission] ADD CONSTRAINT [PK__sys_role__3213E83F0F92B274] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_role_permission] ADD CONSTRAINT [PK__sys_role__3213E83FB7FAE549] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11110,7 +11567,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_sms
 -- ----------------------------
-ALTER TABLE [dbo].[sys_sms] ADD CONSTRAINT [PK__sys_sms__3213E83F269CB37B] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_sms] ADD CONSTRAINT [PK__sys_sms__3213E83F7C6EE54F] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11129,7 +11586,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_sms_template
 -- ----------------------------
-ALTER TABLE [dbo].[sys_sms_template] ADD CONSTRAINT [PK__sys_sms___3213E83F603DAFD9] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_sms_template] ADD CONSTRAINT [PK__sys_sms___3213E83F1A1023CE] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11141,6 +11598,12 @@ GO
 CREATE NONCLUSTERED INDEX [index_user_name]
 ON [dbo].[sys_user] (
   [username] ASC
+)
+GO
+
+CREATE NONCLUSTERED INDEX [uniq_sys_user_work_no]
+ON [dbo].[sys_user] (
+  [work_no] ASC
 )
 GO
 
@@ -11160,7 +11623,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user] ADD CONSTRAINT [PK__sys_user__3213E83F139BA035] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_user] ADD CONSTRAINT [PK__sys_user__3213E83F50695164] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11197,7 +11660,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user_agent
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user_agent] ADD CONSTRAINT [PK__sys_user__3213E83F77B93365] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_user_agent] ADD CONSTRAINT [PK__sys_user__3213E83F84A12EDE] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11229,7 +11692,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user_depart
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user_depart] ADD CONSTRAINT [PK__sys_user__3214EC27EA3F949B] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[sys_user_depart] ADD CONSTRAINT [PK__sys_user__3214EC271BCA4A5A] PRIMARY KEY CLUSTERED ([ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11261,7 +11724,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user_role
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user_role] ADD CONSTRAINT [PK__sys_user__3213E83F2E7D364D] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_user_role] ADD CONSTRAINT [PK__sys_user__3213E83FCF5D2D13] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11270,7 +11733,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_demo
 -- ----------------------------
-ALTER TABLE [dbo].[test_demo] ADD CONSTRAINT [PK__test_dem__3213E83F806D0BA1] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_demo] ADD CONSTRAINT [PK__test_dem__3213E83FDAEF5B5F] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11279,7 +11742,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_order_main
 -- ----------------------------
-ALTER TABLE [dbo].[test_order_main] ADD CONSTRAINT [PK__test_ord__3213E83FE1BBBC87] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_order_main] ADD CONSTRAINT [PK__test_ord__3213E83F0B623D2A] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11288,7 +11751,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_order_product
 -- ----------------------------
-ALTER TABLE [dbo].[test_order_product] ADD CONSTRAINT [PK__test_ord__3213E83FE40B04D4] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_order_product] ADD CONSTRAINT [PK__test_ord__3213E83F0FC6263B] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11297,7 +11760,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_person
 -- ----------------------------
-ALTER TABLE [dbo].[test_person] ADD CONSTRAINT [PK__test_per__3213E83FAC1976EC] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_person] ADD CONSTRAINT [PK__test_per__3213E83F0AF2E7BE] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO

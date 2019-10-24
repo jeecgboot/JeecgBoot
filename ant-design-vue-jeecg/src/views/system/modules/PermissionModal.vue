@@ -148,6 +148,16 @@
           <a-switch checkedChildren="是" unCheckedChildren="否" v-model="alwaysShow"/>
         </a-form-item>
 
+        <!--update_begin author:wuxianquan date:20190908 for:增加组件，外链打开方式可选 -->
+        <a-form-item
+          v-show="show"
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="打开方式">
+          <a-switch checkedChildren="外部" unCheckedChildren="内部" v-model="internalOrExternal"/>
+        </a-form-item>
+        <!--update_end author:wuxianquan date:20190908 for:增加组件，外链打开方式可选 -->
+
 
       </a-form>
 
@@ -186,6 +196,9 @@
         alwaysShow:false,//表单元素-聚合路由
         menuHidden:false,//表单元素-隐藏路由
         routeSwitch:true, //是否路由菜单
+        /*update_begin author:wuxianquan date:20190908 for:定义变量，初始值代表内部打开*/
+        internalOrExternal:false,//菜单打开方式
+        /*update_end author:wuxianquan date:20190908 for:定义变量，初始值代表内部打开*/
         isKeepalive:true, //是否缓存路由
         show:true,//根据菜单类型，动态显示隐藏表单元素
         menuLabel:'菜单名称',
@@ -213,7 +226,7 @@
           component:{rules: [{ required: this.show, message: '请输入前端组件!' }]},
           url:{rules: [{ required: this.show, message: '请输入菜单路径!' }]},
           permsType:{rules: [{ required: true, message: '请输入授权策略!' }]},
-          sortNo:{initialValue:1.0,rules: [{validator: this.validateNumber}]},
+          sortNo:{initialValue:1.0},
         }
       }
     },
@@ -254,13 +267,20 @@
         if(record.route!=null){
           this.routeSwitch = record.route?true:false;
         }
-        
+
         if(record.keepAlive!=null){
           this.isKeepalive = record.keepAlive?true:false;
         }else{
           this.isKeepalive = false; // 升级兼容 如果没有（后台没有传过来、或者是新建）默认为false
         }
 
+        /*update_begin author:wuxianquan date:20190908 for:编辑初始化数据*/
+        if(record.internalOrExternal!=null){
+          this.internalOrExternal = record.internalOrExternal?true:false;
+        }else{
+          this.internalOrExternal = false;
+        }
+        /*update_end author:wuxianquan date:20190908 for:编辑初始化数据*/
 
 
         //console.log('record.menuType', record.menuType);
@@ -295,6 +315,10 @@
             this.model.hidden = this.menuHidden;
             this.model.route = this.routeSwitch;
             this.model.keepAlive = this.isKeepalive;
+            /*update_begin author:wuxianquan date:20190908 for:获取值*/
+            this.model.internalOrExternal = this.internalOrExternal;
+            /*update_end author:wuxianquan date:20190908 for:获取值*/
+
             let formData = Object.assign(this.model, values);
             if ((formData.menuType == 1 || formData.menuType == 2) && !formData.parentId) {
               that.validateStatus = 'error';

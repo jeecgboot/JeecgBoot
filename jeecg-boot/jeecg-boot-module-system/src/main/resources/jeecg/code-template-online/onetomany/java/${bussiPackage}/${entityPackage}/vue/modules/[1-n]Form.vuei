@@ -14,6 +14,7 @@
 <#assign form_file = false>
 
 <#list sub.colums as po>
+<#if po.isShow =='Y'>
 <#assign form_field_dictCode="">
 	<#if po.dictTable?default("")?trim?length gt 1>
 		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
@@ -66,7 +67,7 @@
     </#if>
           </a-form-item>
         </a-col>
-        
+</#if>
 </#list>    
       </a-row>
     </a-form>
@@ -136,10 +137,12 @@
         validatorRules:{
         <#list sub.colums as po>
         <#if po.fieldName !='id'>
+        <#if po.isShow =='Y'>
         <#if po.nullable =='N'>
           ${po.fieldName}:{rules: [{ required: true, message: '请输入${po.filedComment}!' }]},
         <#else>
           ${po.fieldName}:{},
+        </#if>
         </#if>
         </#if>
 	    </#list>

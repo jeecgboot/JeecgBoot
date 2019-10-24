@@ -114,6 +114,7 @@
     </#if>
     </#list>
 	<#list columns as po>
+	<#if po.isShowList =='Y'>
 	<#if po.fieldDbName!=tableVo.extendParams.textField && po.fieldName!=pidFieldName>
           {
             title:'${po.filedComment}',
@@ -142,6 +143,7 @@
             dataIndex: '${po.fieldName}'
 			</#if>
           },
+     </#if>
      </#if>
      </#list>
           {

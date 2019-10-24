@@ -250,9 +250,24 @@ export const JeecgListMixin = {
         console.log(info.file, info.fileList);
       }
       if (info.file.status === 'done') {
-        if(info.file.response.success){
-          this.$message.success(`${info.file.name} 文件上传成功`);
-          this.loadData();
+        if (info.file.response.success) {
+          // this.$message.success(`${info.file.name} 文件上传成功`);
+          if (info.file.response.code === 201) {
+            let { message, result: { msg, fileUrl, fileName } } = info.file.response
+            let href = window._CONFIG['domianURL'] + fileUrl
+            this.$warning({
+              title: message,
+              content: (
+                <div>
+                  <span>{msg}</span><br/>
+                  <span>具体详情请 <a href={href} target="_blank" download={fileName}>点击下载</a> </span>
+                </div>
+              )
+            })
+          } else {
+            this.$message.success(info.file.response.message || `${info.file.name} 文件上传成功`)
+          }
+          this.loadData()
         } else {
           this.$message.error(`${info.file.name} ${info.file.response.message}.`);
         }

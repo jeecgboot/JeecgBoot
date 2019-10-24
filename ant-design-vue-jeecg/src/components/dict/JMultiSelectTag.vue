@@ -9,7 +9,8 @@
     @change="onChange"
     :disabled="disabled"
     mode="multiple"
-    :placeholder="placeholder">
+    :placeholder="placeholder"
+    allowClear>
     <a-select-option
       v-for="(item,index) in dictOptions"
       :key="index"

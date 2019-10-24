@@ -18,6 +18,7 @@
           :treeData="treeData"
           @expand="onExpand"
           @select="onTreeNodeSelect"
+          :selectedKeys="selectedKeys"
           :expandedKeys="expandedKeysss"
           :checkStrictly="checkStrictly">
           <span slot="hasDatarule" slot-scope="{slotTitle,ruleFlag}">
@@ -74,11 +75,15 @@
         title:"角色权限配置",
         visible: false,
         loading: false,
+        selectedKeys:[]
       }
     },
     methods: {
       onTreeNodeSelect(id){
-        this.$refs.datarule.show(id[0],this.roleId)
+        if(id && id.length>0){
+          this.selectedKeys = id
+        }
+        this.$refs.datarule.show(this.selectedKeys[0],this.roleId)
       },
       onCheck (o) {
         if(this.checkStrictly){

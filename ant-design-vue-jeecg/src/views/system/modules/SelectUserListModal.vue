@@ -66,17 +66,17 @@
         </a-row>
       </a-form>
     </div>
-
+ <!--    update-begin author:kangxiaolin   date:20190921   for:系统发送通知 用户多选失败 #513  -->
     <a-table
       ref="table"
       rowKey="id"
       :columns="columns"
       :dataSource="dataSource"
       :pagination="ipagination"
-      :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+      :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange,onSelect:onSelect}"
       @change="handleTableChange"
     >
-
+<!--     update-end   author:kangxiaolin  date:20190921     for:系统发送通知 用户多选失败 #513 -->
     </a-table>
   </a-modal>
 </template>
@@ -178,7 +178,13 @@
         if(!selectUser){
           this.selectionRows=[]
         }else{
-          this.selectionRows = selectUser;
+          var that=this;
+          that.selectionRows=[];
+          selectUser.forEach(function(record,index){
+            console.log(record)
+            that.selectionRows.push({id: that.selectedRowKeys[index],realname:record})
+          })
+          // this.selectionRows = selectUser;
         }
       },
       loadData (arg){
@@ -211,11 +217,23 @@
         }
         return str;
       },
-      onSelectChange (selectedRowKeys,selectionRows) {
+      //--update-begin----author:kangxiaolin---date:20190921------for:系统发送通知 用户多选失败 #513----
+      onSelectChange (selectedRowKeys) {
         this.selectedRowKeys = selectedRowKeys;
-        console.log(this.selectedRowKeys);
-        this.selectionRows = selectionRows;
       },
+      onSelect(record, selected){
+        if(selected == true ){
+          this.selectionRows.push(record);
+        }else {
+          this.selectionRows.forEach(function(item,index,arr){
+            if(item.id == record.id) {
+              arr.splice(index, 1);
+            }
+          })
+        }
+        //--update-end----author:kangxiaolin---date:20190921------for:系统发送通知 用户多选失败 #513----
+      },
+
       searchReset(){
         let that = this;
         Object.keys(that.queryParam).forEach(function(key){

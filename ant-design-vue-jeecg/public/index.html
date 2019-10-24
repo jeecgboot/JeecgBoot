@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Jeecg-Boot 快速开发平台</title>
   <link rel="icon" href="<%= BASE_URL %>logo.png">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.2.5/polyfill.js"></script>
+  <script src="https://cdn.bootcss.com/babel-polyfill/7.6.0/polyfill.js"></script>
   <style>
     html,
     body,
@@ -245,6 +245,7 @@
     window._CONFIG['domianURL'] = 'http://127.0.0.1:8080/jeecg-boot';
     window._CONFIG['casPrefixUrl'] = 'http://cas.example.org:8443/cas';
     window._CONFIG['imgDomainURL'] = window._CONFIG['domianURL'] + '/sys/common/view';
+    window._CONFIG['downloadUrl'] = window._CONFIG['domianURL'] + '/sys/common/download';
     window._CONFIG['pdfDomainURL'] =  window._CONFIG['domianURL'] + '/sys/common/pdf/pdfPreviewIframe';
   </script>
 </head>
