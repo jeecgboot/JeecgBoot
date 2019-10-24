@@ -3,7 +3,7 @@
 
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
 <#list columns as po><#rt/>
 <#if po.fieldName !='id' && po_index<= tableVo.searchFieldNum>

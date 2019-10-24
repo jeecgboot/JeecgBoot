@@ -1,9 +1,12 @@
 package org.jeecg.common.exception;
 
+import io.lettuce.core.RedisConnectionException;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.jeecg.common.api.vo.Result;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.redis.connection.PoolException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -52,7 +55,7 @@ public class JeecgBootExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	public Result<?> handleException(Exception e){
 		log.error(e.getMessage(), e);
-		return Result.error(e.getMessage());
+		return Result.error("操作失败，"+e.getMessage());
 	}
 	
 	/**
@@ -73,6 +76,18 @@ public class JeecgBootExceptionHandler {
     public Result<?> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
     	log.error(e.getMessage(), e);
         return Result.error("文件大小超出10MB限制, 请压缩或降低文件质量! ");
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public Result<?> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+    	log.error(e.getMessage(), e);
+        return Result.error("字段太长,超出数据库字段的长度");
+    }
+
+    @ExceptionHandler(PoolException.class)
+    public Result<?> handlePoolException(PoolException e) {
+    	log.error(e.getMessage(), e);
+        return Result.error("Redis 连接异常!");
     }
 
 }

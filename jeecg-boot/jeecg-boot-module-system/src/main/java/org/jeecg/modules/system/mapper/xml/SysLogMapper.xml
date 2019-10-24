@@ -24,14 +24,46 @@
     
    	<!-- 首页访问统计 -->
     <select id="findVisitCount" resultType="java.util.HashMap">
-        select count(*) as visit,
-        	   count(distinct(ip)) as ip,
-        	   DATE_FORMAT(create_time, '%Y-%m-%d') as tian,
-        	   DATE_FORMAT(create_time, '%m-%d') as type
-         from sys_log 
+       <if test="dbType == 'MYSQL'">
+         select count(*) as visit
+        	   ,count(distinct(ip)) as ip
+        	   ,DATE_FORMAT(create_time, '%Y-%m-%d') as tian
+        	   ,DATE_FORMAT(create_time, '%m-%d') as type
+        	   from sys_log 
          where log_type = 1 and create_time &gt;= #{dayStart} and create_time &lt; #{dayEnd}
          group by tian,type
          order by tian asc
+       </if>
+       <if test="dbType == 'ORACLE'">
+        select count(*) as visit
+        	   ,count(distinct(ip)) as ip
+        	  ,to_char(create_time, 'yyyy-mm-dd') as tian
+        	   ,to_char(create_time, 'mm-dd') as type
+         from sys_log 
+         where log_type = 1 and create_time &gt;= #{dayStart} and create_time &lt; #{dayEnd}
+         group by to_char(create_time, 'yyyy-mm-dd'),to_char(create_time, 'mm-dd') 
+         order by to_char(create_time, 'yyyy-mm-dd') asc
+       </if>
+      <if test="dbType == 'POSTGRESQL'">
+       select count(*) as visit
+        	   ,count(distinct(ip)) as ip
+        	  ,to_char(create_time, 'yyyy-mm-dd') as tian
+        	   ,to_char(create_time, 'mm-dd') as type
+         from sys_log 
+         where log_type = 1 and create_time &gt;= #{dayStart} and create_time &lt; #{dayEnd}
+         group by tian,type 
+         order by tian asc 	   
+     </if>
+     <if test="dbType == 'SQLSERVER'">
+        select count(*) as visit
+        	   ,count(distinct(ip)) as ip
+             ,CONVERT(varchar(100), create_time, 23) as tian
+        	   ,RIGHT(CONVERT(varchar(100), create_time, 23),5) as type
+         from sys_log 
+         where log_type = 1 and create_time &gt;= #{dayStart} and create_time &lt; #{dayEnd} 
+         group by CONVERT(varchar(100), create_time, 23),RIGHT(CONVERT(varchar(100), create_time, 23),5)  
+         order by CONVERT(varchar(100), create_time, 23) asc	  
+     </if>
     </select>
 
 </mapper>

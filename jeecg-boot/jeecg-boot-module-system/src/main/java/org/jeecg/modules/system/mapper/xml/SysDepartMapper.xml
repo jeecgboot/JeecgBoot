@@ -5,4 +5,20 @@
 	<select id="queryUserDeparts" parameterType="String" resultType="org.jeecg.modules.system.entity.SysDepart">
 	   select * from sys_depart where id IN ( select dep_id from sys_user_depart where user_id = #{userId} )
 	</select>
+
+    <!-- 根据username查询所拥有的部门 -->
+    <select id="queryDepartsByUsername" parameterType="String" resultType="org.jeecg.modules.system.entity.SysDepart">
+        SELECT *
+        FROM sys_depart
+        WHERE id IN (
+            SELECT dep_id
+            FROM sys_user_depart
+            WHERE user_id = (
+                SELECT id
+                FROM sys_user
+                WHERE username = #{username}
+            )
+        )
+    </select>
+
 </mapper>

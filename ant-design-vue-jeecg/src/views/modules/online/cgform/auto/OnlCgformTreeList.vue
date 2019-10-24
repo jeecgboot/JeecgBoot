@@ -66,28 +66,30 @@
         </template>
 
         <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此图片</span>
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
           <img v-else :src="getImgView(text)" height="25px" alt="图片不存在" style="max-width:80px;font-size: 12px;font-style: italic;"/>
         </template>
 
         <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此文件</span>
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
           <a-button
             v-else
             :ghost="true"
             type="primary"
             icon="download"
             size="small"
-            @click="uploadFile(text)">
+            @click="downloadRowFile(text)">
             下载
           </a-button>
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <template v-if="buttonSwitch.update">
+
+          <template v-if="showOptButton('update',record)">
             <a @click="handleEdit(record)">编辑</a>
             <a-divider type="vertical"/>
           </template>
+
           <a-dropdown>
             <a class="ant-dropdown-link">
               更多 <a-icon type="down" />
@@ -96,7 +98,16 @@
               <a-menu-item >
                 <a @click="handleDetail(record)">详情</a>
               </a-menu-item>
-              <a-menu-item v-if="buttonSwitch.delete">
+
+              <a-menu-item v-if="showSubmitFlowButton(record)">
+                <a @click="startProcess(record)">提交流程</a>
+              </a-menu-item>
+
+              <template v-if="showViewFlowButton(record)">
+                  <a-menu-item @click="handlePreviewPic(record)">审批进度</a-menu-item>
+              </template>
+
+              <a-menu-item v-if="showOptButton('delete',record)">
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDeleteOne(record)">
                   <a>删除</a>
                 </a-popconfirm>
@@ -120,6 +131,7 @@
       <onl-cgform-auto-modal @success="handleFormSuccess" ref="modal" :code="code"></onl-cgform-auto-modal>
 
       <j-import-modal ref="importModal" :url="getImportUrl()" @ok="importOk"></j-import-modal>
+
     </div>
   </a-card>
 </template>
@@ -134,7 +146,7 @@
   export default {
     name: 'OnlCgformTreeList',
     components: {
-      JImportModal
+      JImportModal,
     },
     data() {
       return {
@@ -171,7 +183,7 @@
           optPre:"/online/cgform/api/form/",
           exportXls:'/online/cgform/api/exportXls/',
           buttonAction:'/online/cgform/api/doButton',
-          startProcess: "/process/extActProcess/startMutilProcess",
+          startProcess: "/process/extActProcess/startMutilProcess"
         },
         isorter:{
           column: 'create_time',
@@ -209,7 +221,9 @@
           import:true,
           export:true
         },
-        expandedRowKeys:[]
+        expandedRowKeys:[],
+        hasBpmStatus:false,
+        flowCodePre:"onl_",
 
       }
     },
@@ -299,18 +313,27 @@
         this.initButtonSwitch(res.result.hideColumns)
         let currColumns = res.result.columns
         let textFieldIndex = -1
+        let hasBpmStatus = false
         for(let a=0;a<currColumns.length;a++){
           currColumns[a].align = 'left'
+          //找到显示列
           if(this.textField==currColumns[a].dataIndex){
             textFieldIndex = a
           }
+          //数据字典翻译
           if(currColumns[a].customRender){
             let dictCode = currColumns[a].customRender;
             currColumns[a].customRender=(text)=>{
               return filterMultiDictText(this.dictOptions[dictCode], text);
             }
           }
+          //判断是否有bpm_status
+          if(currColumns[a].dataIndex.toLowerCase()=='bpm_status'){
+            hasBpmStatus = true;
+          }
         }
+        this.hasBpmStatus = hasBpmStatus;
+
         if(textFieldIndex!=-1){
           let textFieldColumn = currColumns.splice(textFieldIndex,1)
           currColumns.unshift(textFieldColumn[0])
@@ -461,7 +484,7 @@
         }
         return window._CONFIG['imgDomainURL']+"/"+text
       },
-      uploadFile(text){
+      downloadRowFile(text){
         if(!text){
           this.$message.warning("未知的文件")
           return;
@@ -469,7 +492,7 @@
         if(text.indexOf(",")>0){
           text = text.substring(0,text.indexOf(","))
         }
-        window.open(window._CONFIG['domianURL'] + "/sys/common/download/"+text);
+        window.open(window._CONFIG['downloadUrl']+"/"+text);
       },
       /*-------数据格式化-end----------*/
 
@@ -615,6 +638,59 @@
 
       },
       /*-------JS增强-end----------*/
+      showOptButton(opt,record){
+        //只有当按钮属性为false,或是按钮属性为true但是流程已提交时才隐藏
+        if(!this.buttonSwitch[opt]){
+          return false
+        }else{
+          if(this.hasBpmStatus){
+            if(record.bpm_status !=null && record.bpm_status !='' && record.bpm_status != '1'){
+              return false
+            }
+          }
+        }
+        return true
+      },
+      showSubmitFlowButton(record){
+        if(this.hasBpmStatus){
+          if(record.bpm_status ==null || record.bpm_status =='' || record.bpm_status == '1'){
+            return true
+          }
+        }
+        return false
+      },
+      showViewFlowButton(record){
+        if(this.hasBpmStatus){
+          if(record.bpm_status !=null && record.bpm_status !='' && record.bpm_status != '1'){
+            return true
+          }
+        }
+        return false
+      },
+      startProcess: function(record){
+        var that = this;
+        this.$confirm({
+          title:"提示",
+          content:"确认提交流程吗?",
+          onOk: function(){
+            var param = {
+              flowCode:that.flowCodePre+that.currentTableName,
+              id:record.id,
+              formUrl:"modules/bpm/task/form/OnlineFormDetail",
+              formUrlMobile:"modules/bpm/task/form/OnlineFormDetail"
+            }
+            postAction(that.url.startProcess,param).then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                that.loadData();
+                that.onClearSelected();
+              }else{
+                that.$message.warning(res.message);
+              }
+            });
+          }
+        });
+      },
 
     }
   }

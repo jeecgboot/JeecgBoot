@@ -1,6 +1,6 @@
 server:
   port: 8080
-  tomcat: 
+  tomcat:
     max-swallow-size: -1
   servlet:
     context-path: /jeecg-boot
@@ -13,10 +13,10 @@ management:
   web:
    exposure:
     include: metrics,httptrace
-    
+
 spring:
   servlet:
-     multipart: 
+     multipart:
         max-file-size: 10MB
         max-request-size: 10MB
   mail:
@@ -24,10 +24,10 @@ spring:
     username: jeecgos@163.com
     password: ??
     properties:
-      mail: 
-        smtp: 
+      mail:
+        smtp:
           auth: true
-          starttls: 
+          starttls:
             enable: true
             required: true
   ## quartz定时任务,采用数据库方式
@@ -75,7 +75,7 @@ spring:
         # 初始化大小，最小，最大
         initial-size: 5
         min-idle: 5
-        maxActive: 20
+        maxActive: 1000
         # 配置获取连接等待超时的时间
         maxWait: 60000
         # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
@@ -138,8 +138,41 @@ jeecg :
     webapp: /opt/jeecg-boot/webapp
   #短信秘钥
   sms:
-     accessKeyId: LTAIpW4gUG7xYDNI
-     accessKeySecret: ???
+     accessKeyId: ??
+     accessKeySecret: ??
+  shiro:
+     excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**
+  #阿里云oss存储配置
+  oss:
+    type: aliyun
+    endpoint: oss-cn-beijing.aliyuncs.com
+    accessKey: ???
+    secretKey: ???
+    bucketName: ???
+    properties:
+      aliyun:
+        protocol: https
+  # ElasticSearch 设置
+  elasticsearch:
+    cluster-name: my-application
+    cluster-nodes: 127.0.0.1:9200
+#  #腾讯云cos存储配置
+#  oss:
+#    type: qc
+#    #跟地区有关
+#    endpoint: cos.ap-beijing.myqcloud.com
+#    accessKey: yourSecretKeyId
+#    secretKey: yourSecretKey
+#    bucketName: yourBucketName
+#    properties:
+#      qc:
+#        #地区
+#        region: ap-beijing
+#        #存储路径
+#        prefix: project
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas
+logging:
+  level:
+    org.jeecg.modules.system.mapper : debug

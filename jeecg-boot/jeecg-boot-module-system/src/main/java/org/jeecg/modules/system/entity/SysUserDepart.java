@@ -13,7 +13,7 @@ public class SysUserDepart implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	/**主键id*/
-    @TableId(type = IdType.UUID)
+    @TableId(type = IdType.ID_WORKER_STR)
 	private String id;
 	/**用户id*/
 	private String userId;

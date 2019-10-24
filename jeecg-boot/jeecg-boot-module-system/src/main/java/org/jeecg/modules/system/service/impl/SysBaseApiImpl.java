@@ -11,29 +11,27 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.api.ISysBaseAPI;
+import org.jeecg.common.system.vo.ComboModel;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.IPUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.message.websocket.WebSocket;
-import org.jeecg.modules.system.entity.SysAnnouncement;
-import org.jeecg.modules.system.entity.SysAnnouncementSend;
-import org.jeecg.modules.system.entity.SysDict;
-import org.jeecg.modules.system.entity.SysLog;
-import org.jeecg.modules.system.entity.SysUser;
-import org.jeecg.modules.system.mapper.SysAnnouncementMapper;
-import org.jeecg.modules.system.mapper.SysAnnouncementSendMapper;
-import org.jeecg.modules.system.mapper.SysLogMapper;
-import org.jeecg.modules.system.mapper.SysUserMapper;
-import org.jeecg.modules.system.mapper.SysUserRoleMapper;
+import org.jeecg.modules.system.entity.*;
+import org.jeecg.modules.system.mapper.*;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
@@ -50,10 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class SysBaseApiImpl implements ISysBaseAPI {
-	public static final String DB_TYPE_MYSQL="MYSQL";
-	public static final String DB_TYPE_ORACLE="ORACLE";
-	public static final String DB_TYPE_POSTGRESQL="POSTGRESQL";
-	public static final String DB_TYPE_SQLSERVER="SQLSERVER";
+	/** 当前系统数据库类型 */
 	public static String DB_TYPE = "";
 	
 	@Resource
@@ -63,6 +58,8 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	@Autowired
 	private SysUserRoleMapper sysUserRoleMapper;
 	@Autowired
+	private ISysDepartService sysDepartService;
+	@Autowired
 	private ISysDictService sysDictService;
 	@Resource
 	private SysAnnouncementMapper sysAnnouncementMapper;
@@ -70,6 +67,10 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	private SysAnnouncementSendMapper sysAnnouncementSendMapper;
 	@Resource
     private WebSocket webSocket;
+	@Resource
+	private SysRoleMapper roleMapper;
+	@Resource
+	private SysDepartMapper departMapper;
 	
 	@Override
 	public void addLog(String LogContent, Integer logType, Integer operatetype) {
@@ -104,6 +105,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	}
 
 	@Override
+	@Cacheable(cacheNames=CacheConstant.SYS_USERS_CACHE, key="#username")
 	public LoginUser getUserByName(String username) {
 		if(oConvertUtils.isEmpty(username)) {
 			return null;
@@ -116,10 +118,44 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		BeanUtils.copyProperties(sysUser, loginUser);
 		return loginUser;
 	}
+	
+	@Override
+	public LoginUser getUserById(String id) {
+		if(oConvertUtils.isEmpty(id)) {
+			return null;
+		}
+		LoginUser loginUser = new LoginUser();
+		SysUser sysUser = userMapper.selectById(id);
+		if(sysUser==null) {
+			return null;
+		}
+		BeanUtils.copyProperties(sysUser, loginUser);
+		return loginUser;
+	}
 
 	@Override
 	public List<String> getRolesByUsername(String username) {
 		return sysUserRoleMapper.getRoleByUserName(username);
+	}
+
+	@Override
+	public List<String> getDepartIdsByUsername(String username) {
+		List<SysDepart> list = sysDepartService.queryDepartsByUsername(username);
+		List<String> result = new ArrayList<>(list.size());
+		for (SysDepart depart : list) {
+			result.add(depart.getId());
+		}
+		return result;
+	}
+
+	@Override
+	public List<String> getDepartNamesByUsername(String username) {
+		List<SysDepart> list = sysDepartService.queryDepartsByUsername(username);
+		List<String> result = new ArrayList<>(list.size());
+		for (SysDepart depart : list) {
+			result.add(depart.getDepartName());
+		}
+		return result;
 	}
 
 	@Override
@@ -186,7 +222,6 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	 * @param dataSource
 	 * @return
 	 * @throws SQLException
-	 * @throws DBException
 	 */
 	private String getDatabaseTypeByDataSource(DataSource dataSource) throws SQLException{
 		if("".equals(DB_TYPE)) {
@@ -195,13 +230,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				DatabaseMetaData md = connection.getMetaData();
 				String dbType = md.getDatabaseProductName().toLowerCase();
 				if(dbType.indexOf("mysql")>=0) {
-					DB_TYPE = DB_TYPE_MYSQL;
+					DB_TYPE = DataBaseConstant.DB_TYPE_MYSQL;
 				}else if(dbType.indexOf("oracle")>=0) {
-					DB_TYPE = DB_TYPE_ORACLE;
+					DB_TYPE = DataBaseConstant.DB_TYPE_ORACLE;
 				}else if(dbType.indexOf("sqlserver")>=0||dbType.indexOf("sql server")>=0) {
-					DB_TYPE = DB_TYPE_SQLSERVER;
+					DB_TYPE = DataBaseConstant.DB_TYPE_SQLSERVER;
 				}else if(dbType.indexOf("postgresql")>=0) {
-					DB_TYPE = DB_TYPE_POSTGRESQL;
+					DB_TYPE = DataBaseConstant.DB_TYPE_POSTGRESQL;
 				}else {
 					throw new JeecgBootException("数据库类型:["+dbType+"]不识别!");
 				}
@@ -228,5 +263,53 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		}
 
 		return list;
+	}
+
+	@Override
+	public List<DictModel> queryFilterTableDictInfo(String table, String text, String code, String filterSql) {
+		return sysDictService.queryTableDictItemsByCodeAndFilter(table,text,code,filterSql);
+	}
+
+	@Override
+	public List<ComboModel> queryAllUser() {
+		List<ComboModel> list = new ArrayList<ComboModel>();
+		List<SysUser> userList = userMapper.selectList(new QueryWrapper<SysUser>().eq("status","1").eq("del_flag","0"));
+		for(SysUser user : userList){
+			ComboModel model = new ComboModel();
+			model.setTitle(user.getRealname());
+			model.setId(user.getId());
+			list.add(model);
+		}
+		return list;
+	}
+
+	@Override
+	public List<ComboModel> queryAllRole() {
+		List<ComboModel> list = new ArrayList<ComboModel>();
+		List<SysRole> roleList = roleMapper.selectList(new QueryWrapper<SysRole>());
+		for(SysRole role : roleList){
+			ComboModel model = new ComboModel();
+			model.setTitle(role.getRoleName());
+			model.setId(role.getId());
+			list.add(model);
+		}
+		return list;
+	}
+
+	@Override
+	public List<String> getRoleIdsByUsername(String username) {
+		return sysUserRoleMapper.getRoleIdByUserName(username);
+	}
+
+	@Override
+	public String getDepartIdsByOrgCode(String orgCode) {
+		return departMapper.queryDepartIdByOrgCode(orgCode);
+	}
+
+	@Override
+	public DictModel getParentDepartId(String departId) {
+		SysDepart depart = departMapper.getParentDepartId(departId);
+		DictModel model = new DictModel(depart.getId(),depart.getParentId());
+		return model;
 	}
 }

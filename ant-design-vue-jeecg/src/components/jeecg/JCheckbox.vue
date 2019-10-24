@@ -1,5 +1,5 @@
 <template>
-  <a-checkbox-group :options="options" :value="checkboxArray" @change="onChange" />
+  <a-checkbox-group :options="options" :value="checkboxArray" v-bind="$attrs" @change="onChange" />
 </template>
 
 <script>

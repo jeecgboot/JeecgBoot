@@ -1,25 +1,36 @@
 <!-- JEditableTable -->
-<!-- @version 1.4.4 -->
+<!-- @version 1.5.0 -->
 <!-- @author sjlei -->
 <template>
   <a-spin :spinning="loading">
 
-    <!-- 操作按钮 -->
-    <div v-if="actionButton" class="action-button">
-      <a-button type="primary" icon="plus" @click="handleClickAdd">新增</a-button>
-      <span class="gap"></span>
-      <template v-if="selectedRowIds.length>0">
-        <a-popconfirm
-          :title="`确定要删除这 ${selectedRowIds.length} 项吗?`"
-          @confirm="handleConfirmDelete">
-          <a-button type="primary" icon="minus">删除</a-button>
-        </a-popconfirm>
-        <template v-if="showClearSelectButton">
+    <a-row type="flex">
+      <a-col>
+        <slot name="buttonBefore" :target="getVM()"/>
+      </a-col>
+      <a-col>
+        <!-- 操作按钮 -->
+        <div v-if="actionButton" class="action-button">
+          <a-button type="primary" icon="plus" @click="handleClickAdd">新增</a-button>
           <span class="gap"></span>
-          <a-button icon="delete" @click="handleClickClearSelect">清空选择</a-button>
-        </template>
-      </template>
-    </div>
+          <template v-if="selectedRowIds.length>0">
+            <a-popconfirm
+              :title="`确定要删除这 ${selectedRowIds.length} 项吗?`"
+              @confirm="handleConfirmDelete">
+              <a-button type="primary" icon="minus">删除</a-button>
+              <span class="gap"></span>
+            </a-popconfirm>
+            <template v-if="showClearSelectButton">
+              <a-button icon="delete" @click="handleClickClearSelection">清空选择</a-button>
+              <span class="gap"></span>
+            </template>
+          </template>
+        </div>
+      </a-col>
+      <a-col>
+        <slot name="buttonAfter" :target="getVM()"/>
+      </a-col>
+    </a-row>
 
     <div :id="`${caseId}inputTable`" class="input-table">
       <!-- 渲染表头 -->
@@ -65,7 +76,8 @@
           <div v-if="rows.length===0" class="tr-nodata">
             <span>暂无数据</span>
           </div>
-          <draggable v-model="rows" handle=".td-ds-icons" @end="handleDragMoveEnd">
+<!--           v-model="rows"-->
+          <draggable :value="rows" handle=".td-ds-icons" @end="handleDragMoveEnd">
 
             <!-- 动态生成tr -->
             <template v-for="(row,rowIndex) in rows">
@@ -128,6 +140,7 @@
                           v-bind="buildProps(row,col)"
                           :data-input-number="col.type === formTypes.inputNumber"
                           :placeholder="replaceProps(col, col.placeholder)"
+                          @blur="(e)=>{handleBlurCommono(e.target,rowIndex,row,col)}"
                           @input="(e)=>{handleInputCommono(e.target,rowIndex,row,col)}"
                           @mouseover="()=>{handleMouseoverCommono(row,col)}"
                           @mouseout="()=>{handleMouseoutCommono(row,col)}"/>
@@ -262,6 +275,230 @@
 
                     </div>
 
+                    <!-- update-begin-author:taoyan date:0827 for：popup -->
+                    <template v-else-if="col.type === formTypes.popup">
+                      <a-tooltip
+                        :key="i"
+                        :id="id"
+                        placement="top"
+                        :title="(tooltips[id] || {}).title"
+                        :visible="(tooltips[id] || {}).visible || false"
+                        :autoAdjustOverflow="true">
+                        <span
+                          @mouseover="()=>{handleMouseoverCommono(row,col)}"
+                          @mouseout="()=>{handleMouseoutCommono(row,col)}">
+
+                          <j-popup
+                            :id="id"
+                            :key="i"
+                            v-bind="buildProps(row,col)"
+                            :placeholder="replaceProps(col, col.placeholder)"
+                            style="width: 100%;"
+                            :value="getPopupValue(id)"
+                            :field="col.key"
+                            :org-fields="col.orgFieldse"
+                            :dest-fields="col.destFields"
+                            :code="col.popupCode"
+                            @input="(value,others)=>popupCallback(value,others,id,row,col,rowIndex)"/>
+                        </span>
+                      </a-tooltip>
+                    </template>
+                    <!-- update-end-author:taoyan date:0827 for：popup -->
+
+                    <!-- update-beign-author:taoyan date:0827 for：文件/图片逻辑新增 -->
+                    <div v-else-if="col.type === formTypes.file" :key="i">
+                      <template v-if="uploadValues[id] != null" v-for="(file,fileKey) of [(uploadValues[id]||{})]">
+                        <a-input
+                          :key="fileKey"
+                          :readOnly="true"
+                          :value="file.name"
+                        >
+                          <template slot="addonBefore" style="width: 30px">
+                            <a-tooltip v-if="file.status==='uploading'" :title="`上传中(${Math.floor(file.percent)}%)`">
+                              <a-icon type="loading"/>
+                            </a-tooltip>
+                            <a-tooltip v-else-if="file.status==='done'" title="上传完成">
+                              <a-icon type="check-circle" style="color:#00DB00;"/>
+                            </a-tooltip>
+                            <a-tooltip v-else title="上传失败">
+                              <a-icon type="exclamation-circle" style="color:red;"/>
+                            </a-tooltip>
+                          </template>
+
+                          <template slot="addonAfter" style="width: 30px">
+                            <a-tooltip title="删除并重新上传">
+                              <a-icon
+                                v-if="file.status!=='uploading'"
+                                type="close-circle"
+                                style="cursor: pointer;"
+                                @click="()=>handleClickDelFile(id)"/>
+                            </a-tooltip>
+                          </template>
+
+                        </a-input>
+                      </template>
+
+                      <div :hidden="uploadValues[id] != null">
+
+                        <a-upload
+                          name="file"
+                          :data="{'isup':1}"
+                          :multiple="false"
+                          :action="getUploadAction(col.action)"
+                          :headers="uploadGetHeaders(row,col)"
+                          :showUploadList="false"
+                          v-bind="buildProps(row,col)"
+                          @change="(v)=>handleChangeUpload(v,id,row,col)"
+                        >
+                          <a-button icon="upload">{{ col.placeholder }}</a-button>
+                        </a-upload>
+                      </div>
+
+                    </div>
+
+                    <div v-else-if="col.type === formTypes.image" :key="i">
+                      <template v-if="uploadValues[id] != null" v-for="(file,fileKey) of [(uploadValues[id]||{})]">
+                        <div :key="fileKey" style="position: relative;">
+                          <img :src="getCellImageView(id)" style="height:32px;max-width:100px !important;" alt="无图片"/>
+                          <template slot="addonBefore" style="width: 30px">
+                            <a-tooltip v-if="file.status==='uploading'" :title="`上传中(${Math.floor(file.percent)}%)`">
+                              <a-icon type="loading"/>
+                            </a-tooltip>
+                            <a-tooltip v-else-if="file.status==='done'" title="上传完成">
+                              <a-icon type="check-circle" style="color:#00DB00;"/>
+                            </a-tooltip>
+                            <a-tooltip v-else title="上传失败">
+                              <a-icon type="exclamation-circle" style="color:red;"/>
+                            </a-tooltip>
+                          </template>
+
+                          <template style="width: 30px">
+                            <a-tooltip title="删除并重新上传" style="margin-left:5px">
+                              <a-icon
+                                v-if="file.status!=='uploading'"
+                                type="close-circle"
+                                style="cursor: pointer;"
+                                @click="()=>handleClickDelFile(id)"/>
+                            </a-tooltip>
+                          </template>
+
+                        </div>
+                      </template>
+
+                      <div :hidden="uploadValues[id] != null">
+
+                        <a-upload
+                          name="file"
+                          :data="{'isup':1}"
+                          :multiple="false"
+                          :action="getUploadAction(col.action)"
+                          :headers="uploadGetHeaders(row,col)"
+                          :showUploadList="false"
+                          v-bind="buildProps(row,col)"
+                          @change="(v)=>handleChangeUpload(v,id,row,col)"
+                        >
+                          <a-button icon="upload">请上传图片</a-button>
+                        </a-upload>
+                      </div>
+
+                    </div>
+                    <!-- update-end-author:taoyan date:0827 for：图片逻辑新增 -->
+
+
+                    <!-- radio-begin -->
+                    <template v-else-if="col.type === formTypes.radio">
+                      <a-tooltip
+                        :key="i"
+                        :id="id"
+                        placement="top"
+                        :title="(tooltips[id] || {}).title"
+                        :visible="(tooltips[id] || {}).visible || false"
+                        :autoAdjustOverflow="true">
+                        <span
+                          @mouseover="()=>{handleMouseoverCommono(row,col)}"
+                          @mouseout="()=>{handleMouseoutCommono(row,col)}">
+                          <a-radio-group
+                            :id="id"
+                            :key="i"
+                            v-bind="buildProps(row,col)"
+                            :value="radioValues[id]"
+                            @change="(e)=>handleRadioChange(e.target.value,id,row,col)">
+                            <a-radio v-for="(item, key) in col.options" :key="key" :value="item.value">{{ item.text }}</a-radio>
+                          </a-radio-group>
+                        </span>
+                      </a-tooltip>
+                    </template>
+                    <!-- radio-end -->
+
+
+                    <!-- select多选 -begin -->
+                    <template v-else-if="col.type === formTypes.list_multi">
+                      <a-tooltip
+                        :key="i"
+                        :id="id"
+                        placement="top"
+                        :title="(tooltips[id] || {}).title"
+                        :visible="(tooltips[id] || {}).visible || false"
+                        :autoAdjustOverflow="true">
+
+                        <span
+                          @mouseover="()=>{handleMouseoverCommono(row,col)}"
+                          @mouseout="()=>{handleMouseoutCommono(row,col)}">
+
+                          <a-select
+                            :id="id"
+                            :key="i"
+                            mode="multiple"
+                            :maxTagCount="1"
+                            v-bind="buildProps(row,col)"
+                            style="width: 100%;"
+                            :value="multiSelectValues[id]"
+                            :options="col.options"
+                            :getPopupContainer="getParentContainer"
+                            :placeholder="replaceProps(col, col.placeholder)"
+                            @change="(v)=>handleMultiSelectChange(v,id,row,col)"
+                            allowClear>
+                          </a-select>
+                        </span>
+                      </a-tooltip>
+                    </template>
+                    <!-- select多选 -end -->
+
+                    <!-- select搜索 -begin -->
+                    <template v-else-if="col.type === formTypes.sel_search">
+                      <a-tooltip
+                        :key="i"
+                        :id="id"
+                        placement="top"
+                        :title="(tooltips[id] || {}).title"
+                        :visible="(tooltips[id] || {}).visible || false"
+                        :autoAdjustOverflow="true">
+
+                        <span
+                          @mouseover="()=>{handleMouseoverCommono(row,col)}"
+                          @mouseout="()=>{handleMouseoutCommono(row,col)}">
+
+                          <a-select
+                            :id="id"
+                            :key="i"
+                            showSearch
+                            optionFilterProp="children"
+                            :filterOption="filterOption"
+                            v-bind="buildProps(row,col)"
+                            style="width: 100%;"
+                            :value="searchSelectValues[id]"
+                            :options="col.options"
+                            :getPopupContainer="getParentContainer"
+                            :placeholder="replaceProps(col, col.placeholder)"
+                            @change="(v)=>handleSearchSelectChange(v,id,row,col)"
+                            allowClear>
+                          </a-select>
+                        </span>
+                      </a-tooltip>
+                    </template>
+                    <!-- select搜索 -end -->
+
+
                     <div v-else-if="col.type === formTypes.slot" :key="i">
                       <slot
                         :name="(col.slot || col.slotName) || col.key"
@@ -270,12 +507,14 @@
                         :column="col"
                         :rowId="removeCaseId(row.id)"
                         :getValue="()=>_getValueForSlot(row.id)"
+                        :caseId="caseId"
+                        :allValues="_getAllValuesForSlot()"
                         :target="getVM()"
                       />
                     </div>
 
                     <!-- else (normal) -->
-                    <span v-else :key="i">{{ inputValues[rowIndex][col.key] }}</span>
+                    <span v-else :key="i"  v-bind="buildProps(row,col)" >{{ inputValues[rowIndex][col.key] }}</span>
                   </template>
                 </div>
               </div>
@@ -298,6 +537,7 @@
   import { cloneObject, randomString } from '@/utils/util'
   import JDate from '@/components/jeecg/JDate'
   import { initDictOptions } from '@/components/dict/JDictSelectUtil'
+
 
   // 行高，需要在实例加载完成前用到
   let rowHeight = 61
@@ -397,6 +637,13 @@
         jdateValues: {},
         // file 信息
         uploadValues: {},
+        //popup信息
+        popupValues:{},
+
+        radioValues:{},
+        metaCheckboxValues:{},
+        multiSelectValues:{},
+        searchSelectValues:{},
         // 绑定左侧选择框已选择的id
         selectedRowIds: [],
         // 存储被删除行的id
@@ -480,6 +727,20 @@
     },
     // 侦听器
     watch: {
+      rows:{
+        immediate:true,
+        handler(val,old) {
+          // val.forEach(item => {
+          //   for (let inputValue of  this.inputValues) {
+          //     if (inputValue.id === item.id) {
+          //       item['dbFieldName'] = inputValue['dbFieldName']
+          //       break
+          //     }
+          //   }
+          // })
+          // console.log('watch.rows:', cloneObject({ val, old }))
+        }
+      },
       dataSource: {
         immediate: true,
         handler: function (newValue) {
@@ -489,6 +750,12 @@
           let checkboxValues = {}
           let selectValues = {}
           let jdateValues = {}
+          let uploadValues = {}
+          let popupValues={}
+          let radioValues = {}
+          let multiSelectValues = {}
+          let searchSelectValues = {}
+
           // 禁用行的id
           let disabledRowIds = (this.disabledRowIds || [])
           newValue.forEach((data, newValueIndex) => {
@@ -531,6 +798,27 @@
                   value[column.key] = sourceValue
                 }
 
+              } else if (column.type === FormTypes.popup) {
+                popupValues[inputId] = sourceValue
+              } else if (column.type === FormTypes.radio) {
+                radioValues[inputId] = sourceValue
+              } else if (column.type === FormTypes.sel_search) {
+                searchSelectValues[inputId] = sourceValue
+              } else if (column.type === FormTypes.list_multi) {
+                if(sourceValue.length>0){
+                  multiSelectValues[inputId] = sourceValue.split(",")
+                }else{
+                  multiSelectValues[inputId] = []
+                }
+              } else if (column.type === FormTypes.file || column.type === FormTypes.image) {
+                if(sourceValue){
+                  let fileName = sourceValue.substring(sourceValue.lastIndexOf("/")+1)
+                  uploadValues[inputId] = {
+                    name: fileName,
+                    status: 'done',
+                    path:sourceValue
+                  }
+                }
               } else {
                 value[column.key] = sourceValue
               }
@@ -559,6 +847,11 @@
           this.selectValues = selectValues
           this.jdateValues = jdateValues
           this.rows = rows
+          this.uploadValues = uploadValues
+          this.popupValues = popupValues
+          this.radioValues = radioValues
+          this.multiSelectValues = multiSelectValues
+          this.searchSelectValues = searchSelectValues
 
           // 更新form表单的值
           this.$nextTick(() => {
@@ -571,7 +864,7 @@
         immediate: true,
         handler(columns) {
           columns.forEach(column => {
-            if (column.type === FormTypes.select) {
+            if (column.type === FormTypes.select || column.type === FormTypes.list_multi || column.type === FormTypes.sel_search) {
               // 兼容 旧版本 options
               if (column.options instanceof Array) {
                 column.options = column.options.map(item => {
@@ -594,7 +887,7 @@
       },
       // 当selectRowIds改变时触发事件
       selectedRowIds(newValue) {
-        this.$emit('selectRowChange', cloneObject(newValue))
+        this.$emit('selectRowChange', cloneObject(newValue).map(i => this.removeCaseId(i)))
       }
     },
     mounted() {
@@ -642,6 +935,11 @@
         this.selectedRowIds = []
         this.tooltips = {}
         this.notPassedIds = []
+        this.uploadValues=[]
+        this.popupValues=[]
+        this.radioValues=[]
+        this.multiSelectValues = []
+        this.searchSelectValues = []
         this.scrollTop = 0
         this.$nextTick(() => {
           this.el.tbody.scrollTop = 0
@@ -921,12 +1219,34 @@
             } else if (column.type === FormTypes.upload) {
               value[column.key] = cloneObject(this.uploadValues[inputId] || null)
 
+            } else if (column.type === FormTypes.image || column.type === FormTypes.file) {
+              let currUploadObj = cloneObject(this.uploadValues[inputId] || null)
+              if(currUploadObj){
+                value[column.key] = currUploadObj['path'] || null
+              }
+
+            } else if (column.type === FormTypes.popup) {
+              if(!value[column.key]){
+                value[column.key] = this.popupValues[inputId] || null
+              }
+            } else if (column.type === FormTypes.radio) {
+              value[column.key] = this.radioValues[inputId]
+            }else if (column.type === FormTypes.sel_search) {
+              value[column.key] = this.searchSelectValues[inputId]
+            }else if (column.type === FormTypes.list_multi) {
+              if(!this.multiSelectValues[inputId] || this.multiSelectValues[inputId].length==0){
+                value[column.key] = ''
+              }else{
+                value[column.key] = this.multiSelectValues[inputId].join(",")
+              }
             }
+
+
             // 检查表单验证
             if (validate === true) {
-              let results = this.validateOneInput(value[column.key], value, column, notPassedIds, false)
+              let results = this.validateOneInput(value[column.key], value, column, notPassedIds, false, 'getValues')
               tooltips[inputId] = results[0]
-              if (tooltips[inputId].visible) {
+              if (tooltips[inputId].passed === false) {
                 error++
                 // if (error++ === 0) {
                 // let element = document.getElementById(inputId)
@@ -946,8 +1266,10 @@
 
         }
 
-        this.tooltips = tooltips
-        this.notPassedIds = notPassedIds
+        if (validate === true) {
+          this.tooltips = tooltips
+          this.notPassedIds = notPassedIds
+        }
         return { error, values }
       },
 
@@ -993,6 +1315,19 @@
       // slot 获取值
       _getValueForSlot(rowId) {
         return this.getValuesSync({ rowIds: [rowId] }).values[0]
+      },
+      _getAllValuesForSlot() {
+        return cloneObject({
+          inputValues: this.inputValues,
+          selectValues: this.selectValues,
+          checkboxValues: this.checkboxValues,
+          jdateValues: this.jdateValues,
+          uploadValues: this.uploadValues,
+          popupValues: this.popupValues,
+          radioValues: this.radioValues,
+          multiSelectValues: this.multiSelectValues,
+          searchSelectValues: this.searchSelectValues,
+        })
       },
       /** 设置某行某列的值 */
       setValues(values) {
@@ -1052,42 +1387,78 @@
       // },
 
       /** 验证单个表单 */
-      validateOneInput(value, row, column, notPassedIds, update = false) {
+      validateOneInput(value, row, column, notPassedIds, update = false, validType = 'input') {
         let tooltips = Object.assign({}, this.tooltips)
         // let notPassedIds = cloneObject(this.notPassedIds)
         let inputId = column.key + row.id
-        let [passed, message] = this.validateValue(column.validateRules, value)
         tooltips[inputId] = tooltips[inputId] ? tooltips[inputId] : {}
-        tooltips[inputId].visible = !passed
-        let index = notPassedIds.indexOf(inputId)
-        let borderColor = null, boxShadow = null
-        if (!passed) {
-          tooltips[inputId].title = this.replaceProps(column, message)
-          borderColor = 'red'
-          boxShadow = `0 0 0 2px rgba(255, 0, 0, 0.2)`
-          if (index === -1) notPassedIds.push(inputId)
-        } else {
-          if (index !== -1) notPassedIds.splice(index, 1)
+
+        let [passed, message] = this.validateValue(column.validateRules, value)
+
+        const nextThen = res => {
+          let [passed, message] = res
+          if (passed == null) {
+            // debugger
+          }
+          if (passed == null && tooltips[inputId].visible != null) {
+            return
+          }
+          passed = passed == null ? true : passed
+          tooltips[inputId].visible = !passed
+          tooltips[inputId].passed = passed
+          let index = notPassedIds.indexOf(inputId)
+          let borderColor = null, boxShadow = null
+          if (!passed) {
+            tooltips[inputId].title = this.replaceProps(column, message)
+            borderColor = 'red'
+            boxShadow = `0 0 0 2px rgba(255, 0, 0, 0.2)`
+            if (index === -1) notPassedIds.push(inputId)
+          } else {
+            if (index !== -1) notPassedIds.splice(index, 1)
+          }
+
+          let element = document.getElementById(inputId)
+          if (element != null) {
+            // select 在 .ant-select-selection 上设置 border-color
+            if (column.type === FormTypes.select) {
+              element = element.getElementsByClassName('ant-select-selection')[0]
+            }
+            // jdate 在 input 上设置 border-color
+            if (column.type === FormTypes.date || column.type === FormTypes.datetime) {
+              element = element.getElementsByTagName('input')[0]
+            }
+            element.style.borderColor = borderColor
+            element.style.boxShadow = boxShadow
+          }
+          // 是否更新到data
+          if (update) {
+            this.tooltips = tooltips
+            this.notPassedIds = notPassedIds
+          }
+
         }
 
-        let element = document.getElementById(inputId)
-        if (element != null) {
-          // select 在 .ant-select-selection 上设置 border-color
-          if (column.type === FormTypes.select) {
-            element = element.getElementsByClassName('ant-select-selection')[0]
-          }
-          // jdate 在 input 上设置 border-color
-          if (column.type === FormTypes.date || column.type === FormTypes.datetime) {
-            element = element.getElementsByTagName('input')[0]
-          }
-          element.style.borderColor = borderColor
-          element.style.boxShadow = boxShadow
+        if (typeof passed === 'function') {
+          let executed = false
+          passed(validType, value, row, column, (flag, msg) => {
+            if (executed) return
+            executed = true
+            if (typeof msg === 'string') {
+              message = msg
+            }
+            if (flag == null) {
+              nextThen([null, message])
+            }else  if (typeof flag === 'boolean' && flag) {
+              nextThen([true, message])
+            } else {
+              nextThen([false, message])
+            }
+
+          }, this)
+        } else {
+          nextThen([passed, message])
         }
-        // 是否更新到data
-        if (update) {
-          this.tooltips = tooltips
-          this.notPassedIds = notPassedIds
-        }
+
         return [tooltips[inputId], notPassedIds]
       },
       /** 通过规则验证值是否正确 */
@@ -1130,6 +1501,8 @@
                 }
               }
               if (!flag) passed = new RegExp(rule.pattern).test(value)
+            } else if (typeof rule.handler === 'function') {
+              return [rule.handler, rule.message]
             }
             // 如果没有通过验证，则跳出循环。如果通过了验证，则继续验证下一条规则
             if (!passed) {
@@ -1221,7 +1594,10 @@
       handleConfirmDelete() {
         this.removeSelectedRows()
       },
-      handleClickClearSelect() {
+      handleClickClearSelection() {
+        this.clearSelection()
+      },
+      clearSelection() {
         this.selectedRowIds = []
       },
       /** select 搜索时的事件，用于动态添加options */
@@ -1267,20 +1643,14 @@
 
       /** 拖动结束，交换inputValue中的值 */
       handleDragMoveEnd(event) {
-        let { oldIndex, newIndex } = event
+        let { oldIndex, newIndex, item: { dataset: { idx: dataIdx } } } = event
 
-        let values = this.inputValues
-        // 存储旧数据，并删除旧项目
-        let temp = values[oldIndex]
-        values.splice(oldIndex, 1)
-        // 向新项目里添加旧数据
-        values.splice(newIndex, 0, temp)
+        // 由于动态显示隐藏行导致index有误差，需要算出真实的index
+        let diff = Number.parseInt(dataIdx) - oldIndex
+        oldIndex += diff
+        newIndex += diff
 
-        values.forEach((item, index) => {
-          item[this.dragSortKey] = (index + 1)
-        })
-
-        this.forceUpdateFormValues()
+        this.rowResort(oldIndex, newIndex)
 
         // 触发已拖动事件
         this.$emit('dragged', {
@@ -1290,13 +1660,32 @@
         })
       },
 
+      /** 行重新排序 */
+      rowResort(oldIndex, newIndex) {
+        const sort = (array) => {
+          // 存储旧数据，并删除旧项目
+          let temp = array[oldIndex]
+          array.splice(oldIndex, 1)
+          // 向新项目里添加旧数据
+          array.splice(newIndex, 0, temp)
+        }
+
+        sort(this.rows)
+        sort(this.inputValues)
+
+        // 重置排序字段
+        this.inputValues.forEach((val, idx) => val[this.dragSortKey] = (idx + 1))
+
+        this.forceUpdateFormValues()
+      },
+
       /* --- common function begin --- */
 
       /** 鼠标移入 */
       handleMouseoverCommono(row, column) {
         let inputId = column.key + row.id
         if (this.notPassedIds.indexOf(inputId) !== -1) {
-          this.showOrHideTooltip(inputId, true)
+          this.showOrHideTooltip(inputId, true, true)
         }
       },
       /** 鼠标移出 */
@@ -1325,12 +1714,17 @@
         // 存储输入的值
         this.inputValues[index][column.key] = value
         // 做单个表单验证
-        this.validateOneInput(value, row, column, this.notPassedIds, true)
+        this.validateOneInput(value, row, column, this.notPassedIds, true, 'input')
 
         // 触发valueChange 事件
         if (change) {
           this.elemValueChange(type, row, column, value)
         }
+      },
+      handleBlurCommono(target, index, row, column) {
+        let { value } = target
+        // 做单个表单验证
+        this.validateOneInput(value, row, column, this.notPassedIds, true, 'blur')
       },
       handleChangeCheckboxCommon(event, row, column) {
         let { id, checked } = event.target
@@ -1342,14 +1736,14 @@
       handleChangeSelectCommon(value, id, row, column) {
         this.selectValues = this.bindValuesChange(value, id, 'selectValues')
         // 做单个表单验证
-        this.validateOneInput(value, row, column, this.notPassedIds, true)
+        this.validateOneInput(value, row, column, this.notPassedIds, true, 'change')
 
         // 触发valueChange 事件
         this.elemValueChange(FormTypes.select, row, column, value)
       },
       handleChangeJDateCommon(value, id, row, column, showTime) {
         this.jdateValues = this.bindValuesChange(value, id, 'jdateValues')
-        this.validateOneInput(value, row, column, this.notPassedIds, true)
+        this.validateOneInput(value, row, column, this.notPassedIds, true, 'change')
 
         // 触发valueChange 事件
         if (showTime) {
@@ -1370,6 +1764,9 @@
         if (column.responseName && file.response) {
           value['responseName'] = file.response[column.responseName]
         }
+        if(file.status =='done'){
+          value['path'] = file.response[column.responseName]
+        }
         this.uploadValues = this.bindValuesChange(value, id, 'uploadValues')
       },
       /** 记录用到数据绑定的组件的值 */
@@ -1380,11 +1777,16 @@
       },
 
       /** 显示或隐藏tooltip */
-      showOrHideTooltip(inputId, show) {
-        let tooltips = Object.assign({}, this.tooltips)
-        tooltips[inputId] = tooltips[inputId] ? tooltips[inputId] : {}
-        tooltips[inputId].visible = show
-        this.tooltips = tooltips
+      showOrHideTooltip(inputId, show, force = false) {
+        if (!this.tooltips[inputId] && !force) {
+          return
+        }
+
+        let tooltip = this.tooltips[inputId] || {}
+        if (tooltip.visible !== show) {
+          tooltip.visible = show
+          this.$set(this.tooltips, inputId, tooltip)
+        }
       },
 
       /** value 触发valueChange事件 */
@@ -1502,12 +1904,14 @@
       },
       /** view辅助方法：构建 td style */
       buildTdStyle(col) {
+        const isEmptyWidth = (column) => (column.type === FormTypes.hidden || column.width === '0px' || column.width === '0' || column.width === 0)
+
         let style = {}
         // 计算宽度
         if (col.width) {
           style['width'] = col.width
         } else if (this.columns) {
-          style['width'] = `${(100 - 4 * 2) / this.columns.length}%`
+          style['width'] = `${(100 - 4 * 2) / (this.columns.filter(column => !isEmptyWidth(column))).length}%`
         } else {
           style['width'] = '120px'
         }
@@ -1516,6 +1920,10 @@
         if (isCheckbox) {
           style['align-items'] = 'center'
           style['text-align'] = 'center'
+          style['padding-left'] = '0'
+          style['padding-right'] = '0'
+        }
+        if (isEmptyWidth(col)) {
           style['padding-left'] = '0'
           style['padding-right'] = '0'
         }
@@ -1538,7 +1946,7 @@
         }
 
         // 判断是否是禁用的列
-        props['disabled'] = !!col['disabled']
+        props['disabled'] = (typeof col['disabled'] === 'boolean' ? col['disabled'] : props['disabled'])
 
         // 判断是否为禁用的行
         if (props['disabled'] !== true) {
@@ -1559,7 +1967,70 @@
           headers['X-Access-Token'] = this.accessToken
         }
         return headers
-      }
+      },
+      /** 上传请求地址 */
+      getUploadAction(value){
+        if(!value){
+          return window._CONFIG['domianURL']+"/sys/common/upload"
+        }else{
+          return value
+        }
+      },
+      /** 预览图片地址 */
+      getCellImageView(id){
+        let currUploadObj = this.uploadValues[id] || null
+        if(currUploadObj && currUploadObj['path']){
+          return window._CONFIG['domianURL']+"/sys/common/view/"+currUploadObj['path']
+        }else{
+          return ''
+        }
+      },
+      /** popup回调 */
+      popupCallback(value,others,id,row,column,index){
+        // 存储输入的值
+        this.popupValues[id]=value
+        if(others){
+          Object.keys(others).map((key)=>{
+            this.inputValues[index][key] = others[key]
+          })
+        }
+        // 做单个表单验证
+        this.validateOneInput(value, row, column, this.notPassedIds, true, 'change')
+        // 触发valueChange 事件
+        this.elemValueChange("input", row, column, value)
+        // 更新form表单的值
+        this.$nextTick(() => {
+          this.forceUpdateFormValues()
+        })
+      },
+      /** popup输入框回显 */
+      getPopupValue(id){
+        return this.popupValues[id]
+      },
+      handleRadioChange(value, id, row, column) {
+        this.radioValues = this.bindValuesChange(value, id, 'radioValues')
+        // 做单个表单验证
+        this.validateOneInput(value, row, column, this.notPassedIds, true, 'change')
+        // 触发valueChange 事件
+        this.elemValueChange(FormTypes.radio, row, column, value)
+      },
+      handleMultiSelectChange(value, id, row, column) {
+        this.multiSelectValues = this.bindValuesChange(value, id, 'multiSelectValues')
+        // 做单个表单验证
+        this.validateOneInput(value, row, column, this.notPassedIds, true, 'change')
+        // 触发valueChange 事件
+        this.elemValueChange(FormTypes.list_multi, row, column, value)
+      },
+      handleSearchSelectChange(value, id, row, column) {
+        console.log(value)
+        this.searchSelectValues = this.bindValuesChange(value, id, 'searchSelectValues')
+        this.validateOneInput(value, row, column, this.notPassedIds, true, 'change')
+        this.elemValueChange(FormTypes.sel_search, row, column, value)
+      },
+      filterOption(input, option) {
+        return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      },
+
 
     }
   }

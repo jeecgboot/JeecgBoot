@@ -10,9 +10,6 @@ export const DisabledAuthFilterMixin = {
 
     }
   },
-  created() {
-
-  },
   methods:{
     isDisabledAuth(code){
       return disabledAuthFilter(code,this.formData);
