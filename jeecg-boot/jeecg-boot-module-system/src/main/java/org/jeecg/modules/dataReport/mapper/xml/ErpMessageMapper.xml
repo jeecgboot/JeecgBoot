@@ -17,7 +17,7 @@
         (
         SELECT
             M .taskid AS taskid,
-            M.submitucode,
+            M .wcode AS submitucode,
             M .ucode AS ucode,
             M.IDX,
             M .tasktitle AS tasktitle,
@@ -41,7 +41,7 @@
         taskid
         ) MM
         LEFT JOIN USERS UU ON MM.UCODE = UU.usercode
-        LEFT JOIN USERS UU1 ON MM.submitucode = UU1.usercode
+        LEFT JOIN wcode uu1 ON  MM.submitucode = UU1.wcode
 
         WHERE rn = 1
 

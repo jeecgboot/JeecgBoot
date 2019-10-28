@@ -263,7 +263,7 @@
           {
             title: '放行时间',
             align: "center",
-            sorter: true,
+            // sorter: true,
             dataIndex: 'releasedate'
           },
           {
@@ -279,7 +279,7 @@
           {
             title: '柜量',
             align: "center",
-            sorter: true,
+            // sorter: true,
             dataIndex: 'connum'
           },
           {
@@ -308,10 +308,10 @@
           {
             title: '业务类型',
             align: "center",
-            filters:[
-              { text: '进口', value: '进口' },
-              { text: '出口', value: '出口' },
-             ],
+            // filters:[
+            //   { text: '进口', value: '进口' },
+            //   { text: '出口', value: '出口' },
+            //  ],
             // onFilter: (value, record) => record.request.method.includes(value),
             dataIndex: 'salestype'
           },
