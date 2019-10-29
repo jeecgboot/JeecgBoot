@@ -3,7 +3,7 @@
 
     <!-- 左侧面板 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="12">
           <a-col :md="7" :sm="8">
             <a-form-item label="字典名称" :labelCol="{span: 6}" :wrapperCol="{span: 14, offset: 1}">
@@ -30,6 +30,8 @@
         <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
           <a-button type="primary" icon="import">导入</a-button>
         </a-upload>
+
+        <a-button type="primary" icon="hdd" @click="openDeleteList">回收站</a-button>
       </div>
 
       <a-table
@@ -58,6 +60,7 @@
     </div>
     <dict-modal ref="modalForm" @ok="modalFormOk"></dict-modal>  <!-- 字典类型 -->
     <dict-item-list ref="dictItemList"></dict-item-list>
+    <dict-delete-list ref="dictDeleteList"></dict-delete-list>
   </a-card>
 </template>
 
@@ -66,11 +69,12 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import DictModal from './modules/DictModal'
   import DictItemList from './DictItemList'
+  import DictDeleteList from './DictDeleteList'
 
   export default {
     name: "DictList",
     mixins:[JeecgListMixin],
-    components: {DictModal, DictItemList},
+    components: {DictModal, DictItemList,DictDeleteList},
     data() {
       return {
         description: '这是数据字典页面',
@@ -161,6 +165,10 @@
         that.queryParam.dictCode = "";
         that.loadData(this.ipagination.current);
       },
+
+      openDeleteList(){
+        this.$refs.dictDeleteList.show()
+      }
     },
     watch: {
       openKeys(val) {

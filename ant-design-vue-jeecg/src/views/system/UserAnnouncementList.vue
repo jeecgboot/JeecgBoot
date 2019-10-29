@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
 
           <a-col :span="6">
@@ -132,11 +132,7 @@
         loading:false,
       }
     },
-    created() {
-      this.loadData();
-    },
     methods: {
-
       handleDetail: function(record){
         this.$refs.sysAnnouncementModal.detail(record);
         this.$refs.sysAnnouncementModal.title="查看";

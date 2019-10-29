@@ -1,6 +1,6 @@
 import { getAction,deleteAction,putAction,postAction} from '@/api/manage'
 
-////根路径
+////根路�?
 // const doMian = "/jeecg-boot/";
 ////图片预览请求地址
 // const imgView = "http://localhost:8080/jeecg-boot/sys/common/view/";
@@ -68,13 +68,13 @@ const editDictItem = (params)=>putAction("/sys/dictItem/edit",params);
 //const delDictItem = (params)=>deleteAction("/sys/dictItem/delete",params);
 //const delDictItemList = (params)=>deleteAction("/sys/dictItem/deleteBatch",params);
 
-//字典标签专用（通过code获取字典数组）
+//字典标签专用（�?�过code获取字典数组�?
 export const ajaxGetDictItems = (code, params)=>getAction(`/sys/dict/getDictItems/${code}`,params);
 
 //系统通告
 const doReleaseData = (params)=>getAction("/sys/annountCement/doReleaseData",params);
 const doReovkeData = (params)=>getAction("/sys/annountCement/doReovkeData",params);
-//获取系统访问量
+//获取系统访问�?
 const getLoginfo = (params)=>getAction("/sys/loginfo",params);
 const getVisitInfo = (params)=>getAction("/sys/visitInfo",params);
 //数据日志访问
@@ -83,7 +83,7 @@ const getVisitInfo = (params)=>getAction("/sys/visitInfo",params);
 // 根据部门主键查询用户信息
 const queryUserByDepId = (params)=>getAction("/sys/user/queryUserByDepId",params);
 
-// 查询用户角色表里的所有信息
+// 查询用户角色表里的所有信�?
 const queryUserRoleMap = (params)=>getAction("/sys/user/queryUserRoleMap",params);
 // 重复校验
 const duplicateCheck = (params)=>getAction("/sys/duplicate/check",params);

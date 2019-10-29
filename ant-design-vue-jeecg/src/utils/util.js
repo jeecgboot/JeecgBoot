@@ -125,7 +125,10 @@ function  generateChildRouters (data) {
         icon: item.meta.icon,
         url:item.meta.url ,
         permissionList:item.meta.permissionList,
-        keepAlive:item.meta.keepAlive
+        keepAlive:item.meta.keepAlive,
+        /*update_begin author:wuxianquan date:20190908 for:赋值 */
+        internalOrExternal:item.meta.internalOrExternal
+        /*update_end author:wuxianquan date:20190908 for:赋值 */
       }
     }
     if(item.alwaysShow){

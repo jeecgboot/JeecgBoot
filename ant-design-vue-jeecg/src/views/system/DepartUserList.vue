@@ -9,8 +9,8 @@
           <template>
 
             <!--组织机构-->
-            <a-directory-tree
-              selectable
+            <a-tree
+              showLine
               :selectedKeys="selectedKeys"
               :checkStrictly="true"
               @select="onSelect"

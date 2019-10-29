@@ -7,7 +7,8 @@
     :data="{'isup':1,'bizPath':bizPath}"
     :fileList="fileList"
     :beforeUpload="beforeUpload"
-    @change="handleChange">
+    @change="handleChange"
+    :disabled="disabled">
     <a-button>
       <a-icon type="upload" />{{ text }}
     </a-button>
@@ -63,6 +64,13 @@
         type:String,
         required:false
       },
+      // update-begin- --- author:wangshuai ------ date:20190929 ---- for:Jupload组件增加是否能够点击
+      disabled:{
+        type:Boolean,
+        required:false,
+        default: false
+      },
+      // update-end- --- author:wangshuai ------ date:20190929 ---- for:Jupload组件增加是否能够点击
       //此属性被废弃了
       triggerChange:{
         type: Boolean,
