@@ -10,27 +10,37 @@ public interface CacheConstant {
 	/**
 	 * 字典信息缓存
 	 */
-    public static final String DICT_CACHE = "dictCache";
+    public static final String SYS_DICT_CACHE = "sys:cache:dict";
+	/**
+	 * 表字典信息缓存
+	 */
+    public static final String SYS_DICT_TABLE_CACHE = "sys:cache:dictTable";
 
 	/**
-	 * 权限信息缓存
+	 * 数据权限配置缓存
 	 */
-    public static final String PERMISSION_CACHE = "permission";
+    public static final String SYS_DATA_PERMISSIONS_CACHE = "sys:cache:permission:datarules";
 
 	/**
-	 * 登录用户规则缓存
+	 * 缓存用户信息
 	 */
-    public static final String LOGIN_USER_RULES_CACHE = "loginUser_cacheRules";
+	public static final String SYS_USERS_CACHE = "sys:cache:user";
 
 	/**
-	 * 部门信息缓存
+	 * 全部部门信息缓存
 	 */
-	public static final String DEPART_INFO_CACHE = "departCache_info";
+	public static final String SYS_DEPARTS_CACHE = "sys:cache:depart:alldata";
 
 
 	/**
-	 * 部门id信息缓存
+	 * 全部部门ids缓存
 	 */
-	public static final String DEPART_IDMODEL_CACHE = "departCache_idmodel";
+	public static final String SYS_DEPART_IDS_CACHE = "sys:cache:depart:allids";
+
+
+	/**
+	 * 测试缓存key
+	 */
+	public static final String TEST_DEMO_CACHE = "test:demo";
 
 }

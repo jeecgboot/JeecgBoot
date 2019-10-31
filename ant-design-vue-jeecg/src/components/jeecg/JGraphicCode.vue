@@ -5,6 +5,8 @@
 </template>
 
 <script>
+  import { getAction } from '@/api/manage'
+
   export default {
     name: 'JGraphicCode',
     props: {
@@ -59,6 +61,11 @@
       contentHeight: {
         type: Number,
         default: 38
+      },
+      remote:{
+        type:Boolean,
+        default:false,
+        required:false
       }
     },
     methods: {
@@ -74,20 +81,21 @@
         return 'rgb(' + r + ',' + g + ',' + b + ')'
       },
       drawPic () {
-        this.randomCode()
-        let canvas = document.getElementById('gc-canvas')
-        let ctx = canvas.getContext('2d')
-        ctx.textBaseline = 'bottom'
-        // 绘制背景
-        ctx.fillStyle = this.randomColor(this.backgroundColorMin, this.backgroundColorMax)
-        ctx.fillRect(0, 0, this.contentWidth, this.contentHeight)
-        // 绘制文字
-        for (let i = 0; i < this.code.length; i++) {
-          this.drawText(ctx, this.code[i], i)
-        }
-        this.drawLine(ctx)
-        this.drawDot(ctx)
-        this.$emit("success",this.code)
+        this.randomCode().then(()=>{
+          let canvas = document.getElementById('gc-canvas')
+          let ctx = canvas.getContext('2d')
+          ctx.textBaseline = 'bottom'
+          // 绘制背景
+          ctx.fillStyle = this.randomColor(this.backgroundColorMin, this.backgroundColorMax)
+          ctx.fillRect(0, 0, this.contentWidth, this.contentHeight)
+          // 绘制文字
+          for (let i = 0; i < this.code.length; i++) {
+            this.drawText(ctx, this.code[i], i)
+          }
+          this.drawLine(ctx)
+          this.drawDot(ctx)
+          this.$emit("success",this.code)
+        })
       },
       drawText (ctx, txt, i) {
         ctx.fillStyle = this.randomColor(this.colorMin, this.colorMax)
@@ -136,6 +144,31 @@
         this.drawPic()
       },
       randomCode(){
+        return new Promise((resolve)=>{
+          if(this.remote==true){
+            getAction("/sys/getCheckCode").then(res=>{
+              console.log("aaaaa",res)
+              if(res.success){
+                this.checkKey = res.result.key
+                this.code = res.result.code
+                resolve();
+              }else{
+                this.$message.error("生成验证码错误,请联系系统管理员")
+                this.code = 'BUG'
+                resolve();
+              }
+            }).catch(()=>{
+              console.log("生成验证码连接服务器异常")
+              this.code = 'BUG'
+              resolve();
+            })
+          }else{
+            this.randomLocalCode();
+            resolve();
+          }
+        })
+      },
+      randomLocalCode(){
         let random = ''
         //去掉了I l i o O
         let str = "QWERTYUPLKJHGFDSAZXCVBNMqwertyupkjhgfdsazxcvbnm1234567890"
@@ -144,6 +177,12 @@
           random += str[index];
         }
         this.code = random
+      },
+      getLoginParam(){
+        return {
+          checkCode:this.code,
+          checkKey:this.checkKey
+        }
       }
     },
     mounted () {
@@ -151,7 +190,8 @@
     },
     data(){
       return {
-        code:""
+        code:"",
+        checkKey:""
       }
     }
 

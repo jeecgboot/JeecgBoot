@@ -73,6 +73,7 @@
 
 - `required` 是否必填，可选值为`true`or`false`
 - `pattern` 正则表达式验证，只有成功匹配该正则的值才能成功通过验证
+- `handler` 自定义函数校验，使用方法请见[示例五](#示例五)
 - `message` 当验证未通过时显示的提示文本，可以使用`${...}`变量替换文本（详见`${...} 变量使用方式`）
 - 配置示例请看[示例二](#示例二)
 
@@ -252,6 +253,19 @@ setValues([
     }
 ])
 ```
+### clearSelection
+
+主动清空选择的行
+
+- `参数:` 无
+- `返回值:` 无
+
+## 内置插槽
+
+| 插槽名       | 说明                                                 |
+|--------------|------------------------------------------------------|
+| buttonBefore | 在操作按钮的**前面**插入插槽，不受`actionButton`属性的影响 |
+| buttonAfter  | 在操作按钮的**后面**插入插槽，不受`actionButton`属性的影响 |
 
 ## ${...} 变量使用方式
 
@@ -510,4 +524,54 @@ this.$refs.editableTable.getValues((error, values) => {
         }
     }
 </script>
+```
+
+## 示例五
+
+```js
+// 该示例是自定义函数校验
+columns: [
+    {
+        title: '字段名称',
+        key: 'dbFieldName',
+        type: FormTypes.input,
+        defaultValue: '',
+        validateRules: [
+            {
+                // 自定义函数校验 handler
+                handler(type, value, row, column, callback, target) {
+                    // type 触发校验的类型（input、change、blur）
+                    // value 当前校验的值
+                    // callback(flag, message) 方法必须执行且只能执行一次
+                    //          flag = 是否通过了校验，不填写或者填写 null 代表不进行任何操作
+                    //          message = 提示的类型，默认使用配置的 message
+                    // target 行编辑的实例对象
+
+                    if (type === 'blur') {
+
+                        if (value === 'abc') {
+                            callback(false, '${title}不能是abc') // false = 未通过，可以跟自定义提示
+                            return
+                        }
+
+                        let { values } = target.getValuesSync({ validate: false })
+                        let count = 0
+                        for (let val of values) {
+                            if (val['dbFieldName'] === value) {
+                                if (++count >= 2) {
+                                    callback(false, '${title}不能重复')
+                                    return
+                                }
+                            }
+                        }
+                        callback(true) // true = 通过验证
+                    } else {
+                        callback() // 不填写或者填写 null 代表不进行任何操作
+                    }
+                },
+                message: '${title}默认提示'
+            }
+        ]
+    },
+]
 ```

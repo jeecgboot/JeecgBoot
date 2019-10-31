@@ -6,7 +6,7 @@
 Jeecg-Boot 快速开发平台（前后端分离版本）
 ===============
 
-当前最新版本： 2.1.0（发布日期：20190826）
+当前最新版本： 2.1.1（发布日期：20191021）
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-JEECG团队-orange.svg)](http://www.jeecg.com)
@@ -36,13 +36,13 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 技术文档
 -----------------------------------
 
-- 在线演示 ：  [http://boot.jeecg.com](http://boot.jeecg.com)
+- 在线演示 ： [http://boot.jeecg.com](http://boot.jeecg.com)
 
 - 技术官网：  [http://www.jeecg.com](http://www.jeecg.com)
 
-- 开发文档：  [http://jeecg-boot.mydoc.io/?t=345660](http://jeecg-boot.mydoc.io/?t=345660)
+- 开发文档：  [http://doc.jeecg.com/1273753](http://doc.jeecg.com/1273753)
 
-- 视频教程  ：[JeecgBoot实战入门系列视频](https://space.bilibili.com/454617261/channel/detail?cid=84186)
+- 视频教程  ：[JeecgBoot入门系列视频](https://space.bilibili.com/454617261/channel/detail?cid=84186)
 
 - 常见问题：  [入门常见问题大全](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
 
@@ -53,7 +53,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 交流互动
 -----------------------------------
 
-- QQ交流群 ：  ①284271917、②769925425
+- QQ交流群 ：  ②769925425、①284271917（满）
 
 - 反馈问题：  [反馈问题，请按格式发Issues](https://github.com/zhangdaiscott/jeecg-boot/issues/new)
 

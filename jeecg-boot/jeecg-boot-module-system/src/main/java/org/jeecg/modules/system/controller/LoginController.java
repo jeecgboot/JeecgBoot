@@ -1,26 +1,19 @@
 package org.jeecg.modules.system.controller;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import cn.hutool.core.util.RandomUtil;
+import com.alibaba.fastjson.JSONObject;
+import com.aliyuncs.exceptions.ClientException;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.DySmsEnum;
-import org.jeecg.common.util.DySmsHelper;
-import org.jeecg.common.util.PasswordUtil;
-import org.jeecg.common.util.RedisUtil;
-import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.util.*;
 import org.jeecg.common.util.encryption.EncryptedString;
 import org.jeecg.modules.shiro.vo.DefContants;
 import org.jeecg.modules.system.entity.SysDepart;
@@ -30,20 +23,11 @@ import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysLogService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.alibaba.fastjson.JSONObject;
-import com.aliyuncs.exceptions.ClientException;
-
-import cn.hutool.core.util.RandomUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 /**
  * @Author scott
@@ -64,10 +48,12 @@ public class LoginController {
     private RedisUtil redisUtil;
 	@Autowired
     private ISysDepartService sysDepartService;
+	
+	private static final String BASE_CHECK_CODES = "qwertyuiplkjhgfdsazxcvbnmQWERTYUPLKJHGFDSAZXCVBNM1234567890";
 
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ApiOperation("登录接口")
-	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel) throws Exception {
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel){
 		Result<JSONObject> result = new Result<JSONObject>();
 		String username = sysLoginModel.getUsername();
 		String password = sysLoginModel.getPassword();
@@ -76,6 +62,18 @@ public class LoginController {
 		//password = AesEncryptUtil.desEncrypt(sysLoginModel.getPassword().replaceAll("%2B", "\\+")).trim();//密码解密
 		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
 
+		//update-begin-author:taoyan date:20190828 for:校验验证码
+		Object checkCode = redisUtil.get(sysLoginModel.getCheckKey());
+		if(checkCode==null) {
+			result.error500("验证码失效");
+			return result;
+		}
+		if(!checkCode.equals(sysLoginModel.getCaptcha())) {
+			result.error500("验证码错误");
+			return result;
+		}
+		//update-end-author:taoyan date:20190828 for:校验验证码
+		
 		//1. 校验用户是否有效
 		SysUser sysUser = sysUserService.getUserByName(username);
 		result = sysUserService.checkUserIsEffective(sysUser);
@@ -112,18 +110,17 @@ public class LoginController {
 	    	return Result.error("退出登录失败！");
 	    }
 	    String username = JwtUtil.getUsername(token);
-	    SysUser sysUser = sysUserService.getUserByName(username);
+		LoginUser sysUser = sysBaseAPI.getUserByName(username);
 	    if(sysUser!=null) {
 	    	sysBaseAPI.addLog("用户名: "+sysUser.getRealname()+",退出成功！", CommonConstant.LOG_TYPE_1, null);
 	    	log.info(" 用户名:  "+sysUser.getRealname()+",退出成功！ ");
-	    	//清空用户Token缓存
+	    	//清空用户登录Token缓存
 	    	redisUtil.del(CommonConstant.PREFIX_USER_TOKEN + token);
-	    	//清空用户权限缓存：权限Perms和角色集合
-	    	redisUtil.del(CommonConstant.LOGIN_USER_CACHERULES_ROLE + username);
-	    	redisUtil.del(CommonConstant.LOGIN_USER_CACHERULES_PERMISSION + username);
+	    	//清空用户登录Shiro权限缓存
+	    	redisUtil.del(CommonConstant.PREFIX_USER_SHIRO_CACHE + sysUser.getId());
 	    	return Result.ok("退出登录成功！");
 	    }else {
-	    	return Result.error("无效的token");
+	    	return Result.error("Token无效!");
 	    }
 	}
 	
@@ -283,6 +280,7 @@ public class LoginController {
 	 * @param jsonObject
 	 * @return
 	 */
+	@ApiOperation("手机号登录接口")
 	@PostMapping("/phoneLogin")
 	public Result<JSONObject> phoneLogin(@RequestBody JSONObject jsonObject) {
 		Result<JSONObject> result = new Result<JSONObject>();
@@ -322,9 +320,9 @@ public class LoginController {
 		String username = sysUser.getUsername();
 		// 生成token
 		String token = JwtUtil.sign(username, syspassword);
+        // 设置token缓存有效时间
 		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
-		// 设置超时时间
-		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME / 1000);
+		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
 
 		// 获取用户部门信息
 		JSONObject obj = new JSONObject();
@@ -356,6 +354,86 @@ public class LoginController {
 		map.put("key", EncryptedString.key);
 		map.put("iv",EncryptedString.iv);
 		result.setResult(map);
+		return result;
+	}
+	
+	/**
+	 * 获取校验码
+	 */
+	@ApiOperation("获取验证码")
+	@GetMapping(value = "/getCheckCode")
+	public Result<Map<String,String>> getCheckCode(){
+		Result<Map<String,String>> result = new Result<Map<String,String>>();
+		Map<String,String> map = new HashMap<String,String>();
+		try {
+			String code = RandomUtil.randomString(BASE_CHECK_CODES,4);
+			String key = MD5Util.MD5Encode(code+System.currentTimeMillis(), "utf-8");
+			redisUtil.set(key, code, 60);
+			map.put("key", key);
+			map.put("code",code);
+			result.setResult(map);
+			result.setSuccess(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+		}
+		return result;
+	}
+	
+	/**
+	 * app登录
+	 * @param sysLoginModel
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/mLogin", method = RequestMethod.POST)
+	public Result<JSONObject> mLogin(@RequestBody SysLoginModel sysLoginModel) throws Exception {
+		Result<JSONObject> result = new Result<JSONObject>();
+		String username = sysLoginModel.getUsername();
+		String password = sysLoginModel.getPassword();
+		
+		//1. 校验用户是否有效
+		SysUser sysUser = sysUserService.getUserByName(username);
+		result = sysUserService.checkUserIsEffective(sysUser);
+		if(!result.isSuccess()) {
+			return result;
+		}
+		
+		//2. 校验用户名或密码是否正确
+		String userpassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
+		String syspassword = sysUser.getPassword();
+		if (!syspassword.equals(userpassword)) {
+			result.error500("用户名或密码错误");
+			return result;
+		}
+		
+		String orgCode = sysUser.getOrgCode();
+		if(oConvertUtils.isEmpty(orgCode)) {
+			//如果当前用户无选择部门 查看部门关联信息
+			List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());
+			if (departs == null || departs.size() == 0) {
+				result.error500("用户暂未归属部门,不可登录!");
+				return result;
+			}
+			orgCode = departs.get(0).getOrgCode();
+			sysUser.setOrgCode(orgCode);
+			this.sysUserService.updateUserDepart(username, orgCode);
+		}
+		JSONObject obj = new JSONObject();
+		//用户登录信息
+		obj.put("userInfo", sysUser);
+		
+		// 生成token
+		String token = JwtUtil.sign(username, syspassword);
+		// 设置超时时间
+		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
+		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
+		//token 信息
+		obj.put("token", token);
+		result.setResult(obj);
+		result.setSuccess(true);
+		result.setCode(200);
+		sysBaseAPI.addLog("用户名: " + username + ",登录成功[移动端]！", CommonConstant.LOG_TYPE_1, null);
 		return result;
 	}
 

@@ -18,9 +18,8 @@ import VueApexCharts from 'vue-apexcharts'
 
 import preview from 'vue-photo-preview'
 import 'vue-photo-preview/dist/skin.css'
-import "@jeecg/antd-onine"
-import '@jeecg/antd-onine/dist/OnlineForm.css'
-
+import "@jeecg/antd-online"
+import '@jeecg/antd-online/dist/OnlineForm.css'
 
 import {
   ACCESS_TOKEN,

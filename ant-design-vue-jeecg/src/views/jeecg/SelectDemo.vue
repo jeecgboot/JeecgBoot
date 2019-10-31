@@ -55,14 +55,14 @@
           <a-col :span="12">选中的部门ID(v-model):{{ departId }}</a-col>
         </a-row>
 
-        <!--  用户选择控件 -->
+        <!--  通过部门选择用户控件 -->
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="选择用户">
-              <j-select-user-by-dep v-model="userRealName"></j-select-user-by-dep>
+              <j-select-user-by-dep v-model="userIds" :multi="true"></j-select-user-by-dep>
             </a-form-item>
           </a-col>
-          <a-col :span="12">选中的用户(v-model):{{ userRealName }}</a-col>
+          <a-col :span="12">选中的用户(v-model):{{ userIds }}</a-col>
         </a-row>
 
         <!--  用户选择控件 -->
@@ -73,6 +73,16 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">选中的用户(v-model):{{ multiUser }}</a-col>
+        </a-row>
+
+        <!-- 角色选择 -->
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="选择角色">
+              <j-select-role v-model="formData.selectRole"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">选中值：{{ formData.selectRole}}</a-col>
         </a-row>
 
         <!--  JCheckbox -->
@@ -207,18 +217,48 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="树字典">
-              <j-tree-dict parentCode="B01" />
+              <j-tree-dict parentCode="A01" />
             </a-form-item>
           </a-col>
           <a-col :span="12"></a-col>
+        </a-row>
+
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="下拉树选择">
+              <j-tree-select
+                v-model="formData.treeSelect"
+                placeholder="请选择菜单"
+                dict="sys_permission,name,id"
+                pidField="parent_id"
+                pidValue=""
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :spapn="12">选中的值(v-model)：{{ formData.treeSelect }}</a-col>
+        </a-row>
+
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="下拉树多选">
+              <j-tree-select
+                v-model="formData.treeSelectMultiple"
+                placeholder="请选择菜单"
+                dict="sys_permission,name,id"
+                pidField="parent_id"
+                pidValue=""
+                multiple
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :spapn="12">选中的值(v-model)：{{ formData.treeSelectMultiple }}</a-col>
         </a-row>
 
         <!-- VueCron -->
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="cron表达式">
-              <j-cron ref="innerVueCron" v-decorator="['cronExpression', {'initialValue':'0/1 * * * * ?'}]"  @change="setCorn"></j-cron>
-              <!--              <j-cron ref="innerVueCron" v-model="cron" @change="setCorn"></j-cron>-->
+              <j-cron ref="innerVueCron" v-decorator="['cronExpression', { initialValue: '* * * * * ? *' }]" @change="setCorn"></j-cron>
             </a-form-item>
           </a-col>
         </a-row>
@@ -234,6 +274,7 @@
   import JSelectDepart from '@/components/jeecgbiz/JSelectDepart'
   import JSelectUserByDep from '@/components/jeecgbiz/JSelectUserByDep'
   import JSelectMultiUser from '@/components/jeecgbiz/JSelectMultiUser'
+  import JSelectRole from '@/components/jeecgbiz/JSelectRole'
   import JCheckbox from '@/components/jeecg/JCheckbox'
   import JCodeEditor from '@/components/jeecg/JCodeEditor'
   import JDate from '@/components/jeecg/JDate'
@@ -244,6 +285,8 @@
   import JSelectMultiple from '@/components/jeecg/JSelectMultiple'
   import JTreeDict from "../../components/jeecg/JTreeDict.vue";
   import JCron from "@/components/jeecg/JCron.vue";
+  import JTreeSelect from '@/components/jeecg/JTreeSelect'
+
   export default {
     name: 'SelectDemo',
     components: {
@@ -252,20 +295,21 @@
       JSelectDepart,
       JSelectUserByDep,
       JSelectMultiUser,
+      JSelectRole,
       JCheckbox,
       JCodeEditor,
       JDate, JEditor, JEllipsis, JGraphicCode, JSlider, JSelectMultiple,
-      JCron
+      JCron, JTreeSelect
     },
     data() {
       return {
         selectList: [],
         selectedDepUsers: '',
-        formData:{},
+        formData: {},
         form: this.$form.createForm(this),
         departId: '4f1765520d6346f9bd9c79e2479e5b12,57197590443c44f083d42ae24ef26a2c',
-        userRealName: '',
-        multiUser: '',
+        userIds: 'admin',
+        multiUser: 'admin,jeecg',
         jcheckbox: {
           values: 'spring,jeecgboot',
           options: [
@@ -368,7 +412,6 @@ sayHi('hello, world!')`
         this.modal.fullScreen = mode
       },
       setCorn(data){
-
         this.$nextTick(() => {
           this.form.cronExpression = data;
         })

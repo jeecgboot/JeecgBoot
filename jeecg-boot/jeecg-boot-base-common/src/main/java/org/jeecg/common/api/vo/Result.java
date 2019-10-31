@@ -52,13 +52,6 @@ public class Result<T> implements Serializable {
 		
 	}
 	
-	public Result<T> error500(String message) {
-		this.message = message;
-		this.code = CommonConstant.SC_INTERNAL_SERVER_ERROR_500;
-		this.success = false;
-		return this;
-	}
-	
 	public Result<T> success(String message) {
 		this.message = message;
 		this.code = CommonConstant.SC_OK_200;
@@ -102,7 +95,13 @@ public class Result<T> implements Serializable {
 		r.setSuccess(false);
 		return r;
 	}
-	
+
+	public Result<T> error500(String message) {
+		this.message = message;
+		this.code = CommonConstant.SC_INTERNAL_SERVER_ERROR_500;
+		this.success = false;
+		return this;
+	}
 	/**
 	 * 无权限访问返回结果
 	 */

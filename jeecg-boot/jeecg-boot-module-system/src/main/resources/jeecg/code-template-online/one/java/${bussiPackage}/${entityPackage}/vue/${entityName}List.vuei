@@ -2,12 +2,13 @@
   <a-card :bordered="false">
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
 <#assign query_field_no=0>
 <#assign query_field_select=false>
 <#assign query_field_date=false>
 <#assign list_need_dict=false>
+<#assign list_need_category=false>
 <#assign query_flag=false>
 <#-- 开始循环 -->
 <#list columns as po>
@@ -66,7 +67,11 @@
 <#if !list_need_dict && po.fieldShowType!='popup' && po.dictField?default("")?trim?length gt 1>
 <#assign list_need_dict=true>
 </#if>
+<#if po.classType=='cat_tree' && po.dictText?default("")?trim?length == 0>
+<#assign list_need_category=true>
+</#if>
 </#list>
+<#-- 结束循环 -->
 <#t>
 <#if query_field_no gt 2>
           </template>
@@ -93,7 +98,7 @@
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-button type="primary" icon="download" @click="handleExportXls('${tableVo.ftlDescription}')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :action="importExcelUrl" @change="handleImportExcel">
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
       <a-dropdown v-if="selectedRowKeys.length > 0">
@@ -120,9 +125,13 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        <#if tableVo.extendParams.scroll=='1'>:scroll="tableScroll"</#if>
         @change="handleTableChange">
-        
+
+        <template slot="htmlSlot" slot-scope="text">
+          <div v-html="text"></div>
+        </template>
         <template slot="imgSlot" slot-scope="text">
           <span v-if="!text" style="font-size: 12px;font-style: italic;">无此图片</span>
           <img v-else :src="getImgView(text)" height="25px" alt="图片不存在" style="max-width:80px;font-size: 12px;font-style: italic;"/>
@@ -173,9 +182,13 @@
   <#if query_field_date>
   import JDate from '@/components/jeecg/JDate.vue'
   </#if>
+  <#if list_need_category>
+  import { loadCategoryData } from '@/api/api'
+  </#if>
   <#if list_need_dict>
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
-  </#if>  
+  </#if>
+
   export default {
     name: "${entityName}List",
     mixins:[JeecgListMixin],
@@ -203,7 +216,10 @@
               return parseInt(index)+1;
             }
           },
+    <#assign showColNum=0>
 	<#list columns as po>
+	<#if po.isShowList =='Y'>
+	<#assign showColNum=showColNum+1>
           {
             title:'${po.filedComment}',
             align:"center",
@@ -212,13 +228,18 @@
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
             }
+            <#elseif po.fieldDbType=='Blob'>
+            dataIndex: '${po.fieldName}String'
+            <#elseif po.classType=='umeditor'>
+            dataIndex: '${po.fieldName}',
+            scopedSlots: {customRender: 'htmlSlot'}
             <#elseif po.classType=='file'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'fileSlot'}
             <#elseif po.classType=='image'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'imgSlot'}
-			<#elseif po.classType=='list_multi' || po.classType=='list' || po.classType=='radio' || po.classType=='checkbox' ||  po.classType=='sel_depart'>
+			<#elseif po.classType=='sel_search' || po.classType=='list_multi' || po.classType=='list' || po.classType=='radio' || po.classType=='checkbox' ||  po.classType=='sel_depart'>
             dataIndex: '${po.fieldName}',
             customRender:(text)=>{
               if(!text){
@@ -227,16 +248,41 @@
                 return filterMultiDictText(this.dictOptions['${po.fieldName}'], text+"")
               }
             }
+            <#elseif po.classType=='cat_tree'>
+            <#if list_need_category>
+            dataIndex: '${po.fieldName}',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['${po.fieldName}'], text+"")
+              }
+            }
+            <#else>
+            dataIndex: '${po.fieldName}',
+            customRender:(text,record)=>{
+              if(!text){
+                return ''
+              }else{
+                return record['${po.dictText}']
+              }
+            }
+            </#if>
 			<#else>
             dataIndex: '${po.fieldName}'
 			</#if>
           },
+     </#if>
      </#list>
           {
             title: '操作',
             dataIndex: 'action',
             align:"center",
-            scopedSlots: { customRender: 'action' },
+            <#if tableVo.extendParams.scroll=='1'>
+            fixed:"right",
+            width:147,
+            </#if>
+            scopedSlots: { customRender: 'action' }
           }
         ],
         url: {
@@ -254,7 +300,10 @@
          </#if>
          </#if>
          </#list>
-        } 
+        },
+        <#if tableVo.extendParams.scroll=='1'>
+        tableScroll:{x :${showColNum}*147+50}
+        </#if>
       }
     },
     computed: {
@@ -272,7 +321,13 @@
             this.$set(this.dictOptions, '${po.fieldName}', res.result)
           }
         })
-        <#elseif po.classType=='list_multi' || po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
+        <#elseif po.classType=='cat_tree' && list_need_category==true>
+        loadCategoryData({code:"${po.dictField}"}).then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, '${po.fieldName}', res.result)
+          }
+        })
+        <#elseif po.classType=='sel_search' || po.classType=='list_multi' || po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
         	<#assign list_field_dictCode="">
 	        <#if po.dictTable?default("")?trim?length gt 1>
 				<#assign list_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">

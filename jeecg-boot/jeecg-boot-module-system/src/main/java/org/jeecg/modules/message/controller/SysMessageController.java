@@ -5,7 +5,6 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.poi.ss.formula.functions.T;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -51,15 +50,12 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	 * @return
 	 */
 	@GetMapping(value = "/list")
-	public Result<IPage<SysMessage>> queryPageList(SysMessage sysMessage, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+	public Result<?> queryPageList(SysMessage sysMessage, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
-		Result<IPage<SysMessage>> result = new Result<IPage<SysMessage>>();
 		QueryWrapper<SysMessage> queryWrapper = QueryGenerator.initQueryWrapper(sysMessage, req.getParameterMap());
 		Page<SysMessage> page = new Page<SysMessage>(pageNo, pageSize);
 		IPage<SysMessage> pageList = sysMessageService.page(page, queryWrapper);
-		result.setSuccess(true);
-		result.setResult(pageList);
-		return result;
+        return Result.ok(pageList);
 	}
 
 	/**
@@ -69,16 +65,9 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	 * @return
 	 */
 	@PostMapping(value = "/add")
-	public Result<T> add(@RequestBody SysMessage sysMessage) {
-		Result<T> result = new Result<T>();
-		try {
-			sysMessageService.save(sysMessage);
-			result.success("添加成功！");
-		} catch (Exception e) {
-			log.info(e.getMessage(), e);
-			result.error500("操作失败");
-		}
-		return result;
+	public Result<?> add(@RequestBody SysMessage sysMessage) {
+		sysMessageService.save(sysMessage);
+		return Result.ok("添加成功！");
 	}
 
 	/**
@@ -88,20 +77,10 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	 * @return
 	 */
 	@PutMapping(value = "/edit")
-	public Result<T> edit(@RequestBody SysMessage sysMessage) {
-		Result<T> result = new Result<T>();
-		SysMessage sysMessageEntity = sysMessageService.getById(sysMessage.getId());
-		if (sysMessageEntity == null) {
-			result.error500("未找到对应实体");
-		} else {
-			boolean ok = sysMessageService.updateById(sysMessage);
-			if (ok) {
-				result.success("修改成功!");
-			} else {
-				result.error500("修改失败!");
-			}
-		}
-		return result;
+	public Result<?> edit(@RequestBody SysMessage sysMessage) {	
+		sysMessageService.updateById(sysMessage);
+        return Result.ok("修改成功!");
+
 	}
 
 	/**
@@ -111,18 +90,9 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	 * @return
 	 */
 	@DeleteMapping(value = "/delete")
-	public Result<T> delete(@RequestParam(name = "id", required = true) String id) {
-		Result<T> result = new Result<T>();
-		SysMessage sysMessage = sysMessageService.getById(id);
-		if (sysMessage == null) {
-			result.error500("未找到对应实体");
-		} else {
-			boolean ok = sysMessageService.removeById(id);
-			if (ok) {
-				result.success("删除成功!");
-			}
-		}
-		return result;
+	public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
+		sysMessageService.removeById(id);
+        return Result.ok("删除成功!");
 	}
 
 	/**
@@ -132,15 +102,10 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	 * @return
 	 */
 	@DeleteMapping(value = "/deleteBatch")
-	public Result<T> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
-		Result<T> result = new Result<T>();
-		if (ids == null || "".equals(ids.trim())) {
-			result.error500("ids参数不允许为空！");
-		} else {
-			this.sysMessageService.removeByIds(Arrays.asList(ids.split(",")));
-			result.success("删除成功!");
-		}
-		return result;
+	public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
+
+		this.sysMessageService.removeByIds(Arrays.asList(ids.split(",")));
+	    return Result.ok("批量删除成功！");
 	}
 
 	/**
@@ -150,23 +115,15 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	 * @return
 	 */
 	@GetMapping(value = "/queryById")
-	public Result<SysMessage> queryById(@RequestParam(name = "id", required = true) String id) {
-		Result<SysMessage> result = new Result<SysMessage>();
+	public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
 		SysMessage sysMessage = sysMessageService.getById(id);
-		if (sysMessage == null) {
-			result.error500("未找到对应实体");
-		} else {
-			result.setResult(sysMessage);
-			result.setSuccess(true);
-		}
-		return result;
+		return Result.ok(sysMessage);
 	}
 
 	/**
 	 * 导出excel
 	 *
 	 * @param request
-	 * @param response
 	 */
 	@GetMapping(value = "/exportXls")
 	public ModelAndView exportXls(HttpServletRequest request, SysMessage sysMessage) {
