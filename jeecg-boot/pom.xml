@@ -4,7 +4,7 @@
   <artifactId>jeecg-boot-parent</artifactId>
   <version>2.1.1</version>
   <packaging>pom</packaging>
-  
+
   	<parent>
 	    <groupId>org.springframework.boot</groupId>
 	    <artifactId>spring-boot-starter-parent</artifactId>
@@ -16,8 +16,8 @@
 	<modules>
 		<module>jeecg-boot-base-common</module>
 		<module>jeecg-boot-module-system</module>
-	</modules> 
-	
+	</modules>
+
 	<distributionManagement>
 	  	<repository>
             <id>jeecg</id>
@@ -30,7 +30,7 @@
             <url>http://maven.jeecg.com:8090/nexus/content/repositories/snapshots/</url>
 	    </snapshotRepository>
 	</distributionManagement>
-	
+
 	<repositories>
 		<repository>
             <id>aliyun</id>
@@ -49,7 +49,7 @@
 			</snapshots>
         </repository>
 	</repositories>
-	
+
     <properties>
         <jeecgboot.common.version>2.1.1</jeecgboot.common.version>
         <java.version>1.8</java.version>
@@ -64,7 +64,7 @@
 		<aliyun.oss.version>3.6.0</aliyun.oss.version>
 		<qc.cos.version>5.6.5</qc.cos.version>
     </properties>
-    
+
 	<dependencies>
 		<!--集成springmvc框架并实现自动配置 -->
 		<dependency>
@@ -93,7 +93,7 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
 		</dependency> -->
-		
+
 		<!-- commons -->
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -105,26 +105,26 @@
 			<artifactId>commons-lang</artifactId>
 			<version>${commons.version}</version>
 		</dependency>
-		
+
 		<!-- freemarker -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-freemarker</artifactId>
 		</dependency>
-		
+
 		<!-- Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
-		
+
 		<!-- mybatis-plus -->
 		 <dependency>
 	        <groupId>com.baomidou</groupId>
 	        <artifactId>mybatis-plus-boot-starter</artifactId>
 	        <version>${mybatis-plus.version}</version>
 	    </dependency>
-		
+
 		<!-- druid -->
        <dependency>
 		   <groupId>com.alibaba</groupId>
@@ -138,14 +138,14 @@
 		  <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
 		  <version>2.5.4</version>
 		</dependency>
-				
+
 		<!-- json -->
 		<dependency>
          	<groupId>com.alibaba</groupId>
          	<artifactId>fastjson</artifactId>
          	<version>1.2.60</version>
         </dependency>
-      
+
 		<!--mysql-->
 		<dependency>
 			<groupId>mysql</groupId>
@@ -167,20 +167,19 @@
 		    <version>11.2.0.3</version>
 			<scope>runtime</scope>
 		</dependency>
-        <!-- postgresql驱动 -->
-        <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.2.5</version>
-            <scope>runtime</scope>
-        </dependency>
-		
+		<!-- postgresql驱动 -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.2.6</version>
+		</dependency>
+
 		 <!-- Quartz定时任务 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-quartz</artifactId>
         </dependency>
-        
+
 		<!--JWT-->
 		<dependency>
 			<groupId>com.auth0</groupId>
@@ -222,7 +221,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-		
+
 		<!-- Swagger API文档 -->
         <dependency>
 		    <groupId>io.springfox</groupId>
@@ -255,8 +254,8 @@
             <artifactId>swagger-models</artifactId>
             <version>1.5.22</version>
         </dependency>
-		
-		
+
+
 		<!-- Redis -->
 		<dependency>
 			 <groupId>org.springframework.boot</groupId>
@@ -266,7 +265,7 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
         </dependency>
-        
+
 		<!-- 代码生成器 -->
 		<!-- 如果下载失败，看这个链接http://jeecg-boot.mydoc.io/?t=345672 -->
 		<dependency>
@@ -274,7 +273,7 @@
 			<artifactId>codegenerate</artifactId>
 			<version>1.0.7</version>
 		</dependency>
-		
+
         <!-- AutoPoi Excel工具类-->
 		<dependency>
 			<groupId>org.jeecgframework</groupId>
@@ -287,13 +286,13 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<dependency>
 		    <groupId>cn.hutool</groupId>
 		    <artifactId>hutool-all</artifactId>
 		    <version>4.5.11</version>
 		</dependency>
-		
+
 		<!-- 阿里云短信 -->
 		<dependency>
 			<groupId>com.aliyun</groupId>
@@ -305,14 +304,14 @@
 			<artifactId>aliyun-java-sdk-core</artifactId>
 			<version>${aliyun-java-sdk-core.version}</version>
 		</dependency>
-		
+
 		<!--HttpClient-->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.5.3</version>
 		</dependency>
-		
+
 		<!-- websocket -->
 		<dependency>
 		   <groupId>org.springframework.boot</groupId>
