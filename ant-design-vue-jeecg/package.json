@@ -55,7 +55,8 @@
     "less-loader": "^4.1.0",
     "node-sass": "^4.11.0",
     "sass-loader": "^7.0.1",
-    "vue-template-compiler": "^2.6.10"
+    "vue-template-compiler": "^2.6.10",
+    "html-webpack-plugin": "^4.0.0-beta.11"
   },
   "eslintConfig": {
     "root": true,
