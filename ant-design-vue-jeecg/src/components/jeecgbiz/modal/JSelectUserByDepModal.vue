@@ -157,8 +157,9 @@
         console.log("props userIds: ", this.userIds)
         if (this.userIds) {
           let currUserIds = this.userIds
+          let userIdsArr = currUserIds.split(',');
           for (let item of this.dataSource) {
-            if (currUserIds.indexOf(item.username) >= 0) {
+            if (userIdsArr.includes(item.username)) {
               names += "," + item.realname
             }
           }

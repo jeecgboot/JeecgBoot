@@ -39,8 +39,8 @@
         <!--  部门选择控件 -->
         <a-row :gutter="24">
           <a-col :span="12">
-            <a-form-item label="选择部门">
-              <j-select-depart v-decorator="['departId']" :trigger-change="true"></j-select-depart>
+            <a-form-item label="选择部门 自定义返回值">
+              <j-select-depart v-decorator="['departId']" :trigger-change="true" customReturnField="departName"></j-select-depart>
             </a-form-item>
           </a-col>
           <a-col :span="12">选中的部门ID(v-decorator):{{ getDepartIdValue() }}</a-col>
@@ -69,7 +69,7 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="选择用户">
-              <j-select-multi-user v-model="multiUser"></j-select-multi-user>
+              <j-select-multi-user v-model="multiUser" ></j-select-multi-user>
             </a-form-item>
           </a-col>
           <a-col :span="12">选中的用户(v-model):{{ multiUser }}</a-col>
@@ -217,7 +217,7 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="树字典">
-              <j-tree-dict parentCode="A01" />
+              <j-tree-dict parentCode="B01" />
             </a-form-item>
           </a-col>
           <a-col :span="12"></a-col>

@@ -182,6 +182,7 @@ public class SysPermissionController {
 			log.info(" ------ 通过令牌获取用户拥有的访问菜单 ---- TOKEN ------ " + token);
 			String username = JwtUtil.getUsername(token);
 			List<SysPermission> metaList = sysPermissionService.queryByUser(username);
+			//添加首页路由
 			PermissionDataUtil.addIndexPage(metaList);
 			JSONObject json = new JSONObject();
 			JSONArray menujsonArray = new JSONArray();
@@ -196,8 +197,11 @@ public class SysPermissionController {
 			List<SysPermission> allAuthList = sysPermissionService.list(query);
 			JSONArray allauthjsonArray = new JSONArray();
 			this.getAllAuthJsonArray(allauthjsonArray, allAuthList);
+			//路由菜单
 			json.put("menu", menujsonArray);
+			//按钮权限
 			json.put("auth", authjsonArray);
+			//全部权限配置（按钮权限，访问权限）
 			json.put("allAuth", allauthjsonArray);
 			result.setResult(json);
 			result.success("查询成功");
@@ -517,7 +521,12 @@ public class SysPermissionController {
 		}
 	}
 
-	private JSONObject getPermissionJsonObject(SysPermission permission) {
+	/**
+	 * 根据菜单配置生成路由json
+	 * @param permission
+	 * @return
+	 */
+		private JSONObject getPermissionJsonObject(SysPermission permission) {
 		JSONObject json = new JSONObject();
 		// 类型(0：一级菜单 1：子菜单 2：按钮)
 		if (permission.getMenuType().equals(CommonConstant.MENU_TYPE_2)) {

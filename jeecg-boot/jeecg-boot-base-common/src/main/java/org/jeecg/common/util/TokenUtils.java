@@ -1,5 +1,6 @@
 package org.jeecg.common.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.api.ISysBaseAPI;
@@ -13,13 +14,29 @@ import javax.servlet.http.HttpServletRequest;
  * @Date 2019/9/23 14:12
  * @Description: 编程校验token有效性
  */
+@Slf4j
 public class TokenUtils {
+
+    /**
+     * 获取 request 里传递的 token
+     *
+     * @param request
+     * @return
+     */
+    public static String getTokenByRequest(HttpServletRequest request) {
+        String token = request.getParameter("token");
+        if (token == null) {
+            token = request.getHeader("X-Access-Token");
+        }
+        return token;
+    }
 
     /**
      * 验证Token
      */
     public static boolean verifyToken(HttpServletRequest request, ISysBaseAPI sysBaseAPI, RedisUtil redisUtil) {
-        String token = request.getParameter("token");
+        log.info(" -- url --" + request.getRequestURL());
+        String token = getTokenByRequest(request);
 
         // 解密获得username，用于和数据库进行对比
         String username = JwtUtil.getUsername(token);

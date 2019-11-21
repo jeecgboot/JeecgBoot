@@ -260,6 +260,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 
 	@Override
+	@CacheEvict(value= {CacheConstant.SYS_USERS_CACHE}, key="#username")
 	public void updateUserDepart(String username,String orgCode) {
 		baseMapper.updateUserDepart(username, orgCode);
 	}

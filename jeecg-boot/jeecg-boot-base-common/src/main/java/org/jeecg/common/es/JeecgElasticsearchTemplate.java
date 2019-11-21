@@ -11,6 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 /**
  * 关于 ElasticSearch 的一些方法（创建索引、添加数据、查询等）
  *
@@ -20,10 +24,53 @@ import org.springframework.stereotype.Component;
 @Component
 public class JeecgElasticsearchTemplate {
 
-    @Value("${jeecg.elasticsearch.cluster-nodes}")
+    /**
+     * 用户配置是否通过，未通过就不走任何方法
+     */
+    private static boolean configIsPassed = true;
+    /**
+     * 是否已检测过配置
+     */
+    private static boolean configIsChecked = false;
+
     private String baseUrl;
 
     private final String FORMAT_JSON = "format=json";
+
+    public JeecgElasticsearchTemplate(@Value("${jeecg.elasticsearch.cluster-nodes}") String baseUrl) {
+        log.debug("JeecgElasticsearchTemplate BaseURL：" + baseUrl);
+
+        //  未检测过配置，进行检测操作
+        if (!configIsChecked) {
+            configIsChecked = true;
+            // 为空则代表未配置 baseUrl
+            if (StringUtils.isEmpty(baseUrl)) {
+                configIsPassed = false;
+            } else {
+                this.baseUrl = baseUrl;
+                // 判断配置的地址是否有效
+                try {
+                    RestUtil.get(this.getBaseUrl().toString());
+                } catch (Exception e) {
+                    configIsPassed = false;
+                }
+            }
+            if (configIsPassed) {
+                log.info("ElasticSearch服务连接成功");
+            } else {
+                log.warn("ElasticSearch 服务连接失败，原因：配置未通过。可能是BaseURL未配置或配置有误，也可能是Elasticsearch服务未启动。接下来将会拒绝执行任何方法！");
+            }
+        }
+    }
+
+    /**
+     * 检查配置是否通过，未通过就抛出异常，中断执行
+     */
+    private void checkConfig() {
+        if (!configIsPassed) {
+            throw new RuntimeException("配置未通过，拒绝执行该方法");
+        }
+    }
 
     public StringBuilder getBaseUrl(String indexName, String typeName) {
         typeName = typeName.trim().toLowerCase();
@@ -43,6 +90,7 @@ public class JeecgElasticsearchTemplate {
      * cat 查询ElasticSearch系统数据，返回json
      */
     public <T> ResponseEntity<T> _cat(String urlAfter, Class<T> responseType) {
+        this.checkConfig();
         String url = this.getBaseUrl().append("/_cat").append(urlAfter).append("?").append(FORMAT_JSON).toString();
         return RestUtil.request(url, HttpMethod.GET, null, null, null, responseType);
     }
@@ -53,6 +101,7 @@ public class JeecgElasticsearchTemplate {
      * 查询地址：GET http://{baseUrl}/_cat/indices
      */
     public JSONArray getIndices() {
+        this.checkConfig();
         return getIndices(null);
     }
 
@@ -63,6 +112,7 @@ public class JeecgElasticsearchTemplate {
      * 查询地址：GET http://{baseUrl}/_cat/indices/{indexName}
      */
     public JSONArray getIndices(String indexName) {
+        this.checkConfig();
         StringBuilder urlAfter = new StringBuilder("/indices");
         if (!StringUtils.isEmpty(indexName)) {
             urlAfter.append("/").append(indexName.trim().toLowerCase());
@@ -74,6 +124,7 @@ public class JeecgElasticsearchTemplate {
      * 索引是否存在
      */
     public boolean indexExists(String indexName) {
+        this.checkConfig();
         try {
             JSONArray array = getIndices(indexName);
             return array != null;
@@ -92,6 +143,7 @@ public class JeecgElasticsearchTemplate {
      * 查询地址：PUT http://{baseUrl}/{indexName}
      */
     public boolean createIndex(String indexName) {
+        this.checkConfig();
         String url = this.getBaseUrl(indexName).toString();
 
         /* 返回结果 （仅供参考）
@@ -119,6 +171,7 @@ public class JeecgElasticsearchTemplate {
      * 查询地址：DELETE http://{baseUrl}/{indexName}
      */
     public boolean removeIndex(String indexName) {
+        this.checkConfig();
         String url = this.getBaseUrl(indexName).toString();
         try {
             return RestUtil.delete(url).getBoolean("acknowledged");
@@ -136,6 +189,7 @@ public class JeecgElasticsearchTemplate {
      * 保存数据，详见：saveOrUpdate
      */
     public boolean save(String indexName, String typeName, String dataId, JSONObject data) {
+        this.checkConfig();
         return this.saveOrUpdate(indexName, typeName, dataId, data);
     }
 
@@ -143,6 +197,7 @@ public class JeecgElasticsearchTemplate {
      * 更新数据，详见：saveOrUpdate
      */
     public boolean update(String indexName, String typeName, String dataId, JSONObject data) {
+        this.checkConfig();
         return this.saveOrUpdate(indexName, typeName, dataId, data);
     }
 
@@ -158,6 +213,7 @@ public class JeecgElasticsearchTemplate {
      * @return
      */
     public boolean saveOrUpdate(String indexName, String typeName, String dataId, JSONObject data) {
+        this.checkConfig();
         String url = this.getBaseUrl(indexName, typeName).append("/").append(dataId).toString();
         /* 返回结果（仅供参考）
        "createIndexA2": {
@@ -178,11 +234,16 @@ public class JeecgElasticsearchTemplate {
 
         try {
             // 去掉 data 中为空的值
-            for (String key : data.keySet()) {
+            Set<String> keys = data.keySet();
+            List<String> emptyKeys = new ArrayList<>(keys.size());
+            for (String key : keys) {
                 String value = data.getString(key);
                 if (StringUtils.isEmpty(value)) {
-                    data.remove(key);
+                    emptyKeys.add(key);
                 }
+            }
+            for (String key : emptyKeys) {
+                data.remove(key);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -198,6 +259,7 @@ public class JeecgElasticsearchTemplate {
      * 请求地址：DELETE http://{baseUrl}/{indexName}/{typeName}/{dataId}
      */
     public boolean delete(String indexName, String typeName, String dataId) {
+        this.checkConfig();
         String url = this.getBaseUrl(indexName, typeName).append("/").append(dataId).toString();
         /* 返回结果（仅供参考）
         {
@@ -235,6 +297,7 @@ public class JeecgElasticsearchTemplate {
      * 请求地址：POST http://{baseUrl}/{indexName}/{typeName}/_search
      */
     public JSONObject search(String indexName, String typeName, JSONObject queryObject) {
+        this.checkConfig();
         String url = this.getBaseUrl(indexName, typeName).append("/_search").toString();
 
         log.info("search: " + queryObject.toJSONString());

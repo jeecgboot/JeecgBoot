@@ -1,3 +1,4 @@
+import * as api from '@/api/api'
 import { isURL } from '@/utils/validate'
 
 export function timeFix() {
@@ -254,4 +255,25 @@ export function cssExpand(css, id) {
   }
   // 应用新样式
   document.head.appendChild(style)
+}
+
+/**
+ * 重复值验证工具方法
+ *
+ * 使用示例：
+ * { validator: (rule, value, callback) => validateDuplicateValue('sys_fill_rule', 'rule_code', value, this.model.id, callback) }
+ *
+ * @param tableName 被验证的表名
+ * @param fieldName 被验证的字段名
+ * @param fieldVal 被验证的值
+ * @param dataId 数据ID，可空
+ * @param callback
+ */
+export function validateDuplicateValue(tableName, fieldName, fieldVal, dataId, callback) {
+  let params = { tableName, fieldName, fieldVal, dataId }
+  api.duplicateCheck(params).then(res => {
+    res['success'] ? callback() : callback(res['message'])
+  }).catch(err => {
+    callback(err.message || err)
+  })
 }
