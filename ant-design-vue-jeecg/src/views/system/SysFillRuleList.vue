@@ -5,36 +5,22 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-
           <a-col :md="6" :sm="8">
-            <a-form-item label="职务编码">
-              <a-input placeholder="请输入职务编码" v-model="queryParam.code"></a-input>
+            <a-form-item label="规则名称">
+              <a-input placeholder="请输入规则名称" v-model="queryParam.ruleName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="职务名称">
-              <a-input placeholder="请输入职务名称" v-model="queryParam.name"></a-input>
+            <a-form-item label="规则Code">
+              <a-input placeholder="请输入规则Code" v-model="queryParam.ruleCode"></a-input>
             </a-form-item>
           </a-col>
-          <template v-if="toggleSearchStatus">
-            <a-col :md="6" :sm="8">
-              <a-form-item label="职级">
-                <j-dict-select-tag v-model="queryParam.postRank" placeholder="请选择职级" dictCode="position_rank"/>
-              </a-form-item>
-            </a-col>
-
-          </template>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
             </span>
           </a-col>
-
         </a-row>
       </a-form>
     </div>
@@ -42,7 +28,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('职务表')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('填值规则')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
@@ -60,31 +46,39 @@
     </div>
 
     <!-- table区域-begin -->
-    <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
-        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
+    <a-alert type="info" showIcon style="margin-bottom: 16px;">
+      <template slot="message">
+        <span>已选择</span>
+        <a style="font-weight: 600;padding: 0 4px;">{{ selectedRowKeys.length }}</a>
+        <span>项</span>
+        <template v-if="selectedRowKeys.length>0">
+          <a-divider type="vertical"/>
+          <a @click="onClearSelected">清空</a>
+        </template>
+      </template>
+    </a-alert>
 
-      <a-table
-        ref="table"
-        size="middle"
-        bordered
-        rowKey="id"
-        :columns="columns"
-        :dataSource="dataSource"
-        :pagination="ipagination"
-        :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
-        @change="handleTableChange">
+    <a-table
+      ref="table"
+      size="middle"
+      bordered
+      rowKey="id"
+      :columns="columns"
+      :dataSource="dataSource"
+      :pagination="ipagination"
+      :loading="loading"
+      :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+      @change="handleTableChange">
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
-
           <a-divider type="vertical"/>
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
             <a-menu slot="overlay">
+              <a-menu-item @click="handleTest(record)">
+                功能测试
+              </a-menu-item>
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>
@@ -94,30 +88,26 @@
           </a-dropdown>
         </span>
 
-      </a-table>
-    </div>
+    </a-table>
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <sysPosition-modal ref="modalForm" @ok="modalFormOk"></sysPosition-modal>
+    <sys-fill-rule-modal ref="modalForm" @ok="modalFormOk"/>
   </a-card>
 </template>
 
 <script>
-  import SysPositionModal from './modules/SysPositionModal'
+  import { getAction } from '@/api/manage'
+  import SysFillRuleModal from './modules/SysFillRuleModal'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import JDictSelectTag from '@/components/dict/JDictSelectTag'
 
   export default {
-    name: 'SysPositionList',
+    name: 'SysFillRuleList',
     mixins: [JeecgListMixin],
-    components: {
-      SysPositionModal,
-      JDictSelectTag
-    },
+    components: { SysFillRuleModal },
     data() {
       return {
-        description: '职务表管理页面',
+        description: '填值规则管理页面',
         // 表头
         columns: [
           {
@@ -126,30 +116,28 @@
             key: 'rowIndex',
             width: 60,
             align: 'center',
-            customRender: function (t, r, index) {
-              return parseInt(index) + 1
-            }
+            customRender: (t, r, index) => 1 + index
           },
           {
-            title: '职务编码',
+            title: '规则名称',
             align: 'center',
-            dataIndex: 'code'
+            dataIndex: 'ruleName'
           },
           {
-            title: '职务名称',
+            title: '规则Code',
             align: 'center',
-            dataIndex: 'name'
+            dataIndex: 'ruleCode'
           },
           {
-            title: '职级',
+            title: '规则实现类',
             align: 'center',
-            dataIndex: 'postRank_dictText'
+            dataIndex: 'ruleClass'
           },
-          // {
-          //   title: '公司id',
-          //   align: 'center',
-          //   dataIndex: 'companyId'
-          // },
+          {
+            title: '规则参数',
+            align: 'center',
+            dataIndex: 'ruleParams'
+          },
           {
             title: '操作',
             dataIndex: 'action',
@@ -158,17 +146,38 @@
           }
         ],
         url: {
-          list: '/sys/position/list',
-          delete: '/sys/position/delete',
-          deleteBatch: '/sys/position/deleteBatch',
-          exportXlsUrl: '/sys/position/exportXls',
-          importExcelUrl: '/sys/position/importExcel',
+          list: '/sys/fillRule/list',
+          test: '/sys/fillRule/testFillRule',
+          delete: '/sys/fillRule/delete',
+          deleteBatch: '/sys/fillRule/deleteBatch',
+          exportXlsUrl: '/sys/fillRule/exportXls',
+          importExcelUrl: '/sys/fillRule/importExcel',
         },
       }
     },
     computed: {
-      importExcelUrl: function () {
-        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
+      importExcelUrl() {
+        return `${window._CONFIG['domianURL']}${this.url.importExcelUrl}`
+      }
+    },
+    methods: {
+      handleTest(record) {
+        let closeLoading = this.$message.loading('生成中...', 0)
+
+        getAction(this.url.test, {
+          ruleCode: record.ruleCode
+        }).then(res => {
+          if (res.success) {
+            this.$info({
+              title: '填值规则功能测试',
+              content: '生成结果：' + res.result
+            })
+          } else {
+            this.$message.warn(res.message)
+          }
+        }).finally(() => {
+          closeLoading()
+        })
       }
     }
   }

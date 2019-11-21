@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>2.1.1</version>
+  <version>2.1.2</version>
   <packaging>pom</packaging>
   
   	<parent>
@@ -16,7 +16,7 @@
 	<modules>
 		<module>jeecg-boot-base-common</module>
 		<module>jeecg-boot-module-system</module>
-	</modules> 
+	</modules>
 	
 	<distributionManagement>
 	  	<repository>
@@ -51,7 +51,7 @@
 	</repositories>
 	
     <properties>
-        <jeecgboot.common.version>2.1.1</jeecgboot.common.version>
+        <jeecgboot.common.version>2.1.2</jeecgboot.common.version>
         <java.version>1.8</java.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -62,7 +62,6 @@
         <aliyun-java-sdk-core.version>3.2.3</aliyun-java-sdk-core.version>
 		<aliyun-java-sdk-dysmsapi.version>1.0.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.6.0</aliyun.oss.version>
-		<qc.cos.version>5.6.5</qc.cos.version>
     </properties>
     
 	<dependencies>
@@ -105,7 +104,7 @@
 			<artifactId>commons-lang</artifactId>
 			<version>${commons.version}</version>
 		</dependency>
-		
+
 		<!-- freemarker -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -131,7 +130,7 @@
 		   <artifactId>druid-spring-boot-starter</artifactId>
 		   <version>${druid.version}</version>
 		</dependency>
-
+		
 		<!-- 动态数据源 -->
 		<dependency>
 		  <groupId>com.baomidou</groupId>
@@ -168,12 +167,12 @@
 			<scope>runtime</scope>
 		</dependency>
         <!-- postgresql驱动 -->
-        <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.2.5</version>
-            <scope>runtime</scope>
-        </dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.2.6</version>
+			<scope>runtime</scope>
+		</dependency>
 		
 		 <!-- Quartz定时任务 -->
         <dependency>
@@ -187,30 +186,14 @@
 			<artifactId>java-jwt</artifactId>
 			<version>3.7.0</version>
 		</dependency>
-
-        <!--  online form-->
-        <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>online-form</artifactId>
-            <version>1.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-collections</groupId>
-                    <artifactId>commons-collections</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
+		
 		<!--shiro-->
 		<dependency>
 		    <groupId>org.apache.shiro</groupId>
 		    <artifactId>shiro-spring-boot-starter</artifactId>
 		    <version>1.4.0</version>
 		</dependency>
+		<!-- shiro-redis -->
         <dependency>
             <groupId>org.crazycake</groupId>
             <artifactId>shiro-redis</artifactId>
@@ -222,7 +205,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-		
+
 		<!-- Swagger API文档 -->
         <dependency>
 		    <groupId>io.springfox</groupId>
@@ -272,7 +255,7 @@
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>codegenerate</artifactId>
-			<version>1.0.7</version>
+			<version>1.0.8</version>
 		</dependency>
 		
         <!-- AutoPoi Excel工具类-->
@@ -305,7 +288,23 @@
 			<artifactId>aliyun-java-sdk-core</artifactId>
 			<version>${aliyun-java-sdk-core.version}</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>org.jeecgframework.boot</groupId>
+			<artifactId>online-form</artifactId>
+			<version>2.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-collections</groupId>
+					<artifactId>commons-collections</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
 		<!--HttpClient-->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -319,15 +318,11 @@
 		   <artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
 
+		<!-- aliyun oss -->
 		<dependency>
 			<groupId>com.aliyun.oss</groupId>
 			<artifactId>aliyun-sdk-oss</artifactId>
 			<version>${aliyun.oss.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcloud</groupId>
-			<artifactId>cos_api</artifactId>
-			<version>${qc.cos.version}</version>
 		</dependency>
 
 	</dependencies>
@@ -353,8 +348,8 @@
 			<!--<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin> -->
-			<!--指定JDK编译版本 -->
+			</plugin>
+			 指定JDK编译版本 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

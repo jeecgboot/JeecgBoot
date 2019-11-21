@@ -11,7 +11,7 @@ https://www.oschina.net/p/jeecg-boot
 Jeecg-Boot 快速开发平台（前后端分离版本）
 ===============
 
-当前最新版本： 2.1.1（发布日期：20191021）
+当前最新版本： 2.1.2（发布日期：20191122）
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-JEECG团队-orange.svg)](http://www.jeecg.com)

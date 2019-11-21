@@ -116,10 +116,13 @@ public class ShiroConfig {
 		//测试示例
 		filterChainDefinitionMap.put("/test/jeecgDemo/html", "anon"); //模板页面
 		filterChainDefinitionMap.put("/test/jeecgDemo/redis/**", "anon"); //redis测试
-		
+
+		//排除Online请求
+		filterChainDefinitionMap.put("/auto/cgform/**", "anon");
+
 		//websocket排除
 		filterChainDefinitionMap.put("/websocket/**", "anon");
-
+		
 		// 添加自己的过滤器并且取名为jwt
 		Map<String, Filter> filterMap = new HashMap<String, Filter>(1);
 		filterMap.put("jwt", new JwtFilter());
@@ -205,7 +208,9 @@ public class ShiroConfig {
     public RedisManager redisManager() {
         log.info("===============(2)创建RedisManager,连接Redis..URL= " + host + ":" + port);
         RedisManager redisManager = new RedisManager();
-        redisManager.setHost(host + ":" + port);//老版本是分别setHost和setPort,新版本只需要setHost就可以了
+		redisManager.setHost(host);
+		redisManager.setPort(oConvertUtils.getInt(port));
+		redisManager.setTimeout(0);
         if (!StringUtils.isEmpty(redisPassword)) {
             redisManager.setPassword(redisPassword);
         }

@@ -1,12 +1,13 @@
 server:
-    port: 8080
-    tomcat: 
-        max-swallow-size: -1
-    servlet:
-       context-path: /jeecg-boot
-       compression:
-         enabled: true
-         mime-types: application/javascript,application/json,application/xml,text/html,text/xml,text/plain,text/css,image/*
+  port: 8080
+  tomcat:
+    max-swallow-size: -1
+  servlet:
+    context-path: /jeecg-boot
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types: application/javascript,application/json,application/xml,text/html,text/xml,text/plain,text/css,image/*
         
 management:
  endpoints:
@@ -141,39 +142,21 @@ jeecg :
     webapp: D://webapp
   #短信秘钥
   sms:
-     accessKeyId: ??
+     accessKeyId: LTAIpW4gUG7xYDNI
      accessKeySecret: ??
   shiro:
      excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**
   #阿里云oss存储配置
   oss:
-    type: aliyun
     endpoint: oss-cn-beijing.aliyuncs.com
-    accessKey: ???
-    secretKey: ???
-    bucketName: ???
-    properties:
-      aliyun:
-        protocol: https
+    accessKey: WegDpuKzOuPK6D3N
+    secretKey: ??
+    bucketName: jeecgos
+    staticDomain: ??
   # ElasticSearch 设置
   elasticsearch:
-    cluster-name: my-application
+    cluster-name: jeecg-ES
     cluster-nodes: 127.0.0.1:9200
-#  #腾讯云cos存储配置
-#  oss:
-#    type: qc
-#    #跟地区有关
-#    endpoint: cos.ap-beijing.myqcloud.com
-#    accessKey: yourSecretKeyId
-#    secretKey: yourSecretKey
-#    bucketName: yourBucketName
-#    properties:
-#      qc:
-#        #地区
-#        region: ap-beijing
-#        #存储路径
-#        prefix: project
-
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas
