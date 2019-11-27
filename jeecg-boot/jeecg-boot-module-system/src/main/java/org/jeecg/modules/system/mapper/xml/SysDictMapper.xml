@@ -58,9 +58,9 @@
 		select id as "value",depart_name as "text" from sys_depart where del_flag = '0'
 	</select>
 	
-		<!-- 查询部门信息 作为字典数据 -->
+		<!-- 查询用户信息 作为字典数据 -->
 	<select id="queryAllUserBackDictModel" resultType="org.jeecg.common.system.vo.DictModel">
-		select username as "value",realname as "text" from sys_depart where del_flag = '0'
+		select username as "value",realname as "text" from sys_user where del_flag = '0'
 	</select>
 	
 	<!--通过查询指定table的 text code 获取字典数据，且支持关键字查询 -->

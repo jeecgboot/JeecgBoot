@@ -177,13 +177,14 @@
   import JDictSelectTag from '../../../../components/dict/JDictSelectTag.vue'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import Clipboard from 'clipboard'
+
   import { filterObj } from '@/utils/util';
 
   export default {
     name: 'OnlCgformHeadList',
     mixins: [JeecgListMixin],
     components: {
-      JDictSelectTag
+      JDictSelectTag,
     },
     data() {
       return {

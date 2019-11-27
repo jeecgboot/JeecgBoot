@@ -33,7 +33,7 @@
             placeholder="请选择职级"
             :triggerChange="true"
             dictCode="position_rank"
-            v-decorator="['rank', validatorRules.rank]"
+            v-decorator="['postRank', validatorRules.postRank]"
           />
         </a-form-item>
         <!--<a-form-item-->
@@ -104,7 +104,7 @@
             ]
           },
           name: { rules: [{ required: true, message: '请输入职务名称' }] },
-          rank: { rules: [{ required: true, message: '请选择职级' }] },
+          postRank: { rules: [{ required: true, message: '请选择职级' }] },
         },
         url: {
           add: '/sys/position/add',
@@ -126,7 +126,7 @@
           this.form.setFieldsValue(pick(this.model,
             'code',
             'name',
-            'rank',
+            'postRank',
             // 'companyId'
           ))
         })

@@ -19,9 +19,9 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.util.JeecgDataAutorUtils;
 import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.system.entity.SysPermissionDataRule;
 import org.springframework.util.NumberUtils;
 
 import com.alibaba.fastjson.JSON;
@@ -94,7 +94,7 @@ public class QueryGenerator {
 		
 		//区间条件组装 模糊查询 高级查询组装 简单排序 权限查询
 		PropertyDescriptor origDescriptors[] = PropertyUtils.getPropertyDescriptors(searchObj);
-		Map<String,SysPermissionDataRule> ruleMap = getRuleMap();
+		Map<String,SysPermissionDataRuleModel> ruleMap = getRuleMap();
 		
 		//权限规则自定义SQL表达式
 		for (String c : ruleMap.keySet()) {
@@ -444,14 +444,14 @@ public class QueryGenerator {
 	 * 
 	 * @return
 	 */
-	public static Map<String, SysPermissionDataRule> getRuleMap() {
-		Map<String, SysPermissionDataRule> ruleMap = new HashMap<String, SysPermissionDataRule>();
-		List<SysPermissionDataRule> list =JeecgDataAutorUtils.loadDataSearchConditon();
+	public static Map<String, SysPermissionDataRuleModel> getRuleMap() {
+		Map<String, SysPermissionDataRuleModel> ruleMap = new HashMap<String, SysPermissionDataRuleModel>();
+		List<SysPermissionDataRuleModel> list =JeecgDataAutorUtils.loadDataSearchConditon();
 		if(list != null&&list.size()>0){
 			if(list.get(0)==null){
 				return ruleMap;
 			}
-			for (SysPermissionDataRule rule : list) {
+			for (SysPermissionDataRuleModel rule : list) {
 				String column = rule.getRuleColumn();
 				if(QueryRuleEnum.SQL_RULES.getValue().equals(rule.getRuleConditions())) {
 					column = SQL_RULES_COLUMN+rule.getId();
@@ -462,7 +462,7 @@ public class QueryGenerator {
 		return ruleMap;
 	}
 	
-	private static void addRuleToQueryWrapper(SysPermissionDataRule dataRule,String name, Class propertyType, QueryWrapper<?> queryWrapper) {
+	private static void addRuleToQueryWrapper(SysPermissionDataRuleModel dataRule, String name, Class propertyType, QueryWrapper<?> queryWrapper) {
 		QueryRuleEnum rule = QueryRuleEnum.getByValue(dataRule.getRuleConditions());
 		if(rule.equals(QueryRuleEnum.IN) && ! propertyType.equals(String.class)) {
 			String[] values = dataRule.getRuleValue().split(",");
@@ -636,7 +636,7 @@ public class QueryGenerator {
 	public static String installAuthJdbc(Class<?> clazz) {
 		StringBuffer sb = new StringBuffer();
 		//权限查询
-		Map<String,SysPermissionDataRule> ruleMap = getRuleMap();
+		Map<String,SysPermissionDataRuleModel> ruleMap = getRuleMap();
 		PropertyDescriptor origDescriptors[] = PropertyUtils.getPropertyDescriptors(clazz);
 		String sql_and = " and ";
 		for (String c : ruleMap.keySet()) {
@@ -651,7 +651,7 @@ public class QueryGenerator {
 				continue;
 			}
 			if(ruleMap.containsKey(name)) {
-				SysPermissionDataRule dataRule = ruleMap.get(name);
+				SysPermissionDataRuleModel dataRule = ruleMap.get(name);
 				QueryRuleEnum rule = QueryRuleEnum.getByValue(dataRule.getRuleConditions());
 				Class propType = origDescriptors[i].getPropertyType();
 				boolean isString = propType.equals(String.class);
@@ -677,7 +677,7 @@ public class QueryGenerator {
 	 */
 	public static void installAuthMplus(QueryWrapper<?> queryWrapper,Class<?> clazz) {
 		//权限查询
-		Map<String,SysPermissionDataRule> ruleMap = getRuleMap();
+		Map<String,SysPermissionDataRuleModel> ruleMap = getRuleMap();
 		PropertyDescriptor origDescriptors[] = PropertyUtils.getPropertyDescriptors(clazz);
 		for (String c : ruleMap.keySet()) {
 			if(oConvertUtils.isNotEmpty(c) && c.startsWith(SQL_RULES_COLUMN)){

@@ -21,6 +21,7 @@ import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.ComboModel;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.system.vo.SysDepartModel;
 import org.jeecg.common.util.IPUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
@@ -283,6 +284,27 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		return list;
 	}
 
+    @Override
+    public List<ComboModel> queryAllUser(String[] userIds) {
+        List<ComboModel> list = new ArrayList<ComboModel>();
+        List<SysUser> userList = userMapper.selectList(new QueryWrapper<SysUser>().eq("status","1").eq("del_flag","0"));
+        for(SysUser user : userList){
+            ComboModel model = new ComboModel();
+            model.setUsername(user.getUsername());
+            model.setTitle(user.getRealname());
+            model.setId(user.getId());
+            if(oConvertUtils.isNotEmpty(userIds)){
+                for(int i = 0; i<userIds.length;i++){
+                    if(userIds[i].equals(user.getId())){
+                        model.setChecked(true);
+                    }
+                }
+            }
+            list.add(model);
+        }
+        return list;
+    }
+
 	@Override
 	public List<ComboModel> queryAllRole() {
 		List<ComboModel> list = new ArrayList<ComboModel>();
@@ -295,6 +317,26 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		}
 		return list;
 	}
+
+    @Override
+    public List<ComboModel> queryAllRole(String[] roleIds) {
+        List<ComboModel> list = new ArrayList<ComboModel>();
+        List<SysRole> roleList = roleMapper.selectList(new QueryWrapper<SysRole>());
+        for(SysRole role : roleList){
+            ComboModel model = new ComboModel();
+            model.setTitle(role.getRoleName());
+            model.setId(role.getId());
+            if(oConvertUtils.isNotEmpty(roleIds)) {
+                for (int i = 0; i < roleIds.length; i++) {
+                    if (roleIds[i].equals(role.getId())) {
+                        model.setChecked(true);
+                    }
+                }
+            }
+            list.add(model);
+        }
+        return list;
+    }
 
 	@Override
 	public List<String> getRoleIdsByUsername(String username) {
@@ -311,5 +353,17 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		SysDepart depart = departMapper.getParentDepartId(departId);
 		DictModel model = new DictModel(depart.getId(),depart.getParentId());
 		return model;
+	}
+
+	@Override
+	public List<SysDepartModel> getAllSysDepart() {
+		List<SysDepartModel> departModelList = new ArrayList<SysDepartModel>();
+		List<SysDepart> departList = departMapper.selectList(new QueryWrapper<SysDepart>().eq("del_flag","0"));
+		for(SysDepart depart : departList){
+			SysDepartModel model = new SysDepartModel();
+			BeanUtils.copyProperties(depart,model);
+			departModelList.add(model);
+		}
+		return departModelList;
 	}
 }

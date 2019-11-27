@@ -14,13 +14,19 @@ import java.io.Serializable;
 public class ComboModel implements Serializable {
     private String id;
     private String title;
+    /**文档管理 表单table默认选中*/
+    private boolean checked;
+    /**文档管理 表单table 用户账号*/
+    private String username;
 
     public ComboModel(){
 
     };
 
-    public ComboModel(String id,String title){
+    public ComboModel(String id,String title,boolean checked,String username){
         this.id = id;
         this.title = title;
+        this.checked = false;
+        this.username = username;
     };
 }

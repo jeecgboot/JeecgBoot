@@ -1,6 +1,6 @@
 <template>
   <a-row class="j-select-biz-component-box" type="flex" :gutter="8">
-    <a-col class="left">
+    <a-col class="left" :class="{'full': !buttons}">
       <a-select
         mode="multiple"
         :placeholder="placeholder"
@@ -10,10 +10,11 @@
         :disabled="disabled"
         :open="false"
         style="width: 100%;"
+        @click.native="visible=(buttons?visible:true)"
       />
     </a-col>
 
-    <a-col class="right">
+    <a-col v-if="buttons" class="right">
       <a-button type="primary" icon="search" :disabled="disabled" @click="visible=true">{{selectButtonText}}</a-button>
     </a-col>
 
@@ -54,6 +55,11 @@
       },
       // 是否支持多选，默认 true
       multiple: {
+        type: Boolean,
+        default: true
+      },
+      // 是否显示按钮，默认 true
+      buttons: {
         type: Boolean,
         default: true
       },
@@ -152,6 +158,10 @@
 
     .right {
       width: #{$width};
+    }
+
+    .full {
+      width: 100%;
     }
   }
 </style>

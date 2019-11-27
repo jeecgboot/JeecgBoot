@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.util.JwtUtil;
@@ -117,7 +118,11 @@ public class LoginController {
 	    	//清空用户登录Token缓存
 	    	redisUtil.del(CommonConstant.PREFIX_USER_TOKEN + token);
 	    	//清空用户登录Shiro权限缓存
-	    	redisUtil.del(CommonConstant.PREFIX_USER_SHIRO_CACHE + sysUser.getId());
+			redisUtil.del(CommonConstant.PREFIX_USER_SHIRO_CACHE + sysUser.getId());
+			//清空用户的缓存信息（包括部门信息），例如sys:cache:user::<username>
+			redisUtil.del(String.format("%s::%s", CacheConstant.SYS_USERS_CACHE, sysUser.getUsername()));
+			//调用shiro的logout
+			SecurityUtils.getSubject().logout();
 	    	return Result.ok("退出登录成功！");
 	    }else {
 	    	return Result.error("Token无效!");
