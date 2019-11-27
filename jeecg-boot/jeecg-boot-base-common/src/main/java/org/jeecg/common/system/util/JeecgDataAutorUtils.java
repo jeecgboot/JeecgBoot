@@ -1,14 +1,13 @@
 package org.jeecg.common.system.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
+import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.SpringContextUtils;
-import org.jeecg.modules.system.entity.SysPermissionDataRule;
 import org.springframework.util.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @ClassName: JeecgDataAutorUtils
@@ -29,16 +28,16 @@ public class JeecgDataAutorUtils {
 	 * 往链接请求里面，传入数据查询条件
 	 * 
 	 * @param request
-	 * @param MENU_DATA_AUTHOR_RULES
+	 * @param dataRules
 	 */
-	public static synchronized void installDataSearchConditon(HttpServletRequest request, List<SysPermissionDataRule> dataRules) {
+	public static synchronized void installDataSearchConditon(HttpServletRequest request, List<SysPermissionDataRuleModel> dataRules) {
 		@SuppressWarnings("unchecked")
-		List<SysPermissionDataRule> list = (List<SysPermissionDataRule>)loadDataSearchConditon();// 1.先从request获取MENU_DATA_AUTHOR_RULES，如果存则获取到LIST
+		List<SysPermissionDataRuleModel> list = (List<SysPermissionDataRuleModel>)loadDataSearchConditon();// 1.先从request获取MENU_DATA_AUTHOR_RULES，如果存则获取到LIST
 		if (list==null) {
 			// 2.如果不存在，则new一个list
-			list = new ArrayList<SysPermissionDataRule>();
+			list = new ArrayList<SysPermissionDataRuleModel>();
 		}
-		for (SysPermissionDataRule tsDataRule : dataRules) {
+		for (SysPermissionDataRuleModel tsDataRule : dataRules) {
 			list.add(tsDataRule);
 		}
 		request.setAttribute(MENU_DATA_AUTHOR_RULES, list); // 3.往list里面增量存指
@@ -47,19 +46,17 @@ public class JeecgDataAutorUtils {
 	/**
 	 * 获取请求对应的数据权限规则
 	 * 
-	 * @param request
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static synchronized List<SysPermissionDataRule> loadDataSearchConditon() {
-		return (List<SysPermissionDataRule>) SpringContextUtils.getHttpServletRequest().getAttribute(MENU_DATA_AUTHOR_RULES);
+	public static synchronized List<SysPermissionDataRuleModel> loadDataSearchConditon() {
+		return (List<SysPermissionDataRuleModel>) SpringContextUtils.getHttpServletRequest().getAttribute(MENU_DATA_AUTHOR_RULES);
 				
 	}
 
 	/**
 	 * 获取请求对应的数据权限SQL
 	 * 
-	 * @param request
 	 * @return
 	 */
 	public static synchronized String loadDataSearchConditonSQLString() {
@@ -70,7 +67,7 @@ public class JeecgDataAutorUtils {
 	 * 往链接请求里面，传入数据查询条件
 	 * 
 	 * @param request
-	 * @param MENU_DATA_AUTHOR_RULE_SQL
+	 * @param sql
 	 */
 	public static synchronized void installDataSearchConditon(HttpServletRequest request, String sql) {
 		String ruleSql = (String)loadDataSearchConditonSQLString();

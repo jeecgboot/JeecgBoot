@@ -14,6 +14,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.system.util.JeecgDataAutorUtils;
 import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
@@ -92,12 +93,15 @@ public class PermissionDataAspect {
 		//3.通过用户名+菜单ID 找到权限配置信息 放到request中去
 		if(currentSyspermission!=null && currentSyspermission.size()>0) {
 			String username = JwtUtil.getUserNameByToken(request);
-			List<SysPermissionDataRule> dataRules = new ArrayList<SysPermissionDataRule>();
+			List<SysPermissionDataRuleModel> dataRules = new ArrayList<SysPermissionDataRuleModel>();
 			for (SysPermission sysPermission : currentSyspermission) {
+				// update-begin--Author:scott Date:20191119 for：数据权限规则编码不规范，项目存在相同包名和类名 #722
 				List<SysPermissionDataRule> temp = sysPermissionDataRuleService.queryPermissionDataRules(username, sysPermission.getId());
 				if(temp!=null && temp.size()>0) {
-					dataRules.addAll(temp);
+					//dataRules.addAll(temp);
+					dataRules = oConvertUtils.entityListToModelList(temp,SysPermissionDataRuleModel.class);
 				}
+				// update-end--Author:scott Date:20191119 for：数据权限规则编码不规范，项目存在相同包名和类名 #722
 			}
 			if(dataRules!=null && dataRules.size()>0) {
 				JeecgDataAutorUtils.installDataSearchConditon(request, dataRules);

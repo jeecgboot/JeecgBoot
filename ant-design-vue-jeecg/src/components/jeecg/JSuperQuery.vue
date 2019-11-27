@@ -63,7 +63,33 @@
               </a-col>
 
               <a-col :span="8">
-                <j-dict-select-tag v-if="item.dictCode" v-model="item.val" :dictCode="item.dictCode" placeholder="请选择"/>
+                <template v-if="item.dictCode">
+                  <template v-if="item.type === 'table-dict'">
+                    <j-popup
+                      v-model="item.val"
+                      :code="item.dictTable"
+                      :field="item.dictCode"
+                      :orgFields="item.dictCode"
+                      :destFields="item.dictCode"
+                    ></j-popup>
+                  </template>
+                  <j-dict-select-tag v-else v-model="item.val" :dictCode="item.dictCode" placeholder="请选择"/>
+                </template>
+                <j-select-multi-user
+                  v-else-if="item.type === 'select-user'"
+                  v-model="item.val"
+                  :buttons="false"
+                  :multiple="false"
+                  placeholder="请选择用户"
+                  :returnKeys="['id', item.customReturnField || 'username']"
+                />
+                <j-select-depart
+                  v-else-if="item.type === 'select-depart'"
+                  v-model="item.val"
+                  :multi="false"
+                  placeholder="请选择部门"
+                  :customReturnField="item.customReturnField || 'id'"
+                />
                 <j-date v-else-if=" item.type=='date' " v-model="item.val" placeholder="请选择日期" style="width: 100%"></j-date>
                 <j-date v-else-if=" item.type=='datetime' " v-model="item.val" placeholder="请选择时间" :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" style="width: 100%"></j-date>
                 <a-input-number v-else-if=" item.type=='int'||item.type=='number' " style="width: 100%" placeholder="请输入数值" v-model="item.val"/>
@@ -86,7 +112,10 @@
             <div slot="title">
               保存的查询
             </div>
+
+            <a-empty v-if="treeData.length === 0" class="j-super-query-history-empty" description="没有保存任何查询"/>
             <a-tree
+              v-else
               class="j-super-query-history-tree"
               showIcon
               :treeData="treeData"
@@ -113,10 +142,12 @@
 <script>
   import * as utils from '@/utils/util'
   import JDate from '@/components/jeecg/JDate.vue'
+  import JSelectDepart from '@/components/jeecgbiz/JSelectDepart'
+  import JSelectMultiUser from '@/components/jeecgbiz/JSelectMultiUser'
 
   export default {
     name: 'JSuperQuery',
-    components: { JDate },
+    components: { JDate, JSelectDepart, JSelectMultiUser },
     props: {
       /*
        fieldList: [{
@@ -182,7 +213,6 @@
               return item
             })
           }
-          console.log({ list })
         }
       }
     },
@@ -222,9 +252,12 @@
       handleSelected(option, item) {
         let index = option.data.attrs['data-idx']
 
-        let { type, dictCode } = this.fieldList[index]
+        let { type, dictCode, dictTable, customReturnField } = this.fieldList[index]
         item['type'] = type
         item['dictCode'] = dictCode
+        item['dictTable'] = dictTable
+        item['customReturnField'] = customReturnField
+        this.$set(item, 'val', '')
       },
       handleReset() {
         this.queryParamsModel = [{}]
@@ -335,6 +368,24 @@
       .ant-card-head {
         padding: 4px 8px;
         min-height: initial;
+      }
+    }
+
+    .j-super-query-history-empty /deep/ {
+      .ant-empty-image {
+        height: 80px;
+        line-height: 80px;
+        margin-bottom: 0;
+      }
+
+      img {
+        width: 80px;
+        height: 65px;
+      }
+
+      .ant-empty-description {
+        color: #afafaf;
+        margin: 8px 0;
       }
     }
 
