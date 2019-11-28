@@ -12,7 +12,7 @@
  Target Server Version : 14003223
  File Encoding         : 65001
 
- Date: 21/10/2019 11:31:47
+ Date: 27/11/2019 15:48:46
 */
 
 
@@ -1260,16 +1260,16 @@ IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[on
 GO
 
 CREATE TABLE [dbo].[onl_cgform_button] (
-  [ID] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [BUTTON_CODE] nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [BUTTON_ICON] nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [BUTTON_NAME] nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [BUTTON_STATUS] nvarchar(2) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [BUTTON_STYLE] nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [EXP] nvarchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [CGFORM_HEAD_ID] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [OPT_TYPE] nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [ORDER_NUM] int  NULL
+  [id] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [button_code] nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [button_icon] nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [button_name] nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [button_status] nvarchar(2) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [button_style] nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [exp] nvarchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [cgform_head_id] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [opt_type] nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [order_num] int  NULL
 )
 GO
 
@@ -1280,70 +1280,70 @@ EXEC sp_addextendedproperty
 'MS_Description', N'主键ID',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_button',
-'COLUMN', N'ID'
+'COLUMN', N'id'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'按钮编码',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_button',
-'COLUMN', N'BUTTON_CODE'
+'COLUMN', N'button_code'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'按钮图标',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_button',
-'COLUMN', N'BUTTON_ICON'
+'COLUMN', N'button_icon'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'按钮名称',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_button',
-'COLUMN', N'BUTTON_NAME'
+'COLUMN', N'button_name'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'按钮状态',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_button',
-'COLUMN', N'BUTTON_STATUS'
+'COLUMN', N'button_status'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'按钮样式',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_button',
-'COLUMN', N'BUTTON_STYLE'
+'COLUMN', N'button_style'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'表达式',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_button',
-'COLUMN', N'EXP'
+'COLUMN', N'exp'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'表单ID',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_button',
-'COLUMN', N'CGFORM_HEAD_ID'
+'COLUMN', N'cgform_head_id'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'按钮类型',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_button',
-'COLUMN', N'OPT_TYPE'
+'COLUMN', N'opt_type'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'排序',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_button',
-'COLUMN', N'ORDER_NUM'
+'COLUMN', N'order_num'
 GO
 
 
@@ -1362,13 +1362,13 @@ IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[on
 GO
 
 CREATE TABLE [dbo].[onl_cgform_enhance_java] (
-  [ID] nvarchar(36) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [BUTTON_CODE] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [CG_JAVA_TYPE] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [CG_JAVA_VALUE] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [CGFORM_HEAD_ID] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [ACTIVE_STATUS] nvarchar(2) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [EVENT] nvarchar(10) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL
+  [id] nvarchar(36) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [button_code] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [cg_java_type] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [cg_java_value] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [cgform_head_id] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [active_status] nvarchar(2) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [event] nvarchar(10) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL
 )
 GO
 
@@ -1379,42 +1379,42 @@ EXEC sp_addextendedproperty
 'MS_Description', N'按钮编码',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_java',
-'COLUMN', N'BUTTON_CODE'
+'COLUMN', N'button_code'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'类型',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_java',
-'COLUMN', N'CG_JAVA_TYPE'
+'COLUMN', N'cg_java_type'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'数值',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_java',
-'COLUMN', N'CG_JAVA_VALUE'
+'COLUMN', N'cg_java_value'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'表单ID',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_java',
-'COLUMN', N'CGFORM_HEAD_ID'
+'COLUMN', N'cgform_head_id'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'生效状态',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_java',
-'COLUMN', N'ACTIVE_STATUS'
+'COLUMN', N'active_status'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'事件状态(end:结束，start:开始)',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_java',
-'COLUMN', N'EVENT'
+'COLUMN', N'event'
 GO
 
 
@@ -1426,11 +1426,11 @@ IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[on
 GO
 
 CREATE TABLE [dbo].[onl_cgform_enhance_js] (
-  [ID] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [CG_JS] nvarchar(max) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [CG_JS_TYPE] nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [CONTENT] nvarchar(1000) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [CGFORM_HEAD_ID] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL
+  [id] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [cg_js] nvarchar(max) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [cg_js_type] nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [content] nvarchar(1000) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [cgform_head_id] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL
 )
 GO
 
@@ -1441,35 +1441,35 @@ EXEC sp_addextendedproperty
 'MS_Description', N'主键ID',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_js',
-'COLUMN', N'ID'
+'COLUMN', N'id'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'JS增强内容',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_js',
-'COLUMN', N'CG_JS'
+'COLUMN', N'cg_js'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'类型',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_js',
-'COLUMN', N'CG_JS_TYPE'
+'COLUMN', N'cg_js_type'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'备注',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_js',
-'COLUMN', N'CONTENT'
+'COLUMN', N'content'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'表单ID',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_js',
-'COLUMN', N'CGFORM_HEAD_ID'
+'COLUMN', N'cgform_head_id'
 GO
 
 
@@ -1518,12 +1518,12 @@ IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[on
 GO
 
 CREATE TABLE [dbo].[onl_cgform_enhance_sql] (
-  [ID] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [BUTTON_CODE] nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [CGB_SQL] nvarchar(max) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [CGB_SQL_NAME] nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [CONTENT] nvarchar(1000) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [CGFORM_HEAD_ID] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL
+  [id] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [button_code] nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [cgb_sql] nvarchar(max) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [cgb_sql_name] nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [content] nvarchar(1000) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [cgform_head_id] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL
 )
 GO
 
@@ -1534,42 +1534,42 @@ EXEC sp_addextendedproperty
 'MS_Description', N'主键ID',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_sql',
-'COLUMN', N'ID'
+'COLUMN', N'id'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'按钮编码',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_sql',
-'COLUMN', N'BUTTON_CODE'
+'COLUMN', N'button_code'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'SQL内容',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_sql',
-'COLUMN', N'CGB_SQL'
+'COLUMN', N'cgb_sql'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'Sql名称',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_sql',
-'COLUMN', N'CGB_SQL_NAME'
+'COLUMN', N'cgb_sql_name'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'备注',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_sql',
-'COLUMN', N'CONTENT'
+'COLUMN', N'content'
 GO
 
 EXEC sp_addextendedproperty
 'MS_Description', N'表单ID',
 'SCHEMA', N'dbo',
 'TABLE', N'onl_cgform_enhance_sql',
-'COLUMN', N'CGFORM_HEAD_ID'
+'COLUMN', N'cgform_head_id'
 GO
 
 
@@ -1937,7 +1937,7 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'1130f1e252533529bb1167b896dffe32', N'deea5a8ec619460c9245ba85dbc59e80', N'update_time', N'更新日期', NULL, N'0', N'1', N'Date', N'20', N'0', N'', N'', N'', N'', N'datetime', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'5', N'admin', N'2019-06-10 16:07:16.0000000', N'2019-04-20 11:41:19.0000000', N'admin')
 GO
 
-INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'117fc4ba649d6690a3ac482ad5e4ad38', N'56870166aba54ebfacb20ba6c770bd73', N'create_time', N'创建日期', NULL, N'0', N'1', N'Date', N'20', N'0', N'', N'', N'', N'', N'datetime', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'3', N'admin', N'2019-06-10 16:01:35.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'117fc4ba649d6690a3ac482ad5e4ad38', N'56870166aba54ebfacb20ba6c770bd73', N'create_time', N'创建日期', NULL, N'0', N'1', N'Date', N'20', N'0', N'', N'', N'', N'', N'datetime', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'3', N'admin', N'2019-11-21 17:58:27.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'13246645b7650491b70205d99703ca06', N'402860816aa5921f016aa5dedcb90009', N'bpm_status', N'流程状态', N'bpm_status', N'0', N'1', N'string', N'32', N'0', N'1', N'bpm_status', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'1', N'group', N'', N'', N'8', N'admin', N'2019-05-11 15:56:47.0000000', N'2019-05-11 15:50:08.0000000', N'admin')
@@ -1991,7 +1991,7 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'1f0c6d33b79713fe79fb30373c81f6f7', N'758334cb1e7445e2822b60e807aec4a3', N'update_time', N'更新日期', NULL, N'0', N'1', N'Date', N'20', N'0', N'', N'', N'', N'', N'datetime', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'5', NULL, NULL, N'2019-10-18 18:02:09.0000000', N'admin')
 GO
 
-INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'1fa5f07b3e70d4925b69b2bf51309421', N'56870166aba54ebfacb20ba6c770bd73', N'update_time', N'更新日期', NULL, N'0', N'1', N'Date', N'20', N'0', N'', N'', N'', N'', N'datetime', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'5', N'admin', N'2019-06-10 16:01:35.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'1fa5f07b3e70d4925b69b2bf51309421', N'56870166aba54ebfacb20ba6c770bd73', N'update_time', N'更新日期', NULL, N'0', N'1', N'Date', N'20', N'0', N'', N'', N'', N'', N'datetime', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'5', N'admin', N'2019-11-21 17:58:27.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'20ff34fb0466089cb633d73d5a6f08d6', N'd35109c3632c4952a19ecc094943dd71', N'update_time', N'更新日期', NULL, N'0', N'1', N'date', N'20', N'0', N'', N'', N'', N'', N'text', N'', N'120', N'', N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'4', N'admin', N'2019-08-23 23:45:15.0000000', N'2019-03-15 14:24:35.0000000', N'admin')
@@ -2108,7 +2108,7 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'404b516d4f2229f292783db595b02ba1', N'402860816bff91c0016bff91d8830007', N'update_time', N'更新时间', N'update_time', N'0', N'1', N'Date', N'0', N'0', N'', N'', N'', N'', N'date', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'13', N'admin', N'2019-07-19 18:04:41.0000000', N'2019-07-17 18:54:37.0000000', N'admin')
 GO
 
-INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'405de5ea82e54138a0613dd41b006dfb', N'56870166aba54ebfacb20ba6c770bd73', N'update_by', N'更新人', NULL, N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'4', N'admin', N'2019-06-10 16:01:35.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'405de5ea82e54138a0613dd41b006dfb', N'56870166aba54ebfacb20ba6c770bd73', N'update_by', N'更新人', NULL, N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'4', N'admin', N'2019-11-21 17:58:27.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'4164314d6a51d100169a29872b7504d8', N'402860816bff91c0016bff91ca7e0002', N'cert_time', N'发证时间', N'cert_time', N'0', N'1', N'Date', N'0', N'0', N'', N'', N'', N'', N'date', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'3', N'admin', N'2019-07-19 18:07:13.0000000', N'2019-07-17 18:54:33.0000000', N'admin')
@@ -2117,7 +2117,7 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'41d4215c01b0d26871f2cb83d3e532ae', N'402860816bff91c0016bff91c0cb0000', N'bpm_status', N'流程状态', NULL, N'0', N'1', N'String', N'32', N'0', N'1', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'17', N'admin', N'2019-07-19 18:09:01.0000000', N'2019-07-19 15:35:23.0000000', N'admin')
 GO
 
-INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'422a44a15fa39fd57c3c23eb601f7c03', N'56870166aba54ebfacb20ba6c770bd73', N'descc', N'描述', NULL, N'0', N'1', N'String', N'100', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'8', N'admin', N'2019-06-10 16:01:35.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'422a44a15fa39fd57c3c23eb601f7c03', N'56870166aba54ebfacb20ba6c770bd73', N'descc', N'描述', NULL, N'0', N'1', N'String', N'100', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'8', N'admin', N'2019-11-21 17:58:28.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'42cccfa014c9e131a0a1b23f563d3688', N'402860816bff91c0016bffa220a9000b', N'sex', N'性别', N'sex', N'0', N'1', N'string', N'20', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'6', N'admin', N'2019-07-22 16:15:32.0000000', N'2019-07-17 19:12:24.0000000', N'admin')
@@ -2147,7 +2147,7 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'46be01bef342519e268902d0d36a7473', N'deea5a8ec619460c9245ba85dbc59e80', N'descc', N'描述', NULL, N'0', N'1', N'String', N'32', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'11', N'admin', N'2019-06-10 16:07:16.0000000', N'2019-04-20 11:41:19.0000000', N'admin')
 GO
 
-INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'46f1a875f86a4f48d0540ad0d5e667d7', N'56870166aba54ebfacb20ba6c770bd73', N'order_date', N'下单时间', NULL, N'0', N'1', N'Date', N'32', N'0', N'', N'', N'', N'', N'date', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'7', N'admin', N'2019-06-10 16:01:35.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'46f1a875f86a4f48d0540ad0d5e667d7', N'56870166aba54ebfacb20ba6c770bd73', N'order_date', N'下单时间', NULL, N'0', N'1', N'Date', N'32', N'0', N'', N'', N'', N'', N'date', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'7', N'admin', N'2019-11-21 17:58:28.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'47c21a6b45e59a6b70bb9c0cc4510a68', N'1acb6f81a1d9439da6cc4e868617b565', N'integral_val', N'积分值', NULL, N'0', N'1', N'int', N'32', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'13', N'admin', N'2019-06-10 14:47:14.0000000', N'2019-04-23 22:58:19.0000000', N'admin')
@@ -2411,7 +2411,7 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'86e0f3a8f31c60698157f139ed993954', N'402860816bff91c0016bffa220a9000b', N'having_reserve_funds', N'是否有公积金', N'having_reserve_funds', N'0', N'1', N'string', N'20', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'group', N'', N'', N'33', N'admin', N'2019-07-22 16:15:32.0000000', N'2019-07-17 19:12:24.0000000', N'admin')
 GO
 
-INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'873e2bb041b17bff77d3aca72900ea1b', N'56870166aba54ebfacb20ba6c770bd73', N'order_code', N'订单编码', NULL, N'0', N'1', N'String', N'32', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'6', N'admin', N'2019-06-10 16:01:35.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'873e2bb041b17bff77d3aca72900ea1b', N'56870166aba54ebfacb20ba6c770bd73', N'order_code', N'订单编码', NULL, N'0', N'1', N'String', N'32', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'6', N'admin', N'2019-11-21 17:58:28.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'877391ae770a4ce2c95181ef410982ce', N'4028318169e81b970169e81b97650000', N'request_param', N'请求参数', N'request_param', N'0', N'1', N'string', N'255', N'0', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'10', NULL, NULL, N'2019-04-04 19:28:36.0000000', N'admin')
@@ -2444,7 +2444,7 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'8c6518fec11fc4769ba4eb770c9e00f7', N'4028839a6de2ebd3016de2ebd3870000', N'integral_val', N'积分值', N'integral_val', N'0', N'1', N'int', N'10', N'0', NULL, NULL, NULL, NULL, N'text', NULL, N'120', NULL, N'0', NULL, NULL, N'0', N'1', N'1', N'group', NULL, NULL, N'11', NULL, NULL, N'2019-10-19 15:29:30.0000000', N'admin')
 GO
 
-INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'8ca56210938fbe649f840e505eb9fd41', N'56870166aba54ebfacb20ba6c770bd73', N'create_by', N'创建人', NULL, N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'2', N'admin', N'2019-06-10 16:01:35.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'8ca56210938fbe649f840e505eb9fd41', N'56870166aba54ebfacb20ba6c770bd73', N'create_by', N'创建人', NULL, N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'2', N'admin', N'2019-11-21 17:58:27.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'8ea43fd1e4ce82becee61b2f1e2e843f', N'32feeb502544416c9bf41329c10a88f4', N'sex', N'性别', NULL, N'0', N'1', N'String', N'32', N'0', N'', N'sex', N'', N'', N'list', N'', N'120', NULL, N'0', N'', N'', N'0', N'1', N'1', N'single', N'', N'', N'8', N'admin', N'2019-08-23 20:03:40.0000000', N'2019-07-02 18:23:23.0000000', N'admin')
@@ -2636,7 +2636,7 @@ GO
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'b47af4d937e55c6208939bac5378bfad', N'62e29cdb81ac44d1a2d8ff89851b853d', N'update_time', N'更新日期', NULL, N'0', N'1', N'Date', N'20', N'0', N'', N'', N'', N'', N'datetime', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'5', NULL, NULL, N'2019-05-11 14:01:14.0000000', N'admin')
 GO
 
-INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'b53203fc52d067bb4730dbcb7e496bd3', N'56870166aba54ebfacb20ba6c770bd73', N'id', N'主键', NULL, N'1', N'0', N'string', N'36', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'1', N'admin', N'2019-06-10 16:01:35.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
+INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'b53203fc52d067bb4730dbcb7e496bd3', N'56870166aba54ebfacb20ba6c770bd73', N'id', N'主键', NULL, N'1', N'0', N'string', N'36', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'1', N'admin', N'2019-11-21 17:58:27.0000000', N'2019-04-20 11:38:39.0000000', N'admin')
 GO
 
 INSERT INTO [dbo].[onl_cgform_field]  VALUES (N'b5cfd3c9691a884430f3d9cd5ecb211f', N'e2faf977fdaf4b25a524f58c2441a51c', N'create_by', N'创建人', NULL, N'0', N'1', N'string', N'50', N'0', N'', N'', N'', N'', N'text', N'', N'120', NULL, N'0', N'', N'', N'0', N'0', N'0', N'single', N'', N'', N'2', N'admin', N'2019-06-10 17:27:00.0000000', N'2019-04-24 17:12:11.0000000', N'admin')
@@ -3271,7 +3271,7 @@ GO
 -- ----------------------------
 -- Records of onl_cgform_head
 -- ----------------------------
-INSERT INTO [dbo].[onl_cgform_head]  VALUES (N'56870166aba54ebfacb20ba6c770bd73', N'test_order_main', N'2', N'4', N'测试订单主表', N'N', N'Y', N'Y', N'N', NULL, N'UUID', N'single', NULL, N'test_order_product', NULL, NULL, NULL, NULL, N'bdfl_include', N'2', NULL, N'0', NULL, N'0', NULL, N'admin', N'2019-04-20 11:39:54.0000000', N'admin', N'2019-04-20 11:38:39.0000000')
+INSERT INTO [dbo].[onl_cgform_head]  VALUES (N'56870166aba54ebfacb20ba6c770bd73', N'test_order_main', N'2', N'5', N'测试订单主表', N'N', N'Y', N'Y', N'N', NULL, N'UUID', N'single', NULL, N'test_order_product', NULL, NULL, NULL, NULL, N'bdfl_include', N'2', NULL, N'0', NULL, N'0', NULL, N'admin', N'2019-11-21 17:58:28.0000000', N'admin', N'2019-04-20 11:38:39.0000000')
 GO
 
 INSERT INTO [dbo].[onl_cgform_head]  VALUES (N'd35109c3632c4952a19ecc094943dd71', N'test_demo', N'1', N'14', N'测试用户表', N'N', N'Y', N'Y', N'N', NULL, N'UUID', N'single', NULL, NULL, NULL, NULL, NULL, NULL, N'bdfl_include', N'1', NULL, N'0', NULL, N'0', NULL, N'admin', N'2019-03-22 21:51:35.0000000', N'admin', N'2019-03-15 14:24:35.0000000')
@@ -3453,10 +3453,10 @@ IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qr
 GO
 
 CREATE TABLE [dbo].[qrtz_blob_triggers] (
-  [SCHED_NAME] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [TRIGGER_NAME] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [TRIGGER_GROUP] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [BLOB_DATA] varbinary(max)  NULL
+  [sched_name] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [trigger_name] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [trigger_group] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [blob_data] varbinary(max)  NULL
 )
 GO
 
@@ -3478,9 +3478,9 @@ IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qr
 GO
 
 CREATE TABLE [dbo].[qrtz_calendars] (
-  [SCHED_NAME] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [CALENDAR_NAME] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [CALENDAR] varbinary(max)  NOT NULL
+  [sched_name] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [calendar_name] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [calendar] varbinary(max)  NOT NULL
 )
 GO
 
@@ -3496,11 +3496,11 @@ IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qr
 GO
 
 CREATE TABLE [dbo].[qrtz_cron_triggers] (
-  [SCHED_NAME] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [TRIGGER_NAME] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [TRIGGER_GROUP] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [CRON_EXPRESSION] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [TIME_ZONE_ID] nvarchar(80) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL
+  [sched_name] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [trigger_name] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [trigger_group] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [cron_expression] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [time_zone_id] nvarchar(80) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL
 )
 GO
 
@@ -3522,19 +3522,19 @@ IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qr
 GO
 
 CREATE TABLE [dbo].[qrtz_fired_triggers] (
-  [SCHED_NAME] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [ENTRY_ID] nvarchar(95) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [TRIGGER_NAME] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [TRIGGER_GROUP] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [INSTANCE_NAME] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [FIRED_TIME] bigint  NOT NULL,
-  [SCHED_TIME] bigint  NOT NULL,
-  [PRIORITY] int  NOT NULL,
-  [STATE] nvarchar(16) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [JOB_NAME] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [JOB_GROUP] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [IS_NONCONCURRENT] nvarchar(1) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [REQUESTS_RECOVERY] nvarchar(1) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL
+  [sched_name] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [entry_id] nvarchar(95) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [trigger_name] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [trigger_group] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [instance_name] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [fired_time] bigint  NOT NULL,
+  [sched_time] bigint  NOT NULL,
+  [priority] int  NOT NULL,
+  [state] nvarchar(16) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [job_name] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [job_group] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [is_nonconcurrent] nvarchar(1) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [requests_recovery] nvarchar(1) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL
 )
 GO
 
@@ -3550,16 +3550,16 @@ IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qr
 GO
 
 CREATE TABLE [dbo].[qrtz_job_details] (
-  [SCHED_NAME] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [JOB_NAME] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [JOB_GROUP] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [DESCRIPTION] nvarchar(250) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [JOB_CLASS_NAME] nvarchar(250) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [IS_DURABLE] nvarchar(1) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [IS_NONCONCURRENT] nvarchar(1) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [IS_UPDATE_DATA] nvarchar(1) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [REQUESTS_RECOVERY] nvarchar(1) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [JOB_DATA] varbinary(max)  NULL
+  [sched_name] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [job_name] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [job_group] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [description] nvarchar(250) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [job_class_name] nvarchar(250) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [is_durable] nvarchar(1) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [is_nonconcurrent] nvarchar(1) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [is_update_data] nvarchar(1) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [requests_recovery] nvarchar(1) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [job_data] varbinary(max)  NULL
 )
 GO
 
@@ -3575,8 +3575,8 @@ IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qr
 GO
 
 CREATE TABLE [dbo].[qrtz_locks] (
-  [SCHED_NAME] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [LOCK_NAME] nvarchar(40) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL
+  [sched_name] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [lock_name] nvarchar(40) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL
 )
 GO
 
@@ -3599,8 +3599,8 @@ IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qr
 GO
 
 CREATE TABLE [dbo].[qrtz_paused_trigger_grps] (
-  [SCHED_NAME] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [TRIGGER_GROUP] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL
+  [sched_name] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [trigger_group] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL
 )
 GO
 
@@ -3616,10 +3616,10 @@ IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qr
 GO
 
 CREATE TABLE [dbo].[qrtz_scheduler_state] (
-  [SCHED_NAME] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [INSTANCE_NAME] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [LAST_CHECKIN_TIME] bigint  NOT NULL,
-  [CHECKIN_INTERVAL] bigint  NOT NULL
+  [sched_name] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [instance_name] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [last_checkin_time] bigint  NOT NULL,
+  [checkin_interval] bigint  NOT NULL
 )
 GO
 
@@ -3635,12 +3635,12 @@ IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qr
 GO
 
 CREATE TABLE [dbo].[qrtz_simple_triggers] (
-  [SCHED_NAME] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [TRIGGER_NAME] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [TRIGGER_GROUP] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [REPEAT_COUNT] bigint  NOT NULL,
-  [REPEAT_INTERVAL] bigint  NOT NULL,
-  [TIMES_TRIGGERED] bigint  NOT NULL
+  [sched_name] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [trigger_name] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [trigger_group] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [repeat_count] bigint  NOT NULL,
+  [repeat_interval] bigint  NOT NULL,
+  [times_triggered] bigint  NOT NULL
 )
 GO
 
@@ -3662,20 +3662,20 @@ IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qr
 GO
 
 CREATE TABLE [dbo].[qrtz_simprop_triggers] (
-  [SCHED_NAME] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [TRIGGER_NAME] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [TRIGGER_GROUP] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [STR_PROP_1] nvarchar(512) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [STR_PROP_2] nvarchar(512) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [STR_PROP_3] nvarchar(512) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [INT_PROP_1] int  NULL,
-  [INT_PROP_2] int  NULL,
-  [LONG_PROP_1] bigint  NULL,
-  [LONG_PROP_2] bigint  NULL,
-  [DEC_PROP_1] decimal(13,4)  NULL,
-  [DEC_PROP_2] decimal(13,4)  NULL,
-  [BOOL_PROP_1] nvarchar(1) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [BOOL_PROP_2] nvarchar(1) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL
+  [sched_name] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [trigger_name] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [trigger_group] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [str_prop_1] nvarchar(512) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [str_prop_2] nvarchar(512) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [str_prop_3] nvarchar(512) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [int_prop_1] int  NULL,
+  [int_prop_2] int  NULL,
+  [long_prop_1] bigint  NULL,
+  [long_prop_2] bigint  NULL,
+  [dec_prop_1] decimal(13,4)  NULL,
+  [dec_prop_2] decimal(13,4)  NULL,
+  [bool_prop_1] nvarchar(1) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [bool_prop_2] nvarchar(1) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL
 )
 GO
 
@@ -3697,22 +3697,22 @@ IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qr
 GO
 
 CREATE TABLE [dbo].[qrtz_triggers] (
-  [SCHED_NAME] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [TRIGGER_NAME] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [TRIGGER_GROUP] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [JOB_NAME] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [JOB_GROUP] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [DESCRIPTION] nvarchar(250) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [NEXT_FIRE_TIME] bigint  NULL,
-  [PREV_FIRE_TIME] bigint  NULL,
-  [PRIORITY] int  NULL,
-  [TRIGGER_STATE] nvarchar(16) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [TRIGGER_TYPE] nvarchar(8) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
-  [START_TIME] bigint  NOT NULL,
-  [END_TIME] bigint  NULL,
-  [CALENDAR_NAME] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [MISFIRE_INSTR] smallint  NULL,
-  [JOB_DATA] varbinary(max)  NULL
+  [sched_name] nvarchar(120) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [trigger_name] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [trigger_group] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [job_name] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [job_group] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [description] nvarchar(250) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [next_fire_time] bigint  NULL,
+  [prev_fire_time] bigint  NULL,
+  [priority] int  NULL,
+  [trigger_state] nvarchar(16) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [trigger_type] nvarchar(8) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [start_time] bigint  NOT NULL,
+  [end_time] bigint  NULL,
+  [calendar_name] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [misfire_instr] smallint  NULL,
+  [job_data] varbinary(max)  NULL
 )
 GO
 
@@ -3995,7 +3995,10 @@ GO
 -- ----------------------------
 -- Records of sys_announcement_send
 -- ----------------------------
-INSERT INTO [dbo].[sys_announcement_send]  VALUES (N'646c0c405ec643d4dc4160db2446f8ff', N'93a9060a1c20e4bf98b3f768a02c2ff9', N'e9ca23d68d884d4ebb19d07889727dae', N'0', NULL, N'admin', N'2019-05-17 11:50:56.0000000', NULL, NULL)
+INSERT INTO [dbo].[sys_announcement_send]  VALUES (N'646c0c405ec643d4dc4160db2446f8ff', N'93a9060a1c20e4bf98b3f768a02c2ff9', N'e9ca23d68d884d4ebb19d07889727dae', N'1', N'2019-11-21 16:30:01.0000000', N'admin', N'2019-05-17 11:50:56.0000000', N'admin', N'2019-11-21 16:30:01.0000000')
+GO
+
+INSERT INTO [dbo].[sys_announcement_send]  VALUES (N'1197434450981543938', N'93a9060a1c20e4bf98b3f768a02c2ff9', N'a75d45a015c44384a04449ee80dc3503', N'0', NULL, N'jeecg', N'2019-11-21 16:39:55.0000000', NULL, NULL)
 GO
 
 
@@ -5000,6 +5003,103 @@ GO
 
 
 -- ----------------------------
+-- Table structure for sys_fill_rule
+-- ----------------------------
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[sys_fill_rule]') AND type IN ('U'))
+	DROP TABLE [dbo].[sys_fill_rule]
+GO
+
+CREATE TABLE [dbo].[sys_fill_rule] (
+  [id] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [rule_name] nvarchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [rule_code] nvarchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [rule_class] nvarchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [rule_params] nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [update_by] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [update_time] datetime2(7)  NULL,
+  [create_by] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [create_time] datetime2(7)  NULL
+)
+GO
+
+ALTER TABLE [dbo].[sys_fill_rule] SET (LOCK_ESCALATION = TABLE)
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'主键ID',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_fill_rule',
+'COLUMN', N'id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'规则名称',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_fill_rule',
+'COLUMN', N'rule_name'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'规则Code',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_fill_rule',
+'COLUMN', N'rule_code'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'规则实现类',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_fill_rule',
+'COLUMN', N'rule_class'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'规则参数',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_fill_rule',
+'COLUMN', N'rule_params'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'修改人',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_fill_rule',
+'COLUMN', N'update_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'修改时间',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_fill_rule',
+'COLUMN', N'update_time'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'创建人',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_fill_rule',
+'COLUMN', N'create_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'创建时间',
+'SCHEMA', N'dbo',
+'TABLE', N'sys_fill_rule',
+'COLUMN', N'create_time'
+GO
+
+
+-- ----------------------------
+-- Records of sys_fill_rule
+-- ----------------------------
+INSERT INTO [dbo].[sys_fill_rule]  VALUES (N'1192349918153428994', N'订单号生成（带参）', N'order_num_rule_param', N'org.jeecg.modules.online.cgform.rule.OrderNumberRule', N'{ "prefix": "XD" }', N'admin', N'2019-11-07 17:44:17.0000000', N'admin', N'2019-11-07 15:55:48.0000000')
+GO
+
+INSERT INTO [dbo].[sys_fill_rule]  VALUES (N'1192350056519323649', N'订单号生成', N'order_num_rule', N'org.jeecg.modules.online.cgform.rule.OrderNumberRule', NULL, N'admin', N'2019-11-07 16:37:05.0000000', N'admin', N'2019-11-07 15:56:21.0000000')
+GO
+
+
+-- ----------------------------
 -- Table structure for sys_log
 -- ----------------------------
 IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[sys_log]') AND type IN ('U'))
@@ -5358,6 +5458,84 @@ INSERT INTO [dbo].[sys_log]  VALUES (N'1185452151318528001', N'1', N'用户名: 
 GO
 
 INSERT INTO [dbo].[sys_log]  VALUES (N'1185452231589117953', N'1', N'用户名: admin,登录成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-10-19 15:06:51.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197430985244905474', N'1', N'用户名: 管理员,退出成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-11-21 16:26:08.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197431068325679105', N'1', N'用户名: admin,登录成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-11-21 16:26:29.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197431850395602945', N'2', N'填值规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysFillRuleController.queryPageList()', NULL, NULL, NULL, N'41', N'admin', N'2019-11-21 16:29:35.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197431872520556545', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, NULL, NULL, N'65', N'admin', N'2019-11-21 16:29:40.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197431893076840450', N'2', N'职务表-编辑', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.edit()', NULL, N'[{"code":"devleader","createBy":"admin","createTime":1571370543000,"id":"1185040064792571906","name":"研发部经理","postRank":"2","sysOrgCode":"A01","updateBy":"admin","updateTime":1574324985161}]', NULL, N'19', N'admin', N'2019-11-21 16:29:45.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197431893756317697', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, NULL, NULL, N'42', N'admin', N'2019-11-21 16:29:45.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197433172830294018', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, NULL, NULL, N'22', N'admin', N'2019-11-21 16:34:50.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197433546278539266', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, NULL, NULL, N'16', N'admin', N'2019-11-21 16:36:19.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197433566151151618', N'1', N'用户名: 管理员,退出成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-11-21 16:36:24.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197434320656130049', N'1', N'用户名: admin,登录成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-11-21 16:39:24.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197434360204222466', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, NULL, NULL, N'240', N'admin', N'2019-11-21 16:39:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197434364826345474', N'2', N'编辑用户，id： e9ca23d68d884d4ebb19d07889727dae', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'admin', N'2019-11-21 16:39:34.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197434403829178369', N'1', N'用户名: 管理员,退出成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-11-21 16:39:44.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197434443708620802', N'1', N'用户名: jeecg,登录成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-11-21 16:39:53.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197434470036267009', N'2', N'职务表-分页列表查询', N'1', N'jeecg', N'jeecg', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, NULL, NULL, N'45', N'jeecg', N'2019-11-21 16:40:00.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197434579583098881', N'2', N'职务表-分页列表查询', N'1', N'jeecg', N'jeecg', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, NULL, NULL, N'46', N'jeecg', N'2019-11-21 16:40:26.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197448449475338242', N'1', N'用户名: jeecg,退出成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-11-21 17:35:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197448475219976193', N'1', N'用户名: admin,登录成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-11-21 17:35:39.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197448491221245953', N'2', N'填值规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysFillRuleController.queryPageList()', NULL, NULL, NULL, N'98', N'admin', N'2019-11-21 17:35:42.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197449269478547458', N'2', N'填值规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysFillRuleController.queryPageList()', NULL, NULL, NULL, N'43', N'admin', N'2019-11-21 17:38:48.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197450304582443009', N'2', N'填值规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysFillRuleController.queryPageList()', NULL, NULL, NULL, N'27', N'admin', N'2019-11-21 17:42:55.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197453216322797569', N'2', N'填值规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysFillRuleController.queryPageList()', NULL, NULL, NULL, N'526', N'admin', N'2019-11-21 17:54:29.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197454357987155969', N'2', N'填值规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysFillRuleController.queryPageList()', NULL, NULL, NULL, N'329', N'admin', N'2019-11-21 17:59:01.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197792320302452738', N'1', N'用户名: 管理员,退出成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-11-22 16:21:57.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197792369866543106', N'1', N'用户名: admin,登录成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg', N'2019-11-22 16:22:10.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log]  VALUES (N'1197793164787802113', N'2', N'填值规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysFillRuleController.queryPageList()', NULL, NULL, NULL, N'381', N'admin', N'2019-11-22 16:25:19.0000000', NULL, NULL)
 GO
 
 INSERT INTO [dbo].[sys_log]  VALUES (N'11f511eeeb2e91af86b9d5e05132fc89', N'1', N'用户名: admin,登录成功！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, N'jeecg-boot', N'2019-02-26 15:13:43.0000000', NULL, NULL)
@@ -7822,6 +8000,9 @@ GO
 INSERT INTO [dbo].[sys_permission]  VALUES (N'1174590283938041857', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'通讯录', N'/isystem/addressList', N'system/AddressList', NULL, NULL, N'1', NULL, N'1', N'3', N'0', NULL, N'1', N'1', N'0', N'0', NULL, N'admin', N'2019-09-19 15:45:21.0000000', NULL, NULL, N'0', N'0', N'1', N'0')
 GO
 
+INSERT INTO [dbo].[sys_permission]  VALUES (N'1192318987661234177', N'e41b69c57a941a3bbcce45032fe57605', N'Online填值规则', N'/isystem/fillRule', N'system/SysFillRuleList', NULL, NULL, N'1', NULL, N'1', N'3', N'0', NULL, N'1', N'1', N'0', N'0', NULL, N'admin', N'2019-11-07 13:52:53.0000000', N'admin', N'2019-11-21 17:58:45.0000000', N'0', N'0', N'1', N'0')
+GO
+
 INSERT INTO [dbo].[sys_permission]  VALUES (N'13212d3416eb690c2e1d5033166ff47a', N'2e42e3835c2b44ec9f7bc26c146ee531', N'失败', N'/result/fail', N'result/Error', NULL, NULL, N'1', NULL, NULL, N'2', NULL, NULL, N'1', N'1', NULL, NULL, NULL, NULL, N'2018-12-25 20:34:38.0000000', NULL, NULL, N'0', N'0', NULL, NULL)
 GO
 
@@ -8267,7 +8448,7 @@ CREATE TABLE [dbo].[sys_position] (
   [id] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
   [code] nvarchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
   [name] nvarchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
-  [rank] nvarchar(2) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [post_rank] nvarchar(2) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
   [company_id] nvarchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
   [create_by] nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
   [create_time] datetime2(7)  NULL,
@@ -8298,7 +8479,7 @@ EXEC sp_addextendedproperty
 'MS_Description', N'职级',
 'SCHEMA', N'dbo',
 'TABLE', N'sys_position',
-'COLUMN', N'rank'
+'COLUMN', N'post_rank'
 GO
 
 EXEC sp_addextendedproperty
@@ -8347,7 +8528,7 @@ GO
 -- ----------------------------
 -- Records of sys_position
 -- ----------------------------
-INSERT INTO [dbo].[sys_position]  VALUES (N'1185040064792571906', N'devleader', N'研发部经理', N'3', NULL, N'admin', N'2019-10-18 11:49:03.0000000', NULL, NULL, N'A01')
+INSERT INTO [dbo].[sys_position]  VALUES (N'1185040064792571906', N'devleader', N'研发部经理', N'2', NULL, N'admin', N'2019-10-18 11:49:03.0000000', N'admin', N'2019-11-21 16:29:45.0000000', N'A01')
 GO
 
 
@@ -8646,6 +8827,9 @@ INSERT INTO [dbo].[sys_role_permission]  VALUES (N'1185039870529187841', N'f6817
 GO
 
 INSERT INTO [dbo].[sys_role_permission]  VALUES (N'1185039870537576450', N'f6817f48af4fb3af11b9e8bf182f618b', N'1166535831146504193', NULL)
+GO
+
+INSERT INTO [dbo].[sys_role_permission]  VALUES (N'1197431682208206850', N'f6817f48af4fb3af11b9e8bf182f618b', N'1192318987661234177', NULL)
 GO
 
 INSERT INTO [dbo].[sys_role_permission]  VALUES (N'126ea9faebeec2b914d6d9bef957afb6', N'f6817f48af4fb3af11b9e8bf182f618b', N'f1cb187abf927c88b89470d08615f5ac', NULL)
@@ -10120,10 +10304,10 @@ GO
 INSERT INTO [dbo].[sys_user]  VALUES (N'42d153bffeea74f72a9c1697874fa4a7', N'test22', N'23232', N'ac52e15671a377cf', N'5FMD48RM', N'user/20190314/ly-plate-e_1552531617500.png', N'2019-02-09 00:00:00.0000000', N'1', N'zhangdaiscott@163.com', N'18611782222', NULL, N'1', N'0', N'1', NULL, NULL, NULL, N'admin', N'2019-01-26 18:01:10.0000000', N'admin', N'2019-03-23 15:05:50.0000000')
 GO
 
-INSERT INTO [dbo].[sys_user]  VALUES (N'a75d45a015c44384a04449ee80dc3503', N'jeecg', N'jeecg', N'3dd8371f3cf8240e', N'vDDkDzrK', N'user/20190220/e1fe9925bc315c60addea1b98eb1cb1349547719_1550656892940.jpg', NULL, N'2', NULL, NULL, NULL, N'1', N'0', N'1', NULL, NULL, NULL, N'admin', N'2019-02-13 16:02:36.0000000', N'admin', N'2019-04-09 15:47:36.0000000')
+INSERT INTO [dbo].[sys_user]  VALUES (N'a75d45a015c44384a04449ee80dc3503', N'jeecg', N'jeecg', N'3dd8371f3cf8240e', N'vDDkDzrK', N'user/20190220/e1fe9925bc315c60addea1b98eb1cb1349547719_1550656892940.jpg', NULL, N'2', NULL, NULL, N'A02A01', N'1', N'0', N'1', NULL, NULL, NULL, N'admin', N'2019-02-13 16:02:36.0000000', N'admin', N'2019-04-09 15:47:36.0000000')
 GO
 
-INSERT INTO [dbo].[sys_user]  VALUES (N'e9ca23d68d884d4ebb19d07889727dae', N'admin', N'管理员', N'cb362cfeefbf3d8d', N'RCGTeGiH', N'user/20190119/logo-2_1547868176839.png', N'2018-12-05 00:00:00.0000000', N'1', N'11@qq.com', N'18566666661', N'A01', N'1', N'0', N'1', N'111', N'', NULL, NULL, N'2038-06-21 17:54:10.0000000', N'admin', N'2019-10-18 11:39:53.0000000')
+INSERT INTO [dbo].[sys_user]  VALUES (N'e9ca23d68d884d4ebb19d07889727dae', N'admin', N'管理员', N'cb362cfeefbf3d8d', N'RCGTeGiH', N'user/20190119/logo-2_1547868176839.png', N'2018-12-05 00:00:00.0000000', N'1', N'11@qq.com', N'18566666661', N'A01', N'1', N'0', N'1', N'111', N'', NULL, NULL, N'2038-06-21 17:54:10.0000000', N'admin', N'2019-11-21 16:39:35.0000000')
 GO
 
 INSERT INTO [dbo].[sys_user]  VALUES (N'f0019fdebedb443c98dcb17d88222c38', N'zhagnxiao', N'张小红', N'f898134e5e52ae11a2ffb2c3b57a4e90', N'go3jJ4zX', N'user/20190401/20180607175028Fn1Lq7zw_1554118444672.png', N'2019-04-01 00:00:00.0000000', NULL, NULL, NULL, NULL, N'1', N'0', N'1', NULL, NULL, NULL, N'admin', N'2023-10-01 19:34:10.0000000', N'admin', N'2019-04-10 22:00:22.0000000')
@@ -10271,7 +10455,7 @@ IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[sy
 GO
 
 CREATE TABLE [dbo].[sys_user_depart] (
-  [ID] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [id] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
   [user_id] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
   [dep_id] nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL
 )
@@ -10284,7 +10468,7 @@ EXEC sp_addextendedproperty
 'MS_Description', N'id',
 'SCHEMA', N'dbo',
 'TABLE', N'sys_user_depart',
-'COLUMN', N'ID'
+'COLUMN', N'id'
 GO
 
 EXEC sp_addextendedproperty
@@ -10314,7 +10498,7 @@ GO
 INSERT INTO [dbo].[sys_user_depart]  VALUES (N'1f3a0267811327b9eca86b0cc2b956f3', N'bcbe1290783a469a83ae3bd8effe15d4', N'5159cde220114246b045e574adceafe9')
 GO
 
-INSERT INTO [dbo].[sys_user_depart]  VALUES (N'1185037756700635138', N'e9ca23d68d884d4ebb19d07889727dae', N'c6d7cb4deeac411cb3384b1b31278596')
+INSERT INTO [dbo].[sys_user_depart]  VALUES (N'1197434365652623362', N'e9ca23d68d884d4ebb19d07889727dae', N'c6d7cb4deeac411cb3384b1b31278596')
 GO
 
 INSERT INTO [dbo].[sys_user_depart]  VALUES (N'ac52f23ae625eb6560c9227170b88166', N'f0019fdebedb443c98dcb17d88222c38', N'57197590443c44f083d42ae24ef26a2c')
@@ -10414,7 +10598,7 @@ GO
 INSERT INTO [dbo].[sys_user_role]  VALUES (N'fe38580871c5061ba59d5c03a0840b0e', N'a75d45a015c44384a04449ee80dc3503', N'ee8626f80f7c2619917b6236f3a7f02b')
 GO
 
-INSERT INTO [dbo].[sys_user_role]  VALUES (N'1185037756495114241', N'e9ca23d68d884d4ebb19d07889727dae', N'f6817f48af4fb3af11b9e8bf182f618b')
+INSERT INTO [dbo].[sys_user_role]  VALUES (N'1197434365367410689', N'e9ca23d68d884d4ebb19d07889727dae', N'f6817f48af4fb3af11b9e8bf182f618b')
 GO
 
 INSERT INTO [dbo].[sys_user_role]  VALUES (N'd2233e5be091d39da5abb0073c766224', N'f0019fdebedb443c98dcb17d88222c38', N'ee8626f80f7c2619917b6236f3a7f02b')
@@ -10867,7 +11051,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table demo
 -- ----------------------------
-ALTER TABLE [dbo].[demo] ADD CONSTRAINT [PK__demo__3213E83F58C4AAAA] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[demo] ADD CONSTRAINT [PK__demo__3213E83FA2EA13CE] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10876,7 +11060,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_monthly_growth_analysis
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_monthly_growth_analysis] ADD CONSTRAINT [PK__jeecg_mo__3213E83F46A5861E] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_monthly_growth_analysis] ADD CONSTRAINT [PK__jeecg_mo__3213E83F76CE7DB3] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10885,7 +11069,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_order_customer
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_order_customer] ADD CONSTRAINT [PK__jeecg_or__3213E83F15054910] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_order_customer] ADD CONSTRAINT [PK__jeecg_or__3213E83FDE3B250C] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10894,7 +11078,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_order_main
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_order_main] ADD CONSTRAINT [PK__jeecg_or__3213E83FCBC62783] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_order_main] ADD CONSTRAINT [PK__jeecg_or__3213E83F1A0D3D75] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10903,7 +11087,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_order_ticket
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_order_ticket] ADD CONSTRAINT [PK__jeecg_or__3213E83FC3E87D4C] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_order_ticket] ADD CONSTRAINT [PK__jeecg_or__3213E83F6B8EAC20] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10912,7 +11096,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_project_nature_income
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_project_nature_income] ADD CONSTRAINT [PK__jeecg_pr__3213E83FF169ED46] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_project_nature_income] ADD CONSTRAINT [PK__jeecg_pr__3213E83F53F9C771] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10923,25 +11107,25 @@ GO
 -- ----------------------------
 CREATE NONCLUSTERED INDEX [index_formid]
 ON [dbo].[onl_cgform_button] (
-  [CGFORM_HEAD_ID] ASC
+  [cgform_head_id] ASC
 )
 GO
 
 CREATE NONCLUSTERED INDEX [index_button_code]
 ON [dbo].[onl_cgform_button] (
-  [BUTTON_CODE] ASC
+  [button_code] ASC
 )
 GO
 
 CREATE NONCLUSTERED INDEX [index_button_status]
 ON [dbo].[onl_cgform_button] (
-  [BUTTON_STATUS] ASC
+  [button_status] ASC
 )
 GO
 
 CREATE NONCLUSTERED INDEX [index_button_order]
 ON [dbo].[onl_cgform_button] (
-  [ORDER_NUM] ASC
+  [order_num] ASC
 )
 GO
 
@@ -10949,7 +11133,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_button
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_button] ADD CONSTRAINT [PK__onl_cgfo__3214EC27081F99A1] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[onl_cgform_button] ADD CONSTRAINT [PK__onl_cgfo__3213E83F96415529] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10960,19 +11144,19 @@ GO
 -- ----------------------------
 CREATE NONCLUSTERED INDEX [index_fmid]
 ON [dbo].[onl_cgform_enhance_java] (
-  [CGFORM_HEAD_ID] ASC
+  [cgform_head_id] ASC
 )
 GO
 
 CREATE NONCLUSTERED INDEX [index_buttoncode]
 ON [dbo].[onl_cgform_enhance_java] (
-  [BUTTON_CODE] ASC
+  [button_code] ASC
 )
 GO
 
 CREATE NONCLUSTERED INDEX [index_status]
 ON [dbo].[onl_cgform_enhance_java] (
-  [ACTIVE_STATUS] ASC
+  [active_status] ASC
 )
 GO
 
@@ -10980,7 +11164,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_enhance_java
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_enhance_java] ADD CONSTRAINT [PK__onl_cgfo__3214EC27E1042610] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[onl_cgform_enhance_java] ADD CONSTRAINT [PK__onl_cgfo__3213E83FB74B4065] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -10991,13 +11175,13 @@ GO
 -- ----------------------------
 CREATE NONCLUSTERED INDEX [index_fmid]
 ON [dbo].[onl_cgform_enhance_js] (
-  [CGFORM_HEAD_ID] ASC
+  [cgform_head_id] ASC
 )
 GO
 
 CREATE NONCLUSTERED INDEX [index_jstype]
 ON [dbo].[onl_cgform_enhance_js] (
-  [CG_JS_TYPE] ASC
+  [cg_js_type] ASC
 )
 GO
 
@@ -11005,7 +11189,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_enhance_js
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_enhance_js] ADD CONSTRAINT [PK__onl_cgfo__3214EC2782E94D10] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[onl_cgform_enhance_js] ADD CONSTRAINT [PK__onl_cgfo__3213E83FC2E2BC11] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11016,7 +11200,7 @@ GO
 -- ----------------------------
 CREATE NONCLUSTERED INDEX [index_formid]
 ON [dbo].[onl_cgform_enhance_sql] (
-  [CGFORM_HEAD_ID] ASC
+  [cgform_head_id] ASC
 )
 GO
 
@@ -11024,7 +11208,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_enhance_sql
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_enhance_sql] ADD CONSTRAINT [PK__onl_cgfo__3214EC277840F99D] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[onl_cgform_enhance_sql] ADD CONSTRAINT [PK__onl_cgfo__3213E83FCBD6061C] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11043,7 +11227,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_field
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_field] ADD CONSTRAINT [PK__onl_cgfo__3213E83FCEFA63A3] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgform_field] ADD CONSTRAINT [PK__onl_cgfo__3213E83F14589C0C] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11080,7 +11264,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_head
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_head] ADD CONSTRAINT [PK__onl_cgfo__3213E83F91EBCC6E] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgform_head] ADD CONSTRAINT [PK__onl_cgfo__3213E83F04AD3E52] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11099,7 +11283,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_index
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_index] ADD CONSTRAINT [PK__onl_cgfo__3213E83FE2822735] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgform_index] ADD CONSTRAINT [PK__onl_cgfo__3213E83F88F68152] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11108,7 +11292,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table oss_file
 -- ----------------------------
-ALTER TABLE [dbo].[oss_file] ADD CONSTRAINT [PK__oss_file__3213E83F71710982] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[oss_file] ADD CONSTRAINT [PK__oss_file__3213E83FBAE915DD] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11117,7 +11301,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_blob_triggers
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_blob_triggers] ADD CONSTRAINT [PK__qrtz_blo__20F4F101B4D0DD1C] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[qrtz_blob_triggers] ADD CONSTRAINT [PK__qrtz_blo__009FEA1C8B0D5748] PRIMARY KEY CLUSTERED ([sched_name], [trigger_name], [trigger_group])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11126,7 +11310,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_calendars
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_calendars] ADD CONSTRAINT [PK__qrtz_cal__DEBD34E0A34833C4] PRIMARY KEY CLUSTERED ([SCHED_NAME], [CALENDAR_NAME])
+ALTER TABLE [dbo].[qrtz_calendars] ADD CONSTRAINT [PK__qrtz_cal__E21C9869F7532E8D] PRIMARY KEY CLUSTERED ([sched_name], [calendar_name])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11135,7 +11319,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_cron_triggers
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_cron_triggers] ADD CONSTRAINT [PK__qrtz_cro__20F4F101ECECB5DB] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[qrtz_cron_triggers] ADD CONSTRAINT [PK__qrtz_cro__009FEA1C9F5129E9] PRIMARY KEY CLUSTERED ([sched_name], [trigger_name], [trigger_group])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11144,7 +11328,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_fired_triggers
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_fired_triggers] ADD CONSTRAINT [PK__qrtz_fir__7793D06DFD6D2A33] PRIMARY KEY CLUSTERED ([SCHED_NAME], [ENTRY_ID])
+ALTER TABLE [dbo].[qrtz_fired_triggers] ADD CONSTRAINT [PK__qrtz_fir__5E6EA63B1C64C1A4] PRIMARY KEY CLUSTERED ([sched_name], [entry_id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11153,7 +11337,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_job_details
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_job_details] ADD CONSTRAINT [PK__qrtz_job__E0CAAB8AFB4BC10C] PRIMARY KEY CLUSTERED ([SCHED_NAME], [JOB_NAME], [JOB_GROUP])
+ALTER TABLE [dbo].[qrtz_job_details] ADD CONSTRAINT [PK__qrtz_job__1642BB8CF8D47978] PRIMARY KEY CLUSTERED ([sched_name], [job_name], [job_group])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11162,7 +11346,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_locks
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_locks] ADD CONSTRAINT [PK__qrtz_loc__7D2E9A0316F89ADE] PRIMARY KEY CLUSTERED ([SCHED_NAME], [LOCK_NAME])
+ALTER TABLE [dbo].[qrtz_locks] ADD CONSTRAINT [PK__qrtz_loc__F1C0211F42E7435D] PRIMARY KEY CLUSTERED ([sched_name], [lock_name])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11171,7 +11355,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_paused_trigger_grps
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_paused_trigger_grps] ADD CONSTRAINT [PK__qrtz_pau__696155E980D271F2] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[qrtz_paused_trigger_grps] ADD CONSTRAINT [PK__qrtz_pau__3D845B2B035CA262] PRIMARY KEY CLUSTERED ([sched_name], [trigger_group])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11180,7 +11364,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_scheduler_state
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_scheduler_state] ADD CONSTRAINT [PK__qrtz_sch__C8C3A19E582C5C62] PRIMARY KEY CLUSTERED ([SCHED_NAME], [INSTANCE_NAME])
+ALTER TABLE [dbo].[qrtz_scheduler_state] ADD CONSTRAINT [PK__qrtz_sch__FDC0ABB1ECBBE32C] PRIMARY KEY CLUSTERED ([sched_name], [instance_name])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11189,7 +11373,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_simple_triggers
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_simple_triggers] ADD CONSTRAINT [PK__qrtz_sim__20F4F101109EE8A1] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[qrtz_simple_triggers] ADD CONSTRAINT [PK__qrtz_sim__009FEA1C96E46BBB] PRIMARY KEY CLUSTERED ([sched_name], [trigger_name], [trigger_group])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11198,7 +11382,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_simprop_triggers
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_simprop_triggers] ADD CONSTRAINT [PK__qrtz_sim__20F4F10139F6F7EC] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[qrtz_simprop_triggers] ADD CONSTRAINT [PK__qrtz_sim__009FEA1C22830060] PRIMARY KEY CLUSTERED ([sched_name], [trigger_name], [trigger_group])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11207,11 +11391,11 @@ GO
 -- ----------------------------
 -- Indexes structure for table qrtz_triggers
 -- ----------------------------
-CREATE NONCLUSTERED INDEX [SCHED_NAME]
+CREATE NONCLUSTERED INDEX [sched_name]
 ON [dbo].[qrtz_triggers] (
-  [SCHED_NAME] ASC,
-  [JOB_NAME] ASC,
-  [JOB_GROUP] ASC
+  [sched_name] ASC,
+  [job_name] ASC,
+  [job_group] ASC
 )
 GO
 
@@ -11219,7 +11403,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table qrtz_triggers
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_triggers] ADD CONSTRAINT [PK__qrtz_tri__20F4F1012BCB670C] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[qrtz_triggers] ADD CONSTRAINT [PK__qrtz_tri__009FEA1CAB2510AC] PRIMARY KEY CLUSTERED ([sched_name], [trigger_name], [trigger_group])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11228,7 +11412,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_announcement
 -- ----------------------------
-ALTER TABLE [dbo].[sys_announcement] ADD CONSTRAINT [PK__sys_anno__3213E83FF2AA335A] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_announcement] ADD CONSTRAINT [PK__sys_anno__3213E83F87E90A99] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11237,7 +11421,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_category
 -- ----------------------------
-ALTER TABLE [dbo].[sys_category] ADD CONSTRAINT [PK__sys_cate__3213E83FE3C11840] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_category] ADD CONSTRAINT [PK__sys_cate__3213E83FB05DA8A0] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11257,7 +11441,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_data_log
 -- ----------------------------
-ALTER TABLE [dbo].[sys_data_log] ADD CONSTRAINT [PK__sys_data__3213E83FFBFCC6EE] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_data_log] ADD CONSTRAINT [PK__sys_data__3213E83F2BF7ADDE] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11288,7 +11472,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_depart
 -- ----------------------------
-ALTER TABLE [dbo].[sys_depart] ADD CONSTRAINT [PK__sys_depa__3213E83FF062DD3B] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_depart] ADD CONSTRAINT [PK__sys_depa__3213E83F53FF8778] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11307,7 +11491,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_dict
 -- ----------------------------
-ALTER TABLE [dbo].[sys_dict] ADD CONSTRAINT [PK__sys_dict__3213E83F476EE7C3] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_dict] ADD CONSTRAINT [PK__sys_dict__3213E83F7B44477F] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11338,7 +11522,26 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_dict_item
 -- ----------------------------
-ALTER TABLE [dbo].[sys_dict_item] ADD CONSTRAINT [PK__sys_dict__3213E83FB485AC00] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_dict_item] ADD CONSTRAINT [PK__sys_dict__3213E83FD5E92C6F] PRIMARY KEY CLUSTERED ([id])
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
+ON [PRIMARY]
+GO
+
+
+-- ----------------------------
+-- Indexes structure for table sys_fill_rule
+-- ----------------------------
+CREATE NONCLUSTERED INDEX [uni_sys_fill_rule_code]
+ON [dbo].[sys_fill_rule] (
+  [rule_code] ASC
+)
+GO
+
+
+-- ----------------------------
+-- Primary Key structure for table sys_fill_rule
+-- ----------------------------
+ALTER TABLE [dbo].[sys_fill_rule] ADD CONSTRAINT [PK__sys_fill__3213E83F5D4CAD5A] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11375,7 +11578,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_log
 -- ----------------------------
-ALTER TABLE [dbo].[sys_log] ADD CONSTRAINT [PK__sys_log__3213E83FB0899BBE] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_log] ADD CONSTRAINT [PK__sys_log__3213E83FFCCBA80B] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11436,7 +11639,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_permission
 -- ----------------------------
-ALTER TABLE [dbo].[sys_permission] ADD CONSTRAINT [PK__sys_perm__3213E83F6DADEF24] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_permission] ADD CONSTRAINT [PK__sys_perm__3213E83F04F149CD] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11455,7 +11658,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_permission_data_rule
 -- ----------------------------
-ALTER TABLE [dbo].[sys_permission_data_rule] ADD CONSTRAINT [PK__sys_perm__3213E83FA692365A] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_permission_data_rule] ADD CONSTRAINT [PK__sys_perm__3213E83F0D7BA9E3] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11464,7 +11667,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_position
 -- ----------------------------
-ALTER TABLE [dbo].[sys_position] ADD CONSTRAINT [PK__sys_posi__3213E83F56DE265D] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_position] ADD CONSTRAINT [PK__sys_posi__3213E83F8656FAB5] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11473,7 +11676,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_quartz_job
 -- ----------------------------
-ALTER TABLE [dbo].[sys_quartz_job] ADD CONSTRAINT [PK__sys_quar__3213E83F68491362] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_quartz_job] ADD CONSTRAINT [PK__sys_quar__3213E83FC71EE2E7] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11482,12 +11685,6 @@ GO
 -- ----------------------------
 -- Indexes structure for table sys_role
 -- ----------------------------
-CREATE NONCLUSTERED INDEX [index_role_code]
-ON [dbo].[sys_role] (
-  [role_code] ASC
-)
-GO
-
 CREATE NONCLUSTERED INDEX [uniq_sys_role_role_code]
 ON [dbo].[sys_role] (
   [role_code] ASC
@@ -11498,7 +11695,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_role
 -- ----------------------------
-ALTER TABLE [dbo].[sys_role] ADD CONSTRAINT [PK__sys_role__3213E83F1D18F7EF] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_role] ADD CONSTRAINT [PK__sys_role__3213E83F19964E1B] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11530,7 +11727,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_role_permission
 -- ----------------------------
-ALTER TABLE [dbo].[sys_role_permission] ADD CONSTRAINT [PK__sys_role__3213E83FB7FAE549] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_role_permission] ADD CONSTRAINT [PK__sys_role__3213E83FD3FE6EFE] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11567,7 +11764,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_sms
 -- ----------------------------
-ALTER TABLE [dbo].[sys_sms] ADD CONSTRAINT [PK__sys_sms__3213E83F7C6EE54F] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_sms] ADD CONSTRAINT [PK__sys_sms__3213E83FCE27AE94] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11586,7 +11783,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_sms_template
 -- ----------------------------
-ALTER TABLE [dbo].[sys_sms_template] ADD CONSTRAINT [PK__sys_sms___3213E83F1A1023CE] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_sms_template] ADD CONSTRAINT [PK__sys_sms___3213E83F39BBA379] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11623,7 +11820,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user] ADD CONSTRAINT [PK__sys_user__3213E83F50695164] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_user] ADD CONSTRAINT [PK__sys_user__3213E83F33D23BC1] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11660,7 +11857,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user_agent
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user_agent] ADD CONSTRAINT [PK__sys_user__3213E83F84A12EDE] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_user_agent] ADD CONSTRAINT [PK__sys_user__3213E83F0EB00E06] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11692,7 +11889,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user_depart
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user_depart] ADD CONSTRAINT [PK__sys_user__3214EC271BCA4A5A] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[sys_user_depart] ADD CONSTRAINT [PK__sys_user__3213E83F579C95F6] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11724,7 +11921,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user_role
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user_role] ADD CONSTRAINT [PK__sys_user__3213E83FCF5D2D13] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_user_role] ADD CONSTRAINT [PK__sys_user__3213E83FE1956DC2] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11733,7 +11930,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_demo
 -- ----------------------------
-ALTER TABLE [dbo].[test_demo] ADD CONSTRAINT [PK__test_dem__3213E83FDAEF5B5F] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_demo] ADD CONSTRAINT [PK__test_dem__3213E83FE77F5CC2] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11742,7 +11939,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_order_main
 -- ----------------------------
-ALTER TABLE [dbo].[test_order_main] ADD CONSTRAINT [PK__test_ord__3213E83F0B623D2A] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_order_main] ADD CONSTRAINT [PK__test_ord__3213E83F08CA8FE6] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11751,7 +11948,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_order_product
 -- ----------------------------
-ALTER TABLE [dbo].[test_order_product] ADD CONSTRAINT [PK__test_ord__3213E83F0FC6263B] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_order_product] ADD CONSTRAINT [PK__test_ord__3213E83FDD47D09D] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -11760,43 +11957,8 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_person
 -- ----------------------------
-ALTER TABLE [dbo].[test_person] ADD CONSTRAINT [PK__test_per__3213E83F0AF2E7BE] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_person] ADD CONSTRAINT [PK__test_per__3213E83FD5F2C2B1] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
-GO
-
-
--- ----------------------------
--- Foreign Keys structure for table qrtz_blob_triggers
--- ----------------------------
-ALTER TABLE [dbo].[qrtz_blob_triggers] ADD CONSTRAINT [qrtz_blob_triggers_ibfk_1] FOREIGN KEY ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) REFERENCES [dbo].[qrtz_triggers] ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) ON DELETE NO ACTION ON UPDATE NO ACTION
-GO
-
-
--- ----------------------------
--- Foreign Keys structure for table qrtz_cron_triggers
--- ----------------------------
-ALTER TABLE [dbo].[qrtz_cron_triggers] ADD CONSTRAINT [qrtz_cron_triggers_ibfk_1] FOREIGN KEY ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) REFERENCES [dbo].[qrtz_triggers] ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) ON DELETE NO ACTION ON UPDATE NO ACTION
-GO
-
-
--- ----------------------------
--- Foreign Keys structure for table qrtz_simple_triggers
--- ----------------------------
-ALTER TABLE [dbo].[qrtz_simple_triggers] ADD CONSTRAINT [qrtz_simple_triggers_ibfk_1] FOREIGN KEY ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) REFERENCES [dbo].[qrtz_triggers] ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) ON DELETE NO ACTION ON UPDATE NO ACTION
-GO
-
-
--- ----------------------------
--- Foreign Keys structure for table qrtz_simprop_triggers
--- ----------------------------
-ALTER TABLE [dbo].[qrtz_simprop_triggers] ADD CONSTRAINT [qrtz_simprop_triggers_ibfk_1] FOREIGN KEY ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) REFERENCES [dbo].[qrtz_triggers] ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) ON DELETE NO ACTION ON UPDATE NO ACTION
-GO
-
-
--- ----------------------------
--- Foreign Keys structure for table qrtz_triggers
--- ----------------------------
-ALTER TABLE [dbo].[qrtz_triggers] ADD CONSTRAINT [qrtz_triggers_ibfk_1] FOREIGN KEY ([SCHED_NAME], [JOB_NAME], [JOB_GROUP]) REFERENCES [dbo].[qrtz_job_details] ([SCHED_NAME], [JOB_NAME], [JOB_GROUP]) ON DELETE NO ACTION ON UPDATE NO ACTION
 GO
 

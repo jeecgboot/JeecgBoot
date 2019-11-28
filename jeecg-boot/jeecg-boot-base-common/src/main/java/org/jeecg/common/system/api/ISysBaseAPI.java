@@ -6,6 +6,7 @@ import java.util.List;
 import org.jeecg.common.system.vo.ComboModel;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.system.vo.SysDepartModel;
 
 /**
  * @Description: 底层共通业务API，提供其他独立模块调用
@@ -115,11 +116,25 @@ public interface ISysBaseAPI {
 	 */
 	public List<ComboModel> queryAllUser();
 
+    /**
+     * 获取所有有效用户 带参
+     * userIds 默认选中用户
+     * @return
+     */
+    public List<ComboModel> queryAllUser(String[] userIds);
+
 	/**
 	 * 获取所有角色
 	 * @return
 	 */
 	public List<ComboModel> queryAllRole();
+
+	/**
+	 * 获取所有角色 带参
+     * roleIds 默认选中角色
+	 * @return
+	 */
+	public List<ComboModel> queryAllRole(String[] roleIds );
 
 	/**
 	 * 通过用户账号查询角色Id集合
@@ -141,5 +156,11 @@ public interface ISysBaseAPI {
 	 * @return
 	 */
 	public DictModel getParentDepartId(String departId);
+
+	/**
+	 * 查询所有部门
+	 * @return
+	 */
+	public List<SysDepartModel> getAllSysDepart();
 	
 }

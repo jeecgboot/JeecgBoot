@@ -61,6 +61,7 @@
           toolbar: this.toolbar,
           branding: false,
           menubar: false,
+          toolbar_drawer: false,
           images_upload_handler: (blobInfo, success) => {
             const img = 'data:image/jpeg;base64,' + blobInfo.base64()
             success(img)

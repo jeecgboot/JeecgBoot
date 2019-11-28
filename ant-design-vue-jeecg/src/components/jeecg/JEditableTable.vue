@@ -181,6 +181,7 @@
                           :options="col.options"
                           :getPopupContainer="getParentContainer"
                           :placeholder="replaceProps(col, col.placeholder)"
+                          :filterOption="(i,o)=>handleSelectFilterOption(i,o,col)"
                           @change="(v)=>handleChangeSelectCommon(v,id,row,col)"
                           @search="(v)=>handleSearchSelect(v,id,row,col)"
                           @blur="(v)=>handleBlurSearch(v,id,row,col)"
@@ -514,7 +515,7 @@
                     </div>
 
                     <!-- else (normal) -->
-                    <span v-else :key="i"  v-bind="buildProps(row,col)" >{{ inputValues[rowIndex][col.key] }}</span>
+                    <span v-else :key="i" v-bind="buildProps(row,col)">{{ inputValues[rowIndex][col.key] }}</span>
                   </template>
                 </div>
               </div>
@@ -657,17 +658,6 @@
     created() {
       // 当前显示的tr
       this.visibleTrEls = []
-      // 用来存储input表单的值
-      // 数组里的每项都是一个对象，对象里每个key都是input的rowKey，值就是input的值，其中有个id的字段来区分
-      // 示例：
-      // [{
-      //    id: "_jet-4sp0iu-15541771111770"
-      //    dbDefaultVal: "aaa",
-      //    dbFieldName: "bbb",
-      //    dbFieldTxt: "ccc",
-      //    dbLength: 32
-      // }]
-      this.inputValues = []
       this.disabledRowIds = (this.disabledRowIds || [])
     },
     // 计算属性
@@ -827,15 +817,18 @@
               for (let columnKey in this.disabledRows) {
                 // 判断是否有该属性
                 if (this.disabledRows.hasOwnProperty(columnKey) && data.hasOwnProperty(columnKey)) {
-                  // row[columnKey] =
-
                   if (disabled !== true) {
-                    disabled = this.disabledRows[columnKey] === data[columnKey]
+                    let temp = this.disabledRows[columnKey]
+                    // 禁用规则可以是一个数组
+                    if (temp instanceof Array) {
+                      disabled = temp.includes(data[columnKey])
+                    } else {
+                      disabled = (temp === data[columnKey])
+                    }
                     if (disabled) {
                       disabledRowIds.push(row.id)
                     }
                   }
-
                 }
               }
             })
@@ -870,9 +863,9 @@
                 column.options = column.options.map(item => {
                   if (item) {
                     return {
+                      ...item,
                       text: item.text || item.title,
-                      title: item.text || item.title,
-                      value: item.value
+                      title: item.text || item.title
                     }
                   }
                   return {}
@@ -925,10 +918,20 @@
 
       /** 初始化列表 */
       initialize() {
+        // inputValues：用来存储input表单的值
+        // 数组里的每项都是一个对象，对象里每个key都是input的rowKey，值就是input的值，其中有个id的字段来区分
+        // 示例：
+        // [{
+        //    id: "_jet-4sp0iu-15541771111770"
+        //    dbDefaultVal: "aaa",
+        //    dbFieldName: "bbb",
+        //    dbFieldTxt: "ccc",
+        //    dbLength: 32
+        // }]
+        this.inputValues = []
         this.visibleTrEls = []
         this.rows = []
         this.deleteIds = []
-        this.inputValues = []
         this.selectValues = {}
         this.checkboxValues = {}
         this.jdateValues = {}
@@ -1094,16 +1097,17 @@
         }
         this.rows = rows
 
+        let rowValue = this.getValuesSync({
+          validate: false,
+          rowIds: [this.removeCaseId(row.id)]
+        }).values[0]
+
         this.$nextTick(() => {
           this.updateFormValues()
         })
         // 触发add事件
         this.$emit('added', {
-          row: (() => {
-            let r = Object.assign({}, row)
-            r.id = this.removeCaseId(r.id)
-            return r
-          })(),
+          row: rowValue,
           target: this
         })
         // 设置滚动条位置
@@ -1600,9 +1604,16 @@
       clearSelection() {
         this.selectedRowIds = []
       },
+      /** 用于搜索下拉框中的内容 */
+      handleSelectFilterOption(input, option, column) {
+        if (column.allowSearch === true) {
+          return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+        return true
+      },
       /** select 搜索时的事件，用于动态添加options */
       handleSearchSelect(value, id, row, col) {
-        if (col.allowInput === true) {
+        if (col.allowSearch !== true && col.allowInput === true) {
           // 是否找到了对应的项，找不到则添加这一项
           let flag = false
           for (let option of col.options) {
@@ -1941,7 +1952,7 @@
           }
         }
         // 判断select是否允许输入
-        if (col.type === FormTypes.select && col.allowInput === true) {
+        if (col.type === FormTypes.select && (col.allowInput === true || col.allowSearch === true)) {
           props['showSearch'] = true
         }
 
@@ -2022,7 +2033,6 @@
         this.elemValueChange(FormTypes.list_multi, row, column, value)
       },
       handleSearchSelectChange(value, id, row, column) {
-        console.log(value)
         this.searchSelectValues = this.bindValuesChange(value, id, 'searchSelectValues')
         this.validateOneInput(value, row, column, this.notPassedIds, true, 'change')
         this.elemValueChange(FormTypes.sel_search, row, column, value)

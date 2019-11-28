@@ -19,7 +19,7 @@
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
               <a-form-item label="职级">
-                <j-dict-select-tag v-model="queryParam.rank" placeholder="请选择职级" dictCode="position_rank"/>
+                <j-dict-select-tag v-model="queryParam.postRank" placeholder="请选择职级" dictCode="position_rank"/>
               </a-form-item>
             </a-col>
 
@@ -143,7 +143,7 @@
           {
             title: '职级',
             align: 'center',
-            dataIndex: 'rank_dictText'
+            dataIndex: 'postRank_dictText'
           },
           // {
           //   title: '公司id',
