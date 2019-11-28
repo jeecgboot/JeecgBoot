@@ -70,7 +70,14 @@ public interface ISysDepartService extends IService<SysDepart>{
      */
 	public List<SysDepart> queryUserDeparts(String userId);
 
-	
+    /**
+     * 根据用户名查询部门
+     *
+     * @param username
+     * @return
+     */
+    List<SysDepart> queryDepartsByUsername(String username);
+
 	 /**
      * 根据部门id批量删除并删除其可能存在的子级部门
      * @param id

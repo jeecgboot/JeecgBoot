@@ -3,6 +3,7 @@ package org.jeecg.common.system.api;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.jeecg.common.system.vo.ComboModel;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
 
@@ -23,11 +24,18 @@ public interface ISysBaseAPI {
 	void addLog(String LogContent, Integer logType, Integer operatetype);
 	
 	/**
-	  * 根据用户账号查询登录用户信息
+	  * 根据用户账号查询用户信息
 	 * @param username
 	 * @return
 	 */
 	public LoginUser getUserByName(String username);
+	
+	/**
+	  * 根据用户id查询用户信息
+	 * @param id
+	 * @return
+	 */
+	public LoginUser getUserById(String id);
 	
 	/**
 	 * 通过用户账号查询角色集合
@@ -35,6 +43,20 @@ public interface ISysBaseAPI {
 	 * @return
 	 */
 	public List<String> getRolesByUsername(String username);
+
+	/**
+	 * 通过用户账号查询部门集合
+	 * @param username
+	 * @return 部门 id
+	 */
+	List<String> getDepartIdsByUsername(String username);
+
+	/**
+	 * 通过用户账号查询部门 name
+	 * @param username
+	 * @return 部门 name
+	 */
+	List<String> getDepartNamesByUsername(String username);
 
 	/**
 	 * 获取当前数据库类型
@@ -76,5 +98,48 @@ public interface ISysBaseAPI {
 	 * @param msgContent  消息内容
 	 */
 	public void sendSysAnnouncement(String fromUser,String toUser,String title, String msgContent);
+	
+	/**
+	 * 查询表字典 支持过滤数据
+	 * @param table
+	 * @param text
+	 * @param code
+	 * @param filterSql
+	 * @return
+	 */
+	public List<DictModel> queryFilterTableDictInfo(String table, String text, String code, String filterSql);
+
+	/**
+	 * 获取所有有效用户
+	 * @return
+	 */
+	public List<ComboModel> queryAllUser();
+
+	/**
+	 * 获取所有角色
+	 * @return
+	 */
+	public List<ComboModel> queryAllRole();
+
+	/**
+	 * 通过用户账号查询角色Id集合
+	 * @param username
+	 * @return
+	 */
+	public List<String> getRoleIdsByUsername(String username);
+
+	/**
+	 * 通过部门编号查询部门id
+	 * @param orgCode
+	 * @return
+	 */
+	public String getDepartIdsByOrgCode(String orgCode);
+
+	/**
+	 * 查询上一级部门
+	 * @param departId
+	 * @return
+	 */
+	public DictModel getParentDepartId(String departId);
 	
 }

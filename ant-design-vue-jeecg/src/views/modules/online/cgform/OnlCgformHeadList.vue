@@ -96,11 +96,21 @@
               </template>
 
               <a-menu-item>
+                <a @click="copyConfig(record.id)">复制视图</a>
+              </a-menu-item>
+
+              <a-menu-item v-if="record.hascopy==1">
+                <a @click="showMyCopyInfo(record.id)">配置视图</a>
+              </a-menu-item>
+
+              <a-menu-item>
                 <a @click="handleRemoveRecord(record.id)">移除</a>
               </a-menu-item>
 
               <a-menu-item>
-                <a @click="handleDelete(record.id)">删除</a>
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                  <a>删除</a>
+                </a-popconfirm>
               </a-menu-item>
 
             </a-menu>
@@ -167,12 +177,13 @@
   import JDictSelectTag from '../../../../components/dict/JDictSelectTag.vue'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import Clipboard from 'clipboard'
+  import { filterObj } from '@/utils/util';
 
   export default {
     name: 'OnlCgformHeadList',
     mixins: [JeecgListMixin],
     components: {
-      JDictSelectTag,
+      JDictSelectTag
     },
     data() {
       return {
@@ -231,7 +242,8 @@
           delete: '/online/cgform/head/delete',
           deleteBatch: '/online/cgform/head/deleteBatch',
           doDbSynch: '/online/cgform/api/doDbSynch/',
-          removeRecord: '/online/cgform/head/removeRecord'
+          removeRecord: '/online/cgform/head/removeRecord',
+          copyOnline: '/online/cgform/head/copyOnline'
         },
         tableTypeDictOptions: [],
         sexDictOptions: [],
@@ -253,7 +265,6 @@
           this.tableTypeDictOptions = res.result
         }
       })
-      this.loadData()
     },
     methods: {
       doDbSynch(id) {
@@ -265,6 +276,15 @@
             this.$message.warning(res.message)
           }
         })
+      },
+      getQueryParams() {
+        //获取查询条件
+        var param = Object.assign({}, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        param.copyType = 0;
+        return filterObj(param);
       },
       handleCancleDbSync() {
         this.syncModalVisible = false
@@ -281,9 +301,18 @@
             this.$message.warning(res.message)
           }
         })
+        setTimeout(()=>{
+          if(this.syncLoading){
+            this.syncModalVisible = false
+            this.syncLoading = false
+            this.$message.success("网络延迟,已自动刷新!")
+            this.loadData()
+          }
+        },10000)
       },
       openSyncModal(id) {
         this.syncModalVisible = true
+        this.syncLoading = false
         this.syncFormId = id
       },
       goPageOnline(rd) {
@@ -391,7 +420,21 @@
           this.$message.error('该浏览器不支持自动复制')
           clipboard.destroy()
         })
+      },
+      showMyCopyInfo(id){
+        this.$router.push({ path: '/online/copyform/' + id })
+      },
+      copyConfig(id){
+        postAction(`${this.url.copyOnline}?code=${id}`).then(res=>{
+          if(res.success){
+            this.$message.success("复制成功")
+            this.loadData()
+          }else{
+            this.$message.error("复制失败>>"+res.message)
+          }
+        })
       }
+
     }
   }
 </script>

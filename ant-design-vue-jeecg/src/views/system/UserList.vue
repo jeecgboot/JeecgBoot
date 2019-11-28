@@ -3,12 +3,13 @@
 
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline" @submit.prevent="searchQuery">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
 
           <a-col :md="6" :sm="12">
             <a-form-item label="账号">
-              <a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>
+              <!--<a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>-->
+              <j-input placeholder="输入账号模糊查询" v-model="queryParam.username"></j-input>
             </a-form-item>
           </a-col>
 
@@ -117,9 +118,8 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)" v-has="'user:edit'">编辑</a>
-
-          <a-divider type="vertical" v-has="'user:edit'"/>
+          <a @click="handleEdit(record)">编辑</a>
+          <a-divider type="vertical"/>
 
           <a-dropdown>
             <a class="ant-dropdown-link">
@@ -180,6 +180,7 @@
   import {frozenBatch} from '@/api/api'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import SysUserAgentModal from "./modules/SysUserAgentModal";
+  import JInput from '@/components/jeecg/JInput'
 
   export default {
     name: "UserList",
@@ -187,7 +188,8 @@
     components: {
       SysUserAgentModal,
       UserModal,
-      PasswordModal
+      PasswordModal,
+      JInput
     },
     data() {
       return {

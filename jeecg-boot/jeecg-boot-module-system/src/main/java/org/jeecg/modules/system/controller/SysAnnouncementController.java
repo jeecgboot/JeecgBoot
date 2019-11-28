@@ -288,6 +288,7 @@ public class SysAnnouncementController {
 		querySaWrapper.eq(SysAnnouncement::getMsgType,CommonConstant.MSG_TYPE_ALL); // 全部人员
 		querySaWrapper.eq(SysAnnouncement::getDelFlag,CommonConstant.DEL_FLAG_0.toString());  // 未删除
 		querySaWrapper.eq(SysAnnouncement::getSendStatus, CommonConstant.HAS_SEND); //已发布
+		querySaWrapper.ge(SysAnnouncement::getEndTime, sysUser.getCreateTime()); //新注册用户不看结束通知
 		if(anntIds!=null&&anntIds.size()>0) {
 			querySaWrapper.notIn(SysAnnouncement::getId, anntIds);
 		}
@@ -321,7 +322,6 @@ public class SysAnnouncementController {
      * 导出excel
      *
      * @param request
-     * @param response
      */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(SysAnnouncement sysAnnouncement,HttpServletRequest request) {

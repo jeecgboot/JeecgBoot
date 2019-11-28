@@ -1,15 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.jeecgframework.boot</groupId>
-	<artifactId>jeecg-boot-parent</artifactId>
-	<version>2.1.0</version>
-	<packaging>pom</packaging>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.jeecgframework.boot</groupId>
+  <artifactId>jeecg-boot-parent</artifactId>
+  <version>2.1.1</version>
+  <packaging>pom</packaging>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.3.RELEASE</version>
-		<relativePath/>
+  	<parent>
+	    <groupId>org.springframework.boot</groupId>
+	    <artifactId>spring-boot-starter-parent</artifactId>
+	    <version>2.1.3.RELEASE</version>
+	    <relativePath/>
 	</parent>
 
 
@@ -19,49 +19,51 @@
 	</modules>
 
 	<distributionManagement>
-		<repository>
-			<id>jeecg</id>
-			<name>jeecg Repository</name>
-			<url>http://maven.jeecg.com:8090/nexus/content/repositories/jeecg</url>
-		</repository>
-		<snapshotRepository>
-			<id>jeecg-snapshots</id>
-			<name>jeecg Snapshot Repository</name>
-			<url>http://maven.jeecg.com:8090/nexus/content/repositories/snapshots/</url>
-		</snapshotRepository>
+	  	<repository>
+            <id>jeecg</id>
+            <name>jeecg Repository</name>
+            <url>http://maven.jeecg.com:8090/nexus/content/repositories/jeecg</url>
+        </repository>
+        <snapshotRepository>
+	        <id>jeecg-snapshots</id>
+            <name>jeecg Snapshot Repository</name>
+            <url>http://maven.jeecg.com:8090/nexus/content/repositories/snapshots/</url>
+	    </snapshotRepository>
 	</distributionManagement>
 
 	<repositories>
 		<repository>
-			<id>aliyun</id>
-			<name>aliyun Repository</name>
-			<url>http://maven.aliyun.com/nexus/content/groups/public</url>
-			<snapshots>
+            <id>aliyun</id>
+            <name>aliyun Repository</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+            <snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-		</repository>
+        </repository>
 		<repository>
-			<id>jeecg</id>
-			<name>jeecg Repository</name>
-			<url>http://maven.jeewx.com/nexus/content/repositories/jeecg</url>
-			<snapshots>
+            <id>jeecg</id>
+            <name>jeecg Repository</name>
+            <url>http://maven.jeecg.org/nexus/content/repositories/jeecg</url>
+            <snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-		</repository>
+        </repository>
 	</repositories>
 
-	<properties>
-		<jeecgboot.common.version>2.1.0</jeecgboot.common.version>
-		<java.version>1.8</java.version>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<mybatis-plus.version>3.1.2</mybatis-plus.version>
-		<druid.version>1.1.17</druid.version>
-		<jwt.version>0.9.1</jwt.version>
-		<commons.version>2.6</commons.version>
-		<aliyun-java-sdk-core.version>3.2.3</aliyun-java-sdk-core.version>
+    <properties>
+        <jeecgboot.common.version>2.1.1</jeecgboot.common.version>
+        <java.version>1.8</java.version>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <mybatis-plus.version>3.1.2</mybatis-plus.version>
+        <druid.version>1.1.17</druid.version>
+        <jwt.version>0.9.1</jwt.version>
+        <commons.version>2.6</commons.version>
+        <aliyun-java-sdk-core.version>3.2.3</aliyun-java-sdk-core.version>
 		<aliyun-java-sdk-dysmsapi.version>1.0.0</aliyun-java-sdk-dysmsapi.version>
-	</properties>
+		<aliyun.oss.version>3.6.0</aliyun.oss.version>
+		<qc.cos.version>5.6.5</qc.cos.version>
+    </properties>
 
 	<dependencies>
 		<!--集成springmvc框架并实现自动配置 -->
@@ -70,27 +72,27 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-mail</artifactId>
+    		<groupId>org.springframework.boot</groupId>
+    		<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-aop</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-		<!-- <dependency>
+	        <groupId>org.springframework.boot</groupId>
+	        <artifactId>spring-boot-starter-test</artifactId>
+	        <scope>test</scope>
+	    </dependency>
+	    <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
-        </dependency> -->
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+	    <!-- <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
+		</dependency> -->
 
 		<!-- commons -->
 		<dependency>
@@ -117,32 +119,32 @@
 		</dependency>
 
 		<!-- mybatis-plus -->
-		<dependency>
-			<groupId>com.baomidou</groupId>
-			<artifactId>mybatis-plus-boot-starter</artifactId>
-			<version>${mybatis-plus.version}</version>
-		</dependency>
+		 <dependency>
+	        <groupId>com.baomidou</groupId>
+	        <artifactId>mybatis-plus-boot-starter</artifactId>
+	        <version>${mybatis-plus.version}</version>
+	    </dependency>
 
 		<!-- druid -->
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>druid-spring-boot-starter</artifactId>
-			<version>${druid.version}</version>
+       <dependency>
+		   <groupId>com.alibaba</groupId>
+		   <artifactId>druid-spring-boot-starter</artifactId>
+		   <version>${druid.version}</version>
 		</dependency>
 
 		<!-- 动态数据源 -->
 		<dependency>
-			<groupId>com.baomidou</groupId>
-			<artifactId>dynamic-datasource-spring-boot-starter</artifactId>
-			<version>2.5.4</version>
+		  <groupId>com.baomidou</groupId>
+		  <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+		  <version>2.5.4</version>
 		</dependency>
 
 		<!-- json -->
 		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-			<version>1.2.56</version>
-		</dependency>
+         	<groupId>com.alibaba</groupId>
+         	<artifactId>fastjson</artifactId>
+         	<version>1.2.60</version>
+        </dependency>
 
 		<!--mysql-->
 		<dependency>
@@ -153,24 +155,31 @@
 		</dependency>
 		<!--  sqlserver-->
 		<dependency>
-			<groupId>com.microsoft.sqlserver</groupId>
-			<artifactId>sqljdbc4</artifactId>
-			<version>4.0</version>
-			<scope>runtime</scope>
+		    <groupId>com.microsoft.sqlserver</groupId>
+		    <artifactId>sqljdbc4</artifactId>
+		    <version>4.0</version>
+		    <scope>runtime</scope>
 		</dependency>
 		<!-- oracle驱动 -->
 		<dependency>
-			<groupId>com.oracle</groupId>
-			<artifactId>ojdbc6</artifactId>
-			<version>11.2.0.3</version>
+		    <groupId>com.oracle</groupId>
+		    <artifactId>ojdbc6</artifactId>
+		    <version>11.2.0.3</version>
 			<scope>runtime</scope>
 		</dependency>
+        <!-- postgresql驱动 -->
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.5</version>
+            <scope>runtime</scope>
+        </dependency>
 
-		<!-- Quartz定时任务 -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-quartz</artifactId>
-		</dependency>
+		 <!-- Quartz定时任务 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+        </dependency>
 
 		<!--JWT-->
 		<dependency>
@@ -179,23 +188,51 @@
 			<version>3.7.0</version>
 		</dependency>
 
+        <!--  online form-->
+        <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>online-form</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
 		<!--shiro-->
 		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-spring-boot-starter</artifactId>
-			<version>1.4.0</version>
+		    <groupId>org.apache.shiro</groupId>
+		    <artifactId>shiro-spring-boot-starter</artifactId>
+		    <version>1.4.0</version>
 		</dependency>
+        <dependency>
+            <groupId>org.crazycake</groupId>
+            <artifactId>shiro-redis</artifactId>
+            <version>3.1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.shiro</groupId>
+                    <artifactId>shiro-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
 		<!-- Swagger API文档 -->
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>2.9.2</version>
+        <dependency>
+		    <groupId>io.springfox</groupId>
+		    <artifactId>springfox-swagger2</artifactId>
+		    <version>2.9.2</version>
 		</dependency>
 		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.9.2</version>
+		    <groupId>io.springfox</groupId>
+		    <artifactId>springfox-swagger-ui</artifactId>
+		    <version>2.9.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.xiaoymin</groupId>
@@ -207,42 +244,42 @@
 			<artifactId>springfox-bean-validators</artifactId>
 			<version>2.9.2</version>
 		</dependency>
-		<!-- # 增加两个配置解决 NumberFormatException -->
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-annotations</artifactId>
-			<version>1.5.22</version>
-		</dependency>
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-models</artifactId>
-			<version>1.5.22</version>
-		</dependency>
+        <!-- # 增加两个配置解决 NumberFormatException -->
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>1.5.22</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-models</artifactId>
+            <version>1.5.22</version>
+        </dependency>
 
 
 		<!-- Redis -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
+			 <groupId>org.springframework.boot</groupId>
+			  <artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-pool2</artifactId>
-		</dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
 
 		<!-- 代码生成器 -->
 		<!-- 如果下载失败，看这个链接http://jeecg-boot.mydoc.io/?t=345672 -->
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>codegenerate</artifactId>
-			<version>1.0.5</version>
+			<version>1.0.7</version>
 		</dependency>
 
-		<!-- AutoPoi Excel工具类-->
+        <!-- AutoPoi Excel工具类-->
 		<dependency>
 			<groupId>org.jeecgframework</groupId>
 			<artifactId>autopoi-web</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.4</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-codec</groupId>
@@ -252,9 +289,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>cn.hutool</groupId>
-			<artifactId>hutool-all</artifactId>
-			<version>4.5.11</version>
+		    <groupId>cn.hutool</groupId>
+		    <artifactId>hutool-all</artifactId>
+		    <version>4.5.11</version>
 		</dependency>
 
 		<!-- 阿里云短信 -->
@@ -278,9 +315,21 @@
 
 		<!-- websocket -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-websocket</artifactId>
+		   <groupId>org.springframework.boot</groupId>
+		   <artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.aliyun.oss</groupId>
+			<artifactId>aliyun-sdk-oss</artifactId>
+			<version>${aliyun.oss.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcloud</groupId>
+			<artifactId>cos_api</artifactId>
+			<version>${qc.cos.version}</version>
+		</dependency>
+
 
 		<!--amqp依赖-->
 		<dependency>
@@ -312,39 +361,39 @@
 			<!--<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			 指定JDK编译版本 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-			<!-- 打包跳过测试 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<skipTests>true</skipTests>
-				</configuration>
-			</plugin>
-			<!-- 避免font文件的二进制文件格式压缩破坏 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<configuration>
-					<nonFilteredFileExtensions>
-						<nonFilteredFileExtension>woff</nonFilteredFileExtension>
-						<nonFilteredFileExtension>woff2</nonFilteredFileExtension>
-						<nonFilteredFileExtension>eot</nonFilteredFileExtension>
-						<nonFilteredFileExtension>ttf</nonFilteredFileExtension>
-						<nonFilteredFileExtension>svg</nonFilteredFileExtension>
-					</nonFilteredFileExtensions>
-				</configuration>
-			</plugin>
+			</plugin> -->
+			<!--指定JDK编译版本 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <!-- 打包跳过测试 -->
+            <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-surefire-plugin</artifactId>
+		        <configuration>
+		          <skipTests>true</skipTests>
+		        </configuration>
+	        </plugin>
+	         <!-- 避免font文件的二进制文件格式压缩破坏 -->
+	         <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>woff</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>woff2</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>eot</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>ttf</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>svg</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
+                </configuration>
+            </plugin>
 		</plugins>
 		<resources>
 			<resource>

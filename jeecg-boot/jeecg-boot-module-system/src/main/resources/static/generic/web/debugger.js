@@ -33,7 +33,7 @@ var FontInspector = (function FontInspectorClosure() {
     var divs = document.querySelectorAll('div[' + fontAttribute + ']');
     for (var i = 0, ii = divs.length; i < ii; ++i) {
       var div = divs[i];
-      div.className = 'debuggerHideText';
+      div.className = 'HideText';
     }
   }
   function selectFont(fontName, show) {

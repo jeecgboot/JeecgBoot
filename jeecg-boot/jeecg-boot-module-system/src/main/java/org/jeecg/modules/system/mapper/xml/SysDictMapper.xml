@@ -24,12 +24,23 @@
 	
 	<!--通过查询指定table的 text code 获取字典（指定查询条件）-->
 	<select id="queryTableDictItemsByCodeAndFilter" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
-		   select ${text} as "text",${code} as "value" from ${table} where ${filterSql}
+		   select ${text} as "text",${code} as "value" from ${table}
+		<if test="filterSql != null and filterSql != ''">
+			where ${filterSql}
+		</if>
 	</select>
 	
 	<!--通过查询指定table的 text code key 获取字典值-->
-	<select id="queryTableDictTextByKey" parameterType="String"  resultType="String">
+	<select id="queryTableDictTextByKey" parameterType="String" resultType="String">
 		   select ${text} as "text" from ${table} where ${code}= #{key}
+	</select>
+
+	<!--通过查询指定table的 text code key 获取字典值，包含value-->
+	<select id="queryTableDictByKeys" parameterType="String" resultType="org.jeecg.common.system.vo.DictModel">
+		select ${text} as "text", ${code} as "value" from ${table} where ${code} in
+		<foreach item="key" collection="keyArray" open="(" separator="," close=")">
+			#{key}
+		</foreach>
 	</select>
 
 	<!-- 重复校验 sql语句 -->
@@ -58,14 +69,28 @@
 	</select>
 	
 	<!-- 根据表名、显示字段名、存储字段名、父ID查询树 -->
-	<select id="queryTreeList" parameterType="String"  resultType="org.jeecg.modules.system.model.TreeSelectModel">
+	<select id="queryTreeList" parameterType="Object" resultType="org.jeecg.modules.system.model.TreeSelectModel">
 		select ${text} as "title",
 			   ${code} as "key",
 			   <if test="hasChildField != null and hasChildField != ''">
-			   (case ${hasChildField} when '1' then 0 else 1 end) as isLeaf,
+			   (case when ${hasChildField} = '1' then 0 else 1 end) as isLeaf,
 			   </if>
 			   ${pidField} as parentId
-			   from ${table} where ${pidField} = #{pid}
+			   from ${table}
+			   where
+			   <choose>
+				   <when test="pid != null and pid != ''">
+					   ${pidField} = #{pid}
+				   </when>
+				   <otherwise>
+					   (${pidField} = '' OR ${pidField} IS NULL)
+				   </otherwise>
+			   </choose>
+			   <if test="query!= null">
+				   <foreach collection="query.entrySet()" item="value"  index="key" >
+				   	and ${key} = #{value}
+				   </foreach>
+			   </if>
 	</select>
 	
 	

@@ -18,9 +18,6 @@
       value: {
         required: false,
         type: String,
-        default:()=>{
-          return '* * * * * ? *'
-        }
       }
     },
     data(){

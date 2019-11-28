@@ -6,45 +6,66 @@
     <select id="getErpApproveMessage" resultType="org.jeecg.modules.dataReport.entity.ErpMessage">
 
 
-        SELECT
-
-            concat (concat(MM.taskid, MM .ucode),MM.IDX) AS messageId,
-            UU.LANGNAME1 AS approver,
-            uu1.LANGNAME1 AS submitter,
-            MM.TASKTITLE AS title,
-            MM.taskexpl AS taskexpl
-        FROM
-        (
-        SELECT
-            M .taskid AS taskid,
-            M .wcode AS submitucode,
-            M .ucode AS ucode,
-            M.IDX,
-            M .tasktitle AS tasktitle,
-             M .taskexpl AS taskexpl,
-            ROW_NUMBER () OVER (
-            PARTITION BY M .taskid
-            ORDER BY
-            M .idx DESC
-        ) rn
-        FROM
-        tasklist M
-        LEFT JOIN workflowu U ON M .wfuid = U .wfuid
-        AND M .wfcode = U .wfcode
-        WHERE
-        (M .ucode &lt; &gt;  '*')
-        AND (
-            BITAND (NVL(rflags, 0), 256 + 128) = 0
-        )
-
-        ORDER BY
-        taskid
-        ) MM
-        LEFT JOIN USERS UU ON MM.UCODE = UU.usercode
-        LEFT JOIN wcode uu1 ON  MM.submitucode = UU1.wcode
-
-        WHERE rn = 1
-
+      SELECT
+	*
+FROM
+	(
+		SELECT
+			CONCAT (
+				CONCAT (MM.taskid, MM.ucode),
+				MM.IDX
+			) AS messageId,
+			MM.BCODE,
+			MM.LANGNAME1 AS approver,
+			MM.submitter AS submitter,
+			MM.TASKTITLE AS title,
+			MM.taskexpl AS taskexpl
+		FROM
+			(
+				SELECT
+					M .taskid AS taskid,
+					M .wcode AS submitucode,
+					M .ucode AS ucode,
+					M .IDX,
+					UU.LANGNAME1,
+					uu1.LANGNAME1 AS submitter,
+					WW.BCODE,
+					M .tasktitle AS tasktitle,
+					M .taskexpl AS taskexpl,
+					ROW_NUMBER () OVER (
+						PARTITION BY M .taskid
+						ORDER BY
+							M .idx DESC
+					) rn
+				FROM
+					tasklist M
+				LEFT JOIN workflowu U ON M .wfuid = U .wfuid
+				AND M .wfcode = U .wfcode
+				LEFT JOIN USERS UU ON M .UCODE = UU.usercode
+				LEFT JOIN wcode uu1 ON M .wcode = UU1.wcode
+				LEFT JOIN wbcode WW ON UU.WCODE = ww.WCODE
+				WHERE
+					(M .ucode &lt; &gt;  '*')
+				AND (
+					BITAND (NVL(rflags, 0), 256 + 128) = 0
+				)
+				AND M.UCODE != '000000008216'
+				ORDER BY
+					taskid
+			) MM
+		WHERE
+			rn = 1
+	) TTT
+WHERE
+	TTT.bcode NOT IN (
+		SELECT
+			bcode
+		FROM
+			mbcode
+		WHERE
+			dtype = '01'
+		AND mpath LIKE '01.00000001.00103009.00103083%'
+	)
 
 
 

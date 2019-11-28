@@ -11,11 +11,12 @@ import org.jeecg.modules.dataReport.entity.BlDataCare;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface IDataCareService extends JeecgService<BlDataCare> {
 
-    IPage<BlDataCare> getAllBlnoByErp(Page<BlDataCare> page,QueryWrapper<BlDataCare> queryWrapper);
+    List<BlDataCare> getAllBlnoByErp(QueryWrapper<BlDataCare> queryWrapper);
 
-    List<String> getTmsBlNoDatas(QueryWrapper<BlDataCare> queryWrapper);
+    List<Map<String,Object>> getTmsBlNoDatas(QueryWrapper<BlDataCare> queryWrapper);
 
 }

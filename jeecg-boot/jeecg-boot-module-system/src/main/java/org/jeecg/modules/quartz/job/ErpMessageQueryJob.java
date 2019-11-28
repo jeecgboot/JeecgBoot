@@ -44,6 +44,7 @@ public class ErpMessageQueryJob implements Job {
          * 缓存ID进行判别 若存在则不提醒 **/
 //        List<String> messageIdCacheList = null;
         List<ErpMessage> erpApproveMessage = ems.getErpApproveMessage();
+        log.info("J1-->  Erp Message size is {},   条数" + DateUtils.now(), erpApproveMessage.size());
         if (CollectionUtil.isNotEmpty(erpApproveMessage)) {
 //            Cache.ValueWrapper valueWrapper = cacheManager.getCache(MessageConstant.CACHE_ERP_MESSAGE).get(MessageConstant.CACHE_ERP_MESSAGE_MESSAGE_ID);
             List<String> messageIdCacheList = (List<String>) redisUtil.get(MessageConstant.CACHE_ERP_MESSAGE);

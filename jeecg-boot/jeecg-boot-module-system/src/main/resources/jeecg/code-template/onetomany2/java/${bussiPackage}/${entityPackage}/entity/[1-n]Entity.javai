@@ -25,7 +25,7 @@ public class ${subTab.entityName} implements Serializable {
     <#list subTab.originalColumns as po>
 	/**${po.filedComment}*/
 	<#if po.fieldName == primaryKeyField>
-	@TableId(type = IdType.UUID)
+	@TableId(type = IdType.ID_WORKER_STR)
 	<#else>
   <#if po.fieldType =='java.util.Date'>
 	<#if po.fieldDbType =='date'>

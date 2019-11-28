@@ -29,7 +29,7 @@ public class SysDepart implements Serializable {
     private static final long serialVersionUID = 1L;
     
 	/**ID*/
-	@TableId(type = IdType.UUID)
+	@TableId(type = IdType.ID_WORKER_STR)
 	private String id;
 	/**父机构ID*/
 	private String parentId;
@@ -47,6 +47,9 @@ public class SysDepart implements Serializable {
 	/**描述*/
 	@Excel(name="描述",width=15)
 	private Object description;
+	/**机构类别 1组织机构，2岗位*/
+	@Excel(name="机构类别",width=15)
+	private String orgCategory;
 	/**机构类型*/
 	@Excel(name="机构类型",width=15)
 	private String orgType;
@@ -108,6 +111,7 @@ public class SysDepart implements Serializable {
                 Objects.equals(departNameAbbr, depart.departNameAbbr) &&
                 Objects.equals(departOrder, depart.departOrder) &&
                 Objects.equals(description, depart.description) &&
+                Objects.equals(orgCategory, depart.orgCategory) &&
                 Objects.equals(orgType, depart.orgType) &&
                 Objects.equals(orgCode, depart.orgCode) &&
                 Objects.equals(mobile, depart.mobile) &&
@@ -129,7 +133,7 @@ public class SysDepart implements Serializable {
     public int hashCode() {
 
         return Objects.hash(super.hashCode(), id, parentId, departName, 
-        		departNameEn, departNameAbbr, departOrder, description, 
+        		departNameEn, departNameAbbr, departOrder, description,orgCategory, 
         		orgType, orgCode, mobile, fax, address, memo, status, 
         		delFlag, createBy, createTime, updateBy, updateTime);
     }

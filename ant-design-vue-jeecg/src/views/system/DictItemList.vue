@@ -16,7 +16,7 @@
         }">
 
         <div class="table-page-search-wrapper">
-          <a-form layout="inline" :form="form">
+          <a-form layout="inline" :form="form" @keyup.enter.native="searchQuery">
             <a-row :gutter="10">
               <a-col :md="8" :sm="12">
                 <a-form-item label="名称">

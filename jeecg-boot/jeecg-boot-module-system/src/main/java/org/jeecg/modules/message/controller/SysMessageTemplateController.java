@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.poi.ss.formula.functions.T;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -57,15 +56,12 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	 * @return
 	 */
 	@GetMapping(value = "/list")
-	public Result<IPage<SysMessageTemplate>> queryPageList(SysMessageTemplate sysMessageTemplate, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+	public Result<?> queryPageList(SysMessageTemplate sysMessageTemplate, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
-		Result<IPage<SysMessageTemplate>> result = new Result<IPage<SysMessageTemplate>>();
 		QueryWrapper<SysMessageTemplate> queryWrapper = QueryGenerator.initQueryWrapper(sysMessageTemplate, req.getParameterMap());
 		Page<SysMessageTemplate> page = new Page<SysMessageTemplate>(pageNo, pageSize);
 		IPage<SysMessageTemplate> pageList = sysMessageTemplateService.page(page, queryWrapper);
-		result.setSuccess(true);
-		result.setResult(pageList);
-		return result;
+        return Result.ok(pageList);
 	}
 
 	/**
@@ -75,16 +71,9 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	 * @return
 	 */
 	@PostMapping(value = "/add")
-	public Result<T> add(@RequestBody SysMessageTemplate sysMessageTemplate) {
-		Result<T> result = new Result<T>();
-		try {
-			sysMessageTemplateService.save(sysMessageTemplate);
-			result.success("添加成功！");
-		} catch (Exception e) {
-			log.info(e.getMessage(), e);
-			result.error500("操作失败");
-		}
-		return result;
+	public Result<?> add(@RequestBody SysMessageTemplate sysMessageTemplate) {
+		sysMessageTemplateService.save(sysMessageTemplate);
+        return Result.ok("添加成功！");
 	}
 
 	/**
@@ -94,21 +83,9 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	 * @return
 	 */
 	@PutMapping(value = "/edit")
-	public Result<T> edit(@RequestBody SysMessageTemplate sysMessageTemplate) {
-		Result<T> result = new Result<T>();
-		SysMessageTemplate sysMessageTemplateEntity = sysMessageTemplateService.getById(sysMessageTemplate.getId());
-		if (sysMessageTemplateEntity == null) {
-			result.error500("未找到对应实体");
-		} else {
-			boolean ok = sysMessageTemplateService.updateById(sysMessageTemplate);
-			if (ok) {
-				result.success("修改成功!");
-			} else {
-				result.error500("修改失败!");
-			}
-		}
-
-		return result;
+	public Result<?> edit(@RequestBody SysMessageTemplate sysMessageTemplate) {
+		sysMessageTemplateService.updateById(sysMessageTemplate);
+        return Result.ok("更新成功！");
 	}
 
 	/**
@@ -118,19 +95,9 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	 * @return
 	 */
 	@DeleteMapping(value = "/delete")
-	public Result<T> delete(@RequestParam(name = "id", required = true) String id) {
-		Result<T> result = new Result<T>();
-		SysMessageTemplate sysMessageTemplate = sysMessageTemplateService.getById(id);
-		if (sysMessageTemplate == null) {
-			result.error500("未找到对应实体");
-		} else {
-			boolean ok = sysMessageTemplateService.removeById(id);
-			if (ok) {
-				result.success("删除成功!");
-			}
-		}
-
-		return result;
+	public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
+		sysMessageTemplateService.removeById(id);
+        return Result.ok("删除成功!");
 	}
 
 	/**
@@ -140,15 +107,9 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	 * @return
 	 */
 	@DeleteMapping(value = "/deleteBatch")
-	public Result<T> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
-		Result<T> result = new Result<T>();
-		if (ids == null || "".equals(ids.trim())) {
-			result.error500("ids参数不允许为空！");
-		} else {
-			this.sysMessageTemplateService.removeByIds(Arrays.asList(ids.split(",")));
-			result.success("删除成功!");
-		}
-		return result;
+	public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
+		this.sysMessageTemplateService.removeByIds(Arrays.asList(ids.split(",")));
+        return Result.ok("批量删除成功！");
 	}
 
 	/**
@@ -158,16 +119,9 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	 * @return
 	 */
 	@GetMapping(value = "/queryById")
-	public Result<SysMessageTemplate> queryById(@RequestParam(name = "id", required = true) String id) {
-		Result<SysMessageTemplate> result = new Result<SysMessageTemplate>();
+	public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
 		SysMessageTemplate sysMessageTemplate = sysMessageTemplateService.getById(id);
-		if (sysMessageTemplate == null) {
-			result.error500("未找到对应实体");
-		} else {
-			result.setResult(sysMessageTemplate);
-			result.setSuccess(true);
-		}
-		return result;
+        return Result.ok(sysMessageTemplate);
 	}
 
 	/**

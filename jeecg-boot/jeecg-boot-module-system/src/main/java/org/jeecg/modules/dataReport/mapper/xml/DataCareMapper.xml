@@ -34,7 +34,7 @@
 				'出口'
 				END
 				) AS salestype,
-				TTT4.tm_odate AS releasedate,
+				TTT4.tm_odate AS tm_odate,
 				DEPOT AS wharf
 				FROM
 				(
@@ -131,23 +131,47 @@
 
 
 	</select>
-    <select id="getTmsBlNoDatas" resultType="java.lang.String">
+    <select id="getTmsBlNoDatas" resultType="java.util.HashMap">
 
-		SELECT
-			bl_no
-		FROM
-			order_info t
-		WHERE
-			t.is_valid = 1  AND t.dispatch_center IS NULL AND t.customs_release_date &gt;= #{startDate} AND t.customs_release_date &lt;= #{endDate}
-		UNION
-			SELECT
-				bl_no
-			FROM
-				order_bulk_info t1
-			WHERE
-				t1.is_valid = 1
-				AND t1.erp_order_id IS NOT NULL
-				AND t1.created_time &gt;= #{startDate} AND t1.created_time &lt;= #{endDate}
+		SELECT * FROM (
+				SELECT
+					t.bl_no,
+					CASE
+				WHEN ttt.cnum IS NULL THEN
+					0
+				ELSE
+					ttt.cnum
+				END AS cnum
+				FROM
+					order_info t
+				LEFT JOIN (
+					SELECT
+						tt.order_id,
+						COUNT(*) AS cnum
+					FROM
+						order_container_info tt
+					WHERE
+						tt.is_valid = 1
+					AND tt.container_status = 1
+					GROUP BY
+						tt.order_id
+				) ttt ON t.order_id = ttt.order_id
+				WHERE
+					t.is_valid = 1
+				AND t.dispatch_center IS NULL
+
+
+				UNION
+					SELECT
+						bl_no, 0 AS cunm
+					FROM
+						order_bulk_info t1
+					WHERE
+						t1.is_valid = 1
+					AND t1.erp_order_id IS NOT NULL
+					AND t1.order_source = 2
+
+				) tt
 
 	</select>
 </mapper>

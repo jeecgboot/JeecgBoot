@@ -1,11 +1,6 @@
 package org.jeecg.config;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import javax.servlet.Filter;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
@@ -13,12 +8,22 @@ import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.crazycake.shiro.RedisCacheManager;
+import org.crazycake.shiro.RedisManager;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.shiro.authc.ShiroRealm;
 import org.jeecg.modules.shiro.authc.aop.JwtFilter;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.util.StringUtils;
+
+import javax.servlet.Filter;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author: Scott
@@ -26,9 +31,22 @@ import org.springframework.context.annotation.DependsOn;
  * @description: shiro 配置类
  */
 
+@Slf4j
 @Configuration
 public class ShiroConfig {
-	
+
+	@Value("${jeecg.shiro.excludeUrls}")
+	private String excludeUrls;
+
+    @Value("${spring.redis.port}")
+    private String port;
+
+    @Value("${spring.redis.host}")
+    private String host;
+
+    @Value("${spring.redis.password}")
+    private String redisPassword;
+
 	/**
 	 * Filter Chain定义说明 
 	 * 
@@ -42,10 +60,18 @@ public class ShiroConfig {
 		shiroFilterFactoryBean.setSecurityManager(securityManager);
 		// 拦截器
 		Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
+		if(oConvertUtils.isNotEmpty(excludeUrls)){
+			String[] permissionUrl = excludeUrls.split(",");
+			for(String url : permissionUrl){
+				filterChainDefinitionMap.put(url,"anon");
+			}
+		}
 		//cas验证登录
 		filterChainDefinitionMap.put("/cas/client/validateLogin", "anon");
 		// 配置不会被拦截的链接 顺序判断
+		filterChainDefinitionMap.put("/sys/getCheckCode", "anon"); //登录验证码接口排除
 		filterChainDefinitionMap.put("/sys/login", "anon"); //登录接口排除
+		filterChainDefinitionMap.put("/sys/mLogin", "anon"); //登录接口排除
 		filterChainDefinitionMap.put("/sys/logout", "anon"); //登出接口排除
 		filterChainDefinitionMap.put("/sys/getEncryptedString", "anon"); //获取加密串
 		filterChainDefinitionMap.put("/sys/sms", "anon");//短信验证码
@@ -87,19 +113,13 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/actuator/httptrace/**", "anon");
 		filterChainDefinitionMap.put("/actuator/redis/**", "anon");
 
-
-		filterChainDefinitionMap.put("/test/jeecgDemo/demo3", "anon"); //模板测试
-		filterChainDefinitionMap.put("/test/jeecgDemo/redisDemo/**", "anon"); //redis测试
+		//测试示例
+		filterChainDefinitionMap.put("/test/jeecgDemo/html", "anon"); //模板页面
+		filterChainDefinitionMap.put("/test/jeecgDemo/redis/**", "anon"); //redis测试
 		
-
-
-		//排除Online请求
-		filterChainDefinitionMap.put("/auto/cgform/**", "anon");
 		//websocket排除
 		filterChainDefinitionMap.put("/websocket/**", "anon");
-		
-		
-	
+
 		// 添加自己的过滤器并且取名为jwt
 		Map<String, Filter> filterMap = new HashMap<String, Filter>(1);
 		filterMap.put("jwt", new JwtFilter());
@@ -129,7 +149,8 @@ public class ShiroConfig {
 		defaultSessionStorageEvaluator.setSessionStorageEnabled(false);
 		subjectDAO.setSessionStorageEvaluator(defaultSessionStorageEvaluator);
 		securityManager.setSubjectDAO(subjectDAO);
-
+        //自定义缓存实现,使用redis
+        securityManager.setCacheManager(redisCacheManager());
 		return securityManager;
 	}
 
@@ -146,7 +167,7 @@ public class ShiroConfig {
 	}
 
 	@Bean
-	public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+	public static LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
 		return new LifecycleBeanPostProcessor();
 	}
 
@@ -156,5 +177,39 @@ public class ShiroConfig {
 		advisor.setSecurityManager(securityManager);
 		return advisor;
 	}
+
+    /**
+     * cacheManager 缓存 redis实现
+     * 使用的是shiro-redis开源插件
+     *
+     * @return
+     */
+    public RedisCacheManager redisCacheManager() {
+        log.info("===============(1)创建缓存管理器RedisCacheManager");
+        RedisCacheManager redisCacheManager = new RedisCacheManager();
+        redisCacheManager.setRedisManager(redisManager());
+        //redis中针对不同用户缓存(此处的id需要对应user实体中的id字段,用于唯一标识)
+        redisCacheManager.setPrincipalIdFieldName("id");
+        //用户权限信息缓存时间
+        redisCacheManager.setExpire(200000);
+        return redisCacheManager;
+    }
+
+    /**
+     * 配置shiro redisManager
+     * 使用的是shiro-redis开源插件
+     *
+     * @return
+     */
+    @Bean
+    public RedisManager redisManager() {
+        log.info("===============(2)创建RedisManager,连接Redis..URL= " + host + ":" + port);
+        RedisManager redisManager = new RedisManager();
+        redisManager.setHost(host + ":" + port);//老版本是分别setHost和setPort,新版本只需要setHost就可以了
+        if (!StringUtils.isEmpty(redisPassword)) {
+            redisManager.setPassword(redisPassword);
+        }
+        return redisManager;
+    }
 
 }

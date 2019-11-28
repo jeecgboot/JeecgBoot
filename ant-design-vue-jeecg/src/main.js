@@ -20,9 +20,14 @@ import VueApexCharts from 'vue-apexcharts'
 
 import preview from 'vue-photo-preview'
 import 'vue-photo-preview/dist/skin.css'
-import "@jeecg/antd-onine"
-import '@jeecg/antd-onine/dist/OnlineForm.css'
+import "@jeecg/antd-online"
+import '@jeecg/antd-online/dist/OnlineForm.css'
 
+import dataV from '@jiaminghi/data-view'
+
+import 'echarts-gl'
+import * as d3 from "d3"
+import echarts from 'echarts'
 
 import {
   ACCESS_TOKEN,
@@ -57,7 +62,12 @@ Vue.component('apexchart', VueApexCharts)
 Vue.use(preview)
 Vue.use(vueBus);
 Vue.use(JeecgComponents);
-Vue.use(VueParticles)
+Vue.use(VueParticles);
+Vue.use(dataV);
+Vue.use(echarts);
+Vue.prototype.$echarts = echarts
+Vue.prototype.$d3 = d3;
+window.d3 = d3;   //暂时设置为全局变量
 
 new Vue({
   router,

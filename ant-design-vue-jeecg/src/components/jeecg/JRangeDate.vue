@@ -4,7 +4,7 @@
     @change="handleDateChange"
     :disabledDate="disabledDate"
     :value="momVal"
-    :ranges="{ 昨天: [moment().subtract(1,'day'), moment().endOf('day')], '上月': [moment().month(moment().month() - 1).startOf('month'), moment().month(moment().month() - 1).endOf('month') ] }"
+    :ranges="{ 昨天: [moment().subtract(1,'day'), moment().endOf('day')], '本月': [moment().startOf('month'), moment().startOf('day') ],  '上月': [moment().month(moment().month() - 1).startOf('month'), moment().month(moment().month() - 1).endOf('month') ] ,  '上上月': [moment().month(moment().month() - 2).startOf('month'), moment().month(moment().month() - 2).endOf('month') ]}"
     :showTime="showTime"
     :format="dateFormat"
     :allowClear="false"
@@ -65,8 +65,11 @@
       let dateStr = this.value;
       console.log(!dateStr);
       return {
-        // momVal:!dateStr?null:moment(dateStr,this.dateFormat)
-        // momVal: dateStr? [moment().startOf('month'), moment().startOf('day')]:[moment(dateStr[0]), moment(dateStr[1])]
+
+
+
+        /**   若需要给查询时间控件默认日期 则  将Null 替换为 [moment(moment().startOf('month')), moment(moment().startOf('day'))]  **/
+        // momVal: dateStr? [moment(moment().startOf('month')), moment(moment().startOf('day'))]:[moment(dateStr[0]), moment(dateStr[1])]
         momVal: dateStr? null:[moment(dateStr[0]), moment(dateStr[1])]
         // momVal:dateStr
       }

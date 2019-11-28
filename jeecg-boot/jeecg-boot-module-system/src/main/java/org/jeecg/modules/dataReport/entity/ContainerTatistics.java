@@ -48,13 +48,15 @@ public class ContainerTatistics {
     @ApiModelProperty(value = "箱号（柜号）")
 	private String containerNo;
 	/**尺寸(1：20，2：40)*/
-	@Excel(name = "尺寸(1：20，2：40)", width = 15)
+	@Excel(name = "尺寸(1：20，2：40)", width = 15, dicCode = "container_size")
     @ApiModelProperty(value = "尺寸(1：20，2：40)")
+	@Dict(dicCode = "container_size")
 	private Integer containerSize;
 	/**规格（1：GP，2：HQ）*/
-	@Excel(name = "规格（1：GP，2：HQ）", width = 15)
+	@Excel(name = "规格（1：GP，2：HQ）", width = 15, dicCode = "container_spec")
     @ApiModelProperty(value = "规格（1：GP，2：HQ）")
-	private String containerSpec;
+	@Dict(dicCode = "container_spec")
+	private Integer containerSpec;
 	/**船东*/
 	@Excel(name = "船东", width = 15)
     @ApiModelProperty(value = "船东")
@@ -89,4 +91,52 @@ public class ContainerTatistics {
 	@ApiModelProperty(value = "是否退载")
 	@Dict(dicCode = "take_back")
 	private Integer takeBack;
+
+
+
+	/**停靠码头*/
+	@Excel(name = "停靠码头", width = 15)
+	@ApiModelProperty(value = "停靠码头")
+	private String outdepotnameCn;
+
+	/**码头放行*/
+	@Excel(name = "码头放行日期", width = 15)
+	@ApiModelProperty(value = "码头放行")
+	private String mtPassdate;
+
+
+
+
+	/**箱进码头*/
+	@Excel(name = "箱进码头", width = 15, format = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@ApiModelProperty(value = "箱进码头")
+	private Date ieDate;
+
+	/**码头进场*/
+	@Excel(name = "码头进场", width = 15)
+	@ApiModelProperty(value = "码头进场")
+	private String mtIndate;
+
+	/**码头出场*/
+	@Excel(name = "码头出场", width = 15)
+	@ApiModelProperty(value = "码头出场")
+	private String mtOutdate;
+
+
+
+	/**返箱堆场*/
+	@Excel(name = "返箱堆场", width = 15)
+	@ApiModelProperty(value = "返箱堆场")
+	private String indepotnameCn;
+	/**堆场进闸*/
+	@Excel(name = "堆场进闸", width = 15)
+	@ApiModelProperty(value = "堆场进闸")
+	private String dcIndate;
+
+	/**堆场出闸*/
+	@Excel(name = "堆场出闸", width = 15)
+	@ApiModelProperty(value = "堆场出闸")
+	private String dcOutdate;
 }

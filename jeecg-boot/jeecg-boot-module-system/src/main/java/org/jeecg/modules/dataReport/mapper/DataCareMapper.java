@@ -13,13 +13,14 @@ import org.jeecg.modules.message.entity.SysMessageTemplate;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 数据比对
  */
 public interface DataCareMapper extends BaseMapper<BlDataCare> {
 
-    IPage<BlDataCare> getAllBlnoByErp(Page<org.jeecg.modules.dataReport.entity.BlDataCare> page,@Param(Constants.WRAPPER) Wrapper<BlDataCare> userWrapper);
+    List<BlDataCare> getAllBlnoByErp(@Param(Constants.WRAPPER) Wrapper<BlDataCare> userWrapper);
 
-    List<String> getTmsBlNoDatas(Date startDate,Date endDate);
+    List<Map<String,Object>> getTmsBlNoDatas(Date startDate, Date endDate);
 }

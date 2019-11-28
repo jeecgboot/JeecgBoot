@@ -1,5 +1,6 @@
 import { UserLayout, TabLayout, RouteView, BlankLayout, PageView } from '@/components/layouts'
 import ContainerTatistics from '@views/std/report/ContainerTatisticsList'
+import TradeVisual from '@views/std/visual/tradeVisual'
 
 /**
  * 走菜单，走权限控制
@@ -324,6 +325,32 @@ export const constantRouterMap = [
     ]
   },
 
+  // {
+  //   path: '/',
+  //   name: 'index',
+  //   component: TabLayout,
+  //   meta: {title: '首页'},
+  //   redirect: '/dashboard/workplace',
+  //   children: [
+  //     {
+  //       path: '/online',
+  //       name: 'online',
+  //       redirect: '/online',
+  //       component: RouteView,
+  //       meta: {title: '在线开发', icon: 'dashboard', permission: ['dashboard']},
+  //       children: [
+  //         {
+  //           path: '/online/auto/:code',
+  //           name: 'report',
+  //           component: () => import('@/views/modules/online/cgreport/OnlCgreportAutoList')
+  //         },
+  //       ]
+  //     },
+  //   ]
+  // },
+  /**
+   * router中添加路径后，可以直接进行访问，在permission.js中添加白名单即可直接访问，如可视化效果
+   */
   {
     path: '/test',
     name:'test',
@@ -337,10 +364,15 @@ export const constantRouterMap = [
       }
     ]
   },
-  {
+  /*{
     path: '/dataReport/containerStatistics',
     name:'containerStatistics',
     component: ContainerTatistics,
+  },*/
+  {
+    path: '/dataReport/tradeVisual',
+    name:'tradeVisual',
+    component: TradeVisual,
   },
   {
     path: '/404',

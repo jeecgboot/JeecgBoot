@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.aspect;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,13 +63,13 @@ public class PermissionDataAspect {
 		Method method = signature.getMethod();
 		PermissionData pd = method.getAnnotation(PermissionData.class);
 		String component = pd.pageComponent();
-		SysPermission currentSyspermission=null;
+		List<SysPermission> currentSyspermission = null;
 		if(oConvertUtils.isNotEmpty(component)) {
 			//1.通过注解属性pageComponent 获取菜单
 			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
 			query.eq(SysPermission::getDelFlag,0);
 			query.eq(SysPermission::getComponent, component);
-			currentSyspermission = sysPermissionService.getOne(query);
+			currentSyspermission = sysPermissionService.list(query);
 		}else {
 			String requestMethod = request.getMethod();
 			String requestPath = request.getRequestURI().substring(request.getContextPath().length());
@@ -79,28 +80,31 @@ public class PermissionDataAspect {
 			query.eq(SysPermission::getMenuType,2);
 			query.eq(SysPermission::getDelFlag,0);
 			query.eq(SysPermission::getUrl, requestPath);
-			currentSyspermission = sysPermissionService.getOne(query);
+			currentSyspermission = sysPermissionService.list(query);
 			//2.未找到 再通过正则匹配获取菜单
-			if(currentSyspermission==null) {
+			if(currentSyspermission==null || currentSyspermission.size()==0) {
 				String regUrl = getRegexpUrl(requestPath);
 				if(regUrl!=null) {
-					currentSyspermission = sysPermissionService.getOne(new LambdaQueryWrapper<SysPermission>().eq(SysPermission::getMenuType,2).eq(SysPermission::getUrl, regUrl).eq(SysPermission::getDelFlag,0));
+					currentSyspermission = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().eq(SysPermission::getMenuType,2).eq(SysPermission::getUrl, regUrl).eq(SysPermission::getDelFlag,0));
 				}
 			}
 		}
 		//3.通过用户名+菜单ID 找到权限配置信息 放到request中去
-		if(currentSyspermission!=null) {
+		if(currentSyspermission!=null && currentSyspermission.size()>0) {
 			String username = JwtUtil.getUserNameByToken(request);
-			List<SysPermissionDataRule> dataRules = sysPermissionDataRuleService.queryPermissionDataRules(username, currentSyspermission.getId());
+			List<SysPermissionDataRule> dataRules = new ArrayList<SysPermissionDataRule>();
+			for (SysPermission sysPermission : currentSyspermission) {
+				List<SysPermissionDataRule> temp = sysPermissionDataRuleService.queryPermissionDataRules(username, sysPermission.getId());
+				if(temp!=null && temp.size()>0) {
+					dataRules.addAll(temp);
+				}
+			}
 			if(dataRules!=null && dataRules.size()>0) {
 				JeecgDataAutorUtils.installDataSearchConditon(request, dataRules);
-				
-				//TODO 此处将用户信息查找出来放到request中实属无奈  可以优化
 				SysUserCacheInfo userinfo = sysUserService.getCacheUser(username);
 				JeecgDataAutorUtils.installUserInfo(request, userinfo);
 			}
 		}
-		
 		return  point.proceed();
 	}
 	

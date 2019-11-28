@@ -22,8 +22,8 @@ export const JeecgListMixin = {
       /* 分页参数 */
       ipagination:{
         current: 1,
-        pageSize: 10,
-        pageSizeOptions: ['10', '20', '30','100'],
+        pageSize: 50,
+        pageSizeOptions: ['50', '100', '200','300'],
         showTotal: (total, range) => {
           return range[0] + "-" + range[1] + " 共" + total + "条"
         },
@@ -62,6 +62,7 @@ export const JeecgListMixin = {
   methods:{
     moment,
     loadData(arg) {
+
       if(!this.url.list){
         this.$message.error("请设置url.list属性!")
         return
@@ -104,7 +105,7 @@ export const JeecgListMixin = {
     },
     getQueryParams() {
       //获取查询条件
-      debugger
+
       let sqp = {}
       if(this.superQueryParams){
         sqp['superQueryParams']=encodeURI(this.superQueryParams)
@@ -125,6 +126,7 @@ export const JeecgListMixin = {
      * @returns {*}
      */
     getQueryParamsByProcess(param){
+
 
       //遍历参数，并将日期区间的数组参数取出之后进行切分begin和end方便后台进行处理
       for ( let p in param) {
@@ -241,7 +243,7 @@ export const JeecgListMixin = {
       this.$refs.modalForm.disableSubmit = false;
     },
     handleTableChange(pagination, filters, sorter) {
-      debugger
+
       //分页、排序、筛选变化时触发
       //TODO 筛选
       if (Object.keys(sorter).length > 0) {
@@ -270,12 +272,13 @@ export const JeecgListMixin = {
     },
     /* 导出 */
     handleExportXls2(){
+
       let paramsStr = encodeURI(JSON.stringify(this.getQueryParams()));
       let url = `${window._CONFIG['domianURL']}/${this.url.exportXlsUrl}?paramsStr=${paramsStr}`;
       window.location.href = url;
     },
     handleExportXls(fileName){
-      debugger
+
       let sqp = {}
       if(!fileName || typeof fileName != "string"){
         fileName = "导出文件"
@@ -316,9 +319,24 @@ export const JeecgListMixin = {
         console.log(info.file, info.fileList);
       }
       if (info.file.status === 'done') {
-        if(info.file.response.success){
-          this.$message.success(`${info.file.name} 文件上传成功`);
-          this.loadData();
+        if (info.file.response.success) {
+          // this.$message.success(`${info.file.name} 文件上传成功`);
+          if (info.file.response.code === 201) {
+            let { message, result: { msg, fileUrl, fileName } } = info.file.response
+            let href = window._CONFIG['domianURL'] + fileUrl
+            this.$warning({
+              title: message,
+              content: (
+                <div>
+                  <span>{msg}</span><br/>
+                  <span>具体详情请 <a href={href} target="_blank" download={fileName}>点击下载</a> </span>
+                </div>
+              )
+            })
+          } else {
+            this.$message.success(info.file.response.message || `${info.file.name} 文件上传成功`)
+          }
+          this.loadData()
         } else {
           this.$message.error(`${info.file.name} ${info.file.response.message}.`);
         }

@@ -134,12 +134,12 @@
           {
             title: '尺寸',
             align: "center",
-            dataIndex: 'containerSize'
+            dataIndex: 'containerSize_dictText'
           },
           {
             title: '规格',
             align: "center",
-            dataIndex: 'containerSpec'
+            dataIndex: 'containerSpec_dictText'
           },
           {
             title: '退载自拖',
@@ -178,6 +178,31 @@
             dataIndex: 'detailAddress'
           },
           {
+            title: '箱进码头',
+            align: "center",
+            dataIndex: 'ieDate'
+          },
+          {
+            title: '车进码头',
+            align: "center",
+            dataIndex: 'mtIndate'
+          },
+          {
+            title: '车出码头',
+            align: "center",
+            dataIndex: 'mtOutdate'
+          },
+          {
+            title: '车进堆场',
+            align: "center",
+            dataIndex: 'dcIndate'
+          },
+          {
+            title: '车出堆场',
+            align: "center",
+            dataIndex: 'dcOutdate'
+          },
+          {
             title: '接单备注',
             align: "center",
             dataIndex: 'orderRemark'
@@ -212,8 +237,11 @@
         this.queryParam = {}
         this.isorter = {}
         this.visible = true;
-        if (record.blNo) {
+        if (record.blNo ) {
           this.queryParam.bolcodeQuery = record.blNo
+          this.loadData();
+        }else if(record.bolcode){
+          this.queryParam.bolcodeQuery = record.bolcode
           this.loadData();
         }
       },
