@@ -42,7 +42,7 @@
                 <a-select v-model="queryParam.status" placeholder="请选择用户状态查询">
                   <a-select-option value="">请选择用户状态</a-select-option>
                   <a-select-option value="1">正常</a-select-option>
-                  <a-select-option value="2">解冻</a-select-option>
+                  <a-select-option value="2">冻结</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
