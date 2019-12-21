@@ -17,7 +17,7 @@
             </a-row>
             <a-row>
               <a-radio value="2">每隔
-                <a-input-number size="small" v-model="result.second.incrementIncrement" :min="1" :max="60"></a-input-number>
+                <a-input-number size="small" v-model="result.second.incrementIncrement" :min="1" :max="59"></a-input-number>
                 秒执行 从
                 <a-input-number size="small" v-model="result.second.incrementStart" :min="0" :max="59"></a-input-number>
                 秒开始
@@ -31,7 +31,7 @@
             </a-row>
             <a-row>
               <a-radio value="4">周期从
-                <a-input-number size="small" v-model="result.second.rangeStart" :min="1" :max="60"></a-input-number>
+                <a-input-number size="small" v-model="result.second.rangeStart" :min="1" :max="59"></a-input-number>
                 到
                 <a-input-number size="small" v-model="result.second.rangeEnd" :min="0" :max="59"></a-input-number>
                 秒

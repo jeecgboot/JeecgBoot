@@ -20,7 +20,8 @@ public class MybatisPlusConfig {
      */
     @Bean
     public PaginationInterceptor paginationInterceptor() {
-        return new PaginationInterceptor();
+        // 设置sql的limit为无限制，默认是500
+        return new PaginationInterceptor().setLimit(-1);
     }
     
 //    /**

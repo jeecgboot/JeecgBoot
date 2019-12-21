@@ -24,7 +24,7 @@ public class JoaDemo implements Serializable {
     private static final long serialVersionUID = 1L;
     
 	/**ID*/
-	@TableId(type = IdType.UUID)
+	@TableId(type = IdType.ID_WORKER_STR)
 	private java.lang.String id;
 	/**请假人*/
 	@Excel(name = "请假人", width = 15)

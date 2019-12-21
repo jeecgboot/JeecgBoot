@@ -28,13 +28,16 @@ export async function initDictOptions(dictCode) {
  * @return String
  */
 export function filterDictText(dictOptions, text) {
-  let re = "";
-  dictOptions.forEach(function (option) {
-    if (text === option.value) {
-      re = option.text;
+  //--update-begin----author:sunjianlei---date:20191025------for:修复字典替换方法在字典没有加载完成之前报错的问题、修复没有找到字典时返回空值的问题---
+  if (dictOptions instanceof Array) {
+    for (let dictItem of dictOptions) {
+      if (text === dictItem.value) {
+        return dictItem.text
+      }
     }
-  });
-  return re;
+  }
+  return text
+//--update-end----author:sunjianlei---date:20191025------for:修复字典替换方法在字典没有加载完成之前报错的问题、修复没有找到字典时返回空值的问题---
 }
 
 /**
@@ -44,7 +47,7 @@ export function filterDictText(dictOptions, text) {
  * @return String
  */
 export function filterMultiDictText(dictOptions, text) {
-  if(!text){
+  if(!text || !dictOptions || dictOptions.length==0){
     return ""
   }
   let re = "";
@@ -58,7 +61,7 @@ export function filterMultiDictText(dictOptions, text) {
     }
   });
   if(re==""){
-    return "";
+    return text;
   }
   return re.substring(0,re.length-1);
 }

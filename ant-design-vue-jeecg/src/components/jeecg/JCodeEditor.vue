@@ -228,10 +228,11 @@
         // 初始化编辑器实例，传入需要被实例化的文本域对象和默认配置
         this.coder = CodeMirror.fromTextArea(this.$refs.textarea, this.coderOptions)
         // 编辑器赋值
-        this.coder.setValue(this.value || this.code)
         if(this.value||this.code){
           this.hasCode=true
+          this.coder.setValue(this.value || this.code)
         }else{
+          this.coder.setValue('')
           this.hasCode=false
         }
         // 支持双向绑定
@@ -266,7 +267,13 @@
         return this.code
       },
       setCodeContent(val){
-        this.coder.setValue(val)
+        setTimeout(()=>{
+          if(!val){
+            this.coder.setValue('')
+          }else{
+            this.coder.setValue(val)
+          }
+        },300)
       },
       // 获取当前语法类型
       _getLanguage (language) {
@@ -405,5 +412,7 @@
 
   }
 
-
+.CodeMirror-cursor{
+  height:18.4px !important;
+}
 </style>

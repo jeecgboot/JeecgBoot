@@ -32,15 +32,23 @@
         tagType:""
       }
     },
+    watch:{
+      dictCode:{
+        immediate:true,
+        handler() {
+          this.initDictData()
+        },
+      }
+    },
     created() {
-      console.log(this.dictCode);
+      // console.log(this.dictCode);
       if(!this.type || this.type==="list"){
         this.tagType = "select"
       }else{
         this.tagType = this.type
       }
       //获取字典数据
-      this.initDictData();
+      // this.initDictData();
     },
     methods: {
       initDictData() {

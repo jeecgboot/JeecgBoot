@@ -1,11 +1,12 @@
 <template>
-  <div v-if="disabled" class="jeecg-form-container-disabled">
+  <div :class="disabled?'jeecg-form-container-disabled':''">
+    <fieldset disabled>
+      <slot name="detail"></slot>
+    </fieldset>
+    <slot name="edit"></slot>
     <fieldset disabled>
       <slot></slot>
     </fieldset>
-  </div>
-  <div v-else>
-    <slot></slot>
   </div>
 </template>
 

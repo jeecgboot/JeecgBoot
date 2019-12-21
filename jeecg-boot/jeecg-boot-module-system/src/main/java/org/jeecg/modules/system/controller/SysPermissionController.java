@@ -25,6 +25,7 @@ import org.jeecg.modules.system.service.ISysRolePermissionService;
 import org.jeecg.modules.system.util.PermissionDataUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -67,6 +68,7 @@ public class SysPermissionController {
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<List<SysPermissionTree>> list() {
+        long start = System.currentTimeMillis();
 		Result<List<SysPermissionTree>> result = new Result<>();
 		try {
 			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
@@ -77,11 +79,71 @@ public class SysPermissionController {
 			getTreeList(treeList, list, null);
 			result.setResult(treeList);
 			result.setSuccess(true);
+            log.info("======获取全部菜单数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
 		return result;
 	}
+
+	/*update_begin author:wuxianquan date:20190908 for:先查询一级菜单，当用户点击展开菜单时加载子菜单 */
+	/**
+	 * 系统菜单列表(一级菜单)
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = "/getSystemMenuList", method = RequestMethod.GET)
+	public Result<List<SysPermissionTree>> getSystemMenuList() {
+        long start = System.currentTimeMillis();
+		Result<List<SysPermissionTree>> result = new Result<>();
+		try {
+			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
+			query.eq(SysPermission::getMenuType,CommonConstant.MENU_TYPE_0);
+			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
+			query.orderByAsc(SysPermission::getSortNo);
+			List<SysPermission> list = sysPermissionService.list(query);
+			List<SysPermissionTree> sysPermissionTreeList = new ArrayList<SysPermissionTree>();
+			for(SysPermission sysPermission : list){
+				SysPermissionTree sysPermissionTree = new SysPermissionTree(sysPermission);
+				sysPermissionTreeList.add(sysPermissionTree);
+			}
+			result.setResult(sysPermissionTreeList);
+			result.setSuccess(true);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+        log.info("======获取一级菜单数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+		return result;
+	}
+
+
+	/**
+	 * 查询子菜单
+	 * @param parentId
+	 * @return
+	 */
+	@RequestMapping(value = "/getSystemSubmenu", method = RequestMethod.GET)
+	public Result<List<SysPermissionTree>> getSystemSubmenu(@RequestParam("parentId") String parentId){
+		Result<List<SysPermissionTree>> result = new Result<>();
+		try{
+			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
+			query.eq(SysPermission::getParentId,parentId);
+			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
+			query.orderByAsc(SysPermission::getSortNo);
+			List<SysPermission> list = sysPermissionService.list(query);
+			List<SysPermissionTree> sysPermissionTreeList = new ArrayList<SysPermissionTree>();
+			for(SysPermission sysPermission : list){
+				SysPermissionTree sysPermissionTree = new SysPermissionTree(sysPermission);
+				sysPermissionTreeList.add(sysPermissionTree);
+			}
+			result.setResult(sysPermissionTreeList);
+			result.setSuccess(true);
+		}catch (Exception e){
+			log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	/*update_end author:wuxianquan date:20190908 for:先查询一级菜单，当用户点击展开菜单时加载子菜单 */
 
 //	/**
 //	 * 查询用户拥有的菜单权限和按钮权限（根据用户账号）
@@ -120,6 +182,7 @@ public class SysPermissionController {
 			log.info(" ------ 通过令牌获取用户拥有的访问菜单 ---- TOKEN ------ " + token);
 			String username = JwtUtil.getUsername(token);
 			List<SysPermission> metaList = sysPermissionService.queryByUser(username);
+			//添加首页路由
 			PermissionDataUtil.addIndexPage(metaList);
 			JSONObject json = new JSONObject();
 			JSONArray menujsonArray = new JSONArray();
@@ -134,8 +197,11 @@ public class SysPermissionController {
 			List<SysPermission> allAuthList = sysPermissionService.list(query);
 			JSONArray allauthjsonArray = new JSONArray();
 			this.getAllAuthJsonArray(allauthjsonArray, allAuthList);
+			//路由菜单
 			json.put("menu", menujsonArray);
+			//按钮权限
 			json.put("auth", authjsonArray);
+			//全部权限配置（按钮权限，访问权限）
 			json.put("allAuth", allauthjsonArray);
 			result.setResult(json);
 			result.success("查询成功");
@@ -172,7 +238,6 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequiresRoles({ "admin" })
-	@CacheEvict(value= CacheConstant.LOGIN_USER_RULES_CACHE, allEntries=true)
 	@RequestMapping(value = "/edit", method = { RequestMethod.PUT, RequestMethod.POST })
 	public Result<SysPermission> edit(@RequestBody SysPermission permission) {
 		Result<SysPermission> result = new Result<>();
@@ -193,7 +258,6 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequiresRoles({ "admin" })
-	@CacheEvict(value=CacheConstant.LOGIN_USER_RULES_CACHE, allEntries=true)
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<SysPermission> delete(@RequestParam(name = "id", required = true) String id) {
 		Result<SysPermission> result = new Result<>();
@@ -214,7 +278,6 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequiresRoles({ "admin" })
-	@CacheEvict(value=CacheConstant.LOGIN_USER_RULES_CACHE, allEntries=true)
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysPermission> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 		Result<SysPermission> result = new Result<>();
@@ -458,7 +521,12 @@ public class SysPermissionController {
 		}
 	}
 
-	private JSONObject getPermissionJsonObject(SysPermission permission) {
+	/**
+	 * 根据菜单配置生成路由json
+	 * @param permission
+	 * @return
+	 */
+		private JSONObject getPermissionJsonObject(SysPermission permission) {
 		JSONObject json = new JSONObject();
 		// 类型(0：一级菜单 1：子菜单 2：按钮)
 		if (permission.getMenuType().equals(CommonConstant.MENU_TYPE_2)) {
@@ -503,6 +571,15 @@ public class SysPermissionController {
 			} else {
 				meta.put("keepAlive", false);
 			}
+
+			/*update_begin author:wuxianquan date:20190908 for:往菜单信息里添加外链菜单打开方式 */
+			//外链菜单打开方式
+			if (permission.isInternalOrExternal()) {
+				meta.put("internalOrExternal", true);
+			} else {
+				meta.put("internalOrExternal", false);
+			}
+			/* update_end author:wuxianquan date:20190908 for: 往菜单信息里添加外链菜单打开方式*/
 
 			meta.put("title", permission.getName());
 			if (oConvertUtils.isEmpty(permission.getParentId())) {

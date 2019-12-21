@@ -3,6 +3,8 @@ package org.jeecg.modules.system.entity;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -35,7 +37,7 @@ public class SysUser implements Serializable {
     /**
      * id
      */
-    @TableId(type = IdType.UUID)
+    @TableId(type = IdType.ID_WORKER_STR)
     private String id;
 
     /**
@@ -53,11 +55,13 @@ public class SysUser implements Serializable {
     /**
      * 密码
      */
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     /**
      * md5密码盐
      */
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String salt;
 
     /**
@@ -111,6 +115,24 @@ public class SysUser implements Serializable {
     @Excel(name = "删除状态", width = 15,dicCode="del_flag")
     @TableLogic
     private String delFlag;
+
+    /**
+     * 工号，唯一键
+     */
+    @Excel(name = "工号", width = 15)
+    private String workNo;
+
+    /**
+     * 职务，关联职务表
+     */
+    @Excel(name = "职务", width = 15)
+    private String post;
+
+    /**
+     * 座机号
+     */
+    @Excel(name = "座机号", width = 15)
+    private String telephone;
 
     /**
      * 创建人

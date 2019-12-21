@@ -10,6 +10,7 @@
     style="width: 100%"
     :filterOption="false"
     @change="handleAsyncChange"
+    allowClear
     :notFoundContent="loading ? undefined : null"
   >
     <a-spin v-if="loading" slot="notFoundContent" size="small"/>
@@ -25,6 +26,7 @@
     @change="handleChange"
     :filterOption="filterOption"
     v-model="selectedValue"
+    allowClear
     :notFoundContent="loading ? undefined : null">
     <a-spin v-if="loading" slot="notFoundContent" size="small"/>
     <a-select-option v-for="d in options" :key="d.value" :value="d.value">{{ d.text }}</a-select-option>

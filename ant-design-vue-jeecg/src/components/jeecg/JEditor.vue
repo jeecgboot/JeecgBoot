@@ -61,6 +61,7 @@
           toolbar: this.toolbar,
           branding: false,
           menubar: false,
+          toolbar_drawer: false,
           images_upload_handler: (blobInfo, success) => {
             const img = 'data:image/jpeg;base64,' + blobInfo.base64()
             success(img)
@@ -87,12 +88,9 @@
         this.myValue = (newValue == null ? '' : newValue)
       },
       myValue(newValue) {
-        console.log(newValue)
         if(this.triggerChange){
-          console.log(1)
           this.$emit('change', newValue)
         }else{
-          console.log(2)
           this.$emit('input', newValue)
         }
       }

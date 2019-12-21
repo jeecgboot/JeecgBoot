@@ -3,8 +3,11 @@
     :rowKey="rowKey"
     :columns="columns"
     :dataSource="dataSource"
-    v-bind="tableProps"
-    @expand="handleExpand">
+    :expandedRowKeys="expandedRowKeys"
+    v-bind="tableAttrs"
+    v-on="$listeners"
+    @expand="handleExpand"
+    @expandedRowsChange="expandedRowKeys=$event">
 
     <template v-for="(slotItem) of slots" :slot="slotItem" slot-scope="text, record, index">
       <slot :name="slotItem" v-bind="{text,record,index}"></slot>
@@ -30,8 +33,7 @@
       },
       queryParams: {
         type: Object,
-        default: () => {
-        }
+        default: () => ({})
       },
       // 查询顶级时的值，如果顶级为0，则传0
       topValue: {
@@ -52,13 +54,23 @@
       },
       tableProps: {
         type: Object,
-        default: () => {
-        }
+        default: () => ({})
+      },
+      /** 是否在创建组件的时候就查询数据 */
+      immediateRequest: {
+        type: Boolean,
+        default: true
+      },
+      condition:{
+        type:String,
+        default:'',
+        required:false
       }
     },
     data() {
       return {
-        dataSource: []
+        dataSource: [],
+        expandedRowKeys: []
       }
     },
     computed: {
@@ -77,6 +89,9 @@
           }
         }
         return slots
+      },
+      tableAttrs() {
+        return Object.assign(this.$attrs, this.tableProps)
       }
     },
     watch: {
@@ -88,20 +103,44 @@
       }
     },
     created() {
-      this.loadData()
+      if (this.immediateRequest) this.loadData()
     },
     methods: {
 
       /** 加载数据*/
       loadData(id = this.topValue, first = true, url = this.url) {
+        this.$emit('requestBefore', { first })
+
+        if (first) {
+          this.expandedRowKeys = []
+        }
+
         let params = Object.assign({}, this.queryParams || {})
         params[this.queryKey] = id
+        if(this.condition && this.condition.length>0){
+          params['condition'] = this.condition
+        }
+
         return getAction(url, params).then(res => {
-          let dataSource = res.result.map(item => {
+          let list = []
+          if (res.result instanceof Array) {
+            list = res.result
+          } else if (res.result.records instanceof Array) {
+            list = res.result.records
+          } else {
+            throw '返回数据类型不识别'
+          }
+          let dataSource = list.map(item => {
             // 判断是否标记了带有子级
             if (item.hasChildren === true) {
+              // 查找第一个带有dataIndex的值的列
+              let firstColumn
+              for (let column of this.columns) {
+                firstColumn = column.dataIndex
+                if (firstColumn) break
+              }
               // 定义默认展开时显示的loading子级，实际子级数据只在展开时加载
-              let loadChild = { id: `${item.id}_loadChild`, name: 'loading...', isLoading: true }
+              let loadChild = { id: `${item.id}_loadChild`, [firstColumn]: 'loading...', isLoading: true }
               item.children = [loadChild]
             }
             return item
@@ -109,8 +148,9 @@
           if (first) {
             this.dataSource = dataSource
           }
+          this.$emit('requestSuccess', { first, dataSource, res })
           return Promise.resolve(dataSource)
-        })
+        }).finally(() => this.$emit('requestFinally', { first }))
       },
 
       /** 点击展开图标时触发 */
