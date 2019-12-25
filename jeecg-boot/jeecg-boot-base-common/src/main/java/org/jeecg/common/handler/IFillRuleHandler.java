@@ -10,6 +10,11 @@ import com.alibaba.fastjson.JSONObject;
  */
 public interface IFillRuleHandler {
 
+    /**
+     * @param params 页面配置固定参数
+     * @param formData  动态表单参数
+     * @return
+     */
     public Object execute(JSONObject params, JSONObject formData);
 
 }

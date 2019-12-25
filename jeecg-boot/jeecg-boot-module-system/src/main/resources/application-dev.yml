@@ -157,6 +157,12 @@ jeecg :
   elasticsearch:
     cluster-name: jeecg-ES
     cluster-nodes: 127.0.0.1:9200
+  # 表单设计器配置
+  desform:
+    # 主题颜色（仅支持 16进制颜色代码）
+    theme-color: "#1890ff"
+  # 在线预览文件服务器地址配置
+  file-view-domain: http://127.0.0.1:8012
 #Mybatis输出sql日志
 logging:
   level:

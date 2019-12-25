@@ -151,19 +151,9 @@ public class SysRoleController {
 	 * @return
 	 */
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-	public Result<SysRole> delete(@RequestParam(name="id",required=true) String id) {
-		Result<SysRole> result = new Result<SysRole>();
-		SysRole sysrole = sysRoleService.getById(id);
-		if(sysrole==null) {
-			result.error500("未找到对应实体");
-		}else {
-			boolean ok = sysRoleService.removeById(id);
-			if(ok) {
-				result.success("删除成功!");
-			}
-		}
-		
-		return result;
+	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
+		sysRoleService.deleteRole(id);
+		return Result.ok("删除角色成功");
 	}
 	
 	/**
@@ -174,11 +164,11 @@ public class SysRoleController {
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysRole> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<SysRole> result = new Result<SysRole>();
-		if(ids==null || "".equals(ids.trim())) {
-			result.error500("参数不识别！");
+		if(oConvertUtils.isEmpty(ids)) {
+			result.error500("未选中角色！");
 		}else {
-			this.sysRoleService.removeByIds(Arrays.asList(ids.split(",")));
-			result.success("删除成功!");
+			sysRoleService.deleteBatchRole(ids.split(","));
+			result.success("删除角色成功!");
 		}
 		return result;
 	}
