@@ -177,7 +177,6 @@
   import JDictSelectTag from '../../../../components/dict/JDictSelectTag.vue'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import Clipboard from 'clipboard'
-
   import { filterObj } from '@/utils/util';
 
   export default {

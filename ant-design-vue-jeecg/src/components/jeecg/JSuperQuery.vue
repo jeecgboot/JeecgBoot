@@ -1,11 +1,22 @@
 <template>
+<div class="j-super-query-box">
+
+  <slot>
+    <a-tooltip v-if="superQueryFlag" title="已有高级查询条件生效">
+      <a-button type="primary" @click="visible=true">
+        <a-icon type="appstore" theme="twoTone" :spin="true"></a-icon>
+        <span>高级查询</span>
+      </a-button>
+    </a-tooltip>
+    <a-button v-else type="primary" icon="filter" @click="visible=true">高级查询</a-button>
+  </slot>
+
   <a-modal
     title="高级查询构造器"
     :width="1000"
     :visible="visible"
     @cancel="handleCancel"
     :mask="false"
-    wrapClassName="ant-modal-cust-warp"
     class="j-super-query-modal"
     style="top:5%;max-height: 95%;">
 
@@ -33,7 +44,7 @@
           <a-form v-else layout="inline">
 
             <a-form-item label="过滤条件匹配" style="margin-bottom: 12px;">
-              <a-select v-model="selectValue">
+              <a-select v-model="selectValue" :getPopupContainer="node=>node.parentNode">
                 <a-select-option value="and">AND（所有条件都要求匹配）</a-select-option>
                 <a-select-option value="or">OR（条件中的任意一个匹配）</a-select-option>
               </a-select>
@@ -42,13 +53,23 @@
             <a-row type="flex" style="margin-bottom:10px" :gutter="16" v-for="(item, index) in queryParamsModel" :key="index">
 
               <a-col :span="8">
-                <a-select placeholder="选择查询字段" v-model="item.field" @select="(val,option)=>handleSelected(option,item)">
-                  <a-select-option v-for="(f,fIndex) in fieldList" :key=" 'field'+fIndex" :value="f.value" :data-idx="fIndex">{{ f.text }}</a-select-option>
-                </a-select>
+                <a-tree-select
+                  showSearch
+                  v-model="item.field"
+                  :treeData="fieldTreeData"
+                  :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
+                  placeholder="选择查询字段"
+                  allowClear
+                  treeDefaultExpandAll
+                  :getPopupContainer="node=>node.parentNode"
+                  style="width: 100%"
+                  @select="(val,option)=>handleSelected(option,item)"
+                >
+                </a-tree-select>
               </a-col>
 
               <a-col :span="4">
-                <a-select placeholder="匹配规则" v-model="item.rule">
+                <a-select placeholder="匹配规则" v-model="item.rule" :getPopupContainer="node=>node.parentNode">
                   <a-select-option value="eq">等于</a-select-option>
                   <a-select-option value="ne">不等于</a-select-option>
                   <a-select-option value="gt">大于</a-select-option>
@@ -90,6 +111,7 @@
                   placeholder="请选择部门"
                   :customReturnField="item.customReturnField || 'id'"
                 />
+                <a-select v-else-if="item.options instanceof Array" v-model="item.val" :options="item.options" allowClear placeholder="请选择"/>
                 <j-date v-else-if=" item.type=='date' " v-model="item.val" placeholder="请选择日期" style="width: 100%"></j-date>
                 <j-date v-else-if=" item.type=='datetime' " v-model="item.val" placeholder="请选择时间" :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" style="width: 100%"></j-date>
                 <a-input-number v-else-if=" item.type=='int'||item.type=='number' " style="width: 100%" placeholder="请输入数值" v-model="item.val"/>
@@ -137,6 +159,7 @@
     </a-modal>
 
   </a-modal>
+</div>
 </template>
 
 <script>
@@ -186,6 +209,7 @@
     },
     data() {
       return {
+        fieldTreeData: [],
 
         prompt: {
           visible: false,
@@ -199,6 +223,7 @@
         // 保存查询条件的前缀名
         saveCodeBefore: 'JSuperQuerySaved_',
         selectValue: 'and',
+        superQueryFlag: false
       }
     },
     watch: {
@@ -214,6 +239,35 @@
             })
           }
         }
+      },
+      fieldList: {
+        deep: true,
+        immediate: true,
+        handler(val) {
+          let mainData = [], subData = []
+          val.forEach(item => {
+            let data = { ...item }
+            data.label = data.label || data.text
+            let hasChildren = (data.children instanceof Array)
+            data.disabled = hasChildren
+            data.selectable = !hasChildren
+            if (hasChildren) {
+              data.children = data.children.map(item2 => {
+                let child = { ...item2 }
+                child.label = child.label || child.text
+                child.label = data.label + '-' + child.label
+                child.value = data.value + ',' + child.value
+                child.val = ''
+                return child
+              })
+              data.val = ''
+              subData.push(data)
+            } else {
+              mainData.push(data)
+            }
+          })
+          this.fieldTreeData = mainData.concat(subData)
+        }
       }
     },
 
@@ -225,16 +279,20 @@
         this.visible = true
       },
       handleOk() {
-        console.log('---高级查询参数--->', this.queryParamsModel)
         if (!this.isNullArray(this.queryParamsModel)) {
           let event = {
             matchType: this.selectValue,
             params: this.removeEmptyObject(utils.cloneObject(this.queryParamsModel))
           }
-          this.$emit(this.callback, event.params, event.matchType)
+          console.log('---高级查询参数--->', event)
+          this.emitCallback(event.params, event.matchType)
         } else {
-          this.$emit(this.callback)
+          this.emitCallback()
         }
+      },
+      emitCallback(params, matchType) {
+        this.superQueryFlag = !!params
+        this.$emit(this.callback, params, matchType)
       },
       handleCancel() {
         this.close()
@@ -249,19 +307,19 @@
       handleDel(index) {
         this.queryParamsModel.splice(index, 1)
       },
-      handleSelected(option, item) {
-        let index = option.data.attrs['data-idx']
-
-        let { type, dictCode, dictTable, customReturnField } = this.fieldList[index]
+      handleSelected(node, item) {
+        let { type, options, dictCode, dictTable, customReturnField } = node.dataRef
         item['type'] = type
+        item['options'] = options
         item['dictCode'] = dictCode
         item['dictTable'] = dictTable
         item['customReturnField'] = customReturnField
-        this.$set(item, 'val', '')
+        this.$set(item, 'val', undefined)
       },
       handleReset() {
+        this.superQueryFlag = false
         this.queryParamsModel = [{}]
-        this.$emit(this.callback)
+        this.emitCallback()
       },
       handleSave() {
         let queryParams = this.removeEmptyObject(utils.cloneObject(this.queryParamsModel))
@@ -332,7 +390,7 @@
         }
         if (array.length === 1) {
           let obj = array[0]
-          if (!obj.field || !obj.val || !obj.rule) {
+          if (!obj.field || (obj.val == null || obj.val === '') || !obj.rule) {
             return true
           }
         }
@@ -344,6 +402,9 @@
           let item = array[i]
           if (item == null || Object.keys(item).length <= 0) {
             array.splice(i--, 1)
+          } else {
+            // 去掉特殊属性
+            delete item.options
           }
         }
         return array
@@ -354,10 +415,11 @@
 
 <style lang="scss" scoped>
 
-  .j-super-query-modal {
+  .j-super-query-box {
+    display: inline-block;
+  }
 
-    /deep/ {
-    }
+  .j-super-query-modal {
 
     .j-super-query-history-card /deep/ {
       .ant-card-body,

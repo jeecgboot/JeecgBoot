@@ -76,11 +76,6 @@
             dataIndex: 'realname'
           },
           {
-            title: '角色名称',
-            align: 'center',
-            dataIndex: 'roleName'
-          },
-          {
             title: '性别',
             align: 'center',
             dataIndex: 'sex',
@@ -167,6 +162,9 @@
             names = names.substring(1)
           }
           this.$emit("initComp", names)
+        }else{
+          // JSelectUserByDep组件bug issues/I16634
+          this.$emit("initComp", "")
         }
       },
       async loadData(arg) {

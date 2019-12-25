@@ -22,7 +22,7 @@
     data(){
       return {
         treeData:[],
-        treeValue:"",
+        treeValue: null,
         url_root:"/sys/category/loadTreeRoot",
         url_children:"/sys/category/loadTreeChildren",
         url_view:'/sys/category/loadOne',
@@ -97,7 +97,7 @@
     methods:{
       loadViewInfo(){
         if(!this.value || this.value=="0"){
-          this.treeValue = ""
+          this.treeValue = null
         }else{
           let param = {
             field:this.field,

@@ -15,8 +15,8 @@
 
           <a-col :md="6" :sm="8">
             <a-form-item label="性别">
-              <a-select v-model="queryParam.sex" placeholder="请选择性别查询">
-                <a-select-option value="">请选择性别查询</a-select-option>
+              <a-select v-model="queryParam.sex" placeholder="请选择性别">
+                <a-select-option value="">请选择</a-select-option>
                 <a-select-option value="1">男性</a-select-option>
                 <a-select-option value="2">女性</a-select-option>
               </a-select>
@@ -26,8 +26,8 @@
 
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
-              <a-form-item label="邮箱">
-                <a-input placeholder="请输入邮箱查询" v-model="queryParam.email"></a-input>
+              <a-form-item label="真实名字">
+                <a-input placeholder="请输入真实名字" v-model="queryParam.realname"></a-input>
               </a-form-item>
             </a-col>
 
@@ -38,11 +38,11 @@
             </a-col>
 
             <a-col :md="6" :sm="8">
-              <a-form-item label="状态">
-                <a-select v-model="queryParam.status" placeholder="请选择用户状态查询">
-                  <a-select-option value="">请选择用户状态</a-select-option>
+              <a-form-item label="用户状态">
+                <a-select v-model="queryParam.status" placeholder="请选择">
+                  <a-select-option value="">请选择</a-select-option>
                   <a-select-option value="1">正常</a-select-option>
-                  <a-select-option value="2">解冻</a-select-option>
+                  <a-select-option value="2">冻结</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -65,7 +65,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
-      <a-button @click="handleAdd" type="primary" icon="plus" v-has="'user:add'">添加用户</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus">添加用户</a-button>
       <a-button type="primary" icon="download" @click="handleExportXls('用户信息')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
