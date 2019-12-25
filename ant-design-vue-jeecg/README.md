@@ -7,7 +7,7 @@ Overview
 ----
 
 基于 [Ant Design of Vue](https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn/) 实现的 Ant Design Pro  Vue 版
-Jeecg-boot 的前段UI框架，采用前后端分离方案，提供强大代码生成器的快速开发平台。
+Jeecg-boot 的前端UI框架，采用前后端分离框架，提供强大代码生成器的快速开发平台。
 前端页面代码和后端功能代码一键生成，不需要写任何代码，保持jeecg一贯的强大！！
 
 
