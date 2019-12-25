@@ -64,6 +64,10 @@
                 message: '${title}必须以字母开头，可包含数字、下划线、横杠'
               },
               {
+                unique: true,
+                message: '${title}不能重复'
+              },
+              {
                 handler(type, value, row, column, callback, target) {
                   // type 触发校验的类型（input、change、blur）
                   // value 当前校验的值
@@ -73,25 +77,13 @@
                   // target 行编辑的实例对象
 
                   if (type === 'blur') {
-                    let { values } = target.getValuesSync({ validate: false })
-
                     if (value === 'abc') {
-                      callback(false, '${title}不能是abc')  // false = 未验证
-                      return
+                      callback(false, '${title}不能是abc')  // false = 未通过校验
+                    } else {
+                      callback(true) // true = 通过验证
                     }
-
-                    let count = 0
-                    for (let val of values) {
-                      if (val['dbFieldName'] === value) {
-                        if (++count >= 2) {
-                          callback(false, '${title}不能重复==')
-                          return
-                        }
-                      }
-                    }
-                    callback(true) // true = 通过验证
                   } else {
-                    callback() // 不填写或者填写 null 代表不进行任何操作
+                    callback(true) // 不填写或者填写 null 代表不进行任何操作
                   }
                 },
                 message: '${title}默认提示'

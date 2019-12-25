@@ -80,10 +80,11 @@ export const JEditableTableMixin = {
     },
 
     /** 查询某个tab的数据 */
-    requestSubTableData(url, params, tab) {
+    requestSubTableData(url, params, tab, success) {
       tab.loading = true
       getAction(url, params).then(res => {
         tab.dataSource = res.result || []
+        typeof success === 'function' ? success(res) : ''
       }).finally(() => {
         tab.loading = false
       })

@@ -145,7 +145,7 @@
 </style>
 
 <!-- update_begin author:sunjianlei date:20190530 for: 选中首页的时候不显示背景颜色 -->
-<style lang="scss">
+<style lang="less">
   .ant-menu.ant-menu-root {
     & > .ant-menu-item:first-child {
       background-color: transparent;
@@ -156,7 +156,7 @@
 
       &.ant-menu-item-selected {
         & > a, & > a:hover {
-          color: #1890ff;
+          color: @primary-color;
         }
       }
     }

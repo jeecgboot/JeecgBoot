@@ -132,23 +132,32 @@
   }
 </script>
 <style scoped>
+  /*update_begin author:scott date:20191203 for:打印机打印的字体模糊问题 */
+  * {
+    color: #000000!important;
+    -webkit-tap-highlight-color: #000000!important;
+  }
+  /*update_end author:scott date:20191203 for:打印机打印的字体模糊问题 */
+
   .abcdefg .ant-card-body{
     margin-left: 0%;
     margin-right: 0%;
     margin-bottom: 1%;
     border:0px solid black;
     min-width: 800px;
+    color:#000000!important;
   }
   .explain{
     text-align: left;
     margin-left: 50px;
+    color:#000000!important;
   }
   .explain .ant-input,.sign .ant-input{
     font-weight:bolder;
     text-align:center;
     border-left-width:0px!important;
-    border-top-width:0px!important;;
-    border-right-width:0px!important;;
+    border-top-width:0px!important;
+    border-right-width:0px!important;
   }
   .explain div{
     margin-bottom: 10px;

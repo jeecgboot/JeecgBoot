@@ -61,7 +61,7 @@
         default:"temp"
       },
       value:{
-        type:String,
+        type:[String,Array],
         required:false
       },
       // update-begin- --- author:wangshuai ------ date:20190929 ---- for:Jupload组件增加是否能够点击
@@ -80,7 +80,11 @@
     },
     watch:{
       value(val){
-        this.initFileList(val)
+        if (val instanceof Array) {
+          this.initFileList(val.join(','))
+        } else {
+          this.initFileList(val)
+        }
       }
     },
     created(){

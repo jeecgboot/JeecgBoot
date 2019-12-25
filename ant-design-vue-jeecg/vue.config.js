@@ -31,7 +31,6 @@ module.exports = {
       .set('@views', resolve('src/views'))
       .set('@layout', resolve('src/layout'))
       .set('@static', resolve('src/static'))
-      .set('@mobile', resolve('src/modules/mobile'))
   },
 
   css: {
@@ -39,12 +38,9 @@ module.exports = {
       less: {
         modifyVars: {
           /* less 变量覆盖，用于自定义 ant design 主题 */
-
-          /*
-          'primary-color': '#F5222D',
-          'link-color': '#F5222D',
+          'primary-color': '#1890FF',
+          'link-color': '#1890FF',
           'border-radius-base': '4px',
-          */
         },
         javascriptEnabled: true,
       }
