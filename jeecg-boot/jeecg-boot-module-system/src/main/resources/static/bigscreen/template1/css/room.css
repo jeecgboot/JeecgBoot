@@ -1,0 +1,62 @@
+body,html{width:100%;height:100%;margin:0px;padding:0px;font-size:12px;color:#555;background-color:#000;font-family:'微软雅黑'}
+#main{width:4352px;height:1536px;display:inline-block; background:url(../images/war_room_main.jpg) left top no-repeat}
+
+/*下钻按钮*/
+.contentButton{width:218px;height:100px;position:absolute;}
+.contentButton a{width:218px;height:100px;display:inline-block; background:url(../images/content_comm.png) no-repeat top left}
+.contentButton a:hover{width:218px;height:100px;display:inline-block; background:url(../images/content_down.png) no-repeat top left}
+.contentButton .a1{width:218px;height:100px;display:inline-block; background:url(../images/content_comm1.png) no-repeat top left}
+.contentButton .a1:hover{width:218px;height:100px;display:inline-block; background:url(../images/content_down1.png) no-repeat top left}
+
+/*弹出窗口*/
+#popWindow{width:2200px;height:1000px;display:inline-block;position:absolute;top:240px;left:1070px;background-color:#06274A;border:1px solid #09f}
+
+/*年的进度条*/
+#y_gauge1{width:250px;height:250px;position:absolute;left:60px;top:200px;}
+#y_gauge2{width:250px;height:250px;position:absolute;left:290px;top:200px;}
+#y_gauge3{width:250px;height:250px;position:absolute;left:530px;top:200px;}
+#y_gauge4{width:250px;height:250px;position:absolute;left:770px;top:200px;}
+
+/*螺旋DNA*/
+#orderStatus{width:1000px;height:320px;position:absolute;left:80px;top:460px;}
+
+/*监控的仪表盘*/
+#gauge1{width:250px;height:250px;position:absolute;left:2200px;top:280px;}
+#gauge2{width:250px;height:250px;position:absolute;left:2550px;top:280px;}
+#gauge3{width:250px;height:250px;position:absolute;left:2910px;top:280px;}
+#gauge4{width:250px;height:250px;position:absolute;left:2380px;top:550px;}
+#gauge5{width:250px;height:250px;position:absolute;left:2730px;top:550px;}
+
+/*仪表盘文字*/
+.gaugeTitle{width:250px;height:40px;position:absolute;left:0px;top:200px;color:#B7E1FF;font-size:24px;display:inline-block;text-align:center;font-family:Arial;}
+
+/*地图*/
+#map{width:1100px;height:800px;position:absolute;left:1080px;top:170px;display:inline-block;color:#E1E1E1;font-size:24px;}
+
+#productPie{width:1000px;height:680px;position:absolute;left:2210px;top:260px;display:inline-block;color:#E1E1E1;font-size:24px;}
+
+/*业务进展图*/
+#businessProgress{width:1000px;height:640px;position:absolute;left:3330px;top:180px;display:inline-block;color:#E1E1E1;font-size:24px;}
+
+/*计划完成情况*/
+#plan{width:1000px;height:400px;position:absolute;left:80px;top:1020px;display:inline-block;color:#E1E1E1;font-size:24px;}
+/*质量指标分析*/
+#quality{width:1000px;height:400px;position:absolute;left:1170px;top:1020px;display:inline-block;color:#E1E1E1;font-size:24px;}
+/*舆情文字云*/
+#wordCloud{width:900px;height:420px;position:absolute;left:3330px;top:1000px;display:inline-block;color:#E1E1E1;font-size:24px;}
+
+/*投诉情况展示表*/
+#produce{width:900px;height:380px;position:absolute;left:2250px;top:1050px;display:inline-block;color:#B7E2FF;font-size:24px;}
+#produce table{width:100%;font-size:24px;}
+#produce table td{text-align:center;border:1px solid #069}
+#produce table .row1{}
+#produce table .row2{}
+
+/*视频*/
+#video{width:960px;height:540px;position:absolute;left:3280px;top:140px;display:inline-block;}
+
+/*监控视频*/
+#Monitor{width:960px;height:540px;position:absolute;left:3280px;top:940px;display:inline-block;color:#E1E1E1;font-size:24px;}
+
+/*刷新时间*/
+#refresh{width:800px;position:absolute;left:3350px;top:40px;display:inline-block;color:#FFF;font-size:24px;}
