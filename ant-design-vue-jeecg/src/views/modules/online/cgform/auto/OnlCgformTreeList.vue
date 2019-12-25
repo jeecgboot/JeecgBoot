@@ -132,7 +132,6 @@
 
       <j-import-modal ref="importModal" :url="getImportUrl()" @ok="importOk"></j-import-modal>
 
-      <process-inst-pic-modal ref="processInstPicModal"></process-inst-pic-modal>
     </div>
   </a-card>
 </template>
@@ -147,7 +146,7 @@
   export default {
     name: 'OnlCgformTreeList',
     components: {
-      JImportModal,
+      JImportModal
     },
     data() {
       return {
@@ -692,13 +691,6 @@
           }
         });
       },
-      handlePreviewPic: function(record){
-        var flowCode = this.flowCodePre+this.currentTableName;
-        var dataId = record.id;
-        this.$refs.processInstPicModal.preview(flowCode,dataId);
-        this.$refs.processInstPicModal.title="流程图";
-      }
-
     }
   }
 </script>

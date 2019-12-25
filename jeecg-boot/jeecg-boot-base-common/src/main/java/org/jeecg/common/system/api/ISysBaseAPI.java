@@ -2,6 +2,7 @@ package org.jeecg.common.system.api;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.jeecg.common.system.vo.ComboModel;
 import org.jeecg.common.system.vo.DictModel;
@@ -99,7 +100,37 @@ public interface ISysBaseAPI {
 	 * @param msgContent  消息内容
 	 */
 	public void sendSysAnnouncement(String fromUser,String toUser,String title, String msgContent);
-	
+
+	/**
+	 * 发送系统消息
+	 * @param fromUser 发送人(用户登录账户)
+	 * @param toUser   发送给(用户登录账户)
+	 * @param title    通知标题
+	 * @param map  	   模板参数
+	 * @param templateCode  模板编码
+	 */
+	public void sendSysAnnouncement(String fromUser, String toUser,String title, Map<String, String> map, String templateCode);
+
+	/**
+	 * 通过消息中心模板，生成推送内容
+	 *
+	 * @param templateCode 模板编码
+	 * @param map          模板参数
+	 * @return
+	 */
+	public String parseTemplateByCode(String templateCode, Map<String, String> map);
+
+
+	/**
+	 * 发送系统消息
+	 * @param fromUser 发送人(用户登录账户)
+	 * @param toUser  发送给(用户登录账户)
+	 * @param title  消息主题
+	 * @param msgContent  消息内容
+	 * @param setMsgCategory  消息类型 1:消息2:系统消息
+	 */
+	public void sendSysAnnouncement(String fromUser, String toUser, String title, String msgContent, String setMsgCategory);
+
 	/**
 	 * 查询表字典 支持过滤数据
 	 * @param table

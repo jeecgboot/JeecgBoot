@@ -26,4 +26,18 @@ public interface ISysRoleService extends IService<SysRole> {
      */
     Result importExcelCheckRoleCode(MultipartFile file, ImportParams params) throws Exception;
 
+    /**
+     * 删除角色
+     * @param roleid
+     * @return
+     */
+    public boolean deleteRole(String roleid);
+
+    /**
+     * 批量删除角色
+     * @param roleids
+     * @return
+     */
+    public boolean deleteBatchRole(String[] roleids);
+
 }

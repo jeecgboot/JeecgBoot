@@ -1,8 +1,4 @@
 
-2019年度最受欢迎中国开源软件评选
-请给JeecgBoot 投票，谢谢支持。
-https://www.oschina.net/p/jeecg-boot
-
 
 ![JEECG](https://static.oschina.net/uploads/img/201905/24164523_XDhg.png "JeecgBoot快速开发平台")
 
@@ -11,12 +7,12 @@ https://www.oschina.net/p/jeecg-boot
 Jeecg-Boot 快速开发平台（前后端分离版本）
 ===============
 
-当前最新版本： 2.1.2（发布日期：20191122）
+当前最新版本： 2.1.3（发布日期：20191226）
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-JEECG团队-orange.svg)](http://www.jeecg.com)
-[![](https://img.shields.io/badge/version-2.1.2-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-2.1.3-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -169,6 +165,8 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  └─树分类字典
 │  └─系统公告
 │  └─我的组织机构
+│  └─职务管理
+│  └─通讯录
 ├─消息中心
 │  ├─消息管理
 │  ├─模板管理
@@ -206,7 +204,12 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  └─进度条
 │  └─排名列表
 │  └─等等
+│─大屏模板
+│  ├─作战指挥中心大屏
+│  └─物流服务中心大屏
 │─常用示例
+│  ├─自定义组件
+│  ├─对象存储(对接阿里云)
 │  ├─单表模型例子
 │  └─一对多模型例子
 │  └─打印例子
@@ -215,7 +218,10 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  └─常用选择组件
 │  └─异步树table
 │  └─接口模拟测试
+│  └─表格合计示例
+│  └─异步树列表示例
 │  └─一对多JEditable
+│  └─JEditable组件示例
 │  └─图片拖拽排序
 │  └─图片翻页
 │  └─图片预览
@@ -247,15 +253,16 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  └─异常页面
 │  └─个人页面
 ├─高级功能
+│  ├─系统编码规则
 │  ├─提供单点登录CAS集成方案
 │  ├─提供APP发布方案
 │  ├─集成Websocket消息通知机制
 ├─Online在线开发(暂未开源)
 │  ├─Online在线表单 - 功能已开放
 │  ├─在线代码生成器 - 功能已开放
+│  ├─Online在线报表 - 功能已开放
 │  ├─Online在线图表
 │  ├─Online图表模板配置
-│  ├─Online在线报表
 │  ├─高级表单设计器
 │─流程模块功能 (暂不开源)
 │  ├─流程设计器
@@ -334,10 +341,13 @@ yarn run lint
 
 系统效果
 ----
+##### 大屏模板
+![输入图片说明](https://static.oschina.net/uploads/img/201912/25133248_Ag1C.jpg "在这里输入图片标题")
+
+![输入图片说明](https://static.oschina.net/uploads/img/201912/25133301_k9Kc.jpg "在这里输入图片标题")
 
 ##### PC端
 ![输入图片说明](https://static.oschina.net/uploads/img/201904/14155402_AmlV.png "在这里输入图片标题")
-![输入图片说明](https://oscimg.oschina.net/oscnet/ba807921197596ba56f495d4b22ee3280ca.jpg "在这里输入图片标题")
 ![输入图片说明](https://static.oschina.net/uploads/img/201904/14160657_cHwb.png "在这里输入图片标题")
 ![输入图片说明](https://static.oschina.net/uploads/img/201904/14160813_KmXS.png "在这里输入图片标题")
 ![输入图片说明](https://static.oschina.net/uploads/img/201904/14160935_Nibs.png "在这里输入图片标题")

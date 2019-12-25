@@ -77,7 +77,7 @@
     },
     data () {
       return {
-        treeValue:"",
+        treeValue: null,
         treeData:[],
         url:"/sys/dict/loadTreeData",
         view:'/sys/dict/loadDictItem/',
@@ -106,7 +106,7 @@
     methods: {
       loadItemByCode(){
         if(!this.value || this.value=="0"){
-          this.treeValue = ""
+          this.treeValue = null
         }else{
           getAction(`${this.view}${this.dict}`,{key:this.value}).then(res=>{
             if(res.success){
@@ -211,7 +211,7 @@
       onChange(value){
         if(!value){
           this.$emit('change', '');
-          this.treeValue = ''
+          this.treeValue = null
         } else if (value instanceof Array) {
           this.$emit('change', value.map(item => item.value).join(','))
           this.treeValue = value

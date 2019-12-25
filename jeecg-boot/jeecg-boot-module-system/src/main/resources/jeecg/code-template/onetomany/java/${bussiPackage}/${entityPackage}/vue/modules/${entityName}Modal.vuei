@@ -16,7 +16,7 @@
     <#if po.fieldName !='id'>
       <#list [po_index, po_index+1] as idx><#rt/>
         <#if idx lt columns?size>
-          <a-col :span="12" :gutter="8">
+          <a-col :span="12">
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"

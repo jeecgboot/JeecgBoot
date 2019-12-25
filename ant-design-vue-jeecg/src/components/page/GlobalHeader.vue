@@ -161,10 +161,10 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
   /* update_begin author:scott date:20190220 for: 缩小首页布局顶部的高度*/
 
-  $height: 59px;
+  @height: 59px;
 
   .layout {
 
@@ -174,8 +174,8 @@
         margin-left: 10px;
 
         .ant-menu.ant-menu-horizontal {
-          height: $height;
-          line-height: $height;
+          height: @height;
+          line-height: @height;
         }
       }
       .trigger {
@@ -189,15 +189,15 @@
     .header {
       z-index: 2;
       color: white;
-      height: $height;
-      background-color: #1890ff;
+      height: @height;
+      background-color: @primary-color;
       transition: background 300ms;
 
       /* dark 样式 */
       &.dark {
         color: #000000;
         box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-        background-color: white !important;
+        background-color: @primary-color;
       }
     }
 
@@ -209,8 +209,8 @@
   }
 
   .ant-layout-header {
-    height: $height;
-    line-height: $height;
+    height: @height;
+    line-height: @height;
   }
 
   /* update_end author:scott date:20190220 for: 缩小首页布局顶部的高度*/

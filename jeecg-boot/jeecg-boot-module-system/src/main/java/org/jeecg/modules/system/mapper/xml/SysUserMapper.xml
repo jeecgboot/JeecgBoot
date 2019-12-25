@@ -81,4 +81,20 @@
 		SELECT COUNT(1) <include refid="getUserByOrgCodeFromSql"/>
 	</select>
 
+	<!-- 批量删除角色的与用户关系-->
+	<update id="deleteBathRoleUserRelation">
+		delete from sys_user_role
+		where role_id in
+		<foreach item="id" collection="roleIdArray" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+	<!-- 批量删除角色的与权限关系-->
+	<update id="deleteBathRolePermissionRelation">
+		delete from sys_role_permission
+		where role_id in
+		<foreach item="id" collection="roleIdArray" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
 </mapper>

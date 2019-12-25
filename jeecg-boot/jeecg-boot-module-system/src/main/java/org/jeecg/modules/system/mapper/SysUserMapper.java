@@ -83,4 +83,17 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      */
     Integer getUserByOrgCodeTotal(@Param("orgCode") String orgCode, @Param("userParams") SysUser userParams);
 
+    /**
+     * @Author scott
+     * @Date 2019/12/13 16:10
+     * @Description: 批量删除角色与用户关系
+     */
+	void deleteBathRoleUserRelation(@Param("roleIdArray") String[] roleIdArray);
+
+    /**
+     * @Author scott
+     * @Date 2019/12/13 16:10
+     * @Description: 批量删除角色与权限关系
+     */
+	void deleteBathRolePermissionRelation(@Param("roleIdArray") String[] roleIdArray);
 }

@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,8 @@ import org.jeecg.common.system.vo.SysDepartModel;
 import org.jeecg.common.util.IPUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.message.entity.SysMessageTemplate;
+import org.jeecg.modules.message.service.ISysMessageTemplateService;
 import org.jeecg.modules.message.websocket.WebSocket;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.*;
@@ -51,7 +54,8 @@ import lombok.extern.slf4j.Slf4j;
 public class SysBaseApiImpl implements ISysBaseAPI {
 	/** 当前系统数据库类型 */
 	public static String DB_TYPE = "";
-	
+	@Autowired
+	private ISysMessageTemplateService sysMessageTemplateService;
 	@Resource
 	private SysLogMapper sysLogMapper;
 	@Autowired
@@ -182,6 +186,11 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	@Override
 	public void sendSysAnnouncement(String fromUser, String toUser, String title, String msgContent) {
+		this.sendSysAnnouncement(fromUser, toUser, title, msgContent, CommonConstant.MSG_CATEGORY_2);
+	}
+
+	@Override
+	public void sendSysAnnouncement(String fromUser, String toUser, String title, String msgContent, String setMsgCategory) {
 		SysAnnouncement announcement = new SysAnnouncement();
 		announcement.setTitile(title);
 		announcement.setMsgContent(msgContent);
@@ -190,7 +199,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		announcement.setMsgType(CommonConstant.MSG_TYPE_UESR);
 		announcement.setSendStatus(CommonConstant.HAS_SEND);
 		announcement.setSendTime(new Date());
-		announcement.setMsgCategory(CommonConstant.MSG_CATEGORY_2);
+		announcement.setMsgCategory(setMsgCategory);
 		announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
 		sysAnnouncementMapper.insert(announcement);
 		// 2.插入用户通告阅读标记表记录
@@ -216,8 +225,82 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		    	webSocket.sendOneMessage(sysUser.getId(), obj.toJSONString());
 			}
 		}
-		
+
 	}
+
+    @Override
+    public String parseTemplateByCode(String templateCode,Map<String, String> map) {
+        List<SysMessageTemplate> sysSmsTemplates = sysMessageTemplateService.selectByCode(templateCode);
+        if(sysSmsTemplates==null||sysSmsTemplates.size()==0){
+            throw new JeecgBootException("消息模板不存在，模板编码："+templateCode);
+        }
+        SysMessageTemplate sysSmsTemplate = sysSmsTemplates.get(0);
+        //模板内容
+        String content = sysSmsTemplate.getTemplateContent();
+        if(map!=null) {
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                String str = "${" + entry.getKey() + "}";
+                content = content.replace(str, entry.getValue());
+            }
+        }
+        return content;
+    }
+
+	@Override
+	public void sendSysAnnouncement(String fromUser, String toUser,String title,Map<String, String> map, String templateCode) {
+		List<SysMessageTemplate> sysSmsTemplates = sysMessageTemplateService.selectByCode(templateCode);
+        if(sysSmsTemplates==null||sysSmsTemplates.size()==0){
+            throw new JeecgBootException("消息模板不存在，模板编码："+templateCode);
+        }
+		SysMessageTemplate sysSmsTemplate = sysSmsTemplates.get(0);
+		//模板标题
+		title = title==null?sysSmsTemplate.getTemplateName():title;
+		//模板内容
+		String content = sysSmsTemplate.getTemplateContent();
+		if(map!=null) {
+			for (Map.Entry<String, String> entry : map.entrySet()) {
+				String str = "${" + entry.getKey() + "}";
+				title = title.replace(str, entry.getValue());
+				content = content.replace(str, entry.getValue());
+			}
+		}
+
+		SysAnnouncement announcement = new SysAnnouncement();
+		announcement.setTitile(title);
+		announcement.setMsgContent(content);
+		announcement.setSender(fromUser);
+		announcement.setPriority(CommonConstant.PRIORITY_M);
+		announcement.setMsgType(CommonConstant.MSG_TYPE_UESR);
+		announcement.setSendStatus(CommonConstant.HAS_SEND);
+		announcement.setSendTime(new Date());
+		announcement.setMsgCategory(CommonConstant.MSG_CATEGORY_2);
+		announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
+		sysAnnouncementMapper.insert(announcement);
+		// 2.插入用户通告阅读标记表记录
+		String userId = toUser;
+		String[] userIds = userId.split(",");
+		String anntId = announcement.getId();
+		for(int i=0;i<userIds.length;i++) {
+			if(oConvertUtils.isNotEmpty(userIds[i])) {
+				SysUser sysUser = userMapper.getUserByName(userIds[i]);
+				if(sysUser==null) {
+					continue;
+				}
+				SysAnnouncementSend announcementSend = new SysAnnouncementSend();
+				announcementSend.setAnntId(anntId);
+				announcementSend.setUserId(sysUser.getId());
+				announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
+				sysAnnouncementSendMapper.insert(announcementSend);
+				JSONObject obj = new JSONObject();
+				obj.put("cmd", "user");
+				obj.put("userId", sysUser.getId());
+				obj.put("msgId", announcement.getId());
+				obj.put("msgTxt", announcement.getTitile());
+				webSocket.sendOneMessage(sysUser.getId(), obj.toJSONString());
+			}
+		}
+	}
+
 	/**
 	 * 获取数据库类型
 	 * @param dataSource

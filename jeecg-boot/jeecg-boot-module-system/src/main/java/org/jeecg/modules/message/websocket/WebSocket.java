@@ -50,7 +50,8 @@ public class WebSocket {
     
     @OnMessage
     public void onMessage(String message) {
-    	//log.info("【websocket消息】收到客户端消息:"+message);
+        //todo 现在有个定时任务刷，应该去掉
+    	log.debug("【websocket消息】收到客户端消息:"+message);
     	JSONObject obj = new JSONObject();
     	obj.put("cmd", "heartcheck");//业务类型
     	obj.put("msgTxt", "心跳响应");//消息内容

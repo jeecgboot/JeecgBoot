@@ -31,7 +31,7 @@
             <a-list>
               <a-list-item :key="index" v-for="(record, index) in announcement1">
                 <div style="margin-left: 5%;width: 80%">
-                  <p><a @click="showAnnouncement(record)">标题：{{ record.titile }}</a></p>
+                  <p><a @click="showAnnouncement(record)">{{ record.titile }}</a></p>
                   <p style="color: rgba(0,0,0,.45);margin-bottom: 0px">{{ record.createTime }} 发布</p>
                 </div>
                 <div style="text-align: right">
@@ -49,7 +49,7 @@
             <a-list>
               <a-list-item :key="index" v-for="(record, index) in announcement2">
                 <div style="margin-left: 5%;width: 80%">
-                  <p><a @click="showAnnouncement(record)">标题：{{ record.titile }}</a></p>
+                  <p><a @click="showAnnouncement(record)">{{ record.titile }}</a></p>
                   <p style="color: rgba(0,0,0,.45);margin-bottom: 0px">{{ record.createTime }} 发布</p>
                 </div>
                 <div style="text-align: right">
@@ -191,24 +191,24 @@
         // WebSocket与普通的请求所用协议有所不同，ws等同于http，wss等同于https
         var userId = store.getters.userInfo.id;
         var url = window._CONFIG['domianURL'].replace("https://","wss://").replace("http://","ws://")+"/websocket/"+userId;
-        //console.log(url);
+        console.log(url);
         this.websock = new WebSocket(url);
-        this.websock.onopen = this.websocketonopen;
-        this.websock.onerror = this.websocketonerror;
-        this.websock.onmessage = this.websocketonmessage;
-        this.websock.onclose = this.websocketclose;
+        this.websock.onopen = this.websocketOnopen;
+        this.websock.onerror = this.websocketOnerror;
+        this.websock.onmessage = this.websocketOnmessage;
+        this.websock.onclose = this.websocketOnclose;
       },
-      websocketonopen: function () {
+      websocketOnopen: function () {
         console.log("WebSocket连接成功");
         //心跳检测重置
         this.heartCheck.reset().start();
       },
-      websocketonerror: function (e) {
+      websocketOnerror: function (e) {
         console.log("WebSocket连接发生错误");
         this.reconnect();
       },
-      websocketonmessage: function (e) {
-        //console.log("-----接收消息-------",e.data);
+      websocketOnmessage: function (e) {
+        console.log("-----接收消息-------",e.data);
         var data = eval("(" + e.data + ")"); //解析对象
         if(data.cmd == "topic"){
             //系统通知
@@ -217,21 +217,19 @@
             //用户消息
           this.loadData();
         }
-
         //心跳检测重置
         this.heartCheck.reset().start();
-
       },
-      websocketsend(text) { // 数据发送
+      websocketOnclose: function (e) {
+        console.log("connection closed (" + e.code + ")");
+        this.reconnect();
+      },
+      websocketSend(text) { // 数据发送
         try {
           this.websock.send(text);
         } catch (err) {
           console.log("send failed (" + err.code + ")");
         }
-      },
-      websocketclose: function (e) {
-        console.log("connection closed (" + e.code + ")");
-        this.reconnect();
       },
 
       openNotification (data) {
@@ -284,7 +282,7 @@
             this.timeoutObj = setTimeout(function(){
               //这里发送一个心跳，后端收到后，返回一个心跳消息，
               //onmessage拿到返回的心跳就说明连接正常
-              that.websocketsend("HeartBeat");
+              that.websocketSend("HeartBeat");
               console.info("客户端发送心跳");
               //self.serverTimeoutObj = setTimeout(function(){//如果超过一定时间还没重置，说明后端主动断开了
               //  that.websock.close();//如果onclose会执行reconnect，我们执行ws.close()就行了.如果直接执行reconnect 会触发onclose导致重连两次

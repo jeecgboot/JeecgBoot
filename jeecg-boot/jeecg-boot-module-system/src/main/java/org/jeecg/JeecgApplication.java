@@ -22,8 +22,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableAutoConfiguration
 public class JeecgApplication {
 
-    public static void main(String[] args) throws UnknownHostException {
-        //System.setProperty("spring.devtools.restart.enabled", "true");
+  public static void main(String[] args) throws UnknownHostException {
+    //System.setProperty("spring.devtools.restart.enabled", "true");
 
         ConfigurableApplicationContext application = SpringApplication.run(JeecgApplication.class, args);
         Environment env = application.getEnvironment();
@@ -34,22 +34,8 @@ public class JeecgApplication {
                 "Application Jeecg-Boot is running! Access URLs:\n\t" +
                 "Local: \t\thttp://localhost:" + port + path + "/\n\t" +
                 "External: \thttp://" + ip + ":" + port + path + "/\n\t" +
-                "swagger-ui: \thttp://" + ip + ":" + port + path + "/swagger-ui.html\n\t" +
-                "Doc: \t\thttp://" + ip + ":" + port + path + "/doc.html\n" +
+                "swagger-ui: \t\thttp://" + ip + ":" + port + path + "/doc.html\n" +
                 "----------------------------------------------------------");
 
-    }
-
-    /**
-     * tomcat-embed-jasper引用后提示jar找不到的问题
-     */
-    @Bean
-    public TomcatServletWebServerFactory tomcatFactory() {
-        return new TomcatServletWebServerFactory() {
-            @Override
-            protected void postProcessContext(Context context) {
-                ((StandardJarScanner) context.getJarScanner()).setScanManifest(false);
-            }
-        };
     }
 }

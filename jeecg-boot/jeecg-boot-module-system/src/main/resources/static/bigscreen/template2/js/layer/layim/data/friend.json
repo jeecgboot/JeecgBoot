@@ -1,0 +1,107 @@
+{
+    "status": 1,
+    "msg": "ok",
+    "data": [
+        {
+            "name": "销售部",
+            "nums": 36,
+            "id": 1,
+            "item": [
+                {
+                    "id": "100001",
+                    "name": "郭敬明",
+                    "face": "img/a5.jpg"
+                },
+                {
+                    "id": "100002",
+                    "name": "作家崔成浩",
+                    "face": "img/a6.jpg"
+                },
+                {
+                    "id": "1000022",
+                    "name": "韩寒",
+                    "face": "img/a7.jpg"
+                },
+                {
+                    "id": "10000222",
+                    "name": "范爷",
+                    "face": "img/a8.jpg"
+                },
+                {
+                    "id": "100002222",
+                    "name": "小马哥",
+                    "face": "img/a9.jpg"
+                }
+            ]
+        },
+        {
+            "name": "大学同窗",
+            "nums": 16,
+            "id": 2,
+            "item": [
+                {
+                    "id": "1000033",
+                    "name": "苏醒",
+                    "face": "img/a9.jpg"
+                },
+                {
+                    "id": "10000333",
+                    "name": "马云",
+                    "face": "img/a8.jpg"
+                },
+                {
+                    "id": "100003",
+                    "name": "鬼脚七",
+                    "face": "img/a7.jpg"
+                },
+                {
+                    "id": "100004",
+                    "name": "谢楠",
+                    "face": "img/a6.jpg"
+                },
+                {
+                    "id": "100005",
+                    "name": "徐峥",
+                    "face": "img/a5.jpg"
+                }
+            ]
+        },
+        {
+            "name": "H+后台主题",
+            "nums": 38,
+            "id": 3,
+            "item": [
+                {
+                    "id": "100006",
+                    "name": "柏雪近在它香",
+                    "face": "img/a4.jpg"
+                },
+                {
+                    "id": "100007",
+                    "name": "罗昌平",
+                    "face": "img/a3.jpg"
+                },
+                {
+                    "id": "100008",
+                    "name": "Crystal影子",
+                    "face": "img/a2.jpg"
+                },
+                {
+                    "id": "100009",
+                    "name": "艺小想",
+                    "face": "img/a1.jpg"
+                },
+                {
+                    "id": "100010",
+                    "name": "天猫",
+                    "face": "img/a8.jpg"
+                },
+                {
+                    "id": "100011",
+                    "name": "张泉灵",
+                    "face": "img/a7.jpg"
+                }
+            ]
+        }
+    ]
+}

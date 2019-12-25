@@ -119,7 +119,7 @@
       /** 数据回显*/
       loadItemByCode(){
         if(!this.value || this.value=="0"){
-          this.treeValue = ""
+          this.treeValue = []
         }else{
           getAction(this.view,{ids:this.value}).then(res=>{
             console.log(124345)

@@ -18,8 +18,8 @@ import VueApexCharts from 'vue-apexcharts'
 
 import preview from 'vue-photo-preview'
 import 'vue-photo-preview/dist/skin.css'
-import "@jeecg/antd-online"
-import '@jeecg/antd-online/dist/OnlineForm.css'
+import "@jeecg/antd-online-re"
+import '@jeecg/antd-online-re/dist/OnlineForm.css'
 
 import {
   ACCESS_TOKEN,
@@ -69,7 +69,7 @@ new Vue({
     store.commit('TOGGLE_WEAK', Vue.ls.get(DEFAULT_COLOR_WEAK, config.colorWeak))
     store.commit('TOGGLE_COLOR', Vue.ls.get(DEFAULT_COLOR, config.primaryColor))
     store.commit('SET_TOKEN', Vue.ls.get(ACCESS_TOKEN))
-    store.commit('SET_MULTI_PAGE',Vue.ls.get(DEFAULT_MULTI_PAGE,true))
+    store.commit('SET_MULTI_PAGE',Vue.ls.get(DEFAULT_MULTI_PAGE,config.multipage))
   },
   render: h => h(App)
 }).$mount('#app')

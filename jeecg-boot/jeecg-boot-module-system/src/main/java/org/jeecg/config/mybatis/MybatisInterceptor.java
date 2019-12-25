@@ -45,32 +45,20 @@ public class MybatisInterceptor implements Interceptor {
 			return invocation.proceed();
 		}
 		if (SqlCommandType.INSERT == sqlCommandType) {
+			LoginUser sysUser = this.getLoginUser();
 			Field[] fields = oConvertUtils.getAllFields(parameter);
 			for (Field field : fields) {
 				log.debug("------field.name------" + field.getName());
 				try {
-					//update-begin--Author:scott  Date:20190828 for：关于使用Quzrtz 开启线程任务， #465
-					// 获取登录用户信息
-					LoginUser sysUser = null;
-					try{
-						sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-					}catch (Exception e){
-						sysUser = null;
-					}
-					//update-end--Author:scott  Date:20190828 for：关于使用Quzrtz 开启线程任务， #465
 					if ("createBy".equals(field.getName())) {
 						field.setAccessible(true);
 						Object local_createBy = field.get(parameter);
 						field.setAccessible(false);
 						if (local_createBy == null || local_createBy.equals("")) {
-							String createBy = "jeecg";
 							if (sysUser != null) {
-								// 登录账号
-								createBy = sysUser.getUsername();
-							}
-							if (oConvertUtils.isNotEmpty(createBy)) {
+								// 登录人账号
 								field.setAccessible(true);
-								field.set(parameter, createBy);
+								field.set(parameter, sysUser.getUsername());
 								field.setAccessible(false);
 							}
 						}
@@ -92,15 +80,10 @@ public class MybatisInterceptor implements Interceptor {
 						Object local_sysOrgCode = field.get(parameter);
 						field.setAccessible(false);
 						if (local_sysOrgCode == null || local_sysOrgCode.equals("")) {
-							String sysOrgCode = "";
 							// 获取登录用户信息
 							if (sysUser != null) {
-								// 登录账号
-								sysOrgCode = sysUser.getOrgCode();
-							}
-							if (oConvertUtils.isNotEmpty(sysOrgCode)) {
 								field.setAccessible(true);
-								field.set(parameter, sysOrgCode);
+								field.set(parameter, sysUser.getOrgCode());
 								field.setAccessible(false);
 							}
 						}
@@ -110,6 +93,7 @@ public class MybatisInterceptor implements Interceptor {
 			}
 		}
 		if (SqlCommandType.UPDATE == sqlCommandType) {
+			LoginUser sysUser = this.getLoginUser();
 			Field[] fields = null;
 			if (parameter instanceof ParamMap) {
 				ParamMap<?> p = (ParamMap<?>) parameter;
@@ -137,12 +121,10 @@ public class MybatisInterceptor implements Interceptor {
 				try {
 					if ("updateBy".equals(field.getName())) {
 						//获取登录用户信息
-						LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 						if (sysUser != null) {
 							// 登录账号
-							String updateBy = sysUser.getUsername();
 							field.setAccessible(true);
-							field.set(parameter, updateBy);
+							field.set(parameter, sysUser.getUsername());
 							field.setAccessible(false);
 						}
 					}
@@ -168,5 +150,18 @@ public class MybatisInterceptor implements Interceptor {
 	public void setProperties(Properties properties) {
 		// TODO Auto-generated method stub
 	}
+
+	//update-begin--Author:scott  Date:20191213 for：关于使用Quzrtz 开启线程任务， #465
+	private LoginUser getLoginUser() {
+		LoginUser sysUser = null;
+		try {
+			sysUser = SecurityUtils.getSubject().getPrincipal() != null ? (LoginUser) SecurityUtils.getSubject().getPrincipal() : null;
+		} catch (Exception e) {
+			//e.printStackTrace();
+			sysUser = null;
+		}
+		return sysUser;
+	}
+	//update-end--Author:scott  Date:20191213 for：关于使用Quzrtz 开启线程任务， #465
 
 }
