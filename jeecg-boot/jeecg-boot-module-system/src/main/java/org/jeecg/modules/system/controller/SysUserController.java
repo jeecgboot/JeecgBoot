@@ -112,7 +112,6 @@ public class SysUserController {
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-    @RequiresPermissions("user:add")
 	public Result<SysUser> add(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
 		String selectedRoles = jsonObject.getString("selectedroles");
@@ -137,7 +136,6 @@ public class SysUserController {
 	}
 
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
-	@RequiresPermissions("user:edit")
 	public Result<SysUser> edit(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
 		try {
@@ -399,7 +397,6 @@ public class SysUserController {
      * @param response
      * @return
      */
-    @RequiresPermissions("user:import")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
