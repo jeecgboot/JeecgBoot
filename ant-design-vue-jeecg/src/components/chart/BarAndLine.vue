@@ -1,7 +1,7 @@
 <template>
-  <div :style="{ padding: '0 0 32px 32px' }">
+  <div :style="{ padding: '0 50px 32px 0' }">
     <h4 :style="{ marginBottom: '20px' }">{{ title }}</h4>
-    <v-chart :forceFit="true" :height="height" :data="data" :scale="scale">
+    <v-chart :forceFit="true" :height="height" :data="data" :scale="scale" :padding=" padding">
       <v-tooltip/>
       <v-legend/>
       <v-axis/>
@@ -23,13 +23,13 @@
       dataSource: {
         type: Array,
         default: () => [
-          { type: '10:10', bar: 2, line: 2 },
-          { type: '10:15', bar: 6, line: 3 },
-          { type: '10:20', bar: 2, line: 5 },
-          { type: '10:25', bar: 9, line: 1 },
-          { type: '10:30', bar: 2, line: 3 },
-          { type: '10:35', bar: 2, line: 1 },
-          { type: '10:40', bar: 1, line: 2 }
+          { type: '10:10', bar: 200, line: 1000 },
+          { type: '10:15', bar: 600, line: 1000},
+          { type: '10:20', bar: 200, line: 1000},
+          { type: '10:25', bar: 900, line: 1000},
+          { type: '10:30', bar: 200, line: 1000},
+          { type: '10:35', bar: 200, line: 1000},
+          { type: '10:40', bar: 100, line: 1000}
         ]
       },
       height: {
@@ -39,6 +39,7 @@
     },
     data() {
       return {
+        padding: { top:50, right:50, bottom:100, left:50 },
         scale: [{
           dataKey: 'bar',
           min: 0

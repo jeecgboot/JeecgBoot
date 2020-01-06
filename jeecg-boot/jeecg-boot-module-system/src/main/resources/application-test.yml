@@ -1,12 +1,13 @@
 server:
-    port: 8080
-    tomcat: 
-        max-swallow-size: -1
-    servlet:
-       context-path: /jeecg-boot
-       compression:
-         enabled: true
-         mime-types: application/javascript,application/json,application/xml,text/html,text/xml,text/plain,text/css,image/*
+  port: 8080
+  tomcat:
+    max-swallow-size: -1
+  servlet:
+    context-path: /jeecg-boot
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types: application/javascript,application/json,application/xml,text/html,text/xml,text/plain,text/css,image/*
         
 management:
  endpoints:
@@ -129,9 +130,9 @@ mybatis-plus:
       id-type: 4
       # 默认数据库表下划线命名
       table-underline: true
-   #configuration:
+   configuration:
     # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
-    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 #jeecg专用配置
 jeecg :
   path :
@@ -142,10 +143,26 @@ jeecg :
   #短信秘钥
   sms:
      accessKeyId: LTAIpW4gUG7xYDNI
-     accessKeySecret: ???
-logging:
-  level:
-    org.jeecg.modules.system.mapper : debug
+     accessKeySecret: ??
+  shiro:
+     excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**
+  #阿里云oss存储配置
+  oss:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    accessKey: WegDpuKzOuPK6D3N
+    secretKey: ??
+    bucketName: jeecgos
+    staticDomain: ??
+  # ElasticSearch 设置
+  elasticsearch:
+    cluster-name: jeecg-ES
+    cluster-nodes: 127.0.0.1:9200
+  # 表单设计器配置
+  desform:
+    # 主题颜色（仅支持 16进制颜色代码）
+    theme-color: "#1890ff"
+  # 在线预览文件服务器地址配置
+  file-view-domain: 127.0.0.1:8012
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas

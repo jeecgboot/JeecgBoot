@@ -1,4 +1,5 @@
 
+
 ![JEECG](https://static.oschina.net/uploads/img/201905/24164523_XDhg.png "JeecgBoot快速开发平台")
 
 
@@ -6,11 +7,12 @@
 Jeecg-Boot 快速开发平台（前后端分离版本）
 ===============
 
-当前最新版本： 2.1.0（发布日期：20190826）
+当前最新版本： 2.1.3（发布日期：20191226）
+
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-JEECG团队-orange.svg)](http://www.jeecg.com)
-[![](https://img.shields.io/badge/version-2.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-2.1.3-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -21,7 +23,8 @@ Jeecg-Boot 快速开发平台（前后端分离版本）
 
 <h3 align="center">Java RAD framework for enterprise web applications</h3>
 
-Jeecg-Boot 是一款基于SpringBoot+代码生成器的快速开发平台！前后端分离架构：SpringBoot,Ant Design Vue,Mybatis,Shiro,JWT。强大的代码生成器让前端和后台代码一键生成，不需要写任何代码，保持jeecg一贯的强大，绝对是全栈开发福音！！ JeecgBoot在提高UI能力的同时，降低了前后分离的开发成本，JeecgBoot还独创在线开发模式（No代码概念），一系列在线智能开发：在线配置表单、在线配置报表、在线图表设计、在线设计流程等等。
+JeecgBoot 是一款基于代码生成器的J2EE快速开发平台！采用前后端分离架构：SpringBoot2.x，Ant Design&Vue，Mybatis-plus，Shiro，JWT。强大的代码生成器让前后端代码一键生成，无需写任何代码! JeecgBoot引领新的开发模式(Online Coding模式-> 代码生成器模式-> 手工MERGE智能开发)， 帮助解决Java项目70%的重复工作，让开发更多关注业务逻辑。既能快速提高开发效率，帮助公司节省成本，同时又不失灵活性！JeecgBoot还独创在线开发模式（No代码概念）：在线表单配置（表单设计器）、移动配置能力、工作流配置（在线设计流程）、报表配置能力、在线图表配置、插件能力（可插拔）等等！
+
 
 JEECG宗旨是: 简单功能由Online Coding配置实现（在线配置表单、在线配置报表、在线图表设计、在线设计流程、在线设计表单），复杂功能由代码生成器生成进行手工Merge，既保证了智能又兼顾了灵活; 
 业务流程采用工作流来实现、扩展出任务接口，供开发编写业务逻辑，表单提供多种解决方案： 表单设计器、online配置表单、编码表单。同时实现了流程与表单的分离设计（松耦合）、并支持任务节点灵活配置，既保证了公司流程的保密性，又减少了开发人员的工作量。
@@ -53,7 +56,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 交流互动
 -----------------------------------
 
-- QQ交流群 ：  ①284271917、②769925425
+- QQ交流群 ：  ②769925425、①284271917（满）
 
 - 反馈问题：  [反馈问题，请按格式发Issues](https://github.com/zhangdaiscott/jeecg-boot/issues/new)
 
@@ -162,6 +165,8 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  └─树分类字典
 │  └─系统公告
 │  └─我的组织机构
+│  └─职务管理
+│  └─通讯录
 ├─消息中心
 │  ├─消息管理
 │  ├─模板管理
@@ -199,7 +204,12 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  └─进度条
 │  └─排名列表
 │  └─等等
+│─大屏模板
+│  ├─作战指挥中心大屏
+│  └─物流服务中心大屏
 │─常用示例
+│  ├─自定义组件
+│  ├─对象存储(对接阿里云)
 │  ├─单表模型例子
 │  └─一对多模型例子
 │  └─打印例子
@@ -208,7 +218,10 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  └─常用选择组件
 │  └─异步树table
 │  └─接口模拟测试
+│  └─表格合计示例
+│  └─异步树列表示例
 │  └─一对多JEditable
+│  └─JEditable组件示例
 │  └─图片拖拽排序
 │  └─图片翻页
 │  └─图片预览
@@ -240,15 +253,16 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 │  └─异常页面
 │  └─个人页面
 ├─高级功能
+│  ├─系统编码规则
 │  ├─提供单点登录CAS集成方案
 │  ├─提供APP发布方案
 │  ├─集成Websocket消息通知机制
 ├─Online在线开发(暂未开源)
 │  ├─Online在线表单 - 功能已开放
 │  ├─在线代码生成器 - 功能已开放
+│  ├─Online在线报表 - 功能已开放
 │  ├─Online在线图表
 │  ├─Online图表模板配置
-│  ├─Online在线报表
 │  ├─高级表单设计器
 │─流程模块功能 (暂不开源)
 │  ├─流程设计器
@@ -327,10 +341,13 @@ yarn run lint
 
 系统效果
 ----
+##### 大屏模板
+![输入图片说明](https://static.oschina.net/uploads/img/201912/25133248_Ag1C.jpg "在这里输入图片标题")
+
+![输入图片说明](https://static.oschina.net/uploads/img/201912/25133301_k9Kc.jpg "在这里输入图片标题")
 
 ##### PC端
 ![输入图片说明](https://static.oschina.net/uploads/img/201904/14155402_AmlV.png "在这里输入图片标题")
-![输入图片说明](https://oscimg.oschina.net/oscnet/ba807921197596ba56f495d4b22ee3280ca.jpg "在这里输入图片标题")
 ![输入图片说明](https://static.oschina.net/uploads/img/201904/14160657_cHwb.png "在这里输入图片标题")
 ![输入图片说明](https://static.oschina.net/uploads/img/201904/14160813_KmXS.png "在这里输入图片标题")
 ![输入图片说明](https://static.oschina.net/uploads/img/201904/14160935_Nibs.png "在这里输入图片标题")

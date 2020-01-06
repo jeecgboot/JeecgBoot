@@ -37,5 +37,64 @@
 	<select id="getUserByEmail" resultType="org.jeecg.modules.system.entity.SysUser">
 	select * from  sys_user  where email = #{email} and del_flag = '0'
 	</select>
-	
+
+	<!-- SQL片段：getUserByOrgCode 的 FROM 和 WHERE 部分 -->
+	<sql id="getUserByOrgCodeFromSql">
+		FROM
+		sys_depart
+		-- 关联查询出该部门有哪些用户
+		INNER JOIN sys_user_depart ON sys_user_depart.dep_id = sys_depart.id
+		-- 关联查询出该用户的详细信息
+		INNER JOIN sys_user ON sys_user.id = sys_user_depart.user_id
+		WHERE
+		sys_depart.org_code LIKE '${orgCode}%'
+
+		<if test="userParams != null">
+			<if test="userParams.realname != null and userParams.realname != ''">
+				AND sys_user.realname LIKE '%${userParams.realname}%'
+			</if>
+			<if test="userParams.workNo != null and userParams.workNo != ''">
+				AND sys_user.work_no LIKE '%${userParams.workNo}%'
+			</if>
+		</if>
+	</sql>
+
+	<!-- 根据 orgCode 查询用户，包括子部门下的用户 -->
+	<select id="getUserByOrgCode" resultType="org.jeecg.modules.system.model.SysUserSysDepartModel">
+		SELECT
+			sys_user.id AS "sys_user.id",
+			sys_user.realname AS "sys_user.realname",
+			sys_user.work_no AS "sys_user.work_no",
+			sys_user.post AS "sys_user.post",
+			sys_user.telephone AS "sys_user.telephone",
+			sys_user.email AS "sys_user.email",
+			sys_user.phone AS "sys_user.phone",
+			sys_depart.id AS "sys_depart.id",
+			sys_depart.depart_name AS "sys_depart.depart_name"
+		<include refid="getUserByOrgCodeFromSql"/>
+		ORDER BY
+			sys_depart.org_code ASC
+	</select>
+
+	<!-- 查询 getUserByOrgCode 的总数-->
+	<select id="getUserByOrgCodeTotal" resultType="java.lang.Integer">
+		SELECT COUNT(1) <include refid="getUserByOrgCodeFromSql"/>
+	</select>
+
+	<!-- 批量删除角色的与用户关系-->
+	<update id="deleteBathRoleUserRelation">
+		delete from sys_user_role
+		where role_id in
+		<foreach item="id" collection="roleIdArray" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+	<!-- 批量删除角色的与权限关系-->
+	<update id="deleteBathRolePermissionRelation">
+		delete from sys_role_permission
+		where role_id in
+		<foreach item="id" collection="roleIdArray" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
 </mapper>

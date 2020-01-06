@@ -224,7 +224,7 @@
           getAction(this.url.customerListByMainId, {mainId: record.id}).then((res) => {
             if (res.success) {
               this.loading = false;
-              this.innerData = res.result;
+              this.innerData = res.result.records;
             }
           });
         }

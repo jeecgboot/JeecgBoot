@@ -1,65 +1,46 @@
 <template>
-  <div style="width: 100%;">
-    <a-select
-      mode="multiple"
-      placeholder="Please select"
-      :value="nameList"
-      style="width: calc(100% - 178px);">
-    </a-select>
-    <span style="display: inline-block;width:170px;float: right;overflow: hidden;">
-      <a-button type="primary" @click="handleSelect" icon="search" style="width: 81px">选择</a-button>
-      <a-button type="primary" @click="selectReset" icon="reload" style="margin-left: 8px;width: 81px">清空</a-button>
-    </span>
-
-    <!-- 选择多个用户支持排序 -->
-    <j-select-multi-user-modal ref="selectModal" @selectFinished="selectOK"/>
-  </div>
+  <!-- 定义在这里的参数都是不可在外部覆盖的，防止出现问题 -->
+  <j-select-biz-component
+    :value="value"
+    :listUrl="url.list"
+    :columns="columns"
+    v-on="$listeners"
+    v-bind="attrs"
+  />
 </template>
 
 <script>
-  import JSelectMultiUserModal from './modal/JSelectMultiUserModal'
+  import JSelectBizComponent from './JSelectBizComponent'
+
   export default {
     name: 'JSelectMultiUser',
-    components:{ JSelectMultiUserModal },
-    props:{
-      value:{
-        type:String,
-        required:false
-      }
-    },
-    data(){
+    components: { JSelectBizComponent },
+    props: ['value'],
+    data() {
       return {
-        selectList: [],
+        url: { list: '/sys/user/list' },
+        columns: [
+          { title: '姓名', align: 'center', width: '20%', widthRight: '70%', dataIndex: 'realname' },
+          { title: '账号', align: 'center', width: '20%', dataIndex: 'username' },
+          { title: '电话', align: 'center', width: '23%', dataIndex: 'phone' },
+          { title: '出生日期', align: 'center', width: '23%', dataIndex: 'birthday' }
+        ],
+        // 定义在这里的参数都是可以在外部传递覆盖的，可以更灵活的定制化使用的组件
+        default: {
+          name: '用户',
+          width: 1000,
+          displayKey: 'realname',
+          returnKeys: ['id', 'username'],
+          queryParamText: '账号',
+        }
       }
     },
     computed: {
-      nameList: function () {
-        var names = [];
-        for (var a = 0; a < this.selectList.length; a++) {
-          names.push(this.selectList[a].name);
-        }
-        let nameStr = ''
-        if(names.length>0){
-          nameStr = names.join(",")
-        }
-        this.$emit("change",nameStr)
-        return names;
-      }
-    },
-    model: {
-      prop: 'value',
-      event: 'change'
-    },
-    methods:{
-      handleSelect: function () {
-        this.$refs.selectModal.add();
-      },
-      selectReset() {
-        this.selectList = [];
-      },
-      selectOK: function (data) {
-        this.selectList = data;
+      attrs() {
+        return Object.assign(this.default, this.$attrs)
       }
     }
   }
 </script>
+
+<style lang="scss" scoped></style>

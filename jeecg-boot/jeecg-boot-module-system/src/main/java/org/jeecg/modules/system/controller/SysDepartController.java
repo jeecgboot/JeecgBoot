@@ -88,7 +88,7 @@ public class SysDepartController {
 	 * @return
 	 */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	@CacheEvict(value= {CacheConstant.DEPART_INFO_CACHE,CacheConstant.DEPART_IDMODEL_CACHE}, allEntries=true)
+	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> add(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
 		Result<SysDepart> result = new Result<SysDepart>();
 		String username = JwtUtil.getUserNameByToken(request);
@@ -113,7 +113,7 @@ public class SysDepartController {
 	 * @return
 	 */
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
-	@CacheEvict(value= {CacheConstant.DEPART_INFO_CACHE,CacheConstant.DEPART_IDMODEL_CACHE}, allEntries=true)
+	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> edit(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
 		String username = JwtUtil.getUserNameByToken(request);
 		sysDepart.setUpdateBy(username);
@@ -140,7 +140,7 @@ public class SysDepartController {
     * @return
     */
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-	@CacheEvict(value= {CacheConstant.DEPART_INFO_CACHE,CacheConstant.DEPART_IDMODEL_CACHE}, allEntries=true)
+	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
    public Result<SysDepart> delete(@RequestParam(name="id",required=true) String id) {
 
        Result<SysDepart> result = new Result<SysDepart>();
@@ -167,7 +167,7 @@ public class SysDepartController {
 	 * @return
 	 */
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
-	@CacheEvict(value= {CacheConstant.DEPART_INFO_CACHE,CacheConstant.DEPART_IDMODEL_CACHE}, allEntries=true)
+	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 
 		Result<SysDepart> result = new Result<SysDepart>();
@@ -249,7 +249,6 @@ public class SysDepartController {
      * 导出excel
      *
      * @param request
-     * @param response
      */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(SysDepart sysDepart,HttpServletRequest request) {
@@ -282,6 +281,7 @@ public class SysDepartController {
      * @return
      */
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
+	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();

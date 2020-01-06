@@ -15,9 +15,9 @@
           <!--组织机构-->
           <a-directory-tree
             selectable
-            :selectedKeys="selectedKeys"
+            :selectedKeys="selectedDepIds"
             :checkStrictly="true"
-            @select="this.onSelect"
+            @select="onDepSelect"
             :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
             :treeData="departTree"
           />
@@ -42,7 +42,7 @@
             :columns="columns"
             :dataSource="dataSource"
             :pagination="ipagination"
-            :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+            :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange,type: getType}"
             @change="handleTableChange">
           </a-table>
         </a-card>
@@ -52,16 +52,17 @@
 </template>
 
 <script>
-  import { filterObj } from '@/utils/util'
-  import { queryDepartTreeList, getUserList, queryUserByDepId, queryUserRoleMap } from '@/api/api'
+  import {filterObj} from '@/utils/util'
+  import {queryDepartTreeList, getUserList, queryUserByDepId} from '@/api/api'
+
   export default {
     name: 'JSelectUserByDepModal',
     components: {},
-    props:['modalWidth'],
+    props: ['modalWidth', 'multi', 'userIds'],
     data() {
       return {
         queryParam: {
-          username:"",
+          username: "",
         },
         columns: [
           {
@@ -75,15 +76,10 @@
             dataIndex: 'realname'
           },
           {
-            title: '角色名称',
-            align: 'center',
-            dataIndex: 'roleName'
-          },
-          {
             title: '性别',
             align: 'center',
             dataIndex: 'sex',
-            customRender: function(text) {
+            customRender: function (text) {
               if (text === 1) {
                 return '男'
               } else if (text === 2) {
@@ -106,10 +102,9 @@
         ],
         scrollTrigger: {},
         dataSource: [],
-        selectedKeys: [],
-        userNameArr: [],
-        departName: '',
-        userRolesMap: {},
+        selectedRowKeys: [],
+        selectUserRows: [],
+        selectUserIds: [],
         title: '根据部门选择用户',
         ipagination: {
           current: 1,
@@ -126,37 +121,61 @@
           column: 'createTime',
           order: 'desc'
         },
-        selectedRowKeys: [],
-        selectedRows: [],
+        selectedDepIds: [],
         departTree: [],
         visible: false,
         form: this.$form.createForm(this)
       }
     },
+    computed: {
+      // 计算属性的 getter
+      getType: function () {
+        console.log("multi: ", this.multi);
+        return this.multi == true ? 'checkbox' : 'radio';
+      }
+    },
+    watch: {
+      userIds() {
+        this.initUserNames()
+      }
+    },
     created() {
       // 该方法触发屏幕自适应
       this.resetScreenSize();
-      this.queryUserRoleMap();
+      this.loadData().then((res) => {
+        this.initUserNames();
+      })
     },
     methods: {
-      loadData(arg) {
+      initUserNames() {
+        let names = ''
+        console.log("props userIds: ", this.userIds)
+        if (this.userIds) {
+          let currUserIds = this.userIds
+          let userIdsArr = currUserIds.split(',');
+          for (let item of this.dataSource) {
+            if (userIdsArr.includes(item.username)) {
+              names += "," + item.realname
+            }
+          }
+          if (names) {
+            names = names.substring(1)
+          }
+          this.$emit("initComp", names)
+        }else{
+          // JSelectUserByDep组件bug issues/I16634
+          this.$emit("initComp", "")
+        }
+      },
+      async loadData(arg) {
         if (arg === 1) {
           this.ipagination.current = 1;
         }
         let params = this.getQueryParams();//查询条件
-        getUserList(params).then((res) => {
+        await getUserList(params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.records;
-            this.assignRoleName(this.dataSource);
             this.ipagination.total = res.result.total;
-          }
-        })
-      },
-      queryUserRoleMap(){
-        queryUserRoleMap().then((res) => {
-          if (res.success) {
-            this.userRolesMap = res.result;
-            this.loadData();
           }
         })
       },
@@ -164,15 +183,15 @@
       resetScreenSize() {
         let screenWidth = document.body.clientWidth;
         if (screenWidth < 500) {
-          this.scrollTrigger = { x: 800 };
+          this.scrollTrigger = {x: 800};
         } else {
           this.scrollTrigger = {};
         }
       },
       showModal() {
         this.visible = true;
-        this.assignRoleName(this.dataSource);
         this.queryDepartTree();
+        this.loadData();
         this.form.resetFields();
       },
       getQueryParams() {
@@ -191,13 +210,13 @@
       },
       searchReset(num) {
         let that = this;
-        if(num !== 0){
+        if (num !== 0) {
           that.queryParam = {};
           that.loadData(1);
         }
         that.selectedRowKeys = [];
-        that.userNameArr = [];
-        that.selectedKeys = [];
+        that.selectUserIds = [];
+        that.selectedDepIds = [];
       },
       close() {
         this.searchReset(0);
@@ -214,27 +233,31 @@
       },
       handleSubmit() {
         let that = this;
-        for (let i = 0, len = this.selectedRowKeys.length; i < len; i++) {
-          this.getUserNames(this.selectedRowKeys[i]);
-        }
-        that.$emit('ok', that.userNameArr.join(','));
+        this.getSelectUserRows();
+        console.log(that.selectUserRows)
+        that.$emit('ok', that.selectUserRows, that.selectUserIds);
+        that.searchReset(0)
         that.close();
       },
-      // 遍历匹配,获取用户真实姓名
-      getUserNames(rowId) {
+      //获取选择用户信息
+      getSelectUserRows(rowId) {
         let dataSource = this.dataSource;
+        let userIds = "";
+        this.selectUserRows = [];
         for (let i = 0, len = dataSource.length; i < len; i++) {
-          if (rowId === dataSource[i].id) {
-            this.userNameArr.push(dataSource[i].realname);
+          if (this.selectedRowKeys.includes(dataSource[i].id)) {
+            this.selectUserRows.push(dataSource[i]);
+            userIds = userIds + "," + dataSource[i].username
           }
         }
+        this.selectUserIds = userIds.substring(1);
       },
       // 点击树节点,筛选出对应的用户
-      onSelect(selectedKeys) {
-        if (selectedKeys[0] != null) {
-          this.queryUserByDepId(selectedKeys); // 调用方法根据选选择的id查询用户信息
-          if (this.selectedKeys[0] !== selectedKeys[0]) {
-            this.selectedKeys = [selectedKeys[0]];
+      onDepSelect(selectedDepIds) {
+        if (selectedDepIds[0] != null) {
+          this.initQueryUserByDepId(selectedDepIds); // 调用方法根据选选择的id查询用户信息
+          if (this.selectedDepIds[0] !== selectedDepIds[0]) {
+            this.selectedDepIds = [selectedDepIds[0]];
           }
         }
       },
@@ -246,25 +269,13 @@
         this.loadData(1);
       },
       // 根据选择的id来查询用户信息
-      queryUserByDepId(selectedKeys) {
-        queryUserByDepId({ id: selectedKeys.toString() }).then((res) => {
+      initQueryUserByDepId(selectedDepIds) {
+        queryUserByDepId({id: selectedDepIds.toString()}).then((res) => {
           if (res.success) {
             this.dataSource = res.result;
             this.ipagination.total = res.result.length;
-            this.assignRoleName(this.dataSource);
           }
         })
-      },
-      // 传入用户id,找到匹配的角色名称
-      queryUserRole(userId) {
-        let map = this.userRolesMap;
-        let roleName = [];
-        for (var key in map) {
-          if (userId === key) {
-            roleName.push(map[key]);
-          }
-        }
-        return roleName.join(',');
       },
       queryDepartTree() {
         queryDepartTreeList().then((res) => {
@@ -272,16 +283,6 @@
             this.departTree = res.result;
           }
         })
-      },
-      // 为角色名称赋值
-      assignRoleName(data) {
-        let userId = '';
-        let role = '';
-        for (let i = 0, length = data.length; i < length; i++) {
-          userId = this.dataSource[i].id;
-          role = this.queryUserRole(userId);
-          this.dataSource[i].roleName = role;
-        }
       },
       modalFormOk() {
         this.loadData();

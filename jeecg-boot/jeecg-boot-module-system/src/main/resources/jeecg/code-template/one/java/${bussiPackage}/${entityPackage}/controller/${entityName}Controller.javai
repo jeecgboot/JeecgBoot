@@ -19,7 +19,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-
+import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -45,12 +45,13 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags="${tableVo.ftlDescription}")
 @RestController
 @RequestMapping("/${entityPackage}/${entityName?uncap_first}")
-public class ${entityName}Controller {
+public class ${entityName}Controller extends JeecgController<${entityName}, I${entityName}Service> {
 	@Autowired
 	private I${entityName}Service ${entityName?uncap_first}Service;
 	
 	/**
-	  * 分页列表查询
+	 * 分页列表查询
+	 *
 	 * @param ${entityName?uncap_first}
 	 * @param pageNo
 	 * @param pageSize
@@ -60,65 +61,47 @@ public class ${entityName}Controller {
 	@AutoLog(value = "${tableVo.ftlDescription}-分页列表查询")
 	@ApiOperation(value="${tableVo.ftlDescription}-分页列表查询", notes="${tableVo.ftlDescription}-分页列表查询")
 	@GetMapping(value = "/list")
-	public Result<IPage<${entityName}>> queryPageList(${entityName} ${entityName?uncap_first},
-									  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-									  HttpServletRequest req) {
-		Result<IPage<${entityName}>> result = new Result<IPage<${entityName}>>();
+	public Result<?> queryPageList(${entityName} ${entityName?uncap_first},
+								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+								   HttpServletRequest req) {
 		QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap());
 		Page<${entityName}> page = new Page<${entityName}>(pageNo, pageSize);
 		IPage<${entityName}> pageList = ${entityName?uncap_first}Service.page(page, queryWrapper);
-		result.setSuccess(true);
-		result.setResult(pageList);
-		return result;
+		return Result.ok(pageList);
 	}
 	
 	/**
-	  *   添加
+	 * 添加
+	 *
 	 * @param ${entityName?uncap_first}
 	 * @return
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-添加")
 	@ApiOperation(value="${tableVo.ftlDescription}-添加", notes="${tableVo.ftlDescription}-添加")
 	@PostMapping(value = "/add")
-	public Result<${entityName}> add(@RequestBody ${entityName} ${entityName?uncap_first}) {
-		Result<${entityName}> result = new Result<${entityName}>();
-		try {
-			${entityName?uncap_first}Service.save(${entityName?uncap_first});
-			result.success("添加成功！");
-		} catch (Exception e) {
-			log.error(e.getMessage(),e);
-			result.error500("操作失败");
-		}
-		return result;
+	public Result<?> add(@RequestBody ${entityName} ${entityName?uncap_first}) {
+		${entityName?uncap_first}Service.save(${entityName?uncap_first});
+		return Result.ok("添加成功！");
 	}
 	
 	/**
-	  *  编辑
+	 * 编辑
+	 *
 	 * @param ${entityName?uncap_first}
 	 * @return
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-编辑")
 	@ApiOperation(value="${tableVo.ftlDescription}-编辑", notes="${tableVo.ftlDescription}-编辑")
 	@PutMapping(value = "/edit")
-	public Result<${entityName}> edit(@RequestBody ${entityName} ${entityName?uncap_first}) {
-		Result<${entityName}> result = new Result<${entityName}>();
-		${entityName} ${entityName?uncap_first}Entity = ${entityName?uncap_first}Service.getById(${entityName?uncap_first}.getId());
-		if(${entityName?uncap_first}Entity==null) {
-			result.error500("未找到对应实体");
-		}else {
-			boolean ok = ${entityName?uncap_first}Service.updateById(${entityName?uncap_first});
-			//TODO 返回false说明什么？
-			if(ok) {
-				result.success("修改成功!");
-			}
-		}
-		
-		return result;
+	public Result<?> edit(@RequestBody ${entityName} ${entityName?uncap_first}) {
+		${entityName?uncap_first}Service.updateById(${entityName?uncap_first});
+		return Result.ok("编辑成功!");
 	}
 	
 	/**
-	  *   通过id删除
+	 * 通过id删除
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -126,88 +109,51 @@ public class ${entityName}Controller {
 	@ApiOperation(value="${tableVo.ftlDescription}-通过id删除", notes="${tableVo.ftlDescription}-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		try {
-			${entityName?uncap_first}Service.removeById(id);
-		} catch (Exception e) {
-			log.error("删除失败",e.getMessage());
-			return Result.error("删除失败!");
-		}
+		${entityName?uncap_first}Service.removeById(id);
 		return Result.ok("删除成功!");
 	}
 	
 	/**
-	  *  批量删除
+	 * 批量删除
+	 *
 	 * @param ids
 	 * @return
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-批量删除")
 	@ApiOperation(value="${tableVo.ftlDescription}-批量删除", notes="${tableVo.ftlDescription}-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
-	public Result<${entityName}> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		Result<${entityName}> result = new Result<${entityName}>();
-		if(ids==null || "".equals(ids.trim())) {
-			result.error500("参数不识别！");
-		}else {
-			this.${entityName?uncap_first}Service.removeByIds(Arrays.asList(ids.split(",")));
-			result.success("删除成功!");
-		}
-		return result;
+	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
+		this.${entityName?uncap_first}Service.removeByIds(Arrays.asList(ids.split(",")));
+		return Result.ok("批量删除成功！");
 	}
 	
 	/**
-	  * 通过id查询
+	 * 通过id查询
+	 *
 	 * @param id
 	 * @return
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-通过id查询")
 	@ApiOperation(value="${tableVo.ftlDescription}-通过id查询", notes="${tableVo.ftlDescription}-通过id查询")
 	@GetMapping(value = "/queryById")
-	public Result<${entityName}> queryById(@RequestParam(name="id",required=true) String id) {
-		Result<${entityName}> result = new Result<${entityName}>();
+	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		${entityName} ${entityName?uncap_first} = ${entityName?uncap_first}Service.getById(id);
-		if(${entityName?uncap_first}==null) {
-			result.error500("未找到对应实体");
-		}else {
-			result.setResult(${entityName?uncap_first});
-			result.setSuccess(true);
-		}
-		return result;
+		return Result.ok(${entityName?uncap_first});
 	}
 
   /**
-      * 导出excel
+   * 导出excel
    *
    * @param request
-   * @param response
+   * @param ${entityName?uncap_first}
    */
   @RequestMapping(value = "/exportXls")
-  public ModelAndView exportXls(HttpServletRequest request, HttpServletResponse response) {
-      // Step.1 组装查询条件
-      QueryWrapper<${entityName}> queryWrapper = null;
-      try {
-          String paramsStr = request.getParameter("paramsStr");
-          if (oConvertUtils.isNotEmpty(paramsStr)) {
-              String deString = URLDecoder.decode(paramsStr, "UTF-8");
-              ${entityName} ${entityName?uncap_first} = JSON.parseObject(deString, ${entityName}.class);
-              queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, request.getParameterMap());
-          }
-      } catch (UnsupportedEncodingException e) {
-          e.printStackTrace();
-      }
-
-      //Step.2 AutoPoi 导出Excel
-      ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-      List<${entityName}> pageList = ${entityName?uncap_first}Service.list(queryWrapper);
-      //导出文件名称
-      mv.addObject(NormalExcelConstants.FILE_NAME, "${tableVo.ftlDescription}列表");
-      mv.addObject(NormalExcelConstants.CLASS, ${entityName}.class);
-      mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("${tableVo.ftlDescription}列表数据", "导出人:Jeecg", "导出信息"));
-      mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
-      return mv;
+  public ModelAndView exportXls(HttpServletRequest request, ${entityName} ${entityName?uncap_first}) {
+      return super.exportXls(request, ${entityName?uncap_first}, ${entityName}.class, "${tableVo.ftlDescription}");
   }
 
   /**
-      * 通过excel导入数据
+   * 通过excel导入数据
    *
    * @param request
    * @param response
@@ -215,30 +161,7 @@ public class ${entityName}Controller {
    */
   @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
   public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
-      MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-      Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
-      for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-          MultipartFile file = entity.getValue();// 获取上传文件对象
-          ImportParams params = new ImportParams();
-          params.setTitleRows(2);
-          params.setHeadRows(1);
-          params.setNeedSave(true);
-          try {
-              List<${entityName}> list${entityName}s = ExcelImportUtil.importExcel(file.getInputStream(), ${entityName}.class, params);
-              ${entityName?uncap_first}Service.saveBatch(list${entityName}s);
-              return Result.ok("文件导入成功！数据行数:" + list${entityName}s.size());
-          } catch (Exception e) {
-              log.error(e.getMessage(),e);
-              return Result.error("文件导入失败:"+e.getMessage());
-          } finally {
-              try {
-                  file.getInputStream().close();
-              } catch (IOException e) {
-                  e.printStackTrace();
-              }
-          }
-      }
-      return Result.ok("文件导入失败！");
+      return super.importExcel(request, response, ${entityName}.class);
   }
 
 }

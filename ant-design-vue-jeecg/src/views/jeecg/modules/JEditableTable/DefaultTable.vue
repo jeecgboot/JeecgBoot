@@ -62,6 +62,31 @@
               {
                 pattern: /^[a-z|A-Z][a-z|A-Z\d_-]{0,}$/, // 正则
                 message: '${title}必须以字母开头，可包含数字、下划线、横杠'
+              },
+              {
+                unique: true,
+                message: '${title}不能重复'
+              },
+              {
+                handler(type, value, row, column, callback, target) {
+                  // type 触发校验的类型（input、change、blur）
+                  // value 当前校验的值
+                  // callback(flag, message) 方法必须执行且只能执行一次
+                  //          flag = 是否通过了校验，不填写或者填写 null 代表不进行任何操作
+                  //          message = 提示的类型，默认使用配置的 message
+                  // target 行编辑的实例对象
+
+                  if (type === 'blur') {
+                    if (value === 'abc') {
+                      callback(false, '${title}不能是abc')  // false = 未通过校验
+                    } else {
+                      callback(true) // true = 通过验证
+                    }
+                  } else {
+                    callback(true) // 不填写或者填写 null 代表不进行任何操作
+                  }
+                },
+                message: '${title}默认提示'
               }
             ]
           },

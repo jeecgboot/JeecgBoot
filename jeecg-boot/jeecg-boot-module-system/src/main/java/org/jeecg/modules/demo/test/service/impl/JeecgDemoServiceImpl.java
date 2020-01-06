@@ -1,6 +1,10 @@
 package org.jeecg.modules.demo.test.service.impl;
 
-import org.jeecg.common.system.base.service.impl.JeecgServiceImpl;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.jeecg.common.constant.CacheConstant;
+import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.demo.test.entity.JeecgDemo;
 import org.jeecg.modules.demo.test.mapper.JeecgDemoMapper;
 import org.jeecg.modules.demo.test.service.IJeecgDemoService;
@@ -16,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @Version: V1.0
  */
 @Service
-public class JeecgDemoServiceImpl extends JeecgServiceImpl<JeecgDemoMapper, JeecgDemo> implements IJeecgDemoService {
+public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo> implements IJeecgDemoService {
 	@Autowired
 	JeecgDemoMapper jeecgDemoMapper;
 	
@@ -51,12 +55,21 @@ public class JeecgDemoServiceImpl extends JeecgServiceImpl<JeecgDemoMapper, Jeec
 	 * 缓存注解测试： redis
 	 */
 	@Override
-	@Cacheable(cacheNames="jeecgDemo", key="#id")
+	@Cacheable(cacheNames = CacheConstant.TEST_DEMO_CACHE, key = "#id")
 	public JeecgDemo getByIdCacheable(String id) {
 		JeecgDemo t = jeecgDemoMapper.selectById(id);
 		System.err.println("---未读缓存，读取数据库---");
 		System.err.println(t);
 		return t;
+	}
+
+
+	@Override
+	public IPage<JeecgDemo> queryListWithPermission(int pageSize,int pageNo) {
+		Page<JeecgDemo> page = new Page<>(pageNo, pageSize);
+		//编程方式，获取当前请求的数据权限规则SQL片段
+		String sql = QueryGenerator.installAuthJdbc(JeecgDemo.class);
+		return this.baseMapper.queryListWithPermission(page, sql);
 	}
 
 }

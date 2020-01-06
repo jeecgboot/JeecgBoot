@@ -5,8 +5,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import com.alibaba.fastjson.JSONObject;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.util.FillRuleUtil;
 import org.jeecg.common.util.YouBianCodeUtil;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.mapper.SysDepartMapper;
@@ -37,7 +39,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	/**
 	 * queryTreeList 对应 queryTreeList 查询所有的部门数据,以树结构形式响应给前端
 	 */
-	@Cacheable(value = CacheConstant.DEPART_INFO_CACHE)
+	@Cacheable(value = CacheConstant.SYS_DEPARTS_CACHE)
 	@Override
 	public List<SysDepartTreeModel> queryTreeList() {
 		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
@@ -49,7 +51,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		return listResult;
 	}
 
-	@Cacheable(value = CacheConstant.DEPART_IDMODEL_CACHE)
+	@Cacheable(value = CacheConstant.SYS_DEPART_IDS_CACHE)
 	@Override
 	public List<DepartIdModel> queryDepartIdTreeList() {
 		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
@@ -76,7 +78,11 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 			// 先判断该对象有无父级ID,有则意味着不是最高级,否则意味着是最高级
 			// 获取父级ID
 			String parentId = sysDepart.getParentId();
-			String[] codeArray = generateOrgCode(parentId);
+			//update-begin--Author:baihailong  Date:20191209 for：部门编码规则生成器做成公用配置
+			JSONObject formData = new JSONObject();
+			formData.put("parentId",parentId);
+			String[] codeArray = (String[]) FillRuleUtil.executeRule("org_num_role",formData);
+			//update-end--Author:baihailong  Date:20191209 for：部门编码规则生成器做成公用配置
 			sysDepart.setOrgCode(codeArray[0]);
 			String orgType = codeArray[1];
 			sysDepart.setOrgType(String.valueOf(orgType));
@@ -88,8 +94,8 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	}
 	
 	/**
-	 * saveDepartData 的调用方法,生成部门编码和部门类型
-	 * 
+	 * saveDepartData 的调用方法,生成部门编码和部门类型（作废逻辑）
+	 * @deprecated
 	 * @param parentId
 	 * @return
 	 */
@@ -105,11 +111,11 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 				// 定义旧编码字符串
 				String oldOrgCode = "";
 				// 定义部门类型
-				String orgType = "";		
-				// 如果是最高级,则查询出同级的org_code, 调用工具类生成编码并返回                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+				String orgType = "";
+				// 如果是最高级,则查询出同级的org_code, 调用工具类生成编码并返回
 				if (StringUtil.isNullOrEmpty(parentId)) {
 					// 线判断数据库中的表是否为空,空则直接返回初始编码
-					query1.eq(SysDepart::getParentId, "");
+					query1.eq(SysDepart::getParentId, "").or().isNull(SysDepart::getParentId);
 					query1.orderByDesc(SysDepart::getOrgCode);
 					departList = this.list(query1);
 					if(departList == null || departList.size() == 0) {
@@ -254,6 +260,10 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	public List<SysDepart> queryUserDeparts(String userId) {
 		return baseMapper.queryUserDeparts(userId);
 	}
-	
+
+	@Override
+	public List<SysDepart> queryDepartsByUsername(String username) {
+		return baseMapper.queryDepartsByUsername(username);
+	}
 
 }

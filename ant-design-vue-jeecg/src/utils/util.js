@@ -1,3 +1,4 @@
+import * as api from '@/api/api'
 import { isURL } from '@/utils/validate'
 
 export function timeFix() {
@@ -125,7 +126,10 @@ function  generateChildRouters (data) {
         icon: item.meta.icon,
         url:item.meta.url ,
         permissionList:item.meta.permissionList,
-        keepAlive:item.meta.keepAlive
+        keepAlive:item.meta.keepAlive,
+        /*update_begin author:wuxianquan date:20190908 for:赋值 */
+        internalOrExternal:item.meta.internalOrExternal
+        /*update_end author:wuxianquan date:20190908 for:赋值 */
       }
     }
     if(item.alwaysShow){
@@ -251,4 +255,44 @@ export function cssExpand(css, id) {
   }
   // 应用新样式
   document.head.appendChild(style)
+}
+
+/**
+ * 重复值验证工具方法
+ *
+ * 使用示例：
+ * { validator: (rule, value, callback) => validateDuplicateValue('sys_fill_rule', 'rule_code', value, this.model.id, callback) }
+ *
+ * @param tableName 被验证的表名
+ * @param fieldName 被验证的字段名
+ * @param fieldVal 被验证的值
+ * @param dataId 数据ID，可空
+ * @param callback
+ */
+export function validateDuplicateValue(tableName, fieldName, fieldVal, dataId, callback) {
+  let params = { tableName, fieldName, fieldVal, dataId }
+  api.duplicateCheck(params).then(res => {
+    res['success'] ? callback() : callback(res['message'])
+  }).catch(err => {
+    callback(err.message || err)
+  })
+}
+
+/**
+ * 如果值不存在就 push 进数组，反之不处理
+ * @param array 要操作的数据
+ * @param value 要添加的值
+ * @param key 可空，如果比较的是对象，可能存在地址不一样但值实际上是一样的情况，可以传此字段判断对象中唯一的字段，例如 id。不传则直接比较实际值
+ * @returns {boolean} 成功 push 返回 true，不处理返回 false
+ */
+export function pushIfNotExist(array, value, key) {
+  for (let item of array) {
+    if (key && (item[key] === value[key])) {
+      return false
+    } else if (item === value) {
+      return false
+    }
+  }
+  array.push(value)
+  return true
 }

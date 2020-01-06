@@ -28,21 +28,20 @@
 <!--                      <a-icon type="share-alt" />-->
 <!--                      在线cron表达式生成-->
 <!--                    </a>-->
-          <j-cron ref="innerVueCron" v-decorator="['cronExpression', {'initialValue':'0/1 * * * * ?',rules: [{ required: true, message: '请输入cron表达式!' }]}]"  @change="setCorn"></j-cron>
+<!--          <j-cron ref="innerVueCron" v-decorator="['cronExpression', {'initialValue':'0/1 * * * * ?',rules: [{ required: true, message: '请输入cron表达式!' }]}]"  @change="setCorn"></j-cron>-->
+          <j-cron ref="innerVueCron" v-decorator="['cronExpression', { initialValue: '* * * * * ? *' }]" @change="setCorn"></j-cron>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="参数"
-          hasFeedback >
-          <a-input placeholder="请输入参数" v-decorator="['parameter', {}]" />
+          label="参数">
+          <a-textarea placeholder="请输入参数" :rows="5" v-decorator="['parameter', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="描述"
-          hasFeedback >
-          <a-input placeholder="请输入描述" v-decorator="['description', {}]" />
+          label="描述">
+          <a-textarea placeholder="请输入描述" :rows="3" v-decorator="['description', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -61,9 +60,9 @@
 
 <script>
   import { httpAction } from '@/api/manage'
-  import JCron from "@/components/jeecg/JCron.vue";
+  import JCron from "@/components/jeecg/JCron";
   import pick from 'lodash.pick'
-  import moment from "moment"
+  // import moment from "moment"
 
   export default {
     name: "QuartzJobModal",
@@ -109,6 +108,8 @@
         this.edit({});
       },
       edit (record) {
+        let that = this;
+        that.form.resetFields();
         this.model = Object.assign({},record);
         console.log(this.model)
         this.visible = true;
@@ -127,10 +128,10 @@
         this.form.validateFields((err, values) => {
           console.log('values',values)
           if (!err) {
-            // if (typeof values.cronExpression == "undefined" || Object.keys(values.cronExpression).length==0 ) {
-            //   this.$message.warning('请输入cron表达式!');
-            //   return false;
-            // }
+            if (typeof values.cronExpression == "undefined" || Object.keys(values.cronExpression).length==0 ) {
+              this.$message.warning('请输入cron表达式!');
+              return false;
+            }
 
             that.confirmLoading = true;
             let httpurl = '';
@@ -171,9 +172,9 @@
         })
 
         // console.log(Object.keys(data).length==0);
-        // if (Object.keys(data).length==0) {
-        //   this.$message.warning('请输入cron表达式!');
-        // }
+        if (Object.keys(data).length==0) {
+          this.$message.warning('请输入cron表达式!');
+        }
       },
       validateCron(rule, value, callback){
         if(!value){

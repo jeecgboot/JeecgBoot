@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
@@ -44,6 +45,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -237,7 +240,7 @@ public class SysDictController {
 	 * @return
 	 */
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-	@CacheEvict(value=CacheConstant.DICT_CACHE, allEntries=true)
+	@CacheEvict(value=CacheConstant.SYS_DICT_CACHE, allEntries=true)
 	public Result<SysDict> delete(@RequestParam(name="id",required=true) String id) {
 		Result<SysDict> result = new Result<SysDict>();
 		boolean ok = sysDictService.removeById(id);
@@ -255,7 +258,7 @@ public class SysDictController {
 	 * @return
 	 */
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
-	@CacheEvict(value= CacheConstant.DICT_CACHE, allEntries=true)
+	@CacheEvict(value= CacheConstant.SYS_DICT_CACHE, allEntries=true)
 	public Result<SysDict> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<SysDict> result = new Result<SysDict>();
 		if(oConvertUtils.isEmpty(ids)) {
@@ -382,8 +385,8 @@ public class SysDictController {
 	 * 根据字典code加载字典text 返回
 	 */
 	@RequestMapping(value = "/loadDictItem/{dictCode}", method = RequestMethod.GET)
-	public Result<String> loadDictItem(@PathVariable String dictCode,@RequestParam(name="key") String key) {
-		Result<String> result = new Result<String>();
+	public Result<List<String>> loadDictItem(@PathVariable String dictCode,@RequestParam(name="key") String key) {
+		Result<List<String>> result = new Result<>();
 		try {
 			if(dictCode.indexOf(",")!=-1) {
 				String[] params = dictCode.split(",");
@@ -391,9 +394,10 @@ public class SysDictController {
 					result.error500("字典Code格式不正确！");
 					return result;
 				}
-				String text = sysDictService.queryTableDictTextByKey(params[0], params[1], params[2], key);
+				List<String> texts = sysDictService.queryTableDictByKeys(params[0], params[1], params[2], key.split(","));
+
 				result.setSuccess(true);
-				result.setResult(text);
+				result.setResult(texts);
 				log.info(result.toString());
 			}else {
 				result.error500("字典Code格式不正确！");
@@ -410,17 +414,69 @@ public class SysDictController {
 	/**
 	 * 根据表名——显示字段-存储字段 pid 加载树形数据
 	 */
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/loadTreeData", method = RequestMethod.GET)
 	public Result<List<TreeSelectModel>> loadDict(@RequestParam(name="pid") String pid,@RequestParam(name="pidField") String pidField,
 			@RequestParam(name="tableName") String tbname,
 			@RequestParam(name="text") String text,
 			@RequestParam(name="code") String code,
-			@RequestParam(name="hasChildField") String hasChildField) {
+			@RequestParam(name="hasChildField") String hasChildField,
+			@RequestParam(name="condition") String condition) {
 		Result<List<TreeSelectModel>> result = new Result<List<TreeSelectModel>>();
-		List<TreeSelectModel> ls = sysDictService.queryTreeList(tbname, text, code, pidField, pid,hasChildField);
+		Map<String, String> query = null;
+		if(oConvertUtils.isNotEmpty(condition)) {
+			query = JSON.parseObject(condition, Map.class);
+		}
+		List<TreeSelectModel> ls = sysDictService.queryTreeList(query,tbname, text, code, pidField, pid,hasChildField);
 		result.setSuccess(true);
 		result.setResult(ls);
 		return result;
+	}
+
+
+	/**
+	 * 查询被删除的列表
+	 * @return
+	 */
+	@RequestMapping(value = "/deleteList", method = RequestMethod.GET)
+	public Result<List<SysDict>> deleteList() {
+		Result<List<SysDict>> result = new Result<List<SysDict>>();
+		List<SysDict> list = this.sysDictService.queryDeleteList();
+		result.setSuccess(true);
+		result.setResult(list);
+		return result;
+	}
+
+	/**
+	 * 物理删除
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/deletePhysic/{id}", method = RequestMethod.DELETE)
+	public Result<?> deletePhysic(@PathVariable String id) {
+		try {
+			sysDictService.deleteOneDictPhysically(id);
+			return Result.ok("删除成功!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Result.error("删除失败!");
+		}
+	}
+
+	/**
+	 * 取回
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/back/{id}", method = RequestMethod.PUT)
+	public Result<?> back(@PathVariable String id) {
+		try {
+			sysDictService.updateDictDelFlag(0,id);
+			return Result.ok("操作成功!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Result.error("操作失败!");
+		}
 	}
 
 }

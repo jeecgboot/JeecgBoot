@@ -3,29 +3,39 @@
 
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
 
           <a-col :md="6" :sm="8">
-            <a-form-item label="名称">
-              <a-input placeholder="请输入名称查询" v-model="queryParam.name"></a-input>
+            <a-form-item label="用户名">
+              <j-input placeholder="请输入名称模糊查询" v-model="queryParam.name"></j-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="年龄">
-              <a-input placeholder="请输入名称查询" v-model="queryParam.age"></a-input>
+             <!-- <a-input placeholder="请输入名称查询" v-model="queryParam.age"></a-input>-->
+              <a-input placeholder="最小年龄" type="ge" v-model="queryParam.age_begin" style="width:calc(50% - 15px);"></a-input>
+              <span class="group-query-strig">~</span>
+              <a-input placeholder="最大年龄" type="le" v-model="queryParam.age_end" style="width:calc(50% - 15px);"></a-input>
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
-              <a-form-item label="字典下拉">
-                <j-dict-select-tag v-model="queryParam.sex" placeholder="请选择用户名称" dictCode="sex"/>
+              <a-form-item label="生日">
+                <a-range-picker v-model="queryParam.birthdayRange"
+                                format="YYYY-MM-DD"
+                                :placeholder="['开始时间', '结束时间']"
+                                @change="onBirthdayChange" />
               </a-form-item>
             </a-col>
-
             <a-col :md="6" :sm="8">
-              <a-form-item label="字典表下拉">
-                <j-dict-select-tag v-model="queryParam.realname" placeholder="请选择用户" dictCode="sys_user,realname,id"/>
+              <a-form-item label="性别">
+                <j-dict-select-tag v-model="queryParam.sex" placeholder="请选择性别" dictCode="sex"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="选择用户">
+                <j-dict-select-tag v-model="queryParam.id" placeholder="请选择用户" dictCode="demo,name,id"/>
               </a-form-item>
             </a-col>
           </template>
@@ -37,7 +47,7 @@
           </span>
           <a-col :md="6" :sm="24">
 
-            <template v-if="superQueryFlag">
+       <!--     <template v-if="superQueryFlag">
               <a-tooltip title="已有高级查询条件生效!">
                 <button :disabled="false" class="ant-btn ant-btn-primary" @click="superQuery">
                   <a-icon type="appstore" theme="twoTone" spin="true"></a-icon>
@@ -46,6 +56,9 @@
               </a-tooltip>
             </template>
             <a-button v-else type="primary" @click="superQuery" icon="filter">高级查询</a-button>
+-->
+            <!-- 高级查询区域 -->
+            <j-super-query :fieldList="fieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
 
             <a @click="handleToggleSearch" style="margin-left: 8px">
               {{ toggleSearchStatus ? '收起' : '展开' }}
@@ -157,18 +170,18 @@
     <!-- 一对多表单区域 -->
     <JeecgDemoTabsModal ref="jeecgDemoTabsModal" @ok="modalFormOk"></JeecgDemoTabsModal>
 
-    <!-- 高级查询区域 -->
-    <j-super-query :fieldList="fieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
   </a-card>
 </template>
 
 <script>
   import JeecgDemoModal from './modules/JeecgDemoModal'
   import JSuperQuery from '@/components/jeecg/JSuperQuery.vue';
+  import JInput from '@/components/jeecg/JInput.vue';
   import JeecgDemoTabsModal from './modules/JeecgDemoTabsModal'
   import {initDictOptions, filterDictText} from '@/components/dict/JDictSelectUtil'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import Vue from 'vue'
+  import { filterObj } from '@/utils/util';
 
   //高级查询modal需要参数
   const superQueryFieldList=[{
@@ -191,6 +204,7 @@
       JeecgDemoModal,
       JSuperQuery,
       JeecgDemoTabsModal,
+      JInput
     },
     data() {
       return {
@@ -278,6 +292,22 @@
       }
     },
     methods: {
+      getQueryParams(){
+        console.log(this.queryParam.birthdayRange)
+
+        //高级查询器
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        delete param.birthdayRange; //范围参数不传递后台
+        return filterObj(param);
+      },
       initDictConfig() {
         console.log("--我才是真的方法!--")
         //初始化字典 - 性别
@@ -294,6 +324,11 @@
       //跳转单据页面
       jump() {
         this.$router.push({path: '/jeecg/helloworld'})
+      },
+      onBirthdayChange: function (value, dateString) {
+        console.log(dateString[0],dateString[1]);
+        this.queryParam.birthday_begin=dateString[0];
+        this.queryParam.birthday_end=dateString[1];
       },
       //列设置更改事件
       onColSettingsChange (checkedValues) {

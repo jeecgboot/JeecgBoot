@@ -1,0 +1,276 @@
+<#list subTables as sub>
+#segment#${sub.entityName}Modal.vue
+<template>
+  <a-modal
+    :title="title"
+    :width="width"
+    :visible="visible"
+    :confirmLoading="confirmLoading"
+    @ok="handleOk"
+    @cancel="handleCancel"
+    cancelText="关闭">
+    <a-spin :spinning="confirmLoading">
+      <a-form :form="form">
+<#assign form_date = false>
+<#assign form_select = false>
+<#assign form_select_multi = false>
+<#assign form_select_search = false>
+<#assign form_popup = false>
+<#assign form_sel_depart = false>
+<#assign form_sel_user = false>
+<#assign form_file = false>
+<#assign form_editor = false>
+<#assign form_cat_tree = false>
+<#assign form_cat_back = "">
+
+<#list sub.originalColumns as po>
+<#if po.isShow =='Y'>
+<#assign form_field_dictCode="">
+	<#if po.dictTable?default("")?trim?length gt 1>
+		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+	<#elseif po.dictField?default("")?trim?length gt 1>
+		<#assign form_field_dictCode="${po.dictField}">
+	</#if>
+        <a-form-item label="${po.filedComment}" :labelCol="labelCol" :wrapperCol="wrapperCol">
+	<#if po.classType =='date'>
+		<#assign form_date=true>
+          <j-date placeholder="请选择${po.filedComment}" v-decorator="[ '${po.fieldName}', validatorRules.${po.fieldName}]" :trigger-change="true" style="width: 100%"/>
+	<#elseif po.classType =='datetime'>
+		<#assign form_date=true>
+          <j-date placeholder="请选择${po.filedComment}" v-decorator="[ '${po.fieldName}', validatorRules.${po.fieldName}]" :trigger-change="true" :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" style="width: 100%"/>
+	<#elseif po.classType =='popup'>
+		<#assign form_popup=true>
+          <j-popup
+            v-decorator="['${po.fieldName}']"
+            :trigger-change="true"
+            org-fields="${po.dictField}"
+            dest-fields="${po.dictText}"
+            code="${po.dictTable}"
+            @callback="popupCallback"/>
+	<#elseif po.classType =='sel_depart'>
+		<#assign form_sel_depart=true>
+          <j-select-depart v-decorator="['${po.fieldName}']" :trigger-change="true"/>
+	<#elseif po.classType =='sel_user'>
+		<#assign form_sel_user = true>
+          <j-select-user-by-dep v-decorator="['${po.fieldName}']" :trigger-change="true"/>
+	<#elseif po.classType =='textarea'>
+          <a-textarea v-decorator="['${po.fieldName}']" rows="4" placeholder="请输入${po.filedComment}"/>
+	<#elseif po.classType=='list' || po.classType=='radio'>
+		<#assign form_select = true>
+          <j-dict-select-tag type="${po.classType}" v-decorator="['${po.fieldName}']" :trigger-change="true" dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}"/>
+	<#elseif po.classType=='list_multi' || po.classType=='checkbox'>
+		<#assign form_select_multi = true>
+          <j-multi-select-tag type="${po.classType}" v-decorator="['${po.fieldName}']" :trigger-change="true" dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}"/>
+	<#elseif po.classType=='sel_search'>
+    	<#assign form_select_search = true>
+          <j-search-select-tag v-decorator="['${po.fieldName}']" dict="${form_field_dictCode}" />
+    <#elseif po.classType=='cat_tree'>
+    	<#assign form_cat_tree = true>
+          <j-category-select v-decorator="['${po.fieldName}']" <#if po.dictField?default("")?trim?length gt 1>pcode="${po.dictField}"<#else>pcode="0"</#if> placeholder="请选择${po.filedComment}" <#if po.dictText?default("")?trim?length gt 1>back="${po.dictText}" @change="handleCategoryChange"</#if>/>
+    	<#if po.dictText?default("")?trim?length gt 1>
+    	<#assign form_cat_back = "${po.dictText}">
+    	</#if>
+	<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+          <a-input-number v-decorator="[ '${po.fieldName}', validatorRules.${po.fieldName}]" placeholder="请输入${po.filedComment}" style="width: 100%"/>
+	<#elseif po.classType=='file' || po.classType=='image'>
+		<#assign form_file = true>
+          <j-upload v-decorator="['${po.fieldName}']" :trigger-change="true"></j-upload>
+	<#elseif po.classType=='umeditor'>
+        <#assign form_editor = true>
+          <j-editor v-decorator="['${po.fieldName}',{trigger:'input'}]"/>
+    <#elseif po.fieldDbType=='Blob'>
+          <a-input v-decorator="[ '${po.fieldName}String', validatorRules.${po.fieldName}]" placeholder="请输入${po.filedComment}"></a-input>
+	<#else>
+          <a-input v-decorator="[ '${po.fieldName}', validatorRules.${po.fieldName}]" placeholder="请输入${po.filedComment}"></a-input>
+    </#if>
+        </a-form-item>
+</#if>
+</#list>
+        <#if form_cat_tree && form_cat_back?length gt 1>
+        <a-form-item v-show="false">
+          <a-input v-decorator="[ '${form_cat_back}']"></a-input>
+        </a-form-item>
+        </#if>
+
+      </a-form>
+    </a-spin>
+  </a-modal>
+</template>
+
+<script>
+
+  import { httpAction } from '@/api/manage'
+  import pick from 'lodash.pick'
+  <#if form_date>
+  import JDate from '@/components/jeecg/JDate'
+  </#if>
+  <#if form_file>
+  import JUpload from '@/components/jeecg/JUpload'
+  </#if>
+  <#if form_sel_depart>
+  import JSelectDepart from '@/components/jeecgbiz/JSelectDepart'
+  </#if>
+  <#if form_sel_user>
+  import JSelectUserByDep from '@/components/jeecgbiz/JSelectUserByDep'
+  </#if>
+  <#if form_select>
+  import JDictSelectTag from "@/components/dict/JDictSelectTag"
+  </#if>
+  <#if form_select_multi>
+  import JMultiSelectTag from "@/components/dict/JMultiSelectTag"
+  </#if>
+  <#if form_select_search>
+  import JSearchSelectTag from '@/components/dict/JSearchSelectTag'
+  </#if>
+  <#if form_editor>
+  import JEditor from '@/components/jeecg/JEditor'
+  </#if>
+  <#if form_cat_tree>
+  import JCategorySelect from '@/components/jeecg/JCategorySelect'
+  </#if>
+
+  export default {
+    name: "${sub.entityName}Modal",
+    components: {
+    <#if form_date>
+      JDate,
+    </#if>
+    <#if form_file>
+      JUpload,
+    </#if>
+    <#if form_sel_depart>
+      JSelectDepart,
+    </#if>
+    <#if form_sel_user>
+      JSelectUserByDep,
+    </#if>
+    <#if form_select>
+      JDictSelectTag,
+    </#if>
+    <#if form_select_multi>
+      JMultiSelectTag,
+    </#if>
+    <#if form_select_search>
+      JSearchSelectTag,
+    </#if>
+    <#if form_editor>
+      JEditor,
+    </#if>
+    <#if form_cat_tree>
+      JCategorySelect
+    </#if>
+    },
+    props:{
+      mainId:{
+        type:String,
+        required:false,
+        default:''
+      }
+    },
+    data () {
+      return {
+        form: this.$form.createForm(this),
+        title:"操作",
+        width:800,
+        visible: false,
+        model: {},
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 5 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
+
+        confirmLoading: false,
+        validatorRules:{
+        <#list sub.originalColumns as po>
+        <#if po.isShow =='Y'>
+        <#if po.fieldName !='id'>
+        <#if po.nullable =='N'>
+        ${po.fieldName}:{rules: [{ required: true, message: '请输入${po.filedComment}!' }]},
+        <#else>
+        ${po.fieldName}:{},
+        </#if>
+        </#if>
+        </#if>
+	    </#list>
+        },
+        url: {
+          add: "/${entityPackage}/${entityName?uncap_first}/add${sub.entityName}",
+          edit: "/${entityPackage}/${entityName?uncap_first}/edit${sub.entityName}",
+        }
+
+      }
+    },
+    created () {
+    },
+    methods: {
+      add () {
+        this.edit({});
+      },
+      edit (record) {
+        this.form.resetFields();
+        this.model = Object.assign({}, record);
+        this.visible = true;
+        this.$nextTick(() => {
+          this.form.setFieldsValue(pick(this.model<#list sub.originalColumns as po><#if po.fieldName !='id'><#if po.fieldDbType=='Blob'>,'${po.fieldName}String'<#else>,'${po.fieldName}'</#if></#if></#list>))
+        })
+      },
+      close () {
+        this.$emit('close');
+        this.visible = false;
+      },
+      handleOk () {
+        const that = this;
+        // 触发表单验证
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            that.confirmLoading = true;
+            let httpurl = '';
+            let method = '';
+            if(!this.model.id){
+              httpurl+=this.url.add;
+              method = 'post';
+            }else{
+              httpurl+=this.url.edit;
+               method = 'put';
+            }
+            let formData = Object.assign(this.model, values);
+            <#list sub.foreignKeys as key>
+            formData['${key?uncap_first}'] = this.mainId
+            </#list>
+            console.log("表单提交数据",formData)
+            httpAction(httpurl,formData,method).then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                that.$emit('ok');
+              }else{
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
+          }
+
+        })
+      },
+      handleCancel () {
+        this.close()
+      },
+      popupCallback(row){
+        this.form.setFieldsValue(pick(row<#list sub.originalColumns as po><#if po.fieldName !='id'><#if po.fieldDbType=='Blob'>,'${po.fieldName}String'<#else>,'${po.fieldName}'</#if></#if></#list>))
+      },
+      <#if form_cat_tree>
+      handleCategoryChange(value,backObj){
+        this.form.setFieldsValue(backObj)
+      }
+      </#if>
+
+
+    }
+  }
+</script>
+</#list>

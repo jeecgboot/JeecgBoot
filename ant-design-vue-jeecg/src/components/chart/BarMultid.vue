@@ -1,7 +1,7 @@
 <template>
   <div :style="{ padding: '0 0 32px 32px' }">
     <h4 :style="{ marginBottom: '20px' }">{{ title }}</h4>
-    <v-chart :forceFit="true" :height="height" :data="data">
+    <v-chart :forceFit="true" :height="254" :data="chartData" :padding="['auto', 'auto', '40', '50']">
       <v-tooltip />
       <v-axis />
       <v-legend />
@@ -13,6 +13,11 @@
 <script>
   import { DataSet } from '@antv/data-set'
 
+  const sourceDataConst = [
+    { type: 'Jeecg', 'Jan.': 18.9, 'Feb.': 28.8, 'Mar.': 39.3, 'Apr.': 81.4, 'May': 47, 'Jun.': 20.3, 'Jul.': 24, 'Aug.': 35.6 },
+    { type: 'Jeebt', 'Jan.': 12.4, 'Feb.': 23.2, 'Mar.': 34.5, 'Apr.': 99.7, 'May': 52.6, 'Jun.': 35.5, 'Jul.': 37.4, 'Aug.': 42.4 },
+  ];
+  const fieldsConst = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.'];
   export default {
     name: 'BarMultid',
     props: {
@@ -20,46 +25,47 @@
         type: String,
         default: ''
       },
-      dataSource:{
-        type: Array,
-        default: () => [
-          { type: 'Jeecg', 'Jan.': 18.9, 'Feb.': 28.8, 'Mar.': 39.3, 'Apr.': 81.4, 'May': 47, 'Jun.': 20.3, 'Jul.': 24, 'Aug.': 35.6 },
-          { type: 'Jeebt', 'Jan.': 12.4, 'Feb.': 23.2, 'Mar.': 34.5, 'Apr.': 99.7, 'May': 52.6, 'Jun.': 35.5, 'Jul.': 37.4, 'Aug.': 42.4 }
-        ]
+      sourceData:{
+        type:Array,
+        default:()=>[]
       },
       fields:{
-        type: Array,
-        default: () => ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.']
-      },
-      height: {
-        type: Number,
-        default: 254
+        type:Array,
+        default:()=>[]
       }
     },
     data() {
       return {
+        chartData:"",
+        height: 400,
         adjust: [{
           type: 'dodge',
-          marginRatio: 1 / 32
-        }]
+          marginRatio: 1 / 32,
+        }],
+      };
+    },
+    watch: {
+      'sourceData': function () {
+        this.drawChart();
       }
     },
-    computed: {
-      data() {
-        const dv = new DataSet.View().source(this.dataSource)
+    mounted(){
+      this.drawChart()
+    },
+    methods:{
+      drawChart(){
+        let temp = sourceDataConst;
+        if(this.sourceData && this.sourceData.length>0){
+          temp = this.sourceData
+        }
+        const dv = new DataSet.View().source(temp);
         dv.transform({
           type: 'fold',
-          fields: this.fields,
+          fields:(!this.fields||this.fields.length==0)?fieldsConst:this.fields,
           key: 'x',
-          value: 'y'
-        })
-
-        // bar 使用不了 - 和 / 所以替换下
-        return dv.rows.map(row => {
-          row.x = row.x.replace(/[-/]/g, '_')
-          return row
-        })
-
+          value: 'y',
+        });
+        this.chartData=dv.rows;
       }
     }
   }

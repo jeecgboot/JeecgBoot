@@ -42,7 +42,7 @@
               </a-form-item>
             </a-col>
             <a-col  :span="10">
-              <j-graphic-code @success="generateCode" style="float: right"></j-graphic-code>
+              <j-graphic-code @success="generateCode" ref="jgraphicCodeRef" style="float: right" remote></j-graphic-code>
             </a-col>
           </a-row>
 
@@ -84,13 +84,13 @@
       </a-tabs>
 
       <a-form-item>
-        <a-checkbox v-model="formLogin.rememberMe">自动登陆</a-checkbox>
-  <!--      <router-link :to="{ name: 'alteration'}" class="forge-password" style="float: right;">
+        <a-checkbox v-decorator="['rememberMe', {initialValue: true, valuePropName: 'checked'}]" >自动登陆</a-checkbox>
+        <router-link :to="{ name: 'alteration'}" class="forge-password" style="float: right;">
           忘记密码
         </router-link>
         <router-link :to="{ name: 'register'}" class="forge-password" style="float: right;margin-right: 10px" >
           注册账户
-        </router-link>-->
+        </router-link>
       </a-form-item>
 
       <a-form-item style="margin-top:24px">
@@ -201,13 +201,6 @@
           time: 60,
           smsSendBtn: false,
         },
-        formLogin: {
-          username: "",
-          password: "",
-          captcha: "",
-          mobile: "",
-          rememberMe: true
-        },
         validatorRules:{
           username:{rules: [{ required: true, message: '请输入用户名!',validator: 'click'}]},
           password:{rules: [{ required: true, message: '请输入密码!',validator: 'click'}]},
@@ -251,20 +244,22 @@
       },
       handleSubmit () {
         let that = this
-        let loginParams = {
-          remember_me: that.formLogin.rememberMe
-        };
+        let loginParams = {};
         that.loginBtn = true;
         // 使用账户密码登陆
         if (that.customActiveKey === 'tab1') {
-          that.form.validateFields([ 'username', 'password','inputCode' ], { force: true }, (err, values) => {
+          that.form.validateFields([ 'username', 'password','inputCode', 'rememberMe' ], { force: true }, (err, values) => {
             if (!err) {
               loginParams.username = values.username
               // update-begin- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
               //loginParams.password = md5(values.password)
               //loginParams.password = encryption(values.password,that.encryptedString.key,that.encryptedString.iv)
               loginParams.password = values.password
+              loginParams.remember_me = values.rememberMe
               // update-begin- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
+              let checkParams = this.$refs.jgraphicCodeRef.getLoginParam()
+              loginParams.captcha = checkParams.checkCode
+              loginParams.checkKey = checkParams.checkKey
 
               that.Login(loginParams).then((res) => {
                 this.departConfirm(res)
@@ -279,10 +274,11 @@
           })
           // 使用手机号登陆
         } else {
-          that.form.validateFields([ 'mobile', 'captcha' ], { force: true }, (err, values) => {
+          that.form.validateFields([ 'mobile', 'captcha', 'rememberMe' ], { force: true }, (err, values) => {
             if (!err) {
               loginParams.mobile = values.mobile
               loginParams.captcha = values.captcha
+              loginParams.remember_me = values.rememberMe
               that.PhoneLogin(loginParams).then((res) => {
                 console.log(res.result);
                 this.departConfirm(res)

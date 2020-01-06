@@ -1,32 +1,29 @@
 package org.jeecg.modules.system.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
+import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.*;
+import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.*;
 
 /**
  * <p>
@@ -52,7 +49,70 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	private ISysBaseAPI sysBaseAPI;
 	@Autowired
 	private SysDepartMapper sysDepartMapper;
-	
+
+    @Override
+    @CacheEvict(value = {CacheConstant.SYS_USERS_CACHE}, allEntries = true)
+    public Result<?> resetPassword(String username, String oldpassword, String newpassword, String confirmpassword) {
+        SysUser user = userMapper.getUserByName(username);
+        String passwordEncode = PasswordUtil.encrypt(username, oldpassword, user.getSalt());
+        if (!user.getPassword().equals(passwordEncode)) {
+            return Result.error("旧密码输入错误!");
+        }
+        if (oConvertUtils.isEmpty(newpassword)) {
+            return Result.error("新密码不允许为空!");
+        }
+        if (!newpassword.equals(confirmpassword)) {
+            return Result.error("两次输入密码不一致!");
+        }
+        String password = PasswordUtil.encrypt(username, newpassword, user.getSalt());
+        this.userMapper.update(new SysUser().setPassword(password), new LambdaQueryWrapper<SysUser>().eq(SysUser::getId, user.getId()));
+        return Result.ok("密码重置成功!");
+    }
+
+    @Override
+    @CacheEvict(value = {CacheConstant.SYS_USERS_CACHE}, allEntries = true)
+    public Result<?> changePassword(SysUser sysUser) {
+        String salt = oConvertUtils.randomGen(8);
+        sysUser.setSalt(salt);
+        String password = sysUser.getPassword();
+        String passwordEncode = PasswordUtil.encrypt(sysUser.getUsername(), password, salt);
+        sysUser.setPassword(passwordEncode);
+        this.userMapper.updateById(sysUser);
+        return Result.ok("密码修改成功!");
+    }
+
+    @Override
+    @CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
+	@Transactional(rollbackFor = Exception.class)
+	public boolean deleteUser(String userId) {
+		//1.删除用户
+		this.removeById(userId);
+		//2.删除用户部门关联关系
+		LambdaQueryWrapper<SysUserDepart> query = new LambdaQueryWrapper<SysUserDepart>();
+		query.eq(SysUserDepart::getUserId, userId);
+		sysUserDepartMapper.delete(query);
+		//3.删除用户角色关联关系
+		//TODO
+		return false;
+	}
+
+	@Override
+    @CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
+	@Transactional(rollbackFor = Exception.class)
+	public boolean deleteBatchUsers(String userIds) {
+		//1.删除用户
+		this.removeByIds(Arrays.asList(userIds.split(",")));
+		//2.删除用户部门关系
+		LambdaQueryWrapper<SysUserDepart> query = new LambdaQueryWrapper<SysUserDepart>();
+		for(String id : userIds.split(",")) {
+			query.eq(SysUserDepart::getUserId, id);
+			this.sysUserDepartMapper.delete(query);
+		}
+		//3.删除用户角色关系
+		//TODO
+		return false;
+	}
+
 	@Override
 	public SysUser getUserByName(String username) {
 		return userMapper.getUserByName(username);
@@ -73,7 +133,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	}
 
 	@Override
-	@CacheEvict(value= CacheConstant.LOGIN_USER_RULES_CACHE, allEntries=true)
+	@CacheEvict(value= {CacheConstant.SYS_USERS_CACHE}, allEntries=true)
 	@Transactional
 	public void editUserWithRole(SysUser user, String roles) {
 		this.updateById(user);
@@ -100,7 +160,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return 角色集合
 	 */
 	@Override
-	@Cacheable(value = CacheConstant.LOGIN_USER_RULES_CACHE,key = "'Roles_'+#username")
 	public Set<String> getUserRolesSet(String username) {
 		// 查询用户拥有的角色集合
 		List<String> roles = sysUserRoleMapper.getRoleByUserName(username);
@@ -115,7 +174,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	 * @return 权限集合
 	 */
 	@Override
-	@Cacheable(value = CacheConstant.LOGIN_USER_RULES_CACHE,key = "'Permissions_'+#username")
 	public Set<String> getUserPermissionsSet(String username) {
 		Set<String> permissionSet = new HashSet<>();
 		List<SysPermission> permissionList = sysPermissionMapper.queryByUser(username);
@@ -173,6 +231,26 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		return userMapper.getUserByDepId(page, departId,username);
 	}
 
+	@Override
+	public IPage<SysUser> getUserByDepartIdAndQueryWrapper(Page<SysUser> page, String departId, QueryWrapper<SysUser> queryWrapper) {
+		LambdaQueryWrapper<SysUser> lambdaQueryWrapper = queryWrapper.lambda();
+
+		lambdaQueryWrapper.eq(SysUser::getDelFlag, "0");
+        lambdaQueryWrapper.inSql(SysUser::getId, "SELECT user_id FROM sys_user_depart WHERE dep_id = '" + departId + "'");
+
+        return userMapper.selectPage(page, lambdaQueryWrapper);
+	}
+
+	@Override
+	public IPage<SysUserSysDepartModel> queryUserByOrgCode(String orgCode, SysUser userParams, IPage page) {
+		List<SysUserSysDepartModel> list = baseMapper.getUserByOrgCode(page, orgCode, userParams);
+		Integer total = baseMapper.getUserByOrgCodeTotal(orgCode, userParams);
+
+		IPage<SysUserSysDepartModel> result = new Page<>(page.getCurrent(), page.getSize(), total);
+		result.setRecords(list);
+
+		return result;
+	}
 
 	// 根据角色Id查询
 	@Override
@@ -182,6 +260,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 
 	@Override
+	@CacheEvict(value= {CacheConstant.SYS_USERS_CACHE}, key="#username")
 	public void updateUserDepart(String username,String orgCode) {
 		baseMapper.updateUserDepart(username, orgCode);
 	}
@@ -214,7 +293,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 	@Override
 	@Transactional
-	@CacheEvict(value="loginUser_cacheRules", allEntries=true)
+	@CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
 	public void editUserWithDepart(SysUser user, String departs) {
 		this.updateById(user);  //更新角色的时候已经更新了一次了，可以再跟新一次
 		//先删后加

@@ -40,6 +40,14 @@
           <a-input placeholder="请输入用户名称" v-decorator="[ 'realname', validatorRules.realname]" />
         </a-form-item>
 
+        <a-form-item label="工号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input placeholder="请输入工号" v-decorator="[ 'workNo', validatorRules.workNo]" />
+        </a-form-item>
+
+        <a-form-item label="职务" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <j-select-position placeholder="请选择职务" :multiple="false" v-decorator="['post', {}]"/>
+        </a-form-item>
+
         <a-form-item label="角色分配" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!roleDisabled" >
           <a-select
             mode="multiple"
@@ -104,6 +112,10 @@
           <a-input placeholder="请输入手机号码" :disabled="isDisabledAuth('user:form:phone')" v-decorator="[ 'phone', validatorRules.phone]" />
         </a-form-item>
 
+        <a-form-item label="座机" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input placeholder="请输入座机" v-decorator="[ 'telephone', validatorRules.telephone]"/>
+        </a-form-item>
+
         <a-form-item label="工作流引擎" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <j-dict-select-tag  v-decorator="['activitiSync', {}]" placeholder="请选择是否同步工作流引擎" :type="'radio'" :triggerChange="true" dictCode="activiti_sync"/>
         </a-form-item>
@@ -127,6 +139,7 @@
   import Vue from 'vue'
   // 引入搜索部门弹出框的组件
   import departWindow from './DepartWindow'
+  import JSelectPosition from '@/components/jeecgbiz/JSelectPosition'
   import { ACCESS_TOKEN } from "@/store/mutation-types"
   import { getAction } from '@/api/manage'
   import {addUser,editUser,queryUserRole,queryall } from '@/api/api'
@@ -134,9 +147,10 @@
   import {duplicateCheck } from '@/api/api'
 
   export default {
-    name: "RoleModal",
+    name: "UserModal",
     components: {
       departWindow,
+      JSelectPosition
     },
     data () {
       return {
@@ -185,8 +199,19 @@
               validator: this.validateEmail
             }],
           },
-          roles:{}
+          roles:{},
           //  sex:{initialValue:((!this.model.sex)?"": (this.model.sex+""))}
+          workNo: {
+            rules: [
+              { required: true, message: '请输入工号' },
+              { validator: this.validateWorkNo }
+            ]
+          },
+          telephone: {
+            rules: [
+              { pattern: /^0\d{2,3}-[1-9]\d{6,7}$/, message: '请输入正确的座机号码' },
+            ]
+          }
         },
         title:"操作",
         visible: false,
@@ -282,7 +307,7 @@
         that.visible = true;
         that.model = Object.assign({}, record);
         that.$nextTick(() => {
-          that.form.setFieldsValue(pick(this.model,'username','sex','realname','email','phone','activitiSync'))
+          that.form.setFieldsValue(pick(this.model,'username','sex','realname','email','phone','activitiSync','workNo','telephone','post'))
         });
         // 调用查询用户对应的部门信息的方法
         that.checkedDepartKeys = [];
@@ -389,7 +414,10 @@
         if(!value){
           callback()
         }else{
-          if(new RegExp(/^1[3|4|5|7|8][0-9]\d{8}$/).test(value)){
+          //update-begin--Author:kangxiaolin  Date:20190826 for：[05] 手机号不支持199号码段--------------------
+          if(new RegExp(/^1[3|4|5|7|8|9][0-9]\d{8}$/).test(value)){
+            //update-end--Author:kangxiaolin  Date:20190826 for：[05] 手机号不支持199号码段--------------------
+
             var params = {
               tableName: 'sys_user',
               fieldName: 'phone',
@@ -446,6 +474,21 @@
           callback("用户名已存在!")
         }
       })
+      },
+      validateWorkNo(rule, value, callback){
+        var params = {
+          tableName: 'sys_user',
+          fieldName: 'work_no',
+          fieldVal: value,
+          dataId: this.userId
+        };
+        duplicateCheck(params).then((res) => {
+          if (res.success) {
+            callback()
+          } else {
+            callback("工号已存在!")
+          }
+        })
       },
       handleConfirmBlur  (e) {
         const value = e.target.value;

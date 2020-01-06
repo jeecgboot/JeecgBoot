@@ -1,6 +1,8 @@
 <template>
   <global-layout @dynamicRouterShow="dynamicRouterShow">
-    <contextmenu :itemList="menuItemList" :visible.sync="menuVisible" @select="onMenuSelect"/>
+    <!-- update-begin- author:sunjianlei --- date:20191009 --- for: 提升右键菜单的层级 -->
+    <contextmenu :itemList="menuItemList" :visible.sync="menuVisible" style="z-index: 9999;" @select="onMenuSelect"/>
+    <!-- update-end- author:sunjianlei --- date:20191009 --- for: 提升右键菜单的层级 -->
     <a-tabs
       @contextmenu.native="e => onContextmenu(e)"
       v-if="multipage"
@@ -10,6 +12,7 @@
       :hide-add="true"
       type="editable-card"
       @change="changePage"
+      @tabClick="tabCallBack"
       @edit="editPage">
       <a-tab-pane :id="page.fullPath" :key="page.fullPath" v-for="page in pageList">
         <span slot="tab" :pagekey="page.fullPath">{{ page.meta.title }}</span>
@@ -18,9 +21,11 @@
     <div style="margin: 12px 12px 0;">
       <transition name="page-toggle">
         <keep-alive v-if="multipage">
-          <router-view/>
+          <router-view v-if="reloadFlag"/>
         </keep-alive>
-        <router-view v-else/>
+        <template v-else>
+          <router-view v-if="reloadFlag"/>
+        </template>
       </transition>
     </div>
   </global-layout>
@@ -30,6 +35,7 @@
   import GlobalLayout from '@/components/page/GlobalLayout'
   import Contextmenu from '@/components/menu/Contextmenu'
   import { mixin, mixinDevice } from '@/utils/mixin.js'
+  import { triggerWindowResizeEvent } from '@/utils/util'
 
   const indexKey = '/dashboard/analysis'
 
@@ -47,12 +53,21 @@
         activePage: '',
         menuVisible: false,
         menuItemList: [
+          { key: '4', icon: 'reload', text: '刷 新' },
           { key: '1', icon: 'arrow-left', text: '关闭左侧' },
           { key: '2', icon: 'arrow-right', text: '关闭右侧' },
           { key: '3', icon: 'close', text: '关闭其它' }
-        ]
+        ],
+        reloadFlag:true
       }
     },
+    /* update_begin author:wuxianquan date:20190828 for: 关闭当前tab页，供子页面调用 ->望菜单能配置外链，直接弹出新页面而不是嵌入iframe #428 */
+    provide(){
+      return{
+        closeCurrent:this.closeCurrent
+      }
+    },
+    /* update_end author:wuxianquan date:20190828 for: 关闭当前tab页，供子页面调用->望菜单能配置外链，直接弹出新页面而不是嵌入iframe #428 */
     computed: {
       multipage() {
         //判断如果是手机模式，自动切换为单页面模式
@@ -101,15 +116,22 @@
         this.$router.push(Object.assign({},waitRouter));
       },
       'multipage': function(newVal) {
-        if (!newVal) {
-          this.linkList = [this.$route.fullPath]
-          this.pageList = [this.$route]
+        if(this.reloadFlag){
+          if (!newVal) {
+            this.linkList = [this.$route.fullPath]
+            this.pageList = [this.$route]
+          }
         }
       }
     },
     methods: {
       changePage(key) {
         this.activePage = key
+      },
+      tabCallBack() {
+        this.$nextTick(() => {
+          triggerWindowResizeEvent()
+        })
       },
       editPage(key, action) {
         this[action](key)
@@ -157,13 +179,21 @@
           case '3':
             this.closeOthers(pageKey)
             break
+          case '4':
+            this.routeReload()
+            break
           default:
             break
         }
       },
+      /* update_begin author:wuxianquan date:20190828 for: 关闭当前tab页，供子页面调用->望菜单能配置外链，直接弹出新页面而不是嵌入iframe #428 */
+      closeCurrent(){
+        this.remove(this.activePage);
+      },
+      /* update_end author:wuxianquan date:20190828 for: 关闭当前tab页，供子页面调用->望菜单能配置外链，直接弹出新页面而不是嵌入iframe #428 */
       closeOthers(pageKey) {
         let index = this.linkList.indexOf(pageKey)
-        if (pageKey == indexKey) {
+        if (pageKey == indexKey || pageKey.indexOf('?ticke=')>=0) {
           this.linkList = this.linkList.slice(index, index + 1)
           this.pageList = this.pageList.slice(index, index + 1)
           this.activePage = this.linkList[0]
@@ -171,7 +201,7 @@
           let indexContent = this.pageList.slice(0, 1)[0]
           this.linkList = this.linkList.slice(index, index + 1)
           this.pageList = this.pageList.slice(index, index + 1)
-          this.linkList.unshift(indexKey)
+          this.linkList.unshift(indexContent.fullPath)
           this.pageList.unshift(indexContent)
           this.activePage = this.linkList[1]
         }
@@ -185,7 +215,7 @@
         let index = this.linkList.indexOf(pageKey)
         this.linkList = this.linkList.slice(index)
         this.pageList = this.pageList.slice(index)
-        this.linkList.unshift(indexKey)
+        this.linkList.unshift(indexContent.fullPath)
         this.pageList.unshift(indexContent)
         if (this.linkList.indexOf(this.activePage) < 0) {
           this.activePage = this.linkList[0]
@@ -207,13 +237,25 @@
           let meta = Object.assign({},currRouter.meta,{title:title})
           this.pageList.splice(keyIndex, 1, Object.assign({},currRouter,{meta:meta}))
         }
-      }
+      },
       //update-end-author:taoyan date:20190430 for:动态路由title显示配置的菜单title而不是其对应路由的title
+
+      //update-begin-author:taoyan date:20191008 for:路由刷新
+      routeReload(){
+        this.reloadFlag = false
+        let ToggleMultipage = "ToggleMultipage"
+        this.$store.dispatch(ToggleMultipage,false)
+        this.$nextTick(()=>{
+          this.$store.dispatch(ToggleMultipage,true)
+          this.reloadFlag = true
+        })
+      }
+      //update-end-author:taoyan date:20191008 for:路由刷新
     }
   }
 </script>
 
-<style lang="scss">
+<style lang="less">
 
   /*
  * The following styles are auto-applied to elements with
@@ -291,7 +333,7 @@
       border-bottom: 1px solid transparent !important;
     }
     .ant-tabs-tab-active {
-      border-color: #1890ff !important;
+      border-color: @primary-color!important;
     }
   }
 

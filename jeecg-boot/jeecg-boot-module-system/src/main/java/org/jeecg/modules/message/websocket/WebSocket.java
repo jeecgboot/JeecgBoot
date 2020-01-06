@@ -13,12 +13,18 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.springframework.stereotype.Component;
 
+import com.alibaba.fastjson.JSONObject;
+
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @Author scott
+ * @Date 2019/11/29 9:41
+ * @Description: 此注解相当于设置访问URL
+ */
 @Component
 @Slf4j
-@ServerEndpoint("/websocket/{userId}")
-//此注解相当于设置访问URL
+@ServerEndpoint("/websocket/{userId}") //此注解相当于设置访问URL
 public class WebSocket {
     
     private Session session;
@@ -48,7 +54,12 @@ public class WebSocket {
     
     @OnMessage
     public void onMessage(String message) {
-    	log.info("【websocket消息】收到客户端消息:"+message);
+        //todo 现在有个定时任务刷，应该去掉
+    	log.debug("【websocket消息】收到客户端消息:"+message);
+    	JSONObject obj = new JSONObject();
+    	obj.put("cmd", "heartcheck");//业务类型
+    	obj.put("msgTxt", "心跳响应");//消息内容
+    	session.getAsyncRemote().sendText(obj.toJSONString());
     }
     
     // 此为广播消息

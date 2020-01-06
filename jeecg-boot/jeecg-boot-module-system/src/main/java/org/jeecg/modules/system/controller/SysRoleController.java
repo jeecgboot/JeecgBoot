@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.controller;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +18,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.util.PmsUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.entity.SysPermissionDataRule;
@@ -148,21 +150,10 @@ public class SysRoleController {
 	 * @param id
 	 * @return
 	 */
-	@CacheEvict(value= CacheConstant.LOGIN_USER_RULES_CACHE, allEntries=true)
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-	public Result<SysRole> delete(@RequestParam(name="id",required=true) String id) {
-		Result<SysRole> result = new Result<SysRole>();
-		SysRole sysrole = sysRoleService.getById(id);
-		if(sysrole==null) {
-			result.error500("未找到对应实体");
-		}else {
-			boolean ok = sysRoleService.removeById(id);
-			if(ok) {
-				result.success("删除成功!");
-			}
-		}
-		
-		return result;
+	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
+		sysRoleService.deleteRole(id);
+		return Result.ok("删除角色成功");
 	}
 	
 	/**
@@ -170,15 +161,14 @@ public class SysRoleController {
 	 * @param ids
 	 * @return
 	 */
-	@CacheEvict(value=CacheConstant.LOGIN_USER_RULES_CACHE, allEntries=true)
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysRole> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<SysRole> result = new Result<SysRole>();
-		if(ids==null || "".equals(ids.trim())) {
-			result.error500("参数不识别！");
+		if(oConvertUtils.isEmpty(ids)) {
+			result.error500("未选中角色！");
 		}else {
-			this.sysRoleService.removeByIds(Arrays.asList(ids.split(",")));
-			result.success("删除成功!");
+			sysRoleService.deleteBatchRole(ids.split(","));
+			result.success("删除角色成功!");
 		}
 		return result;
 	}
@@ -290,14 +280,10 @@ public class SysRoleController {
 			params.setHeadRows(1);
 			params.setNeedSave(true);
 			try {
-				List<SysRole> listSysRoles = ExcelImportUtil.importExcel(file.getInputStream(), SysRole.class, params);
-				for (SysRole sysRoleExcel : listSysRoles) {
-					sysRoleService.save(sysRoleExcel);
-				}
-				return Result.ok("文件导入成功！数据行数：" + listSysRoles.size());
+				return sysRoleService.importExcelCheckRoleCode(file, params);
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
-				return Result.error("文件导入失败:"+e.getMessage());
+				return Result.error("文件导入失败:" + e.getMessage());
 			} finally {
 				try {
 					file.getInputStream().close();
@@ -358,7 +344,7 @@ public class SysRoleController {
 				this.sysRolePermissionService.updateById(sysRolePermission);
 			}
 		} catch (Exception e) {
-			log.error("SysRoleController.saveDatarule()发生异常：" + e.getMessage());
+			log.error("SysRoleController.saveDatarule()发生异常：" + e.getMessage(),e);
 			return Result.error("保存失败");
 		}
 		return Result.ok("保存成功!");
