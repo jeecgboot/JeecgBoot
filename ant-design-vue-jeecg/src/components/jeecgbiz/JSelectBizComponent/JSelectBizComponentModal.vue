@@ -2,7 +2,7 @@
   <a-modal
     centered
     :title="name + '选择'"
-    :width="900"
+    :width="width"
     :visible="visible"
     @ok="handleOk"
     @cancel="close"
@@ -17,7 +17,7 @@
 
               <a-col :span="14">
                 <a-form-item :label="(queryParamText||name)">
-                  <a-input :placeholder="'请输入' + (queryParamText||name)" v-model="queryParam[valueKey]"></a-input>
+                  <a-input v-model="queryParam[queryParamCode||valueKey]" :placeholder="'请输入' + (queryParamText||name)" @pressEnter="searchQuery"/>
                 </a-form-item>
               </a-col>
               <a-col :span="8">
@@ -34,8 +34,8 @@
         <a-table
           size="small"
           bordered
-          rowKey="id"
-          :columns="columns"
+          :rowKey="rowKey"
+          :columns="innerColumns"
           :dataSource="dataSource"
           :pagination="ipagination"
           :loading="loading"
@@ -49,7 +49,7 @@
       <a-col :span="8">
         <a-card :title="'已选' + name" :bordered="false" :head-style="{padding:0}" :body-style="{padding:0}">
 
-          <a-table rowKey="id" size="small" bordered v-bind="selectedTable">
+          <a-table size="small" :rowKey="rowKey" bordered v-bind="selectedTable">
               <span slot="action" slot-scope="text, record, index">
                 <a @click="handleDeleteSelected(record, index)">删除</a>
               </span>
@@ -62,7 +62,9 @@
 </template>
 
 <script>
+  import { getAction } from '@/api/manage'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import { cloneObject, pushIfNotExist } from '@/utils/util'
 
   export default {
     name: 'JSelectBizComponentModal',
@@ -84,6 +86,10 @@
         type: Boolean,
         default: true
       },
+      width: {
+        type: Number,
+        default: 900
+      },
 
       name: {
         type: String,
@@ -94,60 +100,110 @@
         required: true,
         default: ''
       },
+      // 根据 value 获取显示文本的地址，例如存的是 username，可以通过该地址获取到 realname
+      valueUrl: {
+        type: String,
+        default: ''
+      },
       displayKey: {
         type: String,
         default: null
       },
-      propColumns: {
+      columns: {
         type: Array,
+        required: true,
         default: () => []
+      },
+      // 查询条件Code
+      queryParamCode: {
+        type: String,
+        default: null
       },
       // 查询条件文字
       queryParamText: {
         type: String,
         default: null
       },
-
+      rowKey: {
+        type: String,
+        default: 'id'
+      },
     },
     data() {
       return {
+        innerValue: [],
         // 表头
-        columns: this.propColumns,
+        innerColumns: this.columns,
         // 已选择列表
         selectedTable: {
           pagination: false,
           scroll: { y: 240 },
           columns: [
-            this.propColumns[0],
+            {
+              ...this.columns[0],
+              width: this.columns[0].widthRight || this.columns[0].width,
+            },
             { title: '操作', dataIndex: 'action', align: 'center', width: 60, scopedSlots: { customRender: 'action' }, }
           ],
           dataSource: [],
         },
-        url: { list: this.listUrl }
+        url: { list: this.listUrl },
+        /* 分页参数 */
+        ipagination: {
+          current: 1,
+          pageSize: 5,
+          pageSizeOptions: ['5', '10', '20', '30'],
+          showTotal: (total, range) => {
+            return range[0] + '-' + range[1] + ' 共' + total + '条'
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0
+        },
+        options: [],
+        dataSourceMap: {},
       }
     },
     watch: {
       value: {
+        deep: true,
         immediate: true,
         handler(val) {
+          this.innerValue = cloneObject(val)
+          this.selectedRowKeys = []
           this.valueWatchHandler(val)
+          this.queryOptionsByValue(val)
         }
       },
       dataSource: {
         deep: true,
         handler(val) {
-          let options = val.map(data => ({ label: data[this.displayKey || this.valueKey], value: data[this.valueKey] }))
-          this.$emit('ok', options)
-          this.valueWatchHandler(this.value)
+          this.emitOptions(val)
+          this.valueWatchHandler(this.innerValue)
         }
       },
-      selectionRows: {
+      selectedRowKeys: {
         immediate: true,
         deep: true,
         handler(val) {
-          this.selectedTable.dataSource = val
+          this.selectedTable.dataSource = val.map(key => {
+            for (let data of this.dataSource) {
+              if (data[this.rowKey] === key) {
+                pushIfNotExist(this.innerValue, data[this.valueKey])
+                return data
+              }
+            }
+            for (let data of this.selectedTable.dataSource) {
+              if (data[this.rowKey] === key) {
+                pushIfNotExist(this.innerValue, data[this.valueKey])
+                return data
+              }
+            }
+            console.warn('未找到选择的行信息，key：' + key)
+            return {}
+          })
         },
-      },
+      }
     },
 
     methods: {
@@ -158,18 +214,63 @@
       },
 
       valueWatchHandler(val) {
-        let dataSource = []
-        let selectedRowKeys = []
         val.forEach(item => {
-          this.dataSource.forEach(data => {
+          this.dataSource.concat(this.selectedTable.dataSource).forEach(data => {
             if (data[this.valueKey] === item) {
-              dataSource.push(data)
-              selectedRowKeys.push(data.id)
+              pushIfNotExist(this.selectedRowKeys, data[this.rowKey])
             }
           })
         })
-        this.selectedTable.dataSource = dataSource
-        this.selectedRowKeys = selectedRowKeys
+      },
+
+      queryOptionsByValue(value) {
+        if (!value || value.length === 0) {
+          return
+        }
+        // 判断options是否存在value，如果已存在数据就不再请求后台了
+        let notExist = false
+        for (let val of value) {
+          let find = false
+          for (let option of this.options) {
+            if (val === option.value) {
+              find = true
+              break
+            }
+          }
+          if (!find) {
+            notExist = true
+            break
+          }
+        }
+        if (!notExist) return
+        getAction(this.valueUrl || this.listUrl, {
+          // 这里最后加一个 , 的原因是因为无论如何都要使用 in 查询，防止后台进行了模糊匹配，导致查询结果不准确
+          [this.valueKey]: value.join(',') + ',',
+          pageNo: 1,
+          pageSize: value.length
+        }).then((res) => {
+          if (res.success) {
+            let dataSource = res.result
+            if (!(dataSource instanceof Array)) {
+              dataSource = res.result.records
+            }
+            this.emitOptions(dataSource, (data) => {
+              pushIfNotExist(this.innerValue, data[this.valueKey])
+              pushIfNotExist(this.selectedRowKeys, data[this.rowKey])
+              pushIfNotExist(this.selectedTable.dataSource, data, this.rowKey)
+            })
+          }
+        })
+      },
+
+      emitOptions(dataSource, callback) {
+        dataSource.forEach(data => {
+          let key = data[this.valueKey]
+          this.dataSourceMap[key] = data
+          pushIfNotExist(this.options, { label: data[this.displayKey || this.valueKey], value: key }, 'value')
+          typeof callback === 'function' ? callback(data) : ''
+        })
+        this.$emit('options', this.options, this.dataSourceMap)
       },
 
       /** 完成选择 */
@@ -181,22 +282,30 @@
 
       /** 删除已选择的 */
       handleDeleteSelected(record, index) {
-        this.selectedRowKeys.splice(this.selectedRowKeys.indexOf(record.id), 1)
+        this.selectedRowKeys.splice(this.selectedRowKeys.indexOf(record[this.rowKey]), 1)
         this.selectedTable.dataSource.splice(index, 1)
       },
 
       customRowFn(record) {
-        if (!this.multiple) {
-          return {
-            on: {
-              click: () => {
-                this.selectedRowKeys = [record.id]
+        return {
+          on: {
+            click: () => {
+              let key = record[this.rowKey]
+              if (!this.multiple) {
+                this.selectedRowKeys = [key]
                 this.selectedTable.dataSource = [record]
+              } else {
+                let index = this.selectedRowKeys.indexOf(key)
+                if (index === -1) {
+                  this.selectedRowKeys.push(key)
+                  this.selectedTable.dataSource.push(record)
+                } else {
+                  this.handleDeleteSelected(record, index)
+                }
               }
             }
           }
         }
-        return {}
       },
 
     }

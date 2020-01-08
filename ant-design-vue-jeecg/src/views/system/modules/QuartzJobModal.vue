@@ -34,16 +34,14 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="参数"
-          hasFeedback >
-          <a-input placeholder="请输入参数" v-decorator="['parameter', {}]" />
+          label="参数">
+          <a-textarea placeholder="请输入参数" :rows="5" v-decorator="['parameter', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="描述"
-          hasFeedback >
-          <a-input placeholder="请输入描述" v-decorator="['description', {}]" />
+          label="描述">
+          <a-textarea placeholder="请输入描述" :rows="3" v-decorator="['description', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"

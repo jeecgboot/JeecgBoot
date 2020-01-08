@@ -68,7 +68,10 @@
 
         <!-- 字符串超长截取省略号显示-->
         <span slot="description" slot-scope="text">
-          <j-ellipsis :value="text" :length="25" />
+          <j-ellipsis :value="text" :length="20" />
+        </span>
+        <span slot="parameterRender" slot-scope="text">
+          <j-ellipsis :value="text" :length="20" />
         </span>
 
 
@@ -151,12 +154,14 @@
           {
             title: '参数',
             align:"center",
-            dataIndex: 'parameter'
+            width: 150,
+            dataIndex: 'parameter',
+            scopedSlots: {customRender: 'parameterRender'},
           },
           {
             title: '描述',
             align:"center",
-            width: 300,
+            width: 250,
             dataIndex: 'description',
             scopedSlots: {customRender: 'description'},
           },

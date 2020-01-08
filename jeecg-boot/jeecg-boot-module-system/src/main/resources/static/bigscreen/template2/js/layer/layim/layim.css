@@ -1,0 +1,151 @@
+
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,input,button,textarea,p,blockquote,th,td,form{margin:0; padding:0;}
+input,button,textarea,select,optgroup,option{font-family:inherit; font-size:inherit; font-style:inherit; font-weight:inherit; outline: 0;}
+li{list-style:none;}
+.xxim_icon, .xxim_main i, .layim_chatbox i{position:absolute;}
+.loading{background:url(loading.gif) no-repeat center center;}
+.layim_chatbox a, .layim_chatbox a:hover{color:#343434; text-decoration:none; }
+.layim_zero{position:absolute; width:0; height:0; border-style:dashed; border-color:transparent; overflow:hidden;}
+
+.xxim_main{position:fixed; right:1px; bottom:1px; width:230px; border:1px solid #BEBEBE; background-color:#fff; font-size:12px; box-shadow: 0 0 10px rgba(0,0,0,.2); z-index:99999999}
+.layim_chatbox textarea{resize:none;}
+.xxim_main em, .xxim_main i, .layim_chatbox em, .layim_chatbox i{font-style:normal; font-weight:400;}
+.xxim_main h5{font-size:100%; font-weight:400;}
+
+/* 搜索栏 */
+.xxim_search{position:relative; padding-left:40px; height:40px; border-bottom:1px solid #DCDCDC; background-color:#fff;}
+.xxim_search i{left:10px; top:12px; width:16px; height:16px;font-size: 16px;color:#999;}
+.xxim_search input{border:none; background:none; width: 180px; margin-top:10px; line-height:20px;}
+.xxim_search span{display:none; position:absolute; right:10px; top:10px; height:18px; line-height:18px;width:18px;text-align: center;background-color:#AFAFAF; color:#fff; cursor:pointer; border-radius:2px; font-size:12px; font-weight:900;}
+.xxim_search span:hover{background-color:#FCBE00;}
+
+/* 主面板tab */
+.xxim_tabs{height:45px; border-bottom:1px solid #DBDBDB; background-color:#F4F4F4; font-size:0;}
+.xxim_tabs span{position:relative; display:inline-block; *display:inline; *zoom:1; vertical-align:top; width:76px; height:45px; border-right:1px solid #DBDBDB; cursor:pointer; font-size:12px;}
+.xxim_tabs span i{top:12px; left:50%; width:20px; margin-left:-10px; height:20px;font-size:20px;color:#ccc;}
+.xxim_tabs .xxim_tabnow{height:46px; background-color:#fff;}
+.xxim_tabs .xxim_tabnow i{color:#1ab394;}
+.xxim_tabs .xxim_latechat{border-right:none;}
+.xxim_tabs .xxim_tabfriend i{width:14px; margin-left:-7px;}
+
+/* 主面板列表 */
+.xxim_list{display:none; height:350px; padding:5px 0; overflow:hidden;}
+.xxim_list:hover{ overflow-y:auto;}
+.xxim_list h5{position:relative; padding-left:32px; height:26px; line-height:26px; cursor:pointer; color:#000; font-size:0;}
+.xxim_list h5 span{display:inline-block; *display:inline; *zoom:1; vertical-align:top; max-width:140px; overflow:hidden; text-overflow: ellipsis; white-space:nowrap; font-size:12px;}
+.xxim_list h5 i{left:15px; top:8px; width:10px; height:10px;font-size:10px;color:#666;}
+.xxim_list h5 *{font-size:12px;}
+.xxim_list .xxim_chatlist{display:none;}
+.xxim_list .xxim_liston h5 i{width:8px; height:7px;}
+.xxim_list .xxim_liston .xxim_chatlist{display:block;}
+.xxim_chatlist {}
+.xxim_chatlist li{position:relative; height:40px; line-height:30px; padding:5px 10px; font-size:0; cursor:pointer;}
+.xxim_chatlist li:hover{background-color:#F2F4F8}
+.xxim_chatlist li *{display:inline-block; *display:inline; *zoom:1; vertical-align:top; font-size:12px;}
+.xxim_chatlist li span{padding-left:10px; max-width:120px;  overflow:hidden; text-overflow: ellipsis; white-space:nowrap;}
+.xxim_chatlist li img{width:30px; height:30px;}
+.xxim_chatlist li .xxim_time{position:absolute; right:10px; color:#999;}
+.xxim_list .xxim_errormsg{text-align:center; margin:50px 0; color:#999;}
+.xxim_searchmain{position:absolute; width:230px; height:491px; left:0; top:41px; z-index:10; background-color:#fff;}
+
+/* 主面板底部 */
+.xxim_bottom{height:34px; border-top:1px solid #D0DCF3; background-color:#F2F4F8;}
+.xxim_expend{border-left:1px solid #D0DCF3; border-bottom:1px solid #D0DCF3;}
+.xxim_bottom li{position:relative; width:50px; height:32px; line-height:32px; float:left; border-right:1px solid #D0DCF3;  cursor:pointer;}
+.xxim_bottom li i{ top:9px;}
+.xxim_bottom .xxim_hide{border-right:none;}
+.xxim_bottom .xxim_online{width:72px; padding-left:35px;}
+.xxim_online i{left:13px; width:14px; height:14px;font-size:14px;color:#FFA00A;}
+.xxim_setonline{display:none; position:absolute; left:-79px; bottom:-1px;  border:1px solid #DCDCDC; background-color:#fff;}
+.xxim_setonline span{position:relative; display:block; width:32px;width: 77px; padding:0 10px 0 35px;}
+.xxim_setonline span:hover{background-color:#F2F4F8;}
+.xxim_offline .xxim_nowstate, .xxim_setoffline i{color:#999;}
+.xxim_mymsg i{left:18px; width:14px; height:14px;font-size: 14px;}
+.xxim_mymsg a{position:absolute; left:0; top:0; width:50px; height:32px;}
+.xxim_seter i{left:18px; width:14px; height:14px;font-size: 14px;}
+.xxim_hide i{left:18px; width:14px; height:14px;font-size: 14px;}
+.xxim_show i{}
+.xxim_bottom .xxim_on{position:absolute; left:-17px; top:50%; width:16px;text-align: center;color:#999;line-height: 97px; height:97px; margin-top:-49px;border:solid 1px #BEBEBE;border-right: none; background:#F2F4F8;}
+.xxim_bottom .xxim_off{}
+
+/* 聊天窗口 */
+.layim_chatbox{width:620px; border:1px solid #BEBEBE; background-color:#fff; font-size:12px; box-shadow: 0 0 10px rgba(0,0,0,.2);}
+.layim_chatbox h6{position:relative; height:40px; border-bottom:1px solid #D9D9D9; background-color:#FCFDFA}
+.layim_move{position:absolute; height:40px; width: 620px; z-index:0;}
+.layim_face{position:absolute; bottom:-1px; left:10px; width:64px; height:64px;padding:1px;background: #fff; border:1px solid #ccc;}
+.layim_face img{width:60px; height:60px;}
+.layim_names{position:absolute; left:90px; max-width:300px; line-height:40px; color:#000; overflow:hidden; text-overflow: ellipsis; white-space:nowrap; font-size:14px;}
+.layim_rightbtn{position:absolute; right:15px; top:12px; font-size:20px;}
+.layim_rightbtn i{position:relative; width:16px; height:16px; display:inline-block; *display:inline; *zoom:1; vertical-align:top; cursor:pointer; transition: all .3s;text-align: center;line-height: 16px;}
+.layim_rightbtn .layim_close{background: #FFA00A;color:#fff;}
+.layim_rightbtn .layim_close:hover{-webkit-transform: rotate(180deg); -moz-transform: rotate(180deg);}
+.layim_rightbtn .layer_setmin{margin-right:5px;color:#999;font-size:14px;font-weight: 700;}
+.layim_chat, .layim_chatmore,.layim_groups{height:450px; overflow:hidden;}
+.layim_chatmore{display:none; float:left; width:135px; border-right:1px solid #BEBEBE; background-color:#F2F2F2}
+.layim_chatlist li, .layim_groups li{position:relative; height:30px; line-height:30px; padding:0 10px; overflow:hidden; text-overflow: ellipsis; white-space:nowrap; cursor:pointer;}
+.layim_chatlist li{padding:0 20px 0 10px;}
+.layim_chatlist li:hover{background-color:#E3E3E3;}
+.layim_chatlist li span{display:inline-block; *display:inline; *zoom:1; vertical-align:top; width:90px; overflow:hidden; text-overflow: ellipsis; white-space:nowrap;}
+.layim_chatlist li em{display:none; position:absolute; top:6px; right:10px; height:18px; line-height:18px;width:18px;text-align: center;font-size:14px;font-weight:900; border-radius:3px;}
+.layim_chatlist li em:hover{background-color: #FCBE00; color:#fff;}
+.layim_chatlist .layim_chatnow,.layim_chatlist .layim_chatnow:hover{/*border-top:1px solid #D9D9D9; border-bottom:1px solid #D9D9D9;*/ background-color:#fff;}
+.layim_chat{}
+.layim_chatarea{height:280px;}
+.layim_chatview{display:none; height:280px; overflow:hidden;}
+.layim_chatmore:hover, .layim_groups:hover, .layim_chatview:hover{overflow-y:auto;}
+.layim_chatview li{margin-bottom:10px; clear:both; *zoom:1;}
+.layim_chatview li:after{content:'\20'; clear:both; *zoom:1; display:block; height:0;}
+
+.layim_chatthis{display:block;}
+.layim_chatuser{float:left; padding:15px; font-size:0;}
+.layim_chatuser *{display:inline-block; *display:inline; *zoom:1; vertical-align:top; line-height:30px; font-size:12px; padding-right:10px;}
+.layim_chatuser img{width:30px; height:30px;padding-right: 0;margin-right: 15px;}
+.layim_chatuser .layim_chatname{max-width:230px; overflow:hidden; text-overflow: ellipsis; white-space:nowrap;}
+.layim_chatuser .layim_chattime{color:#999; padding-left:10px;}
+.layim_chatsay{position:relative; float:left; margin:0 15px; padding:10px; line-height:20px; background-color:#F3F3F3; border-radius:3px; clear:both;}
+.layim_chatsay .layim_zero{left:5px; top:-8px; border-width:8px; border-right-style:solid; border-right-color:#F3F3F3;}
+.layim_chateme .layim_chatuser{float:right;}
+.layim_chateme .layim_chatuser *{padding-right:0; padding-left:10px;}
+.layim_chateme .layim_chatuser img{margin-left:15px;padding-left: 0;}
+.layim_chateme .layim_chatsay .layim_zero{left:auto; right:10px;}
+.layim_chateme .layim_chatuser .layim_chattime{padding-left:0; padding-right:10px;}
+.layim_chateme .layim_chatsay{float:right; background-color:#EBFBE3}
+.layim_chateme .layim_zero{border-right-color:#EBFBE3;}
+.layim_groups{display:none; float:right; width:130px; border-left:1px solid #D9D9D9; background-color:#fff;}
+.layim_groups ul{display:none;}
+.layim_groups ul.layim_groupthis{display:block;}
+.layim_groups li *{display:inline-block; *display:inline; *zoom:1; vertical-align:top; margin-right:10px;}
+.layim_groups li img{width:20px; height:20px; margin-top:5px;}
+.layim_groups li span{max-width:80px; overflow:hidden; text-overflow: ellipsis; white-space:nowrap;}
+.layim_groups li:hover{background-color:#F3F3F3;}
+.layim_groups .layim_errors{text-align:center; color:#999;}
+.layim_tool{position:relative; height:35px; line-height:35px; padding-left:10px; background-color:#F3F3F3;}
+.layim_tool i{position:relative; top:10px; display:inline-block; *display:inline; *zoom:1; vertical-align:top; width:16px; height:16px; margin-right:10px; cursor:pointer;font-size:16px;color:#999;font-weight: 700;}
+.layim_tool i:hover{color:#FFA00A;}
+.layim_tool .layim_seechatlog{position:absolute; right:15px;}
+.layim_tool .layim_seechatlog i{}
+.layim_write{display:block; border:none; width:98%; height:90px; line-height:20px; margin:5px auto 0;}
+.layim_send{position:relative; height:40px; background-color:#F3F3F3;}
+.layim_sendbtn{position:absolute; height:26px; line-height:26px; right:10px; top:8px; padding:0 40px 0 20px; background-color:#FFA00A; color:#fff; border-radius:3px; cursor:pointer;}
+.layim_enter{position:absolute; right:0; border-left:1px solid #FFB94F; width:24px; height:26px;}
+.layim_enter:hover{background-color:#E68A00; border-radius:0 3px 3px 0;}
+.layim_enter .layim_zero{left:7px; top:11px; border-width:5px; border-top-style:solid; border-top-color:#FFE0B3;}
+.layim_sendtype{display:none; position:absolute; right:10px; bottom:37px; border:1px solid #D9D9D9; background-color:#fff; text-align:left;}
+.layim_sendtype span{display:block; line-height:24px; padding:0 10px 0 25px; cursor:pointer;}
+.layim_sendtype span:hover{background-color:#F3F3F3;}
+.layim_sendtype span i{left:5px;}
+
+.layim_min{display:none; position:absolute; left:-190px; bottom:-1px; width:160px; height:32px; line-height:32px; padding:0 10px; overflow:hidden; text-overflow: ellipsis; white-space:nowrap; border:1px solid #ccc; box-shadow: 0 0 5px rgba(0,0,75,.2); background-color:#FCFDFA; cursor:pointer;}
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,141 @@
+/*
+ * layer皮肤
+ * 作者：一☆隐☆一
+ * QQ:9073194
+ * 请保留这里的信息 谢谢！虽然你不保留我也不能把你怎么样！
+ */
+
+html #layui_layer_skinmoonstylecss {
+	display: none;
+	position: absolute;
+	width: 1989px;
+}
+body .layer-ext-moon[type="dialog"] {
+	min-width: 320px;
+}
+body .layer-ext-moon-msg[type="dialog"]{min-width:200px;}
+body .layer-ext-moon .layui-layer-title {
+	background: #f6f6f6;
+	color: #212a31;
+	font-size: 16px;
+	font-weight: bold;
+	height: 46px;
+	line-height: 46px;
+}
+
+
+
+body .layer-ext-moon .layui-layer-content .layui-layer-ico {
+	height: 32px;
+	width: 32px;
+	top:18.5px;
+}
+body .layer-ext-moon .layui-layer-ico0 {
+	background: url(default.png) no-repeat -96px 0;
+	;
+}
+body .layer-ext-moon .layui-layer-ico1 {
+	background: url(default.png) no-repeat -224px 0;
+	;
+}
+body .layer-ext-moon .layui-layer-ico2 {
+	background: url(default.png) no-repeat -192px 0;
+}
+body .layer-ext-moon .layui-layer-ico3 {
+	background: url(default.png) no-repeat -160px 0;
+}
+body .layer-ext-moon .layui-layer-ico4 {
+	background: url(default.png) no-repeat -320px 0;
+}
+body .layer-ext-moon .layui-layer-ico5 {
+	background: url(default.png) no-repeat -288px 0;
+}
+body .layer-ext-moon .layui-layer-ico6 {
+	background: url(default.png) -256px 0;
+}
+body .layer-ext-moon .layui-layer-ico7 {
+	background: url(default.png) no-repeat -128px 0;
+}
+body .layer-ext-moon .layui-layer-setwin {
+	top: 15px;
+	right: 15px;
+}
+body .layer-ext-moon .layui-layer-setwin a {
+	width: 16px;
+	height: 16px;
+}
+body .layer-ext-moon .layui-layer-setwin .layui-layer-min cite:hover {
+	background-color: #56abe4;
+}
+body .layer-ext-moon .layui-layer-setwin .layui-layer-max {
+	background: url(default.png) no-repeat -80px 0;
+}
+body .layer-ext-moon .layui-layer-setwin .layui-layer-max:hover {
+	background: url(default.png) no-repeat -64px 0;
+}
+body .layer-ext-moon .layui-layer-setwin .layui-layer-maxmin {
+	background: url(default.png) no-repeat -32px 0;
+}
+body .layer-ext-moon .layui-layer-setwin .layui-layer-maxmin:hover {
+	background: url(default.png) no-repeat -16px 0;
+}
+body .layer-ext-moon .layui-layer-setwin .layui-layer-close1,body .layer-ext-moon .layui-layer-setwin .layui-layer-close2 {
+	background: url(default.png) 0 0;
+}
+body .layer-ext-moon .layui-layer-setwin .layui-layer-close1:hover,body .layer-ext-moon .layui-layer-setwin .layui-layer-close2:hover {
+	background: url(default.png) -48px 0;
+}
+body .layer-ext-moon .layui-layer-padding{padding-top: 24px;}
+body .layer-ext-moon .layui-layer-btn {
+	padding: 15px 0;
+	background: #f0f4f7;
+	border-top: 1px #c7c7c7 solid;
+}
+body .layer-ext-moon .layui-layer-btn a {
+	font-size: 12px;
+	font-weight: normal;
+	margin: 0 3px;
+	margin-right: 7px;
+	margin-left: 7px;
+	padding: 6px 20px;
+	color: #fff;
+	border: 1px solid #0064b6;
+	background: #0071ce;
+	border-radius: 3px;
+	display: inline-block;
+	height: 20px;
+	line-height: 20px;
+	text-align: center;
+	vertical-align: middle;
+	background-repeat: no-repeat;
+	text-decoration: none;
+	outline: none;
+	-moz-box-sizing: content-box;
+	-webkit-box-sizing: content-box;
+	box-sizing: content-box;
+}
+body .layer-ext-moon .layui-layer-btn .layui-layer-btn0 {
+	background: #0071ce;
+}
+body .layer-ext-moon .layui-layer-btn .layui-layer-btn1 {
+	background: #fff;
+	color: #404a58;
+	border: 1px solid #c0c4cd;
+	border-radius: 3px;
+}
+body .layer-ext-moon .layui-layer-btn .layui-layer-btn2 {
+	background: #f60;
+	color: #fff;
+	border: 1px solid #f60;
+	border-radius: 3px;
+}
+body .layer-ext-moon .layui-layer-btn .layui-layer-btn3 {
+	background: #f00;
+	color: #fff;
+	border: 1px solid #f00;
+	border-radius: 3px;
+}
+
+body .layer-ext-moon .layui-layer-title span.layui-layer-tabnow{
+	height:46px;
+}

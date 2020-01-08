@@ -255,7 +255,7 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="less">
 
   /*
  * The following styles are auto-applied to elements with
@@ -333,7 +333,7 @@
       border-bottom: 1px solid transparent !important;
     }
     .ant-tabs-tab-active {
-      border-color: #1890ff !important;
+      border-color: @primary-color!important;
     }
   }
 

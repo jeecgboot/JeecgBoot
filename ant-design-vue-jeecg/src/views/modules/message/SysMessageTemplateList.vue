@@ -179,6 +179,9 @@
               if(text=='3') {
                 return "微信";
               }
+              if(text=='4') {
+                return "系统";
+              }
             }
           },
           {

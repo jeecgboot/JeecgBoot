@@ -1,7 +1,7 @@
 <template>
   <a-card :bordered="false" style="height: 100%">
     <div class="table-page-search-wrapper">
-      <a-form layout="inline">
+      <a-form layout="inline" @keyup.enter.native="searchByquery">
         <a-row :gutter="24" v-if="queryInfo && queryInfo.length>0">
           <template v-for="(item,index) in queryInfo">
             <template v-if=" item.hidden==='1' ">
@@ -62,6 +62,15 @@
           {{ item.buttonName }}
         </a-button>
       </template>
+
+      <!-- 高级查询 -->
+      <j-super-query
+        ref="superQuery"
+        :fieldList="superQuery.fieldList"
+        :saveCode="$route.fullPath"
+        :loading="table.loading"
+        style="margin-left: 8px;"
+        @handleSuperQuery="handleSuperQuery"/>
 
       <a-button
         v-if="buttonSwitch.batch_delete"
@@ -179,10 +188,9 @@
         </span>
       </a-table>
 
-      <onl-cgform-auto-modal @success="handleFormSuccess" ref="modal" :code="code"></onl-cgform-auto-modal>
+      <onl-cgform-auto-modal @success="handleFormSuccess" ref="modal" :code="code" @schema="handleGetSchema" />
 
       <j-import-modal ref="importModal" :url="getImportUrl()" @ok="importOk"></j-import-modal>
-
 
     </div>
   </a-card>
@@ -194,10 +202,12 @@
   import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
   import { filterObj } from '@/utils/util';
   import JImportModal from '@/components/jeecg/JImportModal'
+  import JSuperQuery from '@comp/jeecg/JSuperQuery'
 
   export default {
     name: 'OnlCgFormAutoList',
     components: {
+      JSuperQuery,
       JImportModal,
     },
     data() {
@@ -226,9 +236,8 @@
         cgButtonLinkList:[],
         cgButtonList:[],
         queryInfo:[],
-        queryParam:{
-
-        },
+        // 查询参数，多个页面的查询参数用 code 作为键来区分
+        queryParamsMap: {},
         toggleSearchStatus:false,
         table: {
           loading: true,
@@ -276,7 +285,16 @@
           export:true
         },
         hasBpmStatus:false,
-        checkboxFlag:false
+        checkboxFlag:false,
+        // 高级查询
+        superQuery: {
+          // 字段列表
+          fieldList: [],
+          // 查询参数
+          params: '',
+          // 查询条件拼接方式 'and' or 'or'
+          matchType: 'and'
+        }
       }
     },
     created() {
@@ -286,7 +304,8 @@
       this.cgButtonJsHandler('mounted')
     },
     watch: {
-      '$route'() {
+      '$route.path'(newVal,oldVal) {
+        console.log('$route.path： ',oldVal)
         // 刷新参数放到这里去触发，就可以刷新相同界面了
         this.initAutoList()
       }
@@ -300,6 +319,14 @@
           fixed:true,
           selectedRowKeys:this.table.selectedRowKeys,
           onChange: this.handleChangeInTableSelect
+        }
+      },
+      queryParam: {
+        get() {
+          return this.queryParamsMap[this.code]
+        },
+        set(newVal) {
+          this.$set(this.queryParamsMap, this.code, newVal)
         }
       }
     },
@@ -354,8 +381,17 @@
         if(!this.$route.params.code){
           return false
         }
+        // 清空高级查询条件
+        this.superQuery.params = ''
+        if (this.$refs.superQuery) {
+          this.$refs.superQuery.handleReset()
+        }
+
         this.table.loading = true
         this.code = this.$route.params.code
+        if (!this.queryParam) {
+          this.queryParam = {}
+        }
         getAction(`${this.url.getColumns}${this.code}`).then((res)=>{
           console.log("--onlineList-加载动态列>>",res);
           if(res.success){
@@ -415,6 +451,7 @@
           if(arg==1){
             this.table.pagination.current=1
           }
+          this.table.loading = true
           let params = this.getQueryParams();//查询条件
           console.log("--onlineList-查询条件-->",params)
           getAction(`${this.url.getData}${this.code}`,params).then((res)=>{
@@ -432,6 +469,7 @@
             }else{
               this.$message.warning(res.message)
             }
+          }).finally(() => {
             this.table.loading = false
           })
         }else{
@@ -439,7 +477,8 @@
         }
       },
       loadDataNoPage(){
-        let param = Object.assign({}, this.queryParam,this.isorter);
+        this.table.loading = true
+        let param = this.getQueryParams()//查询条件
         param['pageSize'] = -521;
         getAction(`${this.url.getData}${this.code}`,filterObj(param)).then((res)=>{
           console.log("--onlineList-列表数据",res)
@@ -453,6 +492,7 @@
           }else{
             this.$message.warning(res.message)
           }
+        }).finally(() => {
           this.table.loading = false
         })
       },
@@ -460,6 +500,8 @@
         let param = Object.assign({}, this.queryParam,this.isorter);
         param.pageNo = this.table.pagination.current;
         param.pageSize = this.table.pagination.pageSize;
+        param.superQueryMatchType = this.superQuery.matchType
+        param.superQueryParams = encodeURIComponent(this.superQuery.params)
         return filterObj(param);
       },
       handleChangeInTableSelect(selectedRowKeys, selectionRows) {
@@ -547,6 +589,49 @@
 
       handleFormSuccess(){
         this.loadData()
+      },
+      // 查询完 schema 后，生成高级查询的字段列表
+      handleGetSchema(schema) {
+        if (schema && schema.properties) {
+          let setField = (array, field) => {
+            let type = field.type || 'string'
+            type = (type === 'inputNumber' ? 'number' : type)
+            array.push({
+              type: type,
+              value: field.key,
+              text: field.title,
+              // 额外字典参数
+              dictCode: field.dictCode,
+              dictTable: field.dictTable,
+              dictText: field.dictText,
+              options: field.enum || field.options
+            })
+          }
+          let fieldList = []
+          for (let key in schema.properties) {
+            if (!schema.properties.hasOwnProperty(key)) {
+              continue
+            }
+            let field = schema.properties[key]
+            // tab = 子表
+            if (field.view === 'tab') {
+              let subTable = {
+                type: 'sub-table',
+                value: field.key,
+                text: field.describe,
+                children: []
+              }
+              for (let column of field.columns) {
+                setField(subTable.children, column)
+              }
+              fieldList.push(subTable)
+            } else {
+              field.key = key
+              setField(fieldList, field)
+            }
+          }
+          this.superQuery.fieldList = fieldList
+        }
       },
       onClearSelected(){
         this.table.selectedRowKeys = []
@@ -700,7 +785,18 @@
           })
 
         }
-      }
+      },
+
+      // 高级查询
+      handleSuperQuery(params, matchType) {
+        if (!params || params.length === 0) {
+          this.superQuery.params = ''
+        } else {
+          this.superQuery.params = JSON.stringify(params)
+        }
+        this.superQuery.matchType = matchType
+        this.loadData()
+      },
 
     }
   }

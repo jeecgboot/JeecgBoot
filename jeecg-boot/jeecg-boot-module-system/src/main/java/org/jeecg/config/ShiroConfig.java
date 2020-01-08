@@ -66,6 +66,10 @@ public class ShiroConfig {
 				filterChainDefinitionMap.put(url,"anon");
 			}
 		}
+		//大屏请求排除
+		filterChainDefinitionMap.put("/big/screen/**", "anon");
+		filterChainDefinitionMap.put("/bigscreen/**", "anon");
+
 		//cas验证登录
 		filterChainDefinitionMap.put("/cas/client/validateLogin", "anon");
 		// 配置不会被拦截的链接 顺序判断
@@ -119,7 +123,7 @@ public class ShiroConfig {
 
 		//排除Online请求
 		filterChainDefinitionMap.put("/auto/cgform/**", "anon");
-
+		
 		//websocket排除
 		filterChainDefinitionMap.put("/websocket/**", "anon");
 		

@@ -47,7 +47,7 @@
           </span>
           <a-col :md="6" :sm="24">
 
-            <template v-if="superQueryFlag">
+       <!--     <template v-if="superQueryFlag">
               <a-tooltip title="已有高级查询条件生效!">
                 <button :disabled="false" class="ant-btn ant-btn-primary" @click="superQuery">
                   <a-icon type="appstore" theme="twoTone" spin="true"></a-icon>
@@ -56,6 +56,9 @@
               </a-tooltip>
             </template>
             <a-button v-else type="primary" @click="superQuery" icon="filter">高级查询</a-button>
+-->
+            <!-- 高级查询区域 -->
+            <j-super-query :fieldList="fieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
 
             <a @click="handleToggleSearch" style="margin-left: 8px">
               {{ toggleSearchStatus ? '收起' : '展开' }}
@@ -167,8 +170,6 @@
     <!-- 一对多表单区域 -->
     <JeecgDemoTabsModal ref="jeecgDemoTabsModal" @ok="modalFormOk"></JeecgDemoTabsModal>
 
-    <!-- 高级查询区域 -->
-    <j-super-query :fieldList="fieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
   </a-card>
 </template>
 
@@ -293,7 +294,14 @@
     methods: {
       getQueryParams(){
         console.log(this.queryParam.birthdayRange)
-        var param = Object.assign({}, this.queryParam,this.isorter);
+
+        //高级查询器
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;

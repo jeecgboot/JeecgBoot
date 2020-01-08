@@ -64,9 +64,22 @@ public class JeecgBootExceptionHandler {
 	 * @return
 	 */
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-	public Result<?> HttpRequestMethodNotSupportedException(Exception e){
-		log.error(e.getMessage(), e);
-		return Result.error("没有权限，请联系管理员授权");
+	public Result<?> HttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e){
+		StringBuffer sb = new StringBuffer();
+		sb.append("不支持");
+		sb.append(e.getMethod());
+		sb.append("请求方法，");
+		sb.append("支持以下");
+		String [] methods = e.getSupportedMethods();
+		if(methods!=null){
+			for(String str:methods){
+				sb.append(str);
+				sb.append("、");
+			}
+		}
+		log.error(sb.toString(), e);
+		//return Result.error("没有权限，请联系管理员授权");
+		return Result.error(405,sb.toString());
 	}
 	
 	 /** 
