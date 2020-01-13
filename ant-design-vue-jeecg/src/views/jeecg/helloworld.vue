@@ -19,11 +19,11 @@
         <a-cascader :options="areaOptions" @change="onChange" :showSearch="{filter}" placeholder="Please select" />
       </a-form-item>
       </a-col>
-      <a-form-item :wrapperCol="{ span: 12, offset: 5 }">
-        <a-col :md="24" :sm="24">
-        <a-button type="primary" htmlType="submit">Submit</a-button>
-        </a-col>
-      </a-form-item>
+      <a-col :md="24" :sm="24">
+        <a-form-item :wrapperCol="{ span: 12, offset: 5 }">
+          <a-button type="primary" htmlType="submit">Submit</a-button>
+        </a-form-item>
+      </a-col>
     </a-form>
   </a-card>
 </template>
