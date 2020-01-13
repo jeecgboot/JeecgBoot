@@ -291,7 +291,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 - jdk8
 - mysql
 - redis
-- 数据库脚步：jeecg-boot\docs\jeecg-boot-mysql.sql
+- 数据库脚本：jeecg-boot\docs\jeecg-boot-mysql.sql
 - 默认登录账号： admin/123456
 
 
