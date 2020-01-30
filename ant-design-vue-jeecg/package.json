@@ -24,7 +24,7 @@
     "lodash.pick": "^4.4.0",
     "md5": "^2.2.1",
     "nprogress": "^0.2.0",
-    "tinymce": "^5.0.2",
+    "tinymce": "^5.1.4",
     "viser-vue": "^2.4.4",
     "vue": "^2.6.10",
     "vue-apexcharts": "^1.3.2",
