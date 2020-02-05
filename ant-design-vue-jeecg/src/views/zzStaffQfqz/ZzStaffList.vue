@@ -281,7 +281,7 @@
           }
         ],
         url: {
-          list: "/zzStaff/zzStaff/list",
+          list: "/zzStaff/zzStaff/list?type=2",
           delete: "/zzStaff/zzStaff/delete",
           deleteBatch: "/zzStaff/zzStaff/deleteBatch",
           exportXlsUrl: "/zzStaff/zzStaff/exportXls",

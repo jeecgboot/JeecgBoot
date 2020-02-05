@@ -22,6 +22,8 @@
         <a-form-item label="手机号" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'phone', validatorRules.phone]" placeholder="请输入手机号"></a-input>
         </a-form-item>
+
+        <!--<a-input  v-decorator="[ 'type']" value="1"></a-input>-->
         <!--<a-form-item label="人员类型" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
           <!--<j-dict-select-tag type="list" v-decorator="['type', validatorRules.type]" :trigger-change="true" dictCode="" placeholder="请选择人员类型"/>-->
         <!--</a-form-item>-->
