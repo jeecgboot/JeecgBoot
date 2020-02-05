@@ -120,8 +120,8 @@
           ]},
         },
         url: {
-          add: "/aaa/zzStaff/add",
-          edit: "/aaa/zzStaff/edit",
+          add: "/zzStaff/zzStaff/add",
+          edit: "/zzStaff/zzStaff/edit",
         }
       }
     },
@@ -160,6 +160,7 @@
             }
             let formData = Object.assign(this.model, values);
             console.log("表单提交数据",formData)
+            formData.type = 1;
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
