@@ -16,7 +16,8 @@
 	<modules>
 		<module>jeecg-boot-base-common</module>
 		<module>jeecg-boot-module-system</module>
-	</modules>
+        <module>jeecg-boot-module-shzz</module>
+    </modules>
 	
 	<distributionManagement>
 	  	<repository>
@@ -332,6 +333,11 @@
 			<dependency>
 	    		<groupId>org.jeecgframework.boot</groupId>
 	    		<artifactId>jeecg-boot-base-common</artifactId>
+	    		<version>${jeecgboot.common.version}</version>
+	    	</dependency>
+			<dependency>
+	    		<groupId>org.jeecgframework.boot</groupId>
+	    		<artifactId>jeecg-boot-module-shzz</artifactId>
 	    		<version>${jeecgboot.common.version}</version>
 	    	</dependency>
 	    	<!-- 七牛云SDK -->
