@@ -16,12 +16,14 @@
       margin: 0px;
       padding: 0px;
     }
+
     .chromeframe {
       margin: 0.2em 0;
       background: #ccc;
       color: #000;
       padding: 0.2em 0;
     }
+
     #loader-wrapper {
       position: fixed;
       top: 0;
@@ -30,6 +32,7 @@
       height: 100%;
       z-index: 999999;
     }
+
     #loader {
       display: block;
       position: relative;
@@ -54,6 +57,7 @@
       /* Chrome, Firefox 16+, IE 10+, Opera */
       z-index: 1001;
     }
+
     #loader:before {
       content: "";
       position: absolute;
@@ -76,6 +80,7 @@
       animation: spin 3s linear infinite;
       /* Chrome, Firefox 16+, IE 10+, Opera */
     }
+
     #loader:after {
       content: "";
       position: absolute;
@@ -98,6 +103,7 @@
       animation: spin 1.5s linear infinite;
       /* Chrome, Firefox 16+, IE 10+, Opera */
     }
+
     @-webkit-keyframes spin {
       0% {
         -webkit-transform: rotate(0deg);
@@ -107,6 +113,7 @@
         transform: rotate(0deg);
         /* Firefox 16+, IE 10+, Opera */
       }
+
       100% {
         -webkit-transform: rotate(360deg);
         /* Chrome, Opera 15+, Safari 3.1+ */
@@ -116,6 +123,7 @@
         /* Firefox 16+, IE 10+, Opera */
       }
     }
+
     @keyframes spin {
       0% {
         -webkit-transform: rotate(0deg);
@@ -125,6 +133,7 @@
         transform: rotate(0deg);
         /* Firefox 16+, IE 10+, Opera */
       }
+
       100% {
         -webkit-transform: rotate(360deg);
         /* Chrome, Opera 15+, Safari 3.1+ */
@@ -134,6 +143,7 @@
         /* Firefox 16+, IE 10+, Opera */
       }
     }
+
     #loader-wrapper .loader-section {
       position: fixed;
       top: 0;
@@ -149,12 +159,15 @@
       transform: translateX(0);
       /* Firefox 16+, IE 10+, Opera */
     }
+
     #loader-wrapper .loader-section.section-left {
       left: 0;
     }
+
     #loader-wrapper .loader-section.section-right {
       right: 0;
     }
+
     /* Loaded */
     .loaded #loader-wrapper .loader-section.section-left {
       -webkit-transform: translateX(-100%);
@@ -166,6 +179,7 @@
       -webkit-transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
       transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
     }
+
     .loaded #loader-wrapper .loader-section.section-right {
       -webkit-transform: translateX(100%);
       /* Chrome, Opera 15+, Safari 3.1+ */
@@ -176,11 +190,13 @@
       -webkit-transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
       transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
     }
+
     .loaded #loader {
       opacity: 0;
       -webkit-transition: all 0.3s ease-out;
       transition: all 0.3s ease-out;
     }
+
     .loaded #loader-wrapper {
       visibility: hidden;
       -webkit-transform: translateY(-100%);
@@ -192,13 +208,16 @@
       -webkit-transition: all 0.3s 1s ease-out;
       transition: all 0.3s 1s ease-out;
     }
+
     /* JavaScript Turned Off */
     .no-js #loader-wrapper {
       display: none;
     }
+
     .no-js h1 {
       color: #222222;
     }
+
     #loader-wrapper .load_title {
       font-family: 'Open Sans';
       color: #FFF;
@@ -211,6 +230,7 @@
       opacity: 1;
       line-height: 30px;
     }
+
     #loader-wrapper .load_title span {
       font-weight: normal;
       font-style: italic;
@@ -218,50 +238,57 @@
       color: #FFF;
       opacity: 0.5;
     }
+
     /* 滚动条优化 start */
-    ::-webkit-scrollbar{
-      width:8px;
-      height:8px;
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
     }
-    ::-webkit-scrollbar-track{
+
+    ::-webkit-scrollbar-track {
       background: #f6f6f6;
-      border-radius:2px;
+      border-radius: 2px;
     }
-    ::-webkit-scrollbar-thumb{
+
+    ::-webkit-scrollbar-thumb {
       background: #cdcdcd;
-      border-radius:2px;
+      border-radius: 2px;
     }
-    ::-webkit-scrollbar-thumb:hover{
+
+    ::-webkit-scrollbar-thumb:hover {
       background: #747474;
     }
+
     ::-webkit-scrollbar-corner {
       background: #f6f6f6;
     }
+
     /* 滚动条优化 end */
   </style>
   <!-- 全局配置 -->
   <script>
     window._CONFIG = {};
+    // window._CONFIG['domianURL'] = 'http://127.0.0.1:8080/jeecg-boot';
     window._CONFIG['domianURL'] = 'http://zhzl.free-http.svipss.top/jeecg-boot';
     window._CONFIG['casPrefixUrl'] = 'http://cas.example.org:8443/cas';
     window._CONFIG['imgDomainURL'] = window._CONFIG['domianURL'] + '/sys/common/view';
     window._CONFIG['downloadUrl'] = window._CONFIG['domianURL'] + '/sys/common/download';
-    window._CONFIG['pdfDomainURL'] =  window._CONFIG['domianURL'] + '/sys/common/pdf/pdfPreviewIframe';
+    window._CONFIG['pdfDomainURL'] = window._CONFIG['domianURL'] + '/sys/common/pdf/pdfPreviewIframe';
   </script>
 </head>
 
 <body>
-<!-- built files will be auto injected -->
-<div id="app">
-  <div id="loader-wrapper">
-    <div id="loader"></div>
-    <div class="loader-section section-left"></div>
-    <div class="loader-section section-right"></div>
-    <div class="load_title">正在加载 Jeecg-Boot 快速开发平台,请耐心等待
+  <!-- built files will be auto injected -->
+  <div id="app">
+    <div id="loader-wrapper">
+      <div id="loader"></div>
+      <div class="loader-section section-left"></div>
+      <div class="loader-section section-right"></div>
+      <div class="load_title">正在加载 Jeecg-Boot 快速开发平台,请耐心等待
 
+      </div>
     </div>
   </div>
-</div>
 
 </body>
 

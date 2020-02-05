@@ -59,7 +59,8 @@ module.exports = {
         }
       },*/
       '/jeecg-boot': {
-        target: 'http://zhzl.free-http.svipss.top', //请求本地 需要jeecg-boot后台项目
+        // target: 'http://localhost:8080', //请求本地 需要jeecg-boot后台项目
+        target: 'http://zhzl.free-http.svipss.top', 
         ws: false,
         changeOrigin: true
       },
