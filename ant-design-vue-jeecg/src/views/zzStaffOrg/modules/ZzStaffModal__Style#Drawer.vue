@@ -1,12 +1,12 @@
 <template>
-  <a-modal
+  <a-drawer
     :title="title"
     :width="width"
-    :visible="visible"
-    :confirmLoading="confirmLoading"
-    @ok="handleOk"
-    @cancel="handleCancel"
-    cancelText="关闭">
+    placement="right"
+    :closable="false"
+    @close="close"
+    :visible="visible">
+  
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
@@ -49,10 +49,12 @@
         <a-form-item label="学历" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <j-dict-select-tag type="list" v-decorator="['education', validatorRules.education]" :trigger-change="true" dictCode="education" placeholder="请选择学历"/>
         </a-form-item>
-
+        
       </a-form>
     </a-spin>
-  </a-modal>
+    <a-button type="primary" @click="handleOk">确定</a-button>
+    <a-button type="primary" @click="handleCancel">取消</a-button>
+  </a-drawer>
 </template>
 
 <script>
@@ -62,7 +64,7 @@
   import { validateDuplicateValue } from '@/utils/util'
   import JDate from '@/components/jeecg/JDate'  
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
-
+  
   export default {
     name: "ZzStaffModal",
     components: { 
@@ -118,8 +120,8 @@
           ]},
         },
         url: {
-          add: "/zzStaff/zzStaff/add",
-          edit: "/zzStaff/zzStaff/edit",
+          add: "/aaa/zzStaff/add",
+          edit: "/aaa/zzStaff/edit",
         }
       }
     },
@@ -178,9 +180,17 @@
       },
       popupCallback(row){
         this.form.setFieldsValue(pick(row,'zzOrg','name','sex','phone','type','minZu','zzmm','sfz','birthday','lv','speciality','job','education'))
-      },
-
+      }
       
     }
   }
 </script>
+
+<style lang="less" scoped>
+/** Button按钮间距 */
+  .ant-btn {
+    margin-left: 30px;
+    margin-bottom: 30px;
+    float: right;
+  }
+</style>

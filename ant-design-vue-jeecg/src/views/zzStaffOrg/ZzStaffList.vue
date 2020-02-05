@@ -5,16 +5,21 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
+            <a-form-item label="综治机构">
+              <j-dict-select-tag placeholder="请选择综治机构" v-model="queryParam.zzOrg" dictCode="zz_org,org_name,id"/>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
             <a-form-item label="姓名">
               <a-input placeholder="请输入姓名" v-model="queryParam.name"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="8">
-            <a-form-item label="手机号">
-              <a-input placeholder="请输入手机号" v-model="queryParam.phone"></a-input>
-            </a-form-item>
-          </a-col>
           <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="手机号">
+                <a-input placeholder="请输入手机号" v-model="queryParam.phone"></a-input>
+              </a-form-item>
+            </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="身份证">
                 <a-input placeholder="请输入身份证" v-model="queryParam.sfz"></a-input>
@@ -119,12 +124,14 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import ZzStaffModal from './modules/ZzStaffModal'
+  import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "ZzStaffList",
     mixins:[JeecgListMixin],
     components: {
+      JDictSelectTag,
       ZzStaffModal
     },
     data () {
@@ -176,18 +183,18 @@
             align:"center",
             dataIndex: 'phone'
           },
-          {
-            title:'人员类型',
-            align:"center",
-            dataIndex: 'type',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['type'], text+"")
-              }
-            }
-          },
+          // {
+          //   title:'人员类型',
+          //   align:"center",
+          //   dataIndex: 'type',
+          //   customRender:(text)=>{
+          //     if(!text){
+          //       return ''
+          //     }else{
+          //       return filterMultiDictText(this.dictOptions['type'], text+"")
+          //     }
+          //   }
+          // },
           {
             title:'民族',
             align:"center",

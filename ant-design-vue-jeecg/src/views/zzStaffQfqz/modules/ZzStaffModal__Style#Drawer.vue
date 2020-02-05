@@ -11,7 +11,7 @@
       <a-form :form="form">
 
         <a-form-item label="综治机构" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-dict-select-tag type="list" v-decorator="['zzOrg', validatorRules.zzOrg]" :trigger-change="true" dictCode="" placeholder="请选择综治机构"/>
+          <j-dict-select-tag type="list" v-decorator="['zzOrg', validatorRules.zzOrg]" :trigger-change="true" dictCode="zz_qfqz,org_name,id" placeholder="请选择综治机构"/>
         </a-form-item>
         <a-form-item label="姓名" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'name', validatorRules.name]" placeholder="请输入姓名"></a-input>
@@ -120,8 +120,8 @@
           ]},
         },
         url: {
-          add: "/zzStaff/zzStaff/add",
-          edit: "/zzStaff/zzStaff/edit",
+          add: "/aaa/zzStaff/add",
+          edit: "/aaa/zzStaff/edit",
         }
       }
     },
