@@ -1,5 +1,5 @@
 <template>
-  <a-radio-group v-if="tagType=='radio'" @change="handleInput" :value="value" :disabled="disabled">
+  <a-radio-group v-if="tagType=='radio'" @change="handleInput" :value="value" :disabled="disabled" :defaultValue="dictOptions ? dictOptions[0].value : ''">
     <a-radio v-for="(item, key) in dictOptions" :key="key" :value="item.value">{{ item.text }}</a-radio>
   </a-radio-group>
 
@@ -29,6 +29,7 @@
     data() {
       return {
         dictOptions: [],
+        value1:"",
         tagType:""
       }
     },
@@ -47,6 +48,11 @@
       }else{
         this.tagType = this.type
       }
+      // console.log(this.dictOptions);
+      // if(this.dictOptions){
+      //   this.value1 = this.dictOptions[0].value;
+      // }
+
       //获取字典数据
       // this.initDictData();
     },
