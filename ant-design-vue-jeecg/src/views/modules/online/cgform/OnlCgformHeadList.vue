@@ -38,17 +38,17 @@
       <a-button @click="importOnlineForm" type="primary" icon="database" style="margin-left:8px">从数据库导入表单</a-button>
       <a-button @click="goGenerateCode" v-has="'online:goGenerateCode'" type="primary" icon="database" style="margin-left:8px">代码生成</a-button>
 
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel">
-            <a-icon type="delete"/>
-            删除
-          </a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作
-          <a-icon type="down"/>
-        </a-button>
-      </a-dropdown>
+      <!--<a-dropdown v-if="selectedRowKeys.length > 0">-->
+        <!--&lt;!&ndash;<a-menu slot="overlay">&ndash;&gt;-->
+          <!--&lt;!&ndash;<a-menu-item key="1" @click="batchDel">&ndash;&gt;-->
+            <!--&lt;!&ndash;<a-icon type="delete"/>&ndash;&gt;-->
+            <!--&lt;!&ndash;删除&ndash;&gt;-->
+          <!--&lt;!&ndash;</a-menu-item>&ndash;&gt;-->
+        <!--&lt;!&ndash;</a-menu>&ndash;&gt;-->
+        <!--<a-button style="margin-left: 8px"> 批量操作-->
+          <!--<a-icon type="down"/>-->
+        <!--</a-button>-->
+      <!--</a-dropdown>-->
     </div>
 
     <!-- table区域-begin -->
@@ -103,15 +103,15 @@
                 <a @click="showMyCopyInfo(record.id)">配置视图</a>
               </a-menu-item>
 
-              <a-menu-item>
-                <a @click="handleRemoveRecord(record.id)">移除</a>
-              </a-menu-item>
+              <!--<a-menu-item>-->
+                <!--<a @click="handleRemoveRecord(record.id)">移除</a>-->
+              <!--</a-menu-item>-->
 
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
+              <!--<a-menu-item>-->
+                <!--<a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">-->
+                  <!--<a>删除</a>-->
+                <!--</a-popconfirm>-->
+              <!--</a-menu-item>-->
 
             </a-menu>
           </a-dropdown>
