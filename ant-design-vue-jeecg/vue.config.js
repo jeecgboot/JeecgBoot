@@ -47,7 +47,7 @@ module.exports = {
   },
 
   devServer: {
-    // disableHostCheck: true,
+    disableHostCheck: true,
     port: 3000,
     proxy: {
      /* '/api': {
@@ -60,7 +60,7 @@ module.exports = {
       },*/
       '/jeecg-boot': {
         // target: 'http://localhost:8080', //请求本地 需要jeecg-boot后台项目
-        target: 'http://zzview.max.svipss.top',
+        target: 'http://196000w1a1.iask.in',
         ws: false,
         changeOrigin: true
       },
