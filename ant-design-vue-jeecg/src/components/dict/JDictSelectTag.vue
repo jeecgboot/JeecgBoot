@@ -1,5 +1,6 @@
 <template>
-  <a-radio-group v-if="tagType=='radio'" @change="handleInput" :value="value" :disabled="disabled" :defaultValue="dictOptions ? dictOptions[0].value : ''">
+  <!--<a-radio-group v-if="tagType=='radio'" @change="handleInput" :value="value" :disabled="disabled" :defaultValue="dictOptions ? dictOptions[0].value : ''">-->
+  <a-radio-group v-if="tagType=='radio'" @change="handleInput" :value="value" :disabled="disabled" >
     <a-radio v-for="(item, key) in dictOptions" :key="key" :value="item.value">{{ item.text }}</a-radio>
   </a-radio-group>
 

@@ -10,7 +10,7 @@
 
     <script type="text/javascript" src="${base}/bigscreen/template2/js/rem.js"></script>
     <link rel="stylesheet" href="${base}/bigscreen/template2/css/style.css">
-    <title>智慧物流服务中心-首页</title>
+    <title>智慧服务中心-首页</title>
 </head>
 
 <body style="visibility: hidden;">

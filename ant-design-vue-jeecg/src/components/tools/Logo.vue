@@ -21,7 +21,7 @@
     props: {
       title: {
         type: String,
-        default: 'Jeecg-Boot Pro',
+        default: '社会综治',
         required: false
       },
       showTitle: {
