@@ -17,8 +17,8 @@
         :type="collapsed ? 'menu-unfold' : 'menu-fold'"
         @click.native="toggle"/>
 
-      <span v-if="device === 'desktop'">欢迎进入社会综治平台</span>
-      <span v-else>社会综治</span>
+      <span v-if="device === 'desktop'">欢迎进入延边州社会综治平台</span>
+      <span v-else>延边州社会综治</span>
 
       <user-menu :theme="theme"/>
     </div>

@@ -43,8 +43,8 @@
           password:{
             rules: [{
               required: true,
-              pattern:/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,./]).{8,}$/,
-              message: '密码由8位数字、大小写字母和特殊符号组成!'
+              pattern:/^.{6,}$/,
+              message: '密码大于6位!'
             }, {
               validator: this.validateToNextPassword,
             }],

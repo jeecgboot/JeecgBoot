@@ -21,7 +21,7 @@
     props: {
       title: {
         type: String,
-        default: '社会综治',
+        default: '延边州社会综治',
         required: false
       },
       showTitle: {
