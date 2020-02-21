@@ -4,6 +4,33 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
+          <a-col :md="6" :sm="8">
+            <a-form-item label="姓名">
+              <a-input placeholder="请输入姓名" v-model="queryParam.name"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="身份证">
+              <a-input placeholder="请输入身份证" v-model="queryParam.sfz"></a-input>
+            </a-form-item>
+          </a-col>
+          <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="性别">
+                <j-dict-select-tag placeholder="请选择性别" v-model="queryParam.sex" dictCode="sex"/>
+              </a-form-item>
+            </a-col>
+          </template>
+          <a-col :md="6" :sm="8" >
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
 
         </a-row>
       </a-form>
@@ -41,7 +68,8 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        
         @change="handleTableChange">
 
         <template slot="htmlSlot" slot-scope="text">
@@ -91,12 +119,14 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import ZzPHjrkModal from './modules/ZzPHjrkModal'
+  import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "ZzPHjrkList",
     mixins:[JeecgListMixin],
     components: {
+      JDictSelectTag,
       ZzPHjrkModal
     },
     data () {
@@ -115,47 +145,63 @@
             }
           },
           {
-            title:'人户一致标识',
+            title:'姓名',
             align:"center",
-            dataIndex: 'rhyz',
+            dataIndex: 'name'
+          },
+          {
+            title:'身份证',
+            align:"center",
+            dataIndex: 'sfz'
+          },
+          {
+            title:'性别',
+            align:"center",
+            dataIndex: 'sex',
             customRender:(text)=>{
               if(!text){
                 return ''
               }else{
-                return filterMultiDictText(this.dictOptions['rhyz'], text+"")
+                return filterMultiDictText(this.dictOptions['sex'], text+"")
               }
             }
           },
           {
-            title:'户号',
+            title:'照片',
             align:"center",
-            dataIndex: 'hh'
+            dataIndex: 'photo',
+            scopedSlots: {customRender: 'imgSlot'}
           },
           {
-            title:'户主身份证',
+            title:'出生日期',
             align:"center",
-            dataIndex: 'hzSfz'
+            dataIndex: 'birthday',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
           },
           {
-            title:'户主姓名',
+            title:'民族',
             align:"center",
-            dataIndex: 'hzName'
+            dataIndex: 'zm',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['zm'], text+"")
+              }
+            }
           },
           {
-            title:'与户主关系',
+            title:'籍贯',
             align:"center",
-            dataIndex: 'hzGx'
-          },
-          {
-            title:'户主联系方式',
-            align:"center",
-            dataIndex: 'hzLxfs'
+            dataIndex: 'jg'
           },
           {
             title: '操作',
             dataIndex: 'action',
             align:"center",
-            scopedSlots: { customRender: 'action' },
+            scopedSlots: { customRender: 'action' }
           }
         ],
         url: {
@@ -166,9 +212,9 @@
           importExcelUrl: "hjrk/zzPHjrk/importExcel",
         },
         dictOptions:{
-         rhyz:[],
+         sex:[],
+         zm:[],
         },
-
       }
     },
     computed: {
@@ -178,9 +224,14 @@
     },
     methods: {
       initDictConfig(){
-        initDictOptions('yzbz').then((res) => {
+        initDictOptions('sex').then((res) => {
           if (res.success) {
-            this.$set(this.dictOptions, 'rhyz', res.result)
+            this.$set(this.dictOptions, 'sex', res.result)
+          }
+        })
+        initDictOptions('minzu').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'zm', res.result)
           }
         })
       }
