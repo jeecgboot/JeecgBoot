@@ -80,30 +80,41 @@
     },
     created() {
       if (this.$route.path != indexKey) {
-        this.pageList.push({
-          name: 'dashboard-analysis',
-          path: indexKey,
-          fullPath: indexKey,
-          meta: {
-            icon: 'dashboard',
-            title: '首页'
-          }
-        })
-        this.linkList.push(indexKey)
+        this.addIndexToFirst()
       }
+      // update-begin-author:sunjianlei date:20191223 for: 修复刷新后菜单Tab名字显示异常
+      let storeKey = 'route:title:' + this.$route.fullPath
+      let routeTitle = this.$ls.get(storeKey)
+      if (routeTitle) {
+        this.$route.meta.title = routeTitle
+      }
+      // update-end-author:sunjianlei date:20191223 for: 修复刷新后菜单Tab名字显示异常
       this.pageList.push(this.$route)
       this.linkList.push(this.$route.fullPath)
       this.activePage = this.$route.fullPath
     },
     watch: {
       '$route': function(newRoute) {
+        //console.log("新的路由",newRoute)
         this.activePage = newRoute.fullPath
         if (!this.multipage) {
           this.linkList = [newRoute.fullPath]
           this.pageList = [Object.assign({},newRoute)]
-        } else if (this.linkList.indexOf(newRoute.fullPath) < 0) {
+        // update-begin-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
+        } else if(indexKey==newRoute.fullPath) {
+          //首页时 判断是否缓存 没有缓存 刷新之
+          if (newRoute.meta.keepAlive === false) {
+            this.routeReload()
+          }
+        // update-end-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
+        }else if (this.linkList.indexOf(newRoute.fullPath) < 0) {
           this.linkList.push(newRoute.fullPath)
           this.pageList.push(Object.assign({},newRoute))
+          // update-begin-author:sunjianlei date:20200103 for: 如果新增的页面配置了缓存路由，那么就强制刷新一遍
+          if (newRoute.meta.keepAlive) {
+            this.routeReload()
+          }
+          // update-end-author:sunjianlei date:20200103 for: 如果新增的页面配置了缓存路由，那么就强制刷新一遍
         } else if (this.linkList.indexOf(newRoute.fullPath) >= 0) {
           let oldIndex = this.linkList.indexOf(newRoute.fullPath)
           let oldPositionRoute = this.pageList[oldIndex]
@@ -114,6 +125,7 @@
         let index = this.linkList.lastIndexOf(key)
         let waitRouter = this.pageList[index]
         this.$router.push(Object.assign({},waitRouter));
+        this.changeTitle(waitRouter.meta.title)
       },
       'multipage': function(newVal) {
         if(this.reloadFlag){
@@ -122,9 +134,44 @@
             this.pageList = [this.$route]
           }
         }
-      }
+      },
+      // update-begin-author:sunjianlei date:20191223 for: 修复从单页模式切换回多页模式后首页不居第一位的 BUG
+      device() {
+        if (this.multipage && this.linkList.indexOf(indexKey) === -1) {
+          this.addIndexToFirst()
+        }
+      },
+      // update-end-author:sunjianlei date:20191223 for: 修复从单页模式切换回多页模式后首页不居第一位的 BUG
     },
     methods: {
+      // update-begin-author:sunjianlei date:20191223 for: 修复从单页模式切换回多页模式后首页不居第一位的 BUG
+      // 将首页添加到第一位
+      addIndexToFirst() {
+        this.pageList.splice(0, 0, {
+          name: 'dashboard-analysis',
+          path: indexKey,
+          fullPath: indexKey,
+          meta: {
+            icon: 'dashboard',
+            title: '首页'
+          }
+        })
+        this.linkList.splice(0, 0, indexKey)
+      },
+      // update-end-author:sunjianlei date:20191223 for: 修复从单页模式切换回多页模式后首页不居第一位的 BUG
+
+      // update-begin-author:sunjianlei date:20200120 for: 动态更改页面标题
+      changeTitle(title) {
+        let projectTitle = "Jeecg-Boot 企业级快速开发平台"
+        // 首页特殊处理
+        if (this.$route.path === indexKey) {
+          document.title = projectTitle
+        } else {
+          document.title = title + ' · ' + projectTitle
+        }
+      },
+      // update-end-author:sunjianlei date:20200120 for: 动态更改页面标题
+
       changePage(key) {
         this.activePage = key
       },
@@ -236,6 +283,9 @@
           let currRouter = this.pageList[keyIndex]
           let meta = Object.assign({},currRouter.meta,{title:title})
           this.pageList.splice(keyIndex, 1, Object.assign({},currRouter,{meta:meta}))
+          if (key === this.activePage) {
+            this.changeTitle(title)
+          }
         }
       },
       //update-end-author:taoyan date:20190430 for:动态路由title显示配置的菜单title而不是其对应路由的title

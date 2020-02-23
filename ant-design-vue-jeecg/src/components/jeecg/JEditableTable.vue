@@ -32,6 +32,8 @@
       </a-col>
     </a-row>
 
+    <slot name="actionButtonAfter" :target="getVM()"/>
+
     <div :id="`${caseId}inputTable`" class="input-table">
       <!-- 渲染表头 -->
       <div class="thead" ref="thead">
@@ -142,7 +144,9 @@
                         placement="top"
                         :title="(tooltips[id] || {}).title"
                         :visible="(tooltips[id] || {}).visible || false"
-                        :autoAdjustOverflow="true">
+                        :autoAdjustOverflow="true"
+                        :getPopupContainer="getParentContainer"
+                      >
 
                         <input
                           :id="id"
@@ -175,7 +179,9 @@
                         placement="top"
                         :title="(tooltips[id] || {}).title"
                         :visible="(tooltips[id] || {}).visible || false"
-                        :autoAdjustOverflow="true">
+                        :autoAdjustOverflow="true"
+                        :getPopupContainer="getParentContainer"
+                      >
 
                       <span
                         @mouseover="()=>{handleMouseoverCommono(row,col)}"
@@ -211,7 +217,9 @@
                         placement="top"
                         :title="(tooltips[id] || {}).title"
                         :visible="(tooltips[id] || {}).visible || false"
-                        :autoAdjustOverflow="true">
+                        :autoAdjustOverflow="true"
+                        :getPopupContainer="getParentContainer"
+                      >
 
                       <span
                         @mouseover="()=>{handleMouseoverCommono(row,col)}"
@@ -278,19 +286,33 @@
                       </template>
 
                       <div :hidden="uploadValues[id] != null">
-
-                        <a-upload
-                          name="file"
-                          :data="{'isup':1}"
-                          :multiple="false"
-                          :action="col.action"
-                          :headers="uploadGetHeaders(row,col)"
-                          :showUploadList="false"
-                          v-bind="buildProps(row,col)"
-                          @change="(v)=>handleChangeUpload(v,id,row,col)"
+                        <a-tooltip
+                          :key="i"
+                          :id="id"
+                          placement="top"
+                          :title="(tooltips[id] || {}).title"
+                          :visible="(tooltips[id] || {}).visible || false"
+                          :autoAdjustOverflow="true"
+                          :getPopupContainer="getParentContainer"
                         >
-                          <a-button icon="upload">{{ col.placeholder }}</a-button>
-                        </a-upload>
+
+                          <span
+                            @mouseover="()=>{handleMouseoverCommono(row,col)}"
+                            @mouseout="()=>{handleMouseoutCommono(row,col)}">
+                            <a-upload
+                              name="file"
+                              :data="{'isup':1}"
+                              :multiple="false"
+                              :action="col.action"
+                              :headers="uploadGetHeaders(row,col)"
+                              :showUploadList="false"
+                              v-bind="buildProps(row,col)"
+                              @change="(v)=>handleChangeUpload(v,id,row,col)"
+                            >
+                              <a-button icon="upload">{{ col.placeholder }}</a-button>
+                            </a-upload>
+                          </span>
+                        </a-tooltip>
                       </div>
 
                     </div>
@@ -303,7 +325,10 @@
                         placement="top"
                         :title="(tooltips[id] || {}).title"
                         :visible="(tooltips[id] || {}).visible || false"
-                        :autoAdjustOverflow="true">
+                        :autoAdjustOverflow="true"
+                        :getPopupContainer="getParentContainer"
+                      >
+
                         <span
                           @mouseover="()=>{handleMouseoverCommono(row,col)}"
                           @mouseout="()=>{handleMouseoutCommono(row,col)}">
@@ -359,19 +384,33 @@
                       </template>
 
                       <div :hidden="uploadValues[id] != null">
-
-                        <a-upload
-                          name="file"
-                          :data="{'isup':1}"
-                          :multiple="false"
-                          :action="getUploadAction(col.action)"
-                          :headers="uploadGetHeaders(row,col)"
-                          :showUploadList="false"
-                          v-bind="buildProps(row,col)"
-                          @change="(v)=>handleChangeUpload(v,id,row,col)"
+                        <a-tooltip
+                          :key="i"
+                          :id="id"
+                          placement="top"
+                          :title="(tooltips[id] || {}).title"
+                          :visible="(tooltips[id] || {}).visible || false"
+                          :autoAdjustOverflow="true"
+                          :getPopupContainer="getParentContainer"
                         >
-                          <a-button icon="upload">{{ col.placeholder }}</a-button>
-                        </a-upload>
+
+                          <span
+                            @mouseover="()=>{handleMouseoverCommono(row,col)}"
+                            @mouseout="()=>{handleMouseoutCommono(row,col)}">
+                            <a-upload
+                              name="file"
+                              :data="{'isup':1}"
+                              :multiple="false"
+                              :action="getUploadAction(col.action)"
+                              :headers="uploadGetHeaders(row,col)"
+                              :showUploadList="false"
+                              v-bind="buildProps(row,col)"
+                              @change="(v)=>handleChangeUpload(v,id,row,col)"
+                            >
+                              <a-button icon="upload">{{ col.placeholder }}</a-button>
+                            </a-upload>
+                          </span>
+                        </a-tooltip>
                       </div>
 
                     </div>
@@ -406,19 +445,33 @@
                       </template>
 
                       <div :hidden="uploadValues[id] != null">
-
-                        <a-upload
-                          name="file"
-                          :data="{'isup':1}"
-                          :multiple="false"
-                          :action="getUploadAction(col.action)"
-                          :headers="uploadGetHeaders(row,col)"
-                          :showUploadList="false"
-                          v-bind="buildProps(row,col)"
-                          @change="(v)=>handleChangeUpload(v,id,row,col)"
+                        <a-tooltip
+                          :key="i"
+                          :id="id"
+                          placement="top"
+                          :title="(tooltips[id] || {}).title"
+                          :visible="(tooltips[id] || {}).visible || false"
+                          :autoAdjustOverflow="true"
+                          :getPopupContainer="getParentContainer"
                         >
-                          <a-button icon="upload">请上传图片</a-button>
-                        </a-upload>
+
+                          <span
+                            @mouseover="()=>{handleMouseoverCommono(row,col)}"
+                            @mouseout="()=>{handleMouseoutCommono(row,col)}">
+                            <a-upload
+                              name="file"
+                              :data="{'isup':1}"
+                              :multiple="false"
+                              :action="getUploadAction(col.action)"
+                              :headers="uploadGetHeaders(row,col)"
+                              :showUploadList="false"
+                              v-bind="buildProps(row,col)"
+                              @change="(v)=>handleChangeUpload(v,id,row,col)"
+                            >
+                              <a-button icon="upload">请上传图片</a-button>
+                            </a-upload>
+                          </span>
+                        </a-tooltip>
                       </div>
 
                     </div>
@@ -433,7 +486,10 @@
                         placement="top"
                         :title="(tooltips[id] || {}).title"
                         :visible="(tooltips[id] || {}).visible || false"
-                        :autoAdjustOverflow="true">
+                        :autoAdjustOverflow="true"
+                        :getPopupContainer="getParentContainer"
+                      >
+
                         <span
                           @mouseover="()=>{handleMouseoverCommono(row,col)}"
                           @mouseout="()=>{handleMouseoutCommono(row,col)}">
@@ -459,7 +515,9 @@
                         placement="top"
                         :title="(tooltips[id] || {}).title"
                         :visible="(tooltips[id] || {}).visible || false"
-                        :autoAdjustOverflow="true">
+                        :autoAdjustOverflow="true"
+                        :getPopupContainer="getParentContainer"
+                      >
 
                         <span
                           @mouseover="()=>{handleMouseoverCommono(row,col)}"
@@ -492,7 +550,9 @@
                         placement="top"
                         :title="(tooltips[id] || {}).title"
                         :visible="(tooltips[id] || {}).visible || false"
-                        :autoAdjustOverflow="true">
+                        :autoAdjustOverflow="true"
+                        :getPopupContainer="getParentContainer"
+                      >
 
                         <span
                           @mouseover="()=>{handleMouseoverCommono(row,col)}"
@@ -526,7 +586,9 @@
                         placement="top"
                         :title="(tooltips[id] || {}).title"
                         :visible="(tooltips[id] || {}).visible || false"
-                        :autoAdjustOverflow="true">
+                        :autoAdjustOverflow="true"
+                        :getPopupContainer="getParentContainer"
+                      >
 
                         <span
                           @mouseover="()=>{handleMouseoverCommono(row,col)}"
@@ -693,6 +755,7 @@
       }
     },
     created() {
+      this.inputValues = []
       // 当前显示的tr
       this.visibleTrEls = []
       this.disabledRowIds = (this.disabledRowIds || [])
@@ -771,149 +834,155 @@
       dataSource: {
         immediate: true,
         handler: function (newValue) {
-          this.initialize()
+          // 兼容IE
+          this.getElementPromise('tbody').then(() => {
 
-          let rows = []
-          let checkboxValues = {}
-          let selectValues = {}
-          let jdateValues = {}
-          let slotValues = {}
-          let uploadValues = {}
-          let popupValues = {}
-          let radioValues = {}
-          let multiSelectValues = {}
-          let searchSelectValues = {}
+            this.initialize()
 
-          // 禁用行的id
-          let disabledRowIds = (this.disabledRowIds || [])
-          newValue.forEach((data, newValueIndex) => {
-            // 判断源数据是否带有id
-            if (data.id == null || data.id === '') {
-              data.id = this.removeCaseId(this.generateId() + newValueIndex)
-            }
+            let rows = []
+            let checkboxValues = {}
+            let selectValues = {}
+            let jdateValues = {}
+            let slotValues = {}
+            let uploadValues = {}
+            let popupValues = {}
+            let radioValues = {}
+            let multiSelectValues = {}
+            let searchSelectValues = {}
 
-            let value = { id: this.caseId + data.id }
-            let row = { id: value.id }
-            let disabled = false
-            this.columns.forEach(column => {
-              let inputId = column.key + value.id
-              let sourceValue = (data[column.key] == null ? '' : data[column.key]).toString()
-              if (column.type === FormTypes.checkbox) {
-
-                // 判断是否设定了customValue（自定义值）
-                if (column.customValue instanceof Array) {
-                  let customValue = (column.customValue[0] || '').toString()
-                  checkboxValues[inputId] = (sourceValue === customValue)
-                } else {
-                  checkboxValues[inputId] = sourceValue
-                }
-
-              } else if (column.type === FormTypes.select) {
-                if (sourceValue) {
-                  // 判断是否是多选
-                  selectValues[inputId] = (column.props || {})['mode'] === 'multiple' ? sourceValue.split(',') : sourceValue
-                } else {
-                  selectValues[inputId] = undefined
-                }
-
-              } else if (column.type === FormTypes.date || column.type === FormTypes.datetime) {
-                jdateValues[inputId] = sourceValue
-
-              } else if (column.type === FormTypes.slot) {
-                if (sourceValue !== 0 && !sourceValue) {
-                  slotValues[inputId] = column.defaultValue
-                } else {
-                  slotValues[inputId] = sourceValue
-                }
-
-              } else if (column.type === FormTypes.popup) {
-                popupValues[inputId] = sourceValue
-              } else if (column.type === FormTypes.radio) {
-                radioValues[inputId] = sourceValue
-              } else if (column.type === FormTypes.sel_search) {
-                searchSelectValues[inputId] = sourceValue
-              } else if (column.type === FormTypes.list_multi) {
-                if (sourceValue.length > 0) {
-                  multiSelectValues[inputId] = sourceValue.split(',')
-                } else {
-                  multiSelectValues[inputId] = []
-                }
-              } else if (column.type === FormTypes.upload || column.type === FormTypes.file || column.type === FormTypes.image) {
-                if (sourceValue) {
-                  let fileName = sourceValue.substring(sourceValue.lastIndexOf('/') + 1)
-                  uploadValues[inputId] = {
-                    name: fileName,
-                    status: 'done',
-                    path: sourceValue
-                  }
-                }
-              } else {
-                value[column.key] = sourceValue
+            // 禁用行的id
+            let disabledRowIds = (this.disabledRowIds || [])
+            newValue.forEach((data, newValueIndex) => {
+              // 判断源数据是否带有id
+              if (data.id == null || data.id === '') {
+                data.id = this.removeCaseId(this.generateId() + newValueIndex)
               }
 
-              // 解析disabledRows
-              for (let columnKey in this.disabledRows) {
-                // 判断是否有该属性
-                if (this.disabledRows.hasOwnProperty(columnKey) && data.hasOwnProperty(columnKey)) {
-                  if (disabled !== true) {
-                    let temp = this.disabledRows[columnKey]
-                    // 禁用规则可以是一个数组
-                    if (temp instanceof Array) {
-                      disabled = temp.includes(data[columnKey])
-                    } else {
-                      disabled = (temp === data[columnKey])
+              let value = { id: this.caseId + data.id }
+              let row = { id: value.id }
+              let disabled = false
+              this.columns.forEach(column => {
+                let inputId = column.key + value.id
+                let sourceValue = (data[column.key] == null ? '' : data[column.key]).toString()
+                if (column.type === FormTypes.checkbox) {
+
+                  // 判断是否设定了customValue（自定义值）
+                  if (column.customValue instanceof Array) {
+                    let customValue = (column.customValue[0] || '').toString()
+                    checkboxValues[inputId] = (sourceValue === customValue)
+                  } else {
+                    checkboxValues[inputId] = sourceValue
+                  }
+
+                } else if (column.type === FormTypes.select) {
+                  if (sourceValue) {
+                    // 判断是否是多选
+                    selectValues[inputId] = (column.props || {})['mode'] === 'multiple' ? sourceValue.split(',') : sourceValue
+                  } else {
+                    selectValues[inputId] = undefined
+                  }
+
+                } else if (column.type === FormTypes.date || column.type === FormTypes.datetime) {
+                  jdateValues[inputId] = sourceValue
+
+                } else if (column.type === FormTypes.slot) {
+                  if (sourceValue !== 0 && !sourceValue) {
+                    slotValues[inputId] = column.defaultValue
+                  } else {
+                    slotValues[inputId] = sourceValue
+                  }
+
+                } else if (column.type === FormTypes.popup) {
+                  popupValues[inputId] = sourceValue
+                } else if (column.type === FormTypes.radio) {
+                  radioValues[inputId] = sourceValue
+                } else if (column.type === FormTypes.sel_search) {
+                  searchSelectValues[inputId] = sourceValue
+                } else if (column.type === FormTypes.list_multi) {
+                  if (sourceValue.length > 0) {
+                    multiSelectValues[inputId] = sourceValue.split(',')
+                  } else {
+                    multiSelectValues[inputId] = []
+                  }
+                } else if (column.type === FormTypes.upload || column.type === FormTypes.file || column.type === FormTypes.image) {
+                  if (sourceValue) {
+                    let fileName = sourceValue.substring(sourceValue.lastIndexOf('/') + 1)
+                    uploadValues[inputId] = {
+                      name: fileName,
+                      status: 'done',
+                      path: sourceValue
                     }
-                    if (disabled) {
-                      disabledRowIds.push(row.id)
+                  }
+                } else {
+                  value[column.key] = sourceValue
+                }
+
+                // 解析disabledRows
+                for (let columnKey in this.disabledRows) {
+                  // 判断是否有该属性
+                  if (this.disabledRows.hasOwnProperty(columnKey) && data.hasOwnProperty(columnKey)) {
+                    if (disabled !== true) {
+                      let temp = this.disabledRows[columnKey]
+                      // 禁用规则可以是一个数组
+                      if (temp instanceof Array) {
+                        disabled = temp.includes(data[columnKey])
+                      } else {
+                        disabled = (temp === data[columnKey])
+                      }
+                      if (disabled) {
+                        disabledRowIds.push(row.id)
+                      }
                     }
                   }
                 }
-              }
+              })
+              this.inputValues.push(value)
+              rows.push(row)
             })
-            this.inputValues.push(value)
-            rows.push(row)
-          })
-          this.disabledRowIds = disabledRowIds
-          this.checkboxValues = checkboxValues
-          this.selectValues = selectValues
-          this.jdateValues = jdateValues
-          this.slotValues = slotValues
-          this.rows = rows
-          this.uploadValues = uploadValues
-          this.popupValues = popupValues
-          this.radioValues = radioValues
-          this.multiSelectValues = multiSelectValues
-          this.searchSelectValues = searchSelectValues
+            this.disabledRowIds = disabledRowIds
+            this.checkboxValues = checkboxValues
+            this.selectValues = selectValues
+            this.jdateValues = jdateValues
+            this.slotValues = slotValues
+            this.rows = rows
+            this.uploadValues = uploadValues
+            this.popupValues = popupValues
+            this.radioValues = radioValues
+            this.multiSelectValues = multiSelectValues
+            this.searchSelectValues = searchSelectValues
 
-          // 更新form表单的值
-          this.$nextTick(() => {
-            this.updateFormValues()
+            // 更新form表单的值
+            this.$nextTick(() => {
+              this.updateFormValues()
+            })
           })
-
         }
       },
       columns: {
         immediate: true,
         handler(columns) {
-          columns.forEach(column => {
-            if (column.type === FormTypes.select || column.type === FormTypes.list_multi || column.type === FormTypes.sel_search) {
-              // 兼容 旧版本 options
-              if (column.options instanceof Array) {
-                column.options = column.options.map(item => {
-                  if (item) {
-                    return {
-                      ...item,
-                      text: item.text || item.title,
-                      title: item.text || item.title
+          // 兼容IE
+          this.getElementPromise('tbody').then(() => {
+            columns.forEach(column => {
+              if (column.type === FormTypes.select || column.type === FormTypes.list_multi || column.type === FormTypes.sel_search) {
+                // 兼容 旧版本 options
+                if (column.options instanceof Array) {
+                  column.options = column.options.map(item => {
+                    if (item) {
+                      return {
+                        ...item,
+                        text: item.text || item.title,
+                        title: item.text || item.title
+                      }
                     }
-                  }
-                  return {}
-                })
+                    return {}
+                  })
+                }
+                if (column.dictCode) {
+                  this._loadDictConcatToOptions(column)
+                }
               }
-              if (column.dictCode) {
-                this._loadDictConcatToOptions(column)
-              }
-            }
+            })
           })
         }
       },
@@ -923,19 +992,12 @@
       }
     },
     mounted() {
-      // 获取document element对象
-      let elements = {};
-      ['inputTable', 'tbody'].forEach(id => {
-        elements[id] = document.getElementById(this.caseId + id)
-      })
-      this.el = elements
-
       let vm = this
       /** 监听滚动条事件 */
-      this.el.inputTable.onscroll = function (event) {
+      this.getElement('inputTable').onscroll = function (event) {
         vm.syncScrollBar(event.target.scrollLeft)
       }
-      this.el.tbody.onscroll = function (event) {
+      this.getElement('tbody').onscroll = function (event) {
         // vm.recalcTrHiddenItem(event.target.scrollTop)
       }
 
@@ -954,6 +1016,25 @@
 
     },
     methods: {
+
+      getElement(id, noCaseId = false) {
+        if (!this.el[id]) {
+          this.el[id] = document.getElementById((noCaseId ? '' : this.caseId) + id)
+        }
+        return this.el[id]
+      },
+
+      getElementPromise(id, noCaseId = false) {
+        return new Promise((resolve) => {
+          let timer = setInterval(() => {
+            let element = this.getElement(id, noCaseId)
+            if (element) {
+              clearInterval(timer)
+              resolve(element)
+            }
+          }, 10)
+        })
+      },
 
       /** 初始化列表 */
       initialize() {
@@ -985,14 +1066,14 @@
         this.searchSelectValues = []
         this.scrollTop = 0
         this.$nextTick(() => {
-          this.el.tbody.scrollTop = 0
+          this.getElement('tbody').scrollTop = 0
         })
       },
 
       /** 同步滚动条状态 */
       syncScrollBar(scrollLeft) {
         // this.style.tbody.left = `${scrollLeft}px`
-        // this.el.tbody.scrollLeft = scrollLeft
+        // this.getElement('tbody').scrollLeft = scrollLeft
       },
       /** 重置滚动条位置，参数留空则滚动到上次记录的位置 */
       resetScrollTop(top) {
@@ -1157,7 +1238,7 @@
           target: this
         })
         // 设置滚动条位置
-        let tbody = this.el.tbody
+        let tbody = this.getElement('tbody')
         let offsetHeight = tbody.offsetHeight
         let realScrollTop = tbody.scrollTop + offsetHeight
         if (forceScrollToBottom === false) {
@@ -1245,13 +1326,14 @@
         return true
       },
 
-      /** 获取表格表单里的值（同步版） */
-      getValuesSync(options = {}) {
+      /** 获取表格表单里的值（异步版） */
+      getValuesAsync(options = {}, callback) {
         let { validate, rowIds } = options
         if (typeof validate !== 'boolean') validate = true
         if (!(rowIds instanceof Array)) rowIds = null
         // console.log('options:', { validate, rowIds })
 
+        let asyncCount = 0
         let error = 0
         let inputValues = cloneObject(this.inputValues)
         let tooltips = Object.assign({}, this.tooltips)
@@ -1314,7 +1396,7 @@
             } else if (column.type === FormTypes.sel_search) {
               value[column.key] = this.searchSelectValues[inputId]
             } else if (column.type === FormTypes.list_multi) {
-              if (!this.multiSelectValues[inputId] || this.multiSelectValues[inputId].length == 0) {
+              if (!this.multiSelectValues[inputId] || this.multiSelectValues[inputId].length === 0) {
                 value[column.key] = ''
               } else {
                 value[column.key] = this.multiSelectValues[inputId].join(',')
@@ -1326,20 +1408,27 @@
 
             // 检查表单验证
             if (validate === true) {
-              let results = this.validateOneInput(value[column.key], value, column, notPassedIds, false, 'getValues')
-              tooltips[inputId] = results[0]
-              if (tooltips[inputId].passed === false) {
-                error++
-                // if (error++ === 0) {
-                // let element = document.getElementById(inputId)
-                // while (element.className !== 'tr') {
-                //   element = element.parentElement
-                // }
-                // this.jumpToId(inputId, element)
-                // }
+              const handleValidateOneInput = (results) => {
+                tooltips[inputId] = results[0]
+                if (tooltips[inputId].passed === false) {
+                  error++
+                  // if (error++ === 0) {
+                  // let element = document.getElementById(inputId)
+                  // while (element.className !== 'tr') {
+                  //   element = element.parentElement
+                  // }
+                  // this.jumpToId(inputId, element)
+                  // }
+                }
+                tooltips[inputId].visible = false
+                notPassedIds = results[1]
               }
-              tooltips[inputId].visible = false
-              notPassedIds = results[1]
+              asyncCount++
+              let results = this.validateOneInputAsync(value[column.key], value, column, notPassedIds, false, 'getValues', (results) => {
+                handleValidateOneInput(results)
+                asyncCount--
+              })
+              handleValidateOneInput(results)
             }
           })
           // 将caseId去除
@@ -1352,25 +1441,42 @@
           this.tooltips = tooltips
           this.notPassedIds = notPassedIds
         }
+
+        const timer = setInterval(() => {
+          if (asyncCount === 0) {
+            clearInterval(timer)
+            if (typeof callback === 'function') {
+              callback({ error, values })
+            }
+          }
+        }, 50)
+
         return { error, values }
+      },
+
+      /** 获取表格表单里的值（同步版） */
+      getValuesSync(options = {}) {
+        return this.getValuesAsync(options)
       },
 
       /** 获取表格表单里的值 */
       getValues(callback, validate = true, rowIds) {
-        let result = this.getValuesSync({ validate, rowIds })
-        if (typeof callback === 'function') {
-          callback(result.error, result.values)
-        }
+        this.getValuesAsync({ validate, rowIds }, ({ error, values }) => {
+          if (typeof callback === 'function') {
+            callback(error, values)
+          }
+        })
       },
       /** getValues的Promise版 */
       getValuesPromise(validate = true, rowIds) {
         return new Promise((resolve, reject) => {
-          let { error, values } = this.getValuesSync({ validate, rowIds })
-          if (error === 0) {
-            resolve(values)
-          } else {
-            reject(VALIDATE_NO_PASSED)
-          }
+          this.getValuesAsync({ validate, rowIds }, ({ error, values }) => {
+            if (error === 0) {
+              resolve(values)
+            } else {
+              reject(VALIDATE_NO_PASSED)
+            }
+          })
         })
       },
       /** 获取被删除项的id */
@@ -1468,14 +1574,24 @@
       //     element = document.getElementById(id)
       //   }
       //   if (element != null) {
-      //     console.log(this.el.tbody.scrollTop, element.offsetTop)
-      //     this.el.tbody.scrollTop = element.offsetTop
-      //     console.log(this.el.tbody.scrollTop, element.offsetTop)
+      //     console.log(this.getElement('tbody').scrollTop, element.offsetTop)
+      //     this.getElement('tbody').scrollTop = element.offsetTop
+      //     console.log(this.getElement('tbody').scrollTop, element.offsetTop)
       //   }
       // },
 
-      /** 验证单个表单 */
-      validateOneInput(value, row, column, notPassedIds, update = false, validType = 'input') {
+      /**
+       * 验证单个表单，异步版
+       *
+       * @param value 校验的值
+       * @param row 校验的行
+       * @param column 校验的列
+       * @param notPassedIds 没有通过校验的 id
+       * @param update 是否更新到vue中
+       * @param validType 校验触发的方式（input、blur等）
+       * @param callback
+       */
+      validateOneInputAsync(value, row, column, notPassedIds, update = false, validType = 'input', callback) {
         let tooltips = Object.assign({}, this.tooltips)
         // let notPassedIds = cloneObject(this.notPassedIds)
         let inputId = column.key + row.id
@@ -1515,6 +1631,10 @@
             if (column.type === FormTypes.date || column.type === FormTypes.datetime) {
               element = element.getElementsByTagName('input')[0]
             }
+            // upload 在 .ant-upload .ant-btn 上设置 border-color
+            if (column.type === FormTypes.upload || column.type === FormTypes.file || column.type === FormTypes.image) {
+              element = element.getElementsByClassName('ant-upload')[0].getElementsByClassName('ant-btn')[0]
+            }
             element.style.borderColor = borderColor
             element.style.boxShadow = boxShadow
             if (element.tagName === 'SPAN') {
@@ -1525,6 +1645,10 @@
           if (update) {
             this.tooltips = tooltips
             this.notPassedIds = notPassedIds
+          }
+
+          if (typeof callback === 'function') {
+            callback([tooltips[inputId], notPassedIds])
           }
 
         }
@@ -1547,8 +1671,12 @@
           nextThen([passed, message])
         }
 
-
         return [tooltips[inputId], notPassedIds]
+      },
+
+      /** 验证单个表单 */
+      validateOneInput(value, row, column, notPassedIds, update = false, validType = 'input') {
+        return this.validateOneInputAsync(value, row, column, notPassedIds, update, validType)
       },
       /** 通过规则验证值是否正确 */
       validateValue(column, value) {
@@ -1620,7 +1748,7 @@
 
       /** 动态更新表单的值 */
       updateFormValues() {
-        let trs = this.el.tbody.getElementsByClassName('tr')
+        let trs = this.getElement('tbody').getElementsByClassName('tr')
         let trEls = []
         for (let tr of trs) {
           trEls.push(tr)
@@ -1959,7 +2087,7 @@
       handleClickDownloadFile(id) {
         let { path } = this.uploadValues[id] || {}
         if (path) {
-          let url = window._CONFIG['downloadUrl'] + '/' + path
+          let url = window._CONFIG['staticDomainURL'] + '/' + path
           window.open(url)
         }
       },
@@ -2130,7 +2258,7 @@
       getCellImageView(id) {
         let currUploadObj = this.uploadValues[id] || null
         if (currUploadObj && currUploadObj['path']) {
-          return window._CONFIG['domianURL'] + '/sys/common/view/' + currUploadObj['path']
+          return window._CONFIG['staticDomainURL'] + '/' + currUploadObj['path']
         } else {
           return ''
         }
@@ -2340,7 +2468,7 @@
 
       .td {
         /*flex: 1;*/
-        padding: 14px 0 14px @spacing;
+        padding: 14px @spacing 14px 0;
         justify-content: center;
 
         &:last-child {

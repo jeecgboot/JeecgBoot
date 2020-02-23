@@ -150,7 +150,7 @@
               console.log("aaaaa",res)
               if(res.success){
                 this.checkKey = res.result.key
-                this.code = res.result.code
+                this.code = window.atob(res.result.code)
                 resolve();
               }else{
                 this.$message.error("生成验证码错误,请联系系统管理员")

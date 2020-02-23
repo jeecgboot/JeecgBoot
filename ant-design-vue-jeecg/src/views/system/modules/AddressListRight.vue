@@ -66,12 +66,6 @@
             customRender: (t, r, i) => parseInt(i) + 1
           },
           {
-            title: '部门',
-            width: '20%',
-            align: 'center',
-            dataIndex: 'departName'
-          },
-          {
             title: '姓名',
             width: '15%',
             align: 'center',
@@ -84,6 +78,12 @@
             dataIndex: 'workNo'
           },
           {
+            title: '部门',
+            width: '20%',
+            align: 'center',
+            dataIndex: 'departName'
+          },
+          {
             title: '职务',
             width: '15%',
             align: 'center',
@@ -91,7 +91,7 @@
             customRender: (text) => (text || '').split(',').map(t => this.positionInfo[t] ? this.positionInfo[t] : t).join(',')
           },
           {
-            title: '座机',
+            title: '手机',
             width: '15%',
             align: 'center',
             dataIndex: 'telephone'
@@ -130,14 +130,26 @@
     methods: {
 
       loadData(pageNum, orgCode) {
-        if (!orgCode) {
-          return
-        }
-        //加载数据 若传入参数1则加载第一页的内容
-        if (pageNum === 1) {
-          this.ipagination.current = 1
-        }
         this.loading = true
+        if (pageNum === 1) {
+            this.ipagination.current = 1
+        }
+        // update-begin- --- author:wangshuai ------ date:20200102 ---- for:传过来的部门编码为空全查
+        if (!orgCode) {
+            getAction(this.url.list, {
+                ...this.getQueryParams()
+            }).then((res) => {
+                if (res.success) {
+                    this.dataSource = res.result.records
+                    this.ipagination.total = res.result.total
+                }
+            }).finally(() => {
+                this.loading = false
+                this.cardLoading = false
+            })
+          // update-end- --- author:wangshuai ------ date:20200102 ---- for:传过来的部门编码为空全查
+        }else{
+        //加载数据 若传入参数1则加载第一页的内容
         getAction(this.url.list, {
           orgCode,
           ...this.getQueryParams()
@@ -150,6 +162,7 @@
           this.loading = false
           this.cardLoading = false
         })
+        }
       },
 
       searchQuery() {

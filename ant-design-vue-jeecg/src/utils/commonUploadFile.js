@@ -38,7 +38,7 @@ const getUploadFileList=(paths)=>{
         uid:uidGenerator(),
         name:getFileName(arr[a]),
         status: 'done',
-        url: window._CONFIG['domianURL']+"/sys/common/view/"+arr[a],
+        url: window._CONFIG['staticDomainURL']+"/"+arr[a],
         response:{
           status:"history",
           message:arr[a]

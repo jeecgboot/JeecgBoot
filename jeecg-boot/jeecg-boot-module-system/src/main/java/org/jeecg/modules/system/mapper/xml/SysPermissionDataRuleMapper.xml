@@ -11,6 +11,16 @@
 			join sys_user_role d on d.role_id = c.id
 			join sys_user e on d.user_id = e.id
 			where e.username = #{username} and b.id =  #{permissionId}
+		<!--update begin Author:lvdandan  Date:20200213 for：加入部门权限 -->
+		union
+		select data_rule_ids
+			from sys_depart_role_permission a
+			join sys_permission b on a.permission_id = b.id
+			join sys_depart_role c on a.role_id = c.id
+			join sys_depart_role_user d on d.drole_id = c.id
+			join sys_user e on d.user_id = e.id
+			where e.username = #{username} and b.id = #{permissionId}
+		<!--update end Author:lvdandan  Date:20200213 for：加入部门权限 -->
 	</select>
 
 </mapper>

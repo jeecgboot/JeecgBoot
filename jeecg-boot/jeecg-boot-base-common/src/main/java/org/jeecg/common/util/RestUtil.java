@@ -15,6 +15,28 @@ import java.util.Map;
  */
 public class RestUtil {
 
+    private static String domain = null;
+
+    public static String getDomain() {
+        if (domain == null) {
+            domain = SpringContextUtils.getDomain();
+        }
+        return domain;
+    }
+
+    public static String path = null;
+
+    public static String getPath() {
+        if (path == null) {
+            path = SpringContextUtils.getApplicationContext().getEnvironment().getProperty("server.servlet.context-path");
+        }
+        return path;
+    }
+
+    public static String getBaseUrl() {
+        return getDomain() + getPath();
+    }
+
     /**
      * RestAPI 调用器
      */

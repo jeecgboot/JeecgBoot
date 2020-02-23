@@ -40,16 +40,15 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button v-if="buttonSwitch.add" @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button v-if="buttonSwitch.import" @click="handleImportXls" type="primary" icon="upload" style="margin-left:8px">导入</a-button>
-      <a-button v-if="buttonSwitch.export" @click="handleExportXls" type="primary" icon="download" style="margin-left:8px">导出</a-button>
+      <a-button v-if="buttonSwitch.import" @click="handleImportXls" type="primary" icon="upload">导入</a-button>
+      <a-button v-if="buttonSwitch.export" @click="handleExportXls" type="primary" icon="download">导出</a-button>
       <template v-if="cgButtonList && cgButtonList.length>0" v-for="(item,index) in cgButtonList">
         <a-button
           v-if=" item.optType=='js' "
           :key=" 'cgbtn'+index "
           @click="cgButtonJsHandler(item.buttonCode)"
           type="primary"
-          :icon="item.buttonIcon"
-          style="margin-left:8px">
+          :icon="item.buttonIcon">
           {{ item.buttonName }}
         </a-button>
         <a-button
@@ -57,8 +56,7 @@
           :key=" 'cgbtn'+index "
           @click="cgButtonActionHandler(item.buttonCode)"
           type="primary"
-          :icon="item.buttonIcon"
-          style="margin-left:8px">
+          :icon="item.buttonIcon">
           {{ item.buttonName }}
         </a-button>
       </template>
@@ -69,13 +67,11 @@
         :fieldList="superQuery.fieldList"
         :saveCode="$route.fullPath"
         :loading="table.loading"
-        style="margin-left: 8px;"
         @handleSuperQuery="handleSuperQuery"/>
 
       <a-button
         v-if="buttonSwitch.batch_delete"
         @click="handleDelBatch"
-        style="margin-left:8px"
         v-show="table.selectedRowKeys.length > 0"
         ghost
         type="primary"
@@ -102,6 +98,16 @@
         @change="handleTableChange"
         :scroll="table.scroll"
         style="min-height: 300px">
+
+        <!-- 支持链接href跳转 -->
+        <template
+          v-for="field of fieldHrefSlots"
+          :slot="field.slotName"
+          slot-scope="text, record"
+        >
+          <a @click="handleClickFieldHref(field,record)">{{ text }}</a>
+        </template>
+
 
         <template slot="dateSlot" slot-scope="text">
           <span>{{ getFormatDate(text) }}</span>
@@ -149,22 +155,16 @@
               更多 <a-icon type="down" />
             </a>
             <a-menu slot="overlay">
-              <a-menu-item >
+              <a-menu-item v-if="buttonSwitch.detail">
                 <a href="javascript:;" @click="handleDetail(record)">详情</a>
               </a-menu-item>
               <template v-if="hasBpmStatus">
                 <template v-if="record.bpm_status == '1'||record.bpm_status == ''|| record.bpm_status == null">
-                    <a-menu-item>
-                      <a href="javascript:;" @click="startProcess(record)">提交流程</a>
-                    </a-menu-item>
                     <a-menu-item v-if="buttonSwitch.delete">
                       <a-popconfirm title="确定删除吗?" @confirm="() => handleDeleteOne(record)">
                         <a>删除</a>
                       </a-popconfirm>
                     </a-menu-item>
-                </template>
-                <template v-else>
-                    <a-menu-item @click="handlePreviewPic(record)">审批进度</a-menu-item>
                 </template>
               </template>
               <template v-else>
@@ -175,7 +175,7 @@
                 </a-menu-item>
                </template>
               <template v-if="cgButtonLinkList && cgButtonLinkList.length>0" v-for="(btnItem,btnIndex) in cgButtonLinkList">
-                <a-menu-item :key=" 'cgbtnLink'+btnIndex ">
+                <a-menu-item :key=" 'cgbtnLink'+btnIndex " v-if="showLinkButton(btnItem,record)">
                   <a href="javascript:void(0);" @click="cgButtonLinkHandler(record,btnItem.buttonCode,btnItem.optType)">
                     <a-icon v-if="btnItem.buttonIcon" :type="btnItem.buttonIcon" />
                     {{ btnItem.buttonName }}
@@ -192,20 +192,27 @@
 
       <j-import-modal ref="importModal" :url="getImportUrl()" @ok="importOk"></j-import-modal>
 
+      <!-- 跳转Href的动态组件方式 -->
+      <a-modal v-bind="hrefComponent.model" v-on="hrefComponent.on">
+        <component :is="hrefComponent.is" v-bind="hrefComponent.params"/>
+      </a-modal>
+
     </div>
   </a-card>
 </template>
 
 <script>
 
+  import { HrefJump } from '@/mixins/OnlAutoListMixin'
   import { postAction,getAction,deleteAction,downFile } from '@/api/manage'
   import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
-  import { filterObj } from '@/utils/util';
+  import { cloneObject, filterObj } from '@/utils/util'
   import JImportModal from '@/components/jeecg/JImportModal'
   import JSuperQuery from '@comp/jeecg/JSuperQuery'
 
   export default {
     name: 'OnlCgFormAutoList',
+    mixins: [HrefJump],
     components: {
       JSuperQuery,
       JImportModal,
@@ -222,7 +229,6 @@
           optPre:"/online/cgform/api/form/",
           exportXls:'/online/cgform/api/exportXls/',
           buttonAction:'/online/cgform/api/doButton',
-          startProcess: "/process/extActProcess/startMutilProcess",
         },
         flowCodePre:"onl_",
         isorter:{
@@ -282,7 +288,8 @@
           delete:true,
           batch_delete:true,
           import:true,
-          export:true
+          export:true,
+          detail:true
         },
         hasBpmStatus:false,
         checkboxFlag:false,
@@ -304,8 +311,7 @@
       this.cgButtonJsHandler('mounted')
     },
     watch: {
-      '$route.path'(newVal,oldVal) {
-        console.log('$route.path： ',oldVal)
+      '$route'() {
         // 刷新参数放到这里去触发，就可以刷新相同界面了
         this.initAutoList()
       }
@@ -342,30 +348,6 @@
         }else{
           this.hasBpmStatus = false;
         }
-      },
-      startProcess: function(record){
-        var that = this;
-        this.$confirm({
-          title:"提示",
-          content:"确认提交流程吗?",
-          onOk: function(){
-            var param = {
-              flowCode:that.flowCodePre+that.currentTableName,
-              id:record.id,
-              formUrl:"modules/bpm/task/form/OnlineFormDetail",
-              formUrlMobile:"modules/bpm/task/form/OnlineFormDetail"
-            }
-            postAction(that.url.startProcess,param).then((res)=>{
-              if(res.success){
-                that.$message.success(res.message);
-                that.loadData();
-                that.onClearSelected();
-              }else{
-                that.$message.warning(res.message);
-              }
-            });
-          }
-        });
       },
       initQueryInfo(){
         getAction(`${this.url.getQueryInfo}${this.code}`).then((res)=>{
@@ -407,6 +389,7 @@
               this.table.pagination = false
             }
 
+            this.fieldHrefSlots = res.result.fieldHrefSlots
             this.dictOptions = res.result.dictOptions
             this.formTemplate = res.result.formTemplate
             this.description = res.result.description
@@ -441,6 +424,8 @@
             this.hasBpmStatusFilter();
             this.loadData();
             this.initQueryInfo();
+            //加载新路由，清空checkbox选中
+            this.table.selectedRowKeys = [];
           }else{
             this.$message.warning(res.message)
           }
@@ -569,6 +554,10 @@
         this.cgButtonLinkHandler(record,"beforeEdit","js")
         this.$refs.modal.edit(this.formTemplate,record.id);
       },
+      showLinkButton(item,record){
+        let btn = new ButtonExpHandler(item.exp,record);
+        return btn.show;
+      },
       handleDetail(record){
         this.$refs.modal.detail(this.formTemplate,record.id);
       },
@@ -604,7 +593,8 @@
               dictCode: field.dictCode,
               dictTable: field.dictTable,
               dictText: field.dictText,
-              options: field.enum || field.options
+              options: field.enum || field.options,
+              order: field.order,
             })
           }
           let fieldList = []
@@ -630,6 +620,17 @@
               setField(fieldList, field)
             }
           }
+          // 冒泡排序
+          for (let i = 0; i < fieldList.length; i++) {
+            for (let j = i + 1; j < fieldList.length; j++) {
+              let temp1 = fieldList[i]
+              let temp2 = fieldList[j]
+              if (temp1.order > temp2.order) {
+                fieldList[i] = temp2
+                fieldList[j] = temp1
+              }
+            }
+          }
           this.superQuery.fieldList = fieldList
         }
       },
@@ -641,7 +642,7 @@
         if(text && text.indexOf(",")>0){
           text = text.substring(0,text.indexOf(","))
         }
-        return window._CONFIG['imgDomainURL']+"/"+text
+        return window._CONFIG['staticDomainURL']+"/"+text
       },
       downloadRowFile(text){
         if(!text){
@@ -651,7 +652,7 @@
         if(text.indexOf(",")>0){
           text = text.substring(0,text.indexOf(","))
         }
-        window.open(window._CONFIG['downloadUrl']+"/"+text);//TODO 下载的方法
+        window.open(window._CONFIG['staticDomainURL']+"/"+text);//TODO 下载的方法
       },
       handleDelBatch(){
         if(this.table.selectedRowKeys.length<=0){
@@ -777,13 +778,15 @@
         }
       },
       initButtonSwitch(hideColumns){
+        Object.keys(this.buttonSwitch).forEach(key=>{
+          this.buttonSwitch[key]=true
+        })
         if(hideColumns && hideColumns.length>0){
           Object.keys(this.buttonSwitch).forEach(key=>{
             if(hideColumns.indexOf(key)>=0){
               this.buttonSwitch[key]=false
             }
           })
-
         }
       },
 
@@ -801,6 +804,9 @@
     }
   }
 </script>
+<style scoped>
+  @import '~@assets/less/common.less';
+</style>
 <style>
   .ant-card-body .table-operator{
     margin-bottom: 18px;

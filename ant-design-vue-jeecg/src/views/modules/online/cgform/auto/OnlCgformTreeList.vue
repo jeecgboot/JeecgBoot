@@ -98,15 +98,6 @@
               <a-menu-item >
                 <a @click="handleDetail(record)">详情</a>
               </a-menu-item>
-
-              <a-menu-item v-if="showSubmitFlowButton(record)">
-                <a @click="startProcess(record)">提交流程</a>
-              </a-menu-item>
-
-              <template v-if="showViewFlowButton(record)">
-                  <a-menu-item @click="handlePreviewPic(record)">审批进度</a-menu-item>
-              </template>
-
               <a-menu-item v-if="showOptButton('delete',record)">
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDeleteOne(record)">
                   <a>删除</a>
@@ -146,7 +137,7 @@
   export default {
     name: 'OnlCgformTreeList',
     components: {
-      JImportModal
+      JImportModal,
     },
     data() {
       return {
@@ -183,7 +174,6 @@
           optPre:"/online/cgform/api/form/",
           exportXls:'/online/cgform/api/exportXls/',
           buttonAction:'/online/cgform/api/doButton',
-          startProcess: "/process/extActProcess/startMutilProcess"
         },
         isorter:{
           column: 'create_time',
@@ -482,7 +472,7 @@
         if(text && text.indexOf(",")>0){
           text = text.substring(0,text.indexOf(","))
         }
-        return window._CONFIG['imgDomainURL']+"/"+text
+        return window._CONFIG['staticDomainURL']+"/"+text
       },
       downloadRowFile(text){
         if(!text){
@@ -492,7 +482,7 @@
         if(text.indexOf(",")>0){
           text = text.substring(0,text.indexOf(","))
         }
-        window.open(window._CONFIG['downloadUrl']+"/"+text);
+        window.open(window._CONFIG['staticDomainURL']+"/"+text);
       },
       /*-------数据格式化-end----------*/
 
@@ -651,14 +641,6 @@
         }
         return true
       },
-      showSubmitFlowButton(record){
-        if(this.hasBpmStatus){
-          if(record.bpm_status ==null || record.bpm_status =='' || record.bpm_status == '1'){
-            return true
-          }
-        }
-        return false
-      },
       showViewFlowButton(record){
         if(this.hasBpmStatus){
           if(record.bpm_status !=null && record.bpm_status !='' && record.bpm_status != '1'){
@@ -691,6 +673,7 @@
           }
         });
       },
+
     }
   }
 </script>

@@ -21,4 +21,17 @@
         )
     </select>
 
+    <!-- 根据部门Id查询,当前和下级所有部门IDS -->
+    <select id="getSubDepIdsByDepId" resultType="java.lang.String">
+		select id from sys_depart where del_flag = '0' and org_code like concat((select org_code from sys_depart where id=#{departId}),'%')
+	</select>
+
+    <!--根据部门编码获取我的部门下所有部门ids -->
+    <select id="getSubDepIdsByOrgCodes" resultType="java.lang.String">
+		select id from sys_depart where del_flag = '0' and
+        <foreach collection="orgCodes" item="item" index="index"  open="(" separator="or" close=")">
+            org_code LIKE CONCAT(#{item},'%')
+        </foreach>
+	</select>
+
 </mapper>

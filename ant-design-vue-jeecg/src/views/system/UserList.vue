@@ -66,10 +66,12 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
       <a-button @click="handleAdd" type="primary" icon="plus">添加用户</a-button>
+      <a-button @click="handleSyncUser"  v-has="'user:syncbpm'" type="primary" icon="plus">同步流程</a-button>
       <a-button type="primary" icon="download" @click="handleExportXls('用户信息')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
+      <a-button type="primary" icon="hdd" @click="recycleBinVisible=true">回收站</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay" @click="handleMenuClick">
           <a-menu-item key="1">
@@ -171,17 +173,22 @@
     <password-modal ref="passwordmodal" @ok="passwordModalOk"></password-modal>
 
     <sys-user-agent-modal ref="sysUserAgentModal"></sys-user-agent-modal>
+
+    <!-- 用户回收站 -->
+    <user-recycle-bin-modal :visible.sync="recycleBinVisible" @ok="modalFormOk"/>
+
   </a-card>
 </template>
 
 <script>
   import UserModal from './modules/UserModal'
   import PasswordModal from './modules/PasswordModal'
-  import {putAction} from '@/api/manage';
+  import {putAction,getFileAccessHttpUrl} from '@/api/manage';
   import {frozenBatch} from '@/api/api'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import SysUserAgentModal from "./modules/SysUserAgentModal";
   import JInput from '@/components/jeecg/JInput'
+  import UserRecycleBinModal from './modules/UserRecycleBinModal'
 
   export default {
     name: "UserList",
@@ -190,12 +197,14 @@
       SysUserAgentModal,
       UserModal,
       PasswordModal,
-      JInput
+      JInput,
+      UserRecycleBinModal
     },
     data() {
       return {
         description: '这是用户管理页面',
         queryParam: {},
+        recycleBinVisible: false,
         columns: [
           /*{
             title: '#',
@@ -214,7 +223,7 @@
             width: 120
           },
           {
-            title: '真实姓名',
+            title: '用户姓名',
             align: "center",
             width: 100,
             dataIndex: 'realname',
@@ -237,7 +246,7 @@
           {
             title: '生日',
             align: "center",
-            width: 180,
+            width: 100,
             dataIndex: 'birthday'
           },
           {
@@ -247,9 +256,10 @@
             dataIndex: 'phone'
           },
           {
-            title: '邮箱',
+            title: '部门',
             align: "center",
-            dataIndex: 'email'
+            width: 180,
+            dataIndex: 'orgCode'
           },
           {
             title: '状态',
@@ -257,13 +267,6 @@
             width: 80,
             dataIndex: 'status_dictText'
           },
-         /* {
-            title: '创建时间',
-            align: "center",
-            width: 150,
-            dataIndex: 'createTime',
-            sorter: true
-          },*/
           {
             title: '操作',
             dataIndex: 'action',
@@ -274,7 +277,7 @@
 
         ],
         url: {
-          imgerver: window._CONFIG['domianURL'] + "/sys/common/view",
+          imgerver: window._CONFIG['staticDomainURL'],
           syncUser: "/process/extActProcess/doSyncUser",
           list: "/sys/user/list",
           delete: "/sys/user/delete",
@@ -291,7 +294,7 @@
     },
     methods: {
       getAvatarView: function (avatar) {
-        return this.url.imgerver + "/" + avatar;
+        return getFileAccessHttpUrl(avatar,this.url.imgerver,"http")
       },
 
       batchFrozen: function (status) {
@@ -362,6 +365,8 @@
       handleAgentSettings(username){
         this.$refs.sysUserAgentModal.agentSettings(username);
         this.$refs.sysUserAgentModal.title = "用户代理人设置";
+      },
+      handleSyncUser() {
       },
       passwordModalOk() {
         //TODO 密码修改完成 不需要刷新页面，可以把datasource中的数据更新一下

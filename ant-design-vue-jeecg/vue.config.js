@@ -30,7 +30,6 @@ module.exports = {
       .set('@comp', resolve('src/components'))
       .set('@views', resolve('src/views'))
       .set('@layout', resolve('src/layout'))
-      .set('@static', resolve('src/static'))
   },
 
   css: {

@@ -1,13 +1,13 @@
 <template>
-  <a-card :bordered="false" style="width: 160%;text-align: center;margin-left:-25%">
+  <a-card :bordered="false" style="width: 130%;text-align: center;margin-left:-10%">
     <a-steps class="steps" :current="currentTab">
-      <a-step title="账户信息" />
-      <a-step title="身份验证" />
-      <a-step title="更改密码" />
-      <a-step title="完成" />
+      <a-step title="用户账户"/>
+      <a-step title="手机验证"/>
+      <a-step title="密码"/>
+      <a-step title="完成"/>
     </a-steps>
     <div class="content">
-      <step1 v-if="currentTab === 0" @nextStep="nextStep"  />
+      <step1 v-if="currentTab === 0" @nextStep="nextStep"/>
       <step2 v-if="currentTab === 1" @nextStep="nextStep" @prevStep="prevStep" :userList="userList"/>
       <step3 v-if="currentTab === 2" @nextStep="nextStep" @prevStep="prevStep" :userList="userList"/>
       <step4 v-if="currentTab === 3" @prevStep="prevStep" @finish="finish" :userList="userList"/>
@@ -20,6 +20,7 @@
   import Step2 from './Step2'
   import Step3 from './Step3'
   import Step4 from './Step4'
+
   export default {
     name: "Alteration",
     components: {
@@ -28,11 +29,11 @@
       Step3,
       Step4
     },
-    data () {
+    data() {
       return {
         description: '将一个冗长或用户不熟悉的表单任务分成多个步骤，指导用户完成。',
         currentTab: 0,
-        userList:{},
+        userList: {},
         // form
         form: null,
       }
@@ -40,19 +41,19 @@
     methods: {
 
       // handler
-      nextStep (data) {
-        this.userList=data;
+      nextStep(data) {
+        this.userList = data;
         if (this.currentTab < 4) {
           this.currentTab += 1
         }
       },
-      prevStep (data) {
-        this.userList=data;
+      prevStep(data) {
+        this.userList = data;
         if (this.currentTab > 0) {
           this.currentTab -= 1
         }
       },
-      finish () {
+      finish() {
         this.currentTab = 0
       }
     }

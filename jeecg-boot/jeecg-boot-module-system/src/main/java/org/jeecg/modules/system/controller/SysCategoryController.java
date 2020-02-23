@@ -237,10 +237,10 @@ public class SysCategoryController {
               for (SysCategory sysCategoryExcel : listSysCategorys) {
                   sysCategoryService.save(sysCategoryExcel);
               }
-              return Result.ok("文件导入成功！数据行数:" + listSysCategorys.size());
+              return Result.ok("文件导入成功！数据行数：" + listSysCategorys.size());
           } catch (Exception e) {
-              log.error(e.getMessage(),e);
-              return Result.error("文件导入失败:"+e.getMessage());
+              log.error(e.getMessage(), e);
+              return Result.error("文件导入失败："+e.getMessage());
           } finally {
               try {
                   file.getInputStream().close();
@@ -249,7 +249,7 @@ public class SysCategoryController {
               }
           }
       }
-      return Result.ok("文件导入失败！");
+      return Result.error("文件导入失败！");
   }
   
   

@@ -197,7 +197,7 @@
       &.dark {
         color: #000000;
         box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-        background-color: @primary-color;
+        background-color: white !important;
       }
     }
 

@@ -1,6 +1,7 @@
 package org.jeecg.common.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.api.ISysBaseAPI;
@@ -37,6 +38,10 @@ public class TokenUtils {
     public static boolean verifyToken(HttpServletRequest request, ISysBaseAPI sysBaseAPI, RedisUtil redisUtil) {
         log.info(" -- url --" + request.getRequestURL());
         String token = getTokenByRequest(request);
+
+        if (StringUtils.isBlank(token)) {
+            throw new AuthenticationException("token不能为空!");
+        }
 
         // 解密获得username，用于和数据库进行对比
         String username = JwtUtil.getUsername(token);

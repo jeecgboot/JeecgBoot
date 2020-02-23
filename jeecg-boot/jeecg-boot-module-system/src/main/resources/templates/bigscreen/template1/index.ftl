@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>JEECG-boot大屏指挥室</title>
+    <title>JEECG ROOM 作战指挥室</title>
     <link href="${base}/bigscreen/template1/css/easyui.css" rel="stylesheet" type="text/css">
     <link href="${base}/bigscreen/template1/css/room.css" rel="stylesheet" type="text/css" />
 
@@ -19,6 +19,7 @@
     <script language="javascript" type="text/javascript" src="${base}/bigscreen/template1/js/china.js"></script>
     <script language="javascript" type="text/javascript" src="${base}/bigscreen/template1/js/geoCoord.js"></script>
     <script language="javascript" type="text/javascript" src="${base}/bigscreen/template1/js/room.js"></script>
+    <script language="javascript" type="text/javascript" src="${base}/bigscreen/template1/js/resize.js"></script>
 </head>
 
 <body>
@@ -48,7 +49,7 @@
         <!-- 地图结束 -->
 
         <!-- 产品饼图开始 -->
-        <div id="productPie"></div>
+        <div id="productPie" style="width: 900px; height: 590px;"></div>
         <!-- 产品饼图结束 -->
 
         <!-- 业务进展图开始 -->

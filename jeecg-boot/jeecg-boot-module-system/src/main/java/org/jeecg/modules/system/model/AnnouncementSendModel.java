@@ -51,4 +51,16 @@ public class AnnouncementSendModel implements Serializable {
      * 消息类型1:通知公告2:系统消息
      */
     private java.lang.String msgCategory;
+	/**
+	 * 业务id
+	 */
+	private java.lang.String busId;
+	/**
+	 * 打开方式 组件：component 路由：url
+	 */
+	private java.lang.String openType;
+	/**
+	 * 组件/路由 地址
+	 */
+	private java.lang.String openPage;
 }

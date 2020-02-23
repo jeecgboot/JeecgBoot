@@ -9,7 +9,7 @@
           <a-form-item>
             <a-input
               size="large"
-              v-decorator="['username',validatorRules.username,{ validator: this.handleUsernameOrEmail }]"
+              v-decorator="['username',{initialValue:'admin', rules: validatorRules.username.rules}]"
               type="text"
               placeholder="请输入帐户名 / jeecg">
               <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
@@ -18,7 +18,7 @@
 
           <a-form-item>
             <a-input
-              v-decorator="['password',validatorRules.password]"
+              v-decorator="['password',{initialValue:'123456', rules: validatorRules.password.rules}]"
               size="large"
               type="password"
               autocomplete="false"
@@ -28,7 +28,7 @@
           </a-form-item>
 
           <a-row :gutter="0">
-            <a-col :span="14">
+            <a-col :span="16">
               <a-form-item>
                 <a-input
                   v-decorator="['inputCode',validatorRules.inputCode]"
@@ -36,13 +36,13 @@
                   type="text"
                   @change="inputCodeChange"
                   placeholder="请输入验证码">
-                  <a-icon slot="prefix" v-if=" inputCodeContent==verifiedCode " type="smile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
-                  <a-icon slot="prefix" v-else type="frown" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+                  <a-icon slot="prefix" type="smile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
                 </a-input>
               </a-form-item>
             </a-col>
-            <a-col  :span="10">
-              <j-graphic-code @success="generateCode" ref="jgraphicCodeRef" style="float: right" remote></j-graphic-code>
+            <a-col :span="8" style="text-align: right">
+              <img style="margin-top: 2px;" :src="randCodeImage" @click="handleChangeCheckCode"/>
+              <!--<j-graphic-code @success="generateCode" ref="jgraphicCodeRef" style="float: right" remote></j-graphic-code>-->
             </a-col>
           </a-row>
 
@@ -88,7 +88,7 @@
         <router-link :to="{ name: 'alteration'}" class="forge-password" style="float: right;">
           忘记密码
         </router-link>
-        <router-link :to="{ name: 'register'}" class="forge-password" style="float: right;margin-right: 10px" >
+       <router-link :to="{ name: 'register'}" class="forge-password" style="float: right;margin-right: 10px" >
           注册账户
         </router-link>
       </a-form-item>
@@ -173,8 +173,7 @@
   import Vue from 'vue'
   import { ACCESS_TOKEN ,ENCRYPTED_STRING} from "@/store/mutation-types"
   import JGraphicCode from '@/components/jeecg/JGraphicCode'
-  import { putAction } from '@/api/manage'
-  import { postAction } from '@/api/manage'
+  import { putAction,postAction,getAction } from '@/api/manage'
   import { encryption , getEncryptedString } from '@/utils/encryption/aesEncrypt'
   import store from '@/store/'
   import { USER_INFO } from "@/store/mutation-types"
@@ -202,11 +201,11 @@
           smsSendBtn: false,
         },
         validatorRules:{
-          username:{rules: [{ required: true, message: '请输入用户名!',validator: 'click'}]},
+          username:{rules: [{ required: true, message: '请输入用户名!'},{validator: this.handleUsernameOrEmail}]},
           password:{rules: [{ required: true, message: '请输入密码!',validator: 'click'}]},
           mobile:{rules: [{validator:this.validateMobile}]},
           captcha:{rule: [{ required: true, message: '请输入验证码!'}]},
-          inputCode:{rules: [{ required: true, message: '请输入验证码!'},{validator: this.validateInputCode}]}
+          inputCode:{rules: [{ required: true, message: '请输入验证码!'}]}
         },
         verifiedCode:"",
         inputCodeContent:"",
@@ -216,12 +215,16 @@
         departVisible:false,
         departSelected:"",
         currentUsername:"",
-        validate_status:""
+        validate_status:"",
+        currdatetime:'',
+        randCodeImage:''
       }
     },
     created () {
+      this.currdatetime = new Date().getTime();
       Vue.ls.remove(ACCESS_TOKEN)
       this.getRouterData();
+      this.handleChangeCheckCode();
       // update-begin- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
       //this.getEncrypte();
       // update-end- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
@@ -257,10 +260,9 @@
               loginParams.password = values.password
               loginParams.remember_me = values.rememberMe
               // update-begin- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
-              let checkParams = this.$refs.jgraphicCodeRef.getLoginParam()
-              loginParams.captcha = checkParams.checkCode
-              loginParams.checkKey = checkParams.checkKey
-
+              loginParams.captcha = that.inputCodeContent
+              loginParams.checkKey = that.currdatetime
+              console.log("登录参数",loginParams)
               that.Login(loginParams).then((res) => {
                 this.departConfirm(res)
               }).catch((err) => {
@@ -339,6 +341,16 @@
           this.stepCaptchaVisible = false
         })
       },
+      handleChangeCheckCode(){
+        this.currdatetime = new Date().getTime();
+        getAction(`/sys/randomImage/${this.currdatetime}`).then(res=>{
+          if(res.success){
+            this.randCodeImage = res.result
+          }else{
+            this.$message.error(res.message)
+          }
+        })
+      },
       loginSuccess () {
         // update-begin- author:sunjianlei --- date:20190812 --- for: 登录成功后不解除禁用按钮，防止多次点击
         // this.loginBtn = false
@@ -384,12 +396,6 @@
       },
       inputCodeChange(e){
         this.inputCodeContent = e.target.value
-        if(!e.target.value||0==e.target.value){
-          this.inputCodeNull=true
-        }else{
-          this.inputCodeContent = this.inputCodeContent.toLowerCase()
-          this.inputCodeNull=false
-        }
       },
       departConfirm(res){
         if(res.success){
@@ -452,10 +458,12 @@
       },
     getRouterData(){
       this.$nextTick(() => {
-        this.form.setFieldsValue({
-        'username': this.$route.params.username
-      });
-    })
+        if (this.$route.params.username) {
+          this.form.setFieldsValue({
+            'username': this.$route.params.username
+          });
+        }
+      })
     },
     //获取密码加密规则
     getEncrypte(){

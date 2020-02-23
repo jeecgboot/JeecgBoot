@@ -236,9 +236,9 @@ export const JeecgListMixin = {
           return
         }
         if (typeof window.navigator.msSaveBlob !== 'undefined') {
-          window.navigator.msSaveBlob(new Blob([data]), fileName+'.xls')
+          window.navigator.msSaveBlob(new Blob([data],{type: 'application/vnd.ms-excel'}), fileName+'.xls')
         }else{
-          let url = window.URL.createObjectURL(new Blob([data]))
+          let url = window.URL.createObjectURL(new Blob([data],{type: 'application/vnd.ms-excel'}))
           let link = document.createElement('a')
           link.style.display = 'none'
           link.href = url
@@ -286,7 +286,7 @@ export const JeecgListMixin = {
       if(text && text.indexOf(",")>0){
         text = text.substring(0,text.indexOf(","))
       }
-      return window._CONFIG['imgDomainURL']+"/"+text
+      return window._CONFIG['staticDomainURL']+"/"+text
     },
     /* 文件下载 */
     uploadFile(text){
@@ -297,7 +297,7 @@ export const JeecgListMixin = {
       if(text.indexOf(",")>0){
         text = text.substring(0,text.indexOf(","))
       }
-      window.open(window._CONFIG['domianURL'] + "/sys/common/download/"+text);
+      window.open(window._CONFIG['staticDomainURL']+ "/"+text);
     },
   }
 

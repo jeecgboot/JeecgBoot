@@ -112,3 +112,17 @@ export function downFile(url,parameter){
   })
 }
 
+/**
+ * 获取文件访问路径
+ * @param avatar
+ * @param imgerver
+ * @param str
+ * @returns {*}
+ */
+export function getFileAccessHttpUrl(avatar,imgerver,subStr) {
+  if(avatar && avatar.indexOf(subStr) != -1 ){
+    return avatar;
+  }else{
+    return imgerver + "/" + avatar;
+  }
+}

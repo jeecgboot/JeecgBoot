@@ -30,6 +30,7 @@
         <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
           <a-button type="primary" icon="import">导入</a-button>
         </a-upload>
+        <a-button type="primary" icon="sync" @click="refleshCache()">刷新缓存</a-button>
 
         <a-button type="primary" icon="hdd" @click="openDeleteList">回收站</a-button>
       </div>
@@ -70,6 +71,7 @@
   import DictModal from './modules/DictModal'
   import DictItemList from './DictItemList'
   import DictDeleteList from './DictDeleteList'
+  import { getAction } from '@/api/manage'
 
   export default {
     name: "DictList",
@@ -132,6 +134,7 @@
           delete: "/sys/dict/delete",
           exportXlsUrl: "sys/dict/exportXls",
           importExcelUrl: "sys/dict/importExcel",
+          refleshCache: "sys/dict/refleshCache",
         },
       }
     },
@@ -165,9 +168,18 @@
         that.queryParam.dictCode = "";
         that.loadData(this.ipagination.current);
       },
-
       openDeleteList(){
         this.$refs.dictDeleteList.show()
+      },
+      refleshCache(){
+        getAction(this.url.refleshCache).then((res) => {
+          if (res.success) {
+            this.$message.success("刷新缓存完成！");
+          }
+        }).catch(e=>{
+          this.$message.warn("刷新缓存失败！");
+          console.log("刷新失败",e)
+        })
       }
     },
     watch: {

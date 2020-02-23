@@ -9,7 +9,7 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="性别">
-              <j-dict-select-tag v-model="formData.sex" title="性别" dictCode="sex"/>
+              <j-dict-select-tag v-model="formData.sex" title="性别" dictCode="sex" placeholder="请选择性别"/>
             <!--  <j-dict-select-tag title="性别" dictCode="sex" disabled/>-->
             </a-form-item>
           </a-col>
@@ -176,34 +176,28 @@
         <a-row :gutter="24">
           <a-col>
 
-            <a-form-item label="最大化弹窗">
-              <a-button @click="()=>modal.visible=true">最大化弹窗</a-button>
+            <a-form-item label="JModal弹窗">
+              <a-button style="margin-right: 8px;" @click="()=>modal.visible=true">点击弹出JModal</a-button>
+              <span style="margin-right: 8px;">全屏化：<a-switch v-model="modal.fullscreen"/></span>
+              <span style="margin-right: 8px;">允许切换全屏：<a-switch v-model="modal.switchFullscreen"/></span>
+              <span>锁定Body滚动：<a-switch v-model="modal.lockScroll"/></span>
+
             </a-form-item>
 
-            <a-modal
-              :visible="modal.visible"
-              :width="modal.width"
-              :style="modal.style"
-              @ok="()=>modal.visible=false"
-              @cancel="()=>modal.visible=false">
-
-              <template slot="title">
-                <div style="width: 100%;height:20px;padding-right:32px;">
-                  <div style="float: left;">{{ modal.title }}</div>
-                  <div style="float: right;">
-                    <a-button
-                      icon="fullscreen"
-                      style="width:56px;height:100%;border:0"
-                      @click="handleClickToggleFullScreen"/>
-                  </div>
-                </div>
-              </template>
+            <j-modal
+              :visible.sync="modal.visible"
+              :width="1200"
+              :title="modal.title"
+              :lockScroll="modal.lockScroll"
+              :fullscreen.sync="modal.fullscreen"
+              :switchFullscreen="modal.switchFullscreen"
+            >
 
               <template v-for="(i,k) of 30">
                 <p :key="k">这是主体内容，高度是自适应的</p>
               </template>
 
-            </a-modal>
+            </j-modal>
 
           </a-col>
         </a-row>
@@ -217,10 +211,10 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="树字典">
-              <j-tree-dict parentCode="B01" />
+              <j-tree-dict v-model="formData.treeDict" placeholder="请选择树字典" parentCode="A01" />
             </a-form-item>
           </a-col>
-          <a-col :span="12"></a-col>
+          <a-col :span="12">选中的值(v-model)：{{ formData.treeDict }}</a-col>
         </a-row>
 
         <a-row :gutter="24">
@@ -262,6 +256,45 @@
             </a-form-item>
           </a-col>
         </a-row>
+
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="高级查询">
+              <j-super-query :fieldList="superQuery.fieldList" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="高级查询（自定义按钮）">
+              <j-super-query :fieldList="superQuery.fieldList">
+                <!-- 直接在内部写一个按钮即可，点击事件自动添加 -->
+                <a-button type="primary" ghost icon="clock-circle">高级查询</a-button>
+              </j-super-query>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="图片上传">
+              <j-image-upload v-model="imgList"></j-image-upload>
+            </a-form-item>
+          </a-col>
+          <a-col :spapn="12">选中的值(v-model)：{{ imgList }}</a-col>
+        </a-row>
+        <a-row :gutter="24" style="margin-top: 65px;margin-bottom:50px;">
+          <a-col :span="12">
+            <a-form-item label="文件上传">
+              <j-upload v-model="fileList"></j-upload>
+            </a-form-item>
+          </a-col>
+          <a-col :spapn="12">
+            选中的值(v-model)：
+            <j-ellipsis :value="fileList" :length="30" v-if="fileList.length>0"/>
+          </a-col>
+        </a-row>
+
       </a-form>
     </div>
 
@@ -286,10 +319,15 @@
   import JTreeDict from "../../components/jeecg/JTreeDict.vue";
   import JCron from "@/components/jeecg/JCron.vue";
   import JTreeSelect from '@/components/jeecg/JTreeSelect'
+  import JSuperQuery from '@/components/jeecg/JSuperQuery'
+  import JUpload from '@/components/jeecg/JUpload'
+  import JImageUpload from '@/components/jeecg/JImageUpload'
 
   export default {
     name: 'SelectDemo',
     components: {
+      JImageUpload,
+      JUpload,
       JTreeDict,
       JDictSelectTag,
       JSelectDepart,
@@ -299,7 +337,7 @@
       JCheckbox,
       JCodeEditor,
       JDate, JEditor, JEllipsis, JGraphicCode, JSlider, JSelectMultiple,
-      JCron, JTreeSelect
+      JCron, JTreeSelect, JSuperQuery
     },
     data() {
       return {
@@ -352,11 +390,20 @@ sayHi('hello, world!')`
         modal: {
           title: '这里是标题',
           visible: false,
-          width: '100%',
-          style: { top: '20px' },
-          fullScreen: true
+          lockScroll: true,
+          fullscreen: true,
+          switchFullscreen: true,
         },
         cron: '',
+        superQuery: {
+          fieldList: [
+            { type: 'input', value: 'name', text: '姓名', },
+            { type: 'select', value: 'sex', text: '性别', dictCode: 'sex' },
+            { type: 'number', value: 'age', text: '年龄', }
+          ]
+        },
+        fileList:[],
+        imgList:[],
       }
     },
     computed: {
@@ -398,18 +445,6 @@ sayHi('hello, world!')`
       },
       handleJSliderSuccess(value) {
         this.jslider.value = value
-      },
-      /** 切换全屏显示 */
-      handleClickToggleFullScreen() {
-        let mode = !this.modal.fullScreen
-        if (mode) {
-          this.modal.width = '100%'
-          this.modal.style.top = '20px'
-        } else {
-          this.modal.width = '1200px'
-          this.modal.style.top = '50px'
-        }
-        this.modal.fullScreen = mode
       },
       setCorn(data){
         this.$nextTick(() => {

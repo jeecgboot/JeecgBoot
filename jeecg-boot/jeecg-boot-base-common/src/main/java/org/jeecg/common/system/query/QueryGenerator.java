@@ -443,7 +443,7 @@ public class QueryGenerator {
 	
 
 	/**
-	 * 
+	 * 获取请求对应的数据权限规则
 	 * @return
 	 */
 	public static Map<String, SysPermissionDataRuleModel> getRuleMap() {

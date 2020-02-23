@@ -72,6 +72,7 @@
       </a-badge>
     </span>
     <show-announcement ref="ShowAnnouncement" @ok="modalFormOk"></show-announcement>
+    <dynamic-notice ref="showDynamNotice" :path="openPath" :formData="formData"/>
   </a-popover>
 </template>
 
@@ -79,11 +80,13 @@
   import { getAction,putAction } from '@/api/manage'
   import ShowAnnouncement from './ShowAnnouncement'
   import store from '@/store/'
+  import DynamicNotice from './DynamicNotice'
 
 
   export default {
     name: "HeaderNotice",
     components: {
+      DynamicNotice,
       ShowAnnouncement,
     },
     data () {
@@ -105,6 +108,8 @@
         websock: null,
         lockReconnect:false,
         heartCheck:null,
+        formData:{},
+        openPath:''
       }
     },
     computed:{
@@ -172,7 +177,13 @@
           }
         });
         this.hovered = false;
-        this.$refs.ShowAnnouncement.detail(record);
+        if(record.openType==='component'){
+          this.openPath = record.openPage;
+          this.formData = {id:record.busId};
+          this.$refs.showDynamNotice.detail(record.openPage);
+        }else{
+          this.$refs.ShowAnnouncement.detail(record);
+        }
       },
       toMyAnnouncement(){
 

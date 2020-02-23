@@ -128,7 +128,6 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	 * 导出excel
 	 *
 	 * @param request
-	 * @param response
 	 */
 	@GetMapping(value = "/exportXls")
 	public ModelAndView exportXls(HttpServletRequest request,SysMessageTemplate sysMessageTemplate) {

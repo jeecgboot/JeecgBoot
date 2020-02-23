@@ -245,7 +245,6 @@ public class SysRoleController {
 	/**
 	 * 导出excel
 	 * @param request
-	 * @param response
 	 */
 	@RequestMapping(value = "/exportXls")
 	public ModelAndView exportXls(SysRole sysRole,HttpServletRequest request) {
@@ -308,6 +307,7 @@ public class SysRoleController {
 			map.put("datarule", list);
 			LambdaQueryWrapper<SysRolePermission> query = new LambdaQueryWrapper<SysRolePermission>()
 					.eq(SysRolePermission::getPermissionId, permissionId)
+					.isNotNull(SysRolePermission::getDataRuleIds)
 					.eq(SysRolePermission::getRoleId,roleId);
 			SysRolePermission sysRolePermission = sysRolePermissionService.getOne(query);
 			if(sysRolePermission==null) {
