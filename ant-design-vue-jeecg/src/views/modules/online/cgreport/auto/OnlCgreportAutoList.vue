@@ -58,18 +58,34 @@
       style="min-height: 300px"
     >
 
+      <!-- 支持链接href跳转 -->
+      <template
+        v-for="field of fieldHrefSlots"
+        :slot="field.slotName"
+        slot-scope="text, record"
+      >
+        <a @click="handleClickFieldHref(field,record)">{{ text }}</a>
+      </template>
+
     </a-table>
+
+    <!-- 跳转Href的动态组件方式 -->
+    <a-modal v-bind="hrefComponent.model" v-on="hrefComponent.on">
+      <component :is="hrefComponent.is" v-bind="hrefComponent.params"/>
+    </a-modal>
 
   </a-card>
 </template>
 
 <script>
+  import { HrefJump } from '@/mixins/OnlAutoListMixin'
   import { getAction,downFile } from '@/api/manage'
   import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
   import {filterObj} from '@/utils/util';
 
   export default {
     name: 'OnlCgreportAutoList',
+    mixins: [HrefJump],
     components: {
     },
     data() {
@@ -89,8 +105,7 @@
         reportCode: '',
         description: '在线报表功能测试页面',
         url: {
-          getColumns: '/online/cgreport/api/getColumns/',
-          getData: '/online/cgreport/api/getData/',
+          getColumnsAndData: '/online/cgreport/api/getColumnsAndData/',
           getQueryInfo: '/online/cgreport/api/getQueryInfo/',
           getParamsInfo:'/online/cgreport/api/getParamsInfo/'
         },
@@ -153,7 +168,7 @@
         }
 
         this.selfParam={}
-        getAction(`${this.url.getParamsInfo}${this.$route.params.code}`).then((res) => {
+        getAction(`${this.url.getParamsInfo}${this.reportCode}`).then((res) => {
           if (res.success) {
             if(res.result && res.result.length>0){
               for(let i of res.result){
@@ -167,10 +182,10 @@
         })
       },
       initQueryInfo() {
-        if(!this.$route.params.code){
+        if(!this.reportCode){
           return false
         }
-        getAction(`${this.url.getQueryInfo}${this.$route.params.code}`).then((res) => {
+        getAction(`${this.url.getQueryInfo}${this.reportCode}`).then((res) => {
           console.log("获取查询条件", res);
           if (res.success) {
             this.queryInfo = res.result
@@ -180,7 +195,7 @@
         })
       },
       loadData(arg) {
-        if(!this.$route.params.code){
+        if(!this.reportCode){
           return false
         }
         if (arg == 1) {
@@ -189,42 +204,43 @@
         let params = this.getQueryParams();//查询条件
         console.log(params)
 
+        //获取报表ID
         console.log(' 动态报表 reportCode ： ' + this.reportCode);
         this.table.loading = true
-        Promise.all([
-          getAction(`${this.url.getColumns}${this.reportCode}`),
-          getAction(`${this.url.getData}${this.reportCode}`, params)
-        ]).then(results => {
-          let [{result: {columns,cgreportHeadName,dictOptions}}, {result: data}] = results
-          let columnWidth = 230
-          this.dictOptions = dictOptions
-          for(let a=0;a<columns.length;a++){
-            if(columns[a].customRender){
-              let field_name = columns[a].customRender;
-              columns[a].customRender=(text)=>{
-                if(!text){
-                  return ''
-                }else{
-                  return filterMultiDictText(this.dictOptions[field_name], text+"");
-                }
+
+        getAction(`${this.url.getColumnsAndData}${this.reportCode}`, params).then(res => {
+          if (res.success) {
+            let { data, columns, cgreportHeadName, dictOptions, fieldHrefSlots } = res.result
+
+            let columnWidth = 230
+            this.dictOptions = dictOptions
+            for(let a=0;a<columns.length;a++){
+              if(columns[a].customRender){
+                let field_name = columns[a].customRender;
+                columns[a].customRender = (t => t ? filterMultiDictText(this.dictOptions[field_name], t + '') : t)
               }
+              columns.width = columnWidth
             }
-            columns.width = columnWidth
+            this.table.scroll.x = columns.length * columnWidth
+            this.table.columns = [...columns]
+            this.cgreportHeadName = cgreportHeadName
+            this.fieldHrefSlots = fieldHrefSlots
+            if (data) {
+              this.table.pagination.total = Number(data.total)
+              this.table.dataSource = data.records
+            } else {
+              this.table.pagination.total = 0
+              this.table.dataSource = []
+            }
+
+          }else{
+            this.$message.warn('查询失败：'+res.message)
           }
-          this.table.scroll.x = columns.length * columnWidth
-          this.table.columns = [...columns]
-          this.cgreportHeadName = cgreportHeadName
-          if (data) {
-            this.table.pagination.total = Number(data.total)
-            this.table.dataSource = data.records
-          } else {
-            this.table.pagination.total = 0
-            this.table.dataSource = []
-          }
+
         }).catch((e) => {
           console.error(e)
           this.$message.error('查询失败')
-        }).then(() => {
+        }).finally(() => {
           this.table.loading = false
         })
       },
@@ -246,7 +262,14 @@
       },
       exportExcel() {
         let fileName = this.cgreportHeadName
-        downFile(`/online/cgreport/api/exportXls/${this.reportCode}`,this.queryParam).then((data)=>{
+        let selfParam = {}
+        for (let queryName in this.$route.query) {
+          if (this.$route.query.hasOwnProperty(queryName)) {
+            let value = this.$route.query[queryName]
+            selfParam['self_' + queryName] = value || ''
+          }
+        }
+        downFile(`/online/cgreport/api/exportXls/${this.reportCode}`, Object.assign(selfParam, this.queryParam)).then((data) => {
           if (!data) {
             this.$message.warning("文件下载失败")
             return
@@ -275,6 +298,9 @@
         if (Object.keys(sorter).length > 0) {
           this.sorter.column = sorter.field
           this.sorter.order = 'ascend' == sorter.order ? 'asc' : 'desc'
+        } else {
+          this.sorter.column = null
+          this.sorter.order = null
         }
         this.table.pagination = pagination
         this.loadData()
