@@ -3,6 +3,7 @@ package org.jeecg.common.util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -12,19 +13,9 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * 
@@ -629,6 +620,30 @@ public class oConvertUtils {
 		}
 		BeanUtils.copyProperties(entity, model);
 		return (T)model;
+	}
+
+	/**
+	 * 判断 list 是否为空
+	 *
+	 * @param list
+	 * @return true or false
+	 * list == null		: true
+	 * list.size() == 0	: true
+	 */
+	public static boolean listIsEmpty(Collection list) {
+		return (list == null || list.size() == 0);
+	}
+
+	/**
+	 * 判断 list 是否不为空
+	 *
+	 * @param list
+	 * @return true or false
+	 * list == null		: false
+	 * list.size() == 0	: false
+	 */
+	public static boolean listIsNotEmpty(Collection list) {
+		return !listIsEmpty(list);
 	}
 
 }

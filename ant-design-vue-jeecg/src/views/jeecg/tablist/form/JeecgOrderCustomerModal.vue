@@ -43,24 +43,7 @@
           :wrapperCol="wrapperCol"
           label="身份证扫描件"
           hasFeedback>
-          <a-upload
-            :action="uploadAction"
-            listType="picture-card"
-            :headers="headers"
-            :fileList="fileList"
-            @change="handleChange"
-            @preview="handlePreview"
-          >
-            <a-button>
-              <a-icon type="upload"/>
-              upload
-            </a-button>
-          </a-upload>
-          <a-modal :visible="previewVisible" :footer="null" @cancel="handlePicCancel">
-            <img alt="example" style="width: 100%" :src="previewImage"/>
-          </a-modal>
-
-          <br/>
+          <j-image-upload text="上传" v-model="fileList" :isMultiple="true"></j-image-upload>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -88,11 +71,11 @@
   import pick from 'lodash.pick'
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
-
-  import { getUploadFileList,getFilePaths } from '@/utils/commonUploadFile.js'
+  import JImageUpload from '../../../../components/jeecg/JImageUpload'
 
   export default {
     name: "JeecgOrderCustomerModal",
+    components: { JImageUpload },
     data() {
       return {
         title: "操作",
@@ -177,7 +160,7 @@
           add: "/test/order/addCustomer",
           edit: "/test/order/editCustomer",
           fileUpload: window._CONFIG['domianURL'] + "/sys/common/upload",
-          imgerver: window._CONFIG['domianURL'] + "/sys/common/view",
+          imgerver: window._CONFIG['staticDomainURL'],
           getOrderCustomerList: "/test/order/listOrderCustomerByMainId",
         },
         validatorRules: {
@@ -222,8 +205,6 @@
 
         this.form.resetFields();
         this.orderId = record.orderId;
-        let currFileList = getUploadFileList(record.idcardPic)
-        this.fileList = [...currFileList]
         this.model = Object.assign({}, record);
         if (record.id) {
           this.hiding = false;
@@ -232,6 +213,9 @@
           this.$nextTick(() => {
             this.form.setFieldsValue(pick(this.model, 'id', 'name', 'sex', 'idcard','telphone', 'orderId', 'createBy', 'createTime', 'updateBy', 'updateTime'))
           });
+          setTimeout(() => {
+            this.fileList = record.idcardPic
+          }, 5)
         } else {
           this.addStatus = false;
           this.editStatus = true;
@@ -262,7 +246,7 @@
             let formData = Object.assign(this.model, values);
             console.log(formData);
             formData.orderId = this.orderId;
-            formData.idcardPic = getFilePaths(this.fileList)
+            formData.idcardPic = this.fileList;
             httpAction(httpurl, formData, method).then((res) => {
               if (res.success) {
                 that.$message.success(res.message);

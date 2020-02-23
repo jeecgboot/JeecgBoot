@@ -109,6 +109,7 @@ export function getMasterTableInitialData() {
       // table2
       isShowForm: '0',
       isShowList: '0',
+      isReadOnly: '1',
       fieldShowType: 'text',
       fieldLength: '120',
       queryMode: 'single',

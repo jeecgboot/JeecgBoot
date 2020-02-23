@@ -13,26 +13,31 @@ import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.api.ISysBaseAPI;
-import org.jeecg.common.system.vo.ComboModel;
-import org.jeecg.common.system.vo.DictModel;
-import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.system.vo.SysDepartModel;
+import org.jeecg.common.system.vo.*;
 import org.jeecg.common.util.IPUtils;
 import org.jeecg.common.util.SpringContextUtils;
+import org.jeecg.common.util.SysAnnmentTypeEnum;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.util.oss.OssBootUtil;
 import org.jeecg.modules.message.entity.SysMessageTemplate;
 import org.jeecg.modules.message.service.ISysMessageTemplateService;
 import org.jeecg.modules.message.websocket.WebSocket;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.*;
+import org.jeecg.modules.system.service.ISysDataSourceService;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysDictService;
+import org.jeecg.modules.system.util.MinioUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -42,6 +47,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @Description: 底层共通业务API，提供其他独立模块调用
@@ -76,7 +82,12 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	private SysRoleMapper roleMapper;
 	@Resource
 	private SysDepartMapper departMapper;
-	
+	@Resource
+	private SysCategoryMapper categoryMapper;
+
+	@Autowired
+	private ISysDataSourceService dataSourceService;
+
 	@Override
 	public void addLog(String LogContent, Integer logType, Integer operatetype) {
 		SysLog sysLog = new SysLog();
@@ -228,7 +239,64 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	}
 
-    @Override
+	@Override
+	public void sendSysAnnouncement(String fromUser, String toUser, String title, String msgContent, String setMsgCategory, String busType, String busId) {
+		SysAnnouncement announcement = new SysAnnouncement();
+		announcement.setTitile(title);
+		announcement.setMsgContent(msgContent);
+		announcement.setSender(fromUser);
+		announcement.setPriority(CommonConstant.PRIORITY_M);
+		announcement.setMsgType(CommonConstant.MSG_TYPE_UESR);
+		announcement.setSendStatus(CommonConstant.HAS_SEND);
+		announcement.setSendTime(new Date());
+		announcement.setMsgCategory(setMsgCategory);
+		announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
+		announcement.setBusId(busId);
+		announcement.setBusType(busType);
+		announcement.setOpenType(SysAnnmentTypeEnum.getByType(busType).getOpenType());
+		announcement.setOpenPage(SysAnnmentTypeEnum.getByType(busType).getOpenPage());
+		sysAnnouncementMapper.insert(announcement);
+		// 2.插入用户通告阅读标记表记录
+		String userId = toUser;
+		String[] userIds = userId.split(",");
+		String anntId = announcement.getId();
+		for(int i=0;i<userIds.length;i++) {
+			if(oConvertUtils.isNotEmpty(userIds[i])) {
+				SysUser sysUser = userMapper.getUserByName(userIds[i]);
+				if(sysUser==null) {
+					continue;
+				}
+				SysAnnouncementSend announcementSend = new SysAnnouncementSend();
+				announcementSend.setAnntId(anntId);
+				announcementSend.setUserId(sysUser.getId());
+				announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
+				sysAnnouncementSendMapper.insert(announcementSend);
+				JSONObject obj = new JSONObject();
+				obj.put("cmd", "user");
+				obj.put("userId", sysUser.getId());
+				obj.put("msgId", announcement.getId());
+				obj.put("msgTxt", announcement.getTitile());
+				webSocket.sendOneMessage(sysUser.getId(), obj.toJSONString());
+			}
+		}
+	}
+
+	@Override
+	public void updateSysAnnounReadFlag(String busType, String busId) {
+		SysAnnouncement announcement = sysAnnouncementMapper.selectOne(new QueryWrapper<SysAnnouncement>().eq("bus_type",busType).eq("bus_id",busId));
+		if(announcement != null){
+			LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+			String userId = sysUser.getId();
+			LambdaUpdateWrapper<SysAnnouncementSend> updateWrapper = new UpdateWrapper().lambda();
+			updateWrapper.set(SysAnnouncementSend::getReadFlag, CommonConstant.HAS_READ_FLAG);
+			updateWrapper.set(SysAnnouncementSend::getReadTime, new Date());
+			updateWrapper.last("where annt_id ='"+announcement.getId()+"' and user_id ='"+userId+"'");
+			SysAnnouncementSend announcementSend = new SysAnnouncementSend();
+			sysAnnouncementSendMapper.update(announcementSend, updateWrapper);
+		}
+	}
+
+	@Override
     public String parseTemplateByCode(String templateCode,Map<String, String> map) {
         List<SysMessageTemplate> sysSmsTemplates = sysMessageTemplateService.selectByCode(templateCode);
         if(sysSmsTemplates==null||sysSmsTemplates.size()==0){
@@ -275,6 +343,64 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		announcement.setSendTime(new Date());
 		announcement.setMsgCategory(CommonConstant.MSG_CATEGORY_2);
 		announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
+		sysAnnouncementMapper.insert(announcement);
+		// 2.插入用户通告阅读标记表记录
+		String userId = toUser;
+		String[] userIds = userId.split(",");
+		String anntId = announcement.getId();
+		for(int i=0;i<userIds.length;i++) {
+			if(oConvertUtils.isNotEmpty(userIds[i])) {
+				SysUser sysUser = userMapper.getUserByName(userIds[i]);
+				if(sysUser==null) {
+					continue;
+				}
+				SysAnnouncementSend announcementSend = new SysAnnouncementSend();
+				announcementSend.setAnntId(anntId);
+				announcementSend.setUserId(sysUser.getId());
+				announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
+				sysAnnouncementSendMapper.insert(announcementSend);
+				JSONObject obj = new JSONObject();
+				obj.put("cmd", "user");
+				obj.put("userId", sysUser.getId());
+				obj.put("msgId", announcement.getId());
+				obj.put("msgTxt", announcement.getTitile());
+				webSocket.sendOneMessage(sysUser.getId(), obj.toJSONString());
+			}
+		}
+	}
+
+	@Override
+	public void sendSysAnnouncement(String fromUser, String toUser, String title, Map<String, String> map, String templateCode, String busType, String busId) {
+		List<SysMessageTemplate> sysSmsTemplates = sysMessageTemplateService.selectByCode(templateCode);
+		if(sysSmsTemplates==null||sysSmsTemplates.size()==0){
+			throw new JeecgBootException("消息模板不存在，模板编码："+templateCode);
+		}
+		SysMessageTemplate sysSmsTemplate = sysSmsTemplates.get(0);
+		//模板标题
+		title = title==null?sysSmsTemplate.getTemplateName():title;
+		//模板内容
+		String content = sysSmsTemplate.getTemplateContent();
+		if(map!=null) {
+			for (Map.Entry<String, String> entry : map.entrySet()) {
+				String str = "${" + entry.getKey() + "}";
+				title = title.replace(str, entry.getValue());
+				content = content.replace(str, entry.getValue());
+			}
+		}
+		SysAnnouncement announcement = new SysAnnouncement();
+		announcement.setTitile(title);
+		announcement.setMsgContent(content);
+		announcement.setSender(fromUser);
+		announcement.setPriority(CommonConstant.PRIORITY_M);
+		announcement.setMsgType(CommonConstant.MSG_TYPE_UESR);
+		announcement.setSendStatus(CommonConstant.HAS_SEND);
+		announcement.setSendTime(new Date());
+		announcement.setMsgCategory(CommonConstant.MSG_CATEGORY_2);
+		announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
+		announcement.setBusId(busId);
+		announcement.setBusType(busType);
+		announcement.setOpenType(SysAnnmentTypeEnum.getByType(busType).getOpenType());
+		announcement.setOpenPage(SysAnnmentTypeEnum.getByType(busType).getOpenPage());
 		sysAnnouncementMapper.insert(announcement);
 		// 2.插入用户通告阅读标记表记录
 		String userId = toUser;
@@ -350,8 +476,20 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	}
 
 	@Override
+	public List<SysCategoryModel> queryAllDSysCategory() {
+		List<SysCategory> ls = categoryMapper.selectList(null);
+		List<SysCategoryModel> res = oConvertUtils.entityListToModelList(ls,SysCategoryModel.class);
+		return res;
+	}
+
+	@Override
 	public List<DictModel> queryFilterTableDictInfo(String table, String text, String code, String filterSql) {
 		return sysDictService.queryTableDictItemsByCodeAndFilter(table,text,code,filterSql);
+	}
+
+	@Override
+	public List<String> queryTableDictByKeys(String table, String text, String code, String[] keyArray) {
+		return sysDictService.queryTableDictByKeys(table,text,code,keyArray);
 	}
 
 	@Override
@@ -362,20 +500,25 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			ComboModel model = new ComboModel();
 			model.setTitle(user.getRealname());
 			model.setId(user.getId());
+			model.setUsername(user.getUsername());
 			list.add(model);
 		}
 		return list;
 	}
 
     @Override
-    public List<ComboModel> queryAllUser(String[] userIds) {
+    public JSONObject queryAllUser(String[] userIds,int pageNo,int pageSize) {
+		JSONObject json = new JSONObject();
+		QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>().eq("status","1").eq("del_flag","0");
         List<ComboModel> list = new ArrayList<ComboModel>();
-        List<SysUser> userList = userMapper.selectList(new QueryWrapper<SysUser>().eq("status","1").eq("del_flag","0"));
-        for(SysUser user : userList){
+		Page<SysUser> page = new Page<SysUser>(pageNo, pageSize);
+		IPage<SysUser> pageList = userMapper.selectPage(page, queryWrapper);
+        for(SysUser user : pageList.getRecords()){
             ComboModel model = new ComboModel();
             model.setUsername(user.getUsername());
             model.setTitle(user.getRealname());
             model.setId(user.getId());
+            model.setEmail(user.getEmail());
             if(oConvertUtils.isNotEmpty(userIds)){
                 for(int i = 0; i<userIds.length;i++){
                     if(userIds[i].equals(user.getId())){
@@ -385,7 +528,9 @@ public class SysBaseApiImpl implements ISysBaseAPI {
             }
             list.add(model);
         }
-        return list;
+		json.put("list",list);
+        json.put("total",pageList.getTotal());
+        return json;
     }
 
 	@Override
@@ -409,6 +554,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
             ComboModel model = new ComboModel();
             model.setTitle(role.getRoleName());
             model.setId(role.getId());
+            model.setRoleCode(role.getRoleCode());
             if(oConvertUtils.isNotEmpty(roleIds)) {
                 for (int i = 0; i < roleIds.length; i++) {
                     if (roleIds[i].equals(role.getId())) {
@@ -449,4 +595,38 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		}
 		return departModelList;
 	}
+
+	@Override
+	public DynamicDataSourceModel getDynamicDbSourceById(String dbSourceId) {
+		SysDataSource dbSource = dataSourceService.getById(dbSourceId);
+		return new DynamicDataSourceModel(dbSource);
+	}
+
+	@Override
+	public DynamicDataSourceModel getDynamicDbSourceByCode(String dbSourceCode) {
+		SysDataSource dbSource = dataSourceService.getOne(new LambdaQueryWrapper<SysDataSource>().eq(SysDataSource::getCode, dbSourceCode));
+		return new DynamicDataSourceModel(dbSource);
+	}
+
+	@Override
+	public List<String> getDeptHeadByDepId(String deptId) {
+		List<SysUser> userList = userMapper.selectList(new QueryWrapper<SysUser>().like("depart_ids",deptId).eq("status","1").eq("del_flag","0"));
+		List<String> list = new ArrayList<>();
+		for(SysUser user : userList){
+			list.add(user.getUsername());
+		}
+		return list;
+	}
+
+	@Override
+	public String upload(MultipartFile file,String bizPath,String uploadType) {
+		String url = "";
+		if(CommonConstant.UPLOAD_TYPE_MINIO.equals(uploadType)){
+			url = MinioUtil.upload(file,bizPath);
+		}else{
+			url = OssBootUtil.upload(file,bizPath);
+		}
+		return url;
+	}
+
 }

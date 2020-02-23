@@ -20,14 +20,14 @@
         </chart-card>
       </a-col>
       <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="访问量" :total="8846 | NumberFormat">
+        <chart-card :loading="loading" title="订单量" :total="8846 | NumberFormat">
           <a-tooltip title="指标说明" slot="action">
             <a-icon type="info-circle-o" />
           </a-tooltip>
           <div>
             <mini-area />
           </div>
-          <template slot="footer">日访问量<span> {{ '1234' | NumberFormat }}</span></template>
+          <template slot="footer">日订单量<span> {{ '1234' | NumberFormat }}</span></template>
         </chart-card>
       </a-col>
       <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
@@ -85,7 +85,7 @@
               </a-col>
             </a-row>
           </a-tab-pane>
-          <a-tab-pane tab="访问量" key="2">
+          <a-tab-pane tab="销售趋势" key="2">
             <a-row>
               <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
                 <bar title="销售额趋势" :dataSource="barData"/>
@@ -101,10 +101,10 @@
 
     <a-row>
       <a-col :span="24">
-        <a-card :loading="loading" :bordered="false" title="最近一周访问次数统计" :style="{ marginTop: '24px' }">
+        <a-card :loading="loading" :bordered="false" title="最近一周访问量统计" :style="{ marginTop: '24px' }">
           <a-row>
             <a-col :span="6">
-              <head-info title="今日访问IP数" :content="loginfo.todayIp"></head-info>
+              <head-info title="今日IP" :content="loginfo.todayIp"></head-info>
             </a-col>
             <a-col :span="2">
               <a-spin class='circle-cust'>
@@ -112,7 +112,7 @@
               </a-spin>
             </a-col>
             <a-col :span="6">
-              <head-info title="今日访问次数" :content="loginfo.todayVisitCount"></head-info>
+              <head-info title="今日访问" :content="loginfo.todayVisitCount"></head-info>
             </a-col>
             <a-col :span="2">
               <a-spin class='circle-cust'>
@@ -120,7 +120,7 @@
               </a-spin>
             </a-col>
             <a-col :span="6">
-              <head-info title="访问总次数" :content="loginfo.totalVisitCount"></head-info>
+              <head-info title="总访问量" :content="loginfo.totalVisitCount"></head-info>
             </a-col>
             <a-col :span="2">
               <a-spin class='circle-cust'>

@@ -21,6 +21,10 @@
 		<result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
 		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
 		<result column="user_ids" property="userIds" jdbcType="VARCHAR"/>
+		<result column="bus_type" property="busType" jdbcType="VARCHAR"/>
+		<result column="bus_id" property="busId" jdbcType="VARCHAR"/>
+		<result column="open_type" property="openType" jdbcType="VARCHAR"/>
+		<result column="open_page" property="openPage" jdbcType="VARCHAR"/>
 	</resultMap>
 	
 	

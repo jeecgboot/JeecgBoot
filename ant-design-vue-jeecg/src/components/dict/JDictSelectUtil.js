@@ -47,10 +47,20 @@ export function filterDictText(dictOptions, text) {
  * @return String
  */
 export function filterMultiDictText(dictOptions, text) {
+  //js “!text” 认为0为空，所以做提前处理
+  if(text === 0 || text === '0'){
+    for (let dictItem of dictOptions) {
+      if (text == dictItem.value) {
+        return dictItem.text
+      }
+    }
+  }
+
   if(!text || !dictOptions || dictOptions.length==0){
     return ""
   }
   let re = "";
+  text = text.toString()
   let arr = text.split(",")
   dictOptions.forEach(function (option) {
     for(let i=0;i<arr.length;i++){

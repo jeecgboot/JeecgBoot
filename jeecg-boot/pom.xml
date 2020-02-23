@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>2.1.3</version>
+  <version>2.1.4</version>
   <packaging>pom</packaging>
   
   	<parent>
@@ -17,7 +17,7 @@
 		<module>jeecg-boot-base-common</module>
 		<module>jeecg-boot-module-system</module>
 	</modules>
-	
+
 	<distributionManagement>
 	  	<repository>
             <id>jeecg</id>
@@ -51,7 +51,7 @@
 	</repositories>
 	
     <properties>
-        <jeecgboot.common.version>2.1.3</jeecgboot.common.version>
+        <jeecgboot.common.version>2.1.4</jeecgboot.common.version>
         <java.version>1.8</java.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -62,6 +62,7 @@
         <aliyun-java-sdk-core.version>3.2.3</aliyun-java-sdk-core.version>
 		<aliyun-java-sdk-dysmsapi.version>1.0.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.6.0</aliyun.oss.version>
+		<guava.version>26.0-jre</guava.version>
     </properties>
     
 	<dependencies>
@@ -206,6 +207,24 @@
             </exclusions>
         </dependency>
 
+		<!--  online form-->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-re</artifactId>
+			<version>2.1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-collections</groupId>
+					<artifactId>commons-collections</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+
 		<!-- Swagger API文档 -->
         <dependency>
 		    <groupId>io.springfox</groupId>
@@ -238,21 +257,6 @@
             <artifactId>swagger-models</artifactId>
             <version>1.5.22</version>
         </dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-re</artifactId>
-			<version>5.2.13</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-collections</groupId>
-					<artifactId>commons-collections</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 		
 		
 		<!-- Redis -->
@@ -270,14 +274,14 @@
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>codegenerate</artifactId>
-			<version>1.0.8</version>
+			<version>1.1.0</version>
 		</dependency>
 		
         <!-- AutoPoi Excel工具类-->
 		<dependency>
 			<groupId>org.jeecgframework</groupId>
 			<artifactId>autopoi-web</artifactId>
-			<version>1.0.4</version>
+			<version>1.0.5</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-codec</groupId>
@@ -291,7 +295,19 @@
 		    <artifactId>hutool-all</artifactId>
 		    <version>4.5.11</version>
 		</dependency>
-		
+
+		<!-- mini文件存储服务 -->
+		<dependency>
+			<groupId>io.minio</groupId>
+			<artifactId>minio</artifactId>
+			<version>4.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+		</dependency>
+
 		<!-- 阿里云短信 -->
 		<dependency>
 			<groupId>com.aliyun</groupId>
@@ -315,6 +331,18 @@
 		<dependency>
 		   <groupId>org.springframework.boot</groupId>
 		   <artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+
+		<!-- starter-jdbc -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- aliyun oss -->
@@ -344,7 +372,11 @@
 	</dependencyManagement>
 	<build>
 		<plugins>
-			<!--指定JDK编译版本 -->
+			<!--<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			 指定JDK编译版本 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

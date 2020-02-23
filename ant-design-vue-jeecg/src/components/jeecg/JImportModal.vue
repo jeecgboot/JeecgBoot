@@ -42,6 +42,11 @@
         type: String,
         default: '',
         required: false
+      },
+      biz:{
+        type: String,
+        default: '',
+        required: false
       }
     },
     data(){
@@ -49,7 +54,8 @@
         visible:false,
         uploading:false,
         fileList:[],
-        uploadAction:''
+        uploadAction:'',
+        foreignKeys:''
       }
     },
     watch: {
@@ -67,10 +73,11 @@
       handleClose(){
         this.visible=false
       },
-      show(){
+      show(arg){
         this.fileList = []
         this.uploading = false
         this.visible = true
+        this.foreignKeys = arg;
       },
       handleRemove(file) {
         const index = this.fileList.indexOf(file);
@@ -85,6 +92,12 @@
       handleImport() {
         const { fileList } = this;
         const formData = new FormData();
+        if(this.biz){
+          formData.append('isSingleTableImport',this.biz);
+        }
+        if(this.foreignKeys && this.foreignKeys.length>0){
+          formData.append('foreignKeys',this.foreignKeys);
+        }
         fileList.forEach((file) => {
           formData.append('files[]', file);
         });

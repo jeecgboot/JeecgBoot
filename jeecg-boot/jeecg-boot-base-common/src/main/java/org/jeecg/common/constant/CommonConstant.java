@@ -171,20 +171,42 @@ public interface CommonConstant {
     public static final Integer DESIGN_FORM_URL_STATUS_NOT_PASSED = 2;
 
     /**
-     * 表单设计器URL授权未通过
+     * 表单设计器新增 Flag
      */
     public static final String DESIGN_FORM_URL_TYPE_ADD = "add";
     /**
-     * 表单设计器URL授权未通过
+     * 表单设计器修改 Flag
      */
     public static final String DESIGN_FORM_URL_TYPE_EDIT = "edit";
     /**
-     * 表单设计器URL授权未通过
+     * 表单设计器详情 Flag
      */
     public static final String DESIGN_FORM_URL_TYPE_DETAIL = "detail";
     /**
-     * 表单设计器URL授权未通过
+     * 表单设计器复用数据 Flag
+     */
+    public static final String DESIGN_FORM_URL_TYPE_REUSE = "reuse";
+    /**
+     * 表单设计器编辑 Flag （已弃用）
      */
     public static final String DESIGN_FORM_URL_TYPE_VIEW = "view";
 
+    /**
+     * online参数值设置（是：Y, 否：N）
+     */
+    public static final String ONLINE_PARAM_VAL_IS_TURE = "Y";
+    public static final String ONLINE_PARAM_VAL_IS_FALSE = "N";
+
+    /**
+     * 文件上传类型（本地：local，Minio：minio，阿里云：alioss）
+     */
+    public static final String UPLOAD_TYPE_LOCAL = "local";
+    public static final String UPLOAD_TYPE_MINIO = "minio";
+    public static final String UPLOAD_TYPE_OSS = "alioss";
+
+    /**
+     * 员工身份 （1:普通员工  2:上级）
+     */
+    public static final Integer USER_IDENTITY_1 = 1;
+    public static final Integer USER_IDENTITY_2 = 2;
 }

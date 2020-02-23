@@ -72,7 +72,7 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 			}
 			String[] arr = ids.split(",");
 			for (String id : arr) {
-				if(oConvertUtils.isNotEmpty(id)) {
+				if(oConvertUtils.isNotEmpty(id) && !set.contains(id)) {
 					set.add(id);
 				}
 			}

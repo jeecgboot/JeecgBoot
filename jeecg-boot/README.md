@@ -1,7 +1,7 @@
 Jeecg-Boot 快速开发平台
 ===============
 
-当前最新版本： 2.1.3（发布日期：20191226）
+当前最新版本： 2.1.4（发布日期：20200224）
 
 
 ## 后端技术架构
@@ -37,11 +37,11 @@ Jeecg-Boot 快速开发平台
 ## 技术文档
 
 
-- 在线演示 ：  [http://boot.jeecg.org](http://boot.jeecg.org)
+- 在线演示 ：  [http://boot.jeecg.com](http://boot.jeecg.com)
 
 - 在线文档：  [http://doc.jeecg.com/1273753](http://doc.jeecg.com/1273753)
 
-- 常见问题：  [入门常见问题大全](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
+- 常见问题：  [入门常见问题大全](http://bbs.jeecg.com/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
 
 - QQ交流群 ：  ①284271917、②769925425
 

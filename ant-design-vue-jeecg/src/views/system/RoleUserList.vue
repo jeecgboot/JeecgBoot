@@ -60,26 +60,27 @@
             :rowSelection="{selectedRowKeys: selectedRowKeys1, onChange: onSelectChange1, type:'radio'}"
             @change="handleTableChange">
           <span slot="action" slot-scope="text, record">
-          <a @click="handleOpen(record)">用户</a>
-          <a-divider type="vertical"/>
-          <a-dropdown>
-            <a class="ant-dropdown-link">
-              更多 <a-icon type="down"/>
-            </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a @click="handlePerssion(record.id)">授权</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a @click="handleEdit(record)">编辑</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete1(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+            <a @click="handleOpen(record)">用户</a>
+            <a-divider type="vertical"/>
+
+            <a-dropdown>
+              <a class="ant-dropdown-link">
+                更多 <a-icon type="down"/>
+              </a>
+              <a-menu slot="overlay">
+                <a-menu-item>
+                  <a @click="handlePerssion(record.id)">授权</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a @click="handleEdit(record)">编辑</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete1(record.id)">
+                    <a>删除</a>
+                  </a-popconfirm>
+                </a-menu-item>
+              </a-menu>
+            </a-dropdown>
         </span>
           </a-table>
         </div>
@@ -530,7 +531,7 @@
       },
       handlePerssion(roleId){
         this.$refs.modalUserRole.show(roleId);
-      }
+      },
     }
   }
 </script>

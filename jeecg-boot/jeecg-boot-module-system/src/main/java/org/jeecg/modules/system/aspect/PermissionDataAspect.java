@@ -75,15 +75,26 @@ public class PermissionDataAspect {
 			String requestMethod = request.getMethod();
 			String requestPath = request.getRequestURI().substring(request.getContextPath().length());
 			requestPath = filterUrl(requestPath);
-			log.info("拦截请求>>"+requestPath+";请求类型>>"+requestMethod);
+			log.info("拦截请求 >> "+requestPath+";请求类型 >> "+requestMethod);
 			//1.直接通过前端请求地址查询菜单
 			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
 			query.eq(SysPermission::getMenuType,2);
 			query.eq(SysPermission::getDelFlag,0);
 			query.eq(SysPermission::getUrl, requestPath);
 			currentSyspermission = sysPermissionService.list(query);
-			//2.未找到 再通过正则匹配获取菜单
+			//2.未找到 再通过自定义匹配URL 获取菜单
 			if(currentSyspermission==null || currentSyspermission.size()==0) {
+				//通过自定义URL匹配规则 获取菜单（实现通过菜单配置数据权限规则，实际上针对获取数据接口进行数据规则控制）
+				String userMatchUrl = UrlMatchEnum.getMatchResultByUrl(requestPath);
+				LambdaQueryWrapper<SysPermission> queryQserMatch = new LambdaQueryWrapper<SysPermission>();
+				queryQserMatch.eq(SysPermission::getMenuType, 1);
+				queryQserMatch.eq(SysPermission::getDelFlag, 0);
+				queryQserMatch.eq(SysPermission::getUrl, userMatchUrl);
+				currentSyspermission = sysPermissionService.list(queryQserMatch);
+			}
+			//3.未找到 再通过正则匹配获取菜单
+			if(currentSyspermission==null || currentSyspermission.size()==0) {
+				//通过正则匹配权限配置
 				String regUrl = getRegexpUrl(requestPath);
 				if(regUrl!=null) {
 					currentSyspermission = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().eq(SysPermission::getMenuType,2).eq(SysPermission::getUrl, regUrl).eq(SysPermission::getDelFlag,0));

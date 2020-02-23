@@ -17,8 +17,7 @@
         <div style="background: #fff;padding-left:16px;height: 100%; margin-top: 5px">
           <a-alert type="info" :showIcon="true">
             <div slot="message">
-              当前选择：
-              <a v-if="this.currSelected.title">{{ getCurrSelectedTitle() }}</a>
+              当前选择：<span v-if="this.currSelected.title">{{ getCurrSelectedTitle() }}</span>
               <a v-if="this.currSelected.title" style="margin-left: 10px" @click="onClearSelected">取消选择</a>
             </div>
           </a-alert>
@@ -72,82 +71,90 @@
       <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
     </a-col>
     <a-col :md="12" :sm="24">
-      <a-card :bordered="false">
-        <a-form :form="form">
-          <a-form-item
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="机构名称">
-            <a-input placeholder="请输入机构/部门名称" v-decorator="['departName', validatorRules.departName ]"/>
-          </a-form-item>
-          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门">
-            <a-tree-select
-              style="width:100%"
-              :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
-              :treeData="treeData"
-              :disabled="disable"
-              v-model="model.parentId"
-              placeholder="无">
-            </a-tree-select>
-          </a-form-item>
-          <a-form-item
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="机构编码">
-            <a-input disabled placeholder="请输入机构编码" v-decorator="['orgCode', validatorRules.orgCode ]"/>
-          </a-form-item>
-          <a-form-item
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="机构类型">
-            <template v-if="orgCategoryDisabled">
-              <a-radio-group v-decorator="['orgCategory',validatorRules.orgCategory]" placeholder="请选择机构类型">
-                <a-radio value="1">
-                  公司
-                </a-radio>
-              </a-radio-group>
-            </template>
-            <template v-else>
-              <a-radio-group v-decorator="['orgCategory',validatorRules.orgCategory]" placeholder="请选择机构类型">
-                <a-radio value="2">
-                  部门
-                </a-radio>
-                <a-radio value="3">
-                  岗位
-                </a-radio>
-              </a-radio-group>
-            </template>
-          </a-form-item>
-          <a-form-item
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="排序">
-            <a-input-number v-decorator="[ 'departOrder',{'initialValue':0}]"/>
-          </a-form-item>
-          <a-form-item
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="手机号">
-            <a-input placeholder="请输入手机号" v-decorator="['mobile', {'initialValue':''}]"/>
-          </a-form-item>
-          <a-form-item
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="地址">
-            <a-input placeholder="请输入地址" v-decorator="['address', {'initialValue':''}]"/>
-          </a-form-item>
-          <a-form-item
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="备注">
-            <a-textarea placeholder="请输入备注" v-decorator="['memo', {'initialValue':''}]"/>
-          </a-form-item>
-        </a-form>
-        <div class="anty-form-btn">
-          <a-button @click="emptyCurrForm" type="default" htmlType="button" icon="sync">重置</a-button>
-          <a-button @click="submitCurrForm" type="primary" htmlType="button" icon="form">修改并保存</a-button>
-        </div>
-      </a-card>
+      <a-tabs defaultActiveKey="1">
+        <a-tab-pane tab="基本信息" key="1" >
+          <a-card :bordered="false">
+            <a-form :form="form">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="机构名称">
+                <a-input placeholder="请输入机构/部门名称" v-decorator="['departName', validatorRules.departName ]"/>
+              </a-form-item>
+              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门">
+                <a-tree-select
+                  style="width:100%"
+                  :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
+                  :treeData="treeData"
+                  :disabled="disable"
+                  v-model="model.parentId"
+                  placeholder="无">
+                </a-tree-select>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="机构编码">
+                <a-input disabled placeholder="请输入机构编码" v-decorator="['orgCode', validatorRules.orgCode ]"/>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="机构类型">
+                <template v-if="orgCategoryDisabled">
+                  <a-radio-group v-decorator="['orgCategory',validatorRules.orgCategory]" placeholder="请选择机构类型">
+                    <a-radio value="1">
+                      公司
+                    </a-radio>
+                  </a-radio-group>
+                </template>
+                <template v-else>
+                  <a-radio-group v-decorator="['orgCategory',validatorRules.orgCategory]" placeholder="请选择机构类型">
+                    <a-radio value="2">
+                      部门
+                    </a-radio>
+                    <a-radio value="3">
+                      岗位
+                    </a-radio>
+                  </a-radio-group>
+                </template>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="排序">
+                <a-input-number v-decorator="[ 'departOrder',{'initialValue':0}]"/>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="手机号">
+                <a-input placeholder="请输入手机号" v-decorator="['mobile', {'initialValue':''}]"/>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="地址">
+                <a-input placeholder="请输入地址" v-decorator="['address', {'initialValue':''}]"/>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="备注">
+                <a-textarea placeholder="请输入备注" v-decorator="['memo', {'initialValue':''}]"/>
+              </a-form-item>
+            </a-form>
+            <div class="anty-form-btn">
+              <a-button @click="emptyCurrForm" type="default" htmlType="button" icon="sync">重置</a-button>
+              <a-button @click="submitCurrForm" type="primary" htmlType="button" icon="form">修改并保存</a-button>
+            </div>
+          </a-card>
+        </a-tab-pane>
+        <a-tab-pane tab="部门权限" key="2" forceRender>
+          <depart-auth-modal ref="departAuth"/>
+        </a-tab-pane>
+      </a-tabs>
+
     </a-col>
     <depart-modal ref="departModal" @ok="loadTree"></depart-modal>
   </a-row>
@@ -158,6 +165,7 @@
   import {queryDepartTreeList, searchByKeywords, deleteByDepartId} from '@/api/api'
   import {httpAction, deleteAction} from '@/api/manage'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import DepartAuthModal from './modules/DepartAuthModal'
   // 表头
   const columns = [
     {
@@ -201,6 +209,7 @@
     name: 'DepartList',
     mixins: [JeecgListMixin],
     components: {
+      DepartAuthModal,
       DepartModal
     },
     data() {
@@ -403,7 +412,7 @@
         this.selectedKeys = [record.key]
         this.model.parentId = record.parentId
         this.setValuesToForm(record)
-
+        this.$refs.departAuth.show(record.id);
 
       },
       // 触发onSelect事件时,为部门树右侧的form表单赋值
@@ -425,6 +434,7 @@
         this.currSelected = {}
         this.form.resetFields()
         this.selectedKeys = []
+        this.$refs.departAuth.departId = ''
       },
       handleNodeTypeChange(val) {
         this.currSelected.nodeType = val

@@ -1,15 +1,22 @@
 <template>
 <div class="j-super-query-box">
 
-  <slot>
-    <a-tooltip v-if="superQueryFlag" title="已有高级查询条件生效">
-      <a-button type="primary" @click="visible=true">
-        <a-icon type="appstore" theme="twoTone" :spin="true"></a-icon>
-        <span>高级查询</span>
-      </a-button>
-    </a-tooltip>
-    <a-button v-else type="primary" icon="filter" @click="visible=true">高级查询</a-button>
-  </slot>
+  <div @click="visible=true">
+    <slot>
+      <a-tooltip v-if="superQueryFlag" :mouseLeaveDelay="0.2">
+        <template slot="title">
+          <span>已有高级查询条件生效</span>
+          <a-divider type="vertical"/>
+          <a @click="handleReset">清空</a>
+        </template>
+        <a-button type="primary">
+          <a-icon type="appstore" theme="twoTone" :spin="true"></a-icon>
+          <span>高级查询</span>
+        </a-button>
+      </a-tooltip>
+      <a-button v-else type="primary" icon="filter" @click="visible=true">高级查询</a-button>
+    </slot>
+  </div>
 
   <a-modal
     title="高级查询构造器"

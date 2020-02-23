@@ -154,6 +154,10 @@
         //此处触发动态路由被点击事件
         this.findMenuBykey(this.menus,value.key)
         this.$emit("dynamicRouterShow",value.key,this.activeMenu.meta.title)
+        // update-begin-author:sunjianlei date:20191223 for: 修复刷新后菜单Tab名字显示异常
+        let storeKey = 'route:title:' + this.activeMenu.path
+        this.$ls.set(storeKey, this.activeMenu.meta.title)
+        // update-end-author:sunjianlei date:20191223 for: 修复刷新后菜单Tab名字显示异常
       },
       findMenuBykey(menus,key){
         for(let i of menus){
@@ -337,6 +341,10 @@
             font-size: 16px;
             padding: 4px;
           }
+
+          .anticon {
+            color: white;
+          }
         }
       }
 
@@ -348,6 +356,10 @@
 
             &:hover {
               background: rgba(0, 0, 0, 0.05);
+            }
+
+            .anticon {
+              color: black;
             }
           }
         }

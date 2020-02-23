@@ -1,43 +1,32 @@
 package org.jeecg.modules.system.controller;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.constant.CacheConstant;
-import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.system.util.JwtUtil;
-import org.jeecg.common.util.MD5Util;
-import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.system.entity.SysPermission;
-import org.jeecg.modules.system.entity.SysPermissionDataRule;
-import org.jeecg.modules.system.entity.SysRolePermission;
-import org.jeecg.modules.system.model.SysPermissionTree;
-import org.jeecg.modules.system.model.TreeModel;
-import org.jeecg.modules.system.service.ISysPermissionDataRuleService;
-import org.jeecg.modules.system.service.ISysPermissionService;
-import org.jeecg.modules.system.service.ISysRolePermissionService;
-import org.jeecg.modules.system.util.PermissionDataUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.MD5Util;
+import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.system.entity.SysDepartPermission;
+import org.jeecg.modules.system.entity.SysPermission;
+import org.jeecg.modules.system.entity.SysPermissionDataRule;
+import org.jeecg.modules.system.entity.SysRolePermission;
+import org.jeecg.modules.system.model.SysPermissionTree;
+import org.jeecg.modules.system.model.SysRoleDeisgnModel;
+import org.jeecg.modules.system.model.TreeModel;
+import org.jeecg.modules.system.service.*;
+import org.jeecg.modules.system.util.PermissionDataUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -60,6 +49,9 @@ public class SysPermissionController {
 
 	@Autowired
 	private ISysPermissionDataRuleService sysPermissionDataRuleService;
+
+	@Autowired
+	private ISysDepartPermissionService sysDepartPermissionService;
 
 	/**
 	 * 加载数据节点
@@ -116,7 +108,6 @@ public class SysPermissionController {
 		return result;
 	}
 
-
 	/**
 	 * 查询子菜单
 	 * @param parentId
@@ -144,6 +135,42 @@ public class SysPermissionController {
 		return result;
 	}
 	/*update_end author:wuxianquan date:20190908 for:先查询一级菜单，当用户点击展开菜单时加载子菜单 */
+
+	// update_begin author:sunjianlei date:20200108 for: 新增批量根据父ID查询子级菜单的接口 -------------
+	/**
+	 * 查询子菜单
+	 *
+	 * @param parentIds 父ID（多个采用半角逗号分割）
+	 * @return 返回 key-value 的 Map
+	 */
+	@GetMapping("/getSystemSubmenuBatch")
+	public Result getSystemSubmenuBatch(@RequestParam("parentIds") String parentIds) {
+		try {
+			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<>();
+			List<String> parentIdList = Arrays.asList(parentIds.split(","));
+			query.in(SysPermission::getParentId, parentIdList);
+			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
+			query.orderByAsc(SysPermission::getSortNo);
+			List<SysPermission> list = sysPermissionService.list(query);
+			Map<String, List<SysPermissionTree>> listMap = new HashMap<>();
+			for (SysPermission item : list) {
+				String pid = item.getParentId();
+				if (parentIdList.contains(pid)) {
+					List<SysPermissionTree> mapList = listMap.get(pid);
+					if (mapList == null) {
+						mapList = new ArrayList<>();
+					}
+					mapList.add(new SysPermissionTree(item));
+					listMap.put(pid, mapList);
+				}
+			}
+			return Result.ok(listMap);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			return Result.error("批量查询子菜单失败：" + e.getMessage());
+		}
+	}
+	// update_end author:sunjianlei date:20200108 for: 新增批量根据父ID查询子级菜单的接口 -------------
 
 //	/**
 //	 * 查询用户拥有的菜单权限和按钮权限（根据用户账号）
@@ -183,7 +210,12 @@ public class SysPermissionController {
 			String username = JwtUtil.getUsername(token);
 			List<SysPermission> metaList = sysPermissionService.queryByUser(username);
 			//添加首页路由
-			PermissionDataUtil.addIndexPage(metaList);
+			//update-begin-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
+			if(!PermissionDataUtil.hasIndexPage(metaList)){
+				SysPermission indexMenu = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().eq(SysPermission::getName,"首页")).get(0);
+				metaList.add(0,indexMenu);
+			}
+			//update-end-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
 			JSONObject json = new JSONObject();
 			JSONArray menujsonArray = new JSONArray();
 			this.getPermissionJsonArray(menujsonArray, metaList, null);
@@ -217,6 +249,7 @@ public class SysPermissionController {
 	 * @param permission
 	 * @return
 	 */
+	@RequiresRoles({ "admin" })
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysPermission> add(@RequestBody SysPermission permission) {
 		Result<SysPermission> result = new Result<SysPermission>();
@@ -236,6 +269,7 @@ public class SysPermissionController {
 	 * @param permission
 	 * @return
 	 */
+	@RequiresRoles({ "admin" })
 	@RequestMapping(value = "/edit", method = { RequestMethod.PUT, RequestMethod.POST })
 	public Result<SysPermission> edit(@RequestBody SysPermission permission) {
 		Result<SysPermission> result = new Result<>();
@@ -255,6 +289,7 @@ public class SysPermissionController {
 	 * @param id
 	 * @return
 	 */
+	@RequiresRoles({ "admin" })
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<SysPermission> delete(@RequestParam(name = "id", required = true) String id) {
 		Result<SysPermission> result = new Result<>();
@@ -274,6 +309,7 @@ public class SysPermissionController {
 	 * @param ids
 	 * @return
 	 */
+	@RequiresRoles({ "admin" })
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysPermission> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 		Result<SysPermission> result = new Result<>();
@@ -371,6 +407,7 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequestMapping(value = "/saveRolePermission", method = RequestMethod.POST)
+	@RequiresRoles({ "admin" })
 	public Result<String> saveRolePermission(@RequestBody JSONObject json) {
 		long start = System.currentTimeMillis();
 		Result<String> result = new Result<>();
@@ -429,8 +466,7 @@ public class SysPermissionController {
 	/**
 	  *  获取权限JSON数组
 	 * @param jsonArray
-	 * @param metaList
-	 * @param parentJson
+	 * @param allList
 	 */
 	private void getAllAuthJsonArray(JSONArray jsonArray,List<SysPermission> allList) {
 		JSONObject json = null;
@@ -448,7 +484,6 @@ public class SysPermissionController {
 	  *  获取权限JSON数组
 	 * @param jsonArray
 	 * @param metaList
-	 * @param parentJson
 	 */
 	private void getAuthJsonArray(JSONArray jsonArray,List<SysPermission> metaList) {
 		for (SysPermission permission : metaList) {
@@ -718,4 +753,45 @@ public class SysPermissionController {
 		return result;
 	}
 
+	/**
+	 * 部门权限表
+	 * @param departId
+	 * @return
+	 */
+	@RequestMapping(value = "/queryDepartPermission", method = RequestMethod.GET)
+	public Result<List<String>> queryDepartPermission(@RequestParam(name = "departId", required = true) String departId) {
+		Result<List<String>> result = new Result<>();
+		try {
+			List<SysDepartPermission> list = sysDepartPermissionService.list(new QueryWrapper<SysDepartPermission>().lambda().eq(SysDepartPermission::getDepartId, departId));
+			result.setResult(list.stream().map(SysDepartPermission -> String.valueOf(SysDepartPermission.getPermissionId())).collect(Collectors.toList()));
+			result.setSuccess(true);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+
+	/**
+	 * 保存部门授权
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = "/saveDepartPermission", method = RequestMethod.POST)
+	@RequiresRoles({ "admin" })
+	public Result<String> saveDepartPermission(@RequestBody JSONObject json) {
+		long start = System.currentTimeMillis();
+		Result<String> result = new Result<>();
+		try {
+			String departId = json.getString("departId");
+			String permissionIds = json.getString("permissionIds");
+			String lastPermissionIds = json.getString("lastpermissionIds");
+			this.sysDepartPermissionService.saveDepartPermission(departId, permissionIds, lastPermissionIds);
+			result.success("保存成功！");
+			log.info("======部门授权成功=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+		} catch (Exception e) {
+			result.error500("授权失败！");
+			log.error(e.getMessage(), e);
+		}
+		return result;
+	}
 }
