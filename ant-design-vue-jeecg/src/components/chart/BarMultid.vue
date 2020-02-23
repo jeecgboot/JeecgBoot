@@ -11,7 +11,7 @@
 </template>
 
 <script>
-  import { DataSet } from '@antv/data-set'
+  // import { DataSet } from '@antv/data-set'
 
   const sourceDataConst = [
     { type: 'Jeecg', 'Jan.': 18.9, 'Feb.': 28.8, 'Mar.': 39.3, 'Apr.': 81.4, 'May': 47, 'Jun.': 20.3, 'Jul.': 24, 'Aug.': 35.6 },

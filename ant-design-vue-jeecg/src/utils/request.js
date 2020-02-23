@@ -7,8 +7,9 @@ import { ACCESS_TOKEN } from "@/store/mutation-types"
 
 // 创建 axios 实例
 const service = axios.create({
-  // baseURL: 'http://196000w1a1.iask.in/jeecg-boot', // api base_url
-  baseURL: '/jeecg-boot', // api base_url
+  // 打包的时候用这个地址，但是这个地址会导致在线生成代码不可用。本地开发用下面的地址
+  baseURL: 'http://196000w1a1.iask.in/jeecg-boot', // api base_url
+  // baseURL: '/jeecg-boot', // api base_url
   timeout: 9000 // 请求超时时间
 })
 

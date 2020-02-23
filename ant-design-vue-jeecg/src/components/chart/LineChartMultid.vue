@@ -12,7 +12,7 @@
 </template>
 
 <script>
-  import { DataSet } from '@antv/data-set'
+  // import { DataSet } from '@antv/data-set'
 
   export default {
     name: 'LineChartMultid',

@@ -9,7 +9,7 @@
 </template>
 
 <script>
-  const DataSet = require('@antv/data-set')
+  // const DataSet = require('@antv/data-set')
 
   export default {
     props: {

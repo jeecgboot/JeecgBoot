@@ -118,7 +118,7 @@
   import Radar from '@/components/chart/Radar'
   import { getRoleList, getServiceList } from "@/api/manage"
 
-  const DataSet = require('@antv/data-set')
+  // const DataSet = require('@antv/data-set')
 
   export default {
     name: "Workplace",

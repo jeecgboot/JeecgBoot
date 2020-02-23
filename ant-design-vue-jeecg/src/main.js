@@ -13,13 +13,14 @@ import 'ant-design-vue/dist/antd.less';  // or 'ant-design-vue/dist/antd.less'
 import '@/permission' // permission control
 import '@/utils/filter' // base filter
 import Print from 'vue-print-nb-jeecg'
-/*import '@babel/polyfill'*/
-import VueApexCharts from 'vue-apexcharts'
+// import VueApexCharts from 'vue-apexcharts'
 
 import preview from 'vue-photo-preview'
 import 'vue-photo-preview/dist/skin.css'
-import "@jeecg/antd-online-re"
-import '@jeecg/antd-online-re/dist/OnlineForm.css'
+// 这个注释掉就不会把在线表单打包进去，但是会导致在线表单不可用，开发环境放开，同时注释掉vue.config里的configureWebpack，externals中的配置
+// 以后考虑通过cdn导入，暂定
+// import "@jeecg/antd-online-re"
+// import '@jeecg/antd-online-re/dist/OnlineForm.css'
 
 import {
   ACCESS_TOKEN,
@@ -49,8 +50,8 @@ Vue.use(Viser)
 Vue.use(hasPermission)
 Vue.use(JDictSelectTag)
 Vue.use(Print)
-Vue.use(VueApexCharts)
-Vue.component('apexchart', VueApexCharts)
+// Vue.use(VueApexCharts)
+// Vue.component('apexchart', VueApexCharts)
 Vue.use(preview)
 Vue.use(vueBus);
 Vue.use(JeecgComponents);
