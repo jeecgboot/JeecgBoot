@@ -2,11 +2,11 @@
  * 同步列表，可以同步新增、修改、删除
  * @author sunjianlei
  * */
-export function syncAllTable(vm, table1) {
+export async function syncAllTable(vm, table1) {
   vm.$refs.editableTable.resetScrollTop()
   let deleteIds = table1.$refs.editableTable.getDeleteIds()
   let table1Value
-  table1.$refs.editableTable.getValuesPromise(false).then((values) => {
+  await table1.$refs.editableTable.getValuesPromise(false).then((values) => {
     table1Value = values
     return vm.$refs.editableTable.getValuesPromise(false)
   }).then((values) => {
