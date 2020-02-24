@@ -20,7 +20,7 @@
         @change="searchMethods"
         @blur="hiddenClick"
       >
-        <a-select-option v-for="site in searchMenuOptions" :value="site.id">{{site.meta.title}}</a-select-option>
+        <a-select-option v-for="(site,index) in searchMenuOptions" :key="index" :value="site.id">{{site.meta.title}}</a-select-option>
       </a-select>
     </component>
     <!-- update-end author:sunjianlei date:20200219 for: 菜单搜索改为动态组件，在手机端呈现出弹出框 -->
