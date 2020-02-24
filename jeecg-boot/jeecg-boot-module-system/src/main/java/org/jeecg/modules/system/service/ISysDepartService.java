@@ -84,5 +84,11 @@ public interface ISysDepartService extends IService<SysDepart>{
      * @return
      */
 	void deleteBatchWithChildren(List<String> ids);
+	
+	
+	SysDepart getParentDepartId(String departId);
+	
+	
+	String queryDepartIdByOrgCode(String orgCode);
     
 }

@@ -428,12 +428,12 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	@Override
 	public String getDepartIdsByOrgCode(String orgCode) {
-		return departMapper.queryDepartIdByOrgCode(orgCode);
+		return sysDepartService.queryDepartIdByOrgCode(orgCode);
 	}
 
 	@Override
 	public DictModel getParentDepartId(String departId) {
-		SysDepart depart = departMapper.getParentDepartId(departId);
+		SysDepart depart =  sysDepartService.getParentDepartId(departId);
 		DictModel model = new DictModel(depart.getId(),depart.getParentId());
 		return model;
 	}
@@ -448,5 +448,37 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			departModelList.add(model);
 		}
 		return departModelList;
+	}
+
+	@Override
+	public DictModel getParentDepartCodeName(String departId) {
+		SysDepart depart = sysDepartService.getParentDepartId(departId);
+		
+		//System.out.println("the dept="+departId+",parentDeptCode_Name -===="+depart.getOrgCode()+depart.getDepartName());
+		SysDepart parentDepart = sysDepartService.getById(depart.getParentId());
+		DictModel model = new DictModel();
+		String parentDepartCode = "";
+		String parentDepartName = "";
+		if(parentDepart!=null) {//顶级组织无上级组织信息 
+			parentDepartCode = parentDepart.getOrgCode();
+			parentDepartName = parentDepart.getDepartName();
+		}else {
+			parentDepartCode = depart.getOrgCode();
+			parentDepartName = depart.getDepartNameAbbr();
+		}
+		model.setText(parentDepartCode);
+		model.setValue(parentDepartName);
+		return model;
+	}
+
+	@Override
+	public String getDepartNameByOrgId(String orgId) {
+		SysDepart depart = sysDepartService.getById(orgId);
+		String departName = "";
+		if(depart!= null) {
+			departName = depart.getDepartName();
+		}
+		
+		return departName;
 	}
 }
