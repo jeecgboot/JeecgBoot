@@ -1,6 +1,6 @@
 import { getAction,deleteAction,putAction,postAction} from '@/api/manage'
 
-////根路�?
+////根路径
 // const doMian = "/jeecg-boot/";
 ////图片预览请求地址
 // const imgView = "http://localhost:8080/jeecg-boot/sys/common/view/";
@@ -31,6 +31,11 @@ const changPassword = (params)=>putAction("/sys/user/changPassword",params);
 const addPermission= (params)=>postAction("/sys/permission/add",params);
 const editPermission= (params)=>putAction("/sys/permission/edit",params);
 const getPermissionList = (params)=>getAction("/sys/permission/list",params);
+/*update_begin author:wuxianquan date:20190908 for:添加查询一级菜单和子菜单查询api */
+const getSystemMenuList = (params)=>getAction("/sys/permission/getSystemMenuList",params);
+const getSystemSubmenu = (params)=>getAction("/sys/permission/getSystemSubmenu",params);
+/*update_end author:wuxianquan date:20190908 for:添加查询一级菜单和子菜单查询api */
+
 // const deletePermission = (params)=>deleteAction("/sys/permission/delete",params);
 // const deletePermissionList = (params)=>deleteAction("/sys/permission/deleteBatch",params);
 const queryTreeList = (params)=>getAction("/sys/permission/queryTreeList",params);
@@ -68,13 +73,13 @@ const editDictItem = (params)=>putAction("/sys/dictItem/edit",params);
 //const delDictItem = (params)=>deleteAction("/sys/dictItem/delete",params);
 //const delDictItemList = (params)=>deleteAction("/sys/dictItem/deleteBatch",params);
 
-//字典标签专用（�?�过code获取字典数组�?
+//字典标签专用（通过code获取字典数组）
 export const ajaxGetDictItems = (code, params)=>getAction(`/sys/dict/getDictItems/${code}`,params);
 
 //系统通告
 const doReleaseData = (params)=>getAction("/sys/annountCement/doReleaseData",params);
 const doReovkeData = (params)=>getAction("/sys/annountCement/doReovkeData",params);
-//获取系统访问�?
+//获取系统访问量
 const getLoginfo = (params)=>getAction("/sys/loginfo",params);
 const getVisitInfo = (params)=>getAction("/sys/visitInfo",params);
 //数据日志访问
@@ -83,10 +88,12 @@ const getVisitInfo = (params)=>getAction("/sys/visitInfo",params);
 // 根据部门主键查询用户信息
 const queryUserByDepId = (params)=>getAction("/sys/user/queryUserByDepId",params);
 
-// 查询用户角色表里的所有信�?
+// 查询用户角色表里的所有信息
 const queryUserRoleMap = (params)=>getAction("/sys/user/queryUserRoleMap",params);
 // 重复校验
 const duplicateCheck = (params)=>getAction("/sys/duplicate/check",params);
+// 加载分类字典
+const loadCategoryData = (params)=>getAction("/sys/category/loadAllData",params);
 
 export {
   // imgView,
@@ -133,6 +140,9 @@ export {
   queryUserRoleMap,
   duplicateCheck,
   queryTreeListForRole,
+  getSystemMenuList,
+  getSystemSubmenu,
+  loadCategoryData
 }
 
 

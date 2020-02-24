@@ -121,11 +121,13 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/test/jeecgDemo/html", "anon"); //模板页面
 		filterChainDefinitionMap.put("/test/jeecgDemo/redis/**", "anon"); //redis测试
 
+		
 		//排除Online请求
 		filterChainDefinitionMap.put("/auto/cgform/**", "anon");
 		
 		//websocket排除
 		filterChainDefinitionMap.put("/websocket/**", "anon");
+		//filterChainDefinitionMap.put("/biz/reimburseBizMainInfo/*", "anon");
 		
 		// 添加自己的过滤器并且取名为jwt
 		Map<String, Filter> filterMap = new HashMap<String, Filter>(1);

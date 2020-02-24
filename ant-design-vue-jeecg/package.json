@@ -12,9 +12,10 @@
     "@antv/data-set": "^0.10.2",
     "@jeecg/antd-online-re": "2.1.3",
     "@tinymce/tinymce-vue": "^2.0.0",
-    "ant-design-vue": "^1.4.0",
+    "ant-design-vue": "^1.4.10",
     "apexcharts": "^3.6.5",
     "axios": "^0.18.0",
+    "circular-json": "^0.5.9",
     "clipboard": "^2.0.4",
     "codemirror": "^5.46.0",
     "dayjs": "^1.8.0",
@@ -51,12 +52,12 @@
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.1.0",
+    "html-webpack-plugin": "^4.0.0-beta.11",
     "less": "^3.9.0",
     "less-loader": "^4.1.0",
     "node-sass": "^4.11.0",
     "sass-loader": "^7.0.1",
-    "vue-template-compiler": "^2.6.10",
-    "html-webpack-plugin": "^4.0.0-beta.11"
+    "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {
     "root": true,

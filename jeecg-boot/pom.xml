@@ -16,6 +16,7 @@
 	<modules>
 		<module>jeecg-boot-base-common</module>
 		<module>jeecg-boot-module-system</module>
+		<module>jeecg-boot-eip-pass-expense</module>
 	</modules>
 	
 	<distributionManagement>
