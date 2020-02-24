@@ -49,8 +49,7 @@ ADD COLUMN `bus_id` varchar(50) COMMENT '业务id' AFTER `bus_type`,
 ADD COLUMN `open_type` varchar(20) COMMENT '打开方式(组件：component 路由：url)' AFTER `bus_id`,
 ADD COLUMN `open_page` varchar(255) COMMENT '组件路由 地址' AFTER `open_type`;
 
-INSERT INTO `sys_permission` (`id`, `parent_id`, `name`, `url`, `component`, `is_route`, `component_name`, `redirect`, `menu_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1209731624921534465', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '多数据源管理', 'isystemdataSource', 'systemSysDataSourceList', '1', NULL, NULL, '1', NULL, '1', '3', '0', NULL, '1', '0', '0', NULL, 'admin', '2019-12-25 150430', NULL, NULL, '0', '0', '1', '0');
-
+INSERT INTO `sys_permission` (`id`, `parent_id`, `name`, `url`, `component`, `is_route`, `component_name`, `redirect`, `menu_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1209731624921534465', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '多数据源管理', '/isystem/dataSource', 'system/SysDataSourceList', '1', NULL, NULL, '1', NULL, '1', '3', '0', NULL, '1', '0', '0', NULL, 'admin', '2019-12-25 15:04:30', NULL, NULL, '0', '0', '1', '0');
 
 ALTER TABLE `sys_data_source`
     ADD COLUMN `code`  varchar(100) NULL COMMENT '数据源编码' AFTER `id`;
@@ -79,7 +78,7 @@ INSERT INTO `sys_check_rule` VALUES ('1224980593992388610', '通用编码规则'
 INSERT INTO `sys_check_rule` VALUES ('1225001845524004866', '负责的功能测试', 'test', '[{digits,pattern^.{3,12}$,message只能输入3-12位字符},{digits3,pattern^d{3}$,message前3位必须是数字},{digits,pattern^[^pP]$,message不能输入P},{digits4,pattern^@{4}$,message第4-7位必须都为 @},{digits2,pattern^#=$,message第8-9位必须是 #=},{digits1,pattern^O$,message第10位必须为大写的O},{digits,pattern^.。$,message必须以。结尾}]', '包含长度校验、特殊字符校验等', 'admin', '2020-02-07 115731', 'admin', '2020-02-05 182254');
 
 -- 编码校验规则菜单
-INSERT INTO `sys_permission` (`id`, `parent_id`, `name`, `url`, `component`, `is_route`, `component_name`, `redirect`, `menu_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1224641973866467330', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '编码校验规则', 'isystemcheckRule', 'systemSysCheckRuleList', '1', NULL, NULL, '1', NULL, '1', '2', '0', NULL, '1', '0', '0', NULL, 'admin', '2019-11-07 135253', NULL, NULL, '0', '0', '1', '0');
+INSERT INTO `sys_permission` (`id`, `parent_id`, `name`, `url`, `component`, `is_route`, `component_name`, `redirect`, `menu_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1224641973866467330', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '编码校验规则', '/isystem/checkRule', 'system/SysCheckRuleList', '1', NULL, NULL, '1', NULL, '1', '2', '0', NULL, '1', '0', '0', NULL, 'admin', '2019-11-07 13:52:53', NULL, NULL, '0', '0', '1', '0');
 
 DROP TABLE IF EXISTS `sys_depart_permission`;
 CREATE TABLE `sys_depart_permission` (
