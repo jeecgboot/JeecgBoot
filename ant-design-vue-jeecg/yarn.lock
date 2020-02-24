@@ -863,10 +863,10 @@
     cssnano-preset-default "^4.0.0"
     postcss "^7.0.0"
 
-"@jeecg/antd-online-214@^2.1.4":
-  version "2.1.4"
-  resolved "https://registry.npmjs.org/@jeecg/antd-online-214/-/antd-online-214-2.1.4.tgz#981dae8ff2ab75367fbd4aef63d5a676132ade00"
-  integrity sha512-1gtZTHvUnFUpH2AB5FzuGvYHhPMhEfhk8bf838AtxOHUl/jQBF/sHpl7fDbvKKjHNpRAIrKmUDzWk6WboStr1A==
+"@jeecg/antd-online-214@^2.1.41":
+  version "2.1.41"
+  resolved "https://registry.npmjs.org/@jeecg/antd-online-214/-/antd-online-214-2.1.41.tgz#d74847558b87b590202ed3f3f2223d6388896e5b"
+  integrity sha512-kC9Td7Er2lq71ZsYuXFMI/qvUCvUEQxPsqJX2FwPE8VV2GmegXtluNTCi7EuU+j6hxismhKl+AkNIiC06xQh5Q==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"

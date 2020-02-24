@@ -207,7 +207,6 @@
             </exclusions>
         </dependency>
 
-		<!--  online form-->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-re</artifactId>
