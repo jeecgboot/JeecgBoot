@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.fms.reimburse.base.mapper.ReimburseBaseErpCostcenterMapper">
+	<!-- 通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap id="rmbsErpCostcenter" type="org.jeecg.modules.fms.reimburse.base.vo.CostcenterVO">
+	   <!-- result属性映射非匹配字段 -->
+	    <result column="erp_org_code" property="costcenterCode"/>
+	    <result column="erp_org_name" property="costcenterName"/>
+	    <result column="costcenter_type_code" property="costcenterTypeCode"/>
+	    <result column="costcenter_type_name" property="costcenterTypeName"/>
+	</resultMap>
+	<select id="queryCurCostCenterInfo" parameterType="String"  resultMap="rmbsErpCostcenter">
+		   select s.erp_org_code,s.erp_org_name,s.costcenter_type_code,s.costcenter_type_name
+		   from reimburse_base_erp_costcenter s
+		   where 
+		   s.erp_org_code = (select m.erp_org_code from reimburse_base_erp_costcenter_auditorg_map m
+		   						where m.audit_org_code=#{orgCode} and m.valid_flag='Y')
+		   and s.valid_flag='Y'
+	</select>
+</mapper>

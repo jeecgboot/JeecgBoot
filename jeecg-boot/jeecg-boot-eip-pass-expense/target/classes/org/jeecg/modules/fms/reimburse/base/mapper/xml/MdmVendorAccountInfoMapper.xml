@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.fms.reimburse.base.mapper.MdmVendorAccountInfoMapper">
+
+	<delete id="deleteByMainId" parameterType="java.lang.String">
+		DELETE 
+		FROM  mdm_vendor_account_info 
+		WHERE
+			 vendor_id = #{mainId} 
+	</delete>
+	
+	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.fms.reimburse.base.entity.MdmVendorAccountInfo">
+		SELECT * 
+		FROM  mdm_vendor_account_info
+		WHERE
+			 vendor_id = #{mainId} 
+	</select>
+	
+	
+	<resultMap id="vendorAccount" type="org.jeecg.modules.fms.reimburse.base.vo.VendorAccntVO">
+	   <!-- result属性映射非匹配字段 -->
+	    <result column="md_code" property="mdCode"/>
+	    <result column="vendor_name" property="vendorName"/>
+	    <result column="main_account_flag" property="mainAccountFlag"/>
+	    <result column="bank_name" property="bankName"/>
+	    <result column="bank_code" property="bankCode"/>
+	    <result column="branch_bank" property="branchBank"/>
+	    <result column="cnap_number" property="cnapNumber"/>
+	    <result column="account_name" property="accountName"/>
+	    <result column="account_number" property="accountNumber"/>
+	</resultMap>
+	<select id="selectVendorAccntByVendorcodeAndOrgcode" parameterType="String"  resultMap="vendorAccount">
+			SELECT accnt.id,vendor.MD_CODE,vendor.VENDOR_NAME,accnt.MAIN_ACCOUNT_FLAG,accnt.BANK_CODE,
+				   accnt.bank_name,accnt.BRANCH_BANK,accnt.CNAP_NUMBER,accnt.ACCOUNT_NUMBER,accnt.ACCOUNT_NAME
+			FROM REIMBURSEMENT.MDM_VENDOR_ACCOUNT_INFO accnt,
+			            REIMBURSEMENT.MDM_VENDOR_INFO vendor,
+			            REIMBURSEMENT.MDM_VENDOR_COMPANY_INFO comp
+			WHERE accnt.MD_CODE=vendor.MD_CODE
+			AND accnt.VENDOR_COMPANY_ID=comp.VENDOR_COMPANY_ID
+			<if test="vendorCode !=null and !vendorCode.equals('')">
+			AND vendor.MD_CODE=#{vendorCode}
+			</if>
+			AND vendor.VENDOR_STATUS='Y'
+			AND comp.OU_CODE=(
+			SELECT ccenter.ERP_OU_CODE FROM  reimburse_base_erp_costcenter ccenter,
+											 reimburse_base_erp_costcenter_auditorg_map orgMap
+			WHERE 
+				orgMap.ERP_ORG_CODE=ccenter.ERP_ORG_CODE
+			AND orgMap.AUDIT_ORG_CODE=#{orgCode})
+			
+	</select>
+</mapper>

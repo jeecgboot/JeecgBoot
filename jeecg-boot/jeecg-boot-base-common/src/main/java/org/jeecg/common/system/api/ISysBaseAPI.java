@@ -194,4 +194,18 @@ public interface ISysBaseAPI {
 	 */
 	public List<SysDepartModel> getAllSysDepart();
 	
+	/**
+	 * 查询上级部门代码和名称
+	 * @param departId
+	 * @return
+	 */
+	public DictModel getParentDepartCodeName(String departId);
+	
+	
+	/**
+	 * 
+	 * @param orgId
+	 * @return
+	 */
+	public String getDepartNameByOrgId(String orgId);
 }

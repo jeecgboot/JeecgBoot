@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: eip-pass-reimbursements
+Implementation-Version: 1.0.0
+Built-By: JINTANG
+Implementation-Vendor-Id: org.jeecgframework.boot
+Build-Jdk: 1.8.0_112
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/jeecg-boot-parent/jeecg-boot-eip-pass-expense
+Created-By: Maven Integration for Eclipse
+

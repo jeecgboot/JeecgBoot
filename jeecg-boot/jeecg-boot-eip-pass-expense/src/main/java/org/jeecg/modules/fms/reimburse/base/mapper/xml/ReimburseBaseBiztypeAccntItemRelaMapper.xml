@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.fms.reimburse.base.mapper.ReimburseBaseBiztypeAccntItemRelaMapper">
+
+	
+	<!-- 通过支出成本类型及成本中心类型取业务大类 -->
+	<select id="queryBizTypeByCostTypeNow" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		   SELECT distinct(s.biz_type_code) as "value",s.biz_type_name as "text"
+		   FROM reimburse_base_biztype_accnt_item_rela s
+		   WHERE s.cost_type_code = #{costType} AND s.COSTCENTER_TYPE=#{costcenterType}
+		   AND s.enable_flag='Y'
+		   AND #{now} &gt;= s.START_VALID_TIME
+		   AND #{now} &lt;= s.END_VALID_TIME
+		   ORDER by s.biz_type_code asc
+	</select>
+	<!-- 通过支出成本类型及成本中心类型取会计科目 -->
+	<select id="queryErpAccntByFeeItemNow" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		   SELECT DISTINCT(s.accnt_code) as "value",s.accnt_name as "text"
+		   FROM reimburse_base_biztype_accnt_item_rela s
+		   WHERE s.cost_type_code = #{costType} AND s.COSTCENTER_TYPE=#{costcenterType}
+		   AND s.biz_type_code = #{bizTypeCode}
+		   AND s.fee_item_code = #{feeItemCode}
+		   AND s.enable_flag='Y'
+		   AND #{now} &gt;= s.START_VALID_TIME
+		   AND #{now} &lt;= s.END_VALID_TIME
+		   ORDER by s.accnt_code asc
+	</select>
+	
+	<!-- 通过支出成本类型及成本中心类型、业务大类获取业务小类 -->
+	<select id="queryFeeItemByBizTypeCostTypeNow" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+
+		   SELECT distinct(s.fee_item_code) as "value",s.fee_item_name as "text"
+		   FROM reimburse_base_biztype_accnt_item_rela s
+		   WHERE s.cost_type_code = #{costType} AND s.COSTCENTER_TYPE=#{costcenterType}
+		   AND s.biz_type_code = #{bizTypeCode}
+		   AND s.enable_flag='Y'
+		   AND #{now} &gt;= s.START_VALID_TIME
+		   AND #{now} &lt;= s.END_VALID_TIME
+		   ORDER by s.fee_item_code asc
+	</select>
+	
+	
+	<!-- 通过字典code获取字典数据 -->
+	<select id="queryDictTextByKey" parameterType="String"  resultType="String">
+		   SELECT s.item_text FROM sys_dict_item s 
+		   WHERE s.dict_id = (SELECT id FROM sys_dict WHERE dict_code = #{code})
+		   AND s.item_value = #{key}
+	</select>
+	
+	<!--通过查询指定table的 text code 获取字典-->
+	<select id="queryTableDictItemsByCode" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		   SELECT ${text} as "text",${code} as "value" FROM ${table}
+	</select>
+	
+	<!--通过查询指定table的 text code 获取字典（指定查询条件）-->
+	<select id="queryTableDictItemsByCodeAndFilter" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		   SELECT ${text} as "text",${code} as "value" FROM ${table}
+		<if test="filterSql != null and filterSql != ''">
+			WHERE ${filterSql}
+		</if>
+	</select>
+	
+	<!--通过查询指定table的 text code key 获取字典值-->
+	<select id="queryTableDictTextByKey" parameterType="String" resultType="String">
+		   SELECT ${text} as "text" FROM ${table} WHERE ${code}= #{key}
+	</select>
+
+	<!--通过查询指定table的 text code key 获取字典值，包含value-->
+	<select id="queryTableDictByKeys" parameterType="String" resultType="org.jeecg.common.system.vo.DictModel">
+		SELECT ${text} as "text", ${code} as "value" FROM ${table} WHERE ${code} IN
+		<foreach item="key" collection="keyArray" open="(" separator="," close=")">
+			#{key}
+		</foreach>
+	</select>
+</mapper>

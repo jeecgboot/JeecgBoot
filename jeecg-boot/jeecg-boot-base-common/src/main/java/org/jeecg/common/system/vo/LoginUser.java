@@ -2,6 +2,7 @@ package org.jeecg.common.system.vo;
 
 import java.util.Date;
 
+import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -89,5 +90,16 @@ public class LoginUser {
 	 * 创建时间
 	 */
 	private Date createTime;
+	
+	
+    /**
+     * 工号，唯一键
+     */
+    private String workNo;
+
+    /**
+     * 职务，关联职务表
+     */
+    private String post;
 
 }

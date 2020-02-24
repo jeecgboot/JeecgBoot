@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faceted-project>
+  <installed facet="cloudfoundry.standalone.app" version="1.0"/>
+  <installed facet="java" version="1.8"/>
+  <installed facet="jst.utility" version="1.0"/>
+</faceted-project>

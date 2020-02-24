@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.fms.reimburse.biz.mapper.ReimburseBizMainInfoMapper">
+
+	<select id="selectRmnoByOrgcode" parameterType="java.lang.String" resultType="org.jeecg.modules.fms.reimburse.biz.entity.ReimburseBizMainInfo">
+		SELECT * FROM reimburse_biz_main_info
+ 				WHERE 
+ 				user_dept_code = #{orgCode}
+	</select>
+	
+	<select id="selectTodayMaxRmnoByOrgcode" parameterType="java.util.Map"  resultType="org.jeecg.modules.fms.reimburse.biz.entity.ReimburseBizMainInfo">
+		SELECT * FROM reimburse_biz_main_info
+ 				WHERE 
+ 				CREATE_TIME = (select Max(CREATE_TIME) as CREATE_TIME from reimburse_biz_main_info
+ 				 						where 
+ 				 						CREATE_TIME > #{today})
+				AND user_company_code=#{orgCode} 				 						
+ 				AND reimbursement_template_code = #{rbsTemplate}
+ 				
+	</select>
+	
+	<select id="getReimburseBizMainInfoByApplyNo" parameterType="java.lang.String" resultType="org.jeecg.modules.fms.reimburse.biz.entity.ReimburseBizMainInfo">
+		SELECT * FROM reimburse_biz_main_info
+ 				WHERE 
+ 				apply_no = #{applyNo}
+	</select>
+	
+</mapper>
