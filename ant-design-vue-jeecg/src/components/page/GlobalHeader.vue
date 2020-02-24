@@ -10,12 +10,12 @@
         v-if="device==='mobile'"
         class="trigger"
         :type="collapsed ? 'menu-fold' : 'menu-unfold'"
-        @click.native="toggle"></a-icon>
+        @click="toggle"></a-icon>
       <a-icon
         v-else
         class="trigger"
         :type="collapsed ? 'menu-unfold' : 'menu-fold'"
-        @click.native="toggle"/>
+        @click="toggle"/>
 
       <span v-if="device === 'desktop'">欢迎进入 Jeecg-Boot 企业级快速开发平台</span>
       <span v-else>Jeecg-Boot</span>
@@ -37,7 +37,7 @@
             v-else
             class="trigger"
             :type="collapsed ? 'menu-fold' : 'menu-unfold'"
-            @click.native="toggle"></a-icon>
+            @click="toggle"></a-icon>
         </div>
         <user-menu class="header-index-right" :theme="theme" :style="topMenuStyle.headerIndexRight"/>
       </div>

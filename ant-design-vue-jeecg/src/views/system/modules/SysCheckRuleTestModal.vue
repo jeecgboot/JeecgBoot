@@ -12,7 +12,7 @@
       </a-form-item>
     </a-form>
     <a-row type="flex" :gutter="8">
-      <a-col v-for="(str,index) of testValue">
+      <a-col v-for="(str,index) of testValue" :key="index">
         <a-row>
           <a-col>
             <a-input :value="str" style="text-align: center;width: 40px;"/>

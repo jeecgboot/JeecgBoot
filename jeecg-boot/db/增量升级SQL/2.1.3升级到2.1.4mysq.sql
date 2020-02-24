@@ -1,5 +1,4 @@
 
-
 -- 多数据源表
 DROP TABLE IF EXISTS `sys_data_source`;
 CREATE TABLE `sys_data_source` (
@@ -27,14 +26,10 @@ INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `descri
 INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1209733839933476865', '1209733563293962241', 'Oracle', '2', '', '1', '1', 'admin', '2019-12-25 151318', NULL, NULL);
 INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1209733903020003330', '1209733563293962241', 'SQLServer', '3', '', '1', '1', 'admin', '2019-12-25 151333', NULL, NULL);
 
-
 -- 生产销售监控 --
-update sys_permission set url='{{ window._CONFIG['domianURL'] }}bigscreentemplatindex1' where id='1205098241075453953';
+update sys_permission set url='{{ window._CONFIG[\'domianURL\'] }}/big/screen/templat/index1' where id='1205098241075453953';
 -- 智慧物流监控 --
-update sys_permission set url='{{ window._CONFIG['domianURL'] }}bigscreentemplatindex2' where id='1205306106780364802';
-
-
-
+update sys_permission set url='{{ window._CONFIG[\'domianURL\'] }}/big/screen/templat/index2' where id='1205306106780364802';
 
 
 
@@ -138,4 +133,3 @@ INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `com
 
 ALTER TABLE `onl_cgform_field`
 ADD COLUMN `is_read_only`  tinyint(1) NULL DEFAULT 0 COMMENT '是否是只读（1是 0否）' AFTER `is_show_list`;
-
