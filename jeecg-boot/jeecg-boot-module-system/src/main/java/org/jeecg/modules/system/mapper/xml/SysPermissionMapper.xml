@@ -44,15 +44,18 @@
 		   SELECT * FROM (
 			   SELECT p.*
 			   FROM  sys_permission p
-			   WHERE exists(
-					select a.id from sys_role_permission a
-					join sys_role b on a.role_id = b.id
-					join sys_user_role c on c.role_id = b.id
-					join sys_user d on d.id = c.user_id
-					where p.id = a.permission_id AND d.username = #{username,jdbcType=VARCHAR}
-			   )
+			   WHERE (exists(
+						select a.id from sys_role_permission a
+						join sys_role b on a.role_id = b.id
+						join sys_user_role c on c.role_id = b.id
+						join sys_user d on d.id = c.user_id
+						where p.id = a.permission_id AND d.username = #{username,jdbcType=VARCHAR}
+					)
+					<!--update begin Author:taoyan  Date:20200225 for：默认授权online的auto动态隐藏路由 -->
+					or (p.url like '%:code' and p.url like '/online%' and p.hidden = 1) )
+					<!--update end Author:taoyan  Date:20200213 for：默认授权online的auto动态隐藏路由  -->
 			   and p.del_flag = 0
-			<!--update begin Author:lvdandan  Date:20200213 for：加入部门权限 -->
+			<!--update begin Author:lvdandan  Date:20200225 for：加入部门权限 -->
 			   UNION
 			   SELECT p.*
 			   FROM  sys_permission p
