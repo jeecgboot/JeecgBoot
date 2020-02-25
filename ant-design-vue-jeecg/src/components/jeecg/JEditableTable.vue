@@ -1268,7 +1268,8 @@
         // 同步更改
         this.rows = rows
         this.$nextTick(() => {
-          this.updateFormValues()
+          this.recalcSortNumber()
+          this.forceUpdateFormValues()
         })
         // 触发 insert 事件
         this.$emit('inserted', {
@@ -1911,10 +1912,17 @@
         sort(this.rows)
         sort(this.inputValues)
 
-        // 重置排序字段
-        this.inputValues.forEach((val, idx) => val[this.dragSortKey] = (idx + 1))
+        this.recalcSortNumber()
 
         this.forceUpdateFormValues()
+      },
+
+      /** 重新计算排序字段的数值 */
+      recalcSortNumber() {
+        if (this.dragSort) {
+          // 重置排序字段
+          this.inputValues.forEach((val, idx) => val[this.dragSortKey] = (idx + 1))
+        }
       },
 
       /** 当前行向上移一位 */

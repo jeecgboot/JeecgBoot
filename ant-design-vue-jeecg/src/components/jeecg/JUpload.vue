@@ -221,7 +221,7 @@
             }).map((file) => {
               var fileJson = {
                 fileName:file.name,
-                filePath:file.url,
+                filePath:file.response.message,
                 fileSize:file.size
               };
               this.newFileList.push(fileJson);
