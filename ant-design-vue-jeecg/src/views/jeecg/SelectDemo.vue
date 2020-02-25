@@ -180,7 +180,6 @@
               <a-button style="margin-right: 8px;" @click="()=>modal.visible=true">点击弹出JModal</a-button>
               <span style="margin-right: 8px;">全屏化：<a-switch v-model="modal.fullscreen"/></span>
               <span style="margin-right: 8px;">允许切换全屏：<a-switch v-model="modal.switchFullscreen"/></span>
-              <span>锁定Body滚动：<a-switch v-model="modal.lockScroll"/></span>
 
             </a-form-item>
 
@@ -188,7 +187,6 @@
               :visible.sync="modal.visible"
               :width="1200"
               :title="modal.title"
-              :lockScroll="modal.lockScroll"
               :fullscreen.sync="modal.fullscreen"
               :switchFullscreen="modal.switchFullscreen"
             >
@@ -390,7 +388,6 @@ sayHi('hello, world!')`
         modal: {
           title: '这里是标题',
           visible: false,
-          lockScroll: true,
           fullscreen: true,
           switchFullscreen: true,
         },
