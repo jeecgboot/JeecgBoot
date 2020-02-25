@@ -37,20 +37,13 @@
 </template>
 
 <script>
-  import ACol from 'ant-design-vue/es/grid/Col'
 
   export default {
     name: 'JModal',
-    components: { ACol },
     props: {
       title: String,
       // 可使用 .sync 修饰符
       visible: Boolean,
-      // 是否在弹出时禁止 body 滚动
-      lockScroll: {
-        type: Boolean,
-        default: true
-      },
       // 是否全屏弹窗，当全屏时无论如何都会禁止 body 滚动。可使用 .sync 修饰符
       fullscreen: {
         type: Boolean,
@@ -66,11 +59,8 @@
       return {
         // 内部使用的 slots ，不再处理
         usedSlots: ['title'],
-
-        // 缓存 body 的 overflow
-        bodyOverflowCache: '',
+        // 实际控制是否全屏的参数
         innerFullscreen: this.fullscreen,
-        fullscreenButtonIcon: 'fullscreen-exit',
       }
     },
     computed: {
@@ -98,23 +88,15 @@
       allSlotsKeys() {
         return this.slotsKeys.concat(this.scopedSlotsKeys)
       },
-      // 是否锁定body滚动
-      lockBodyScroll() {
-        return this.lockScroll || this.innerFullscreen
-      }
+      // 切换全屏的按钮图标
+      fullscreenButtonIcon() {
+        return this.innerFullscreen ? 'fullscreen' : 'fullscreen-exit'
+      },
     },
     watch: {
       visible() {
         if (this.visible) {
           this.innerFullscreen = this.fullscreen
-        }
-        if (this.lockBodyScroll) {
-          if (this.visible) {
-            this.bodyOverflowCache = document.body.style.overflow
-            document.body.style.overflow = 'hidden'
-          } else {
-            document.body.style.overflow = this.bodyOverflowCache
-          }
         }
       },
       innerFullscreen(val) {
@@ -134,12 +116,8 @@
         this.close()
       },
 
+      /** 切换全屏 */
       toggleFullscreen() {
-        if (this.innerFullscreen) {
-          this.fullscreenButtonIcon = 'fullscreen'
-        } else {
-          this.fullscreenButtonIcon = 'fullscreen-exit'
-        }
         this.innerFullscreen = !this.innerFullscreen
       },
 
