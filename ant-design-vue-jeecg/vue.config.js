@@ -30,6 +30,14 @@ module.exports = {
       .set('@comp', resolve('src/components'))
       .set('@views', resolve('src/views'))
       .set('@layout', resolve('src/layout'))
+
+    // 配置 webpack 识别 markdown 为普通的文件
+    config.module
+      .rule('markdown')
+      .test(/\.md$/)
+      .use()
+      .loader('file-loader')
+      .end()
   },
 
   css: {

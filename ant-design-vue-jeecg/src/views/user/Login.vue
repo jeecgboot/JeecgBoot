@@ -9,16 +9,16 @@
           <a-form-item>
             <a-input
               size="large"
-              v-decorator="['username',{initialValue:'admin', rules: validatorRules.username.rules}]"
+              v-decorator="['username',validatorRules.username,{ validator: this.handleUsernameOrEmail }]"
               type="text"
-              placeholder="请输入帐户名 / jeecg">
+              placeholder="请输入帐户名 / admin">
               <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
             </a-input>
           </a-form-item>
 
           <a-form-item>
             <a-input
-              v-decorator="['password',{initialValue:'123456', rules: validatorRules.password.rules}]"
+              v-decorator="['password',validatorRules.password]"
               size="large"
               type="password"
               autocomplete="false"
@@ -41,7 +41,8 @@
               </a-form-item>
             </a-col>
             <a-col :span="8" style="text-align: right">
-              <img style="margin-top: 2px;" :src="randCodeImage" @click="handleChangeCheckCode"/>
+              <img v-if="requestCodeSuccess" style="margin-top: 2px;" :src="randCodeImage" @click="handleChangeCheckCode"/>
+              <img v-else style="margin-top: 2px;" src="../../assets/checkcode.png" @click="handleChangeCheckCode"/>
               <!--<j-graphic-code @success="generateCode" ref="jgraphicCodeRef" style="float: right" remote></j-graphic-code>-->
             </a-col>
           </a-row>
@@ -217,7 +218,8 @@
         currentUsername:"",
         validate_status:"",
         currdatetime:'',
-        randCodeImage:''
+        randCodeImage:'',
+        requestCodeSuccess:false
       }
     },
     created () {
@@ -346,9 +348,13 @@
         getAction(`/sys/randomImage/${this.currdatetime}`).then(res=>{
           if(res.success){
             this.randCodeImage = res.result
+            this.requestCodeSuccess=true
           }else{
             this.$message.error(res.message)
+            this.requestCodeSuccess=false
           }
+        }).catch(()=>{
+          this.requestCodeSuccess=false
         })
       },
       loginSuccess () {

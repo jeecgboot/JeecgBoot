@@ -1,15 +1,17 @@
 package org.jeecg.modules.system.util;
 
-import sun.misc.BASE64Encoder;
-
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Random;
 
+/**
+ * 登录验证码工具类
+ */
 public class RandImageUtil {
 
     public static final String key = "JEECG_LOGIN_KEY";
@@ -69,9 +71,8 @@ public class RandImageUtil {
         ImageIO.write(image, IMG_FORMAT, byteStream);
         //转换成字节
         byte[] bytes = byteStream.toByteArray();
-        BASE64Encoder encoder = new BASE64Encoder();
         //转换成base64串
-        String base64 = encoder.encodeBuffer(bytes).trim();
+        String base64 = Base64.getEncoder().encodeToString(bytes).trim();
         base64 = base64.replaceAll("\n", "").replaceAll("\r", "");//删除 \r\n
 
         //写到指定位置
