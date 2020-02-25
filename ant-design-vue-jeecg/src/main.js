@@ -19,8 +19,10 @@ import preview from 'vue-photo-preview'
 import 'vue-photo-preview/dist/skin.css'
 // 这个注释掉就不会把在线表单打包进去，但是会导致在线表单不可用，开发环境放开，同时注释掉vue.config里的configureWebpack，externals中的配置
 // 以后考虑通过cdn导入，暂定
-// import "@jeecg/antd-online-re"
-// import '@jeecg/antd-online-re/dist/OnlineForm.css'
+// if (process.env.NODE_ENV === 'production') {
+//   import "@jeecg/antd-online-re"
+//   import '@jeecg/antd-online-re/dist/OnlineForm.css'
+// }
 
 import {
   ACCESS_TOKEN,

@@ -21,13 +21,15 @@ module.exports = {
     if (process.env.NODE_ENV === 'production') {
       config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
     }
-    config.externals = {
-      '@jeecg/antd-online-re' : '@jeecg/antd-online-re',
-      '@antv' : '@antv',
-      'apexcharts' : 'apexcharts',
-      'vue-apexcharts' : 'vue-apexcharts',
-      '@antv_g2' : '@antv_g2',
-      'tinymce' : 'tinymce'
+    if (process.env.NODE_ENV === 'production') {
+      config.externals = {
+        '@jeecg/antd-online-re': '@jeecg/antd-online-re',
+        '@antv': '@antv',
+        'apexcharts': 'apexcharts',
+        'vue-apexcharts': 'vue-apexcharts',
+        '@antv_g2': '@antv_g2',
+        'tinymce': 'tinymce'
+      }
     }
   },
   chainWebpack: (config) => {
