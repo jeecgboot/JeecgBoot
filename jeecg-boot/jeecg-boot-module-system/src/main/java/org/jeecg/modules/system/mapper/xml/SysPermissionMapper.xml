@@ -52,7 +52,8 @@
 						where p.id = a.permission_id AND d.username = #{username,jdbcType=VARCHAR}
 					)
 					<!--update begin Author:taoyan  Date:20200225 for：默认授权online的auto动态隐藏路由 -->
-					or (p.url like '%:code' and p.url like '/online%' and p.hidden = 1) )
+					or (p.url like '%:code' and p.url like '/online%' and p.hidden = 1)
+					or (p.url = '/online') )
 					<!--update end Author:taoyan  Date:20200213 for：默认授权online的auto动态隐藏路由  -->
 			   and p.del_flag = 0
 			<!--update begin Author:lvdandan  Date:20200225 for：加入部门权限 -->
