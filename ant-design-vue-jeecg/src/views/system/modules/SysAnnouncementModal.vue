@@ -1,94 +1,123 @@
 <template>
   <a-modal
     :title="title"
-    :width="800"
+
+    :width="900"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
     :okButtonProps="{ props: {disabled: disabled} }"
     cancelText="关闭">
-    
+
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-      
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="标题">
-          <a-input placeholder="请输入标题" v-decorator="['titile', validatorRules.title]" :readOnly="disableSubmit" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="消息类型">
-          <a-select
-            v-decorator="[ 'msgCategory', validatorRules.msgCategory]"
-            placeholder="请选择消息类型"
-            :disabled="disableSubmit">
-            <a-select-option value="1">通知公告</a-select-option>
-            <a-select-option value="2">系统消息</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="内容">
-          <j-editor v-decorator="[ 'msgContent', {} ]" triggerChange></j-editor>
-        </a-form-item>
-
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="开始时间">
-          <j-date v-decorator="[ 'startTime', validatorRules.startTime]" placeholder="请选择开始时间" showTime dateFormat="YYYY-MM-DD HH:mm:ss"></j-date>
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="结束时间">
-          <j-date v-decorator="[ 'endTime', validatorRules.endTime]" placeholder="请选择结束时间" showTime dateFormat="YYYY-MM-DD HH:mm:ss"></j-date>
-        </a-form-item>
-
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="优先级">
-          <a-select
-            v-decorator="[ 'priority', {}]"
-            placeholder="请选择优先级"
-            :disabled="disableSubmit">
-            <a-select-option value="L">低</a-select-option>
-            <a-select-option value="M">中</a-select-option>
-            <a-select-option value="H">高</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="通告对象类型">
-          <a-select
-            v-decorator="[ 'msgType', validatorRules.msgType]"
-            placeholder="请选择通告对象类型"
-            :disabled="disableSubmit"
-            @change="chooseMsgType">
-            <a-select-option value="USER">指定用户</a-select-option>
-            <a-select-option value="ALL">全体用户</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="指定用户"
-          v-if="userType">
-          <a-select
-            mode="multiple"
-            style="width: 100%"
-            placeholder="请选择用户"
-            v-model="selectedUser"
-            @dropdownVisibleChange="selectUserIds">
-          </a-select>
-        </a-form-item>
+        <a-row style="width: 100%;">
+          <a-col :span="24/2">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="标题">
+              <a-input placeholder="请输入标题" v-decorator="['titile', validatorRules.title]" :readOnly="disableSubmit"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24/2">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="消息类型">
+              <a-select
+                v-decorator="[ 'msgCategory', validatorRules.msgCategory]"
+                placeholder="请选择消息类型"
+                :disabled="disableSubmit"
+                :getPopupContainer = "(target) => target.parentNode">
+                <a-select-option value="1">通知公告</a-select-option>
+                <a-select-option value="2">系统消息</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row style="width: 100%;">
+          <a-col :span="24/2">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="开始时间:">
+              <j-date style="width: 100%" :getCalendarContainer="node => node.parentNode" v-decorator="[ 'startTime', validatorRules.startTime]" placeholder="请选择开始时间" showTime dateFormat="YYYY-MM-DD HH:mm:ss" ></j-date>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24/2">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="结束时间"
+              class="endTime">
+              <j-date style="width: 100%" :getCalendarContainer="node => node.parentNode" v-decorator="[ 'endTime', validatorRules.endTime]" placeholder="请选择结束时间" showTime dateFormat="YYYY-MM-DD HH:mm:ss"></j-date>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row style="width: 100%;">
+          <a-col :span="24/2">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="优先级">
+              <a-select
+                v-decorator="[ 'priority', {}]"
+                placeholder="请选择优先级"
+                :disabled="disableSubmit"
+                :getPopupContainer = "(target) => target.parentNode">
+                <a-select-option value="L">低</a-select-option>
+                <a-select-option value="M">中</a-select-option>
+                <a-select-option value="H">高</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24/2">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="通告类型">
+              <a-select
+                v-decorator="[ 'msgType', validatorRules.msgType]"
+                placeholder="请选择通告类型"
+                :disabled="disableSubmit"
+                @change="chooseMsgType"
+                :getPopupContainer = "(target) => target.parentNode">
+                <a-select-option value="USER">指定用户</a-select-option>
+                <a-select-option value="ALL">全体用户</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row style="width: 100%;">
+          <a-col :span="24/2">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="指定用户"
+              v-if="userType">
+              <a-select
+                mode="multiple"
+                placeholder="请选择用户"
+                v-model="selectedUser"
+                @dropdownVisibleChange="selectUserIds"
+              >
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row style="width: 100%;">
+          <a-col :span="24">
+            <a-form-item
+              :labelCol="labelColX1"
+              :wrapperCol="wrapperColX1"
+              label="内容"
+              class="j-field-content">
+              <j-editor v-decorator="[ 'msgContent', {} ]" triggerChange></j-editor>
+            </a-form-item>
+          </a-col>
+        </a-row>
       </a-form>
     </a-spin>
     <select-user-list-modal ref="UserListModal" @choseUser="choseUser"></select-user-list-modal>
@@ -115,11 +144,19 @@
         model: {},
         labelCol: {
           xs: { span: 24 },
-          sm: { span: 5 },
+          sm: { span: 6 },
         },
         wrapperCol: {
           xs: { span: 24 },
-          sm: { span: 16 },
+          sm: { span: 18 },
+        },
+        labelColX1: {
+          xs: { span: 24 },
+          sm: { span: 3 },
+        },
+        wrapperColX1: {
+          xs: { span: 24 },
+          sm: { span: 21 },
         },
 
         confirmLoading: false,

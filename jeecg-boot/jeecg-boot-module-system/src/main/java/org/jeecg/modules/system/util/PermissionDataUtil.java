@@ -75,5 +75,21 @@ public class PermissionDataUtil {
 			metaList.add(0,new SysPermission(true));
 		}
 	}
+
+	/**
+	 * 判断是否授权首页
+	 * @param metaList
+	 * @return
+	 */
+	public static boolean hasIndexPage(List<SysPermission> metaList){
+		boolean hasIndexMenu = false;
+		for (SysPermission sysPermission : metaList) {
+			if("首页".equals(sysPermission.getName())) {
+				hasIndexMenu = true;
+				break;
+			}
+		}
+		return hasIndexMenu;
+	}
 	
 }

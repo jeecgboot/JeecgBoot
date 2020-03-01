@@ -26,7 +26,7 @@
     },
     computed: {
       email () {
-        let v = this.form && this.form.username || 'xxx'
+        let v = this.form ? this.form.username || this.form.mobile : ' XXX '
         let title = `你的账户：${v} 注册成功`
         this.username = v;
         return title

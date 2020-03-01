@@ -5,10 +5,13 @@
     :visible="visible"
     :bodyStyle ="bodyStyle"
     @cancel="handleCancel"
-    destroyOnClose
-    :footer="null">
+    destroyOnClose>
     <template slot="title">
       <a-button icon="fullscreen" class="custom-btn" @click="handleClickToggleFullScreen"/>
+    </template>
+    <template slot="footer">
+      <a-button key="back" @click="handleCancel">关闭</a-button>
+      <a-button v-if="record.openType==='url'&&record.readFlag!=='1'" type="primary" @click="toHandle">去处理</a-button>
     </template>
     <a-card class="daily-article" :loading="loading">
       <a-card-meta
@@ -74,7 +77,14 @@
           this.modelStyle.style.top = '50px'
         }
         this.modelStyle.fullScreen = mode
-      }
+      },
+      toHandle(){
+        if(this.record.openType==='url'&&this.record.readFlag!== '1'){
+          this.visible = false;
+          //链接跳转
+          this.$router.push({path: this.record.openPage})
+        }
+      },
     }
   }
 </script>

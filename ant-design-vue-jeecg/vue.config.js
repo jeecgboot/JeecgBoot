@@ -30,8 +30,14 @@ module.exports = {
       .set('@comp', resolve('src/components'))
       .set('@views', resolve('src/views'))
       .set('@layout', resolve('src/layout'))
-      .set('@static', resolve('src/static'))
-      .set('@mobile', resolve('src/modules/mobile'))
+
+    // 配置 webpack 识别 markdown 为普通的文件
+    config.module
+      .rule('markdown')
+      .test(/\.md$/)
+      .use()
+      .loader('file-loader')
+      .end()
   },
 
   css: {
@@ -39,12 +45,9 @@ module.exports = {
       less: {
         modifyVars: {
           /* less 变量覆盖，用于自定义 ant design 主题 */
-
-          /*
-          'primary-color': '#F5222D',
-          'link-color': '#F5222D',
+          'primary-color': '#1890FF',
+          'link-color': '#1890FF',
           'border-radius-base': '4px',
-          */
         },
         javascriptEnabled: true,
       }

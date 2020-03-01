@@ -46,6 +46,7 @@
       </span>
     </a-table>
     <show-announcement ref="ShowAnnouncement"></show-announcement>
+    <dynamic-notice ref="showDynamNotice" :path="openPath" :formData="formData"/>
   </a-card>
 </template>
 
@@ -54,11 +55,13 @@
   import { getAction,putAction } from '@/api/manage'
   import ShowAnnouncement from '@/components/tools/ShowAnnouncement'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import DynamicNotice from '../../components/tools/DynamicNotice'
 
   export default {
     name: "UserAnnouncementList",
     mixins: [JeecgListMixin],
     components: {
+      DynamicNotice,
       ShowAnnouncement
     },
     data () {
@@ -130,6 +133,7 @@
           readAllMsg:"sys/sysAnnouncementSend/readAll",
         },
         loading:false,
+        openPath:''
       }
     },
     methods: {
@@ -143,7 +147,13 @@
             this.loadData();
           }
         });
-        this.$refs.ShowAnnouncement.detail(record);
+        if(record.openType==='component'){
+          this.openPath = record.openPage;
+          this.formData = {id:record.busId};
+          this.$refs.showDynamNotice.detail();
+        }else{
+          this.$refs.ShowAnnouncement.detail(record);
+        }
       },
       readAll(){
         var that = this;

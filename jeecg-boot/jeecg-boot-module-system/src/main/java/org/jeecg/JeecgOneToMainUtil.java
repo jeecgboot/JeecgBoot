@@ -61,7 +61,7 @@ public class JeecgOneToMainUtil {
 		
 		//第三步：一对多(父子表)数据模型,代码生成
 		try {
-			new CodeGenerateOneToMany(mainTable,subTables).generateCodeFile();
+			new CodeGenerateOneToMany(mainTable,subTables).generateCodeFile(null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

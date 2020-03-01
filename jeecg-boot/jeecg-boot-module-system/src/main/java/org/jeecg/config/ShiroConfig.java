@@ -66,10 +66,12 @@ public class ShiroConfig {
 				filterChainDefinitionMap.put(url,"anon");
 			}
 		}
+
 		//cas验证登录
 		filterChainDefinitionMap.put("/cas/client/validateLogin", "anon");
 		// 配置不会被拦截的链接 顺序判断
 		filterChainDefinitionMap.put("/sys/getCheckCode", "anon"); //登录验证码接口排除
+		filterChainDefinitionMap.put("/sys/randomImage/**", "anon"); //登录验证码接口排除
 		filterChainDefinitionMap.put("/sys/login", "anon"); //登录接口排除
 		filterChainDefinitionMap.put("/sys/mLogin", "anon"); //登录接口排除
 		filterChainDefinitionMap.put("/sys/logout", "anon"); //登出接口排除
@@ -82,8 +84,9 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/sys/user/phoneVerification", "anon");//用户忘记密码验证手机号
 		filterChainDefinitionMap.put("/sys/user/passwordChange", "anon");//用户更改密码
 		filterChainDefinitionMap.put("/auth/2step-code", "anon");//登录验证码
-		filterChainDefinitionMap.put("/sys/common/view/**", "anon");//图片预览不限制token
-		filterChainDefinitionMap.put("/sys/common/download/**", "anon");//文件下载不限制token
+		filterChainDefinitionMap.put("/sys/common/static/**", "anon");//图片预览 &下载文件不限制token
+		//filterChainDefinitionMap.put("/sys/common/view/**", "anon");//图片预览不限制token
+		//filterChainDefinitionMap.put("/sys/common/download/**", "anon");//文件下载不限制token
 		filterChainDefinitionMap.put("/sys/common/pdf/**", "anon");//pdf预览
 		filterChainDefinitionMap.put("/generic/**", "anon");//pdf预览需要文件
 		filterChainDefinitionMap.put("/", "anon");
@@ -100,6 +103,7 @@ public class ShiroConfig {
 		// update-begin--Author:sunjianlei Date:20190813 for：排除字体格式的后缀
 		filterChainDefinitionMap.put("/**/*.ttf", "anon");
 		filterChainDefinitionMap.put("/**/*.woff", "anon");
+		filterChainDefinitionMap.put("/**/*.woff2", "anon");
 		// update-begin--Author:sunjianlei Date:20190813 for：排除字体格式的后缀
 
 		filterChainDefinitionMap.put("/druid/**", "anon");
@@ -122,7 +126,10 @@ public class ShiroConfig {
 
 		//websocket排除
 		filterChainDefinitionMap.put("/websocket/**", "anon");
-		
+
+		//大屏设计器排除
+		filterChainDefinitionMap.put("/big/screen/**", "anon");
+
 		// 添加自己的过滤器并且取名为jwt
 		Map<String, Filter> filterMap = new HashMap<String, Filter>(1);
 		filterMap.put("jwt", new JwtFilter());

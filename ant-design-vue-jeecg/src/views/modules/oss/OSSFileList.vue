@@ -31,7 +31,21 @@
           @change="handleChange">
         <a-button>
           <a-icon type="upload"/>
-          文件上传
+          OSS文件上传
+        </a-button>
+      </a-upload>
+
+      <a-upload
+        name="file"
+        :multiple="false"
+        :action="minioUploadAction"
+        :headers="tokenHeader"
+        :showUploadList="false"
+        :beforeUpload="beforeUpload"
+        @change="handleChange">
+        <a-button>
+          <a-icon type="upload"/>
+          MINIO文件上传
         </a-button>
       </a-upload>
     </div>
@@ -58,7 +72,9 @@
           @change="handleTableChange">
 
         <span slot="action" slot-scope="text, record">
-            <a @click="ossDelete(record.id)">删除</a>
+          <a @click="handlePreview(record)">预览</a>
+          <a-divider type="vertical"/>
+          <a @click="ossDelete(record.id)">删除</a>
         </span>
 
       </a-table>
@@ -108,14 +124,18 @@
         url: {
           upload: "/oss/file/upload",
           list: "/oss/file/list",
-          delete: "/oss/file/delete"
+          delete: "/oss/file/delete",
+          minioUpload: "/sys/upload/uploadMinio"
         }
       }
     },
     computed: {
       uploadAction() {
         return window._CONFIG['domianURL'] + this.url.upload;
-      }
+      },
+      minioUploadAction() {
+        return window._CONFIG['domianURL'] + this.url.minioUpload;
+      },
     },
     methods: {
       beforeUpload(file) {
@@ -139,10 +159,10 @@
             this.loadData()
             this.$message.success(`${info.file.name} 上传成功!`);
           } else {
-            this.$message.error(`${info.file.name} 上传失败.`);
+            this.$message.error(`${info.file.response.message}`);
           }
         } else if (info.file.status === 'error') {
-          this.$message.error(`${info.file.name} 上传失败.`);
+          this.$message.error(`${info.file.response.message}`);
         }
       },
       ossDelete(id) {
@@ -154,11 +174,17 @@
             that.handleDelete(id)
           }
         });
+      },
+      handlePreview(record) {
+        if (record && record.url) {
+          let url = window._CONFIG['onlinePreviewDomainURL'] + '?url=' + encodeURIComponent(record.url)
+          window.open(url, '_blank')
+        }
       }
     }
   }
 </script>
 
 <style scoped>
-  @import '~@assets/less/common.less'
+  @import '~@assets/less/common.less';
 </style>

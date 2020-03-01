@@ -7,7 +7,7 @@
         <a-row :gutter="10">
           <a-col :md="10" :sm="12">
             <a-form-item label="用户账号" style="margin-left:8px">
-              <a-input placeholder="请输入名称查询" v-model="queryParam.username"></a-input>
+              <a-input placeholder="请输入账号" v-model="queryParam.username"></a-input>
             </a-form-item>
           </a-col>
           <!--<a-col :md="8" :sm="8">-->
@@ -25,7 +25,7 @@
       </a-form>
     </div>
     <!-- 操作按钮区域 -->
-    <div class="table-operator" :md="24" :sm="24" style="margin: -46px 0px 10px 2px">
+    <div class="table-operator" :md="24" :sm="24" style="margin-top: -15px">
       <a-button @click="handleAdd" type="primary" icon="plus" style="margin-top: 16px">用户录入</a-button>
       <!--<a-button @click="handleEdit" type="primary" icon="edit" style="margin-top: 16px">用户编辑</a-button>-->
       <a-button @click="handleAddUserDepart" type="primary" icon="plus">添加已有用户</a-button>
@@ -34,7 +34,7 @@
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel">
             <a-icon type="delete"/>
-            删除关系
+            取消关联
           </a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作
@@ -80,9 +80,12 @@
               </a-menu-item>
 
               <a-menu-item>
-                <a-popconfirm title="确定要删除关系吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除关系</a>
+                <a-popconfirm title="确定取消与选中部门关联吗?" @confirm="() => handleDelete(record.id)">
+                  <a>取消关联</a>
                 </a-popconfirm>
+              </a-menu-item>
+              <a-menu-item>
+                <a href="javascript:;" @click="handleDeptRole(record)">分配部门角色</a>
               </a-menu-item>
             </a-menu>
           </a-dropdown>
@@ -96,6 +99,7 @@
     <!-- 表单区域 -->
     <user-modal ref="modalForm" @ok="modalFormOk"></user-modal>
     <Select-User-Modal ref="selectUserModal" @selectFinished="selectOK"></Select-User-Modal>
+    <dept-role-user-modal ref="deptRoleUser"></dept-role-user-modal>
   </a-card>
 </template>
 
@@ -104,11 +108,13 @@
   import {getAction, postAction, deleteAction} from '@/api/manage'
   import SelectUserModal from './SelectUserModal'
   import UserModal from './UserModal'
+  import DeptRoleUserModal from './DeptRoleUserModal'
 
   export default {
     name: "DeptUserInfo",
     mixins: [JeecgListMixin],
     components: {
+      DeptRoleUserModal,
       SelectUserModal,
       UserModal
     },
@@ -126,6 +132,21 @@
             title: '用户名称',
             align: "center",
             dataIndex: 'realname'
+          },
+          {
+            title: '性别',
+            align: "center",
+            dataIndex: 'sex_dictText'
+          },
+          {
+            title: '电话',
+            align: "center",
+            dataIndex: 'phone'
+          },
+          {
+            title: '部门',
+            align: "center",
+            dataIndex: 'orgCode'
           },
           {
             title: '操作',
@@ -146,7 +167,12 @@
     },
 
     methods: {
-
+      searchReset() {
+        this.queryParam = {}
+        this.currentDeptId = '';
+        this.loadData(1);
+        this.$emit('clearSelectedDepartKeys')
+      },
       loadData(arg) {
         if (!this.url.list) {
           this.$message.error("请设置url.list属性!")
@@ -156,11 +182,11 @@
         if (arg === 1) {
           this.ipagination.current = 1;
         }
-        if (this.currentDeptId === '') return;
-        var params = this.getQueryParams();//查询条件
+        //if (this.currentDeptId === '') return;
+        let params = this.getQueryParams();//查询条件
         params.depId = this.currentDeptId;
         getAction(this.url.list, params).then((res) => {
-          if (res.success) {
+          if (res.success && res.result) {
             this.dataSource = res.result.records;
             this.ipagination.total = res.result.total;
           }
@@ -172,6 +198,11 @@
           this.$message.error("请设置url.deleteBatch属性!")
           return
         }
+        if (!this.currentDeptId) {
+          this.$message.error("未选中任何部门，无法取消部门与用户的关联!")
+          return
+        }
+
         if (this.selectedRowKeys.length <= 0) {
           this.$message.warning('请选择一条记录！');
           return;
@@ -183,12 +214,12 @@
           var that = this;
           console.log(this.currentDeptId);
           this.$confirm({
-            title: "确认删除",
-            content: "是否删除选中数据?",
+            title: "确认取消",
+            content: "是否取消用户与选中部门的关联?",
             onOk: function () {
               deleteAction(that.url.deleteBatch, {depId: that.currentDeptId, userIds: ids}).then((res) => {
                 if (res.success) {
-                  that.$message.success(res.message);
+                  that.$message.success("删除用户与选中部门关系成功！");
                   that.loadData();
                   that.onClearSelected();
                 } else {
@@ -204,10 +235,15 @@
           this.$message.error("请设置url.delete属性!")
           return
         }
+        if (!this.currentDeptId) {
+          this.$message.error("未选中任何部门，无法取消部门与用户的关联!")
+          return
+        }
+
         var that = this;
         deleteAction(that.url.delete, {depId: this.currentDeptId, userId: id}).then((res) => {
           if (res.success) {
-            that.$message.success(res.message);
+            that.$message.success("删除用户与选中部门关系成功！");
             if (this.selectedRowKeys.length>0){
                for(let i =0; i<this.selectedRowKeys.length;i++){
                    if (this.selectedRowKeys[i] == id){
@@ -232,14 +268,14 @@
         this.dataSource = [];
       },
       hasSelectDept() {
-        if (this.currentDeptId == null) {
+        if (this.currentDeptId == '') {
           this.$message.error("请选择一个部门!")
           return false;
         }
         return true;
       },
       handleAddUserDepart() {
-        if (this.currentDeptId == '') {
+        if (this.currentDeptId == '' ) {
           this.$message.error("请选择一个部门!")
         } else {
           this.$refs.selectUserModal.visible = true;
@@ -277,6 +313,10 @@
             this.$message.warning(res.message);
           }
         })
+      },
+      handleDeptRole(record){
+        this.$refs.deptRoleUser.add(record,this.currentDeptId);
+        this.$refs.deptRoleUser.title = "部门角色分配";
       }
     }
   }

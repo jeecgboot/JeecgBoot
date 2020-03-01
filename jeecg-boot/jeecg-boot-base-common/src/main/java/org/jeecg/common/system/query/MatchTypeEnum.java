@@ -23,6 +23,13 @@ public enum MatchTypeEnum {
         return value;
     }
 
+    public static MatchTypeEnum getByValue(Object value) {
+        if (oConvertUtils.isEmpty(value)) {
+            return null;
+        }
+        return getByValue(value.toString());
+    }
+
     public static MatchTypeEnum getByValue(String value) {
         if (oConvertUtils.isEmpty(value)) {
             return null;

@@ -18,6 +18,10 @@ public class ComboModel implements Serializable {
     private boolean checked;
     /**文档管理 表单table 用户账号*/
     private String username;
+    /**文档管理 表单table 用户邮箱*/
+    private String email;
+    /**文档管理 表单table 角色编码*/
+    private String roleCode;
 
     public ComboModel(){
 

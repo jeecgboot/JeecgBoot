@@ -124,4 +124,20 @@ public class SysAnnouncement implements Serializable {
      * 指定用户
      **/
     private java.lang.String userIds;
+    /**
+     * 业务类型(email:邮件 bpm:流程)
+     */
+    private java.lang.String busType;
+    /**
+     * 业务id
+     */
+    private java.lang.String busId;
+    /**
+     * 打开方式 组件：component 路由：url
+     */
+    private java.lang.String openType;
+    /**
+     * 组件/路由 地址
+     */
+    private java.lang.String openPage;
 }

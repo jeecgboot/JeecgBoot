@@ -25,7 +25,7 @@ const frozenBatch = (params)=>putAction("/sys/user/frozenBatch",params);
 //验证用户是否存在
 const checkOnlyUser = (params)=>getAction("/sys/user/checkOnlyUser",params);
 //改变密码
-const changPassword = (params)=>putAction("/sys/user/changPassword",params);
+const changePassword = (params)=>putAction("/sys/user/changePassword",params);
 
 //权限管理
 const addPermission= (params)=>postAction("/sys/permission/add",params);
@@ -34,6 +34,7 @@ const getPermissionList = (params)=>getAction("/sys/permission/list",params);
 /*update_begin author:wuxianquan date:20190908 for:添加查询一级菜单和子菜单查询api */
 const getSystemMenuList = (params)=>getAction("/sys/permission/getSystemMenuList",params);
 const getSystemSubmenu = (params)=>getAction("/sys/permission/getSystemSubmenu",params);
+const getSystemSubmenuBatch = (params) => getAction('/sys/permission/getSystemSubmenuBatch', params)
 /*update_end author:wuxianquan date:20190908 for:添加查询一级菜单和子菜单查询api */
 
 // const deletePermission = (params)=>deleteAction("/sys/permission/delete",params);
@@ -55,6 +56,14 @@ const queryIdTree = (params)=>getAction("/sys/sysDepart/queryIdTree",params);
 const queryParentName   = (params)=>getAction("/sys/sysDepart/queryParentName",params);
 const searchByKeywords   = (params)=>getAction("/sys/sysDepart/searchBy",params);
 const deleteByDepartId   = (params)=>deleteAction("/sys/sysDepart/delete",params);
+
+//二级部门管理
+const queryDepartPermission = (params)=>getAction("/sys/permission/queryDepartPermission",params);
+const saveDepartPermission = (params)=>postAction("/sys/permission/saveDepartPermission",params);
+const queryTreeListForDeptRole = (params)=>getAction("/sys/sysDepartPermission/queryTreeListForDeptRole",params);
+const queryDeptRolePermission = (params)=>getAction("/sys/sysDepartPermission/queryDeptRolePermission",params);
+const saveDeptRolePermission = (params)=>postAction("/sys/sysDepartPermission/saveDeptRolePermission",params);
+const queryMyDepartTreeList = (params)=>getAction("/sys/sysDepart/queryMyDeptTreeList",params);
 
 //日志管理
 //const getLogList = (params)=>getAction("/sys/log/list",params);
@@ -94,6 +103,7 @@ const queryUserRoleMap = (params)=>getAction("/sys/user/queryUserRoleMap",params
 const duplicateCheck = (params)=>getAction("/sys/duplicate/check",params);
 // 加载分类字典
 const loadCategoryData = (params)=>getAction("/sys/category/loadAllData",params);
+const checkRuleByCode = (params) => getAction('/sys/checkRule/checkByCode', params)
 
 export {
   // imgView,
@@ -108,7 +118,7 @@ export {
   queryall,
   frozenBatch,
   checkOnlyUser,
-  changPassword,
+  changePassword,
   getPermissionList,
   addPermission,
   editPermission,
@@ -142,7 +152,15 @@ export {
   queryTreeListForRole,
   getSystemMenuList,
   getSystemSubmenu,
-  loadCategoryData
+  getSystemSubmenuBatch,
+  loadCategoryData,
+  checkRuleByCode,
+  queryDepartPermission,
+  saveDepartPermission,
+  queryTreeListForDeptRole,
+  queryDeptRolePermission,
+  saveDeptRolePermission,
+  queryMyDepartTreeList
 }
 
 

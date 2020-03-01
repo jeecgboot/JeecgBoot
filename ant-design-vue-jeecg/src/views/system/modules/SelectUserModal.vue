@@ -12,12 +12,12 @@
 
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
-        <a-form layout="inline">
+        <a-form layout="inline"  @keyup.enter.native="searchQuery">
           <a-row :gutter="24">
 
             <a-col :span="10">
-              <a-form-item label="姓名">
-                <a-input placeholder="请输入姓名" v-model="queryParam.username"></a-input>
+              <a-form-item label="用户账号">
+                <a-input placeholder="请输入用户账号" v-model="queryParam.username"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="8">
@@ -83,7 +83,7 @@
           {
             title: '用户账号',
             align: "center",
-            width: 113,
+            width: 100,
             dataIndex: 'username'
           },
           {
@@ -93,10 +93,22 @@
             dataIndex: 'realname'
           },
           {
-            title: '状态',
+            title: '性别',
             align: "center",
             width: 100,
-            dataIndex: 'status'
+            dataIndex: 'sex_dictText'
+          },
+          {
+            title: '电话',
+            align: "center",
+            width: 100,
+            dataIndex: 'phone'
+          },
+          {
+            title: '部门',
+            align: "center",
+            width: 150,
+            dataIndex: 'orgCode'
           }
         ],
         columns2: [

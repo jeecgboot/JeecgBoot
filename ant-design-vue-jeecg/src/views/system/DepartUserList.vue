@@ -6,7 +6,7 @@
           <a-input-search @search="onSearch" style="width:100%;margin-top: 10px" placeholder="请输入部门名称"/>
           <!-- 树-->
 
-          <template>
+          <template v-if="userIdentity === '2' && departTree.length>0">
 
             <!--组织机构-->
             <a-tree
@@ -16,10 +16,14 @@
               @select="onSelect"
               :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
               :treeData="departTree"
+              :autoExpandParent="autoExpandParent"
             />
 
           </template>
-
+          <div style="margin-top: 24px;" v-else-if="userIdentity === '2' && departTree.length==0">
+            <h3><span>您的部门下暂无有效部门信息</span></h3>
+          </div>
+          <div style="margin-top: 24px;" v-else><h3>普通员工暂此权限</h3></div>
         </div>
       </a-card>
     </a-col>
@@ -30,7 +34,10 @@
             <Dept-Base-Info ref="DeptBaseInfo"></Dept-Base-Info>
           </a-tab-pane>
           <a-tab-pane tab="用户信息" key="2">
-            <Dept-User-Info ref="DeptUserInfo"></Dept-User-Info>
+            <Dept-User-Info ref="DeptUserInfo" @clearSelectedDepartKeys="clearSelectedDepartKeys"></Dept-User-Info>
+          </a-tab-pane>
+          <a-tab-pane tab="部门角色" key="3" forceRender>
+            <dept-role-info ref="DeptRoleInfo" @clearSelectedDepartKeys="clearSelectedDepartKeys"/>
           </a-tab-pane>
         </a-tabs>
       </a-card>
@@ -40,13 +47,15 @@
 <script>
   import DeptBaseInfo from './modules/DeptBaseInfo'
   import DeptUserInfo from './modules/DeptUserInfo'
-  import {queryDepartTreeList, searchByKeywords} from '@/api/api'
+  import {queryMyDepartTreeList, searchByKeywords} from '@/api/api'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import DeptRoleInfo from './modules/DeptRoleInfo'
 
   export default {
     name: 'DepartUserList',
     mixins: [JeecgListMixin],
     components: {
+      DeptRoleInfo,
       DeptBaseInfo,
       DeptUserInfo,
     },
@@ -85,6 +94,7 @@
           nodes: [],
           edges: []
         },
+        userIdentity:"",
       }
     },
     methods: {
@@ -94,12 +104,19 @@
       loadData() {
         this.refresh();
       },
+      clearSelectedDepartKeys() {
+        this.checkedKeys = [];
+        this.selectedKeys = [];
+        this.currentDeptId = '';
+        this.$refs.DeptUserInfo.currentDeptId='';
+        this.$refs.DeptRoleInfo.currentDeptId='';
+      },
       loadTree() {
         var that = this
         that.treeData = []
         that.departTree = []
-        queryDepartTreeList().then((res) => {
-          if (res.success) {
+        queryMyDepartTreeList().then((res) => {
+          if (res.success && res.result ) {
             for (let i = 0; i < res.result.length; i++) {
               let temp = res.result[i]
               that.treeData.push(temp)
@@ -109,6 +126,7 @@
             }
             this.loading = false
           }
+          that.userIdentity = res.message
         })
       },
       setThisExpandedKeys(node) {
@@ -161,6 +179,7 @@
 
         this.$refs.DeptBaseInfo.open(record);
         this.$refs.DeptUserInfo.open(record);
+        this.$refs.DeptRoleInfo.open(record);
         // }
         // else {
         //   this.checkedKeys = [];
@@ -180,6 +199,8 @@
         this.$refs.DeptBaseInfo.open(record);
         this.$refs.DeptUserInfo.onClearSelected();
         this.$refs.DeptUserInfo.open(record);
+        this.$refs.DeptRoleInfo.onClearSelected();
+        this.$refs.DeptRoleInfo.open(record);
       },
     },
     created() {

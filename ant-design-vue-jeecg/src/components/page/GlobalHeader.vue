@@ -10,12 +10,12 @@
         v-if="device==='mobile'"
         class="trigger"
         :type="collapsed ? 'menu-fold' : 'menu-unfold'"
-        @click.native="toggle"></a-icon>
+        @click="toggle"></a-icon>
       <a-icon
         v-else
         class="trigger"
         :type="collapsed ? 'menu-unfold' : 'menu-fold'"
-        @click.native="toggle"/>
+        @click="toggle"/>
 
       <span v-if="device === 'desktop'">欢迎进入 Jeecg-Boot 企业级快速开发平台</span>
       <span v-else>Jeecg-Boot</span>
@@ -37,7 +37,7 @@
             v-else
             class="trigger"
             :type="collapsed ? 'menu-fold' : 'menu-unfold'"
-            @click.native="toggle"></a-icon>
+            @click="toggle"></a-icon>
         </div>
         <user-menu class="header-index-right" :theme="theme" :style="topMenuStyle.headerIndexRight"/>
       </div>
@@ -161,10 +161,10 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
   /* update_begin author:scott date:20190220 for: 缩小首页布局顶部的高度*/
 
-  $height: 59px;
+  @height: 59px;
 
   .layout {
 
@@ -174,8 +174,8 @@
         margin-left: 10px;
 
         .ant-menu.ant-menu-horizontal {
-          height: $height;
-          line-height: $height;
+          height: @height;
+          line-height: @height;
         }
       }
       .trigger {
@@ -189,8 +189,8 @@
     .header {
       z-index: 2;
       color: white;
-      height: $height;
-      background-color: #1890ff;
+      height: @height;
+      background-color: @primary-color;
       transition: background 300ms;
 
       /* dark 样式 */
@@ -209,8 +209,8 @@
   }
 
   .ant-layout-header {
-    height: $height;
-    line-height: $height;
+    height: @height;
+    line-height: @height;
   }
 
   /* update_end author:scott date:20190220 for: 缩小首页布局顶部的高度*/

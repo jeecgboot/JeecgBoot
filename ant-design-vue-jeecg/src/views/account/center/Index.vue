@@ -133,7 +133,7 @@
     methods: {
       ...mapGetters(["nickname", "avatar"]),
       getAvatar(){
-          return window._CONFIG['imgDomainURL']+"/"+this.avatar();
+          return window._CONFIG['staticDomainURL']+"/"+this.avatar();
       },
       getTeams() {
         this.$http.get('/api/workplace/teams')

@@ -32,6 +32,8 @@
       </a-col>
     </a-row>
 
+    <slot name="actionButtonAfter" :target="getVM()"/>
+
     <div :id="`${caseId}inputTable`" class="input-table">
       <!-- 渲染表头 -->
       <div class="thead" ref="thead">
@@ -76,7 +78,7 @@
           <div v-if="rows.length===0" class="tr-nodata">
             <span>暂无数据</span>
           </div>
-<!--           v-model="rows"-->
+          <!-- v-model="rows"-->
           <draggable :value="rows" handle=".td-ds-icons" @end="handleDragMoveEnd">
 
             <!-- 动态生成tr -->
@@ -96,10 +98,19 @@
                 <!-- 左侧固定td  -->
 
                 <div v-if="dragSort" class="td td-ds" :style="style.tdLeftDs">
-                  <div class="td-ds-icons">
-                    <a-icon type="align-left"/>
-                    <a-icon type="align-right"/>
-                  </div>
+                  <a-dropdown :trigger="['click']" :getPopupContainer="getParentContainer">
+                    <div class="td-ds-icons">
+                      <a-icon type="align-left"/>
+                      <a-icon type="align-right"/>
+                    </div>
+
+                    <a-menu slot="overlay">
+                      <a-menu-item key="0" :disabled="rowIndex===0" @click="_handleRowMoveUp(rowIndex)">向上移</a-menu-item>
+                      <a-menu-item key="1" :disabled="rowIndex===(rows.length-1)" @click="_handleRowMoveDown(rowIndex)">向下移</a-menu-item>
+                      <a-menu-divider/>
+                      <a-menu-item key="3" @click="_handleRowInsertDown(rowIndex)">插入一行</a-menu-item>
+                    </a-menu>
+                  </a-dropdown>
                 </div>
 
                 <div v-if="rowSelection" class="td td-cb" :style="style.tdLeft">
@@ -133,7 +144,9 @@
                         placement="top"
                         :title="(tooltips[id] || {}).title"
                         :visible="(tooltips[id] || {}).visible || false"
-                        :autoAdjustOverflow="true">
+                        :autoAdjustOverflow="true"
+                        :getPopupContainer="getParentContainer"
+                      >
 
                         <input
                           :id="id"
@@ -166,7 +179,9 @@
                         placement="top"
                         :title="(tooltips[id] || {}).title"
                         :visible="(tooltips[id] || {}).visible || false"
-                        :autoAdjustOverflow="true">
+                        :autoAdjustOverflow="true"
+                        :getPopupContainer="getParentContainer"
+                      >
 
                       <span
                         @mouseover="()=>{handleMouseoverCommono(row,col)}"
@@ -202,7 +217,9 @@
                         placement="top"
                         :title="(tooltips[id] || {}).title"
                         :visible="(tooltips[id] || {}).visible || false"
-                        :autoAdjustOverflow="true">
+                        :autoAdjustOverflow="true"
+                        :getPopupContainer="getParentContainer"
+                      >
 
                       <span
                         @mouseover="()=>{handleMouseoverCommono(row,col)}"
@@ -245,33 +262,57 @@
                             </a-tooltip>
                           </template>
 
-                          <template slot="addonAfter" style="width: 30px">
-                            <a-tooltip title="删除并重新上传">
-                              <a-icon
-                                v-if="file.status!=='uploading'"
-                                type="close-circle"
-                                style="cursor: pointer;"
-                                @click="()=>handleClickDelFile(id)"/>
-                            </a-tooltip>
+                          <template v-if="col.allowDownload!==false || col.allowRemove!==false" slot="addonAfter" style="width: 30px">
+                            <a-dropdown :trigger="['click']" placement="bottomRight" :getPopupContainer="getParentContainer">
+                              <a-tooltip title="操作" :getPopupContainer="getParentContainer">
+                                <a-icon
+                                  v-if="file.status!=='uploading'"
+                                  type="setting"
+                                  style="cursor: pointer;"/>
+                              </a-tooltip>
+
+                              <a-menu slot="overlay">
+                                <a-menu-item v-if="col.allowDownload!==false" @click="handleClickDownloadFile(id)">
+                                  <span><a-icon type="download"/>&nbsp;下载</span>
+                                </a-menu-item>
+                                <a-menu-item v-if="col.allowRemove!==false" @click="handleClickDelFile(id)">
+                                  <span><a-icon type="delete"/>&nbsp;删除</span>
+                                </a-menu-item>
+                              </a-menu>
+                            </a-dropdown>
                           </template>
 
                         </a-input>
                       </template>
 
                       <div :hidden="uploadValues[id] != null">
-
-                        <a-upload
-                          name="file"
-                          :data="{'isup':1}"
-                          :multiple="false"
-                          :action="col.action"
-                          :headers="uploadGetHeaders(row,col)"
-                          :showUploadList="false"
-                          v-bind="buildProps(row,col)"
-                          @change="(v)=>handleChangeUpload(v,id,row,col)"
+                        <a-tooltip
+                          :key="i"
+                          :id="id"
+                          placement="top"
+                          :title="(tooltips[id] || {}).title"
+                          :visible="(tooltips[id] || {}).visible || false"
+                          :autoAdjustOverflow="true"
+                          :getPopupContainer="getParentContainer"
                         >
-                          <a-button icon="upload">{{ col.placeholder }}</a-button>
-                        </a-upload>
+
+                          <span
+                            @mouseover="()=>{handleMouseoverCommono(row,col)}"
+                            @mouseout="()=>{handleMouseoutCommono(row,col)}">
+                            <a-upload
+                              name="file"
+                              :data="{'isup':1}"
+                              :multiple="false"
+                              :action="col.action"
+                              :headers="uploadGetHeaders(row,col)"
+                              :showUploadList="false"
+                              v-bind="buildProps(row,col)"
+                              @change="(v)=>handleChangeUpload(v,id,row,col)"
+                            >
+                              <a-button icon="upload">{{ col.placeholder }}</a-button>
+                            </a-upload>
+                          </span>
+                        </a-tooltip>
                       </div>
 
                     </div>
@@ -284,7 +325,10 @@
                         placement="top"
                         :title="(tooltips[id] || {}).title"
                         :visible="(tooltips[id] || {}).visible || false"
-                        :autoAdjustOverflow="true">
+                        :autoAdjustOverflow="true"
+                        :getPopupContainer="getParentContainer"
+                      >
+
                         <span
                           @mouseover="()=>{handleMouseoverCommono(row,col)}"
                           @mouseout="()=>{handleMouseoutCommono(row,col)}">
@@ -340,19 +384,33 @@
                       </template>
 
                       <div :hidden="uploadValues[id] != null">
-
-                        <a-upload
-                          name="file"
-                          :data="{'isup':1}"
-                          :multiple="false"
-                          :action="getUploadAction(col.action)"
-                          :headers="uploadGetHeaders(row,col)"
-                          :showUploadList="false"
-                          v-bind="buildProps(row,col)"
-                          @change="(v)=>handleChangeUpload(v,id,row,col)"
+                        <a-tooltip
+                          :key="i"
+                          :id="id"
+                          placement="top"
+                          :title="(tooltips[id] || {}).title"
+                          :visible="(tooltips[id] || {}).visible || false"
+                          :autoAdjustOverflow="true"
+                          :getPopupContainer="getParentContainer"
                         >
-                          <a-button icon="upload">{{ col.placeholder }}</a-button>
-                        </a-upload>
+
+                          <span
+                            @mouseover="()=>{handleMouseoverCommono(row,col)}"
+                            @mouseout="()=>{handleMouseoutCommono(row,col)}">
+                            <a-upload
+                              name="file"
+                              :data="{'isup':1}"
+                              :multiple="false"
+                              :action="getUploadAction(col.action)"
+                              :headers="uploadGetHeaders(row,col)"
+                              :showUploadList="false"
+                              v-bind="buildProps(row,col)"
+                              @change="(v)=>handleChangeUpload(v,id,row,col)"
+                            >
+                              <a-button icon="upload">{{ col.placeholder }}</a-button>
+                            </a-upload>
+                          </span>
+                        </a-tooltip>
                       </div>
 
                     </div>
@@ -387,19 +445,33 @@
                       </template>
 
                       <div :hidden="uploadValues[id] != null">
-
-                        <a-upload
-                          name="file"
-                          :data="{'isup':1}"
-                          :multiple="false"
-                          :action="getUploadAction(col.action)"
-                          :headers="uploadGetHeaders(row,col)"
-                          :showUploadList="false"
-                          v-bind="buildProps(row,col)"
-                          @change="(v)=>handleChangeUpload(v,id,row,col)"
+                        <a-tooltip
+                          :key="i"
+                          :id="id"
+                          placement="top"
+                          :title="(tooltips[id] || {}).title"
+                          :visible="(tooltips[id] || {}).visible || false"
+                          :autoAdjustOverflow="true"
+                          :getPopupContainer="getParentContainer"
                         >
-                          <a-button icon="upload">请上传图片</a-button>
-                        </a-upload>
+
+                          <span
+                            @mouseover="()=>{handleMouseoverCommono(row,col)}"
+                            @mouseout="()=>{handleMouseoutCommono(row,col)}">
+                            <a-upload
+                              name="file"
+                              :data="{'isup':1}"
+                              :multiple="false"
+                              :action="getUploadAction(col.action)"
+                              :headers="uploadGetHeaders(row,col)"
+                              :showUploadList="false"
+                              v-bind="buildProps(row,col)"
+                              @change="(v)=>handleChangeUpload(v,id,row,col)"
+                            >
+                              <a-button icon="upload">请上传图片</a-button>
+                            </a-upload>
+                          </span>
+                        </a-tooltip>
                       </div>
 
                     </div>
@@ -414,7 +486,10 @@
                         placement="top"
                         :title="(tooltips[id] || {}).title"
                         :visible="(tooltips[id] || {}).visible || false"
-                        :autoAdjustOverflow="true">
+                        :autoAdjustOverflow="true"
+                        :getPopupContainer="getParentContainer"
+                      >
+
                         <span
                           @mouseover="()=>{handleMouseoverCommono(row,col)}"
                           @mouseout="()=>{handleMouseoutCommono(row,col)}">
@@ -440,7 +515,9 @@
                         placement="top"
                         :title="(tooltips[id] || {}).title"
                         :visible="(tooltips[id] || {}).visible || false"
-                        :autoAdjustOverflow="true">
+                        :autoAdjustOverflow="true"
+                        :getPopupContainer="getParentContainer"
+                      >
 
                         <span
                           @mouseover="()=>{handleMouseoverCommono(row,col)}"
@@ -473,7 +550,9 @@
                         placement="top"
                         :title="(tooltips[id] || {}).title"
                         :visible="(tooltips[id] || {}).visible || false"
-                        :autoAdjustOverflow="true">
+                        :autoAdjustOverflow="true"
+                        :getPopupContainer="getParentContainer"
+                      >
 
                         <span
                           @mouseover="()=>{handleMouseoverCommono(row,col)}"
@@ -501,17 +580,35 @@
 
 
                     <div v-else-if="col.type === formTypes.slot" :key="i">
-                      <slot
-                        :name="(col.slot || col.slotName) || col.key"
-                        :index="rowIndex"
-                        :text="inputValues[rowIndex][col.key]"
-                        :column="col"
-                        :rowId="removeCaseId(row.id)"
-                        :getValue="()=>_getValueForSlot(row.id)"
-                        :caseId="caseId"
-                        :allValues="_getAllValuesForSlot()"
-                        :target="getVM()"
-                      />
+                      <a-tooltip
+                        :key="i"
+                        :id="id"
+                        placement="top"
+                        :title="(tooltips[id] || {}).title"
+                        :visible="(tooltips[id] || {}).visible || false"
+                        :autoAdjustOverflow="true"
+                        :getPopupContainer="getParentContainer"
+                      >
+
+                        <span
+                          @mouseover="()=>{handleMouseoverCommono(row,col)}"
+                          @mouseout="()=>{handleMouseoutCommono(row,col)}">
+                            <slot
+                              :name="(col.slot || col.slotName) || col.key"
+                              :index="rowIndex"
+                              :text="slotValues[id]"
+                              :value="slotValues[id]"
+                              :column="col"
+                              :rowId="removeCaseId(row.id)"
+                              :getValue="()=>_getValueForSlot(row.id)"
+                              :caseId="caseId"
+                              :allValues="_getAllValuesForSlot()"
+                              :target="getVM()"
+                              :handleChange="(v)=>handleChangeSlotCommon(v,id,row,col)"
+                              :isNotPass="notPassedIds.includes(col.key+row.id)"
+                            />
+                        </span>
+                      </a-tooltip>
                     </div>
 
                     <!-- else (normal) -->
@@ -636,15 +733,17 @@
         checkboxValues: {},
         // 绑定 jdate 的值
         jdateValues: {},
+        // 绑定插槽数据
+        slotValues: {},
         // file 信息
         uploadValues: {},
         //popup信息
-        popupValues:{},
+        popupValues: {},
 
-        radioValues:{},
-        metaCheckboxValues:{},
-        multiSelectValues:{},
-        searchSelectValues:{},
+        radioValues: {},
+        metaCheckboxValues: {},
+        multiSelectValues: {},
+        searchSelectValues: {},
         // 绑定左侧选择框已选择的id
         selectedRowIds: [],
         // 存储被删除行的id
@@ -656,6 +755,7 @@
       }
     },
     created() {
+      this.inputValues = []
       // 当前显示的tr
       this.visibleTrEls = []
       this.disabledRowIds = (this.disabledRowIds || [])
@@ -717,9 +817,9 @@
     },
     // 侦听器
     watch: {
-      rows:{
-        immediate:true,
-        handler(val,old) {
+      rows: {
+        immediate: true,
+        handler(val, old) {
           // val.forEach(item => {
           //   for (let inputValue of  this.inputValues) {
           //     if (inputValue.id === item.id) {
@@ -734,147 +834,155 @@
       dataSource: {
         immediate: true,
         handler: function (newValue) {
-          this.initialize()
+          // 兼容IE
+          this.getElementPromise('tbody').then(() => {
 
-          let rows = []
-          let checkboxValues = {}
-          let selectValues = {}
-          let jdateValues = {}
-          let uploadValues = {}
-          let popupValues={}
-          let radioValues = {}
-          let multiSelectValues = {}
-          let searchSelectValues = {}
+            this.initialize()
 
-          // 禁用行的id
-          let disabledRowIds = (this.disabledRowIds || [])
-          newValue.forEach((data, newValueIndex) => {
-            // 判断源数据是否带有id
-            if (data.id == null || data.id === '') {
-              data.id = this.removeCaseId(this.generateId() + newValueIndex)
-            }
+            let rows = []
+            let checkboxValues = {}
+            let selectValues = {}
+            let jdateValues = {}
+            let slotValues = {}
+            let uploadValues = {}
+            let popupValues = {}
+            let radioValues = {}
+            let multiSelectValues = {}
+            let searchSelectValues = {}
 
-            let value = { id: this.caseId + data.id }
-            let row = { id: value.id }
-            let disabled = false
-            this.columns.forEach(column => {
-              let inputId = column.key + value.id
-              let sourceValue = (data[column.key] == null ? '' : data[column.key]).toString()
-              if (column.type === FormTypes.checkbox) {
+            // 禁用行的id
+            let disabledRowIds = (this.disabledRowIds || [])
+            newValue.forEach((data, newValueIndex) => {
+              // 判断源数据是否带有id
+              if (data.id == null || data.id === '') {
+                data.id = this.removeCaseId(this.generateId() + newValueIndex)
+              }
 
-                // 判断是否设定了customValue（自定义值）
-                if (column.customValue instanceof Array) {
-                  let customValue = (column.customValue[0] || '').toString()
-                  checkboxValues[inputId] = (sourceValue === customValue)
-                } else {
-                  checkboxValues[inputId] = sourceValue
-                }
+              let value = { id: this.caseId + data.id }
+              let row = { id: value.id }
+              let disabled = false
+              this.columns.forEach(column => {
+                let inputId = column.key + value.id
+                let sourceValue = (data[column.key] == null ? '' : data[column.key]).toString()
+                if (column.type === FormTypes.checkbox) {
 
-              } else if (column.type === FormTypes.select) {
-                if (sourceValue) {
-                  // 判断是否是多选
-                  selectValues[inputId] = (column.props || {})['mode'] === 'multiple' ? sourceValue.split(',') : sourceValue
-                } else {
-                  selectValues[inputId] = undefined
-                }
+                  // 判断是否设定了customValue（自定义值）
+                  if (column.customValue instanceof Array) {
+                    let customValue = (column.customValue[0] || '').toString()
+                    checkboxValues[inputId] = (sourceValue === customValue)
+                  } else {
+                    checkboxValues[inputId] = sourceValue
+                  }
 
-              } else if (column.type === FormTypes.date || column.type === FormTypes.datetime) {
-                jdateValues[inputId] = sourceValue
+                } else if (column.type === FormTypes.select) {
+                  if (sourceValue) {
+                    // 判断是否是多选
+                    selectValues[inputId] = (column.props || {})['mode'] === 'multiple' ? sourceValue.split(',') : sourceValue
+                  } else {
+                    selectValues[inputId] = undefined
+                  }
 
-              } else if (column.type === FormTypes.slot) {
-                if (sourceValue !== 0 && !sourceValue) {
-                  value[column.key] = column.defaultValue
+                } else if (column.type === FormTypes.date || column.type === FormTypes.datetime) {
+                  jdateValues[inputId] = sourceValue
+
+                } else if (column.type === FormTypes.slot) {
+                  if (sourceValue !== 0 && !sourceValue) {
+                    slotValues[inputId] = column.defaultValue
+                  } else {
+                    slotValues[inputId] = sourceValue
+                  }
+
+                } else if (column.type === FormTypes.popup) {
+                  popupValues[inputId] = sourceValue
+                } else if (column.type === FormTypes.radio) {
+                  radioValues[inputId] = sourceValue
+                } else if (column.type === FormTypes.sel_search) {
+                  searchSelectValues[inputId] = sourceValue
+                } else if (column.type === FormTypes.list_multi) {
+                  if (sourceValue.length > 0) {
+                    multiSelectValues[inputId] = sourceValue.split(',')
+                  } else {
+                    multiSelectValues[inputId] = []
+                  }
+                } else if (column.type === FormTypes.upload || column.type === FormTypes.file || column.type === FormTypes.image) {
+                  if (sourceValue) {
+                    let fileName = sourceValue.substring(sourceValue.lastIndexOf('/') + 1)
+                    uploadValues[inputId] = {
+                      name: fileName,
+                      status: 'done',
+                      path: sourceValue
+                    }
+                  }
                 } else {
                   value[column.key] = sourceValue
                 }
 
-              } else if (column.type === FormTypes.popup) {
-                popupValues[inputId] = sourceValue
-              } else if (column.type === FormTypes.radio) {
-                radioValues[inputId] = sourceValue
-              } else if (column.type === FormTypes.sel_search) {
-                searchSelectValues[inputId] = sourceValue
-              } else if (column.type === FormTypes.list_multi) {
-                if(sourceValue.length>0){
-                  multiSelectValues[inputId] = sourceValue.split(",")
-                }else{
-                  multiSelectValues[inputId] = []
-                }
-              } else if (column.type === FormTypes.file || column.type === FormTypes.image) {
-                if(sourceValue){
-                  let fileName = sourceValue.substring(sourceValue.lastIndexOf("/")+1)
-                  uploadValues[inputId] = {
-                    name: fileName,
-                    status: 'done',
-                    path:sourceValue
-                  }
-                }
-              } else {
-                value[column.key] = sourceValue
-              }
-
-              // 解析disabledRows
-              for (let columnKey in this.disabledRows) {
-                // 判断是否有该属性
-                if (this.disabledRows.hasOwnProperty(columnKey) && data.hasOwnProperty(columnKey)) {
-                  if (disabled !== true) {
-                    let temp = this.disabledRows[columnKey]
-                    // 禁用规则可以是一个数组
-                    if (temp instanceof Array) {
-                      disabled = temp.includes(data[columnKey])
-                    } else {
-                      disabled = (temp === data[columnKey])
-                    }
-                    if (disabled) {
-                      disabledRowIds.push(row.id)
+                // 解析disabledRows
+                for (let columnKey in this.disabledRows) {
+                  // 判断是否有该属性
+                  if (this.disabledRows.hasOwnProperty(columnKey) && data.hasOwnProperty(columnKey)) {
+                    if (disabled !== true) {
+                      let temp = this.disabledRows[columnKey]
+                      // 禁用规则可以是一个数组
+                      if (temp instanceof Array) {
+                        disabled = temp.includes(data[columnKey])
+                      } else {
+                        disabled = (temp === data[columnKey])
+                      }
+                      if (disabled) {
+                        disabledRowIds.push(row.id)
+                      }
                     }
                   }
                 }
-              }
+              })
+              this.inputValues.push(value)
+              rows.push(row)
             })
-            this.inputValues.push(value)
-            rows.push(row)
-          })
-          this.disabledRowIds = disabledRowIds
-          this.checkboxValues = checkboxValues
-          this.selectValues = selectValues
-          this.jdateValues = jdateValues
-          this.rows = rows
-          this.uploadValues = uploadValues
-          this.popupValues = popupValues
-          this.radioValues = radioValues
-          this.multiSelectValues = multiSelectValues
-          this.searchSelectValues = searchSelectValues
+            this.disabledRowIds = disabledRowIds
+            this.checkboxValues = checkboxValues
+            this.selectValues = selectValues
+            this.jdateValues = jdateValues
+            this.slotValues = slotValues
+            this.rows = rows
+            this.uploadValues = uploadValues
+            this.popupValues = popupValues
+            this.radioValues = radioValues
+            this.multiSelectValues = multiSelectValues
+            this.searchSelectValues = searchSelectValues
 
-          // 更新form表单的值
-          this.$nextTick(() => {
-            this.updateFormValues()
+            // 更新form表单的值
+            this.$nextTick(() => {
+              this.updateFormValues()
+            })
           })
-
         }
       },
       columns: {
         immediate: true,
         handler(columns) {
-          columns.forEach(column => {
-            if (column.type === FormTypes.select || column.type === FormTypes.list_multi || column.type === FormTypes.sel_search) {
-              // 兼容 旧版本 options
-              if (column.options instanceof Array) {
-                column.options = column.options.map(item => {
-                  if (item) {
-                    return {
-                      ...item,
-                      text: item.text || item.title,
-                      title: item.text || item.title
+          // 兼容IE
+          this.getElementPromise('tbody').then(() => {
+            columns.forEach(column => {
+              if (column.type === FormTypes.select || column.type === FormTypes.list_multi || column.type === FormTypes.sel_search) {
+                // 兼容 旧版本 options
+                if (column.options instanceof Array) {
+                  column.options = column.options.map(item => {
+                    if (item) {
+                      return {
+                        ...item,
+                        text: item.text || item.title,
+                        title: item.text || item.title
+                      }
                     }
-                  }
-                  return {}
-                })
+                    return {}
+                  })
+                }
+                if (column.dictCode) {
+                  this._loadDictConcatToOptions(column)
+                }
               }
-              if (column.dictCode) {
-                this._loadDictConcatToOptions(column)
-              }
-            }
+            })
           })
         }
       },
@@ -884,19 +992,12 @@
       }
     },
     mounted() {
-      // 获取document element对象
-      let elements = {};
-      ['inputTable', 'tbody'].forEach(id => {
-        elements[id] = document.getElementById(this.caseId + id)
-      })
-      this.el = elements
-
       let vm = this
       /** 监听滚动条事件 */
-      this.el.inputTable.onscroll = function (event) {
+      this.getElement('inputTable').onscroll = function (event) {
         vm.syncScrollBar(event.target.scrollLeft)
       }
-      this.el.tbody.onscroll = function (event) {
+      this.getElement('tbody').onscroll = function (event) {
         // vm.recalcTrHiddenItem(event.target.scrollTop)
       }
 
@@ -915,6 +1016,25 @@
 
     },
     methods: {
+
+      getElement(id, noCaseId = false) {
+        if (!this.el[id]) {
+          this.el[id] = document.getElementById((noCaseId ? '' : this.caseId) + id)
+        }
+        return this.el[id]
+      },
+
+      getElementPromise(id, noCaseId = false) {
+        return new Promise((resolve) => {
+          let timer = setInterval(() => {
+            let element = this.getElement(id, noCaseId)
+            if (element) {
+              clearInterval(timer)
+              resolve(element)
+            }
+          }, 10)
+        })
+      },
 
       /** 初始化列表 */
       initialize() {
@@ -935,24 +1055,25 @@
         this.selectValues = {}
         this.checkboxValues = {}
         this.jdateValues = {}
+        this.slotValues = {}
         this.selectedRowIds = []
         this.tooltips = {}
         this.notPassedIds = []
-        this.uploadValues=[]
-        this.popupValues=[]
-        this.radioValues=[]
+        this.uploadValues = []
+        this.popupValues = []
+        this.radioValues = []
         this.multiSelectValues = []
         this.searchSelectValues = []
         this.scrollTop = 0
         this.$nextTick(() => {
-          this.el.tbody.scrollTop = 0
+          this.getElement('tbody').scrollTop = 0
         })
       },
 
       /** 同步滚动条状态 */
       syncScrollBar(scrollLeft) {
         // this.style.tbody.left = `${scrollLeft}px`
-        // this.el.tbody.scrollLeft = scrollLeft
+        // this.getElement('tbody').scrollLeft = scrollLeft
       },
       /** 重置滚动条位置，参数留空则滚动到上次记录的位置 */
       resetScrollTop(top) {
@@ -987,7 +1108,7 @@
         return `${this.caseId}${timestamp}${rows.length}`
       },
       /** push 一条数据 */
-      push(record, update = true, rows) {
+      push(record, update = true, rows, insertIndex = null) {
         if (!(rows instanceof Array)) {
           rows = cloneObject(this.rows) || []
         }
@@ -1005,6 +1126,7 @@
         let checkboxValues = Object.assign({}, this.checkboxValues)
         let selectValues = Object.assign({}, this.selectValues)
         let jdateValues = Object.assign({}, this.jdateValues)
+        let slotValues = Object.assign({}, this.slotValues)
         this.columns.forEach(column => {
           let key = column.key
           let inputId = key + row.id
@@ -1039,17 +1161,23 @@
             jdateValues[inputId] = recordHasValue ? record[key] : column.defaultValue
 
           } else if (column.type === FormTypes.slot) {
-            value[key] = recordHasValue ? record[key] : (column.defaultValue || '')
+            slotValues[inputId] = recordHasValue ? record[key] : (column.defaultValue || '')
 
           } else {
             value[key] = recordHasValue ? record[key] : ''
           }
         })
-        rows.push(row)
-        this.inputValues.push(value)
+        if (typeof insertIndex === 'number') {
+          rows.splice(insertIndex, 0, row)
+          this.inputValues.splice(insertIndex, 0, value)
+        } else {
+          rows.push(row)
+          this.inputValues.push(value)
+        }
         this.checkboxValues = checkboxValues
         this.selectValues = selectValues
         this.jdateValues = jdateValues
+        this.slotValues = slotValues
 
         if (this.dragSort) {
           this.inputValues.forEach((item, index) => {
@@ -1097,21 +1225,20 @@
         }
         this.rows = rows
 
-        let rowValue = this.getValuesSync({
-          validate: false,
-          rowIds: [this.removeCaseId(row.id)]
-        }).values[0]
-
         this.$nextTick(() => {
           this.updateFormValues()
         })
         // 触发add事件
         this.$emit('added', {
-          row: rowValue,
+          row: (() => {
+            let r = Object.assign({}, row)
+            r.id = this.removeCaseId(r.id)
+            return r
+          })(),
           target: this
         })
         // 设置滚动条位置
-        let tbody = this.el.tbody
+        let tbody = this.getElement('tbody')
         let offsetHeight = tbody.offsetHeight
         let realScrollTop = tbody.scrollTop + offsetHeight
         if (forceScrollToBottom === false) {
@@ -1122,6 +1249,37 @@
         }
         this.$nextTick(() => {
           tbody.scrollTop = tbody.scrollHeight
+        })
+      },
+      /**
+       * 在指定位置添加一行
+       * @param insertIndex 添加位置下标
+       * @param num 添加的行数，默认1
+       */
+      insert(insertIndex, num = 1) {
+        if (!insertIndex && num < 1) return
+        let rows = this.rows
+        let newRows = []
+        for (let i = 0; i < num; i++) {
+          let row = { id: this.generateId(rows) }
+          rows = this.push(row, false, rows, insertIndex)
+          newRows.push(row)
+        }
+        // 同步更改
+        this.rows = rows
+        this.$nextTick(() => {
+          this.recalcSortNumber()
+          this.forceUpdateFormValues()
+        })
+        // 触发 insert 事件
+        this.$emit('inserted', {
+          rows: newRows.map(row => {
+            let r = cloneObject(row)
+            r.id = this.removeCaseId(r.id)
+            return r
+          }),
+          num, insertIndex,
+          target: this
         })
       },
       /** 删除被选中的行 */
@@ -1161,7 +1319,7 @@
           }
         })
         this.rows = rows
-        this.$emit('deleted', this.getDeleteIds())
+        this.$emit('deleted', this.getDeleteIds(), this)
         this.$nextTick(() => {
           // 更新formValues
           this.updateFormValues()
@@ -1169,13 +1327,14 @@
         return true
       },
 
-      /** 获取表格表单里的值（同步版） */
-      getValuesSync(options = {}) {
+      /** 获取表格表单里的值（异步版） */
+      getValuesAsync(options = {}, callback) {
         let { validate, rowIds } = options
         if (typeof validate !== 'boolean') validate = true
         if (!(rowIds instanceof Array)) rowIds = null
         // console.log('options:', { validate, rowIds })
 
+        let asyncCount = 0
         let error = 0
         let inputValues = cloneObject(this.inputValues)
         let tooltips = Object.assign({}, this.tooltips)
@@ -1225,43 +1384,52 @@
 
             } else if (column.type === FormTypes.image || column.type === FormTypes.file) {
               let currUploadObj = cloneObject(this.uploadValues[inputId] || null)
-              if(currUploadObj){
+              if (currUploadObj) {
                 value[column.key] = currUploadObj['path'] || null
               }
 
             } else if (column.type === FormTypes.popup) {
-              if(!value[column.key]){
+              if (!value[column.key]) {
                 value[column.key] = this.popupValues[inputId] || null
               }
             } else if (column.type === FormTypes.radio) {
               value[column.key] = this.radioValues[inputId]
-            }else if (column.type === FormTypes.sel_search) {
+            } else if (column.type === FormTypes.sel_search) {
               value[column.key] = this.searchSelectValues[inputId]
-            }else if (column.type === FormTypes.list_multi) {
-              if(!this.multiSelectValues[inputId] || this.multiSelectValues[inputId].length==0){
+            } else if (column.type === FormTypes.list_multi) {
+              if (!this.multiSelectValues[inputId] || this.multiSelectValues[inputId].length === 0) {
                 value[column.key] = ''
-              }else{
-                value[column.key] = this.multiSelectValues[inputId].join(",")
+              } else {
+                value[column.key] = this.multiSelectValues[inputId].join(',')
               }
+            } else if (column.type === FormTypes.slot) {
+              value[column.key] = this.slotValues[inputId]
             }
 
 
             // 检查表单验证
             if (validate === true) {
-              let results = this.validateOneInput(value[column.key], value, column, notPassedIds, false, 'getValues')
-              tooltips[inputId] = results[0]
-              if (tooltips[inputId].passed === false) {
-                error++
-                // if (error++ === 0) {
-                // let element = document.getElementById(inputId)
-                // while (element.className !== 'tr') {
-                //   element = element.parentElement
-                // }
-                // this.jumpToId(inputId, element)
-                // }
+              const handleValidateOneInput = (results) => {
+                tooltips[inputId] = results[0]
+                if (tooltips[inputId].passed === false) {
+                  error++
+                  // if (error++ === 0) {
+                  // let element = document.getElementById(inputId)
+                  // while (element.className !== 'tr') {
+                  //   element = element.parentElement
+                  // }
+                  // this.jumpToId(inputId, element)
+                  // }
+                }
+                tooltips[inputId].visible = false
+                notPassedIds = results[1]
               }
-              tooltips[inputId].visible = false
-              notPassedIds = results[1]
+              asyncCount++
+              let results = this.validateOneInputAsync(value[column.key], value, column, notPassedIds, false, 'getValues', (results) => {
+                handleValidateOneInput(results)
+                asyncCount--
+              })
+              handleValidateOneInput(results)
             }
           })
           // 将caseId去除
@@ -1274,25 +1442,42 @@
           this.tooltips = tooltips
           this.notPassedIds = notPassedIds
         }
+
+        const timer = setInterval(() => {
+          if (asyncCount === 0) {
+            clearInterval(timer)
+            if (typeof callback === 'function') {
+              callback({ error, values })
+            }
+          }
+        }, 50)
+
         return { error, values }
+      },
+
+      /** 获取表格表单里的值（同步版） */
+      getValuesSync(options = {}) {
+        return this.getValuesAsync(options)
       },
 
       /** 获取表格表单里的值 */
       getValues(callback, validate = true, rowIds) {
-        let result = this.getValuesSync({ validate, rowIds })
-        if (typeof callback === 'function') {
-          callback(result.error, result.values)
-        }
+        this.getValuesAsync({ validate, rowIds }, ({ error, values }) => {
+          if (typeof callback === 'function') {
+            callback(error, values)
+          }
+        })
       },
       /** getValues的Promise版 */
       getValuesPromise(validate = true, rowIds) {
         return new Promise((resolve, reject) => {
-          let { error, values } = this.getValuesSync({ validate, rowIds })
-          if (error === 0) {
-            resolve(values)
-          } else {
-            reject(VALIDATE_NO_PASSED)
-          }
+          this.getValuesAsync({ validate, rowIds }, ({ error, values }) => {
+            if (error === 0) {
+              resolve(values)
+            } else {
+              reject(VALIDATE_NO_PASSED)
+            }
+          })
         })
       },
       /** 获取被删除项的id */
@@ -1326,6 +1511,7 @@
           selectValues: this.selectValues,
           checkboxValues: this.checkboxValues,
           jdateValues: this.jdateValues,
+          slotValues: this.slotValues,
           uploadValues: this.uploadValues,
           popupValues: this.popupValues,
           radioValues: this.radioValues,
@@ -1371,6 +1557,11 @@
                 this.jdateValues[modelKey] = newValue
                 edited = true
               }
+              // 在 slotValues 中寻找值
+              if (!edited && this.slotValues.hasOwnProperty(modelKey)) {
+                this.slotValues[modelKey] = newValue
+                edited = true
+              }
             }
           }
         })
@@ -1384,20 +1575,30 @@
       //     element = document.getElementById(id)
       //   }
       //   if (element != null) {
-      //     console.log(this.el.tbody.scrollTop, element.offsetTop)
-      //     this.el.tbody.scrollTop = element.offsetTop
-      //     console.log(this.el.tbody.scrollTop, element.offsetTop)
+      //     console.log(this.getElement('tbody').scrollTop, element.offsetTop)
+      //     this.getElement('tbody').scrollTop = element.offsetTop
+      //     console.log(this.getElement('tbody').scrollTop, element.offsetTop)
       //   }
       // },
 
-      /** 验证单个表单 */
-      validateOneInput(value, row, column, notPassedIds, update = false, validType = 'input') {
+      /**
+       * 验证单个表单，异步版
+       *
+       * @param value 校验的值
+       * @param row 校验的行
+       * @param column 校验的列
+       * @param notPassedIds 没有通过校验的 id
+       * @param update 是否更新到vue中
+       * @param validType 校验触发的方式（input、blur等）
+       * @param callback
+       */
+      validateOneInputAsync(value, row, column, notPassedIds, update = false, validType = 'input', callback) {
         let tooltips = Object.assign({}, this.tooltips)
         // let notPassedIds = cloneObject(this.notPassedIds)
         let inputId = column.key + row.id
         tooltips[inputId] = tooltips[inputId] ? tooltips[inputId] : {}
 
-        let [passed, message] = this.validateValue(column.validateRules, value)
+        let [passed, message] = this.validateValue(column, value)
 
         const nextThen = res => {
           let [passed, message] = res
@@ -1431,13 +1632,24 @@
             if (column.type === FormTypes.date || column.type === FormTypes.datetime) {
               element = element.getElementsByTagName('input')[0]
             }
+            // upload 在 .ant-upload .ant-btn 上设置 border-color
+            if (column.type === FormTypes.upload || column.type === FormTypes.file || column.type === FormTypes.image) {
+              element = element.getElementsByClassName('ant-upload')[0].getElementsByClassName('ant-btn')[0]
+            }
             element.style.borderColor = borderColor
             element.style.boxShadow = boxShadow
+            if (element.tagName === 'SPAN') {
+              element.style.display = 'block'
+            }
           }
           // 是否更新到data
           if (update) {
             this.tooltips = tooltips
             this.notPassedIds = notPassedIds
+          }
+
+          if (typeof callback === 'function') {
+            callback([tooltips[inputId], notPassedIds])
           }
 
         }
@@ -1450,14 +1662,11 @@
             if (typeof msg === 'string') {
               message = msg
             }
-            if (flag == null) {
-              nextThen([null, message])
-            }else  if (typeof flag === 'boolean' && flag) {
+            if (flag == null || flag === true) {
               nextThen([true, message])
             } else {
               nextThen([false, message])
             }
-
           }, this)
         } else {
           nextThen([passed, message])
@@ -1465,8 +1674,14 @@
 
         return [tooltips[inputId], notPassedIds]
       },
+
+      /** 验证单个表单 */
+      validateOneInput(value, row, column, notPassedIds, update = false, validType = 'input') {
+        return this.validateOneInputAsync(value, row, column, notPassedIds, update, validType)
+      },
       /** 通过规则验证值是否正确 */
-      validateValue(rules, value) {
+      validateValue(column, value) {
+        let rules = column.validateRules
         let passed = true, message = ''
         // 判断有没有验证规则或验证规则格式正不正确，若条件不符合则默认通过
         if (rules instanceof Array) {
@@ -1477,12 +1692,24 @@
             if (rule.required === true && isNull) {
               passed = false
             } else // 使用 else-if 是为了防止一个 rule 中出现两个规则
+            // 验证规则：唯一校验
+            if (rule.unique === true || rule.pattern === 'only') {
+              let { values } = this.getValuesSync({ validate: false })
+              let findCount = 0
+              for (let val of values) {
+                if (val[column.key] === value) {
+                  if (++findCount >= 2) {
+                    passed = false
+                    break
+                  }
+                }
+              }
+            } else
             // 验证规则：正则表达式
             if (!!rule.pattern && !isNull) {
 
               // 兼容 online 的规则
               let foo = [
-                { title: '唯一校验', value: 'only', pattern: null },
                 { title: '6到16位数字', value: 'n6-16', pattern: /\d{6,18}/ },
                 { title: '6到16位任意字符', value: '*6-16', pattern: /^.{6,16}$/ },
                 { title: '网址', value: 'url', pattern: /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/ },
@@ -1491,7 +1718,7 @@
                 { title: '邮政编码', value: 'p', pattern: /^[1-9]\d{5}$/ },
                 { title: '字母', value: 's', pattern: /^[A-Z|a-z]+$/ },
                 { title: '数字', value: 'n', pattern: /^-?\d+\.?\d*$/ },
-                { title: '整数', value: 'z', pattern: /^[1-9]\d*$/ },
+                { title: '整数', value: 'z', pattern: /^-?\d+$/ },
                 { title: '非空', value: '*', pattern: /^.+$/ },
                 { title: '6到18位字符串', value: 's6-18', pattern: /^.{6,18}$/ },
                 { title: '金额', value: 'money', pattern: /^(([1-9][0-9]*)|([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2}))$/ },
@@ -1505,7 +1732,9 @@
                 }
               }
               if (!flag) passed = new RegExp(rule.pattern).test(value)
-            } else if (typeof rule.handler === 'function') {
+            } else
+            // 校验规则：自定义函数校验
+            if (typeof rule.handler === 'function') {
               return [rule.handler, rule.message]
             }
             // 如果没有通过验证，则跳出循环。如果通过了验证，则继续验证下一条规则
@@ -1520,7 +1749,7 @@
 
       /** 动态更新表单的值 */
       updateFormValues() {
-        let trs = this.el.tbody.getElementsByClassName('tr')
+        let trs = this.getElement('tbody').getElementsByClassName('tr')
         let trEls = []
         for (let tr of trs) {
           trEls.push(tr)
@@ -1652,6 +1881,11 @@
         }
       },
 
+      /** 触发已拖动事件 */
+      emitDragged(oldIndex, newIndex) {
+        this.$emit('dragged', { oldIndex, newIndex, target: this })
+      },
+
       /** 拖动结束，交换inputValue中的值 */
       handleDragMoveEnd(event) {
         let { oldIndex, newIndex, item: { dataset: { idx: dataIdx } } } = event
@@ -1662,13 +1896,7 @@
         newIndex += diff
 
         this.rowResort(oldIndex, newIndex)
-
-        // 触发已拖动事件
-        this.$emit('dragged', {
-          oldIndex,
-          newIndex,
-          target: this
-        })
+        this.emitDragged(oldIndex, newIndex)
       },
 
       /** 行重新排序 */
@@ -1684,10 +1912,41 @@
         sort(this.rows)
         sort(this.inputValues)
 
-        // 重置排序字段
-        this.inputValues.forEach((val, idx) => val[this.dragSortKey] = (idx + 1))
+        this.recalcSortNumber()
 
         this.forceUpdateFormValues()
+      },
+
+      /** 重新计算排序字段的数值 */
+      recalcSortNumber() {
+        if (this.dragSort) {
+          // 重置排序字段
+          this.inputValues.forEach((val, idx) => val[this.dragSortKey] = (idx + 1))
+        }
+      },
+
+      /** 当前行向上移一位 */
+      _handleRowMoveUp(rowIndex) {
+        if (rowIndex > 0) {
+          let newIndex = rowIndex - 1
+          this.rowResort(rowIndex, newIndex)
+          this.emitDragged(rowIndex, newIndex)
+        }
+      },
+
+      /** 当前行向下移一位 */
+      _handleRowMoveDown(rowIndex) {
+        if (rowIndex < (this.rows.length - 1)) {
+          let newIndex = rowIndex + 1
+          this.rowResort(rowIndex, newIndex)
+          this.emitDragged(rowIndex, newIndex)
+        }
+      },
+
+      /** 在当前行下面插入一行 */
+      _handleRowInsertDown(rowIndex) {
+        let insertIndex = (rowIndex + 1)
+        this.insert(insertIndex)
       },
 
       /* --- common function begin --- */
@@ -1732,6 +1991,14 @@
           this.elemValueChange(type, row, column, value)
         }
       },
+      /** slot Change */
+      handleChangeSlotCommon(value, id, row, column) {
+        this.slotValues = this.bindValuesChange(value, id, 'slotValues')
+        // 做单个表单验证
+        this.validateOneInput(value, row, column, this.notPassedIds, true, 'change')
+        // 触发valueChange 事件
+        this.elemValueChange(FormTypes.slot, row, column, value)
+      },
       handleBlurCommono(target, index, row, column) {
         let { value } = target
         // 做单个表单验证
@@ -1775,16 +2042,18 @@
         if (column.responseName && file.response) {
           value['responseName'] = file.response[column.responseName]
         }
-        if(file.status =='done'){
+        if (file.status == 'done') {
           value['path'] = file.response[column.responseName]
         }
         this.uploadValues = this.bindValuesChange(value, id, 'uploadValues')
       },
       /** 记录用到数据绑定的组件的值 */
       bindValuesChange(value, id, key) {
-        let values = Object.assign({}, this[key])
-        values[id] = value
-        return values
+        // let values = Object.assign({}, this[key])
+        // values[id] = value
+        // return values
+        this.$set(this[key], id, value)
+        return this[key]
       },
 
       /** 显示或隐藏tooltip */
@@ -1823,7 +2092,13 @@
       handleClickDelFile(id) {
         this.uploadValues[id] = null
       },
-
+      handleClickDownloadFile(id) {
+        let { path } = this.uploadValues[id] || {}
+        if (path) {
+          let url = window._CONFIG['staticDomainURL'] + '/' + path
+          window.open(url)
+        }
+      },
       /** 加载数据字典并合并到 options */
       _loadDictConcatToOptions(column) {
         initDictOptions(column.dictCode).then((res) => {
@@ -1980,42 +2255,42 @@
         return headers
       },
       /** 上传请求地址 */
-      getUploadAction(value){
-        if(!value){
-          return window._CONFIG['domianURL']+"/sys/common/upload"
-        }else{
+      getUploadAction(value) {
+        if (!value) {
+          return window._CONFIG['domianURL'] + '/sys/common/upload'
+        } else {
           return value
         }
       },
       /** 预览图片地址 */
-      getCellImageView(id){
+      getCellImageView(id) {
         let currUploadObj = this.uploadValues[id] || null
-        if(currUploadObj && currUploadObj['path']){
-          return window._CONFIG['domianURL']+"/sys/common/view/"+currUploadObj['path']
-        }else{
+        if (currUploadObj && currUploadObj['path']) {
+          return window._CONFIG['staticDomainURL'] + '/' + currUploadObj['path']
+        } else {
           return ''
         }
       },
       /** popup回调 */
-      popupCallback(value,others,id,row,column,index){
+      popupCallback(value, others, id, row, column, index) {
         // 存储输入的值
-        this.popupValues[id]=value
-        if(others){
-          Object.keys(others).map((key)=>{
+        this.popupValues[id] = value
+        if (others) {
+          Object.keys(others).map((key) => {
             this.inputValues[index][key] = others[key]
           })
         }
         // 做单个表单验证
         this.validateOneInput(value, row, column, this.notPassedIds, true, 'change')
         // 触发valueChange 事件
-        this.elemValueChange("input", row, column, value)
+        this.elemValueChange('input', row, column, value)
         // 更新form表单的值
         this.$nextTick(() => {
           this.forceUpdateFormValues()
         })
       },
       /** popup输入框回显 */
-      getPopupValue(id){
+      getPopupValue(id) {
         return this.popupValues[id]
       },
       handleRadioChange(value, id, row, column) {
@@ -2201,7 +2476,7 @@
 
       .td {
         /*flex: 1;*/
-        padding: 14px 0 14px @spacing;
+        padding: 14px @spacing 14px 0;
         justify-content: center;
 
         &:last-child {
