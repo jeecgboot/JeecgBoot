@@ -52,7 +52,7 @@
     }
   }
 </script>
-<style lang="scss" scoped>
+<style lang="less" scoped>
   .information {
     line-height: 22px;
 
