@@ -15,7 +15,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
   .toolbar {
     position: fixed;
     width: 100%;

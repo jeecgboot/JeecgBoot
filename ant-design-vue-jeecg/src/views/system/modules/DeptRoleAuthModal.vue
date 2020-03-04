@@ -201,7 +201,7 @@
   }
 
 </script>
-<style lang="scss" scoped>
+<style lang="less" scoped>
   .drawer-bootom-button {
     position: absolute;
     bottom: 0;
