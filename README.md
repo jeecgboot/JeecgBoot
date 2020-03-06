@@ -110,13 +110,13 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 语言：Java 8
 
-- IDE(JAVA)： IDEA / Eclipse安装lombok插件 
+- IDE(JAVA)： IDEA安装lombok插件 
 
-- IDE(前端)： WebStorm 或者 IDEA
+- IDE(前端)： WebStorm
 
 - 依赖管理：Maven
 
-- 数据库：MySQL5.7+  &  Oracle 11g & Sqlserver2017
+- 数据库：PostgreSQL 12.1
 
 - 缓存：Redis
 
