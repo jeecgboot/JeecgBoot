@@ -1,1 +1,1 @@
-This directory descirbing the VueX's components.
+This directory descirbes the VueX's components.
