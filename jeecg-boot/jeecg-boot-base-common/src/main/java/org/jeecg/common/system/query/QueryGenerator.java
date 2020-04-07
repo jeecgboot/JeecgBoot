@@ -483,11 +483,11 @@ public class QueryGenerator {
 	}
 	
 	public static String converRuleValue(String ruleValue) {
-		String value = JwtUtil.getSessionData(ruleValue);
-		if(oConvertUtils.isEmpty(value)) {
-			value = JwtUtil.getUserSystemData(ruleValue,null);
-		}
-		return value!= null ? value : ruleValue;
+		// 从session中替换占位符的值
+		ruleValue = JwtUtil.getSessionData(ruleValue);
+		// 从当前用户信息中替换占位符的值
+		ruleValue = JwtUtil.getUserSystemData(ruleValue, null);
+		return ruleValue;
 	}
 	
 	public static String getSqlRuleValue(String sqlRule){

@@ -9,7 +9,9 @@ import com.google.common.base.Joiner;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
@@ -104,17 +106,19 @@ public class JwtUtil {
 	 * @return
 	 */
 	public static String getSessionData(String key) {
-		Matcher m = Pattern.compile(".*#\\{(.+)\\}.*").matcher(key);
-		if (m.find()) {
-			String acturalKey = m.group(1);
-			HttpSession session = SpringContextUtils.getHttpServletRequest().getSession();
-			String value = (String) session.getAttribute(acturalKey);
+		Matcher m = Pattern.compile(".*?#\\{(.+?)\\}.*?").matcher(key);
+		Set<String> mappedKeys = new HashSet<>();
+		while (m.find()) {
+			mappedKeys.add(m.group(1));
+		}
+		HttpSession session = SpringContextUtils.getHttpServletRequest().getSession();
+		for(String mappedKey: mappedKeys) {
+			String value = (String) session.getAttribute(mappedKey);
 			if (value != null) {
-				key = key.replace(String.format("#\\{%s\\}", acturalKey), value);
-				return key;
+				key = key.replaceAll(String.format("#\\{%s\\}", mappedKey), value);
 			}
 		}
-		return null;
+		return key;
 	}
 
 	/**
@@ -186,12 +190,15 @@ public class JwtUtil {
 
 		// 替换形如#{key}的值
 		// for (String mappedKey : mappedValues.keySet()) {
-		// 	key = key.replaceAll(String.format("#\\{%s\\}", mappedKey), mappedValues.get(mappedKey));
+		// key = key.replaceAll(String.format("#\\{%s\\}", mappedKey), mappedValues.get(mappedKey));
 		// }
 		// 优化替换逻辑
 		Matcher m = Pattern.compile(".*?#\\{(.+?)\\}.*?").matcher(key);
-		while(m.find()) {
-			String mappedKey = m.group(1);
+		Set<String> mappedKeys = new HashSet<>();
+		while (m.find()) {
+			mappedKeys.add(m.group(1));
+		}
+		for (String mappedKey : mappedKeys) {
 			key = key.replaceAll(String.format("#\\{%s\\}", mappedKey), mappedValues.get(mappedKey));
 		}
 		return key;
