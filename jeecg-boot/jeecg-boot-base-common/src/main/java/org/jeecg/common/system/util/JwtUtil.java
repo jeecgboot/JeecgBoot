@@ -8,9 +8,12 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.common.base.Joiner;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.exception.JeecgBootException;
@@ -93,110 +96,110 @@ public class JwtUtil {
 		}
 		return username;
 	}
-	
+
 	/**
-	  *  从session中获取变量
+	 * 从session中获取变量
+	 * 
 	 * @param key
 	 * @return
 	 */
 	public static String getSessionData(String key) {
-		//${myVar}%
-		//得到${} 后面的值
-		String moshi = "";
-		if(key.indexOf("}")!=-1){
-			 moshi = key.substring(key.indexOf("}")+1);
-		}
-		String returnValue = null;
-		if (key.contains("#{")) {
-			key = key.substring(2,key.indexOf("}"));
-		}
-		if (oConvertUtils.isNotEmpty(key)) {
+		Matcher m = Pattern.compile(".*#\\{(.+)\\}.*").matcher(key);
+		if (m.find()) {
+			String acturalKey = m.group(1);
 			HttpSession session = SpringContextUtils.getHttpServletRequest().getSession();
-			returnValue = (String) session.getAttribute(key);
+			String value = (String) session.getAttribute(acturalKey);
+			if (value != null) {
+				key = key.replace(String.format("#\\{%s\\}", acturalKey), value);
+				return key;
+			}
 		}
-		//结果加上${} 后面的值
-		if(returnValue!=null){returnValue = returnValue + moshi;}
-		return returnValue;
+		return null;
 	}
-	
+
 	/**
-	  * 从当前用户中获取变量
+	 * 从当前用户中获取变量
+	 * 
 	 * @param key
 	 * @param user
 	 * @return
 	 */
-	//TODO 急待改造 sckjkdsjsfjdk
-	public static String getUserSystemData(String key,SysUserCacheInfo user) {
-		if(user==null) {
+	// TODO 急待改造 sckjkdsjsfjdk
+	public static String getUserSystemData(String key, SysUserCacheInfo user) {
+		if (user == null) {
 			user = JeecgDataAutorUtils.loadUserInfo();
 		}
-		//#{sys_user_code}%
-		
 		// 获取登录用户信息
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		
-		String moshi = "";
-		if(key.indexOf("}")!=-1){
-			 moshi = key.substring(key.indexOf("}")+1);
-		}
-		String returnValue = null;
-		//针对特殊标示处理#{sysOrgCode}，判断替换
-		if (key.contains("#{")) {
-			key = key.substring(2,key.indexOf("}"));
+
+		Map<String, String> mappedValues = new HashMap<>();
+		String value = null;
+		if (user == null) {
+			value = sysUser.getUsername();
 		} else {
-			key = key;
+			value = user.getSysUserCode();
 		}
-		//替换为系统登录用户帐号
-		if (key.equals(DataBaseConstant.SYS_USER_CODE)|| key.equals(DataBaseConstant.SYS_USER_CODE_TABLE)) {
-			if(user==null) {
-				returnValue = sysUser.getUsername();
-			}else {
-				returnValue = user.getSysUserCode();
-			}
+		// 替换为系统登录用户帐号
+		mappedValues.put(DataBaseConstant.SYS_USER_CODE, value);
+		mappedValues.put(DataBaseConstant.SYS_USER_CODE_TABLE, value);
+		// 替换为系统登录用户真实名字
+		if (user == null) {
+			value = sysUser.getRealname();
+		} else {
+			value = user.getSysUserName();
 		}
-		//替换为系统登录用户真实名字
-		else if (key.equals(DataBaseConstant.SYS_USER_NAME)|| key.equals(DataBaseConstant.SYS_USER_NAME_TABLE)) {
-			if(user==null) {
-				returnValue = sysUser.getRealname();
-			}else {
-				returnValue = user.getSysUserName();
-			}
+		mappedValues.put(DataBaseConstant.SYS_USER_NAME, value);
+		mappedValues.put(DataBaseConstant.SYS_USER_NAME_TABLE, value);
+
+		// 替换为系统用户登录所使用的机构编码
+		if (user == null) {
+			value = sysUser.getOrgCode();
+		} else {
+			value = user.getSysOrgCode();
 		}
-		
-		//替换为系统用户登录所使用的机构编码
-		else if (key.equals(DataBaseConstant.SYS_ORG_CODE)|| key.equals(DataBaseConstant.SYS_ORG_CODE_TABLE)) {
-			if(user==null) {
-				returnValue = sysUser.getOrgCode();
-			}else {
-				returnValue = user.getSysOrgCode();
-			}
+		mappedValues.put(DataBaseConstant.SYS_ORG_CODE, value);
+		mappedValues.put(DataBaseConstant.SYS_ORG_CODE_TABLE, value);
+
+		// 替换为系统用户所拥有的所有机构编码
+		if (user.isOneDepart()) {
+			value = user.getSysMultiOrgCode().get(0);
+		} else {
+			value = Joiner.on(",").join(user.getSysMultiOrgCode());
 		}
-		//替换为系统用户所拥有的所有机构编码
-		else if (key.equals(DataBaseConstant.SYS_MULTI_ORG_CODE)|| key.equals(DataBaseConstant.SYS_MULTI_ORG_CODE_TABLE)) {
-			if(user.isOneDepart()) {
-				returnValue = user.getSysMultiOrgCode().get(0);
-			}else {
-				returnValue = Joiner.on(",").join(user.getSysMultiOrgCode());
-			}
+		mappedValues.put(DataBaseConstant.SYS_MULTI_ORG_CODE, value);
+		mappedValues.put(DataBaseConstant.SYS_MULTI_ORG_CODE_TABLE, value);
+
+		// 替换为当前系统时间(年月日)
+		value = user.getSysDate();
+		mappedValues.put(DataBaseConstant.SYS_DATE, value);
+		mappedValues.put(DataBaseConstant.SYS_DATE_TABLE, value);
+
+		// 替换为当前系统时间（年月日时分秒）
+		value = user.getSysTime();
+		mappedValues.put(DataBaseConstant.SYS_TIME, value);
+		mappedValues.put(DataBaseConstant.SYS_TIME_TABLE, value);
+
+		// 流程状态默认值（默认未发起）
+		value = "1";
+		mappedValues.put(DataBaseConstant.BPM_STATUS, value);
+		mappedValues.put(DataBaseConstant.BPM_STATUS_TABLE, value);
+
+		// 替换形如#{key}的值
+		// for (String mappedKey : mappedValues.keySet()) {
+		// 	key = key.replaceAll(String.format("#\\{%s\\}", mappedKey), mappedValues.get(mappedKey));
+		// }
+		// 优化替换逻辑
+		Matcher m = Pattern.compile(".*?#\\{(.+?)\\}.*?").matcher(key);
+		while(m.find()) {
+			String mappedKey = m.group(1);
+			key = key.replaceAll(String.format("#\\{%s\\}", mappedKey), mappedValues.get(mappedKey));
 		}
-		//替换为当前系统时间(年月日)
-		else if (key.equals(DataBaseConstant.SYS_DATE)|| key.equals(DataBaseConstant.SYS_DATE_TABLE)) {
-			returnValue = user.getSysDate();
-		}
-		//替换为当前系统时间（年月日时分秒）
-		else if (key.equals(DataBaseConstant.SYS_TIME)|| key.equals(DataBaseConstant.SYS_TIME_TABLE)) {
-			returnValue = user.getSysTime();
-		}
-		//流程状态默认值（默认未发起）
-		else if (key.equals(DataBaseConstant.BPM_STATUS)|| key.equals(DataBaseConstant.BPM_STATUS_TABLE)) {
-			returnValue = "1";
-		}
-		if(returnValue!=null){returnValue = returnValue + moshi;}
-		return returnValue;
+		return key;
 	}
-	
+
 	public static void main(String[] args) {
-		 String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjUzMzY1MTMsInVzZXJuYW1lIjoiYWRtaW4ifQ.xjhud_tWCNYBOg_aRlMgOdlZoWFFKB_givNElHNw3X0";
-		 System.out.println(JwtUtil.getUsername(token));
+		String token =
+				"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjUzMzY1MTMsInVzZXJuYW1lIjoiYWRtaW4ifQ.xjhud_tWCNYBOg_aRlMgOdlZoWFFKB_givNElHNw3X0";
+		System.out.println(JwtUtil.getUsername(token));
 	}
 }
