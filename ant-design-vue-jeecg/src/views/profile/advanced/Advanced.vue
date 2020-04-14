@@ -300,7 +300,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 
   .detail-layout {
     margin-left: 44px;

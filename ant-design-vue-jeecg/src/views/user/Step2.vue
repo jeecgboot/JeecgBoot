@@ -184,7 +184,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
   .stepFormText {
     margin-bottom: 24px;
   }

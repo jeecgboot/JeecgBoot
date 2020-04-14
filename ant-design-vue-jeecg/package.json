@@ -54,8 +54,6 @@
     "html-webpack-plugin": "^4.0.0-beta.11",
     "less": "^3.9.0",
     "less-loader": "^4.1.0",
-    "node-sass": "^4.13.1",
-    "sass-loader": "^7.3.1",
     "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {
@@ -65,7 +63,7 @@
     },
     "extends": [
       "plugin:vue/strongly-recommended",
-      "eslint:recommended"
+      "@vue/standard"
     ],
     "parserOptions": {
       "parser": "babel-eslint"
@@ -93,7 +91,9 @@
       "vue/no-use-v-if-with-v-for": 0,
       "vue/html-closing-bracket-newline": 0,
       "vue/no-parsing-error": 0,
-      "no-console": 0
+      "no-console": 0,
+      "no-tabs": 0,
+      "indent": [1, 4]
     }
   },
   "postcss": {
@@ -104,6 +104,6 @@
   "browserslist": [
     "> 1%",
     "last 2 versions",
-    "not ie <= 8"
+    "not ie <= 10"
   ]
 }

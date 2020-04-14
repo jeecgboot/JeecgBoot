@@ -22,7 +22,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 
   .setting-drawer-index-item {
     margin-bottom: 24px;

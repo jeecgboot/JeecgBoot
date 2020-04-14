@@ -221,25 +221,21 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
   /* update_begin author:zhaoxin date:20191129 for: 让搜索框颜色能随主题颜色变换*/
   /* update-begin author:sunjianlei date:20191220 for: 解决全局样式冲突问题 */
   .user-wrapper .search-input {
     width: 180px;
     color: inherit;
 
-    /deep/ {
-      .ant-select-selection {
+    /deep/ .ant-select-selection {
         background-color: inherit;
         border: 0;
         border-bottom: 1px solid white;
+        &__placeholder, &__field__placeholder {
+          color: inherit;
+        }
       }
-
-      .ant-select-selection__placeholder,
-      .ant-select-search__field__placeholder {
-        color: inherit;
-      }
-    }
   }
   /* update-end author:sunjianlei date:20191220 for: 解决全局样式冲突问题 */
   /* update_end author:zhaoxin date:20191129 for: 让搜索框颜色能随主题颜色变换*/

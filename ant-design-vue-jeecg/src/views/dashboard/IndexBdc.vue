@@ -446,7 +446,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
   .extra-wrapper {
     line-height: 55px;
     padding-right: 24px;
