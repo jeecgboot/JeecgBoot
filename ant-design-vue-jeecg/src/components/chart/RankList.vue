@@ -32,7 +32,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 
   .rank {
     padding: 0 32px 32px 72px;

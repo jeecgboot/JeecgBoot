@@ -218,7 +218,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
   .circle-cust{
     position: relative;
     top: 28px;

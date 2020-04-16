@@ -125,7 +125,7 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="less">
   .j-modal-box {
 
     &.fullscreen {
@@ -180,8 +180,5 @@
       }
     }
 
-    /deep/ {
-
-    }
   }
 </style>
