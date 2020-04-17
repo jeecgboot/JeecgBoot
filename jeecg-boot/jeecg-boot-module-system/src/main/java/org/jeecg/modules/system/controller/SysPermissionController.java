@@ -23,6 +23,7 @@ import org.jeecg.modules.system.model.TreeModel;
 import org.jeecg.modules.system.service.*;
 import org.jeecg.modules.system.util.PermissionDataUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -239,6 +240,40 @@ public class SysPermissionController {
 			result.success("查询成功");
 		} catch (Exception e) {
 			result.error500("查询失败:" + e.getMessage());  
+			log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+
+
+	/**
+	 * 查询用户拥有的按钮权限（根据TOKEN）.
+	 * 提供给第三方验证前端请求的地址是否有权限访问该地址。
+	 * @return
+	 */
+	@RequestMapping(value = "/getUserButtonPathsByToken", method = RequestMethod.GET)
+	public Result<?> getUserButtonPathsByToken(@RequestParam(name = "token", required = true) String token) {
+		Result<JSONArray> result = new Result<JSONArray>();
+		try {
+			if (oConvertUtils.isEmpty(token)) {
+				return Result.error("TOKEN不允许为空！");
+			}
+			log.info(" ------ 通过令牌获取用户拥有的访问菜单 ---- TOKEN ------ " + token);
+			String username = JwtUtil.getUsername(token);
+
+			if(StringUtils.isEmpty(username)){
+				return Result.noauth("token不合法！");
+			}
+
+			List<SysPermission> metaList = sysPermissionService.queryByUser(username);
+
+			JSONArray authjsonArray = new JSONArray();
+			this.getAuthJsonArray(authjsonArray, metaList);
+
+			result.setResult(authjsonArray);
+			result.success("查询成功");
+		} catch (Exception e) {
+			result.error500("查询失败:" + e.getMessage());
 			log.error(e.getMessage(), e);
 		}
 		return result;
@@ -476,6 +511,7 @@ public class SysPermissionController {
 			json.put("status", permission.getStatus());
 			json.put("type", permission.getPermsType());
 			json.put("describe", permission.getName());
+			json.put("path", permission.getUrl());
 			jsonArray.add(json);
 		}
 	}
@@ -496,6 +532,7 @@ public class SysPermissionController {
 				json.put("action", permission.getPerms());
 				json.put("type", permission.getPermsType());
 				json.put("describe", permission.getName());
+				json.put("path",permission.getUrl());
 				jsonArray.add(json);
 			}
 		}
@@ -717,7 +754,7 @@ public class SysPermissionController {
 	/**
 	 * 删除菜单权限数据
 	 * 
-	 * @param sysPermissionDataRule
+	 * @param id
 	 * @return
 	 */
 	@RequestMapping(value = "/deletePermissionRule", method = RequestMethod.DELETE)
