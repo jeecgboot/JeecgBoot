@@ -95,6 +95,14 @@
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
+              label="摘要">
+              <a-textarea placeholder="请输入摘要" v-decorator="['msgAbstract',validatorRules.msgAbstract]" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24/2">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
               label="指定用户"
               v-if="userType">
               <a-select
@@ -165,8 +173,9 @@
           title:{rules: [{ required: true, message: '请输入标题!' }]},
           msgCategory:{rules: [{ required: true, message: '请选择消息类型!' }]},
           msgType:{rules: [{ required: true, message: '请选择通告对象类型!' }]},
-          endTime:{rules:[{validator: this.endTimeValidate}]},
-          startTime:{rules:[{validator: this.startTimeValidate}]}
+          endTime:{rules:[{ required: true, message: '请选择结束时间!'} ,{validator: this.endTimeValidate}]},
+          startTime:{rules:[{required: true, message: '请选择开始时间!'},{validator: this.startTimeValidate}]},
+          msgAbstract:{rules: [{ required: true, message: '请输入摘要!' }]},
         },
         url: {
           queryByIds: "/sys/user/queryByIds",
@@ -209,7 +218,7 @@
           });
         }
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'endTime','startTime','titile','msgContent','sender','priority','msgCategory','msgType','sendStatus','delFlag'))
+          this.form.setFieldsValue(pick(this.model,'endTime','startTime','titile','msgContent','sender','priority','msgCategory','msgType','sendStatus','delFlag','msgAbstract'))
         });
       },
       close () {
@@ -219,6 +228,11 @@
       },
       handleOk () {
         const that = this;
+        //当设置指定用户类型，但用户为空时，后台报错
+        if(this.userType &&!(this.userIds!=null && this.userIds.length >0)){
+            this.$message.warning('指定用户不能为空！')
+            return;
+          }
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
@@ -241,6 +255,7 @@
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');
+                that.resetUser();
               }else{
                 that.$message.warning(res.message);
               }

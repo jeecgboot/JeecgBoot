@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>2.1.4</version>
+  <version>2.2.0</version>
   <packaging>pom</packaging>
   
   	<parent>
@@ -16,7 +16,7 @@
 	<modules>
 		<module>jeecg-boot-base-common</module>
 		<module>jeecg-boot-module-system</module>
-	</modules>
+    </modules>
 
 	<distributionManagement>
 	  	<repository>
@@ -51,7 +51,7 @@
 	</repositories>
 	
     <properties>
-        <jeecgboot.common.version>2.1.4</jeecgboot.common.version>
+        <jeecgboot.version>2.2.0</jeecgboot.version>
         <java.version>1.8</java.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -174,6 +174,21 @@
 			<version>42.2.6</version>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-re</artifactId>
+			<version>2.1.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-collections</groupId>
+					<artifactId>commons-collections</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		
 		 <!-- Quartz定时任务 -->
         <dependency>
@@ -204,31 +219,32 @@
                     <groupId>org.apache.shiro</groupId>
                     <artifactId>shiro-core</artifactId>
                 </exclusion>
-            </exclusions>
-        </dependency>
-
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-re</artifactId>
-			<version>2.1.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<exclusions>
 				<exclusion>
-					<groupId>commons-collections</groupId>
-					<artifactId>commons-collections</artifactId>
+					<artifactId>guava</artifactId>
+					<groupId>com.google.guava</groupId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-
+        </dependency>
 
 		<!-- Swagger API文档 -->
         <dependency>
 		    <groupId>io.springfox</groupId>
 		    <artifactId>springfox-swagger2</artifactId>
 		    <version>2.9.2</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>swagger-annotations</artifactId>
+					<groupId>io.swagger</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>swagger-models</artifactId>
+					<groupId>io.swagger</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>guava</artifactId>
+					<groupId>com.google.guava</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 		    <groupId>io.springfox</groupId>
@@ -244,6 +260,12 @@
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-bean-validators</artifactId>
 			<version>2.9.2</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>guava</artifactId>
+					<groupId>com.google.guava</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
         <!-- # 增加两个配置解决 NumberFormatException -->
         <dependency>
@@ -273,14 +295,14 @@
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>codegenerate</artifactId>
-			<version>1.1.0</version>
+			<version>1.2.0</version>
 		</dependency>
 		
         <!-- AutoPoi Excel工具类-->
 		<dependency>
 			<groupId>org.jeecgframework</groupId>
 			<artifactId>autopoi-web</artifactId>
-			<version>1.0.5</version>
+			<version>1.1.1</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-codec</groupId>
@@ -300,6 +322,16 @@
 			<groupId>io.minio</groupId>
 			<artifactId>minio</artifactId>
 			<version>4.0.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>guava</artifactId>
+					<groupId>com.google.guava</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jsr305</artifactId>
+					<groupId>com.google.code.findbugs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -313,18 +345,6 @@
 			<artifactId>aliyun-java-sdk-dysmsapi</artifactId>
 			<version>${aliyun-java-sdk-dysmsapi.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.aliyun</groupId>
-			<artifactId>aliyun-java-sdk-core</artifactId>
-			<version>${aliyun-java-sdk-core.version}</version>
-		</dependency>
-		
-		<!--HttpClient-->
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.5.3</version>
-		</dependency>
 		
 		<!-- websocket -->
 		<dependency>
@@ -332,23 +352,24 @@
 		   <artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
 
-		<!-- starter-jdbc -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jdbc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-			<version>1.4</version>
-			<scope>compile</scope>
-		</dependency>
-
 		<!-- aliyun oss -->
 		<dependency>
 			<groupId>com.aliyun.oss</groupId>
 			<artifactId>aliyun-sdk-oss</artifactId>
 			<version>${aliyun.oss.version}</version>
+		</dependency>
+
+		<!-- 第三方登录 -->
+		<dependency>
+			<groupId>com.xkcoding.justauth</groupId>
+			<artifactId>justauth-spring-boot-starter</artifactId>
+			<version>1.3.2</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>fastjson</artifactId>
+					<groupId>com.alibaba</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 	</dependencies>
@@ -359,7 +380,7 @@
 			<dependency>
 	    		<groupId>org.jeecgframework.boot</groupId>
 	    		<artifactId>jeecg-boot-base-common</artifactId>
-	    		<version>${jeecgboot.common.version}</version>
+	    		<version>${jeecgboot.version}</version>
 	    	</dependency>
 	    	<!-- 七牛云SDK -->
 			<dependency>

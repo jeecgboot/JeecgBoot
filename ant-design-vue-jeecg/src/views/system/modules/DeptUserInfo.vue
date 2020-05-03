@@ -26,9 +26,9 @@
     </div>
     <!-- 操作按钮区域 -->
     <div class="table-operator" :md="24" :sm="24" style="margin-top: -15px">
-      <a-button @click="handleAdd" type="primary" icon="plus" style="margin-top: 16px">用户录入</a-button>
       <!--<a-button @click="handleEdit" type="primary" icon="edit" style="margin-top: 16px">用户编辑</a-button>-->
       <a-button @click="handleAddUserDepart" type="primary" icon="plus">添加已有用户</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus" style="margin-top: 16px">新建用户</a-button>
 
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
@@ -75,17 +75,18 @@
               更多 <a-icon type="down"/>
             </a>
             <a-menu slot="overlay">
+                <a-menu-item>
+                <a href="javascript:;" @click="handleDeptRole(record)">分配部门角色</a>
+              </a-menu-item>
+
               <a-menu-item>
-                <a href="javascript:;" @click="handleDetail(record)">详情</a>
+                <a href="javascript:;" @click="handleDetail(record)">用户详情</a>
               </a-menu-item>
 
               <a-menu-item>
                 <a-popconfirm title="确定取消与选中部门关联吗?" @confirm="() => handleDelete(record.id)">
                   <a>取消关联</a>
                 </a-popconfirm>
-              </a-menu-item>
-              <a-menu-item>
-                <a href="javascript:;" @click="handleDeptRole(record)">分配部门角色</a>
               </a-menu-item>
             </a-menu>
           </a-dropdown>
@@ -124,14 +125,19 @@
         currentDeptId: '',
         // 表头
         columns: [{
-          title: '用户账号',
-          align: "center",
-          dataIndex: 'username'
-        },
+            title: '用户账号',
+            align: "center",
+            dataIndex: 'username'
+          },
           {
             title: '用户名称',
             align: "center",
             dataIndex: 'realname'
+          },
+          {
+            title: '部门',
+            align: "center",
+            dataIndex: 'orgCode'
           },
           {
             title: '性别',
@@ -144,16 +150,11 @@
             dataIndex: 'phone'
           },
           {
-            title: '部门',
-            align: "center",
-            dataIndex: 'orgCode'
-          },
-          {
             title: '操作',
             dataIndex: 'action',
             scopedSlots: {customRender: 'action'},
             align: "center",
-            width: 170
+            width: 150
           }],
         url: {
           list: "/sys/user/departUserList",
@@ -169,9 +170,7 @@
     methods: {
       searchReset() {
         this.queryParam = {}
-        this.currentDeptId = '';
         this.loadData(1);
-        this.$emit('clearSelectedDepartKeys')
       },
       loadData(arg) {
         if (!this.url.list) {
@@ -315,8 +314,12 @@
         })
       },
       handleDeptRole(record){
-        this.$refs.deptRoleUser.add(record,this.currentDeptId);
-        this.$refs.deptRoleUser.title = "部门角色分配";
+        if(this.currentDeptId != ''){
+          this.$refs.deptRoleUser.add(record,this.currentDeptId);
+          this.$refs.deptRoleUser.title = "部门角色分配";
+        }else{
+          this.$message.warning("请先选择一个部门!");
+        }
       }
     }
   }

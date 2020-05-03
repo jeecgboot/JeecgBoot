@@ -15,14 +15,14 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="字典名称">
-          <a-input placeholder="请输入字典名称" v-decorator="[ 'dictName', validatorRules.dictName]"/>
+          <a-input placeholder="请输入字典名称" v-decorator.trim="[ 'dictName', validatorRules.dictName]"/>
         </a-form-item>
 
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="字典编码">
-          <a-input placeholder="请输入字典编码" v-decorator="[ 'dictCode', validatorRules.dictCode]"/>
+          <a-input placeholder="请输入字典编码" v-decorator.trim="[ 'dictCode', validatorRules.dictCode]"/>
         </a-form-item>
 
         <a-form-item

@@ -23,6 +23,7 @@
   import 'tinymce/plugins/colorpicker'
   import 'tinymce/plugins/textcolor'
   import 'tinymce/plugins/fullscreen'
+  import { uploadAction,getFileAccessHttpUrl } from '@/api/manage'
   export default {
     components: {
       Editor
@@ -65,8 +66,21 @@
           menubar: false,
           toolbar_drawer: false,
           images_upload_handler: (blobInfo, success) => {
-            const img = 'data:image/jpeg;base64,' + blobInfo.base64()
-            success(img)
+            let formData = new FormData()
+            formData.append('file', blobInfo.blob(), blobInfo.filename());
+            formData.append('biz', "jeditor");
+            formData.append("jeditor","1");
+            uploadAction(window._CONFIG['domianURL']+"/sys/common/upload", formData).then((res) => {
+              if (res.success) {
+                if(res.message == 'local'){
+                  const img = 'data:image/jpeg;base64,' + blobInfo.base64()
+                  success(img)
+                }else{
+                  let img = getFileAccessHttpUrl(res.message)
+                  success(img)
+                }
+              }
+            })
           }
         },
         myValue: this.value

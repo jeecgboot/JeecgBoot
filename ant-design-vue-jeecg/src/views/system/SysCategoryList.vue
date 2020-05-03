@@ -39,9 +39,11 @@
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
           <a-divider type="vertical" />
-          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
             <a>删除</a>
           </a-popconfirm>
+          <a-divider type="vertical" />
+          <a @click="handleAddSub(record)">添加下级</a>
         </span>
 
       </a-table>
@@ -56,6 +58,7 @@
   import { getAction } from '@/api/manage'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import SysCategoryModal from './modules/SysCategoryModal'
+  import { deleteAction } from '@/api/manage'
   
   export default {
     name: "SysCategoryList",
@@ -69,12 +72,12 @@
         // 表头
         columns: [
           {
-            title:'类型名称',
+            title:'分类名称',
             align:"left",
             dataIndex: 'name'
           },
           {
-            title:'类型编码',
+            title:'分类编码',
             align:"left",
             dataIndex: 'code'
           },
@@ -97,7 +100,8 @@
         hasChildrenField:"hasChild",
         pidField:"pid",
         dictOptions:{
-        } 
+        },
+        subExpandedKeys:[],
       }
     },
     computed: {
@@ -228,6 +232,8 @@
                 this.dataSource = [...this.dataSource]
                 resolve()
               }else{
+                row.children=''
+                row.hasChildrenField='0'
                 reject()
               }
             }else{
@@ -243,6 +249,45 @@
               this.parentFormData = arr[i]
             }else{
               this.getFormDataById(id,arr[i].children)
+            }
+          }
+        }
+      },
+      handleAddSub(record){
+        this.subExpandedKeys = [];
+        this.getExpandKeysByPid(record.id,this.dataSource,this.dataSource)
+        this.$refs.modalForm.subExpandedKeys = this.subExpandedKeys;
+        this.$refs.modalForm.title = "添加子分类";
+        this.$refs.modalForm.edit({'pid':record.id});
+        this.$refs.modalForm.disableSubmit = false;
+      },
+      handleDelete: function (record) {
+        let that = this;
+        deleteAction(that.url.delete, {id: record.id}).then((res) => {
+          if (res.success) {
+            if (record.pid && record.pid!='0') {
+              let formData = {pid: record.pid};
+              that.$message.success(res.message);
+              that.subExpandedKeys = [];
+              that.getExpandKeysByPid(record.pid, this.dataSource, this.dataSource)
+              that.addOk(formData, this.subExpandedKeys.reverse())
+            } else {
+              that.loadData();
+            }
+          } else {
+            that.$message.warning(res.message);
+          }
+        });
+      },
+      // 添加子分类时获取所有父级id
+      getExpandKeysByPid(pid,arr,all){
+        if(pid && arr && arr.length>0){
+          for(let i=0;i<arr.length;i++){
+            if(arr[i].id==pid){
+              this.subExpandedKeys.push(arr[i].id)
+              this.getExpandKeysByPid(arr[i]['pid'],all,all)
+            }else{
+              this.getExpandKeysByPid(pid,arr[i].children,all)
             }
           }
         }

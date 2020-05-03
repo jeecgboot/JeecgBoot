@@ -3,8 +3,18 @@
 <template>
   <a-card :bordered="false" :class="'cust-erp-sub-tab'">
     <!-- 操作按钮区域 -->
-    <div class="table-operator">
-      <a-button v-if="mainId" @click="handleAdd" type="primary" icon="plus">新增</a-button>
+    <div class="table-operator" v-if="mainId">
+      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('${sub.ftlDescription}')">导出</a-button>
+      <a-upload
+        name="file"
+        :showUploadList="false"
+        :multiple="false"
+        :headers="tokenHeader"
+        :action="importExcelUrl"
+        @change="handleImportExcel">
+          <a-button type="primary" icon="import">导入</a-button>
+      </a-upload>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -36,11 +46,11 @@
           <div v-html="text"></div>
         </template>
         <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此图片</span>
-          <img v-else :src="getImgView(text)" height="25px" alt="图片不存在" style="max-width:80px;font-size: 12px;font-style: italic;"/>
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
+          <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width:80px;font-size: 12px;font-style: italic;"/>
         </template>
         <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此文件</span>
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
           <a-button
             v-else
             :ghost="true"
@@ -157,7 +167,9 @@
         url: {
           list: "/${entityPackage}/${entityName?uncap_first}/list${sub.entityName}ByMainId",
           delete: "/${entityPackage}/${entityName?uncap_first}/delete${sub.entityName}",
-          deleteBatch: "/${entityPackage}/${entityName?uncap_first}/deleteBatch${sub.entityName}"
+          deleteBatch: "/${entityPackage}/${entityName?uncap_first}/deleteBatch${sub.entityName}",
+          exportXlsUrl: "/${entityPackage}/${entityName?uncap_first}/export${sub.entityName}",
+          importUrl: "/${entityPackage}/${entityName?uncap_first}/import${sub.entityName}",
         },
         dictOptions:{
          <#list columns as po>
@@ -169,6 +181,11 @@
          </#list>
         },
 
+      }
+    },
+    computed: {
+      importExcelUrl(){
+        return `${'$'}{window._CONFIG['domianURL']}/${'$'}{this.url.importUrl}/${'$'}{this.mainId}`;
       }
     },
     methods: {

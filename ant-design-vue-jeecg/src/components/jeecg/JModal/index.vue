@@ -1,8 +1,8 @@
 <template>
   <a-modal
     ref="modal"
-    class="j-modal-box"
-    :class="{'fullscreen':innerFullscreen,'no-title':isNoTitle,'no-footer':isNoFooter,}"
+    :class="getClass(modalClass)"
+    :style="getStyle(modalStyle)"
     :visible="visible"
     v-bind="_attrs"
     v-on="$listeners"
@@ -38,6 +38,8 @@
 
 <script>
 
+  import { getClass, getStyle } from '@/utils/props-util'
+
   export default {
     name: 'JModal',
     props: {
@@ -47,12 +49,17 @@
       // 是否全屏弹窗，当全屏时无论如何都会禁止 body 滚动。可使用 .sync 修饰符
       fullscreen: {
         type: Boolean,
-        default: true
+        default: false
       },
       // 是否允许切换全屏（允许后右上角会出现一个按钮）
       switchFullscreen: {
         type: Boolean,
         default: false
+      },
+      // 点击确定按钮的时候是否关闭弹窗
+      okClose: {
+        type: Boolean,
+        default: true
       },
     },
     data() {
@@ -73,6 +80,22 @@
         }
         return attrs
       },
+      modalClass() {
+        return {
+          'j-modal-box': true,
+          'fullscreen': this.innerFullscreen,
+          'no-title': this.isNoTitle,
+          'no-footer': this.isNoFooter,
+        }
+      },
+      modalStyle() {
+        let style = {}
+        // 如果全屏就将top设为 0
+        if (this.innerFullscreen) {
+          style['top'] = '0'
+        }
+        return style
+      },
       isNoTitle() {
         return !this.title && !this.allSlotsKeys.includes('title')
       },
@@ -90,7 +113,7 @@
       },
       // 切换全屏的按钮图标
       fullscreenButtonIcon() {
-        return this.innerFullscreen ? 'fullscreen' : 'fullscreen-exit'
+        return this.innerFullscreen ? 'fullscreen-exit' : 'fullscreen'
       },
     },
     watch: {
@@ -105,12 +128,21 @@
     },
     methods: {
 
+      getClass(clazz) {
+        return { ...getClass(this), ...clazz }
+      },
+      getStyle(style) {
+        return { ...getStyle(this), ...style }
+      },
+
       close() {
         this.$emit('update:visible', false)
       },
 
       handleOk() {
-        this.close()
+        if (this.okClose) {
+          this.close()
+        }
       },
       handleCancel() {
         this.close()
@@ -167,6 +199,7 @@
 
       .right {
         width: 56px;
+        position: inherit;
 
         .ant-modal-close {
           right: 56px;
@@ -180,5 +213,13 @@
       }
     }
 
+
+  }
+
+  @media (max-width: 767px) {
+    .j-modal-box.fullscreen {
+      margin: 0;
+      max-width: 100vw;
+    }
   }
 </style>

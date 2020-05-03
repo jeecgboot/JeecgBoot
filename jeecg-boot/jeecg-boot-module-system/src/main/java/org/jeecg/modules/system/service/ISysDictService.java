@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jeecg.common.system.vo.DictModel;
+import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.modules.system.entity.SysDict;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysDictItem;
@@ -21,14 +22,20 @@ public interface ISysDictService extends IService<SysDict> {
 
     public List<DictModel> queryDictItemsByCode(String code);
 
+    public Map<String,List<DictModel>> queryAllDictItems();
+
+    @Deprecated
     List<DictModel> queryTableDictItemsByCode(String table, String text, String code);
-    
+
+    @Deprecated
 	public List<DictModel> queryTableDictItemsByCodeAndFilter(String table, String text, String code, String filterSql);
 
     public String queryDictTextByKey(String code, String key);
 
+    @Deprecated
 	String queryTableDictTextByKey(String table, String text, String code, String key);
 
+	@Deprecated
 	List<String> queryTableDictByKeys(String table, String text, String code, String[] keyArray);
 
     /**
@@ -42,7 +49,7 @@ public interface ISysDictService extends IService<SysDict> {
     /**
      * 添加一对多
      */
-    public void saveMain(SysDict sysDict, List<SysDictItem> sysDictItemList);
+    public Integer saveMain(SysDict sysDict, List<SysDictItem> sysDictItemList);
     
     /**
 	 * 查询所有部门 作为字典信息 id -->value,departName -->text
@@ -64,6 +71,7 @@ public interface ISysDictService extends IService<SysDict> {
 	 * @param keyword
 	 * @return
 	 */
+	@Deprecated
 	public List<DictModel> queryTableDictItems(String table, String text, String code,String keyword);
 	
 	/**
@@ -76,6 +84,7 @@ public interface ISysDictService extends IService<SysDict> {
 	 * @param hasChildField
 	 * @return
 	 */
+	@Deprecated
 	List<TreeSelectModel> queryTreeList(Map<String, String> query,String table, String text, String code, String pidField,String pid,String hasChildField);
 
 	/**
@@ -97,5 +106,14 @@ public interface ISysDictService extends IService<SysDict> {
 	 */
 	public List<SysDict> queryDeleteList();
 
+	/**
+	 * 分页查询
+	 * @param query
+	 * @param pageSize
+	 * @param pageNo
+	 * @return
+	 */
+	@Deprecated
+	public List<DictModel> queryDictTablePageList(DictQuery query,int pageSize, int pageNo);
 
 }

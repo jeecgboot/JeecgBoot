@@ -1,3 +1,4 @@
+<#include "/common/utils.ftl">
 <#list subTables as sub>
 <#if sub.foreignRelationType=='1'>
 #segment#${sub.entityName}Form.vue
@@ -12,6 +13,7 @@
 <#assign form_sel_depart = false>
 <#assign form_sel_user = false>
 <#assign form_file = false>
+<#assign form_image = false>
 
 <#list sub.colums as po>
 <#if po.isShow =='Y'>
@@ -25,45 +27,48 @@
         <a-col :span="24">
           <a-form-item label="${po.filedComment}" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
 	<#else>
-        <a-col :span="12">
+        <a-col :xs="24" :sm="12">
           <a-form-item label="${po.filedComment}" :labelCol="labelCol" :wrapperCol="wrapperCol">
 	</#if>
 	<#if po.classType =='date'>
 		<#assign form_date=true>
-            <j-date placeholder="请选择${po.filedComment}" v-decorator="[ '${po.fieldName}', validatorRules.${po.fieldName}]" :trigger-change="true" style="width: 100%"/>
+            <j-date placeholder="请选择${po.filedComment}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" style="width: 100%"/>
 	<#elseif po.classType =='datetime'>
 		<#assign form_date=true>
-            <j-date placeholder="请选择${po.filedComment}" v-decorator="[ '${po.fieldName}', validatorRules.${po.fieldName}]" :trigger-change="true" :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" style="width: 100%"/>
+            <j-date placeholder="请选择${po.filedComment}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" style="width: 100%"/>
 	<#elseif po.classType =='popup'>
 		<#assign form_popup=true>
             <j-popup
-              v-decorator="['${po.fieldName}']"
+              v-decorator="['${po.fieldName}'${autoWriteRules(po)}]"
               :trigger-change="true"
               org-fields="${po.dictField}"
-              dest-fields="${po.dictText}"
+              dest-fields="${Format.underlineToHump(po.dictText)}"
               code="${po.dictTable}"
               @callback="popupCallback"/>
 	<#elseif po.classType =='sel_depart'>
 		<#assign form_sel_depart=true>
-            <j-select-depart v-decorator="['${po.fieldName}']" :trigger-change="true"/>
+            <j-select-depart v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true"/>
 	<#elseif po.classType =='sel_user'>
 		<#assign form_sel_user = true>
-            <j-select-user-by-dep v-decorator="['${po.fieldName}']" :trigger-change="true"/>
+            <j-select-user-by-dep v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true"/>
 	<#elseif po.classType =='textarea'>
-            <a-textarea v-decorator="['${po.fieldName}']" rows="4" placeholder="请输入${po.filedComment}"/>
+            <a-textarea v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" rows="4" placeholder="请输入${po.filedComment}"/>
 	<#elseif po.classType=='list' || po.classType=='radio'>
 		<#assign form_select = true>
-            <j-dict-select-tag type="${po.classType}" v-decorator="['${po.fieldName}']" :trigger-change="true" dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}"/>
+            <j-dict-select-tag type="${po.classType}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}"/>
 	<#elseif po.classType=='list_multi' || po.classType=='checkbox'>
 		<#assign form_select_multi = true>
-            <j-multi-select-tag type="${po.classType}" v-decorator="['${po.fieldName}']" :trigger-change="true" dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}"/>
+            <j-multi-select-tag type="${po.classType}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}"/>
 	<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
-            <a-input-number v-decorator="[ '${po.fieldName}', validatorRules.${po.fieldName}]" placeholder="请输入${po.filedComment}" style="width: 100%"/>
-	<#elseif po.classType=='file' || po.classType=='image'>
+            <a-input-number v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}" style="width: 100%"/>
+	<#elseif po.classType=='file'>
 		<#assign form_file = true>
-            <j-upload v-decorator="['${po.fieldName}']" :trigger-change="true"></j-upload>
+            <j-upload v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true"></j-upload>
+    <#elseif po.classType=='image'>
+        <#assign form_image = true>
+            <j-image-upload isMultiple v-decorator="['${po.fieldName}'${autoWriteRules(po)}]"></j-image-upload>
 	<#else>
-            <a-input v-decorator="[ '${po.fieldName}', validatorRules.${po.fieldName}]" placeholder="请输入${po.filedComment}"></a-input>
+            <a-input v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}"></a-input>
     </#if>
           </a-form-item>
         </a-col>
@@ -76,11 +81,15 @@
 <script>
   import pick from 'lodash.pick'
   import { getAction } from '@/api/manage'
+  import { validateDuplicateValue } from '@/utils/util'
   <#if form_date>
   import JDate from '@/components/jeecg/JDate'  
   </#if>
   <#if form_file>
   import JUpload from '@/components/jeecg/JUpload'
+  </#if>
+  <#if form_image>
+  import JImageUpload from '@/components/jeecg/JImageUpload'
   </#if>
   <#if form_sel_depart>
   import JSelectDepart from '@/components/jeecgbiz/JSelectDepart'
@@ -104,6 +113,9 @@
     <#if form_file>
       JUpload,
     </#if>
+    <#if form_image>
+      JImageUpload,
+    </#if>
     <#if form_sel_depart>
       JSelectDepart,
     </#if>
@@ -122,32 +134,23 @@
         form: this.$form.createForm(this),
         model: {},
         labelCol: {
-          span: 6
+          xs: { span: 24 },
+          sm: { span: 6 },
         },
         wrapperCol: {
-          span: 16
+          xs: { span: 24 },
+          sm: { span: 16 },
         },
         labelCol2: {
-          span: 3
+          xs: { span: 24 },
+          sm: { span: 3 },
         },
         wrapperCol2: {
-          span: 20
+          xs: { span: 24 },
+          sm: { span: 20 },
         },
+        <#include "/common/validatorRulesTemplate/sub.ftl">
         confirmLoading: false,
-        validatorRules:{
-        <#list sub.colums as po>
-        <#if po.fieldName !='id'>
-        <#if po.isShow =='Y'>
-        <#if po.nullable =='N'>
-          ${po.fieldName}:{rules: [{ required: true, message: '请输入${po.filedComment}!' }]},
-        <#else>
-          ${po.fieldName}:{},
-        </#if>
-        </#if>
-        </#if>
-	    </#list>
-        },
-        
       }
     },
     methods:{

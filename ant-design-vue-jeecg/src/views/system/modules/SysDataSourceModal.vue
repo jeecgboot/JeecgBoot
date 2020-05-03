@@ -14,14 +14,14 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="数据源名称">
-          <a-input placeholder="请输入数据源名称" v-decorator="['name', validatorRules.name]"/>
+          label="数据源编码">
+          <a-input placeholder="请输入数据源编码" :disabled="!!model.id" v-decorator="['code', validatorRules.code]"/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="数据源编码">
-          <a-input placeholder="请输入数据源编码" :disabled="!!model.id" v-decorator="['code', validatorRules.code]"/>
+          label="数据源名称">
+          <a-input placeholder="请输入数据源名称" v-decorator="['name', validatorRules.name]"/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -137,6 +137,14 @@
           '2': { dbDriver: 'oracle.jdbc.OracleDriver' },
           // SQLServer 数据库
           '3': { dbDriver: 'com.microsoft.sqlserver.jdbc.SQLServerDriver' },
+        },
+        dbUrlMap: {
+          // MySQL 数据库
+          '1': { dbUrl: 'jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false' },
+          // Oracle
+          '2': { dbUrl: 'jdbc:oracle:thin:@127.0.0.1:1521:ORCL' },
+          // SQLServer 数据库
+          '3': { dbUrl: 'jdbc:sqlserver://127.0.0.1:1433;SelectMethod=cursor;DatabaseName=jeecgboot' }
         }
       }
     },
@@ -216,8 +224,12 @@
       // 数据库类型更改时，联动更改数据库驱动
       handleDbTypeChange(val) {
         let dbDriver = this.dbDriverMap[val]
+        let dbUrl = this.dbUrlMap[val]
         if (dbDriver) {
           this.form.setFieldsValue(dbDriver)
+        }
+        if (dbUrl) {
+          this.form.setFieldsValue(dbUrl)
         }
       },
     }

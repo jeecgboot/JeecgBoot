@@ -102,8 +102,9 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
     @ApiOperation(value = "多数据源管理-编辑", notes = "多数据源管理-编辑")
     @PutMapping(value = "/edit")
     public Result<?> edit(@RequestBody SysDataSource sysDataSource) {
+        SysDataSource d = sysDataSourceService.getById(sysDataSource.getId());
+        DataSourceCachePool.removeCache(d.getCode());
         sysDataSourceService.updateById(sysDataSource);
-        DataSourceCachePool.removeCacheById(sysDataSource.getId());
         return Result.ok("编辑成功!");
     }
 
@@ -117,8 +118,9 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
     @ApiOperation(value = "多数据源管理-通过id删除", notes = "多数据源管理-通过id删除")
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id") String id) {
+        SysDataSource sysDataSource = sysDataSourceService.getById(id);
+        DataSourceCachePool.removeCache(sysDataSource.getCode());
         sysDataSourceService.removeById(id);
-        DataSourceCachePool.removeCacheById(id);
         return Result.ok("删除成功!");
     }
 
@@ -133,8 +135,11 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name = "ids") String ids) {
         List<String> idList = Arrays.asList(ids.split(","));
+        idList.forEach(item->{
+            SysDataSource sysDataSource = sysDataSourceService.getById(item);
+            DataSourceCachePool.removeCache(sysDataSource.getCode());
+        });
         this.sysDataSourceService.removeByIds(idList);
-        idList.forEach(DataSourceCachePool::removeCacheById);
         return Result.ok("批量删除成功！");
     }
 

@@ -126,9 +126,9 @@ public interface CommonConstant {
     /**
      * 同步工作流引擎1同步0不同步
      */
-    public static final String ACT_SYNC_0 = "0";
-    public static final String ACT_SYNC_1 = "1";
-    
+    public static final Integer ACT_SYNC_1 = 1;
+    public static final Integer ACT_SYNC_0 = 0;
+
     /**
      * 消息类型1:通知公告2:系统消息
      */
@@ -142,7 +142,7 @@ public interface CommonConstant {
     public static final Integer RULE_FLAG_1 = 1;
 
     /**
-     * 是否用户已被冻结 1(解冻)正常 2冻结
+     * 是否用户已被冻结 1正常(解冻) 2冻结
      */
     public static final Integer USER_UNFREEZE = 1;
     public static final Integer USER_FREEZE = 2;
@@ -205,8 +205,61 @@ public interface CommonConstant {
     public static final String UPLOAD_TYPE_OSS = "alioss";
 
     /**
+     * 文档上传自定义桶名称
+     */
+    public static final String UPLOAD_CUSTOM_BUCKET = "eoafile";
+    /**
+     * 文档上传自定义路径
+     */
+    public static final String UPLOAD_CUSTOM_PATH = "eoafile";
+    /**
+     * 文件外链接有效天数
+     */
+    public static final Integer UPLOAD_EFFECTIVE_DAYS = 1;
+
+    /**
      * 员工身份 （1:普通员工  2:上级）
      */
     public static final Integer USER_IDENTITY_1 = 1;
     public static final Integer USER_IDENTITY_2 = 2;
+
+    /** sys_user 表 username 唯一键索引 */
+    public static final String SQL_INDEX_UNIQ_SYS_USER_USERNAME = "uniq_sys_user_username";
+    /** sys_user 表 work_no 唯一键索引 */
+    public static final String SQL_INDEX_UNIQ_SYS_USER_WORK_NO = "uniq_sys_user_work_no";
+    /** sys_user 表 phone 唯一键索引 */
+    public static final String SQL_INDEX_UNIQ_SYS_USER_PHONE = "uniq_sys_user_phone";
+    /** sys_user 表 email 唯一键索引 */
+    public static final String SQL_INDEX_UNIQ_SYS_USER_EMAIL = "uniq_sys_user_email";
+    /** sys_quartz_job 表 job_class_name 唯一键索引 */
+    public static final String SQL_INDEX_UNIQ_JOB_CLASS_NAME = "uniq_job_class_name";
+    /** sys_position 表 code 唯一键索引 */
+    public static final String SQL_INDEX_UNIQ_CODE = "uniq_code";
+    /** sys_role 表 code 唯一键索引 */
+    public static final String SQL_INDEX_UNIQ_SYS_ROLE_CODE = "uniq_sys_role_role_code";
+    /** sys_depart 表 code 唯一键索引 */
+    public static final String SQL_INDEX_UNIQ_DEPART_ORG_CODE = "uniq_depart_org_code";
+    /**
+     * 在线聊天 是否为默认分组
+     */
+    public static final String IM_DEFAULT_GROUP = "1";
+    /**
+     * 在线聊天 图片文件保存路径
+     */
+    public static final String IM_UPLOAD_CUSTOM_PATH = "imfile";
+    /**
+     * 在线聊天 用户状态
+     */
+    public static final String IM_STATUS_ONLINE = "online";
+
+    /**
+     * 在线聊天 SOCKET消息类型
+     */
+    public static final String IM_SOCKET_TYPE = "chatMessage";
+
+    /**
+     * 考勤补卡业务状态 （1：同意  2：不同意）
+     */
+    public static final String SIGN_PATCH_BIZ_STATUS_1 = "1";
+    public static final String SIGN_PATCH_BIZ_STATUS_2 = "2";
 }

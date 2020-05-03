@@ -47,11 +47,11 @@
         v-bind="tableProps">
         
         <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此图片</span>
-          <img v-else :src="getImgView(text)" height="25px" alt="图片不存在" style="max-width:80px;font-size: 12px;font-style: italic;"/>
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
+          <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width:80px;font-size: 12px;font-style: italic;"/>
         </template>
         <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此文件</span>
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
           <a-button
             v-else
             :ghost="true"
@@ -71,7 +71,10 @@
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
               <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                <a @click="handleAddChild(record)">添加下级</a>
+              </a-menu-item>
+              <a-menu-item>
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDeleteNode(record)">
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
@@ -88,7 +91,7 @@
 
 <script>
 
-  import { getAction } from '@/api/manage'
+  import { getAction, deleteAction } from '@/api/manage'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import ${entityName}Modal from './modules/${entityName}Modal'
   import {filterMultiDictText} from '@/components/dict/JDictSelectUtil'
@@ -157,7 +160,8 @@
         expandedRowKeys:[],
         hasChildrenField:"${hasChildrenField}",
         pidField:"${pidFieldName}",
-        dictOptions: {}
+        dictOptions: {},
+        loadParent: false
       }
     },
     computed: {
@@ -274,9 +278,14 @@
         if(!formData[this.pidField]){
           this.loadData()
         }else{
-          this.expandedRowKeys=[]
-          for(let i of arr){
-            await this.expandTreeNode(i)
+          if(this.loadParent===true){
+            this.expandTreeNode(formData[this.pidField])
+            this.loadParent = false
+          }else{
+            this.expandedRowKeys=[]
+            for(let i of arr){
+              await this.expandTreeNode(i)
+            }
           }
         }
       },
@@ -291,11 +300,11 @@
             if(res.success){
               if(res.result && res.result.length>0){
                 row.children = this.getDataByResult(res.result)
-                this.dataSource = [...this.dataSource]
-                resolve()
               }else{
-                reject()
+                row.children=''
               }
+              this.dataSource = [...this.dataSource]
+              resolve()
             }else{
               reject()
             }
@@ -313,8 +322,32 @@
           }
         }
       },
-      
-       
+      handleAddChild(record){
+        this.loadParent = true
+        let obj = {}
+        obj[this.pidField] = record['id']
+        this.$refs.modalForm.add(obj);
+      },
+      handleDeleteNode(record) {
+        if(!this.url.delete){
+          this.$message.error("请设置url.delete属性!")
+          return
+        }
+        var that = this;
+        deleteAction(that.url.delete, {id: record.id}).then((res) => {
+          if (res.success) {
+            if(!record[this.pidField] || record[this.pidField] =='0' || record[this.pidField].length==0){
+              that.loadData(1)
+            }else{
+              that.$message.success(res.message);
+              that.expandTreeNode(record[this.pidField]);
+            }
+          } else {
+            that.$message.warning(res.message);
+          }
+        });
+      }
+
     }
   }
 </script>

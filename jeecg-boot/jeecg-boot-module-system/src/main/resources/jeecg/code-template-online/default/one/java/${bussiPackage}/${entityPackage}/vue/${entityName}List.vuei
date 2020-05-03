@@ -9,7 +9,16 @@
 <#assign query_field_date=false>
 <#assign list_need_dict=false>
 <#assign list_need_category=false>
+<#assign query_field_pca=false>
+<#assign list_need_pca=false>
 <#assign query_flag=false>
+<#assign query_inp=false>
+<#assign query_popup=false>
+<#assign query_sel_user=false>
+<#assign query_sel_dep=false>
+<#assign query_sel_multi=false>
+<#assign query_sel_cat=false>
+<#assign query_sel_search=false>
 <#-- 开始循环 -->
 <#list columns as po>
 <#if po.isQuery=='Y'>
@@ -17,15 +26,41 @@
 	<#if query_field_no==2>
           <template v-if="toggleSearchStatus">
 	</#if>
+	<#assign query_field_dictCode="">
+	<#if po.dictTable?default("")?trim?length gt 1>
+	    <#assign query_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+    <#elseif po.dictField?default("")?trim?length gt 1>
+        <#assign query_field_dictCode="${po.dictField}">
+    </#if>
 	<#if po.queryMode=='single'>
           <#if query_field_no gt 1>  </#if><a-col :xl="6" :lg="7" :md="8" :sm="24">
             <#if query_field_no gt 1>  </#if><a-form-item label="${po.filedComment}">
-			<#if po.classType=='date'>
+            <#if po.classType=='sel_search'>
+<#assign query_sel_search=true>
+              <#if query_field_no gt 1>  </#if><j-search-select-tag placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" dict="${po.dictTable},${po.dictText},${po.dictField}"/>
+            <#elseif po.classType=='sel_user'>
+<#assign query_sel_user=true>
+              <#if query_field_no gt 1>  </#if><j-select-user-by-dep placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"/>
+            <#elseif po.classType=='sel_depart'>
+<#assign query_sel_dep=true>
+              <#if query_field_no gt 1>  </#if><j-select-depart placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"/>
+            <#elseif po.classType=='list_multi'>
+<#assign query_sel_multi=true>
+              <#if query_field_no gt 1>  </#if><j-multi-select-tag placeholder="请选择${po.filedComment}" dictCode="${query_field_dictCode?default("")}" v-model="queryParam.${po.fieldName}"/>
+            <#elseif po.classType=='cat_tree'>
+<#assign query_sel_cat=true>
+              <#if query_field_no gt 1>  </#if><j-category-select placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" pcode="${po.dictField?default("")}"/>
+			<#elseif po.classType=='date'>
 <#assign query_field_date=true>
               <#if query_field_no gt 1>  </#if><j-date placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"></j-date>
 			<#elseif po.classType=='datetime'>
 <#assign query_field_date=true>
               <#if query_field_no gt 1>  </#if><j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"></j-date>
+            <#elseif po.classType=='pca'>
+<#assign query_field_pca=true>
+              <#if query_field_no gt 1>  </#if><j-area-linkage type="cascader" v-model="queryParam.${po.fieldName}" placeholder="请选择省市区"/>
+            <#elseif po.classType=='popup'>
+              <#if query_field_no gt 1>  </#if><j-popup placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" code="${po.dictTable}" org-fields="${po.dictField}" dest-fields="${po.dictText}" :field="getPopupField('${po.dictText}')"/>
 			<#elseif po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
 <#assign query_field_select=true>
 			<#--  ---------------------------下拉或是单选 判断数据字典是表字典还是普通字典------------------------------- -->
@@ -70,6 +105,9 @@
 <#if po.classType=='cat_tree' && po.dictText?default("")?trim?length == 0>
 <#assign list_need_category=true>
 </#if>
+<#if po.classType=='pca'>
+<#assign list_need_pca=true>
+</#if>
 </#list>
 <#-- 结束循环 -->
 <#t>
@@ -88,7 +126,6 @@
             </span>
           </a-col>
 </#if>
-
         </a-row>
       </a-form>
     </div>
@@ -125,19 +162,24 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
-        <#if tableVo.extendParams.scroll=='1'>:scroll="tableScroll"</#if>
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        class="j-table-force-nowrap"
         @change="handleTableChange">
 
         <template slot="htmlSlot" slot-scope="text">
           <div v-html="text"></div>
         </template>
         <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此图片</span>
-          <img v-else :src="getImgView(text)" height="25px" alt="图片不存在" style="max-width:80px;font-size: 12px;font-style: italic;"/>
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
+          <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width:80px;font-size: 12px;font-style: italic;"/>
         </template>
+        <#if list_need_pca>
+        <template slot="pcaSlot" slot-scope="text">
+          <div>{{ getPcaText(text) }}</div>
+        </template>
+        </#if>
         <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此文件</span>
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
           <a-button
             v-else
             :ghost="true"
@@ -174,6 +216,8 @@
 
 <script>
 
+  import '@/assets/less/TableExpand.less'
+  import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import ${entityName}Modal from './modules/${entityName}Modal'
   <#if query_field_select>
@@ -188,16 +232,61 @@
   <#if list_need_dict>
   import {filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   </#if>
+  <#if query_field_pca>
+  import JAreaLinkage from '@comp/jeecg/JAreaLinkage'
+  </#if>
+  <#if list_need_pca>
+  import Area from '@/components/_util/Area'
+  </#if>
+  <#if query_inp>
+  import JInput from '@comp/jeecg/JInput'
+  </#if>
+  <#if query_sel_user>
+  import JSelectUserByDep from '@/components/jeecgbiz/JSelectUserByDep'
+  </#if>
+  <#if query_sel_dep>
+  import JSelectDepart from '@/components/jeecgbiz/JSelectDepart'
+  </#if>
+  <#if query_sel_multi>
+  import JMultiSelectTag from '@/components/dict/JMultiSelectTag'
+  </#if>
+  <#if query_sel_cat>
+  import JCategorySelect from '@comp/jeecg/JCategorySelect'
+  </#if>
+  <#if query_sel_search>
+  import JSearchSelectTag from '@/components/dict/JSearchSelectTag'
+  </#if>
 
   export default {
     name: "${entityName}List",
-    mixins:[JeecgListMixin],
+    mixins:[JeecgListMixin, mixinDevice],
     components: {
       <#if query_field_select>
       JDictSelectTag,
       </#if>
       <#if query_field_date>
       JDate,
+      </#if>
+      <#if query_field_pca>
+      JAreaLinkage,
+      </#if>
+      <#if query_inp>
+      JInput,
+      </#if>
+      <#if query_sel_user>
+      JSelectUserByDep,
+      </#if>
+      <#if query_sel_dep>
+      JSelectDepart,
+      </#if>
+      <#if query_sel_multi>
+      JMultiSelectTag,
+      </#if>
+      <#if query_sel_cat>
+      JCategorySelect,
+      </#if>
+      <#if query_sel_search>
+      JSearchSelectTag,
       </#if>
       ${entityName}Modal
     },
@@ -218,7 +307,7 @@
           },
     <#assign showColNum=0>
 	<#list columns as po>
-	<#if po.isShowList =='Y'>
+	<#if po.isShowList =='Y' && po.fieldName !='id'>
 	<#assign showColNum=showColNum+1>
           {
             title:'${po.filedComment}',
@@ -233,6 +322,9 @@
             <#elseif po.classType=='umeditor'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'htmlSlot'}
+            <#elseif po.classType=='pca'>
+            dataIndex: '${po.fieldName}',
+            scopedSlots: {customRender: 'pcaSlot'}
             <#elseif po.classType=='file'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'fileSlot'}
@@ -260,7 +352,7 @@
             dataIndex: 'action',
             align:"center",
             <#if tableVo.extendParams.scroll=='1'>
-            fixed:"right",
+            // fixed:"right",
             width:147,
             </#if>
             scopedSlots: { customRender: 'action' }
@@ -274,22 +366,32 @@
           importExcelUrl: "${entityPackage}/${entityName?uncap_first}/importExcel",
         },
         dictOptions:{},
-        <#if tableVo.extendParams.scroll=='1'>
-        tableScroll:{x :${showColNum}*147+50}
+        <#if list_need_pca>
+        pcaData:''
         </#if>
       }
     },
+    <#if list_need_pca>
+    created() {
+      this.pcaData = new Area()
+    },
+    </#if>
     computed: {
       importExcelUrl: function(){
         <#noparse>return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;</#noparse>
-      }
+      },
     },
     methods: {
+    <#if list_need_pca>
+      getPcaText(code){
+        return this.pcaData.getText(code);
+      },
+    </#if>
       initDictConfig(){
       <#list columns as po>
       <#if (po.isQuery=='Y' || po.isShowList=='Y') && po.classType!='popup'>
         <#if po.classType=='cat_tree' && list_need_category==true>
-        loadCategoryData({code:"${po.dictField}"}).then((res) => {
+        loadCategoryData({code:'${po.dictField?default("")}'}).then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, '${po.fieldName}', res.result)
           }

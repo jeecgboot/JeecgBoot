@@ -189,7 +189,6 @@ public class SysCategoryController {
       * 导出excel
    *
    * @param request
-   * @param response
    */
   @RequestMapping(value = "/exportXls")
   public ModelAndView exportXls(HttpServletRequest request, SysCategory sysCategory) {
@@ -376,8 +375,8 @@ public class SysCategoryController {
 				result.setMessage("加载分类字典树参数有误.[null]!");
 				return result;
 			}else{
-		 		if(sysCategoryService.ROOT_PID_VALUE.equals(pcode)){
-					pid = sysCategoryService.ROOT_PID_VALUE;
+		 		if(ISysCategoryService.ROOT_PID_VALUE.equals(pcode)){
+					pid = ISysCategoryService.ROOT_PID_VALUE;
 				}else{
 					pid = this.sysCategoryService.queryIdByCode(pcode);
 				}
@@ -449,7 +448,6 @@ public class SysCategoryController {
 		 result.setResult(rdList);
 		 return result;
 	 }
-
 
 
 

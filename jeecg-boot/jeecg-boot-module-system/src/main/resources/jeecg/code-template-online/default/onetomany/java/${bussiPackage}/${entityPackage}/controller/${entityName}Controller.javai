@@ -175,8 +175,8 @@ public class ${entityName}Controller {
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "${sub.ftlDescription}集合-通过id查询")
-	@ApiOperation(value="${sub.ftlDescription}集合-通过id查询", notes="${sub.ftlDescription}-通过id查询")
+	@AutoLog(value = "${sub.ftlDescription}通过主表ID查询")
+	@ApiOperation(value="${sub.ftlDescription}主表ID查询", notes="${sub.ftlDescription}-通主表ID查询")
 	@GetMapping(value = "/query${sub.entityName}ByMainId")
 	public Result<?> query${sub.entityName}ListByMainId(@RequestParam(name="id",required=true) String id) {
 		List<${sub.entityName}> ${sub.entityName?uncap_first}List = ${sub.entityName?uncap_first}Service.selectByMainId(id);

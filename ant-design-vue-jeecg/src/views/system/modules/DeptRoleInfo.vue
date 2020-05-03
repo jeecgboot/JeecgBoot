@@ -21,7 +21,7 @@
     </div>
     <!-- 操作按钮区域 -->
     <div class="table-operator" :md="24" :sm="24">
-      <a-button @click="handleAdd" type="primary" icon="plus">部门角色录入</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus">新建部门角色</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -56,17 +56,14 @@
             </a>
             <a-menu slot="overlay">
               <a-menu-item>
+                <a @click="handlePerssion(record)">授权</a>
+              </a-menu-item>
+              <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
-              <a-menu-item>
-                <a href="javascript:;" @click="handleDetail(record)">详情</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a @click="handlePerssion(record)">授权</a>
-              </a-menu-item>
-            </a-menu>
+             </a-menu>
           </a-dropdown>
         </span>
       </a-table>
@@ -132,9 +129,7 @@
     methods: {
       searchReset() {
         this.queryParam = {}
-        this.currentDeptId = '';
         this.loadData(1);
-        this.$emit('clearSelectedDepartKeys')
       },
       loadData(arg) {
         if (!this.url.list) {

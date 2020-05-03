@@ -1,7 +1,7 @@
 <template>
   <a-card :loading="cardLoading" :bordered="false" style="height: 100%;">
     <a-spin :spinning="loading">
-      <a-input-search @search="handleSearch" style="width:100%;margin-top: 10px" placeholder="输入机构名称查询..." allowClear enterButton />
+      <a-input-search @search="handleSearch" style="width:100%;margin-top: 10px" placeholder="输入机构名称查询..." enterButton />
 
       <a-tree
         showLine

@@ -9,7 +9,7 @@
           <a-form-item>
             <a-input
               size="large"
-              v-decorator="['username',validatorRules.username,{ validator: this.handleUsernameOrEmail }]"
+              v-decorator="['username',{initialValue:'admin', rules: validatorRules.username.rules}]"
               type="text"
               placeholder="请输入帐户名 / admin">
               <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
@@ -18,7 +18,7 @@
 
           <a-form-item>
             <a-input
-              v-decorator="['password',validatorRules.password]"
+              v-decorator="['password',{initialValue:'123456', rules: validatorRules.password.rules}]"
               size="large"
               type="password"
               autocomplete="false"
@@ -43,7 +43,6 @@
             <a-col :span="8" style="text-align: right">
               <img v-if="requestCodeSuccess" style="margin-top: 2px;" :src="randCodeImage" @click="handleChangeCheckCode"/>
               <img v-else style="margin-top: 2px;" src="../../assets/checkcode.png" @click="handleChangeCheckCode"/>
-              <!--<j-graphic-code @success="generateCode" ref="jgraphicCodeRef" style="float: right" remote></j-graphic-code>-->
             </a-col>
           </a-row>
 
@@ -106,15 +105,12 @@
         </a-button>
       </a-form-item>
 
-      <!-- <div class="user-login-other">
+      <div class="user-login-other">
         <span>其他登陆方式</span>
-        <a><a-icon class="item-icon" type="alipay-circle"></a-icon></a>
-        <a><a-icon class="item-icon" type="taobao-circle"></a-icon></a>
-        <a><a-icon class="item-icon" type="weibo-circle"></a-icon></a>
-        <router-link class="register" :to="{ name: 'register' }">
-          注册账户
-        </router-link>
-      </div>-->
+        <a @click="onThirdLogin('github')" title="github"><a-icon class="item-icon" type="github"></a-icon></a>
+        <a @click="onThirdLogin('wechat_enterprise')" title="企业微信"><a-icon class="item-icon" type="wechat"></a-icon></a>
+        <a @click="onThirdLogin('dingtalk')" title="钉钉"><a-icon class="item-icon" type="dingding"></a-icon></a>
+      </div>
     </a-form>
 
     <two-step-captcha
@@ -173,7 +169,6 @@
   import { timeFix } from "@/utils/util"
   import Vue from 'vue'
   import { ACCESS_TOKEN ,ENCRYPTED_STRING} from "@/store/mutation-types"
-  import JGraphicCode from '@/components/jeecg/JGraphicCode'
   import { putAction,postAction,getAction } from '@/api/manage'
   import { encryption , getEncryptedString } from '@/utils/encryption/aesEncrypt'
   import store from '@/store/'
@@ -181,8 +176,7 @@
 
   export default {
     components: {
-      TwoStepCaptcha,
-      JGraphicCode
+      TwoStepCaptcha
     },
     data () {
       return {
@@ -232,7 +226,28 @@
       // update-end- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
     },
     methods: {
-      ...mapActions([ "Login", "Logout","PhoneLogin" ]),
+      ...mapActions([ "Login", "Logout","PhoneLogin","ThirdLogin" ]),
+      //第三方登录
+      onThirdLogin(source){
+        let url = window._CONFIG['domianURL']+`/thirdLogin/render/${source}`
+        window.open(url, `login ${source}`, 'height=500, width=500, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=n o, status=no')
+        let that = this;
+        let receiveMessage = function(event){
+          var origin = event.origin
+          console.log("origin",origin);
+
+          let token = event.data
+          console.log("event.data",token)
+          that.ThirdLogin(token).then(res=>{
+            if(res.success){
+              that.loginSuccess()
+            }else{
+              that.requestFailed(res);
+            }
+          })
+        }
+        window.addEventListener("message", receiveMessage, false);
+      },
       // handler
       handleUsernameOrEmail (rule, value, callback) {
         const regex = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/;
@@ -361,7 +376,7 @@
         // update-begin- author:sunjianlei --- date:20190812 --- for: 登录成功后不解除禁用按钮，防止多次点击
         // this.loginBtn = false
         // update-end- author:sunjianlei --- date:20190812 --- for: 登录成功后不解除禁用按钮，防止多次点击
-        this.$router.push({ name: "dashboard" })
+        this.$router.push({ path: "/dashboard/analysis" })
         this.$notification.success({
           message: '欢迎',
           description: `${timeFix()}，欢迎回来`,

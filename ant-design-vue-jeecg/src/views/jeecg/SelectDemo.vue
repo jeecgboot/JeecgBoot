@@ -1,5 +1,5 @@
 <template>
-  <a-card :bordered="false" style="height:100%">
+  <a-card :bordered="false" style="height:100%;padding-bottom:200px; ">
 
     <div class="table-page-search-wrapper">
       <a-form layout="inline" :form="form">
@@ -10,7 +10,7 @@
           <a-col :span="12">
             <a-form-item label="性别">
               <j-dict-select-tag v-model="formData.sex" title="性别" dictCode="sex" placeholder="请选择性别"/>
-            <!--  <j-dict-select-tag title="性别" dictCode="sex" disabled/>-->
+              <!--  <j-dict-select-tag title="性别" dictCode="sex" disabled/>-->
             </a-form-item>
           </a-col>
           <a-col :span="12">选中值：{{ formData.sex}}</a-col>
@@ -34,6 +34,47 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">选中值：{{ formData.user2}}</a-col>
+        </a-row>
+
+
+        <!-- 字典搜索  -->
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="字典搜索(同步)">
+              <j-search-select-tag placeholder="请做出你的选择" v-model="formData.searchValue" :dictOptions="searchOptions">
+              </j-search-select-tag>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">选中值：{{ formData.searchValue}}</a-col>
+        </a-row>
+
+        <!--  字典搜索 异步加载 -->
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="字典搜索(异步)">
+              <j-search-select-tag
+                placeholder="请做出你的选择"
+                v-model="formData.asyncSelectValue"
+                dict="sys_depart,depart_name,id"
+                :async="true">
+              </j-search-select-tag>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">选中值：{{ formData.asyncSelectValue}}</a-col>
+        </a-row>
+
+        <!--  JMultiSelectTag -->
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="字典下拉(多选)">
+              <j-multi-select-tag
+                v-model="formData.selMuti"
+                dictCode="sex"
+                placeholder="请选择">
+              </j-multi-select-tag>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">多选组合(v-model)：{{ formData.selMuti }}</a-col>
         </a-row>
 
         <!--  部门选择控件 -->
@@ -79,10 +120,20 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="选择角色">
-              <j-select-role v-model="formData.selectRole"/>
+              <j-select-role v-model="formData.selectRole" @change="changeMe"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">选中值：{{ formData.selectRole}}</a-col>
+        </a-row>
+
+        <!-- 职务选择 -->
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="选择职务">
+              <j-select-position  v-model="formData.selectPosition" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">选中值：{{ formData.selectPosition}}</a-col>
         </a-row>
 
         <!--  JCheckbox -->
@@ -142,16 +193,6 @@
           <a-col :span="12">过长剪切：{{ jellipsis.value }}</a-col>
         </a-row>
 
-        <!-- JGraphicCode -->
-        <a-row :gutter="24">
-          <a-col :span="12">
-            <a-form-item label="验证码">
-              <j-graphic-code @success="generateCode"/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">验证码：{{ jgraphicCode.value }}</a-col>
-        </a-row>
-
         <!-- JSlider -->
         <a-row :gutter="24">
           <a-col :span="12">
@@ -200,16 +241,10 @@
           </a-col>
         </a-row>
 
-        <!-- JSuperQuery 高级查询 -->
-        <!-- JTreeSelect 树组件 -->
-        <!-- JTreeTable 树列表 -->
-        <!-- JUpload.上传组件 -->
-        <!-- JImportModal 导入组件 -->
-
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="树字典">
-              <j-tree-dict v-model="formData.treeDict" placeholder="请选择树字典" parentCode="A01" />
+              <j-tree-dict v-model="formData.treeDict" placeholder="请选择树字典" parentCode="B01" />
             </a-form-item>
           </a-col>
           <a-col :span="12">选中的值(v-model)：{{ formData.treeDict }}</a-col>
@@ -227,7 +262,7 @@
               />
             </a-form-item>
           </a-col>
-          <a-col :spapn="12">选中的值(v-model)：{{ formData.treeSelect }}</a-col>
+          <a-col :span="12">选中的值(v-model)：{{ formData.treeSelect }}</a-col>
         </a-row>
 
         <a-row :gutter="24">
@@ -243,7 +278,17 @@
               />
             </a-form-item>
           </a-col>
-          <a-col :spapn="12">选中的值(v-model)：{{ formData.treeSelectMultiple }}</a-col>
+          <a-col :span="12">选中的值(v-model)：{{ formData.treeSelectMultiple }}</a-col>
+        </a-row>
+
+        <!-- 分类字典树 -->
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="分类字典树">
+              <j-category-select v-model="formData.selectCategory" pcode="A01"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">选中的值(v-model)：{{ formData.selectCategory }}</a-col>
         </a-row>
 
         <!-- VueCron -->
@@ -267,19 +312,38 @@
           <a-col :span="12">
             <a-form-item label="高级查询（自定义按钮）">
               <j-super-query :fieldList="superQuery.fieldList">
-                <!-- 直接在内部写一个按钮即可，点击事件自动添加 -->
-                <a-button type="primary" ghost icon="clock-circle">高级查询</a-button>
+                <!--
+                    v-slot:button 可以更高自由的定制按钮
+                    参数介绍：
+                      isActive: 是否是激活状态（已有高级查询条件生效）
+                      isMobile: 当前是否是移动端，可针对移动端展示不同的样式
+                          open: 打开弹窗，一个方法，可绑定点击事件
+                         reset: 重置所有查询条件，一个方法，可绑定点击事件
+                -->
+                <template v-slot:button="{isActive,isMobile,open,reset}">
+                  <!-- 定义的是普通状态下的按钮 -->
+                  <a-button v-if="!isActive" type="primary" ghost icon="clock-circle" @click="open()">高级查询</a-button>
+                  <!-- 定义的当有高级查询条件生效状态下的按钮 -->
+                  <a-button-group v-else>
+                    <a-button type="primary" ghost @click="open()">
+                      <a-icon type="plus-circle" spin/>
+                      <span>高级查询</span>
+                    </a-button>
+                    <a-button v-if="isMobile" type="primary" ghost icon="delete" @click="reset()"/>
+                  </a-button-group>
+                </template>
               </j-super-query>
             </a-form-item>
           </a-col>
         </a-row>
+
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="图片上传">
               <j-image-upload v-model="imgList"></j-image-upload>
             </a-form-item>
           </a-col>
-          <a-col :spapn="12">选中的值(v-model)：{{ imgList }}</a-col>
+          <a-col :span="12">选中的值(v-model)：{{ imgList }}</a-col>
         </a-row>
         <a-row :gutter="24" style="margin-top: 65px;margin-bottom:50px;">
           <a-col :span="12">
@@ -287,10 +351,78 @@
               <j-upload v-model="fileList"></j-upload>
             </a-form-item>
           </a-col>
-          <a-col :spapn="12">
+          <a-col :span="12">
             选中的值(v-model)：
             <j-ellipsis :value="fileList" :length="30" v-if="fileList.length>0"/>
           </a-col>
+        </a-row>
+
+        <!-- 特殊查询组件 -->
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="特殊查询组件">
+              <a-row>
+                <a-col :span="16">
+                  <j-input v-model="formData.jInput" :type="jInput.type"/>
+                </a-col>
+                <a-col :span="3" style="text-align: right;" >查询类型：</a-col>
+                <a-col :span="5">
+                  <a-select v-model="jInput.type" :options="jInput.options"></a-select>
+                </a-col>
+              </a-row>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">输入的值(v-model)：{{ formData.jInput }}</a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="15">
+            <a-form-item label="MarkdownEditor" style="min-height: 300px">
+              <j-markdown-editor v-model="content"></j-markdown-editor>
+            </a-form-item>
+          </a-col>
+          <a-col :span="9">
+            输入的值(v-model)：{{ content }}
+          </a-col>
+        </a-row>
+
+        <!-- 省市县级联 -->
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="省市县级联">
+              <j-area-linkage v-model="formData.areaLinkage1" type="cascader"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">输入的值(v-model)：{{ formData.areaLinkage1 }}</a-col>
+        </a-row>
+
+
+        <!-- 省市县级联 -->
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="省市县级联">
+              <j-area-linkage v-model="formData.areaLinkage2" type="select"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">输入的值(v-model)：{{ formData.areaLinkage2 }}</a-col>
+        </a-row>
+
+        <!-- 功能示例：关闭当前页面 -->
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="功能示例：关闭当前页面">
+              <a-button type="primary" @click="handleCloseCurrentPage">点击关闭当前页面</a-button>
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <!-- JPopup示例 -->
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="JPopup示例">
+              <j-popup v-model="formData.jPopup" code="demo" field="name" orgFields="name" destFields="name"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">选择的值(v-model)：{{ formData.jPopup }}</a-col>
         </a-row>
 
       </a-form>
@@ -311,7 +443,6 @@
   import JDate from '@/components/jeecg/JDate'
   import JEditor from '@/components/jeecg/JEditor'
   import JEllipsis from '@/components/jeecg/JEllipsis'
-  import JGraphicCode from '@/components/jeecg/JGraphicCode'
   import JSlider from '@/components/jeecg/JSlider'
   import JSelectMultiple from '@/components/jeecg/JSelectMultiple'
   import JTreeDict from "../../components/jeecg/JTreeDict.vue";
@@ -320,10 +451,23 @@
   import JSuperQuery from '@/components/jeecg/JSuperQuery'
   import JUpload from '@/components/jeecg/JUpload'
   import JImageUpload from '@/components/jeecg/JImageUpload'
+  import JSelectPosition from '@comp/jeecgbiz/JSelectPosition'
+  import JCategorySelect from '@comp/jeecg/JCategorySelect'
+  import JMultiSelectTag from '@comp/dict/JMultiSelectTag'
+  import JInput from '@comp/jeecg/JInput'
+  import JAreaLinkage from '@comp/jeecg/JAreaLinkage'
+  import JMarkdownEditor from '@/components/jeecg/JMarkdownEditor/index'
+  import JSearchSelectTag from '@/components/dict/JSearchSelectTag'
 
   export default {
     name: 'SelectDemo',
+    inject:['closeCurrent'],
     components: {
+      JMarkdownEditor,
+      JAreaLinkage,
+      JInput,
+      JCategorySelect,
+      JSelectPosition,
       JImageUpload,
       JUpload,
       JTreeDict,
@@ -334,14 +478,19 @@
       JSelectRole,
       JCheckbox,
       JCodeEditor,
-      JDate, JEditor, JEllipsis, JGraphicCode, JSlider, JSelectMultiple,
-      JCron, JTreeSelect, JSuperQuery
+      JDate, JEditor, JEllipsis, JSlider, JSelectMultiple,
+      JCron, JTreeSelect, JSuperQuery, JMultiSelectTag,
+      JSearchSelectTag
     },
     data() {
       return {
         selectList: [],
         selectedDepUsers: '',
-        formData: {},
+        formData: {
+          areaLinkage1: '110105',
+          areaLinkage2: '140221',
+          sex: 1
+        },
         form: this.$form.createForm(this),
         departId: '4f1765520d6346f9bd9c79e2479e5b12,57197590443c44f083d42ae24ef26a2c',
         userIds: 'admin',
@@ -370,9 +519,6 @@ sayHi('hello, world!')`
         jellipsis: {
           value: '这是一串很长很长的文字段落。这是一串很长很长的文字段落。这是一串很长很长的文字段落。这是一串很长很长的文字段落。'
         },
-        jgraphicCode: {
-          value: ''
-        },
         jslider: {
           value: false
         },
@@ -396,11 +542,41 @@ sayHi('hello, world!')`
           fieldList: [
             { type: 'input', value: 'name', text: '姓名', },
             { type: 'select', value: 'sex', text: '性别', dictCode: 'sex' },
-            { type: 'number', value: 'age', text: '年龄', }
+            { type: 'number', value: 'age', text: '年龄', },
+            {
+              type: 'select', value: 'hobby', text: '爱好',
+              options: [
+                { label: '音乐', value: '1' },
+                { label: '游戏', value: '2' },
+                { label: '电影', value: '3' },
+                { label: '读书', value: '4' },
+              ]
+            },
           ]
         },
         fileList:[],
         imgList:[],
+        jInput: {
+          type: 'like',
+          options: [
+            { value: 'like', label: '模糊（like）' },
+            { value: 'ne', label: '不等于（ne）' },
+            { value: 'ge', label: '大于等于（ge）' },
+            { value: 'le', label: '小于等于（le)' },
+          ],
+        },
+        content: '',
+        searchOptions:[{
+          text:"选项一",
+          value:"1"
+        },{
+          text:"选项二",
+          value:"2"
+        },{
+          text:"选项三",
+          value:"3"
+        }],
+
       }
     },
     computed: {
@@ -418,6 +594,9 @@ sayHi('hello, world!')`
       },
       getDepartIdValue() {
         return this.form.getFieldValue('departId')
+      },
+      changeMe() {
+        console.log('you so ...  , change Me')
       },
       selectOK: function(data) {
         this.selectList = data
@@ -437,9 +616,6 @@ sayHi('hello, world!')`
       onSearchDepUserCallBack(selectedDepUsers) {
         this.selectedDepUsers = selectedDepUsers
       },
-      generateCode(value) {
-        this.jgraphicCode.value = value.toLowerCase()
-      },
       handleJSliderSuccess(value) {
         this.jslider.value = value
       },
@@ -447,7 +623,14 @@ sayHi('hello, world!')`
         this.$nextTick(() => {
           this.form.cronExpression = data;
         })
-      }
+      },
+
+      handleCloseCurrentPage() {
+        // 注意：以下代码必须存在
+        // inject:['closeCurrent'],
+        this.closeCurrent()
+      },
+
     }
   }
 </script>

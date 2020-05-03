@@ -12,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import java.util.Date;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @Description: ${subTab.ftlDescription}
@@ -21,9 +23,11 @@ import java.util.Date;
  */
 @Data
 @TableName("${subTab.tableName}")
+@ApiModel(value="${tableName}对象", description="${tableVo.ftlDescription}")
 public class ${subTab.entityName} implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
+    <#assign excel_ignore_arr=['createBy','createTime','updateBy','updateTime','sysOrgCode']>
 <#list subTab.originalColumns as po>
 	/**${po.filedComment}*/
 <#if po.fieldName == primaryKeyField>
@@ -31,16 +35,22 @@ public class ${subTab.entityName} implements Serializable {
 <#else>
 	<#if po.fieldDbType =='Date'>
 		<#if po.classType=='date'>
+    <#if !excel_ignore_arr?seq_contains("${po.fieldName}")>
 	@Excel(name = "${po.filedComment}", width = 15, format = "yyyy-MM-dd")
+	</#if>
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
 		<#else>
+    <#if !excel_ignore_arr?seq_contains("${po.fieldName}")>
 	@Excel(name = "${po.filedComment}", width = 20, format = "yyyy-MM-dd HH:mm:ss")
+	</#if>
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 		</#if>
 	<#elseif !subTab.foreignKeys?seq_contains(po.fieldName?cap_first)>
+    <#if !excel_ignore_arr?seq_contains("${po.fieldName}")>
 	@Excel(name = "${po.filedComment}", width = 15)
+	</#if>
 	</#if>
 </#if>
 <#if po.classType =='list' || po.classType =='radio' || po.classType =='list_multi' || po.classType =='checkbox' || po.classType =='sel_search'>
@@ -56,6 +66,7 @@ public class ${subTab.entityName} implements Serializable {
 <#if po.classType =='sel_depart'>
     @Dict(dicCode = "id",dicText = "depart_name",dictTable = "sys_depart")
 </#if>
+	@ApiModelProperty(value = "${po.filedComment}")
 	private <#if po.fieldType=='java.sql.Blob'>byte[]<#else>${po.fieldType}</#if> ${po.fieldName};
 </#list>
 }

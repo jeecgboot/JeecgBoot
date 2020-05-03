@@ -3,7 +3,8 @@
     <a-input-search
       v-model="userNames"
       placeholder="请先选择用户"
-      disabled
+      readOnly
+      unselectable="on"
       @search="onSearchDepUser">
       <a-button slot="enterButton" :disabled="disabled">选择用户</a-button>
     </a-input-search>

@@ -1,6 +1,7 @@
 package org.jeecg.modules.message.websocket;
 
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.WebsocketConst;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,24 +22,24 @@ public class TestController {
     	Result<String> result = new Result<String>();
     	String message = jsonObject.getString("message");
     	JSONObject obj = new JSONObject();
-    	obj.put("cmd", "topic");
-		obj.put("msgId", "M0001");
-		obj.put("msgTxt", message);
+    	obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_TOPIC);
+		obj.put(WebsocketConst.MSG_ID, "M0001");
+		obj.put(WebsocketConst.MSG_TXT, message);
     	webSocket.sendAllMessage(obj.toJSONString());
         result.setResult("群发！");
         return result;
     }
-    
+
     @PostMapping("/sendUser")
     public Result<String> sendUser(@RequestBody JSONObject jsonObject) {
     	Result<String> result = new Result<String>();
     	String userId = jsonObject.getString("userId");
     	String message = jsonObject.getString("message");
     	JSONObject obj = new JSONObject();
-    	obj.put("cmd", "user");
-    	obj.put("userId", userId);
-		obj.put("msgId", "M0001");
-		obj.put("msgTxt", message);
+    	obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
+    	obj.put(WebsocketConst.MSG_USER_ID, userId);
+		obj.put(WebsocketConst.MSG_ID, "M0001");
+		obj.put(WebsocketConst.MSG_TXT, message);
         webSocket.sendOneMessage(userId, obj.toJSONString());
         result.setResult("单发");
         return result;

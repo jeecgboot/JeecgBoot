@@ -93,6 +93,8 @@
       this.linkList.push(this.$route.fullPath)
       this.activePage = this.$route.fullPath
     },
+    mounted() {
+    },
     watch: {
       '$route': function(newRoute) {
         //console.log("新的路由",newRoute)
@@ -192,6 +194,7 @@
           this.$message.warning('这是最后一页，不能再关闭了啦')
           return
         }
+        console.log("this.pageList ",this.pageList );
         this.pageList = this.pageList.filter(item => item.fullPath !== key)
         let index = this.linkList.indexOf(key)
         this.linkList = this.linkList.filter(item => item !== key)

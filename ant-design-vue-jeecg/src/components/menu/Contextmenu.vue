@@ -43,7 +43,7 @@ export default {
   },
   methods: {
     closeMenu (e) {
-      if (['menuitemicon', 'menuitem'].indexOf(e.target.getAttribute('role')) < 0) {
+      if (this.visible === true && ['menuitemicon', 'menuitem'].indexOf(e.target.getAttribute('role')) < 0) {
         this.$emit('update:visible', false)
       }
     },
