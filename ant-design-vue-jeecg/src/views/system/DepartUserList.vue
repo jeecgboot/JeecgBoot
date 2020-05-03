@@ -17,6 +17,8 @@
               :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
               :treeData="departTree"
               :autoExpandParent="autoExpandParent"
+              :expandedKeys="iExpandedKeys"
+              @expand="onExpand"
             />
 
           </template>
@@ -99,7 +101,7 @@
     },
     methods: {
       callback(key) {
-        console.log(key)
+        //console.log(key)
       },
       loadData() {
         this.refresh();
@@ -130,11 +132,15 @@
         })
       },
       setThisExpandedKeys(node) {
+        //只展开一级目录
         if (node.children && node.children.length > 0) {
           this.iExpandedKeys.push(node.key)
+          //下方代码放开注释则默认展开所有节点
+          /**
           for (let a = 0; a < node.children.length; a++) {
             this.setThisExpandedKeys(node.children[a])
           }
+          */
         }
       },
       refresh() {
@@ -153,7 +159,7 @@
       onSearch(value) {
         let that = this
         if (value) {
-          searchByKeywords({keyWord: value}).then((res) => {
+          searchByKeywords({keyWord: value,myDeptSearch:'1'}).then((res) => {
             if (res.success) {
               that.departTree = []
               for (let i = 0; i < res.result.length; i++) {

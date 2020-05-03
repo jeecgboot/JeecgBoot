@@ -160,7 +160,6 @@
           add: "/test/order/addCustomer",
           edit: "/test/order/editCustomer",
           fileUpload: window._CONFIG['domianURL'] + "/sys/common/upload",
-          imgerver: window._CONFIG['staticDomainURL'],
           getOrderCustomerList: "/test/order/listOrderCustomerByMainId",
         },
         validatorRules: {
@@ -246,7 +245,11 @@
             let formData = Object.assign(this.model, values);
             console.log(formData);
             formData.orderId = this.orderId;
-            formData.idcardPic = this.fileList;
+            if(this.fileList != '') {
+              formData.idcardPic = this.fileList;
+            }else{
+              formData.idcardPic = '';
+            }
             httpAction(httpurl, formData, method).then((res) => {
               if (res.success) {
                 that.$message.success(res.message);
@@ -278,36 +281,6 @@
           callback("您的身份证号码格式不正确!");
         }
       },
-      handleChange(info) {
-        this.fileList = info.fileList;
-        if (info.file.status === 'uploading') {
-          return
-        }
-        if (info.file.status === 'done') {
-          var response = info.file.response;
-          if (!response.success) {
-            this.$message.warning(response.message);
-          }
-        }
-      },
-      handlePicCancel() {
-        this.previewVisible = false
-        this.previewImage=''
-      },
-      handlePicView(url){
-        this.previewImage = this.url.imgerver + "/" + url
-        this.previewVisible = true
-      },
-      handlePreview(file) {
-        this.previewImage = file.url || file.thumbUrl
-        this.previewVisible = true
-      },
-      getIdCardView(url) {
-       // let pics = this.model.idcardPic.split(",");
-        //let pics_len = pics.length;
-        // 显示上传的最后一个图片
-        return this.url.imgerver + "/" + url
-      }
     }
   }
 </script>

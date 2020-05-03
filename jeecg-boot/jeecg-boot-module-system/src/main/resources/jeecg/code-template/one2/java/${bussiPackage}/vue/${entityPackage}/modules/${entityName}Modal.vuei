@@ -1,9 +1,10 @@
 <template>
-  <a-modal
+  <j-modal
     :title="title"
     :width="800"
     :visible="visible"
     :confirmLoading="confirmLoading"
+    switchFullscreen
     @ok="handleOk"
     @cancel="handleCancel"
     cancelText="关闭">
@@ -32,7 +33,7 @@
 
       </a-form>
     </a-spin>
-  </a-modal>
+  </j-modal>
 </template>
 
 <script>

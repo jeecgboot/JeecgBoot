@@ -2,16 +2,16 @@ import { USER_AUTH,SYS_BUTTON_AUTH } from "@/store/mutation-types"
 
 const hasPermission = {
     install (Vue, options) {
-        //console.log(options);
+        console.log(options);
           Vue.directive('has', {
             inserted: (el, binding, vnode)=>{
-                //console.log("页面权限控制----");
-                console.time()
+                console.log("页面权限控制----");
+                //console.time()
                 //节点权限处理，如果命中则不进行全局权限处理
                 if(!filterNodePermission(el, binding, vnode)){
                   filterGlobalPermission(el, binding, vnode);
                 }
-                console.timeEnd() //计时结束并输出时长
+                //console.timeEnd() //计时结束并输出时长
             }
           });
     }

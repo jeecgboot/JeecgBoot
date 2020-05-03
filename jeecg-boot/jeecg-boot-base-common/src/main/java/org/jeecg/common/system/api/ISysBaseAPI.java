@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import org.jeecg.common.system.vo.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @Description: 底层共通业务API，提供其他独立模块调用
@@ -96,7 +99,13 @@ public interface ISysBaseAPI {
    	 * @return
    	 */
    	public List<DictModel> queryAllDepartBackDictModel();
-   	
+
+    /**
+   	 * 查询所有部门，拼接查询条件
+   	 * @return
+   	 */
+   	List<JSONObject> queryAllDepart(Wrapper wrapper);
+
 	/**
 	 * 发送系统消息
 	 * @param fromUser 发送人(用户登录账户)
@@ -184,6 +193,7 @@ public interface ISysBaseAPI {
 	 * @param keyArray
 	 * @return
 	 */
+	@Deprecated
 	public List<String> queryTableDictByKeys(String table, String text, String code, String[] keyArray);
 
 	/**
@@ -198,6 +208,13 @@ public interface ISysBaseAPI {
      * @return
      */
     public JSONObject queryAllUser(String[] userIds, int pageNo, int pageSize);
+
+    /**
+     * 获取所有有效用户 拼接查询条件
+     *
+     * @return
+     */
+    List<JSONObject> queryAllUser(Wrapper wrapper);
 
 	/**
 	 * 获取所有角色
@@ -271,4 +288,49 @@ public interface ISysBaseAPI {
 	 */
 	public String upload(MultipartFile file,String bizPath,String uploadType);
 
+	/**
+	 * 文件上传 自定义桶
+	 * @param file
+	 * @param bizPath
+	 * @param uploadType
+	 * @param customBucket
+	 * @return
+	 */
+	public String upload(MultipartFile file,String bizPath,String uploadType,String customBucket);
+
+	/**
+	 * 文档管理文件下载预览
+	 * @param filePath
+	 * @param uploadpath
+	 * @param response
+	 */
+	public void viewAndDownload(String filePath, String uploadpath, String uploadType,HttpServletResponse response);
+
+
+	/**
+	 * 给指定用户发消息
+	 * @param userIds
+	 * @param cmd
+	 */
+	public void sendWebSocketMsg(String[] userIds, String cmd);
+
+	/**
+	 * 根据id获取所有参与用户
+	 * userIds
+	 * @return
+	 */
+	public List<LoginUser> queryAllUserByIds(String[] userIds);
+	/**
+	 * 将会议签到信息推动到预览
+	 * userIds
+	 * @return
+	 * @param userId
+	 */
+    void meetingSignWebsocket(String userId);
+	/**
+	 * 根据name获取所有参与用户
+	 * userNames
+	 * @return
+	 */
+	List<LoginUser> queryUserByNames(String[] userNames);
 }

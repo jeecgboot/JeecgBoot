@@ -21,6 +21,11 @@ public class TreeSelectProperty extends CommonProperty {
 	private String pidValue;//父级节点的值 暂时没用到 默认为0
 	private String hasChildField;
 	private String textField;//树形下拉保存text值的字段名
+
+	/**
+	 * 是不是pid 组件 1是 0否
+	 */
+	private Integer pidComponent = 0;
 	
 	public String getDict() {
 		return dict;
@@ -62,6 +67,14 @@ public class TreeSelectProperty extends CommonProperty {
 
 	public void setTextField(String textField) {
 		this.textField = textField;
+	}
+
+	public Integer getPidComponent() {
+		return pidComponent;
+	}
+
+	public void setPidComponent(Integer pidComponent) {
+		this.pidComponent = pidComponent;
 	}
 
 	/**
@@ -122,6 +135,9 @@ public class TreeSelectProperty extends CommonProperty {
 		}
 		if(hasChildField!=null) {
 			prop.put("hasChildField",hasChildField);
+		}
+		if(pidComponent!=null) {
+			prop.put("pidComponent",pidComponent);
 		}
 		map.put("prop",prop);
 		return map;

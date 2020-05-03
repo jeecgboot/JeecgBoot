@@ -34,12 +34,43 @@ spring:
   ## quartz定时任务,采用数据库方式
   quartz:
     job-store-type: jdbc
+    initialize-schema: embedded
+    #设置自动启动，默认为 true
+    auto-startup: true
+    #启动时更新己存在的Job
+    overwrite-existing-jobs: true
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: MyScheduler
+            instanceId: AUTO
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            tablePrefix: QRTZ_
+            isClustered: true
+            misfireThreshold: 60000
+            clusterCheckinInterval: 10000
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 10
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
   #json 时间戳统一转换
   jackson:
     date-format:   yyyy-MM-dd HH:mm:ss
     time-zone:   GMT+8
   aop:
     proxy-target-class: true
+  activiti:
+    check-process-definitions: false
+    #启用作业执行器
+    async-executor-activate: false
+    #启用异步执行器
+    job-executor-activate: false
+  jpa:
+    open-in-view: false
   #配置freemarker
   freemarker:
     # 设置模板后缀名
@@ -153,14 +184,15 @@ jeecg :
   #阿里云oss存储配置
   oss:
     endpoint: oss-cn-beijing.aliyuncs.com
-    accessKey: WegDpuKzOuPK6D3N
+    accessKey: ??
     secretKey: ??
     bucketName: jeecgos
-    staticDomain: ??
-  # ElasticSearch 设置
+    staticDomain: https://static.jeecg.com
+  # ElasticSearch 6设置
   elasticsearch:
-    cluster-name: docker-cluster
+    cluster-name: jeecg-ES
     cluster-nodes: 127.0.0.1:9200
+    check-enabled: false
   # 表单设计器配置
   desform:
     # 主题颜色（仅支持 16进制颜色代码）
@@ -172,7 +204,7 @@ jeecg :
     minio_url: http://minio.jeecg.com
     minio_name: ??
     minio_pass: ??
-    bucketName: ??
+    bucketName: otatest
 #Mybatis输出sql日志
 logging:
   level:
@@ -180,3 +212,6 @@ logging:
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas
+#enable swagger
+swagger:
+  enable: true

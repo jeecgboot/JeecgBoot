@@ -6,12 +6,12 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
 
-          <a-col :md="6" :sm="8">
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <a-form-item label="用户名">
               <j-input placeholder="请输入名称模糊查询" v-model="queryParam.name"></j-input>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="8">
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <a-form-item label="年龄">
              <!-- <a-input placeholder="请输入名称查询" v-model="queryParam.age"></a-input>-->
               <a-input placeholder="最小年龄" type="ge" v-model="queryParam.age_begin" style="width:calc(50% - 15px);"></a-input>
@@ -20,7 +20,7 @@
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
-            <a-col :md="6" :sm="8">
+            <a-col :xl="6" :lg="7" :md="8" :sm="24">
               <a-form-item label="生日">
                 <a-range-picker v-model="queryParam.birthdayRange"
                                 format="YYYY-MM-DD"
@@ -28,56 +28,42 @@
                                 @change="onBirthdayChange" />
               </a-form-item>
             </a-col>
-            <a-col :md="6" :sm="8">
+            <a-col :xl="6" :lg="7" :md="8" :sm="24">
               <a-form-item label="性别">
                 <j-dict-select-tag v-model="queryParam.sex" placeholder="请选择性别" dictCode="sex"/>
               </a-form-item>
             </a-col>
-            <a-col :md="6" :sm="8">
+            <a-col :xl="6" :lg="7" :md="8" :sm="24">
               <a-form-item label="选择用户">
                 <j-dict-select-tag v-model="queryParam.id" placeholder="请选择用户" dictCode="demo,name,id"/>
               </a-form-item>
             </a-col>
           </template>
           <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-            <a-col :md="6" :sm="24">
+            <a-col :xl="6" :lg="7" :md="8" :sm="24">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
             </a-col>
           </span>
-          <a-col :md="6" :sm="24">
-
-       <!--     <template v-if="superQueryFlag">
-              <a-tooltip title="已有高级查询条件生效!">
-                <button :disabled="false" class="ant-btn ant-btn-primary" @click="superQuery">
-                  <a-icon type="appstore" theme="twoTone" spin="true"></a-icon>
-                  <span>高级查询</span>
-                </button>
-              </a-tooltip>
-            </template>
-            <a-button v-else type="primary" @click="superQuery" icon="filter">高级查询</a-button>
--->
-            <!-- 高级查询区域 -->
-            <j-super-query :fieldList="fieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
-
-            <a @click="handleToggleSearch" style="margin-left: 8px">
-              {{ toggleSearchStatus ? '收起' : '展开' }}
-              <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-            </a>
-          </a-col>
         </a-row>
       </a-form>
     </div>
 
     <!-- 操作按钮区域 -->
-    <div class="table-operator" style="margin-top: 5px">
+    <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-button type="primary" icon="plus" @click="jump">创建单据</a-button>
       <a-button type="primary" icon="plus" @click="onetomany">一对多</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('demo')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('单表示例')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
+      <!-- 高级查询区域 -->
+      <j-super-query :fieldList="fieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel">
@@ -112,7 +98,7 @@
                 </a-row>
               </a-checkbox-group>
             </template>
-            <a><a-icon type="setting" />自定义列</a>
+            <a><a-icon type="setting" />设置</a>
           </a-popover>
         </span>
       </div>
@@ -178,25 +164,27 @@
   import JSuperQuery from '@/components/jeecg/JSuperQuery.vue';
   import JInput from '@/components/jeecg/JInput.vue';
   import JeecgDemoTabsModal from './modules/JeecgDemoTabsModal'
-  import {initDictOptions, filterDictText} from '@/components/dict/JDictSelectUtil'
+  import {initDictOptions, filterDictText,filterDictTextByCache} from '@/components/dict/JDictSelectUtil'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import Vue from 'vue'
   import { filterObj } from '@/utils/util';
 
   //高级查询modal需要参数
-  const superQueryFieldList=[{
-    type:"date",
-    value:"birthday",
-    text:"生日"
-  },{
-    type:"string",
-    value:"name",
-    text:"用户名"
-  },{
-    type:"int",
-    value:"age",
-    text:"年龄"
-  }]
+  const superQueryFieldList=[
+    {
+      type: "string",
+      value: "name",
+      text: "用户名"
+    }, {
+      type: "int",
+      value: "age",
+      text: "年龄"
+    }, {
+      type: "date",
+      value: "birthday",
+      text: "生日"
+    }
+  ]
   export default {
     name: "JeecgDemoList",
     mixins:[JeecgListMixin],
@@ -208,7 +196,7 @@
     },
     data() {
       return {
-        description: '用户管理页面',
+        description: '单表示例列表',
         //字典数组缓存
         sexDictOptions: [],
         importExcelUrl:`${window._CONFIG['domianURL']}/test/jeecgDemo/importExcel`,
@@ -249,7 +237,7 @@
             dataIndex: 'sex',
             customRender: (text) => {
               //字典值替换通用方法
-              return filterDictText(this.sexDictOptions, text);
+              return filterDictTextByCache('sex', text);
             }
           },
           {
@@ -293,12 +281,11 @@
     },
     methods: {
       getQueryParams(){
-        console.log(this.queryParam.birthdayRange)
-
         //高级查询器
         let sqp = {}
         if(this.superQueryParams){
           sqp['superQueryParams']=encodeURI(this.superQueryParams)
+          sqp['superQueryMatchType'] = this.superQueryMatchType
         }
         var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
 
@@ -380,38 +367,5 @@
   }
 </script>
 <style scoped>
-  .ant-card-body .table-operator {
-    margin-bottom: 18px;
-  }
-
-  .ant-table-tbody .ant-table-row td {
-    padding-top: 15px;
-    padding-bottom: 15px;
-  }
-
-  .anty-row-operator button {
-    margin: 0 5px
-  }
-
-  .ant-btn-danger {
-    background-color: #ffffff
-  }
-
-  .ant-modal-cust-warp {
-    height: 100%
-  }
-
-  .ant-modal-cust-warp .ant-modal-body {
-    height: calc(100% - 110px) !important;
-    overflow-y: auto
-  }
-
-  .ant-modal-cust-warp .ant-modal-content {
-    height: 90% !important;
-    overflow-y: hidden
-  }
-  /** Button按钮间距 */
-  .ant-btn {
-    margin-left: 3px
-  }
+  @import '~@assets/less/common.less';
 </style>

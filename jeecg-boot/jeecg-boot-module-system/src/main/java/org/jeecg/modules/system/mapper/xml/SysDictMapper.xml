@@ -92,6 +92,18 @@
 				   </foreach>
 			   </if>
 	</select>
-	
-	
+
+
+	<!-- 分页查询字典表数据 -->
+	<select id="queryDictTablePageList" parameterType="Object" resultType="org.jeecg.common.system.vo.DictModel">
+		select ${query.text} as "text",${query.code} as "value" from ${query.table}
+		where 1 = 1
+		<if test="query.keyword != null and query.keyword != ''">
+			and (${query.text} like '%${query.keyword}%' or ${query.code} like '%${query.keyword}%')
+		</if>
+		<if test="query.codeValue != null and query.codeValue != ''">
+			and ${query.code} = #{query.codeValue}
+		</if>
+	</select>
+
 </mapper>

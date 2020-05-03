@@ -15,6 +15,7 @@ import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.PasswordUtil;
+import org.jeecg.common.util.UUIDGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.*;
@@ -53,6 +54,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	private ISysBaseAPI sysBaseAPI;
 	@Autowired
 	private SysDepartMapper sysDepartMapper;
+	@Autowired
+	private SysRoleMapper sysRoleMapper;
+	@Autowired
+	private SysDepartRoleUserMapper departRoleUserMapper;
+	@Autowired
+	private SysDepartRoleMapper sysDepartRoleMapper;
 
     @Override
     @CacheEvict(value = {CacheConstant.SYS_USERS_CACHE}, allEntries = true)
@@ -303,14 +310,33 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	@CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
 	public void editUserWithDepart(SysUser user, String departs) {
 		this.updateById(user);  //更新角色的时候已经更新了一次了，可以再跟新一次
+		String[] arr = {};
+		if(oConvertUtils.isNotEmpty(departs)){
+			arr = departs.split(",");
+		}
+		//查询已关联部门
+		List<SysUserDepart> userDepartList = sysUserDepartMapper.selectList(new QueryWrapper<SysUserDepart>().lambda().eq(SysUserDepart::getUserId, user.getId()));
+		if(userDepartList != null && userDepartList.size()>0){
+			for(SysUserDepart depart : userDepartList ){
+				//修改已关联部门删除部门用户角色关系
+				if(!Arrays.asList(arr).contains(depart.getDepId())){
+					List<SysDepartRole> sysDepartRoleList = sysDepartRoleMapper.selectList(
+							new QueryWrapper<SysDepartRole>().lambda().eq(SysDepartRole::getDepartId,depart.getDepId()));
+					List<String> roleIds = sysDepartRoleList.stream().map(SysDepartRole::getId).collect(Collectors.toList());
+					if(roleIds != null && roleIds.size()>0){
+						departRoleUserMapper.delete(new QueryWrapper<SysDepartRoleUser>().lambda().eq(SysDepartRoleUser::getUserId, user.getId())
+								.in(SysDepartRoleUser::getDroleId,roleIds));
+					}
+				}
+			}
+		}
 		//先删后加
 		sysUserDepartMapper.delete(new QueryWrapper<SysUserDepart>().lambda().eq(SysUserDepart::getUserId, user.getId()));
 		if(oConvertUtils.isNotEmpty(departs)) {
-			String[] arr = departs.split(",");
 			for (String departId : arr) {
 				SysUserDepart userDepart = new SysUserDepart(user.getId(), departId);
 				sysUserDepartMapper.insert(userDepart);
@@ -379,6 +405,34 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		//3. 删除用户角色关系
 		line += sysUserRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>().in(SysUserRole::getUserId, userIds));
 		return line != 0;
+	}
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateNullPhoneEmail() {
+        userMapper.updateNullByEmptyString("email");
+        userMapper.updateNullByEmptyString("phone");
+        return true;
+    }
+
+	@Override
+	public void saveThirdUser(SysUser sysUser) {
+		//保存用户
+		String userid = UUIDGenerator.generate();
+		sysUser.setId(userid);
+		baseMapper.insert(sysUser);
+		//获取第三方角色
+		SysRole sysRole = sysRoleMapper.selectOne(new LambdaQueryWrapper<SysRole>().eq(SysRole::getRoleCode, "third_role"));
+		//保存用户角色
+		SysUserRole userRole = new SysUserRole();
+		userRole.setRoleId(sysRole.getId());
+		userRole.setUserId(userid);
+		sysUserRoleMapper.insert(userRole);
+	}
+
+	@Override
+	public List<SysUser> queryByDepIds(List<String> departIds, String username) {
+		return userMapper.queryByDepIds(departIds,username);
 	}
 
 }

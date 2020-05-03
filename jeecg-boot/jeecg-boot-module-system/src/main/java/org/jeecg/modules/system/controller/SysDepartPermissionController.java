@@ -65,7 +65,6 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "部门权限表-分页列表查询")
 	@ApiOperation(value="部门权限表-分页列表查询", notes="部门权限表-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(SysDepartPermission sysDepartPermission,
@@ -84,7 +83,6 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 	 * @param sysDepartPermission
 	 * @return
 	 */
-	@AutoLog(value = "部门权限表-添加")
 	@ApiOperation(value="部门权限表-添加", notes="部门权限表-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody SysDepartPermission sysDepartPermission) {
@@ -98,7 +96,6 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 	 * @param sysDepartPermission
 	 * @return
 	 */
-	@AutoLog(value = "部门权限表-编辑")
 	@ApiOperation(value="部门权限表-编辑", notes="部门权限表-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody SysDepartPermission sysDepartPermission) {
@@ -112,7 +109,6 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "部门权限表-通过id删除")
 	@ApiOperation(value="部门权限表-通过id删除", notes="部门权限表-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
@@ -126,7 +122,6 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "部门权限表-批量删除")
 	@ApiOperation(value="部门权限表-批量删除", notes="部门权限表-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
@@ -140,7 +135,6 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "部门权限表-通过id查询")
 	@ApiOperation(value="部门权限表-通过id查询", notes="部门权限表-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {

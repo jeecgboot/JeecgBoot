@@ -56,3 +56,18 @@ export function logout(logoutToken) {
     }
   })
 }
+
+/**
+ * 第三方登录
+ * @param token
+ * @returns {*}
+ */
+export function thirdLogin(token) {
+  return axios({
+    url: `/thirdLogin/getLoginUser/${token}`,
+    method: 'get',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}

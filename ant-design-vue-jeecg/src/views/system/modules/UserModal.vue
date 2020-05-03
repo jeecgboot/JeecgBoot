@@ -23,7 +23,7 @@
       <a-form :form="form">
 
         <a-form-item label="用户账号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入用户账号" v-decorator="[ 'username', validatorRules.username]" :readOnly="!!model.id"/>
+          <a-input placeholder="请输入用户账号" v-decorator.trim="[ 'username', validatorRules.username]" :readOnly="!!model.id"/>
         </a-form-item>
 
         <template v-if="!model.id">
@@ -37,11 +37,11 @@
         </template>
 
         <a-form-item label="用户姓名" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-          <a-input placeholder="请输入用户姓名" v-decorator="[ 'realname', validatorRules.realname]" />
+          <a-input placeholder="请输入用户姓名" v-decorator.trim="[ 'realname', validatorRules.realname]" />
         </a-form-item>
 
         <a-form-item label="工号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入工号" v-decorator="[ 'workNo', validatorRules.workNo]" />
+          <a-input placeholder="请输入工号" v-decorator.trim="[ 'workNo', validatorRules.workNo]" />
         </a-form-item>
 
         <a-form-item label="职务" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -54,7 +54,8 @@
             style="width: 100%"
             placeholder="请选择用户角色"
             optionFilterProp = "children"
-            v-model="selectedRole">
+            v-model="selectedRole"
+            :getPopupContainer= "(target) => target.parentNode">
             <a-select-option v-for="(role,roleindex) in roleList" :key="roleindex.toString()" :value="role.id">
               {{ role.roleName }}
             </a-select-option>
@@ -64,9 +65,9 @@
         <!--部门分配-->
         <a-form-item label="部门分配" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!departDisabled">
           <a-input-search
-            placeholder="点击右侧按钮选择部门"
+            placeholder="点击选择部门"
             v-model="checkedDepartNameString"
-            disabled
+            readOnly
             @search="onSearch">
             <a-button slot="enterButton" icon="search">选择</a-button>
           </a-input-search>
@@ -104,11 +105,12 @@
           <a-date-picker
             style="width: 100%"
             placeholder="请选择生日"
-            v-decorator="['birthday', {initialValue:!model.birthday?null:moment(model.birthday,dateFormat)}]"/>
+            v-decorator="['birthday', {initialValue:!model.birthday?null:moment(model.birthday,dateFormat)}]"
+            :getCalendarContainer="node => node.parentNode"/>
         </a-form-item>
 
         <a-form-item label="性别" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-select v-decorator="[ 'sex', {}]" placeholder="请选择性别">
+          <a-select v-decorator="[ 'sex', {}]" placeholder="请选择性别" :getPopupContainer= "(target) => target.parentNode">
             <a-select-option :value="1">男</a-select-option>
             <a-select-option :value="2">女</a-select-option>
           </a-select>
@@ -248,7 +250,6 @@
         picUrl: "",
         url: {
           fileUpload: window._CONFIG['domianURL']+"/sys/common/upload",
-          imgerver: window._CONFIG['staticDomainURL'],
           userWithDepart: "/sys/user/userDepartList", // 引入为指定用户查看部门信息需要的url
           userId:"/sys/user/generateUserId", // 引入生成添加用户情况下的url
           syncUserByUserName:"/process/extActProcess/doSyncUserByUserName",//同步用户到工作流
@@ -332,7 +333,7 @@
           that.form.setFieldsValue(pick(this.model,'username','sex','realname','email','phone','activitiSync','workNo','telephone','post'))
         });
         //身份为上级显示负责部门，否则不显示
-        if(this.model.identity=="2"){
+        if(this.model.userIdentity=="2"){
             this.identity="2";
             this.departIdShow=true;
         }else{
@@ -406,10 +407,14 @@
               values.birthday = values.birthday.format(this.dateFormat);
             }
             let formData = Object.assign(this.model, values);
-            formData.avatar = that.fileList;
+            if(that.fileList != ''){
+              formData.avatar = that.fileList;
+            }else{
+              formData.avatar = null;
+            }
             formData.selectedroles = this.selectedRole.length>0?this.selectedRole.join(","):'';
             formData.selecteddeparts = this.userDepartModel.departIdList.length>0?this.userDepartModel.departIdList.join(","):'';
-            formData.identity=this.identity;
+            formData.userIdentity=this.identity;
             //如果是上级择传入departIds,否则为空
             if(this.identity==="2"){
               formData.departIds=this.departIds.join(",");

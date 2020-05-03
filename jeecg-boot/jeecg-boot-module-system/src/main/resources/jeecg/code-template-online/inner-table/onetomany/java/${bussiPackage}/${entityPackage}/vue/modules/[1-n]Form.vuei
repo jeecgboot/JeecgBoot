@@ -1,0 +1,213 @@
+<#include "/common/utils.ftl">
+<#list subTables as sub>
+<#if sub.foreignRelationType=='1'>
+#segment#${sub.entityName}Form.vue
+<template>
+  <div>
+    <a-form :form="form">
+      <a-row>
+<#assign form_date = false>
+<#assign form_select = false>
+<#assign form_select_multi = false>
+<#assign form_popup = false>
+<#assign form_sel_depart = false>
+<#assign form_sel_user = false>
+<#assign form_file = false>
+<#assign form_image = false>
+
+<#list sub.colums as po>
+<#if po.isShow =='Y'>
+<#assign form_field_dictCode="">
+	<#if po.dictTable?default("")?trim?length gt 1>
+		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+	<#elseif po.dictField?default("")?trim?length gt 1>
+		<#assign form_field_dictCode="${po.dictField}">
+	</#if>
+	<#if po.classType =='textarea'>
+        <a-col :span="24">
+          <a-form-item label="${po.filedComment}" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
+	<#else>
+        <a-col :xs="24" :sm="12">
+          <a-form-item label="${po.filedComment}" :labelCol="labelCol" :wrapperCol="wrapperCol">
+	</#if>
+	<#if po.classType =='date'>
+		<#assign form_date=true>
+            <j-date placeholder="请选择${po.filedComment}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" style="width: 100%"/>
+	<#elseif po.classType =='datetime'>
+		<#assign form_date=true>
+            <j-date placeholder="请选择${po.filedComment}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" style="width: 100%"/>
+	<#elseif po.classType =='popup'>
+		<#assign form_popup=true>
+            <j-popup
+              v-decorator="['${po.fieldName}'${autoWriteRules(po)}]"
+              :trigger-change="true"
+              org-fields="${po.dictField}"
+              dest-fields="${Format.underlineToHump(po.dictText)}"
+              code="${po.dictTable}"
+              @callback="popupCallback"/>
+	<#elseif po.classType =='sel_depart'>
+		<#assign form_sel_depart=true>
+            <j-select-depart v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true"/>
+	<#elseif po.classType =='sel_user'>
+		<#assign form_sel_user = true>
+            <j-select-user-by-dep v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true"/>
+	<#elseif po.classType =='textarea'>
+            <a-textarea v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" rows="4" placeholder="请输入${po.filedComment}"/>
+	<#elseif po.classType=='list' || po.classType=='radio'>
+		<#assign form_select = true>
+            <j-dict-select-tag type="${po.classType}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}"/>
+	<#elseif po.classType=='list_multi' || po.classType=='checkbox'>
+		<#assign form_select_multi = true>
+            <j-multi-select-tag type="${po.classType}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}"/>
+	<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+            <a-input-number v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}" style="width: 100%"/>
+	<#elseif po.classType=='file'>
+		<#assign form_file = true>
+            <j-upload v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true"></j-upload>
+    <#elseif po.classType=='image'>
+        <#assign form_image = true>
+            <j-image-upload isMultiple v-decorator="['${po.fieldName}'${autoWriteRules(po)}]"></j-image-upload>
+	<#else>
+            <a-input v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}"></a-input>
+    </#if>
+          </a-form-item>
+        </a-col>
+</#if>
+</#list>    
+      </a-row>
+    </a-form>
+  </div>
+</template>
+<script>
+  import pick from 'lodash.pick'
+  import { getAction } from '@/api/manage'
+  import { validateDuplicateValue } from '@/utils/util'
+  <#if form_date>
+  import JDate from '@/components/jeecg/JDate'  
+  </#if>
+  <#if form_file>
+  import JUpload from '@/components/jeecg/JUpload'
+  </#if>
+  <#if form_image>
+  import JImageUpload from '@/components/jeecg/JImageUpload'
+  </#if>
+  <#if form_sel_depart>
+  import JSelectDepart from '@/components/jeecgbiz/JSelectDepart'
+  </#if>
+  <#if form_sel_user>
+  import JSelectUserByDep from '@/components/jeecgbiz/JSelectUserByDep'
+  </#if>
+  <#if form_select>
+  import JDictSelectTag from "@/components/dict/JDictSelectTag"
+  </#if>
+  <#if form_select_multi>
+  import JMultiSelectTag from "@/components/dict/JMultiSelectTag"
+  </#if>
+
+  export default {
+    name: '${sub.entityName}Form',
+    components: { 
+    <#if form_date>
+      JDate,
+    </#if>
+    <#if form_file>
+      JUpload,
+    </#if>
+    <#if form_image>
+      JImageUpload,
+    </#if>
+    <#if form_sel_depart>
+      JSelectDepart,
+    </#if>
+    <#if form_sel_user>
+      JSelectUserByDep,
+    </#if>
+    <#if form_select>
+      JDictSelectTag,
+    </#if>
+    <#if form_select_multi>
+      JMultiSelectTag,
+    </#if>
+    },
+    data () {
+      return {
+        form: this.$form.createForm(this),
+        model: {},
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 6 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
+        labelCol2: {
+          xs: { span: 24 },
+          sm: { span: 3 },
+        },
+        wrapperCol2: {
+          xs: { span: 24 },
+          sm: { span: 20 },
+        },
+        <#include "/common/validatorRulesTemplate/sub.ftl">
+        confirmLoading: false,
+      }
+    },
+    methods:{
+      initFormData(url,id){
+        this.clearFormData()
+        if(!id){
+          this.edit({})
+        }else{
+          getAction(url,{id:id}).then(res=>{
+            if(res.success){
+              let records = res.result.records
+              if(records && records.length>0){
+                this.edit(records[0])
+              }
+            }
+          })
+        }
+      },
+      edit(record){
+        this.model = Object.assign({}, record)
+        console.log("${sub.entityName}Form-edit",this.model);
+        let fieldval = pick(this.model<#list sub.colums as po><#if po.fieldName !='id'>,'${po.fieldName}'</#if></#list>)
+        this.$nextTick(() => {
+          this.form.setFieldsValue(fieldval)
+        })
+      },
+      getFormData(){
+        let formdata_arr = []
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            let formdata = Object.assign(this.model, values)
+            let isNullObj = true
+            Object.keys(formdata).forEach(key=>{
+              if(formdata[key]){
+                isNullObj = false
+              }
+            })
+            if(!isNullObj){
+              formdata_arr.push(formdata)
+            }
+          }else{
+            this.$emit("validateError","${sub.ftlDescription}表单校验未通过");
+          }
+        })
+        console.log("${sub.ftlDescription}表单数据集",formdata_arr);
+        return formdata_arr;
+      },
+      popupCallback(row){
+        this.form.setFieldsValue(pick(row<#list sub.colums as po><#if po.fieldName !='id'>,'${po.fieldName}'</#if></#list>))
+      },
+      clearFormData(){
+        this.form.resetFields()
+        this.model={}
+      }
+    
+    }
+  }
+</script>
+</#if>
+</#list>

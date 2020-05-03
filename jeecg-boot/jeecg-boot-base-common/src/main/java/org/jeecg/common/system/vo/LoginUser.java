@@ -79,11 +79,11 @@ public class LoginUser {
 	 */
 	private Integer status;
 	
-	private String delFlag;
+	private Integer delFlag;
 	/**
      * 同步工作流引擎1同步0不同步
      */
-    private String activitiSync;
+    private Integer activitiSync;
 
 	/**
 	 * 创建时间
@@ -93,11 +93,21 @@ public class LoginUser {
 	/**
 	 *  身份（1 普通员工 2 上级）
 	 */
-	private Integer identity;
+	private Integer userIdentity;
 
 	/**
 	 * 管理部门ids
 	 */
 	private String departIds;
+
+	/**
+	 * 职务，关联职务表
+	 */
+	private String post;
+
+	/**
+	 * 座机号
+	 */
+	private String telephone;
 
 }

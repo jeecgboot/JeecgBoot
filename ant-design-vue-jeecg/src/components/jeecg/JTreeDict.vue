@@ -180,7 +180,11 @@
       },
       onChange(value){
         console.log(value)
-        this.$emit('change', value.value);
+        if(!value){
+          this.$emit('change', '');
+        }else{
+          this.$emit('change', value.value);
+        }
         this.treeValue = value
       },
       onSearch(value){

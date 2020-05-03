@@ -121,7 +121,7 @@
       this.loadData();
       //this.timerFun();
       this.initWebSocket();
-      this.heartCheckFun();
+     // this.heartCheckFun();
     },
     destroyed: function () { // 离开页面生命周期函数
       this.websocketclose();
@@ -212,7 +212,7 @@
       websocketOnopen: function () {
         console.log("WebSocket连接成功");
         //心跳检测重置
-        this.heartCheck.reset().start();
+        //this.heartCheck.reset().start();
       },
       websocketOnerror: function (e) {
         console.log("WebSocket连接发生错误");
@@ -229,7 +229,7 @@
           this.loadData();
         }
         //心跳检测重置
-        this.heartCheck.reset().start();
+        //this.heartCheck.reset().start();
       },
       websocketOnclose: function (e) {
         console.log("connection closed (" + e.code + ")");

@@ -169,7 +169,7 @@
               this.checkedKeys = [...res.result];
               this.defaultCheckedKeys = [...res.result];
               this.expandedKeysss = this.allTreeKeys;
-              //console.log(this.defaultCheckedKeys)
+              console.log(this.defaultCheckedKeys)
           })
         })
       }

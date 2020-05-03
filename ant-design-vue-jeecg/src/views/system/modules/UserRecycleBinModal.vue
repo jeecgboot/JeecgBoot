@@ -53,6 +53,7 @@
 </template>
 
 <script>
+  import { putAction,deleteAction,getFileAccessHttpUrl } from "@/api/manage"
 
   // 高度封装的请求，请务必使用 superRequest.call(this,{}) 的方式调用
   function superRequest(options) {
@@ -95,9 +96,11 @@
           { title: '操作', align: 'center', dataIndex: 'action', width: 200, scopedSlots: { customRender: 'action' } }
         ],
         url: {
-          getAvatar: (path) => `window._CONFIG['staticDomainURL']/${path}`,
+          getAvatar: (path) => getFileAccessHttpUrl(`${path}`),
           // 回收站操作，get = 获取列表；put = 取回；delete = 彻底删除
           recycleBin: '/sys/user/recycleBin',
+          putRecycleBin: '/sys/user/putRecycleBin',
+          deleteRecycleBin: '/sys/user/deleteRecycleBin',
         },
       }
     },
@@ -137,10 +140,8 @@
           content: `您确定要恢复这 ${userIds.length} 个用户吗？`,
           centered: true,
           onOk: () => {
-            superRequest.call(this, {
-              loading: true,
-              promise: this.$http.put(this.url.recycleBin, userIds),
-              success: () => {
+            putAction(this.url.putRecycleBin,{userIds:userIds.join(',')}).then((res)=>{
+              if(res.success){
                 this.handleOk()
                 this.handleClearSelection()
                 this.$message.success(`还原 ${userIds.length} 个用户成功！`)
@@ -159,15 +160,16 @@
           </div>),
           centered: true,
           onOk: () => {
-            superRequest.call(this, {
-              loading: true,
-              promise: this.$http.delete(this.url.recycleBin + `?userIds=${userIds.join(',')}`),
-              success: () => {
+            var that = this;
+            deleteAction(that.url.deleteRecycleBin, {userIds: userIds.join(',')}).then((res) => {
+              if (res.success) {
                 this.loadData()
                 this.handleClearSelection()
                 this.$message.success(`彻底删除 ${userIds.length} 个用户成功！`)
+              } else {
+                that.$message.warning(res.message);
               }
-            })
+            });
           },
         })
       },

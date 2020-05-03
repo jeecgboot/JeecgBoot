@@ -70,11 +70,12 @@ public class ShiroConfig {
 		//cas验证登录
 		filterChainDefinitionMap.put("/cas/client/validateLogin", "anon");
 		// 配置不会被拦截的链接 顺序判断
-		filterChainDefinitionMap.put("/sys/getCheckCode", "anon"); //登录验证码接口排除
 		filterChainDefinitionMap.put("/sys/randomImage/**", "anon"); //登录验证码接口排除
+		filterChainDefinitionMap.put("/sys/checkCaptcha", "anon"); //登录验证码接口排除
 		filterChainDefinitionMap.put("/sys/login", "anon"); //登录接口排除
 		filterChainDefinitionMap.put("/sys/mLogin", "anon"); //登录接口排除
 		filterChainDefinitionMap.put("/sys/logout", "anon"); //登出接口排除
+		filterChainDefinitionMap.put("/thirdLogin/**", "anon"); //第三方登录
 		filterChainDefinitionMap.put("/sys/getEncryptedString", "anon"); //获取加密串
 		filterChainDefinitionMap.put("/sys/sms", "anon");//短信验证码
 		filterChainDefinitionMap.put("/sys/phoneLogin", "anon");//手机登录		
@@ -85,8 +86,6 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/sys/user/passwordChange", "anon");//用户更改密码
 		filterChainDefinitionMap.put("/auth/2step-code", "anon");//登录验证码
 		filterChainDefinitionMap.put("/sys/common/static/**", "anon");//图片预览 &下载文件不限制token
-		//filterChainDefinitionMap.put("/sys/common/view/**", "anon");//图片预览不限制token
-		//filterChainDefinitionMap.put("/sys/common/download/**", "anon");//文件下载不限制token
 		filterChainDefinitionMap.put("/sys/common/pdf/**", "anon");//pdf预览
 		filterChainDefinitionMap.put("/generic/**", "anon");//pdf预览需要文件
 		filterChainDefinitionMap.put("/", "anon");
@@ -117,18 +116,15 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/actuator/httptrace/**", "anon");
 		filterChainDefinitionMap.put("/actuator/redis/**", "anon");
 
+        //大屏设计器排除
+		filterChainDefinitionMap.put("/big/screen/**", "anon");
+
 		//测试示例
 		filterChainDefinitionMap.put("/test/jeecgDemo/html", "anon"); //模板页面
 		filterChainDefinitionMap.put("/test/jeecgDemo/redis/**", "anon"); //redis测试
 
-		//排除Online请求
-		filterChainDefinitionMap.put("/auto/cgform/**", "anon");
-
 		//websocket排除
 		filterChainDefinitionMap.put("/websocket/**", "anon");
-
-		//大屏设计器排除
-		filterChainDefinitionMap.put("/big/screen/**", "anon");
 
 		// 添加自己的过滤器并且取名为jwt
 		Map<String, Filter> filterMap = new HashMap<String, Filter>(1);
@@ -173,6 +169,12 @@ public class ShiroConfig {
 	public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
 		DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
 		defaultAdvisorAutoProxyCreator.setProxyTargetClass(true);
+		/**
+		* 解决重复代理问题 github#994
+		* 添加前缀判断 不匹配 任何Advisor
+		*/
+		defaultAdvisorAutoProxyCreator.setUsePrefix(true);
+		defaultAdvisorAutoProxyCreator.setAdvisorBeanNamePrefix("_no_advisor");
 		return defaultAdvisorAutoProxyCreator;
 	}
 

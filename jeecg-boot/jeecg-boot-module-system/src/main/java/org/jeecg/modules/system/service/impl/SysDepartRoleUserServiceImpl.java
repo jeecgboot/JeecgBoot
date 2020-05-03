@@ -2,14 +2,19 @@ package org.jeecg.modules.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.system.entity.SysDepartRole;
 import org.jeecg.modules.system.entity.SysDepartRoleUser;
+import org.jeecg.modules.system.mapper.SysDepartRoleMapper;
 import org.jeecg.modules.system.mapper.SysDepartRoleUserMapper;
 import org.jeecg.modules.system.service.ISysDepartRoleUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Description: 部门角色人员信息
@@ -19,6 +24,8 @@ import java.util.*;
  */
 @Service
 public class SysDepartRoleUserServiceImpl extends ServiceImpl<SysDepartRoleUserMapper, SysDepartRoleUser> implements ISysDepartRoleUserService {
+    @Autowired
+    private SysDepartRoleMapper sysDepartRoleMapper;
 
     @Override
     public void deptRoleUserAdd(String userId, String newRoleId, String oldRoleId) {
@@ -37,6 +44,20 @@ public class SysDepartRoleUserServiceImpl extends ServiceImpl<SysDepartRoleUserM
         if(remove!=null && remove.size()>0) {
             for (String roleId : remove) {
                 this.remove(new QueryWrapper<SysDepartRoleUser>().lambda().eq(SysDepartRoleUser::getUserId, userId).eq(SysDepartRoleUser::getDroleId, roleId));
+            }
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeDeptRoleUser(List<String> userIds, String depId) {
+        for(String userId : userIds){
+            List<SysDepartRole> sysDepartRoleList = sysDepartRoleMapper.selectList(new QueryWrapper<SysDepartRole>().eq("depart_id",depId));
+            List<String> roleIds = sysDepartRoleList.stream().map(SysDepartRole::getId).collect(Collectors.toList());
+            if(roleIds != null && roleIds.size()>0){
+                QueryWrapper<SysDepartRoleUser> query = new QueryWrapper<>();
+                query.eq("user_id",userId).in("drole_id",roleIds);
+                this.remove(query);
             }
         }
     }

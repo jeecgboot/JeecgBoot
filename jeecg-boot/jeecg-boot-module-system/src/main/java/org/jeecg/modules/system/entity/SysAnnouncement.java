@@ -140,4 +140,8 @@ public class SysAnnouncement implements Serializable {
      * 组件/路由 地址
      */
     private java.lang.String openPage;
+    /**
+     * 摘要
+     */
+    private java.lang.String msgAbstract;
 }

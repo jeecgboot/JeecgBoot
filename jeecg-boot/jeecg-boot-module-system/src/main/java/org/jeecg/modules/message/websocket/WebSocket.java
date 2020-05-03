@@ -11,6 +11,7 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
+import org.jeecg.common.constant.WebsocketConst;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
@@ -57,8 +58,8 @@ public class WebSocket {
         //todo 现在有个定时任务刷，应该去掉
     	log.debug("【websocket消息】收到客户端消息:"+message);
     	JSONObject obj = new JSONObject();
-    	obj.put("cmd", "heartcheck");//业务类型
-    	obj.put("msgTxt", "心跳响应");//消息内容
+    	obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_CHECK);//业务类型
+    	obj.put(WebsocketConst.MSG_TXT, "心跳响应");//消息内容
     	session.getAsyncRemote().sendText(obj.toJSONString());
     }
     

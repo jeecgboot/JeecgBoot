@@ -7,7 +7,11 @@ package org.jeecg.modules.system.aspect;
  */
 public enum UrlMatchEnum {
     CGFORM_DATA("/online/cgform/api/getData/", "/online/cgformList/"),
-    CGFORM_TREE_DATA("/online/cgform/api/getTreeData/", "/online/cgformList/");
+    CGFORM_EXCEL_DATA("/online/cgform/api/exportXls/", "/online/cgformList/"),
+    CGFORM_TREE_DATA("/online/cgform/api/getTreeData/", "/online/cgformList/"),
+    CGREPORT_DATA("/online/cgreport/api/getColumnsAndData/", "/online/cgreport/"),
+    CGREPORT_EXCEL_DATA("/online/cgreport/api/exportXls/", "/online/cgreport/");
+
 
     UrlMatchEnum(String url, String match_url) {
         this.url = url;

@@ -166,7 +166,7 @@
       },
       /** 加载desform */
       loadDesformList() {
-        getAction(this.url.getDeptRoleList, { departId: this.currentDeptId }).then((res) => {
+        getAction(this.url.getDeptRoleList, { departId: this.currentDeptId, userId:this.userId }).then((res) => {
           if (res.success) {
             this.desformList = res.result
             var designName = [];

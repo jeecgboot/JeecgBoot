@@ -11,10 +11,12 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.CommonSendStatus;
+import org.jeecg.common.constant.WebsocketConst;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
@@ -24,6 +26,7 @@ import org.jeecg.modules.system.entity.SysAnnouncement;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.system.service.ISysAnnouncementSendService;
 import org.jeecg.modules.system.service.ISysAnnouncementService;
+
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -227,9 +230,9 @@ public class SysAnnouncementController {
 				result.success("该系统通知发布成功");
 				if(sysAnnouncement.getMsgType().equals(CommonConstant.MSG_TYPE_ALL)) {
 					JSONObject obj = new JSONObject();
-			    	obj.put("cmd", "topic");
-					obj.put("msgId", sysAnnouncement.getId());
-					obj.put("msgTxt", sysAnnouncement.getTitile());
+			    	obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_TOPIC);
+					obj.put(WebsocketConst.MSG_ID, sysAnnouncement.getId());
+					obj.put(WebsocketConst.MSG_TXT, sysAnnouncement.getTitile());
 			    	webSocket.sendAllMessage(obj.toJSONString());
 				}else {
 					// 2.插入用户通告阅读标记表记录
@@ -238,9 +241,9 @@ public class SysAnnouncementController {
 					String anntId = sysAnnouncement.getId();
 					Date refDate = new Date();
 					JSONObject obj = new JSONObject();
-			    	obj.put("cmd", "user");
-					obj.put("msgId", sysAnnouncement.getId());
-					obj.put("msgTxt", sysAnnouncement.getTitile());
+			    	obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
+					obj.put(WebsocketConst.MSG_ID, sysAnnouncement.getId());
+					obj.put(WebsocketConst.MSG_TXT, sysAnnouncement.getTitile());
 			    	webSocket.sendMoreMessage(userIds, obj.toJSONString());
 				}
 			}
@@ -274,7 +277,6 @@ public class SysAnnouncementController {
 
 	/**
 	 * @功能：补充用户数据，并返回系统消息
-	 * @param id
 	 * @return
 	 */
 	@RequestMapping(value = "/listByUser", method = RequestMethod.GET)
@@ -378,4 +380,42 @@ public class SysAnnouncementController {
         }
         return Result.error("文件导入失败！");
     }
+	/**
+	 *同步消息
+	 * @param anntId
+	 * @return
+	 */
+	@RequestMapping(value = "/syncNotic", method = RequestMethod.GET)
+	public Result<SysAnnouncement> syncNotic(@RequestParam(name="anntId",required=false) String anntId, HttpServletRequest request) {
+		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
+		JSONObject obj = new JSONObject();
+		if(StringUtils.isNotBlank(anntId)){
+			SysAnnouncement sysAnnouncement = sysAnnouncementService.getById(anntId);
+			if(sysAnnouncement==null) {
+				result.error500("未找到对应实体");
+			}else {
+				if(sysAnnouncement.getMsgType().equals(CommonConstant.MSG_TYPE_ALL)) {
+					obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_TOPIC);
+					obj.put(WebsocketConst.MSG_ID, sysAnnouncement.getId());
+					obj.put(WebsocketConst.MSG_TXT, sysAnnouncement.getTitile());
+					webSocket.sendAllMessage(obj.toJSONString());
+				}else {
+					// 2.插入用户通告阅读标记表记录
+					String userId = sysAnnouncement.getUserIds();
+					if(oConvertUtils.isNotEmpty(userId)){
+						String[] userIds = userId.substring(0, (userId.length()-1)).split(",");
+						obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
+						obj.put(WebsocketConst.MSG_ID, sysAnnouncement.getId());
+						obj.put(WebsocketConst.MSG_TXT, sysAnnouncement.getTitile());
+						webSocket.sendMoreMessage(userIds, obj.toJSONString());
+					}
+				}
+			}
+		}else{
+			obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_TOPIC);
+			obj.put(WebsocketConst.MSG_TXT, "批量设置已读");
+			webSocket.sendAllMessage(obj.toJSONString());
+		}
+		return result;
+	}
 }

@@ -116,7 +116,7 @@
   import PageLayout from '@/components/page/PageLayout'
   import HeadInfo from '@/components/tools/HeadInfo'
   import Radar from '@/components/chart/Radar'
-  import { getRoleList, getServiceList } from "@/api/manage"
+  import { getRoleList, getServiceList, getFileAccessHttpUrl } from "@/api/manage"
 
   const DataSet = require('@antv/data-set')
 
@@ -185,7 +185,7 @@
     },
     created() {
       this.user = this.userInfo
-      this.avatar = window._CONFIG['staticDomainURL'] +"/"+ this.userInfo.avatar
+      this.avatar = getFileAccessHttpUrl(this.userInfo.avatar)
       console.log('this.avatar :'+ this.avatar)
 
       getRoleList().then(res => {

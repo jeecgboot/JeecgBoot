@@ -27,8 +27,9 @@
             </a-input>
           </a-form-item>
         </a-col>
-        <a-col :span="10">
-          <j-graphic-code @success="generateCode" style="float: right"></j-graphic-code>
+        <a-col :span="10" style="text-align: right">
+          <img v-if="requestCodeSuccess" style="margin-top: 2px;" :src="randCodeImage" @click="handleChangeCheckCode"/>
+          <img v-else style="margin-top: 2px;" src="../../assets/checkcode.png" @click="handleChangeCheckCode"/>
         </a-col>
       </a-row>
       <a-form-item :wrapperCol="{span: 19, offset: 5}">
@@ -40,15 +41,11 @@
 </template>
 
 <script>
-  import JGraphicCode from '@/components/jeecg/JGraphicCode'
-  import {getAction} from '@/api/manage'
-  import {checkOnlyUser} from '@/api/api'
+  import { getAction,postAction } from '@/api/manage'
+  import { checkOnlyUser } from '@/api/api'
 
   export default {
     name: "Step1",
-    components: {
-      JGraphicCode
-    },
     data() {
       return {
         form: this.$form.createForm(this),
@@ -57,12 +54,32 @@
         verifiedCode: "",
         validatorRules: {
           username: {rules: [{required: false}, {validator: this.validateInputUsername}]},
-          inputCode: {rules: [{required: true, message: '请输入验证码!'}, {validator: this.validateInputCode}]},
+          inputCode: {rules: [{required: true, message: '请输入验证码!'}]},
         },
+        randCodeImage:'',
+        requestCodeSuccess:true,
+        currdatetime:''
 
       }
     },
+    created(){
+      this.handleChangeCheckCode();
+    },
     methods: {
+      handleChangeCheckCode(){
+        this.currdatetime = new Date().getTime();
+        getAction(`/sys/randomImage/${this.currdatetime}`).then(res=>{
+          if(res.success){
+            this.randCodeImage = res.result
+            this.requestCodeSuccess=true
+          }else{
+            this.$message.error(res.message)
+            this.requestCodeSuccess=false
+          }
+        }).catch(()=>{
+          this.requestCodeSuccess=false
+        })
+      },
       nextStep() {
         let that = this
         this.form.validateFields((err, values) => {
@@ -77,28 +94,38 @@
             } else {
               params.username = username;
             }
-            getAction("/sys/user/querySysUser", params).then((res) => {
-              if (res.success) {
-                var userList = {
-                  username: res.result.username,
-                  phone: res.result.phone,
-                  isPhone: isPhone
-                };
-                setTimeout(function () {
-                  that.$emit('nextStep', userList)
-                })
-              }
-            });
+            that.validateInputCode().then(()=>{
+              getAction("/sys/user/querySysUser", params).then((res) => {
+                if (res.success) {
+                  var userList = {
+                    username: res.result.username,
+                    phone: res.result.phone,
+                    isPhone: isPhone
+                  };
+                  setTimeout(function () {
+                    that.$emit('nextStep', userList)
+                  })
+                }
+              });
+            })
           }
         })
 
       },
-      validateInputCode(rule, value, callback) {
-        if (!value || this.verifiedCode == this.inputCodeContent) {
-          callback();
-        } else {
-          callback(new Error("您输入的验证码不正确!"));
-        }
+      validateInputCode() {
+        return new Promise((resolve,reject)=>{
+          postAction("/sys/checkCaptcha",{
+            captcha:this.inputCodeContent,
+            checkKey:this.currdatetime
+          }).then(res=>{
+            if(res.success){
+              resolve();
+            }else{
+              this.$message.error(res.message)
+              reject();
+            }
+          });
+        })
       },
       inputCodeChange(e) {
         this.inputCodeContent = e.target.value;

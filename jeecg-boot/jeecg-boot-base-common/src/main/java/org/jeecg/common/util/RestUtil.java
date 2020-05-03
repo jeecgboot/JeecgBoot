@@ -3,8 +3,11 @@ package org.jeecg.common.util;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -40,7 +43,16 @@ public class RestUtil {
     /**
      * RestAPI 调用器
      */
-    private final static RestTemplate RT = new RestTemplate();
+    private final static RestTemplate RT;
+
+    static {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3000);
+        requestFactory.setReadTimeout(3000);
+        RT = new RestTemplate(requestFactory);
+        // 解决乱码问题
+        RT.getMessageConverters().set(1, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+    }
 
     public static RestTemplate getRestTemplate() {
         return RT;

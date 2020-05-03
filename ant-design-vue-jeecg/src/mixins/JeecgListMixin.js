@@ -4,7 +4,7 @@
  * data中url定义 list为查询列表  delete为删除单条记录  deleteBatch为批量删除
  */
 import { filterObj } from '@/utils/util';
-import { deleteAction, getAction,downFile } from '@/api/manage'
+import { deleteAction, getAction,downFile,getFileAccessHttpUrl } from '@/api/manage'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from "@/store/mutation-types"
 
@@ -47,16 +47,18 @@ export const JeecgListMixin = {
       /* 高级查询条件生效状态 */
       superQueryFlag:false,
       /* 高级查询条件 */
-      superQueryParams:""
+      superQueryParams: '',
+      /** 高级查询拼接方式 */
+      superQueryMatchType: 'and',
     }
   },
   created() {
-    if(!this.disableMixinCreated){
-      console.log(' -- mixin created -- ')
-      this.loadData();
-      //初始化字典配置 在自己页面定义
-      this.initDictConfig();
-    }
+      if(!this.disableMixinCreated){
+        console.log(' -- mixin created -- ')
+        this.loadData();
+        //初始化字典配置 在自己页面定义
+        this.initDictConfig();
+      }
   },
   methods:{
     loadData(arg) {
@@ -84,22 +86,24 @@ export const JeecgListMixin = {
     initDictConfig(){
       console.log("--这是一个假的方法!")
     },
-    handleSuperQuery(arg) {
+    handleSuperQuery(params, matchType) {
       //高级查询方法
-      if(!arg){
+      if(!params){
         this.superQueryParams=''
         this.superQueryFlag = false
       }else{
         this.superQueryFlag = true
-        this.superQueryParams=JSON.stringify(arg)
+        this.superQueryParams=JSON.stringify(params)
+        this.superQueryMatchType = matchType
       }
-      this.loadData()
+      this.loadData(1)
     },
     getQueryParams() {
       //获取查询条件
       let sqp = {}
       if(this.superQueryParams){
         sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        sqp['superQueryMatchType'] = this.superQueryMatchType
       }
       var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
       param.field = this.getQueryField();
@@ -206,6 +210,10 @@ export const JeecgListMixin = {
     handleToggleSearch(){
       this.toggleSearchStatus = !this.toggleSearchStatus;
     },
+    // 给popup查询使用(查询区域不支持回填多个字段，限制只返回一个字段)
+    getPopupField(fields){
+      return fields.split(',')[0]
+    },
     modalFormOk() {
       // 新增/修改 成功时，重载列表
       this.loadData();
@@ -286,7 +294,7 @@ export const JeecgListMixin = {
       if(text && text.indexOf(",")>0){
         text = text.substring(0,text.indexOf(","))
       }
-      return window._CONFIG['staticDomainURL']+"/"+text
+      return getFileAccessHttpUrl(text)
     },
     /* 文件下载 */
     uploadFile(text){
@@ -297,7 +305,8 @@ export const JeecgListMixin = {
       if(text.indexOf(",")>0){
         text = text.substring(0,text.indexOf(","))
       }
-      window.open(window._CONFIG['staticDomainURL']+ "/"+text);
+      let url = getFileAccessHttpUrl(text)
+      window.open(url);
     },
   }
 

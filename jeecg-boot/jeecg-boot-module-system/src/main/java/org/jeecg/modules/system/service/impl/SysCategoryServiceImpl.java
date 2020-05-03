@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
+import org.jeecg.common.constant.FillRuleConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.FillRuleUtil;
 import org.jeecg.common.util.YouBianCodeUtil;
@@ -47,7 +48,7 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 		//update-begin--Author:baihailong  Date:20191209 for：分类字典编码规则生成器做成公用配置
 		JSONObject formData = new JSONObject();
 		formData.put("pid",categoryPid);
-		categoryCode = (String) FillRuleUtil.executeRule("category_code_rule",formData);
+		categoryCode = (String) FillRuleUtil.executeRule(FillRuleConstant.CATEGORY,formData);
 		//update-end--Author:baihailong  Date:20191209 for：分类字典编码规则生成器做成公用配置
 		sysCategory.setCode(categoryCode);
 		sysCategory.setPid(categoryPid);
