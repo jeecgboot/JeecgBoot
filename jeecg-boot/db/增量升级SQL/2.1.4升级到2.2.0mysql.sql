@@ -123,8 +123,6 @@ ADD UNIQUE INDEX `uniq_code` USING BTREE (`code`) ;
 ALTER TABLE `sys_depart`
 ADD UNIQUE INDEX `uniq_depart_org_code` USING BTREE (`org_code`) ;
 
-update sys_permission set component = 'modules/online/desform/auto/AutoDesignDataListTable' where component = 'modules/online/desform/auto/AutoDesignDataForm'
-
 ALTER TABLE `sys_depart`
 MODIFY COLUMN `description` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '描述' AFTER `depart_order`;
 
