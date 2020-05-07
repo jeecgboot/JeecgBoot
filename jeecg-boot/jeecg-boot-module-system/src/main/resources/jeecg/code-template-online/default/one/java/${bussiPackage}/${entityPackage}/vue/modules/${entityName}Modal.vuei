@@ -57,9 +57,6 @@
 	<#elseif po.classType =='pca'>
 		<#assign form_pca=true>
 		  <j-area-linkage type="cascader" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入省市区"/>
-	<#elseif po.classType =='markdown'>
-	    <#assign form_md=true>
-	      <j-markdown-editor v-decorator="['${po.fieldName}']" id="${po.fieldName}"></j-markdown-editor>
     <#elseif po.classType =='password'>
 	      <a-input-password v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}"/>
 	<#elseif po.classType =='sel_user'>
@@ -150,10 +147,6 @@
   <#if form_pca>
   import JAreaLinkage from '@comp/jeecg/JAreaLinkage'
   </#if>
-  <#if form_pca>
-  import JMarkdownEditor from '@/components/jeecg/JMarkdownEditor/index'
-  </#if>
-
 
 
   export default {
@@ -191,9 +184,6 @@
     </#if>
     <#if form_cat_tree>
       JCategorySelect,
-    </#if>
-    <#if form_pca>
-      JMarkdownEditor,
     </#if>
     },
     data () {

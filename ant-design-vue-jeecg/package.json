@@ -25,7 +25,6 @@
     "md5": "^2.2.1",
     "nprogress": "^0.2.0",
     "tinymce": "^5.1.4",
-    "tui-editor": "^1.4.10",
     "viser-vue": "^2.4.4",
     "vue": "^2.6.10",
     "vue-area-linkage": "^5.1.0",
