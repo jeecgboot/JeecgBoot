@@ -45,11 +45,11 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 开发文档：  [http://doc.jeecg.com](http://doc.jeecg.com/1273753)
 
-- 视频教程  ：[JeecgBoot入门视频教程](http://www.jeecg.com/#/doc/rumen-video)
+- 视频教程  ：[JeecgBoot入门视频教程](http://www.jeecg.com/doc/video)
 
 - 常见问题：  [入门常见问题大全](http://bbs.jeecg.com/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
 
-- 更新日志：  [版本日志](http://www.jeecg.com/#/doc/changelog)
+- 更新日志：  [版本日志](http://www.jeecg.com/doc/log)
 
 
 
@@ -60,7 +60,7 @@ Jeecg-Boot快速开发平台，可以应用在任何J2EE项目的开发中，尤
 
 - 反馈问题：  [反馈问题，请按格式发Issues](https://github.com/zhangdaiscott/jeecg-boot/issues/new)
 
-- 参与开源：  [欢迎加入JEECG开源团队，共同进步！！](http://www.jeecg.com/#/doc/canyu-os)
+- 参与开源：  [欢迎加入JEECG开源团队，共同进步！！](http://www.jeecg.com/doc/join)
 
 - Online一分钟：  [1分钟快速学习](https://my.oschina.net/jeecg/blog/3083313)
 
