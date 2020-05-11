@@ -1,7 +1,7 @@
 <template>
   <div :style="{ padding: '0 0 32px 32px' }">
     <h4 :style="{ marginBottom: '20px' }">{{ title }}</h4>
-    <v-chart :force-fit="true" :height="height" :data="data" :scale="scale">
+    <v-chart :force-fit="true" :height="height" :data="data" :scale="scale" :onClick="handleClick">
       <v-tooltip/>
       <v-axis/>
       <v-legend/>
@@ -13,9 +13,11 @@
 
 <script>
   import { DataSet } from '@antv/data-set'
+  import { ChartEventMixins } from './mixins/ChartMixins'
 
   export default {
     name: 'LineChartMultid',
+    mixins: [ChartEventMixins],
     props: {
       title: {
         type: String,

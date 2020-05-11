@@ -17,7 +17,7 @@ public class SysDepartModel {
     /**排序*/
     private Integer departOrder;
     /**描述*/
-    private Object description;
+    private String description;
     /**机构类别 1组织机构，2岗位*/
     private String orgCategory;
     /**机构类型*/
@@ -81,11 +81,11 @@ public class SysDepartModel {
         this.departOrder = departOrder;
     }
 
-    public Object getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(Object description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 

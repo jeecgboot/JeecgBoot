@@ -1,7 +1,7 @@
 <template>
   <a-card :loading="cardLoading" :bordered="false" style="height: 100%;">
     <a-spin :spinning="loading">
-      <a-input-search @search="handleSearch" style="width:100%;margin-top: 10px" placeholder="输入组织机构名称进行查询..."/>
+      <a-input-search @search="handleSearch" style="width:100%;margin-top: 10px" placeholder="输入机构名称查询..." enterButton />
 
       <a-tree
         showLine
@@ -67,20 +67,21 @@
         promise.then(res => {
           if (res.success) {
             this.treeDataSource = res.result
-
+            // update-begin- --- author:wangshuai ------ date:20200102 ---- for:去除默认选中第一条数据、默认展开所有第一级
             // 默认选中第一条数据、默认展开所有第一级
-            if (res.result.length > 0) {
-              this.expandedKeys = []
-              res.result.forEach((item, index) => {
-                if (index === 0) {
-                  this.selectedKeys = [item.id]
-                  this.emitInput(item.orgCode)
-                }
-                this.expandedKeys.push(item.id)
-              })
-            }
+            // if (res.result.length > 0) {
+            //   this.expandedKeys = []
+            //   res.result.forEach((item, index) => {
+            //     if (index === 0) {
+            //       this.selectedKeys = [item.id]
+            //       this.emitInput(item.orgCode)
+            //     }
+            //     this.expandedKeys.push(item.id)
+            //   })
+            // }
+           // update-end- --- author:wangshuai ------ date:20200102 ---- for:去除默认选中第一条数据、默认展开所有第一级
           } else {
-            this.$message.warn('组织机构查询失败：' + res.message)
+            this.$message.warn(res.message)
             console.error('组织机构查询失败:', res)
           }
         }).finally(() => {

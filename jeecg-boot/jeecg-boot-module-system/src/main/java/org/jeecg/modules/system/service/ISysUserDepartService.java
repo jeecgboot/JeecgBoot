@@ -34,4 +34,8 @@ public interface ISysUserDepartService extends IService<SysUserDepart> {
 	 * @return
 	 */
 	List<SysUser> queryUserByDepId(String depId);
+  	/**
+	 * 根据部门code，查询当前部门和下级部门的用户信息
+	 */
+	public List<SysUser> queryUserByDepCode(String depCode,String realname);
 }

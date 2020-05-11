@@ -96,7 +96,7 @@
       loadRoot(){
         let param = {
           pid:this.pid,
-          pcode:this.pcode,
+          pcode:!this.pcode?'0':this.pcode,
           condition:this.condition
         }
         getAction(this.url,param).then(res=>{
@@ -119,11 +119,9 @@
       /** 数据回显*/
       loadItemByCode(){
         if(!this.value || this.value=="0"){
-          this.treeValue = ""
+          this.treeValue = []
         }else{
           getAction(this.view,{ids:this.value}).then(res=>{
-            console.log(124345)
-            console.log(124345,res)
             if(res.success){
               let values = this.value.split(',')
               this.treeValue = res.result.map((item, index) => ({

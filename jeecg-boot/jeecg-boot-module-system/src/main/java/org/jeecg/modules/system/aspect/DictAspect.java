@@ -125,7 +125,7 @@ public class DictAspect {
     }
 
     /**
-          *  翻译字典文本
+     *  翻译字典文本
      * @param code
      * @param text
      * @param table
@@ -145,6 +145,7 @@ public class DictAspect {
                 continue; //跳过循环
             }
             if (!StringUtils.isEmpty(table)){
+                log.debug("--DictAspect------dicTable="+ table+" ,dicText= "+text+" ,dicCode="+code);
                 tmpValue= dictService.queryTableDictTextByKey(table,text,code,k.trim());
             }else {
                 tmpValue = dictService.queryDictTextByKey(code, k.trim());

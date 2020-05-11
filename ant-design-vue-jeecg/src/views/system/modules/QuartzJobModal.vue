@@ -34,27 +34,21 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="参数"
-          hasFeedback >
-          <a-input placeholder="请输入参数" v-decorator="['parameter', {}]" />
+          label="参数">
+          <a-textarea placeholder="请输入参数" :rows="5" v-decorator="['parameter', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="描述"
-          hasFeedback >
-          <a-input placeholder="请输入描述" v-decorator="['description', {}]" />
+          label="描述">
+          <a-textarea placeholder="请输入描述" :rows="3" v-decorator="['description', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="状态">
-          <a-radio-group buttonStyle="solid" v-decorator="[ 'status', {'initialValue':0}]">
-            <a-radio-button :value="0">正常</a-radio-button>
-            <a-radio-button :value="-1">停止</a-radio-button>
-          </a-radio-group>
+          <j-dict-select-tag type="radioButton"  v-decorator="[ 'status', {'initialValue':0}]" :trigger-change="true" dictCode="quartz_status"/>
         </a-form-item>
-
       </a-form>
     </a-spin>
   </a-modal>
@@ -74,6 +68,7 @@
     data () {
       return {
         title:"操作",
+        buttonStyle: 'solid',
         visible: false,
         model: {},
         labelCol: {

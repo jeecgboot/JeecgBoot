@@ -45,4 +45,20 @@ public interface ISysPermissionService extends IService<SysPermission> {
 	 * @return
 	 */
 	public List<String> queryPermissionUrlWithStar();
+
+	/**
+	 * 判断用户否拥有权限
+	 * @param username
+	 * @param sysPermission
+	 * @return
+	 */
+	public boolean hasPermission(String username, SysPermission sysPermission);
+
+	/**
+	 * 根据用户和请求地址判断是否有此权限
+	 * @param username
+	 * @param url
+	 * @return
+	 */
+	public boolean hasPermission(String username, String url);
 }

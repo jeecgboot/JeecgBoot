@@ -1,7 +1,7 @@
 <template>
   <div class="footer">
     <div class="links">
-      <a href="http://www.jeecg.org" target="_blank">JEECG 首页</a>
+      <a href="http://www.jeecg.com" target="_blank">JEECG 首页</a>
       <a href="https://github.com/zhangdaiscott/jeecg-boot" target="_blank">
         <a-icon type="github"/>
       </a>
@@ -22,7 +22,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
   .footer {
     padding: 0 16px;
     margin: 48px 0 24px;

@@ -1,6 +1,7 @@
 package org.jeecg.modules.quartz.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -8,10 +9,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -83,6 +86,7 @@ public class QuartzJobController {
 	 * @param quartzJob
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<?> add(@RequestBody QuartzJob quartzJob) {
 		List<QuartzJob> list = quartzJobService.findByJobClassName(quartzJob.getJobClassName());
@@ -99,6 +103,7 @@ public class QuartzJobController {
 	 * @param quartzJob
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
 	public Result<?> eidt(@RequestBody QuartzJob quartzJob) {
 		try {
@@ -116,6 +121,7 @@ public class QuartzJobController {
 	 * @param id
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
 		QuartzJob quartzJob = quartzJobService.getById(id);
@@ -133,6 +139,7 @@ public class QuartzJobController {
 	 * @param ids
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 		if (ids == null || "".equals(ids.trim())) {
@@ -148,9 +155,10 @@ public class QuartzJobController {
 	/**
 	 * 暂停定时任务
 	 * 
-	 * @param job
+	 * @param jobClassName
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@GetMapping(value = "/pause")
 	@ApiOperation(value = "暂停定时任务")
 	public Result<Object> pauseJob(@RequestParam(name = "jobClassName", required = true) String jobClassName) {
@@ -172,9 +180,10 @@ public class QuartzJobController {
 	/**
 	 * 启动定时任务
 	 * 
-	 * @param job
+	 * @param jobClassName
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@GetMapping(value = "/resume")
 	@ApiOperation(value = "恢复定时任务")
 	public Result<Object> resumeJob(@RequestParam(name = "jobClassName", required = true) String jobClassName) {
@@ -203,7 +212,7 @@ public class QuartzJobController {
 	 * 导出excel
 	 * 
 	 * @param request
-	 * @param response
+	 * @param quartzJob
 	 */
 	@RequestMapping(value = "/exportXls")
 	public ModelAndView exportXls(HttpServletRequest request, QuartzJob quartzJob) {
@@ -228,9 +237,12 @@ public class QuartzJobController {
 	 * @return
 	 */
 	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
-	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
+	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+		// 错误信息
+		List<String> errorMessage = new ArrayList<>();
+		int successLines = 0, errorLines = 0;
 		for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
 			MultipartFile file = entity.getValue();// 获取上传文件对象
 			ImportParams params = new ImportParams();
@@ -238,11 +250,10 @@ public class QuartzJobController {
 			params.setHeadRows(1);
 			params.setNeedSave(true);
 			try {
-				List<QuartzJob> listQuartzJobs = ExcelImportUtil.importExcel(file.getInputStream(), QuartzJob.class, params);
-				for (QuartzJob quartzJobExcel : listQuartzJobs) {
-					quartzJobService.save(quartzJobExcel);
-				}
-				return Result.ok("文件导入成功！数据行数：" + listQuartzJobs.size());
+				List<Object> listQuartzJobs = ExcelImportUtil.importExcel(file.getInputStream(), QuartzJob.class, params);
+				List<String> list = ImportExcelUtil.importDateSave(listQuartzJobs, IQuartzJobService.class, errorMessage,CommonConstant.SQL_INDEX_UNIQ_JOB_CLASS_NAME);
+				errorLines+=list.size();
+				successLines+=(listQuartzJobs.size()-errorLines);
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 				return Result.error("文件导入失败！");
@@ -254,6 +265,6 @@ public class QuartzJobController {
 				}
 			}
 		}
-		return Result.error("文件导入失败！");
+		return ImportExcelUtil.imporReturnRes(errorLines,successLines,errorMessage);
 	}
 }

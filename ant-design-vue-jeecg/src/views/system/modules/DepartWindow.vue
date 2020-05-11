@@ -17,6 +17,8 @@
         multiple
         treeCheckable="tree"
         checkable
+        @expand="onExpand"
+        :expandedKeys="expandedKeysss"
         :checkedKeys="checkedKeys"
         allowClear="true"
         :checkStrictly="true"
@@ -45,6 +47,7 @@
     data () {
       return {
         checkedKeys:[], // 存储选中的部门id
+        expandedKeysss:[],//展开的节点
         userId:"", // 存储用户id
         model:{}, // 存储SysUserDepartsVO表
         userDepartModel:{userId:'',departIdList:[]}, // 存储用户id一对多部门信息的对象
@@ -146,8 +149,26 @@
         queryIdTree().then((res)=>{
           if(res.success){
             this.departTree = res.result;
+            if(this.checkedKeys&&this.checkedKeys.length >0){
+              let treekey=[];
+              let arr=res.result;
+              if(arr&&arr.length>0){
+                arr.forEach(item => {
+                  treekey.push(item.key);
+             /*     if(item.children&&item.children.length>0){
+                    item.children.forEach(item1 => {
+                      treekey.push(item1.key);
+                    })
+                  }*/
+                })
+                this.expandedKeysss = treekey
+              }
+            }
           }
         })
+      },
+      onExpand(expandedKeys){
+        this.expandedKeysss = expandedKeys;
       },
       modalFormOk(){
 

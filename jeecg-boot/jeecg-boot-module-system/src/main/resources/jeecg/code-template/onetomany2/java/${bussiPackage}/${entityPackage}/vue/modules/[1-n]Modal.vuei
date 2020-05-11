@@ -1,12 +1,13 @@
 <#list subTables as subTab>
 #segment#${subTab.entityName}Modal.vue
 <template>
-  <a-modal
+  <j-modal
     :title="title"
     :width="800"
     :visible="visible"
     :okButtonProps="{ props: {disabled: disableSubmit} }"
     :confirmLoading="confirmLoading"
+    switchFullscreen
     @ok="handleOk"
     @cancel="handleCancel"
     cancelText="关闭">
@@ -41,7 +42,7 @@
 </#list>
       </a-form>
     </a-spin>
-  </a-modal>
+  </j-modal>
 </template>
 
 <script>

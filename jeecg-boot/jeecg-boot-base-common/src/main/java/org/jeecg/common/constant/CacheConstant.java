@@ -43,4 +43,9 @@ public interface CacheConstant {
 	 */
 	public static final String TEST_DEMO_CACHE = "test:demo";
 
+	/**
+	 * 字典信息缓存
+	 */
+	public static final String SYS_DYNAMICDB_CACHE = "sys:cache:dbconnect:dynamic:";
+
 }

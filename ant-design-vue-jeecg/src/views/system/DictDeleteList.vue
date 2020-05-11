@@ -79,6 +79,8 @@
     methods: {
       handleCancel(){
         this.visible = false
+        //回收站字典列表刷新
+        this.$emit("refresh")
       },
       show(){
         this.visible = true
@@ -106,14 +108,25 @@
         })
       },
       handleDelete(id){
-        deleteAction("/sys/dict/deletePhysic/"+id).then(res=>{
-          if(res.success){
-            this.$message.success(res.message)
-            this.loadData();
-          }else{
-            this.$message.warning(res.message)
-          }
-        })
+        this.$confirm({
+          title: '彻底删除字典',
+          content: (<div>
+            <p>您确定要彻底删除这个字典项吗？</p>
+            <p style="color:red;">注意：彻底删除后将无法恢复，请谨慎操作！</p>
+            </div>),
+          centered: false,
+          onOk: () => {
+          var that = this;
+          deleteAction("/sys/dict/deletePhysic/"+id).then((res) => {
+            if (res.success) {
+              this.$message.success(res.message)
+              this.loadData();
+            } else {
+              that.$message.warning(res.message);
+            }
+          });
+        },
+      })
       }
 
     }

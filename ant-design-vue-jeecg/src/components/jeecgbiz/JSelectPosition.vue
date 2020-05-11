@@ -1,5 +1,5 @@
 <template>
-  <j-select-biz-component v-bind="configs" v-on="$listeners"/>
+  <j-select-biz-component :width="1000" v-bind="configs" v-on="$listeners"/>
 </template>
 
 <script>
@@ -16,11 +16,12 @@
           displayKey: 'name',
           returnKeys: ['id', 'code'],
           listUrl: '/sys/position/list',
-          queryParamText: '职务编码',
+          queryParamCode: 'name',
+          queryParamText: '职务名称',
           columns: [
-            { title: '职务名称', dataIndex: 'name', align: 'center', width: 100 },
-            { title: '职务编码', dataIndex: 'code', align: 'center', width: 100 },
-            { title: '职级', dataIndex: 'rank_dictText', align: 'center', width: 100 }
+            { title: '职务名称', dataIndex: 'name', align: 'center', width: '30%', widthRight: '70%' },
+            { title: '职务编码', dataIndex: 'code', align: 'center', width: '35%' },
+            { title: '职级', dataIndex: 'rank_dictText', align: 'center', width: '25%' }
           ]
         }
       }
@@ -33,4 +34,4 @@
   }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="less" scoped></style>

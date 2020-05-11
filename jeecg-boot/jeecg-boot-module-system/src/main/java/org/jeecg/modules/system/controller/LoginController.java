@@ -21,8 +21,10 @@ import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysLoginModel;
 import org.jeecg.modules.system.service.ISysDepartService;
+import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.service.ISysLogService;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.jeecg.modules.system.util.RandImageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,7 +51,9 @@ public class LoginController {
     private RedisUtil redisUtil;
 	@Autowired
     private ISysDepartService sysDepartService;
-	
+	@Autowired
+    private ISysDictService sysDictService;
+
 	private static final String BASE_CHECK_CODES = "qwertyuiplkjhgfdsazxcvbnmQWERTYUPLKJHGFDSAZXCVBNM1234567890";
 
 	@ApiOperation("登录接口")
@@ -64,12 +68,15 @@ public class LoginController {
 		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
 
 		//update-begin-author:taoyan date:20190828 for:校验验证码
-		Object checkCode = redisUtil.get(sysLoginModel.getCheckKey());
-		if(checkCode==null) {
-			result.error500("验证码失效");
-			return result;
-		}
-		if(!checkCode.equals(sysLoginModel.getCaptcha())) {
+        String captcha = sysLoginModel.getCaptcha();
+        if(captcha==null){
+            result.error500("验证码无效");
+            return result;
+        }
+        String lowerCaseCaptcha = captcha.toLowerCase();
+		String realKey = MD5Util.MD5Encode(lowerCaseCaptcha+sysLoginModel.getCheckKey(), "utf-8");
+		Object checkCode = redisUtil.get(realKey);
+		if(checkCode==null || !checkCode.equals(lowerCaseCaptcha)) {
 			result.error500("验证码错误");
 			return result;
 		}
@@ -214,8 +221,14 @@ public class LoginController {
 	public Result<String> sms(@RequestBody JSONObject jsonObject) {
 		Result<String> result = new Result<String>();
 		String mobile = jsonObject.get("mobile").toString();
+		//手机号模式 登录模式: "2"  注册模式: "1"
 		String smsmode=jsonObject.get("smsmode").toString();
-		log.info(mobile);	
+		log.info(mobile);
+		if(oConvertUtils.isEmpty(mobile)){
+			result.setMessage("手机号不允许为空！");
+			result.setSuccess(false);
+			return result;
+		}
 		Object object = redisUtil.get(mobile);
 		if (object != null) {
 			result.setMessage("验证码10分钟内，仍然有效！");
@@ -343,6 +356,7 @@ public class LoginController {
 		}
 		obj.put("token", token);
 		obj.put("userInfo", sysUser);
+		obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
 		result.setResult(obj);
 		result.success("登录成功");
 		return result;
@@ -361,28 +375,29 @@ public class LoginController {
 		result.setResult(map);
 		return result;
 	}
-	
+
 	/**
-	 * 获取校验码
+	 * 后台生成图形验证码 ：有效
+	 * @param response
+	 * @param key
 	 */
 	@ApiOperation("获取验证码")
-	@GetMapping(value = "/getCheckCode")
-	public Result<Map<String,String>> getCheckCode(){
-		Result<Map<String,String>> result = new Result<Map<String,String>>();
-		Map<String,String> map = new HashMap<String,String>();
+	@GetMapping(value = "/randomImage/{key}")
+	public Result<String> randomImage(HttpServletResponse response,@PathVariable String key){
+		Result<String> res = new Result<String>();
 		try {
 			String code = RandomUtil.randomString(BASE_CHECK_CODES,4);
-			String key = MD5Util.MD5Encode(code+System.currentTimeMillis(), "utf-8");
-			redisUtil.set(key, code, 60);
-			map.put("key", key);
-			map.put("code",code);
-			result.setResult(map);
-			result.setSuccess(true);
+			String lowerCaseCode = code.toLowerCase();
+			String realKey = MD5Util.MD5Encode(lowerCaseCode+key, "utf-8");
+			redisUtil.set(realKey, lowerCaseCode, 60);
+			String base64 = RandImageUtil.generate(code);
+			res.setSuccess(true);
+			res.setResult(base64);
 		} catch (Exception e) {
+			res.error500("获取验证码出错"+e.getMessage());
 			e.printStackTrace();
-			result.setSuccess(false);
 		}
-		return result;
+		return res;
 	}
 	
 	/**
@@ -440,6 +455,27 @@ public class LoginController {
 		result.setCode(200);
 		sysBaseAPI.addLog("用户名: " + username + ",登录成功[移动端]！", CommonConstant.LOG_TYPE_1, null);
 		return result;
+	}
+
+	/**
+	 * 图形验证码
+	 * @param sysLoginModel
+	 * @return
+	 */
+	@RequestMapping(value = "/checkCaptcha", method = RequestMethod.POST)
+	public Result<?> checkCaptcha(@RequestBody SysLoginModel sysLoginModel){
+		String captcha = sysLoginModel.getCaptcha();
+		String checkKey = sysLoginModel.getCheckKey();
+		if(captcha==null){
+			return Result.error("验证码无效");
+		}
+		String lowerCaseCaptcha = captcha.toLowerCase();
+		String realKey = MD5Util.MD5Encode(lowerCaseCaptcha+checkKey, "utf-8");
+		Object checkCode = redisUtil.get(realKey);
+		if(checkCode==null || !checkCode.equals(lowerCaseCaptcha)) {
+			return Result.error("验证码错误");
+		}
+		return Result.ok();
 	}
 
 }

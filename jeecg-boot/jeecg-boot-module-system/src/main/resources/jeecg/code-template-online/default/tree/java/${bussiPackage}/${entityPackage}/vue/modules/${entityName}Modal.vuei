@@ -1,0 +1,265 @@
+<#include "/common/utils.ftl">
+<template>
+  <j-modal
+    :title="title"
+    :width="width"
+    :visible="visible"
+    :confirmLoading="confirmLoading"
+    switchFullscreen
+    @ok="handleOk"
+    @cancel="handleCancel"
+    :destroyOnClose="true"
+    cancelText="关闭">
+    <a-spin :spinning="confirmLoading">
+      <a-form :form="form">
+<#assign form_date = false>
+<#assign form_select = false>
+<#assign form_select_multi = false>
+<#assign form_popup = false>
+<#assign form_sel_depart = false>
+<#assign form_sel_user = false>
+<#assign form_file = false>
+<#assign form_image = false>
+<#assign form_tree_select = false>
+<#assign pidFieldName = "">
+
+<#list columns as po>
+<#if po.isShow =='Y'>
+<#assign form_field_dictCode="">
+	<#if po.dictTable?default("")?trim?length gt 1>
+		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+	<#elseif po.dictField?default("")?trim?length gt 1>
+		<#assign form_field_dictCode="${po.dictField}">
+	</#if>
+        <a-form-item label="${po.filedComment}" :labelCol="labelCol" :wrapperCol="wrapperCol">
+	<#if po.fieldDbName == tableVo.extendParams.pidField>
+		<#assign form_tree_select = true>
+		<#assign pidFieldName = po.fieldName>
+          <j-tree-select
+            ref="treeSelect"
+            placeholder="请选择${po.filedComment}"
+            v-decorator="['${po.fieldName}'${autoWriteRules(po)}]"
+            dict="${tableVo.tableName},${tableVo.extendParams.textField},id"
+            pidField="${tableVo.extendParams.pidField}"
+            pidValue="0"
+            hasChildField="${tableVo.extendParams.hasChildren}">
+          </j-tree-select>
+	<#elseif po.classType =='date'>
+		<#assign form_date=true>
+          <j-date placeholder="请选择${po.filedComment}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" style="width: 100%"/>
+	<#elseif po.classType =='datetime'>
+		<#assign form_date=true>
+          <j-date placeholder="请选择${po.filedComment}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" style="width: 100%"/>
+	<#elseif po.classType =='popup'>
+		<#assign form_popup=true>
+          <j-popup
+            v-decorator="['${po.fieldName}'${autoWriteRules(po)}]"
+            :trigger-change="true"
+            org-fields="${po.dictField}"
+            dest-fields="${Format.underlineToHump(po.dictText)}"
+            code="${po.dictTable}"
+            @callback="popupCallback"/>
+	<#elseif po.classType =='sel_depart'>
+		<#assign form_sel_depart=true>
+          <j-select-depart v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true"/>
+	<#elseif po.classType =='sel_user'>
+		<#assign form_sel_user = true>
+          <j-select-user-by-dep v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true"/>
+	<#elseif po.classType =='textarea'>
+          <a-textarea v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" rows="4" placeholder="请输入${po.filedComment}"/>
+	<#elseif po.classType=='list' || po.classType=='radio'>
+		<#assign form_select = true>
+          <j-dict-select-tag type="${po.classType}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}"/>
+	<#elseif po.classType=='list_multi' || po.classType=='checkbox'>
+		<#assign form_select_multi = true>
+          <j-multi-select-tag type="${po.classType}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}"/>
+	<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+          <a-input-number v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}" style="width: 100%"/>
+	<#elseif po.classType=='file'>
+		<#assign form_file = true>
+          <j-upload v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true"></j-upload>
+	<#elseif po.classType=='image'>
+	    <#assign form_image = true>
+          <j-image-upload isMultiple v-decorator="['${po.fieldName}'${autoWriteRules(po)}]"></j-image-upload>
+	<#else>
+          <a-input v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}"></a-input>
+    </#if>
+        </a-form-item>
+</#if>
+</#list>    
+        
+      </a-form>
+    </a-spin>
+  </j-modal>
+</template>
+
+<script>
+
+  import { httpAction } from '@/api/manage'
+  import pick from 'lodash.pick'
+  import { validateDuplicateValue } from '@/utils/util'
+  <#if form_date>
+  import JDate from '@/components/jeecg/JDate'  
+  </#if>
+  <#if form_file>
+  import JUpload from '@/components/jeecg/JUpload'
+  </#if>
+  <#if form_image>
+  import JImageUpload from '@/components/jeecg/JImageUpload'
+  </#if>
+  <#if form_sel_depart>
+  import JSelectDepart from '@/components/jeecgbiz/JSelectDepart'
+  </#if>
+  <#if form_sel_user>
+  import JSelectUserByDep from '@/components/jeecgbiz/JSelectUserByDep'
+  </#if>
+  <#if form_select>
+  import JDictSelectTag from "@/components/dict/JDictSelectTag"
+  </#if>
+  <#if form_select_multi>
+  import JMultiSelectTag from "@/components/dict/JMultiSelectTag"
+  </#if>
+  <#if form_tree_select>
+  import JTreeSelect from '@/components/jeecg/JTreeSelect'
+  </#if>
+  
+  export default {
+    name: "${entityName}Modal",
+    components: { 
+    <#if form_date>
+      JDate,
+    </#if>
+    <#if form_file>
+      JUpload,
+    </#if>
+    <#if form_image>
+      JImageUpload,
+    </#if>
+    <#if form_sel_depart>
+      JSelectDepart,
+    </#if>
+    <#if form_sel_user>
+      JSelectUserByDep,
+    </#if>
+    <#if form_select>
+      JDictSelectTag,
+    </#if>
+    <#if form_select_multi>
+      JMultiSelectTag,
+    </#if>
+    <#if form_tree_select>
+      JTreeSelect
+  	</#if>
+    },
+    data () {
+      return {
+        form: this.$form.createForm(this),
+        title:"操作",
+        width:800,
+        visible: false,
+        model: {},
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 5 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
+
+        confirmLoading: false,
+        <#include "/common/validatorRulesTemplate/main.ftl">
+        url: {
+          add: "/${entityPackage}/${entityName?uncap_first}/add",
+          edit: "/${entityPackage}/${entityName?uncap_first}/edit",
+        },
+        expandedRowKeys:[],
+        pidField:"${pidFieldName}"
+     
+      }
+    },
+    created () {
+    },
+    methods: {
+      add (obj) {
+        this.edit(obj);
+      },
+      edit (record) {
+        this.form.resetFields();
+        this.model = Object.assign({}, record);
+        this.visible = true;
+        this.$nextTick(() => {
+          this.form.setFieldsValue(pick(this.model<#list columns as po><#if po.fieldName !='id'>,'${po.fieldName}'</#if></#list>))
+        })
+      },
+      close () {
+        this.$emit('close');
+        this.visible = false;
+      },
+      handleOk () {
+        const that = this;
+        // 触发表单验证
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            that.confirmLoading = true;
+            let httpurl = '';
+            let method = '';
+            if(!this.model.id){
+              httpurl+=this.url.add;
+              method = 'post';
+            }else{
+              httpurl+=this.url.edit;
+               method = 'put';
+            }
+            let old_pid = this.model[this.pidField]
+            let formData = Object.assign(this.model, values);
+            let new_pid = this.model[this.pidField]
+            console.log("表单提交数据",formData)
+            httpAction(httpurl,formData,method).then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                that.submitSuccess(formData,old_pid==new_pid)
+              }else{
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
+          }
+         
+        })
+      },
+      handleCancel () {
+        this.close()
+      },
+      popupCallback(row){
+        this.form.setFieldsValue(pick(row<#list columns as po><#if po.fieldName !='id'>,'${po.fieldName}'</#if></#list>))
+      },
+      submitSuccess(formData,flag){
+        if(!formData.id){
+          let treeData = this.$refs.treeSelect.getCurrTreeData()
+          this.expandedRowKeys=[]
+          this.getExpandKeysByPid(formData[this.pidField],treeData,treeData)
+          this.$emit('ok',formData,this.expandedRowKeys.reverse());
+        }else{
+          this.$emit('ok',formData,flag);
+        }
+      },
+      getExpandKeysByPid(pid,arr,all){
+        if(pid && arr && arr.length>0){
+          for(let i=0;i<arr.length;i++){
+            if(arr[i].key==pid){
+              this.expandedRowKeys.push(arr[i].key)
+              this.getExpandKeysByPid(arr[i]['parentId'],all,all)
+            }else{
+              this.getExpandKeysByPid(pid,arr[i].children,all)
+            }
+          }
+        }
+      }
+      
+      
+    }
+  }
+</script>

@@ -1,0 +1,32 @@
+package ${bussiPackage}.${entityPackage}.service;
+
+<#list subTables as sub>
+import ${bussiPackage}.${entityPackage}.entity.${sub.entityName};
+</#list>
+import ${bussiPackage}.${entityPackage}.entity.${entityName};
+import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.beans.factory.annotation.Autowired;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
+
+/**
+ * @Description: ${tableVo.ftlDescription}
+ * @Author: jeecg-boot
+ * @Date:   ${.now?string["yyyy-MM-dd"]}
+ * @Version: V1.0
+ */
+public interface I${entityName}Service extends IService<${entityName}> {
+
+	/**
+	 * 删除一对多
+	 */
+	public void delMain (String id);
+	
+	/**
+	 * 批量删除一对多
+	 */
+	public void delBatchMain (Collection<? extends Serializable> idList);
+
+
+}

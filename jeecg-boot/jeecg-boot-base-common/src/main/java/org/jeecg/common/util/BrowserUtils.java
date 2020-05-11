@@ -191,4 +191,16 @@ public class BrowserUtils {
 		return browserLangCode;
 	}
 
+    /** 判断请求是否来自电脑端 */
+    public static boolean isDesktop(HttpServletRequest request) {
+        return !isMobile(request);
+    }
+
+    /** 判断请求是否来自移动端 */
+    public static boolean isMobile(HttpServletRequest request) {
+        String ua = request.getHeader("User-Agent").toLowerCase();
+        Pattern pattern = Pattern.compile("(phone|pad|pod|iphone|ipod|ios|ipad|android|mobile|blackberry|iemobile|mqqbrowser|juc|fennec|wosbrowser|browserng|webos|symbian|windows phone)");
+        return pattern.matcher(ua).find();
+    }
+
 }

@@ -72,18 +72,18 @@
     }
   }
 </script>
-<style lang="scss" scoped>
+<style lang="less" scoped>
 
   /* update_begin author:sunjianlei date:20190509 for: 修改侧边导航栏滚动条的样式 */
   .sider {
-    $scrollBarSize: 10px;
+    @scrollBarSize: 10px;
 
     ul.ant-menu {
 
       /* 定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
       &::-webkit-scrollbar {
-        width: $scrollBarSize;
-        height: $scrollBarSize;
+        width: @scrollBarSize;
+        height: @scrollBarSize;
         background-color: transparent;
         display: none;
       }
@@ -109,7 +109,7 @@
 
       /* 定义滑块 */
       &::-webkit-scrollbar-thumb {
-        border-radius: $scrollBarSize;
+        border-radius: @scrollBarSize;
         background-color: #eee;
         box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
 
@@ -145,7 +145,7 @@
 </style>
 
 <!-- update_begin author:sunjianlei date:20190530 for: 选中首页的时候不显示背景颜色 -->
-<style lang="scss">
+<style lang="less">
   .ant-menu.ant-menu-root {
     & > .ant-menu-item:first-child {
       background-color: transparent;
@@ -156,7 +156,7 @@
 
       &.ant-menu-item-selected {
         & > a, & > a:hover {
-          color: #1890ff;
+          color: @primary-color;
         }
       }
     }

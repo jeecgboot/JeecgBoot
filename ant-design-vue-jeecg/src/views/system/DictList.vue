@@ -30,6 +30,7 @@
         <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
           <a-button type="primary" icon="import">导入</a-button>
         </a-upload>
+        <a-button type="primary" icon="sync" @click="refleshCache()">刷新缓存</a-button>
 
         <a-button type="primary" icon="hdd" @click="openDeleteList">回收站</a-button>
       </div>
@@ -60,7 +61,7 @@
     </div>
     <dict-modal ref="modalForm" @ok="modalFormOk"></dict-modal>  <!-- 字典类型 -->
     <dict-item-list ref="dictItemList"></dict-item-list>
-    <dict-delete-list ref="dictDeleteList"></dict-delete-list>
+    <dict-delete-list ref="dictDeleteList" @refresh="() =>loadData()"></dict-delete-list>
   </a-card>
 </template>
 
@@ -70,6 +71,9 @@
   import DictModal from './modules/DictModal'
   import DictItemList from './DictItemList'
   import DictDeleteList from './DictDeleteList'
+  import { getAction } from '@/api/manage'
+  import { UI_CACHE_DB_DICT_DATA } from "@/store/mutation-types"
+  import Vue from 'vue'
 
   export default {
     name: "DictList",
@@ -132,6 +136,8 @@
           delete: "/sys/dict/delete",
           exportXlsUrl: "sys/dict/exportXls",
           importExcelUrl: "sys/dict/importExcel",
+          refleshCache: "sys/dict/refleshCache",
+          queryAllDictItems: "sys/dict/queryAllDictItems",
         },
       }
     },
@@ -146,6 +152,10 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
+        if (this.superQueryParams) {
+          param['superQueryParams'] = encodeURI(this.superQueryParams)
+          param['superQueryMatchType'] = this.superQueryMatchType
+        }
         return filterObj(param);
       },
       //取消选择
@@ -165,9 +175,25 @@
         that.queryParam.dictCode = "";
         that.loadData(this.ipagination.current);
       },
-
       openDeleteList(){
         this.$refs.dictDeleteList.show()
+      },
+      refleshCache(){
+        getAction(this.url.refleshCache).then((res) => {
+          if (res.success) {
+            //重新加载缓存
+            getAction(this.url.queryAllDictItems).then((res) => {
+              if (res.success) {
+                Vue.ls.remove(UI_CACHE_DB_DICT_DATA)
+                Vue.ls.set(UI_CACHE_DB_DICT_DATA, res.result, 7 * 24 * 60 * 60 * 1000)
+              }
+            })
+            this.$message.success("刷新缓存完成！");
+          }
+        }).catch(e=>{
+          this.$message.warn("刷新缓存失败！");
+          console.log("刷新失败",e)
+        })
       }
     },
     watch: {

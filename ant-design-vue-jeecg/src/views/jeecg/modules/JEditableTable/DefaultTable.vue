@@ -25,7 +25,7 @@
       @selectRowChange="handleSelectRowChange">
 
       <template v-slot:action="props">
-        <a @click="handleDelete(props)">{{ props.text }}</a>
+        <a @click="handleDelete(props)">删除</a>
       </template>
 
     </j-editable-table>
@@ -64,6 +64,10 @@
                 message: '${title}必须以字母开头，可包含数字、下划线、横杠'
               },
               {
+                unique: true,
+                message: '${title}不能重复'
+              },
+              {
                 handler(type, value, row, column, callback, target) {
                   // type 触发校验的类型（input、change、blur）
                   // value 当前校验的值
@@ -73,25 +77,13 @@
                   // target 行编辑的实例对象
 
                   if (type === 'blur') {
-                    let { values } = target.getValuesSync({ validate: false })
-
                     if (value === 'abc') {
-                      callback(false, '${title}不能是abc')  // false = 未验证
-                      return
+                      callback(false, '${title}不能是abc')  // false = 未通过校验
+                    } else {
+                      callback(true) // true = 通过验证
                     }
-
-                    let count = 0
-                    for (let val of values) {
-                      if (val['dbFieldName'] === value) {
-                        if (++count >= 2) {
-                          callback(false, '${title}不能重复==')
-                          return
-                        }
-                      }
-                    }
-                    callback(true) // true = 通过验证
                   } else {
-                    callback() // 不填写或者填写 null 代表不进行任何操作
+                    callback(true) // 不填写或者填写 null 代表不进行任何操作
                   }
                 },
                 message: '${title}默认提示'
@@ -162,6 +154,8 @@
             type: FormTypes.inputNumber,
             defaultValue: 32,
             placeholder: '${title}',
+            // 是否是统计列，只有 inputNumber 才能设置统计列
+            statistics: true,
             validateRules: [{ required: true, message: '请输入${title}' }]
           },
           {
@@ -175,6 +169,15 @@
             validateRules: [{ required: true, message: '请选择${title}' }]
           },
           {
+            title: '数字',
+            key: 'money',
+            width: '320px',
+            type: FormTypes.inputNumber,
+            defaultValue: '100.32',
+            placeholder: '请选择${title}',
+            validateRules: [{ required: true, message: '请选择${title}' }]
+          },
+          {
             title: '可以为空',
             key: 'isNull',
             // width: '8%',
@@ -184,13 +187,22 @@
             defaultChecked: false
           },
           {
+            type: FormTypes.popup,
+            key: 'popup',
+            title: 'JPopup',
+            width: '180px',
+            popupCode: 'demo',
+            field: 'name',
+            orgFields: 'name',
+            destFields: 'name'
+          },
+          {
             title: '操作',
             key: 'action',
             // width: '8%',
             width: '100px',
             type: FormTypes.slot,
             slotName: 'action',
-            defaultValue: '删除'
           }
 
         ],

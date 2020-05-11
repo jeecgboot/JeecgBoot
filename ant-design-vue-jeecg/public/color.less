@@ -7679,3 +7679,23 @@ font.medium {
 font.weak {
   color: #f5222d;
 }
+
+
+// begin -------- JAreaLinkage 三级联动样式 --------------
+.cascader-menu-list .cascader-menu-option.hover,
+.cascader-menu-list .cascader-menu-option:hover {
+  background-color: color(~`colorPalette("@{primary-color}", 1)`);
+}
+
+.area-selectable-list .area-select-option.hover {
+  background-color: color(~`colorPalette("@{primary-color}", 1)`);
+}
+
+.area-select:hover {
+  border-color: @primary-color;
+}
+
+.area-select:active {
+  box-shadow: 0 0 0 2px color(~`colorPalette("@{primary-color}", 1)`);
+}
+// end -------- JAreaLinkage 三级联动样式 --------------

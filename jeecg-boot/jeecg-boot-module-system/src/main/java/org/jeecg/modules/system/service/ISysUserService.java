@@ -1,8 +1,10 @@
 package org.jeecg.modules.system.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -13,6 +15,7 @@ import org.jeecg.modules.system.entity.SysUser;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -94,6 +97,20 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @return
 	 */
 	public IPage<SysUser> getUserByDepId(Page<SysUser> page, String departId, String username);
+
+	/**
+	 * 根据部门Ids查询
+	 * @param
+	 * @return
+	 */
+	public IPage<SysUser> getUserByDepIds(Page<SysUser> page, List<String> departIds, String username);
+
+	/**
+	 * 根据 userIds查询，查询用户所属部门的名称（多个部门名逗号隔开）
+	 * @param
+	 * @return
+	 */
+	public Map<String,String> getDepNamesByUserIds(List<String> userIds);
 
     /**
      * 根据部门 Id 和 QueryWrapper 查询
@@ -178,4 +195,42 @@ public interface ISysUserService extends IService<SysUser> {
 	 */
 	Result checkUserIsEffective(SysUser sysUser);
 
+	/**
+	 * 查询被逻辑删除的用户
+	 */
+	List<SysUser> queryLogicDeleted();
+
+	/**
+	 * 查询被逻辑删除的用户（可拼装查询条件）
+	 */
+	List<SysUser> queryLogicDeleted(LambdaQueryWrapper<SysUser> wrapper);
+
+	/**
+	 * 还原被逻辑删除的用户
+	 */
+	boolean revertLogicDeleted(List<String> userIds, SysUser updateEntity);
+
+	/**
+	 * 彻底删除被逻辑删除的用户
+	 */
+	boolean removeLogicDeleted(List<String> userIds);
+
+    /**
+     * 更新手机号、邮箱空字符串为 null
+     */
+    @Transactional(rollbackFor = Exception.class)
+    boolean updateNullPhoneEmail();
+
+	/**
+	 * 保存第三方用户信息
+	 * @param sysUser
+	 */
+	void saveThirdUser(SysUser sysUser);
+
+	/**
+	 * 根据部门Ids查询
+	 * @param
+	 * @return
+	 */
+	List<SysUser> queryByDepIds(List<String> departIds, String username);
 }

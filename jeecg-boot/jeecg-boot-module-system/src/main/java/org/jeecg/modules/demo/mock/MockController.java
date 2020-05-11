@@ -194,7 +194,7 @@ public class MockController {
 			//json = FileUtils.re.readFileToString(jsonFile);
 			//换个写法，解决springboot读取jar包中文件的问题
 			InputStream stream = getClass().getClassLoader().getResourceAsStream(jsonSrc.replace("classpath:", ""));
-			json = IOUtils.toString(stream);
+			json = IOUtils.toString(stream,"UTF-8");
 		} catch (IOException e) {
 			log.error(e.getMessage(),e);
 		}

@@ -109,6 +109,7 @@ public class SysRoleController {
 	 * @return
 	 */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
+	//@RequiresRoles({"admin"})
 	public Result<SysRole> add(@RequestBody SysRole role) {
 		Result<SysRole> result = new Result<SysRole>();
 		try {
@@ -127,6 +128,7 @@ public class SysRoleController {
 	 * @param role
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
 	public Result<SysRole> edit(@RequestBody SysRole role) {
 		Result<SysRole> result = new Result<SysRole>();
@@ -150,20 +152,11 @@ public class SysRoleController {
 	 * @param id
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-	public Result<SysRole> delete(@RequestParam(name="id",required=true) String id) {
-		Result<SysRole> result = new Result<SysRole>();
-		SysRole sysrole = sysRoleService.getById(id);
-		if(sysrole==null) {
-			result.error500("未找到对应实体");
-		}else {
-			boolean ok = sysRoleService.removeById(id);
-			if(ok) {
-				result.success("删除成功!");
-			}
-		}
-		
-		return result;
+	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
+		sysRoleService.deleteRole(id);
+		return Result.ok("删除角色成功");
 	}
 	
 	/**
@@ -171,14 +164,15 @@ public class SysRoleController {
 	 * @param ids
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysRole> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<SysRole> result = new Result<SysRole>();
-		if(ids==null || "".equals(ids.trim())) {
-			result.error500("参数不识别！");
+		if(oConvertUtils.isEmpty(ids)) {
+			result.error500("未选中角色！");
 		}else {
-			this.sysRoleService.removeByIds(Arrays.asList(ids.split(",")));
-			result.success("删除成功!");
+			sysRoleService.deleteBatchRole(ids.split(","));
+			result.success("删除角色成功!");
 		}
 		return result;
 	}
@@ -255,7 +249,6 @@ public class SysRoleController {
 	/**
 	 * 导出excel
 	 * @param request
-	 * @param response
 	 */
 	@RequestMapping(value = "/exportXls")
 	public ModelAndView exportXls(SysRole sysRole,HttpServletRequest request) {
@@ -318,6 +311,7 @@ public class SysRoleController {
 			map.put("datarule", list);
 			LambdaQueryWrapper<SysRolePermission> query = new LambdaQueryWrapper<SysRolePermission>()
 					.eq(SysRolePermission::getPermissionId, permissionId)
+					.isNotNull(SysRolePermission::getDataRuleIds)
 					.eq(SysRolePermission::getRoleId,roleId);
 			SysRolePermission sysRolePermission = sysRolePermissionService.getOne(query);
 			if(sysRolePermission==null) {

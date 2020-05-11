@@ -1,11 +1,14 @@
 package org.jeecg.modules.system.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.system.entity.SysUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
+import org.jeecg.modules.system.vo.SysUserDepVo;
 
 import java.util.List;
 
@@ -32,6 +35,21 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 * @return
 	 */
 	IPage<SysUser> getUserByDepId(Page page, @Param("departId") String departId, @Param("username") String username);
+
+	/**
+	 *  根据用户Ids,查询用户所属部门名称信息
+	 * @param userIds
+	 * @return
+	 */
+	List<SysUserDepVo> getDepNamesByUserIds(@Param("userIds")List<String> userIds);
+
+	/**
+	 *  根据部门Ids,查询部门下用户信息
+	 * @param page
+	 * @param departIds
+	 * @return
+	 */
+	IPage<SysUser> getUserByDepIds(Page page, @Param("departIds") List<String> departIds, @Param("username") String username);
 
 	/**
 	 * 根据角色Id查询用户信息
@@ -83,4 +101,42 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      */
     Integer getUserByOrgCodeTotal(@Param("orgCode") String orgCode, @Param("userParams") SysUser userParams);
 
+    /**
+     * @Author scott
+     * @Date 2019/12/13 16:10
+     * @Description: 批量删除角色与用户关系
+     */
+	void deleteBathRoleUserRelation(@Param("roleIdArray") String[] roleIdArray);
+
+    /**
+     * @Author scott
+     * @Date 2019/12/13 16:10
+     * @Description: 批量删除角色与权限关系
+     */
+	void deleteBathRolePermissionRelation(@Param("roleIdArray") String[] roleIdArray);
+
+	/**
+	 * 查询被逻辑删除的用户
+	 */
+	List<SysUser> selectLogicDeleted(@Param(Constants.WRAPPER) Wrapper<SysUser> wrapper);
+
+	/**
+	 * 还原被逻辑删除的用户
+	 */
+	int revertLogicDeleted(@Param("userIds") String userIds, @Param("entity") SysUser entity);
+
+	/**
+	 * 彻底删除被逻辑删除的用户
+	 */
+	int deleteLogicDeleted(@Param("userIds") String userIds);
+
+    /** 更新空字符串为null【此写法有sql注入风险，禁止随便用】 */
+    int updateNullByEmptyString(@Param("fieldName") String fieldName);
+    
+	/**
+	 *  根据部门Ids,查询部门下用户信息
+	 * @param departIds
+	 * @return
+	 */
+	List<SysUser> queryByDepIds(@Param("departIds")List<String> departIds,@Param("username") String username);
 }

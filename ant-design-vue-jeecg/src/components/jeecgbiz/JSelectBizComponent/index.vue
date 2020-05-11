@@ -1,17 +1,20 @@
 <template>
   <a-row class="j-select-biz-component-box" type="flex" :gutter="8">
     <a-col class="left" :class="{'full': !buttons}">
-      <a-select
-        mode="multiple"
-        :placeholder="placeholder"
-        v-model="selectValue"
-        :options="selectOptions"
-        allowClear
-        :disabled="disabled"
-        :open="false"
-        style="width: 100%;"
-        @click.native="visible=(buttons?visible:true)"
-      />
+      <slot name="left">
+        <a-select
+          mode="multiple"
+          :placeholder="placeholder"
+          v-model="selectValue"
+          :options="selectOptions"
+          allowClear
+          :disabled="disabled"
+          :open="selectOpen"
+          style="width: 100%;"
+          @dropdownVisibleChange="handleDropdownVisibleChange"
+          @click.native="visible=(buttons?visible:true)"
+        />
+      </slot>
     </a-col>
 
     <a-col v-if="buttons" class="right">
@@ -20,11 +23,9 @@
 
     <j-select-biz-component-modal
       v-model="selectValue"
-      :name="name" :listUrl="listUrl" :returnKeys="returnKeys" :displayKey="displayKey"
-      :propColumns="columns" :queryParamText="queryParamText" :multiple="multiple"
       :visible.sync="visible"
-      :valueKey="valueKey"
-      @ok="selectOptions=$event"
+      v-bind="modalProps"
+      @options="handleOptions"
     />
   </a-row>
 </template>
@@ -63,20 +64,6 @@
         type: Boolean,
         default: true
       },
-
-      /* 可复用属性 */
-
-      // 被选择的名字，例如选择部门就填写'部门'
-      name: {
-        type: String,
-        default: ''
-      },
-      // list 接口地址
-      listUrl: {
-        type: String,
-        required: true,
-        default: ''
-      },
       // 显示的 Key
       displayKey: {
         type: String,
@@ -92,29 +79,29 @@
         type: String,
         default: '选择'
       },
-      // 查询条件文字
-      queryParamText: {
-        type: String,
-        default: null
-      },
-      // columns
-      columns: {
-        type: Array,
-        default: () => []
-      }
 
     },
     data() {
       return {
         selectValue: [],
         selectOptions: [],
-        visible: false
+        dataSourceMap: {},
+        visible: false,
+        selectOpen: false,
       }
     },
     computed: {
       valueKey() {
         return this.returnId ? this.returnKeys[0] : this.returnKeys[1]
-      }
+      },
+      modalProps() {
+        return Object.assign({
+          valueKey: this.valueKey,
+          multiple: this.multiple,
+          returnKeys: this.returnKeys,
+          displayKey: this.displayKey || this.valueKey
+        }, this.$attrs)
+      },
     },
     watch: {
       value: {
@@ -130,38 +117,49 @@
       selectValue: {
         deep: true,
         handler(val) {
-          const data = val.join(',')
+          let rows = val.map(key => this.dataSourceMap[key])
+          this.$emit('select', rows)
+          let data = val.join(',')
           this.$emit('input', data)
           this.$emit('change', data)
         }
       }
     },
-    methods: {}
+    methods: {
+      handleOptions(options, dataSourceMap) {
+        this.selectOptions = options
+        this.dataSourceMap = dataSourceMap
+      },
+      handleDropdownVisibleChange() {
+        // 解决antdv自己的bug —— open 设置为 false 了，点击后还是添加了 open 样式，导致点击事件失效
+        this.selectOpen = true
+        this.$nextTick(() => {
+          this.selectOpen = false
+        })
+      },
+    }
   }
 </script>
 
-<style lang="scss">
-  .j-select-biz-component-box {
-    .ant-select-search__field {
-      display: none !important;
-    }
-  }
-</style>
-<style lang="scss" scoped>
+<style lang="less" scoped>
   .j-select-biz-component-box {
 
-    $width: 82px;
+    @width: 82px;
 
     .left {
-      width: calc(100% - #{$width} - 8px);
+      width: calc(100% - @width - 8px);
     }
 
     .right {
-      width: #{$width};
+      width: @width;
     }
 
     .full {
       width: 100%;
+    }
+
+    /deep/ .ant-select-search__field {
+      display: none !important;
     }
   }
 </style>

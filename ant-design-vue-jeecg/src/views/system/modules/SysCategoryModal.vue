@@ -22,8 +22,8 @@
           </j-tree-select>
         </a-form-item>
           
-        <a-form-item label="类型名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'name', validatorRules.name]" placeholder="请输入类型名称"></a-input>
+        <a-form-item label="分类名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input v-decorator="[ 'name', validatorRules.name]" placeholder="请输入分类名称"></a-input>
         </a-form-item>
           
         <!--<a-form-item label="类型编码" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -80,15 +80,16 @@
             }]
           },
           pid:{},
-          name:{}
+          name:{rules: [{ required: true, message: '请输入类型名称!' }]}
         },
         url: {
           add: "/sys/category/add",
           edit: "/sys/category/edit",
-          checkCode:"/sys/category/checkCode"
+          checkCode:"/sys/category/checkCode",
         },
         expandedRowKeys:[],
-        pidField:"pid"
+        pidField:"pid",
+        subExpandedKeys:[]
      
       }
     },
@@ -153,10 +154,13 @@
           let treeData = this.$refs.treeSelect.getCurrTreeData()
           this.expandedRowKeys=[]
           this.getExpandKeysByPid(formData[this.pidField],treeData,treeData)
+          if(formData.pid && this.expandedRowKeys.length==0){
+            this.expandedRowKeys = this.subExpandedKeys;
+          }
           this.$emit('ok',formData,this.expandedRowKeys.reverse());
         }else{
           this.$emit('ok',formData);
-        }
+      }
       },
       getExpandKeysByPid(pid,arr,all){
         if(pid && arr && arr.length>0){
