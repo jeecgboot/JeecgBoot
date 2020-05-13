@@ -12,7 +12,7 @@
     "@antv/data-set": "^0.11.2",
     "@jeecg/antd-online-beta220": "^1.0.1",
     "@tinymce/tinymce-vue": "^2.0.0",
-    "ant-design-vue": "^1.5.2",
+    "ant-design-vue": "1.5.2",
     "area-data": "^5.0.6",
     "axios": "^0.18.0",
     "clipboard": "^2.0.4",
