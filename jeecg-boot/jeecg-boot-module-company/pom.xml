@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>jeecg-boot-module-company</artifactId>
+    <version>2.2.0</version>
+    <packaging>jar</packaging>
+
+    <!-- 公共资源版本父POM -->
+    <parent>
+        <groupId>org.jeecgframework.boot</groupId>
+        <artifactId>jeecg-boot-parent</artifactId>
+        <version>2.2.0</version>
+    </parent>
+
+    <repositories>
+        <repository>
+            <id>aliyun</id>
+            <name>aliyun Repository</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>jeecg</id>
+            <name>jeecg Repository</name>
+            <url>http://maven.jeecg.org/nexus/content/repositories/jeecg</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+
+    <dependencies>
+        <!-- 新创建插件项目说明：
+            jeecg-boot-module-system 项目禁止其他独立模块直接引用，如果需要共通API或者调用系统信息接口请使用
+            统一的业务接口定义： 	  jeecg-boot-base-common/org.jeecg.common.system.api.ISysBaseAPI(所有子模块需要的接口都在这里定义)
+            接口实现类在system里：  jeecg-boot-module-system/org.jeecg.modules.system.service.impl.SysBaseApiImpl
+         -->
+        <!-- jeecg boot common -->
+        <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>jeecg-boot-base-common</artifactId>
+        </dependency>
+    </dependencies>
+</project>

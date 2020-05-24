@@ -15,6 +15,7 @@
 
 	<modules>
 		<module>jeecg-boot-base-common</module>
+		<module>jeecg-boot-module-company</module>
 		<module>jeecg-boot-module-system</module>
     </modules>
 
@@ -382,6 +383,12 @@
 	    		<artifactId>jeecg-boot-base-common</artifactId>
 	    		<version>${jeecgboot.version}</version>
 	    	</dependency>
+			<!-- jeecg-boot-module-company -->
+			<dependency>
+				<groupId>org.jeecgframework.boot</groupId>
+				<artifactId>jeecg-boot-module-company</artifactId>
+				<version>${jeecgboot.version}</version>
+			</dependency>
 	    	<!-- 七牛云SDK -->
 			<dependency>
 				<groupId>com.qiniu</groupId>
@@ -395,8 +402,8 @@
 			<!--<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			 指定JDK编译版本 -->
+			</plugin>-->
+			<!-- 指定JDK编译版本 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
