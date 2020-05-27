@@ -7,57 +7,57 @@
 </template>
 
 <script>
-export default {
-  name: 'Contextmenu',
-  props: {
-    visible: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    itemList: {
-      type: Array,
-      required: true,
-      default: () => []
-    }
-  },
-  data () {
-    return {
-      left: 0,
-      top: 0,
-      target: null,
-      selectedKeys: []
-    }
-  },
-  computed: {
-    style () {
-      return {
-        left: this.left + 'px',
-        top: this.top + 'px'
+  export default {
+    name: 'Contextmenu',
+    props: {
+      visible: {
+        type: Boolean,
+        required: false,
+        default: false
+      },
+      itemList: {
+        type: Array,
+        required: true,
+        default: () => []
       }
-    }
-  },
-  created () {
-    window.addEventListener('mousedown', e => this.closeMenu(e))
-    window.addEventListener('contextmenu', e => this.setPosition(e))
-  },
-  methods: {
-    closeMenu (e) {
-      if (this.visible === true && ['menuitemicon', 'menuitem'].indexOf(e.target.getAttribute('role')) < 0) {
+    },
+    data () {
+      return {
+        left: 0,
+        top: 0,
+        target: null,
+        selectedKeys: []
+      }
+    },
+    computed: {
+      style () {
+        return {
+          left: this.left + 'px',
+          top: this.top + 'px'
+        }
+      }
+    },
+    created () {
+      window.addEventListener('mousedown', e => this.closeMenu(e))
+      window.addEventListener('contextmenu', e => this.setPosition(e))
+    },
+    methods: {
+      closeMenu (e) {
+        if (this.visible === true && ['menuitemicon', 'menuitem'].indexOf(e.target.getAttribute('role')) < 0) {
+          this.$emit('update:visible', false)
+        }
+      },
+      setPosition (e) {
+        this.left = e.clientX
+        this.top = e.clientY
+        this.target = e.target
+      },
+      handleClick ({key}) {
+        this.$emit('select', key, this.target)
         this.$emit('update:visible', false)
       }
-    },
-    setPosition (e) {
-      this.left = e.clientX
-      this.top = e.clientY
-      this.target = e.target
-    },
-    handleClick ({key}) {
-      this.$emit('select', key, this.target)
-      this.$emit('update:visible', false)
     }
   }
-}
 </script>
 
 <style lang="less" scoped>

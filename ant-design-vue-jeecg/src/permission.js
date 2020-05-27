@@ -11,6 +11,7 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['/user/login', '/user/register', '/user/register-result','/user/alteration'] // no redirect whitelist
 
+//
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
 
@@ -21,6 +22,7 @@ router.beforeEach((to, from, next) => {
       NProgress.done()
     } else {
       if (store.getters.permissionList.length === 0) {
+        console.log("MYP: GetPermissionList");
         store.dispatch('GetPermissionList').then(res => {
               const menuData = res.result.menu;
               console.log(res.message)

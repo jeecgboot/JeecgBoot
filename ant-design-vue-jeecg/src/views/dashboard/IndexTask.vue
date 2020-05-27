@@ -5,7 +5,7 @@
         <a-col :sm="24" :lg="12">
           <a-card>
             <div slot="title" class="index-md-title">
-              <img src="../../assets/daiban.png"/>
+              <img src="src/assets/daiban.png"/>
               我的待办【{{ dataSource1.length }}】
             </div>
             <div slot="extra">
@@ -38,7 +38,7 @@
         <a-col :sm="24" :lg="12">
           <a-card>
             <div slot="title" class="index-md-title">
-              <img src="../../assets/zaiban.png"/>
+              <img src="src/assets/zaiban.png"/>
               我的在办【{{ dataSource2.length }}】
             </div>
             <div slot="extra">
@@ -75,7 +75,7 @@
         <a-col :sm="24" :lg="12">
           <a-card>
             <div slot="title" class="index-md-title">
-              <img src="../../assets/guaz.png"/>
+              <img src="src/assets/guaz.png"/>
               我的挂账【{{ dataSource4.length }}】
             </div>
             <a-table
@@ -105,7 +105,7 @@
         <a-col :sm="24" :lg="12">
           <a-card>
             <div slot="title" class="index-md-title">
-              <img src="../../assets/duban.png"/>
+              <img src="src/assets/duban.png"/>
               我的督办【{{ dataSource3.length }}】
             </div>
             <a-table

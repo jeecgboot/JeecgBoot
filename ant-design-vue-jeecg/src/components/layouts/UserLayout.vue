@@ -4,25 +4,27 @@
       <div class="top">
         <div class="header">
           <a href="/">
-            <img src="~@/assets/logo.svg" class="logo" alt="logo">
-            <span class="title">Jeecg Boot</span>
+           <!-- <img src="~@/assets/logo.svg" class="logo" alt="logo">-->
+            <span class="title"> “一企一档”信息管理系统</span>
           </a>
         </div>
         <div class="desc">
-          Jeecg Boot 是中国最具影响力的 企业级 快速开发平台
+<!--
+          “一企一档”信息管理系统
+-->
         </div>
       </div>
 
       <route-view></route-view>
 
       <div class="footer">
-        <div class="links">
-          <a href="http://doc.jeecg.com" target="_blank">帮助</a>
+        <!--<div class="links">
+          <a href="http://www.google.com" target="_blank">帮助</a>
           <a href="https://github.com/zhangdaiscott/jeecg-boot" target="_blank">隐私</a>
           <a href="https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE" target="_blank">条款</a>
-        </div>
+        </div>-->
         <div class="copyright">
-          Copyright &copy; 2019 <a href="http://www.jeecg.com" target="_blank">JEECG开源社区</a> 出品
+          版权所有 &copy; 2020 <a href="" target="_blank">江苏自由光智能科技有限公司</a>
         </div>
       </div>
     </div>
@@ -40,12 +42,15 @@
     data () {
       return {}
     },
+    created () {
+      console.log("layout");
+    },
     mounted () {
       document.body.classList.add('userLayout')
     },
     beforeDestroy () {
       document.body.classList.remove('userLayout')
-    },
+    }
   }
 </script>
 

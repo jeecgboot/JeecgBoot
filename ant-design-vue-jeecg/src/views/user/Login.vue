@@ -48,7 +48,7 @@
 
 
         </a-tab-pane>
-        <a-tab-pane key="tab2" tab="手机号登陆">
+        <!--<a-tab-pane key="tab2" tab="手机号登陆">
           <a-form-item>
             <a-input
               v-decorator="['mobile',validatorRules.mobile]"
@@ -79,7 +79,7 @@
                 @click.stop.prevent="getCaptcha"
                 v-text="!state.smsSendBtn && '获取验证码' || (state.time+' s')"></a-button>
             </a-col>
-          </a-row>
+          </a-row>-->
         </a-tab-pane>
       </a-tabs>
 
@@ -105,19 +105,19 @@
         </a-button>
       </a-form-item>
 
-      <div class="user-login-other">
+    <!--  <div class="user-login-other">
         <span>其他登陆方式</span>
         <a @click="onThirdLogin('github')" title="github"><a-icon class="item-icon" type="github"></a-icon></a>
         <a @click="onThirdLogin('wechat_enterprise')" title="企业微信"><a-icon class="item-icon" type="wechat"></a-icon></a>
         <a @click="onThirdLogin('dingtalk')" title="钉钉"><a-icon class="item-icon" type="dingding"></a-icon></a>
-      </div>
+      </div>-->
     </a-form>
 
-    <two-step-captcha
+<!--    <two-step-captcha
       v-if="requiredTwoStepCaptcha"
       :visible="stepCaptchaVisible"
       @success="stepCaptchaSuccess"
-      @cancel="stepCaptchaCancel"></two-step-captcha>
+      @cancel="stepCaptchaCancel"></two-step-captcha>-->
 
     <a-modal
       title="登录部门选择"
@@ -176,7 +176,7 @@
 
   export default {
     components: {
-      TwoStepCaptcha
+      // TwoStepCaptcha
     },
     data () {
       return {
@@ -263,6 +263,7 @@
         // this.form.resetFields()
       },
       handleSubmit () {
+
         let that = this
         let loginParams = {};
         that.loginBtn = true;

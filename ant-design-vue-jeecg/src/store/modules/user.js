@@ -13,7 +13,7 @@ const user = {
     welcome: '',
     avatar: '',
     permissionList: [],
-    info: {}
+    info: {}  //添加 company_id  数据
   },
 
   mutations: {
@@ -39,6 +39,7 @@ const user = {
   actions: {
     // CAS验证登录
     ValidateLogin({ commit }, userInfo) {
+      console.log("cas单点登录验证",userInfo);
       return new Promise((resolve, reject) => {
         getAction("/cas/client/validateLogin",userInfo).then(response => {
           console.log("----cas 登录--------",response);
@@ -63,6 +64,7 @@ const user = {
     },
     // 登录
     Login({ commit }, userInfo) {
+      console.log("登录",userInfo);
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
           if(response.code =='200'){
@@ -111,6 +113,7 @@ const user = {
     },
     // 获取用户信息
     GetPermissionList({ commit }) {
+      console.log("MYP: user GetPermissionList");
       return new Promise((resolve, reject) => {
         let v_token = Vue.ls.get(ACCESS_TOKEN);
         let params = {token:v_token};

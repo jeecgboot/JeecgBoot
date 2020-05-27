@@ -6,6 +6,7 @@ import com.aliyuncs.exceptions.ClientException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.jeecg.common.api.vo.Result;
@@ -16,6 +17,7 @@ import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
 import org.jeecg.common.util.encryption.EncryptedString;
+import org.jeecg.modules.business.service.ICompanySysuserService;
 import org.jeecg.modules.shiro.vo.DefContants;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
@@ -25,6 +27,7 @@ import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.service.ISysLogService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.util.RandImageUtil;
+import org.jeecg.modules.system.vo.SysUserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,6 +56,8 @@ public class LoginController {
     private ISysDepartService sysDepartService;
 	@Autowired
     private ISysDictService sysDictService;
+	@Autowired
+	private ICompanySysuserService companySysuserService;
 
 	private static final String BASE_CHECK_CODES = "qwertyuiplkjhgfdsazxcvbnmQWERTYUPLKJHGFDSAZXCVBNM1234567890";
 
@@ -81,7 +86,7 @@ public class LoginController {
 			return result;
 		}
 		//update-end-author:taoyan date:20190828 for:校验验证码
-		
+
 		//1. 校验用户是否有效
 		SysUser sysUser = sysUserService.getUserByName(username);
 		result = sysUserService.checkUserIsEffective(sysUser);
@@ -96,9 +101,39 @@ public class LoginController {
 			result.error500("用户名或密码错误");
 			return result;
 		}
-				
+		SysUserVo sysUserVo = new SysUserVo();
+		sysUserVo.setUsername( sysUser.getUsername());
+		sysUserVo.setRealname( sysUser.getRealname( ));
+		sysUserVo.setAvatar(   sysUser.getAvatar());
+		sysUserVo.setBirthday( sysUser.getBirthday());
+		sysUserVo.setPassword(   sysUser.getPassword());
+		sysUserVo.setSalt( sysUserVo.getSalt());
+		sysUserVo.setSex(      sysUser.getSex( ));
+		sysUserVo.setEmail(    sysUser.getEmail( ));
+		sysUserVo.setPhone(    sysUser.getPhone( ));
+		sysUserVo.setOrgCode(  sysUser.getOrgCode( ));
+		sysUserVo.setStatus(   sysUser.getStatus( ));
+		sysUserVo.setDelFlag(  sysUser.getDelFlag( ));
+		sysUserVo.setWorkNo(   sysUser.getWorkNo( ));
+		sysUserVo.setPost(     sysUser.getPost( ));
+		sysUserVo.setTelephone(sysUser.getTelephone( ));
+		sysUserVo.setCreateBy( sysUser.getCreateBy(  ));
+		sysUserVo.setUpdateBy( sysUser.getUpdateBy(  ));
+		sysUserVo.setUpdateTime(sysUser.getUpdateTime( ));
+		sysUserVo.setActivitiSync(sysUser.getActivitiSync( ));
+		sysUserVo.setUserIdentity(sysUser.getUserIdentity( ));
+		sysUserVo.setDepartIds( sysUser.getDepartIds(   ));
+		sysUserVo.setThirdId( sysUser.getThirdId(      ));
+		sysUserVo.setThirdType( sysUser.getThirdType(   ));
+		sysUserVo.setAvatar(sysUser.getAvatar());
+
+
+		//查询 用户对应的企业信息
+		sysUserVo.setCompanySysusers(companySysuserService.list(sysUser.getId()));
+
+
 		//用户登录信息
-		userInfo(sysUser, result);
+		userInfo(sysUserVo, result);
 		sysBaseAPI.addLog("用户名: " + username + ",登录成功！", CommonConstant.LOG_TYPE_1, null);
 
 		return result;

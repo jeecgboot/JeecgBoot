@@ -1,7 +1,9 @@
 package org.jeecg.modules.system.controller;
 
 
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -26,6 +28,10 @@ import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.PmsUtil;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.business.entity.CompanyBaseinfo;
+import org.jeecg.modules.business.entity.CompanySysuser;
+import org.jeecg.modules.business.service.ICompanyBaseinfoService;
+import org.jeecg.modules.business.service.ICompanySysuserService;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
@@ -86,6 +92,10 @@ public class SysUserController {
 
     @Autowired
     private ISysDepartRoleService departRoleService;
+    @Autowired
+    private ICompanySysuserService companySysuserService;
+    @Autowired
+    private ICompanyBaseinfoService companyBaseinfoService;
 
 	@Autowired
 	private RedisUtil redisUtil;
@@ -105,7 +115,7 @@ public class SysUserController {
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysUser>> queryPageList(SysUser user,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
-		Result<IPage<SysUser>> result = new Result<IPage<SysUser>>();
+ 		Result<IPage<SysUser>> result = new Result<IPage<SysUser>>();
 		QueryWrapper<SysUser> queryWrapper = QueryGenerator.initQueryWrapper(user, req.getParameterMap());
     	//TODO 外部模拟登陆临时账号，列表不显示
         queryWrapper.ne("username","_reserve_user_external");
@@ -146,6 +156,8 @@ public class SysUserController {
 			user.setDelFlag(CommonConstant.DEL_FLAG_0);
 			sysUserService.addUserWithRole(user, selectedRoles);
             sysUserService.addUserWithDepart(user, selectedDeparts);
+            //添加新的
+            companySysuserService.saveByBaseinfoName(user.getId(), jsonObject.getString("company"));
 			result.success("添加成功！");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -174,7 +186,14 @@ public class SysUserController {
 				sysUserService.editUserWithRole(user, roles);
                 sysUserService.editUserWithDepart(user, departs);
                 sysUserService.updateNullPhoneEmail();
-				result.success("修改成功!");
+                //修改 用户与公司中间表
+                //根据用户id删除旧有的
+                companySysuserService.removeByUserId(user.getId());
+                //添加新的
+                companySysuserService.saveByBaseinfoName(user.getId(), jsonObject.getString("company"));
+
+
+                result.success("修改成功!");
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -183,7 +202,9 @@ public class SysUserController {
 		return result;
 	}
 
-	/**
+
+
+    /**
 	 * 删除用户
 	 */
 	//@RequiresRoles({"admin"})
@@ -392,7 +413,6 @@ public class SysUserController {
      * 导出excel
      *
      * @param request
-     * @param response
      */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(SysUser sysUser,HttpServletRequest request) {

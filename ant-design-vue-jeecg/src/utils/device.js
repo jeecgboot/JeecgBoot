@@ -4,6 +4,7 @@ const enquireScreen = function (call) {
   // tablet
   const handler = {
     match: function () {
+      console.log('handler 0 matched');
       call && call(0)
     },
     unmatch: function () {
@@ -12,7 +13,9 @@ const enquireScreen = function (call) {
   }
   // mobile
   const handler2 = {
+
     match: () => {
+      console.log('handler 1 matched');
       call && call(1)
     }
   }
