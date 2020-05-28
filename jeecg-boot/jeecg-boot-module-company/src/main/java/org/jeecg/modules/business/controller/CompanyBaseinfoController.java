@@ -1,14 +1,14 @@
 package org.jeecg.modules.business.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.business.entity.CompanyBaseinfo;
 import org.jeecg.modules.business.entity.CompanySysuser;
 import org.jeecg.modules.business.service.ICompanyBaseinfoService;
@@ -64,7 +64,23 @@ public class CompanyBaseinfoController extends JeecgController<CompanyBaseinfo, 
 		IPage<CompanyBaseinfo> pageList = companyBaseinfoService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}
-	
+	 @AutoLog(value = "company_baseinfo-通过用户id-分页列表查询")
+	 @ApiOperation(value="company_baseinfo-通过用户id-分页列表查询", notes="company_baseinfo-通过用户id-分页列表查询")
+	 @GetMapping(value = "/listByUserId/{userId}")
+	 public Result<?> queryByUserIdRestful(@PathVariable  String userId,CompanyBaseinfo companyBaseinfo,
+										   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+										   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+										   HttpServletRequest req) {
+		 List<String> companyIds = new ArrayList<>();
+		 if (queryCompanyIds(userId, companyIds)) return Result.error("未找到对应数据");
+		 Map<String, String[]> parameterMap = new HashMap(req.getParameterMap());
+		 parameterMap.put("companyId_MultiString",new String[]{String.join(",", companyIds)});
+		 QueryWrapper<CompanyBaseinfo> queryWrapper = QueryGenerator.initQueryWrapper(companyBaseinfo, req.getParameterMap());
+		 Page<CompanyBaseinfo> page = new Page<CompanyBaseinfo>(pageNo, pageSize);
+		 IPage<CompanyBaseinfo> pageList = companyBaseinfoService.page(page, queryWrapper);
+		 return Result.ok(pageList);
+
+	 }
 	/**
 	 *   添加
 	 *
@@ -147,10 +163,60 @@ public class CompanyBaseinfoController extends JeecgController<CompanyBaseinfo, 
 	 @ApiOperation(value="company_baseinfo-通过用户id查询", notes="company_baseinfo-通过用户id查询")
 	 @GetMapping(value = "/queryByUserId")
 	 public Result<?> queryByUserId(@RequestParam(name="userId",required=true) String userId) {
-		 List<CompanySysuser>  companySysusers = companySysuserService.list( userId);
+		 return resultByUserId(userId);
+	 }
+
+
+	 private Result<?> resultByUserId(@PathVariable String userId) {
+		 List<String> companyIds = new ArrayList<>();
+		 if (queryCompanyIds(userId, companyIds)) return Result.error("未找到对应数据");
+
+		 //根据企业人员信息 查找企业数据
+		 List<CompanyBaseinfo> companyBaseinfos = companyBaseinfoService.list(new QueryWrapper<CompanyBaseinfo>().lambda().eq(CompanyBaseinfo::getStatus, "NORAML")
+				 .in(CompanyBaseinfo::getCompanyId, companyIds));
+
+		 List<String> companyNameList = new ArrayList<>();
+		 companyBaseinfos.forEach(companySysuser -> {
+			 companyNameList.add(companySysuser.getShortName());
+		 });
+		 String companyNames = String.join(",", companyNameList);
+		 return Result.ok(companyNames);
+	 }
+
+	 private boolean queryCompanyIds(@PathVariable String userId, List<String> companyIds) {
+		 List<CompanySysuser> companySysusers = companySysuserService.list(userId);
+
+		 if (companySysusers.isEmpty())
+			 return true;
+
+		 companySysusers.forEach(companySysuser -> {
+			 companyIds.add(companySysuser.getCompanyId());
+		 });
+		 return false;
+	 }
+
+	 /**
+	  * 通过userid查询
+	  *
+	  * @param token
+	  * @return
+	  */
+	 @AutoLog(value = "company_baseinfo-通过用户id查询")
+	 @ApiOperation(value="company_baseinfo-通过用户id查询", notes="company_baseinfo-通过用户id查询")
+	 @GetMapping(value = "/queryByToken")
+	 public Result<?> queryByToken(@RequestParam(name = "token", required = true) String token) {
+
+		 if (oConvertUtils.isEmpty(token)) {
+			 return Result.error("TOKEN不允许为空！");
+		 }
+		 log.info(" ------ 通过令牌获取用户拥有的访问菜单 ---- TOKEN ------ " + token);
+		 String username = JwtUtil.getUsername(token);
+
+	 	 List<CompanySysuser>  companySysusers = companySysuserService.list(
+	 	 		new QueryWrapper<CompanySysuser>().lambda().eq(CompanySysuser :: getSysUsername,username));
 
 		 if(companySysusers.isEmpty())
-		 	return Result.error("未找到对应数据");
+			 return Result.error("未找到对应数据");
 		 List<String> companyIds = new ArrayList<>();
 		 companySysusers.forEach(companySysuser -> {
 			 companyIds.add(companySysuser.getCompanyId());

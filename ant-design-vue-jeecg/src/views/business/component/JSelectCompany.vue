@@ -2,6 +2,9 @@
   <j-select-biz-component :width="1000" v-bind="configs" v-on="$listeners"/>
 </template>
 
+
+<!-- 选择框组件，value 是逗号分隔拼接字符串  -->
+
 <script>
   import JSelectBizComponent from '@/components/jeecgbiz/JSelectBizComponent'
 
