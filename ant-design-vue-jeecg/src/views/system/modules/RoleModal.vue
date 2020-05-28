@@ -17,14 +17,14 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="角色名称">
-          <a-input placeholder="请输入角色名称" v-decorator="[ 'roleName', validatorRules.roleName]" />
+          <a-input placeholder="请输入角色名称" v-decorator.trim="[ 'roleName', validatorRules.roleName]" />
         </a-form-item>
 
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="角色编码">
-          <a-input placeholder="请输入角色编码" :disabled="roleDisabled" v-decorator="[ 'roleCode', validatorRules.roleCode]" />
+          <a-input placeholder="请输入角色编码" :disabled="roleDisabled" v-decorator.trim="[ 'roleCode', validatorRules.roleCode]" />
         </a-form-item>
 
         <a-form-item

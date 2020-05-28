@@ -4,9 +4,8 @@
     :width="drawerWidth"
     @close="handleCancel"
     :visible="visible"
-    :confirmLoading="confirmLoading"
-    :wrapStyle="{height: 'calc(100% - 108px)',overflow: 'auto',paddingBottom: '108px'}"
-  >
+    :confirmLoading="confirmLoading">
+
     <div :style="{width: '100%',border: '1px solid #e9e9e9',padding: '10px 16px',background: '#fff',}">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
@@ -76,7 +75,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="授权标识">
-          <a-input placeholder="多个用逗号分隔, 如: user:list,user:create" v-decorator="[ 'perms', {}]" :readOnly="disableSubmit"/>
+          <a-input placeholder="多个用逗号分隔, 如: user:list,user:create" v-decorator="[ 'perms', {rules:[{ required: false, message: '请输入授权标识!' },{validator: this.validatePerms }]}]" :readOnly="disableSubmit"/>
         </a-form-item>
 
         <a-form-item
@@ -102,7 +101,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="菜单图标">
-          <a-input placeholder="点击右侧按钮选择图标" v-model="model.icon" :readOnly="disableSubmit">
+          <a-input placeholder="点击选择图标" v-model="model.icon" :readOnly="disableSubmit">
             <a-icon slot="addonAfter" type="setting" @click="selectIcons" />
           </a-input>
         </a-form-item>
@@ -175,10 +174,9 @@
 </template>
 
 <script>
-  import {addPermission,editPermission,queryTreeList} from '@/api/api'
+  import {addPermission,editPermission,queryTreeList, duplicateCheck} from '@/api/api'
   import Icons from './icon/Icons'
   import pick from 'lodash.pick'
-
 
   export default {
     name: "PermissionModal",
@@ -357,6 +355,26 @@
           callback();
         }else{
           callback("请输入正整数!");
+        }
+      },
+      validatePerms(rule, value, callback){
+        if(value && value.length>0){
+          //校验授权标识是否存在
+          var params = {
+            tableName: 'sys_permission',
+            fieldName: 'perms',
+            fieldVal: value,
+            dataId: this.model.id
+          };
+          duplicateCheck(params).then((res) => {
+            if (res.success) {
+              callback()
+            } else {
+              callback("授权标识已存在!")
+            }
+          })
+        }else{
+          callback()
         }
       },
       onChangeMenuType(e) {

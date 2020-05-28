@@ -133,7 +133,8 @@
           readAllMsg:"sys/sysAnnouncementSend/readAll",
         },
         loading:false,
-        openPath:''
+        openPath:'',
+        formData:''
       }
     },
     methods: {
@@ -145,6 +146,7 @@
         putAction(this.url.editCementSend,{anntId:record.anntId}).then((res)=>{
           if(res.success){
             this.loadData();
+            this.syncHeadNotic(record.anntId)
           }
         });
         if(record.openType==='component'){
@@ -154,6 +156,9 @@
         }else{
           this.$refs.ShowAnnouncement.detail(record);
         }
+      },
+      syncHeadNotic(anntId){
+        getAction("sys/annountCement/syncNotic",{anntId:anntId})
       },
       readAll(){
         var that = this;
@@ -165,6 +170,7 @@
               if(res.success){
                 that.$message.success(res.message);
                 that.loadData();
+                that.syncHeadNotic();
               }
             });
           }

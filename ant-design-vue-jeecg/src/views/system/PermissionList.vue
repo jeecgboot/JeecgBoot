@@ -24,6 +24,7 @@
 
       <a-table
         :columns="columns"
+        :scroll="{x: 1500}"
         size="middle"
         :pagination="false"
         :dataSource="dataSource"
@@ -45,7 +46,7 @@
                 <a href="javascript:;" @click="handleDetail(record)">详情</a>
               </a-menu-item>
               <a-menu-item>
-                <a href="javascript:;" @click="handleAddSub(record)">添加子菜单</a>
+                <a href="javascript:;" @click="handleAddSub(record)">添加下级</a>
               </a-menu-item>
               <a-menu-item>
                 <a href="javascript:;" @click="handleDataRule(record)">数据规则</a>
@@ -134,6 +135,7 @@
     {
       title: '操作',
       dataIndex: 'action',
+      fixed: 'right',
       scopedSlots: { customRender: 'action' },
       align: 'center',
       width: 150

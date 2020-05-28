@@ -40,7 +40,11 @@
         <a-button style="float: right" @click="handleSubmit" type="primary" htmlType="button" icon="form">保存</a-button>
       </div>
     </template>
-    <div v-else style="height:330px;"><h3>请先选择一个部门!</h3></div>
+    <a-card v-else :bordered="false" style="height:200px">
+      <a-empty>
+        <span slot="description"> 请先选择一个部门! </span>
+      </a-empty>
+    </a-card>
     <depart-datarule-modal ref="datarule"/>
   </a-card>
 </template>

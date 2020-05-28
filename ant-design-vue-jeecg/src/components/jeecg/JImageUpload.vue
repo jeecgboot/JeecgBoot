@@ -44,7 +44,6 @@
     data(){
       return {
         uploadAction:window._CONFIG['domianURL']+"/sys/common/upload",
-        urlView:window._CONFIG['staticDomainURL'],
         uploadLoading:false,
         picUrl:false,
         headers:{},
@@ -103,7 +102,7 @@
         let fileList = [];
         let arr = paths.split(",")
         for(var a=0;a<arr.length;a++){
-          let url = getFileAccessHttpUrl(arr[a],this.urlView,"http");
+          let url = getFileAccessHttpUrl(arr[a]);
           fileList.push({
             uid: uidGenerator(),
             name: getFileName(arr[a]),
@@ -156,7 +155,7 @@
       getAvatarView(){
         if(this.fileList.length>0){
           let url = this.fileList[0].url
-          return getFileAccessHttpUrl(url,this.urlView,"http")
+          return getFileAccessHttpUrl(url)
         }
       },
       handlePathChange(){

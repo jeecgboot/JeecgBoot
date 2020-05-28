@@ -33,11 +33,42 @@ spring:
             required: true
   ## quartz定时任务,采用数据库方式
   quartz:
-     job-store-type: jdbc
+    job-store-type: jdbc
+    initialize-schema: embedded
+    #设置自动启动，默认为 true
+    auto-startup: true
+    #启动时更新己存在的Job
+    overwrite-existing-jobs: true
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: MyScheduler
+            instanceId: AUTO
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            tablePrefix: QRTZ_
+            isClustered: true
+            misfireThreshold: 60000
+            clusterCheckinInterval: 10000
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 10
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
   #json 时间戳统一转换
   jackson:
     date-format:   yyyy-MM-dd HH:mm:ss
     time-zone:   GMT+8
+  jpa:
+    open-in-view: false
+  activiti:
+    check-process-definitions: false
+    #启用作业执行器
+    async-executor-activate: false
+    #启用异步执行器
+    job-executor-activate: false
   aop:
     proxy-target-class: true
   #配置freemarker
@@ -153,26 +184,30 @@ jeecg :
   #阿里云oss存储配置
   oss:
     endpoint: oss-cn-beijing.aliyuncs.com
-    accessKey: WegDpuKzOuPK6D3N
+    accessKey: ??
     secretKey: ??
     bucketName: jeecgos
     staticDomain: https://static.jeecg.com
   # ElasticSearch 设置
   elasticsearch:
     cluster-name: jeecg-ES
-    cluster-nodes: 127.0.0.1:9200
+    cluster-nodes: http://fileview.jeecg.com
+    check-enabled: false
   # 表单设计器配置
   desform:
     # 主题颜色（仅支持 16进制颜色代码）
     theme-color: "#1890ff"
   # 在线预览文件服务器地址配置
-  file-view-domain: 127.0.0.1:8012
+  file-view-domain: http://127.0.0.1:8012
   # minio文件上传
   minio:
     minio_url: http://minio.jeecg.com
     minio_name: ??
     minio_pass: ??
-    bucketName: ??
+    bucketName: otatest
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas
+#enable swagger
+swagger:
+  enable: true

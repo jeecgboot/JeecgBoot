@@ -1,11 +1,18 @@
 
 /*列表上方操作按钮区域*/
 .ant-card-body .table-operator {
-  margin-bottom: 18px;
+  margin-bottom: 8px;
 }
 /** Button按钮间距 */
 .table-operator .ant-btn {
-  margin: 8px 8px 0 0;
+  margin: 0 8px 8px 0;
+}
+.table-operator .ant-btn-group .ant-btn {
+  margin: 0;
+}
+
+.table-operator .ant-btn-group .ant-btn:last-child {
+  margin: 0 8px 8px 0;
 }
 /*列表td的padding设置 可以控制列表大小*/
 .ant-table-tbody .ant-table-row td {
@@ -45,3 +52,7 @@
 /*erp风格子表外框padding设置*/
 .ant-card-wider-padding.cust-erp-sub-tab>.ant-card-body{padding:5px 12px}
 
+/* 内嵌子表背景颜色 */
+.j-inner-table-wrapper /deep/ .ant-table-expanded-row .ant-table-wrapper .ant-table-tbody .ant-table-row {
+  background-color: #FFFFFF;
+}

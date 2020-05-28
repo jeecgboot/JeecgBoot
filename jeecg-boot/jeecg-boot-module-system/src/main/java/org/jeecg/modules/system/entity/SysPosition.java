@@ -60,13 +60,11 @@ public class SysPosition {
     /**
      * 创建人
      */
-    @Excel(name = "创建人", width = 15)
     @ApiModelProperty(value = "创建人")
     private java.lang.String createBy;
     /**
      * 创建时间
      */
-    @Excel(name = "创建时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "创建时间")
@@ -74,13 +72,11 @@ public class SysPosition {
     /**
      * 修改人
      */
-    @Excel(name = "修改人", width = 15)
     @ApiModelProperty(value = "修改人")
     private java.lang.String updateBy;
     /**
      * 修改时间
      */
-    @Excel(name = "修改时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "修改时间")

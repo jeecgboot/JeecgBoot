@@ -90,7 +90,9 @@ public class PermissionDataAspect {
 				queryQserMatch.eq(SysPermission::getMenuType, 1);
 				queryQserMatch.eq(SysPermission::getDelFlag, 0);
 				queryQserMatch.eq(SysPermission::getUrl, userMatchUrl);
-				currentSyspermission = sysPermissionService.list(queryQserMatch);
+				if(oConvertUtils.isNotEmpty(userMatchUrl)){
+					currentSyspermission = sysPermissionService.list(queryQserMatch);
+				}
 			}
 			//3.未找到 再通过正则匹配获取菜单
 			if(currentSyspermission==null || currentSyspermission.size()==0) {

@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.shiro.SecurityUtils;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -19,6 +20,7 @@ import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.modules.system.entity.SysLog;
 import org.jeecg.modules.system.service.ISysLogService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
@@ -80,17 +82,11 @@ public class AutoLogAspect {
 			sysLog.setOperateType(getOperateType(methodName, syslog.operateType()));
 		}
 
-		//请求的参数
-		Object[] args = joinPoint.getArgs();
-		try{
-			String params = JSONObject.toJSONString(args);
-			sysLog.setRequestParam(params);
-		}catch (Exception e){
-
-		}
-
 		//获取request
 		HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
+		//请求的参数
+		sysLog.setRequestParam(getReqestParams(request,joinPoint));
+
 		//设置IP地址
 		sysLog.setIp(IPUtils.getIpAddr(request));
 
@@ -133,5 +129,36 @@ public class AutoLogAspect {
         	return CommonConstant.OPERATE_TYPE_6;
 		}
 		return CommonConstant.OPERATE_TYPE_1;
+	}
+
+	/**
+	* @Description: 获取请求参数
+	* @author: scott
+	* @date: 2020/4/16 0:10
+	* @param request:  request
+	* @param joinPoint:  joinPoint
+	* @Return: java.lang.String
+	*/
+	private String getReqestParams(HttpServletRequest request, JoinPoint joinPoint) {
+		String httpMethod = request.getMethod();
+		String params = "";
+		if ("POST".equals(httpMethod) || "PUT".equals(httpMethod) || "PATCH".equals(httpMethod)) {
+			Object[] paramsArray = joinPoint.getArgs();
+			params = JSONObject.toJSONString(paramsArray);
+		} else {
+			MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+			Method method = signature.getMethod();
+			// 请求的方法参数值
+			Object[] args = joinPoint.getArgs();
+			// 请求的方法参数名称
+			LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
+			String[] paramNames = u.getParameterNames(method);
+			if (args != null && paramNames != null) {
+				for (int i = 0; i < args.length; i++) {
+					params += "  " + paramNames[i] + ": " + args[i];
+				}
+			}
+		}
+		return params;
 	}
 }

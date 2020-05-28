@@ -59,7 +59,7 @@ public interface ISysDepartService extends IService<SysDepart>{
      * @param keyWord
      * @return
      */
-    List<SysDepartTreeModel> searhBy(String keyWord);
+    List<SysDepartTreeModel> searhBy(String keyWord,String myDeptSearch,String departIds);
     
     /**
      * 根据部门id删除并删除其可能存在的子级部门

@@ -29,7 +29,7 @@ export default {
 | selectButtonText      | String  |      | "选择"       | 选择按钮的文字                                                                       |
 | queryParamText        | String  |      | null         | 查询条件显示文字，不传则使用 `name`                                                  |
 | columns               | Array   | 是   |              | 列配置项，与antd的table的配置完全一致。列的第一项会被配置成右侧已选择的列表上        |
-| columns[0].widthRight | Array   |      | null         | 仅列的第一项可以应用此配置，表示右侧已选择列表的宽度，建议 `70%`，不传则应用`width`  |
+| columns[0].widthRight | String   |      | null         | 仅列的第一项可以应用此配置，表示右侧已选择列表的宽度，建议 `70%`，不传则应用`width`  |
 | placeholder           | String  |      | "请选择"     | 占位符                                                                               |
 | disabled              | Boolean |      | false        | 是否禁用                                                                             |
 | multiple              | Boolean |      | false        | 是否可多选                                                                           |

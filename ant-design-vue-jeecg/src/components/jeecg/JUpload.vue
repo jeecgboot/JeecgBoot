@@ -1,19 +1,43 @@
 <template>
-  <a-upload
-    name="file"
-    :multiple="true"
-    :action="uploadAction"
-    :headers="headers"
-    :data="{'biz':bizPath}"
-    :fileList="fileList"
-    :beforeUpload="beforeUpload"
-    @change="handleChange"
-    :disabled="disabled"
-    :returnUrl="returnUrl">
-    <a-button>
-      <a-icon type="upload" />{{ text }}
-    </a-button>
-  </a-upload>
+  <div :id="containerId" style="position: relative">
+
+    <!--  ---------------------------- begin 图片左右换位置 ------------------------------------- -->
+    <div class="movety-container" :style="{top:top+'px',left:left+'px',display:moveDisplay}" style="padding:0 8px;position: absolute;z-index: 91;height: 32px;width: 104px;text-align: center;">
+      <div :id="containerId+'-mover'" :class="showMoverTask?'uploadty-mover-mask':'movety-opt'" style="margin-top: 12px">
+        <a @click="moveLast" style="margin: 0 5px;"><a-icon type="arrow-left" style="color: #fff;font-size: 16px"/></a>
+        <a @click="moveNext" style="margin: 0 5px;"><a-icon type="arrow-right" style="color: #fff;font-size: 16px"/></a>
+      </div>
+    </div>
+    <!--  ---------------------------- end 图片左右换位置 ------------------------------------- -->
+
+    <a-upload
+      name="file"
+      :multiple="true"
+      :action="uploadAction"
+      :headers="headers"
+      :data="{'biz':bizPath}"
+      :fileList="fileList"
+      :beforeUpload="beforeUpload"
+      @change="handleChange"
+      :disabled="disabled"
+      :returnUrl="returnUrl"
+      :listType="complistType"
+      @preview="handlePreview"
+      :class="{'uploadty-disabled':disabled}">
+      <template>
+        <div v-if="isImageComp">
+          <a-icon type="plus" />
+          <div class="ant-upload-text">{{ text }}</div>
+        </div>
+        <a-button v-else-if="buttonVisible">
+         <a-icon type="upload" />{{ text }}
+        </a-button>
+      </template>
+    </a-upload>
+    <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+      <img alt="example" style="width: 100%" :src="previewImage" />
+    </a-modal>
+  </div>
 </template>
 
 <script>
@@ -40,10 +64,21 @@
     data(){
       return {
         uploadAction:window._CONFIG['domianURL']+"/sys/common/upload",
-        urlDownload:window._CONFIG['staticDomainURL'],
         headers:{},
         fileList: [],
         newFileList: [],
+        uploadGoOn:true,
+        previewVisible: false,
+        //---------------------------- begin 图片左右换位置 -------------------------------------
+        previewImage: '',
+        containerId:'',
+        top:'',
+        left:'',
+        moveDisplay:'none',
+        showMoverTask:false,
+        moverHold:false,
+        currentImg:''
+        //---------------------------- end 图片左右换位置 -------------------------------------
       }
     },
     props:{
@@ -90,23 +125,48 @@
         required:false,
         default: true
       },
+      number:{
+        type:Number,
+        required:false,
+        default: 0
+      },
+      buttonVisible:{
+        type:Boolean,
+        required:false,
+        default: true
+      },
     },
     watch:{
-      value(val){
-        if (val instanceof Array) {
-          if(this.returnUrl){
-            this.initFileList(val.join(','))
-          }else{
-            this.initFileListArr(val);
+      value:{
+        immediate: true,
+        handler() {
+          let val = this.value
+          if (val instanceof Array) {
+            if(this.returnUrl){
+              this.initFileList(val.join(','))
+            }else{
+              this.initFileListArr(val);
+            }
+          } else {
+            this.initFileList(val)
           }
-        } else {
-          this.initFileList(val)
         }
+      }
+    },
+    computed:{
+      isImageComp(){
+        return this.fileType === FILE_TYPE_IMG
+      },
+      complistType(){
+        return this.fileType === FILE_TYPE_IMG?'picture-card':'text'
       }
     },
     created(){
       const token = Vue.ls.get(ACCESS_TOKEN);
-      this.headers = {"X-Access-Token":token}
+      //---------------------------- begin 图片左右换位置 -------------------------------------
+      this.headers = {"X-Access-Token":token};
+      this.containerId = 'container-ty-'+new Date().getTime();
+      //---------------------------- end 图片左右换位置 -------------------------------------
     },
 
     methods:{
@@ -117,11 +177,12 @@
         }
         let fileList = [];
         for(var a=0;a<val.length;a++){
+          let url = getFileAccessHttpUrl(val[a].filePath);
           fileList.push({
             uid:uidGenerator(),
             name:val[a].fileName,
             status: 'done',
-            url: val[a].filePath,
+            url: url,
             response:{
               status:"history",
               message:val[a].filePath
@@ -141,7 +202,7 @@
         let fileList = [];
         let arr = paths.split(",")
         for(var a=0;a<arr.length;a++){
-          let url = getFileAccessHttpUrl(arr[a],this.urlDownload,"http");
+          let url = getFileAccessHttpUrl(arr[a]);
           fileList.push({
             uid:uidGenerator(),
             name:getFileName(arr[a]),
@@ -172,15 +233,12 @@
         this.$emit('change', path);
       },
       beforeUpload(file){
+        this.uploadGoOn=true
         var fileType = file.type;
-        if(fileType===FILE_TYPE_IMG){
+        if(this.fileType===FILE_TYPE_IMG){
           if(fileType.indexOf('image')<0){
             this.$message.warning('请上传图片');
-            return false;
-          }
-        }else if(fileType===FILE_TYPE_TXT){
-          if(fileType.indexOf('image')>=0){
-            this.$message.warning('请上传文件');
+            this.uploadGoOn=false
             return false;
           }
         }
@@ -189,13 +247,19 @@
       },
       handleChange(info) {
         console.log("--文件列表改变--")
+        if(!info.file.status && this.uploadGoOn === false){
+          info.fileList.pop();
+        }
         let fileList = info.fileList
         if(info.file.status==='done'){
+          if(this.number>0){
+            fileList = fileList.slice(-this.number);
+          }
           if(info.file.response.success){
             fileList = fileList.map((file) => {
               if (file.response) {
                 let reUrl = file.response.message;
-                file.url = getFileAccessHttpUrl(reUrl,this.urlDownload,"http");
+                file.url = getFileAccessHttpUrl(reUrl);
               }
               return file;
             });
@@ -213,20 +277,16 @@
             this.handlePathChange()
           }else{
             //returnUrl为false时返回文件名称、文件路径及文件大小
-            fileList = fileList.filter((file) => {
-              if (file.response) {
-                return file.response.success === true;
-              }
-              return false;
-            }).map((file) => {
+            this.newFileList = [];
+            for(var a=0;a<fileList.length;a++){
               var fileJson = {
-                fileName:file.name,
-                filePath:file.response.message,
-                fileSize:file.size
+                fileName:fileList[a].name,
+                filePath:fileList[a].response.message,
+                fileSize:fileList[a].size
               };
               this.newFileList.push(fileJson);
-              this.$emit('change', this.newFileList);
-            });
+            }
+            this.$emit('change', this.newFileList);
           }
         }
       },
@@ -234,6 +294,115 @@
         //如有需要新增 删除逻辑
         console.log(file)
       },
+      handlePreview(file){
+        if(this.fileType === FILE_TYPE_IMG){
+          this.previewImage = file.url || file.thumbUrl;
+          this.previewVisible = true;
+        }else{
+          location.href=file.url
+        }
+      },
+      handleCancel(){
+        this.previewVisible = false;
+      },
+      //---------------------------- begin 图片左右换位置 -------------------------------------
+      moveLast(){
+        //console.log(ev)
+        //console.log(this.fileList)
+        //console.log(this.currentImg)
+        let index = this.getIndexByUrl();
+        if(index==0){
+          this.$message.warn('未知的操作')
+        }else{
+          let curr = this.fileList[index].url;
+          let last = this.fileList[index-1].url;
+          let arr =[]
+          for(let i=0;i<this.fileList.length;i++){
+            if(i==index-1){
+              arr.push(curr)
+            }else if(i==index){
+              arr.push(last)
+            }else{
+              arr.push(this.fileList[i].url)
+            }
+          }
+          this.currentImg = last
+          this.$emit('change',arr.join(','))
+        }
+      },
+      moveNext(){
+        let index = this.getIndexByUrl();
+        if(index==this.fileList.length-1){
+          this.$message.warn('已到最后~')
+        }else{
+          let curr = this.fileList[index].url;
+          let next = this.fileList[index+1].url;
+          let arr =[]
+          for(let i=0;i<this.fileList.length;i++){
+            if(i==index+1){
+              arr.push(curr)
+            }else if(i==index){
+              arr.push(next)
+            }else{
+              arr.push(this.fileList[i].url)
+            }
+          }
+          this.currentImg = next
+          this.$emit('change',arr.join(','))
+        }
+      },
+      getIndexByUrl(){
+        for(let i=0;i<this.fileList.length;i++){
+          if(this.fileList[i].url === this.currentImg || encodeURI(this.fileList[i].url) === this.currentImg){
+            return i;
+          }
+        }
+        return -1;
+      }
+    },
+    mounted(){
+      const moverObj = document.getElementById(this.containerId+'-mover');
+      moverObj.addEventListener('mouseover',()=>{
+        this.moverHold = true
+        this.moveDisplay = 'block';
+      });
+      moverObj.addEventListener('mouseout',()=>{
+        this.moverHold = false
+        this.moveDisplay = 'none';
+      });
+      let picList = document.getElementById(this.containerId)?document.getElementById(this.containerId).getElementsByClassName('ant-upload-list-picture-card'):[];
+      if(picList && picList.length>0){
+        picList[0].addEventListener('mouseover',(ev)=>{
+          ev = ev || window.event;
+          let target = ev.target || ev.srcElement;
+          if('ant-upload-list-item-info' == target.className){
+            this.showMoverTask=false
+            let item = target.parentElement
+            this.left = item.offsetLeft
+            this.top=item.offsetTop+item.offsetHeight-50;
+            this.moveDisplay = 'block';
+            this.currentImg = target.getElementsByTagName('img')[0].src
+          }
+
+        });
+
+        picList[0].addEventListener('mouseout',(ev)=>{
+          ev = ev || window.event;
+          let target = ev.target || ev.srcElement;
+          //console.log('移除',target)
+          if('ant-upload-list-item-info' == target.className){
+            this.showMoverTask=true
+            setTimeout(()=>{
+              if(this.moverHold === false)
+                this.moveDisplay = 'none';
+            },100)
+          }
+          if('ant-upload-list-item ant-upload-list-item-done' == target.className || 'ant-upload-list ant-upload-list-picture-card'== target.className){
+            this.moveDisplay = 'none';
+          }
+        })
+        //---------------------------- end 图片左右换位置 -------------------------------------
+      }
     },
     model: {
       prop: 'value',
@@ -242,6 +411,24 @@
   }
 </script>
 
-<style scoped>
-
+<style lang="less">
+.uploadty-disabled{
+  .ant-upload-list-item {
+    .anticon-close{
+      display: none;
+    }
+    .anticon-delete{
+      display: none;
+    }
+  }
+}
+  //---------------------------- begin 图片左右换位置 -------------------------------------
+  .uploadty-mover-mask{
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: .8;
+    color: #fff;
+    height: 28px;
+    line-height: 28px;
+  }
+  //---------------------------- end 图片左右换位置 -------------------------------------
 </style>

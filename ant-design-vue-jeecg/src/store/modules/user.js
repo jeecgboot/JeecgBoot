@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import { login, logout, phoneLogin } from "@/api/login"
-import { ACCESS_TOKEN, USER_NAME,USER_INFO,USER_AUTH,SYS_BUTTON_AUTH } from "@/store/mutation-types"
+import { login, logout, phoneLogin, thirdLogin } from "@/api/login"
+import { ACCESS_TOKEN, USER_NAME,USER_INFO,USER_AUTH,SYS_BUTTON_AUTH,UI_CACHE_DB_DICT_DATA } from "@/store/mutation-types"
 import { welcome } from "@/utils/util"
 import { queryPermissionsByUser } from '@/api/api'
 import { getAction } from '@/api/manage'
@@ -71,6 +71,7 @@ const user = {
             Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(UI_CACHE_DB_DICT_DATA, result.sysAllDictItems, 7 * 24 * 60 * 60 * 1000)
             commit('SET_TOKEN', result.token)
             commit('SET_INFO', userInfo)
             commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
@@ -94,6 +95,7 @@ const user = {
         Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
         Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
         Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
+        Vue.ls.set(UI_CACHE_DB_DICT_DATA, result.sysAllDictItems, 7 * 24 * 60 * 60 * 1000)
         commit('SET_TOKEN', result.token)
         commit('SET_INFO', userInfo)
         commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
@@ -151,14 +153,38 @@ const user = {
         commit('SET_TOKEN', '')
         commit('SET_PERMISSIONLIST', [])
         Vue.ls.remove(ACCESS_TOKEN)
+        Vue.ls.remove(UI_CACHE_DB_DICT_DATA)
         //console.log('logoutToken: '+ logoutToken)
         logout(logoutToken).then(() => {
-          //var sevice = "http://"+window.location.host+"/";
-          //var serviceUrl = encodeURIComponent(sevice);
+          //let sevice = "http://"+window.location.host+"/";
+          //let serviceUrl = encodeURIComponent(sevice);
           //window.location.href = window._CONFIG['casPrefixUrl']+"/logout?service="+serviceUrl;
           resolve()
         }).catch(() => {
           resolve()
+        })
+      })
+    },
+    // 第三方登录
+    ThirdLogin({ commit }, token) {
+      return new Promise((resolve, reject) => {
+        thirdLogin(token).then(response => {
+          if(response.code =='200'){
+            const result = response.result
+            const userInfo = result.userInfo
+            Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
+            commit('SET_TOKEN', result.token)
+            commit('SET_INFO', userInfo)
+            commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
+            commit('SET_AVATAR', userInfo.avatar)
+            resolve(response)
+          }else{
+            reject(response)
+          }
+        }).catch(error => {
+          reject(error)
         })
       })
     },

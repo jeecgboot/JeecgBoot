@@ -1,17 +1,15 @@
 <template>
-  <a-modal
-    class="announcementCustomModal"
+  <j-modal
+    :title="title"
     :width="modelStyle.width"
     :visible="visible"
     :bodyStyle ="bodyStyle"
+    :switchFullscreen="switchFullscreen"
     @cancel="handleCancel"
-    destroyOnClose>
-    <template slot="title">
-      <a-button icon="fullscreen" class="custom-btn" @click="handleClickToggleFullScreen"/>
-    </template>
+   >
     <template slot="footer">
       <a-button key="back" @click="handleCancel">关闭</a-button>
-      <a-button v-if="record.openType==='url'&&record.readFlag!=='1'" type="primary" @click="toHandle">去处理</a-button>
+      <a-button v-if="record.openType==='url'" type="primary" @click="toHandle">去处理</a-button>
     </template>
     <a-card class="daily-article" :loading="loading">
       <a-card-meta
@@ -21,7 +19,7 @@
       <a-divider />
       <span v-html="record.msgContent" class="article-content"></span>
     </a-card>
-  </a-modal>
+  </j-modal>
 </template>
 
 <script>
@@ -42,6 +40,7 @@
           sm: { span: 16 },
         },
         visible: false,
+        switchFullscreen: true,
         loading: false,
         bodyStyle:{
           padding: "0",
@@ -79,7 +78,7 @@
         this.modelStyle.fullScreen = mode
       },
       toHandle(){
-        if(this.record.openType==='url'&&this.record.readFlag!== '1'){
+        if(this.record.openType==='url'){
           this.visible = false;
           //链接跳转
           this.$router.push({path: this.record.openPage})

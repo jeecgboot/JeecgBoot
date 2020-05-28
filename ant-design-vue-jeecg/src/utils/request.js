@@ -5,16 +5,18 @@ import { VueAxios } from './axios'
 import {Modal, notification} from 'ant-design-vue'
 import { ACCESS_TOKEN } from "@/store/mutation-types"
 
-//自动设置后台服务 baseURL (也可以手工指定写死项目名字)
-let baseDomain = window._CONFIG['domianURL'];
-let baseProject = baseDomain.substring(baseDomain.lastIndexOf("/"));
-console.log("baseDomain= ",baseDomain)
-console.log("baseProject= ",baseProject)
-
+/**
+ * 【指定 axios的 baseURL】
+ * 如果手工指定 baseURL: '/jeecg-boot'
+ * 则映射后端域名，通过 vue.config.js
+ * @type {*|string}
+ */
+let apiBaseUrl = window._CONFIG['domianURL'] || "/jeecg-boot";
+console.log("apiBaseUrl= ",apiBaseUrl)
 // 创建 axios 实例
 const service = axios.create({
   //baseURL: '/jeecg-boot',
-  baseURL: baseProject, // api base_url
+  baseURL: apiBaseUrl, // api base_url
   timeout: 9000 // 请求超时时间
 })
 

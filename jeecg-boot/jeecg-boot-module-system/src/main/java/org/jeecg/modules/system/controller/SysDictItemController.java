@@ -6,6 +6,7 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -65,7 +66,6 @@ public class SysDictItemController {
 	
 	/**
 	 * @功能：新增
-	 * @param sysDict
 	 * @return
 	 */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)

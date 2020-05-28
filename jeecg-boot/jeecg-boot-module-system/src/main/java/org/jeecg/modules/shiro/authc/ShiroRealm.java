@@ -115,7 +115,7 @@ public class ShiroRealm extends AuthorizingRealm {
 		}
 
 		// 查询用户信息
-		log.info("———校验token是否有效————checkUserTokenIsEffect——————— "+ token);
+		log.debug("———校验token是否有效————checkUserTokenIsEffect——————— "+ token);
         LoginUser loginUser = sysBaseAPI.getUserByName(username);
 		if (loginUser == null) {
 			throw new AuthenticationException("用户不存在!");

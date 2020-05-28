@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.service.impl;
 
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -10,8 +11,11 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -21,13 +25,11 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
+import org.jeecg.common.constant.WebsocketConst;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.*;
-import org.jeecg.common.util.IPUtils;
-import org.jeecg.common.util.SpringContextUtils;
-import org.jeecg.common.util.SysAnnmentTypeEnum;
-import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.util.*;
 import org.jeecg.common.util.oss.OssBootUtil;
 import org.jeecg.modules.message.entity.SysMessageTemplate;
 import org.jeecg.modules.message.service.ISysMessageTemplateService;
@@ -37,7 +39,6 @@ import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.service.ISysDataSourceService;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysDictService;
-import org.jeecg.modules.system.util.MinioUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -59,7 +60,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class SysBaseApiImpl implements ISysBaseAPI {
 	/** 当前系统数据库类型 */
-	public static String DB_TYPE = "";
+	private static String DB_TYPE = "";
 	@Autowired
 	private ISysMessageTemplateService sysMessageTemplateService;
 	@Resource
@@ -176,11 +177,15 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	@Override
 	public String getDatabaseType() throws SQLException {
+		if(oConvertUtils.isNotEmpty(DB_TYPE)){
+			return DB_TYPE;
+		}
 		DataSource dataSource = SpringContextUtils.getApplicationContext().getBean(DataSource.class);
 		return getDatabaseTypeByDataSource(dataSource);
 	}
 
 	@Override
+	@Cacheable(value = CacheConstant.SYS_DICT_CACHE,key = "#code")
 	public List<DictModel> queryDictItemsByCode(String code) {
 		return sysDictService.queryDictItemsByCode(code);
 	}
@@ -195,7 +200,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		return sysDictService.queryAllDepartBackDictModel();
 	}
 
-	@Override
+    @Override
+    public List<JSONObject> queryAllDepart(Wrapper wrapper) {
+        //noinspection unchecked
+        return JSON.parseArray(JSON.toJSONString(sysDepartService.list(wrapper))).toJavaList(JSONObject.class);
+    }
+
+    @Override
 	public void sendSysAnnouncement(String fromUser, String toUser, String title, String msgContent) {
 		this.sendSysAnnouncement(fromUser, toUser, title, msgContent, CommonConstant.MSG_CATEGORY_2);
 	}
@@ -229,10 +240,10 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
 				sysAnnouncementSendMapper.insert(announcementSend);
 				JSONObject obj = new JSONObject();
-		    	obj.put("cmd", "user");
-		    	obj.put("userId", sysUser.getId());
-				obj.put("msgId", announcement.getId());
-				obj.put("msgTxt", announcement.getTitile());
+		    	obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
+		    	obj.put(WebsocketConst.MSG_USER_ID, sysUser.getId());
+				obj.put(WebsocketConst.MSG_ID, announcement.getId());
+				obj.put(WebsocketConst.MSG_TXT, announcement.getTitile());
 		    	webSocket.sendOneMessage(sysUser.getId(), obj.toJSONString());
 			}
 		}
@@ -272,10 +283,10 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
 				sysAnnouncementSendMapper.insert(announcementSend);
 				JSONObject obj = new JSONObject();
-				obj.put("cmd", "user");
-				obj.put("userId", sysUser.getId());
-				obj.put("msgId", announcement.getId());
-				obj.put("msgTxt", announcement.getTitile());
+				obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
+				obj.put(WebsocketConst.MSG_USER_ID, sysUser.getId());
+				obj.put(WebsocketConst.MSG_ID, announcement.getId());
+				obj.put(WebsocketConst.MSG_TXT, announcement.getTitile());
 				webSocket.sendOneMessage(sysUser.getId(), obj.toJSONString());
 			}
 		}
@@ -360,10 +371,10 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
 				sysAnnouncementSendMapper.insert(announcementSend);
 				JSONObject obj = new JSONObject();
-				obj.put("cmd", "user");
-				obj.put("userId", sysUser.getId());
-				obj.put("msgId", announcement.getId());
-				obj.put("msgTxt", announcement.getTitile());
+				obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
+				obj.put(WebsocketConst.MSG_USER_ID, sysUser.getId());
+				obj.put(WebsocketConst.MSG_ID, announcement.getId());
+				obj.put(WebsocketConst.MSG_TXT, announcement.getTitile());
 				webSocket.sendOneMessage(sysUser.getId(), obj.toJSONString());
 			}
 		}
@@ -418,10 +429,10 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
 				sysAnnouncementSendMapper.insert(announcementSend);
 				JSONObject obj = new JSONObject();
-				obj.put("cmd", "user");
-				obj.put("userId", sysUser.getId());
-				obj.put("msgId", announcement.getId());
-				obj.put("msgTxt", announcement.getTitile());
+				obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
+				obj.put(WebsocketConst.MSG_USER_ID, sysUser.getId());
+				obj.put(WebsocketConst.MSG_ID, announcement.getId());
+				obj.put(WebsocketConst.MSG_TXT, announcement.getTitile());
 				webSocket.sendOneMessage(sysUser.getId(), obj.toJSONString());
 			}
 		}
@@ -495,7 +506,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	@Override
 	public List<ComboModel> queryAllUser() {
 		List<ComboModel> list = new ArrayList<ComboModel>();
-		List<SysUser> userList = userMapper.selectList(new QueryWrapper<SysUser>().eq("status","1").eq("del_flag","0"));
+		List<SysUser> userList = userMapper.selectList(new QueryWrapper<SysUser>().eq("status",1).eq("del_flag",0));
 		for(SysUser user : userList){
 			ComboModel model = new ComboModel();
 			model.setTitle(user.getRealname());
@@ -509,7 +520,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
     @Override
     public JSONObject queryAllUser(String[] userIds,int pageNo,int pageSize) {
 		JSONObject json = new JSONObject();
-		QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>().eq("status","1").eq("del_flag","0");
+		QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>().eq("status",1).eq("del_flag",0);
         List<ComboModel> list = new ArrayList<ComboModel>();
 		Page<SysUser> page = new Page<SysUser>(pageNo, pageSize);
 		IPage<SysUser> pageList = userMapper.selectPage(page, queryWrapper);
@@ -533,7 +544,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
         return json;
     }
 
-	@Override
+    @Override
+    public List<JSONObject> queryAllUser(Wrapper wrapper) {
+        //noinspection unchecked
+        return JSON.parseArray(JSON.toJSONString(userMapper.selectList(wrapper))).toJavaList(JSONObject.class);
+    }
+
+    @Override
 	public List<ComboModel> queryAllRole() {
 		List<ComboModel> list = new ArrayList<ComboModel>();
 		List<SysRole> roleList = roleMapper.selectList(new QueryWrapper<SysRole>());
@@ -610,7 +627,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	@Override
 	public List<String> getDeptHeadByDepId(String deptId) {
-		List<SysUser> userList = userMapper.selectList(new QueryWrapper<SysUser>().like("depart_ids",deptId).eq("status","1").eq("del_flag","0"));
+		List<SysUser> userList = userMapper.selectList(new QueryWrapper<SysUser>().like("depart_ids",deptId).eq("status",1).eq("del_flag",0));
 		List<String> list = new ArrayList<>();
 		for(SysUser user : userList){
 			list.add(user.getUsername());
@@ -629,4 +646,132 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		return url;
 	}
 
+	@Override
+	public String upload(MultipartFile file, String bizPath, String uploadType, String customBucket) {
+		String url = "";
+		if(CommonConstant.UPLOAD_TYPE_MINIO.equals(uploadType)){
+			url = MinioUtil.upload(file,bizPath,customBucket);
+		}else{
+			url = OssBootUtil.upload(file,bizPath,customBucket);
+		}
+		return url;
+	}
+
+	@Override
+	public void viewAndDownload(String filePath, String uploadpath, String uploadType, HttpServletResponse response) {
+		InputStream inputStream = null;
+		OutputStream outputStream = null;
+		try {
+			if(filePath.startsWith("http")){
+				String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
+				if(CommonConstant.UPLOAD_TYPE_MINIO.equals(uploadType)){
+					String bucketName = filePath.replace(MinioUtil.getMinioUrl(),"").split("/")[0];
+					String objectName = filePath.replace(MinioUtil.getMinioUrl()+bucketName,"");
+					inputStream = MinioUtil.getMinioFile(bucketName,objectName);
+					if(inputStream == null){
+						bucketName = CommonConstant.UPLOAD_CUSTOM_BUCKET;
+						objectName = filePath.replace(OssBootUtil.getStaticDomain()+"/","");
+						inputStream = OssBootUtil.getOssFile(objectName,bucketName);
+					}
+				}else{
+					String bucketName = CommonConstant.UPLOAD_CUSTOM_BUCKET;
+					String objectName = filePath.replace(OssBootUtil.getStaticDomain()+"/","");
+					inputStream = OssBootUtil.getOssFile(objectName,bucketName);
+					if(inputStream == null){
+						bucketName = filePath.replace(MinioUtil.getMinioUrl(),"").split("/")[0];
+						objectName = filePath.replace(MinioUtil.getMinioUrl()+bucketName,"");
+						inputStream = MinioUtil.getMinioFile(bucketName,objectName);
+					}
+				}
+				response.addHeader("Content-Disposition", "attachment;fileName=" + new String(fileName.getBytes("UTF-8"),"iso-8859-1"));
+			}else{
+				// 本地文件处理
+				filePath = filePath.replace("..", "");
+				if (filePath.endsWith(",")) {
+					filePath = filePath.substring(0, filePath.length() - 1);
+				}
+				String fullPath = uploadpath + File.separator + filePath;
+				String downloadFilePath = uploadpath + File.separator + fullPath;
+				File file = new File(downloadFilePath);
+				inputStream = new BufferedInputStream(new FileInputStream(fullPath));
+				response.addHeader("Content-Disposition", "attachment;fileName=" + new String(file.getName().getBytes("UTF-8"),"iso-8859-1"));
+			}
+			response.setContentType("application/force-download");// 设置强制下载不打开
+			outputStream = response.getOutputStream();
+			if(inputStream != null){
+				byte[] buf = new byte[1024];
+				int len;
+				while ((len = inputStream.read(buf)) > 0) {
+					outputStream.write(buf, 0, len);
+				}
+				response.flushBuffer();
+			}
+		} catch (IOException e) {
+			response.setStatus(404);
+			log.error("预览文件失败" + e.getMessage());
+		} finally {
+			if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+			if (outputStream != null) {
+				try {
+					outputStream.close();
+				} catch (IOException e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void sendWebSocketMsg(String[] userIds, String cmd) {
+		JSONObject obj = new JSONObject();
+		obj.put(WebsocketConst.MSG_CMD, cmd);
+		webSocket.sendMoreMessage(userIds, obj.toJSONString());
+	}
+
+	@Override
+	public List<LoginUser> queryAllUserByIds(String[] userIds) {
+		QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>().eq("status",1).eq("del_flag",0);
+		queryWrapper.in("id",userIds);
+		List<LoginUser> loginUsers = new ArrayList<>();
+		List<SysUser> sysUsers = userMapper.selectList(queryWrapper);
+		for (SysUser user:sysUsers) {
+			LoginUser loginUser=new LoginUser();
+			BeanUtils.copyProperties(user, loginUser);
+			loginUsers.add(loginUser);
+		}
+		return loginUsers;
+	}
+
+	/**
+	 * 推送签到人员信息
+	 * @param userId
+	 */
+	@Override
+	public void meetingSignWebsocket(String userId) {
+		JSONObject obj = new JSONObject();
+		obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_SIGN);
+		obj.put(WebsocketConst.MSG_USER_ID,userId);
+		//TODO 目前全部推送，后面修改
+		webSocket.sendAllMessage(obj.toJSONString());
+	}
+
+	@Override
+	public List<LoginUser> queryUserByNames(String[] userNames) {
+		QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>().eq("status",1).eq("del_flag",0);
+		queryWrapper.in("username",userNames);
+		List<LoginUser> loginUsers = new ArrayList<>();
+		List<SysUser> sysUsers = userMapper.selectList(queryWrapper);
+		for (SysUser user:sysUsers) {
+			LoginUser loginUser=new LoginUser();
+			BeanUtils.copyProperties(user, loginUser);
+			loginUsers.add(loginUser);
+		}
+		return loginUsers;
+	}
 }

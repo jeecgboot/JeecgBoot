@@ -3,6 +3,10 @@
     <a-radio v-for="(item, key) in dictOptions" :key="key" :value="item.value">{{ item.text }}</a-radio>
   </a-radio-group>
 
+  <a-radio-group v-else-if="tagType=='radioButton'"  buttonStyle="solid" @change="handleInput" :value="getValueSting" :disabled="disabled">
+    <a-radio-button v-for="(item, key) in dictOptions" :key="key" :value="item.value">{{ item.text }}</a-radio-button>
+  </a-radio-group>
+
   <a-select v-else-if="tagType=='select'" :getPopupContainer = "(target) => target.parentNode" :placeholder="placeholder" :disabled="disabled" :value="getValueSting" @change="handleInput">
     <a-select-option :value="undefined">请选择</a-select-option>
     <a-select-option v-for="(item, key) in dictOptions" :key="key" :value="item.value">
@@ -14,7 +18,7 @@
 </template>
 
 <script>
-  import {ajaxGetDictItems} from '@/api/api'
+  import {ajaxGetDictItems,getDictItemsFromCache} from '@/api/api'
 
   export default {
     name: "JDictSelectTag",
@@ -52,11 +56,17 @@
     },
     computed: {
       getValueSting(){
-        return this.value ? this.value.toString() : null;
+        return this.value != null ? this.value.toString() : null;
       },
     },
     methods: {
       initDictData() {
+        //优先从缓存中读取字典配置
+        if(getDictItemsFromCache(this.dictCode)){
+          this.dictOptions = getDictItemsFromCache(this.dictCode);
+          return
+        }
+
         //根据字典Code, 初始化字典数组
         ajaxGetDictItems(this.dictCode, null).then((res) => {
           if (res.success) {

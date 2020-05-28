@@ -63,12 +63,14 @@
 
 <script>
   import { getAction } from '@/api/manage'
+  import Ellipsis from '@/components/Ellipsis'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { cloneObject, pushIfNotExist } from '@/utils/util'
 
   export default {
     name: 'JSelectBizComponentModal',
     mixins: [JeecgListMixin],
+    components: { Ellipsis },
     props: {
       value: {
         type: Array,
@@ -128,12 +130,15 @@
         type: String,
         default: 'id'
       },
+      // 过长裁剪长度，设置为 -1 代表不裁剪
+      ellipsisLength: {
+        type: Number,
+        default: 12
+      },
     },
     data() {
       return {
         innerValue: [],
-        // 表头
-        innerColumns: this.columns,
         // 已选择列表
         selectedTable: {
           pagination: false,
@@ -147,6 +152,7 @@
           ],
           dataSource: [],
         },
+        renderEllipsis: (value) => (<ellipsis length={this.ellipsisLength}>{value}</ellipsis>),
         url: { list: this.listUrl },
         /* 分页参数 */
         ipagination: {
@@ -163,6 +169,19 @@
         options: [],
         dataSourceMap: {},
       }
+    },
+    computed: {
+      // 表头
+      innerColumns() {
+        let columns = cloneObject(this.columns)
+        columns.forEach(column => {
+          // 给所有的列加上过长裁剪
+          if (this.ellipsisLength !== -1) {
+            column.customRender = (text) => this.renderEllipsis(text)
+          }
+        })
+        return columns
+      },
     },
     watch: {
       value: {

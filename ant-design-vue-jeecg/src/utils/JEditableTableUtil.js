@@ -14,6 +14,7 @@ const FormTypes = {
   sel_search:"sel_search",
   radio:'radio',
   checkbox_meta:"checkbox_meta",
+  input_pop:'input_pop',
 
   slot: 'slot',
   hidden: 'hidden'
@@ -77,18 +78,22 @@ export function validateFormAndTables(form, cases) {
 /**
  * 验证并获取一个或多个表格的所有值
  * @param cases 接收一个数组，每项都是一个JEditableTable实例
+ * @param deleteTempId 是否删除临时ID，如果设为true，行编辑就不返回新增行的ID，ID需要后台生成
  * @author sunjianlei
  */
-export function validateTables(cases) {
+export function validateTables(cases, deleteTempId) {
   if (!(cases instanceof Array)) {
     throw `'validateTables'函数的'cases'参数需要的是一个数组，而传入的却是${typeof cases}`
   }
   return new Promise((resolve, reject) => {
     let tables = []
     let index = 0;
+    if(!cases || cases.length==0){
+      resolve()
+    }
     (function next() {
       let vm = cases[index]
-      vm.getAll(true).then(all => {
+      vm.getAll(true, deleteTempId).then(all => {
         tables[index] = all
         // 判断校验是否全部完成，完成返回成功，否则继续进行下一步校验
         if (++index === cases.length) {

@@ -51,7 +51,7 @@
       },
       getCalendarContainer: {
         type: Function,
-        default: () => document.body
+        default: (node) => node.parentNode
       }
     },
     data () {

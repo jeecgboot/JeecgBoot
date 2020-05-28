@@ -4,16 +4,22 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDepartPermission;
+import org.jeecg.modules.system.entity.SysDepartRole;
+import org.jeecg.modules.system.entity.SysDepartRolePermission;
 import org.jeecg.modules.system.entity.SysPermissionDataRule;
 import org.jeecg.modules.system.mapper.SysDepartPermissionMapper;
+import org.jeecg.modules.system.mapper.SysDepartRoleMapper;
+import org.jeecg.modules.system.mapper.SysDepartRolePermissionMapper;
 import org.jeecg.modules.system.mapper.SysPermissionDataRuleMapper;
 import org.jeecg.modules.system.service.ISysDepartPermissionService;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Description: 部门权限表
@@ -26,7 +32,14 @@ public class SysDepartPermissionServiceImpl extends ServiceImpl<SysDepartPermiss
     @Resource
     private SysPermissionDataRuleMapper ruleMapper;
 
+    @Resource
+    private SysDepartRoleMapper sysDepartRoleMapper;
+
+    @Resource
+    private SysDepartRolePermissionMapper departRolePermissionMapper;
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveDepartPermission(String departId, String permissionIds, String lastPermissionIds) {
         List<String> add = getDiff(lastPermissionIds,permissionIds);
         if(add!=null && add.size()>0) {
@@ -43,6 +56,12 @@ public class SysDepartPermissionServiceImpl extends ServiceImpl<SysDepartPermiss
         if(delete!=null && delete.size()>0) {
             for (String permissionId : delete) {
                 this.remove(new QueryWrapper<SysDepartPermission>().lambda().eq(SysDepartPermission::getDepartId, departId).eq(SysDepartPermission::getPermissionId, permissionId));
+                //删除部门权限时，删除部门角色中已授权的权限
+                List<SysDepartRole> sysDepartRoleList = sysDepartRoleMapper.selectList(new LambdaQueryWrapper<SysDepartRole>().eq(SysDepartRole::getDepartId,departId));
+                List<String> roleIds = sysDepartRoleList.stream().map(SysDepartRole::getId).collect(Collectors.toList());
+                if(roleIds != null && roleIds.size()>0){
+                    departRolePermissionMapper.delete(new LambdaQueryWrapper<SysDepartRolePermission>().eq(SysDepartRolePermission::getPermissionId,permissionId));
+                }
             }
         }
     }

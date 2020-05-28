@@ -94,6 +94,7 @@
   import DepartSelect from './DepartSelect'
   import { mapActions, mapGetters,mapState } from 'vuex'
   import { mixinDevice } from '@/utils/mixin.js'
+  import { getFileAccessHttpUrl } from "@/api/manage"
 
   export default {
     name: "UserMenu",
@@ -157,8 +158,7 @@
       ...mapActions(["Logout"]),
       ...mapGetters(["nickname", "avatar","userInfo"]),
       getAvatar(){
-        console.log('url = '+ window._CONFIG['staticDomainURL']+"/"+this.avatar())
-        return window._CONFIG['staticDomainURL']+"/"+this.avatar()
+        return getFileAccessHttpUrl(this.avatar())
       },
       handleLogout() {
         const that = this
@@ -229,13 +229,13 @@
     color: inherit;
 
     /deep/ .ant-select-selection {
-        background-color: inherit;
-        border: 0;
-        border-bottom: 1px solid white;
-        &__placeholder, &__field__placeholder {
-          color: inherit;
-        }
+      background-color: inherit;
+      border: 0;
+      border-bottom: 1px solid white;
+      &__placeholder, &__field__placeholder {
+        color: inherit;
       }
+    }
   }
   /* update-end author:sunjianlei date:20191220 for: 解决全局样式冲突问题 */
   /* update_end author:zhaoxin date:20191129 for: 让搜索框颜色能随主题颜色变换*/

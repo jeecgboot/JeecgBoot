@@ -2,6 +2,7 @@
   <a-tree-select
     allowClear
     labelInValue
+    :getPopupContainer="(node) => node.parentNode"
     style="width: 100%"
     :disabled="disabled"
     :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"

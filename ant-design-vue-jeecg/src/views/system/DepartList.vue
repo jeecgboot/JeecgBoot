@@ -5,8 +5,8 @@
 
         <!-- 按钮操作区域 -->
         <a-row style="margin-left: 14px">
-          <a-button @click="handleAdd(2)" type="primary">添加子部门</a-button>
-          <a-button @click="handleAdd(1)" type="primary">添加一级部门</a-button>
+          <a-button @click="handleAdd(1)" type="primary">添加部门</a-button>
+          <a-button @click="handleAdd(2)" type="primary">添加下级</a-button>
           <a-button type="primary" icon="download" @click="handleExportXls('部门信息')">导出</a-button>
           <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
             <a-button type="primary" icon="import">导入</a-button>
@@ -73,7 +73,7 @@
     <a-col :md="12" :sm="24">
       <a-tabs defaultActiveKey="1">
         <a-tab-pane tab="基本信息" key="1" >
-          <a-card :bordered="false">
+          <a-card :bordered="false" v-if="selectedKeys.length>0">
             <a-form :form="form">
               <a-form-item
                 :labelCol="labelCol"
@@ -146,8 +146,13 @@
             </a-form>
             <div class="anty-form-btn">
               <a-button @click="emptyCurrForm" type="default" htmlType="button" icon="sync">重置</a-button>
-              <a-button @click="submitCurrForm" type="primary" htmlType="button" icon="form">修改并保存</a-button>
+              <a-button @click="submitCurrForm" type="primary" htmlType="button" icon="form">保存</a-button>
             </div>
+          </a-card>
+          <a-card v-else >
+            <a-empty>
+              <span slot="description"> 请先选择一个部门! </span>
+            </a-empty>
           </a-card>
         </a-tab-pane>
         <a-tab-pane tab="部门权限" key="2" forceRender>
@@ -224,6 +229,7 @@
         visible: false,
         departTree: [],
         rightClickSelectedKey: '',
+        rightClickSelectedOrgCode: '',
         hiding: true,
         model: {},
         dropTrigger: '',
@@ -282,6 +288,8 @@
         that.departTree = []
         queryDepartTreeList().then((res) => {
           if (res.success) {
+            //部门全选后，再添加部门，选中数量增多
+            this.allTreeKeys = [];
             for (let i = 0; i < res.result.length; i++) {
               let temp = res.result[i]
               that.treeData.push(temp)
@@ -311,6 +319,7 @@
         this.dropTrigger = 'contextmenu'
         console.log(node.node.eventKey)
         this.rightClickSelectedKey = node.node.eventKey
+        this.rightClickSelectedOrgCode = node.node.dataRef.orgCode
       },
       onExpand(expandedKeys) {
         console.log('onExpand', expandedKeys)
@@ -422,8 +431,10 @@
         }else{
           this.orgCategoryDisabled = false;
         }
-        this.form.getFieldDecorator('fax', {initialValue: ''})
-        this.form.setFieldsValue(pick(record, 'departName','orgCategory', 'orgCode', 'departOrder', 'mobile', 'fax', 'address', 'memo'))
+        this.$nextTick(() => {
+          this.form.getFieldDecorator('fax', {initialValue: ''})
+          this.form.setFieldsValue(pick(record, 'departName','orgCategory', 'orgCode', 'departOrder', 'mobile', 'fax', 'address', 'memo'))
+        })
       },
       getCurrSelectedTitle() {
         return !this.currSelected.title ? '' : this.currSelected.title
@@ -486,7 +497,7 @@
         } else if (num == 2) {
           let key = this.currSelected.key
           if (!key) {
-            this.$message.warning('请先选中一条记录!')
+            this.$message.warning('请先点击选中上级部门！')
             return false
           }
           this.$refs.departModal.add(this.selectedKeys)
@@ -497,12 +508,26 @@
         }
       },
       handleDelete() {
-        deleteByDepartId({id: this.rightClickSelectedKey}).then((resp) => {
-          if (resp.success) {
-            this.$message.success('删除成功!')
-            this.loadTree()
-          } else {
-            this.$message.warning('删除失败!')
+        var that = this
+        this.$confirm({
+          title: '确认删除',
+          content: '确定要删除此部门以及子节点数据吗?',
+          onOk: function () {
+            deleteByDepartId({id: that.rightClickSelectedKey}).then((resp) => {
+              if (resp.success) {
+                //删除成功后，去除已选中中的数据
+                that.checkedKeys.splice(that.checkedKeys.findIndex(key => key === that.rightClickSelectedKey), 1);
+                that.$message.success('删除成功!')
+                that.loadTree()
+                //删除后同步清空右侧基本信息内容
+                let orgCode=that.form.getFieldValue("orgCode");
+                if(orgCode && orgCode === that.rightClickSelectedOrgCode){
+                  that.onClearSelected()
+                }
+              } else {
+                that.$message.warning('删除失败!')
+              }
+            })
           }
         })
       },

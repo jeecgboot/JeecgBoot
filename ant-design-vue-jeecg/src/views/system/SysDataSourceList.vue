@@ -123,20 +123,14 @@
             customRender: (t, r, index) => index + 1
           },
           {
-            title: '数据源名称',
-            align: 'center',
-            dataIndex: 'name'
-          },
-          {
             title: '数据源编码',
             align: 'center',
             dataIndex: 'code'
           },
           {
-            title: '备注',
+            title: '数据源名称',
             align: 'center',
-            dataIndex: 'remark',
-            customRender: (t) => ellipsis(t)
+            dataIndex: 'name'
           },
           {
             title: '数据库类型',

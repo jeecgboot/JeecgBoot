@@ -1,3 +1,5 @@
 /target/
 /.idea/
 *.iml
+jeecg-boot-module-demo
+rebel.xml

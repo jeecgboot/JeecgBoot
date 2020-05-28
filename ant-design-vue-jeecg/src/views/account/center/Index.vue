@@ -94,6 +94,7 @@
   import RouteView from "@/components/layouts/RouteView"
   import { AppPage, ArticlePage, ProjectPage } from './page'
   import { mapGetters } from 'vuex'
+  import { getFileAccessHttpUrl } from '@/api/manage';
 
   export default {
     components: {
@@ -133,7 +134,7 @@
     methods: {
       ...mapGetters(["nickname", "avatar"]),
       getAvatar(){
-          return window._CONFIG['staticDomainURL']+"/"+this.avatar();
+          return getFileAccessHttpUrl(this.avatar());
       },
       getTeams() {
         this.$http.get('/api/workplace/teams')
