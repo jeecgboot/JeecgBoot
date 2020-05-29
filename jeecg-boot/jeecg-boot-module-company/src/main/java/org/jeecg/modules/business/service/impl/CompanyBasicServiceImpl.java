@@ -66,10 +66,8 @@ public class CompanyBasicServiceImpl implements ICompanyBasicService {
     private void addElements(String key,String value,Integer counts,List<Map<String,String>> basicInfoMenus){
         Map<String,String> param = new HashMap<>(2);
         param.put("key",key);
-        if(counts>0){
-            value=value+"("+counts+")";
-        }
         param.put("text",value);
+        param.put("point",Integer.toString(counts));
         basicInfoMenus.add(param);
     }
 

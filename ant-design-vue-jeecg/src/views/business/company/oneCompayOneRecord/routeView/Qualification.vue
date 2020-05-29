@@ -1,12 +1,10 @@
 <template>
-
-
-
+  <div>资质</div>
 </template>
 
 <script>
     export default {
-        name: "BaseInfo"
+        name: "Qualification"
     }
 </script>
 

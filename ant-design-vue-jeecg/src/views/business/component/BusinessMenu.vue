@@ -1,7 +1,9 @@
 <template>
   <a-menu :mode="mode" :style="style" :default-selected-keys="['1']">
     <a-menu-item :key="item.key" v-for="item in itemList" @click = 'menuClick(item.key)'>
-      {{ item.text }}
+
+        {{ item.text }} <a-badge :count="item.point" :number-style="{ backgroundColor: '#52c41a' }" />
+
     </a-menu-item>
   </a-menu>
 </template>
@@ -20,10 +22,6 @@
           default: () => {}
         },
         mode:'',
-        call:{
-          type: String,
-          default:'headHandle'
-        }
       },
       data () {
         return {
@@ -39,8 +37,7 @@
       },
       methods:{
         menuClick(key){
-          console.log("headHandle")
-          this.$emit('headHandle',key);
+          this.$emit("clickHandle",key);
         }
       },
       created() {

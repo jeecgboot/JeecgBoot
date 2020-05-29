@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -33,17 +34,18 @@ public class CompanyBasicController extends JeecgController<CompanyBaseinfo, ICo
     @Autowired
     private ICompanyBasicService companyBasicService;
 
-
+    @Autowired
+    private ICompanyBaseinfoService companyBaseinfoService;
 
 
    /**
     *   查询菜单及其状态信息
     *
-    * @param companyId 企业编号
+    * @param companyId 企业ID
     * @return 菜单及其状态信息
     */
    @AutoLog(value = "company_basic-查询菜单及其状态信息")
-   @ApiOperation(value="查询菜单及其状态信息", notes="根据企业编号查询")
+   @ApiOperation(value="查询菜单及其状态信息", notes="根据企业ID查询")
    @GetMapping(value = "/Menus")
    public Result<?> queryMenus(@RequestParam(name="companyId",required=true) String companyId) {
 
@@ -55,6 +57,22 @@ public class CompanyBasicController extends JeecgController<CompanyBaseinfo, ICo
        return Result.ok(result);
    }
 
+    /**
+     *   查询查询企业详细信息
+     *
+     * @param companyId 企业ID
+     * @return 企业详细信息
+     */
+    @AutoLog(value = "company_basic-查询指定企业详细信息")
+    @ApiOperation(value="查询企业详细信息", notes="根据企业ID查询")
+    @GetMapping(value = "/loadBaseInfo")
+    public Result<?> loadBaseInfo(@RequestParam(name="companyId",required=true) String companyId) {
+        //查找企业名称
 
+        //查找企业详细数据
+        CompanyBaseinfo companyBaseinfo =  companyBaseinfoService.getOne(new QueryWrapper<CompanyBaseinfo>().lambda().eq(CompanyBaseinfo::getCompanyId,companyId));
+
+        return Result.ok(companyBaseinfo);
+    }
 
 }

@@ -2,8 +2,10 @@ import { getAction, deleteAction, putAction, postAction, httpAction } from '@/ap
 import Vue from 'vue'
 
 const getDetailMenus = (params)=>getAction("/companyBasic/Menus",params);
+const loadCompanyBaseInfo = (params)=>getAction("/companyBasic/loadBaseInfo",params);
 
 
 export {
-  getDetailMenus
+  getDetailMenus,
+  loadCompanyBaseInfo
 }
