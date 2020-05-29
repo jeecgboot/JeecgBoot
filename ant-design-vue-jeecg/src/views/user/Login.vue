@@ -47,7 +47,7 @@
           </a-row>
 
 
-        </a-tab-pane>
+
         <!--<a-tab-pane key="tab2" tab="手机号登陆">
           <a-form-item>
             <a-input
@@ -163,16 +163,13 @@
 
 <script>
   //import md5 from "md5"
-  import api from '@/api'
-  import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
-  import { mapActions } from "vuex"
-  import { timeFix } from "@/utils/util"
+  import {mapActions} from "vuex"
+  import {timeFix} from "@/utils/util"
   import Vue from 'vue'
-  import { ACCESS_TOKEN ,ENCRYPTED_STRING} from "@/store/mutation-types"
-  import { putAction,postAction,getAction } from '@/api/manage'
-  import { encryption , getEncryptedString } from '@/utils/encryption/aesEncrypt'
+  import {ACCESS_TOKEN, ENCRYPTED_STRING, USER_INFO} from "@/store/mutation-types"
+  import {getAction, postAction, putAction} from '@/api/manage'
+  import {getEncryptedString} from '@/utils/encryption/aesEncrypt'
   import store from '@/store/'
-  import { USER_INFO } from "@/store/mutation-types"
 
   export default {
     components: {

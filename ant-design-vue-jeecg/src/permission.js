@@ -35,7 +35,9 @@ router.beforeEach((to, from, next) => {
               store.dispatch('UpdateAppRouter',  { constRoutes }).then(() => {
                 // 根据roles权限生成可访问的路由表
                 // 动态添加可访问路由表
+                console.log("store.getters.addRouters",store.getters.addRouters);
                 router.addRoutes(store.getters.addRouters)
+                console.log("router",router);
                 const redirect = decodeURIComponent(from.query.redirect || to.path)
                 if (to.path === redirect) {
                   // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record

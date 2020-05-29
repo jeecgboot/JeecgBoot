@@ -10,10 +10,10 @@
         <a-layout-sider width="160" style="background: #fff">
 
           <business-menu :item-list="leftMenus" :menu-style="leftStyle"  mode="inline"></business-menu>
-
         </a-layout-sider>
         <a-layout-content :style="{ padding: '0 24px', minHeight: '280px' }">
-          <router-view/>
+           <base-info v-if="leftActive==1 && topActive==1"/>
+           <basic-info v-if="leftActive==1 && topActive==2"/>
         </a-layout-content>
       </a-layout>
     </a-layout-content>
@@ -24,18 +24,23 @@
 
 <script>
     import BusinessMenu from "../../component/BusinessMenu";
+    import BaseInfo from "./routeView/BaseInfo";
+    import BasicInfo from "./routeView/BasicInfo";
+    import getDetailMenus from "../../requestAction/request"
 
     export default {
       name: "CompanyDetail",
-      components: {BusinessMenu},
+      components: {BusinessMenu,BaseInfo,BasicInfo},
+      props:{
+        companyId:''
+      },
       data(){
         return {
-          leftMenus :
-          [
-            {"key":"1","text":"基本信息"},
-            {"key":"2","text":"企业资质"},
-            {"key":"3","text":"员工信息"}
-          ],
+          topActive:1,
+          leftActive:1,
+          leftMenus:[],
+          basicInfoMenus : [],
+          superviseMenus:[],
           leftStyle :{
             top: '0px',
             left:'0px',
@@ -53,22 +58,27 @@
       methods:{
         headHandle(key){
           console.log("key",key);
-
+          this.topActive = key;
+          //key1为 基础信息  2为监督检查
           if(key==="1"){
-            this.leftMenus = [
-              {"key":"1","text":"基本信息"},
-              {"key":"2","text":"企业资质"},
-              {"key":"3","text":"员工信息"}
-            ];
+            this.leftMenus = this.basicInfoMenus;
           }else{
-            this.leftMenus = [
-              {"key":"1","text":"年度动态监管"},
-              {"key":"2","text":"行政处罚信息"},
-              {"key":"3","text":"信访投诉信息"},
-              {"key":"4","text":"信访投诉信息"}
-            ];
+            this.leftMenus = this.superviseMenus;
           }
         }
+      },
+      created() {
+        //发送请求，查找
+        getDetailMenus({companyId:this.companyId}).then((res)=>{
+          if(res.success){
+            this.basicInfoMenus = res.result.basicInfoMenus;
+            this.superviseMenus = res.result.superviseMenus;
+            this.leftMenus = this.basicInfoMenus;
+          }else{
+            console.log(res.message);
+          }
+        })
+
       }
 
     }

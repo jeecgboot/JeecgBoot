@@ -53,13 +53,13 @@ public class CompanySysuser implements Serializable {
 	@Excel(name = "系统用户id", width = 15)
     @ApiModelProperty(value = "系统用户id")
     private java.lang.String sysUserid;
-
-    /**系统用户id*/
-    @Excel(name = "系统用户名", width = 15)
-    @ApiModelProperty(value = "系统用户id")
-    private java.lang.String sysUsername;
-	/**企业用户id*/
-	@Excel(name = "企业用户id", width = 15)
+    /**企业用户id*/
+    @Excel(name = "企业用户id", width = 15)
     @ApiModelProperty(value = "企业用户id")
     private java.lang.String companyId;
+    /**系统用户id*/
+    @Excel(name = "系统用户名", width = 15)
+    @ApiModelProperty(value = "系统用户名")
+    private java.lang.String sysUsername;
+
 }

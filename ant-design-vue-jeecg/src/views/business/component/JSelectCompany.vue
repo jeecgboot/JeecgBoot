@@ -17,7 +17,7 @@
         settings: {
           name: '公司',
           displayKey: 'shortName',
-          returnKeys: ['companyId', 'shortName'],
+          returnKeys: [ 'shortName','companyId'],
           listUrl: '/company/companyBaseinfo/list',
           queryParamCode: 'shortName',
           queryParamText: '公司简称',

@@ -155,13 +155,12 @@
   import departWindow from './DepartWindow'
   import JSelectPosition from '@/components/jeecgbiz/JSelectPosition'
   import JSelectCompany from '../../business/component/JSelectCompany'
-  import { ACCESS_TOKEN } from "@/store/mutation-types"
+  import { ACCESS_TOKEN,USER_INFO } from "@/store/mutation-types"
   import { getAction } from '@/api/manage'
   import {addUser,editUser,queryUserRole,queryall } from '@/api/api'
   import { disabledAuthFilter } from "@/utils/authFilter"
   import {duplicateCheck } from '@/api/api'
   import JImageUpload from '../../../components/jeecg/JImageUpload'
-
   export default {
     name: "UserModal",
     components: {
@@ -258,7 +257,7 @@
           userWithDepart: "/sys/user/userDepartList", // 引入为指定用户查看部门信息需要的url
           userId:"/sys/user/generateUserId", // 引入生成添加用户情况下的url
           syncUserByUserName:"/process/extActProcess/doSyncUserByUserName",//同步用户到工作流
-          companyinfoByUserId: "/company/companyBaseinfo/queryByUserId", // 引入为指定用户查看部门信息需要的url
+          // companyinfoByUserId: "/company/companyBaseinfo/queryByUserId", // 引入为指定用户查看部门信息需要的url
         },
         identity:"1",
         fileList:[],
@@ -305,18 +304,19 @@
           }
         });
       },
-      queryCompanyByUserId: async function(userId){
-        var that = this;
-        await  getAction(that.url.companyinfoByUserId,{userId:that.userId}).then((res)=>{
-          if(res.success){
-            //后端String类型默认存在messgae
-            that.companys = res.message;
-
-          }else{
-            console.log(res.message);
-          }
-        })
-      },
+      // queryCompanyByUserId: async function(userId){
+      //   var that = this;
+      //   await  getAction(that.url.companyinfoByUserId,{userId:that.userId}).then((res)=>{
+      //     if(res.success){
+      //       console.log("res.message",res.message)
+      //       //后端String类型默认存在messgae
+      //       that.companys = res.message;
+      //
+      //     }else{
+      //       console.log(res.message);
+      //     }
+      //   })
+      // },
       refresh () {
           this.selectedDepartKeys=[];
           this.checkedDepartKeys=[];
@@ -332,7 +332,7 @@
         this.refresh();
         this.edit({activitiSync:'1'});
       },
-      edit:async function (record) {
+      edit: function (record) {
         this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
         let that = this;
         that.initialRoleList();
@@ -348,11 +348,11 @@
         that.visible = true;
 
         //查询所属公司
-        await that.queryCompanyByUserId(record.id);
-        record.company = this.companys;
+        //  that.queryCompanyByUserId(record.id);
+        console.log("USER_INFO",Vue.ls.get(USER_INFO));
+        record.company = Vue.ls.get(USER_INFO).companyIds.join(",");
         that.model = Object.assign({}, record);
         that.$nextTick(() => {
-
           that.form.setFieldsValue(pick(this.model, 'username', 'sex', 'realname', 'email', 'phone', 'activitiSync', 'workNo', 'telephone', 'post','company'))
 
         });
@@ -422,6 +422,7 @@
         const that = this;
         // 触发表单验证
         this.form.validateFields((err, values) => {
+          debugger
           if (!err) {
             that.confirmLoading = true;
             if(!values.birthday){

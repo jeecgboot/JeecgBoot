@@ -24,9 +24,9 @@
       },
       created() {
 
-        console.log(store.getters.userInfo)
-        const companySysusers = store.getters.userInfo.companySysusers;
-        if(companySysusers.length>1){
+        console.log("userInfo",store.getters.userInfo)
+        const companyIds = store.getters.userInfo.companyIds;
+        if(companyIds.length>1){
           this.list_visible = true;
 
         }else{

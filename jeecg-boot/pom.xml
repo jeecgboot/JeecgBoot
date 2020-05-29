@@ -151,7 +151,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.38</version>
+			<version>5.1.47</version>
 			<scope>runtime</scope>
 		</dependency>
 		<!--  sqlserver-->

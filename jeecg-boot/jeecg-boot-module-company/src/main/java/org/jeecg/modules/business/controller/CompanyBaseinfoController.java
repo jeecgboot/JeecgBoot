@@ -153,20 +153,20 @@ public class CompanyBaseinfoController extends JeecgController<CompanyBaseinfo, 
 		}
 		return Result.ok(companyBaseinfo);
 	}
-	 /**
+	/* *//**
 	  * 通过userid查询
 	  *
 	  * @param userId
 	  * @return
-	  */
+	  *//*
 	 @AutoLog(value = "company_baseinfo-通过用户id查询")
 	 @ApiOperation(value="company_baseinfo-通过用户id查询", notes="company_baseinfo-通过用户id查询")
 	 @GetMapping(value = "/queryByUserId")
 	 public Result<?> queryByUserId(@RequestParam(name="userId",required=true) String userId) {
 		 return resultByUserId(userId);
-	 }
+	 }*/
 
-
+/*
 	 private Result<?> resultByUserId(@PathVariable String userId) {
 		 List<String> companyIds = new ArrayList<>();
 		 if (queryCompanyIds(userId, companyIds)) return Result.error("未找到对应数据");
@@ -181,7 +181,7 @@ public class CompanyBaseinfoController extends JeecgController<CompanyBaseinfo, 
 		 });
 		 String companyNames = String.join(",", companyNameList);
 		 return Result.ok(companyNames);
-	 }
+	 }*/
 
 	 private boolean queryCompanyIds(@PathVariable String userId, List<String> companyIds) {
 		 List<CompanySysuser> companySysusers = companySysuserService.list(userId);

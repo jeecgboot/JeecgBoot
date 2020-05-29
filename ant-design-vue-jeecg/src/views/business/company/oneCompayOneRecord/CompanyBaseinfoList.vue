@@ -65,8 +65,6 @@
 
       </a-table>
     </div>
-
-    <companyBaseinfo-modal ref="modalForm" @ok="modalFormOk"></companyBaseinfo-modal>
   </a-card>
 </template>
 
