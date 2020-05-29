@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -49,7 +50,17 @@ public class CompanySysuserServiceImpl extends ServiceImpl<CompanySysuserMapper,
         return this.remove(new QueryWrapper<CompanySysuser>().lambda().eq(CompanySysuser::getSysUserid,userid));
     }
 
+    public boolean queryCompanyIds(String userId, List<String> companyIds) {
+        List<CompanySysuser> companySysusers = this.list(userId);
 
+        if (companySysusers.isEmpty())
+            return true;
+
+        companySysusers.forEach(companySysuser -> {
+            companyIds.add(companySysuser.getCompanyId());
+        });
+        return false;
+    }
     public  void save(String userid, String companys) {
         //插入新的费用账户信息表
         if(!StrUtil.isEmpty(companys)){
