@@ -93,7 +93,6 @@ public class LoginController {
 		if(!result.isSuccess()) {
 			return result;
 		}
-		
 		//2. 校验用户名或密码是否正确
 		String userpassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
 		String syspassword = sysUser.getPassword();
@@ -101,35 +100,14 @@ public class LoginController {
 			result.error500("用户名或密码错误");
 			return result;
 		}
-		SysUserVo sysUserVo = new SysUserVo();
-		sysUserVo.setUsername( sysUser.getUsername());
-		sysUserVo.setRealname( sysUser.getRealname( ));
-		sysUserVo.setAvatar(   sysUser.getAvatar());
-		sysUserVo.setBirthday( sysUser.getBirthday());
-		sysUserVo.setPassword(   sysUser.getPassword());
-		sysUserVo.setSalt( sysUserVo.getSalt());
-		sysUserVo.setSex(      sysUser.getSex( ));
-		sysUserVo.setEmail(    sysUser.getEmail( ));
-		sysUserVo.setPhone(    sysUser.getPhone( ));
-		sysUserVo.setOrgCode(  sysUser.getOrgCode( ));
-		sysUserVo.setStatus(   sysUser.getStatus( ));
-		sysUserVo.setDelFlag(  sysUser.getDelFlag( ));
-		sysUserVo.setWorkNo(   sysUser.getWorkNo( ));
-		sysUserVo.setPost(     sysUser.getPost( ));
-		sysUserVo.setTelephone(sysUser.getTelephone( ));
-		sysUserVo.setCreateBy( sysUser.getCreateBy(  ));
-		sysUserVo.setUpdateBy( sysUser.getUpdateBy(  ));
-		sysUserVo.setUpdateTime(sysUser.getUpdateTime( ));
-		sysUserVo.setActivitiSync(sysUser.getActivitiSync( ));
-		sysUserVo.setUserIdentity(sysUser.getUserIdentity( ));
-		sysUserVo.setDepartIds( sysUser.getDepartIds(   ));
-		sysUserVo.setThirdId( sysUser.getThirdId(      ));
-		sysUserVo.setThirdType( sysUser.getThirdType(   ));
-		sysUserVo.setAvatar(sysUser.getAvatar());
+		SysUserVo sysUserVo = new  SysUserVo(sysUser);
 
+		companySysuserService.list(sysUser.getId()).forEach(companySysuser -> {
+			sysUserVo.getCompanyIds().add(companySysuser.getCompanyId());
+				});
 
 		//查询 用户对应的企业信息
-		sysUserVo.setCompanySysusers(companySysuserService.list(sysUser.getId()));
+
 
 
 		//用户登录信息
@@ -252,7 +230,7 @@ public class LoginController {
 	 * @param jsonObject
 	 * @return
 	 */
-	@PostMapping(value = "/sms")
+/*	@PostMapping(value = "/sms")
 	public Result<String> sms(@RequestBody JSONObject jsonObject) {
 		Result<String> result = new Result<String>();
 		String mobile = jsonObject.get("mobile").toString();
@@ -294,9 +272,9 @@ public class LoginController {
 					return result;
 				}
 				
-				/**
+				*//**
 				 * smsmode 短信模板方式  0 .登录模板、1.注册模板、2.忘记密码模板
-				 */
+				 *//*
 				if (CommonConstant.SMS_TPL_TYPE_0.equals(smsmode)) {
 					//登录模板
 					b = DySmsHelper.sendSms(mobile, obj, DySmsEnum.LOGIN_TEMPLATE_CODE);
@@ -324,7 +302,7 @@ public class LoginController {
 			return result;
 		}
 		return result;
-	}
+	}*/
 	
 
 	/**
@@ -333,6 +311,7 @@ public class LoginController {
 	 * @param jsonObject
 	 * @return
 	 */
+/*
 	@ApiOperation("手机号登录接口")
 	@PostMapping("/phoneLogin")
 	public Result<JSONObject> phoneLogin(@RequestBody JSONObject jsonObject) {
@@ -359,6 +338,7 @@ public class LoginController {
 
 		return result;
 	}
+*/
 
 
 	/**
@@ -368,7 +348,7 @@ public class LoginController {
 	 * @param result
 	 * @return
 	 */
-	private Result<JSONObject> userInfo(SysUser sysUser, Result<JSONObject> result) {
+	private Result<JSONObject> userInfo(SysUserVo sysUser, Result<JSONObject> result) {
 		String syspassword = sysUser.getPassword();
 		String username = sysUser.getUsername();
 		// 生成token

@@ -10,12 +10,14 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.util.RedisUtil;
+import org.jeecg.modules.business.service.ICompanySysuserService;
 import org.jeecg.modules.cas.util.CASServiceUtil;
 import org.jeecg.modules.cas.util.XmlUtils;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.jeecg.modules.system.vo.SysUserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -50,8 +52,8 @@ public class CasClientController {
 	
 	@Value("${cas.prefixUrl}")
     private String prefixUrl;
-	
-	
+	@Autowired
+	ICompanySysuserService companySysuserService;
 	@GetMapping("/validateLogin")
 	public Object validateLogin(@RequestParam(name="ticket") String ticket,
 								@RequestParam(name="service") String service,
@@ -95,7 +97,14 @@ public class CasClientController {
 				obj.put("multi_depart", 2);
 			}
 			obj.put("token", token);
-			obj.put("userInfo", sysUser);
+			//加上  公司Id信息
+			SysUserVo sysUserVo = new  SysUserVo(sysUser);
+
+			companySysuserService.list(sysUser.getId()).forEach(companySysuser -> {
+				sysUserVo.getCompanyIds().add(companySysuser.getCompanyId());
+			});
+
+			obj.put("userInfo", sysUserVo);
 			result.setResult(obj);
 			result.success("登录成功");
 	  		

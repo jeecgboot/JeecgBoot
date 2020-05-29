@@ -14,16 +14,48 @@ import org.jeecg.modules.system.entity.SysUser;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class SysUserVo extends SysUser {
+public class SysUserVo {
 
 
 
     private static final long serialVersionUID = 1L;
+
+
+    public SysUserVo(SysUser sysUser) {
+        this.setId( sysUser.getId());
+        this.setUsername( sysUser.getUsername());
+        this.setRealname( sysUser.getRealname( ));
+        this.setAvatar(   sysUser.getAvatar());
+        this.setBirthday( sysUser.getBirthday());
+        this.setPassword(   sysUser.getPassword());
+        this.setSalt( sysUser.getSalt());
+        this.setSex(      sysUser.getSex( ));
+        this.setEmail(    sysUser.getEmail( ));
+        this.setPhone(    sysUser.getPhone( ));
+        this.setOrgCode(  sysUser.getOrgCode( ));
+        this.setStatus(   sysUser.getStatus( ));
+        this.setDelFlag(  sysUser.getDelFlag( ));
+        this.setWorkNo(   sysUser.getWorkNo( ));
+        this.setPost(     sysUser.getPost( ));
+        this.setTelephone(sysUser.getTelephone( ));
+        this.setCreateBy( sysUser.getCreateBy(  ));
+        this.setUpdateBy( sysUser.getUpdateBy(  ));
+        this.setUpdateTime(sysUser.getUpdateTime( ));
+        this.setActivitiSync(sysUser.getActivitiSync( ));
+        this.setUserIdentity(sysUser.getUserIdentity( ));
+        this.setDepartIds( sysUser.getDepartIds(   ));
+        this.setThirdId( sysUser.getThirdId(      ));
+        this.setThirdType( sysUser.getThirdType(   ));
+        this.setAvatar(sysUser.getAvatar());
+
+
+    }
 
     /**
      * id
@@ -174,6 +206,6 @@ public class SysUserVo extends SysUser {
     private String thirdType;
 
     //用户所对应的公司列表
-    private List<CompanySysuser> companySysusers;
+    private List<String> companyIds = new ArrayList<>();
 
 }

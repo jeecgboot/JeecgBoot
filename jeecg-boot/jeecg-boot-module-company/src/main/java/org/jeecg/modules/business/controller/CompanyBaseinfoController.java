@@ -75,8 +75,8 @@ public class CompanyBaseinfoController extends JeecgController<CompanyBaseinfo, 
 		 if (queryCompanyIds(userId, companyIds)) return Result.error("未找到对应数据");
 		 Map<String, String[]> parameterMap = new HashMap(req.getParameterMap());
 		 parameterMap.put("companyId_MultiString",new String[]{String.join(",", companyIds)});
-		 QueryWrapper<CompanyBaseinfo> queryWrapper = QueryGenerator.initQueryWrapper(companyBaseinfo, req.getParameterMap());
-		 Page<CompanyBaseinfo> page = new Page<CompanyBaseinfo>(pageNo, pageSize);
+		 QueryWrapper<CompanyBaseinfo> queryWrapper = QueryGenerator.initQueryWrapper(companyBaseinfo, parameterMap);
+		 Page<CompanyBaseinfo> page = new Page<>(pageNo, pageSize);
 		 IPage<CompanyBaseinfo> pageList = companyBaseinfoService.page(page, queryWrapper);
 		 return Result.ok(pageList);
 

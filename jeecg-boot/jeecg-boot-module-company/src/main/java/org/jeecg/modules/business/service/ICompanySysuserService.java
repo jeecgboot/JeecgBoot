@@ -14,5 +14,5 @@ import java.util.List;
 public interface ICompanySysuserService extends IService<CompanySysuser> {
     List<CompanySysuser> list(String userid);
     boolean removeByUserId(String userid);
-    void saveByBaseinfoName(String userid, String companys);
+    void save(String userid, String companys);
 }

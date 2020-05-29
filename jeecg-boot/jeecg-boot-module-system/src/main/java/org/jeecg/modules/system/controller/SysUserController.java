@@ -157,7 +157,7 @@ public class SysUserController {
 			sysUserService.addUserWithRole(user, selectedRoles);
             sysUserService.addUserWithDepart(user, selectedDeparts);
             //添加新的
-            companySysuserService.saveByBaseinfoName(user.getId(), jsonObject.getString("company"));
+            companySysuserService.save(user.getId(), jsonObject.getString("company"));
 			result.success("添加成功！");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -190,7 +190,7 @@ public class SysUserController {
                 //根据用户id删除旧有的
                 companySysuserService.removeByUserId(user.getId());
                 //添加新的
-                companySysuserService.saveByBaseinfoName(user.getId(), jsonObject.getString("company"));
+                companySysuserService.save(user.getId(), jsonObject.getString("company"));
 
 
                 result.success("修改成功!");

@@ -50,16 +50,15 @@ public class CompanySysuserServiceImpl extends ServiceImpl<CompanySysuserMapper,
     }
 
 
-    public  void saveByBaseinfoName(String userid, String companys) {
+    public  void save(String userid, String companys) {
         //插入新的费用账户信息表
         if(!StrUtil.isEmpty(companys)){
             //根据   查询  companyID
-            List<CompanyBaseinfo> CompanyBaseinfos = companyBaseinfoMapper.selectList(new QueryWrapper<CompanyBaseinfo>().lambda().in(CompanyBaseinfo :: getShortName, Arrays.asList(companys.split(","))));
             List<CompanySysuser> CompanySysuser = new ArrayList<>();
             //组装  companySysuser
-            CompanyBaseinfos.forEach(companyBaseinfo -> {
+            Arrays.asList(companys.split(",")).forEach(companyId -> {
                 CompanySysuser companySysuser = new CompanySysuser();
-                companySysuser.setCompanyId(companyBaseinfo.getCompanyId());
+                companySysuser.setCompanyId(companyId);
                 companySysuser.setSysUserid(userid);
                 CompanySysuser.add(companySysuser);
             });
