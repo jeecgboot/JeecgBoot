@@ -47,7 +47,7 @@
     import {getDetailMenus} from "../../requestAction/request"
     import Qualification from "./routeView/Qualification";
     import CompanyBaseinfoModal from "./routeView/CompanyBaseinfoModal";
-
+    import CompanyAcceptanceList from "./routeView/CompanyAcceptanceList";
     import BaseInfo from "./routeView/BaseInfo";
     import BasicInfo from "./routeView/BasicInfo";
     import CompanyDynamicSupervisionList from '../companyDynamicSupervision/CompanyDynamicSupervisionList'
