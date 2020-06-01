@@ -35,8 +35,6 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class CompanyDynamicSupervisionController extends JeecgController<CompanyDynamicSupervision, ICompanyDynamicSupervisionService> {
 	@Autowired
 	private ICompanyDynamicSupervisionService companyDynamicSupervisionService;
-	@Autowired
-	private ICompanySysuserService companySysuserService;
 	/**
 	 * 分页列表查询
 	 *
@@ -53,8 +51,6 @@ public class CompanyDynamicSupervisionController extends JeecgController<Company
 								   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
 								   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
 								   HttpServletRequest req) {
-
-
 		Map<String, String[]> parameterMap = new HashMap(req.getParameterMap());
 		parameterMap.put("companyId_MultiString",new String[]{String.join(",", companyId)});
 		QueryWrapper<CompanyDynamicSupervision> queryWrapper = QueryGenerator.initQueryWrapper(companyDynamicSupervision, parameterMap);

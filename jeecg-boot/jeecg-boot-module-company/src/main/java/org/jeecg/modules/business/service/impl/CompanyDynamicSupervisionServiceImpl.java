@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.jeecg.modules.business.entity.CompanyDynamicSupervision;
 import org.jeecg.modules.business.mapper.CompanyDynamicSupervisionMapper;
 import org.jeecg.modules.business.service.ICompanyDynamicSupervisionService;
@@ -16,4 +17,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 @Service
 public class CompanyDynamicSupervisionServiceImpl extends ServiceImpl<CompanyDynamicSupervisionMapper, CompanyDynamicSupervision> implements ICompanyDynamicSupervisionService {
 
+    @Override
+    public Integer findCountByCompanyId(String companyId) {
+        QueryWrapper<CompanyDynamicSupervision> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(CompanyDynamicSupervision::getCompanyId,companyId);
+        return this.count(queryWrapper);
+    }
 }
