@@ -51,12 +51,15 @@
     import CompanyDynamicSupervisionList from '../companyDynamicSupervision/CompanyDynamicSupervisionList'
     import UserinfoList from "./routeView/UserinfoList"
     import ProductMaterialList from "./routeView/ProductMaterialList";
-
+    import Prevention from "./routeView/Prevention";
+    import CompanyDirtyAllowList from "./routeView/CompanyDirtyAllowList";
+    import CompanyAdminPenaltiesList from "./CompanyAdminPenaltiesList";
+    import CompanySupervisoryMonitorList from "./CompanySupervisoryMonitorList";
     export default {
       name: "CompanyDetail",
       components: {
         CompanyAcceptanceList,
-        BusinessMenu,BaseInfo,BasicInfo,Qualification,Prevention,CompanyDirtyAllowList,CompanyBaseinfoModal,CompanyDynamicSupervisionList, CompanyAdminPenaltiesList,
+        BusinessMenu,BaseInfo,BasicInfo,Qualification,Prevention,CompanyDirtyAllowList,CompanyDynamicSupervisionList, CompanyAdminPenaltiesList,
         CompanySupervisoryMonitorList,
         UserinfoList,
         ProductMaterialList},
