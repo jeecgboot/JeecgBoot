@@ -13,7 +13,7 @@
         </a-layout-sider>
         <a-layout-content :style="{ padding: '0 24px', minHeight: '280px' }">
           <company-baseinfo-modal v-if="leftActive==1 && topActive==1"  :companyId="companyId"/>
-          <qualification v-if="leftActive==2 && topActive==1"  />
+          <qualification v-if="leftActive==2 && topActive==1"  :companyId="companyId"/>
           <base-info v-if="leftActive==3 && topActive==1"/>
           <base-info v-if="leftActive==4 && topActive==1"/>
           <base-info v-if="leftActive==5 && topActive==1"/>
