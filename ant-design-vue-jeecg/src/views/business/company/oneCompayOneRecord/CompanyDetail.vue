@@ -17,7 +17,7 @@
           <base-info v-if="leftActive==3 && topActive==1"/>
           <base-info v-if="leftActive==4 && topActive==1"/>
           <base-info v-if="leftActive==5 && topActive==1"/>
-          <base-info v-if="leftActive==6 && topActive==1"/>
+          <company-acceptance-list v-if="leftActive==6 && topActive==1" :companyId="companyId"/>
           <base-info v-if="leftActive==7 && topActive==1"/>
           <base-info v-if="leftActive==8 && topActive==1"/>
           <base-info v-if="leftActive==9 && topActive==1"/>
@@ -46,13 +46,15 @@
     import {getDetailMenus} from "../../requestAction/request"
     import Qualification from "./routeView/Qualification";
     import CompanyBaseinfoModal from "./routeView/CompanyBaseinfoModal";
-
+    import CompanyAcceptanceList from "./routeView/CompanyAcceptanceList";
     import BaseInfo from "./routeView/BaseInfo";
     import BasicInfo from "./routeView/BasicInfo";
     import CompanyDynamicSupervisionList from '../companyDynamicSupervision/CompanyDynamicSupervisionList'
     export default {
       name: "CompanyDetail",
-      components: {BusinessMenu,BaseInfo,BasicInfo,Qualification,CompanyBaseinfoModal,CompanyDynamicSupervisionList},
+      components: {
+        CompanyAcceptanceList,
+        BusinessMenu,BaseInfo,BasicInfo,Qualification,CompanyBaseinfoModal,CompanyDynamicSupervisionList},
       props:{
         companyId:''
       },
