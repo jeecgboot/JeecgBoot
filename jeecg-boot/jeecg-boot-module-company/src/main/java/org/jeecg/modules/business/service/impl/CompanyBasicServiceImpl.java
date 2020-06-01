@@ -1,6 +1,10 @@
 package org.jeecg.modules.business.service.impl;
 
+import org.jeecg.modules.business.service.ICompanyAcceptanceService;
 import org.jeecg.modules.business.service.ICompanyBasicService;
+import org.jeecg.modules.business.service.ICompanyDirtyAllowService;
+import org.jeecg.modules.business.service.ICompanyPreventionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,6 +23,14 @@ import java.util.Map;
 
 @Service
 public class CompanyBasicServiceImpl implements ICompanyBasicService {
+    @Autowired
+    private ICompanyAcceptanceService companyAcceptanceService;
+
+    @Autowired
+    private ICompanyPreventionService companyPreventionService;
+
+    @Autowired
+    private ICompanyDirtyAllowService companyDirtyAllowService;
 
     /**
      *  根据conpanyId组装 一企一档基础信息的菜单信息
@@ -32,9 +44,9 @@ public class CompanyBasicServiceImpl implements ICompanyBasicService {
         addElements("3"," 员工信息",3,basicInfoMenus);
         addElements("4"," 产品物料信息",2,basicInfoMenus);
         addElements("5"," 环评审批信息",3,basicInfoMenus);
-        addElements("6"," 竣工验收信息",0,basicInfoMenus);
-        addElements("7"," 污染防治信息",0,basicInfoMenus);
-        addElements("8"," 排污许可证信息",0,basicInfoMenus);
+        addElements("6"," 竣工验收信息",companyAcceptanceService.findCountByCompanyId(companyId),basicInfoMenus);
+        addElements("7"," 污染防治信息",companyPreventionService.findCountByCompanyId(companyId),basicInfoMenus);
+        addElements("8"," 排污许可证信息",companyDirtyAllowService.findCountByCompanyId(companyId),basicInfoMenus);
         addElements("9"," 危废经营许可信息",3,basicInfoMenus);
         addElements("10"," 固废许可证信息",0,basicInfoMenus);
 

@@ -18,8 +18,8 @@
           <base-info v-if="leftActive==4 && topActive==1"/>
           <base-info v-if="leftActive==5 && topActive==1"/>
           <company-acceptance-list v-if="leftActive==6 && topActive==1" :companyId="companyId"/>
-          <base-info v-if="leftActive==7 && topActive==1"/>
-          <base-info v-if="leftActive==8 && topActive==1"/>
+          <prevention v-if="leftActive==7 && topActive==1" :companyId="companyId"/>
+          <company-dirty-allow-list v-if="leftActive==8 && topActive==1" :companyId="companyId"/>
           <base-info v-if="leftActive==9 && topActive==1"/>
           <base-info v-if="leftActive==10 && topActive==1"/>
           <base-info v-if="leftActive==11 && topActive==1"/>
@@ -42,7 +42,8 @@
 
 <script>
     import BusinessMenu from "../../component/BusinessMenu";
-
+    import Prevention from "./routeView/Prevention";
+    import CompanyDirtyAllowList from "./routeView/CompanyDirtyAllowList";
     import {getDetailMenus} from "../../requestAction/request"
     import Qualification from "./routeView/Qualification";
     import CompanyBaseinfoModal from "./routeView/CompanyBaseinfoModal";
@@ -54,7 +55,7 @@
       name: "CompanyDetail",
       components: {
         CompanyAcceptanceList,
-        BusinessMenu,BaseInfo,BasicInfo,Qualification,CompanyBaseinfoModal,CompanyDynamicSupervisionList},
+        BusinessMenu,BaseInfo,BasicInfo,Qualification,Prevention,CompanyDirtyAllowList,CompanyBaseinfoModal,CompanyDynamicSupervisionList},
       props:{
         companyId:''
       },

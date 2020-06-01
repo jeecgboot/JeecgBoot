@@ -77,7 +77,9 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+          <!--权限控制查看还是编辑，查看只允许查看不允许修改-->
+          <a @click="handleEdit(record)" v-if="">查看</a>
+           <a @click="handleEdit(record)" v-if="">编辑</a>
           <a-divider type="vertical" />
           <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>

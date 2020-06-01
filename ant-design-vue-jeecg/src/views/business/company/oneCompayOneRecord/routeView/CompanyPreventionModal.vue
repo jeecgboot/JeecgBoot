@@ -11,19 +11,10 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
-        <a-form-item label="项目名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['projectName', validatorRules.projectName]" placeholder="请输入项目名称"></a-input>
+        <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input v-decorator="['name', validatorRules.name]" placeholder="请输入名称"></a-input>
         </a-form-item>
-        <a-form-item label="审批单位" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['examineUnit']" placeholder="请输入审批单位"></a-input>
-        </a-form-item>
-        <a-form-item label="审批文号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['examineNum']" placeholder="请输入审批文号"></a-input>
-        </a-form-item>
-        <a-form-item label="审批时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择审批时间" v-decorator="['examineTime']" :trigger-change="true" style="width: 100%"/>
-        </a-form-item>
-        <a-form-item label="验收附件" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="附件上传" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <j-upload v-decorator="['files']" :trigger-change="true"></j-upload>
         </a-form-item>
 
@@ -37,14 +28,12 @@
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import { validateDuplicateValue } from '@/utils/util'
-  import JDate from '@/components/jeecg/JDate'  
   import JUpload from '@/components/jeecg/JUpload'
 
 
   export default {
-    name: "CompanyAcceptanceModal",
+    name: "CompanyPreventionModal",
     components: { 
-      JDate,
       JUpload,
     },
     data () {
@@ -64,15 +53,15 @@
         },
         confirmLoading: false,
         validatorRules: {
-          projectName: {
+          name: {
             rules: [
-              { required: true, message: '请输入项目名称!'},
+              { required: true, message: '请输入名称!'},
             ]
           },
         },
         url: {
-          add: "/business/companyAcceptance/add",
-          edit: "/business/companyAcceptance/edit",
+          add: "/prevention/companyPrevention/add",
+          edit: "/prevention/companyPrevention/edit",
         }
       }
     },
@@ -87,7 +76,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'projectName','examineUnit','examineNum','examineTime','files'))
+          this.form.setFieldsValue(pick(this.model,'createTime','name','files'))
         })
       },
       close () {
@@ -110,6 +99,8 @@
                method = 'put';
             }
             let formData = Object.assign(this.model, values);
+            formData.companyId=this.companyId;
+            formData.type=this.type;
             console.log("表单提交数据",formData)
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
@@ -130,10 +121,12 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'projectName','examineUnit','examineNum','examineTime','files'))
+        this.form.setFieldsValue(pick(row,'createTime','name','files'))
       },
-
-      
+    },
+    props:{
+      type:"",
+      companyId:""
     }
   }
 </script>

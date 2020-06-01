@@ -11,4 +11,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ICompanyAcceptanceService extends IService<CompanyAcceptance> {
 
+  /**
+  * @Description:根据companyId查询数量
+  * @Param:  companyId
+  * @return:  Integer
+  * @Author: 周志远
+  * @Date: 2020/6/1
+  */
+    Integer findCountByCompanyId(String companyId);
+
 }
