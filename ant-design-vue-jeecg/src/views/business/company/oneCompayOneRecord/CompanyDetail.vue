@@ -17,9 +17,9 @@
           <userinfo-list v-if="leftActive==3 && topActive==1" :companyId="companyId"/>
           <product-material-list v-if="leftActive==4 && topActive==1" :companyId="companyId"/>
           <base-info v-if="leftActive==5 && topActive==1"/>
-          <base-info v-if="leftActive==6 && topActive==1"/>
-          <base-info v-if="leftActive==7 && topActive==1"/>
-          <base-info v-if="leftActive==8 && topActive==1"/>
+          <company-acceptance-list v-if="leftActive==6 && topActive==1" :companyId="companyId"/>
+          <prevention v-if="leftActive==7 && topActive==1" :companyId="companyId"/>
+          <company-dirty-allow-list v-if="leftActive==8 && topActive==1" :companyId="companyId"/>
           <base-info v-if="leftActive==9 && topActive==1"/>
           <base-info v-if="leftActive==10 && topActive==1"/>
           <base-info v-if="leftActive==11 && topActive==1"/>
@@ -28,8 +28,8 @@
           <base-info v-if="leftActive==14 && topActive==1"/>
 
           <company-dynamic-supervision-list v-if="leftActive==1 && topActive==2" :companyId="companyId"/>
-          <basic-info v-if="leftActive==2 && topActive==2"/>
-          <basic-info v-if="leftActive==3 && topActive==2"/>
+          <company-admin-penalties-list v-if="leftActive==2 && topActive==2" :company-id="companyId" />
+          <company-supervisory-monitor-list v-if="leftActive==3 && topActive==2" :company-Id="companyId" />
           <basic-info v-if="leftActive==4 && topActive==2"/>
 
         </a-layout-content>
@@ -45,7 +45,7 @@
 
     import {getDetailMenus} from "../../requestAction/request"
     import Qualification from "./routeView/Qualification";
-
+    import CompanyAcceptanceList from "./routeView/CompanyAcceptanceList";
     import BaseInfo from "./routeView/BaseInfo";
     import BasicInfo from "./routeView/BasicInfo";
     import CompanyDynamicSupervisionList from '../companyDynamicSupervision/CompanyDynamicSupervisionList'
@@ -54,7 +54,12 @@
 
     export default {
       name: "CompanyDetail",
-      components: {BusinessMenu,BaseInfo,BasicInfo,Qualification,CompanyDynamicSupervisionList,UserinfoList,ProductMaterialList},
+      components: {
+        CompanyAcceptanceList,
+        BusinessMenu,BaseInfo,BasicInfo,Qualification,Prevention,CompanyDirtyAllowList,CompanyBaseinfoModal,CompanyDynamicSupervisionList, CompanyAdminPenaltiesList,
+        CompanySupervisoryMonitorList,
+        UserinfoList,
+        ProductMaterialList},
       props:{
         companyId:''
       },
