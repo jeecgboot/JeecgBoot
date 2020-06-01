@@ -12,10 +12,10 @@
           <business-menu :item-list="leftMenus" :menu-style="leftStyle"  mode="inline"  @clickHandle = "leftHandle"></business-menu>
         </a-layout-sider>
         <a-layout-content :style="{ padding: '0 24px', minHeight: '280px' }">
-          <company-baseinfo-modal v-if="leftActive==1 && topActive==1"  :companyId="companyId"/>
+          <base-info v-if="leftActive==1 && topActive==1"  :companyId="companyId"/>
           <qualification v-if="leftActive==2 && topActive==1"  :companyId="companyId"/>
-          <base-info v-if="leftActive==3 && topActive==1"/>
-          <base-info v-if="leftActive==4 && topActive==1"/>
+          <userinfo-list v-if="leftActive==3 && topActive==1" :companyId="companyId"/>
+          <product-material-list v-if="leftActive==4 && topActive==1" :companyId="companyId"/>
           <base-info v-if="leftActive==5 && topActive==1"/>
           <base-info v-if="leftActive==6 && topActive==1"/>
           <base-info v-if="leftActive==7 && topActive==1"/>
@@ -45,14 +45,16 @@
 
     import {getDetailMenus} from "../../requestAction/request"
     import Qualification from "./routeView/Qualification";
-    import CompanyBaseinfoModal from "./routeView/CompanyBaseinfoModal";
 
     import BaseInfo from "./routeView/BaseInfo";
     import BasicInfo from "./routeView/BasicInfo";
     import CompanyDynamicSupervisionList from '../companyDynamicSupervision/CompanyDynamicSupervisionList'
+    import UserinfoList from "./routeView/UserinfoList"
+    import ProductMaterialList from "./routeView/ProductMaterialList";
+
     export default {
       name: "CompanyDetail",
-      components: {BusinessMenu,BaseInfo,BasicInfo,Qualification,CompanyBaseinfoModal,CompanyDynamicSupervisionList},
+      components: {BusinessMenu,BaseInfo,BasicInfo,Qualification,CompanyDynamicSupervisionList,UserinfoList,ProductMaterialList},
       props:{
         companyId:''
       },

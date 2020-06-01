@@ -5,18 +5,40 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="申报年份">
-              <a-input placeholder="请输入申报年份" v-model="queryParam.reportYear"></a-input>
+            <a-form-item label="类别">
+              <j-dict-select-tag placeholder="请选择类别" v-model="queryParam.outputType" dictCode="output_type"/>
             </a-form-item>
           </a-col>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="储存方式">
+              <j-dict-select-tag placeholder="请选择储存方式" v-model="queryParam.storeType" dictCode="store_type"/>
+            </a-form-item>
+          </a-col>
+          <template v-if="toggleSearchStatus">
+            <a-col :xl="6" :lg="7" :md="8" :sm="24">
+              <a-form-item label="重点监管">
+                <j-dict-select-tag placeholder="请选择重点监管" v-model="queryParam.supervision" dictCode="yes_or_no"/>
+              </a-form-item>
+            </a-col>
+            <a-col :xl="6" :lg="7" :md="8" :sm="24">
+              <a-form-item label="剧毒">
+                <j-dict-select-tag placeholder="请选择剧毒" v-model="queryParam.toxic" dictCode="yes_or_no"/>
+              </a-form-item>
+            </a-col>
+            <a-col :xl="6" :lg="7" :md="8" :sm="24">
+              <a-form-item label="易制毒">
+                <j-dict-select-tag placeholder="请选择易制毒" v-model="queryParam.precursorChemicals" dictCode="yes_or_no"/>
+              </a-form-item>
+            </a-col>
+          </template>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
+             <!-- <a @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
+              </a>-->
             </span>
           </a-col>
         </a-row>
@@ -25,9 +47,9 @@
     <!-- 查询区域-END -->
     
     <!-- 操作按钮区域 -->
-    <div class="table-operator">
+   <!-- <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('企业年度动态监管')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('company_product_material')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
@@ -37,14 +59,14 @@
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
-    </div>
+    </div>-->
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
-        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
+      <!-- <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
+         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
+       </div>-->
 
       <a-table
         ref="table"
@@ -55,7 +77,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+
         class="j-table-force-nowrap"
         @change="handleTableChange">
 
@@ -80,10 +102,12 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+          <a @click="handleEdit(record)">查看</a>
 
+<!--
           <a-divider type="vertical" />
-          <a-dropdown>
+-->
+          <!--<a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
               <a-menu-item>
@@ -92,13 +116,13 @@
                 </a-popconfirm>
               </a-menu-item>
             </a-menu>
-          </a-dropdown>
+          </a-dropdown>-->
         </span>
 
       </a-table>
     </div>
 
-    <companyDynamicSupervision-modal ref="modalForm" @ok="modalFormOk"></companyDynamicSupervision-modal>
+    <companyProductMaterial-modal ref="modalForm" @ok="modalFormOk"></companyProductMaterial-modal>
   </a-card>
 </template>
 
@@ -107,22 +131,28 @@
   import '@/assets/less/TableExpand.less'
   import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import CompanyDynamicSupervisionModal from './modules/CompanyDynamicSupervisionModal'
+  import CompanyProductMaterialModal from './modules/CompanyProductMaterialModal'
+  import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import {filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
-    name: "CompanyDynamicSupervisionList",
+    name: "ProductMaterialList",
     mixins:[JeecgListMixin, mixinDevice],
     components: {
-      CompanyDynamicSupervisionModal
+      JDictSelectTag,
+      CompanyProductMaterialModal
+    },
+    props:{
+      companyId:''
     },
     data () {
       return {
-        description: '企业年度动态监管管理页面',
+        description: 'company_product_material管理页面',
+        queryParam:{companyId:this.companyId},
         // 表头
         columns: [
           {
-            title: '#',
+            title: '序号',
             dataIndex: '',
             key:'rowIndex',
             width:60,
@@ -132,61 +162,49 @@
             }
           },
           {
-            title:'数据状态',
+            title:'类别',
             align:"center",
-            dataIndex: 'status_dictText'
+            dataIndex: 'outputType_dictText'
           },
           {
-            title:'企业id',
+            title:'产品名称',
             align:"center",
-            dataIndex: 'companyId'
+            dataIndex: 'outputName_dictText'
           },
           {
-            title:'申报年份',
+            title:'产量',
             align:"center",
-            dataIndex: 'reportYear'
+            dataIndex: 'yield'
           },
           {
-            title:'材料类型',
+            title:'最大储量',
             align:"center",
-            dataIndex: 'documentType_dictText'
+            dataIndex: 'maxStore'
           },
           {
-            title:'材料名称',
+            title:'储存方式',
             align:"center",
-            dataIndex: 'documentName'
+            dataIndex: 'storeType_dictText'
           },
           {
-            title:'内容',
+            title:'危化品类别',
             align:"center",
-            dataIndex: 'content',
-            scopedSlots: {customRender: 'fileSlot'}
+            dataIndex: 'hazardousChemicalsCategory_dictText'
           },
           {
-            title:'申报人',
+            title:'重点监管',
             align:"center",
-            dataIndex: 'createBy'
+            dataIndex: 'supervision_dictText'
           },
           {
-            title:'申报时间',
+            title:'剧毒',
             align:"center",
-            dataIndex: 'createTime',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
+            dataIndex: 'toxic_dictText'
           },
           {
-            title:'审核人',
+            title:'易制毒',
             align:"center",
-            dataIndex: 'updateBy'
-          },
-          {
-            title:'审核时间',
-            align:"center",
-            dataIndex: 'updateTime',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
+            dataIndex: 'precursorChemicals_dictText'
           },
           {
             title: '操作',
@@ -198,11 +216,11 @@
           }
         ],
         url: {
-          list: "/cds/companyDynamicSupervision/list",
-          delete: "/cds/companyDynamicSupervision/delete",
-          deleteBatch: "/cds/companyDynamicSupervision/deleteBatch",
-          exportXlsUrl: "/cds/companyDynamicSupervision/exportXls",
-          importExcelUrl: "cds/companyDynamicSupervision/importExcel",
+          list: "/companyProductMaterial/list",
+          // delete: "/testOneDemo/companyProductMaterial/delete",
+          // deleteBatch: "/testOneDemo/companyProductMaterial/deleteBatch",
+          // exportXlsUrl: "/testOneDemo/companyProductMaterial/exportXls",
+          // importExcelUrl: "testOneDemo/companyProductMaterial/importExcel",
         },
         dictOptions:{},
       }
