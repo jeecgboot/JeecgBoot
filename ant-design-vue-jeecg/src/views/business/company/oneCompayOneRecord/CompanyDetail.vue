@@ -27,7 +27,7 @@
           <base-info v-if="leftActive==13 && topActive==1"/>
           <base-info v-if="leftActive==14 && topActive==1"/>
 
-          <basic-info v-if="leftActive==1 && topActive==2"/>
+          <company-dynamic-supervision-list v-if="leftActive==1 && topActive==2" :companyId="companyId"/>
           <basic-info v-if="leftActive==2 && topActive==2"/>
           <basic-info v-if="leftActive==3 && topActive==2"/>
           <basic-info v-if="leftActive==4 && topActive==2"/>
@@ -49,9 +49,10 @@
 
     import BaseInfo from "./routeView/BaseInfo";
     import BasicInfo from "./routeView/BasicInfo";
+    import CompanyDynamicSupervisionList from '../companyDynamicSupervision/CompanyDynamicSupervisionList'
     export default {
       name: "CompanyDetail",
-      components: {BusinessMenu,BaseInfo,BasicInfo,Qualification,CompanyBaseinfoModal},
+      components: {BusinessMenu,BaseInfo,BasicInfo,Qualification,CompanyBaseinfoModal,CompanyDynamicSupervisionList},
       props:{
         companyId:''
       },

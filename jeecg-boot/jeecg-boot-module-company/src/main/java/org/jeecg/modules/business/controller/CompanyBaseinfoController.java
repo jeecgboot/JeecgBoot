@@ -72,7 +72,7 @@ public class CompanyBaseinfoController extends JeecgController<CompanyBaseinfo, 
 										   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 										   HttpServletRequest req) {
 		 List<String> companyIds = new ArrayList<>();
-		 if (queryCompanyIds(userId, companyIds)) return Result.error("未找到对应数据");
+		 if (companySysuserService.queryCompanyIds(userId, companyIds)) return Result.error("未找到对应数据");
 		 Map<String, String[]> parameterMap = new HashMap(req.getParameterMap());
 		 parameterMap.put("companyId_MultiString",new String[]{String.join(",", companyIds)});
 		 QueryWrapper<CompanyBaseinfo> queryWrapper = QueryGenerator.initQueryWrapper(companyBaseinfo, parameterMap);
@@ -169,7 +169,7 @@ public class CompanyBaseinfoController extends JeecgController<CompanyBaseinfo, 
 /*
 	 private Result<?> resultByUserId(@PathVariable String userId) {
 		 List<String> companyIds = new ArrayList<>();
-		 if (queryCompanyIds(userId, companyIds)) return Result.error("未找到对应数据");
+		 if (companySysuserService.queryCompanyIds(userId, companyIds)) return Result.error("未找到对应数据");
 
 		 //根据企业人员信息 查找企业数据
 		 List<CompanyBaseinfo> companyBaseinfos = companyBaseinfoService.list(new QueryWrapper<CompanyBaseinfo>().lambda().eq(CompanyBaseinfo::getStatus, "NORAML")
@@ -183,17 +183,7 @@ public class CompanyBaseinfoController extends JeecgController<CompanyBaseinfo, 
 		 return Result.ok(companyNames);
 	 }*/
 
-	 private boolean queryCompanyIds(@PathVariable String userId, List<String> companyIds) {
-		 List<CompanySysuser> companySysusers = companySysuserService.list(userId);
 
-		 if (companySysusers.isEmpty())
-			 return true;
-
-		 companySysusers.forEach(companySysuser -> {
-			 companyIds.add(companySysuser.getCompanyId());
-		 });
-		 return false;
-	 }
 
 	 /**
 	  * 通过userid查询
