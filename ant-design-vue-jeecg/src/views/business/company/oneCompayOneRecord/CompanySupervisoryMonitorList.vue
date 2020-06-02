@@ -4,9 +4,11 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+          <a-col :xl="10" :lg="11" :md="12" :sm="24">
             <a-form-item label="报告日期">
-              <j-date placeholder="请选择报告日期" v-model="queryParam.reportDate"></j-date>
+              <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.reportDate_begin"></j-date>
+              <span class="query-group-split-cust"></span>
+              <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.reportDate_end"></j-date>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
@@ -82,17 +84,17 @@
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
 
-          <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+<!--          <a-divider type="vertical" />-->
+<!--          <a-dropdown>-->
+<!--            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>-->
+<!--            <a-menu slot="overlay">-->
+<!--              <a-menu-item>-->
+<!--                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">-->
+<!--                  <a>删除</a>-->
+<!--                </a-popconfirm>-->
+<!--              </a-menu-item>-->
+<!--            </a-menu>-->
+<!--          </a-dropdown>-->
         </span>
 
       </a-table>
@@ -118,15 +120,9 @@
       JDate,
       CompanySupervisoryMonitorModal
     },
-    props:{
-      companyId:''
-    },
     data () {
       return {
         description: '监督性监测信息管理页面',
-        queryParam:{
-          companyId: this.companyId
-        },
         // 表头
         columns: [
           {
@@ -167,38 +163,6 @@
               return !text?"":(text.length>10?text.substr(0,10):text)
             }
           },
-          // {
-          //   title:'内容',
-          //   align:"center",
-          //   dataIndex: 'content',
-          //   scopedSlots: {customRender: 'fileSlot'}
-          // },
-          // {
-          //   title:'申报人',
-          //   align:"center",
-          //   dataIndex: 'createBy'
-          // },
-          // {
-          //   title:'申报时间',
-          //   align:"center",
-          //   dataIndex: 'createTime',
-          //   customRender:function (text) {
-          //     return !text?"":(text.length>10?text.substr(0,10):text)
-          //   }
-          // },
-          // {
-          //   title:'审核人',
-          //   align:"center",
-          //   dataIndex: 'updateBy'
-          // },
-          // {
-          //   title:'审核时间',
-          //   align:"center",
-          //   dataIndex: 'updateTime',
-          //   customRender:function (text) {
-          //     return !text?"":(text.length>10?text.substr(0,10):text)
-          //   }
-          // },
           {
             title: '操作',
             dataIndex: 'action',

@@ -11,36 +11,36 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
-        <a-form-item label="数据状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-dict-select-tag type="list" v-decorator="['status', validatorRules.status]" :trigger-change="true" dictCode="statue" placeholder="请选择数据状态"/>
-        </a-form-item>
-        <a-form-item label="企业id" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['companyId', validatorRules.companyId]" placeholder="请输入企业id"></a-input>
-        </a-form-item>
+<!--        <a-form-item label="数据状态" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+<!--          <j-dict-select-tag type="list" v-decorator="['status', validatorRules.status]" :trigger-change="true" dictCode="statue" placeholder="请选择数据状态"/>-->
+<!--        </a-form-item>-->
+<!--        <a-form-item label="企业id" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+<!--          <a-input v-decorator="['companyId', validatorRules.companyId]" placeholder="请输入企业id"></a-input>-->
+<!--        </a-form-item>-->
         <a-form-item label="报告日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择报告日期" v-decorator="['reportDate', validatorRules.reportDate]" :trigger-change="true" style="width: 100%"/>
+          <j-date placeholder="请选择报告日期" v-decorator="['reportDate', validatorRules.reportDate]" :trigger-change="true" style="width: 100%" :disabled="disabled"/>
         </a-form-item>
         <a-form-item label="报告类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-dict-select-tag type="list" v-decorator="['reportType', validatorRules.reportType]" :trigger-change="true" dictCode="report_type" placeholder="请选择报告类型"/>
+          <j-dict-select-tag type="list" v-decorator="['reportType', validatorRules.reportType]" :trigger-change="true" dictCode="report_type" placeholder="请选择报告类型" :disabled="disabled"/>
         </a-form-item>
         <a-form-item label="报告名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['reportName', validatorRules.reportName]" placeholder="请输入报告名称"></a-input>
+          <a-input v-decorator="['reportName', validatorRules.reportName]" placeholder="请输入报告名称" :disabled="disabled"></a-input>
         </a-form-item>
         <a-form-item label="内容" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-upload v-decorator="['content']" :trigger-change="true"></j-upload>
+          <j-upload v-decorator="['content']" :trigger-change="true" :disabled="disabled"></j-upload>
         </a-form-item>
-        <a-form-item label="申报人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['createBy']" placeholder="请输入申报人"></a-input>
-        </a-form-item>
-        <a-form-item label="申报时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择申报时间" v-decorator="['createTime']" :trigger-change="true" style="width: 100%"/>
-        </a-form-item>
-        <a-form-item label="审核人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['updateBy']" placeholder="请输入审核人"></a-input>
-        </a-form-item>
-        <a-form-item label="审核时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择审核时间" v-decorator="['updateTime']" :trigger-change="true" style="width: 100%"/>
-        </a-form-item>
+<!--        <a-form-item label="申报人" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+<!--          <a-input v-decorator="['createBy']" placeholder="请输入申报人"></a-input>-->
+<!--        </a-form-item>-->
+<!--        <a-form-item label="申报时间" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+<!--          <j-date placeholder="请选择申报时间" v-decorator="['createTime']" :trigger-change="true" style="width: 100%"/>-->
+<!--        </a-form-item>-->
+<!--        <a-form-item label="审核人" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+<!--          <a-input v-decorator="['updateBy']" placeholder="请输入审核人"></a-input>-->
+<!--        </a-form-item>-->
+<!--        <a-form-item label="审核时间" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+<!--          <j-date placeholder="请选择审核时间" v-decorator="['updateTime']" :trigger-change="true" style="width: 100%"/>-->
+<!--        </a-form-item>-->
 
       </a-form>
     </a-spin>
@@ -70,6 +70,7 @@
         title:"操作",
         width:800,
         visible: false,
+        disabled: true,
         model: {},
         labelCol: {
           xs: { span: 24 },
@@ -108,8 +109,8 @@
           },
         },
         url: {
-          add: "/csm/companySupervisoryMonitor/add",
-          edit: "/csm/companySupervisoryMonitor/edit",
+          // add: "/csm/companySupervisoryMonitor/add",
+          // edit: "/csm/companySupervisoryMonitor/edit",
         }
       }
     },
