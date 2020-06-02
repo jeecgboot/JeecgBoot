@@ -38,6 +38,9 @@ public class CompanyBasicServiceImpl implements ICompanyBasicService {
 
     @Autowired
     private ICompanySupervisoryMonitorService companySupervisoryMonitorService;
+
+    @Autowired
+    private ICompanyComplaintLetterService companyComplaintLetterService;
     /**
      *  根据conpanyId组装 一企一档基础信息的菜单信息
      * @param companyId
@@ -76,7 +79,7 @@ public class CompanyBasicServiceImpl implements ICompanyBasicService {
         addElements("1"," 年度动态监管",companyDynamicSupervisionService.findCountByCompanyId(companyId),basicInfoMenus);
         addElements("2"," 行政处罚信息",companyAdminPenaltiesService.findCountByCompanyId(companyId),basicInfoMenus);
         addElements("3"," 监督性监测信息",companySupervisoryMonitorService.findCountByCompanyId(companyId),basicInfoMenus);
-        addElements("4"," 信访投诉信息",2,basicInfoMenus);
+        addElements("4"," 信访投诉信息",companyComplaintLetterService.findCountByCompanyId(companyId),basicInfoMenus);
 
         return basicInfoMenus;
     }

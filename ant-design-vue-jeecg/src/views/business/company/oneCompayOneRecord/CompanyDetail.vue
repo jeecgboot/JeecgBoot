@@ -28,9 +28,9 @@
           <base-info v-if="leftActive==14 && topActive==1"/>
 
           <company-dynamic-supervision-list v-if="leftActive==1 && topActive==2" :companyId="companyId"/>
-          <company-admin-penalties-list v-if="leftActive==2 && topActive==2" :company-id="companyId" />
-          <company-supervisory-monitor-list v-if="leftActive==3 && topActive==2" :company-Id="companyId" />
-          <basic-info v-if="leftActive==4 && topActive==2"/>
+          <company-admin-penalties-list v-if="leftActive==2 && topActive==2" :companyId="companyId" />
+          <company-supervisory-monitor-list v-if="leftActive==3 && topActive==2" :companyId="companyId" />
+          <company-complaint-letter-list v-if="leftActive==4 && topActive==2" :companyId="companyId"/>
 
         </a-layout-content>
       </a-layout>
@@ -55,12 +55,13 @@
     import CompanyDirtyAllowList from "./routeView/CompanyDirtyAllowList";
     import CompanyAdminPenaltiesList from "./CompanyAdminPenaltiesList";
     import CompanySupervisoryMonitorList from "./CompanySupervisoryMonitorList";
+    import CompanyComplaintLetterList from "./routeView/CompanyComplaintLetterList";
     export default {
       name: "CompanyDetail",
       components: {
         CompanyAcceptanceList,
         BusinessMenu,BaseInfo,BasicInfo,Qualification,Prevention,CompanyDirtyAllowList,CompanyDynamicSupervisionList, CompanyAdminPenaltiesList,
-        CompanySupervisoryMonitorList,
+        CompanySupervisoryMonitorList,CompanyComplaintLetterList,
         UserinfoList,
         ProductMaterialList},
       props:{

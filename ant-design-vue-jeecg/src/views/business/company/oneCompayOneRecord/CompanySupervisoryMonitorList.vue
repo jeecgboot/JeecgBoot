@@ -48,6 +48,7 @@
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
 
+      <!--:rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"-->
       <a-table
         ref="table"
         size="middle"
@@ -57,7 +58,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+
         class="j-table-force-nowrap"
         @change="handleTableChange">
 
@@ -82,7 +83,7 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+          <a @click="tohandleEdit(record)">查看</a>
 
 <!--          <a-divider type="vertical" />-->
 <!--          <a-dropdown>-->
@@ -100,7 +101,7 @@
       </a-table>
     </div>
 
-    <companySupervisoryMonitor-modal ref="modalForm" @ok="modalFormOk"></companySupervisoryMonitor-modal>
+    <companySupervisoryMonitor-modal ref="modalForm" @ok="modalFormOk" :companyId="companyId"></companySupervisoryMonitor-modal>
   </a-card>
 </template>
 
@@ -120,9 +121,15 @@
       JDate,
       CompanySupervisoryMonitorModal
     },
+    props:{
+      companyId:''
+    },
     data () {
       return {
         description: '监督性监测信息管理页面',
+        queryParam: {
+          companyId:this.companyId
+        },
         // 表头
         columns: [
           {
@@ -189,6 +196,10 @@
     },
     methods: {
       initDictConfig(){
+      },
+      tohandleEdit:function (record) {
+        this.handleEdit(record);
+        this.$refs.modalForm.title="查看监督性监测信息";
       }
     }
   }
