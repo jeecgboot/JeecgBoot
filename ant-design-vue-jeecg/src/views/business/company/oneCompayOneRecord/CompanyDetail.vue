@@ -23,7 +23,7 @@
           <base-info v-if="leftActive==9 && topActive==1"/>
           <base-info v-if="leftActive==10 && topActive==1"/>
           <base-info v-if="leftActive==11 && topActive==1"/>
-          <base-info v-if="leftActive==12 && topActive==1"/>
+          <company-env-tax-list v-if="leftActive==12 && topActive==1" :companyId="companyId"/>
           <base-info v-if="leftActive==13 && topActive==1"/>
           <base-info v-if="leftActive==14 && topActive==1"/>
 
@@ -55,15 +55,18 @@
     import CompanyDirtyAllowList from "./routeView/CompanyDirtyAllowList";
     import CompanyAdminPenaltiesList from "./CompanyAdminPenaltiesList";
     import CompanySupervisoryMonitorList from "./CompanySupervisoryMonitorList";
+    import CompanyEnvTaxList from "./routeView/CompanyEnvTaxList";
     import CompanyComplaintLetterList from "./routeView/CompanyComplaintLetterList";
     export default {
       name: "CompanyDetail",
       components: {
+        CompanyEnvTaxList,
         CompanyAcceptanceList,
         BusinessMenu,BaseInfo,BasicInfo,Qualification,Prevention,CompanyDirtyAllowList,CompanyDynamicSupervisionList, CompanyAdminPenaltiesList,
         CompanySupervisoryMonitorList,CompanyComplaintLetterList,
         UserinfoList,
-        ProductMaterialList},
+        ProductMaterialList,
+        CompanyEnvTaxList},
       props:{
         companyId:''
       },
