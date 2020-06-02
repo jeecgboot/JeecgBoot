@@ -65,7 +65,8 @@ public class Swagger2Config implements WebMvcConfigurer {
 	            .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
 				.paths(PathSelectors.any())
 				.build()
-				.securitySchemes(Collections.singletonList(securityScheme()));
+				.securitySchemes(Collections.singletonList(securityScheme()))
+				.securityContexts(securityContexts());
 				//.globalOperationParameters(setHeaderToken());
 	}
 
@@ -110,6 +111,25 @@ public class Swagger2Config implements WebMvcConfigurer {
                 .license("The Apache License, Version 2.0")
                 .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
 				.build();
+	}
+	/**
+	* 新增 securityContexts 保持登录状态
+	*/
+	private List<SecurityContext> securityContexts() {
+		return new ArrayList(
+				Collections.singleton(SecurityContext.builder()
+						.securityReferences(defaultAuth())
+						.forPaths(PathSelectors.regex("^(?!auth).*$"))
+						.build())
+		);
+	}
+	
+	private List<SecurityReference> defaultAuth() {
+		AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+		AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+		authorizationScopes[0] = authorizationScope;
+		return new ArrayList(
+				Collections.singleton(new SecurityReference(DefContants.X_ACCESS_TOKEN, authorizationScopes)));
 	}
 
 }
