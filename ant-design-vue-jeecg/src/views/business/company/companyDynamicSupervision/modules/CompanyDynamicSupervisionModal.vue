@@ -19,18 +19,37 @@
           <a-input v-decorator="['companyId', validatorRules.companyId]" placeholder="请输入企业id"></a-input>
         </a-form-item>
         -->
-        <a-form-item label="申报年份" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input-number v-decorator="['reportYear', validatorRules.reportYear]" style="width: 100%" :disabled="disabled"/>
-        </a-form-item>
-        <a-form-item label="材料类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-dict-select-tag type="list" v-decorator="['documentType', validatorRules.documentType]" :trigger-change="true" dictCode="supervision_document_type" :disabled="disabled"/>
-        </a-form-item>
-        <a-form-item label="材料名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['documentName', validatorRules.documentName]" :disabled="disabled"></a-input>
-        </a-form-item>
-        <a-form-item label="附件上传" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-upload v-decorator="['content']" :trigger-change="true"></j-upload>
-        </a-form-item>
+        <a-row>
+          <a-col span="12">
+            <a-form-item label="企业名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['CompanyName', validatorRules.companyName]" placeholder="请输入企业名称" :disabled="disabled"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col span="12">
+            <a-form-item label="申报年份" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input-number v-decorator="['reportYear', validatorRules.reportYear]" style="width: 100%" :disabled="disabled"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col span="12">
+            <a-form-item label="材料类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-dict-select-tag type="list" v-decorator="['documentType', validatorRules.documentType]" :trigger-change="true" dictCode="supervision_document_type" :disabled="disabled"/>
+            </a-form-item>
+          </a-col>
+          <a-col span="12">
+            <a-form-item label="材料名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['documentName', validatorRules.documentName]" :disabled="disabled"></a-input>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col span="24">
+            <a-form-item label="附件上传" :labelCol="labelCols" :wrapperCol="wrapperCols">
+              <j-upload v-decorator="['content']" :trigger-change="true"></j-upload>
+            </a-form-item>
+          </a-col>
+        </a-row>
 
         <!--
         <a-form-item label="申报人" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -79,11 +98,19 @@
         model: {},
         labelCol: {
           xs: { span: 24 },
-          sm: { span: 5 },
+          sm: { span: 6 },
         },
         wrapperCol: {
           xs: { span: 24 },
           sm: { span: 16 },
+        },
+        labelCols: {
+          xs: { span: 24 },
+          sm: { span: 3 },
+        },
+        wrapperCols: {
+          xs: { span: 24 },
+          sm: { span: 19 },
         },
         confirmLoading: false,
         validatorRules: {

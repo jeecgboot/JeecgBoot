@@ -10,28 +10,43 @@
     cancelText="关闭">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-
-        <a-form-item label="企业名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['CompanyName', validatorRules.companyName]" placeholder="请输入企业名称" :disabled="disabled"></a-input>
-        </a-form-item>
-        <a-form-item label="文件名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['documentName', validatorRules.documentName]" placeholder="请输入文件名称" :disabled="disabled"></a-input>
-        </a-form-item>
-        <a-form-item label="文件编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['documentNo', validatorRules.documentNo]" placeholder="请输入文件编号" :disabled="disabled"></a-input>
-        </a-form-item>
-        <a-form-item label="发文日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择发文日期" v-decorator="['reportDate', validatorRules.reportDate]" :trigger-change="true" style="width: 100%" :disabled="disabled"/>
-        </a-form-item>
+        <a-row>
+          <a-col span="12">
+            <a-form-item label="企业名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['CompanyName', validatorRules.companyName]" placeholder="请输入企业名称" :disabled="disabled"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col span="12">
+            <a-form-item label="文件名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['documentName', validatorRules.documentName]" placeholder="请输入文件名称" :disabled="disabled"></a-input>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col span="12">
+            <a-form-item label="文件编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['documentNo', validatorRules.documentNo]" placeholder="请输入文件编号" :disabled="disabled"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col span="12">
+            <a-form-item label="发文日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-date placeholder="请选择发文日期" v-decorator="['reportDate', validatorRules.reportDate]" :trigger-change="true" style="width: 100%" :disabled="disabled"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
 <!--        <a-form-item label="数据状态" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
 <!--          <j-dict-select-tag type="list" v-decorator="['status', validatorRules.status]" :trigger-change="true" dictCode="statue" placeholder="请选择数据状态"/>-->
 <!--        </a-form-item>-->
 <!--        <a-form-item label="企业id" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
 <!--          <a-input v-decorator="['companyId', validatorRules.companyId]" placeholder="请输入企业id"></a-input>-->
 <!--        </a-form-item>-->
-        <a-form-item label="文件上传" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-upload v-decorator="['content']" :trigger-change="true"></j-upload>
-        </a-form-item>
+        <a-row>
+          <a-col span="24">
+            <a-form-item label="文件上传" :labelCol="labelCols" :wrapperCol="wrapperCols">
+              <j-upload v-decorator="['content']" :trigger-change="true"></j-upload>
+            </a-form-item>
+          </a-col>
+        </a-row>
 <!--        <a-form-item label="申报人" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
 <!--          <a-input v-decorator="['createBy']" placeholder="请输入申报人"></a-input>-->
 <!--        </a-form-item>-->
@@ -79,11 +94,19 @@
         model: {},
         labelCol: {
           xs: { span: 24 },
-          sm: { span: 5 },
+          sm: { span: 6 },
         },
         wrapperCol: {
           xs: { span: 24 },
           sm: { span: 16 },
+        },
+        labelCols: {
+          xs: { span: 24 },
+          sm: { span: 3 },
+        },
+        wrapperCols: {
+          xs: { span: 24 },
+          sm: { span: 19 },
         },
         confirmLoading: false,
         validatorRules: {

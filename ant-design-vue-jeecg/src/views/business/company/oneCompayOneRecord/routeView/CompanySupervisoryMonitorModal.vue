@@ -17,18 +17,37 @@
 <!--        <a-form-item label="企业id" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
 <!--          <a-input v-decorator="['companyId', validatorRules.companyId]" placeholder="请输入企业id"></a-input>-->
 <!--        </a-form-item>-->
-        <a-form-item label="报告日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择报告日期" v-decorator="['reportDate', validatorRules.reportDate]" :trigger-change="true" style="width: 100%" :disabled="disabled"/>
-        </a-form-item>
-        <a-form-item label="报告类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-dict-select-tag type="list" v-decorator="['reportType', validatorRules.reportType]" :trigger-change="true" dictCode="report_type" placeholder="请选择报告类型" :disabled="disabled"/>
-        </a-form-item>
-        <a-form-item label="报告名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['reportName', validatorRules.reportName]" placeholder="请输入报告名称" :disabled="disabled"></a-input>
-        </a-form-item>
-        <a-form-item label="内容" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-upload v-decorator="['content']" :trigger-change="true" :disabled="disabled"></j-upload>
-        </a-form-item>
+        <a-row>
+          <a-col span="12">
+            <a-form-item label="企业名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['CompanyName', validatorRules.companyName]" placeholder="请输入企业名称" :disabled="disabled"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col span="12">
+            <a-form-item label="报告日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-date placeholder="请选择报告日期" v-decorator="['reportDate', validatorRules.reportDate]" :trigger-change="true" style="width: 100%" :disabled="disabled"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col span="12">
+            <a-form-item label="报告类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-dict-select-tag type="list" v-decorator="['reportType', validatorRules.reportType]" :trigger-change="true" dictCode="report_type" placeholder="请选择报告类型" :disabled="disabled"/>
+            </a-form-item>
+          </a-col>
+          <a-col span="12">
+            <a-form-item label="报告名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['reportName', validatorRules.reportName]" placeholder="请输入报告名称" :disabled="disabled"></a-input>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col span="24">
+            <a-form-item label="附件" :labelCol="labelCols" :wrapperCol="wrapperCols">
+              <j-upload v-decorator="['content']" :trigger-change="true" :disabled="disabled"></j-upload>
+            </a-form-item>
+          </a-col>
+        </a-row>
 <!--        <a-form-item label="申报人" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
 <!--          <a-input v-decorator="['createBy']" placeholder="请输入申报人"></a-input>-->
 <!--        </a-form-item>-->
@@ -74,11 +93,19 @@
         model: {},
         labelCol: {
           xs: { span: 24 },
-          sm: { span: 5 },
+          sm: { span: 6 },
         },
         wrapperCol: {
           xs: { span: 24 },
           sm: { span: 16 },
+        },
+        labelCols: {
+          xs: { span: 24 },
+          sm: { span: 3 },
+        },
+        wrapperCols: {
+          xs: { span: 24 },
+          sm: { span: 19 },
         },
         confirmLoading: false,
         validatorRules: {
