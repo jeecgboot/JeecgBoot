@@ -27,11 +27,12 @@
 <script>
 
   import CompanyApplyList from "./modules/CompanyApplyList";
-
+  import {queryLatestArchivedData} from "../../requestAction/request"
     export default {
         name: "BasicInfoApply",
       components:{
-        CompanyApplyList
+        CompanyApplyList,
+        queryLatestArchivedData
       },
         data(){
           return {
@@ -44,8 +45,9 @@
         },
       //计算属性
       computed:{
-          title:()=>{
-            if(this.latestArchived.date){
+          title(){
+
+            if(this.latestArchived){
               return "暂无基础信息申报";
             }
             return "最新归档信息";
@@ -66,8 +68,19 @@
 
         },
       created() {
+
+          let that = this;
           //查询最新归档信息
-        console.log(this.$store.getters.userInfo.companyIds[0])
+        debugger
+        queryLatestArchivedData({companyId:this.companyId}).then((res)=>{
+          if(res.success){
+            that.latestArchived = res.result;
+            console.log(res.result);
+          }else{
+            that.$message.warning(res.message);
+          }
+
+        })
 
 
       }

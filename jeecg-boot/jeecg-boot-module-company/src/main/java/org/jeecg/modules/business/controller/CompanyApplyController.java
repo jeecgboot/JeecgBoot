@@ -158,8 +158,7 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
 			 	//查询审核通过的，最近的一条数据
 //			 });
 			 //或者直接查询基础信息数据表
-			 CompanyBaseinfo companyBaseinfo = companyBaseinfoService.getOne(new QueryWrapper<CompanyBaseinfo>().lambda().eq(CompanyBaseinfo :: getStatus,"NORAML")
-					 .eq(CompanyBaseinfo :: getCompanyId, companyId));
+			 CompanyBaseinfo companyBaseinfo = companyBaseinfoService.queryByCompanyId( companyId);
 			 return Result.ok(companyBaseinfo);
 		 }
 
