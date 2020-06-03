@@ -5,37 +5,20 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="类别">
-              <j-dict-select-tag placeholder="请选择类别" v-model="queryParam.outputType" dictCode="output_type"/>
+            <a-form-item label="项目名称">
+              <a-input placeholder="请输入项目名称" v-model="queryParam.projectName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="储存方式">
-              <j-dict-select-tag placeholder="请选择储存方式" v-model="queryParam.storeType" dictCode="store_type"/>
+            <a-form-item label="批复文件号">
+              <a-input placeholder="请输入批复文件号" v-model="queryParam.approveFilenum"></a-input>
             </a-form-item>
           </a-col>
-          <template v-if="toggleSearchStatus">
-            <a-col :xl="6" :lg="7" :md="8" :sm="24">
-              <a-form-item label="重点监管">
-                <j-dict-select-tag placeholder="请选择重点监管" v-model="queryParam.supervision" dictCode="yes_or_no"/>
-              </a-form-item>
-            </a-col>
-            <a-col :xl="6" :lg="7" :md="8" :sm="24">
-              <a-form-item label="剧毒">
-                <j-dict-select-tag placeholder="请选择剧毒" v-model="queryParam.toxic" dictCode="yes_or_no"/>
-              </a-form-item>
-            </a-col>
-            <a-col :xl="6" :lg="7" :md="8" :sm="24">
-              <a-form-item label="易制毒">
-                <j-dict-select-tag placeholder="请选择易制毒" v-model="queryParam.precursorChemicals" dictCode="yes_or_no"/>
-              </a-form-item>
-            </a-col>
-          </template>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-             <!-- <a @click="handleToggleSearch" style="margin-left: 8px">
+            <!--  <a @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
               </a>-->
@@ -47,9 +30,9 @@
     <!-- 查询区域-END -->
     
     <!-- 操作按钮区域 -->
-   <!-- <div class="table-operator">
+    <!--<div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('company_product_material')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('环评审批信息')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
@@ -63,10 +46,10 @@
 
     <!-- table区域-begin -->
     <div>
-      <!-- <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
-         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-       </div>-->
+    <!--  <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
+        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
+      </div>-->
 
       <a-table
         ref="table"
@@ -104,10 +87,8 @@
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">查看</a>
 
-<!--
-          <a-divider type="vertical" />
--->
-          <!--<a-dropdown>
+        <!--  <a-divider type="vertical" />-->
+         <!-- <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
               <a-menu-item>
@@ -122,7 +103,7 @@
       </a-table>
     </div>
 
-    <companyProductMaterial-modal ref="modalForm" @ok="modalFormOk"></companyProductMaterial-modal>
+    <companyEnvTrial-modal ref="modalForm" @ok="modalFormOk"></companyEnvTrial-modal>
   </a-card>
 </template>
 
@@ -131,24 +112,22 @@
   import '@/assets/less/TableExpand.less'
   import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import CompanyProductMaterialModal from './modules/CompanyProductMaterialModal'
-  import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import CompanyEnvTrialModal from './modules/CompanyEnvTrialModal'
 
   export default {
-    name: "ProductMaterialList",
+    name: "EnvTrialList",
     mixins:[JeecgListMixin, mixinDevice],
     components: {
-      JDictSelectTag,
-      CompanyProductMaterialModal
+      CompanyEnvTrialModal
     },
     props:{
       companyId:''
     },
     data () {
       return {
-        description: 'company_product_material管理页面',
-        queryParam:{companyId:this.companyId},
+        description: '环评审批信息管理页面',
+        queryParam: {companyId:this.companyId},
+
         // 表头
         columns: [
           {
@@ -162,49 +141,27 @@
             }
           },
           {
-            title:'类别',
+            title:'项目名称',
             align:"center",
-            dataIndex: 'outputType_dictText'
+            dataIndex: 'projectName'
           },
           {
-            title:'产品名称',
+            title:'批复文件号',
             align:"center",
-            dataIndex: 'outputName'
+            dataIndex: 'approveFilenum'
           },
           {
-            title:'产量',
+            title:'审批单位',
             align:"center",
-            dataIndex: 'yield'
+            dataIndex: 'approveUnit'
           },
           {
-            title:'最大储量',
+            title:'审批时间',
             align:"center",
-            dataIndex: 'maxStore'
-          },
-          {
-            title:'储存方式',
-            align:"center",
-            dataIndex: 'storeType_dictText'
-          },
-          {
-            title:'危化品类别',
-            align:"center",
-            dataIndex: 'hazardousChemicalsCategory_dictText'
-          },
-          {
-            title:'重点监管',
-            align:"center",
-            dataIndex: 'supervision_dictText'
-          },
-          {
-            title:'剧毒',
-            align:"center",
-            dataIndex: 'toxic_dictText'
-          },
-          {
-            title:'易制毒',
-            align:"center",
-            dataIndex: 'precursorChemicals_dictText'
+            dataIndex: 'approveDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
           },
           {
             title: '操作',
@@ -216,11 +173,11 @@
           }
         ],
         url: {
-          list: "/companyProductMaterial/list",
-          // delete: "/testOneDemo/companyProductMaterial/delete",
-          // deleteBatch: "/testOneDemo/companyProductMaterial/deleteBatch",
-          // exportXlsUrl: "/testOneDemo/companyProductMaterial/exportXls",
-          // importExcelUrl: "testOneDemo/companyProductMaterial/importExcel",
+          list: "/company/envTrial/list",
+          // delete: "/testOneDemo/companyEnvTrial/delete",
+          // deleteBatch: "/testOneDemo/companyEnvTrial/deleteBatch",
+          // exportXlsUrl: "/testOneDemo/companyEnvTrial/exportXls",
+          // importExcelUrl: "testOneDemo/companyEnvTrial/importExcel",
         },
         dictOptions:{},
       }

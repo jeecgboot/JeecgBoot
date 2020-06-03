@@ -4,7 +4,7 @@ import { UserLayout, TabLayout, RouteView, BlankLayout, PageView } from '@/compo
  * 走菜单，走权限控制
  * @type {[null,null]}
  */
-/*export const asyncRouterMap = [
+export const asyncRouterMap = [
 
   {
     path: '/',
@@ -20,7 +20,7 @@ import { UserLayout, TabLayout, RouteView, BlankLayout, PageView } from '@/compo
   {
     path: '*', redirect: '/404', hidden: true
   }
-]*/
+]
 
 /**
  * 基础路由

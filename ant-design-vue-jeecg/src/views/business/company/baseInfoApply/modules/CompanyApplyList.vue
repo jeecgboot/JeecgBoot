@@ -4,39 +4,15 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="姓名">
-              <a-input placeholder="请输入姓名" v-model="queryParam.name"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="手机号码">
-              <a-input placeholder="请输入手机号码" v-model="queryParam.pbone"> </a-input>
-          </a-form-item>
-            <!--  <a-form-item :aria-disabled="false">
-              <a-input  v-model="queryParam.companyId">{{companyId}}</a-input>
-
-            </a-form-item>-->
-          </a-col>
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <!--<a @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>-->
-            </span>
-          </a-col>
         </a-row>
       </a-form>
     </div>
     <!-- 查询区域-END -->
     
     <!-- 操作按钮区域 -->
- <!--   <div class="table-operator">
+   <!-- <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('company_userinfo')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('企业申报基础表')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
@@ -86,12 +62,11 @@
             下载
           </a-button>
         </template>
-        <a slot="name" @click="handleDetail(record)"   slot-scope="text, record">{{ text }}</a>
 
-        <span slot="action"  slot-scope="text, record">
-          <a @click="handleEdit(record)">详情</a>
+        <span slot="action" slot-scope="text, record">
+          <a @click="handleEdit(record)">编辑</a>
 
-         <!-- <a-divider type="vertical" />
+          <a-divider type="vertical" />
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
@@ -101,13 +76,13 @@
                 </a-popconfirm>
               </a-menu-item>
             </a-menu>
-          </a-dropdown>-->
+          </a-dropdown>
         </span>
 
       </a-table>
     </div>
 
-    <companyUserinfo-modal ref="modalForm" @ok="modalFormOk" ></companyUserinfo-modal>
+    <companyApply-modal ref="modalForm" @ok="modalFormOk"></companyApply-modal>
   </a-card>
 </template>
 
@@ -116,20 +91,23 @@
   import '@/assets/less/TableExpand.less'
   import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import CompanyUserinfoModal from "./modules/CompanyUserinfoModal";
+  import CompanyApplyModal from "./childModules/CompanyApplyModal";
+
   export default {
-    name: "UserinfoList",
+    name: "CompanyApplyList",
     mixins:[JeecgListMixin, mixinDevice],
     components: {
-      CompanyUserinfoModal
+      CompanyApplyModal
     },
-    props:{
-      companyId:''
-    },
+  props:{
+    companyId:''
+  },
     data () {
       return {
-        description: 'company_userinfo管理页面',
-        queryParam:{companyId:this.companyId},
+        description: '企业申报基础表管理页面',
+        queryParam:{
+          companyId:this.companyId
+        },
         // 表头
         columns: [
           {
@@ -143,55 +121,27 @@
             }
           },
           {
-            title:'姓名',
+            title:'更新日期',
             align:"center",
-            dataIndex: 'name',
-            scopedSlots: { customRender: 'name' }
+            dataIndex: 'updateTime',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
           },
           {
-            title:'性别',
+            title:'数据状态',
             align:"center",
-            dataIndex: 'sex'
+            dataIndex: 'companyId'
           },
           {
-            title:'学历',
+            title:'状态',
             align:"center",
-            dataIndex: 'education'
+            dataIndex: 'status'
           },
           {
-            title:'专业',
+            title:'备注',
             align:"center",
-            dataIndex: 'profession'
-          },
-          {
-            title:'职称',
-            align:"center",
-            dataIndex: 'jobTitle'
-          },
-          {
-            title:'部门',
-            align:"center",
-            dataIndex: 'department'
-          },
-          {
-            title:'岗位',
-            align:"center",
-            dataIndex: 'post'
-          },
-          {
-            title:'身份证号码',
-            align:"center",
-            dataIndex: 'idCard'
-          },
-          {
-            title:'手机号码',
-            align:"center",
-            dataIndex: 'pbone'
-          },
-          {
-            title:'出生日期',
-            align:"center",
-            dataIndex: 'birthDate'
+            dataIndex: 'content'
           },
           {
             title: '操作',
@@ -203,8 +153,11 @@
           }
         ],
         url: {
-          list: "/companyUserinfo/list"
-
+          list: "/company/apply/list",
+          // delete: "/testOneDemo/companyApply/delete",
+          // deleteBatch: "/testOneDemo/companyApply/deleteBatch",
+          // exportXlsUrl: "/testOneDemo/companyApply/exportXls",
+          // importExcelUrl: "testOneDemo/companyApply/importExcel",
         },
         dictOptions:{},
       }

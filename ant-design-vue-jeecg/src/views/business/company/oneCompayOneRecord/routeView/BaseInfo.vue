@@ -5,7 +5,7 @@
       <a-row >
         <a-col span = '12'>
         <a-form-item label="企业名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['create_by',{}]" placeholder="请输入企业名称":disabled="disable"  ></a-input>
+          <a-input v-decorator="['shortName',{}]" placeholder="请输入企业名称":disabled="disable"  ></a-input>
         </a-form-item>
         </a-col>
         <a-col span = '12'>
@@ -67,7 +67,7 @@
           </a-col>
           <a-col span = '12'>
             <a-form-item label="法人联系电话" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['create_time', {}]" placeholder="请输入企业法人联系电话":disabled="disable"  ></a-input>
+              <a-input v-decorator="['principalPhone', {}]" placeholder="请输入企业法人联系电话":disabled="disable"  ></a-input>
             </a-form-item>
           </a-col>
         </a-row>
@@ -251,11 +251,12 @@
       return {
         form: this.$form.createForm(this),
         title:"操作",
+        datecolums:['shortName','socialCreditCode','companyType','administrativeRegion','industry','address','longitude','dimension','corporate','economicType','affiliation','envProtectPrincipal','principalPhone','envProtectContact','contactPhone','emergencyLeader','leaderPhone','drainageArea','postalCode','fax','email','industrialOutput','staffCount','enterpriseSize','factoryArea','ischemicals','attachedPark','parentCompany','groupCompany','registeCapital','annualSalesIncome','annualProfit','totalAssets','registeAddress','operateScope','profile'],
         model: {},
         disable:true,
         labelCol: {
           xs: { span: 24 },
-          sm: { span: 8},
+          sm: { span: 6},
         },
         wrapperCol: {
           xs: {span: 24},
@@ -263,7 +264,7 @@
         },
         labelCols: {
           xs: { span: 24},
-          sm: { span: 4},
+          sm: { span: 3},
         },
         wrapperCols: {
           xs: {
@@ -360,7 +361,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'sysOrgCode','status','companyId','shortName','socialCreditCode','companyType','administrativeRegion','industry','address','longitude','dimension','corporate','economicType','affiliation','envProtectPrincipal','principalPhone','envProtectContact','contactPhone','emergencyLeader','leaderPhone','drainageArea','postalCode','fax','email','industrialOutput','staffCount','enterpriseSize','factoryArea','ischemicals','attachedPark','parentCompany','groupCompany','registeCapital','annualSalesIncome','annualProfit','totalAssets','registeAddress','operateScope','profile'))
+          this.form.setFieldsValue(pick(this.model,))
         })
       },
       close () {

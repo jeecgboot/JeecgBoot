@@ -12,7 +12,7 @@
       <a-form :form="form">
 
         <a-form-item label="类别" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-dict-select-tag type="radio" v-decorator="['outputType']" :trigger-change="true" dictCode="output_type" placeholder="请选择类别"/>
+          <j-dict-select-tag type="radio" v-decorator="['outputType']"  @change = "handleTypeChange" :trigger-change="true" dictCode="output_type" placeholder="请选择类别"/>
         </a-form-item>
         <a-form-item label="产品名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="['outputName', validatorRules.outputName]" placeholder="请输入产品名称"></a-input>
@@ -44,16 +44,16 @@
         <a-form-item label="易制毒" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <j-dict-select-tag type="list" v-decorator="['precursorChemicals', validatorRules.precursorChemicals]" :trigger-change="true" dictCode="yes_or_no" placeholder="请选择易制毒"/>
         </a-form-item>
-        <a-form-item label="状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-dict-select-tag type="list" v-decorator="['status', validatorRules.status]" :trigger-change="true" dictCode="output_status" placeholder="请选择状态"/>
+        <a-form-item label="状态" v-if="displayPro" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <j-dict-select-tag type="list"  v-decorator="['status', validatorRules.status]" :trigger-change="true" dictCode="output_status" placeholder="请选择状态"/>
         </a-form-item>
-        <a-form-item label="是否领证" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-dict-select-tag type="list" v-decorator="['certified', validatorRules.certified]" :trigger-change="true" dictCode="yes_or_no" placeholder="请选择是否领证"/>
+        <a-form-item label="是否领证" v-if="displayPro" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <j-dict-select-tag type="list"  v-decorator="['certified', validatorRules.certified]" :trigger-change="true" dictCode="yes_or_no" placeholder="请选择是否领证"/>
         </a-form-item>
-        <a-form-item label="主要原材料" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="主要原材料"  v-if="displayPro" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-textarea v-decorator="['rawMaterials', validatorRules.rawMaterials]" rows="4" placeholder="请输入主要原材料"/>
         </a-form-item>
-        <a-form-item label="主要生产设备" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="主要生产设备" v-if="displayPro" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-textarea v-decorator="['proEquipment', validatorRules.proEquipment]" rows="4" placeholder="请输入主要生产设备"/>
         </a-form-item>
         <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -85,6 +85,7 @@
         width:800,
         visible: false,
         model: {},
+        diplay:{},
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },
@@ -177,7 +178,11 @@
         }
       }
     },
-    created () {
+    computed: {
+      displayPro:function(){
+        console.log(this.model.outputType==='1')
+        return this.model.outputType==='1';
+      }
     },
     methods: {
       add () {
@@ -230,11 +235,9 @@
       handleCancel () {
         this.close()
       },
-      popupCallback(row){
-        this.form.setFieldsValue(pick(row,'outputType','outputName','yield','maxStore','cas','storeType','hazardousChemicalsCategory','mainRisk','supervision','toxic','precursorChemicals','status','certified','rawMaterials','proEquipment','remake'))
-      },
-
-      
+      handleTypeChange(value){
+        this.model.outputType = value;
+      }
     }
   }
 </script>

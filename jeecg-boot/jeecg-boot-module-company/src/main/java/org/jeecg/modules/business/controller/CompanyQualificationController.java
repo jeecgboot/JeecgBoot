@@ -13,6 +13,7 @@ import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.business.entity.CompanyQualification;
 import org.jeecg.modules.business.service.ICompanyQualificationService;
+import org.jeecg.modules.business.utils.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -128,7 +129,7 @@ public class CompanyQualificationController extends JeecgController<CompanyQuali
    public Result<?> queryById(@RequestBody JSONObject jsonObject) {
        String companyId = jsonObject.getString("companyId");
        List<CompanyQualification> companyQualifications = companyQualificationService.list
-               (new QueryWrapper<CompanyQualification>().lambda().eq(CompanyQualification::getCompanyId,companyId).eq(CompanyQualification::getStatus,"NORMAL"));
+               (new QueryWrapper<CompanyQualification>().lambda().eq(CompanyQualification::getCompanyId,companyId).eq(CompanyQualification::getStatus, Constant.status.NORMAL));
        if(companyQualifications==null) {
            return Result.error("未找到对应数据");
        }

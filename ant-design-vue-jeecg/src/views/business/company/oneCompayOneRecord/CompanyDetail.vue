@@ -16,7 +16,7 @@
           <qualification v-if="leftActive==2 && topActive==1"  :companyId="companyId"/>
           <userinfo-list v-if="leftActive==3 && topActive==1" :companyId="companyId"/>
           <product-material-list v-if="leftActive==4 && topActive==1" :companyId="companyId"/>
-          <base-info v-if="leftActive==5 && topActive==1"/>
+          <env-trial-list v-if="leftActive==5 && topActive==1" :companyId="companyId"/>
           <company-acceptance-list v-if="leftActive==6 && topActive==1" :companyId="companyId"/>
           <prevention v-if="leftActive==7 && topActive==1" :companyId="companyId"/>
           <company-dirty-allow-list v-if="leftActive==8 && topActive==1" :companyId="companyId"/>
@@ -55,6 +55,7 @@
     import CompanyDirtyAllowList from "./routeView/CompanyDirtyAllowList";
     import CompanyAdminPenaltiesList from "./CompanyAdminPenaltiesList";
     import CompanySupervisoryMonitorList from "./CompanySupervisoryMonitorList";
+    import EnvTrialList from "./routeView/EnvTrialList";
     export default {
       name: "CompanyDetail",
       components: {
@@ -62,7 +63,8 @@
         BusinessMenu,BaseInfo,BasicInfo,Qualification,Prevention,CompanyDirtyAllowList,CompanyDynamicSupervisionList, CompanyAdminPenaltiesList,
         CompanySupervisoryMonitorList,
         UserinfoList,
-        ProductMaterialList},
+        ProductMaterialList,
+        EnvTrialList},
       props:{
         companyId:''
       },
