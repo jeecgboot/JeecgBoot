@@ -13,7 +13,7 @@
         <a-row>
           <a-col span='12'>
             <a-form-item label="许可证编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-search-select-tag placeholder="请做出你的选择"  v-decorator="['licenceCode', validatorRules.licenceCode]"  dict="company_dirty_allow,licence_code,licence_code":async="true"/>
+              <j-search-select-tag placeholder="请输入后进行选择"  v-decorator="['licenceCode', validatorRules.licenceCode]"  dict="company_dirty_allow,licence_code,licence_code":async="true"/>
             </a-form-item>
           </a-col>
           <a-col span='12'>

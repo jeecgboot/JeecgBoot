@@ -5,13 +5,8 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="排放口名称">
-              <a-input placeholder="请输入排放口名称" v-model="queryParam.ventName"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="排污口税源编号">
-              <a-input placeholder="请输入排污口税源编号" v-model="queryParam.taxsourceCode"></a-input>
+            <a-form-item label="清洁生产报告名称">
+              <a-input placeholder="请输入清洁生产报告名称" v-model="queryParam.reportName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
@@ -28,6 +23,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+      <a-button @click="declare" type="primary" icon="snippets">申报</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel">
@@ -39,7 +35,6 @@
           <a-icon type="down"/>
         </a-button>
       </a-dropdown>
-      <a-button @click="declare" type="primary" icon="snippets">申报</a-button>
     </div>
 
     <!-- table区域-begin -->
@@ -88,17 +83,15 @@
           <a @click="handleEdit(record)">编辑</a>
 
           <a-divider type="vertical"/>
-          <a-dropdown>
-            <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>
-            </a-popconfirm>
-          </a-dropdown>
+                </a-popconfirm>
         </span>
 
       </a-table>
     </div>
 
-    <companyEnvTax-modal ref="modalForm" @ok="modalFormOk" :companyId="companyId"></companyEnvTax-modal>
+    <companyCleanProduct-modal ref="modalForm" @ok="modalFormOk" :companyId="companyId"></companyCleanProduct-modal>
   </a-card>
 </template>
 
@@ -107,18 +100,17 @@
   import '@/assets/less/TableExpand.less'
   import {mixinDevice} from '@/utils/mixin'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import CompanyEnvTaxModal from './CompanyEnvTaxModal'
-  import {filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import CompanyCleanProductModal from './CompanyCleanProductModal'
 
   export default {
-    name: "CompanyEnvTaxList",
+    name: "CompanyCleanProductList",
     mixins: [JeecgListMixin, mixinDevice],
     components: {
-      CompanyEnvTaxModal
+      CompanyCleanProductModal
     },
     data() {
       return {
-        description: '环保税信息管理页面',
+        description: '清洁生产管理页面',
         queryParam: {
           companyId: this.companyId
         },
@@ -135,39 +127,22 @@
             }
           },
           {
-            title: '排污口税源编号',
+            title: '清洁生产报告名称',
             align: "center",
-            dataIndex: 'taxsourceCode'
+            dataIndex: 'reportName'
           },
           {
-            title: '排放口名称',
+            title: '报告时间',
             align: "center",
-            dataIndex: 'ventName'
+            dataIndex: 'reportTime',
+            customRender: function (text) {
+              return !text ? "" : (text.length > 10 ? text.substr(0, 10) : text)
+            }
           },
           {
-            title: '排放口编号',
+            title: '落实情况',
             align: "center",
-            dataIndex: 'ventCode'
-          },
-          {
-            title: '排放口大类',
-            align: "center",
-            dataIndex: 'ventCategory_dictText'
-          },
-          {
-            title: '排污许可证编号',
-            align: "center",
-            dataIndex: 'licenceCode'
-          },
-          {
-            title: '排放方式',
-            align: "center",
-            dataIndex: 'letMode_dictText'
-          },
-          {
-            title: '主管税务科所',
-            align: "center",
-            dataIndex: 'taxDepartment'
+            dataIndex: 'conditionDescribe'
           },
           {
             title: '操作',
@@ -179,12 +154,17 @@
           }
         ],
         url: {
-          list: "/envtax/companyEnvTax/list",
-          delete: "/envtax/companyEnvTax/delete",
-          deleteBatch: "/envtax/companyEnvTax/deleteBatch",
+          list: "/cleanProduct/companyCleanProduct/list",
+          delete: "/cleanProduct/companyCleanProduct/delete",
+          deleteBatch: "/cleanProduct/companyCleanProduct/deleteBatch",
         },
         dictOptions: {},
       }
+    },
+    computed: {
+      importExcelUrl: function () {
+        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+      },
     },
     methods: {
       initDictConfig() {

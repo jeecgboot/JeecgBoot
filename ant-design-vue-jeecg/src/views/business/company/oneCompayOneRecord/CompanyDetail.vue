@@ -24,8 +24,8 @@
           <base-info v-if="leftActive==10 && topActive==1"/>
           <base-info v-if="leftActive==11 && topActive==1"/>
           <company-env-tax-list v-if="leftActive==12 && topActive==1" :companyId="companyId"/>
-          <base-info v-if="leftActive==13 && topActive==1"/>
-          <base-info v-if="leftActive==14 && topActive==1"/>
+          <company-clean-product-list v-if="leftActive==13 && topActive==1" :companyId="companyId"/>
+          <company-online-info-list v-if="leftActive==14 && topActive==1" :companyId="companyId"/>
 
           <company-dynamic-supervision-list v-if="leftActive==1 && topActive==2" :companyId="companyId"/>
           <company-admin-penalties-list v-if="leftActive==2 && topActive==2" :companyId="companyId" />
@@ -57,6 +57,8 @@
     import CompanySupervisoryMonitorList from "./CompanySupervisoryMonitorList";
     import CompanyEnvTaxList from "./routeView/CompanyEnvTaxList";
     import CompanyComplaintLetterList from "./routeView/CompanyComplaintLetterList";
+    import CompanyCleanProductList from "./routeView/CompanyCleanProductList";
+    import CompanyOnlineInfoList from "./routeView/CompanyOnlineInfoList";
     export default {
       name: "CompanyDetail",
       components: {
@@ -66,7 +68,9 @@
         CompanySupervisoryMonitorList,CompanyComplaintLetterList,
         UserinfoList,
         ProductMaterialList,
-        CompanyEnvTaxList},
+        CompanyEnvTaxList,
+        CompanyCleanProductList,
+        CompanyOnlineInfoList},
       props:{
         companyId:''
       },

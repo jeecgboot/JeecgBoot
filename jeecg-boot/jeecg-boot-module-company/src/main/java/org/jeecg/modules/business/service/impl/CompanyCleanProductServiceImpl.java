@@ -1,22 +1,22 @@
 package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.jeecg.modules.business.entity.CompanyCleanProduct;
 import org.jeecg.modules.business.entity.CompanyEnvTax;
-import org.jeecg.modules.business.entity.CompanyPrevention;
-import org.jeecg.modules.business.mapper.CompanyEnvTaxMapper;
-import org.jeecg.modules.business.service.ICompanyEnvTaxService;
+import org.jeecg.modules.business.mapper.CompanyCleanProductMapper;
+import org.jeecg.modules.business.service.ICompanyCleanProductService;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 /**
- * @Description: 环保税信息
+ * @Description: 清洁生产
  * @Author: jeecg-boot
- * @Date: 2020-06-02
+ * @Date:   2020-06-03
  * @Version: V1.0
  */
 @Service
-public class CompanyEnvTaxServiceImpl extends ServiceImpl<CompanyEnvTaxMapper, CompanyEnvTax> implements ICompanyEnvTaxService {
+public class CompanyCleanProductServiceImpl extends ServiceImpl<CompanyCleanProductMapper, CompanyCleanProduct> implements ICompanyCleanProductService {
 
     /**
      * @Description:根据企业id查询数量
@@ -27,8 +27,8 @@ public class CompanyEnvTaxServiceImpl extends ServiceImpl<CompanyEnvTaxMapper, C
      */
     @Override
     public Integer findCountByCompanyId(String companyId) {
-        QueryWrapper<CompanyEnvTax> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(CompanyEnvTax::getCompanyId, companyId);
+        QueryWrapper<CompanyCleanProduct> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(CompanyCleanProduct::getCompanyId, companyId);
         return this.count(queryWrapper);
     }
 }

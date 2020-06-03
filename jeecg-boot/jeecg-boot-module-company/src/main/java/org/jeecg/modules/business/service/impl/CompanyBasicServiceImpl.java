@@ -41,6 +41,15 @@ public class CompanyBasicServiceImpl implements ICompanyBasicService {
 
     @Autowired
     private ICompanyComplaintLetterService companyComplaintLetterService;
+
+    @Autowired
+    private ICompanyEnvTaxService companyEnvTaxService;
+
+    @Autowired
+    private ICompanyCleanProductService companyCleanProductService;
+
+    @Autowired
+    private ICompanyOnlineInfoService companyOnlineInfoService;
     /**
      *  根据conpanyId组装 一企一档基础信息的菜单信息
      * @param companyId
@@ -61,11 +70,11 @@ public class CompanyBasicServiceImpl implements ICompanyBasicService {
 
         addElements("11"," 辐射许可证信息",0,basicInfoMenus);
 
-        addElements("12"," 环保税信息",0,basicInfoMenus);
+        addElements("12"," 环保税信息",companyEnvTaxService.findCountByCompanyId(companyId),basicInfoMenus);
 
-        addElements("13"," 清洁生产信息",0,basicInfoMenus);
+        addElements("13"," 清洁生产信息",companyCleanProductService.findCountByCompanyId(companyId),basicInfoMenus);
 
-        addElements("14"," 在线监控验收信息",0,basicInfoMenus);
+        addElements("14"," 在线监控验收信息",companyOnlineInfoService.findCountByCompanyId(companyId),basicInfoMenus);
 
         return basicInfoMenus;
     }
