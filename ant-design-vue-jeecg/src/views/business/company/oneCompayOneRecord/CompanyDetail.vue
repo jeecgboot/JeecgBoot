@@ -48,7 +48,7 @@
     import CompanyAcceptanceList from "./routeView/CompanyAcceptanceList";
     import BaseInfo from "./routeView/BaseInfo";
     import BasicInfo from "./routeView/BasicInfo";
-    import CompanyDynamicSupervisionList from '../companyDynamicSupervision/CompanyDynamicSupervisionList'
+    import CompanyDynamicSupervisionList from './routeView/CompanyDynamicSupervisionList'
     import UserinfoList from "./routeView/UserinfoList"
     import ProductMaterialList from "./routeView/ProductMaterialList";
     import Prevention from "./routeView/Prevention";
