@@ -100,7 +100,7 @@
       </a-table>
     </div>
 
-    <companyAdminPenalties-modal ref="modalForm" @ok="modalFormOk"></companyAdminPenalties-modal>
+    <companyAdminPenalties-modal ref="modalForm" @ok="modalFormOk" :companyId="companyId"></companyAdminPenalties-modal>
   </a-card>
 </template>
 
@@ -209,8 +209,8 @@
         ],
         url: {
           list: "/cap/companyAdminPenalties/list/" + this.companyId,
-          // delete: "/cap/companyAdminPenalties/delete",
-          // deleteBatch: "/cap/companyAdminPenalties/deleteBatch",
+          delete: "/cap/companyAdminPenalties/delete",
+          deleteBatch: "/cap/companyAdminPenalties/deleteBatch",
           // exportXlsUrl: "/cap/companyAdminPenalties/exportXls",
           // importExcelUrl: "cap/companyAdminPenalties/importExcel",
         },

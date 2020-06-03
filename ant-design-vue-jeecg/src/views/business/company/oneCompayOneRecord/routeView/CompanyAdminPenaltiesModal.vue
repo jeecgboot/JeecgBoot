@@ -84,12 +84,15 @@
       JDictSelectTag,
       CompanyBaseinfoList,
     },
+    props: {
+      companyId:''
+    },
     data () {
       return {
         form: this.$form.createForm(this),
         title:"操作",
         width:800,
-        disabled:true,
+        // disabled:true,
         visible: false,
         model: {},
         labelCol: {
@@ -110,11 +113,11 @@
         },
         confirmLoading: false,
         validatorRules: {
-          companyName: {
-            rules: [
-              { required: true, message: '请输入企业名称!'},
-            ]
-          },
+          // companyName: {
+          //   rules: [
+          //     { required: true, message: '请输入企业名称!'},
+          //   ]
+          // },
           status: {
             rules: [
               { required: true, message: '请输入数据状态!'},
@@ -142,8 +145,8 @@
           },
         },
         url: {
-          // add: "/cap/companyAdminPenalties/add",
-          // edit: "/cap/companyAdminPenalties/edit",
+          add: "/cap/companyAdminPenalties/add",
+          edit: "/cap/companyAdminPenalties/edit",
         }
       }
     },
@@ -181,6 +184,7 @@
                method = 'put';
             }
             let formData = Object.assign(this.model, values);
+            formData.companyId = this.companyId;
             console.log("表单提交数据",formData)
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
