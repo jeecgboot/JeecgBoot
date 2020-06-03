@@ -4,21 +4,15 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :xl="10" :lg="11" :md="12" :sm="24">
-            <a-form-item label="报告日期">
-              <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.reportDate_begin"></j-date>
-              <span class="query-group-split-cust"></span>
-              <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.reportDate_end"></j-date>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="在线设备名称/型号">
+              <a-input placeholder="请输入在线设备名称/型号" v-model="queryParam.equipmentName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
             </span>
           </a-col>
         </a-row>
@@ -29,10 +23,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('监督性监测信息')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>
+      <a-button @click="declare" type="primary" icon="snippets">申报</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -48,7 +39,6 @@
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
 
-      <!--:rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"-->
       <a-table
         ref="table"
         size="middle"
@@ -58,7 +48,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         class="j-table-force-nowrap"
         @change="handleTableChange">
 
@@ -83,25 +73,20 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="tohandleEdit(record)">查看</a>
+          <a @click="handleEdit(record)">编辑</a>
 
-<!--          <a-divider type="vertical" />-->
-<!--          <a-dropdown>-->
-<!--            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>-->
-<!--            <a-menu slot="overlay">-->
-<!--              <a-menu-item>-->
-<!--                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">-->
-<!--                  <a>删除</a>-->
-<!--                </a-popconfirm>-->
-<!--              </a-menu-item>-->
-<!--            </a-menu>-->
-<!--          </a-dropdown>-->
+          <a-divider type="vertical" />
+          <a-dropdown>
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                  <a>删除</a>
+                </a-popconfirm>
+          </a-dropdown>
         </span>
 
       </a-table>
     </div>
 
-    <companySupervisoryMonitor-modal ref="modalForm" @ok="modalFormOk" :companyId="companyId"></companySupervisoryMonitor-modal>
+    <companyOnlineInfo-modal ref="modalForm" @ok="modalFormOk" :companyId="companyId"></companyOnlineInfo-modal>
   </a-card>
 </template>
 
@@ -110,25 +95,19 @@
   import '@/assets/less/TableExpand.less'
   import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import CompanySupervisoryMonitorModal from './routeView/CompanySupervisoryMonitorModal'
-  import JDate from '@/components/jeecg/JDate.vue'
-  import {filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import CompanyOnlineInfoModal from './CompanyOnlineInfoModal'
 
   export default {
-    name: "CompanySupervisoryMonitorList",
+    name: "CompanyOnlineInfoList",
     mixins:[JeecgListMixin, mixinDevice],
     components: {
-      JDate,
-      CompanySupervisoryMonitorModal
-    },
-    props:{
-      companyId:''
+      CompanyOnlineInfoModal
     },
     data () {
       return {
-        description: '监督性监测信息管理页面',
+        description: '在线监控验收信息管理页面',
         queryParam: {
-          companyId:this.companyId
+          companyId: this.companyId
         },
         // 表头
         columns: [
@@ -142,33 +121,39 @@
               return parseInt(index)+1;
             }
           },
-          // {
-          //   title:'数据状态',
-          //   align:"center",
-          //   dataIndex: 'status_dictText'
-          // },
-          // {
-          //   title:'企业id',
-          //   align:"center",
-          //   dataIndex: 'companyId'
-          // },
           {
-            title:'报告名称',
+            title:'在线设备名称/型号',
             align:"center",
-            dataIndex: 'reportName'
+            dataIndex: 'equipmentName'
           },
           {
-            title:'报告类型',
+            title:'设备生产厂家',
             align:"center",
-            dataIndex: 'reportType_dictText'
+            dataIndex: 'equipmentManufacturers'
           },
           {
-            title:'报告日期',
+            title:'运维单位',
             align:"center",
-            dataIndex: 'reportDate',
+            dataIndex: 'operationalUnit'
+          },
+          {
+            title:'投入使用日期',
+            align:"center",
+            dataIndex: 'usedTime',
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
             }
+          },
+          {
+            title:'安装位置',
+            align:"center",
+            dataIndex: 'installLocation'
+          },
+          {
+            title:'在线监控验收材料',
+            align:"center",
+            dataIndex: 'files',
+            scopedSlots: {customRender: 'fileSlot'}
           },
           {
             title: '操作',
@@ -180,27 +165,19 @@
           }
         ],
         url: {
-          list: "/csm/companySupervisoryMonitor/list",
-          // delete: "/csm/companySupervisoryMonitor/delete",
-          // deleteBatch: "/csm/companySupervisoryMonitor/deleteBatch",
-          // exportXlsUrl: "/csm/companySupervisoryMonitor/exportXls",
-          // importExcelUrl: "csm/companySupervisoryMonitor/importExcel",
+          list: "/onlineInfo/companyOnlineInfo/list",
+          delete: "/onlineInfo/companyOnlineInfo/delete",
+          deleteBatch: "/onlineInfo/companyOnlineInfo/deleteBatch",
         },
         dictOptions:{},
       }
     },
-    computed: {
-      importExcelUrl: function(){
-        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
-      },
-    },
     methods: {
       initDictConfig(){
-      },
-      tohandleEdit:function (record) {
-        this.handleEdit(record);
-        this.$refs.modalForm.title="查看监督性监测信息";
       }
+    },
+    props: {
+      companyId: ""
     }
   }
 </script>

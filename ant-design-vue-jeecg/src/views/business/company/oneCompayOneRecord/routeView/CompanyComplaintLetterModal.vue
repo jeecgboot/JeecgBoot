@@ -10,41 +10,37 @@
     cancelText="关闭">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-
 <!--        <a-form-item label="数据状态" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
 <!--          <j-dict-select-tag type="list" v-decorator="['status', validatorRules.status]" :trigger-change="true" dictCode="statue" placeholder="请选择数据状态"/>-->
 <!--        </a-form-item>-->
-<!--        <a-form-item label="企业id" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-<!--          <a-input v-decorator="['companyId', validatorRules.companyId]" placeholder="请输入企业id"></a-input>-->
-<!--        </a-form-item>-->
         <a-row>
-          <a-col span="12">
-            <a-form-item label="企业名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['CompanyName', validatorRules.companyName]" placeholder="请输入企业名称" :disabled="disabled"></a-input>
+          <a-col span='12'>
+            <a-form-item label="企业id" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['companyId', validatorRules.companyId]" placeholder="请输入企业id"></a-input>
             </a-form-item>
           </a-col>
-          <a-col span="12">
-            <a-form-item label="报告日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择报告日期" v-decorator="['reportDate', validatorRules.reportDate]" :trigger-change="true" style="width: 100%" :disabled="disabled"/>
+          <a-col span='12'>
+            <a-form-item label="投诉日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-date placeholder="请选择投诉日期" v-decorator="['compliantDate', validatorRules.compliantDate]" :trigger-change="true" style="width: 100%" :disabled="disabled"/>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
-          <a-col span="12">
-            <a-form-item label="报告类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-dict-select-tag type="list" v-decorator="['reportType', validatorRules.reportType]" :trigger-change="true" dictCode="report_type" placeholder="请选择报告类型" :disabled="disabled"/>
+          <a-col span='12'>
+            <a-form-item label="污染类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-dict-select-tag type="list" v-decorator="['pollutionType', validatorRules.pollutionType]" :trigger-change="true" dictCode="pollution_type" placeholder="请选择污染类型" :disabled="disabled"/>
             </a-form-item>
           </a-col>
-          <a-col span="12">
-            <a-form-item label="报告名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['reportName', validatorRules.reportName]" placeholder="请输入报告名称" :disabled="disabled"></a-input>
+          <a-col span='12'>
+            <a-form-item label="投诉标题" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['complaintTitle', validatorRules.complaintTitle]" placeholder="请输入投诉标题" :disabled="disabled"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
-          <a-col span="24">
-            <a-form-item label="附件" :labelCol="labelCols" :wrapperCol="wrapperCols">
-              <j-upload v-decorator="['content']" :trigger-change="true" :disabled="disabled"></j-upload>
+          <a-col span='24'>
+            <a-form-item label="内容" :labelCol="labelCols" :wrapperCol="wrapperCols">
+              <j-upload v-decorator="['content']" :trigger-change="true"></j-upload>
             </a-form-item>
           </a-col>
         </a-row>
@@ -77,7 +73,7 @@
 
 
   export default {
-    name: "CompanySupervisoryMonitorModal",
+    name: "CompanyComplaintLetterModal",
     components: { 
       JDate,
       JUpload,
@@ -89,7 +85,7 @@
         title:"操作",
         width:800,
         visible: false,
-        disabled: true,
+        disabled:true,
         model: {},
         labelCol: {
           xs: { span: 24 },
@@ -119,25 +115,25 @@
               { required: true, message: '请输入企业id!'},
             ]
           },
-          reportDate: {
+          compliantDate: {
             rules: [
-              { required: true, message: '请输入报告日期!'},
+              { required: true, message: '请输入投诉日期!'},
             ]
           },
-          reportType: {
+          pollutionType: {
             rules: [
-              { required: true, message: '请输入报告类型!'},
+              { required: true, message: '请输入污染类型!'},
             ]
           },
-          reportName: {
+          complaintTitle: {
             rules: [
-              { required: true, message: '请输入报告名称!'},
+              { required: true, message: '请输入投诉标题!'},
             ]
           },
         },
         url: {
-          // add: "/csm/companySupervisoryMonitor/add",
-          // edit: "/csm/companySupervisoryMonitor/edit",
+          add: "/ccl/companyComplaintLetter/add",
+          edit: "/ccl/companyComplaintLetter/edit",
         }
       }
     },
@@ -152,7 +148,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'status','companyId','reportDate','reportType','reportName','content','createBy','createTime','updateBy','updateTime'))
+          this.form.setFieldsValue(pick(this.model,'status','companyId','compliantDate','pollutionType','complaintTitle','content','createBy','createTime','updateBy','updateTime'))
         })
       },
       close () {
@@ -195,7 +191,7 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'status','companyId','reportDate','reportType','reportName','content','createBy','createTime','updateBy','updateTime'))
+        this.form.setFieldsValue(pick(row,'status','companyId','compliantDate','pollutionType','complaintTitle','content','createBy','createTime','updateBy','updateTime'))
       },
 
       

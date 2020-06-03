@@ -5,10 +5,10 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :xl="10" :lg="11" :md="12" :sm="24">
-            <a-form-item label="发文日期">
-              <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.reportDate_begin"></j-date>
+            <a-form-item label="投诉日期">
+              <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.compliantDate_begin"></j-date>
               <span class="query-group-split-cust"></span>
-              <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.reportDate_end"></j-date>
+              <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.compliantDate_end"></j-date>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
@@ -29,7 +29,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('行政处罚信息')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('信访投诉信息')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
@@ -48,6 +48,7 @@
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
 
+      <!--:rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"-->
       <a-table
         ref="table"
         size="middle"
@@ -100,7 +101,7 @@
       </a-table>
     </div>
 
-    <companyAdminPenalties-modal ref="modalForm" @ok="modalFormOk"></companyAdminPenalties-modal>
+    <companyComplaintLetter-modal ref="modalForm" @ok="modalFormOk" :companyId="companyId"></companyComplaintLetter-modal>
   </a-card>
 </template>
 
@@ -109,23 +110,26 @@
   import '@/assets/less/TableExpand.less'
   import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import CompanyAdminPenaltiesModal from './routeView/CompanyAdminPenaltiesModal'
+  import CompanyComplaintLetterModal from './CompanyComplaintLetterModal'
   import JDate from '@/components/jeecg/JDate.vue'
   import {filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
-    name: "CompanyAdminPenaltiesList",
+    name: "CompanyComplaintLetterList",
     mixins:[JeecgListMixin, mixinDevice],
     components: {
       JDate,
-      CompanyAdminPenaltiesModal
+      CompanyComplaintLetterModal
     },
     props: {
       companyId:''
     },
     data () {
       return {
-        description: '行政处罚信息管理页面',
+        description: '信访投诉信息管理页面',
+        queryParam: {
+          companyId:this.companyId
+        },
         // 表头
         columns: [
           {
@@ -138,24 +142,6 @@
               return parseInt(index)+1;
             }
           },
-          {
-            title:'文件名称',
-            align:"center",
-            dataIndex: 'documentName'
-          },
-          {
-            title:'文件编号',
-            align:"center",
-            dataIndex: 'documentNo'
-          },
-          {
-            title:'发文日期',
-            align:"center",
-            dataIndex: 'reportDate',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
-          },
           // {
           //   title:'数据状态',
           //   align:"center",
@@ -166,8 +152,26 @@
           //   align:"center",
           //   dataIndex: 'companyId'
           // },
+          {
+            title:'投诉标题',
+            align:"center",
+            dataIndex: 'complaintTitle'
+          },
+          {
+            title:'污染类型',
+            align:"center",
+            dataIndex: 'pollutionType_dictText'
+          },
+          {
+            title:'投诉日期',
+            align:"center",
+            dataIndex: 'compliantDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
+          },
           // {
-          //   title:'文件上传',
+          //   title:'内容',
           //   align:"center",
           //   dataIndex: 'content',
           //   scopedSlots: {customRender: 'fileSlot'}
@@ -208,11 +212,11 @@
           }
         ],
         url: {
-          list: "/cap/companyAdminPenalties/list/" + this.companyId,
-          // delete: "/cap/companyAdminPenalties/delete",
-          // deleteBatch: "/cap/companyAdminPenalties/deleteBatch",
-          // exportXlsUrl: "/cap/companyAdminPenalties/exportXls",
-          // importExcelUrl: "cap/companyAdminPenalties/importExcel",
+          list: "/ccl/companyComplaintLetter/list",
+          // delete: "/ccl/companyComplaintLetter/delete",
+          // deleteBatch: "/ccl/companyComplaintLetter/deleteBatch",
+          // exportXlsUrl: "/ccl/companyComplaintLetter/exportXls",
+          // importExcelUrl: "ccl/companyComplaintLetter/importExcel",
         },
         dictOptions:{},
       }
@@ -227,9 +231,10 @@
       },
       tohandleEdit:function (record) {
         this.handleEdit(record);
-        this.$refs.modalForm.title="查看行政处罚信息";
+        this.$refs.modalForm.title="查看信访投诉信息";
       }
     }
+
   }
 </script>
 <style scoped>

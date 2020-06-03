@@ -23,14 +23,14 @@
           <base-info v-if="leftActive==9 && topActive==1"/>
           <base-info v-if="leftActive==10 && topActive==1"/>
           <base-info v-if="leftActive==11 && topActive==1"/>
-          <base-info v-if="leftActive==12 && topActive==1"/>
-          <base-info v-if="leftActive==13 && topActive==1"/>
-          <base-info v-if="leftActive==14 && topActive==1"/>
+          <company-env-tax-list v-if="leftActive==12 && topActive==1" :companyId="companyId"/>
+          <company-clean-product-list v-if="leftActive==13 && topActive==1" :companyId="companyId"/>
+          <company-online-info-list v-if="leftActive==14 && topActive==1" :companyId="companyId"/>
 
           <company-dynamic-supervision-list v-if="leftActive==1 && topActive==2" :companyId="companyId"/>
-          <company-admin-penalties-list v-if="leftActive==2 && topActive==2" :company-id="companyId" />
-          <company-supervisory-monitor-list v-if="leftActive==3 && topActive==2" :company-Id="companyId" />
-          <basic-info v-if="leftActive==4 && topActive==2"/>
+          <company-admin-penalties-list v-if="leftActive==2 && topActive==2" :companyId="companyId" />
+          <company-supervisory-monitor-list v-if="leftActive==3 && topActive==2" :companyId="companyId" />
+          <company-complaint-letter-list v-if="leftActive==4 && topActive==2" :companyId="companyId"/>
 
         </a-layout-content>
       </a-layout>
@@ -48,21 +48,29 @@
     import CompanyAcceptanceList from "./routeView/CompanyAcceptanceList";
     import BaseInfo from "./routeView/BaseInfo";
     import BasicInfo from "./routeView/BasicInfo";
-    import CompanyDynamicSupervisionList from '../companyDynamicSupervision/CompanyDynamicSupervisionList'
+    import CompanyDynamicSupervisionList from './routeView/CompanyDynamicSupervisionList'
     import UserinfoList from "./routeView/UserinfoList"
     import ProductMaterialList from "./routeView/ProductMaterialList";
     import Prevention from "./routeView/Prevention";
     import CompanyDirtyAllowList from "./routeView/CompanyDirtyAllowList";
     import CompanyAdminPenaltiesList from "./CompanyAdminPenaltiesList";
     import CompanySupervisoryMonitorList from "./CompanySupervisoryMonitorList";
+    import CompanyEnvTaxList from "./routeView/CompanyEnvTaxList";
+    import CompanyComplaintLetterList from "./routeView/CompanyComplaintLetterList";
+    import CompanyCleanProductList from "./routeView/CompanyCleanProductList";
+    import CompanyOnlineInfoList from "./routeView/CompanyOnlineInfoList";
     import EnvTrialList from "./routeView/EnvTrialList";
     export default {
       name: "CompanyDetail",
       components: {
         CompanyAcceptanceList,
         BusinessMenu,BaseInfo,BasicInfo,Qualification,Prevention,CompanyDirtyAllowList,CompanyDynamicSupervisionList, CompanyAdminPenaltiesList,
-        CompanySupervisoryMonitorList,
+        CompanySupervisoryMonitorList,CompanyComplaintLetterList,
         UserinfoList,
+        ProductMaterialList,
+        CompanyEnvTaxList,
+        CompanyCleanProductList,
+        CompanyOnlineInfoList,
         ProductMaterialList,
         EnvTrialList},
       props:{

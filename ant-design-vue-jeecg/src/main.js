@@ -41,7 +41,12 @@ import vueBus from '@/utils/vueBus';
 import JeecgComponents from '@/components/jeecg/index'
 import '@/assets/less/JAreaLinkage.less'
 import VueAreaLinkage from 'vue-area-linkage'
+import BaiduMap from 'vue-baidu-map'
 
+Vue.use(BaiduMap, {
+  // ak 是在百度地图开发者平台申请的密钥 详见 http://lbsyun.baidu.com/apiconsole/key */
+  ak: 'YOUR_APP_KEY'
+})
 Vue.config.productionTip = false
 Vue.use(Storage, config.storageOptions)
 Vue.use(Antd)

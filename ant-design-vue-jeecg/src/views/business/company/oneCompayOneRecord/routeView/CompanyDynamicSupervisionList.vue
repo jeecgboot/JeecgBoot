@@ -4,11 +4,9 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :xl="10" :lg="11" :md="12" :sm="24">
-            <a-form-item label="发文日期">
-              <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.reportDate_begin"></j-date>
-              <span class="query-group-split-cust"></span>
-              <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.reportDate_end"></j-date>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="申报年份">
+              <a-input placeholder="请输入申报年份" v-model="queryParam.reportYear"></a-input>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
@@ -27,9 +25,11 @@
     <!-- 查询区域-END -->
     
     <!-- 操作按钮区域 -->
+
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('行政处罚信息')">导出</a-button>
+      <!--
+      <a-button type="primary" icon="download" @click="handleExportXls('企业年度动态监管')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
@@ -39,6 +39,7 @@
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
+      -->
     </div>
 
     <!-- table区域-begin -->
@@ -48,6 +49,8 @@
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
 
+
+      <!--:rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"-->
       <a-table
         ref="table"
         size="middle"
@@ -83,7 +86,6 @@
 
         <span slot="action" slot-scope="text, record">
           <a @click="tohandleEdit(record)">查看</a>
-
 <!--          <a-divider type="vertical" />-->
 <!--          <a-dropdown>-->
 <!--            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>-->
@@ -97,10 +99,11 @@
 <!--          </a-dropdown>-->
         </span>
 
+
       </a-table>
     </div>
 
-    <companyAdminPenalties-modal ref="modalForm" @ok="modalFormOk"></companyAdminPenalties-modal>
+    <companyDynamicSupervision-modal ref="modalForm" @ok="modalFormOk"></companyDynamicSupervision-modal>
   </a-card>
 </template>
 
@@ -109,23 +112,21 @@
   import '@/assets/less/TableExpand.less'
   import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import CompanyAdminPenaltiesModal from './routeView/CompanyAdminPenaltiesModal'
-  import JDate from '@/components/jeecg/JDate.vue'
-  import {filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import CompanyDynamicSupervisionModal from './CompanyDynamicSupervisionModal'
+  import store from '@/store/'
 
   export default {
-    name: "CompanyAdminPenaltiesList",
+    name: "CompanyDynamicSupervisionList",
     mixins:[JeecgListMixin, mixinDevice],
     components: {
-      JDate,
-      CompanyAdminPenaltiesModal
+      CompanyDynamicSupervisionModal
     },
-    props: {
+    props:{
       companyId:''
     },
     data () {
       return {
-        description: '行政处罚信息管理页面',
+        description: '企业年度动态监管管理页面',
         // 表头
         columns: [
           {
@@ -139,23 +140,21 @@
             }
           },
           {
-            title:'文件名称',
+            title:'材料名称',
             align:"center",
             dataIndex: 'documentName'
           },
           {
-            title:'文件编号',
+            title:'材料类型',
             align:"center",
-            dataIndex: 'documentNo'
+            dataIndex: 'documentType_dictText'
           },
           {
-            title:'发文日期',
+            title:'所属年份',
             align:"center",
-            dataIndex: 'reportDate',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
+            dataIndex: 'reportYear'
           },
+
           // {
           //   title:'数据状态',
           //   align:"center",
@@ -166,8 +165,10 @@
           //   align:"center",
           //   dataIndex: 'companyId'
           // },
+          //
+          //
           // {
-          //   title:'文件上传',
+          //   title:'内容',
           //   align:"center",
           //   dataIndex: 'content',
           //   scopedSlots: {customRender: 'fileSlot'}
@@ -208,11 +209,11 @@
           }
         ],
         url: {
-          list: "/cap/companyAdminPenalties/list/" + this.companyId,
-          // delete: "/cap/companyAdminPenalties/delete",
-          // deleteBatch: "/cap/companyAdminPenalties/deleteBatch",
-          // exportXlsUrl: "/cap/companyAdminPenalties/exportXls",
-          // importExcelUrl: "cap/companyAdminPenalties/importExcel",
+          list: "/cds/companyDynamicSupervision/list/"+this.companyId,
+          // delete: "/cds/companyDynamicSupervision/delete",
+          // deleteBatch: "/cds/companyDynamicSupervision/deleteBatch",
+          // exportXlsUrl: "/cds/companyDynamicSupervision/exportXls",
+          // importExcelUrl: "cds/companyDynamicSupervision/importExcel",
         },
         dictOptions:{},
       }
@@ -225,9 +226,9 @@
     methods: {
       initDictConfig(){
       },
-      tohandleEdit:function (record) {
+      tohandleEdit:function(record){
         this.handleEdit(record);
-        this.$refs.modalForm.title="查看行政处罚信息";
+        this.$refs.modalForm.title="查看年度动态监管";
       }
     }
   }
