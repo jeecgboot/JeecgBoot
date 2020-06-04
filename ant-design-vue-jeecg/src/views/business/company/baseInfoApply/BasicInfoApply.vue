@@ -9,6 +9,7 @@
       </a-col>
     </a-row>
     <jmodal-base-info ref="baseInfoForm"></jmodal-base-info>
+     <companyApply-modal ref="modalForm" @ok="modalFormOk"></companyApply-modal>
    </div>
 </template>
 
@@ -18,6 +19,7 @@
   import {queryLatestArchivedData} from "../../requestAction/request"
   import LeftCard from "../../component/LeftCard";
   import JmodalBaseInfo from "./modules/childModules/JmodalBaseInfo";
+  import CompanyApplyModal from "./modules/childModules/CompanyApplyModal";
     export default {
         name: "BasicInfoApply",
       components:{
@@ -40,11 +42,12 @@
       computed:{
           cardTitle(){
             if(JSON.stringify(this.latestArchived)=='{}'){
-              this.hoverable = true;
-              return "最新归档信息";
+              this.hoverable = false;
+              return "暂无基础信息申报";
+
             }
-            this.hoverable = false;
-            return "暂无基础信息申报";
+            this.hoverable = true;
+            return "最新归档信息";
 
           }
       },

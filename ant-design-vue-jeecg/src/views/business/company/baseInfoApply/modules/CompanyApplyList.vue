@@ -82,7 +82,7 @@
       </a-table>
     </div>
 
-    <companyApply-modal ref="modalForm" @ok="modalFormOk"></companyApply-modal>
+
   </a-card>
 </template>
 
