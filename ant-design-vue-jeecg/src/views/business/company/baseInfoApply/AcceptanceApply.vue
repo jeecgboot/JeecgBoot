@@ -8,7 +8,7 @@
         <company-apply-list :company-id="companyId" :from-table="fromTable" @toDetail = "applyDetail"></company-apply-list>
       </a-col>
     </a-row>
-    <jmodal-base-info ref="baseInfoForm"></jmodal-base-info>
+
    </div>
 </template>
 
@@ -17,18 +17,16 @@
   import CompanyApplyList from "./modules/CompanyApplyList"
   import {queryLatestArchivedData} from "../../requestAction/request"
   import LeftCard from "../../component/LeftCard";
-  import JmodalBaseInfo from "./modules/childModules/JmodalBaseInfo";
     export default {
-        name: "BasicInfoApply",
+        name: "AcceptanceApply",
       components:{
-        JmodalBaseInfo,
         LeftCard,
         CompanyApplyList,
         queryLatestArchivedData
       },
         data(){
           return {
-            fromTable:"company_baseinfo",
+            fromTable:"company_acceptance",
             hoverable:true,
             //最新归档信息数据
             latestArchived:{},
@@ -71,7 +69,7 @@
 
           let that = this;
           //查询最新归档信息
-
+debugger
         queryLatestArchivedData({companyId:this.companyId,fromTable:this.fromTable}).then((res)=>{
           if(res.success){
             that.latestArchived = res.result;

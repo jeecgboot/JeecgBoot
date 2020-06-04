@@ -145,10 +145,10 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
 	 @AutoLog(value = "企业申报基础表-通过id查询")
 	 @ApiOperation(value="企业申报基础表-通过id查询", notes="企业申报基础表-通过id查询")
 	 @GetMapping(value = "/queryLatestArchivedData")
-	 public Result<?> queryLatestArchivedData(@RequestParam(name="companyId",required=true) String companyId) {
+	 public Result<?> queryLatestArchivedData(@RequestParam(name="companyId",required=true) String companyId,@RequestParam(name="fromTable",required=true) String fromTable) {
 	 	 //查询正常状态的  申报信息
 		 List<CompanyApply> companyApplys = companyApplyService.list(new QueryWrapper<CompanyApply>().lambda()
-				 .eq(CompanyApply::getCompanyId,companyId).eq(CompanyApply::getStatus, Constant.status.NORMAL));//审核通过的
+				 .eq(CompanyApply::getCompanyId,companyId).eq(CompanyApply::getStatus, Constant.status.NORMAL).eq(CompanyApply::getFromTable,fromTable));//审核通过的
 
 		 if(companyApplys==null||companyApplys.isEmpty()) {
 			 return Result.ok();
