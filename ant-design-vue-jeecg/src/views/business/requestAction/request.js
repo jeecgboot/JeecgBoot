@@ -6,7 +6,7 @@ const loadCompanyBaseInfo = (params)=>getAction("/companyBasic/loadBaseInfo",par
 const loadQualifications = (params)=>postAction("/companyQualification/queryByCompanyId",params);
 const loadBaiduMap = (params)=>getAction("/envtax/companyEnvTax/loadBaiduMap",params);
 //查詢 最新的企业归档基本信息
-const queryLatestArchivedData = (params)=>postAction("/company/queryLatestArchivedData",params);
+const queryLatestArchivedData = (params)=>getAction("/company/apply/queryLatestArchivedData",params);
 
 
 export {
