@@ -143,7 +143,7 @@
 		<dependency>
          	<groupId>com.alibaba</groupId>
          	<artifactId>fastjson</artifactId>
-         	<version>1.2.60</version>
+         	<version>1.2.69</version>
         </dependency>
       
 		<!--mysql-->
@@ -314,7 +314,7 @@
 		<dependency>
 		    <groupId>cn.hutool</groupId>
 		    <artifactId>hutool-all</artifactId>
-		    <version>4.5.11</version>
+		    <version>5.0.7</version>
 		</dependency>
 
 		<!-- mini文件存储服务 -->
