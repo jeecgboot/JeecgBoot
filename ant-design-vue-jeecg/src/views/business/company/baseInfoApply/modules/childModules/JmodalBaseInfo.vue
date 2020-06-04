@@ -8,8 +8,9 @@
     switchFullscreen
     @ok="handleOk"
     @cancel="handleCancel"
-    cancelText="关闭">
-    <base-info ref="baseInfoForm" :company-id="companyId"></base-info>
+    cancelText="关闭"
+    v-if="visible">
+    <base-info  :companyId="companyId"></base-info>
   </j-modal>
 </template>
 

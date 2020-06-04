@@ -245,15 +245,15 @@
     },
     props:{
       companyId:'',
-
     },
     data () {
       return {
         form: this.$form.createForm(this),
+        companyid:this.companyId,
         title:"操作",
         datecolums:['shortName','socialCreditCode','companyType','administrativeRegion','industry','address','longitude','dimension','corporate','economicType','affiliation','envProtectPrincipal','principalPhone','envProtectContact','contactPhone','emergencyLeader','leaderPhone','drainageArea','postalCode','fax','email','industrialOutput','staffCount','enterpriseSize','factoryArea','ischemicals','attachedPark','parentCompany','groupCompany','registeCapital','annualSalesIncome','annualProfit','totalAssets','registeAddress','operateScope','profile'],
         model: {},
-        disable:true,
+
         labelCol: {
           xs: { span: 24 },
           sm: { span: 6},
@@ -330,19 +330,29 @@
         }
       }
     },
+    computed:{
+      disable(){
+        //布尔类型转一下
+        //是不是申请
+          return !Boolean(this.companyid==="");
+      }
+    },
     created () {
-      console.log("baseinfo create")
+      console.log("baseinfo create",this.companyId )
       let that = this;
       let record = {};
-      loadCompanyBaseInfo({companyId: this.companyId}).then((res)=>{
-        if(res.success){
-          record = res.result;
-          that.edit(record);
-        }else{
-          console.log(res.message);
-        }
-      });
-
+      if(this.companyId ===""){
+        that.edit({});
+      }else {
+        loadCompanyBaseInfo({companyId: this.companyId}).then((res) => {
+          if (res.success) {
+            record = res.result;
+            that.edit(record);
+          } else {
+            console.log(res.message);
+          }
+        });
+      }
 
 
 

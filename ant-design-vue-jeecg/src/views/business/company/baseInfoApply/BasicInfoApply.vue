@@ -5,7 +5,7 @@
         <left-card :title="cardTitle" :hoverable="hoverable" @toDetail = "latestDetail"></left-card>
       </a-col>
       <a-col span="20">
-        <company-apply-list :company-id="companyId" from-table="company_baseinfo" @toDetail = "applyDetail"></company-apply-list>
+        <company-apply-list :company-id="companyId" :from-table="fromTable" @toDetail = "applyDetail"></company-apply-list>
       </a-col>
     </a-row>
     <jmodal-base-info ref="baseInfoForm"></jmodal-base-info>
@@ -28,7 +28,7 @@
       },
         data(){
           return {
-
+            fromTable:"company_baseinfo",
             hoverable:true,
             //最新归档信息数据
             latestArchived:{},
@@ -39,7 +39,7 @@
       //计算属性
       computed:{
           cardTitle(){
-            if(this.latestArchived.companyId){
+            if(JSON.stringify(this.latestArchived)=='{}'){
               this.hoverable = true;
               return "最新归档信息";
             }
@@ -51,14 +51,20 @@
         methods:{
           //详情
           latestDetail(){
-            let that = this;
             //查询详情数据
-            that.$refs.baseInfoForm.title="详情";
-            that.$refs.baseInfoForm.disableSubmit = false;
-            that.$refs.baseInfoForm.visible = true;
+            this.$refs.baseInfoForm.title="详情";
+            this.$refs.baseInfoForm.disableSubmit = false;
+            this.$refs.baseInfoForm.visible = true;
+            this.$refs.baseInfoForm.confirmLoading = false;
+            this.$refs.baseInfoForm.companyId = this.$store.getters.userInfo.companyIds[0];
           },
           //新增申请
           apply(){
+            this.$refs.baseInfoForm.title="申请";
+            this.$refs.baseInfoForm.disableSubmit = true;
+            this.$refs.baseInfoForm.visible = true;
+            this.$refs.baseInfoForm.confirmLoading = true;
+            this.$refs.baseInfoForm.companyId = "";
 
           },
           applyDetail(){
@@ -72,7 +78,7 @@
           let that = this;
           //查询最新归档信息
 
-        queryLatestArchivedData({companyId:this.companyId}).then((res)=>{
+        queryLatestArchivedData({companyId:this.companyId,fromTable:this.fromTable}).then((res)=>{
           if(res.success){
             that.latestArchived = res.result;
             console.log(res.result);

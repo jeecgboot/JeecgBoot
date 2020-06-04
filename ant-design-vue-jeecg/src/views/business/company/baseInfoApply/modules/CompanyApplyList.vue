@@ -125,15 +125,15 @@
           {
             title:'更新日期',
             align:"center",
-            dataIndex: 'updateTime',
+            dataIndex: 'createTime',
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
             }
           },
           {
-            title:'数据状态',
+            title:'生效日期',
             align:"center",
-            dataIndex: 'companyId'
+            dataIndex: 'updateTime'
           },
           {
             title:'状态',
