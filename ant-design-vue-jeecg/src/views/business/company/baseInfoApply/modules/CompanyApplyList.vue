@@ -64,9 +64,9 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+          <a @click="handleDetail(record)">详情</a>
 
-          <a-divider type="vertical" />
+          <!--<a-divider type="vertical" />
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
@@ -76,7 +76,7 @@
                 </a-popconfirm>
               </a-menu-item>
             </a-menu>
-          </a-dropdown>
+          </a-dropdown>-->
         </span>
 
       </a-table>
@@ -100,13 +100,15 @@
       CompanyApplyModal
     },
   props:{
-    companyId:''
+    companyId:'',
+    fromTable:''
   },
     data () {
       return {
         description: '企业申报基础表管理页面',
         queryParam:{
-          companyId:this.companyId
+          companyId:this.companyId,
+          fromTable:this.fromTable
         },
         // 表头
         columns: [
@@ -138,13 +140,9 @@
             align:"center",
             dataIndex: 'status'
           },
+
           {
-            title:'备注',
-            align:"center",
-            dataIndex: 'content'
-          },
-          {
-            title: '操作',
+            title: '详情',
             dataIndex: 'action',
             align:"center",
             // fixed:"right",
@@ -169,7 +167,11 @@
     },
     methods: {
       initDictConfig(){
-      }
+      },
+      handleDetail(record)
+      {
+        this.$emit("toDetail",record);
+      } ,
     }
   }
 </script>

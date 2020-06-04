@@ -331,17 +331,13 @@
       }
     },
     created () {
+      console.log("baseinfo create")
       let that = this;
       let record = {};
       loadCompanyBaseInfo({companyId: this.companyId}).then((res)=>{
         if(res.success){
           record = res.result;
-          that.form.resetFields();
-          that.model = Object.assign({}, record);
-          console.log("companyBaseinfo",this.model);
-          that.$nextTick(() => {
-            that.form.setFieldsValue(pick(this.model,'sysOrgCode','status','companyId','shortName','socialCreditCode','companyType','administrativeRegion','industry','address','longitude','dimension','corporate','economicType','affiliation','envProtectPrincipal','principalPhone','envProtectContact','contactPhone','emergencyLeader','leaderPhone','drainageArea','postalCode','fax','email','industrialOutput','staffCount','enterpriseSize','factoryArea','ischemicals','attachedPark','parentCompany','groupCompany','registeCapital','annualSalesIncome','annualProfit','totalAssets','registeAddress','operateScope','profile'))
-          })
+          that.edit(record);
         }else{
           console.log(res.message);
         }
@@ -361,7 +357,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,))
+          this.form.setFieldsValue(pick(this.model,...this.datecolums))
         })
       },
       close () {
@@ -404,7 +400,7 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'sysOrgCode','status','companyId','shortName','socialCreditCode','companyType','administrativeRegion','industry','address','longitude','dimension','corporate','economicType','affiliation','envProtectPrincipal','principalPhone','envProtectContact','contactPhone','emergencyLeader','leaderPhone','drainageArea','postalCode','fax','email','industrialOutput','staffCount','enterpriseSize','factoryArea','ischemicals','attachedPark','parentCompany','groupCompany','registeCapital','annualSalesIncome','annualProfit','totalAssets','registeAddress','operateScope','profile'))
+        this.form.setFieldsValue(pick(row,...this.datecolums))
       },
 
       

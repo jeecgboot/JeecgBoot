@@ -1,36 +1,28 @@
 <template>
+   <div>
     <a-row >
       <a-col span="4">
-        <template>
-
-            <a-card :title="title"  :hoverable="hoverable"  :headStyle = "{'font-size':'16px','text-align':'center'}"
-                    style="width: 90%;">
-              <p>简略信息</p>
-              <p>简略信息</p>
-              <p>简略信息</p>
-              <p>简略信息</p>
-              <p>简略信息</p>
-              <p>一些简略信息</p>
-              <template slot="actions" class="ant-card-actions">
-                <span @click="detail" style="font-size: 16px">详情</span>
-                <span @click="apply" style="font-size: 16px">申请</span>
-              </template>
-            </a-card>
-        </template>
+        <left-card :title="cardTitle" :hoverable="hoverable" @toDetail = "latestDetail"></left-card>
       </a-col>
       <a-col span="20">
-        <company-apply-list></company-apply-list>
+        <company-apply-list :company-id="companyId" from-table="company_baseinfo" @toDetail = "applyDetail"></company-apply-list>
       </a-col>
     </a-row>
+    <jmodal-base-info ref="baseInfoForm"></jmodal-base-info>
+   </div>
 </template>
 
 <script>
 
-  import CompanyApplyList from "./modules/CompanyApplyList";
+  import CompanyApplyList from "./modules/CompanyApplyList"
   import {queryLatestArchivedData} from "../../requestAction/request"
+  import LeftCard from "../../component/LeftCard";
+  import JmodalBaseInfo from "./modules/childModules/JmodalBaseInfo";
     export default {
         name: "BasicInfoApply",
       components:{
+        JmodalBaseInfo,
+        LeftCard,
         CompanyApplyList,
         queryLatestArchivedData
       },
@@ -40,30 +32,38 @@
             hoverable:true,
             //最新归档信息数据
             latestArchived:{},
-            companyId:this.$store.getters.userInfo.companyIds[0]
+            companyId:this.$store.getters.userInfo.companyIds[0],
+
           }
         },
       //计算属性
       computed:{
-          title(){
-
-            if(this.latestArchived){
-              return "暂无基础信息申报";
+          cardTitle(){
+            if(this.latestArchived.companyId){
+              this.hoverable = true;
+              return "最新归档信息";
             }
-            return "最新归档信息";
+            this.hoverable = false;
+            return "暂无基础信息申报";
 
           }
       },
         methods:{
           //详情
-          detail(){
-
+          latestDetail(){
+            let that = this;
+            //查询详情数据
+            that.$refs.baseInfoForm.title="详情";
+            that.$refs.baseInfoForm.disableSubmit = false;
+            that.$refs.baseInfoForm.visible = true;
           },
           //新增申请
           apply(){
 
-          }
+          },
+          applyDetail(){
 
+          }
 
 
         },
@@ -71,7 +71,7 @@
 
           let that = this;
           //查询最新归档信息
-        debugger
+
         queryLatestArchivedData({companyId:this.companyId}).then((res)=>{
           if(res.success){
             that.latestArchived = res.result;
