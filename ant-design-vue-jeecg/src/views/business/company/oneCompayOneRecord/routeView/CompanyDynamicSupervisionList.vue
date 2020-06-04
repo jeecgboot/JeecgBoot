@@ -103,7 +103,7 @@
       </a-table>
     </div>
 
-    <companyDynamicSupervision-modal ref="modalForm" @ok="modalFormOk"></companyDynamicSupervision-modal>
+    <companyDynamicSupervision-modal ref="modalForm" @ok="modalFormOk" :companyId="companyId"></companyDynamicSupervision-modal>
   </a-card>
 </template>
 
@@ -210,8 +210,8 @@
         ],
         url: {
           list: "/cds/companyDynamicSupervision/list/"+this.companyId,
-          // delete: "/cds/companyDynamicSupervision/delete",
-          // deleteBatch: "/cds/companyDynamicSupervision/deleteBatch",
+          delete: "/cds/companyDynamicSupervision/delete",
+          deleteBatch: "/cds/companyDynamicSupervision/deleteBatch",
           // exportXlsUrl: "/cds/companyDynamicSupervision/exportXls",
           // importExcelUrl: "cds/companyDynamicSupervision/importExcel",
         },

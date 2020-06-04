@@ -79,13 +79,16 @@
       JUpload,
       JDictSelectTag,
     },
+    props:{
+      companyId:''
+    },
     data () {
       return {
         form: this.$form.createForm(this),
         title:"操作",
         width:800,
         visible: false,
-        disabled:true,
+        // disabled:true,
         model: {},
         labelCol: {
           xs: { span: 24 },
@@ -110,11 +113,11 @@
               { required: true, message: '请输入数据状态!'},
             ]
           },
-          companyId: {
-            rules: [
-              { required: true, message: '请输入企业id!'},
-            ]
-          },
+          // companyId: {
+          //   rules: [
+          //     { required: true, message: '请输入企业id!'},
+          //   ]
+          // },
           compliantDate: {
             rules: [
               { required: true, message: '请输入投诉日期!'},
@@ -171,6 +174,7 @@
                method = 'put';
             }
             let formData = Object.assign(this.model, values);
+            formData.companyId = this.companyId;
             console.log("表单提交数据",formData)
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){

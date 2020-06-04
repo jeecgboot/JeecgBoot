@@ -88,12 +88,15 @@
       JUpload,
       JDictSelectTag,
     },
+    props:{
+      companyId:''
+    },
     data () {
       return {
         form: this.$form.createForm(this),
         title:"操作",
         width:800,
-        disabled : true,
+        // disabled : true,
         visible: false,
         model: {},
         labelCol: {
@@ -180,6 +183,7 @@
                method = 'put';
             }
             let formData = Object.assign(this.model, values);
+            formData.companyId = this.companyId;
             console.log("表单提交数据",formData)
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
