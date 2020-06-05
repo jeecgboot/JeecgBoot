@@ -92,7 +92,7 @@
         form: this.$form.createForm(this),
         title:"操作",
         width:800,
-        // disabled:true,
+        disabled:true,
         visible: false,
         model: {},
         labelCol: {

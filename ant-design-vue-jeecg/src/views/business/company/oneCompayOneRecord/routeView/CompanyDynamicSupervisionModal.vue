@@ -11,35 +11,40 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
-        <!--
-        <a-form-item label="数据状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-dict-select-tag type="list" v-decorator="['status', validatorRules.status]" :trigger-change="true" dictCode="statue" placeholder="请选择数据状态"/>
-        </a-form-item>
-        <a-form-item label="企业id" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['companyId', validatorRules.companyId]" placeholder="请输入企业id"></a-input>
-        </a-form-item>
-        -->
+
+<!--        <a-form-item label="数据状态" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+<!--          <j-dict-select-tag type="list" v-decorator="['status', validatorRules.status]" :trigger-change="true" dictCode="statue" placeholder="请选择数据状态"/>-->
+<!--        </a-form-item>-->
+<!--        <a-form-item label="企业id" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+<!--          <a-input v-decorator="['companyId', validatorRules.companyId]" placeholder="请输入企业id"></a-input>-->
+<!--        </a-form-item>-->
+
         <a-row>
           <a-col span="12">
             <a-form-item label="企业名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['CompanyName', validatorRules.companyName]" placeholder="请输入企业名称" :disabled="disabled"></a-input>
+              <a-select show-search style="width: 100%" placeholder="请输入企业名称" @change="handleChange" :value="value" :disabled="disableSubmit">
+                <a-select-option v-for="item in items" :key="item.key"  >
+                  {{item.value}}
+                </a-select-option>
+              </a-select>
+              <!--a-<input v-decorator="['CompanyName', validatorRules.companyName]" placeholder="请输入企业名称" :disabled="disabled"></a-input>-->
             </a-form-item>
           </a-col>
           <a-col span="12">
             <a-form-item label="申报年份" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number v-decorator="['reportYear', validatorRules.reportYear]" style="width: 100%" :disabled="disabled"/>
+              <a-input-number v-decorator="['reportYear', validatorRules.reportYear]" style="width: 100%" :disabled="disableSubmit"/>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col span="12">
             <a-form-item label="材料类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-dict-select-tag type="list" v-decorator="['documentType', validatorRules.documentType]" :trigger-change="true" dictCode="supervision_document_type" :disabled="disabled"/>
+              <j-dict-select-tag type="list" v-decorator="['documentType', validatorRules.documentType]" :trigger-change="true" dictCode="supervision_document_type" :disabled="disableSubmit"/>
             </a-form-item>
           </a-col>
           <a-col span="12">
             <a-form-item label="材料名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['documentName', validatorRules.documentName]" :disabled="disabled"></a-input>
+              <a-input v-decorator="['documentName', validatorRules.documentName]" :disabled="disableSubmit"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
@@ -51,20 +56,26 @@
           </a-col>
         </a-row>
 
-        <!--
-        <a-form-item label="申报人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['createBy']" placeholder="请输入申报人"></a-input>
-        </a-form-item>
-        <a-form-item label="申报时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择申报时间" v-decorator="['createTime']" :trigger-change="true" style="width: 100%"/>
-        </a-form-item>
-        <a-form-item label="审核人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['updateBy']" placeholder="请输入审核人"></a-input>
-        </a-form-item>
-        <a-form-item label="审核时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择审核时间" v-decorator="['updateTime']" :trigger-change="true" style="width: 100%"/>
-        </a-form-item>
-        -->
+
+<!--        <a-form-item label="申报人" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+<!--          <a-input v-decorator="['createBy']" placeholder="请输入申报人"></a-input>-->
+<!--        </a-form-item>-->
+<!--        <a-form-item label="申报时间" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+<!--          <j-date placeholder="请选择申报时间" v-decorator="['createTime']" :trigger-change="true" style="width: 100%"/>-->
+<!--        </a-form-item>-->
+        <a-row v-if="monitor === true">
+          <a-col span="12">
+            <a-form-item label="审核人" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['updateBy',validatorRules.updateBy]" placeholder="请输入审核人" :disabled="disableSubmit"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col span="12">
+            <a-form-item label="审核时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-date placeholder="请选择审核时间" v-decorator="['updateTime']" :trigger-change="true" style="width: 100%" :disabled="disableSubmit"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+
 
       </a-form>
     </a-spin>
@@ -79,6 +90,7 @@
   import JDate from '@/components/jeecg/JDate'
   import JUpload from '@/components/jeecg/JUpload'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
+  import {queryCompanyName} from "../../../requestAction/request";
 
 
   export default {
@@ -89,14 +101,20 @@
       JDictSelectTag,
     },
     props:{
-      companyId:''
+      companyId:'',
+      disableSubmit:'',
+      monitor:{
+        type:Boolean
+      }
     },
     data () {
       return {
         form: this.$form.createForm(this),
         title:"操作",
         width:800,
-        // disabled : true,
+        value:'',
+        items:[],
+        // disabled : false,
         visible: false,
         model: {},
         labelCol: {
@@ -150,6 +168,7 @@
       }
     },
     created () {
+
     },
     methods: {
       add () {
@@ -159,8 +178,16 @@
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
+        let that = this;
+        debugger
+        queryCompanyName({companyIds:this.$store.getters.userInfo.companyIds.join(',')}).then((res) => {
+          debugger
+          if(res.success){
+            that.items = res.result;
+          }
+        })
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'reportYear','documentType','documentName','content'))
+          this.form.setFieldsValue(pick(this.model,'reportYear','documentType','documentName','content','updateBy','updateTime'))
         })
       },
       close () {
@@ -206,8 +233,13 @@
       popupCallback(row){
         this.form.setFieldsValue(pick(row,'status','companyId','reportYear','documentType','documentName','content','createBy','createTime','updateBy','updateTime'))
       },
+      handleChange(value) {
+        console.log(value);
+        this.value = value;
 
+      },
 
     }
+
   }
 </script>

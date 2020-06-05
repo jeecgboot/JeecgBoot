@@ -92,7 +92,7 @@
         title:"操作",
         width:800,
         visible: false,
-        // disabled: true,
+        disabled: true,
         model: {},
         labelCol: {
           xs: { span: 24 },

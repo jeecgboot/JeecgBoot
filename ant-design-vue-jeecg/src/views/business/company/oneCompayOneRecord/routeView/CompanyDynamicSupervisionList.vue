@@ -4,19 +4,28 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="申报年份">
-              <a-input placeholder="请输入申报年份" v-model="queryParam.reportYear"></a-input>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24" v-if="role === 'monitor'">
+            <a-form-item label="数据状态">
+              <j-dict-select-tag placeholder="请选择数据状态" v-model="queryParam.status" dictCode="statue"/>
             </a-form-item>
           </a-col>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24" v-if="role === 'monitor'">
+            <a-form-item label="企业id">
+<!--              <j-search-select-tag placeholder="请选择企业id" v-model="queryParam.companyId" dict="company_dynamic_supervision,companyId,companyId"/>-->
+              <a-input placeholder="请输入企业id" v-model="queryParam.companyId"></a-input>
+            </a-form-item>
+          </a-col>
+
+            <a-col :xl="6" :lg="7" :md="8" :sm="24">
+              <a-form-item label="申报年份">
+                <a-input placeholder="请输入申报年份" v-model="queryParam.reportYear" ></a-input>
+              </a-form-item>
+            </a-col>
+
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
             </span>
           </a-col>
         </a-row>
@@ -26,31 +35,32 @@
     
     <!-- 操作按钮区域 -->
 
-    <div class="table-operator">
+    <div class="table-operator" v-if="role === 'monitor'">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <!--
       <a-button type="primary" icon="download" @click="handleExportXls('企业年度动态监管')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
+      -->
       <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
+        <a-menu slot="overlay" >
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
-      -->
+
     </div>
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;" v-if="role==='monitor'">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
 
 
-      <!--:rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"-->
+
       <a-table
         ref="table"
         size="middle"
@@ -60,7 +70,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         class="j-table-force-nowrap"
         @change="handleTableChange">
 
@@ -103,7 +113,7 @@
       </a-table>
     </div>
 
-    <companyDynamicSupervision-modal ref="modalForm" @ok="modalFormOk" :companyId="companyId"></companyDynamicSupervision-modal>
+    <companyDynamicSupervision-modal ref="modalForm" @ok="modalFormOk" :companyId="companyid" :monitor="role === 'monitor'"></companyDynamicSupervision-modal>
   </a-card>
 </template>
 
@@ -122,11 +132,13 @@
       CompanyDynamicSupervisionModal
     },
     props:{
-      companyId:''
+      companyId:'',
+      role:''
     },
     data () {
       return {
         description: '企业年度动态监管管理页面',
+        companyid:this.companyId,
         // 表头
         columns: [
           {
@@ -187,17 +199,17 @@
           //   }
           // },
           // {
-          //   title:'审核人',
-          //   align:"center",
-          //   dataIndex: 'updateBy'
-          // },
-          // {
           //   title:'审核时间',
           //   align:"center",
           //   dataIndex: 'updateTime',
           //   customRender:function (text) {
           //     return !text?"":(text.length>10?text.substr(0,10):text)
           //   }
+          // },
+          // {
+          //   title:'审核人',
+          //   align:"center",
+          //   dataIndex: 'updateBy'
           // },
           {
             title: '操作',
@@ -229,6 +241,11 @@
       tohandleEdit:function(record){
         this.handleEdit(record);
         this.$refs.modalForm.title="查看年度动态监管";
+      }
+    },
+    created(){
+      if(this.companyid==null) {
+        this.companyid = this.$store.getters.userInfo.companyIds[0]
       }
     }
   }
