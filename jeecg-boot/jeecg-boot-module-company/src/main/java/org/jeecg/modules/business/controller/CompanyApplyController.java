@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.modules.business.service.ICompanyBaseinfoService;
 import org.jeecg.modules.business.utils.Constant;
+import org.jeecg.modules.business.utils.Equator;
+import org.jeecg.modules.business.utils.FieldBaseEquator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -163,6 +166,24 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
 		 }
 
 	 }
+	 /**
+	  * 查询申报前后对比信息
+	  *
+	  * @param beforeId
+	  * @param afterId
+	  */
+	 @RequestMapping(value = "/queryComparisonData")
+	 @AutoLog(value = "查询申报前后对比信息")
+	 @ApiOperation(value="通过企业申报基础表的前后id", notes="查询申报前后对比信息")
+	 public Result<?> queryComparisonData(@RequestParam(name="beforeId",required=true) String beforeId
+			 ,@RequestParam(name="afterId",required=true) String afterId) {
+		 CompanyBaseinfo after  = companyBaseinfoService.getById(afterId);
+		 CompanyBaseinfo before = companyBaseinfoService.getById(beforeId);
+		 //排除字段
+		 List<String>  excludeFields = Arrays.asList("serialVersionUID","id","createBy","createTime","updateBy","updateTime","sysOrgCode","status");
+		 Equator fieldBaseEquator = new FieldBaseEquator(null,excludeFields);
+		 return Result.ok(fieldBaseEquator.getDiffFields(before,after));
+	 }
     /**
     * 导出excel
     *
@@ -173,6 +194,7 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
     public ModelAndView exportXls(HttpServletRequest request, CompanyApply companyApply) {
         return super.exportXls(request, companyApply, CompanyApply.class, "企业申报基础表");
     }
+
 
     /**
       * 通过excel导入数据
