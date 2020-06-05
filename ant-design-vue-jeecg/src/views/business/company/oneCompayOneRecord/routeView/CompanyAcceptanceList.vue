@@ -25,7 +25,7 @@
     <!-- 查询区域-END -->
     
     <!-- 操作按钮区域 -->
-    <div class="table-operator">
+    <div class="table-operator" v-if="operationshow">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
@@ -33,7 +33,7 @@
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
-      <a-button @click="declare" type="primary" icon="snippets">申报</a-button>
+      <a-button @click="batchDeclare" type="primary" icon="snippets">申报</a-button>
     </div>
 
     <!-- table区域-begin -->
@@ -78,14 +78,13 @@
 
         <span slot="action" slot-scope="text, record">
           <!--权限控制查看还是编辑，查看只允许查看不允许修改-->
-          <a @click="handleEdit(record)" v-if="">查看</a>
-           <a @click="handleEdit(record)" v-if="">编辑</a>
-          <a-divider type="vertical" />
+          <a @click="handleEdit(record)" v-if="operationshow">编辑</a>
+           <a-divider v-if="operationshow" type="vertical" />
+           <a @click="handleview(record)" v-if="!operationshow">查看</a>
           <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
+                  <a v-if="operationshow">删除</a>
           </a-popconfirm>
         </span>
-
       </a-table>
     </div>
 
@@ -99,6 +98,7 @@
   import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import CompanyAcceptanceModal from './CompanyAcceptanceModal'
+  import {getAction} from "../../../../../api/manage";
 
   export default {
     name: "CompanyAcceptanceList",
@@ -109,6 +109,11 @@
     data () {
       return {
         description: '竣工验收信息管理页面',
+
+        queryParam: {
+          companyId: this.companyId,
+          status:this.status
+        },
         // 表头
         columns: [
           {
@@ -154,19 +159,56 @@
           }
         ],
         url: {
-          list: "/business/companyAcceptance/list/"+this.companyId,
+          list: "/business/companyAcceptance/list",
           delete: "/business/companyAcceptance/delete",
           deleteBatch: "/business/companyAcceptance/deleteBatch",
+          declare:"/business/companyAcceptance/declare"
         },
         dictOptions:{},
       }
     },
     methods: {
-      initDictConfig(){
-      }
+      handleview: function (record) {
+        this.$refs.modalForm.edit(record);
+        this.$refs.modalForm.title = "查看";
+        this.$refs.modalForm.disableSubmit = true;
+      },
+      batchDeclare: function () {
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        } else {
+          let ids = "";
+          for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            ids += this.selectedRowKeys[a] + ",";
+          }
+          let that = this;
+          this.$confirm({
+            title: "确认申报",
+            content: "是否申报选中数据?",
+            onOk: function () {
+              that.loading = true;
+              getAction(that.url.declare, {ids: ids}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.loading = false;
+              });
+            }
+          });
+        }
+      },
     },
     props:{
-      companyId:""
+      companyId:"",
+      listtype:"",
+      status:"",
+      operationshow:""
     }
   }
 </script>

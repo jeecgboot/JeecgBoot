@@ -81,4 +81,8 @@ public class CompanyAcceptance implements Serializable {
 	@Excel(name = "验收附件", width = 15)
     @ApiModelProperty(value = "验收附件")
     private String files;
+
+    /**oldid*/
+    @ApiModelProperty(value = "编辑之前的id")
+    private String oldid;
 }

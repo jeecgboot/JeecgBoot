@@ -12,19 +12,19 @@
       <a-form :form="form">
 
         <a-form-item label="项目名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['projectName', validatorRules.projectName]" placeholder="请输入项目名称" disabled="true"></a-input>
+          <a-input v-decorator="['projectName', validatorRules.projectName]" placeholder="请输入项目名称" :disabled="disableSubmit"></a-input>
         </a-form-item>
         <a-form-item label="审批单位" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['examineUnit']" placeholder="请输入审批单位" disabled="true"></a-input>
+          <a-input v-decorator="['examineUnit']" placeholder="请输入审批单位" :disabled="disableSubmit"></a-input>
         </a-form-item>
         <a-form-item label="审批文号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['examineNum']" placeholder="请输入审批文号" disabled="true"></a-input>
+          <a-input v-decorator="['examineNum']" placeholder="请输入审批文号" :disabled="disableSubmit"></a-input>
         </a-form-item>
         <a-form-item label="审批时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择审批时间" v-decorator="['examineTime']" :trigger-change="true" style="width: 100%" disabled="true"/>
+          <j-date placeholder="请选择审批时间" v-decorator="['examineTime']" :trigger-change="true" style="width: 100%" :disabled="disableSubmit"/>
         </a-form-item>
         <a-form-item label="验收附件" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-upload v-decorator="['files']" :trigger-change="true" disabled="true"></j-upload>
+          <j-upload v-decorator="['files']" :trigger-change="true" :disabled="disableSubmit"></j-upload>
         </a-form-item>
 
       </a-form>
@@ -134,7 +134,8 @@
       },
     },
     props:{
-      companyId:""
+      companyId:"",
+      disableSubmit:""
     }
   }
 </script>

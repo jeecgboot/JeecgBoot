@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import java.util.List;
+
 /**
  * @Description: 竣工验收信息
  * @Author: jeecg-boot
@@ -31,5 +33,19 @@ public class CompanyAcceptanceServiceImpl extends ServiceImpl<CompanyAcceptanceM
         QueryWrapper<CompanyAcceptance> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(CompanyAcceptance::getCompanyId, companyId);
         return this.count(queryWrapper);
+    }
+
+    /**
+     * @Description:根据companyId查询实体集合
+     * @Param:
+     * @return:
+     * @Author: 周志远
+     * @Date: 2020/6/5
+     */
+    @Override
+    public List<CompanyAcceptance> findByCompanyId(String companyId) {
+        QueryWrapper<CompanyAcceptance> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(CompanyAcceptance::getCompanyId, companyId);
+        return this.list(queryWrapper);
     }
 }

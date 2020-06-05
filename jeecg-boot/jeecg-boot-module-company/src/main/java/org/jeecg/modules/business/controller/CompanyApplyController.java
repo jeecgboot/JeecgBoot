@@ -9,8 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.modules.business.entity.CompanyAcceptance;
 import org.jeecg.modules.business.entity.CompanyApply;
 import org.jeecg.modules.business.entity.CompanyBaseinfo;
+import org.jeecg.modules.business.service.ICompanyAcceptanceService;
 import org.jeecg.modules.business.service.ICompanyApplyService;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -30,166 +32,188 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
 
- /**
+/**
  * @Description: 企业申报基础表
  * @Author: jeecg-boot
- * @Date:   2020-06-02
+ * @Date: 2020-06-02
  * @Version: V1.0
  */
-@Api(tags="企业申报基础表")
+@Api(tags = "企业申报基础表")
 @RestController
 @RequestMapping("/company/apply")
 @Slf4j
 public class CompanyApplyController extends JeecgController<CompanyApply, ICompanyApplyService> {
-	@Autowired
-	private ICompanyApplyService companyApplyService;
-	 @Autowired
-	 private ICompanyBaseinfoService companyBaseinfoService;
-	/**
-	 * 分页列表查询
-	 *
-	 * @param companyApply
-	 * @param pageNo
-	 * @param pageSize
-	 * @param req
-	 * @return
-	 */
-	@AutoLog(value = "企业申报基础表-分页列表查询")
-	@ApiOperation(value="企业申报基础表-分页列表查询", notes="企业申报基础表-分页列表查询")
-	@GetMapping(value = "/list")
-	public Result<?> queryPageList(CompanyApply companyApply,
-								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-								   HttpServletRequest req) {
-		QueryWrapper<CompanyApply> queryWrapper = QueryGenerator.initQueryWrapper(companyApply, req.getParameterMap());
-		Page<CompanyApply> page = new Page<CompanyApply>(pageNo, pageSize);
-		IPage<CompanyApply> pageList = companyApplyService.page(page, queryWrapper);
-		return Result.ok(pageList);
-	}
-	
-	/**
-	 *   添加
-	 *
-	 * @param companyApply
-	 * @return
-	 */
-	@AutoLog(value = "企业申报基础表-添加")
-	@ApiOperation(value="企业申报基础表-添加", notes="企业申报基础表-添加")
-	@PostMapping(value = "/add")
-	public Result<?> add(@RequestBody CompanyApply companyApply) {
-		companyApplyService.save(companyApply);
-		return Result.ok("添加成功！");
-	}
-	
-	/**
-	 *  编辑
-	 *
-	 * @param companyApply
-	 * @return
-	 */
-	@AutoLog(value = "企业申报基础表-编辑")
-	@ApiOperation(value="企业申报基础表-编辑", notes="企业申报基础表-编辑")
-	@PutMapping(value = "/edit")
-	public Result<?> edit(@RequestBody CompanyApply companyApply) {
-		companyApplyService.updateById(companyApply);
-		return Result.ok("编辑成功!");
-	}
-	
-	/**
-	 *   通过id删除
-	 *
-	 * @param id
-	 * @return
-	 */
-	@AutoLog(value = "企业申报基础表-通过id删除")
-	@ApiOperation(value="企业申报基础表-通过id删除", notes="企业申报基础表-通过id删除")
-	@DeleteMapping(value = "/delete")
-	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		companyApplyService.removeById(id);
-		return Result.ok("删除成功!");
-	}
-	
-	/**
-	 *  批量删除
-	 *
-	 * @param ids
-	 * @return
-	 */
-	@AutoLog(value = "企业申报基础表-批量删除")
-	@ApiOperation(value="企业申报基础表-批量删除", notes="企业申报基础表-批量删除")
-	@DeleteMapping(value = "/deleteBatch")
-	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.companyApplyService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功!");
-	}
-	
-	/**
-	 * 通过id查询
-	 *
-	 * @param id
-	 * @return
-	 */
-	@AutoLog(value = "企业申报基础表-通过id查询")
-	@ApiOperation(value="企业申报基础表-通过id查询", notes="企业申报基础表-通过id查询")
-	@GetMapping(value = "/queryById")
-	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
-		CompanyApply companyApply = companyApplyService.getById(id);
-		if(companyApply==null) {
-			return Result.error("未找到对应数据");
-		}
-		return Result.ok(companyApply);
-	}
-	 /**
-	  * 通过id查询
-	  *
-	  * @param companyId
-	  * @return
-	  */
-	 @AutoLog(value = "企业申报基础表-通过id查询")
-	 @ApiOperation(value="企业申报基础表-通过id查询", notes="企业申报基础表-通过id查询")
-	 @GetMapping(value = "/queryLatestArchivedData")
-	 public Result<?> queryLatestArchivedData(@RequestParam(name="companyId",required=true) String companyId,@RequestParam(name="fromTable",required=true) String fromTable) {
-	 	 //查询正常状态的  申报信息
-		 List<CompanyApply> companyApplys = companyApplyService.list(new QueryWrapper<CompanyApply>().lambda()
-				 .eq(CompanyApply::getCompanyId,companyId).eq(CompanyApply::getStatus, Constant.status.NORMAL).eq(CompanyApply::getFromTable,fromTable));//审核通过的
+    @Autowired
+    private ICompanyApplyService companyApplyService;
+    @Autowired
+    private ICompanyBaseinfoService companyBaseinfoService;
+    @Autowired
+    private ICompanyAcceptanceService companyAcceptanceService;
 
-		 if(companyApplys==null||companyApplys.isEmpty()) {
-			 return Result.ok();
-		 }else{
-		 	//查询到了数据
-//			 companyApplys.forEach(companyApply -> {
-			 	//查询审核通过的，最近的一条数据
-//			 });
-			 //或者直接查询基础信息数据表
-			 CompanyBaseinfo companyBaseinfo = companyBaseinfoService.queryByCompanyId( companyId);
-			 return Result.ok(companyBaseinfo);
-		 }
-
-	 }
-	 /**
-	  * 查询申报前后对比信息
-	  *
-	  * @param beforeId
-	  * @param afterId
-	  */
-	 @RequestMapping(value = "/queryComparisonData")
-	 @AutoLog(value = "查询申报前后对比信息")
-	 @ApiOperation(value="通过企业申报基础表的前后id", notes="查询申报前后对比信息")
-	 public Result<?> queryComparisonData(@RequestParam(name="beforeId",required=true) String beforeId
-			 ,@RequestParam(name="afterId",required=true) String afterId) {
-		 CompanyBaseinfo after  = companyBaseinfoService.getById(afterId);
-		 CompanyBaseinfo before = companyBaseinfoService.getById(beforeId);
-		 //排除字段
-		 List<String>  excludeFields = Arrays.asList("serialVersionUID","id","createBy","createTime","updateBy","updateTime","sysOrgCode","status");
-		 Equator fieldBaseEquator = new FieldBaseEquator(null,excludeFields);
-		 return Result.ok(fieldBaseEquator.getDiffFields(before,after));
-	 }
     /**
-    * 导出excel
-    *
-    * @param request
-    * @param companyApply
-    */
+     * 分页列表查询
+     *
+     * @param companyApply
+     * @param pageNo
+     * @param pageSize
+     * @param req
+     * @return
+     */
+    @AutoLog(value = "企业申报基础表-分页列表查询")
+    @ApiOperation(value = "企业申报基础表-分页列表查询", notes = "企业申报基础表-分页列表查询")
+    @GetMapping(value = "/list")
+    public Result<?> queryPageList(CompanyApply companyApply,
+                                   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                   HttpServletRequest req) {
+        QueryWrapper<CompanyApply> queryWrapper = QueryGenerator.initQueryWrapper(companyApply, req.getParameterMap());
+        Page<CompanyApply> page = new Page<CompanyApply>(pageNo, pageSize);
+        IPage<CompanyApply> pageList = companyApplyService.page(page, queryWrapper);
+        return Result.ok(pageList);
+    }
+
+    /**
+     * 添加
+     *
+     * @param companyApply
+     * @return
+     */
+    @AutoLog(value = "企业申报基础表-添加")
+    @ApiOperation(value = "企业申报基础表-添加", notes = "企业申报基础表-添加")
+    @PostMapping(value = "/add")
+    public Result<?> add(@RequestBody CompanyApply companyApply) {
+        companyApplyService.save(companyApply);
+        return Result.ok("添加成功！");
+    }
+
+    /**
+     * 编辑
+     *
+     * @param companyApply
+     * @return
+     */
+    @AutoLog(value = "企业申报基础表-编辑")
+    @ApiOperation(value = "企业申报基础表-编辑", notes = "企业申报基础表-编辑")
+    @PutMapping(value = "/edit")
+    public Result<?> edit(@RequestBody CompanyApply companyApply) {
+        companyApplyService.updateById(companyApply);
+        return Result.ok("编辑成功!");
+    }
+
+    /**
+     * 通过id删除
+     *
+     * @param id
+     * @return
+     */
+    @AutoLog(value = "企业申报基础表-通过id删除")
+    @ApiOperation(value = "企业申报基础表-通过id删除", notes = "企业申报基础表-通过id删除")
+    @DeleteMapping(value = "/delete")
+    public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
+        companyApplyService.removeById(id);
+        return Result.ok("删除成功!");
+    }
+
+    /**
+     * 批量删除
+     *
+     * @param ids
+     * @return
+     */
+    @AutoLog(value = "企业申报基础表-批量删除")
+    @ApiOperation(value = "企业申报基础表-批量删除", notes = "企业申报基础表-批量删除")
+    @DeleteMapping(value = "/deleteBatch")
+    public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
+        this.companyApplyService.removeByIds(Arrays.asList(ids.split(",")));
+        return Result.ok("批量删除成功!");
+    }
+
+    /**
+     * 通过id查询
+     *
+     * @param id
+     * @return
+     */
+    @AutoLog(value = "企业申报基础表-通过id查询")
+    @ApiOperation(value = "企业申报基础表-通过id查询", notes = "企业申报基础表-通过id查询")
+    @GetMapping(value = "/queryById")
+    public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
+        CompanyApply companyApply = companyApplyService.getById(id);
+        if (companyApply == null) {
+            return Result.error("未找到对应数据");
+        }
+        return Result.ok(companyApply);
+    }
+
+    /**
+     * 通过id查询
+     *
+     * @param companyId
+     * @return
+     */
+    @AutoLog(value = "企业申报基础表-通过id查询")
+    @ApiOperation(value = "企业申报基础表-通过id查询", notes = "企业申报基础表-通过id查询")
+    @GetMapping(value = "/queryLatestArchivedData")
+    public Result<?> queryLatestArchivedData(@RequestParam(name = "companyId", required = true) String companyId, @RequestParam(name = "fromTable", required = true) String fromTable) {
+        //查询正常状态的  申报信息
+        List<CompanyApply> companyApplys = companyApplyService.list(new QueryWrapper<CompanyApply>().lambda()
+                .eq(CompanyApply::getCompanyId, companyId).eq(CompanyApply::getStatus, Constant.status.NORMAL).eq(CompanyApply::getFromTable, fromTable));//审核通过的
+        Result<Object> ok = Result.ok();
+        if (companyApplys == null || companyApplys.isEmpty()) {
+            return ok;
+        } else {
+            //查询到了数据
+//			 companyApplys.forEach(companyApply -> {
+            //查询审核通过的，最近的一条数据
+//			 });
+            //或者直接查询基础信息数据表
+            if ("company_baseinfo".equals(fromTable)) {
+                CompanyBaseinfo companyBaseinfo = companyBaseinfoService.queryByCompanyId(companyId);
+                return Result.ok(companyBaseinfo);
+            }
+            switch (fromTable) {
+                case "company_baseinfo":
+                    CompanyBaseinfo companyBaseinfo = companyBaseinfoService.queryByCompanyId(companyId);
+                    ok = Result.ok(companyBaseinfo);
+                    break; //可选
+                case "company_acceptance":
+                    List<CompanyAcceptance> companyAcceptances = companyAcceptanceService.findByCompanyId(companyId);
+                    ok = Result.ok(companyAcceptances);
+                    break; //可选
+                default: //可选
+                    ok = Result.ok(companyBaseinfoService.queryByCompanyId(companyId));
+                    break;
+            }
+        }
+        return ok;
+
+    }
+
+    /**
+     * 查询申报前后对比信息
+     *
+     * @param beforeId
+     * @param afterId
+     */
+    @RequestMapping(value = "/queryComparisonData")
+    @AutoLog(value = "查询申报前后对比信息")
+    @ApiOperation(value = "通过企业申报基础表的前后id", notes = "查询申报前后对比信息")
+    public Result<?> queryComparisonData(@RequestParam(name = "beforeId", required = true) String beforeId
+            , @RequestParam(name = "afterId", required = true) String afterId) {
+        CompanyBaseinfo after = companyBaseinfoService.getById(afterId);
+        CompanyBaseinfo before = companyBaseinfoService.getById(beforeId);
+        //排除字段
+        List<String> excludeFields = Arrays.asList("serialVersionUID", "id", "createBy", "createTime", "updateBy", "updateTime", "sysOrgCode", "status");
+        Equator fieldBaseEquator = new FieldBaseEquator(null, excludeFields);
+        return Result.ok(fieldBaseEquator.getDiffFields(before, after));
+    }
+
+    /**
+     * 导出excel
+     *
+     * @param request
+     * @param companyApply
+     */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, CompanyApply companyApply) {
         return super.exportXls(request, companyApply, CompanyApply.class, "企业申报基础表");
@@ -197,12 +221,12 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
 
 
     /**
-      * 通过excel导入数据
-    *
-    * @param request
-    * @param response
-    * @return
-    */
+     * 通过excel导入数据
+     *
+     * @param request
+     * @param response
+     * @return
+     */
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         return super.importExcel(request, response, CompanyApply.class);
