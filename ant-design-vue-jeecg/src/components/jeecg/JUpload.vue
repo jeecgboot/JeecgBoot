@@ -233,7 +233,6 @@
         this.$emit('change', path);
       },
       beforeUpload(file){
-        debugger
         this.uploadGoOn=true
         var fileType = file.type;
         if(this.fileType===FILE_TYPE_IMG){

@@ -42,7 +42,9 @@
         :loading="loading"
         class="j-table-force-nowrap"
         @change="handleTableChange">
-
+        <template slot="title" slot-scope="currentPageData">
+          申报记录
+        </template>
         <template slot="htmlSlot" slot-scope="text">
           <div v-html="text"></div>
         </template>

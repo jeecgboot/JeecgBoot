@@ -13,5 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface ICompanyBaseinfoService extends IService<CompanyBaseinfo> {
 
     CompanyBaseinfo queryByCompanyId(String companyId);
-
+    boolean upDateStatus(String companyId,String status);
 }

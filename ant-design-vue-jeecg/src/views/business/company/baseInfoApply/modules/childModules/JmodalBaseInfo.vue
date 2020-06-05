@@ -9,8 +9,9 @@
     @ok="handleOk"
     @cancel="handleCancel"
     cancelText="关闭"
-    v-if="visible">
-    <base-info  :companyId="companyId"></base-info>
+    v-if="visible"
+    >
+    <base-info ref="baseModal" :companyId="companyId" :ftitle="title"  @OK="modalFormOk"></base-info>
   </j-modal>
 </template>
 
@@ -39,11 +40,20 @@
           // this.close()
         },
         handleOk(){
+          console.log("OK")
+          this.$refs.baseModal.handleOk();
+
+          this.visible = false;
+
+        },
+        modalFormOk(){
 
         }
 
-      }
+      },created() {
+          console.log("Jmodal",this.title)
     }
+  }
 </script>
 
 <style scoped>

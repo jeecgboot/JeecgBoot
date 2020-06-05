@@ -1,32 +1,40 @@
 <template>
-  <j-modal
-    :title="title"
+  <business-modal
     :width="width"
     :visible="visible"
     :confirmLoading="confirmLoading"
     switchFullscreen
     @ok="handleOk"
     @cancel="handleCancel"
+
     cancelText="关闭">
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+      <a-descriptions title="申报详情" >
+        <a-descriptions-item label="申报时间">
+          {{model.createTime}}
+        </a-descriptions-item>
+        <a-descriptions-item label="申报人" :span="2">
+          {{model.createBy}}
+        </a-descriptions-item>
 
-        <a-form-item label="更新日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择更新日期" v-decorator="['updateTime']" :trigger-change="true" style="width: 100%"/>
-        </a-form-item>
-        <a-form-item label="数据状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['companyId', validatorRules.companyId]" placeholder="请输入数据状态"></a-input>
-        </a-form-item>
-        <a-form-item label="状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['status', validatorRules.status]" placeholder="请输入状态"></a-input>
-        </a-form-item>
-        <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['content', validatorRules.content]" placeholder="请输入备注"></a-input>
-        </a-form-item>
+        <a-descriptions-item label="申报详情" :span="3">
+          <a-table :columns="columns" :data-source="data">
 
-      </a-form>
+          </a-table>
+        </a-descriptions-item>
+        <a-descriptions-item label="审核人">
+          {{model.updateBy}}
+        </a-descriptions-item>
+        <a-descriptions-item label="申报状态">
+          {{model.status}}
+        </a-descriptions-item>
+        <a-descriptions-item label="生效时间">
+         {{model.updateTime}}
+        </a-descriptions-item>
+
+      </a-descriptions>
     </a-spin>
-  </j-modal>
+  </business-modal>
 </template>
 
 <script>
@@ -34,18 +42,15 @@
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import { validateDuplicateValue } from '@/utils/util'
-  import JDate from '@/components/jeecg/JDate'  
-
-
+  import BusinessModal from "../../../../component/BusinessModal";
   export default {
     name: "CompanyApplyModal",
-    components: { 
-      JDate,
+    components: {
+      BusinessModal,
     },
     data () {
       return {
         form: this.$form.createForm(this),
-        title:"操作",
         width:800,
         visible: false,
         model: {},
@@ -58,27 +63,27 @@
           sm: { span: 16 },
         },
         confirmLoading: false,
-        validatorRules: {
-          companyId: {
-            rules: [
-              { required: true, message: '请输入数据状态!'},
-            ]
+        columns : [
+          {
+            dataIndex: 'name',
+            title:'更改项',
+            key: 'name'
           },
-          status: {
-            rules: [
-              { required: true, message: '请输入状态!'},
-            ]
+          {
+            title: '更改前',
+            dataIndex: 'before',
+            key: 'before'
           },
-          content: {
-            rules: [
-              { required: true, message: '请输入备注!'},
-            ]
+          {
+            title: '更改后',
+            dataIndex: 'after',
+            key: 'after'
           },
-        },
-        url: {
-          add: "/testOneDemo/companyApply/add",
-          edit: "/testOneDemo/companyApply/edit",
-        }
+
+        ],
+        data : [
+        ],
+
       }
     },
     created () {
@@ -87,13 +92,11 @@
       add () {
         this.edit({});
       },
-      edit (record) {
+      detail (record) {
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'updateTime','companyId','status','content'))
-        })
+        //查询前后明细
       },
       close () {
         this.$emit('close');

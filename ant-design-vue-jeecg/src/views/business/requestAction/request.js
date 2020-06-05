@@ -7,6 +7,8 @@ const loadQualifications = (params)=>postAction("/companyQualification/queryByCo
 const loadBaiduMap = (params)=>getAction("/envtax/companyEnvTax/loadBaiduMap",params);
 //查詢 最新的企业归档基本信息
 const queryLatestArchivedData = (params)=>getAction("/company/apply/queryLatestArchivedData",params);
+//查询申报前后对比信息
+const query = (params)=>getAction("/company/apply/queryLatestArchivedData",params);
 
 
 export {

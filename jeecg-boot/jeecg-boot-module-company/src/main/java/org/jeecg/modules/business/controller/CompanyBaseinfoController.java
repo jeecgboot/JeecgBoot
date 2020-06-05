@@ -11,6 +11,7 @@ import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.business.entity.CompanyBaseinfo;
 import org.jeecg.modules.business.entity.CompanySysuser;
+import org.jeecg.modules.business.service.ICompanyApplyService;
 import org.jeecg.modules.business.service.ICompanyBaseinfoService;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.modules.business.service.ICompanySysuserService;
+import org.jeecg.modules.business.utils.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -42,7 +44,8 @@ public class CompanyBaseinfoController extends JeecgController<CompanyBaseinfo, 
 	private ICompanyBaseinfoService companyBaseinfoService;
 	 @Autowired
 	 private ICompanySysuserService companySysuserService;
-
+	 @Autowired
+	 private ICompanyApplyService companyApplyService;
 	/**
 	 * 分页列表查询
 	 *
@@ -91,7 +94,18 @@ public class CompanyBaseinfoController extends JeecgController<CompanyBaseinfo, 
 	@ApiOperation(value="company_baseinfo-添加", notes="company_baseinfo-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody CompanyBaseinfo companyBaseinfo) {
+		String oldId = companyBaseinfo.getId();
+		//去除主键 防止重复
+		companyBaseinfo.setId(null);
+
+//		//根据companyId 修改老的一条数据  状态过期  更新的时候会用到
+//		companyBaseinfoService.upDateStatus(companyBaseinfo.getCompanyId(), Constant.status.EXPIRED);
+
+		//新增
 		companyBaseinfoService.save(companyBaseinfo);
+
+		//插入一条  applyinfo
+		companyApplyService.saveByBase(companyBaseinfo,oldId);
 		return Result.ok("添加成功！");
 	}
 	

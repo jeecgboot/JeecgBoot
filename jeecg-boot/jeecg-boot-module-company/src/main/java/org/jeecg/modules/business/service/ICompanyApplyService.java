@@ -2,6 +2,7 @@ package org.jeecg.modules.business.service;
 
 import org.jeecg.modules.business.entity.CompanyApply;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.business.entity.CompanyBaseinfo;
 
 /**
  * @Description: 企业申报基础表
@@ -10,5 +11,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @Version: V1.0
  */
 public interface ICompanyApplyService extends IService<CompanyApply> {
+
+     boolean saveByBase(CompanyBaseinfo companyBaseinfo,String oldId);
 
 }

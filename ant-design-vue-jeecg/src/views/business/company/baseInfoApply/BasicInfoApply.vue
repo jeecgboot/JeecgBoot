@@ -2,14 +2,14 @@
    <div>
     <a-row >
       <a-col span="4">
-        <left-card :title="cardTitle" :hoverable="hoverable" @toDetail = "latestDetail"></left-card>
+        <left-card :title="cardTitle" :hoverable="hoverable" @toDetail = "latestDetail" @toApply="apply"></left-card>
       </a-col>
       <a-col span="20">
         <company-apply-list :company-id="companyId" :from-table="fromTable" @toDetail = "applyDetail"></company-apply-list>
       </a-col>
     </a-row>
-    <jmodal-base-info ref="baseInfoForm"></jmodal-base-info>
-     <companyApply-modal ref="modalForm" @ok="modalFormOk"></companyApply-modal>
+    <jmodal-base-info ref="baseInfoForm" ></jmodal-base-info>
+     <companyApply-modal ref="applyInfoForm" ></companyApply-modal>
    </div>
 </template>
 
@@ -26,7 +26,8 @@
         JmodalBaseInfo,
         LeftCard,
         CompanyApplyList,
-        queryLatestArchivedData
+        queryLatestArchivedData,
+        CompanyApplyModal
       },
         data(){
           return {
@@ -41,7 +42,7 @@
       //计算属性
       computed:{
           cardTitle(){
-            if(JSON.stringify(this.latestArchived)=='{}'){
+            if(JSON.stringify(this.latestArchived)==='{}'){
               this.hoverable = false;
               return "暂无基础信息申报";
 
@@ -59,18 +60,25 @@
             this.$refs.baseInfoForm.disableSubmit = false;
             this.$refs.baseInfoForm.visible = true;
             this.$refs.baseInfoForm.confirmLoading = false;
-            this.$refs.baseInfoForm.companyId = this.$store.getters.userInfo.companyIds[0];
+
           },
           //新增申请
           apply(){
+
             this.$refs.baseInfoForm.title="申请";
             this.$refs.baseInfoForm.disableSubmit = true;
             this.$refs.baseInfoForm.visible = true;
-            this.$refs.baseInfoForm.confirmLoading = true;
-            this.$refs.baseInfoForm.companyId = "";
+            this.$refs.baseInfoForm.confirmLoading = false;
+
 
           },
-          applyDetail(){
+          applyDetail(record){
+
+            console.log(record)
+            //查询详情数据
+            this.$refs.applyInfoForm.detail(record);
+
+
 
           }
 
@@ -80,7 +88,6 @@
 
           let that = this;
           //查询最新归档信息
-
         queryLatestArchivedData({companyId:this.companyId,fromTable:this.fromTable}).then((res)=>{
           if(res.success){
             that.latestArchived = res.result;

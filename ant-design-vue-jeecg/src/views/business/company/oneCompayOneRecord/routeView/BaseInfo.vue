@@ -238,18 +238,23 @@
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import {loadCompanyBaseInfo} from '../../../requestAction/request'
-
   export default {
     name: "BaseInfo",
     components: { 
     },
     props:{
       companyId:'',
+      ftitle:{
+        type:String,
+        default:()=>{
+          return "";
+        }
+      }
     },
     data () {
       return {
         form: this.$form.createForm(this),
-        companyid:this.companyId,
+        fatherTile:this.ftitle,
         title:"操作",
         datecolums:['shortName','socialCreditCode','companyType','administrativeRegion','industry','address','longitude','dimension','corporate','economicType','affiliation','envProtectPrincipal','principalPhone','envProtectContact','contactPhone','emergencyLeader','leaderPhone','drainageArea','postalCode','fax','email','industrialOutput','staffCount','enterpriseSize','factoryArea','ischemicals','attachedPark','parentCompany','groupCompany','registeCapital','annualSalesIncome','annualProfit','totalAssets','registeAddress','operateScope','profile'],
         model: {},
@@ -325,8 +330,8 @@
           }
         },
         url: {
-          // add: "/testOneDemo/companyBaseinfo/add",
-          // edit: "/testOneDemo/companyBaseinfo/edit",
+          add: "/company/companyBaseinfo/add",
+          edit: "/testOneDemo/companyBaseinfo/edit",
         }
       }
     },
@@ -334,11 +339,11 @@
       disable(){
         //布尔类型转一下
         //是不是申请
-          return !Boolean(this.companyid==="");
+        console.log(this.fatherTile,!Boolean(this.fatherTile==="申请"))
+        return !Boolean(this.ftitle==="申请");
       }
     },
     created () {
-      console.log("baseinfo create",this.companyId )
       let that = this;
       let record = {};
       if(this.companyId ===""){
@@ -365,14 +370,12 @@
       edit (record) {
         this.form.resetFields();
         this.model = Object.assign({}, record);
-        this.visible = true;
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,...this.datecolums))
         })
       },
       close () {
         this.$emit('close');
-        this.visible = false;
       },
       handleOk () {
         const that = this;
@@ -382,13 +385,13 @@
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
-            if(!this.model.id){
+            // if(!this.model.id){
               httpurl+=this.url.add;
               method = 'post';
-            }else{
-              httpurl+=this.url.edit;
-               method = 'put';
-            }
+            // }else{
+            //   httpurl+=this.url.edit;
+            //    method = 'put';
+            // }
             let formData = Object.assign(this.model, values);
             console.log("表单提交数据",formData)
             httpAction(httpurl,formData,method).then((res)=>{

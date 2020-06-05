@@ -1,6 +1,7 @@
 package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.jeecg.modules.business.entity.CompanyBaseinfo;
 import org.jeecg.modules.business.mapper.CompanyBaseinfoMapper;
 import org.jeecg.modules.business.service.ICompanyBaseinfoService;
@@ -23,5 +24,15 @@ public class CompanyBaseinfoServiceImpl extends ServiceImpl<CompanyBaseinfoMappe
                .eq(CompanyBaseinfo :: getCompanyId, companyId)));
    }
 
+    /**
+     *   根据公司id 修改状态
+     * @param companyId
+     * @return
+     */
+    public  boolean upDateStatus(String companyId,String status){
+        UpdateWrapper<CompanyBaseinfo> updateWrapper = new UpdateWrapper<CompanyBaseinfo>()
+                .eq("COMPANY_ID" , companyId).set("STATUS",status);
+        return this.update(updateWrapper);
+    }
 
 }
