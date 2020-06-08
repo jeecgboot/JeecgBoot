@@ -13,6 +13,7 @@ import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.business.entity.CompanyAcceptance;
 import org.jeecg.modules.business.service.ICompanyAcceptanceService;
+import org.jeecg.modules.business.service.ICompanyApplyService;
 import org.jeecg.modules.business.utils.Constant.status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.websocket.server.PathParam;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +40,9 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
     @Autowired
     private ICompanyAcceptanceService companyAcceptanceService;
 
+    @Autowired
+    private ICompanyApplyService companyApplyService;
+
     /**
      * 分页列表查询
      *
@@ -49,12 +54,17 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
      */
     @AutoLog(value = "company_acceptance-分页列表查询")
     @ApiOperation(value = "company_acceptance-分页列表查询", notes = "company_acceptance-分页列表查询")
-    @GetMapping(value = "/list")
+    @GetMapping(value = "/list/{listType}")
     public Result<?> queryPageList(CompanyAcceptance companyAcceptance,
                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                   HttpServletRequest req) {
+                                   HttpServletRequest req, @PathVariable int listType) {
         QueryWrapper<CompanyAcceptance> queryWrapper = QueryGenerator.initQueryWrapper(companyAcceptance, req.getParameterMap());
+        if (listType==0) {
+            queryWrapper.ne("status", status.EXPIRED);
+        } else {
+            queryWrapper.eq("status", status.PEND).or().eq("status", status.NORMAL);
+        }
         Page<CompanyAcceptance> page = new Page<CompanyAcceptance>(pageNo, pageSize);
         IPage<CompanyAcceptance> pageList = companyAcceptanceService.page(page, queryWrapper);
         return Result.ok(pageList);
@@ -92,7 +102,8 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
         companyAcceptanceService.updateById(oldcompanyAcceptance);
         //把编辑过得新增
         companyAcceptance.setId("");
-        companyAcceptance.setOldid(oldcompanyAcceptance.getId());
+        companyAcceptance.setStatus(status.TEMPORARY);
+        companyAcceptance.setOldId(oldcompanyAcceptance.getId());
         companyAcceptanceService.save(companyAcceptance);
         return Result.ok("编辑成功!");
     }
@@ -165,8 +176,13 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
                 }
                 //修改状态为1：待审核状态
                 companyAcceptance.setStatus(status.PEND);
-                boolean issuccess = companyAcceptanceService.updateById(companyAcceptance);
-                if (!issuccess) {
+                boolean isupdate = companyAcceptanceService.updateById(companyAcceptance);
+                if (!isupdate) {
+                    return Result.error("申报失败！");
+                }
+                //新增申报记录
+                boolean isadd = companyApplyService.saveByBase(companyAcceptance);
+                if (!isadd) {
                     return Result.error("申报失败！");
                 }
             }

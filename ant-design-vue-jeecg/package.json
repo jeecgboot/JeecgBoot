@@ -52,6 +52,7 @@
     "html-webpack-plugin": "^4.2.0",
     "less": "^3.9.0",
     "less-loader": "^4.1.0",
+    "vue-baidu-map": "^0.21.22",
     "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {
@@ -89,9 +90,12 @@
       "vue/no-use-v-if-with-v-for": 0,
       "vue/html-closing-bracket-newline": 0,
       "vue/no-parsing-error": 0,
-	  "no-console": 0,
+      "no-console": 0,
       "no-tabs": 0,
-      "indent": [1, 4]
+      "indent": [
+        1,
+        4
+      ]
     }
   },
   "postcss": {
