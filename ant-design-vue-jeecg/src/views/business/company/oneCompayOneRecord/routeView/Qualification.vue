@@ -2,7 +2,7 @@
   <div>
     <a-tabs default-active-key="1"  >
       <a-tab-pane key="1" tab="企业形象">
-        <img style="width: 100%;" :src="companyImage"  :preview="controlCrafts">
+          <pic-list :images="companyImage" />
       </a-tab-pane>
       <a-tab-pane key="2" tab="营业执照照片" force-render>
         <img style="width: 100%;" :src="businessLicense"  :preview="businessLicense">
@@ -31,16 +31,21 @@
     //一企一档 企业资质
     //企业形象照片
     import {loadQualifications} from "../../../requestAction/request"
+    import PicList from "../../../component/PicList";
     import {getFileAccessHttpUrl} from '@/api/manage';
+
 
     export default {
       name: "Qualification",
+      components:{
+        PicList
+      },
       props:{
         companyId:''
       },
       data() {
         return {
-          companyImage:'',
+          companyImage:[],
           controlCrafts:'',
           businessLicense:'',
           floorPlan:'',
@@ -59,7 +64,9 @@
         //查询
         loadQualifications({companyId:that.companyId}).then((res)=>{
           if(res.success){
-            that.companyImage=getFileAccessHttpUrl(res.result.companyImage);
+            console.log(res.success);
+            that.companyImage=[res.result.companyImage,res.result.controlCrafts,res.result.businessLicense
+              ,res.result.floorPlan,res.result.companyImage,res.result.floorPlan,res.result.businessLicense];
             that.controlCrafts=getFileAccessHttpUrl(res.result.controlCrafts);
             that.businessLicense=getFileAccessHttpUrl(res.result.businessLicense);
             that.floorPlan=getFileAccessHttpUrl(res.result.floorPlan);

@@ -15,6 +15,11 @@
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="数据状态">
+              <j-dict-select-tag placeholder="请选择数据状态" v-model="queryParam.status" dictCode="statue"/>
+            </a-form-item>
+          </a-col>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
             </span>
@@ -102,11 +107,11 @@
 
   export default {
     name: "CompanyAcceptanceList",
-    mixins:[JeecgListMixin, mixinDevice],
+    mixins: [JeecgListMixin, mixinDevice],
     components: {
       CompanyAcceptanceModal
     },
-    data () {
+    data() {
       return {
         description: '竣工验收信息管理页面',
         queryParam: {
@@ -117,52 +122,52 @@
           {
             title: '序号',
             dataIndex: '',
-            key:'rowIndex',
-            width:60,
-            align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
+            key: 'rowIndex',
+            width: 60,
+            align: "center",
+            customRender: function (t, r, index) {
+              return parseInt(index) + 1;
             }
           },
           {
-            title:'项目名称',
-            align:"center",
+            title: '项目名称',
+            align: "center",
             dataIndex: 'projectName'
           },
           {
-            title:'审批单位',
-            align:"center",
+            title: '审批单位',
+            align: "center",
             dataIndex: 'examineUnit'
           },
           {
-            title:'审批文号',
-            align:"center",
+            title: '审批文号',
+            align: "center",
             dataIndex: 'examineNum'
           },
           {
-            title:'审批时间',
-            align:"center",
+            title: '审批时间',
+            align: "center",
             dataIndex: 'examineTime',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
+            customRender: function (text) {
+              return !text ? "" : (text.length > 10 ? text.substr(0, 10) : text)
             }
           },
           {
             title: '操作',
             dataIndex: 'action',
-            align:"center",
+            align: "center",
             // fixed:"right",
-            width:147,
-            scopedSlots: { customRender: 'action' }
+            width: 147,
+            scopedSlots: {customRender: 'action'}
           }
         ],
         url: {
-          list: "/business/companyAcceptance/list/"+this.listType,
+          list: "/business/companyAcceptance/list/" + this.listType,
           delete: "/business/companyAcceptance/delete",
           deleteBatch: "/business/companyAcceptance/deleteBatch",
-          declare:"/business/companyAcceptance/declare"
+          declare: "/business/companyAcceptance/declare"
         },
-        dictOptions:{},
+        dictOptions: {},
       }
     },
     methods: {
@@ -202,11 +207,11 @@
         }
       },
     },
-    props:{
-      companyId:"",
-      operationShow:"",
-      listType:""
-    }
+    props: {
+      companyId: "",
+      operationShow: "",
+      listType: ""
+    },
   }
 </script>
 <style scoped>

@@ -1,12 +1,10 @@
 <template>
    <div>
-    <a-row >
-      <a-col span="24">
-        <company-apply-list :company-id="companyId"
+
+        <company-apply-list :company-id="companyId" :hoverable="latestArchived"
                             :from-table="fromTable" @applyDetail = "applyDetail"  @toDetail="latestDetail" @toApply="apply"
-                            :latestArchived="latestArchived"></company-apply-list>
-      </a-col>
-    </a-row>
+                            ></company-apply-list>
+
     <jmodal-base-info ref="baseInfoForm" ></jmodal-base-info>
      <companyApply-modal ref="applyInfoForm" ></companyApply-modal>
    </div>
@@ -15,7 +13,7 @@
 <script>
 
   import CompanyApplyList from "./modules/CompanyApplyList"
-  import {queryLatestArchivedData} from "../../requestAction/request"
+  import { queryLatestArchivedData} from "../../requestAction/request"
   import JmodalBaseInfo from "./modules/childModules/JmodalBaseInfo";
   import CompanyApplyModal from "./modules/childModules/CompanyApplyModal";
     export default {
@@ -23,26 +21,19 @@
       components:{
         JmodalBaseInfo,
         CompanyApplyList,
-        queryLatestArchivedData,
         CompanyApplyModal
       },
         data(){
           return {
             fromTable:"company_baseinfo",
             //最新归档信息数据
-            latestArchived:{},
+            latestArchived:false,
             companyId:this.$store.getters.userInfo.companyIds[0],
 
           }
         },
-      //计算属性
-      computed:{
-        hoverable() {
-          return JSON.stringify(this.latestArchived) !== '{}' ;
 
-        }
 
-      },
       methods:{
           //详情
           latestDetail(){
@@ -68,7 +59,8 @@
             console.log(record)
             //查询详情数据
             this.$refs.applyInfoForm.detail(record);
-
+            //单个表比较
+            this.$refs.applyInfoForm.compareDetail(this.fromTable);
           }
 
 
