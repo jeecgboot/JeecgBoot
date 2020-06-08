@@ -25,7 +25,7 @@
     <!-- 查询区域-END -->
     
     <!-- 操作按钮区域 -->
-    <div class="table-operator" v-if="operationshow">
+    <div class="table-operator" v-if="operationShow">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
@@ -38,7 +38,7 @@
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;" v-if="operationShow">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
@@ -78,11 +78,11 @@
 
         <span slot="action" slot-scope="text, record">
           <!--权限控制查看还是编辑，查看只允许查看不允许修改-->
-          <a @click="handleEdit(record)" v-if="operationshow">编辑</a>
-           <a-divider v-if="operationshow" type="vertical" />
-           <a @click="handleview(record)" v-if="!operationshow">查看</a>
+          <a @click="handleEdit(record)" v-if="operationShow">编辑</a>
+           <a-divider v-if="operationShow" type="vertical" />
+           <a @click="handleview(record)" v-if="!operationShow">查看</a>
           <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a v-if="operationshow">删除</a>
+                  <a v-if="operationShow">删除</a>
           </a-popconfirm>
         </span>
       </a-table>
@@ -109,10 +109,8 @@
     data () {
       return {
         description: '竣工验收信息管理页面',
-
         queryParam: {
-          companyId: this.companyId,
-          status:this.status
+          companyId: this.companyId
         },
         // 表头
         columns: [
@@ -159,7 +157,7 @@
           }
         ],
         url: {
-          list: "/business/companyAcceptance/list",
+          list: "/business/companyAcceptance/list/"+this.listType,
           delete: "/business/companyAcceptance/delete",
           deleteBatch: "/business/companyAcceptance/deleteBatch",
           declare:"/business/companyAcceptance/declare"
@@ -206,9 +204,8 @@
     },
     props:{
       companyId:"",
-      listtype:"",
-      status:"",
-      operationshow:""
+      operationShow:"",
+      listType:""
     }
   }
 </script>

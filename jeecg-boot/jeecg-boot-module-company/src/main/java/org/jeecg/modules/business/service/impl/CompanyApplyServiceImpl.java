@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.service.impl;
 
+import org.jeecg.modules.business.entity.CompanyAcceptance;
 import org.jeecg.modules.business.entity.CompanyApply;
 import org.jeecg.modules.business.entity.CompanyBaseinfo;
 import org.jeecg.modules.business.mapper.CompanyApplyMapper;
@@ -32,5 +33,24 @@ public class CompanyApplyServiceImpl extends ServiceImpl<CompanyApplyMapper, Com
         companyApply.setId(oldId);
         return this.save(companyApply);
     }
+
+    /** 保存竣工验收信息申报记录
+    * @Description:
+    * @Param:
+    * @return:
+    * @Author: 周志远
+    * @Date: 2020/6/5
+    */
+    @Override
+    public boolean saveByBase(CompanyAcceptance companyAcceptance) {
+        CompanyApply companyApply = new CompanyApply();
+        companyApply.setCompanyId(companyAcceptance.getCompanyId());
+        companyApply.setFromTable("company_acceptance");
+        companyApply.setNewId(companyAcceptance.getId());
+        companyApply.setStatus(Constant.status.PEND);
+        companyApply.setId(companyAcceptance.getOldId());
+        return this.save(companyApply);
+    }
+
 
 }

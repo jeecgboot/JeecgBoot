@@ -8,21 +8,22 @@
       </a-form>
     </div>
     <!-- 查询区域-END -->
-    
+
     <!-- 操作按钮区域 -->
-   <!-- <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('企业申报基础表')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>
-    </div>-->
+    <div class="table-operator">
+      <a-button v-if="hoverable" @click="toDetail" type="primary" icon="profile">详情</a-button>
+      <a-button  @click="toApply" type="primary" icon="form">申报</a-button>
+      <!-- <a-button type="primary" icon="download" @click="handleExportXls('企业申报基础表')">导出</a-button>
+       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
+         <a-button type="primary" icon="import">导入</a-button>
+       </a-upload>-->
+      <!-- <a-dropdown v-if="selectedRowKeys.length > 0">
+         <a-menu slot="overlay">
+           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+         </a-menu>
+         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+       </a-dropdown>-->
+    </div>
 
     <!-- table区域-begin -->
     <div>
@@ -103,7 +104,11 @@
     },
   props:{
     companyId:'',
-    fromTable:''
+    fromTable:'',
+    hoverable:{
+      type:Boolean,
+      default:true
+    }
   },
     data () {
       return {
@@ -162,18 +167,19 @@
         dictOptions:{},
       }
     },
-    computed: {
-      importExcelUrl: function(){
-        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
-      },
-    },
     methods: {
       initDictConfig(){
       },
       handleDetail(record)
       {
-        this.$emit("toDetail",record);
+        this.$emit("applyDetail",record);
       } ,
+      toDetail(){
+        this.$emit("toDetail");
+      },
+      toApply(){
+        this.$emit("toApply");
+      }
     }
   }
 </script>
