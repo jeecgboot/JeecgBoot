@@ -1,10 +1,16 @@
 package org.jeecg.modules.system.aspect;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
 import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -144,7 +150,10 @@ public class AutoLogAspect {
 		String params = "";
 		if ("POST".equals(httpMethod) || "PUT".equals(httpMethod) || "PATCH".equals(httpMethod)) {
 			Object[] paramsArray = joinPoint.getArgs();
-			params = JSONObject.toJSONString(paramsArray);
+			List<Object> logArgs = streamOf(paramsArray)
+					.filter(arg -> (!(arg instanceof HttpServletRequest) && !(arg instanceof HttpServletResponse)))
+					.collect(Collectors.toList());
+			params = JSONObject.toJSONString(logArgs);
 		} else {
 			MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 			Method method = signature.getMethod();
@@ -160,5 +169,9 @@ public class AutoLogAspect {
 			}
 		}
 		return params;
+	}
+
+	public static <T> Stream<T> streamOf(T[] array) {
+		return ArrayUtils.isEmpty(array) ? Stream.empty() : Arrays.stream(array);
 	}
 }
