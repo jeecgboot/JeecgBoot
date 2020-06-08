@@ -62,7 +62,6 @@
             //查询详情数据
             this.$refs.applyInfoForm.detail(record);
             let that = this;
-            debugger
             //查询前后明细
             queryComparisonData({beforeId:record.id,afterId:record.newId}).then((res)=>{
               if(res.success) {
