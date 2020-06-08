@@ -41,9 +41,7 @@
 
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
-  import { validateDuplicateValue } from '@/utils/util'
   import BusinessModal from "../../../../component/BusinessModal";
-  import {queryComparisonData} from "../../../../requestAction/request"
   export default {
     name: "CompanyApplyModal",
     components: {
@@ -51,7 +49,6 @@
     },
     data () {
       return {
-        form: this.$form.createForm(this),
         width:800,
         visible: false,
         model: {},
@@ -94,19 +91,8 @@
         this.edit({});
       },
       detail (record) {
-        this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
-        let that = this;
-        //查询前后明细
-        queryComparisonData({beforeId:record.id,afterId:record.newId}).then((res)=>{
-          if(res.success) {
-            console.log(res.result);
-            that.data = res.result;
-          }else{
-            this.$message.error(res.message);
-          }
-        })
       },
       close () {
         this.$emit('close');

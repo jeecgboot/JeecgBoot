@@ -159,7 +159,7 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
         QueryWrapper<CompanyApply> companyWrapper = new QueryWrapper<CompanyApply>();
         companyWrapper.eq("company_id", companyId).eq("from_table", fromTable).and(wrapper -> wrapper.eq("status", Constant.status.NORMAL).or().eq("status", Constant.status.PEND));
         int num = companyApplyService.count(companyWrapper);
-        Result<Object> ok = Result.ok();
+        Result<Object> ok;
         if (num == 0) {
             ok = Result.ok(false);
         }else {

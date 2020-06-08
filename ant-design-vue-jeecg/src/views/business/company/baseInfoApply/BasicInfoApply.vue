@@ -2,9 +2,9 @@
    <div>
     <a-row >
       <a-col span="24">
-        <company-apply-list :company-id="companyId"
+        <company-apply-list :company-id="companyId" :hoverable="latestArchived"
                             :from-table="fromTable" @applyDetail = "applyDetail"  @toDetail="latestDetail" @toApply="apply"
-                            :latestArchived="latestArchived"></company-apply-list>
+                            ></company-apply-list>
       </a-col>
     </a-row>
     <jmodal-base-info ref="baseInfoForm" ></jmodal-base-info>
@@ -15,7 +15,7 @@
 <script>
 
   import CompanyApplyList from "./modules/CompanyApplyList"
-  import {queryLatestArchivedData} from "../../requestAction/request"
+  import {queryComparisonData, queryLatestArchivedData} from "../../requestAction/request"
   import JmodalBaseInfo from "./modules/childModules/JmodalBaseInfo";
   import CompanyApplyModal from "./modules/childModules/CompanyApplyModal";
     export default {
@@ -23,26 +23,19 @@
       components:{
         JmodalBaseInfo,
         CompanyApplyList,
-        queryLatestArchivedData,
         CompanyApplyModal
       },
         data(){
           return {
             fromTable:"company_baseinfo",
             //最新归档信息数据
-            latestArchived:{},
+            latestArchived:false,
             companyId:this.$store.getters.userInfo.companyIds[0],
 
           }
         },
-      //计算属性
-      computed:{
-        hoverable() {
-          return JSON.stringify(this.latestArchived) !== '{}' ;
 
-        }
 
-      },
       methods:{
           //详情
           latestDetail(){
@@ -68,7 +61,17 @@
             console.log(record)
             //查询详情数据
             this.$refs.applyInfoForm.detail(record);
-
+            let that = this;
+            debugger
+            //查询前后明细
+            queryComparisonData({beforeId:record.id,afterId:record.newId}).then((res)=>{
+              if(res.success) {
+                console.log(res.result);
+                that.$refs.applyInfoForm.data = res.result;
+              }else{
+                this.$message.error(res.message);
+              }
+            })
           }
 
 
