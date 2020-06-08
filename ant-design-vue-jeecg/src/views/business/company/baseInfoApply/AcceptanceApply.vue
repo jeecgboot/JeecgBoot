@@ -5,6 +5,7 @@
                         @viewApply="viewApply"></company-apply-list>
     <company-acceptance-list v-if="listshow" :company-id="companyId" :operationShow="operationShow" :listType="listType"
     ></company-acceptance-list>
+    <companyApply-modal ref="applyInfoForm" ></companyApply-modal>
   </div>
 </template>
 
@@ -52,7 +53,7 @@
       },
       //查看
       viewApply() {
-
+        this.$refs.applyInfoForm.detail(record);
       }
 
 
@@ -63,7 +64,6 @@
       //查询最新归档信息
       queryLatestArchivedData({companyId: this.companyId, fromTable: this.fromTable}).then((res) => {
         if (res.success) {
-          debugger
           that.latestArchived = res.result;
         } else {
           that.$message.warning(res.message);
