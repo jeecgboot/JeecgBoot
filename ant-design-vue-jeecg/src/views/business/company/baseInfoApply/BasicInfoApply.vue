@@ -1,12 +1,10 @@
 <template>
    <div>
-    <a-row >
-      <a-col span="24">
+
         <company-apply-list :company-id="companyId" :hoverable="latestArchived"
                             :from-table="fromTable" @applyDetail = "applyDetail"  @toDetail="latestDetail" @toApply="apply"
                             ></company-apply-list>
-      </a-col>
-    </a-row>
+
     <jmodal-base-info ref="baseInfoForm" ></jmodal-base-info>
      <companyApply-modal ref="applyInfoForm" ></companyApply-modal>
    </div>
