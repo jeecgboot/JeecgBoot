@@ -1,11 +1,8 @@
 <template>
    <div>
     <a-row >
-      <a-col span="4">
-        <left-card :title="cardTitle" :hoverable="hoverable" @toDetail = "latestDetail" @toApply="apply"></left-card>
-      </a-col>
-      <a-col span="20">
-        <company-apply-list :company-id="companyId" :from-table="fromTable" @toDetail = "applyDetail"></company-apply-list>
+      <a-col span="24">
+        <company-apply-list :company-id="companyId" :from-table="fromTable" @viewApply = "applyDetail" :latestArchived="latestArchived"></company-apply-list>
       </a-col>
     </a-row>
     <jmodal-base-info ref="baseInfoForm" ></jmodal-base-info>
@@ -17,14 +14,12 @@
 
   import CompanyApplyList from "./modules/CompanyApplyList"
   import {queryLatestArchivedData} from "../../requestAction/request"
-  import LeftCard from "../../component/LeftCard";
   import JmodalBaseInfo from "./modules/childModules/JmodalBaseInfo";
   import CompanyApplyModal from "./modules/childModules/CompanyApplyModal";
     export default {
         name: "BasicInfoApply",
       components:{
         JmodalBaseInfo,
-        LeftCard,
         CompanyApplyList,
         queryLatestArchivedData,
         CompanyApplyModal

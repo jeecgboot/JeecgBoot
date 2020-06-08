@@ -8,21 +8,22 @@
       </a-form>
     </div>
     <!-- 查询区域-END -->
-    
+
     <!-- 操作按钮区域 -->
-   <!-- <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('企业申报基础表')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>
-    </div>-->
+    <div class="table-operator">
+      <a-button v-if="latestArchived" @click="detail" type="primary" icon="profile">详情</a-button>
+      <a-button  @click="apply" type="primary" icon="form">申报</a-button>
+      <!-- <a-button type="primary" icon="download" @click="handleExportXls('企业申报基础表')">导出</a-button>
+       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
+         <a-button type="primary" icon="import">导入</a-button>
+       </a-upload>-->
+      <!-- <a-dropdown v-if="selectedRowKeys.length > 0">
+         <a-menu slot="overlay">
+           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+         </a-menu>
+         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+       </a-dropdown>-->
+    </div>
 
     <!-- table区域-begin -->
     <div>
@@ -50,7 +51,8 @@
         </template>
         <template slot="imgSlot" slot-scope="text">
           <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
-          <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width:80px;font-size: 12px;font-style: italic;"/>
+          <img v-else :src="getImgView(text)" height="25px" alt=""
+               style="max-width:80px;font-size: 12px;font-style: italic;"/>
         </template>
         <template slot="fileSlot" slot-scope="text">
           <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
@@ -66,7 +68,7 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleDetail(record)">详情</a>
+          <a @click="viewApply(record)">查看</a>
 
           <!--<a-divider type="vertical" />
           <a-dropdown>
@@ -91,65 +93,67 @@
 <script>
 
   import '@/assets/less/TableExpand.less'
-  import { mixinDevice } from '@/utils/mixin'
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import {mixinDevice} from '@/utils/mixin'
+  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import CompanyApplyModal from "./childModules/CompanyApplyModal";
+  import {queryLatestArchivedData} from "../../../requestAction/request";
 
   export default {
     name: "CompanyApplyList",
-    mixins:[JeecgListMixin, mixinDevice],
+    mixins: [JeecgListMixin, mixinDevice],
     components: {
       CompanyApplyModal
     },
-  props:{
-    companyId:'',
-    fromTable:''
-  },
-    data () {
+    props: {
+      companyId: '',
+      fromTable: '',
+      latestArchived:''
+    },
+    data() {
       return {
         description: '企业申报基础表管理页面',
-        queryParam:{
-          companyId:this.companyId,
-          fromTable:this.fromTable
+        queryParam: {
+          companyId: this.companyId,
+          fromTable: this.fromTable
         },
         // 表头
         columns: [
           {
             title: '序号',
             dataIndex: '',
-            key:'rowIndex',
-            width:60,
-            align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
+            key: 'rowIndex',
+            width: 60,
+            align: "center",
+            customRender: function (t, r, index) {
+              return parseInt(index) + 1;
             }
           },
           {
-            title:'更新日期',
-            align:"center",
+            title: '更新日期',
+            align: "center",
             dataIndex: 'createTime',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
+            customRender: function (text) {
+              return !text ? "" : (text.length > 10 ? text.substr(0, 10) : text)
             }
           },
           {
-            title:'生效日期',
-            align:"center",
+            title: '生效日期',
+            align: "center",
             dataIndex: 'updateTime'
           },
           {
-            title:'状态',
-            align:"center",
+            title: '状态',
+            align: "center",
             dataIndex: 'status'
           },
 
           {
             title: '详情',
             dataIndex: 'action',
-            align:"center",
+            align: "center",
             // fixed:"right",
-            width:147,
-            scopedSlots: { customRender: 'action' }
+            width: 147,
+            scopedSlots: {customRender: 'action'}
           }
         ],
         url: {
@@ -159,21 +163,27 @@
           // exportXlsUrl: "/testOneDemo/companyApply/exportXls",
           // importExcelUrl: "testOneDemo/companyApply/importExcel",
         },
-        dictOptions:{},
+        dictOptions: {},
       }
     },
-    computed: {
-      importExcelUrl: function(){
+    /*computed: {
+      importExcelUrl: function () {
         return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
       },
-    },
+    },*/
     methods: {
-      initDictConfig(){
+      initDictConfig() {
       },
-      handleDetail(record)
-      {
-        this.$emit("toDetail",record);
-      } ,
+      viewApply(record) {
+        this.$emit("viewApply", record);
+      },
+      detail(){
+        this.$emit('detail');
+      },
+      apply(){
+        this.$emit('apply');
+      }
+
     }
   }
 </script>

@@ -156,34 +156,14 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
     @GetMapping(value = "/queryLatestArchivedData")
     public Result<?> queryLatestArchivedData(@RequestParam(name = "companyId", required = true) String companyId, @RequestParam(name = "fromTable", required = true) String fromTable) {
         //查询正常状态的  申报信息
-        List<CompanyApply> companyApplys = companyApplyService.list(new QueryWrapper<CompanyApply>().lambda()
-                .eq(CompanyApply::getCompanyId, companyId).eq(CompanyApply::getStatus, Constant.status.NORMAL).eq(CompanyApply::getFromTable, fromTable));//审核通过的
+        QueryWrapper<CompanyApply> companyWrapper = new QueryWrapper<CompanyApply>();
+        companyWrapper.eq("company_id", companyId).eq("from_table", fromTable).and(wrapper -> wrapper.eq("status", Constant.status.NORMAL).or().eq("status", Constant.status.PEND));
+        int num = companyApplyService.count(companyWrapper);
         Result<Object> ok = Result.ok();
-        if (companyApplys == null || companyApplys.isEmpty()) {
-            return ok;
-        } else {
-            //查询到了数据
-//			 companyApplys.forEach(companyApply -> {
-            //查询审核通过的，最近的一条数据
-//			 });
-            //或者直接查询基础信息数据表
-            if ("company_baseinfo".equals(fromTable)) {
-                CompanyBaseinfo companyBaseinfo = companyBaseinfoService.queryByCompanyId(companyId);
-                return Result.ok(companyBaseinfo);
-            }
-            switch (fromTable) {
-                case "company_baseinfo":
-                    CompanyBaseinfo companyBaseinfo = companyBaseinfoService.queryByCompanyId(companyId);
-                    ok = Result.ok(companyBaseinfo);
-                    break; //可选
-                case "company_acceptance":
-                    List<CompanyAcceptance> companyAcceptances = companyAcceptanceService.findByCompanyId(companyId);
-                    ok = Result.ok(companyAcceptances);
-                    break; //可选
-                default: //可选
-                    ok = Result.ok(companyBaseinfoService.queryByCompanyId(companyId));
-                    break;
-            }
+        if (num == 0) {
+            ok = Result.ok(false);
+        }else {
+            ok = Result.ok(true);
         }
         return ok;
 
