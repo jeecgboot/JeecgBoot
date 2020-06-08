@@ -6,9 +6,13 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.api.client.json.Json;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.modules.business.entity.CompanyAcceptance;
 import org.jeecg.modules.business.entity.CompanyApply;
 import org.jeecg.modules.business.entity.CompanyBaseinfo;
@@ -174,18 +178,35 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
      *
      * @param beforeId
      * @param afterId
+     * @param fromTable
      */
     @RequestMapping(value = "/queryComparisonData")
     @AutoLog(value = "查询申报前后对比信息")
     @ApiOperation(value = "通过企业申报基础表的前后id", notes = "查询申报前后对比信息")
     public Result<?> queryComparisonData(@RequestParam(name = "beforeId", required = true) String beforeId
-            , @RequestParam(name = "afterId", required = true) String afterId) {
-        CompanyBaseinfo after = companyBaseinfoService.getById(afterId);
-        CompanyBaseinfo before = companyBaseinfoService.getById(beforeId);
+            , @RequestParam(name = "afterId", required = true) String afterId,
+            @RequestParam(name = "fromTable", required = true) String fromTable) {
+
+
+        String[]  arrs = fromTable.split("_");
+        StringBuilder sb = new StringBuilder(arrs[0]);
+        for(int i =1;i<arrs.length;i++) sb.append(toUpperFirstChar2(arrs[i]));
+
+        //获取bean对象
+        ServiceImpl o = (ServiceImpl)SpringContextUtils.getBean(sb.toString()+"ServiceImpl");
         //排除字段
         List<String> excludeFields = Arrays.asList("serialVersionUID", "id", "createBy", "createTime", "updateBy", "updateTime", "sysOrgCode", "status");
         Equator fieldBaseEquator = new FieldBaseEquator(null, excludeFields);
-        return Result.ok(fieldBaseEquator.getDiffFields(before, after));
+        return Result.ok(fieldBaseEquator.getDiffFields(o.getById(beforeId), o.getById(afterId)));
+    }
+    // 高效率
+    private String toUpperFirstChar2(String string) {
+        char[] chars = string.toCharArray();
+        if (chars[0] >= 'a' && chars[0] <= 'z') {
+            chars[0] -= 32;
+            return String.valueOf(chars);
+        }
+        return string;
     }
 
     /**

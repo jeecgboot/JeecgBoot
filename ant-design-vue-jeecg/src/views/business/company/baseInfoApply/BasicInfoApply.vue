@@ -15,7 +15,7 @@
 <script>
 
   import CompanyApplyList from "./modules/CompanyApplyList"
-  import {queryComparisonData, queryLatestArchivedData} from "../../requestAction/request"
+  import { queryLatestArchivedData} from "../../requestAction/request"
   import JmodalBaseInfo from "./modules/childModules/JmodalBaseInfo";
   import CompanyApplyModal from "./modules/childModules/CompanyApplyModal";
     export default {
@@ -61,16 +61,8 @@
             console.log(record)
             //查询详情数据
             this.$refs.applyInfoForm.detail(record);
-            let that = this;
-            //查询前后明细
-            queryComparisonData({beforeId:record.id,afterId:record.newId}).then((res)=>{
-              if(res.success) {
-                console.log(res.result);
-                that.$refs.applyInfoForm.data = res.result;
-              }else{
-                this.$message.error(res.message);
-              }
-            })
+            //单个表比较
+            this.$refs.applyInfoForm.compareDetail(this.fromTable);
           }
 
 
