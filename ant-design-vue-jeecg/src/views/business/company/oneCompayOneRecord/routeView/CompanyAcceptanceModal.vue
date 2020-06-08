@@ -51,6 +51,7 @@
       return {
         form: this.$form.createForm(this),
         title:"操作",
+        disableSubmit:"",
         width:800,
         visible: false,
         model: {},
@@ -134,8 +135,7 @@
       },
     },
     props:{
-      companyId:"",
-      disableSubmit:""
+      companyId:""
     }
   }
 </script>
