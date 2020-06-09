@@ -12,10 +12,10 @@
       <a-form :form="form">
 
         <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['name', validatorRules.name]" placeholder="请输入名称"></a-input>
+          <a-input v-decorator="['name', validatorRules.name]" placeholder="请输入名称" :disabled="disableSubmit"></a-input>
         </a-form-item>
         <a-form-item label="附件上传" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-upload v-decorator="['files']" :trigger-change="true"></j-upload>
+          <j-upload v-decorator="['files']" :trigger-change="true" :disabled="disableSubmit"></j-upload>
         </a-form-item>
 
       </a-form>
@@ -39,6 +39,7 @@
     data () {
       return {
         form: this.$form.createForm(this),
+        disableSubmit:"",
         title:"操作",
         width:800,
         visible: false,

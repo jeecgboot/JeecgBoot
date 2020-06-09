@@ -7,7 +7,8 @@
     switchFullscreen
     @ok="handleOk"
     @cancel="handleCancel"
-    cancelText="关闭">
+    cancelText="关闭"
+    okText = "暂存">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
@@ -29,6 +30,11 @@
 
       </a-form>
     </a-spin>
+    <template slot="footer">
+      <a-button type="primary" @click="handleCancel">取消</a-button>
+      <a-button type="primary" @click="handleOk">暂存</a-button>
+      <a-button type="primary" @click="handDeclare">申报</a-button>
+    </template>
   </j-modal>
 </template>
 
@@ -73,6 +79,7 @@
         },
         url: {
           add: "/business/companyAcceptance/add",
+          declare:"/business/companyAcceptance/declare",
           edit: "/business/companyAcceptance/edit",
         }
       }
@@ -125,6 +132,32 @@
             })
           }
          
+        })
+      },
+      //申报
+      handDeclare () {
+        const that = this;
+        // 触发表单验证
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            that.confirmLoading = true;
+            let httpUrl = this.url.declare;
+            let method = 'put';
+            let formData = Object.assign(this.model, values);
+            formData.companyId=this.companyId;
+            httpAction(httpUrl,formData,method).then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                that.$emit('ok');
+              }else{
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
+          }
+
         })
       },
       handleCancel () {

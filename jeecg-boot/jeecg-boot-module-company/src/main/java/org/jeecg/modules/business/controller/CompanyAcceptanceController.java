@@ -1,6 +1,7 @@
 package org.jeecg.modules.business.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,6 +13,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.business.entity.CompanyAcceptance;
+import org.jeecg.modules.business.entity.CompanyApply;
 import org.jeecg.modules.business.service.ICompanyAcceptanceService;
 import org.jeecg.modules.business.service.ICompanyApplyService;
 import org.jeecg.modules.business.utils.Constant.status;
@@ -60,7 +62,7 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                    HttpServletRequest req, @PathVariable int listType) {
         QueryWrapper<CompanyAcceptance> queryWrapper = QueryGenerator.initQueryWrapper(companyAcceptance, req.getParameterMap());
-        if (listType==0) {
+        if (listType == 0) {
             queryWrapper.ne("status", status.EXPIRED);
         } else {
             queryWrapper.eq("status", status.PEND).or().eq("status", status.NORMAL);
@@ -81,8 +83,54 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
     @ApiOperation(value = "company_acceptance-添加", notes = "company_acceptance-添加")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody CompanyAcceptance companyAcceptance) {
+        companyAcceptance.setStatus(status.TEMPORARY);
         companyAcceptanceService.save(companyAcceptance);
+        //新增申报记录（暂存）
+        companyApplyService.saveByBase(companyAcceptance, "");
         return Result.ok("添加成功！");
+    }
+
+    /**
+     * 申报
+     *
+     * @param companyAcceptance
+     * @return
+     */
+    @AutoLog(value = "company_acceptance-申报")
+    @ApiOperation(value = "company_acceptance-申报", notes = "company_acceptance-申报")
+    @PutMapping(value = "/declare")
+    public Result<?> declare(@RequestBody CompanyAcceptance companyAcceptance) {
+        companyAcceptance.setStatus(status.PEND);
+        //判断是新增还是编辑
+        if (!StrUtil.isEmpty(companyAcceptance.getId())) {
+            //编辑
+            //查询修改之前的对象
+            CompanyAcceptance oldCompanyAcceptance = companyAcceptanceService.getById(companyAcceptance.getId());
+            //状态为正常
+            if (status.NORMAL.equals(oldCompanyAcceptance.getStatus())) {
+                //修改老数据状态为过期
+                oldCompanyAcceptance.setStatus(status.EXPIRED);
+                companyAcceptanceService.updateById(oldCompanyAcceptance);
+                //新增修改后的为新数据
+                companyAcceptance.setId("");
+                companyAcceptanceService.save(companyAcceptance);
+                //新增申报记录
+                companyApplyService.saveByBase(companyAcceptance, oldCompanyAcceptance.getId());
+            } else if (status.NOPASS.equals(oldCompanyAcceptance.getStatus()) || status.TEMPORARY.equals(oldCompanyAcceptance.getStatus())) {
+                //状态为审核未通过、暂存（直接修改）
+                companyAcceptanceService.updateById(companyAcceptance);
+                //修改申报记录状态为待审核
+                CompanyApply companyApply = companyApplyService.findByNewId(companyAcceptance.getId(), "company_acceptance");
+                companyApply.setStatus(status.PEND);
+                companyApplyService.updateById(companyApply);
+            }
+        } else {
+            //新增
+            companyAcceptanceService.save(companyAcceptance);
+            //新增申报记录
+            companyApplyService.saveByBase(companyAcceptance, "");
+        }
+        return Result.ok("编辑成功!");
     }
 
     /**
@@ -95,16 +143,26 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
     @ApiOperation(value = "company_acceptance-编辑", notes = "company_acceptance-编辑")
     @PutMapping(value = "/edit")
     public Result<?> edit(@RequestBody CompanyAcceptance companyAcceptance) {
-        //查询修改之前的
-        CompanyAcceptance oldcompanyAcceptance = companyAcceptanceService.getById(companyAcceptance.getId());
-        //修改老的实体状态为过期
-        oldcompanyAcceptance.setStatus(status.EXPIRED);
-        companyAcceptanceService.updateById(oldcompanyAcceptance);
-        //把编辑过得新增
-        companyAcceptance.setId("");
+        CompanyAcceptance oldCompanyAcceptance = companyAcceptanceService.getById(companyAcceptance.getId());
         companyAcceptance.setStatus(status.TEMPORARY);
-        companyAcceptance.setOldId(oldcompanyAcceptance.getId());
-        companyAcceptanceService.save(companyAcceptance);
+        //查询数据状态
+        if (status.NORMAL.equals(companyAcceptance.getStatus())) {
+            //正常
+            oldCompanyAcceptance.setStatus(status.EXPIRED);
+            companyAcceptanceService.updateById(oldCompanyAcceptance);
+            //新增修改后的为新数据
+            companyAcceptance.setId("");
+            companyAcceptanceService.save(companyAcceptance);
+            //新增申报记录
+            companyApplyService.saveByBase(companyAcceptance, oldCompanyAcceptance.getId());
+        } else if (status.NOPASS.equals(oldCompanyAcceptance.getStatus()) || status.TEMPORARY.equals(oldCompanyAcceptance.getStatus())) {
+            //状态为未通过和暂存的
+            companyAcceptanceService.updateById(companyAcceptance);
+            //修改申报记录状态为暂存
+            CompanyApply companyApply = companyApplyService.findByNewId(companyAcceptance.getId(), "company_acceptance");
+            companyApply.setStatus(status.TEMPORARY);
+            companyApplyService.updateById(companyApply);
+        }
         return Result.ok("编辑成功!");
     }
 
@@ -154,16 +212,16 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
     }
 
     /**
-     * @Description: 申报
+     * @Description: 批量申报
      * @Param:
      * @return:
      * @Author: 周志远
      * @Date: 2020/6/4
      */
-    @AutoLog(value = "company_acceptance-申报")
-    @ApiOperation(value = "company_acceptance-申报", notes = "company_acceptance-申报")
-    @GetMapping(value = "/declare")
-    public Result<?> declare(@RequestParam(name = "ids", required = true) String ids) {
+    @AutoLog(value = "company_acceptance-批量申报")
+    @ApiOperation(value = "company_acceptance-批量申报", notes = "company_acceptance-批量申报")
+    @GetMapping(value = "/batchDeclare")
+    public Result<?> batchDeclare(@RequestParam(name = "ids", required = true) String ids) {
         List<String> idList = Arrays.asList(ids.split(","));
         if (CollectionUtil.isNotEmpty(idList)) {
             for (Iterator<String> iterator = idList.iterator(); iterator.hasNext(); ) {
@@ -176,15 +234,11 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
                 }
                 //修改状态为1：待审核状态
                 companyAcceptance.setStatus(status.PEND);
-                boolean isupdate = companyAcceptanceService.updateById(companyAcceptance);
-                if (!isupdate) {
-                    return Result.error("申报失败！");
-                }
-                //新增申报记录
-                boolean isadd = companyApplyService.saveByBase(companyAcceptance);
-                if (!isadd) {
-                    return Result.error("申报失败！");
-                }
+                companyAcceptanceService.updateById(companyAcceptance);
+                //查询申报记录
+                CompanyApply companyApply = companyApplyService.findByNewId(companyAcceptance.getId(), "company_acceptance");
+                companyApply.setStatus(status.PEND);
+                companyApplyService.updateById(companyApply);
             }
         }
         return Result.ok("申报成功!");
