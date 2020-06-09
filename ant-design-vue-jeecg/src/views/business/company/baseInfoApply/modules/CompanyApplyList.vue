@@ -95,6 +95,7 @@
   import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import CompanyApplyModal from "./childModules/CompanyApplyModal";
+  import {filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "CompanyApplyList",
@@ -143,9 +144,9 @@
             dataIndex: 'updateTime'
           },
           {
-            title:'状态',
-            align:"center",
-            dataIndex: 'status'
+            title: '数据状态',
+            align: "center",
+            dataIndex: 'status_dictText'
           },
 
           {
