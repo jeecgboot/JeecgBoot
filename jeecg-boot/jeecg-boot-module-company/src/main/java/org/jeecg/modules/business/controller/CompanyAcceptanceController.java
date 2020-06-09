@@ -144,9 +144,9 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
     @PutMapping(value = "/edit")
     public Result<?> edit(@RequestBody CompanyAcceptance companyAcceptance) {
         CompanyAcceptance oldCompanyAcceptance = companyAcceptanceService.getById(companyAcceptance.getId());
-        companyAcceptance.setStatus(status.TEMPORARY);
         //查询数据状态
         if (status.NORMAL.equals(companyAcceptance.getStatus())) {
+            companyAcceptance.setStatus(status.TEMPORARY);
             //正常
             oldCompanyAcceptance.setStatus(status.EXPIRED);
             companyAcceptanceService.updateById(oldCompanyAcceptance);
@@ -156,6 +156,7 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
             //新增申报记录
             companyApplyService.saveByBase(companyAcceptance, oldCompanyAcceptance.getId());
         } else if (status.NOPASS.equals(oldCompanyAcceptance.getStatus()) || status.TEMPORARY.equals(oldCompanyAcceptance.getStatus())) {
+            companyAcceptance.setStatus(status.TEMPORARY);
             //状态为未通过和暂存的
             companyAcceptanceService.updateById(companyAcceptance);
             //修改申报记录状态为暂存
