@@ -41,7 +41,6 @@
         }
       },
       created() {
-        console.log("itemList",this.itemList)
       }
     }
 </script>

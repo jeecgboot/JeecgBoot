@@ -2,24 +2,20 @@
   <div>
     <a-tabs default-active-key="1"  >
       <a-tab-pane key="1" tab="企业形象">
-          <pic-list :images="companyImage" />
+          <pic-list :images="qualificttionImgs.companyImage" qualificttion-type="companyImage" :isApply="isApply"/>
       </a-tab-pane>
       <a-tab-pane key="2" tab="营业执照照片" force-render>
-        <img style="width: 100%;" :src="businessLicense"  :preview="businessLicense">
-
+        <pic-list :images="qualificttionImgs.businessLicense" qualificttion-type="businessLicense" :isApply="isApply" />
       </a-tab-pane>
       <a-tab-pane key="3" tab="企业平面图">
-        <img style="width: 100%;" :src="floorPlan"  :preview="businessLicense">
-
+        <pic-list :images="qualificttionImgs.floorPlan" qualificttion-type="floorPlan" :isApply="isApply" />
       </a-tab-pane>
 
       <a-tab-pane key="4" tab="生产工艺图">
-        <img style="width: 100%;" :src="produceCrafts"  :preview="businessLicense">
-
+        <pic-list :images="qualificttionImgs.produceCrafts" qualificttion-type="produceCrafts" :isApply="isApply" />
       </a-tab-pane>
       <a-tab-pane key="5" tab="治理工艺图">
-        <img style="width: 100%;" :src="controlCrafts"  :preview="businessLicense">
-
+        <pic-list :images="qualificttionImgs.controlCrafts" qualificttion-type="controlCrafts" :isApply="isApply" />
       </a-tab-pane>
 
     </a-tabs>
@@ -45,38 +41,27 @@
       },
       data() {
         return {
-          companyImage:[],
-          controlCrafts:'',
-          businessLicense:'',
-          floorPlan:'',
-          produceCrafts:'',
-
-
-
-
+          qualificttionImgs:{},
+          isApply:false
         };
       },
       methods:{
-
+        loadQualificationImgs(){
+          let that = this;
+          loadQualifications({companyId:that.companyId}).then((res)=>{
+            if(res.success){
+              console.log(res.success);
+              that.qualificttionImgs=res.result;
+            }else{
+              console.log(res.message);
+            }
+          });
+        }
       },
       created() {
-        let that = this;
+
         //查询
-        loadQualifications({companyId:that.companyId}).then((res)=>{
-          if(res.success){
-            console.log(res.success);
-            that.companyImage=[res.result.companyImage,res.result.controlCrafts,res.result.businessLicense
-              ,res.result.floorPlan,res.result.companyImage,res.result.floorPlan,res.result.businessLicense];
-            that.controlCrafts=getFileAccessHttpUrl(res.result.controlCrafts);
-            that.businessLicense=getFileAccessHttpUrl(res.result.businessLicense);
-            that.floorPlan=getFileAccessHttpUrl(res.result.floorPlan);
-            that.produceCrafts=getFileAccessHttpUrl(res.result.produceCrafts);
-          }else{
-            console.log(res.message);
-          }
-
-
-        });
+        this.loadQualificationImgs();
 
       }
     }

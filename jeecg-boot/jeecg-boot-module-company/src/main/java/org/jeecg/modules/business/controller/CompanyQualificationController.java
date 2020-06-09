@@ -20,10 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
 * @Description: 企业资质
@@ -127,18 +124,13 @@ public class CompanyQualificationController extends JeecgController<CompanyQuali
    @ApiOperation(value="企业资质-通过企业id查询", notes="企业资质-通过企业id查询")
    @PostMapping(value = "/queryByCompanyId")
    public Result<?> queryById(@RequestBody JSONObject jsonObject) {
-       String companyId = jsonObject.getString("companyId");
-       List<CompanyQualification> companyQualifications = companyQualificationService.list
-               (new QueryWrapper<CompanyQualification>().lambda().eq(CompanyQualification::getCompanyId,companyId).eq(CompanyQualification::getStatus, Constant.status.NORMAL));
-       if(companyQualifications==null) {
-           return Result.error("未找到对应数据");
-       }
-       Map<String,String> result = new HashMap<>();
-       companyQualifications.forEach(companyQualification -> {result.put(companyQualification.getType(),companyQualification.getFilePath());});
+       Map<String, List<String>> result = companyQualificationService.getQualificationFiles(jsonObject.getString("companyId"));
        return Result.ok(result);
    }
 
-   /**
+
+
+    /**
    * 导出excel
    *
    * @param request

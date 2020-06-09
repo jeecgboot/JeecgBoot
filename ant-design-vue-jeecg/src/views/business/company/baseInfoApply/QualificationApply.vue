@@ -2,7 +2,7 @@
   <company-apply-list :company-id="companyId" :hoverable="latestArchived"
                       :from-table="fromTable" @applyDetail = "applyDetail"  @toDetail="latestDetail" @toApply="apply"
                       v-if="!showDetail"></company-apply-list>
-  <qualification :company-id="companyId" v-else></qualification>
+  <qualification ref="qModal" :company-id="companyId" v-else ></qualification>
 </template>
 
 <script>
@@ -18,7 +18,8 @@
           return {
             fromTable:"company_qualification",
             companyId:this.$store.getters.userInfo.companyIds[0],
-            showDetail:false
+            showDetail:false,
+            latestArchived:false
           }
       },
       created() {
@@ -41,6 +42,21 @@
       methods:{
         latestDetail(){
           this.showDetail = true;
+          let that = this;
+          this.$nextTick(() => {
+            that.$refs.qModal.isApply = false;
+          });
+
+        },
+        apply(){
+          this.showDetail = true;
+          let that = this;
+          this.$nextTick(() => {
+            that.$refs.qModal.isApply = true;
+          });
+        },
+        applyDetail(){
+
         }
       }
     }

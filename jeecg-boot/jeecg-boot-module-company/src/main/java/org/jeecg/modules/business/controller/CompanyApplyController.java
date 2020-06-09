@@ -210,6 +210,22 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
     }
 
     /**
+     *
+     * @param applyObj  申报信息
+     * @return
+     */
+    @PostMapping(value = "/qualification")
+    public Result<?> qualificationApply(@RequestBody JSONObject applyObj) {
+
+
+
+
+        return Result.ok();
+    }
+
+
+
+    /**
      * 导出excel
      *
      * @param request

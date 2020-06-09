@@ -56,7 +56,7 @@
           },
           applyDetail(record){
 
-            console.log(record)
+
             //查询详情数据
             this.$refs.applyInfoForm.detail(record);
             //单个表比较
@@ -72,7 +72,6 @@
         queryLatestArchivedData({companyId:this.companyId,fromTable:this.fromTable}).then((res)=>{
           if(res.success){
             that.latestArchived = res.result;
-            console.log(res.result);
           }else{
             that.$message.warning(res.message);
           }

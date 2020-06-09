@@ -9,6 +9,7 @@ const loadBaiduMap = (params)=>getAction("/envtax/companyEnvTax/loadBaiduMap",pa
 const queryLatestArchivedData = (params)=>getAction("/company/apply/queryLatestArchivedData",params);
 //查询申报前后对比信息
 const queryComparisonData = (params)=>getAction("/company/apply/queryComparisonData",params);
+const qualificationApply = (params)=>putAction("/company/apply/qualification",params);
 
 
 export {
@@ -17,5 +18,6 @@ export {
   loadQualifications,
   loadBaiduMap,
   queryLatestArchivedData,
-  queryComparisonData
+  queryComparisonData,
+  qualificationApply
 }
