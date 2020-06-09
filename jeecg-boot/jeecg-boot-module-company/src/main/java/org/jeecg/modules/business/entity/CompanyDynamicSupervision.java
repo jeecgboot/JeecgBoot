@@ -45,7 +45,7 @@ public class CompanyDynamicSupervision implements Serializable {
 	/**申报年份*/
 	@Excel(name = "申报年份", width = 15)
     @ApiModelProperty(value = "申报年份")
-    private java.lang.Integer reportYear;
+    private java.lang.String reportYear;
 	/**材料类型*/
 	@Excel(name = "材料类型", width = 15, dicCode = "supervision_document_type")
 	@Dict(dicCode = "supervision_document_type")

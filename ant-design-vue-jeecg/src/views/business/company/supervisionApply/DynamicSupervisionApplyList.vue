@@ -5,7 +5,8 @@
 
 <script>
   import CompanyDynamicSupervisionList from '../oneCompayOneRecord/routeView/CompanyDynamicSupervisionList'
-    export default {
+
+  export default {
       name: "",
       components: {CompanyDynamicSupervisionList},
       computed: {},
@@ -28,7 +29,7 @@
             customRender: function (t, r, index) {
               return parseInt(index) + 1;
             }
-          },
+            },
             {
               title: '材料名称',
               align: "center",
@@ -45,7 +46,7 @@
               dataIndex: 'companyName'
             },
             {
-              title: '所属年份',
+              title: '申报年份',
               align: "center",
               dataIndex: 'reportYear'
             },

@@ -4,13 +4,25 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :xl="10" :lg="11" :md="12" :sm="24">
-            <a-form-item label="发文日期">
-              <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.reportDate_begin"></j-date>
-              <span class="query-group-split-cust"></span>
-              <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.reportDate_end"></j-date>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="申报状态">
+              <j-dict-select-tag placeholder="请选择申报状态" v-model="queryParam.status" dictCode="statue"/>
             </a-form-item>
           </a-col>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="企业id">
+              <a-input placeholder="请输入企业id" v-model="queryParam.companyId"></a-input>
+            </a-form-item>
+          </a-col>
+          <template v-if="toggleSearchStatus">
+            <a-col :xl="10" :lg="11" :md="12" :sm="24">
+              <a-form-item label="发文日期">
+                <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.reportDate_begin"></j-date>
+                <span class="query-group-split-cust"></span>
+                <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.reportDate_end"></j-date>
+              </a-form-item>
+            </a-col>
+          </template>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -29,10 +41,10 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('行政处罚信息')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>
+<!--      <a-button type="primary" icon="download" @click="handleExportXls('行政处罚信息')">导出</a-button>-->
+<!--      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">-->
+<!--        <a-button type="primary" icon="import">导入</a-button>-->
+<!--      </a-upload>-->
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -57,7 +69,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         class="j-table-force-nowrap"
         @change="handleTableChange">
 
@@ -82,19 +94,12 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="tohandleEdit(record)">查看</a>
-
-<!--          <a-divider type="vertical" />-->
-<!--          <a-dropdown>-->
-<!--            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>-->
-<!--            <a-menu slot="overlay">-->
-<!--              <a-menu-item>-->
-<!--                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">-->
-<!--                  <a>删除</a>-->
-<!--                </a-popconfirm>-->
-<!--              </a-menu-item>-->
-<!--            </a-menu>-->
-<!--          </a-dropdown>-->
+          <a @click="tohandleEdit(record)" v-if="role === 'monitor'">编辑</a>
+          <a @click="tohandleEdit(record)" v-else>查看</a>
+          <a-divider type="vertical" v-if="role === 'monitor'" />
+          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+            <a v-if="role === 'monitor'">删除</a>
+          </a-popconfirm>
         </span>
 
       </a-table>
@@ -121,11 +126,13 @@
       CompanyAdminPenaltiesModal
     },
     props: {
-      companyId:''
+      companyId:'',
+      role:''
     },
     data () {
       return {
         description: '行政处罚信息管理页面',
+        companyid:this.companyId,
         // 表头
         columns: [
           {
@@ -226,8 +233,14 @@
       initDictConfig(){
       },
       tohandleEdit:function (record) {
+
         this.handleEdit(record);
         this.$refs.modalForm.title="查看行政处罚信息";
+      }
+    },
+    created(){
+      if(this.companyid==null) {
+        this.companyid = this.$store.getters.userInfo.companyIds[0]
       }
     }
   }

@@ -5,14 +5,13 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :xl="6" :lg="7" :md="8" :sm="24" v-if="role === 'monitor'">
-            <a-form-item label="数据状态">
-              <j-dict-select-tag placeholder="请选择数据状态" v-model="queryParam.status" dictCode="statue"/>
+            <a-form-item label="申报状态">
+              <j-dict-select-tag placeholder="请选择申报状态" v-model="queryParam.status" dictCode="statue"/>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24" v-if="role === 'monitor'">
-            <a-form-item label="企业id">
-<!--              <j-search-select-tag placeholder="请选择企业id" v-model="queryParam.companyId" dict="company_dynamic_supervision,companyId,companyId"/>-->
-              <a-input placeholder="请输入企业id" v-model="queryParam.companyId"></a-input>
+            <a-form-item label="企业名称">
+              <a-input placeholder="请输入企业名称" v-model="queryParam.companyName"></a-input>
             </a-form-item>
           </a-col>
 
@@ -95,18 +94,12 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="tohandleEdit(record)">查看</a>
-<!--          <a-divider type="vertical" />-->
-<!--          <a-dropdown>-->
-<!--            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>-->
-<!--            <a-menu slot="overlay">-->
-<!--              <a-menu-item>-->
-<!--                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">-->
-<!--                  <a>删除</a>-->
-<!--                </a-popconfirm>-->
-<!--              </a-menu-item>-->
-<!--            </a-menu>-->
-<!--          </a-dropdown>-->
+          <a @click="tohandleEdit(record)" v-if="role === 'monitor'">编辑</a>
+          <a @click="tohandleEdit(record)" v-else>查看</a>
+          <a-divider type="vertical" v-if="role === 'monitor'"/>
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                  <a v-if="role === 'monitor'">删除</a>
+                </a-popconfirm>
         </span>
 
 
@@ -124,6 +117,7 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import CompanyDynamicSupervisionModal from './CompanyDynamicSupervisionModal'
   import store from '@/store/'
+  import {queryDynamicSupervision} from '../../../requestAction/request'
 
   export default {
     name: "CompanyDynamicSupervisionList",
@@ -139,6 +133,9 @@
       return {
         description: '企业年度动态监管管理页面',
         companyid:this.companyId,
+        queryParam: {
+          companyId: this.companyId
+        },
         // 表头
         columns: [
           {
@@ -162,7 +159,7 @@
             dataIndex: 'documentType_dictText'
           },
           {
-            title:'所属年份',
+            title:'申报年份',
             align:"center",
             dataIndex: 'reportYear'
           },
@@ -221,7 +218,7 @@
           }
         ],
         url: {
-          list: "/cds/companyDynamicSupervision/list/"+this.companyId,
+          list: "/cds/companyDynamicSupervision/list",
           delete: "/cds/companyDynamicSupervision/delete",
           deleteBatch: "/cds/companyDynamicSupervision/deleteBatch",
           // exportXlsUrl: "/cds/companyDynamicSupervision/exportXls",
@@ -239,14 +236,26 @@
       initDictConfig(){
       },
       tohandleEdit:function(record){
+        this.$refs.modalForm.value = record.companyId;
         this.handleEdit(record);
         this.$refs.modalForm.title="查看年度动态监管";
-      }
+      },
     },
     created(){
       if(this.companyid==null) {
         this.companyid = this.$store.getters.userInfo.companyIds[0]
       }
+      //
+      // let that = this;
+      // var params = this.getQueryParams();//查询条件
+      // queryDynamicSupervision(params).then((res)=>{
+      //   if(res.success) {
+      //     console.log(res.result);
+      //     that.data = res.result;
+      //   }else{
+      //     this.$message.error(res.message);
+      //   }
+      // })
     }
   }
 </script>

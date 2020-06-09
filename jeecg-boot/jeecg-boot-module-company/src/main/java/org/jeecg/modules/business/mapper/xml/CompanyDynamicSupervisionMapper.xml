@@ -1,5 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.business.mapper.CompanyDynamicSupervisionMapper">
+    <resultMap id="CompanyDynamicSupervisionVO" type="org.jeecg.modules.business.vo.CompanyDynamicSupervisionVO" >
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="company_id" property="companyId" jdbcType="VARCHAR"/>
+        <result column="report_year" property="reportYear" jdbcType="VARCHAR"/>
+        <result column="document_type" property="documentType" jdbcType="TIMESTAMP"/>
+        <result column="document_name" property="documentName" jdbcType="VARCHAR"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
+        <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="company_name" property="companyName" jdbcType="VARCHAR"/>
+    </resultMap>
 
+
+    <select id="getCompanyDynamicSupervision" parameterType="String"  resultMap="CompanyDynamicSupervisionVO">
+        select t1.company_name,t2.* from company_base t1
+        left join company_dynamic_supervision t2 on t1.company_id=t2.company_id
+        where 1=1
+        <if test="companyId != null">
+            and t1.company_id in (#{companyId})
+        </if>
+        <if test="status != null">
+            and status in (#{status})
+        </if>
+        <if test="companyName != null">
+            and company_name like concat('%',#{companyName},'%')
+        </if>
+        <if test="reportYear != null">
+            and report_year = (#{reportYear})
+        </if>
+	</select>
 </mapper>
