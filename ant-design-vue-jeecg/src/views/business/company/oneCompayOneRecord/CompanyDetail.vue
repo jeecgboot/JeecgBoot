@@ -18,7 +18,7 @@
           <product-material-list v-if="leftActive==4 && topActive==1" :companyId="companyId"/>
           <env-trial-list v-if="leftActive==5 && topActive==1" :companyId="companyId"/>
           <company-acceptance-list v-if="leftActive==6 && topActive==1" :companyId="companyId" :listType="0" :operation-show="false"/>
-          <prevention v-if="leftActive==7 && topActive==1" :companyId="companyId" :operation-show="false"/>
+          <prevention v-if="leftActive==7 && topActive==1" :companyId="companyId" :listType="0" :operation-show="false"/>
           <company-dirty-allow-list v-if="leftActive==8 && topActive==1" :companyId="companyId"/>
           <base-info v-if="leftActive==9 && topActive==1"/>
           <base-info v-if="leftActive==10 && topActive==1"/>

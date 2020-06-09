@@ -71,4 +71,7 @@ public class CompanyPrevention implements Serializable {
 	@Excel(name = "附件上传", width = 15)
     @ApiModelProperty(value = "附件上传")
     private String files;
+    /**oldid*/
+    @ApiModelProperty(value = "编辑之前的id")
+    private String oldId;
 }

@@ -99,7 +99,7 @@
       compareDetail(fromTable){
         let that = this;
         //查询前后明细
-        queryComparisonData({beforeId:this.model.id,afterId:this.model.newId,fromTable:fromTable}).then((res)=>{
+        queryComparisonData({beforeId:this.model.oldId,afterId:this.model.newId,fromTable:fromTable}).then((res)=>{
           if(res.success) {
             console.log(res.result);
             that.data = res.result;

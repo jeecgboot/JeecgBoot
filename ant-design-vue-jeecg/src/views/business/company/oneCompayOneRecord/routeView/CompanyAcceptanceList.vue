@@ -57,7 +57,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="rowSelection"
         class="j-table-force-nowrap"
         @change="handleTableChange">
 
@@ -83,11 +83,11 @@
 
         <span slot="action" slot-scope="text, record">
           <!--权限控制查看还是编辑，查看只允许查看不允许修改-->
-          <a @click="handleEdit(record)" v-if="operationShow">编辑</a>
-           <a-divider v-if="operationShow" type="vertical" />
-           <a @click="handleview(record)" v-if="!operationShow">查看</a>
-          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a v-if="operationShow">删除</a>
+          <a  @click="handleEdit(record)" v-if="operationShow && (record.status!='1' && record.status!='4')">编辑</a>
+           <a-divider v-if="operationShow && (record.status!='1' && record.status!='4')" type="vertical" />
+           <a @click="handleview(record)" v-if="!operationShow || (record.status=='1' || record.status=='4')">查看</a>
+           <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                  <a v-if="operationShow  && (record.status!='1' && record.status!='4')">删除</a>
           </a-popconfirm>
         </span>
       </a-table>
@@ -104,6 +104,7 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import CompanyAcceptanceModal from './CompanyAcceptanceModal'
   import {getAction} from "../../../../../api/manage";
+  import {filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "CompanyAcceptanceList",
@@ -153,6 +154,11 @@
             }
           },
           {
+            title: '数据状态',
+            align: "center",
+            dataIndex: 'status_dictText'
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align: "center",
@@ -165,12 +171,15 @@
           list: "/business/companyAcceptance/list/" + this.listType,
           delete: "/business/companyAcceptance/delete",
           deleteBatch: "/business/companyAcceptance/deleteBatch",
-          declare: "/business/companyAcceptance/declare"
+          declare: "/business/companyAcceptance/declare",
+          batchDeclare: "/business/companyAcceptance/batchDeclare",
         },
         dictOptions: {},
       }
     },
     methods: {
+      initDictConfig() {
+      },
       handleview: function (record) {
         this.$refs.modalForm.edit(record);
         this.$refs.modalForm.title = "查看";
@@ -191,7 +200,7 @@
             content: "是否申报选中数据?",
             onOk: function () {
               that.loading = true;
-              getAction(that.url.declare, {ids: ids}).then((res) => {
+              getAction(that.url.batchDeclare, {ids: ids}).then((res) => {
                 if (res.success) {
                   that.$message.success(res.message);
                   that.loadData();
@@ -212,6 +221,21 @@
       operationShow: "",
       listType: ""
     },
+    computed: {
+      rowSelection() {
+        return {
+          getCheckboxProps: record => ({
+            props: {
+              disabled: record.status == '1',
+              name: record.projectName,
+            },
+          }),
+          selectedRowKeys: this.selectedRowKeys,
+          onChange: this.onSelectChange
+        };
+      },
+
+    }
   }
 </script>
 <style scoped>

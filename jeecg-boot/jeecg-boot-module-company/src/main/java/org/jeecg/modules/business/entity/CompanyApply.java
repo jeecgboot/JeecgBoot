@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.jeecg.common.aspect.annotation.Dict;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import io.swagger.annotations.ApiModel;
@@ -52,20 +53,24 @@ public class CompanyApply implements Serializable {
 	@Excel(name = "新的id，new_id 是申请的单子对应的id", width = 15)
     @ApiModelProperty(value = "新的id，new_id 是申请的单子对应的id")
     private java.lang.String newId;
-	/**数据状态*/
-	@Excel(name = "数据状态", width = 15)
-    @ApiModelProperty(value = "数据状态")
+	/**企业id*/
+	@Excel(name = "企业id", width = 15)
+    @ApiModelProperty(value = "企业id")
     private java.lang.String companyId;
 	/**从哪张表过来的*/
 	@Excel(name = "从哪张表过来的", width = 15)
     @ApiModelProperty(value = "从哪张表过来的")
     private java.lang.String fromTable;
-	/**状态*/
-	@Excel(name = "状态", width = 15)
-    @ApiModelProperty(value = "状态")
+	/**数据状态*/
+	@Excel(name = "数据状态", width = 15)
+    @ApiModelProperty(value = "数据状态")
+    @Dict(dicCode = "statue")
     private java.lang.String status;
 	/**备注*/
 	@Excel(name = "备注", width = 15)
     @ApiModelProperty(value = "备注")
     private java.lang.String content;
+    /**oldid*/
+    @ApiModelProperty(value = "编辑之前的id")
+    private String oldId;
 }

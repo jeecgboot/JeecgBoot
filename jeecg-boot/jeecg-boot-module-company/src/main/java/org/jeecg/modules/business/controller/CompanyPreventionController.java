@@ -1,6 +1,7 @@
 package org.jeecg.modules.business.controller;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -9,6 +10,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import cn.hutool.core.collection.CollectionUtil;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
@@ -18,8 +21,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
+import org.jeecg.modules.business.entity.CompanyAcceptance;
 import org.jeecg.modules.business.entity.CompanyPrevention;
+import org.jeecg.modules.business.service.ICompanyApplyService;
 import org.jeecg.modules.business.service.ICompanyPreventionService;
+import org.jeecg.modules.business.utils.Constant;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -49,6 +55,9 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class CompanyPreventionController extends JeecgController<CompanyPrevention, ICompanyPreventionService> {
 	@Autowired
 	private ICompanyPreventionService companyPreventionService;
+
+	 @Autowired
+	 private ICompanyApplyService companyApplyService;
 	
 	/**
 	 * 分页列表查询
@@ -61,12 +70,17 @@ public class CompanyPreventionController extends JeecgController<CompanyPreventi
 	 */
 	@AutoLog(value = "污染防治信息-分页列表查询")
 	@ApiOperation(value="污染防治信息-分页列表查询", notes="污染防治信息-分页列表查询")
-	@GetMapping(value = "/list")
+	@GetMapping(value = "/list/{listType}")
 	public Result<?> queryPageList(CompanyPrevention companyPrevention,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-								   HttpServletRequest req) {
+								   HttpServletRequest req, @PathVariable int listType) {
 		QueryWrapper<CompanyPrevention> queryWrapper = QueryGenerator.initQueryWrapper(companyPrevention, req.getParameterMap());
+		if (listType==0) {
+			queryWrapper.ne("status", Constant.status.EXPIRED);
+		} else {
+			queryWrapper.eq("status", Constant.status.PEND).or().eq("status", Constant.status.NORMAL);
+		}
 		Page<CompanyPrevention> page = new Page<CompanyPrevention>(pageNo, pageSize);
 		IPage<CompanyPrevention> pageList = companyPreventionService.page(page, queryWrapper);
 		return Result.ok(pageList);
@@ -96,7 +110,16 @@ public class CompanyPreventionController extends JeecgController<CompanyPreventi
 	@ApiOperation(value="污染防治信息-编辑", notes="污染防治信息-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody CompanyPrevention companyPrevention) {
-		companyPreventionService.updateById(companyPrevention);
+		//查询编辑之前的
+		CompanyPrevention oldcompanyPrevention = companyPreventionService.getById(companyPrevention.getId());
+		//修改老的实体状态为过期
+		oldcompanyPrevention.setStatus(Constant.status.EXPIRED);
+		companyPreventionService.updateById(oldcompanyPrevention);
+		//把编辑过得新增
+		companyPrevention.setId("");
+		companyPrevention.setStatus(Constant.status.TEMPORARY);
+		companyPrevention.setOldId(oldcompanyPrevention.getId());
+		companyPreventionService.save(companyPrevention);
 		return Result.ok("编辑成功!");
 	}
 	
@@ -144,6 +167,43 @@ public class CompanyPreventionController extends JeecgController<CompanyPreventi
 		}
 		return Result.ok(companyPrevention);
 	}
+
+	 /**
+	  * @Description: 申报
+	  * @Param:
+	  * @return:
+	  * @Author: 周志远
+	  * @Date: 2020/6/4
+	  */
+	 @AutoLog(value = "污染防治信息-申报")
+	 @ApiOperation(value = "污染防治信息-申报", notes = "污染防治信息-申报")
+	 @GetMapping(value = "/declare")
+	 public Result<?> declare(@RequestParam(name = "ids", required = true) String ids) {
+		 List<String> idList = Arrays.asList(ids.split(","));
+		 if (CollectionUtil.isNotEmpty(idList)) {
+			 for (Iterator<String> iterator = idList.iterator(); iterator.hasNext(); ) {
+				 String id = iterator.next();
+				 //查询
+				 CompanyPrevention companyPrevention = companyPreventionService.getById(id);
+				 //判断申报的是否是暂存
+				 if (!Constant.status.TEMPORARY.equals(companyPrevention.getStatus())) {
+					 return Result.error("请选择暂存的污染防治信息申报！");
+				 }
+				 //修改状态为1：待审核状态
+				 companyPrevention.setStatus(Constant.status.PEND);
+				 boolean isupdate = companyPreventionService.updateById(companyPrevention);
+				 if (!isupdate) {
+					 return Result.error("申报失败！");
+				 }
+				 //新增申报记录
+				 boolean isadd = companyApplyService.saveByBase(companyPrevention);
+				 if (!isadd) {
+					 return Result.error("申报失败！");
+				 }
+			 }
+		 }
+		 return Result.ok("申报成功!");
+	 }
 
     /**
     * 导出excel
