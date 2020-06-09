@@ -1,8 +1,8 @@
 <template>
   <div>
     <company-apply-list v-if="!listshow" :company-id="companyId" :from-table="fromTable"
-                        :latestArchived="latestArchived" @detail="detail" @apply="apply"
-                        @viewApply="viewApply"></company-apply-list>
+                        :latestArchived="latestArchived" @toDetail="detail" @toApply="apply"
+                        @applyDetail="viewApply"></company-apply-list>
     <company-acceptance-list v-if="listshow" :company-id="companyId" :operationShow="operationShow" :listType="listType"
     ></company-acceptance-list>
     <companyApply-modal ref="applyInfoForm" ></companyApply-modal>
@@ -13,14 +13,16 @@
 
   import CompanyApplyList from "./modules/CompanyApplyList"
   import CompanyAcceptanceList from "../oneCompayOneRecord/routeView/CompanyAcceptanceList";
-  import {queryLatestArchivedData} from "../../requestAction/request"
+  import {queryComparisonData, queryLatestArchivedData} from "../../requestAction/request"
+  import CompanyApplyModal from "./modules/childModules/CompanyApplyModal";
 
   export default {
     name: "AcceptanceApply",
     components: {
       CompanyApplyList,
       queryLatestArchivedData,
-      CompanyAcceptanceList
+      CompanyAcceptanceList,
+      CompanyApplyModal
     },
     data() {
       return {
@@ -52,8 +54,13 @@
         this.listType = "0";
       },
       //查看
-      viewApply() {
+      viewApply(record){
+
+        console.log(record)
+        //查询详情数据
         this.$refs.applyInfoForm.detail(record);
+        //单个表比较
+        this.$refs.applyInfoForm.compareDetail(this.fromTable);
       }
 
 
