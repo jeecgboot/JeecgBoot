@@ -253,7 +253,7 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
         //先插入 申请表
         CompanyApply apply = new CompanyApply();
         apply.setStatus(Constant.status.PEND);
-        apply.setFromTable(Constant.formTable.COMPANY_QUALIFICATION);
+        apply.setFromTable(Constant.tables.QUALIFICATION);
         apply.setCompanyId(applyObj.getString("companyId"));
         companyApplyService.save(apply);
 
@@ -284,7 +284,7 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
                 array[array.length-1] = "";
                 companyFile.setFilepath(String.join("/",array));
                 companyFile.setFiletype(Constant.fileType.IMAGE);//图片类型
-                companyFile.setFromTable(Constant.formTable.COMPANY_QUALIFICATION);
+                companyFile.setFromTable(Constant.tables.QUALIFICATION);
                 companyFile.setTableId(qualification.getId());
                 companyFiles.add(companyFile);
             }
