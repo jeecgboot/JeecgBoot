@@ -11,20 +11,12 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
-        <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['name', validatorRules.name]" placeholder="请输入名称" :disabled="disableSubmit"></a-input>
-        </a-form-item>
-        <a-form-item label="附件上传" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-upload v-decorator="['files']" :trigger-change="true" :disabled="disableSubmit"></j-upload>
+        <a-form-item label="企业名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input v-decorator="['companyName']" placeholder="请输入企业名称"></a-input>
         </a-form-item>
 
       </a-form>
     </a-spin>
-    <template slot="footer">
-      <a-button type="primary" @click="handleCancel">取消</a-button>
-      <a-button type="primary" @click="handleOk">暂存</a-button>
-      <a-button type="primary" @click="handDeclare">申报</a-button>
-    </template>
   </j-modal>
 </template>
 
@@ -33,18 +25,15 @@
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import { validateDuplicateValue } from '@/utils/util'
-  import JUpload from '@/components/jeecg/JUpload'
 
 
   export default {
-    name: "CompanyPreventionModal",
+    name: "CompanyBaseModal",
     components: { 
-      JUpload,
     },
     data () {
       return {
         form: this.$form.createForm(this),
-        disableSubmit:"",
         title:"操作",
         width:800,
         visible: false,
@@ -59,16 +48,10 @@
         },
         confirmLoading: false,
         validatorRules: {
-          name: {
-            rules: [
-              { required: true, message: '请输入名称!'},
-            ]
-          },
         },
         url: {
-          add: "/prevention/companyPrevention/add",
-          edit: "/prevention/companyPrevention/edit",
-          declare:"/prevention/companyPrevention/declare"
+          add: "/cb/companyBase/add",
+          edit: "/cb/companyBase/edit",
         }
       }
     },
@@ -83,39 +66,12 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'createTime','name','files'))
+          this.form.setFieldsValue(pick(this.model,'companyName'))
         })
       },
       close () {
         this.$emit('close');
         this.visible = false;
-      },
-      //申报
-      handDeclare () {
-        const that = this;
-        // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            that.confirmLoading = true;
-            let httpUrl = this.url.declare;
-            let method = 'put';
-            let formData = Object.assign(this.model, values);
-            formData.companyId=this.companyId;
-            formData.type=this.type;
-            httpAction(httpUrl,formData,method).then((res)=>{
-              if(res.success){
-                that.$message.success(res.message);
-                that.$emit('ok');
-              }else{
-                that.$message.warning(res.message);
-              }
-            }).finally(() => {
-              that.confirmLoading = false;
-              that.close();
-            })
-          }
-
-        })
       },
       handleOk () {
         const that = this;
@@ -133,8 +89,6 @@
                method = 'put';
             }
             let formData = Object.assign(this.model, values);
-            formData.companyId=this.companyId;
-            formData.type=this.type;
             console.log("表单提交数据",formData)
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
@@ -155,12 +109,10 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'createTime','name','files'))
+        this.form.setFieldsValue(pick(row,'companyName'))
       },
-    },
-    props:{
-      type:"",
-      companyId:""
+
+      
     }
   }
 </script>

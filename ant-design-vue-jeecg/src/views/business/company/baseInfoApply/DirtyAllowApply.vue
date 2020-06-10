@@ -3,8 +3,8 @@
     <company-apply-list v-if="!listshow" :company-id="companyId" :from-table="fromTable"
                         :hoverable="latestArchived" @toDetail="detail" @toApply="apply"
                         @applyDetail="viewApply"></company-apply-list>
-    <company-acceptance-list v-if="listshow" :company-id="companyId" :operationShow="operationShow" :listType="listType"
-    ></company-acceptance-list>
+    <company-dirty-allow-list v-if="listshow" :company-id="companyId" :operationShow="operationShow" :listType="listType"
+    ></company-dirty-allow-list>
     <companyApply-modal ref="applyInfoForm"></companyApply-modal>
   </div>
 </template>
@@ -12,7 +12,7 @@
 <script>
 
   import CompanyApplyList from "./modules/CompanyApplyList"
-  import CompanyAcceptanceList from "../oneCompayOneRecord/routeView/CompanyAcceptanceList";
+  import CompanyDirtyAllowList from "../oneCompayOneRecord/routeView/CompanyDirtyAllowList";
   import {queryComparisonData, queryLatestArchivedData} from "../../requestAction/request"
   import CompanyApplyModal from "./modules/childModules/CompanyApplyModal";
 
@@ -21,13 +21,13 @@
     components: {
       CompanyApplyList,
       queryLatestArchivedData,
-      CompanyAcceptanceList,
+      CompanyDirtyAllowList,
       CompanyApplyModal
     },
     data() {
       return {
         listshow: false,
-        fromTable: "company_acceptance",
+        fromTable: "company_dirty_allow",
         hoverable: true,
         //最新归档信息数据
         latestArchived: false,

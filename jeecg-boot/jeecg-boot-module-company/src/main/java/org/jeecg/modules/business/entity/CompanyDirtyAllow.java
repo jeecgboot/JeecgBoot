@@ -54,6 +54,7 @@ public class CompanyDirtyAllow implements Serializable {
 	/**数据状态*/
 	@Excel(name = "数据状态", width = 15)
     @ApiModelProperty(value = "数据状态")
+    @Dict(dicCode = "statue")
     private String status;
 	/**企业id*/
 	@Excel(name = "企业id", width = 15)

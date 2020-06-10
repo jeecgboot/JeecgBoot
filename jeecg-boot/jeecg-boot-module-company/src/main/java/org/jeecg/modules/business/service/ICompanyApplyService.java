@@ -1,10 +1,7 @@
 package org.jeecg.modules.business.service;
 
-import org.jeecg.modules.business.entity.CompanyAcceptance;
-import org.jeecg.modules.business.entity.CompanyApply;
+import org.jeecg.modules.business.entity.*;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.jeecg.modules.business.entity.CompanyBaseinfo;
-import org.jeecg.modules.business.entity.CompanyPrevention;
 
 /**
  * @Description: 企业申报基础表
@@ -14,32 +11,10 @@ import org.jeecg.modules.business.entity.CompanyPrevention;
  */
 public interface ICompanyApplyService extends IService<CompanyApply> {
 
-    boolean saveByBase(CompanyBaseinfo companyBaseinfo, String oldId);
+    boolean saveByBase(String companyId,String id,String status, String oldId,String fromTable);
 
     /**
-     * 保存竣工验收信息申报记录
-     *
-     * @Description:
-     * @Param:
-     * @return:
-     * @Author: 周志远
-     * @Date: 2020/6/5
-     */
-    boolean saveByBase(CompanyAcceptance companyAcceptance, String oldId);
-
-    /**
-     * 保存污染防治信息申报记录
-     *
-     * @Description:
-     * @Param:
-     * @return:
-     * @Author: 周志远
-     * @Date: 2020/6/5
-     */
-    boolean saveByBase(CompanyPrevention companyPrevention);
-
-    /**
-     * @Description: 根据竣工id和fromtable查询
+     * @Description: 根据id和fromtable查询
      * @Param:
      * @return:
      * @Author: 周志远

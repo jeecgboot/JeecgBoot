@@ -4,6 +4,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -105,10 +106,9 @@ public class CompanyBaseinfoController extends JeecgController<CompanyBaseinfo, 
 		companyBaseinfoService.save(companyBaseinfo);
 
 		//插入一条  applyinfo
-		companyApplyService.saveByBase(companyBaseinfo,oldId);
+		companyApplyService.saveByBase(companyBaseinfo.getCompanyId(),companyBaseinfo.getId(),companyBaseinfo.getStatus(),oldId,Constant.tables.BASEINFO);
 		return Result.ok("添加成功！");
 	}
-	
 	/**
 	 *  编辑
 	 *
@@ -245,7 +245,7 @@ public class CompanyBaseinfoController extends JeecgController<CompanyBaseinfo, 
     */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, CompanyBaseinfo companyBaseinfo) {
-        return super.exportXls(request, companyBaseinfo, CompanyBaseinfo.class, "company_baseinfo");
+        return super.exportXls(request, companyBaseinfo, CompanyBaseinfo.class, Constant.tables.BASEINFO);
     }
 
     /**

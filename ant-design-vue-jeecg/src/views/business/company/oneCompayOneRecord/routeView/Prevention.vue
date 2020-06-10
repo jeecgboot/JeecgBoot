@@ -2,7 +2,7 @@
   <div>
     <a-tabs default-active-key="1">
       <a-tab-pane v-for="item in sites" :key="item.key" :tab="item.text">
-        <company-prevention-list :type="item.key" :companyId="companyId" :operationShow="operationShow"
+        <company-prevention-list :type="item.key" :headerText="item.text" :companyId="companyId" :operationShow="operationShow"
                                  :listType="listType"></company-prevention-list>
       </a-tab-pane>
     </a-tabs>

@@ -18,58 +18,45 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * @Description: 污染防治信息
+ * @Description: 企业基础表
  * @Author: jeecg-boot
- * @Date:   2020-06-01
+ * @Date:   2020-06-09
  * @Version: V1.0
  */
 @Data
-@TableName("company_prevention")
+@TableName("company_base")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="company_prevention对象", description="污染防治信息")
-public class CompanyPrevention implements Serializable {
+@ApiModel(value="company_base对象", description="企业基础表")
+public class CompanyBase implements Serializable {
     private static final long serialVersionUID = 1L;
 
-	/**id*/
+	/**主键*/
 	@TableId(type = IdType.ID_WORKER_STR)
-    @ApiModelProperty(value = "id")
-    private String id;
+    @ApiModelProperty(value = "主键")
+    private java.lang.String id;
 	/**创建人*/
     @ApiModelProperty(value = "创建人")
-    private String createBy;
+    private java.lang.String createBy;
 	/**创建日期*/
-	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "创建日期")
-    private Date createTime;
+    private java.util.Date createTime;
 	/**更新人*/
     @ApiModelProperty(value = "更新人")
-    private String updateBy;
+    private java.lang.String updateBy;
 	/**更新日期*/
-	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "更新日期")
-    private Date updateTime;
-	/**数据状态*/
-	@Excel(name = "数据状态", width = 15)
-    @ApiModelProperty(value = "数据状态")
-    @Dict(dicCode = "statue")
-    private String status;
+    private java.util.Date updateTime;
 	/**企业id*/
 	@Excel(name = "企业id", width = 15)
     @ApiModelProperty(value = "企业id")
-    private String companyId;
-	/**名称*/
-	@Excel(name = "名称", width = 15)
-    @ApiModelProperty(value = "名称")
-    private String name;
-	/**类型*/
-	@Excel(name = "类型", width = 15)
-    @ApiModelProperty(value = "类型")
-    private String type;
-	/**附件上传*/
-	@Excel(name = "附件上传", width = 15)
-    @ApiModelProperty(value = "附件上传")
-    private String files;
+    private java.lang.String companyId;
+	/**企业名称*/
+	@Excel(name = "企业名称", width = 15)
+    @ApiModelProperty(value = "企业名称")
+    private java.lang.String companyName;
 }

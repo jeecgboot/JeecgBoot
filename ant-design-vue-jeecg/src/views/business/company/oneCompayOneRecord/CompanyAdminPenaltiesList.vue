@@ -4,18 +4,30 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :xl="10" :lg="11" :md="12" :sm="24">
-            <a-form-item label="发文日期">
-              <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.reportDate_begin"></j-date>
-              <span class="query-group-split-cust"></span>
-              <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.reportDate_end"></j-date>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="申报状态">
+              <j-dict-select-tag placeholder="请选择申报状态" v-model="queryParam.status" dictCode="statue"/>
             </a-form-item>
           </a-col>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24" v-if="role === 'monitor'">
+            <a-form-item label="企业名称">
+              <a-input placeholder="请输入企业名称" v-model="queryParam.companyName"></a-input>
+            </a-form-item>
+          </a-col>
+          <template v-if="toggleSearchStatus">
+            <a-col :xl="10" :lg="11" :md="12" :sm="24" v-if="role === 'monitor'">
+              <a-form-item label="发文日期">
+                <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.reportDate_begin"></j-date>
+                <span class="query-group-split-cust"></span>
+                <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.reportDate_end"></j-date>
+              </a-form-item>
+            </a-col>
+          </template>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
+              <a @click="handleToggleSearch" style="margin-left: 8px" v-if="role === 'monitor'">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
               </a>
@@ -27,12 +39,12 @@
     <!-- 查询区域-END -->
     
     <!-- 操作按钮区域 -->
-    <div class="table-operator">
+    <div class="table-operator" v-if="role === 'monitor'">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('行政处罚信息')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>
+<!--      <a-button type="primary" icon="download" @click="handleExportXls('行政处罚信息')">导出</a-button>-->
+<!--      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">-->
+<!--        <a-button type="primary" icon="import">导入</a-button>-->
+<!--      </a-upload>-->
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -43,7 +55,7 @@
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;" v-if="role === 'monitor'">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
@@ -57,7 +69,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         class="j-table-force-nowrap"
         @change="handleTableChange">
 
@@ -82,25 +94,18 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="tohandleEdit(record)">查看</a>
-
-<!--          <a-divider type="vertical" />-->
-<!--          <a-dropdown>-->
-<!--            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>-->
-<!--            <a-menu slot="overlay">-->
-<!--              <a-menu-item>-->
-<!--                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">-->
-<!--                  <a>删除</a>-->
-<!--                </a-popconfirm>-->
-<!--              </a-menu-item>-->
-<!--            </a-menu>-->
-<!--          </a-dropdown>-->
+          <a @click="tohandleEdit(record)" v-if="role === 'monitor'">编辑</a>
+          <a @click="tohandleEdit(record)" v-else>查看</a>
+          <a-divider type="vertical" v-if="role === 'monitor'" />
+          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+            <a v-if="role === 'monitor'">删除</a>
+          </a-popconfirm>
         </span>
 
       </a-table>
     </div>
 
-    <companyAdminPenalties-modal ref="modalForm" @ok="modalFormOk" :companyId="companyId"></companyAdminPenalties-modal>
+    <companyAdminPenalties-modal ref="modalForm" @ok="modalFormOk" :companyId="companyId" :monitor="role === 'monitor'"></companyAdminPenalties-modal>
   </a-card>
 </template>
 
@@ -121,11 +126,16 @@
       CompanyAdminPenaltiesModal
     },
     props: {
-      companyId:''
+      companyId:'',
+      role:''
     },
     data () {
       return {
         description: '行政处罚信息管理页面',
+        companyid:this.companyId,
+        queryParam: {
+          companyId: this.companyId
+        },
         // 表头
         columns: [
           {
@@ -208,7 +218,7 @@
           }
         ],
         url: {
-          list: "/cap/companyAdminPenalties/list/" + this.companyId,
+          list: "/cap/companyAdminPenalties/list",
           delete: "/cap/companyAdminPenalties/delete",
           deleteBatch: "/cap/companyAdminPenalties/deleteBatch",
           // exportXlsUrl: "/cap/companyAdminPenalties/exportXls",
@@ -226,9 +236,16 @@
       initDictConfig(){
       },
       tohandleEdit:function (record) {
+        this.$refs.modalForm.value = record.companyId;
         this.handleEdit(record);
-        this.$refs.modalForm.title="查看行政处罚信息";
+        this.$refs.modalForm.title="行政处罚信息";
+      },
+    },
+    created(){
+      if(this.companyid==null) {
+        this.companyid = this.$store.getters.userInfo.companyIds[0]
       }
+
     }
   }
 </script>

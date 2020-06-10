@@ -4,6 +4,16 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="数据状态">
+              <j-dict-select-tag placeholder="请选择数据状态" v-model="queryParam.status" dictCode="statue"/>
+            </a-form-item>
+          </a-col>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+            </span>
+          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -43,7 +53,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="rowSelection"
         class="j-table-force-nowrap"
         @change="handleTableChange">
 
@@ -70,11 +80,11 @@
 
         <span slot="action" slot-scope="text, record">
            <!--权限控制查看还是编辑，查看只允许查看不允许修改-->
-          <a @click="handleEdit(record)" v-if="operationShow">编辑</a>
-          <a-divider v-if="operationShow" type="vertical"/>
-          <a @click="handleview(record)" v-if="!operationShow">查看</a>
+          <a @click="handleEdit(record)" v-if="operationShow && (record.status!='1' && record.status!='4')">编辑</a>
+          <a-divider v-if="operationShow && (record.status!='1' && record.status!='4')" type="vertical"/>
+          <a @click="handleview(record)" v-if="!operationShow || (record.status=='1' || record.status=='4')">查看</a>
           <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-            <a v-if="operationShow">删除</a>
+            <a v-if="operationShow && (record.status!='1' && record.status!='4')">删除</a>
           </a-popconfirm>
         </span>
 
@@ -121,7 +131,7 @@
             }
           },
           {
-            title: '名称',
+            title: this.headerText+'名称',
             align: "center",
             dataIndex: 'name'
           },
@@ -134,7 +144,12 @@
             }
           },
           {
-            title: '附件上传',
+            title: '数据状态',
+            align: "center",
+            dataIndex: 'status_dictText'
+          },
+          {
+            title: '附件',
             align: "center",
             dataIndex: 'files',
             scopedSlots: {customRender: 'fileSlot'}
@@ -152,7 +167,7 @@
           list: "/prevention/companyPrevention/list/"+this.listType,
           delete: "/prevention/companyPrevention/delete",
           deleteBatch: "/prevention/companyPrevention/deleteBatch",
-          declare: "/prevention/companyPrevention/declare"
+          batchDeclare: "/prevention/companyPrevention/batchDeclare",
         },
         dictOptions: {},
       }
@@ -180,7 +195,7 @@
             content: "是否申报选中数据?",
             onOk: function () {
               that.loading = true;
-              getAction(that.url.declare, {ids: ids}).then((res) => {
+              getAction(that.url.batchDeclare, {ids: ids}).then((res) => {
                 if (res.success) {
                   that.$message.success(res.message);
                   that.loadData();
@@ -200,7 +215,22 @@
       type: "",
       companyId: "",
       operationShow: '',
-      listType: ''
+      listType: '',
+      headerText:""
+    },
+    computed: {
+      rowSelection() {
+        return {
+          getCheckboxProps: record => ({
+            props: {
+              disabled: record.status == '1',
+              name: record.projectName,
+            },
+          }),
+          selectedRowKeys: this.selectedRowKeys,
+          onChange: this.onSelectChange
+        };
+      },
     }
   }
 </script>

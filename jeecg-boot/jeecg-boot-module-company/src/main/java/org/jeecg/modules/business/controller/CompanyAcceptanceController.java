@@ -17,6 +17,7 @@ import org.jeecg.modules.business.entity.CompanyApply;
 import org.jeecg.modules.business.service.ICompanyAcceptanceService;
 import org.jeecg.modules.business.service.ICompanyApplyService;
 import org.jeecg.modules.business.utils.Constant.status;
+import org.jeecg.modules.business.utils.Constant.tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -86,7 +87,7 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
         companyAcceptance.setStatus(status.TEMPORARY);
         companyAcceptanceService.save(companyAcceptance);
         //新增申报记录（暂存）
-        companyApplyService.saveByBase(companyAcceptance, "");
+        companyApplyService.saveByBase(companyAcceptance.getCompanyId(),companyAcceptance.getId(),companyAcceptance.getStatus(),"", tables.ACCEPTANCE);
         return Result.ok("添加成功！");
     }
 
@@ -115,12 +116,12 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
                 companyAcceptance.setId("");
                 companyAcceptanceService.save(companyAcceptance);
                 //新增申报记录
-                companyApplyService.saveByBase(companyAcceptance, oldCompanyAcceptance.getId());
+                companyApplyService.saveByBase(companyAcceptance.getCompanyId(),companyAcceptance.getId(),companyAcceptance.getStatus(),oldCompanyAcceptance.getId(), tables.ACCEPTANCE);
             } else if (status.NOPASS.equals(oldCompanyAcceptance.getStatus()) || status.TEMPORARY.equals(oldCompanyAcceptance.getStatus())) {
                 //状态为审核未通过、暂存（直接修改）
                 companyAcceptanceService.updateById(companyAcceptance);
                 //修改申报记录状态为待审核
-                CompanyApply companyApply = companyApplyService.findByNewId(companyAcceptance.getId(), "company_acceptance");
+                CompanyApply companyApply = companyApplyService.findByNewId(companyAcceptance.getId(), tables.ACCEPTANCE);
                 companyApply.setStatus(status.PEND);
                 companyApplyService.updateById(companyApply);
             }
@@ -128,9 +129,9 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
             //新增
             companyAcceptanceService.save(companyAcceptance);
             //新增申报记录
-            companyApplyService.saveByBase(companyAcceptance, "");
+            companyApplyService.saveByBase(companyAcceptance.getCompanyId(),companyAcceptance.getId(),companyAcceptance.getStatus(),"", tables.ACCEPTANCE);
         }
-        return Result.ok("编辑成功!");
+        return Result.ok("申报成功!");
     }
 
     /**
@@ -154,13 +155,13 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
             companyAcceptance.setId("");
             companyAcceptanceService.save(companyAcceptance);
             //新增申报记录
-            companyApplyService.saveByBase(companyAcceptance, oldCompanyAcceptance.getId());
+            companyApplyService.saveByBase(companyAcceptance.getCompanyId(),companyAcceptance.getId(),companyAcceptance.getStatus(),oldCompanyAcceptance.getId(), tables.ACCEPTANCE);
         } else if (status.NOPASS.equals(oldCompanyAcceptance.getStatus()) || status.TEMPORARY.equals(oldCompanyAcceptance.getStatus())) {
             companyAcceptance.setStatus(status.TEMPORARY);
             //状态为未通过和暂存的
             companyAcceptanceService.updateById(companyAcceptance);
             //修改申报记录状态为暂存
-            CompanyApply companyApply = companyApplyService.findByNewId(companyAcceptance.getId(), "company_acceptance");
+            CompanyApply companyApply = companyApplyService.findByNewId(companyAcceptance.getId(), tables.ACCEPTANCE);
             companyApply.setStatus(status.TEMPORARY);
             companyApplyService.updateById(companyApply);
         }
@@ -237,7 +238,7 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
                 companyAcceptance.setStatus(status.PEND);
                 companyAcceptanceService.updateById(companyAcceptance);
                 //查询申报记录
-                CompanyApply companyApply = companyApplyService.findByNewId(companyAcceptance.getId(), "company_acceptance");
+                CompanyApply companyApply = companyApplyService.findByNewId(companyAcceptance.getId(), tables.ACCEPTANCE);
                 companyApply.setStatus(status.PEND);
                 companyApplyService.updateById(companyApply);
             }
@@ -254,7 +255,7 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
      */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, CompanyAcceptance companyAcceptance) {
-        return super.exportXls(request, companyAcceptance, CompanyAcceptance.class, "company_acceptance");
+        return super.exportXls(request, companyAcceptance, CompanyAcceptance.class, tables.ACCEPTANCE);
     }
 
     /**

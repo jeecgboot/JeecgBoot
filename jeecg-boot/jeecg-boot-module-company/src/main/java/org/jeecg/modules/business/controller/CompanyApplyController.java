@@ -214,7 +214,7 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
         //获取bean对象
         ServiceImpl o = (ServiceImpl)SpringContextUtils.getBean(sb.toString()+"ServiceImpl");
         //排除字段
-        List<String> excludeFields = Arrays.asList("serialVersionUID", "id", "createBy", "createTime", "updateBy", "updateTime", "sysOrgCode", "status");
+        List<String> excludeFields = Arrays.asList("serialVersionUID", "id", "createBy", "createTime", "updateBy", "updateTime", "sysOrgCode", "status","type");
         Equator fieldBaseEquator = new FieldBaseEquator(null, excludeFields);
         return Result.ok(fieldBaseEquator.getDiffFields(o.getById(beforeId), o.getById(afterId)));
     }
