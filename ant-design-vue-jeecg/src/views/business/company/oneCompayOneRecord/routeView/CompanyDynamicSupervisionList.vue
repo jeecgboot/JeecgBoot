@@ -24,7 +24,11 @@
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button type="primary" @click="toSearchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px" v-if="role === 'monitor'">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
             </span>
           </a-col>
         </a-row>
@@ -238,6 +242,12 @@
         this.$refs.modalForm.value = record.companyId;
         this.handleEdit(record);
         this.$refs.modalForm.title="年度动态监管";
+      },
+      toSearchReset() {
+        let that = this;
+        this.queryParam = {};
+        that.queryParam.companyId = this.companyId;
+        this.loadData(1);
       },
     },
     created(){

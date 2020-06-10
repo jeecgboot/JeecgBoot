@@ -57,12 +57,18 @@
 <!--        <a-form-item label="申报时间" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
 <!--          <j-date placeholder="请选择申报时间" v-decorator="['createTime']" :trigger-change="true" style="width: 100%"/>-->
 <!--        </a-form-item>-->
-<!--        <a-form-item label="审核人" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-<!--          <a-input v-decorator="['updateBy']" placeholder="请输入审核人"></a-input>-->
-<!--        </a-form-item>-->
-<!--        <a-form-item label="审核时间" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-<!--          <j-date placeholder="请选择审核时间" v-decorator="['updateTime']" :trigger-change="true" style="width: 100%"/>-->
-<!--        </a-form-item>-->
+        <a-row v-if="monitor === true">
+          <a-col span="12">
+            <a-form-item label="审核人" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['updateBy']" placeholder="请输入审核人" :disabled="monitor === true"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col span="12">
+            <a-form-item label="审核时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-date placeholder="请选择审核时间" v-decorator="['updateTime']" :trigger-change="true" style="width: 100%" :disabled="monitor === true"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
 
       </a-form>
     </a-spin>
