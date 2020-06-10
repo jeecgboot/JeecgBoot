@@ -27,4 +27,37 @@ public class Constant {
         public static String EXPIRED = "4";
 
     }
+    public  static class tables{
+        /**
+         *企业基本信息表
+         */
+        public static String BASEINFO = "company_baseinfo";
+        /**
+         * 竣工验收信息表
+         */
+        public static String ACCEPTANCE = "company_acceptance";
+        /**
+         * 污染防治信息表
+         */
+        public static String PREVENTION = "company_prevention";
+        /**
+         *排污许可证表
+         */
+        public static String DIRTYALLOW = "company_dirty_allow";
+        /**
+         * 环保税信息表
+         */
+        public static String ENVTAX = "company_env_tax";
+        /**
+         * 清洁生产表
+         */
+        public static String CLEANPRODUCT = "company_clean_product";
+        /**'
+         * 在线监控验收信息
+         */
+        public static String ONLINEINFO = "company_online_info";
+
+
+    }
+
 }

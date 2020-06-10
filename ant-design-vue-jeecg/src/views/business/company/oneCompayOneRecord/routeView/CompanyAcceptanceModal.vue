@@ -6,9 +6,7 @@
     :confirmLoading="confirmLoading"
     switchFullscreen
     @ok="handleOk"
-    @cancel="handleCancel"
-    cancelText="关闭"
-    okText = "暂存">
+    @cancel="handleCancel">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
