@@ -188,7 +188,7 @@
           }
         ],
         url: {
-          list: "/dirty/companyDirtyAllow/list",
+          list: "/dirty/companyDirtyAllow/list/" + this.listType,
           delete: "/dirty/companyDirtyAllow/delete",
           deleteBatch: "/dirty/companyDirtyAllow/deleteBatch",
           batchDeclare: "/dirty/companyDirtyAllow/batchDeclare",

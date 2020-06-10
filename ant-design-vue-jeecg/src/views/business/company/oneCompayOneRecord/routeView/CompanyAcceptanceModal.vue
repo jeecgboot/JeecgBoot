@@ -55,7 +55,7 @@
       return {
         form: this.$form.createForm(this),
         title:"操作",
-        disableSubmit:"",
+        disableSubmit:false,
         width:800,
         visible: false,
         model: {},

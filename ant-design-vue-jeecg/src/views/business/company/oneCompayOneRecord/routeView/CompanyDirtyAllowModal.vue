@@ -20,16 +20,16 @@
         <a-row>
           <a-col span='12'>
             <a-form-item label="有效期限" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-date-picker placeholder="请选择有效开始时间" v-decorator="['validStarttime']" :trigger-change="true"
-                             style="width: 100%" v-model="startValue" :disabled-date="disabledStartDate"
-                             :disabled="disableSubmit" @openChange="handleStartOpenChange"/>
+              <a-date-picker  placeholder="请选择有效开始时间" v-decorator="['validStarttime']" :trigger-change="true"
+                             style="width: 100%"  :disabled-date="disabledStartDate"
+                             :disabled="disableSubmit" @openChange="handleStartOpenChange"  @change="getStartTime" />
             </a-form-item>
           </a-col>
           <a-col span='12'>
             <a-form-item label="至" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-date-picker placeholder="请选择有效结束时间" v-decorator="['validEndtime']" :trigger-change="true"
-                             style="width: 100%" v-model="endValue" :disabled-date="disabledEndDate" :open="endOpen"
-                             :disabled="disableSubmit" @openChange="handleEndOpenChange"/>
+                             style="width: 100%" :disabled-date="disabledEndDate" :open="endOpen"
+                             :disabled="disableSubmit" @openChange="handleEndOpenChange" @change="getEndTime"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -77,6 +77,7 @@
   import {validateDuplicateValue} from '@/utils/util'
   import JDate from '@/components/jeecg/JDate'
   import JUpload from '@/components/jeecg/JUpload'
+  import moment from "moment";
 
 
   export default {
@@ -87,9 +88,10 @@
     },
     data() {
       return {
-        startValue: null,
-        endValue: null,
+        validStarttime: "",
+        validEndtime: "",
         endOpen: false,
+        disableSubmit:false,
         form: this.$form.createForm(this),
         title: "操作",
         width: 800,
@@ -142,6 +144,9 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
+          console.log(this.model)
+          this.model.validStarttime = !this.model.validStarttime?null:moment(this.model.validStarttime,this.dateFormat)
+          this.model.validEndtime = !this.model.validEndtime?null:moment(this.model.validEndtime,this.dateFormat)
           this.form.setFieldsValue(pick(this.model, 'licenceCode', 'certificateTime', 'validStarttime', 'validEndtime', 'certificateOffice', 'dirtyType', 'files'))
         })
       },
@@ -214,24 +219,30 @@
       popupCallback(row) {
         this.form.setFieldsValue(pick(row, 'licenceCode', 'certificateTime', 'validStarttime', 'validEndtime', 'certificateOffice', 'dirtyType', 'files'))
       },
-      disabledStartDate(startValue) {
-        const endValue = this.endValue;
-        if (!startValue || !endValue) {
+      disabledStartDate(validStarttime) {
+        const validEndtime = this.validEndtime;
+        if (!validStarttime || !validEndtime) {
           return false;
         }
-        return startValue.valueOf() > endValue.valueOf();
+        return validStarttime.valueOf() > validEndtime.valueOf();
       },
-      disabledEndDate(endValue) {
-        const startValue = this.startValue;
-        if (!endValue || !startValue) {
+      disabledEndDate(validEndtime) {
+        const validStarttime = this.validStarttime;
+        if (!validEndtime || !validStarttime) {
           return false;
         }
-        return startValue.valueOf() >= endValue.valueOf();
+        return validStarttime.valueOf() >= validEndtime.valueOf();
       },
       handleStartOpenChange(open) {
         if (!open) {
           this.endOpen = true;
         }
+      },
+      getStartTime(date,dateString) {
+          this.validStarttime=date;
+      },
+      getEndTime(date,dateString) {
+        this.validEndtime=date;
       },
       handleEndOpenChange(open) {
         this.endOpen = open;

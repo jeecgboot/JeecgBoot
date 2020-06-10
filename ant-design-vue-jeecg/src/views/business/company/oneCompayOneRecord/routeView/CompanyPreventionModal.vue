@@ -44,7 +44,7 @@
     data () {
       return {
         form: this.$form.createForm(this),
-        disableSubmit:"",
+        disableSubmit:false,
         title:"操作",
         width:800,
         visible: false,
