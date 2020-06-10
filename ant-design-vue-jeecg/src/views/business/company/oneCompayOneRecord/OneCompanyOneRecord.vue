@@ -24,7 +24,6 @@
       },
       created() {
 
-        console.log("userInfo",store.getters.userInfo)
         const companyIds = store.getters.userInfo.companyIds;
         if(companyIds.length>1){
           this.list_visible = true;
@@ -40,7 +39,6 @@
           this.list_visible = value;
         },
         companyDetail(companyId){
-          console.log("companyId",companyId);
           this.changeVisible(false);
           this.companyId = companyId;
         }

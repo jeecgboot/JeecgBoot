@@ -109,15 +109,12 @@
         leftHandle(key){
 
           this.leftActive = key;
-          console.log("topActive",this.topActive,"leftActive",this.leftActive);
         }
       },
       created() {
 
-        console.log("res",getDetailMenus);
         //发送请求，查找
         getDetailMenus({companyId:this.companyId}).then((res)=>{
-          console.log("res",res);
           if(res.success){
             this.basicInfoMenus = res.result.basicInfoMenus;
             this.superviseMenus = res.result.superviseMenus;

@@ -101,7 +101,6 @@
         //查询前后明细
         queryComparisonData({beforeId:this.model.oldId,afterId:this.model.newId,fromTable:fromTable}).then((res)=>{
           if(res.success) {
-            console.log(res.result);
             that.data = res.result;
           }else{
             this.$message.error(res.message);
@@ -128,7 +127,6 @@
                method = 'put';
             }
             let formData = Object.assign(this.model, values);
-            console.log("表单提交数据",formData)
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);

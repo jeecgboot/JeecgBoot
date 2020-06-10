@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.business.mapper.CompanyQualificationMapper">
+	<resultMap id="QualificationBaseInfo" type="org.jeecg.modules.business.vo.QualificationBaseInfo" >
+		<result column="type" property="id" jdbcType="VARCHAR"/>
+		<result column="filepath" property="anntId" jdbcType="VARCHAR"/>
+		<result column="filename" property="userId" jdbcType="VARCHAR"/>
+	</resultMap>
+
+    <!-- 通过表名及数据Id获取最大版本 -->
+    <select id="queryQualificationBaseInfo" parameterType="String"  resultMap="QualificationBaseInfo">
+		select A.type,B.filepath,B.filename from company_qualification A left join company_file B ON A.id = B.table_id and A.company_id = #{companyId}
+		and B.from_table = 'company_qualification' and A.status = #{status}
+	</select>
+
 
 </mapper>

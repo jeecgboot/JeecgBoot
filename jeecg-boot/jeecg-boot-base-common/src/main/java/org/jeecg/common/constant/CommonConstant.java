@@ -202,8 +202,8 @@ public interface CommonConstant {
      */
     public static final String UPLOAD_TYPE_LOCAL = "local";
     public static final String UPLOAD_TYPE_MINIO = "minio";
-    public static final String UPLOAD_TYPE_OSS = "alioss";
 
+    public static final String UPLOAD_TYPE_OSS = "alioss";
     /**
      * 文档上传自定义桶名称
      */
