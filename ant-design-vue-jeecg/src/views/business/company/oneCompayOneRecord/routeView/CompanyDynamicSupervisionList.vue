@@ -117,7 +117,6 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import CompanyDynamicSupervisionModal from './CompanyDynamicSupervisionModal'
   import store from '@/store/'
-  import {queryDynamicSupervision} from '../../../requestAction/request'
 
   export default {
     name: "CompanyDynamicSupervisionList",
@@ -238,7 +237,7 @@
       tohandleEdit:function(record){
         this.$refs.modalForm.value = record.companyId;
         this.handleEdit(record);
-        this.$refs.modalForm.title="查看年度动态监管";
+        this.$refs.modalForm.title="年度动态监管";
       },
     },
     created(){

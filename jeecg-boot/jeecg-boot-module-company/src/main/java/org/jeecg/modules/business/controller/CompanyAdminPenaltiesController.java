@@ -1,10 +1,16 @@
 package org.jeecg.modules.business.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import cn.hutool.core.util.StrUtil;
+import lombok.Data;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.business.entity.CompanyAdminPenalties;
@@ -16,14 +22,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.modules.business.vo.CompanyAdminPenaltiesVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import sun.java2d.pipe.SpanShapeRenderer;
 
- /**
+/**
  * @Description: 行政处罚信息
  * @Author: jeecg-boot
  * @Date:   2020-05-30
@@ -48,18 +56,54 @@ public class CompanyAdminPenaltiesController extends JeecgController<CompanyAdmi
 	 */
 	@AutoLog(value = "行政处罚信息-分页列表查询")
 	@ApiOperation(value="行政处罚信息-分页列表查询", notes="行政处罚信息-分页列表查询")
-	@GetMapping(value = "/list/{companyId}")
-	public Result<?> queryPageList(@PathVariable String companyId, CompanyAdminPenalties companyAdminPenalties,
+	@GetMapping(value = "/list")
+	public Result<?> queryPageList( CompanyAdminPenalties companyAdminPenalties,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-								   HttpServletRequest req) {
-		Map<String, String[]> parameterMap = new HashMap(req.getParameterMap());
-		parameterMap.put("companyId_MultiString",new String[]{String.join(",", companyId)});
-		QueryWrapper<CompanyAdminPenalties> queryWrapper = QueryGenerator.initQueryWrapper(companyAdminPenalties, parameterMap);
-		Page<CompanyAdminPenalties> page = new Page<CompanyAdminPenalties>(pageNo, pageSize);
-		IPage<CompanyAdminPenalties> pageList = companyAdminPenaltiesService.page(page, queryWrapper);
+								   HttpServletRequest req) throws Exception {
+		String companyId = req.getParameter("companyId");
+		String status = req.getParameter("status");
+		String companyName = req.getParameter("companyName");
+		String reportDateBegin = req.getParameter("reportDate_begin");
+		String reportDateEnd = req.getParameter("reportDate_end");
+		Date dateBegin;
+		Date dateEnd;
+		if(StrUtil.isEmpty(reportDateBegin) && StrUtil.isEmpty(reportDateEnd)) {
+			dateBegin = null;
+			dateEnd = null;
+		}else{
+			dateBegin = new SimpleDateFormat("yyyy-MM-dd").parse(reportDateBegin);
+			dateEnd = new SimpleDateFormat("yyyy-MM-dd").parse(reportDateEnd);
+		}
+//		QueryWrapper<CompanyAdminPenalties> queryWrapper = QueryGenerator.initQueryWrapper(companyAdminPenalties, parameterMap);
+		Page<CompanyAdminPenaltiesVO> page = new Page<CompanyAdminPenaltiesVO>(pageNo, pageSize);
+		IPage<CompanyAdminPenaltiesVO> pageList = companyAdminPenaltiesService.getCompanyAdminPenalties(page, companyId,status,companyName,dateBegin,dateEnd);
 		return Result.ok(pageList);
 	}
+
+	 /**
+	  * 分页列表查询
+	  *
+	  * @param companyAdminPenalties
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @AutoLog(value = "行政处罚信息-分页列表查询")
+	 @ApiOperation(value="行政处罚信息-分页列表查询", notes="行政处罚信息-分页列表查询")
+	 @GetMapping(value = "/list/{companyId}")
+	 public Result<?> queryPageList(@PathVariable String companyId, CompanyAdminPenalties companyAdminPenalties,
+									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									HttpServletRequest req) {
+		 Map<String, String[]> parameterMap = new HashMap(req.getParameterMap());
+		 parameterMap.put("companyId_MultiString",new String[]{String.join(",", companyId)});
+		 QueryWrapper<CompanyAdminPenalties> queryWrapper = QueryGenerator.initQueryWrapper(companyAdminPenalties, parameterMap);
+		 Page<CompanyAdminPenalties> page = new Page<CompanyAdminPenalties>(pageNo, pageSize);
+		 IPage<CompanyAdminPenalties> pageList = companyAdminPenaltiesService.page(page, queryWrapper);
+		 return Result.ok(pageList);
+	 }
 	
 	/**
 	 *   添加

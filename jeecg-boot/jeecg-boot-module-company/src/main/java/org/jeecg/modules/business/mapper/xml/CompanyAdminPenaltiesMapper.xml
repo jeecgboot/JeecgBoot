@@ -1,5 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.business.mapper.CompanyAdminPenaltiesMapper">
+    <resultMap id="CompanyAdminPenaltiesVO" type="org.jeecg.modules.business.vo.CompanyAdminPenaltiesVO" >
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="company_id" property="companyId" jdbcType="VARCHAR"/>
+        <result column="report_date" property="reportDate" jdbcType="TIMESTAMP"/>
+        <result column="document_no" property="documentNo" jdbcType="VARCHAR"/>
+        <result column="document_name" property="documentName" jdbcType="VARCHAR"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="company_name" property="companyName" jdbcType="VARCHAR"/>
+    </resultMap>
 
+    <select id="getCompanyAdminPenalties" parameterType="String"  resultMap="CompanyAdminPenaltiesVO">
+        select t1.company_name,t2.* from company_base t1
+        , company_admin_penalties t2 where t1.company_id=t2.company_id
+
+        <if test="companyId != null">
+            and t1.company_id in (#{companyId})
+        </if>
+        <if test="status != null">
+            and status in (#{status})
+        </if>
+        <if test="companyName != null">
+            and company_name like concat('%',#{companyName},'%')
+        </if>
+        <if test="dateBegin != null">
+            and report_date >= (#{dateBegin})
+        </if>
+        <if test="dateEnd != null">
+            and report_date &lt;= (#{dateEnd})
+        </if>
+    </select>
 </mapper>

@@ -13,24 +13,28 @@
         <a-row>
           <a-col span="12">
             <a-form-item label="企业名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['CompanyName', validatorRules.companyName]" placeholder="请输入企业名称" :disabled="disabled"></a-input>
+              <a-select show-search style="width: 100%" @change="handleChange" :value="value" :disabled="monitor !== true">
+                <a-select-option v-for="item in items" :key="item.value"  >
+                  {{item.value}}
+                </a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col span="12">
             <a-form-item label="文件名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['documentName', validatorRules.documentName]" placeholder="请输入文件名称" :disabled="disabled"></a-input>
+              <a-input v-decorator="['documentName', validatorRules.documentName]" placeholder="请输入文件名称" :disabled="monitor !== true"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col span="12">
             <a-form-item label="文件编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['documentNo', validatorRules.documentNo]" placeholder="请输入文件编号" :disabled="disabled"></a-input>
+              <a-input v-decorator="['documentNo', validatorRules.documentNo]" placeholder="请输入文件编号" :disabled="monitor !== true"></a-input>
             </a-form-item>
           </a-col>
           <a-col span="12">
             <a-form-item label="发文日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择发文日期" v-decorator="['reportDate', validatorRules.reportDate]" :trigger-change="true" style="width: 100%" :disabled="disabled"/>
+              <j-date placeholder="请选择发文日期" v-decorator="['reportDate', validatorRules.reportDate]" :trigger-change="true" style="width: 100%" :disabled="monitor !== true"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -74,7 +78,7 @@
   import JUpload from '@/components/jeecg/JUpload'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
   import CompanyBaseinfoList from "../CompanyBaseinfoList";
-
+  import {queryCompanyName} from "../../../requestAction/request";
 
   export default {
     name: "CompanyAdminPenaltiesModal",
@@ -85,14 +89,18 @@
       CompanyBaseinfoList,
     },
     props: {
-      companyId:''
+      companyId:'',
+      monitor:{
+        type:Boolean
+      }
     },
     data () {
       return {
         form: this.$form.createForm(this),
         title:"操作",
         width:800,
-        disabled:true,
+        value:'',
+        items:[],
         visible: false,
         model: {},
         labelCol: {
@@ -160,8 +168,19 @@
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
+        let that = this;
+        queryCompanyName({companyIds:this.$store.getters.userInfo.companyIds.join(',')}).then((res) => {
+          if(res.success){
+            that.items = res.result;
+            that.items.forEach(e=>{
+              if(e.key === that.value){
+                that.value = e.value;
+              }
+            })
+          }
+        })
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'status','companyId','reportDate','documentName','documentNo','content','createBy','createTime','updateBy','updateTime'))
+          this.form.setFieldsValue(pick(this.model,'reportDate','documentName','documentNo','content','updateBy','updateTime'))
         })
       },
       close () {
@@ -206,7 +225,12 @@
       },
       popupCallback(row){
         this.form.setFieldsValue(pick(row,'status','companyId','reportDate','documentName','documentNo','content','createBy','createTime','updateBy','updateTime'))
-      }
+      },
+      handleChange(value) {
+        console.log(value);
+        this.value = value;
+
+      },
       
     }
   }

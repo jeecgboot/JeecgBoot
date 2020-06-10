@@ -6,11 +6,11 @@
         <result column="status" property="status" jdbcType="VARCHAR"/>
         <result column="company_id" property="companyId" jdbcType="VARCHAR"/>
         <result column="report_year" property="reportYear" jdbcType="VARCHAR"/>
-        <result column="document_type" property="documentType" jdbcType="TIMESTAMP"/>
+        <result column="document_type" property="documentType" jdbcType="VARCHAR"/>
         <result column="document_name" property="documentName" jdbcType="VARCHAR"/>
         <result column="content" property="content" jdbcType="VARCHAR"/>
         <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
-        <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
         <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
         <result column="company_name" property="companyName" jdbcType="VARCHAR"/>
