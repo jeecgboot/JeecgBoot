@@ -54,6 +54,7 @@ public class CompanyPrevention implements Serializable {
 	/**数据状态*/
 	@Excel(name = "数据状态", width = 15)
     @ApiModelProperty(value = "数据状态")
+    @Dict(dicCode = "statue")
     private String status;
 	/**企业id*/
 	@Excel(name = "企业id", width = 15)
@@ -71,7 +72,4 @@ public class CompanyPrevention implements Serializable {
 	@Excel(name = "附件上传", width = 15)
     @ApiModelProperty(value = "附件上传")
     private String files;
-    /**oldid*/
-    @ApiModelProperty(value = "编辑之前的id")
-    private String oldId;
 }

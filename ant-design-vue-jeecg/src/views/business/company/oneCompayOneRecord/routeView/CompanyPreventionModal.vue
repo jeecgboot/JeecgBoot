@@ -20,6 +20,11 @@
 
       </a-form>
     </a-spin>
+    <template slot="footer">
+      <a-button type="primary" @click="handleCancel">取消</a-button>
+      <a-button type="primary" @click="handleOk">暂存</a-button>
+      <a-button type="primary" @click="handDeclare">申报</a-button>
+    </template>
   </j-modal>
 </template>
 
@@ -63,6 +68,7 @@
         url: {
           add: "/prevention/companyPrevention/add",
           edit: "/prevention/companyPrevention/edit",
+          declare:"/prevention/companyPrevention/declare"
         }
       }
     },
@@ -83,6 +89,33 @@
       close () {
         this.$emit('close');
         this.visible = false;
+      },
+      //申报
+      handDeclare () {
+        const that = this;
+        // 触发表单验证
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            that.confirmLoading = true;
+            let httpUrl = this.url.declare;
+            let method = 'put';
+            let formData = Object.assign(this.model, values);
+            formData.companyId=this.companyId;
+            formData.type=this.type;
+            httpAction(httpUrl,formData,method).then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                that.$emit('ok');
+              }else{
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
+          }
+
+        })
       },
       handleOk () {
         const that = this;

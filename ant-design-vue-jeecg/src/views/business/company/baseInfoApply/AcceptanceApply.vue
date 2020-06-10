@@ -5,7 +5,7 @@
                         @applyDetail="viewApply"></company-apply-list>
     <company-acceptance-list v-if="listshow" :company-id="companyId" :operationShow="operationShow" :listType="listType"
     ></company-acceptance-list>
-    <companyApply-modal ref="applyInfoForm" ></companyApply-modal>
+    <companyApply-modal ref="applyInfoForm"></companyApply-modal>
   </div>
 </template>
 
@@ -33,7 +33,7 @@
         latestArchived: false,
         companyId: this.$store.getters.userInfo.companyIds[0],
         operationShow: false,
-        listType:"0"
+        listType: "0"
       }
     },
     //计算属性
@@ -54,7 +54,7 @@
         this.listType = "0";
       },
       //查看
-      viewApply(record){
+      viewApply(record) {
 
         console.log(record)
         //查询详情数据

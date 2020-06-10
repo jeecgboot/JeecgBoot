@@ -130,7 +130,7 @@ public class CompanyAcceptanceController extends JeecgController<CompanyAcceptan
             //新增申报记录
             companyApplyService.saveByBase(companyAcceptance, "");
         }
-        return Result.ok("编辑成功!");
+        return Result.ok("申报成功!");
     }
 
     /**

@@ -171,7 +171,6 @@
           list: "/business/companyAcceptance/list/" + this.listType,
           delete: "/business/companyAcceptance/delete",
           deleteBatch: "/business/companyAcceptance/deleteBatch",
-          declare: "/business/companyAcceptance/declare",
           batchDeclare: "/business/companyAcceptance/batchDeclare",
         },
         dictOptions: {},

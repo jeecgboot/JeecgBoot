@@ -67,13 +67,13 @@ public class CompanyApplyServiceImpl extends ServiceImpl<CompanyApplyMapper, Com
      * @Date: 2020/6/5
      */
     @Override
-    public boolean saveByBase(CompanyPrevention companyPrevention) {
+    public boolean saveByBase(CompanyPrevention companyPrevention, String oldId) {
         CompanyApply companyApply = new CompanyApply();
         companyApply.setCompanyId(companyPrevention.getCompanyId());
         companyApply.setFromTable("company_prevention");
         companyApply.setNewId(companyPrevention.getId());
-        companyApply.setStatus(Constant.status.PEND);
-        companyApply.setId(companyPrevention.getOldId());
+        companyApply.setStatus(companyPrevention.getStatus());
+        companyApply.setOldId(oldId);
         return this.save(companyApply);
     }
 

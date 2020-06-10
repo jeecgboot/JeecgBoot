@@ -36,10 +36,10 @@ public interface ICompanyApplyService extends IService<CompanyApply> {
      * @Author: 周志远
      * @Date: 2020/6/5
      */
-    boolean saveByBase(CompanyPrevention companyPrevention);
+    boolean saveByBase(CompanyPrevention companyPrevention, String oldId);
 
     /**
-     * @Description: 根据竣工id和fromtable查询
+     * @Description: 根据id和fromtable查询
      * @Param:
      * @return:
      * @Author: 周志远
