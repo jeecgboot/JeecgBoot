@@ -11,8 +11,9 @@ const queryLatestArchivedData = (params)=>getAction("/company/apply/queryLatestA
 const queryComparisonData = (params)=>getAction("/company/apply/queryComparisonData",params);
 const qualificationApply = (params)=>putAction("/company/apply/qualification",params);
 //查询用户所属的企业名称
-const queryCompanyName = (params)=>getAction("/company/companyBaseinfo/queryCompanyName",params);
-
+const queryCompanyName = (params)=>getAction("/cb/companyBase/queryCompanyName",params);
+//查询企业名称和动态监管信息
+const queryDynamicSupervision = (params)=>getAction("/cds/companyDynamicSupervision/list",params)
 
 
 export {
@@ -23,5 +24,6 @@ export {
   queryLatestArchivedData,
   queryComparisonData,
   queryCompanyName,
-  qualificationApply
+  qualificationApply,
+  queryDynamicSupervision
 }

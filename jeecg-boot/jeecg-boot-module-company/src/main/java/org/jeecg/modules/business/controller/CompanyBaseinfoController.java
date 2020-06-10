@@ -109,30 +109,6 @@ public class CompanyBaseinfoController extends JeecgController<CompanyBaseinfo, 
 		companyApplyService.saveByBase(companyBaseinfo,oldId);
 		return Result.ok("添加成功！");
 	}
-	 /**
-	  *   添加
-	  *
-			 * @param companyIds
-	  * @return
-			  */
-	 @AutoLog(value = "company_baseinfo-根据id查询name")
-	 @ApiOperation(value="company_baseinfo-根据id查询name", notes="company_baseinfo-根据id查询name")
-	 @GetMapping(value = "/queryCompanyName")
-	 public Result<?> queryCompanyName(@RequestParam(name="companyIds",required=true) String companyIds) {
-		List<String> idList =  Arrays.asList(companyIds.split(","));
-
-		List<Map<String,String>> result = new ArrayList<>();
-		 //查询企业id和name
-		 companyBaseinfoService.list(new QueryWrapper<CompanyBaseinfo>().lambda().in(CompanyBaseinfo::getCompanyId,idList).eq(CompanyBaseinfo::getStatus,Constant.status.NORMAL)).forEach(companyBaseinfo -> {
-			 Map<String,String> param = new HashMap<>();
-			 param.put("key",companyBaseinfo.getCompanyId());
-			 param.put("value",companyBaseinfo.getShortName());
-
-			 result.add(param);
-		 });
-
-		 return Result.ok(result);
-	 }
 	/**
 	 *  编辑
 	 *
