@@ -2,7 +2,7 @@
   <a-list :grid="{ gutter: 16, column: 4 }" :data-source="imgsrc" >
     <a-list-item slot="renderItem" slot-scope="item, index" >
       <div class="img_div">
-        <img  :id="'img'+index" class="item" :src="item" preview/>
+        <img  :id="'img'+index" class="item" :src="item.url" preview/>
 
           <div class="mask" v-if="isApply">
             <div class="icon1">
@@ -28,6 +28,7 @@
       list-type="picture-card"
       :file-list="[]"
       :before-upload="beforeUpload"
+      :disabled="disable"
     >
         <a-icon type="plus" />
         <div class="ant-upload-text">
@@ -37,13 +38,16 @@
     </a-upload>
       <a-button
         type="primary"
-        :disabled="deleteImgs.length === 0&&uploadImgs.length === 0"
+        :disabled="(deleteImgs.length === 0&&uploadImgs.length === 0)||disable"
         :loading="uploading"
         style="margin-top: 16px"
         @click="handleUpload"
       >
-        {{ uploading ? 'Uploading' : 'Start Upload' }}
+        {{ disable?  "正在申报中，耐心等待审核" :uploading ? '正在申报' : '点击申报' }}
       </a-button>
+      <span>
+
+      </span>
     </a-list-item>
   </a-list>
 
@@ -51,7 +55,7 @@
 <script>
   import {getFileAccessHttpUrl,uploadAction} from '@/api/manage';
   import Icons from "../../system/modules/icon/Icons";
-
+  import {qualificationApply,queryQualification} from "../requestAction/request"
 
   export default {
     name:"PicList",
@@ -64,7 +68,8 @@
         }
       },
       isApply:true,
-      qualificttionType:''
+      qualificttionType:'',
+      companyId:''
 
     },
     data() {
@@ -76,6 +81,7 @@
         //上传图片
         uploadImgs:[],
         uploading:false,
+        disable:false
 
       }
     },
@@ -90,14 +96,14 @@
 
         //是不是提交列表中的
         let a = this.uploadImgs.findIndex(e=>
-          e.url===this.imgsrc[index]
+          e.url===this.imgsrc[index].url
         );
         if(a>-1){
           //删除提交列表中的对象
           this.uploadImgs.splice(a,1);
         }else{
           //添加到删除对象中
-          this.deleteImgs.push(this.imgsrc[index]);
+          this.deleteImgs.push(this.imgsrc[index].id);
         }
         //删除列表中的元素
         this.imgsrc.splice(index,1);
@@ -111,44 +117,74 @@
         const windowURL = window.URL || window.webkitURL;
         const dataURl = windowURL.createObjectURL(file);
         console.log(dataURl)
-        this.imgsrc.push(dataURl);
+        this.imgsrc.push({id:0,url:dataURl});
         //添加到提交数组中
         this.uploadImgs.push({url:dataURl,value:file});
         //不提交文件
         return false;
       },
       //提交按钮
-      handleUpload(){
+      async handleUpload(){
         this.uploading = true;
-        let formData = new FormData();
-        let uploadFiles = [];
-        this.uploadImgs.forEach(e=>{
-          formData.append('file',e.value);
-        });
+        let addImgs = [];
+        //需要提交的文件大于0
+        if(this.uploadImgs.length>0){
+          let formData = new FormData();
+          this.uploadImgs.forEach(e=>{
+            formData.append('file',e.value);
+          });
 
-        formData.append('biz', "jeditor");
-        // formData.append("jeditor","1");
-        uploadAction(window._CONFIG['domianURL']+"/sys/common/uploadImages", formData).then((res) => {
-          this.uploading = false;
-          if (res.success) {
-            this.$message.success("文件上传成功");
-          }
-          else{
-            this.$message.error(res.message);
-          }
-        })
+          formData.append('biz', "jeditor");
+          // formData.append("jeditor","1");
+
+          await uploadAction(window._CONFIG['domianURL']+"/sys/common/uploadImages", formData).then((res) => {
+            this.uploading = false;
+            if (res.success) {
+              this.$message.success("文件上传成功");
+              //返回存储文件路径
+              addImgs = res.result;
+            }
+            else{
+              this.$message.error(res.message);
+            }
+          });
+        }
         //发送申报请求
-
-
-
+        await qualificationApply(
+          {companyId:this.companyId,
+                  qualificttionType:this.qualificttionType,
+                  addImgs:addImgs,
+                  deleteImgs:this.deleteImgs})
+          .then((res)=>{
+            if (res.success) {
+              this.$message.success("申请完成");
+            }
+            else{
+              this.$message.error(res.message);
+            }
+        });
+        //提交完成处理
+        this.disable = true;
       }
     },created(){
       let that =this;
       this.images.forEach(
         element => {
-          that.imgsrc.push(getFileAccessHttpUrl(element));
+
+          that.imgsrc.push({id:element.id,url:getFileAccessHttpUrl(element.url)});
         }
       );
+
+          //查询申报
+          queryQualification({
+            companyId: this.companyId,
+            qualificttionType: this.qualificttionType
+          }).then((res) => {
+
+            if (res.success) {
+              that.disable = res.result;
+            }
+          });
 
     }
 

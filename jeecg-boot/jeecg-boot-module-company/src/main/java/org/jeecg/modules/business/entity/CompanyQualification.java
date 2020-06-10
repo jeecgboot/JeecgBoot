@@ -61,8 +61,12 @@ public class CompanyQualification implements Serializable {
 	@Excel(name = "资质类型", width = 15)
     @ApiModelProperty(value = "资质类型")
     private String type;
-	/**图片路径*/
-	@Excel(name = "图片路径", width = 15)
-    @ApiModelProperty(value = "图片路径")
-    private String filePath;
+
+    /**新增的申报id*/
+    @ApiModelProperty(value = "新增的申报id")
+    private String applyAddId;
+    /**删除的申报id*/
+    @ApiModelProperty(value = "删除的申报id")
+    private String applyDeleteId;
+
 }

@@ -5,6 +5,10 @@ import lombok.Data;
 @Data
 public class QualificationBaseInfo {
     /**
+     * 资质表id
+     */
+    private String id;
+    /**
      * 资质类型
      */
     private String type;

@@ -2,20 +2,20 @@
   <div>
     <a-tabs default-active-key="1"  >
       <a-tab-pane key="1" tab="企业形象">
-          <pic-list :images="qualificttionImgs.companyImage" qualificttion-type="companyImage" :isApply="isApply"/>
+          <pic-list :images="qualificttionImgs.companyImage" :companyId="companyId" qualificttion-type="companyImage" :isApply="isApply"/>
       </a-tab-pane>
-      <a-tab-pane key="2" tab="营业执照照片" force-render>
-        <pic-list :images="qualificttionImgs.businessLicense" qualificttion-type="businessLicense" :isApply="isApply" />
+      <a-tab-pane key="2" tab="营业执照照片" >
+        <pic-list :images="qualificttionImgs.businessLicense" :companyId="companyId" qualificttion-type="businessLicense" :isApply="isApply" />
       </a-tab-pane>
       <a-tab-pane key="3" tab="企业平面图">
-        <pic-list :images="qualificttionImgs.floorPlan" qualificttion-type="floorPlan" :isApply="isApply" />
+        <pic-list :images="qualificttionImgs.floorPlan" :companyId="companyId" qualificttion-type="floorPlan" :isApply="isApply" />
       </a-tab-pane>
 
       <a-tab-pane key="4" tab="生产工艺图">
-        <pic-list :images="qualificttionImgs.produceCrafts" qualificttion-type="produceCrafts" :isApply="isApply" />
+        <pic-list :images="qualificttionImgs.produceCrafts" :companyId="companyId" qualificttion-type="produceCrafts" :isApply="isApply" />
       </a-tab-pane>
       <a-tab-pane key="5" tab="治理工艺图">
-        <pic-list :images="qualificttionImgs.controlCrafts" qualificttion-type="controlCrafts" :isApply="isApply" />
+        <pic-list :images="qualificttionImgs.controlCrafts" :companyId="companyId" qualificttion-type="controlCrafts" :isApply="isApply" />
       </a-tab-pane>
 
     </a-tabs>
@@ -50,7 +50,7 @@
           let that = this;
           loadQualifications({companyId:that.companyId}).then((res)=>{
             if(res.success){
-              console.log(res.success);
+              console.log(res.result);
               that.qualificttionImgs=res.result;
             }else{
               console.log(res.message);

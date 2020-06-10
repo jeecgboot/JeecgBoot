@@ -27,4 +27,14 @@ public class Constant {
         public static String EXPIRED = "4";
 
     }
+    //状态
+    public  static class formTable{
+        public static String COMPANY_QUALIFICATION = "company_qualification";
+
+    }
+    //文件类型
+    public  static class fileType{
+        public static String IMAGE = "image";
+
+    }
 }

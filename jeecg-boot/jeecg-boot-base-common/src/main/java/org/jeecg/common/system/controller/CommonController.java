@@ -29,6 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -119,40 +121,19 @@ public class CommonController {
 	 */
 	@PostMapping(value = "/uploadImages")
 	public Result<?> uploadImages(HttpServletRequest request, HttpServletResponse response) {
-		Result<?> result = new Result<>();
-		String savePath = "";
+		Result<List<String>> result = new Result<>();
+		List<String> savePaths = new ArrayList<>();
 		String bizPath = request.getParameter("biz");
 		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 		List<MultipartFile> files = multipartRequest.getFiles("file");// 获取上传文件对象
-		if(oConvertUtils.isEmpty(bizPath)){
-			if(CommonConstant.UPLOAD_TYPE_OSS.equals(uploadType)){
-				//未指定目录，则用阿里云默认目录 upload
-				bizPath = "Images";
-				//result.setMessage("使用阿里云文件上传时，必须添加目录！");
-				//result.setSuccess(false);
-				//return result;
-			}else{
-				bizPath = "";
-			}
-		}
-		if(CommonConstant.UPLOAD_TYPE_LOCAL.equals(uploadType)){
-			//针对jeditor编辑器如何使 lcaol模式，采用 base64格式存储
-			String jeditor = request.getParameter("jeditor");
-			if(oConvertUtils.isNotEmpty(jeditor)){
-				result.setMessage(CommonConstant.UPLOAD_TYPE_LOCAL);
-				result.setSuccess(true);
-				return result;
-			}else{
-				for(MultipartFile file:files)
-					savePath = this.uploadLocal(file,bizPath);
 
-			}
-		}else{
-			for(MultipartFile file:files)
-				savePath = sysBaseAPI.upload(file,bizPath,uploadType);
-		}
-		if(oConvertUtils.isNotEmpty(savePath)){
-			result.setMessage(savePath);
+		for(MultipartFile file:files)
+			savePaths .add(this.uploadLocal(file,bizPath));
+
+
+
+		if(!savePaths.isEmpty()){
+			result.setResult(savePaths);
 			result.setSuccess(true);
 		}else {
 			result.setMessage("上传失败！");

@@ -22,5 +22,17 @@ public interface CompanyQualificationMapper extends BaseMapper<CompanyQualificat
      * @return
      */
     public List<QualificationBaseInfo> queryQualificationBaseInfo(@Param("companyId") String companyId, @Param("status") String status);
+    /**
+     * 通过申请id获取所有删减资质信息
+     * @param deleteId 申请id
+     * @return
+     */
+    public List<QualificationBaseInfo> queryDeleteQualification(@Param("deleteId") String deleteId);
+    /**
+     * 通过申请id获取所有新增资质信息
+     * @param addId 申请id
+     * @return
+     */
+    public List<QualificationBaseInfo> queryAddQualification(@Param("addId") String addId);
 
 }

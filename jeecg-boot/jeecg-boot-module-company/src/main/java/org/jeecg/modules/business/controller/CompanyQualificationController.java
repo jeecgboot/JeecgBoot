@@ -124,7 +124,7 @@ public class CompanyQualificationController extends JeecgController<CompanyQuali
    @ApiOperation(value="企业资质-通过企业id查询", notes="企业资质-通过企业id查询")
    @PostMapping(value = "/queryByCompanyId")
    public Result<?> queryById(@RequestBody JSONObject jsonObject) {
-       Map<String, List<String>> result = companyQualificationService.getQualificationFiles(jsonObject.getString("companyId"));
+       Map<String, List<Map<String,String>>> result = companyQualificationService.getQualificationFiles(jsonObject.getString("companyId"));
        return Result.ok(result);
    }
 

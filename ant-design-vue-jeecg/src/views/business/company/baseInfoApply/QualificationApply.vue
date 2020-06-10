@@ -1,18 +1,23 @@
 <template>
+  <div>
   <company-apply-list :company-id="companyId" :hoverable="latestArchived"
                       :from-table="fromTable" @applyDetail = "applyDetail"  @toDetail="latestDetail" @toApply="apply"
                       v-if="!showDetail"></company-apply-list>
   <qualification ref="qModal" :company-id="companyId" v-else ></qualification>
+<qualification-apply-modal ref="applyInfoForm"></qualification-apply-modal>
+  </div>
 </template>
 
 <script>
   import CompanyApplyList from "./modules/CompanyApplyList"
   import {queryLatestArchivedData} from "../../requestAction/request";
   import Qualification from "../oneCompayOneRecord/routeView/Qualification";
+  import QualificationApplyModal from "./modules/childModules/QualificationApplyModal";
     export default {
         name: "QualificationApply",
       components:{
-        CompanyApplyList,Qualification
+        QualificationApplyModal,
+        CompanyApplyList,Qualification,
       },
       data(){
           return {
@@ -55,10 +60,15 @@
             that.$refs.qModal.isApply = true;
           });
         },
-        applyDetail(){
+        applyDetail(record){
+          //查询详情数据
+          this.$refs.applyInfoForm.detail(record);
+        }
+
+
 
         }
-      }
+
     }
 </script>
 

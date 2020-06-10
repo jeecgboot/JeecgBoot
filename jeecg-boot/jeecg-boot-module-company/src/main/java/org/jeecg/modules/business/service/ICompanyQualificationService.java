@@ -18,6 +18,7 @@ import java.util.Map;
  */
 public interface ICompanyQualificationService extends IService<CompanyQualification> {
 
-     Map<String, List<String>> getQualificationFiles(String companyId);
-
+     Map<String, List<Map<String,String>>> getQualificationFiles(String companyId);
+     Boolean updateQualificationFiles(List<String> ids,Map<String,Object> updateParams);
+     Map<String, List<Map<String,String>>> compareQualification(String applyId);
 }
