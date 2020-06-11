@@ -37,10 +37,15 @@
           <a-input v-decorator="['pbone', validatorRules.pbone]" placeholder="请输入手机号码"></a-input>
         </a-form-item>
         <a-form-item label="出生日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['birthDate', validatorRules.birthDate]" placeholder="请输入出生日期"></a-input>
+          <j-date placeholder="请输入出生日期" v-decorator="['birthDate', validatorRules.birthDate]" :trigger-change="true" style="width: 100%" />
         </a-form-item>
       </a-form>
     </a-spin>
+    <template slot="footer">
+      <a-button type="primary" @click="handleCancel">取消</a-button>
+      <a-button type="primary" @click="handleOk">暂存</a-button>
+      <a-button type="primary" @click="handDeclare">申报</a-button>
+    </template>
   </j-modal>
 </template>
 
@@ -131,6 +136,7 @@
         url: {
           add: "/companyUserinfo/add",
           edit: "/companyUserinfo/edit",
+          apply:"/companyUserinfo/editAndApply"
         }
       }
     },
@@ -145,7 +151,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'createBy','createTime','updateBy','updateTime','companyId','name','sex','education','profession','jobTitle','department','post','idCard','pbone','birthDate'))
+          this.form.setFieldsValue(pick(this.model,'name','sex','education','profession','jobTitle','department','post','idCard','pbone','birthDate'))
         })
       },
       close () {
@@ -156,6 +162,7 @@
         const that = this;
         // 触发表单验证
         this.form.validateFields((err, values) => {
+          //获取表单数据
           if (!err) {
             that.confirmLoading = true;
             let httpurl = '';
@@ -163,6 +170,7 @@
             if(!this.model.id){
               httpurl+=this.url.add;
               method = 'post';
+              values.companyId = that.companyId;
             }else{
               httpurl+=this.url.edit;
                method = 'put';
@@ -186,6 +194,35 @@
       },
       handleCancel () {
         this.close()
+      },
+      //申报
+      handDeclare(){
+        const that = this;
+        // 触发表单验证
+        this.form.validateFields((err, values) => {
+          //获取表单数据
+          if (!err) {
+            that.confirmLoading = true;
+
+            let httpurl =this.url.apply;
+            let method = 'post';
+            values.companyId = that.companyId;
+            let formData = Object.assign(this.model, values);
+            console.log("表单提交数据",formData)
+            httpAction(httpurl,formData,method).then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                that.$emit('ok');
+              }else{
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
+          }
+
+        })
       },
       popupCallback(row){
         this.form.setFieldsValue(pick(row,'createBy','createTime','updateBy','updateTime','companyId','name','sex','education','profession','jobTitle','department','post','idCard','pbone','birthDate'))

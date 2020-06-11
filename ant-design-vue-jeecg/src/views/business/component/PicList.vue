@@ -156,6 +156,7 @@
                   addImgs:addImgs,
                   deleteImgs:this.deleteImgs})
           .then((res)=>{
+            this.uploading = false;
             if (res.success) {
               this.$message.success("申请完成");
             }

@@ -9,7 +9,7 @@
 	</resultMap>
 
     <select id="queryQualificationBaseInfo" parameterType="String"  resultMap="QualificationBaseInfo">
-		select B.id,A.type,B.filepath,B.filename from company_qualification A inner join company_file B ON A.id = B.table_id
+		select A.id,A.type,B.filepath,B.filename from company_qualification A inner join company_file B ON A.id = B.table_id
 		where A.company_id = #{companyId}
 		and B.from_table = 'company_qualification' and A.status = #{status}
 	</select>

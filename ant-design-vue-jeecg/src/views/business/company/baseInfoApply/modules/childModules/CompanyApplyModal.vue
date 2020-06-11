@@ -26,7 +26,7 @@
           {{model.updateBy}}
         </a-descriptions-item>
         <a-descriptions-item label="申报状态">
-          {{model.status}}
+          {{ geStatusValue(model.status)}}
         </a-descriptions-item>
         <a-descriptions-item label="生效时间">
          {{model.updateTime}}
@@ -44,11 +44,13 @@
   import { validateDuplicateValue } from '@/utils/util'
   import BusinessModal from "../../../../component/BusinessModal";
   import {queryComparisonData} from "../../../../requestAction/request"
+  import {ajaxGetDictItems,getDictItemsFromCache} from '@/api/api'
 
   export default {
     name: "CompanyApplyModal",
     components: {
       BusinessModal,
+
     },
     data () {
       return {
@@ -85,12 +87,30 @@
         ],
         data : [
         ],
+        dictOptions:[]
 
       }
     },
     created () {
+      this.initDictData("statue");
+
     },
     methods: {
+      initDictData(dictCode) {
+
+        //优先从缓存中读取字典配置
+        if(getDictItemsFromCache(dictCode)){
+          this.dictOptions = getDictItemsFromCache(dictCode);
+          return
+        }
+
+        //根据字典Code, 初始化字典数组
+        ajaxGetDictItems(dictCode, null).then((res) => {
+          if (res.success) {
+            this.dictOptions = res.result;
+          }
+        })
+      },
       detail (record) {
         this.form.resetFields();
         this.model = Object.assign({}, record);
@@ -148,6 +168,18 @@
       popupCallback(row){
         this.form.setFieldsValue(pick(row,'updateTime','companyId','status','content'))
       },
+      geStatusValue(status){
+        if(status===null)
+          return status;
+        let result =
+          this.dictOptions.find(e=>{
+            return  e.value===status;
+          });
+        if(result==null)
+          return status;
+        return result.text;
+
+      }
 
       
     }

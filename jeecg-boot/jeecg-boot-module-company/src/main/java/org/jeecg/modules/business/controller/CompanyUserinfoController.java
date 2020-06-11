@@ -3,9 +3,13 @@ package org.jeecg.modules.business.controller;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import cn.hutool.core.util.StrUtil;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.modules.business.entity.CompanyApply;
 import org.jeecg.modules.business.entity.CompanyUserinfo;
+import org.jeecg.modules.business.service.ICompanyApplyService;
 import org.jeecg.modules.business.service.ICompanyUserinfoService;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -14,6 +18,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.modules.business.utils.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,7 +39,8 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class CompanyUserinfoController extends JeecgController<CompanyUserinfo, ICompanyUserinfoService> {
 	@Autowired
 	private ICompanyUserinfoService companyUserinfoService;
-	
+	@Autowired
+	private ICompanyApplyService companyApplyService;
 	/**
 	 * 分页列表查询
 	 *
@@ -67,6 +73,7 @@ public class CompanyUserinfoController extends JeecgController<CompanyUserinfo, 
 	@ApiOperation(value="company_userinfo-添加", notes="company_userinfo-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody CompanyUserinfo companyUserinfo) {
+		companyUserinfo.setStatus(Constant.status.TEMPORARY);//暂存
 		companyUserinfoService.save(companyUserinfo);
 		return Result.ok("添加成功！");
 	}
@@ -81,10 +88,55 @@ public class CompanyUserinfoController extends JeecgController<CompanyUserinfo, 
 	@ApiOperation(value="company_userinfo-编辑", notes="company_userinfo-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody CompanyUserinfo companyUserinfo) {
-		companyUserinfoService.updateById(companyUserinfo);
+		if(Constant.status.TEMPORARY.equals(companyUserinfo.getStatus()))
+			companyUserinfoService.updateById(companyUserinfo);
+
+		else{
+			//不是暂存的编辑  都是新增暂存状态
+			companyUserinfo.setStatus(Constant.status.PEND);//暂存
+			companyUserinfo.setId(null);
+			companyUserinfoService.save(companyUserinfo);
+
+		}
+
 		return Result.ok("编辑成功!");
 	}
-	
+
+	 /**
+	  *  用户信息申报
+	  *
+	  * @param companyUserinfo 用户信息
+	  * @return
+	  */
+	 @AutoLog(value = "用户信息申报（新增或编辑时直接申报）")
+	 @ApiOperation(value="用户信息申报", notes="新增或编辑时直接申报")
+	 @PostMapping(value = "/editAndApply")
+	 public Result<?> editAndApply(@RequestBody CompanyUserinfo companyUserinfo) {
+
+	 	//新增申报记录
+		 CompanyApply companyApply = new CompanyApply();
+		String oldId = "";
+	 	//申报   1新增申报
+	 	if(StrUtil.isEmpty(companyUserinfo.getId()))
+			companyUserinfoService.save(companyUserinfo);
+	 	//编辑申报 2、编辑暂存数据
+	 	else if(Constant.status.TEMPORARY.equals(companyUserinfo.getStatus())) {
+			companyUserinfo.setStatus(Constant.status.PEND);//暂存
+			companyUserinfoService.updateById(companyUserinfo);
+		}else{
+			//编辑申报 3、编辑正常数据
+			oldId = companyUserinfo.getId();
+	 		//不是暂存的编辑  都是新增暂存状态
+			companyUserinfo.setStatus(Constant.status.PEND);//暂存
+			companyUserinfo.setId(null);
+			companyUserinfoService.save(companyUserinfo);
+
+		}
+		 //新增申报记录
+		 companyApplyService.saveByBase(companyUserinfo.getCompanyId(),companyUserinfo.getId(),Constant.status.PEND,oldId,Constant.tables.USERINFO);
+		 return Result.ok("申报成功!");
+
+	 }
 	/**
 	 *   通过id删除
 	 *

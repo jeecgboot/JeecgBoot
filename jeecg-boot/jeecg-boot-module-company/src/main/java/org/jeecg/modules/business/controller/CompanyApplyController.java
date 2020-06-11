@@ -182,7 +182,8 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
             , @RequestParam(name = "qualificttionType", required = true) String qualificttionType) {
 
         int num = companyQualificationService.count(new QueryWrapper<CompanyQualification>().lambda().eq(CompanyQualification::getCompanyId, companyId)
-                .eq(CompanyQualification::getStatus, Constant.status.PEND).eq(CompanyQualification::getType,qualificttionType));
+                .and(wrapper -> wrapper.ne(CompanyQualification::getApplyDeleteId, "").or().eq(CompanyQualification::getStatus, Constant.status.PEND))
+                .eq(CompanyQualification::getType,qualificttionType));
         Result<Object> ok;
         if (num == 0) {
             ok = Result.ok(false);
@@ -236,8 +237,8 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
 
      */
     @RequestMapping(value = "/comparisonQualification")
-    @AutoLog(value = "查询申报前后对比信息")
-    @ApiOperation(value = "通过企业申报基础表的前后id", notes = "查询申报前后对比信息")
+    @AutoLog(value = "查询企业资质申报前后对比信息")
+    @ApiOperation(value = "通过企业资质申报基础表的id", notes = "查询申报前后资质对比信息")
     public Result<?> comparisonQualification(@RequestParam(name = "applyId", required = true) String applyId) {
 
         return Result.ok(companyQualificationService.compareQualification(applyId));
@@ -260,7 +261,7 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
         JSONArray deleteImgs = applyObj.getJSONArray("deleteImgs");
         if(!deleteImgs.isEmpty()){
             Map<String,Object> updateparams = new HashMap<>();
-            updateparams.put("STATUS",Constant.status.EXPIRED);//状态更改为过期
+            updateparams.put("APPLY_DELETE_ID",apply.getId());//状态更改为过期
            companyQualificationService.updateQualificationFiles(deleteImgs.toJavaList(String.class),updateparams);
         }
 

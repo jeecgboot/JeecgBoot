@@ -12,11 +12,13 @@
 </template>
 
 <script>
+
   import CompanyApplyList from "./modules/CompanyApplyList"
   import {queryLatestArchivedData} from "../../requestAction/request"
   import CompanyApplyModal from "./modules/childModules/CompanyApplyModal";
   import UserinfoList from "../oneCompayOneRecord/routeView/UserinfoList";
-    export default {
+
+  export default {
         name: "UserInfoApply",
       components:{
         CompanyApplyList,
@@ -30,7 +32,8 @@
           //最新归档信息数据
           latestArchived:false,
           companyId:this.$store.getters.userInfo.companyIds[0],
-          showDetail:false
+          showDetail:false,
+
         }
       },//计算属性
 
@@ -43,10 +46,8 @@
         //新增申请
         apply(){
 
-          this.$refs.baseInfoForm.title="申请";
-          this.$refs.baseInfoForm.disableSubmit = true;
-          this.$refs.baseInfoForm.visible = true;
-          this.$refs.baseInfoForm.confirmLoading = false;
+          //查询详情数据
+          this.showDetail = true;
 
 
         },
@@ -55,12 +56,11 @@
           //查询详情数据
           this.$refs.applyInfoForm.detail(record);
 
-        }
+        },
 
 
       },
       created() {
-
         let that = this;
         //查询最新归档信息
         queryLatestArchivedData({companyId:this.companyId,fromTable:this.fromTable}).then((res)=>{

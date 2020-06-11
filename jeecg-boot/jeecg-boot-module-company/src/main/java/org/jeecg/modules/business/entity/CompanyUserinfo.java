@@ -95,4 +95,9 @@ public class CompanyUserinfo implements Serializable {
 	@Excel(name = "出生日期", width = 15)
     @ApiModelProperty(value = "出生日期")
     private java.lang.String birthDate;
+    /**状态*/
+    @Dict(dicCode = "statue")
+    @Excel(name = "状态", width = 15)
+    @ApiModelProperty(value = "状态")
+    private java.lang.String status;
 }

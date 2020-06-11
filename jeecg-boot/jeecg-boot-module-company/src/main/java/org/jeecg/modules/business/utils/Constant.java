@@ -66,7 +66,10 @@ public class Constant {
          * 资质表
          */
         public static String QUALIFICATION = "company_qualification";
-
+        /**
+         * 员工信息
+         */
+        public static String USERINFO = "company_userinfo";
 
     }
 

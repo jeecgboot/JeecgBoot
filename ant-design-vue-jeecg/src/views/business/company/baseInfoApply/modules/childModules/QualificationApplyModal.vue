@@ -34,13 +34,13 @@
           </a-list>
         </a-descriptions-item>
         <a-descriptions-item label="   删除资质" :span="3" v-if="data.delete!==undefined">
-          <a-list :grid="{ gutter: 16, xs: 1, sm: 2, md: 4, lg: 4, xl: 6, xxl: 3 }" :data-source="data.add">
+          <a-list :grid="{ gutter: 16, xs: 1, sm: 2, md: 4, lg: 4, xl: 6, xxl: 3 }" :data-source="data.delete">
             <a-list-item slot="renderItem" slot-scope="item, index">
 
               <div style="float: left;width:104px;height:104px;margin-right: 10px;margin: 0 8px 8px 0;">
                 <div
                   style="width: 100%;height: 100%;position: relative;padding: 8px;border: 1px solid #d9d9d9;border-radius: 4px;">
-                  <img style="width: 100%;" :src="item.url" preview="add">
+                  <img style="width: 100%;object-fit:cover;" :src="item.url" preview="add">
                 </div>
               </div>
 
@@ -52,7 +52,7 @@
           {{model.updateBy}}
         </a-descriptions-item>
         <a-descriptions-item label="申报状态">
-          {{model.status}}
+          {{geStatusValue(model.status)}}
         </a-descriptions-item>
         <a-descriptions-item label="生效时间">
          {{model.updateTime}}
@@ -69,6 +69,7 @@
   import BusinessModal from "../../../../component/BusinessModal";
   import {comparisonQualification} from "../../../../requestAction/request"
   import {getFileAccessHttpUrl} from '@/api/manage';
+  import {ajaxGetDictItems,getDictItemsFromCache} from '@/api/api'
 
   export default {
     name: "QualicationApplyModal",
@@ -84,12 +85,29 @@
         confirmLoading: false,
         data : {},
         spinning:false,
+        dictOptions:[]
 
       }
     },
     created () {
+      this.initDictData("statue");
     },
     methods: {
+      initDictData(dictCode) {
+
+        //优先从缓存中读取字典配置
+        if(getDictItemsFromCache(dictCode)){
+          this.dictOptions = getDictItemsFromCache(dictCode);
+          return
+        }
+
+        //根据字典Code, 初始化字典数组
+        ajaxGetDictItems(dictCode, null).then((res) => {
+          if (res.success) {
+            this.dictOptions = res.result;
+          }
+        })
+      },
       detail (record) {
         this.form.resetFields();
         this.model = Object.assign({}, record);
@@ -128,6 +146,18 @@
         this.form.setFieldsValue(pick(row,'updateTime','companyId','status','content'))
       },
       handleOk(){
+
+      },
+      geStatusValue(status){
+        if(status===null)
+          return status;
+        let result =
+         this.dictOptions.find(e=>{
+          return  e.value===status;
+        });
+        if(result==null)
+          return status;
+        return result.text;
 
       }
       
