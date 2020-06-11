@@ -244,9 +244,7 @@
         this.$refs.modalForm.title="年度动态监管";
       },
       toSearchReset() {
-        let that = this;
-        this.queryParam = {};
-        that.queryParam.companyId = this.companyId;
+        this.queryParam = {companyId:this.companyId};
         this.loadData(1);
       },
     },

@@ -4,6 +4,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.modules.business.service.ICompanySysuserService;
+import org.jeecg.modules.business.utils.Constant;
 import org.jeecg.modules.business.vo.CompanyDynamicSupervisionVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -112,6 +114,40 @@ public class CompanyDynamicSupervisionController extends JeecgController<Company
 		 IPage<CompanyDynamicSupervisionVO> pageList = companyDynamicSupervisionService.getCompanyDynamicSupervision(page,companyId,status,companyName,reportYear);
 		 return Result.ok(pageList);
 	 }
+
+	 /**
+	  * 分页列表查询
+	  *
+	  * @param companyDynamicSupervision
+	  * @return
+	  */
+	 @AutoLog(value = "企业年度动态监管-申报")
+	 @ApiOperation(value="企业年度动态监管-申报", notes="企业年度动态监管-申报")
+	 @PutMapping(value = "/declare")
+	 public Result<?> declare(@RequestBody CompanyDynamicSupervision companyDynamicSupervision) {
+	 	companyDynamicSupervision.setStatus(Constant.status.PEND);
+		 //判断是新增还是编辑
+	 	if(!StrUtil.isEmpty(companyDynamicSupervision.getId())){
+			//编辑
+			//查询修改之前的对象
+			CompanyDynamicSupervision oldCompanyDynamicSupervision = companyDynamicSupervisionService.getById(companyDynamicSupervision.getId());
+			//状态为正常
+			if(Constant.status.NORMAL.equals(oldCompanyDynamicSupervision.getStatus())){
+				//修改老数据状态为过期
+				oldCompanyDynamicSupervision.setStatus(Constant.status.EXPIRED);
+				companyDynamicSupervisionService.updateById(oldCompanyDynamicSupervision);
+				//新增修改后的为新数据
+				companyDynamicSupervision.setId("");
+				companyDynamicSupervisionService.save(companyDynamicSupervision);
+			}else if(Constant.status.NOPASS.equals(oldCompanyDynamicSupervision.getStatus()) || Constant.status.TEMPORARY.equals(oldCompanyDynamicSupervision.getStatus())){
+				companyDynamicSupervisionService.updateById(companyDynamicSupervision);
+			}
+		}else{
+	 		companyDynamicSupervisionService.save(companyDynamicSupervision);
+		}
+		 return Result.ok("添加成功！");
+	 }
+
 	/**
 	 *   添加
 	 *
