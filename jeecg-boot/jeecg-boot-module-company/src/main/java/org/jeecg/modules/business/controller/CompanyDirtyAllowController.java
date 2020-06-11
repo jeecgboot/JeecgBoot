@@ -170,7 +170,7 @@ public class CompanyDirtyAllowController extends JeecgController<CompanyDirtyAll
 				 CompanyDirtyAllow companyDirtyAllow = companyDirtyAllowService.getById(id);
 				 //判断申报的是否是暂存
 				 if (!Constant.status.TEMPORARY.equals(companyDirtyAllow.getStatus())) {
-					 return Result.error("请选择暂存的竣工验收信息申报！");
+					 return Result.error("请选择暂存的信息申报！");
 				 }
 				 //修改状态为1：待审核状态
 				 companyDirtyAllow.setStatus(Constant.status.PEND);

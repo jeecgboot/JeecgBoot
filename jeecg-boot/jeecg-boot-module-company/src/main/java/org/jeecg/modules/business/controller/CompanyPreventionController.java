@@ -230,7 +230,7 @@ public class CompanyPreventionController extends JeecgController<CompanyPreventi
                 CompanyPrevention companyPrevention = companyPreventionService.getById(id);
                 //判断申报的是否是暂存
                 if (!status.TEMPORARY.equals(companyPrevention.getStatus())) {
-                    return Result.error("请选择暂存的竣工验收信息申报！");
+                    return Result.error("请选择暂存的信息申报！");
                 }
                 //修改状态为1：待审核状态
                 companyPrevention.setStatus(status.PEND);

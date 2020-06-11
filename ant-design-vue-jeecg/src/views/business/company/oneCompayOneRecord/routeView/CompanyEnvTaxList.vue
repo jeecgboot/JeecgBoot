@@ -15,6 +15,11 @@
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="数据状态">
+              <j-dict-select-tag placeholder="请选择数据状态" v-model="queryParam.status" dictCode="statue"/>
+            </a-form-item>
+          </a-col>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -26,20 +31,15 @@
     <!-- 查询区域-END -->
 
     <!-- 操作按钮区域 -->
-    <div class="table-operator">
+    <div class="table-operator" v-if="operationShow">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel">
-            <a-icon type="delete"/>
-            删除
-          </a-menu-item>
+          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
         </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作
-          <a-icon type="down"/>
-        </a-button>
+        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
-      <a-button @click="declare" type="primary" icon="snippets">申报</a-button>
+      <a-button @click="batchDeclare" type="primary" icon="snippets">申报</a-button>
     </div>
 
     <!-- table区域-begin -->
@@ -59,7 +59,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="rowSelection"
         class="j-table-force-nowrap"
         @change="handleTableChange">
 
@@ -85,14 +85,13 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
-
-          <a-divider type="vertical"/>
-          <a-dropdown>
-            <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-            </a-popconfirm>
-          </a-dropdown>
+          <!--权限控制查看还是编辑，查看只允许查看不允许修改-->
+          <a  @click="handleEdit(record)" v-if="operationShow && (record.status!='1' && record.status!='4')">编辑</a>
+           <a-divider v-if="operationShow && (record.status!='1' && record.status!='4')" type="vertical" />
+           <a @click="handleview(record)" v-if="!operationShow || (record.status=='1' || record.status=='4')">查看</a>
+           <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                  <a v-if="operationShow  && (record.status!='1' && record.status!='4')">删除</a>
+          </a-popconfirm>
         </span>
 
       </a-table>
@@ -109,6 +108,7 @@
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import CompanyEnvTaxModal from './CompanyEnvTaxModal'
   import {filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import {getAction} from "../../../../../api/manage";
 
   export default {
     name: "CompanyEnvTaxList",
@@ -170,6 +170,11 @@
             dataIndex: 'taxDepartment'
           },
           {
+            title: '数据状态',
+            align: "center",
+            dataIndex: 'status_dictText'
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align: "center",
@@ -179,19 +184,72 @@
           }
         ],
         url: {
-          list: "/envtax/companyEnvTax/list",
+          list: "/envtax/companyEnvTax/list/" + this.listType,
           delete: "/envtax/companyEnvTax/delete",
           deleteBatch: "/envtax/companyEnvTax/deleteBatch",
+          batchDeclare: "/envtax/companyEnvTax/batchDeclare",
         },
         dictOptions: {},
       }
     },
     methods: {
       initDictConfig() {
-      }
+      },
+      handleview: function (record) {
+        this.$refs.modalForm.edit(record);
+        this.$refs.modalForm.title = "查看";
+        this.$refs.modalForm.disableSubmit = true;
+      },
+      batchDeclare: function () {
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        } else {
+          let ids = "";
+          for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            ids += this.selectedRowKeys[a] + ",";
+          }
+          let that = this;
+          this.$confirm({
+            title: "确认申报",
+            content: "是否申报选中数据?",
+            onOk: function () {
+              that.loading = true;
+              getAction(that.url.batchDeclare, {ids: ids}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.loading = false;
+              });
+            }
+          });
+        }
+      },
     },
     props: {
-      companyId: ""
+      companyId: "",
+      operationShow: "",
+      listType: ""
+    },
+    computed: {
+      rowSelection() {
+        return {
+          getCheckboxProps: record => ({
+            props: {
+              disabled: record.status == '1',
+              name: record.projectName,
+            },
+          }),
+          selectedRowKeys: this.selectedRowKeys,
+          onChange: this.onSelectChange
+        };
+      },
+
     }
   }
 </script>

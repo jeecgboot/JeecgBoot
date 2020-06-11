@@ -13,38 +13,40 @@
         <a-row>
           <a-col span='12'>
             <a-form-item label="许可证编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-search-select-tag placeholder="请输入后进行选择"  v-decorator="['licenceCode', validatorRules.licenceCode]"  dict="company_dirty_allow,licence_code,licence_code":async="true"/>
+              <j-search-select-tag placeholder="请输入后进行选择" v-decorator="['licenceCode', validatorRules.licenceCode]"
+                                   dict="company_dirty_allow,licence_code,licence_code" :async="true" :disabled="disableSubmit"/>
             </a-form-item>
           </a-col>
           <a-col span='12'>
             <a-form-item label="排放口大类" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <j-dict-select-tag type="list" v-decorator="['ventCategory', validatorRules.ventCategory]"
-                             @change="ventcategoryChange"    :trigger-change="true" dictCode="ventcategory" placeholder="请选择排放口大类"/>
+                                 @change="ventcategoryChange" :trigger-change="true" dictCode="ventcategory"
+                                 placeholder="请选择排放口大类" :disabled="disableSubmit"/>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col span='12'>
             <a-form-item label="排放口编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['ventCode']" placeholder="请输入排放口编号"></a-input>
+              <a-input v-decorator="['ventCode']" placeholder="请输入排放口编号" :disabled="disableSubmit"></a-input>
             </a-form-item>
           </a-col>
           <a-col span='12'>
             <a-form-item label="排放口名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['ventName']" placeholder="请输入排放口名称"></a-input>
+              <a-input v-decorator="['ventName']" placeholder="请输入排放口名称" :disabled="disableSubmit"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col span='12'>
             <a-form-item label="排污口税源编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['taxsourceCode', validatorRules.taxsourceCode]" placeholder="请输入排污口税源编号"></a-input>
+              <a-input v-decorator="['taxsourceCode', validatorRules.taxsourceCode]" placeholder="请输入排污口税源编号" :disabled="disableSubmit"></a-input>
             </a-form-item>
           </a-col>
           <a-col span='12'>
             <a-form-item label="排放方式" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <j-dict-select-tag type="list" v-decorator="['letMode', validatorRules.letMode]" :trigger-change="true"
-                                 dictCode="letmode" placeholder="请选择排放方式"/>
+                                 dictCode="letmode" placeholder="请选择排放方式" :disabled="disableSubmit"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -53,10 +55,10 @@
             <a-form-item label="排污口位置" :labelCol="labelCols" :wrapperCol="wrapperCols">
               <a-row>
                 <a-col span='21'>
-                  <a-input v-decorator="['ventLocate', validatorRules.ventLocate]" placeholder="请输入排污口位置"></a-input>
+                  <a-input v-decorator="['ventLocate', validatorRules.ventLocate]" placeholder="请输入排污口位置" :disabled="disableSubmit"></a-input>
                 </a-col>
                 <a-col span='3'>
-                  <a-button type="primary" :block="true" @click="searchMap">
+                  <a-button type="primary" :block="true" @click="searchMap" :disabled="disableSubmit">
                     查询坐标
                   </a-button>
                 </a-col>
@@ -67,12 +69,12 @@
         <a-row>
           <a-col span='12'>
             <a-form-item label="排污口经度" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['ventLongitude']" placeholder="请输入排污口经度"></a-input>
+              <a-input v-decorator="['ventLongitude']" placeholder="请输入排污口经度" :disabled="disableSubmit"></a-input>
             </a-form-item>
           </a-col>
           <a-col span='12'>
             <a-form-item label="排污口纬度" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['ventLatitude']" placeholder="请输入排污口纬度"></a-input>
+              <a-input v-decorator="['ventLatitude']" placeholder="请输入排污口纬度" :disabled="disableSubmit"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
@@ -81,7 +83,7 @@
             <a-form-item label="水污染排污去向" :labelCol="labelCols" :wrapperCol="wrapperCols">
               <j-dict-select-tag type="list" v-decorator="['letDirection']" :trigger-change="true"
                                  dictCode="letdirection"
-                                 placeholder="请选择水污染排污去向"/>
+                                 placeholder="请选择水污染排污去向" :disabled="disableSubmit"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -89,17 +91,22 @@
           <a-col span='12' v-if="model.ventCategory==='0'">
             <a-form-item label="大气污染排放口类别" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <j-dict-select-tag type="list" v-decorator="['ventType']" :trigger-change="true" dictCode="venttype"
-                                 placeholder="请选择大气污染物排放口类别" />
+                                 placeholder="请选择大气污染物排放口类别" :disabled="disableSubmit"/>
             </a-form-item>
           </a-col>
           <a-col span='12'>
             <a-form-item label="主管税务科所" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['taxDepartment', validatorRules.taxDepartment]" placeholder="请输入主管税务科所"></a-input>
+              <a-input v-decorator="['taxDepartment', validatorRules.taxDepartment]" placeholder="请输入主管税务科所" :disabled="disableSubmit"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
       </a-form>
     </a-spin>
+    <template slot="footer">
+      <a-button type="primary" @click="handleCancel">取消</a-button>
+      <a-button type="primary" @click="handleOk" v-if="!disableSubmit">暂存</a-button>
+      <a-button type="primary" @click="handDeclare" v-if="!disableSubmit">申报</a-button>
+    </template>
   </j-modal>
 </template>
 
@@ -121,11 +128,12 @@
     data() {
       return {
         form: this.$form.createForm(this),
+        disableSubmit: false,
         title: "操作",
         width: 1200,
         visible: false,
         model: {},
-        asyncSelectValue:"",
+        asyncSelectValue: "",
         labelCol: {
           xs: {span: 24},
           sm: {span: 6},
@@ -183,6 +191,7 @@
         url: {
           add: "/envtax/companyEnvTax/add",
           edit: "/envtax/companyEnvTax/edit",
+          declare: "/envtax/companyEnvTax/declare",
         }
       }
     },
@@ -198,21 +207,21 @@
           this.form.setFieldsValue(pick(this.model, 'licenceCode', 'ventCategory', 'ventCode', 'ventName', 'taxsourceCode', 'letMode', 'ventLocate', 'ventLongitude', 'ventLatitude', 'letDirection', 'ventType', 'taxDepartment'))
         })
       },
-      ventcategoryChange(value){
-        this.model.ventCategory=value;
-        console.log('ventCategory',this.model.ventCategory,this.model.ventCategory==='0');
+      ventcategoryChange(value) {
+        this.model.ventCategory = value;
+        console.log('ventCategory', this.model.ventCategory, this.model.ventCategory === '0');
       },
-      searchMap(){
+      searchMap() {
         let that = this;
         this.form.validateFields((err, values) => {
-          that.model.ventLocate=values.ventLocate;
+          that.model.ventLocate = values.ventLocate;
         });
-        loadBaiduMap({address:this.model.ventLocate}).then((res)=>{
+        loadBaiduMap({address: this.model.ventLocate}).then((res) => {
           console.log(res);
-          if(res.success){
-            this.form.setFieldsValue({ventLongitude:res.result.lng,ventLatitude:res.result.lat});
-          }else{
-            this.$error({ title: '查询坐标错误', content: '错误信息：' + res.message , maskClosable: true })
+          if (res.success) {
+            this.form.setFieldsValue({ventLongitude: res.result.lng, ventLatitude: res.result.lat});
+          } else {
+            this.$error({title: '查询坐标错误', content: '错误信息：' + res.message, maskClosable: true})
           }
         });
       },
@@ -239,6 +248,32 @@
             let formData = Object.assign(this.model, values);
             formData.companyId = this.companyId;
             httpAction(httpurl, formData, method).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message);
+                that.$emit('ok');
+              } else {
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
+          }
+
+        })
+      },
+      //申报
+      handDeclare() {
+        const that = this;
+        // 触发表单验证
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            that.confirmLoading = true;
+            let httpUrl = this.url.declare;
+            let method = 'put';
+            let formData = Object.assign(this.model, values);
+            formData.companyId = this.companyId;
+            httpAction(httpUrl, formData, method).then((res) => {
               if (res.success) {
                 that.$message.success(res.message);
                 that.$emit('ok');
