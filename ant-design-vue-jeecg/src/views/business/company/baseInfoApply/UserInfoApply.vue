@@ -6,7 +6,7 @@
                         :from-table="fromTable" @applyDetail = "applyDetail"  @toDetail="latestDetail" @toApply="apply"
                          v-if="!showDetail"></company-apply-list>
 
-    <userinfo-list :company-id="companyId" ref="userinfoList" v-if="showDetail" ></userinfo-list>
+    <userinfo-list :isApply="isApply" :company-id="companyId" v-if="showDetail" ></userinfo-list>
     <companyApply-modal ref="applyInfoForm" ></companyApply-modal>
   </div>
 </template>
@@ -33,7 +33,7 @@
           latestArchived:false,
           companyId:this.$store.getters.userInfo.companyIds[0],
           showDetail:false,
-
+          isApply:false
         }
       },//计算属性
 
@@ -42,20 +42,18 @@
         latestDetail(){
           //查询详情数据
           this.showDetail = true;
+          this.isApply = false;
         },
         //新增申请
         apply(){
-
           //查询详情数据
           this.showDetail = true;
-
+          this.isApply = true;
 
         },
         applyDetail(record){
-          console.log(record);
           //查询详情数据
           this.$refs.applyInfoForm.detail(record);
-
         },
 
 

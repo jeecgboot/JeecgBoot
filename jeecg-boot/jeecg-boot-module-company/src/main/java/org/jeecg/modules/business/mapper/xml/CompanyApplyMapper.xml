@@ -2,4 +2,31 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.business.mapper.CompanyApplyMapper">
 
+        <resultMap id="CompanyApplyVo" type="org.jeecg.modules.business.vo.CompanyApplyVo" >
+            <result column="companyName" property="company_name" jdbcType="VARCHAR"/>
+            <result column="fromTable" property="from_table" jdbcType="VARCHAR"/>
+            <result column="createTime" property="create_time" jdbcType="VARCHAR"/>
+            <result column="status" property="status" jdbcType="VARCHAR"/>
+            <result column="updateBy" property="update_by" jdbcType="VARCHAR"/>
+            <result column="updateTime" property="update_time" jdbcType="VARCHAR"/>
+
+        </resultMap>
+
+
+
+    <select id="queryCompanyApplyVo"  resultMap="CompanyApplyVo">
+		select a.company_name,b.from_table,b.create_time,b.`status`,b.update_by,b.update_time
+            from company_base a inner join company_apply b  on a.company_id = b.company_id
+            where a.company_id in
+        <foreach collection="companyIds" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        <if test="status != null and status != ''">
+            and b.`status` = #{status}
+        </if>
+        <if test="fromTable != null and fromTable != ''">
+            and b.from_table = #{fromTable}
+        </if>
+	</select>
+
 </mapper>

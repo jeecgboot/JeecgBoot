@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.business.entity.CompanyApply;
@@ -161,7 +162,9 @@ public class CompanyUserinfoController extends JeecgController<CompanyUserinfo, 
 	@ApiOperation(value="company_userinfo-批量删除", notes="company_userinfo-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.companyUserinfoService.removeByIds(Arrays.asList(ids.split(",")));
+//		this.companyUserinfoService.update(new UpdateWrapper<CompanyUserinfo>().lambda().
+//		in(CompanyUserinfo::getId,Arrays.asList(ids.split(",")).
+//		set(CompanyUserinfo::getStatus))));
 		return Result.ok("批量删除成功!");
 	}
 	

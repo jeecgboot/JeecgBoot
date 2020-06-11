@@ -43,14 +43,16 @@
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+          <a-menu-item key="2" @click="batchDel"><a-icon type="delete"/>申报</a-menu-item>
+
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
     </div>
 
     <!-- table区域-begin -->
-    <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+    <div >
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;" v-show="isApply">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
@@ -93,14 +95,11 @@
         <span slot="action"  slot-scope="text, record">
           <!-- 编辑和删除-->
           <a @click="handleEdit(record)">详情</a>
-
-          <a-divider type="vertical" />
-
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+          <a-divider type="vertical" v-show="isApply"  />
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)" v-show="isApply">
                   <a>删除</a>
                 </a-popconfirm>
         </span>
-
       </a-table>
     </div>
 
@@ -121,11 +120,17 @@
       CompanyUserinfoModal
     },
     props:{
-      companyId:''
+      companyId:'',
+      isApply:{
+        type:Boolean,
+        default(){
+          return false;
+        }
+      }
     },
     data () {
       return {
-        isApply:false,
+
         queryParam:{companyId:this.companyId},
         // 表头
         columns: [
@@ -205,8 +210,8 @@
           }
         ],
         url: {
-          list: "/companyUserinfo/list"
-
+          list: "/companyUserinfo/list",
+          deleteBatch:"/companyUserinfo/deleteBatch"
         },
         dictOptions:{},
       }

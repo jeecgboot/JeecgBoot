@@ -1,7 +1,11 @@
 package org.jeecg.modules.business.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.business.entity.*;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.business.vo.CompanyApplyVo;
+
+import java.util.List;
 
 /**
  * @Description: 企业申报基础表
@@ -21,4 +25,7 @@ public interface ICompanyApplyService extends IService<CompanyApply> {
      * @Date: 2020/6/9
      */
     CompanyApply findByNewId(String id, String fromTable);
+
+
+    Page<CompanyApplyVo> queryCompanyApplyVo(Page<CompanyApplyVo> page,String[] companyIds,String status,String fromTable);
 }

@@ -21,6 +21,7 @@ import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.utils.Constant;
 import org.jeecg.modules.business.utils.Equator;
 import org.jeecg.modules.business.utils.FieldBaseEquator;
+import org.jeecg.modules.business.vo.CompanyApplyVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -71,7 +72,30 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
         IPage<CompanyApply> pageList = companyApplyService.page(page, queryWrapper);
         return Result.ok(pageList);
     }
+    /**
+     * 分页列表查询
+     *
+     * @param companyIds
+     * @param pageNo
+     * @param pageSize
+     * @param req
+     * @return
+     */
+    @AutoLog(value = "企业申报基础表-分页列表查询")
+    @ApiOperation(value = "企业申报基础表-分页列表查询", notes = "根据用户id查询")
+    @GetMapping (value = "/listByUserId")
+    public Result<?> listByUserId(@RequestParam(name = "companyIds", required = true) String  companyIds,
+                                   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                  @RequestParam(name = "status", required = false) String  status,
+                                  @RequestParam(name = "fromTable", required = false) String  fromTable,
+                                   HttpServletRequest req) {
 
+
+        Page<CompanyApplyVo> page = new Page<CompanyApplyVo>(pageNo, pageSize);
+        IPage<CompanyApplyVo> pageList =  companyApplyService.queryCompanyApplyVo(page,companyIds.split(","),status,fromTable);
+        return Result.ok(pageList);
+    }
     /**
      * 添加
      *
