@@ -12,26 +12,31 @@
       <a-form :form="form">
 
         <a-form-item label="在线设备名称/型号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['equipmentName', validatorRules.equipmentName]" placeholder="请输入在线设备名称/型号"></a-input>
+          <a-input v-decorator="['equipmentName', validatorRules.equipmentName]" placeholder="请输入在线设备名称/型号" :disabled="disableSubmit"></a-input>
         </a-form-item>
         <a-form-item label="设备生产厂家" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['equipmentManufacturers']" placeholder="请输入设备生产厂家"></a-input>
+          <a-input v-decorator="['equipmentManufacturers']" placeholder="请输入设备生产厂家" :disabled="disableSubmit"></a-input>
         </a-form-item>
         <a-form-item label="运维单位" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['operationalUnit']" placeholder="请输入运维单位"></a-input>
+          <a-input v-decorator="['operationalUnit']" placeholder="请输入运维单位" :disabled="disableSubmit"></a-input>
         </a-form-item>
         <a-form-item label="投入使用日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择投入使用日期" v-decorator="['usedTime']" :trigger-change="true" style="width: 100%"/>
+          <j-date placeholder="请选择投入使用日期" v-decorator="['usedTime']" :trigger-change="true" style="width: 100%" :disabled="disableSubmit"/>
         </a-form-item>
         <a-form-item label="安装位置" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['installLocation']" placeholder="请输入安装位置"></a-input>
+          <a-input v-decorator="['installLocation']" placeholder="请输入安装位置" :disabled="disableSubmit"></a-input>
         </a-form-item>
         <a-form-item label="在线监控验收材料" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-upload v-decorator="['files']" :trigger-change="true"></j-upload>
+          <j-upload v-decorator="['files']" :trigger-change="true" :disabled="disableSubmit"></j-upload>
         </a-form-item>
 
       </a-form>
     </a-spin>
+    <template slot="footer">
+      <a-button type="primary" @click="handleCancel">取消</a-button>
+      <a-button type="primary" @click="handleOk"  v-if="!disableSubmit">暂存</a-button>
+      <a-button type="primary" @click="handDeclare"  v-if="!disableSubmit">申报</a-button>
+    </template>
   </j-modal>
 </template>
 
@@ -53,6 +58,7 @@
     data () {
       return {
         form: this.$form.createForm(this),
+        disableSubmit: false,
         title:"操作",
         width:800,
         visible: false,
@@ -76,6 +82,7 @@
         url: {
           add: "/onlineInfo/companyOnlineInfo/add",
           edit: "/onlineInfo/companyOnlineInfo/edit",
+          declare: "/onlineInfo/companyOnlineInfo/declare",
         }
       }
     },
@@ -128,6 +135,32 @@
             })
           }
          
+        })
+      },
+      //申报
+      handDeclare() {
+        const that = this;
+        // 触发表单验证
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            that.confirmLoading = true;
+            let httpUrl = this.url.declare;
+            let method = 'put';
+            let formData = Object.assign(this.model, values);
+            formData.companyId = this.companyId;
+            httpAction(httpUrl, formData, method).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message);
+                that.$emit('ok');
+              } else {
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
+          }
+
         })
       },
       handleCancel () {

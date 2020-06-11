@@ -22,6 +22,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.modules.business.utils.Constant;
 import org.jeecg.modules.business.vo.CompanyAdminPenaltiesVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -60,7 +61,7 @@ public class CompanyAdminPenaltiesController extends JeecgController<CompanyAdmi
 	public Result<?> queryPageList( CompanyAdminPenalties companyAdminPenalties,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-								   HttpServletRequest req) throws Exception {
+								   HttpServletRequest req) throws ParseException {
 		String companyId = req.getParameter("companyId");
 		String status = req.getParameter("status");
 		String companyName = req.getParameter("companyName");
@@ -79,6 +80,39 @@ public class CompanyAdminPenaltiesController extends JeecgController<CompanyAdmi
 		Page<CompanyAdminPenaltiesVO> page = new Page<CompanyAdminPenaltiesVO>(pageNo, pageSize);
 		IPage<CompanyAdminPenaltiesVO> pageList = companyAdminPenaltiesService.getCompanyAdminPenalties(page, companyId,status,companyName,dateBegin,dateEnd);
 		return Result.ok(pageList);
+	}
+
+	/**
+	 * 分页列表查询
+	 *
+	 * @param companyAdminPenalties
+	 * @return
+	 */
+	@AutoLog(value = "行政处罚信息-申报")
+	@ApiOperation(value="行政处罚信息-申报", notes="行政处罚信息-申报")
+	@PutMapping(value = "/declare")
+	public Result<?> declare(@RequestBody CompanyAdminPenalties companyAdminPenalties) {
+		companyAdminPenalties.setStatus(Constant.status.PEND);
+		//判断是新增还是编辑
+		if(!StrUtil.isEmpty(companyAdminPenalties.getId())){
+			//编辑
+			//查询修改之前的对象
+			CompanyAdminPenalties oldCompanyAdminPenalties = companyAdminPenaltiesService.getById(companyAdminPenalties.getId());
+			//状态为正常
+			if(Constant.status.NORMAL.equals(oldCompanyAdminPenalties.getStatus())){
+				//修改老数据状态为过期
+				oldCompanyAdminPenalties.setStatus(Constant.status.EXPIRED);
+				companyAdminPenaltiesService.updateById(companyAdminPenalties);
+				//新增修改后的为新数据
+				companyAdminPenalties.setId("");
+				companyAdminPenaltiesService.save(companyAdminPenalties);
+			}else if(Constant.status.NOPASS.equals(oldCompanyAdminPenalties.getStatus()) || Constant.status.TEMPORARY.equals(oldCompanyAdminPenalties.getStatus())){
+				companyAdminPenaltiesService.updateById(companyAdminPenalties);
+			}
+		}else {
+			companyAdminPenaltiesService.save(companyAdminPenalties);
+		}
+		return Result.ok("申报成功！");
 	}
 
 	 /**

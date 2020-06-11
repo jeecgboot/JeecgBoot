@@ -23,9 +23,9 @@
           <base-info v-if="leftActive==9 && topActive==1"/>
           <base-info v-if="leftActive==10 && topActive==1"/>
           <base-info v-if="leftActive==11 && topActive==1"/>
-          <company-env-tax-list v-if="leftActive==12 && topActive==1" :companyId="companyId"/>
-          <company-clean-product-list v-if="leftActive==13 && topActive==1" :companyId="companyId"/>
-          <company-online-info-list v-if="leftActive==14 && topActive==1" :companyId="companyId"/>
+          <company-env-tax-list v-if="leftActive==12 && topActive==1" :companyId="companyId" listType="0" :operation-show="false"/>
+          <company-clean-product-list v-if="leftActive==13 && topActive==1" :companyId="companyId" listType="0" :operation-show="false"/>
+          <company-online-info-list v-if="leftActive==14 && topActive==1" :companyId="companyId" listType="0" :operation-show="false"/>
 
           <company-dynamic-supervision-list v-if="leftActive==1 && topActive==2" :companyId="companyId"/>
           <company-admin-penalties-list v-if="leftActive==2 && topActive==2" :companyId="companyId" />

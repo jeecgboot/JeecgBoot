@@ -12,23 +12,28 @@
       <a-form :form="form">
 
         <a-form-item label="清洁生产报告名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['reportName', validatorRules.reportName]" placeholder="请输入清洁生产报告名称"></a-input>
+          <a-input v-decorator="['reportName', validatorRules.reportName]" placeholder="请输入清洁生产报告名称" :disabled="disableSubmit"></a-input>
         </a-form-item>
         <a-form-item label="报告时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择报告时间" v-decorator="['reportTime']" :trigger-change="true" style="width: 100%"/>
+          <j-date placeholder="请选择报告时间" v-decorator="['reportTime']" :trigger-change="true" style="width: 100%" :disabled="disableSubmit"/>
         </a-form-item>
         <a-form-item label="清洁生成报告及专家意见" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-upload v-decorator="['opinionFiles']" :trigger-change="true"></j-upload>
+          <j-upload v-decorator="['opinionFiles']" :trigger-change="true" :disabled="disableSubmit"></j-upload>
         </a-form-item>
         <a-form-item label="落实情况简要描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-textarea v-decorator="['conditionDescribe']" placeholder="请输入落实情况简要描述"></a-textarea>
+          <a-textarea v-decorator="['conditionDescribe']" placeholder="请输入落实情况简要描述" :disabled="disableSubmit"></a-textarea>
         </a-form-item>
         <a-form-item label="落实情况附件" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-image-upload isMultiple v-decorator="['describeFiles']"></j-image-upload>
+          <j-image-upload isMultiple v-decorator="['describeFiles']" :disabled="disableSubmit"></j-image-upload>
         </a-form-item>
 
       </a-form>
     </a-spin>
+    <template slot="footer">
+      <a-button type="primary" @click="handleCancel">取消</a-button>
+      <a-button type="primary" @click="handleOk"  v-if="!disableSubmit">暂存</a-button>
+      <a-button type="primary" @click="handDeclare"  v-if="!disableSubmit">申报</a-button>
+    </template>
   </j-modal>
 </template>
 
@@ -53,6 +58,7 @@
       return {
         form: this.$form.createForm(this),
         title:"操作",
+        disableSubmit: false,
         width:800,
         visible: false,
         model: {},
@@ -75,6 +81,7 @@
         url: {
           add: "/cleanProduct/companyCleanProduct/add",
           edit: "/cleanProduct/companyCleanProduct/edit",
+          declare: "/cleanProduct/companyCleanProduct/declare",
         }
       }
     },
@@ -127,6 +134,32 @@
             })
           }
          
+        })
+      },
+      //申报
+      handDeclare() {
+        const that = this;
+        // 触发表单验证
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            that.confirmLoading = true;
+            let httpUrl = this.url.declare;
+            let method = 'put';
+            let formData = Object.assign(this.model, values);
+            formData.companyId = this.companyId;
+            httpAction(httpUrl, formData, method).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message);
+                that.$emit('ok');
+              } else {
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
+          }
+
         })
       },
       handleCancel () {

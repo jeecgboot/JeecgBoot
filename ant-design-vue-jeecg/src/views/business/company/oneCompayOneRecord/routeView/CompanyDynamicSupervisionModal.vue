@@ -9,10 +9,6 @@
     @cancel="handleCancel">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-
-
-
-
         <a-row>
           <a-col span="12">
             <a-form-item label="企业名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -162,7 +158,6 @@
       }
     },
     created () {
-
     },
 
     methods: {
@@ -174,8 +169,8 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         let that = this;
+        //查询企业名称
         queryCompanyName({companyIds:this.$store.getters.userInfo.companyIds.join(',')}).then((res) => {
-
               if(res.success){
                 that.items = res.result;
                 that.items.forEach(e=>{
@@ -196,6 +191,7 @@
       },
       handleOk () {
         const that = this;
+        //获取选中企业名称对应key值
         const company_id = this.items.find(e=>{
          return  e.value === that.value;
         }).key;
