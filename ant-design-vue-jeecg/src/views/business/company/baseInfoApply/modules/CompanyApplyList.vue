@@ -11,7 +11,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button v-if="hoverable" @click="toDetail" type="primary" icon="profile">详情</a-button>
+      <a-button v-if="hoverable" @click="toDetail" type="primary" icon="profile">查看</a-button>
       <a-button  @click="toApply" type="primary" icon="form">申报</a-button>
       <!-- <a-button type="primary" icon="download" @click="handleExportXls('企业申报基础表')">导出</a-button>
        <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
