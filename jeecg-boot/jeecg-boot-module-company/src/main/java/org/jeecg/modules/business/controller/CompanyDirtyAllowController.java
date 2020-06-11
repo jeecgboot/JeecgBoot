@@ -122,9 +122,13 @@ public class CompanyDirtyAllowController extends JeecgController<CompanyDirtyAll
 			 CompanyDirtyAllow oldCompanyDirtyAllow = companyDirtyAllowService.getById(companyDirtyAllow.getId());
 			 //状态为正常
 			 if (Constant.status.NORMAL.equals(oldCompanyDirtyAllow.getStatus())) {
+				 CompanyApply companyApply = companyApplyService.findByNewId(oldCompanyDirtyAllow.getId(), Constant.tables.DIRTYALLOW);
 				 //修改老数据状态为过期
 				 oldCompanyDirtyAllow.setStatus(Constant.status.EXPIRED);
 				 companyDirtyAllowService.updateById(oldCompanyDirtyAllow);
+				 //修改老申报记录为过期
+				 companyApply.setStatus(Constant.status.EXPIRED);
+				 companyApplyService.updateById(companyApply);
 				 //新增修改后的为新数据
 				 companyDirtyAllow.setId("");
 				 companyDirtyAllowService.save(companyDirtyAllow);
@@ -193,15 +197,18 @@ public class CompanyDirtyAllowController extends JeecgController<CompanyDirtyAll
 		CompanyDirtyAllow oldcompanyDirtyAllow = companyDirtyAllowService.getById(companyDirtyAllow.getId());
 		//查询数据状态
 		if (Constant.status.NORMAL.equals(companyDirtyAllow.getStatus())) {
+			CompanyApply companyApply = companyApplyService.findByNewId(oldcompanyDirtyAllow.getId(), Constant.tables.DIRTYALLOW);
 			companyDirtyAllow.setStatus(Constant.status.TEMPORARY);
 			//正常
-			companyDirtyAllow.setStatus(Constant.status.EXPIRED);
+			oldcompanyDirtyAllow.setStatus(Constant.status.EXPIRED);
+			oldcompanyDirtyAllow.setUpdateBy("");
+			oldcompanyDirtyAllow.setUpdateTime(null);
 			companyDirtyAllowService.updateById(oldcompanyDirtyAllow);
 			//新增修改后的为新数据
 			companyDirtyAllow.setId("");
 			companyDirtyAllowService.save(companyDirtyAllow);
 			//新增申报记录
-			companyApplyService.saveByBase(companyDirtyAllow.getCompanyId(),companyDirtyAllow.getId(),companyDirtyAllow.getStatus(),oldcompanyDirtyAllow.getId(), Constant.tables.ACCEPTANCE);
+			companyApplyService.saveByBase(companyDirtyAllow.getCompanyId(),companyDirtyAllow.getId(),companyDirtyAllow.getStatus(),oldcompanyDirtyAllow.getId(), Constant.tables.DIRTYALLOW);
 		} else if (Constant.status.NOPASS.equals(oldcompanyDirtyAllow.getStatus()) || Constant.status.TEMPORARY.equals(oldcompanyDirtyAllow.getStatus())) {
 			companyDirtyAllow.setStatus(Constant.status.TEMPORARY);
 			//状态为未通过和暂存的

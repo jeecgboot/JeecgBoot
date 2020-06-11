@@ -202,7 +202,7 @@ public class CompanyApplyController extends JeecgController<CompanyApply, ICompa
     @RequestMapping(value = "/queryComparisonData")
     @AutoLog(value = "查询申报前后对比信息")
     @ApiOperation(value = "通过企业申报基础表的前后id", notes = "查询申报前后对比信息")
-    public Result<?> queryComparisonData(@RequestParam(name = "beforeId", required = true) String beforeId
+    public Result<?> queryComparisonData(@RequestParam(name = "beforeId", required = false) String beforeId
             , @RequestParam(name = "afterId", required = true) String afterId,
             @RequestParam(name = "fromTable", required = true) String fromTable) {
 

@@ -30,7 +30,7 @@ public class CompanyApplyServiceImpl extends ServiceImpl<CompanyApplyMapper, Com
         companyApply.setFromTable(fromTable);
         companyApply.setNewId(id);
         companyApply.setStatus(status);
-        companyApply.setId(oldId);
+        companyApply.setOldId(oldId);
         return this.save(companyApply);
     }
 
