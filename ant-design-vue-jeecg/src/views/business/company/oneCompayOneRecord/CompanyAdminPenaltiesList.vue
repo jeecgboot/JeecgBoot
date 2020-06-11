@@ -241,9 +241,7 @@
         this.$refs.modalForm.title="行政处罚信息";
       },
       toSearchReset() {
-        let that = this;
-        this.queryParam = {};
-        that.queryParam.companyId = this.companyId;
+        this.queryParam = {companyId:this.companyId};
         this.loadData(1);
       },
     },

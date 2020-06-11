@@ -126,6 +126,8 @@ public class CompanyDynamicSupervisionController extends JeecgController<Company
 	 @PutMapping(value = "/declare")
 	 public Result<?> declare(@RequestBody CompanyDynamicSupervision companyDynamicSupervision) {
 	 	companyDynamicSupervision.setStatus(Constant.status.PEND);
+//	 	companyDynamicSupervision.setUpdateBy("");
+//	 	companyDynamicSupervision.setUpdateTime(null);
 		 //判断是新增还是编辑
 	 	if(!StrUtil.isEmpty(companyDynamicSupervision.getId())){
 			//编辑
@@ -145,7 +147,7 @@ public class CompanyDynamicSupervisionController extends JeecgController<Company
 		}else{
 	 		companyDynamicSupervisionService.save(companyDynamicSupervision);
 		}
-		 return Result.ok("添加成功！");
+		 return Result.ok("申报成功！");
 	 }
 
 	/**

@@ -5,7 +5,7 @@
     :visible="visible"
     :confirmLoading="confirmLoading"
     switchFullscreen
-    @ok="handleOk"
+
     @cancel="handleCancel"
     cancelText="关闭">
     <a-spin :spinning="confirmLoading">
@@ -13,7 +13,7 @@
         <a-row>
           <a-col span="12">
             <a-form-item label="企业名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select show-search style="width: 100%" @change="handleChange" :value="value" :disabled="monitor !== true">
+              <a-select show-search style="width: 100%" placeholder="请输入企业名称" @change="handleChange" :value="value" :disabled="monitor !== true">
                 <a-select-option v-for="item in items" :key="item.value"  >
                   {{item.value}}
                 </a-select-option>
@@ -72,6 +72,10 @@
 
       </a-form>
     </a-spin>
+    <template slot="footer">
+      <a-button type="primary" @click="handleOk">暂存</a-button>
+      <a-button type="primary" @click="handDeclare">申报</a-button>
+    </template>
   </j-modal>
 </template>
 
@@ -83,7 +87,6 @@
   import JDate from '@/components/jeecg/JDate'  
   import JUpload from '@/components/jeecg/JUpload'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
-  import CompanyBaseinfoList from "../CompanyBaseinfoList";
   import {queryCompanyName} from "../../../requestAction/request";
 
   export default {
@@ -92,7 +95,6 @@
       JDate,
       JUpload,
       JDictSelectTag,
-      CompanyBaseinfoList,
     },
     props: {
       companyId:'',
@@ -161,6 +163,7 @@
         url: {
           add: "/cap/companyAdminPenalties/add",
           edit: "/cap/companyAdminPenalties/edit",
+          declare:"/cap/companyAdminPenalties/declare"
         }
       }
     },
@@ -175,6 +178,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         let that = this;
+        //查询企业名称
         queryCompanyName({companyIds:this.$store.getters.userInfo.companyIds.join(',')}).then((res) => {
           if(res.success){
             that.items = res.result;
@@ -195,6 +199,11 @@
       },
       handleOk () {
         const that = this;
+        //获取选中企业名称对应的key值
+        const company_id = this.items.find(e=>{
+          return e.value === that.value
+        }).key;
+        console.log(company_id);
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
@@ -209,7 +218,7 @@
                method = 'put';
             }
             let formData = Object.assign(this.model, values);
-            formData.companyId = this.companyId;
+            formData.companyId = company_id;
             console.log("表单提交数据",formData)
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
@@ -237,6 +246,31 @@
         this.value = value;
 
       },
+      handDeclare(){
+        const that = this;
+        // 触发表单验证
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            that.confirmLoading = true;
+            let httpUrl = this.url.declare;
+            let method = 'put';
+            let formData = Object.assign(this.model, values);
+            formData.companyId=this.companyId;
+            httpAction(httpUrl,formData,method).then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                that.$emit('ok');
+              }else{
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
+          }
+
+        })
+      }
       
     }
   }

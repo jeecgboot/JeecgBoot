@@ -98,8 +98,8 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="tohandleEdit(record)" v-if="role === 'monitor'">编辑</a>
-          <a @click="tohandleEdit(record)" v-else>查看</a>
+          <a @click="toHandleEdit(record)" v-if="role === 'monitor'">编辑</a>
+          <a @click="toHandleEdit(record)" v-else>查看</a>
           <a-divider type="vertical" v-if="role === 'monitor'"/>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a v-if="role === 'monitor'">删除</a>
@@ -238,7 +238,7 @@
     methods: {
       initDictConfig(){
       },
-      tohandleEdit:function(record){
+      toHandleEdit:function(record){
         this.$refs.modalForm.value = record.companyId;
         this.handleEdit(record);
         this.$refs.modalForm.title="年度动态监管";
