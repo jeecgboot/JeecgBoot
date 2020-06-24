@@ -139,7 +139,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
     .ant-avatar-lg {
         width: 48px;
         height: 48px;

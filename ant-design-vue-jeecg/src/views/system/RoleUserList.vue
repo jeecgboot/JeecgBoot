@@ -5,13 +5,22 @@
         <!-- 查询区域 -->
         <div class="table-page-search-wrapper">
           <!-- 搜索区域 -->
-          <a-form layout="inline">
+          <a-form layout="inline" @keyup.enter.native="searchQuery">
             <a-row :gutter="24">
-              <a-col :md="12" :sm="12">
+              <a-col :md="12" :sm="8">
                 <a-form-item label="角色名称" :labelCol="{span: 5}" :wrapperCol="{span: 18, offset: 1}">
                   <a-input placeholder="" v-model="queryParam.roleName"></a-input>
                 </a-form-item>
               </a-col>
+              <!--
+              <a-col :md="11" :sm="12">
+                <a-form-item label="创建时间" :labelCol="{span: 5}" :wrapperCol="{span: 18, offset: 1}">
+                  <j-date v-model="queryParam.createTime_begin" :showTime="true" date-format="YYYY-MM-DD HH:mm:ss" style="width:45%" placeholder="请选择开始时间" ></j-date>
+                  <span style="width: 10px;">~</span>
+                  <j-date v-model="queryParam.createTime_end" :showTime="true" date-format="YYYY-MM-DD HH:mm:ss" style="width:45%" placeholder="请选择结束时间"></j-date>
+                </a-form-item>
+              </a-col>
+              -->
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
             <a-col :md="12" :sm="24">
                <a-button type="primary" @click="searchQuery" icon="search" style="margin-left: 21px">查询</a-button>
@@ -22,13 +31,13 @@
           </a-form>
         </div>
         <!-- 操作按钮区域 -->
-        <div class="table-operator" style="margin: -8px 0 10px 2px">
-          <a-button @click="handleAdd" type="primary" icon="plus">角色录入</a-button>
-          <a-button @click="handleEdit(model1)" type="primary" icon="plus">角色编辑</a-button>
+        <div class="table-operator" style="margin: 5px 0 10px 2px">
+          <a-button @click="handleAdd" type="primary" icon="plus">新建角色</a-button>
+          <!--<a-button @click="handleEdit(model1)" type="primary" icon="plus">角色编辑</a-button>-->
           <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
             <a-button type="primary" icon="import">导入</a-button>
           </a-upload>
-          <a-button type="primary" icon="download" @click="handleExportXls">导出</a-button>
+          <a-button type="primary" icon="download" @click="handleExportXls('角色管理')">导出</a-button>
         </div>
 
         <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
@@ -51,27 +60,41 @@
             :rowSelection="{selectedRowKeys: selectedRowKeys1, onChange: onSelectChange1, type:'radio'}"
             @change="handleTableChange">
           <span slot="action" slot-scope="text, record">
-          <a @click="handleOpen(record)">用户</a>
-          <a-divider type="vertical"/>
-          <a-dropdown>
-            <a class="ant-dropdown-link">
-              更多 <a-icon type="down"/>
-            </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete1(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+            <a @click="handleOpen(record)">用户</a>
+            <a-divider type="vertical"/>
+
+
+            <a-dropdown>
+              <a class="ant-dropdown-link">
+                更多 <a-icon type="down"/>
+              </a>
+              <a-menu slot="overlay">
+                <a-menu-item>
+                  <a @click="handlePerssion(record.id)">授权</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a @click="handleEdit(record)">编辑</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete1(record.id)">
+                    <a>删除</a>
+                  </a-popconfirm>
+                </a-menu-item>
+              </a-menu>
+            </a-dropdown>
         </span>
           </a-table>
         </div>
+        <!-- 右侧的角色权限配置 -->
+        <user-role-modal ref="modalUserRole"></user-role-modal>
+        <role-modal ref="modalForm" @ok="modalFormOk"></role-modal>
       </a-card>
     </a-col>
-    <a-col :md="rightColMd" :sm="24">
+    <a-col :md="rightColMd" :sm="24" v-if="this.rightcolval == 1">
       <a-card :bordered="false">
+        <div style="text-align: right;">
+          <a-icon type="close-circle" @click="hideUserList" />
+        </div>
         <!-- 查询区域 -->
         <div class="table-page-search-wrapper">
           <a-form layout="inline">
@@ -93,10 +116,10 @@
           </a-form>
         </div>
         <!-- 操作按钮区域 -->
-        <div class="table-operator" :md="24" :sm="24" style="margin: -25px 0px 10px 2px">
-          <a-button @click="handleAdd2" type="primary" icon="plus" style="margin-top: 16px">用户录入</a-button>
+        <div class="table-operator" :md="24" :sm="24">
+          <a-button @click="handleAdd2" type="primary" icon="plus" style="margin-top: 16px">新增用户</a-button>
           <!--<a-button @click="handleEdit2" type="primary" icon="edit" style="margin-top: 16px">用户编辑</a-button>-->
-          <a-button @click="handleAddUserRole" type="primary" icon="plus" style="margin-top: 16px">添加已有用户</a-button>
+          <a-button @click="handleAddUserRole" type="primary" icon="plus" style="margin-top: 16px">已有用户</a-button>
 
           <a-dropdown v-if="selectedRowKeys2.length > 0">
             <a-menu slot="overlay">
@@ -162,14 +185,18 @@
   import RoleModal from './modules/RoleModal'
   import UserModal from './modules/UserModal'
   import { filterObj } from '@/utils/util'
+  import UserRoleModal from './modules/UserRoleModal'
+  import moment from 'moment'
 
   export default {
     name: 'RoleUserList',
     mixins: [JeecgListMixin],
     components: {
+      UserRoleModal,
       SelectUserModal,
       RoleModal,
-      UserModal
+      UserModal,
+      moment
     },
     data() {
       return {
@@ -218,6 +245,8 @@
         selectedRowKeys2: [],
         selectionRows1: [],
         selectionRows2: [],
+        test:{},
+        rightcolval:0,
         columns:
           [
             {
@@ -229,6 +258,15 @@
               title: '角色名称',
               align: 'center',
               dataIndex: 'roleName'
+            },
+            {
+              title: '创建时间',
+              dataIndex: 'createTime',
+              align:"center",
+              sorter: true,
+              customRender: (text) => {
+                return moment(text).format('YYYY-MM-DD')
+              }
             },
             {
               title: '操作',
@@ -264,7 +302,10 @@
             width: 120
           }],
 
-
+        // 高级查询参数
+        superQueryParams2: '',
+        // 高级查询拼接条件
+        superQueryMatchType2: 'and',
         url: {
           list: '/sys/role/list',
           delete: '/sys/role/delete',
@@ -302,6 +343,7 @@
         this.selectionRows1 = []
       },
       onSelectChange1(selectedRowKeys, selectionRows) {
+        this.rightcolval = 1
         this.selectedRowKeys1 = selectedRowKeys
         this.selectionRows1 = selectionRows
         this.model1 = Object.assign({}, selectionRows[0])
@@ -317,6 +359,7 @@
         let sqp = {}
         if (this.superQueryParams2) {
           sqp['superQueryParams'] = encodeURI(this.superQueryParams2)
+          sqp['superQueryMatchType'] = this.superQueryMatchType2
         }
         var param = Object.assign(sqp, this.queryParam2, this.isorter2, this.filters2)
         param.field = this.getQueryField2()
@@ -455,21 +498,21 @@
         }
       },
       handleOpen(record) {
+        this.rightcolval = 1
         this.selectedRowKeys1 = [record.id]
         this.model1 = Object.assign({}, record)
         this.currentRoleId = record.id
         this.onClearSelected2()
         this.loadData2()
       },
-
-      handleEdit: function(record) {
+      /*handleEdit: function(record) {
         if (this.currentRoleId == '') {
           this.$message.error('请选择一个角色!')
         } else {
           this.$refs.modalForm.edit(record)
           this.$refs.modalForm.title = '编辑'
         }
-      },
+      },*/
       searchQuery2() {
         this.loadData2(1)
       },
@@ -486,7 +529,14 @@
         }
         this.ipagination2 = pagination
         this.loadData2()
-      }
+      },
+      hideUserList(){
+        //this.rightcolval = 0
+        this.selectedRowKeys1 = []
+      },
+      handlePerssion(roleId){
+        this.$refs.modalUserRole.show(roleId);
+      },
     }
   }
 </script>

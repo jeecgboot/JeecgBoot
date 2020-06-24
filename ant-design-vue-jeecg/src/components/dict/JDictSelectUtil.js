@@ -4,7 +4,7 @@
  * date: 20190109
  */
 
-import {ajaxGetDictItems} from '@/api/api'
+import {ajaxGetDictItems,getDictItemsFromCache} from '@/api/api'
 import {getAction} from '@/api/manage'
 
 /**
@@ -15,6 +15,13 @@ import {getAction} from '@/api/manage'
 export async function initDictOptions(dictCode) {
   if (!dictCode) {
     return '字典Code不能为空!';
+  }
+  //优先从缓存中读取字典配置
+  if(getDictItemsFromCache(dictCode)){
+    let res = {}
+    res.result = getDictItemsFromCache(dictCode);
+    res.success = true;
+    return res;
   }
   //获取字典数组
   let res = await ajaxGetDictItems(dictCode);
@@ -28,13 +35,25 @@ export async function initDictOptions(dictCode) {
  * @return String
  */
 export function filterDictText(dictOptions, text) {
-  let re = "";
-  dictOptions.forEach(function (option) {
-    if (text === option.value) {
-      re = option.text;
+  // --update-begin----author:sunjianlei---date:20200323------for: 字典翻译 text 允许逗号分隔 ---
+  if (text != null && dictOptions instanceof Array) {
+    let result = []
+    // 允许多个逗号分隔
+    let splitText = text.toString().trim().split(',')
+    for (let txt of splitText) {
+      let dictText = txt
+      for (let dictItem of dictOptions) {
+        if (txt === dictItem.value.toString()) {
+          dictText = dictItem.text
+          break
+        }
+      }
+      result.push(dictText)
     }
-  });
-  return re;
+    return result.join(',')
+  }
+  return text
+  // --update-end----author:sunjianlei---date:20200323------for: 字典翻译 text 允许逗号分隔 ---
 }
 
 /**
@@ -44,21 +63,35 @@ export function filterDictText(dictOptions, text) {
  * @return String
  */
 export function filterMultiDictText(dictOptions, text) {
-  if(!text){
+  //js “!text” 认为0为空，所以做提前处理
+  if(text === 0 || text === '0'){
+    if(dictOptions){
+      for (let dictItem of dictOptions) {
+        if (text == dictItem.value) {
+          return dictItem.text
+        }
+      }
+    }
+  }
+
+  if(!text || text=='null' || !dictOptions || dictOptions.length==0){
     return ""
   }
   let re = "";
+  text = text.toString()
   let arr = text.split(",")
   dictOptions.forEach(function (option) {
-    for(let i=0;i<arr.length;i++){
-      if (arr[i] === option.value) {
-        re += option.text+",";
-        break;
+    if(option){
+      for(let i=0;i<arr.length;i++){
+        if (arr[i] === option.value) {
+          re += option.text+",";
+          break;
+        }
       }
     }
   });
   if(re==""){
-    return "";
+    return text;
   }
   return re.substring(0,re.length-1);
 }
@@ -68,20 +101,42 @@ export function filterMultiDictText(dictOptions, text) {
  * @param children
  * @returns string
  */
-export async function ajaxFilterDictText(dictCode, key) {
+export function filterDictTextByCache(dictCode, key) {
+  if(key==null ||key.length==0){
+    return;
+  }
   if (!dictCode) {
     return '字典Code不能为空!';
   }
-  //console.log(`key : ${key}`);
-  if (!key) {
-    return '';
+   //优先从缓存中读取字典配置
+  if(getDictItemsFromCache(dictCode)){
+    let item = getDictItemsFromCache(dictCode).filter(t => t["value"] == key)
+    if(item && item.length>0){
+      return item[0]["text"]
+    }
   }
-  //通过请求读取字典文本
-  let res = await getAction(`/sys/dict/getDictText/${dictCode}/${key}`);
-  if (res.success) {
-    // console.log('restult: '+ res.result);
-    return res.result;
-  } else {
-    return '';
-  }
+}
+
+/** 通过code获取字典数组 */
+export async function getDictItems(dictCode, params) {
+    //优先从缓存中读取字典配置
+    if(getDictItemsFromCache(dictCode)){
+      let desformDictItems = getDictItemsFromCache(dictCode).map(item => ({...item, label: item.text}))
+      return desformDictItems;
+    }
+
+    //缓存中没有，就请求后台
+    return await ajaxGetDictItems(dictCode, params).then(({success, result}) => {
+      if (success) {
+        let res = result.map(item => ({...item, label: item.text}))
+        console.log('------- 从DB中获取到了字典-------dictCode : ', dictCode, res)
+        return Promise.resolve(res)
+      } else {
+        console.error('getDictItems error: : ', res)
+        return Promise.resolve([])
+      }
+    }).catch((res) => {
+      console.error('getDictItems error: ', res)
+      return Promise.resolve([])
+    })
 }

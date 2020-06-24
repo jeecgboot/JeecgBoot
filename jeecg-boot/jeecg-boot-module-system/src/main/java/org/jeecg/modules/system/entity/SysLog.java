@@ -30,7 +30,7 @@ public class SysLog implements Serializable {
 	/**
 	 * id
 	 */
-	@TableId(type = IdType.UUID)
+	@TableId(type = IdType.ID_WORKER_STR)
 	private String id;
 
 	/**
@@ -104,8 +104,9 @@ public class SysLog implements Serializable {
 	private Integer logType;
 
 	/**
-	 * 操作类型（）
+	 * 操作类型（1查询，2添加，3修改，4删除,5导入，6导出）
 	 */
+	@Dict(dicCode = "operate_type")
 	private Integer operateType;
 
 }

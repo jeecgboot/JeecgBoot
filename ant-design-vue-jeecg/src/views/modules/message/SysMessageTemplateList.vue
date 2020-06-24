@@ -3,7 +3,7 @@
 
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
 
           <a-col :md="6" :sm="8">
@@ -178,6 +178,9 @@
               }
               if(text=='3') {
                 return "微信";
+              }
+              if(text=='4') {
+                return "系统";
               }
             }
           },

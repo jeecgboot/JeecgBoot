@@ -26,7 +26,7 @@
 
     <a-tabs defaultActiveKey="1">
       <a-tab-pane tab="response" key="1">
-        <textarea style="width:100%;font-size: 16px;font-weight:500" :rows="10" v-html="resultJson" readonly>
+        <textarea style="width:100%;font-size: 16px;font-weight:500" :rows="10" v-html="resultJson" readOnly>
         </textarea>
       </a-tab-pane>
     </a-tabs>

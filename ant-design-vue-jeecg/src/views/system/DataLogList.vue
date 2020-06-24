@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
             <a-form-item label="表名">
@@ -79,26 +79,30 @@
           {
             title: '表名',
             align: 'center',
-            dataIndex: 'dataTable'
+            dataIndex: 'dataTable',
+            width: "120"
           }, {
             title: '数据ID',
             align: 'center',
-            dataIndex: 'dataId'
+            dataIndex: 'dataId',
+            width: "120"
           }, {
             title: '版本号',
             align: 'center',
-            dataIndex: 'dataVersion'
+            dataIndex: 'dataVersion',
+            width: "50"
           }, {
             title: '数据内容',
             align: 'center',
             dataIndex: 'dataContent',
-            width: "120px",
+            width: "150",
             scopedSlots: {customRender: 'dataContent'},
           }, {
             title: '创建人',
             align: 'center',
-            dataIndex: 'createBy'
-          }
+            dataIndex: 'createBy',
+            width: "100"
+          },
         ],
         url: {
           list: "/sys/dataLog/list",

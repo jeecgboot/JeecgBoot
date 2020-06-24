@@ -34,7 +34,7 @@ public class SysDictTree implements Serializable {
     /**
      * id
      */
-    @TableId(type = IdType.UUID)
+    @TableId(type = IdType.ID_WORKER_STR)
     private String id;
     /**
      * 字典类型,0 string,1 number类型,2 boolean

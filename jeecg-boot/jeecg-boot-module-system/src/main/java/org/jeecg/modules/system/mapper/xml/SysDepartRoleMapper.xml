@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysDepartRoleMapper">
+
+    <!--根据用户id，部门id查询可授权所有部门角色 -->
+    <select id="queryDeptRoleByDeptAndUser" resultType="org.jeecg.modules.system.entity.SysDepartRole">
+        SELECT * FROM sys_depart_role WHERE depart_id IN (
+            SELECT id FROM sys_depart WHERE id IN (SELECT dep_id FROM sys_user_depart WHERE user_id=#{userId})
+            AND org_code LIKE CONCAT(#{orgCode},'%')
+        )
+    </select>
+</mapper>

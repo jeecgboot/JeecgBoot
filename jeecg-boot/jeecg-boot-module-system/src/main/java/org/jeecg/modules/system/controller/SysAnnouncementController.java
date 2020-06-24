@@ -1,29 +1,32 @@
 package org.jeecg.modules.system.controller;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.CommonSendStatus;
+import org.jeecg.common.constant.WebsocketConst;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.message.websocket.WebSocket;
 import org.jeecg.modules.system.entity.SysAnnouncement;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.system.service.ISysAnnouncementSendService;
 import org.jeecg.modules.system.service.ISysAnnouncementService;
+
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -39,7 +42,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -62,6 +65,8 @@ public class SysAnnouncementController {
 	private ISysAnnouncementService sysAnnouncementService;
 	@Autowired
 	private ISysAnnouncementSendService sysAnnouncementSendService;
+	@Resource
+    private WebSocket webSocket;
 
 	/**
 	  * 分页列表查询
@@ -99,7 +104,7 @@ public class SysAnnouncementController {
 		result.setResult(pageList);
 		return result;
 	}
-	
+
 	/**
 	  *   添加
 	 * @param sysAnnouncement
@@ -119,7 +124,7 @@ public class SysAnnouncementController {
 		}
 		return result;
 	}
-	
+
 	/**
 	  *  编辑
 	 * @param sysAnnouncement
@@ -138,10 +143,10 @@ public class SysAnnouncementController {
 				result.success("修改成功!");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	  *   通过id删除
 	 * @param id
@@ -160,10 +165,10 @@ public class SysAnnouncementController {
 				result.success("删除成功!");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	  *  批量删除
 	 * @param ids
@@ -185,7 +190,7 @@ public class SysAnnouncementController {
 		}
 		return result;
 	}
-	
+
 	/**
 	  * 通过id查询
 	 * @param id
@@ -203,7 +208,7 @@ public class SysAnnouncementController {
 		}
 		return result;
 	}
-	
+
 	/**
 	 *	 更新发布操作
 	 * @param id
@@ -223,12 +228,30 @@ public class SysAnnouncementController {
 			boolean ok = sysAnnouncementService.updateById(sysAnnouncement);
 			if(ok) {
 				result.success("该系统通知发布成功");
+				if(sysAnnouncement.getMsgType().equals(CommonConstant.MSG_TYPE_ALL)) {
+					JSONObject obj = new JSONObject();
+			    	obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_TOPIC);
+					obj.put(WebsocketConst.MSG_ID, sysAnnouncement.getId());
+					obj.put(WebsocketConst.MSG_TXT, sysAnnouncement.getTitile());
+			    	webSocket.sendAllMessage(obj.toJSONString());
+				}else {
+					// 2.插入用户通告阅读标记表记录
+					String userId = sysAnnouncement.getUserIds();
+					String[] userIds = userId.substring(0, (userId.length()-1)).split(",");
+					String anntId = sysAnnouncement.getId();
+					Date refDate = new Date();
+					JSONObject obj = new JSONObject();
+			    	obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
+					obj.put(WebsocketConst.MSG_ID, sysAnnouncement.getId());
+					obj.put(WebsocketConst.MSG_TXT, sysAnnouncement.getTitile());
+			    	webSocket.sendMoreMessage(userIds, obj.toJSONString());
+				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 *	 更新撤销操作
 	 * @param id
@@ -248,13 +271,12 @@ public class SysAnnouncementController {
 				result.success("该系统通知撤销成功");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * @功能：补充用户数据，并返回系统消息
-	 * @param id
 	 * @return
 	 */
 	@RequestMapping(value = "/listByUser", method = RequestMethod.GET)
@@ -268,6 +290,7 @@ public class SysAnnouncementController {
 		querySaWrapper.eq(SysAnnouncement::getMsgType,CommonConstant.MSG_TYPE_ALL); // 全部人员
 		querySaWrapper.eq(SysAnnouncement::getDelFlag,CommonConstant.DEL_FLAG_0.toString());  // 未删除
 		querySaWrapper.eq(SysAnnouncement::getSendStatus, CommonConstant.HAS_SEND); //已发布
+		querySaWrapper.ge(SysAnnouncement::getEndTime, sysUser.getCreateTime()); //新注册用户不看结束通知
 		if(anntIds!=null&&anntIds.size()>0) {
 			querySaWrapper.notIn(SysAnnouncement::getId, anntIds);
 		}
@@ -301,7 +324,6 @@ public class SysAnnouncementController {
      * 导出excel
      *
      * @param request
-     * @param response
      */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(SysAnnouncement sysAnnouncement,HttpServletRequest request) {
@@ -358,4 +380,42 @@ public class SysAnnouncementController {
         }
         return Result.error("文件导入失败！");
     }
+	/**
+	 *同步消息
+	 * @param anntId
+	 * @return
+	 */
+	@RequestMapping(value = "/syncNotic", method = RequestMethod.GET)
+	public Result<SysAnnouncement> syncNotic(@RequestParam(name="anntId",required=false) String anntId, HttpServletRequest request) {
+		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
+		JSONObject obj = new JSONObject();
+		if(StringUtils.isNotBlank(anntId)){
+			SysAnnouncement sysAnnouncement = sysAnnouncementService.getById(anntId);
+			if(sysAnnouncement==null) {
+				result.error500("未找到对应实体");
+			}else {
+				if(sysAnnouncement.getMsgType().equals(CommonConstant.MSG_TYPE_ALL)) {
+					obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_TOPIC);
+					obj.put(WebsocketConst.MSG_ID, sysAnnouncement.getId());
+					obj.put(WebsocketConst.MSG_TXT, sysAnnouncement.getTitile());
+					webSocket.sendAllMessage(obj.toJSONString());
+				}else {
+					// 2.插入用户通告阅读标记表记录
+					String userId = sysAnnouncement.getUserIds();
+					if(oConvertUtils.isNotEmpty(userId)){
+						String[] userIds = userId.substring(0, (userId.length()-1)).split(",");
+						obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
+						obj.put(WebsocketConst.MSG_ID, sysAnnouncement.getId());
+						obj.put(WebsocketConst.MSG_TXT, sysAnnouncement.getTitile());
+						webSocket.sendMoreMessage(userIds, obj.toJSONString());
+					}
+				}
+			}
+		}else{
+			obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_TOPIC);
+			obj.put(WebsocketConst.MSG_TXT, "批量设置已读");
+			webSocket.sendAllMessage(obj.toJSONString());
+		}
+		return result;
+	}
 }

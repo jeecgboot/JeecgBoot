@@ -149,8 +149,11 @@ export default {
       this.selectedRows = []
     },
     onClearSelected() {
+      // 【TESTA-262】页面清空后还能才做所选行，增加  this.$emit('clearAll')
       this.selectedRowKeys = []
+      this.selectedRows = []
       this.updateSelect([], [])
+      this.$emit('clearAll')
     },
     renderMsg(h) {
       const _vm = this

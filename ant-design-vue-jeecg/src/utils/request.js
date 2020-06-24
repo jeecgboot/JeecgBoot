@@ -5,10 +5,19 @@ import { VueAxios } from './axios'
 import {Modal, notification} from 'ant-design-vue'
 import { ACCESS_TOKEN } from "@/store/mutation-types"
 
+/**
+ * 【指定 axios的 baseURL】
+ * 如果手工指定 baseURL: '/jeecg-boot'
+ * 则映射后端域名，通过 vue.config.js
+ * @type {*|string}
+ */
+let apiBaseUrl = window._CONFIG['domianURL'] || "/jeecg-boot";
+console.log("apiBaseUrl= ",apiBaseUrl)
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: '/jeecg-boot', // api base_url
-  timeout: 6000 // 请求超时时间
+  //baseURL: '/jeecg-boot',
+  baseURL: apiBaseUrl, // api base_url
+  timeout: 9000 // 请求超时时间
 })
 
 const err = (error) => {
@@ -78,9 +87,11 @@ service.interceptors.request.use(config => {
     config.headers[ 'X-Access-Token' ] = token // 让每个请求携带自定义 token 请根据实际情况自行修改
   }
   if(config.method=='get'){
-    config.params = {
-      _t: Date.parse(new Date())/1000,
-      ...config.params
+    if(config.url.indexOf("sys/dict/getDictItems")<0){
+      config.params = {
+        _t: Date.parse(new Date())/1000,
+        ...config.params
+      }
     }
   }
   return config

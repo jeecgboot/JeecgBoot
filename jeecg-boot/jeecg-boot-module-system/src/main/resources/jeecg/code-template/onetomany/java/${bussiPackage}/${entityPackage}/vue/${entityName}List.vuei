@@ -3,18 +3,18 @@
 
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
 <#list columns as po><#rt/>
 <#if po.fieldName !='id' && po_index<= tableVo.searchFieldNum>
-          <a-col :span="6">
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <a-form-item label="${po.filedComment}">
               <a-input placeholder="请输入${po.filedComment}" v-model="queryParam.${po.fieldName}"></a-input>
             </a-form-item>
           </a-col>
 </#if>
 </#list>
-          <a-col :span="8" >
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>

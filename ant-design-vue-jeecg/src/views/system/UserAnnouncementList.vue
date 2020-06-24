@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
 
           <a-col :span="6">
@@ -46,6 +46,7 @@
       </span>
     </a-table>
     <show-announcement ref="ShowAnnouncement"></show-announcement>
+    <dynamic-notice ref="showDynamNotice" :path="openPath" :formData="formData"/>
   </a-card>
 </template>
 
@@ -54,11 +55,13 @@
   import { getAction,putAction } from '@/api/manage'
   import ShowAnnouncement from '@/components/tools/ShowAnnouncement'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import DynamicNotice from '../../components/tools/DynamicNotice'
 
   export default {
     name: "UserAnnouncementList",
     mixins: [JeecgListMixin],
     components: {
+      DynamicNotice,
       ShowAnnouncement
     },
     data () {
@@ -125,18 +128,16 @@
           scopedSlots: { customRender: 'action' },
         }],
 		    url: {
-          list: "/system/sysAnnouncementSend/getMyAnnouncementSend",
-          editCementSend:"system/sysAnnouncementSend/editByAnntIdAndUserId",
-          readAllMsg:"system/sysAnnouncementSend/readAll",
+          list: "/sys/sysAnnouncementSend/getMyAnnouncementSend",
+          editCementSend:"sys/sysAnnouncementSend/editByAnntIdAndUserId",
+          readAllMsg:"sys/sysAnnouncementSend/readAll",
         },
         loading:false,
+        openPath:'',
+        formData:''
       }
     },
-    created() {
-      this.loadData();
-    },
     methods: {
-
       handleDetail: function(record){
         this.$refs.sysAnnouncementModal.detail(record);
         this.$refs.sysAnnouncementModal.title="查看";
@@ -145,9 +146,19 @@
         putAction(this.url.editCementSend,{anntId:record.anntId}).then((res)=>{
           if(res.success){
             this.loadData();
+            this.syncHeadNotic(record.anntId)
           }
         });
-        this.$refs.ShowAnnouncement.detail(record);
+        if(record.openType==='component'){
+          this.openPath = record.openPage;
+          this.formData = {id:record.busId};
+          this.$refs.showDynamNotice.detail();
+        }else{
+          this.$refs.ShowAnnouncement.detail(record);
+        }
+      },
+      syncHeadNotic(anntId){
+        getAction("sys/annountCement/syncNotic",{anntId:anntId})
       },
       readAll(){
         var that = this;
@@ -159,6 +170,7 @@
               if(res.success){
                 that.$message.success(res.message);
                 that.loadData();
+                that.syncHeadNotic();
               }
             });
           }

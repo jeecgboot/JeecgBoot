@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.aspect;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.system.util.JeecgDataAutorUtils;
 import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
@@ -62,45 +64,64 @@ public class PermissionDataAspect {
 		Method method = signature.getMethod();
 		PermissionData pd = method.getAnnotation(PermissionData.class);
 		String component = pd.pageComponent();
-		SysPermission currentSyspermission=null;
+		List<SysPermission> currentSyspermission = null;
 		if(oConvertUtils.isNotEmpty(component)) {
 			//1.通过注解属性pageComponent 获取菜单
 			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
 			query.eq(SysPermission::getDelFlag,0);
 			query.eq(SysPermission::getComponent, component);
-			currentSyspermission = sysPermissionService.getOne(query);
+			currentSyspermission = sysPermissionService.list(query);
 		}else {
 			String requestMethod = request.getMethod();
 			String requestPath = request.getRequestURI().substring(request.getContextPath().length());
 			requestPath = filterUrl(requestPath);
-			log.info("拦截请求>>"+requestPath+";请求类型>>"+requestMethod);
+			log.info("拦截请求 >> "+requestPath+";请求类型 >> "+requestMethod);
 			//1.直接通过前端请求地址查询菜单
 			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
 			query.eq(SysPermission::getMenuType,2);
 			query.eq(SysPermission::getDelFlag,0);
 			query.eq(SysPermission::getUrl, requestPath);
-			currentSyspermission = sysPermissionService.getOne(query);
-			//2.未找到 再通过正则匹配获取菜单
-			if(currentSyspermission==null) {
+			currentSyspermission = sysPermissionService.list(query);
+			//2.未找到 再通过自定义匹配URL 获取菜单
+			if(currentSyspermission==null || currentSyspermission.size()==0) {
+				//通过自定义URL匹配规则 获取菜单（实现通过菜单配置数据权限规则，实际上针对获取数据接口进行数据规则控制）
+				String userMatchUrl = UrlMatchEnum.getMatchResultByUrl(requestPath);
+				LambdaQueryWrapper<SysPermission> queryQserMatch = new LambdaQueryWrapper<SysPermission>();
+				queryQserMatch.eq(SysPermission::getMenuType, 1);
+				queryQserMatch.eq(SysPermission::getDelFlag, 0);
+				queryQserMatch.eq(SysPermission::getUrl, userMatchUrl);
+				if(oConvertUtils.isNotEmpty(userMatchUrl)){
+					currentSyspermission = sysPermissionService.list(queryQserMatch);
+				}
+			}
+			//3.未找到 再通过正则匹配获取菜单
+			if(currentSyspermission==null || currentSyspermission.size()==0) {
+				//通过正则匹配权限配置
 				String regUrl = getRegexpUrl(requestPath);
 				if(regUrl!=null) {
-					currentSyspermission = sysPermissionService.getOne(new LambdaQueryWrapper<SysPermission>().eq(SysPermission::getMenuType,2).eq(SysPermission::getUrl, regUrl).eq(SysPermission::getDelFlag,0));
+					currentSyspermission = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().eq(SysPermission::getMenuType,2).eq(SysPermission::getUrl, regUrl).eq(SysPermission::getDelFlag,0));
 				}
 			}
 		}
 		//3.通过用户名+菜单ID 找到权限配置信息 放到request中去
-		if(currentSyspermission!=null) {
+		if(currentSyspermission!=null && currentSyspermission.size()>0) {
 			String username = JwtUtil.getUserNameByToken(request);
-			List<SysPermissionDataRule> dataRules = sysPermissionDataRuleService.queryPermissionDataRules(username, currentSyspermission.getId());
+			List<SysPermissionDataRuleModel> dataRules = new ArrayList<SysPermissionDataRuleModel>();
+			for (SysPermission sysPermission : currentSyspermission) {
+				// update-begin--Author:scott Date:20191119 for：数据权限规则编码不规范，项目存在相同包名和类名 #722
+				List<SysPermissionDataRule> temp = sysPermissionDataRuleService.queryPermissionDataRules(username, sysPermission.getId());
+				if(temp!=null && temp.size()>0) {
+					//dataRules.addAll(temp);
+					dataRules = oConvertUtils.entityListToModelList(temp,SysPermissionDataRuleModel.class);
+				}
+				// update-end--Author:scott Date:20191119 for：数据权限规则编码不规范，项目存在相同包名和类名 #722
+			}
 			if(dataRules!=null && dataRules.size()>0) {
 				JeecgDataAutorUtils.installDataSearchConditon(request, dataRules);
-				
-				//TODO 此处将用户信息查找出来放到request中实属无奈  可以优化
 				SysUserCacheInfo userinfo = sysUserService.getCacheUser(username);
 				JeecgDataAutorUtils.installUserInfo(request, userinfo);
 			}
 		}
-		
 		return  point.proceed();
 	}
 	

@@ -74,7 +74,9 @@
       </a-layout-footer>
     </a-layout>
 
-    <setting-drawer></setting-drawer>
+    <!-- update-start---- author:os_chengtgen -- date:20190830 --  for:issues/463 -编译主题颜色已生效，但还一直转圈，显示主题 正在编译 ---- -->
+    <!--<setting-drawer></setting-drawer>-->
+    <!-- update-end---- author:os_chengtgen -- date:20190830 --  for:issues/463 -编译主题颜色已生效，但还一直转圈，显示主题 正在编译 ---- -->
   </a-layout>
 </template>
 
@@ -82,7 +84,11 @@
   import SideMenu from '@/components/menu/SideMenu'
   import GlobalHeader from '@/components/page/GlobalHeader'
   import GlobalFooter from '@/components/page/GlobalFooter'
-  import SettingDrawer from '@/components/setting/SettingDrawer'
+  // update-start---- author:os_chengtgen -- date:20190830 --  for:issues/463 -编译主题颜色已生效，但还一直转圈，显示主题 正在编译 ------
+  // import SettingDrawer from '@/components/setting/SettingDrawer'
+  // 注释这个因为在个人设置模块已经加载了SettingDrawer页面
+  // update-end ---- author:os_chengtgen -- date:20190830 --  for:issues/463 -编译主题颜色已生效，但还一直转圈，显示主题 正在编译 ------
+
   import { triggerWindowResizeEvent } from '@/utils/util'
   import { mapState, mapActions } from 'vuex'
   import { mixin, mixinDevice } from '@/utils/mixin.js'
@@ -93,7 +99,11 @@
       SideMenu,
       GlobalHeader,
       GlobalFooter,
-      SettingDrawer
+      // update-start---- author:os_chengtgen -- date:20190830 --  for:issues/463 -编译主题颜色已生效，但还一直转圈，显示主题 正在编译 ------
+      // // SettingDrawer
+      // 注释这个因为在个人设置模块已经加载了SettingDrawer页面
+      // update-end ---- author:os_chengtgen -- date:20190830 --  for:issues/463 -编译主题颜色已生效，但还一直转圈，显示主题 正在编译 ------
+
     },
     mixins: [mixin, mixinDevice],
     data() {
@@ -144,6 +154,10 @@
         //此处触发动态路由被点击事件
         this.findMenuBykey(this.menus,value.key)
         this.$emit("dynamicRouterShow",value.key,this.activeMenu.meta.title)
+        // update-begin-author:sunjianlei date:20191223 for: 修复刷新后菜单Tab名字显示异常
+        let storeKey = 'route:title:' + this.activeMenu.path
+        this.$ls.set(storeKey, this.activeMenu.meta.title)
+        // update-end-author:sunjianlei date:20191223 for: 修复刷新后菜单Tab名字显示异常
       },
       findMenuBykey(menus,key){
         for(let i of menus){
@@ -160,7 +174,7 @@
 
 </script>
 
-<style lang="scss">
+<style lang="less">
   body {
     // 打开滚动条固定显示
     overflow-y: scroll;
@@ -327,6 +341,10 @@
             font-size: 16px;
             padding: 4px;
           }
+
+          .anticon {
+            color: white;
+          }
         }
       }
 
@@ -338,6 +356,10 @@
 
             &:hover {
               background: rgba(0, 0, 0, 0.05);
+            }
+
+            .anticon {
+              color: black;
             }
           }
         }

@@ -1,35 +1,42 @@
 <template>
   <div :style="{ padding: '0 0 32px 32px' }">
     <h4 :style="{ marginBottom: '20px' }">{{ title }}</h4>
-    <v-chart :forceFit="true" :height="height" :data="data">
-      <v-tooltip />
-      <v-axis />
-      <v-legend />
-      <v-bar position="x*y" color="type" :adjust="adjust" />
+    <v-chart :data="data" :height="height" :force-fit="true" :onClick="handleClick">
+      <v-tooltip/>
+      <v-axis/>
+      <v-legend/>
+      <v-bar position="x*y" color="type" :adjust="adjust"/>
     </v-chart>
   </div>
 </template>
 
 <script>
   import { DataSet } from '@antv/data-set'
+  import { ChartEventMixins } from './mixins/ChartMixins'
 
   export default {
     name: 'BarMultid',
+    mixins: [ChartEventMixins],
     props: {
       title: {
         type: String,
         default: ''
       },
-      dataSource:{
+      dataSource: {
         type: Array,
         default: () => [
           { type: 'Jeecg', 'Jan.': 18.9, 'Feb.': 28.8, 'Mar.': 39.3, 'Apr.': 81.4, 'May': 47, 'Jun.': 20.3, 'Jul.': 24, 'Aug.': 35.6 },
           { type: 'Jeebt', 'Jan.': 12.4, 'Feb.': 23.2, 'Mar.': 34.5, 'Apr.': 99.7, 'May': 52.6, 'Jun.': 35.5, 'Jul.': 37.4, 'Aug.': 42.4 }
         ]
       },
-      fields:{
+      fields: {
         type: Array,
         default: () => ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.']
+      },
+      // 别名，需要的格式：[{field:'name',alias:'姓名'}, {field:'sex',alias:'性别'}]
+      aliases: {
+        type: Array,
+        default: () => []
       },
       height: {
         type: Number,
@@ -55,11 +62,22 @@
         })
 
         // bar 使用不了 - 和 / 所以替换下
-        return dv.rows.map(row => {
-          row.x = row.x.replace(/[-/]/g, '_')
+        let rows = dv.rows.map(row => {
+          if (typeof row.x === 'string') {
+            row.x = row.x.replace(/[-/]/g, '_')
+          }
           return row
         })
-
+        // 替换别名
+        rows.forEach(row => {
+          for (let item of this.aliases) {
+            if (item.field === row.type) {
+              row.type = item.alias
+              break
+            }
+          }
+        })
+        return rows
       }
     }
   }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.system.vo.DictModel;
 
 import com.alibaba.fastjson.JSONObject;
@@ -52,7 +53,17 @@ public abstract class CommonProperty implements Serializable{
 	protected Integer order;//字段显示排序
 	
 	protected boolean disabled;//是否禁用
-	
+
+    protected String defVal; // 字段默认值
+
+    public String getDefVal() {
+        return defVal;
+    }
+
+    public void setDefVal(String defVal) {
+        this.defVal = defVal;
+    }
+
 	public boolean isDisabled() {
 		return disabled;
 	}
@@ -150,6 +161,9 @@ public abstract class CommonProperty implements Serializable{
 			JSONObject ui = JSONObject.parseObject(str);
 			json.put("ui", ui);
 		}
+        if (StringUtils.isNotBlank(defVal)) {
+            json.put("defVal", defVal);
+        }
 		return json;
 	}
 	

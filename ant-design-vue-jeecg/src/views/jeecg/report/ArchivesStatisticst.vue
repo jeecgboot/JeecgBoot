@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <a-tabs defaultActiveKey="1" @change="callback">
       <a-tab-pane tab="柱状图" key="1">
-        <a-row :gutter="24">
+        <a-row>
           <a-col :span="10">
             <a-radio-group :value="barType" @change="statisticst">
               <a-radio-button value="year">按年统计</a-radio-button>

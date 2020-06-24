@@ -29,7 +29,7 @@ public class SysPermission implements Serializable {
 	/**
 	 * id
 	 */
-	@TableId(type = IdType.UUID)
+	@TableId(type = IdType.ID_WORKER_STR)
 	private String id;
 
 	/**
@@ -78,7 +78,7 @@ public class SysPermission implements Serializable {
 	/**
 	 * 菜单排序
 	 */
-	private Integer sortNo;
+	private Double sortNo;
 
 	/**
 	 * 类型（0：一级菜单；1：子菜单 ；2：按钮权限）
@@ -150,7 +150,12 @@ public class SysPermission implements Serializable {
 	
 	/**alwaysShow*/
     private boolean alwaysShow;
-    
+
+	/*update_begin author:wuxianquan date:20190908 for:实体增加字段 */
+    /** 外链菜单打开方式 0/内部打开 1/外部打开 */
+    private boolean internalOrExternal;
+	/*update_end author:wuxianquan date:20190908 for:实体增加字段 */
+
     public SysPermission() {
     	
     }
@@ -159,10 +164,11 @@ public class SysPermission implements Serializable {
     		this.id = "9502685863ab87f0ad1134142788a385";
         	this.name="首页";
         	this.component="dashboard/Analysis";
+        	this.componentName="dashboard-analysis";
         	this.url="/dashboard/analysis";
         	this.icon="home";
         	this.menuType=0;
-        	this.sortNo=0;
+        	this.sortNo=0.0;
         	this.ruleFlag=0;
         	this.delFlag=0;
         	this.alwaysShow=false;

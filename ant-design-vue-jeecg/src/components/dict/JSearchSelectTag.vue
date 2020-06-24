@@ -4,12 +4,15 @@
     v-if="async"
     showSearch
     labelInValue
+    :disabled="disabled"
+    :getPopupContainer="(node) => node.parentNode"
     @search="loadData"
     :placeholder="placeholder"
     v-model="selectedAsyncValue"
     style="width: 100%"
     :filterOption="false"
     @change="handleAsyncChange"
+    allowClear
     :notFoundContent="loading ? undefined : null"
   >
     <a-spin v-if="loading" slot="notFoundContent" size="small"/>
@@ -18,13 +21,16 @@
 
   <a-select
     v-else
+    :getPopupContainer="(node) => node.parentNode"
     showSearch
+    :disabled="disabled"
     :placeholder="placeholder"
     optionFilterProp="children"
     style="width: 100%"
     @change="handleChange"
     :filterOption="filterOption"
     v-model="selectedValue"
+    allowClear
     :notFoundContent="loading ? undefined : null">
     <a-spin v-if="loading" slot="notFoundContent" size="small"/>
     <a-select-option v-for="d in options" :key="d.value" :value="d.value">{{ d.text }}</a-select-option>
@@ -33,7 +39,7 @@
 </template>
 
 <script>
-  import { ajaxGetDictItems } from '@/api/api'
+  import { ajaxGetDictItems,getDictItemsFromCache } from '@/api/api'
   import debounce from 'lodash/debounce';
   import { getAction } from '../../api/manage'
 
@@ -41,7 +47,7 @@
     name: 'JSearchSelectTag',
     props:{
       disabled: Boolean,
-      value: String,
+      value: [String, Number],
       dict: String,
       dictOptions: Array,
       async: Boolean,
@@ -69,8 +75,12 @@
         immediate:true,
         handler(val){
           if(!val){
-            this.selectedValue=[]
-            this.selectedAsyncValue=[]
+            if(val==0){
+              this.initSelectValue()
+            }else{
+              this.selectedValue=[]
+              this.selectedAsyncValue=[]
+            }
           }else{
             this.initSelectValue()
           }
@@ -98,7 +108,7 @@
             })
           }
         }else{
-          this.selectedValue = this.value
+          this.selectedValue = this.value.toString()
         }
       },
       loadData(value){
@@ -130,11 +140,28 @@
             this.options = [...this.dictOptions]
           }else{
             //根据字典Code, 初始化字典数组
-            ajaxGetDictItems(this.dict, null).then((res) => {
-              if (res.success) {
-                this.options = res.result;
-              }
-            })
+            let dictStr = ''
+            if(this.dict){
+                let arr = this.dict.split(',')
+                if(arr[0].indexOf('where')>0){
+                  let tbInfo = arr[0].split('where')
+                  dictStr = tbInfo[0].trim()+','+arr[1]+','+arr[2]+','+encodeURIComponent(tbInfo[1])
+                }else{
+                  dictStr = this.dict
+                }
+                if (this.dict.indexOf(",") == -1) {
+                  //优先从缓存中读取字典配置
+                  if (getDictItemsFromCache(this.dictCode)) {
+                    this.options = getDictItemsFromCache(this.dictCode);
+                    return
+                  }
+                }
+                ajaxGetDictItems(dictStr, null).then((res) => {
+                  if (res.success) {
+                    this.options = res.result;
+                  }
+                })
+            }
           }
         }
       },

@@ -1,7 +1,7 @@
 Jeecg-Boot 快速开发平台
 ===============
 
-当前最新版本： 2.0.2（发布日期：20190708）
+当前最新版本： 2.2.0（发布日期：20200506）
 
 
 ## 后端技术架构
@@ -37,11 +37,11 @@ Jeecg-Boot 快速开发平台
 ## 技术文档
 
 
-- 在线演示 ：  [http://boot.jeecg.org](http://boot.jeecg.org)
+- 在线演示 ：  [http://boot.jeecg.com](http://boot.jeecg.com)
 
-- 在线教程：  [http://jeecg-boot.mydoc.io/?t=345660](http://jeecg-boot.mydoc.io/?t=345660)
+- 在线文档：  [http://doc.jeecg.com/1273753](http://doc.jeecg.com/1273753)
 
-- 常见问题：  [入门常见问题大全](http://www.jeecg.org/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
+- 常见问题：  [入门常见问题大全](http://bbs.jeecg.com/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
 
 - QQ交流群 ：  ①284271917、②769925425
 
@@ -100,7 +100,7 @@ QueryWrapper<?> queryWrapper = QueryGenerator.initQueryWrapper(?, req.getParamet
 > 功能说明：   一键生成的代码（包括：controller、service、dao、mapper、entity、vue）
  
  - 模板位置： src/main/resources/jeecg/code-template
- - 技术文档： http://jeecg-boot.mydoc.io/?t=345685
+ - 技术文档： http://doc.jeecg.com
 
 
 

@@ -14,6 +14,9 @@ export const USER_INFO = 'Login_Userinfo'
 export const USER_AUTH = 'LOGIN_USER_BUTTON_AUTH'
 export const SYS_BUTTON_AUTH = 'SYS_BUTTON_AUTH'
 export const ENCRYPTED_STRING = 'ENCRYPTED_STRING'
+export const ENHANCE_PRE = 'enhance_'
+export const UI_CACHE_DB_DICT_DATA = 'UI_CACHE_DB_DICT_DATA'
+export const INDEX_MAIN_PAGE_PATH =  "/dashboard/analysis"
 
 export const CONTENT_WIDTH_TYPE = {
   Fluid: 'Fluid',

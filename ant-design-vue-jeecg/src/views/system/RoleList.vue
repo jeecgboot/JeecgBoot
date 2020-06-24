@@ -4,7 +4,7 @@
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
       <!-- 搜索区域 -->
-      <a-form layout="inline">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
             <a-form-item label="名称" :labelCol="{span: 5}" :wrapperCol="{span: 18, offset: 1}">
@@ -67,8 +67,8 @@
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
-
           <a-divider type="vertical" />
+
           <a-dropdown>
             <a class="ant-dropdown-link">
               更多 <a-icon type="down" />

@@ -1,7 +1,9 @@
 package org.jeecg.modules.system.service.impl;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -11,7 +13,10 @@ import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.entity.SysPermissionDataRule;
+import org.jeecg.modules.system.mapper.SysDepartPermissionMapper;
+import org.jeecg.modules.system.mapper.SysDepartRolePermissionMapper;
 import org.jeecg.modules.system.mapper.SysPermissionMapper;
+import org.jeecg.modules.system.mapper.SysRolePermissionMapper;
 import org.jeecg.modules.system.model.TreeModel;
 import org.jeecg.modules.system.service.ISysPermissionDataRuleService;
 import org.jeecg.modules.system.service.ISysPermissionService;
@@ -40,7 +45,16 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 	
 	@Resource
 	private ISysPermissionDataRuleService permissionDataRuleService;
-	
+
+	@Resource
+	private SysRolePermissionMapper sysRolePermissionMapper;
+
+	@Resource
+	private SysDepartPermissionMapper sysDepartPermissionMapper;
+
+	@Resource
+	private SysDepartRolePermissionMapper sysDepartRolePermissionMapper;
+
 	@Override
 	public List<TreeModel> queryListByParentId(String parentId) {
 		return sysPermissionMapper.queryListByParentId(parentId);
@@ -51,7 +65,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 	 */
 	@Override
 	@Transactional
-	@CacheEvict(value = CacheConstant.PERMISSION_CACHE,allEntries=true)
+	@CacheEvict(value = CacheConstant.SYS_DATA_PERMISSIONS_CACHE,allEntries=true)
 	public void deletePermission(String id) throws JeecgBootException {
 		SysPermission sysPermission = this.getById(id);
 		if(sysPermission==null) {
@@ -68,6 +82,17 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 		sysPermissionMapper.deleteById(id);
 		// 该节点可能是子节点但也可能是其它节点的父节点,所以需要级联删除
 		this.removeChildrenBy(sysPermission.getId());
+		//关联删除
+		Map map = new HashMap<>();
+		map.put("permission_id",id);
+		//删除数据规则
+		this.deletePermRuleByPermId(id);
+		//删除角色授权表
+		sysRolePermissionMapper.deleteByMap(map);
+		//删除部门权限表
+		sysDepartPermissionMapper.deleteByMap(map);
+		//删除部门角色授权
+		sysDepartRolePermissionMapper.deleteByMap(map);
 	}
 	
 	/**
@@ -89,6 +114,16 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 			// 再遍历刚才查出的集合, 根据每个对象,查找其是否仍有子级
 			for (int i = 0, len = permissionList.size(); i < len; i++) {
 				id = permissionList.get(i).getId();
+				Map map = new HashMap<>();
+				map.put("permission_id",id);
+				//删除数据规则
+				this.deletePermRuleByPermId(id);
+				//删除角色授权表
+				sysRolePermissionMapper.deleteByMap(map);
+				//删除部门权限表
+				sysDepartPermissionMapper.deleteByMap(map);
+				//删除部门角色授权
+				sysDepartRolePermissionMapper.deleteByMap(map);
 				num = this.count(new LambdaQueryWrapper<SysPermission>().eq(SysPermission::getParentId, id));
 				// 如果有, 则递归
 				if (num > 0) {
@@ -102,8 +137,8 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 	  * 逻辑删除
 	 */
 	@Override
-	@CacheEvict(value = CacheConstant.PERMISSION_CACHE,allEntries=true)
-	//@CacheEvict(value = CacheConstant.PERMISSION_CACHE,allEntries=true,condition="#sysPermission.menuType==2")
+	@CacheEvict(value = CacheConstant.SYS_DATA_PERMISSIONS_CACHE,allEntries=true)
+	//@CacheEvict(value = CacheConstant.SYS_DATA_PERMISSIONS_CACHE,allEntries=true,condition="#sysPermission.menuType==2")
 	public void deletePermissionLogical(String id) throws JeecgBootException {
 		SysPermission sysPermission = this.getById(id);
 		if(sysPermission==null) {
@@ -120,7 +155,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 	}
 
 	@Override
-	@CacheEvict(value = CacheConstant.PERMISSION_CACHE,allEntries=true)
+	@CacheEvict(value = CacheConstant.SYS_DATA_PERMISSIONS_CACHE,allEntries=true)
 	public void addPermission(SysPermission sysPermission) throws JeecgBootException {
 		//----------------------------------------------------------------------
 		//判断是否是一级菜单，是的话清空父菜单
@@ -140,7 +175,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 	}
 
 	@Override
-	@CacheEvict(value = CacheConstant.PERMISSION_CACHE,allEntries=true)
+	@CacheEvict(value = CacheConstant.SYS_DATA_PERMISSIONS_CACHE,allEntries=true)
 	public void editPermission(SysPermission sysPermission) throws JeecgBootException {
 		SysPermission p = this.getById(sysPermission.getId());
 		//TODO 该节点判断是否还有子节点
@@ -201,9 +236,31 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 	  *   获取模糊匹配规则的数据权限URL
 	 */
 	@Override
-	@Cacheable(value = CacheConstant.PERMISSION_CACHE)
+	@Cacheable(value = CacheConstant.SYS_DATA_PERMISSIONS_CACHE)
 	public List<String> queryPermissionUrlWithStar() {
 		return this.baseMapper.queryPermissionUrlWithStar();
+	}
+
+	@Override
+	public boolean hasPermission(String username, SysPermission sysPermission) {
+		int count = baseMapper.queryCountByUsername(username,sysPermission);
+		if(count>0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	@Override
+	public boolean hasPermission(String username, String url) {
+		SysPermission sysPermission = new SysPermission();
+		sysPermission.setUrl(url);
+		int count = baseMapper.queryCountByUsername(username,sysPermission);
+		if(count>0){
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 }

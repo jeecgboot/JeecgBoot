@@ -21,17 +21,20 @@
 		<result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
 		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
 		<result column="user_ids" property="userIds" jdbcType="VARCHAR"/>
+		<result column="bus_type" property="busType" jdbcType="VARCHAR"/>
+		<result column="bus_id" property="busId" jdbcType="VARCHAR"/>
+		<result column="open_type" property="openType" jdbcType="VARCHAR"/>
+		<result column="open_page" property="openPage" jdbcType="VARCHAR"/>
 	</resultMap>
 	
 	
 	<select id="querySysCementListByUserId" parameterType="String"  resultMap="SysAnnouncement">
-	   select sa.* from sys_announcement sa,sys_announcement_send sas 
-	   where sa.id = sas.annt_id 
-	   and sa.send_status = '1'
-	   and sa.del_flag = '0'
-	   and sas.user_id = #{userId}
-	   and sa.msg_category = #{msgCategory}
-	   and sas.read_flag = '0'
+	   select * from sys_announcement 
+	   where send_status = '1' 
+	   and del_flag = '0' 
+	   and msg_category = #{msgCategory} 
+	   and id IN ( select annt_id from sys_announcement_send where user_id = #{userId} and read_flag = '0')
+	   order by create_time DESC
 	</select>
 
 </mapper>

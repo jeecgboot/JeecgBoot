@@ -1,6 +1,6 @@
 <template>
   <div :style="{ padding: '0 0 32px 32px' }">
-    <v-chart :forceFit="true" :height="350" :data="chartData" :scale="scale">
+    <v-chart :forceFit="true" :height="300" :data="chartData" :scale="scale">
       <v-coord type="polar" :startAngle="-202.5" :endAngle="22.5" :radius="0.75"></v-coord>
       <v-axis
         dataKey="value"

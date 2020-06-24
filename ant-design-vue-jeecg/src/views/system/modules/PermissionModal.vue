@@ -4,9 +4,8 @@
     :width="drawerWidth"
     @close="handleCancel"
     :visible="visible"
-    :confirmLoading="confirmLoading"
-    :wrapStyle="{height: 'calc(100% - 108px)',overflow: 'auto',paddingBottom: '108px'}"
-  >
+    :confirmLoading="confirmLoading">
+
     <div :style="{width: '100%',border: '1px solid #e9e9e9',padding: '10px 16px',background: '#fff',}">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
@@ -76,7 +75,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="授权标识">
-          <a-input placeholder="多个用逗号分隔, 如: user:list,user:create" v-decorator="[ 'perms', {}]" :readOnly="disableSubmit"/>
+          <a-input placeholder="多个用逗号分隔, 如: user:list,user:create" v-decorator="[ 'perms', {rules:[{ required: false, message: '请输入授权标识!' },{validator: this.validatePerms }]}]" :readOnly="disableSubmit"/>
         </a-form-item>
 
         <a-form-item
@@ -102,7 +101,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="菜单图标">
-          <a-input placeholder="点击右侧按钮选择图标" v-model="model.icon" :readOnly="disableSubmit">
+          <a-input placeholder="点击选择图标" v-model="model.icon" :readOnly="disableSubmit">
             <a-icon slot="addonAfter" type="setting" @click="selectIcons" />
           </a-input>
         </a-form-item>
@@ -148,6 +147,16 @@
           <a-switch checkedChildren="是" unCheckedChildren="否" v-model="alwaysShow"/>
         </a-form-item>
 
+        <!--update_begin author:wuxianquan date:20190908 for:增加组件，外链打开方式可选 -->
+        <a-form-item
+          v-show="show"
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="打开方式">
+          <a-switch checkedChildren="外部" unCheckedChildren="内部" v-model="internalOrExternal"/>
+        </a-form-item>
+        <!--update_end author:wuxianquan date:20190908 for:增加组件，外链打开方式可选 -->
+
 
       </a-form>
 
@@ -165,10 +174,9 @@
 </template>
 
 <script>
-  import {addPermission,editPermission,queryTreeList} from '@/api/api'
+  import {addPermission,editPermission,queryTreeList, duplicateCheck} from '@/api/api'
   import Icons from './icon/Icons'
   import pick from 'lodash.pick'
-
 
   export default {
     name: "PermissionModal",
@@ -186,6 +194,9 @@
         alwaysShow:false,//表单元素-聚合路由
         menuHidden:false,//表单元素-隐藏路由
         routeSwitch:true, //是否路由菜单
+        /*update_begin author:wuxianquan date:20190908 for:定义变量，初始值代表内部打开*/
+        internalOrExternal:false,//菜单打开方式
+        /*update_end author:wuxianquan date:20190908 for:定义变量，初始值代表内部打开*/
         isKeepalive:true, //是否缓存路由
         show:true,//根据菜单类型，动态显示隐藏表单元素
         menuLabel:'菜单名称',
@@ -213,7 +224,7 @@
           component:{rules: [{ required: this.show, message: '请输入前端组件!' }]},
           url:{rules: [{ required: this.show, message: '请输入菜单路径!' }]},
           permsType:{rules: [{ required: true, message: '请输入授权策略!' }]},
-          sortNo:{rules: [{initialValue:1.0,validator: this.validateNumber}]},
+          sortNo:{initialValue:1.0},
         }
       }
     },
@@ -254,13 +265,20 @@
         if(record.route!=null){
           this.routeSwitch = record.route?true:false;
         }
-        
+
         if(record.keepAlive!=null){
           this.isKeepalive = record.keepAlive?true:false;
         }else{
           this.isKeepalive = false; // 升级兼容 如果没有（后台没有传过来、或者是新建）默认为false
         }
 
+        /*update_begin author:wuxianquan date:20190908 for:编辑初始化数据*/
+        if(record.internalOrExternal!=null){
+          this.internalOrExternal = record.internalOrExternal?true:false;
+        }else{
+          this.internalOrExternal = false;
+        }
+        /*update_end author:wuxianquan date:20190908 for:编辑初始化数据*/
 
 
         //console.log('record.menuType', record.menuType);
@@ -295,6 +313,10 @@
             this.model.hidden = this.menuHidden;
             this.model.route = this.routeSwitch;
             this.model.keepAlive = this.isKeepalive;
+            /*update_begin author:wuxianquan date:20190908 for:获取值*/
+            this.model.internalOrExternal = this.internalOrExternal;
+            /*update_end author:wuxianquan date:20190908 for:获取值*/
+
             let formData = Object.assign(this.model, values);
             if ((formData.menuType == 1 || formData.menuType == 2) && !formData.parentId) {
               that.validateStatus = 'error';
@@ -333,6 +355,26 @@
           callback();
         }else{
           callback("请输入正整数!");
+        }
+      },
+      validatePerms(rule, value, callback){
+        if(value && value.length>0){
+          //校验授权标识是否存在
+          var params = {
+            tableName: 'sys_permission',
+            fieldName: 'perms',
+            fieldVal: value,
+            dataId: this.model.id
+          };
+          duplicateCheck(params).then((res) => {
+            if (res.success) {
+              callback()
+            } else {
+              callback("授权标识已存在!")
+            }
+          })
+        }else{
+          callback()
         }
       },
       onChangeMenuType(e) {

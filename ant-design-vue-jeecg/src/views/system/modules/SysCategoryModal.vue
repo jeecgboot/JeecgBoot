@@ -17,17 +17,25 @@
             placeholder="请选择父级节点"
             v-decorator="['pid', validatorRules.pid]"
             dict="sys_category,name,id"
-            pidField="pid">
+            pidField="pid"
+            pidValue="0">
           </j-tree-select>
         </a-form-item>
           
-        <a-form-item label="类型名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'name', validatorRules.name]" placeholder="请输入类型名称"></a-input>
+        <a-form-item label="分类名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input v-decorator="[ 'name', validatorRules.name]" placeholder="请输入分类名称"></a-input>
         </a-form-item>
           
-        <a-form-item label="类型编码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <!--<a-form-item label="类型编码" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'code', validatorRules.code]" placeholder="请输入类型编码"></a-input>
-        </a-form-item>
+        </a-form-item>-->
+
+        <!--<a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <span style="font-size: 12px;color:red" slot="label">编码规则(注)</span>
+          <span style="font-size: 12px;color:red">
+            编码值前缀需和父节点保持一致,比如父级节点编码是A01则当前编码必须以A01开头
+          </span>
+        </a-form-item>-->
           
         
       </a-form>
@@ -37,7 +45,7 @@
 
 <script>
 
-  import { httpAction } from '@/api/manage'
+  import { httpAction,getAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import JTreeSelect from '@/components/jeecg/JTreeSelect'
   
@@ -64,16 +72,24 @@
 
         confirmLoading: false,
         validatorRules:{
-        pid:{},
-        name:{},
-        code:{},
+          code:{
+            rules: [{
+              required: true, message: '请输入类型编码!'
+            },{
+              validator: this.validateMyCode
+            }]
+          },
+          pid:{},
+          name:{rules: [{ required: true, message: '请输入类型名称!' }]}
         },
         url: {
           add: "/sys/category/add",
           edit: "/sys/category/edit",
+          checkCode:"/sys/category/checkCode",
         },
         expandedRowKeys:[],
-        pidField:"pid"
+        pidField:"pid",
+        subExpandedKeys:[]
      
       }
     },
@@ -138,10 +154,13 @@
           let treeData = this.$refs.treeSelect.getCurrTreeData()
           this.expandedRowKeys=[]
           this.getExpandKeysByPid(formData[this.pidField],treeData,treeData)
+          if(formData.pid && this.expandedRowKeys.length==0){
+            this.expandedRowKeys = this.subExpandedKeys;
+          }
           this.$emit('ok',formData,this.expandedRowKeys.reverse());
         }else{
           this.$emit('ok',formData);
-        }
+      }
       },
       getExpandKeysByPid(pid,arr,all){
         if(pid && arr && arr.length>0){
@@ -154,7 +173,20 @@
             }
           }
         }
-      }
+      },
+      validateMyCode(rule, value, callback){
+        let params = {
+          pid: this.form.getFieldValue('pid'),
+          code: value
+        }
+        getAction(this.url.checkCode,params).then((res) => {
+          if (res.success) {
+            callback()
+          } else {
+            callback(res.message)
+          }
+        })
+      },
       
       
     }

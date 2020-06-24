@@ -477,6 +477,7 @@ online用 实际开发请使用components/dict/JMultiSelectTag
 | dict      |string   | ✔| 表名,显示字段名,存储字段名拼接的字符串 |
 | pidField      |string   | ✔| 父ID的字段名 |
 | pidValue      |string   | | 根节点父ID的值 默认'0' 不可以设置为空,如果想使用此组件，而数据库根节点父ID为空，请修改之 |
+| multiple      |boolean   | |是否支持多选 |
 
 使用示例
 ----

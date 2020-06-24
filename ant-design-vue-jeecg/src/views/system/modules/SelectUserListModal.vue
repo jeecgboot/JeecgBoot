@@ -13,13 +13,13 @@
 
           <a-col :span="6">
             <a-form-item label="账号">
-              <a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>
+              <a-input placeholder="请输入账号" v-model="queryParam.username"></a-input>
             </a-form-item>
           </a-col>
 
           <a-col :span="6">
             <a-form-item label="性别">
-              <a-select v-model="queryParam.sex" placeholder="请选择性别查询">
+              <a-select v-model="queryParam.sex" placeholder="请选择性别">
                 <a-select-option value="">请选择性别查询</a-select-option>
                 <a-select-option value="1">男性</a-select-option>
                 <a-select-option value="2">女性</a-select-option>
@@ -31,20 +31,20 @@
           <template v-if="toggleSearchStatus">
             <a-col :span="6">
               <a-form-item label="邮箱">
-                <a-input placeholder="请输入邮箱查询" v-model="queryParam.email"></a-input>
+                <a-input placeholder="请输入邮箱" v-model="queryParam.email"></a-input>
               </a-form-item>
             </a-col>
 
             <a-col :span="6">
               <a-form-item label="手机号码">
-                <a-input placeholder="请输入手机号码查询" v-model="queryParam.phone"></a-input>
+                <a-input placeholder="请输入手机号码" v-model="queryParam.phone"></a-input>
               </a-form-item>
             </a-col>
 
             <a-col :span="6">
               <a-form-item label="状态">
-                <a-select v-model="queryParam.status" placeholder="请选择用户状态查询">
-                  <a-select-option value="">请选择用户状态</a-select-option>
+                <a-select v-model="queryParam.status" placeholder="请选择状态">
+                  <a-select-option value="">请选择状态</a-select-option>
                   <a-select-option value="1">正常</a-select-option>
                   <a-select-option value="2">解冻</a-select-option>
                 </a-select>
@@ -66,17 +66,17 @@
         </a-row>
       </a-form>
     </div>
-
+ <!--    update-begin author:kangxiaolin   date:20190921   for:系统发送通知 用户多选失败 #513  -->
     <a-table
       ref="table"
       rowKey="id"
       :columns="columns"
       :dataSource="dataSource"
       :pagination="ipagination"
-      :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+      :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange,onSelect:onSelect}"
       @change="handleTableChange"
     >
-
+<!--     update-end   author:kangxiaolin  date:20190921     for:系统发送通知 用户多选失败 #513 -->
     </a-table>
   </a-modal>
 </template>
@@ -101,7 +101,7 @@
           fixed:'left',
           width:200
         },{
-          title: '真实姓名',
+          title: '用户名称',
           align:"center",
           dataIndex: 'realname',
         },{
@@ -170,15 +170,22 @@
         this.edit(selectUser,userIds);
       },
       edit(selectUser,userIds){
-        if(!userIds){
-          this.selectedRowKeys = []
-        }else{
+        //控制台报错
+        if(userIds&&userIds.length>0){
           this.selectedRowKeys = userIds.split(',');
+        }else{
+          this.selectedRowKeys = []
         }
         if(!selectUser){
           this.selectionRows=[]
         }else{
-          this.selectionRows = selectUser;
+          var that=this;
+          that.selectionRows=[];
+          selectUser.forEach(function(record,index){
+            console.log(record)
+            that.selectionRows.push({id: that.selectedRowKeys[index],realname:record})
+          })
+          // this.selectionRows = selectUser;
         }
       },
       loadData (arg){
@@ -196,8 +203,12 @@
       getQueryParams(){
         let param = Object.assign({}, this.queryParam,this.isorter);
         param.field = this.getQueryField();
-        param.current = this.ipagination.current;
+        //--update-begin----author:scott---date:20190818------for:新建公告时指定特定用户翻页错误SelectUserListModal #379----
+        // param.current = this.ipagination.current;
+        // param.pageSize = this.ipagination.pageSize;
+        param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
+        //--update-end----author:scott---date:20190818------for:新建公告时指定特定用户翻页错误SelectUserListModal #379---
         return filterObj(param);
       },
       getQueryField(){
@@ -207,11 +218,23 @@
         }
         return str;
       },
-      onSelectChange (selectedRowKeys,selectionRows) {
+      //--update-begin----author:kangxiaolin---date:20190921------for:系统发送通知 用户多选失败 #513----
+      onSelectChange (selectedRowKeys) {
         this.selectedRowKeys = selectedRowKeys;
-        console.log(this.selectedRowKeys);
-        this.selectionRows = selectionRows;
       },
+      onSelect(record, selected){
+        if(selected == true ){
+          this.selectionRows.push(record);
+        }else {
+          this.selectionRows.forEach(function(item,index,arr){
+            if(item.id == record.id) {
+              arr.splice(index, 1);
+            }
+          })
+        }
+        //--update-end----author:kangxiaolin---date:20190921------for:系统发送通知 用户多选失败 #513----
+      },
+
       searchReset(){
         let that = this;
         Object.keys(that.queryParam).forEach(function(key){

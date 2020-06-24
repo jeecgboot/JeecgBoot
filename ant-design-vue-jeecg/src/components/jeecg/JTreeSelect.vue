@@ -2,6 +2,7 @@
   <a-tree-select
     allowClear
     labelInValue
+    :getPopupContainer="(node) => node.parentNode"
     style="width: 100%"
     :disabled="disabled"
     :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
@@ -9,6 +10,7 @@
     :loadData="asyncLoadTreeData"
     :value="treeValue"
     :treeData="treeData"
+    :multiple="multiple"
     @change="onChange"
     @search="onSearch">
   </a-tree-select>
@@ -45,7 +47,7 @@
       },
       pidValue:{
         type: String,
-        default: '0',
+        default: '',
         required: false
       },
       disabled:{
@@ -57,11 +59,26 @@
         type: String,
         default: '',
         required: false
+      },
+      condition:{
+        type:String,
+        default:'',
+        required:false
+      },
+      // 是否支持多选
+      multiple: {
+        type: Boolean,
+        default: false,
+      },
+      loadTriggleChange:{
+        type: Boolean,
+        default: false,
+        required:false
       }
     },
     data () {
       return {
-        treeValue:"",
+        treeValue: null,
         treeData:[],
         url:"/sys/dict/loadTreeData",
         view:'/sys/dict/loadDictItem/',
@@ -81,24 +98,34 @@
       }
     },
     created(){
-      this.initDictInfo()
-      this.loadRoot()
-      this.loadItemByCode()
+      this.validateProp().then(()=>{
+        this.initDictInfo()
+        this.loadRoot()
+        this.loadItemByCode()
+      })
     },
     methods: {
       loadItemByCode(){
         if(!this.value || this.value=="0"){
-          this.treeValue = ""
+          this.treeValue = null
         }else{
           getAction(`${this.view}${this.dict}`,{key:this.value}).then(res=>{
             if(res.success){
-              this.treeValue = {
-                key:this.value,
-                value:this.value,
-                label:res.result
-              }
+              let values = this.value.split(',')
+              this.treeValue = res.result.map((item, index) => ({
+                key: values[index],
+                value: values[index],
+                label: item
+              }))
+              this.onLoadTriggleChange(res.result[0]);
             }
           })
+        }
+      },
+      onLoadTriggleChange(text){
+        //只有单选才会触发
+        if(!this.multiple && this.loadTriggleChange){
+          this.$emit('change', this.value,text)
         }
       },
       initDictInfo(){
@@ -120,7 +147,8 @@
             text:this.text,
             code:this.code,
             pidField:this.pidField,
-            hasChildField:this.hasChildField
+            hasChildField:this.hasChildField,
+            condition:this.condition
           }
           getAction(this.url,param).then(res=>{
             if(res.success){
@@ -162,7 +190,8 @@
           text:this.text,
           code:this.code,
           pidField:this.pidField,
-          hasChildField:this.hasChildField
+          hasChildField:this.hasChildField,
+          condition:this.condition
         }
         getAction(this.url,param).then(res=>{
           if(res.success && res.result){
@@ -183,9 +212,12 @@
       onChange(value){
         if(!value){
           this.$emit('change', '');
-          this.treeValue = ''
-        }else{
-          this.$emit('change', value.value);
+          this.treeValue = null
+        } else if (value instanceof Array) {
+          this.$emit('change', value.map(item => item.value).join(','))
+          this.treeValue = value
+        } else {
+          this.$emit('change', value.value,value.label)
           this.treeValue = value
         }
 
@@ -195,6 +227,28 @@
       },
       getCurrTreeData(){
         return this.treeData
+      },
+      validateProp(){
+        let mycondition = this.condition
+        return new Promise((resolve,reject)=>{
+          if(!mycondition){
+            resolve();
+          }else{
+            try {
+              let test=JSON.parse(mycondition);
+              console.log("aaaaasdsdd",typeof test)
+              if(typeof test == 'object' && test){
+                resolve()
+              }else{
+                this.$message.error("组件JTreeSelect-condition传值有误，需要一个json字符串!")
+                reject()
+              }
+            } catch(e) {
+              this.$message.error("组件JTreeSelect-condition传值有误，需要一个json字符串!")
+              reject()
+            }
+          }
+        })
       }
     },
     //2.2新增 在组件内定义 指定父组件调用时候的传值属性和事件类型 这个牛逼
