@@ -13,11 +13,15 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.DataBaseConstant;
+import org.jeecg.common.constant.GlobalVarResolver;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 /**
  * @Author Scott
@@ -120,79 +124,27 @@ public class JwtUtil {
 	}
 	
 	/**
-	  * 从当前用户中获取变量
+	  * 处理系统预设变量
 	 * @param key
 	 * @param user
 	 * @return
 	 */
-	//TODO 急待改造 sckjkdsjsfjdk
 	public static String getUserSystemData(String key,SysUserCacheInfo user) {
-		if(user==null) {
-			user = JeecgDataAutorUtils.loadUserInfo();
-		}
-		//#{sys_user_code}%
-		
-		// 获取登录用户信息
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		
-		String moshi = "";
-		if(key.indexOf("}")!=-1){
-			 moshi = key.substring(key.indexOf("}")+1);
-		}
-		String returnValue = null;
 		//针对特殊标示处理#{sysOrgCode}，判断替换
 		if (key.contains("#{")) {
 			key = key.substring(2,key.indexOf("}"));
-		} else {
-			key = key;
 		}
-		//替换为系统登录用户帐号
-		if (key.equals(DataBaseConstant.SYS_USER_CODE)|| key.toLowerCase().equals(DataBaseConstant.SYS_USER_CODE_TABLE)) {
-			if(user==null) {
-				returnValue = sysUser.getUsername();
-			}else {
-				returnValue = user.getSysUserCode();
-			}
-		}
-		//替换为系统登录用户真实名字
-		else if (key.equals(DataBaseConstant.SYS_USER_NAME)|| key.toLowerCase().equals(DataBaseConstant.SYS_USER_NAME_TABLE)) {
-			if(user==null) {
-				returnValue = sysUser.getRealname();
-			}else {
-				returnValue = user.getSysUserName();
-			}
-		}
-		
-		//替换为系统用户登录所使用的机构编码
-		else if (key.equals(DataBaseConstant.SYS_ORG_CODE)|| key.toLowerCase().equals(DataBaseConstant.SYS_ORG_CODE_TABLE)) {
-			if(user==null) {
-				returnValue = sysUser.getOrgCode();
-			}else {
-				returnValue = user.getSysOrgCode();
-			}
-		}
-		//替换为系统用户所拥有的所有机构编码
-		else if (key.equals(DataBaseConstant.SYS_MULTI_ORG_CODE)|| key.toLowerCase().equals(DataBaseConstant.SYS_MULTI_ORG_CODE_TABLE)) {
-			if(user.isOneDepart()) {
-				returnValue = user.getSysMultiOrgCode().get(0);
-			}else {
-				returnValue = Joiner.on(",").join(user.getSysMultiOrgCode());
-			}
-		}
-		//替换为当前系统时间(年月日)
-		else if (key.equals(DataBaseConstant.SYS_DATE)|| key.toLowerCase().equals(DataBaseConstant.SYS_DATE_TABLE)) {
-			returnValue = user.getSysDate();
-		}
-		//替换为当前系统时间（年月日时分秒）
-		else if (key.equals(DataBaseConstant.SYS_TIME)|| key.toLowerCase().equals(DataBaseConstant.SYS_TIME_TABLE)) {
-			returnValue = user.getSysTime();
-		}
-		//流程状态默认值（默认未发起）
-		else if (key.equals(DataBaseConstant.BPM_STATUS)|| key.toLowerCase().equals(DataBaseConstant.BPM_STATUS_TABLE)) {
-			returnValue = "1";
-		}
-		if(returnValue!=null){returnValue = returnValue + moshi;}
-		return returnValue;
+
+		String returnValue = GlobalVarResolver.resolve(key)
+								 .getFunc().apply(isNull(user)
+													  ? JeecgDataAutorUtils.loadUserInfo()
+													  : user);
+
+		return nonNull(returnValue)
+				   ? returnValue + (key.indexOf("}")!=-1
+										? key.substring(key.indexOf("}")+1)
+										: "")
+				   : null;
 	}
 	
 	public static void main(String[] args) {
