@@ -3,6 +3,7 @@ package org.jeecg.modules.system.controller;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.exceptions.ClientException;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -83,7 +84,11 @@ public class LoginController {
 		//update-end-author:taoyan date:20190828 for:校验验证码
 		
 		//1. 校验用户是否有效
-		SysUser sysUser = sysUserService.getUserByName(username);
+		//update-begin-author:wangshuai date:20200601 for: 登录代码验证用户是否注销bug，if条件永远为false
+		LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+		queryWrapper.eq(SysUser::getUsername,username);
+		SysUser sysUser = sysUserService.getOne(queryWrapper);
+		//update-end-author:wangshuai date:20200601 for: 登录代码验证用户是否注销bug，if条件永远为false
 		result = sysUserService.checkUserIsEffective(sysUser);
 		if(!result.isSuccess()) {
 			return result;
@@ -256,6 +261,10 @@ public class LoginController {
 				SysUser sysUser = sysUserService.getUserByPhone(mobile);
 				result = sysUserService.checkUserIsEffective(sysUser);
 				if(!result.isSuccess()) {
+					String message = result.getMessage();
+					if("该用户不存在，请注册".equals(message)){
+						result.error500("该用户不存在或未绑定手机号");
+					}
 					return result;
 				}
 				

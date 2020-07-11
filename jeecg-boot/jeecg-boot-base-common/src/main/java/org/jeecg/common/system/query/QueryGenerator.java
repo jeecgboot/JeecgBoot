@@ -151,7 +151,7 @@ public class QueryGenerator {
 							for (int k=1;k<vals.length;k++) {
 								j = j.or().like(field,vals[k]);
 							}
-							return j;
+							//return j;
 						});
 					}else {
 						queryWrapper.and(j -> j.like(field,vals[0]));
@@ -241,7 +241,7 @@ public class QueryGenerator {
                             }
                         }
                     }
-                    return andWrapper;
+                    //return andWrapper;
                 });
             } catch (UnsupportedEncodingException e) {
                 log.error("--高级查询参数转码失败：" + superQueryParams, e);

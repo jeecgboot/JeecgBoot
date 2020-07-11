@@ -1,6 +1,7 @@
 <template>
   <div class="tinymce-editor">
     <editor
+      v-if="!reloading"
       v-model="myValue"
       :init="init"
       :disabled="disabled"
@@ -23,7 +24,9 @@
   import 'tinymce/plugins/colorpicker'
   import 'tinymce/plugins/textcolor'
   import 'tinymce/plugins/fullscreen'
+  import 'tinymce/icons/default'
   import { uploadAction,getFileAccessHttpUrl } from '@/api/manage'
+  import { getVmParentByName } from '@/utils/util'
   export default {
     components: {
       Editor
@@ -83,13 +86,19 @@
             })
           }
         },
-        myValue: this.value
+        myValue: this.value,
+        reloading: false,
       }
     },
     mounted() {
-      tinymce.init({})
+      this.initATabsChangeAutoReload()
     },
     methods: {
+
+      reload() {
+        this.reloading = true
+        this.$nextTick(() => this.reloading = false)
+      },
 
       onClick(e) {
         this.$emit('onClick', e, tinymce)
@@ -97,7 +106,31 @@
       //可以添加一些自己的自定义事件，如清空内容
       clear() {
         this.myValue = ''
-      }
+      },
+
+      /**
+       * 自动判断父级是否是 <a-tabs/> 组件，然后添加事件监听，自动触发reload()
+       *
+       * 由于 tabs 组件切换会导致 tinymce 无法输入，
+       * 只有重新加载才能使用（无论是vue版的还是jQuery版tinymce都有这个通病）
+       */
+      initATabsChangeAutoReload() {
+        // 获取父级
+        let tabs = getVmParentByName(this, 'ATabs')
+        let tabPane = getVmParentByName(this, 'ATabPane')
+        if (tabs && tabPane) {
+          // 用户自定义的 key
+          let currentKey = tabPane.$vnode.key
+          // 添加事件监听
+          tabs.$on('change', (key) => {
+            // 切换到自己时执行reload
+            if (currentKey === key) {
+              this.reload()
+            }
+          })
+        }
+      },
+
     },
     watch: {
       value(newValue) {

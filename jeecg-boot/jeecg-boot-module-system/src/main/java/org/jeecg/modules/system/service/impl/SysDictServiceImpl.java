@@ -8,6 +8,7 @@ import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictQuery;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.mapper.SysDictItemMapper;
@@ -72,7 +73,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			}).collect(Collectors.toList());
 			res.put(d.getDictCode(), dictModelList);
 		}
-		log.debug("-------登录加载系统字典-----" + res.toString());
+		log.info("-------登录加载系统字典-----" + res.toString());
 		return res;
 	}
 
@@ -133,12 +134,16 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	 * @param table
 	 * @param text
 	 * @param code
-	 * @param keyArray
+	 * @param keys (逗号分隔)
 	 * @return
 	 */
 	@Override
 	@Cacheable(value = CacheConstant.SYS_DICT_TABLE_CACHE)
-	public List<String> queryTableDictByKeys(String table, String text, String code, String[] keyArray) {
+	public List<String> queryTableDictByKeys(String table, String text, String code, String keys) {
+		if(oConvertUtils.isEmpty(keys)){
+			return null;
+		}
+		String[] keyArray = keys.split(",");
 		List<DictModel> dicts = sysDictMapper.queryTableDictByKeys(table, text, code, keyArray);
 		List<String> texts = new ArrayList<>(dicts.size());
 		// 查询出来的顺序可能是乱的，需要排个序

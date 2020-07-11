@@ -262,4 +262,19 @@ public interface CommonConstant {
      */
     public static final String SIGN_PATCH_BIZ_STATUS_1 = "1";
     public static final String SIGN_PATCH_BIZ_STATUS_2 = "2";
+
+    /**
+     * 公文文档上传自定义路径
+     */
+    public static final String UPLOAD_CUSTOM_PATH_OFFICIAL = "officialdoc";
+     /**
+     * 公文文档下载自定义路径
+     */
+    public static final String DOWNLOAD_CUSTOM_PATH_OFFICIAL = "officaldown";
+
+    /**
+     * WPS存储值类别(1 code文号 2 text（WPS模板还是公文发文模板）)
+     */
+    public static final String WPS_TYPE_1="1";
+    public static final String WPS_TYPE_2="2";
 }

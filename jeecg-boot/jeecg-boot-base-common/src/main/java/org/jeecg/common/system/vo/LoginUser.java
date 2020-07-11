@@ -110,4 +110,7 @@ public class LoginUser {
 	 */
 	private String telephone;
 
+	/**多租户id配置，编辑用户的时候设置*/
+	private String relTenantIds;
+
 }

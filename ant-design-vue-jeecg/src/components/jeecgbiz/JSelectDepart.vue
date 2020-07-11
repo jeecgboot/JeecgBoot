@@ -76,6 +76,18 @@
     methods:{
       initComp(departNames){
         this.departNames = departNames
+        //update-begin-author:lvdandan date:20200513 for:TESTA-438 部门选择组件自定义返回值，数据无法回填
+        //TODO 当返回字段为部门名称时会有问题,因为部门名称不唯一
+        //返回字段不为id时，根据返回字段获取id
+        if(this.customReturnField !== 'id' && this.value){
+          const dataList = this.$refs.innerDepartSelectModal.dataList;
+          console.log('this.value',this.value)
+          this.departIds = this.value.split(',').map(item => {
+            const data = dataList.filter(d=>d[this.customReturnField] === item)
+            return data.length > 0 ? data[0].id : ''
+          }).join(',')
+        }
+        //update-end-author:lvdandan date:20200513 for:TESTA-438 部门选择组件自定义返回值，数据无法回填
       },
       openModal(){
         this.$refs.innerDepartSelectModal.show()

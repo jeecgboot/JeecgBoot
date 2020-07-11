@@ -8,6 +8,7 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.jeecg.modules.shiro.authc.JwtToken;
 import org.jeecg.modules.shiro.vo.DefContants;
+import org.jeecg.modules.system.util.TenantContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
 import lombok.extern.slf4j.Slf4j;
@@ -68,6 +69,10 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
 			httpServletResponse.setStatus(HttpStatus.OK.value());
 			return false;
 		}
+		//update-begin-author:taoyan date:20200708 for:多租户用到
+		String tenant_id = httpServletRequest.getHeader(DefContants.TENANT_ID);
+		TenantContext.setTenant(tenant_id);
+		//update-end-author:taoyan date:20200708 for:多租户用到
 		return super.preHandle(request, response);
 	}
 }

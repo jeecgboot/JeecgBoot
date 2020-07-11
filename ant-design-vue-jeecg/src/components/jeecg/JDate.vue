@@ -1,5 +1,6 @@
 <template>
   <a-date-picker
+    dropdownClassName="j-date-picker"
     :disabled="disabled || readOnly"
     :placeholder="placeholder"
     @change="handleDateChange"

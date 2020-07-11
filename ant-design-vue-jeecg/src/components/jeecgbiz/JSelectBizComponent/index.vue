@@ -118,10 +118,12 @@
         deep: true,
         handler(val) {
           let rows = val.map(key => this.dataSourceMap[key])
-          this.$emit('select', rows)
           let data = val.join(',')
-          this.$emit('input', data)
-          this.$emit('change', data)
+          if (data !== this.value) {
+            this.$emit('select', rows)
+            this.$emit('input', data)
+            this.$emit('change', data)
+          }
         }
       }
     },

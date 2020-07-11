@@ -102,6 +102,9 @@ public class SysUser implements Serializable {
      */
     private String orgCode;
 
+    /**部门名称*/
+    private transient String orgCodeTxt;
+
     /**
      * 状态(1：正常  2：冻结 ）
      */
@@ -175,6 +178,7 @@ public class SysUser implements Serializable {
     /**
      * 第三方登录的唯一标识
      */
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String thirdId;
 
     /**
@@ -182,4 +186,9 @@ public class SysUser implements Serializable {
      * （github/github，wechat_enterprise/企业微信，dingtalk/钉钉）
      */
     private String thirdType;
+
+    /**
+     * 多租户id配置，编辑用户的时候设置
+     */
+    private String relTenantIds;
 }

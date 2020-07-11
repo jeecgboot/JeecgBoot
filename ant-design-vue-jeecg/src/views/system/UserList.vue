@@ -119,10 +119,9 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-         <!-- <a @click="handleEdit(record)" v-has="'user:edit'">编辑</a>-->
-          <a @click="handleEdit(record)">编辑</a>
+          <a @click="handleEdit(record)" >编辑</a>
 
-          <a-divider type="vertical"/>
+          <a-divider type="vertical" />
 
           <a-dropdown>
             <a class="ant-dropdown-link">
@@ -260,13 +259,7 @@
             title: '部门',
             align: "center",
             width: 180,
-            dataIndex: 'orgCode'
-          },
-          {
-            title: '负责部门',
-            align: "center",
-            width: 180,
-            dataIndex: 'departIds_dictText'
+            dataIndex: 'orgCodeTxt'
           },
           {
             title: '状态',

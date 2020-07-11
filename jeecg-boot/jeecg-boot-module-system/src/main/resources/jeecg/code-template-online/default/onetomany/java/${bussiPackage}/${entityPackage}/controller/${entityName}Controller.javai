@@ -45,6 +45,12 @@ import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
+<#assign bpm_flag=false>
+<#list originalColumns as po>
+<#if po.fieldDbName=='bpm_status'>
+  <#assign bpm_flag=true>
+</#if>
+</#list>
 
  /**
  * @Description: ${tableVo.ftlDescription}
@@ -98,6 +104,9 @@ public class ${entityName}Controller {
 	public Result<?> add(@RequestBody ${entityName}Page ${entityName?uncap_first}Page) {
 		${entityName} ${entityName?uncap_first} = new ${entityName}();
 		BeanUtils.copyProperties(${entityName?uncap_first}Page, ${entityName?uncap_first});
+		<#if bpm_flag>
+        ${entityName?uncap_first}.setBpmStatus("1");
+        </#if>
 		${entityName?uncap_first}Service.saveMain(${entityName?uncap_first}, <#list subTables as sub>${entityName?uncap_first}Page.get${sub.entityName}List()<#if sub_has_next>,</#if></#list>);
 		return Result.ok("添加成功！");
 	}

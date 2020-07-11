@@ -8,7 +8,9 @@ import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.crazycake.shiro.IRedisManager;
 import org.crazycake.shiro.RedisCacheManager;
+import org.crazycake.shiro.RedisClusterManager;
 import org.crazycake.shiro.RedisManager;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.shiro.authc.ShiroRealm;
@@ -18,12 +20,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.util.StringUtils;
+import redis.clients.jedis.HostAndPort;
+import redis.clients.jedis.JedisCluster;
 
+import javax.annotation.Resource;
 import javax.servlet.Filter;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author: Scott
@@ -37,19 +41,12 @@ public class ShiroConfig {
 
 	@Value("${jeecg.shiro.excludeUrls}")
 	private String excludeUrls;
-
-    @Value("${spring.redis.port}")
-    private String port;
-
-    @Value("${spring.redis.host}")
-    private String host;
-
-    @Value("${spring.redis.password}")
-    private String redisPassword;
+	@Resource
+	LettuceConnectionFactory lettuceConnectionFactory;
 
 	/**
-	 * Filter Chain定义说明 
-	 * 
+	 * Filter Chain定义说明
+	 *
 	 * 1、一个URL可以配置多个Filter，使用逗号分隔
 	 * 2、当设置多个过滤器时，全部验证通过，才视为通过
 	 * 3、部分过滤器可指定参数，如perms，roles
@@ -78,7 +75,7 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/thirdLogin/**", "anon"); //第三方登录
 		filterChainDefinitionMap.put("/sys/getEncryptedString", "anon"); //获取加密串
 		filterChainDefinitionMap.put("/sys/sms", "anon");//短信验证码
-		filterChainDefinitionMap.put("/sys/phoneLogin", "anon");//手机登录		
+		filterChainDefinitionMap.put("/sys/phoneLogin", "anon");//手机登录
 		filterChainDefinitionMap.put("/sys/user/checkOnlyUser", "anon");//校验用户是否存在
 		filterChainDefinitionMap.put("/sys/user/register", "anon");//用户注册
 		filterChainDefinitionMap.put("/sys/user/querySysUser", "anon");//根据手机号获取用户信息
@@ -110,21 +107,24 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/swagger**/**", "anon");
 		filterChainDefinitionMap.put("/webjars/**", "anon");
 		filterChainDefinitionMap.put("/v2/**", "anon");
-		
+
 		//性能监控
 		filterChainDefinitionMap.put("/actuator/metrics/**", "anon");
 		filterChainDefinitionMap.put("/actuator/httptrace/**", "anon");
 		filterChainDefinitionMap.put("/actuator/redis/**", "anon");
 
-        //大屏设计器排除
-		filterChainDefinitionMap.put("/big/screen/**", "anon");
-
 		//测试示例
 		filterChainDefinitionMap.put("/test/jeecgDemo/html", "anon"); //模板页面
 		filterChainDefinitionMap.put("/test/jeecgDemo/redis/**", "anon"); //redis测试
+		filterChainDefinitionMap.put("/big/screen/**", "anon");
+		filterChainDefinitionMap.put("/bigscreen/**", "anon");
+
+		//排除Online请求
+		filterChainDefinitionMap.put("/auto/cgform/**", "anon");
 
 		//websocket排除
 		filterChainDefinitionMap.put("/websocket/**", "anon");
+		filterChainDefinitionMap.put("/newsWebsocket/**", "anon");
 
 		// 添加自己的过滤器并且取名为jwt
 		Map<String, Filter> filterMap = new HashMap<String, Filter>(1);
@@ -214,16 +214,29 @@ public class ShiroConfig {
      * @return
      */
     @Bean
-    public RedisManager redisManager() {
-        log.info("===============(2)创建RedisManager,连接Redis..URL= " + host + ":" + port);
-        RedisManager redisManager = new RedisManager();
-		redisManager.setHost(host);
-		redisManager.setPort(oConvertUtils.getInt(port));
-		redisManager.setTimeout(0);
-        if (!StringUtils.isEmpty(redisPassword)) {
-            redisManager.setPassword(redisPassword);
-        }
-        return redisManager;
+    public IRedisManager redisManager() {
+		log.info("===============(2)创建RedisManager,连接Redis..");
+		IRedisManager manager;
+		// redis 单机支持，在集群为空，或者集群无机器时候使用 add by jzyadmin@163.com
+		if (lettuceConnectionFactory.getClusterConfiguration() == null || lettuceConnectionFactory.getClusterConfiguration().getClusterNodes().isEmpty()) {
+			RedisManager redisManager = new RedisManager();
+			redisManager.setHost(lettuceConnectionFactory.getHostName());
+			redisManager.setPort(lettuceConnectionFactory.getPort());
+			redisManager.setTimeout(0);
+			if (!StringUtils.isEmpty(lettuceConnectionFactory.getPassword())) {
+				redisManager.setPassword(lettuceConnectionFactory.getPassword());
+			}
+			manager = redisManager;
+		}else{
+			// redis 集群支持，优先使用集群配置	add by jzyadmin@163.com
+			RedisClusterManager redisManager = new RedisClusterManager();
+			Set<HostAndPort> portSet = new HashSet<>();
+			lettuceConnectionFactory.getClusterConfiguration().getClusterNodes().forEach(node -> portSet.add(new HostAndPort(node.getHost() , node.getPort())));
+			JedisCluster jedisCluster = new JedisCluster(portSet);
+			redisManager.setJedisCluster(jedisCluster);
+			manager = redisManager;
+		}
+		return manager;
     }
 
 }

@@ -45,7 +45,7 @@ public class OSSFileController {
 
 	@ResponseBody
 	@PostMapping("/upload")
-	//@RequiresRoles({"admin"})
+	@RequiresRoles("admin")
 	public Result upload(@RequestParam("file") MultipartFile multipartFile) {
 		Result result = new Result();
 		try {

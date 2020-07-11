@@ -7,7 +7,7 @@
     :closable="true"
     @close="handleCancel"
     :visible="visible"
-    style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
+    style="height: 100%;overflow: auto;padding-bottom: 53px;">
 
     <template slot="title">
       <div style="width: 100%;">
@@ -28,7 +28,7 @@
 
         <template v-if="!model.id">
           <a-form-item label="登陆密码" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-            <a-input type="password" placeholder="请输入登陆密码" v-decorator="[ 'password', validatorRules.password]" />
+            <a-input type="password" placeholder="请输入登陆密码" v-decorator="[ 'password']" />
           </a-form-item>
 
           <a-form-item label="确认密码" :labelCol="labelCol" :wrapperCol="wrapperCol" >
@@ -72,6 +72,22 @@
             <a-button slot="enterButton" icon="search">选择</a-button>
           </a-input-search>
         </a-form-item>
+
+        <!--租户分配-->
+        <a-form-item label="租户分配" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!departDisabled">
+
+          <a-select
+            mode="multiple"
+            style="width: 100%"
+            placeholder="请选择租户分配"
+            :disabled="disableSubmit"
+            v-model="currentTenant">
+            <a-select-option v-for="(item, index) in tenantList" :key="index" :value="item.id">
+              {{ item.name }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+
        <!-- update--begin--autor:wangshuai-----date:20200108------for：新增身份和负责部门------ -->
         <a-form-item label="身份" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-radio-group
@@ -253,14 +269,18 @@
           userWithDepart: "/sys/user/userDepartList", // 引入为指定用户查看部门信息需要的url
           userId:"/sys/user/generateUserId", // 引入生成添加用户情况下的url
           syncUserByUserName:"/process/extActProcess/doSyncUserByUserName",//同步用户到工作流
+          queryTenantList: '/sys/tenant/queryList'
         },
         identity:"1",
         fileList:[],
+        tenantList: [],
+        currentTenant:[]
       }
     },
     created () {
       const token = Vue.ls.get(ACCESS_TOKEN);
       this.headers = {"X-Access-Token":token}
+      this.initTenantList()
 
     },
     computed:{
@@ -271,6 +291,13 @@
     methods: {
       isDisabledAuth(code){
         return disabledAuthFilter(code);
+      },
+      initTenantList(){
+        getAction(this.url.queryTenantList).then(res=>{
+          if(res.success){
+            this.tenantList = res.result
+          }
+        })
       },
       //窗口最大化切换
       toggleScreen(){
@@ -308,6 +335,7 @@
           this.resultDepartOptions=[];
           this.departId=[];
           this.departIdShow=false;
+          this.currentTenant = []
       },
       add () {
         this.picUrl = "";
@@ -343,6 +371,14 @@
         // 调用查询用户对应的部门信息的方法
         that.checkedDepartKeys = [];
         that.loadCheckedDeparts();
+
+        //update-begin-author:taoyan date:2020710 for:多租户配置
+        if(!record.relTenantIds || record.relTenantIds.length==0){
+          this.currentTenant = []
+        }else{
+          this.currentTenant = record.relTenantIds.split(',').map(Number);
+        }
+        //update-end-author:taoyan date:2020710 for:多租户配置
       },
       //
       loadCheckedDeparts(){
@@ -412,6 +448,9 @@
             }else{
               formData.avatar = null;
             }
+            //update-begin-author:taoyan date:2020710 for:多租户配置
+            formData.relTenantIds = this.currentTenant.length>0?this.currentTenant.join(','):''
+            //update-end-author:taoyan date:2020710 for:多租户配置
             formData.selectedroles = this.selectedRole.length>0?this.selectedRole.join(","):'';
             formData.selecteddeparts = this.userDepartModel.departIdList.length>0?this.userDepartModel.departIdList.join(","):'';
             formData.userIdentity=this.identity;

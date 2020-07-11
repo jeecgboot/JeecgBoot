@@ -85,6 +85,7 @@
 		SELECT
 			sys_user.id AS id,
 			sys_user.realname AS realname,
+			sys_user.avatar AS avatar,
 			sys_user.work_no AS workNo,
 			sys_user.post AS post,
 			sys_user.telephone AS telephone,

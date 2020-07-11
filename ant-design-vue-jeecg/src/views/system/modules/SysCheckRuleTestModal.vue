@@ -29,7 +29,7 @@
   import { validateCheckRule } from '@/utils/util'
 
   export default {
-    name: 'SysCheckRuleModal',
+    name: 'SysCheckRuleTestModal',
     data() {
       return {
         title: '操作',

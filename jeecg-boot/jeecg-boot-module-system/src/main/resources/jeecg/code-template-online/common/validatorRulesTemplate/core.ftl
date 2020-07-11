@@ -7,6 +7,8 @@
     <#-- 非空校验 -->
     <#if po.nullable == 'N' || fieldValidType == '*'>
               { required: true, message: '请输入${po.filedComment}!'},
+    <#else>
+              { required: false},
     </#if>
     <#-- 唯一校验 -->
     <#if fieldValidType == 'only'>

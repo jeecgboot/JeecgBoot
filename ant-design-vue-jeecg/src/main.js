@@ -17,8 +17,8 @@ import Print from 'vue-print-nb-jeecg'
 import preview from 'vue-photo-preview'
 import 'vue-photo-preview/dist/skin.css'
 
-require('@jeecg/antd-online-beta220')
-require('@jeecg/antd-online-beta220/dist/OnlineForm.css')
+require('@jeecg/antd-online-mini')
+require('@jeecg/antd-online-mini/dist/OnlineForm.css')
 
 import {
   ACCESS_TOKEN,

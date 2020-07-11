@@ -31,7 +31,7 @@
               type="primary"
               icon="download"
               size="small"
-              @click="uploadFile(text)"
+              @click="downloadFile(text)"
       >
         <span>下载</span>
       </a-button>

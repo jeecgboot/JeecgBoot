@@ -86,7 +86,7 @@ public class QuartzJobController {
 	 * @param quartzJob
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+	@RequiresRoles("admin")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<?> add(@RequestBody QuartzJob quartzJob) {
 		List<QuartzJob> list = quartzJobService.findByJobClassName(quartzJob.getJobClassName());
@@ -103,7 +103,7 @@ public class QuartzJobController {
 	 * @param quartzJob
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+	@RequiresRoles("admin")
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
 	public Result<?> eidt(@RequestBody QuartzJob quartzJob) {
 		try {
@@ -121,7 +121,7 @@ public class QuartzJobController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+	@RequiresRoles("admin")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
 		QuartzJob quartzJob = quartzJobService.getById(id);
@@ -139,7 +139,7 @@ public class QuartzJobController {
 	 * @param ids
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+	@RequiresRoles("admin")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 		if (ids == null || "".equals(ids.trim())) {
@@ -158,22 +158,16 @@ public class QuartzJobController {
 	 * @param jobClassName
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+	@RequiresRoles("admin")
 	@GetMapping(value = "/pause")
 	@ApiOperation(value = "暂停定时任务")
 	public Result<Object> pauseJob(@RequestParam(name = "jobClassName", required = true) String jobClassName) {
 		QuartzJob job = null;
-		try {
-			job = quartzJobService.getOne(new LambdaQueryWrapper<QuartzJob>().eq(QuartzJob::getJobClassName, jobClassName));
-			if (job == null) {
-				return Result.error("定时任务不存在！");
-			}
-			scheduler.pauseJob(JobKey.jobKey(jobClassName.trim()));
-		} catch (SchedulerException e) {
-			throw new JeecgBootException("暂停定时任务失败");
+		job = quartzJobService.getOne(new LambdaQueryWrapper<QuartzJob>().eq(QuartzJob::getJobClassName, jobClassName));
+		if (job == null) {
+			return Result.error("定时任务不存在！");
 		}
-		job.setStatus(CommonConstant.STATUS_DISABLE);
-		quartzJobService.updateById(job);
+		quartzJobService.pause(job);
 		return Result.ok("暂停定时任务成功");
 	}
 
@@ -183,7 +177,7 @@ public class QuartzJobController {
 	 * @param jobClassName
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+	@RequiresRoles("admin")
 	@GetMapping(value = "/resume")
 	@ApiOperation(value = "恢复定时任务")
 	public Result<Object> resumeJob(@RequestParam(name = "jobClassName", required = true) String jobClassName) {
@@ -266,5 +260,27 @@ public class QuartzJobController {
 			}
 		}
 		return ImportExcelUtil.imporReturnRes(errorLines,successLines,errorMessage);
+	}
+
+	/**
+	 * 立即执行
+	 * @param id
+	 * @return
+	 */
+	@RequiresRoles("admin")
+	@GetMapping("/execute")
+	public Result<?> execute(@RequestParam(name = "id", required = true) String id) {
+		QuartzJob quartzJob = quartzJobService.getById(id);
+		if (quartzJob == null) {
+			return Result.error("未找到对应实体");
+		}
+		try {
+			quartzJobService.execute(quartzJob);
+		} catch (Exception e) {
+			//e.printStackTrace();
+			log.info("定时任务 立即执行失败>>"+e.getMessage());
+			return Result.error("执行失败!");
+		}
+		return Result.ok("执行成功!");
 	}
 }

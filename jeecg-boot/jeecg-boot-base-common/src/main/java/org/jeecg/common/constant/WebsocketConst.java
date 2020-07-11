@@ -53,4 +53,9 @@ public class WebsocketConst {
      */
     public static final String CMD_SIGN = "sign";
 
+    /**
+     * 消息类型 新闻发布/取消
+     */
+    public static final String NEWS_PUBLISH = "publish";
+
 }

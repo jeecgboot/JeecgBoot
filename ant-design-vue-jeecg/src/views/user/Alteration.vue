@@ -1,16 +1,14 @@
 <template>
   <a-card :bordered="false" style="width: 130%;text-align: center;margin-left:-10%">
     <a-steps class="steps" :current="currentTab">
-      <a-step title="用户账户"/>
       <a-step title="手机验证"/>
       <a-step title="密码"/>
       <a-step title="完成"/>
     </a-steps>
     <div class="content">
-      <step1 v-if="currentTab === 0" @nextStep="nextStep"/>
-      <step2 v-if="currentTab === 1" @nextStep="nextStep" @prevStep="prevStep" :userList="userList"/>
-      <step3 v-if="currentTab === 2" @nextStep="nextStep" @prevStep="prevStep" :userList="userList"/>
-      <step4 v-if="currentTab === 3" @prevStep="prevStep" @finish="finish" :userList="userList"/>
+      <step2 v-if="currentTab === 0" @nextStep="nextStep"/>
+      <step3 v-if="currentTab === 1" @nextStep="nextStep" @prevStep="prevStep" :userList="userList"/>
+      <step4 v-if="currentTab === 2" @prevStep="prevStep" @finish="finish" :userList="userList"/>
     </div>
   </a-card>
 </template>

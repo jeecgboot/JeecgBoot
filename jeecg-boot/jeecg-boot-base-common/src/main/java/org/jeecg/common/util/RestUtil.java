@@ -181,7 +181,7 @@ public class RestUtil {
      * @param responseType 返回类型
      * @return ResponseEntity<responseType>
      */
-    public static <T> ResponseEntity<T> request(String url, HttpMethod method, HttpHeaders headers, JSONObject variables, JSONObject params, Class<T> responseType) {
+    public static <T> ResponseEntity<T> request(String url, HttpMethod method, HttpHeaders headers, JSONObject variables, Object params, Class<T> responseType) {
         if (StringUtils.isEmpty(url)) {
             throw new RuntimeException("url 不能为空");
         }
@@ -194,7 +194,12 @@ public class RestUtil {
         // 请求体
         String body = "";
         if (params != null) {
-            body = params.toJSONString();
+            if (params instanceof JSONObject) {
+                body = ((JSONObject) params).toJSONString();
+
+            } else {
+                body = params.toString();
+            }
         }
         // 拼接 url 参数
         if (variables != null) {
@@ -208,14 +213,14 @@ public class RestUtil {
     /**
      * 获取JSON请求头
      */
-    private static HttpHeaders getHeaderApplicationJson() {
+    public static HttpHeaders getHeaderApplicationJson() {
         return getHeader(MediaType.APPLICATION_JSON_UTF8_VALUE);
     }
 
     /**
      * 获取请求头
      */
-    private static HttpHeaders getHeader(String mediaType) {
+    public static HttpHeaders getHeader(String mediaType) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType(mediaType));
         headers.add("Accept", mediaType);
