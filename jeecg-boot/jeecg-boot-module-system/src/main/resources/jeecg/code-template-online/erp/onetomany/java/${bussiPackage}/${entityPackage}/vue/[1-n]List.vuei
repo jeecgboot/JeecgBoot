@@ -35,6 +35,7 @@
         size="middle"
         bordered
         rowKey="id"
+        :scroll="{x:true}"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -57,7 +58,7 @@
             type="primary"
             icon="download"
             size="small"
-            @click="uploadFile(text)">
+            @click="downloadFile(text)">
             下载
           </a-button>
         </template>
@@ -161,6 +162,8 @@
             title: '操作',
             dataIndex: 'action',
             align:"center",
+            fixed:"right",
+            width:147,
             scopedSlots: { customRender: 'action' },
           }
         ],

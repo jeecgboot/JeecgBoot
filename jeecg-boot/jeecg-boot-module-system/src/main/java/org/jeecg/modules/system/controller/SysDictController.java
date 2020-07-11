@@ -242,7 +242,7 @@ public class SysDictController {
 	 * 根据字典code加载字典text 返回
 	 */
 	@RequestMapping(value = "/loadDictItem/{dictCode}", method = RequestMethod.GET)
-	public Result<List<String>> loadDictItem(@PathVariable String dictCode,@RequestParam(name="key") String key, @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
+	public Result<List<String>> loadDictItem(@PathVariable String dictCode,@RequestParam(name="key") String keys, @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
 		Result<List<String>> result = new Result<>();
 		try {
 			if(dictCode.indexOf(",")!=-1) {
@@ -251,7 +251,7 @@ public class SysDictController {
 					result.error500("字典Code格式不正确！");
 					return result;
 				}
-				List<String> texts = sysDictService.queryTableDictByKeys(params[0], params[1], params[2], key.split(","));
+				List<String> texts = sysDictService.queryTableDictByKeys(params[0], params[1], params[2], keys);
 
 				result.setSuccess(true);
 				result.setResult(texts);
@@ -319,7 +319,6 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysDict> add(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -340,7 +339,6 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
 	public Result<SysDict> edit(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -362,7 +360,6 @@ public class SysDictController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value=CacheConstant.SYS_DICT_CACHE, allEntries=true)
 	public Result<SysDict> delete(@RequestParam(name="id",required=true) String id) {
@@ -381,7 +378,6 @@ public class SysDictController {
 	 * @param ids
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value= CacheConstant.SYS_DICT_CACHE, allEntries=true)
 	public Result<SysDict> deleteBatch(@RequestParam(name="ids",required=true) String ids) {

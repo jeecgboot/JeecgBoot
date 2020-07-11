@@ -157,6 +157,7 @@
         bordered
         rowKey="id"
         class="j-table-force-nowrap"
+        :scroll="{x:true}"
         :loading="loading"
         :columns="columns"
         :dataSource="dataSource"
@@ -199,7 +200,7 @@
             type="primary"
             icon="download"
             size="small"
-            @click="uploadFile(text)"
+            @click="downloadFile(text)"
           >
             <span>下载</span>
           </a-button>
@@ -323,12 +324,14 @@
             title: '操作',
             dataIndex: 'action',
             align: 'center',
+            fixed:"right",
+            width:147,
             scopedSlots: { customRender: 'action' },
           },
         ],
         // 字典选项
         dictOptions: {},
-        // 展开的行
+        // 展开的行test
         expandedRowKeys: [],
 <#assign urlPrefix="/${entityPackage}/${entityName?uncap_first}">
         url: {

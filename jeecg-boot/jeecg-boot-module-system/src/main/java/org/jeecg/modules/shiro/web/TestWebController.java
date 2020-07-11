@@ -63,7 +63,7 @@ public class TestWebController {
     }
  
     @GetMapping("/require_role")
-    @RequiresRoles({"admin"})
+    @RequiresRoles("admin")
     public ResponseBean requireRole() {
         return new ResponseBean(200, "You are visiting require_role", null);
     }

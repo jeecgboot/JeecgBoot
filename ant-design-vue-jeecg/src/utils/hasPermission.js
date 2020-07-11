@@ -2,7 +2,7 @@ import { USER_AUTH,SYS_BUTTON_AUTH } from "@/store/mutation-types"
 
 const hasPermission = {
     install (Vue, options) {
-        console.log(options);
+          //console.log(options);
           Vue.directive('has', {
             inserted: (el, binding, vnode)=>{
                 console.log("页面权限控制----");

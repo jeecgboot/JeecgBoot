@@ -1,7 +1,10 @@
 <template>
-  <div v-if="!reloading" class="j-area-linkage">
+  <div class="j-area-linkage">
+    <div v-if="reloading">
+      <span> Reloading... </span>
+    </div>
     <area-cascader
-      v-if="_type === enums.type[0]"
+      v-else-if="_type === enums.type[0]"
       :value="innerValue"
       :data="pcaa"
       :level="1"
@@ -90,19 +93,23 @@
       this.initAreaData();
     },
     methods: {
+
+      /** 重新加载组件 */
+      reload() {
+        this.reloading = true
+        this.$nextTick(() => this.reloading = false)
+      },
+
       /** 通过 value 反推 options */
       loadDataByValue(value) {
-        if(!value || value.length==0){
+        if (!value || value.length === 0) {
           this.innerValue = []
-          this.reloading = true;
-          setTimeout(()=>{
-            this.reloading = false
-          },100)
-        }else{
-          this.initAreaData();
-          let arr = this.areaData.getRealCode(value);
+        } else {
+          this.initAreaData()
+          let arr = this.areaData.getRealCode(value)
           this.innerValue = arr
         }
+        this.reload()
       },
       /** 通过地区code获取子级 */
       loadDataByCode(value) {

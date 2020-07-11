@@ -102,5 +102,9 @@ public interface ISysDepartService extends IService<SysDepart>{
      * @return
      */
     List<String> getMySubDepIdsByDepId(String departIds);
-    
+    /**
+     * 根据关键字获取部门信息（通讯录）
+     * @return
+     */
+    List<SysDepartTreeModel> queryTreeByKeyWord(String keyWord);
 }

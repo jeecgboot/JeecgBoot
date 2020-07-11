@@ -46,6 +46,8 @@
   import 'codemirror/mode/swift/swift.js'
   import 'codemirror/mode/vue/vue.js'
 
+  import { isIE11, isIE } from '@/utils/browser'
+
   // 尝试获取全局实例
   const CodeMirror = window.CodeMirror || _CodeMirror
 
@@ -85,7 +87,21 @@
       zIndex: {
         type: [Number, String],
         default: 999
-      }
+      },
+      // 是否自适应高度，可以传String或Boolean
+      // 传 String 类型只能写"!ie" ，
+      // 填写这个字符串，代表其他浏览器自适应高度
+      // 唯独IE下不自适应高度，因为IE下不支持min、max-height样式
+      // 如果填写的不是"!ie"就视为true
+      autoHeight: {
+        type: [String, Boolean],
+        default: true
+      },
+      // 不自适应高度的情况下生效的固定高度
+      height: {
+        type: [String, Number],
+        default: '240px'
+      },
     },
     data () {
       return {
@@ -217,13 +233,29 @@
           hintOptions: this.options.hintOptions
         }
       },
-      fullScreenParentProps(){
+      isAutoHeight() {
+        let {autoHeight} = this
+        if (typeof autoHeight === 'string' && autoHeight.toLowerCase().trim() === '!ie') {
+          autoHeight = !(isIE() || isIE11())
+        } else {
+          autoHeight = true
+        }
+        return autoHeight
+      },
+      fullScreenParentProps() {
         let props = {
-          class: ['full-screen-parent', this.fullCoder ? 'full-screen' : ''],
+          class: {
+            'full-screen-parent': true,
+            'full-screen': this.fullCoder,
+            'auto-height': this.isAutoHeight
+          },
           style: {}
         }
         if (this.fullCoder) {
           props.style['z-index'] = this.zIndex
+        }
+        if (!this.isAutoHeight) {
+          props.style['height'] = (typeof this.height === 'number' ? this.height + 'px' : this.height)
         }
         return props
       }
@@ -240,7 +272,8 @@
         // 编辑器赋值
         if(this.value||this.code){
           this.hasCode=true
-          this.coder.setValue(this.value || this.code)
+          //this.coder.setValue(this.value || this.code)
+          this.setCodeContent(this.value || this.code)
         }else{
           this.coder.setValue('')
           this.hasCode=false
@@ -408,6 +441,7 @@
         top: 12px;
         right: 12px;
       }
+
       .full-screen-child {
         height: 100%;
         max-height: 100%;
@@ -416,9 +450,22 @@
     }
 
     .full-screen-child {
-      min-height: 120px;
-      max-height: 320px;
-      overflow:hidden;
+      height: 100%;
+    }
+
+    &.auto-height {
+      .full-screen-child {
+        min-height: 120px;
+        max-height: 320px;
+        height: unset;
+        overflow: hidden;
+      }
+
+      &.full-screen .full-screen-child {
+        height: 100%;
+        max-height: 100%;
+        min-height: 100%;
+      }
     }
 
   }

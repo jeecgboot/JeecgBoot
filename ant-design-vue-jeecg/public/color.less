@@ -7680,6 +7680,13 @@ font.weak {
   color: #f5222d;
 }
 
+// 侧边导航栏首页颜色跟随主题变化
+.ant-menu.ant-menu-root > .ant-menu-item:first-child.ant-menu-item-selected {
+  & > a,
+  & > a:hover {
+    color: @primary-color;
+  }
+}
 
 // begin -------- JAreaLinkage 三级联动样式 --------------
 .cascader-menu-list .cascader-menu-option.hover,
@@ -7699,3 +7706,13 @@ font.weak {
   box-shadow: 0 0 0 2px color(~`colorPalette("@{primary-color}", 1)`);
 }
 // end -------- JAreaLinkage 三级联动样式 --------------
+
+// TESTA-521
+.ant-menu-submenu-selected {
+  color: @primary-color;
+}
+
+// TESTA-521
+.tab-layout-tabs.ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
+  border-color: @primary-color !important;
+}

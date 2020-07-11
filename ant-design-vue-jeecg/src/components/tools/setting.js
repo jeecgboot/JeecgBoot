@@ -64,7 +64,7 @@ const updateTheme = primaryColor => {
     const lessConfigNode = document.createElement('script');
     const lessScriptNode = document.createElement('script');
     lessStyleNode.setAttribute('rel', 'stylesheet/less');
-    lessStyleNode.setAttribute('href', '/color.less');
+    lessStyleNode.setAttribute('href', __webpack_public_path__ + 'color.less')
     lessConfigNode.innerHTML = `
       window.less = {
         async: true,

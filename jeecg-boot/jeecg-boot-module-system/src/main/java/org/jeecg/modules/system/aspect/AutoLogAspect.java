@@ -3,6 +3,8 @@ package org.jeecg.modules.system.aspect;
 import java.lang.reflect.Method;
 import java.util.Date;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.shiro.SecurityUtils;
@@ -24,11 +26,12 @@ import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
  * 系统日志，切面处理类
- * 
+ *
  * @Author scott
  * @email jeecgos@163.com
  * @Date 2018年1月14日
@@ -38,10 +41,10 @@ import com.alibaba.fastjson.JSONObject;
 public class AutoLogAspect {
 	@Autowired
 	private ISysLogService sysLogService;
-	
+
 	@Pointcut("@annotation(org.jeecg.common.aspect.annotation.AutoLog)")
-	public void logPointCut() { 
-		
+	public void logPointCut() {
+
 	}
 
 	@Around("logPointCut()")
@@ -68,15 +71,15 @@ public class AutoLogAspect {
 			//注解上的描述,操作日志内容
 			sysLog.setLogContent(syslog.value());
 			sysLog.setLogType(syslog.logType());
-			
+
 		}
 
 		//请求的方法名
 		String className = joinPoint.getTarget().getClass().getName();
 		String methodName = signature.getName();
 		sysLog.setMethod(className + "." + methodName + "()");
-		
-		
+
+
 		//设置操作类型
 		if (sysLog.getLogType() == CommonConstant.LOG_TYPE_2) {
 			sysLog.setOperateType(getOperateType(methodName, syslog.operateType()));
@@ -144,7 +147,19 @@ public class AutoLogAspect {
 		String params = "";
 		if ("POST".equals(httpMethod) || "PUT".equals(httpMethod) || "PATCH".equals(httpMethod)) {
 			Object[] paramsArray = joinPoint.getArgs();
-			params = JSONObject.toJSONString(paramsArray);
+			// java.lang.IllegalStateException: It is illegal to call this method if the current request is not in asynchronous mode (i.e. isAsyncStarted() returns false)
+             //  https://my.oschina.net/mengzhang6/blog/2395893
+			 Object[] arguments  = new Object[paramsArray.length];
+			for (int i = 0; i < paramsArray.length; i++) {
+				if (paramsArray[i] instanceof ServletRequest || paramsArray[i] instanceof ServletResponse || paramsArray[i] instanceof MultipartFile) {
+					//ServletRequest不能序列化，从入参里排除，否则报异常：java.lang.IllegalStateException: It is illegal to call this method if the current request is not in asynchronous mode (i.e. isAsyncStarted() returns false)
+					//ServletResponse不能序列化 从入参里排除，否则报异常：java.lang.IllegalStateException: getOutputStream() has already been called for this response
+					continue;
+				}
+				arguments[i] = paramsArray[i];
+			}
+
+			params = JSONObject.toJSONString(arguments);
 		} else {
 			MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 			Method method = signature.getMethod();

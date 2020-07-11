@@ -127,10 +127,10 @@ spring:
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false
+          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: root
           password: root
-          driver-class-name: com.mysql.jdbc.Driver
+          driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
           #url: jdbc:mysql://localhost:3306/jeecg-boot2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true
@@ -180,7 +180,7 @@ jeecg :
      accessKeyId: LTAIpW4gUG7xYDNI
      accessKeySecret: ??
   shiro:
-     excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**
+     excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**
   #阿里云oss存储配置
   oss:
     endpoint: oss-cn-beijing.aliyuncs.com
@@ -197,6 +197,8 @@ jeecg :
   desform:
     # 主题颜色（仅支持 16进制颜色代码）
     theme-color: "#1890ff"
+    # 文件、图片上传方式，可选项：qiniu（七牛云）、system（跟随系统配置）
+    upload-type: system
   # 在线预览文件服务器地址配置
   file-view-domain: http://fileview.jeecg.com
   # minio文件上传
@@ -205,6 +207,17 @@ jeecg :
     minio_name: ??
     minio_pass: ??
     bucketName: otatest
+  #大屏报表参数设置
+  jmreport:
+    #是否需要校验token
+    is_verify_token: true
+    #必须校验方法
+    verify_methods: remove,delete,save,add,update
+  #Wps在线文档
+  wps:
+    domain: https://wwo.wps.cn/office/
+    appid: ??
+    appsecret: ??
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas

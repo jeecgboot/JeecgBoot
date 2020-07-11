@@ -2,19 +2,6 @@
   <div>
     <a-form :form="form" style="max-width: 500px; margin: 40px auto 0;" @keyup.enter.native="nextStep">
       <a-form-item
-        label="账号名"
-        :labelCol="{span: 5}"
-        :wrapperCol="{span: 19}"
-      >
-        <a-input
-          type="text"
-          autocomplete="false"
-          :style="{width:'310px'}"
-          :value="accountName"
-          disabled>
-        </a-input>
-      </a-form-item>
-      <a-form-item
         label="手机"
         :labelCol="{span: 5}"
         :wrapperCol="{span: 19}"
@@ -22,8 +9,8 @@
         <a-input
           type="text"
           autocomplete="false"
-          :style="{width:'310px'}"
-          v-decorator="['phone',{initialValue: defaultPhone, rules: validatorRules.phone.rule}]"
+          style="width:310px;margin-left:-10px"
+          v-decorator="['phone',{ rules: validatorRules.phone.rule}]"
           placeholder="请输入手机号">
           <a-icon slot="prefix" type="phone" :style="{ color: 'rgba(0,0,0,.25)'}"/>
         </a-input>
@@ -52,10 +39,9 @@
         </a-row>
       </a-form-item>
       <a-form-item :wrapperCol="{span: 19, offset: 5}">
-        <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
+        <router-link style="float: left;line-height: 40px;" :to="{ name: 'login' }">使用已有账户登录</router-link>
         <a-button type="primary" @click="nextStep" style="margin-left: 20px">下一步</a-button>
       </a-form-item>
-
     </a-form>
   </div>
 </template>
@@ -70,7 +56,7 @@
       return {
         form: this.$form.createForm(this),
         loading: false,
-        accountName: this.userList.username,
+        // accountName: this.userList.username,
         dropList: "0",
         captcha: "",
         show: true,
@@ -84,17 +70,11 @@
         },
         validatorRules: {
           captcha: {rule: [{required: true, message: '请输入短信验证码!'}, {validator: this.validateCaptcha}]},
-          phone: {rule: [{required: true, message: '请输入手机号码!'}]},
+          phone: {rule: [{required: true, message: '请输入手机号码!'}, {validator: this.validatePhone}]},
         },
       }
     },
     computed: {
-      defaultPhone: function(){
-        if(this.userList.isPhone){
-          return this.userList.phone
-        }
-        return null;
-      }
     },
     methods: {
       nextStep() {
@@ -108,15 +88,15 @@
                 this.cmsFailed("请输入短信验证码!");
               } else {
                 var params = {}
-                params.phone = this.userList.phone;
+                params.phone = values.phone;
                 params.smscode = values.captcha;
                 postAction("/sys/user/phoneVerification", params).then((res) => {
                   if (res.success) {
                     console.log(res);
                     var userList = {
-                      username: this.userList.username,
-                      phone: this.userList.phone,
-                      smscode: res.result
+                      username: res.result.username,
+                      phone: values.phone,
+                      smscode: res.result.smscode
                     };
                     setTimeout(function () {
                       that.$emit('nextStep', userList)
@@ -133,12 +113,14 @@
           }
         })
       },
-      prevStep() {
-        this.$emit('prevStep', this.userList);
-      },
       getCaptcha(e) {
         e.preventDefault();
         let that = this;
+        let phone=that.form.getFieldValue("phone")
+        if(!phone){
+          this.cmsFailed("手机号不能为空!");
+          return;
+        }
         this.state.smsSendBtn = true;
         let interval = window.setInterval(() => {
           if (that.state.time-- <= 0) {
@@ -150,7 +132,7 @@
 
         const hide = this.$message.loading('验证码发送中..', 0);
         let smsParams = {
-          mobile: this.userList.phone,
+          mobile: phone,
           smsmode: "2"
         };
         postAction("/sys/sms", smsParams).then(res => {
@@ -179,6 +161,18 @@
           that.show = false;
         }
       },
+      validatePhone(rule,value,callback){
+          if(value){
+            var myreg=/^[1][3,4,5,7,8][0-9]{9}$/;
+            if(!myreg.test(value)){
+              callback("请输入正确的手机号")
+            }else{
+              callback();
+            }
+          }else{
+            callback()
+          }
+      }
     }
 
   }

@@ -24,4 +24,17 @@ public interface IQuartzJobService extends IService<QuartzJob> {
 	boolean deleteAndStopJob(QuartzJob quartzJob);
 
 	boolean resumeJob(QuartzJob quartzJob);
+
+	/**
+	 * 执行定时任务
+	 * @param quartzJob
+	 */
+	void execute(QuartzJob quartzJob) throws Exception;
+
+	/**
+	 * 暂停任务
+	 * @param quartzJob
+	 * @throws SchedulerException
+	 */
+	void pause(QuartzJob quartzJob);
 }

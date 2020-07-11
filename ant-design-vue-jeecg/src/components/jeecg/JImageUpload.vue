@@ -86,6 +86,9 @@
         } else {
           this.initFileList(val)
         }
+        if(!val || val.length==0){
+          this.picUrl = false;
+        }
       }
     },
     created(){

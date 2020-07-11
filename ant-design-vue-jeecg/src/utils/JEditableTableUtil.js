@@ -1,3 +1,5 @@
+import { getVmParentByName } from '@/utils/util'
+
 const FormTypes = {
   normal: 'normal',
   input: 'input',
@@ -88,7 +90,7 @@ export function validateTables(cases, deleteTempId) {
   return new Promise((resolve, reject) => {
     let tables = []
     let index = 0;
-    if(!cases || cases.length==0){
+    if(!cases || cases.length === 0){
       resolve()
     }
     (function next() {
@@ -104,7 +106,13 @@ export function validateTables(cases, deleteTempId) {
       }, error => {
         // 出现未验证通过的表单，不再进行下一步校验，直接返回失败并跳转到该表格
         if (error === VALIDATE_NO_PASSED) {
-          reject({ error: VALIDATE_NO_PASSED, index })
+          // 尝试获取tabKey，如果在ATab组件内即可获取
+          let paneKey;
+          let tabPane = getVmParentByName(vm, 'ATabPane')
+          if (tabPane) {
+            paneKey = tabPane.$vnode.key
+          }
+          reject({error: VALIDATE_NO_PASSED, index, paneKey})
         }
         reject(error)
       })

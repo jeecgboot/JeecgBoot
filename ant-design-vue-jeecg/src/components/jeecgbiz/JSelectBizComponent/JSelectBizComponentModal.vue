@@ -1,9 +1,10 @@
 <template>
-  <a-modal
+  <j-modal
     centered
     :title="name + '选择'"
     :width="width"
     :visible="visible"
+    switchFullscreen
     @ok="handleOk"
     @cancel="close"
     cancelText="关闭">
@@ -32,7 +33,7 @@
         </div>
 
         <a-table
-          size="small"
+          size="middle"
           bordered
           :rowKey="rowKey"
           :columns="innerColumns"
@@ -49,7 +50,7 @@
       <a-col :span="8">
         <a-card :title="'已选' + name" :bordered="false" :head-style="{padding:0}" :body-style="{padding:0}">
 
-          <a-table size="small" :rowKey="rowKey" bordered v-bind="selectedTable">
+          <a-table size="middle" :rowKey="rowKey" bordered v-bind="selectedTable">
               <span slot="action" slot-scope="text, record, index">
                 <a @click="handleDeleteSelected(record, index)">删除</a>
               </span>
@@ -58,7 +59,7 @@
         </a-card>
       </a-col>
     </a-row>
-  </a-modal>
+  </j-modal>
 </template>
 
 <script>

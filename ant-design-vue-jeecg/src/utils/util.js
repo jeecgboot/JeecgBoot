@@ -1,6 +1,6 @@
 import * as api from '@/api/api'
 import { isURL } from '@/utils/validate'
-import onlineCommons from '@jeecg/antd-online-beta220'
+import onlineCommons from '@jeecg/antd-online-mini'
 
 export function timeFix() {
   const time = new Date()
@@ -115,7 +115,6 @@ function  generateChildRouters (data) {
       item.meta.url = URL;
     }
 
-    //online菜单路由加载逻辑
     let componentPath
     if(item.component=="modules/online/cgform/OnlCgformHeadList"){
       componentPath = onlineCommons.OnlCgformHeadList
@@ -136,6 +135,7 @@ function  generateChildRouters (data) {
     }else{
       componentPath = resolve => require(['@/' + component+'.vue'], resolve)
     }
+
 
     let menu =  {
       path: item.path,
@@ -477,4 +477,54 @@ export function replaceAll(text, checker, replacer) {
     return replaceAll(text, checker, replacer)
   }
   return text
+}
+
+/**
+ * 获取事件冒泡路径，兼容 IE11，Edge，Chrome，Firefox，Safari
+ * 目前使用的地方：JEditableTable Span模式
+ */
+export function getEventPath(event) {
+  let target = event.target
+  let path = (event.composedPath && event.composedPath()) || event.path
+
+  if (path != null) {
+    return (path.indexOf(window) < 0) ? path.concat(window) : path
+  }
+
+  if (target === window) {
+    return [window]
+  }
+
+  let getParents = (node, memo) => {
+    memo = memo || []
+    const parentNode = node.parentNode
+
+    if (!parentNode) {
+      return memo
+    } else {
+      return getParents(parentNode, memo.concat(parentNode))
+    }
+  }
+  return [target].concat(getParents(target), window)
+}
+
+/**
+ * 根据组件名获取父级
+ * @param vm
+ * @param name
+ * @returns {Vue | null|null|Vue}
+ */
+export function getVmParentByName(vm, name) {
+  let parent = vm.$parent
+  if (parent && parent.$options) {
+    if (parent.$options.name === name) {
+      return parent
+    } else {
+      let res = getVmParentByName(parent, name)
+      if (res) {
+        return res
+      }
+    }
+  }
+  return null
 }

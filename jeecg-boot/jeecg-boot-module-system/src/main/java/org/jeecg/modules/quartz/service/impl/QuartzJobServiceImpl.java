@@ -1,22 +1,15 @@
 package org.jeecg.modules.quartz.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.mapper.QuartzJobMapper;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.CronTrigger;
-import org.quartz.Job;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.TriggerBuilder;
-import org.quartz.TriggerKey;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +30,11 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 	private QuartzJobMapper quartzJobMapper;
 	@Autowired
 	private Scheduler scheduler;
+
+	/**
+	 * 立即执行的任务分组
+	 */
+	private static final String JOB_TEST_GROUP = "test_group";
 
 	@Override
 	public List<QuartzJob> findByJobClassName(String jobClassName) {
@@ -91,6 +89,34 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 		schedulerDelete(job.getJobClassName().trim());
 		boolean ok = this.removeById(job.getId());
 		return ok;
+	}
+
+	@Override
+	public void execute(QuartzJob quartzJob) throws Exception {
+		String jobName = quartzJob.getJobClassName().trim();
+		Date startDate = new Date();
+		String ymd = DateUtils.date2Str(startDate,DateUtils.yyyymmddhhmmss.get());
+		String identity =  jobName + ymd;
+		//3秒后执行 只执行一次
+		startDate.setTime(startDate.getTime()+3000L);
+		// 定义一个Trigger
+		SimpleTrigger trigger = (SimpleTrigger)TriggerBuilder.newTrigger()
+				.withIdentity(identity, JOB_TEST_GROUP)
+				.startAt(startDate)
+				.build();
+		// 构建job信息
+		JobDetail jobDetail = JobBuilder.newJob(getClass(jobName).getClass()).withIdentity(identity).usingJobData("parameter", quartzJob.getParameter()).build();
+		// 将trigger和 jobDetail 加入这个调度
+		scheduler.scheduleJob(jobDetail, trigger);
+		// 启动scheduler
+		scheduler.start();
+	}
+
+	@Override
+	public void pause(QuartzJob quartzJob){
+		schedulerDelete(quartzJob.getJobClassName().trim());
+		quartzJob.setStatus(CommonConstant.STATUS_DISABLE);
+		this.updateById(quartzJob);
 	}
 
 	/**

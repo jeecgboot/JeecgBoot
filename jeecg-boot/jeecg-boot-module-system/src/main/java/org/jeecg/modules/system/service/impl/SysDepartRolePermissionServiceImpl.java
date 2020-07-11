@@ -1,6 +1,8 @@
 package org.jeecg.modules.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.jeecg.common.util.IPUtils;
+import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDepartRolePermission;
 import org.jeecg.modules.system.mapper.SysDepartRolePermissionMapper;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 /**
@@ -22,12 +25,23 @@ public class SysDepartRolePermissionServiceImpl extends ServiceImpl<SysDepartRol
 
     @Override
     public void saveDeptRolePermission(String roleId, String permissionIds, String lastPermissionIds) {
+        String ip = "";
+        try {
+            //获取request
+            HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
+            //获取IP地址
+            ip = IPUtils.getIpAddr(request);
+        } catch (Exception e) {
+            ip = "127.0.0.1";
+        }
         List<String> add = getDiff(lastPermissionIds,permissionIds);
         if(add!=null && add.size()>0) {
             List<SysDepartRolePermission> list = new ArrayList<SysDepartRolePermission>();
             for (String p : add) {
                 if(oConvertUtils.isNotEmpty(p)) {
                     SysDepartRolePermission rolepms = new SysDepartRolePermission(roleId, p);
+                    rolepms.setOperateDate(new Date());
+                    rolepms.setOperateIp(ip);
                     list.add(rolepms);
                 }
             }

@@ -7,7 +7,7 @@
     :closable="true"
     @close="close"
     :visible="visible"
-    style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
+    style="overflow: auto;padding-bottom: 53px;">
 
     <a-form>
       <a-form-item label='所拥有的部门权限'>
