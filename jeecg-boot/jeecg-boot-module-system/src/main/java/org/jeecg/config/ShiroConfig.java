@@ -113,11 +113,11 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/actuator/httptrace/**", "anon");
 		filterChainDefinitionMap.put("/actuator/redis/**", "anon");
 
-
 		//测试示例
 		filterChainDefinitionMap.put("/test/jeecgDemo/html", "anon"); //模板页面
 		filterChainDefinitionMap.put("/test/jeecgDemo/redis/**", "anon"); //redis测试
-
+		filterChainDefinitionMap.put("/big/screen/**", "anon");
+		filterChainDefinitionMap.put("/bigscreen/**", "anon");
 
 		//排除Online请求
 		filterChainDefinitionMap.put("/auto/cgform/**", "anon");
