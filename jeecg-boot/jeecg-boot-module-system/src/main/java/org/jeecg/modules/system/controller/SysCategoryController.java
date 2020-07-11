@@ -1,17 +1,12 @@
 package org.jeecg.modules.system.controller;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -32,11 +27,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-
-import lombok.extern.slf4j.Slf4j;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
  /**
  * @Description: 分类字典
@@ -74,7 +69,7 @@ public class SysCategoryController {
 		QueryWrapper<SysCategory> queryWrapper = new QueryWrapper<SysCategory>();
 		queryWrapper.eq("pid", sysCategory.getPid());
 		//--author:os_chengtgen---date:20190804 -----for: 分类字典页面显示错误,issues:377--------end
-		
+
 		Page<SysCategory> page = new Page<SysCategory>(pageNo, pageSize);
 		IPage<SysCategory> pageList = sysCategoryService.page(page, queryWrapper);
 		result.setSuccess(true);
@@ -233,7 +228,22 @@ public class SysCategoryController {
           params.setNeedSave(true);
           try {
               List<SysCategory> listSysCategorys = ExcelImportUtil.importExcel(file.getInputStream(), SysCategory.class, params);
+			 //按照编码长度排序
+              Collections.sort(listSysCategorys);
+			  log.info("排序后的list====>",listSysCategorys);
               for (SysCategory sysCategoryExcel : listSysCategorys) {
+				  String code = sysCategoryExcel.getCode();
+				  if(code.length()>3){
+					  String pCode = sysCategoryExcel.getCode().substring(0,code.length()-3);
+					  log.info("pCode====>",pCode);
+					  String pId=sysCategoryService.queryIdByCode(pCode);
+					  log.info("pId====>",pId);
+					  if(StringUtils.isNotBlank(pId)){
+						  sysCategoryExcel.setPid(pId);
+					  }
+				  }else{
+					  sysCategoryExcel.setPid("0");
+				  }
                   sysCategoryService.save(sysCategoryExcel);
               }
               return Result.ok("文件导入成功！数据行数：" + listSysCategorys.size());
@@ -399,28 +409,30 @@ public class SysCategoryController {
 
 	 /**
 	  * 分类字典控件数据回显[表单页面]
-	  * @param key
+	  *
+	  * @param ids
 	  * @return
 	  */
 	 @RequestMapping(value = "/loadDictItem", method = RequestMethod.GET)
-	 public Result<List<String>> loadDictItem(@RequestParam(name="ids") String ids) {
+	 public Result<List<String>> loadDictItem(@RequestParam(name = "ids") String ids) {
 		 Result<List<String>> result = new Result<>();
-		 LambdaQueryWrapper<SysCategory> query = new LambdaQueryWrapper<SysCategory>().in(SysCategory::getId,ids);
-		 List<SysCategory> list = this.sysCategoryService.list(query);
-		 List<String> textList = new ArrayList<String>();
-		 for (String id : ids.split(",")) {
-			 for (SysCategory c : list) {
-				if(id.equals(c.getId())){
-					textList.add(c.getName());
-					break;
-				}
-			 }
+		 // 非空判断
+		 if (StringUtils.isBlank(ids)) {
+			 result.setSuccess(false);
+			 result.setMessage("ids 不能为空");
+			 return result;
 		 }
+		 String[] idArray = ids.split(",");
+		 LambdaQueryWrapper<SysCategory> query = new LambdaQueryWrapper<>();
+		 query.in(SysCategory::getId, Arrays.asList(idArray));
+		 // 查询数据
+		 List<SysCategory> list = this.sysCategoryService.list(query);
+		 // 取出name并返回
+		 List<String> textList = list.stream().map(SysCategory::getName).collect(Collectors.toList());
 		 result.setSuccess(true);
 		 result.setResult(textList);
 		 return result;
 	 }
-
 
 	 /**
 	  * [列表页面]加载分类字典数据 用于值的替换

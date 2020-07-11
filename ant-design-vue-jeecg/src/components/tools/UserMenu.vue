@@ -62,6 +62,10 @@
           <a-icon type="cluster"/>
           <span>切换部门</span>
         </a-menu-item>
+        <a-menu-item key="6" @click="clearCache">
+          <a-icon type="sync"/>
+          <span>清理缓存</span>
+        </a-menu-item>
        <!-- <a-menu-item key="2" disabled>
           <a-icon type="setting"/>
           <span>测试</span>
@@ -94,7 +98,9 @@
   import DepartSelect from './DepartSelect'
   import { mapActions, mapGetters,mapState } from 'vuex'
   import { mixinDevice } from '@/utils/mixin.js'
-  import { getFileAccessHttpUrl } from "@/api/manage"
+  import { getFileAccessHttpUrl,getAction } from "@/api/manage"
+  import Vue from 'vue'
+  import { UI_CACHE_DB_DICT_DATA } from "@/store/mutation-types"
 
   export default {
     name: "UserMenu",
@@ -168,7 +174,9 @@
           content: '真的要注销登录吗 ?',
           onOk() {
             return that.Logout({}).then(() => {
-                window.location.href="/";
+              // update-begin author:wangshuai date:20200601 for: 退出登录跳转登录页面
+              that.$router.push({ path: '/user/login' });
+              // update-end author:wangshuai date:20200601 for: 退出登录跳转登录页面
               //window.location.reload()
             }).catch(err => {
               that.$message.error({
@@ -214,9 +222,28 @@
           this.$router.push({ path: route.path })
         }
         this.searchMenuVisible = false
-      }
+      },
       // update_end author:sunjianlei date:20191230 for: 解决外部链接打开失败的问题
       /*update_end author:zhaoxin date:20191129 for: 做头部菜单栏导航*/
+      /*update_begin author:liushaoqian date:20200507 for: 刷新缓存*/
+      clearCache(){
+        getAction("sys/dict/refleshCache").then((res) => {
+          if (res.success) {
+            //重新加载缓存
+            getAction("sys/dict/queryAllDictItems").then((res) => {
+              if (res.success) {
+                Vue.ls.remove(UI_CACHE_DB_DICT_DATA)
+                Vue.ls.set(UI_CACHE_DB_DICT_DATA, res.result, 7 * 24 * 60 * 60 * 1000)
+              }
+            })
+            this.$message.success("刷新缓存完成！");
+          }
+        }).catch(e=>{
+          this.$message.warn("刷新缓存失败！");
+          console.log("刷新失败",e)
+        })
+      }
+      /*update_end author:liushaoqian date:20200507 for: 刷新缓存*/
     }
   }
 </script>

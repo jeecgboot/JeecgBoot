@@ -97,9 +97,35 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	public Result<?> queryPageList(${entityName} ${entityName?uncap_first},HttpServletRequest req) {
 		QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap());
 		List<${entityName}> list = ${entityName?uncap_first}Service.list(queryWrapper);
-		return Result.ok(list);
+		IPage<LvTestTree> pageList = new Page<>(1, 10, list.size());
+        pageList.setRecords(list);
+		return Result.ok(pageList);
 	}
-	
+
+    /**
+      * 批量查询子节点
+      * @param parentIds 父ID（多个采用半角逗号分割）
+      * @return 返回 IPage
+      * @param parentIds
+      * @return
+      */
+	@AutoLog(value = "${tableVo.ftlDescription}-批量获取子数据")
+    @ApiOperation(value="${tableVo.ftlDescription}-批量获取子数据", notes="${tableVo.ftlDescription}-批量获取子数据")
+    @GetMapping("/getChildListBatch")
+    public Result getChildListBatch(@RequestParam("parentIds") String parentIds) {
+        try {
+            QueryWrapper<${entityName}> queryWrapper = new QueryWrapper<>();
+            List<String> parentIdList = Arrays.asList(parentIds.split(","));
+            queryWrapper.in("${Format.humpToUnderline(pidFieldName)}", parentIdList);
+            List<${entityName}> list = ${entityName?uncap_first}Service.list(queryWrapper);
+            IPage<${entityName}> pageList = new Page<>(1, 10, list.size());
+            pageList.setRecords(list);
+            return Result.ok(pageList);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return Result.error("批量查询子节点失败：" + e.getMessage());
+        }
+    }
 	
 	/**
 	 *   添加

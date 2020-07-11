@@ -3,7 +3,7 @@ import axios from 'axios'
 import store from '@/store'
 import { VueAxios } from './axios'
 import {Modal, notification} from 'ant-design-vue'
-import { ACCESS_TOKEN } from "@/store/mutation-types"
+import { ACCESS_TOKEN, TENANT_ID } from "@/store/mutation-types"
 
 /**
  * 【指定 axios的 baseURL】
@@ -12,7 +12,7 @@ import { ACCESS_TOKEN } from "@/store/mutation-types"
  * @type {*|string}
  */
 let apiBaseUrl = window._CONFIG['domianURL'] || "/jeecg-boot";
-console.log("apiBaseUrl= ",apiBaseUrl)
+//console.log("apiBaseUrl= ",apiBaseUrl)
 // 创建 axios 实例
 const service = axios.create({
   //baseURL: '/jeecg-boot',
@@ -22,6 +22,7 @@ const service = axios.create({
 
 const err = (error) => {
   if (error.response) {
+    let that=this;
     let data = error.response.data
     const token = Vue.ls.get(ACCESS_TOKEN)
     console.log("------异常响应------",token)
@@ -45,7 +46,14 @@ const err = (error) => {
             onOk: () => {
               store.dispatch('Logout').then(() => {
                 Vue.ls.remove(ACCESS_TOKEN)
-                window.location.reload()
+                try {
+                  let path=that.$route.path;
+                  if(path.indexOf('/user/login')==-1){
+                    window.location.reload()
+                  }
+                }catch (e) {
+                  window.location.reload()
+                }
               })
             }
           })
@@ -86,6 +94,13 @@ service.interceptors.request.use(config => {
   if (token) {
     config.headers[ 'X-Access-Token' ] = token // 让每个请求携带自定义 token 请根据实际情况自行修改
   }
+  //update-begin-author:taoyan date:2020707 for:多租户
+  let tenantid = Vue.ls.get(TENANT_ID)
+  if (!tenantid) {
+    tenantid = 0;
+  }
+  config.headers[ 'tenant_id' ] = tenantid
+  //update-end-author:taoyan date:2020707 for:多租户
   if(config.method=='get'){
     if(config.url.indexOf("sys/dict/getDictItems")<0){
       config.params = {

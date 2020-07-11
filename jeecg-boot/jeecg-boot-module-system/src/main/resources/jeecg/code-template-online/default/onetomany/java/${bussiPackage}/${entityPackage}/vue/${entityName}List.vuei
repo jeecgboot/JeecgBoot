@@ -19,8 +19,13 @@
 <#assign query_sel_multi=false>
 <#assign query_sel_cat=false>
 <#assign query_sel_search=false>
+<#assign bpm_flag=false>
+
 <#-- 开始循环 -->
 <#list columns as po>
+<#if po.fieldDbName=='bpm_status'>
+  <#assign bpm_flag=true>
+</#if>
 <#if po.isQuery=='Y'>
 <#assign query_flag=true>
 	<#if query_field_no==2>
@@ -159,6 +164,7 @@
         bordered
         rowKey="id"
         class="j-table-force-nowrap"
+        :scroll="{x:true}"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -181,10 +187,15 @@
             type="primary"
             icon="download"
             size="small"
-            @click="uploadFile(text)">
+            @click="downloadFile(text)">
             下载
           </a-button>
         </template>
+        <#if list_need_pca>
+        <template slot="pcaSlot" slot-scope="text">
+          <div>{{ getPcaText(text) }}</div>
+        </template>
+        </#if>
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
@@ -193,6 +204,14 @@
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
+              <a-menu-item>
+                <a @click="handleDetail(record)">详情</a>
+              </a-menu-item>
+              <#if bpm_flag>
+                <a-menu-item v-if="record.bpmStatus === '1'">
+                <a @click="startProcess(record)">发起流程</a>
+              </a-menu-item>
+              </#if>
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>
@@ -205,7 +224,7 @@
       </a-table>
     </div>
 
-    <${entityName?uncap_first}-modal ref="modalForm" @ok="modalFormOk"></${entityName?uncap_first}-modal>
+    <${tableName?replace("_","-")}-modal ref="modalForm" @ok="modalFormOk"/>
   </a-card>
 </template>
 
@@ -250,6 +269,9 @@
   import JSearchSelectTag from '@/components/dict/JSearchSelectTag'
   </#if>
   import '@/assets/less/TableExpand.less'
+  <#if bpm_flag>
+  import { postAction } from '@/api/manage'
+  </#if>
 
   export default {
     name: "${entityName}List",
@@ -319,6 +341,9 @@
             <#elseif po.classType=='file'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'fileSlot'}
+            <#elseif po.classType=='pca'>
+            dataIndex: '${po.fieldName}',
+            scopedSlots: {customRender: 'pcaSlot'}
             <#elseif po.classType=='image'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'imgSlot'}
@@ -342,6 +367,7 @@
             title: '操作',
             dataIndex: 'action',
             align:"center",
+            fixed:"right",
             scopedSlots: { customRender: 'action' },
           }
         ],
@@ -351,9 +377,18 @@
           deleteBatch: "/${entityPackage}/${entityName?uncap_first}/deleteBatch",
           exportXlsUrl: "/${entityPackage}/${entityName?uncap_first}/exportXls",
           importExcelUrl: "${entityPackage}/${entityName?uncap_first}/importExcel",
+          <#if bpm_flag>startProcess: '/process/extActProcess/startMutilProcess'</#if>
         },
+        <#if bpm_flag>
+        flowCode: 'dev_${tableName}_001',
+        </#if>
         dictOptions:{},
       }
+    },
+    created() {
+      <#if list_need_pca>
+      this.pcaData = new Area()
+      </#if>
     },
     computed: {
       importExcelUrl: function(){
@@ -361,6 +396,11 @@
       }
     },
     methods: {
+      <#if list_need_pca>
+      getPcaText(code){
+        return this.pcaData.getText(code);
+      },
+      </#if>
       initDictConfig(){
       <#list columns as po>
       <#if (po.isQuery=='Y' || po.isShowList=='Y') && po.classType!='popup'>
@@ -373,7 +413,34 @@
         </#if>
       </#if>  
       </#list>
-      }
+      },
+      <#if bpm_flag>
+      startProcess(record){
+        this.$confirm({
+          title:'提示',
+          content:'确认提交流程吗?',
+          onOk:()=>{
+            let params = {
+              flowCode: this.flowCode,
+              id: record.id,
+              formUrl: '${entityPackage}/modules/${entityName}Form',
+              formUrlMobile: ''
+            }
+            postAction(this.url.startProcess, params).then(res=>{
+              if(res.success){
+                this.$message.success(res.message);
+                this.loadData();
+                this.onClearSelected();
+              }else{
+                this.$message.warning(res.message);
+              }
+            }).catch((e)=>{
+              this.$message.warning('不识别的请求!');
+            })
+          }
+        })
+      },
+      </#if>
        
     }
   }

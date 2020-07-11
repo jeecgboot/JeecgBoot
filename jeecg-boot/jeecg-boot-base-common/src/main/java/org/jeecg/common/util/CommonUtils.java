@@ -58,7 +58,7 @@ public class CommonUtils {
             fileName = fileName.substring(pos + 1);
         }
         //替换上传文件名字的特殊字符
-        fileName = fileName.replace("=","").replace(",","").replace("&","");
+        fileName = fileName.replace("=","").replace(",","").replace("&","").replace("#", "");
         return fileName;
     }
 }

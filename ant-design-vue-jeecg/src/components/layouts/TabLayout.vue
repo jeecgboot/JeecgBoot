@@ -82,16 +82,19 @@
       if (this.$route.path != indexKey) {
         this.addIndexToFirst()
       }
+      // 复制一个route对象出来，不能影响原route
+      let currentRoute = Object.assign({}, this.$route)
+      currentRoute.meta = Object.assign({}, currentRoute.meta)
       // update-begin-author:sunjianlei date:20191223 for: 修复刷新后菜单Tab名字显示异常
-      let storeKey = 'route:title:' + this.$route.fullPath
+      let storeKey = 'route:title:' + currentRoute.fullPath
       let routeTitle = this.$ls.get(storeKey)
       if (routeTitle) {
-        this.$route.meta.title = routeTitle
+        currentRoute.meta.title = routeTitle
       }
       // update-end-author:sunjianlei date:20191223 for: 修复刷新后菜单Tab名字显示异常
-      this.pageList.push(this.$route)
-      this.linkList.push(this.$route.fullPath)
-      this.activePage = this.$route.fullPath
+      this.pageList.push(currentRoute)
+      this.linkList.push(currentRoute.fullPath)
+      this.activePage = currentRoute.fullPath
     },
     mounted() {
     },
@@ -126,8 +129,11 @@
       'activePage': function(key) {
         let index = this.linkList.lastIndexOf(key)
         let waitRouter = this.pageList[index]
-        this.$router.push(Object.assign({},waitRouter));
-        this.changeTitle(waitRouter.meta.title)
+        // 【TESTA-523】修复：不允许重复跳转路由异常
+        if (waitRouter.fullPath !== this.$route.fullPath) {
+          this.$router.push(Object.assign({}, waitRouter))
+          this.changeTitle(waitRouter.meta.title)
+        }
       },
       'multipage': function(newVal) {
         if(this.reloadFlag){
@@ -352,7 +358,7 @@
 
   }
 
-  .ant-tabs {
+  .tab-layout-tabs.ant-tabs {
 
     &.ant-tabs-card .ant-tabs-tab {
 
@@ -380,7 +386,7 @@
 
   }
 
-  .ant-tabs.ant-tabs-card > .ant-tabs-bar {
+  .tab-layout-tabs.ant-tabs.ant-tabs-card > .ant-tabs-bar {
     .ant-tabs-tab {
       border: none !important;
       border-bottom: 1px solid transparent !important;

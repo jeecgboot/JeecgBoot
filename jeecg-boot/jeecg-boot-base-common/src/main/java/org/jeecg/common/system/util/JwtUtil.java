@@ -16,6 +16,7 @@ import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
+import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 
@@ -181,11 +182,11 @@ public class JwtUtil {
 		}
 		//替换为当前系统时间(年月日)
 		else if (key.equals(DataBaseConstant.SYS_DATE)|| key.toLowerCase().equals(DataBaseConstant.SYS_DATE_TABLE)) {
-			returnValue = user.getSysDate();
+			returnValue = DateUtils.formatDate();
 		}
 		//替换为当前系统时间（年月日时分秒）
 		else if (key.equals(DataBaseConstant.SYS_TIME)|| key.toLowerCase().equals(DataBaseConstant.SYS_TIME_TABLE)) {
-			returnValue = user.getSysTime();
+			returnValue = DateUtils.now();
 		}
 		//流程状态默认值（默认未发起）
 		else if (key.equals(DataBaseConstant.BPM_STATUS)|| key.toLowerCase().equals(DataBaseConstant.BPM_STATUS_TABLE)) {

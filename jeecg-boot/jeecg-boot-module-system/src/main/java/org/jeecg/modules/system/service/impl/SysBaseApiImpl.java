@@ -21,6 +21,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.base.Joiner;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
@@ -500,7 +501,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	@Override
 	public List<String> queryTableDictByKeys(String table, String text, String code, String[] keyArray) {
-		return sysDictService.queryTableDictByKeys(table,text,code,keyArray);
+		return sysDictService.queryTableDictByKeys(table,text,code,Joiner.on(",").join(keyArray));
 	}
 
 	@Override

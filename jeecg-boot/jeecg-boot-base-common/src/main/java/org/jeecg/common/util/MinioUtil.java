@@ -72,6 +72,9 @@ public class MinioUtil {
             InputStream stream = file.getInputStream();
             // 获取文件名
             String orgName = file.getOriginalFilename();
+            if("".equals(orgName)){
+                orgName=file.getName();
+            }
             orgName = CommonUtils.getFileName(orgName);
             String objectName = bizPath+"/"+orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.indexOf("."));
 

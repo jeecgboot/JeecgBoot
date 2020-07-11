@@ -39,6 +39,7 @@
 <script>
 
   import { getClass, getStyle } from '@/utils/props-util'
+  import { triggerWindowResizeEvent } from '@/utils/util'
 
   export default {
     name: 'JModal',
@@ -151,6 +152,7 @@
       /** 切换全屏 */
       toggleFullscreen() {
         this.innerFullscreen = !this.innerFullscreen
+        triggerWindowResizeEvent()
       },
 
     }
@@ -165,7 +167,12 @@
       left: 0;
       padding: 0;
 
-      height: 100vh;
+      // 兼容1.6.2版本的antdv
+      & .ant-modal {
+        top: 0;
+        padding: 0;
+        height: 100vh;
+      }
 
       & .ant-modal-content {
         height: 100vh;
@@ -189,7 +196,6 @@
           height: 100%;
         }
       }
-
     }
 
     .j-modal-title-row {
@@ -208,12 +214,9 @@
           &:hover {
             color: rgba(0, 0, 0, 0.75);
           }
-
         }
       }
     }
-
-
   }
 
   @media (max-width: 767px) {

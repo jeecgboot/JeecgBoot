@@ -153,6 +153,7 @@
         bordered
         rowKey="id"
         class="j-table-force-nowrap"
+        :scroll="{x:true}"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -176,10 +177,15 @@
             type="primary"
             icon="download"
             size="small"
-            @click="uploadFile(text)">
+            @click="downloadFile(text)">
             下载
           </a-button>
         </template>
+        <#if list_need_pca>
+        <template slot="pcaSlot" slot-scope="text">
+          <div>{{ getPcaText(text) }}</div>
+        </template>
+        </#if>
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
@@ -318,6 +324,9 @@
             <#elseif po.classType=='umeditor'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'htmlSlot'}
+            <#elseif po.classType=='pca'>
+            dataIndex: '${po.fieldName}',
+            scopedSlots: {customRender: 'pcaSlot'}
             <#elseif po.classType=='file'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'fileSlot'}
@@ -356,6 +365,8 @@
             title: '操作',
             dataIndex: 'action',
             align:"center",
+            fixed:"right",
+            width:147,
             scopedSlots: { customRender: 'action' },
           }
         ],
@@ -391,12 +402,22 @@
 
       }
     },
+    created() {
+      <#if list_need_pca>
+      this.pcaData = new Area()
+      </#if>
+    },
     computed: {
       importExcelUrl: function(){
         <#noparse>return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;</#noparse>
       }
     },
     methods: {
+      <#if list_need_pca>
+      getPcaText(code){
+        return this.pcaData.getText(code);
+      },
+      </#if>
       initDictConfig(){
       <#list columns as po>
       <#if (po.isQuery=='Y' || po.isShowList=='Y') && po.classType!='popup'>

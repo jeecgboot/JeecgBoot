@@ -57,6 +57,26 @@ public class OssBootUtil {
         return staticDomain;
     }
 
+    public static String getEndPoint() {
+        return endPoint;
+    }
+
+    public static String getAccessKeyId() {
+        return accessKeyId;
+    }
+
+    public static String getAccessKeySecret() {
+        return accessKeySecret;
+    }
+
+    public static String getBucketName() {
+        return bucketName;
+    }
+
+    public static OSSClient getOssClient() {
+        return ossClient;
+    }
+
     /**
      * oss 工具客户端
      */
@@ -86,6 +106,9 @@ public class OssBootUtil {
             }
             // 获取文件名
             String orgName = file.getOriginalFilename();
+            if("" == orgName){
+              orgName=file.getName();
+            }
             orgName = CommonUtils.getFileName(orgName);
             String fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.indexOf("."));
             if (!fileDir.endsWith("/")) {

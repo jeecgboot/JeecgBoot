@@ -19,8 +19,15 @@
 <#assign query_sel_multi=false>
 <#assign query_sel_cat=false>
 <#assign query_sel_search=false>
+<#assign query_switch=false>
+<#assign list_need_switch=false>
+<#assign bpm_flag=false>
+
 <#-- 开始循环 -->
 <#list columns as po>
+<#if po.fieldDbName=='bpm_status'>
+  <#assign bpm_flag=true>
+</#if>
 <#if po.isQuery=='Y'>
 <#assign query_flag=true>
 	<#if query_field_no==2>
@@ -41,6 +48,9 @@
             <#elseif po.classType=='sel_user'>
 <#assign query_sel_user=true>
               <#if query_field_no gt 1>  </#if><j-select-user-by-dep placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"/>
+            <#elseif po.classType=='switch'>
+<#assign query_switch=true>
+              <#if query_field_no gt 1>  </#if><j-switch placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" <#if po.dictField?default("")?trim?length gt 1>:options="${po.dictField}"</#if> query></j-switch>
             <#elseif po.classType=='sel_depart'>
 <#assign query_sel_dep=true>
               <#if query_field_no gt 1>  </#if><j-select-depart placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"/>
@@ -108,6 +118,9 @@
 <#if po.classType=='pca'>
 <#assign list_need_pca=true>
 </#if>
+<#if po.classType=='switch'>
+<#assign list_need_switch=true>
+</#if>
 </#list>
 <#-- 结束循环 -->
 <#t>
@@ -156,6 +169,9 @@
       <a-table
         ref="table"
         size="middle"
+        <#if tableVo.extendParams.scroll=='1'>
+        :scroll="{x:true}"
+        </#if>
         bordered
         rowKey="id"
         :columns="columns"
@@ -186,7 +202,7 @@
             type="primary"
             icon="download"
             size="small"
-            @click="uploadFile(text)">
+            @click="downloadFile(text)">
             下载
           </a-button>
         </template>
@@ -199,6 +215,14 @@
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
               <a-menu-item>
+                <a @click="handleDetail(record)">详情</a>
+              </a-menu-item>
+              <#if bpm_flag>
+              <a-menu-item v-if="record.bpmStatus === '1'">
+                <a @click="startProcess(record)">发起流程</a>
+              </a-menu-item>
+              </#if>
+              <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>
                 </a-popconfirm>
@@ -210,7 +234,7 @@
       </a-table>
     </div>
 
-    <${entityName?uncap_first}-modal ref="modalForm" @ok="modalFormOk"></${entityName?uncap_first}-modal>
+    <${tableName?replace("_","-")}-modal ref="modalForm" @ok="modalFormOk"></${tableName?replace("_","-")}-modal>
   </a-card>
 </template>
 
@@ -220,6 +244,10 @@
   import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import ${entityName}Modal from './modules/${entityName}Modal'
+  <#if bpm_flag>
+  import { postAction } from '@/api/manage'
+  </#if>
+
   <#if query_field_select>
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   </#if>
@@ -256,6 +284,9 @@
   <#if query_sel_search>
   import JSearchSelectTag from '@/components/dict/JSearchSelectTag'
   </#if>
+  <#if query_switch>
+  import JSwitch from '@/components/jeecg/JSwitch'
+  </#if>
 
   export default {
     name: "${entityName}List",
@@ -287,6 +318,9 @@
       </#if>
       <#if query_sel_search>
       JSearchSelectTag,
+      </#if>
+      <#if query_switch>
+      JSwitch,
       </#if>
       ${entityName}Modal
     },
@@ -331,6 +365,9 @@
             <#elseif po.classType=='image'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'imgSlot'}
+            <#elseif po.classType=='switch'>
+            dataIndex: '${po.fieldName}',
+            customRender: (text) => (text ? filterMultiDictText(this.dictOptions['${po.fieldName}'], text) : ''),
             <#elseif po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
             dataIndex: '${po.fieldName}_dictText'
             <#elseif po.classType=='cat_tree'>
@@ -352,7 +389,7 @@
             dataIndex: 'action',
             align:"center",
             <#if tableVo.extendParams.scroll=='1'>
-            // fixed:"right",
+            fixed:"right",
             width:147,
             </#if>
             scopedSlots: { customRender: 'action' }
@@ -364,18 +401,42 @@
           deleteBatch: "/${entityPackage}/${entityName?uncap_first}/deleteBatch",
           exportXlsUrl: "/${entityPackage}/${entityName?uncap_first}/exportXls",
           importExcelUrl: "${entityPackage}/${entityName?uncap_first}/importExcel",
+          <#if bpm_flag>startProcess: '/process/extActProcess/startMutilProcess'</#if>
         },
+        <#if bpm_flag>
+        //代码生成后需手动设置流程编码
+        flowCode: 'dev_${tableName}_001',
+        </#if>
         dictOptions:{},
         <#if list_need_pca>
         pcaData:''
         </#if>
       }
     },
-    <#if list_need_pca>
     created() {
+    <#if list_need_pca>
       this.pcaData = new Area()
-    },
     </#if>
+    <#if list_need_switch>
+    <#list columns as po>
+    <#if po.classType=='switch'>
+      <#if po.dictField?default("")?trim?length gt 1>
+      <#assign switch_extend_arr=po.dictField?eval>
+      <#else>
+       <#assign switch_extend_arr=['Y','N']>
+      </#if>
+      <#list switch_extend_arr as a>
+       <#if a_index == 0>
+       <#assign switch_extend_arr1=a>
+       <#else>
+       <#assign switch_extend_arr2=a>
+       </#if>
+      </#list>
+      this.$set(this.dictOptions, '${po.fieldName}', [{text:'是',value:'${switch_extend_arr1}'},{text:'否',value:'${switch_extend_arr2}'}])
+    </#if>
+    </#list>
+    </#if>
+    },
     computed: {
       importExcelUrl: function(){
         <#noparse>return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;</#noparse>
@@ -387,6 +448,33 @@
         return this.pcaData.getText(code);
       },
     </#if>
+      <#if bpm_flag>
+      startProcess(record){
+        this.$confirm({
+          title:'提示',
+          content:'确认提交流程吗?',
+          onOk:()=>{
+            let params = {
+              flowCode: this.flowCode,
+              id: record.id,
+              formUrl: '${entityPackage}/modules/${entityName}Form',
+              formUrlMobile: ''
+            }
+            postAction(this.url.startProcess, params).then(res=>{
+              if(res.success){
+                this.$message.success(res.message);
+                this.loadData();
+                this.onClearSelected();
+              }else{
+                this.$message.warning(res.message);
+              }
+            }).catch((e)=>{
+              this.$message.warning('不识别的请求!');
+            })
+          }
+        })
+      },
+      </#if>
       initDictConfig(){
       <#list columns as po>
       <#if (po.isQuery=='Y' || po.isShowList=='Y') && po.classType!='popup'>

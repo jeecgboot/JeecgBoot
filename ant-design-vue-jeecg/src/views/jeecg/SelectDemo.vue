@@ -374,7 +374,7 @@
           </a-col>
           <a-col :span="12">输入的值(v-model)：{{ formData.jInput }}</a-col>
         </a-row>
-       <!-- <a-row :gutter="24">
+        <a-row :gutter="24">
           <a-col :span="15">
             <a-form-item label="MarkdownEditor" style="min-height: 300px">
               <j-markdown-editor v-model="content"></j-markdown-editor>
@@ -383,7 +383,7 @@
           <a-col :span="9">
             输入的值(v-model)：{{ content }}
           </a-col>
-        </a-row>-->
+        </a-row>
 
         <!-- 省市县级联 -->
         <a-row :gutter="24">
@@ -456,12 +456,14 @@
   import JMultiSelectTag from '@comp/dict/JMultiSelectTag'
   import JInput from '@comp/jeecg/JInput'
   import JAreaLinkage from '@comp/jeecg/JAreaLinkage'
+  import JMarkdownEditor from '@/components/jeecg/JMarkdownEditor/index'
   import JSearchSelectTag from '@/components/dict/JSearchSelectTag'
 
   export default {
     name: 'SelectDemo',
     inject:['closeCurrent'],
     components: {
+      JMarkdownEditor,
       JAreaLinkage,
       JInput,
       JCategorySelect,

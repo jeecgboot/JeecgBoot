@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.controller;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -97,7 +98,6 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	 * @param sysDepartRole
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
 	@ApiOperation(value="部门角色-添加", notes="部门角色-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody SysDepartRole sysDepartRole) {
@@ -111,7 +111,6 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	 * @param sysDepartRole
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
 	@ApiOperation(value="部门角色-编辑", notes="部门角色-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody SysDepartRole sysDepartRole) {
@@ -125,7 +124,6 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
 	@AutoLog(value = "部门角色-通过id删除")
 	@ApiOperation(value="部门角色-通过id删除", notes="部门角色-通过id删除")
 	@DeleteMapping(value = "/delete")
@@ -140,7 +138,6 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	 * @param ids
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
 	@AutoLog(value = "部门角色-批量删除")
 	@ApiOperation(value="部门角色-批量删除", notes="部门角色-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
@@ -170,9 +167,8 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	@RequestMapping(value = "/getDeptRoleList", method = RequestMethod.GET)
 	public Result<List<SysDepartRole>> getDeptRoleList(@RequestParam(value = "departId") String departId,@RequestParam(value = "userId") String userId){
 		Result<List<SysDepartRole>> result = new Result<>();
-		//查询管理部门下，用户所在部门的所有角色
-		SysDepart depart = sysDepartService.getById(departId);
-		List<SysDepartRole> deptRoleList = sysDepartRoleService.queryDeptRoleByDeptAndUser(depart.getOrgCode(),userId);
+		//查询选中部门的角色
+		List<SysDepartRole> deptRoleList = sysDepartRoleService.list(new LambdaQueryWrapper<SysDepartRole>().eq(SysDepartRole::getDepartId,departId));
 		result.setSuccess(true);
 		result.setResult(deptRoleList);
 		return result;
@@ -198,9 +194,13 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	  * @return
 	  */
 	 @RequestMapping(value = "/getDeptRoleByUserId", method = RequestMethod.GET)
-	 public Result<List<SysDepartRoleUser>> getDeptRoleByUserId(@RequestParam(value = "userId") String userId){
+	 public Result<List<SysDepartRoleUser>> getDeptRoleByUserId(@RequestParam(value = "userId") String userId,@RequestParam(value = "departId") String departId){
 		 Result<List<SysDepartRoleUser>> result = new Result<>();
-		 List<SysDepartRoleUser> roleUserList = departRoleUserService.list(new QueryWrapper<SysDepartRoleUser>().eq("user_id",userId));
+		 //查询部门下角色
+		 List<SysDepartRole> roleList = sysDepartRoleService.list(new QueryWrapper<SysDepartRole>().eq("depart_id",departId));
+		 List<String> roleIds = roleList.stream().map(SysDepartRole::getId).collect(Collectors.toList());
+		 //根据角色id,用户id查询已授权角色
+		 List<SysDepartRoleUser> roleUserList = departRoleUserService.list(new QueryWrapper<SysDepartRoleUser>().eq("user_id",userId).in("drole_id",roleIds));
 		 result.setSuccess(true);
 		 result.setResult(roleUserList);
 		 return result;
