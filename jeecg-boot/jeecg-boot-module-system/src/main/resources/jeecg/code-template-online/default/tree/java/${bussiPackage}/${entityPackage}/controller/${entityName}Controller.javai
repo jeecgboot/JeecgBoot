@@ -87,7 +87,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 
 	 /**
       * 获取子数据
-      * @param testTree
+      * @param ${entityName}
       * @param req
       * @return
       */
@@ -97,7 +97,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	public Result<?> queryPageList(${entityName} ${entityName?uncap_first},HttpServletRequest req) {
 		QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap());
 		List<${entityName}> list = ${entityName?uncap_first}Service.list(queryWrapper);
-		IPage<LvTestTree> pageList = new Page<>(1, 10, list.size());
+		IPage<${entityName}> pageList = new Page<>(1, 10, list.size());
         pageList.setRecords(list);
 		return Result.ok(pageList);
 	}
