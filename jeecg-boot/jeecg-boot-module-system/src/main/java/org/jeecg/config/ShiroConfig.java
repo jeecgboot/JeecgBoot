@@ -1,6 +1,7 @@
 package org.jeecg.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
@@ -38,6 +39,9 @@ import java.util.*;
 @Slf4j
 @Configuration
 public class ShiroConfig {
+
+	protected static final int DEFAULT_TIMEOUT = 2000;
+	protected static final int DEFAULT_MAX_REDIRECTIONS = 5;
 
 	@Value("${jeecg.shiro.excludeUrls}")
 	private String excludeUrls;
@@ -232,7 +236,12 @@ public class ShiroConfig {
 			RedisClusterManager redisManager = new RedisClusterManager();
 			Set<HostAndPort> portSet = new HashSet<>();
 			lettuceConnectionFactory.getClusterConfiguration().getClusterNodes().forEach(node -> portSet.add(new HostAndPort(node.getHost() , node.getPort())));
-			JedisCluster jedisCluster = new JedisCluster(portSet);
+			JedisCluster jedisCluster = null;
+			if (!StringUtils.isEmpty(lettuceConnectionFactory.getPassword())) {
+				jedisCluster = new JedisCluster(portSet, DEFAULT_TIMEOUT, DEFAULT_TIMEOUT, DEFAULT_MAX_REDIRECTIONS, lettuceConnectionFactory.getPassword(), new GenericObjectPoolConfig());	redisManager.setPassword(lettuceConnectionFactory.getPassword());
+			}else{
+				jedisCluster = new JedisCluster(portSet);
+			}
 			redisManager.setJedisCluster(jedisCluster);
 			manager = redisManager;
 		}
