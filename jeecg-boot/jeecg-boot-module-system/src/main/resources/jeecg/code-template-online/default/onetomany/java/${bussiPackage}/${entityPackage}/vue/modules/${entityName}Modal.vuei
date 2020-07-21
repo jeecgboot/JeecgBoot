@@ -9,7 +9,7 @@
     @ok="handleOk"
     :okButtonProps="{ class:{'jee-hidden': disableSubmit} }"
     @cancel="handleCancel">
-    <${tableName?replace("_","-")}-form ref="realForm" @ok="submitCallback" :disabled="disableSubmit" normal/>
+    <${Format.humpToShortbar(entityName)}-form ref="realForm" @ok="submitCallback" :disabled="disableSubmit"/>
   </j-modal>
 </template>
 

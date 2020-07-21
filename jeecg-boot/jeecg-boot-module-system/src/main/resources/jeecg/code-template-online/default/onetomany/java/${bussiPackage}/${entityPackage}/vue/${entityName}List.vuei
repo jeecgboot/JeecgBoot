@@ -224,7 +224,7 @@
       </a-table>
     </div>
 
-    <${tableName?replace("_","-")}-modal ref="modalForm" @ok="modalFormOk"/>
+    <${Format.humpToShortbar(entityName)}-modal ref="modalForm" @ok="modalFormOk"/>
   </a-card>
 </template>
 

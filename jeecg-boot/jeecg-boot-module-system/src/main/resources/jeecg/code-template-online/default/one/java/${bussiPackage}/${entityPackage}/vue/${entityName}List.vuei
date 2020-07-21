@@ -143,7 +143,7 @@
       </a-form>
     </div>
     <!-- 查询区域-END -->
-    
+
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
@@ -234,7 +234,7 @@
       </a-table>
     </div>
 
-    <${tableName?replace("_","-")}-modal ref="modalForm" @ok="modalFormOk"></${tableName?replace("_","-")}-modal>
+    <${Format.humpToShortbar(entityName)}-modal ref="modalForm" @ok="modalFormOk"></${Format.humpToShortbar(entityName)}-modal>
   </a-card>
 </template>
 
@@ -247,7 +247,6 @@
   <#if bpm_flag>
   import { postAction } from '@/api/manage'
   </#if>
-
   <#if query_field_select>
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   </#if>
@@ -289,7 +288,7 @@
   </#if>
 
   export default {
-    name: "${entityName}List",
+    name: '${entityName}List',
     mixins:[JeecgListMixin, mixinDevice],
     components: {
       <#if query_field_select>
