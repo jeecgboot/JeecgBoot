@@ -43,7 +43,7 @@ public class ${subTab.entityName} implements Serializable {
 	</#if>
 	/**${po.filedComment}*/
 	<#if po.fieldName == primaryKeyField>
-	@TableId(type = IdType.ID_WORKER_STR)
+	@TableId(type = IdType.ASSIGN_ID)
 	<#else>
 		<#if po.fieldDbType =='Date'>
 			<#if po.classType=='date'>

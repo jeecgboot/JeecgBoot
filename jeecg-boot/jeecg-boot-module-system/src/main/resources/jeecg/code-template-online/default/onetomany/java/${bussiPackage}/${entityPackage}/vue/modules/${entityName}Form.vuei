@@ -416,7 +416,7 @@
         required: false
       },
       //表单模式：false流程表单 true普通表单
-      normal: {
+      formBpm: {
         type: Boolean,
         default: false,
         required: false
@@ -430,25 +430,21 @@
     },
     computed: {
       formDisabled(){
-        if(this.normal===false){
+        if(this.formBpm===true){
           if(this.formData.disabled===false){
             return false
-          }else{
-            return true
           }
+          return true
         }
         return this.disabled
       },
       showFlowSubmitButton(){
-        if(this.normal===false){
+        if(this.formBpm===true){
           if(this.formData.disabled===false){
             return true
-          }else{
-            return false
           }
-        }else{
-          return false
         }
+        return false
       }
     },
     created () {
@@ -456,6 +452,16 @@
       this.showFlowData();
     },
     methods: {
+      addBefore(){
+        this.form.resetFields()
+<#list subTables as sub><#rt/>
+  <#if sub.foreignRelationType =='1'>
+        this.$refs.${sub.entityName?uncap_first}Form.clearFormData()
+  <#else>
+        this.${sub.entityName?uncap_first}Table.dataSource=[]
+  </#if>
+</#list>
+      },
       getAllTable() {
         <#if hasOne2Many==true>
         let values = this.tableKeys.map(key => getRefPromise(this, key))
@@ -505,7 +511,7 @@
       },
       //渲染流程表单数据
       showFlowData(){
-        if(this.normal === false){
+        if(this.formBpm === true){
           let params = {id:this.formData.dataId};
           getAction(this.url.queryById,params).then((res)=>{
             if(res.success){

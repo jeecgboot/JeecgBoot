@@ -15,10 +15,10 @@
     :visible="visible"
     switchFullscreen
     @ok="handleOk"
-    :okButtonProps="{ class:{'jee-hidden': disablesubmit} }"
+    :okButtonProps="{ class:{'jee-hidden': disableSubmit} }"
     @cancel="handleCancel"
     cancelText="关闭">
-    <${tableName?replace("_","-")}-form ref="realForm" @ok="submitCallback" :disabled="disableSubmit" normal></${tableName?replace("_","-")}-form>
+    <${Format.humpToShortbar(entityName)}-form ref="realForm" @ok="submitCallback" :disabled="disableSubmit"></${Format.humpToShortbar(entityName)}-form>
   </j-modal>
 </template>
 
@@ -26,7 +26,7 @@
 
   import ${entityName}Form from './${entityName}Form'
   export default {
-    name: "${entityName}Modal",
+    name: '${entityName}Modal',
     components: {
       ${entityName}Form
     },
