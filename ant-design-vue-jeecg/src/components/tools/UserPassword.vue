@@ -130,7 +130,7 @@
       validateToNextPassword  (rule, value, callback) {
         const form = this.form;
         if (value && this.confirmDirty) {
-          form.validateFields(['confirm'], { force: true })
+          form.validateFields(['confirmpassword'], { force: true })
         }
         callback();
       },
