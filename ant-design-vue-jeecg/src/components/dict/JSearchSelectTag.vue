@@ -1,5 +1,4 @@
 <template>
-
   <a-select
     v-if="async"
     showSearch
@@ -8,7 +7,7 @@
     :getPopupContainer="(node) => node.parentNode"
     @search="loadData"
     :placeholder="placeholder"
-    v-model="selectedAsyncValue"
+    :value="selectedAsyncValue"
     style="width: 100%"
     :filterOption="false"
     @change="handleAsyncChange"
@@ -29,10 +28,9 @@
     style="width: 100%"
     @change="handleChange"
     :filterOption="filterOption"
-    v-model="selectedValue"
+    :value="selectedValue"
     allowClear
-    :notFoundContent="loading ? undefined : null">
-    <a-spin v-if="loading" slot="notFoundContent" size="small"/>
+    :notFoundContent="null">
     <a-select-option v-for="d in options" :key="d.value" :value="d.value">{{ d.text }}</a-select-option>
   </a-select>
 
@@ -62,8 +60,8 @@
       this.lastLoad = 0;
       return {
         loading:false,
-        selectedValue:[],
-        selectedAsyncValue:[],
+        selectedValue: '',
+        selectedAsyncValue: '',
         options: [],
       }
     },
@@ -78,8 +76,8 @@
             if(val==0){
               this.initSelectValue()
             }else{
-              this.selectedValue=[]
-              this.selectedAsyncValue=[]
+              this.selectedValue = ''
+              this.selectedAsyncValue = ''
             }
           }else{
             this.initSelectValue()
@@ -95,7 +93,7 @@
     methods:{
       initSelectValue(){
         if(this.async){
-          if(!this.selectedAsyncValue || !this.selectedAsyncValue.key || this.selectedAsyncValue.key!=this.value){
+          if(!this.selectedAsyncValue || !this.selectedAsyncValue.key || this.selectedAsyncValue.key !== this.value){
             console.log("这才请求后台")
             getAction(`/sys/dict/loadDictItem/${this.dict}`,{key:this.value}).then(res=>{
               if(res.success){
@@ -121,7 +119,7 @@
         getAction(`/sys/dict/loadDict/${this.dict}`,{keyword:value}).then(res=>{
           this.loading=false
           if(res.success){
-            if(currentLoad!=this.lastLoad){
+            if(currentLoad !== this.lastLoad){
               return
             }
             this.options = res.result
