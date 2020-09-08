@@ -422,15 +422,15 @@ yarn run lint
 
 附属文档
 ----
-- [Ant Design Vue](https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn)
+- [Ant Design Vue](https://www.antdv.com/docs/vue/introduce-cn)
 
-- [报表 viser-vue](https://viserjs.github.io/demo.html#/viser/bar/basic-bar)
+- [报表 viser-vue](https://viserjs.github.io/demo.html#/viser/line/basic-line)
 
 - [Vue](https://cn.vuejs.org/v2/guide)
 
-- [路由/菜单说明](https://github.com/zhangdaiscott/jeecg-boot/tree/master/ant-design-jeecg-vue/src/router/README.md)
+- [路由/菜单说明](https://gitee.com/jeecg/jeecg-boot/tree/v1.1/ant-design-jeecg-vue/src/router/README.md)
 
-- [ANTD 默认配置项](https://github.com/zhangdaiscott/jeecg-boot/tree/master/ant-design-jeecg-vue/src/defaultSettings.js)
+- [ANTD 默认配置项](https://gitee.com/jeecg/jeecg-boot/blob/v1.1/ant-design-jeecg-vue/src/defaultSettings.js)
 
 - 其他待补充...
 
