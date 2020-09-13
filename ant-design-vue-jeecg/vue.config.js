@@ -14,8 +14,14 @@ module.exports = {
    */
   // 如果你不需要生产环境的 source map，可以将其设置为 false 以加速生产环境构建。
   productionSourceMap: false,
-
-
+  // 多入口配置
+  // pages: {
+  //   index: {
+  //     entry: 'src/main.js',
+  //     template: 'public/index.html',
+  //     filename: 'index.html',
+  //   }
+  // },
   //打包app时放开该配置
   //publicPath:'./',
   configureWebpack: config => {
@@ -38,7 +44,7 @@ module.exports = {
     //生产环境，开启js\css压缩
     if (process.env.NODE_ENV === 'production') {
         config.plugin('compressionPlugin').use(new CompressionPlugin({
-          test: /\.js$|.\css|.\less/, // 匹配文件名
+          test: /\.(js|css|less)$/, // 匹配文件名
           threshold: 10240, // 对超过10k的数据压缩
           deleteOriginalAssets: false // 不删除源文件
         }))
@@ -51,6 +57,22 @@ module.exports = {
       .use()
       .loader('file-loader')
       .end()
+
+    // 编译某些npm包里的es6代码
+    // TODO 导致online js lib启动报错
+    // config.module
+    //     //   .rule('vxe')
+    //     //   .test(/\.js$/)
+    //     //   .use()
+    //     //   .loader('babel-loader')
+    //     //   .options({
+    //     //     include: [
+    //     //       resolve('node_modules/vxe-table'),
+    //     //       resolve('node_modules/vxe-table-plugin-antd'),
+    //     //     ]
+    //     //   })
+    //     //   .end()
+
   },
 
   css: {

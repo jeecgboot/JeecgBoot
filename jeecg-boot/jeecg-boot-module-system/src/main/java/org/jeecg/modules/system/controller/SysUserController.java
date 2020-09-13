@@ -19,6 +19,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.api.ISysBaseAPI;
+import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
@@ -41,9 +42,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -90,6 +91,9 @@ public class SysUserController {
     @Value("${jeecg.path.upload}")
     private String upLoadPath;
 
+    @Resource
+    private BaseCommonService baseCommonService;
+
     /**
      * 获取用户列表数据
      * @param user
@@ -125,6 +129,8 @@ public class SysUserController {
 		return result;
 	}
 
+    //@RequiresRoles({"admin"})
+    @RequiresPermissions("user:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysUser> add(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -149,12 +155,14 @@ public class SysUserController {
 		return result;
 	}
 
+    //@RequiresRoles({"admin"})
+    @RequiresPermissions("user:edit")
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
 	public Result<SysUser> edit(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
 		try {
 			SysUser sysUser = sysUserService.getById(jsonObject.getString("id"));
-			sysBaseAPI.addLog("编辑用户，id： " +jsonObject.getString("id") ,CommonConstant.LOG_TYPE_2, 2);
+			baseCommonService.addLog("编辑用户，id： " +jsonObject.getString("id") ,CommonConstant.LOG_TYPE_2, 2);
 			if(sysUser==null) {
 				result.error500("未找到对应实体");
 			}else {
@@ -179,9 +187,10 @@ public class SysUserController {
 	/**
 	 * 删除用户
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		sysBaseAPI.addLog("删除用户，id： " +id ,CommonConstant.LOG_TYPE_2, 3);
+		baseCommonService.addLog("删除用户，id： " +id ,CommonConstant.LOG_TYPE_2, 3);
 		this.sysUserService.deleteUser(id);
 		return Result.ok("删除用户成功");
 	}
@@ -189,9 +198,10 @@ public class SysUserController {
 	/**
 	 * 批量删除用户
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		sysBaseAPI.addLog("批量删除用户， ids： " +ids ,CommonConstant.LOG_TYPE_2, 3);
+		baseCommonService.addLog("批量删除用户， ids： " +ids ,CommonConstant.LOG_TYPE_2, 3);
 		this.sysUserService.deleteBatchUsers(ids);
 		return Result.ok("批量删除用户成功");
 	}
@@ -201,6 +211,7 @@ public class SysUserController {
 	 * @param jsonObject
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/frozenBatch", method = RequestMethod.PUT)
 	public Result<SysUser> frozenBatch(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -287,6 +298,7 @@ public class SysUserController {
     /**
      * 修改密码
      */
+    //@RequiresRoles({"admin"})
     @RequestMapping(value = "/changePassword", method = RequestMethod.PUT)
     public Result<?> changePassword(@RequestBody SysUser sysUser) {
         SysUser u = this.sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, sysUser.getUsername()));
@@ -415,6 +427,8 @@ public class SysUserController {
      * @param response
      * @return
      */
+    //@RequiresRoles({"admin"})
+    @RequiresPermissions("user:import")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response)throws IOException {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -508,6 +522,7 @@ public class SysUserController {
 	/**
 	 * 首页用户重置密码
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/updatePassword", method = RequestMethod.PUT)
 	public Result<?> changPassword(@RequestBody JSONObject json) {
 		String username = json.getString("username");
@@ -540,6 +555,7 @@ public class SysUserController {
      * @param
      * @return
      */
+    //@RequiresRoles({"admin"})
     @RequestMapping(value = "/addSysUserRole", method = RequestMethod.POST)
     public Result<String> addSysUserRole(@RequestBody SysUserRoleVO sysUserRoleVO) {
         Result<String> result = new Result<String>();
@@ -570,6 +586,7 @@ public class SysUserController {
      * @param
      * @return
      */
+    //@RequiresRoles({"admin"})
     @RequestMapping(value = "/deleteUserRole", method = RequestMethod.DELETE)
     public Result<SysUserRole> deleteUserRole(@RequestParam(name="roleId") String roleId,
                                                     @RequestParam(name="userId",required=true) String userId
@@ -593,6 +610,7 @@ public class SysUserController {
      * @param
      * @return
      */
+    //@RequiresRoles({"admin"})
     @RequestMapping(value = "/deleteUserRoleBatch", method = RequestMethod.DELETE)
     public Result<SysUserRole> deleteUserRoleBatch(
             @RequestParam(name="roleId") String roleId,
@@ -719,6 +737,7 @@ public class SysUserController {
     /**
      * 给指定部门添加对应的用户
      */
+    //@RequiresRoles({"admin"})
     @RequestMapping(value = "/editSysDepartWithUser", method = RequestMethod.POST)
     public Result<String> editSysDepartWithUser(@RequestBody SysDepartUsersVO sysDepartUsersVO) {
         Result<String> result = new Result<String>();
@@ -747,6 +766,7 @@ public class SysUserController {
     /**
      *   删除指定机构的用户关系
      */
+    //@RequiresRoles({"admin"})
     @RequestMapping(value = "/deleteUserInDepart", method = RequestMethod.DELETE)
     public Result<SysUserDepart> deleteUserInDepart(@RequestParam(name="depId") String depId,
                                                     @RequestParam(name="userId",required=true) String userId
@@ -778,6 +798,7 @@ public class SysUserController {
     /**
      * 批量删除指定机构的用户关系
      */
+    //@RequiresRoles({"admin"})
     @RequestMapping(value = "/deleteUserInDepartBatch", method = RequestMethod.DELETE)
     public Result<SysUserDepart> deleteUserInDepartBatch(
             @RequestParam(name="depId") String depId,
@@ -1057,9 +1078,9 @@ public class SysUserController {
 			//TODO 从查询效率上将不要用mp的封装的page分页查询 建议自己写分页语句
 			LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<SysUser>();
 			if(oConvertUtils.isNotEmpty(syncFlow)){
-                query.eq(SysUser::getActivitiSync, "1");
+                query.eq(SysUser::getActivitiSync, CommonConstant.ACT_SYNC_1);
             }
-			query.eq(SysUser::getDelFlag,"0");
+			query.eq(SysUser::getDelFlag,CommonConstant.DEL_FLAG_0);
 			if(oConvertUtils.isNotEmpty(username)){
 			    if(username.contains(",")){
                     query.in(SysUser::getUsername,username.split(","));
@@ -1122,6 +1143,7 @@ public class SysUserController {
      * @param userIds 被删除的用户ID，多个id用半角逗号分割
      * @return
      */
+    //@RequiresRoles({"admin"})
     @RequestMapping(value = "/deleteRecycleBin", method = RequestMethod.DELETE)
     public Result deleteRecycleBin(@RequestParam("userIds") String userIds) {
         if (StringUtils.isNotBlank(userIds)) {
@@ -1142,24 +1164,63 @@ public class SysUserController {
         try {
             String username = JwtUtil.getUserNameByToken(request);
             SysUser sysUser = sysUserService.getUserByName(username);
-            sysBaseAPI.addLog("移动端编辑用户，id： " +jsonObject.getString("id") ,CommonConstant.LOG_TYPE_2, 2);
+            baseCommonService.addLog("移动端编辑用户，id： " +jsonObject.getString("id") ,CommonConstant.LOG_TYPE_2, 2);
+            String realname=jsonObject.getString("realname");
+            String avatar=jsonObject.getString("avatar");
+            String sex=jsonObject.getString("sex");
+            String phone=jsonObject.getString("phone");
+            String email=jsonObject.getString("email");
+            // Date birthday=jsonObject.getDate("birthday");
+            SysUser userPhone = sysUserService.getUserByPhone(phone);
             if(sysUser==null) {
                 result.error500("未找到对应用户!");
             }else {
-                String realname=jsonObject.getString("realname");
-                String avatar=jsonObject.getString("avatar");
-                String sex=jsonObject.getString("sex");
-                String phone=jsonObject.getString("phone");
-                String email=jsonObject.getString("email");
-                Date birthday=jsonObject.getDate("birthday");
-
-                sysUser.setRealname(realname);
-                sysUser.setAvatar(avatar);
-                sysUser.setSex(Integer.parseInt(sex));
-                sysUser.setBirthday(birthday);
-                sysUser.setPhone(phone);
-                sysUser.setEmail(email);
+                if(userPhone!=null){
+                    String userPhonename = userPhone.getUsername();
+                    if(!userPhonename.equals(username)){
+                        result.error500("手机号已存在!");
+                        return result;
+                    }
+                }
+                if(StringUtils.isNotBlank(realname)){
+                    sysUser.setRealname(realname);
+                }
+                if(StringUtils.isNotBlank(avatar)){
+                    sysUser.setAvatar(avatar);
+                }
+                if(StringUtils.isNotBlank(sex)){
+                    sysUser.setSex(Integer.parseInt(sex));
+                }
+                if(StringUtils.isNotBlank(phone)){
+                    sysUser.setPhone(phone);
+                }
+                if(StringUtils.isNotBlank(email)){
+                    sysUser.setEmail(email);
+                }
                 sysUser.setUpdateTime(new Date());
+                sysUserService.updateById(sysUser);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("操作失败!");
+        }
+        return result;
+    }
+    /**
+     * 移动端保存设备信息
+     * @param clientId
+     * @return
+     */
+    @RequestMapping(value = "/saveClientId", method = RequestMethod.GET)
+    public Result<SysUser> saveClientId(HttpServletRequest request,@RequestParam("clientId")String clientId) {
+        Result<SysUser> result = new Result<SysUser>();
+        try {
+            String username = JwtUtil.getUserNameByToken(request);
+            SysUser sysUser = sysUserService.getUserByName(username);
+            if(sysUser==null) {
+                result.error500("未找到对应用户!");
+            }else {
+                sysUser.setClientId(clientId);
                 sysUserService.updateById(sysUser);
             }
         } catch (Exception e) {
@@ -1233,5 +1294,42 @@ public class SysUserController {
         }
         result.setResult(list);
         return result;
+    }
+
+    /**
+     * 根据用户名修改手机号
+     * @param json
+     * @return
+     */
+    @RequestMapping(value = "/updateMobile", method = RequestMethod.PUT)
+    public Result<?> changMobile(@RequestBody JSONObject json,HttpServletRequest request) {
+        String smscode = json.getString("smscode");
+        String phone = json.getString("phone");
+        Result<SysUser> result = new Result<SysUser>();
+        //获取登录用户名
+        String username = JwtUtil.getUserNameByToken(request);
+        if(oConvertUtils.isEmpty(username) || oConvertUtils.isEmpty(smscode) || oConvertUtils.isEmpty(phone)) {
+            result.setMessage("修改手机号失败！");
+            result.setSuccess(false);
+            return result;
+        }
+        Object object= redisUtil.get(phone);
+        if(null==object) {
+            result.setMessage("短信验证码失效！");
+            result.setSuccess(false);
+            return result;
+        }
+        if(!smscode.equals(object)) {
+            result.setMessage("短信验证码不匹配！");
+            result.setSuccess(false);
+            return result;
+        }
+        SysUser user = sysUserService.getUserByName(username);
+        if(user==null) {
+            return Result.error("用户不存在！");
+        }
+        user.setPhone(phone);
+        sysUserService.updateById(user);
+        return Result.ok("手机号设置成功!");
     }
 }

@@ -23,6 +23,7 @@ import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysPositionService;
+import org.jeecg.modules.system.service.ISysUserDepartService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -62,6 +63,8 @@ public class SysDepartController {
 	public RedisTemplate<String, Object> redisTemplate;
 	@Autowired
 	private ISysUserService sysUserService;
+	@Autowired
+	private ISysUserDepartService sysUserDepartService;
 	/**
 	 * 查询数据 查出我的部门,并以树结构数据格式响应给前端
 	 *
@@ -116,6 +119,7 @@ public class SysDepartController {
 	 * @param sysDepart
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> add(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
@@ -141,6 +145,7 @@ public class SysDepartController {
 	 * @param sysDepart
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> edit(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
@@ -168,6 +173,7 @@ public class SysDepartController {
     * @param id
     * @return
     */
+	//@RequiresRoles({"admin"})
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
    public Result<SysDepart> delete(@RequestParam(name="id",required=true) String id) {
@@ -195,6 +201,7 @@ public class SysDepartController {
 	 * @param ids
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
@@ -309,6 +316,7 @@ public class SysDepartController {
      * @param response
      * @return
      */
+    //@RequiresRoles({"admin"})
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
@@ -410,7 +418,7 @@ public class SysDepartController {
 			List<SysDepartTreeModel> list = sysDepartService.queryTreeByKeyWord(keyWord);
 			//根据keyWord获取用户信息
 			LambdaQueryWrapper<SysUser> queryUser = new LambdaQueryWrapper<SysUser>();
-			queryUser.eq(SysUser::getDelFlag,0);
+			queryUser.eq(SysUser::getDelFlag,CommonConstant.DEL_FLAG_0);
 			queryUser.and(i -> i.like(SysUser::getUsername, keyWord).or().like(SysUser::getRealname, keyWord));
 			List<SysUser> sysUsers = this.sysUserService.list(queryUser);
 			map.put("userList",sysUsers);
@@ -437,6 +445,21 @@ public class SysDepartController {
 		SysDepart sysDepart = sysDepartService.getOne(query);
 		result.setSuccess(true);
 		result.setResult(sysDepart);
+		return result;
+	}
+
+	/**
+	 * 根据部门id获取用户信息
+	 *
+	 * @param id
+	 * @return
+	 */
+	@GetMapping("/getUsersByDepartId")
+	public Result<List<SysUser>> getUsersByDepartId(@RequestParam(name = "id") String id) {
+		Result<List<SysUser>> result = new Result<>();
+		List<SysUser> sysUsers = sysUserDepartService.queryUserByDepId(id);
+		result.setSuccess(true);
+		result.setResult(sysUsers);
 		return result;
 	}
 }

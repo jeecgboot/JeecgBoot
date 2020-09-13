@@ -8,6 +8,11 @@ package org.jeecg.common.constant;
 public interface CacheConstant {
 
 	/**
+	 * 缓存用户jwt
+	 */
+	public static final String SYS_USERS_CACHE_JWT = "sys:cache:user:jwt";
+
+	/**
 	 * 字典信息缓存
 	 */
     public static final String SYS_DICT_CACHE = "sys:cache:dict";
@@ -15,6 +20,7 @@ public interface CacheConstant {
 	 * 表字典信息缓存
 	 */
     public static final String SYS_DICT_TABLE_CACHE = "sys:cache:dictTable";
+	public static final String SYS_DICT_TABLE_BY_KEYS_CACHE = SYS_DICT_TABLE_CACHE + "ByKeys";
 
 	/**
 	 * 数据权限配置缓存
@@ -48,4 +54,14 @@ public interface CacheConstant {
 	 */
 	public static final String SYS_DYNAMICDB_CACHE = "sys:cache:dbconnect:dynamic:";
 
+	/**
+	 * gateway路由缓存
+	 */
+	public static final String GATEWAY_ROUTES = "geteway_routes";
+
+
+	/**
+	 * gateway路由 reload key
+	 */
+	public static final String ROUTE_JVM_RELOAD_TOPIC = "gateway_jvm_route_reload_topic";
 }

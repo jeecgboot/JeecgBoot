@@ -297,11 +297,20 @@ public class SysAnnouncementController {
 		List<SysAnnouncement> announcements = sysAnnouncementService.list(querySaWrapper);
 		if(announcements.size()>0) {
 			for(int i=0;i<announcements.size();i++) {
+				//update-begin--Author:wangshuai  Date:20200803  for： 通知公告消息重复LOWCOD-759--------------------
+				//因为websocket没有判断是否存在这个用户，要是判断会出现问题，故在此判断逻辑
+				LambdaQueryWrapper<SysAnnouncementSend> query = new LambdaQueryWrapper<>();
+				query.eq(SysAnnouncementSend::getAnntId,announcements.get(i).getId());
+				query.eq(SysAnnouncementSend::getUserId,userId);
+				SysAnnouncementSend one = sysAnnouncementSendService.getOne(query);
+				if(null==one){
 				SysAnnouncementSend announcementSend = new SysAnnouncementSend();
 				announcementSend.setAnntId(announcements.get(i).getId());
 				announcementSend.setUserId(userId);
 				announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
 				sysAnnouncementSendService.save(announcementSend);
+				}
+				//update-end--Author:wangshuai  Date:20200803  for： 通知公告消息重复LOWCOD-759------------
 			}
 		}
 		// 2.查询用户未读的系统消息

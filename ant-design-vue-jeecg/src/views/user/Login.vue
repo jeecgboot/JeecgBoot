@@ -5,7 +5,7 @@
         :activeKey="customActiveKey"
         :tabBarStyle="{ textAlign: 'center', borderBottom: 'unset' }"
         @change="handleTabClick">
-        <a-tab-pane key="tab1" tab="账号密码登陆">
+        <a-tab-pane key="tab1" tab="账号密码登录">
           <a-form-item>
             <a-input
               size="large"
@@ -48,7 +48,7 @@
 
 
         </a-tab-pane>
-        <a-tab-pane key="tab2" tab="手机号登陆">
+        <a-tab-pane key="tab2" tab="手机号登录">
           <a-form-item>
             <a-input
               v-decorator="['mobile',validatorRules.mobile]"
@@ -84,7 +84,7 @@
       </a-tabs>
 
       <a-form-item>
-        <a-checkbox v-decorator="['rememberMe', {initialValue: true, valuePropName: 'checked'}]" >自动登陆</a-checkbox>
+        <a-checkbox v-decorator="['rememberMe', {initialValue: true, valuePropName: 'checked'}]" >自动登录</a-checkbox>
         <router-link :to="{ name: 'alteration'}" class="forge-password" style="float: right;">
           忘记密码
         </router-link>
@@ -106,7 +106,7 @@
       </a-form-item>
 
       <div class="user-login-other">
-        <span>其他登陆方式</span>
+        <span>其他登录方式</span>
         <a @click="onThirdLogin('github')" title="github"><a-icon class="item-icon" type="github"></a-icon></a>
         <a @click="onThirdLogin('wechat_enterprise')" title="企业微信"><a-icon class="item-icon" type="wechat"></a-icon></a>
         <a @click="onThirdLogin('dingtalk')" title="钉钉"><a-icon class="item-icon" type="dingding"></a-icon></a>
@@ -195,6 +195,11 @@
           console.log("origin",origin);
 
           let token = event.data
+          //update-begin--Author:wangshuai  Date:20200729 for：接口在签名校验失败时返回失败的标识码 #1441--------------------
+          if (token === '登录失败') {
+            that.$message.warning(token);
+          }else{
+          //update-end--Author:wangshuai  Date:20200729 for：接口在签名校验失败时返回失败的标识码 #1441--------------------
           console.log("event.data",token)
           that.ThirdLogin(token).then(res=>{
             if(res.success){
@@ -203,6 +208,7 @@
               that.requestFailed(res);
             }
           })
+          }
         }
         window.addEventListener("message", receiveMessage, false);
       },
@@ -224,7 +230,7 @@
         let that = this
         let loginParams = {};
         that.loginBtn = true;
-        // 使用账户密码登陆
+        // 使用账户密码登录
         if (that.customActiveKey === 'tab1') {
           that.form.validateFields([ 'username', 'password','inputCode', 'rememberMe' ], { force: true }, (err, values) => {
             if (!err) {
@@ -249,7 +255,7 @@
               that.loginBtn = false;
             }
           })
-          // 使用手机号登陆
+          // 使用手机号登录
         } else {
           that.form.validateFields([ 'mobile', 'captcha', 'rememberMe' ], { force: true }, (err, values) => {
             if (!err) {

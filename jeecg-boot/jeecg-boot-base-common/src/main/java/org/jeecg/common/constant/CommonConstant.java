@@ -258,6 +258,16 @@ public interface CommonConstant {
     public static final String IM_SOCKET_TYPE = "chatMessage";
 
     /**
+     * 在线聊天 是否开启默认添加好友 1是 0否
+     */
+    public static final String IM_DEFAULT_ADD_FRIEND = "1";
+
+    /**
+     * 在线聊天 用户好友缓存前缀
+     */
+    public static final String IM_PREFIX_USER_FRIEND_CACHE = "im_prefix_user_friend_";
+
+    /**
      * 考勤补卡业务状态 （1：同意  2：不同意）
      */
     public static final String SIGN_PATCH_BIZ_STATUS_1 = "1";
@@ -277,4 +287,17 @@ public interface CommonConstant {
      */
     public static final String WPS_TYPE_1="1";
     public static final String WPS_TYPE_2="2";
+
+
+    public final static String X_ACCESS_TOKEN = "X-Access-Token";
+
+    /**
+     * 多租户 请求头
+     */
+    public final static String TENANT_ID = "tenant_id";
+
+    /**
+     * 微服务读取配置文件属性 服务地址
+     */
+    public final static String CLOUD_SERVER_KEY = "spring.cloud.nacos.discovery.server-addr";
 }

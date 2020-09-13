@@ -112,8 +112,9 @@ export default {
             pageSize: (pagination && pagination.pageSize) ||
               this.localPagination.pageSize
           });
-
-          !r.totalCount && ['auto', false].includes(this.showPagination) && (this.localPagination = false)
+          //update--begin--autor:wangshuai-----date:20200724------for：判断showPagination是否为false------
+          (!this.showPagination || !r.totalCount && this.showPagination === 'auto') && (this.localPagination = false)
+          //update--end--autor:wangshuai-----date:20200724------for：判断showPagination是否为false-----
           this.localDataSource = r.data; // 返回结果中的数组数据
           this.localLoading = false
         });

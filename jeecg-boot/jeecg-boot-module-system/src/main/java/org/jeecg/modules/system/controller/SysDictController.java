@@ -1,29 +1,24 @@
 package org.jeecg.modules.system.controller;
 
 
-import java.io.InputStream;
-import java.util.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import cn.hutool.crypto.SecureUtil;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.ImportExcelUtil;
-import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.shiro.vo.DefContants;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.model.SysDictTree;
@@ -44,15 +39,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-
-import lombok.extern.slf4j.Slf4j;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 /**
  * <p>
@@ -319,6 +308,7 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysDict> add(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -339,6 +329,7 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
 	public Result<SysDict> edit(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -360,6 +351,7 @@ public class SysDictController {
 	 * @param id
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value=CacheConstant.SYS_DICT_CACHE, allEntries=true)
 	public Result<SysDict> delete(@RequestParam(name="id",required=true) String id) {
@@ -378,6 +370,7 @@ public class SysDictController {
 	 * @param ids
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value= CacheConstant.SYS_DICT_CACHE, allEntries=true)
 	public Result<SysDict> deleteBatch(@RequestParam(name="ids",required=true) String ids) {

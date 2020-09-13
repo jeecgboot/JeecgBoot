@@ -110,7 +110,7 @@
         return Object.keys(this.$scopedSlots).filter(key => !this.usedSlots.includes(key))
       },
       allSlotsKeys() {
-        return this.slotsKeys.concat(this.scopedSlotsKeys)
+        return Object.keys(this.$slots).concat(Object.keys(this.$scopedSlots))
       },
       // 切换全屏的按钮图标
       fullscreenButtonIcon() {

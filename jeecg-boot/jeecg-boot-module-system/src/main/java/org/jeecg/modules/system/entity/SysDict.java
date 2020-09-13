@@ -29,7 +29,7 @@ public class SysDict implements Serializable {
     /**
      * id
      */
-    @TableId(type = IdType.ID_WORKER_STR)
+    @TableId(type = IdType.ASSIGN_ID)
     private String id;
     
     /**

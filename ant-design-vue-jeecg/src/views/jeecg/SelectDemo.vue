@@ -81,10 +81,10 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="选择部门 自定义返回值">
-              <j-select-depart v-decorator="['departId']" :trigger-change="true" customReturnField="departName"></j-select-depart>
+              <j-select-depart v-model="orgCodes" :trigger-change="true" customReturnField="orgCode" :multi="true"></j-select-depart>
             </a-form-item>
           </a-col>
-          <a-col :span="12">选中的部门ID(v-decorator):{{ getDepartIdValue() }}</a-col>
+          <a-col :span="12">选中的部门Code(v-decorator):{{ orgCodes }}</a-col>
         </a-row>
 
         <a-row :gutter="24">
@@ -110,7 +110,7 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="选择用户">
-              <j-select-multi-user v-model="multiUser" ></j-select-multi-user>
+              <j-select-multi-user v-model="multiUser" :query-config="selectUserQueryConfig"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">选中的用户(v-model):{{ multiUser }}</a-col>
@@ -285,7 +285,7 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="分类字典树">
-              <j-category-select v-model="formData.selectCategory" pcode="A01"/>
+              <j-category-select v-model="formData.selectCategory" pcode="A01" :multiple="true"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">选中的值(v-model)：{{ formData.selectCategory }}</a-col>
@@ -419,7 +419,7 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="JPopup示例">
-              <j-popup v-model="formData.jPopup" code="demo" field="name" orgFields="name" destFields="name"/>
+              <j-popup v-model="formData.jPopup" code="demo" field="name" orgFields="name" destFields="name" :multi="true"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">选择的值(v-model)：{{ formData.jPopup }}</a-col>
@@ -492,7 +492,8 @@
           sex: 1
         },
         form: this.$form.createForm(this),
-        departId: '4f1765520d6346f9bd9c79e2479e5b12,57197590443c44f083d42ae24ef26a2c',
+        departId: '57197590443c44f083d42ae24ef26a2c,a7d7e77e06c84325a40932163adcdaa6',
+        orgCodes: 'A02A01,A02A02',
         userIds: 'admin',
         multiUser: 'admin,jeecg',
         jcheckbox: {
@@ -577,6 +578,10 @@ sayHi('hello, world!')`
           value:"3"
         }],
 
+        // 选择用户查询条件配置
+        selectUserQueryConfig: [
+          {key: 'phone', label: '电话'},
+        ],
       }
     },
     computed: {
@@ -594,6 +599,9 @@ sayHi('hello, world!')`
       },
       getDepartIdValue() {
         return this.form.getFieldValue('departId')
+      },
+      getOrgCodesValue() {
+        return this.form.getFieldValue('orgCodes')
       },
       changeMe() {
         console.log('you so ...  , change Me')

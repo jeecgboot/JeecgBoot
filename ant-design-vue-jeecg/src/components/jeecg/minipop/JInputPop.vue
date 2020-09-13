@@ -11,7 +11,7 @@
       <a-icon slot="suffix" type="fullscreen" @click.stop="pop" />
     </a-input>
     <div slot="content">
-      <textarea :value="inputContent" :disabled="disabled" @input="handleInputChange" :style="{ height: height + 'px', width: width + 'px' }"></textarea>
+      <a-textarea ref="textarea" :value="inputContent" :disabled="disabled" @input="handleInputChange" :style="{ height: height + 'px', width: width + 'px' }"/>
     </div>
   </a-popover>
 </template>
@@ -84,6 +84,9 @@
       },
       pop(){
         this.visible=true
+        this.$nextTick(() => {
+          this.$refs.textarea.focus()
+        })
       },
       getPopupContainer(node){
         if(!this.popContainer){

@@ -39,7 +39,7 @@
       <div class="thead" ref="thead">
         <div class="tr" :style="{width: this.realTrWidth}">
           <!-- 左侧固定td  -->
-          <div v-if="dragSort" class="td td-ds" :style="style.tdLeftDs">
+          <div v-if="dragSort" class="td td-ds" :style="style.tdLeft">
             <span></span>
           </div>
           <div v-if="rowSelection" class="td td-cb" :style="style.tdLeft">
@@ -104,7 +104,7 @@
               >
                 <!-- 左侧固定td  -->
 
-                <div v-if="dragSort" class="td td-ds" :style="style.tdLeftDs" @dblclick="_handleRowInsertDown(rowIndex)" >
+                <div v-if="dragSort" class="td td-ds" :style="style.tdLeft" @dblclick="_handleRowInsertDown(rowIndex)" >
                   <a-dropdown :trigger="['click']" :getPopupContainer="getParentContainer">
                     <div class="td-ds-icons">
                       <a-icon type="align-left"/>
@@ -584,7 +584,7 @@
               height: '32px'
             }"
           >
-            <div v-if="dragSort" class="td td-ds" :style="style.tdLeftDs">
+            <div v-if="dragSort" class="td td-ds" :style="style.tdLeft">
             </div>
             <div v-if="rowSelection" class="td td-cb" :style="style.tdLeft">
               统计
@@ -673,7 +673,7 @@
         type: Boolean,
         default: false
       },
-      // 页面是否在加载中
+      // 表格内容区域最大高度
       maxHeight: {
         type: Number,
         default: 400
@@ -725,8 +725,7 @@
           // 'max-height': '400px'
           tbody: { left: '0px' },
           // 左侧固定td的style
-          tdLeft: { 'min-width': '4%', 'max-width': '45px' },
-          tdLeftDs: { 'min-width': '30px', 'max-width': '35px' },
+          tdLeft: {},
         },
         // 表单的类型
         formTypes: FormTypes,
@@ -1398,7 +1397,6 @@
         let values = []
         // 遍历inputValues来获取每行的值
         for (let value of inputValues) {
-          if (value == null) console.warn(this.caseId, '+++++++++ value.1: ', value, cloneObject(inputValues))
           let rowIdsFlag = false
           // 如果带有rowIds，那么就只存这几行的数据
           if (rowIds == null) {
@@ -1591,78 +1589,68 @@
           rowKey = this.getCleanId(rowKey)
           for (let newValueKey in newValues) {
             if (newValues.hasOwnProperty(newValueKey)) {
-              let newValue = newValues[newValueKey]
               let edited = false // 已被修改
-              this.inputValues.forEach(value => {
-                // 在inputValues中找到了该字段
-                if (rowKey === this.getCleanId(value.id)) {
-                  if (value.hasOwnProperty(newValueKey)) {
-                    edited = true
-                    value[newValueKey] = newValue
-                  }
-                }
-              })
-              let modelKey = `${newValueKey}${this.caseId}${rowKey}`
-              // 在 selectValues 中寻找值
-              if (!edited) {
-                if (newValue !== 0 && !newValue) {
-                  edited = this.setOneValue(this.selectValues, modelKey, undefined)
-                } else {
-                  edited = this.setOneValue(this.selectValues, modelKey, newValue)
-                }
-              }
-              // 在 checkboxValues 中寻找值
-              if (!edited) {
-                // checkbox 特殊处理 CustomValue
-                let key = this.valuesHasOwnProperty(this.checkboxValues, modelKey)
-                // 找到对应的column
-                let sourceValue
-                for (let column of this.columns) {
-                  if (column.key === newValueKey) {
-                    edited = true
-                    // 判断是否设定了customValue（自定义值）
-                    if (column.customValue instanceof Array) {
-                      let customValue = (column.customValue[0] || '').toString()
-                      sourceValue = (newValue === customValue)
-                    } else {
-                      sourceValue = !!newValue
+              for (let column of this.columns) {
+                if (column.key === newValueKey) {
+                  let newValue = newValues[newValueKey]
+                  this.inputValues.forEach(value => {
+                    // 在inputValues中找到了该字段
+                    if (rowKey === this.getCleanId(value.id)) {
+                      if (value.hasOwnProperty(newValueKey)) {
+                        edited = true
+                        value[newValueKey] = newValue
+                      }
                     }
-                    this.$set(this.checkboxValues, key, sourceValue)
-                    break
+                  })
+                  if (!edited) {
+                    let modelKey = `${newValueKey}${this.caseId}${rowKey}`
+                    if (column.type === FormTypes.select) {
+                      if (newValue !== 0 && !newValue) {
+                        edited = this.setOneValue(this.selectValues, modelKey, undefined)
+                      } else {
+                        edited = this.setOneValue(this.selectValues, modelKey, newValue)
+                      }
+                    } else if (column.type === FormTypes.checkbox) {
+                      // checkbox 特殊处理 CustomValue
+                      let key = this.valuesHasOwnProperty(this.checkboxValues, modelKey)
+                      // 找到对应的column
+                      let sourceValue
+                      // 判断是否设定了customValue（自定义值）
+                      if (column.customValue instanceof Array) {
+                        let customValue = (column.customValue[0] || '').toString()
+                        sourceValue = (newValue === customValue)
+                      } else {
+                        sourceValue = !!newValue
+                      }
+                      this.$set(this.checkboxValues, key, sourceValue)
+                      edited = true
+                    } else if (column.type === FormTypes.date || column.type === FormTypes.datetime) {
+                      edited = this.setOneValue(this.jdateValues, modelKey, newValue)
+                    } else if (column.type === FormTypes.input_pop) {
+                      edited = this.setOneValue(this.jInputPopValues, modelKey, newValue)
+                    } else if (column.type === FormTypes.slot) {
+                      edited = this.setOneValue(this.slotValues, modelKey, newValue)
+                    } else if (column.type === FormTypes.upload || column.type === FormTypes.image || column.type === FormTypes.file) {
+                      edited = this.setOneValue(this.uploadValues, modelKey, newValue)
+                    } else if (column.type === FormTypes.popup) {
+                      edited = this.setOneValue(this.popupValues, modelKey, newValue)
+                    } else if (column.type === FormTypes.radio) {
+                      edited = this.setOneValue(this.radioValues, modelKey, newValue)
+                    } else if (column.type === FormTypes.list_multi) {
+                      edited = this.setOneValue(this.multiSelectValues, modelKey, newValue, true)
+                    } else if (column.type === FormTypes.sel_search) {
+                      edited = this.setOneValue(this.searchSelectValues, modelKey, newValue)
+                    } else {
+                      edited = false
+                    }
+                  }
+                  if (edited) {
+                    this.elemValueChange(column.type, {[newValueKey]: newValue}, column, newValue)
                   }
                 }
               }
-              // 在 jdateValues 中寻找值
               if (!edited) {
-                edited = this.setOneValue(this.jdateValues, modelKey, newValue)
-              }
-              // 在 jInputPopValues 中寻找值
-              if (!edited) {
-                edited = this.setOneValue(this.jInputPopValues, modelKey, newValue)
-              }
-              // 在 slotValues 中寻找值
-              if (!edited) {
-                edited = this.setOneValue(this.slotValues, modelKey, newValue)
-              }
-              // 在 uploadValues 中寻找值
-              if (!edited) {
-                edited = this.setOneValue(this.uploadValues, modelKey, newValue)
-              }
-              // 在 popupValues 中寻找值
-              if (!edited) {
-                edited = this.setOneValue(this.popupValues, modelKey, newValue)
-              }
-              // 在 radioValues 中寻找值
-              if (!edited) {
-                edited = this.setOneValue(this.radioValues, modelKey, newValue)
-              }
-              // 在 multiSelectValues 中寻找值
-              if (!edited) {
-                edited = this.setOneValue(this.multiSelectValues, modelKey, newValue, true)
-              }
-              // 在 searchSelectValues 中寻找值
-              if (!edited) {
-                edited = this.setOneValue(this.searchSelectValues, modelKey, newValue)
+                console.warn(`JEditableTable.setValues：没有找到"${newValueKey}"列`)
               }
             }
           }
@@ -2209,6 +2197,9 @@
           value['message'] = file.response.message || '未知错误'
         }
         this.uploadValues = this.bindValuesChange(value, id, 'uploadValues')
+
+        // 触发valueChange 事件
+        this.elemValueChange(column.type, row, column, value)
       },
       handleMoreOperation(id,flag){
         //console.log("this.uploadValues[id]",this.uploadValues[id])
@@ -2747,8 +2738,9 @@
         flex-direction: column;
 
         &.td-cb, &.td-num {
-          min-width: 4%;
-          max-width: 45px;
+          width: 45px;
+          min-width: 45px;
+          max-width: 50px;
           margin-right: 0;
           padding-left: 0;
           padding-right: 0;
@@ -2757,6 +2749,9 @@
         }
 
         &.td-ds {
+          width: 30px;
+          min-width: 30px;
+          max-width: 35px;
           margin-right: 0;
           padding-left: 0;
           padding-right: 0;
@@ -2942,6 +2937,10 @@
 
         label {
           height: 32px;
+
+          &.ant-checkbox-wrapper {
+            height: auto;
+          }
         }
 
         .j-td-span {

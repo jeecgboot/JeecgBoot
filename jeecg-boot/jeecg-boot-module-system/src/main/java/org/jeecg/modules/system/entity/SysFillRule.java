@@ -28,7 +28,7 @@ public class SysFillRule {
     /**
      * 主键ID
      */
-    @TableId(type = IdType.ID_WORKER_STR)
+    @TableId(type = IdType.ASSIGN_ID)
     @ApiModelProperty(value = "主键ID")
     private java.lang.String id;
     /**

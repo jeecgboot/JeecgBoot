@@ -1,4 +1,7 @@
 import store from '@/store/'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
+import Vue from 'vue'
+
 export const WebsocketMixin = {
   mounted() {
     this.initWebSocket();
@@ -9,6 +12,7 @@ export const WebsocketMixin = {
   },
   methods:{
     initWebSocket: function () {
+      let token = Vue.ls.get(ACCESS_TOKEN)
       console.log("------------WebSocket连接成功");
       // WebSocket与普通的请求所用协议有所不同，ws等同于http，wss等同于https
       var userId = store.getters.userInfo.id;
@@ -18,7 +22,7 @@ export const WebsocketMixin = {
       if(!this.socketUrl.endsWith('/')){
         this.socketUrl = this.socketUrl + '/'
       }
-      var url = window._CONFIG['domianURL'].replace("https://","wss://").replace("http://","ws://") + this.socketUrl + userId;
+      var url = window._CONFIG['domianURL'].replace("https://","wss://").replace("http://","ws://") + this.socketUrl + userId + "/" + token;
       this.websock = new WebSocket(url);
       this.websock.onopen = this.websocketOnopen;
       this.websock.onerror = this.websocketOnerror;

@@ -152,9 +152,7 @@ public class SysTenantController {
         if(oConvertUtils.isNotEmpty(ids)){
             query.in(SysTenant::getId, ids.split(","));
         }
-        Date now = new Date();
-        query.ge(SysTenant::getEndDate, now);
-        query.le(SysTenant::getBeginDate, now);
+        //此处查询忽略时间条件
         List<SysTenant> ls = sysTenantService.list(query);
         result.setSuccess(true);
         result.setResult(ls);

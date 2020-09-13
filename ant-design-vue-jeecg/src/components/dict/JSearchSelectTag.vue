@@ -90,6 +90,14 @@
         handler(){
           this.initDictData()
         }
+      },
+      'dictOptions':{
+        deep: true,
+        handler(val){
+          if(val && val.length>0){
+            this.options = [...val]
+          }
+        }
       }
     },
     methods:{

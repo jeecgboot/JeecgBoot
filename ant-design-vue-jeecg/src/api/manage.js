@@ -167,11 +167,15 @@ export function uploadAction(url,parameter){
  */
 export function getFileAccessHttpUrl(avatar,subStr) {
   if(!subStr) subStr = 'http'
-  if(avatar && avatar.startsWith(subStr)){
-    return avatar;
-  }else{
-    if(avatar &&　avatar.length>0 && avatar.indexOf('[')==-1){
-      return window._CONFIG['staticDomainURL'] + "/" + avatar;
+  try {
+    if(avatar && avatar.startsWith(subStr)){
+      return avatar;
+    }else{
+      if(avatar &&　avatar.length>0 && avatar.indexOf('[')==-1){
+        return window._CONFIG['staticDomainURL'] + "/" + avatar;
+      }
     }
+  }catch(err){
+   return;
   }
 }
