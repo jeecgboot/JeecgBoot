@@ -217,7 +217,7 @@
                 <a @click="handleAddChild(record)">添加下级</a>
               </a-menu-item>
               <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDeleteNode(record)">
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDeleteNode(record.id)">
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
@@ -332,6 +332,9 @@
           {
             title:'${po.filedComment}',
             align:"left",
+            <#if po.sort=='Y'>
+            sorter: true,
+            </#if>
             <#if po.classType=='date'>
             dataIndex: '${po.fieldName}',
             customRender:function (text) {
@@ -356,6 +359,7 @@
             title: '操作',
             dataIndex: 'action',
             align:"center",
+            width:147,
             scopedSlots: { customRender: 'action' },
           }
         ],
@@ -424,7 +428,7 @@
               let records = res.result.records
               const listMap = new Map();
               for (let item of records) {
-                let pid = item.pid;
+                let pid = item[this.pidField];
                 if (this.expandedRowKeys.join(',').includes(pid)) {
                  let mapList = listMap.get(pid);
                   if (mapList == null) {
@@ -436,12 +440,14 @@
               }
               let childrenMap = listMap;
               let fn = (list) => {
-                list.forEach(data => {
-                  if (this.expandedRowKeys.includes(data.id)) {
-                    data.children = this.getDataByResult(childrenMap.get(data.id))
-                    fn(data.children)
-                  }
-                })
+                if(list) {
+                  list.forEach(data => {
+                    if (this.expandedRowKeys.includes(data.id)) {
+                      data.children = this.getDataByResult(childrenMap.get(data.id))
+                      fn(data.children)
+                    }
+                  })
+                }
               }
               fn(dataList)
             }
@@ -462,6 +468,11 @@
           param = Object.assign(sqp, this.isorter ,this.filters);
         }else{
           param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        }
+        if(JSON.stringify(this.queryParam) === "{}" || arg){
+          param.hasQuery = 'false'
+        }else{
+          param.hasQuery = 'true'
         }
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
@@ -491,7 +502,7 @@
         if (expanded) {
           this.expandedRowKeys.push(record.id)
           if (record.children.length>0 && record.children[0].isLoading === true) {
-            let params = this.getQueryParams();//查询条件
+            let params = this.getQueryParams(1);//查询条件
             params[this.pidField] = record.id
             getAction(this.url.childList,params).then((res)=>{
               if(res.success){
@@ -520,20 +531,40 @@
         obj[this.pidField] = record['id']
         this.$refs.modalForm.add(obj);
       },
-      handleDeleteNode(record) {
+      handleDeleteNode(id) {
         if(!this.url.delete){
           this.$message.error("请设置url.delete属性!")
           return
         }
         var that = this;
-        deleteAction(that.url.delete, {id: record.id}).then((res) => {
+        deleteAction(that.url.delete, {id: id}).then((res) => {
           if (res.success) {
              that.loadData(1)
           } else {
             that.$message.warning(res.message);
           }
         });
-      }
+      },
+      batchDel(){
+        if(this.selectedRowKeys.length<=0){
+          this.$message.warning('请选择一条记录！');
+          return false;
+        }else{
+          let ids = "";
+          let that = this;
+          that.selectedRowKeys.forEach(function(val) {
+            ids+=val+",";
+          });
+          that.$confirm({
+            title:"确认删除",
+            content:"是否删除选中数据?",
+            onOk: function(){
+              that.handleDeleteNode(ids)
+              that.onClearSelected();
+            }
+          });
+        }
+      },
 
     }
   }

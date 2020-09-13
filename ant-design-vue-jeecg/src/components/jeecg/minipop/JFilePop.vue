@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-modal
-      title="文件上传"
+      :title="fileType === 'image' ? '图片上传' : '文件上传'"
       :width="width"
       :visible="visible"
       @ok="ok"

@@ -128,6 +128,13 @@
               this.reload()
             }
           })
+        }else{
+          //update--begin--autor:wangshuai-----date:20200724------for：富文本编辑器切换tab无法修改------
+          let tabLayout = getVmParentByName(this, 'TabLayout')
+          tabLayout.excuteCallback(()=>{
+            this.reload()
+          })
+          //update--begin--autor:wangshuai-----date:20200724------for：文本编辑器切换tab无法修改------
         }
       },
 

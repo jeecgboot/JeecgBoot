@@ -1,8 +1,8 @@
 package org.jeecg.common.util.dynamic.db;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.constant.CacheConstant;
-import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.DynamicDataSourceModel;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.SpringContextUtils;
@@ -37,8 +37,8 @@ public class DataSourceCachePool {
         if (getRedisTemplate().hasKey(redisCacheKey)) {
             return (DynamicDataSourceModel) getRedisTemplate().opsForValue().get(redisCacheKey);
         }
-        ISysBaseAPI sysBaseAPI = SpringContextUtils.getBean(ISysBaseAPI.class);
-        DynamicDataSourceModel dbSource = sysBaseAPI.getDynamicDbSourceByCode(dbKey);
+        CommonAPI commonAPI = SpringContextUtils.getBean(CommonAPI.class);
+        DynamicDataSourceModel dbSource = commonAPI.getDynamicDbSourceByCode(dbKey);
         if (dbSource != null) {
             getRedisTemplate().opsForValue().set(redisCacheKey, dbSource);
         }

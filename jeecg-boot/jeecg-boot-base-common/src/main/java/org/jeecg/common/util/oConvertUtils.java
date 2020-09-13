@@ -593,7 +593,7 @@ public class oConvertUtils {
 	 * @return
 	 */
 	public static<F,T> List<T> entityListToModelList(List<F> fromList, Class<T> tClass){
-		if(fromList.isEmpty() || fromList == null){
+		if(fromList == null || fromList.isEmpty()){
 			return null;
 		}
 		List<T> tList = new ArrayList<>();

@@ -22,7 +22,7 @@ public class AnnouncementSendModel implements Serializable {
     private static final long serialVersionUID = 1L;
     
 	/**id*/
-	@TableId(type = IdType.ID_WORKER_STR)
+	@TableId(type = IdType.ASSIGN_ID)
 	private java.lang.String id;
 	/**通告id*/
 	private java.lang.String anntId;
@@ -76,4 +76,8 @@ public class AnnouncementSendModel implements Serializable {
 	 * 摘要
 	 */
 	private java.lang.String msgAbstract;
+	/**
+	 * 邮箱标题
+	 */
+	private java.lang.String emailTitle;
 }

@@ -171,8 +171,14 @@
         if(!this.isMultiple){
           arr.push(uploadFiles[uploadFiles.length-1].response.message)
         }else{
-          for(var a=0;a<uploadFiles.length;a++){
-            arr.push(uploadFiles[a].response.message)
+          for(let a=0;a<uploadFiles.length;a++){
+            // update-begin-author:taoyan date:20200819 for:【开源问题z】上传图片组件 LOWCOD-783
+            if(uploadFiles[a].status === 'done' ) {
+              arr.push(uploadFiles[a].response.message)
+            }else{
+              return;
+            }
+            // update-end-author:taoyan date:20200819 for:【开源问题z】上传图片组件 LOWCOD-783
           }
         }
         if(arr.length>0){

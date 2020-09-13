@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.controller;
 
+import cn.hutool.crypto.SecureUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xkcoding.justauth.AuthRequestFactory;
@@ -9,14 +10,17 @@ import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.system.api.ISysBaseAPI;
+import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -41,7 +45,7 @@ public class ThirdLoginController {
 	private ISysUserService sysUserService;
 	
 	@Autowired
-	private ISysBaseAPI sysBaseAPI;
+	private BaseCommonService baseCommonService;
 	@Autowired
     private RedisUtil redisUtil;
 	@Autowired
@@ -104,9 +108,21 @@ public class ThirdLoginController {
     		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
     		// 设置超时时间
     		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME / 1000);
+
+			//update-begin-author:taoyan date:20200812 for:登录缓存用户信息
+			LoginUser redisUser = new LoginUser();
+			BeanUtils.copyProperties(user, redisUser);
+			redisUser.setPassword(SecureUtil.md5(user.getPassword()));
+			redisUtil.set(CacheConstant.SYS_USERS_CACHE_JWT +":" +token, redisUser);
+			redisUtil.expire(CacheConstant.SYS_USERS_CACHE_JWT +":" +token, JwtUtil.EXPIRE_TIME*2 / 1000);
+			//update-end-author:taoyan date:20200812 for:登录缓存用户信息
+
     		modelMap.addAttribute("token", token);
-    		
-        }
+		//update-begin--Author:wangshuai  Date:20200729 for：接口在签名校验失败时返回失败的标识码 issues#1441--------------------
+        }else{
+			modelMap.addAttribute("token", "登录失败");
+		}
+		//update-end--Author:wangshuai  Date:20200729 for：接口在签名校验失败时返回失败的标识码 issues#1441--------------------
         result.setSuccess(false);
         result.setMessage("第三方登录异常,请联系管理员");
         return "thirdLogin";
@@ -133,7 +149,7 @@ public class ThirdLoginController {
 		result.setResult(obj);
 		result.setSuccess(true);
 		result.setCode(200);
-		sysBaseAPI.addLog("用户名: " + username + ",登录成功[第三方用户]！", CommonConstant.LOG_TYPE_1, null);
+		baseCommonService.addLog("用户名: " + username + ",登录成功[第三方用户]！", CommonConstant.LOG_TYPE_1, null);
 		return result;
 	}
 	

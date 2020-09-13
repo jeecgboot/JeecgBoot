@@ -9,6 +9,6 @@ ${AnsiColor.BRIGHT_BLUE}
 
 
 ${AnsiColor.BRIGHT_GREEN}
-Jeecg  Boot Version: 2.2.1
+Jeecg  Boot Version: 2.3
 Spring Boot Version: ${spring-boot.version}${spring-boot.formatted-version}
 ${AnsiColor.BLACK}

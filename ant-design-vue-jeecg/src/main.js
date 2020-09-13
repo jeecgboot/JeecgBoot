@@ -6,7 +6,9 @@ import store from './store/'
 
 import { VueAxios } from "@/utils/request"
 
-import Antd from 'ant-design-vue'
+import Antd, { version } from 'ant-design-vue'
+console.log('ant-design-vue version:', version)
+
 import Viser from 'viser-vue'
 import 'ant-design-vue/dist/antd.less';  // or 'ant-design-vue/dist/antd.less'
 
@@ -19,6 +21,7 @@ import 'vue-photo-preview/dist/skin.css'
 
 require('@jeecg/antd-online-mini')
 require('@jeecg/antd-online-mini/dist/OnlineForm.css')
+
 
 import {
   ACCESS_TOKEN,
@@ -41,6 +44,8 @@ import vueBus from '@/utils/vueBus';
 import JeecgComponents from '@/components/jeecg/index'
 import '@/assets/less/JAreaLinkage.less'
 import VueAreaLinkage from 'vue-area-linkage'
+import '@/components/jeecg/JVxeTable/install'
+import '@/components/JVxeCells/install'
 
 Vue.config.productionTip = false
 Vue.use(Storage, config.storageOptions)

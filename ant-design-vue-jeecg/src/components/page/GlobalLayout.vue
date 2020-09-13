@@ -3,7 +3,7 @@
 
     <template v-if="layoutMode === 'sidemenu'">
       <a-drawer
-        v-if="device === 'mobile'"
+        v-show="device === 'mobile'"
         :wrapClassName="'drawer-sider ' + navTheme"
         placement="left"
         @close="() => this.collapsed = false"
@@ -13,6 +13,7 @@
       >
         <side-menu
           mode="inline"
+          v-if="device === 'mobile'"
           :menus="menus"
           @menuSelect="menuSelect"
           :theme="navTheme"
@@ -21,7 +22,7 @@
       </a-drawer>
 
       <side-menu
-        v-else
+        v-if="device === 'desktop'"
         mode="inline"
         :menus="menus"
         @menuSelect="myMenuSelect"
@@ -343,7 +344,7 @@
           }
 
           .anticon {
-            color: white;
+            color: inherit;
           }
         }
       }
@@ -359,7 +360,7 @@
             }
 
             .anticon {
-              color: black;
+              color: inherit;
             }
           }
         }

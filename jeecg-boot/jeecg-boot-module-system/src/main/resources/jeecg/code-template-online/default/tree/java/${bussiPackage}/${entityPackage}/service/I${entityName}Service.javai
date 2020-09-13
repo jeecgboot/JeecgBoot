@@ -3,6 +3,8 @@ package ${bussiPackage}.${entityPackage}.service;
 import ${bussiPackage}.${entityPackage}.entity.${entityName};
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.common.exception.JeecgBootException;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import java.util.List;
 
 /**
  * @Description: ${tableVo.ftlDescription}
@@ -29,5 +31,8 @@ public interface I${entityName}Service extends IService<${entityName}> {
 	
 	/**删除节点*/
 	void delete${entityName}(String id) throws JeecgBootException;
+
+	/**查询所有数据，无分页*/
+    List<${entityName}> queryTreeListNoPage(QueryWrapper<${entityName}> queryWrapper);
 
 }

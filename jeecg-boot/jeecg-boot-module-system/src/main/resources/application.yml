@@ -22,7 +22,7 @@ justauth:
       agent-id: 1000002
     DINGTALK:
       client-id: dingoa33vjqxrbyidnmgwo
-      client-secret: ？？
+      client-secret: ??
       redirect-uri: http://sso.test.com:8080/jeecg-boot/thirdLogin/dingtalk/callback
   cache:
     type: default
