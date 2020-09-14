@@ -1,6 +1,6 @@
 --- 创建mysql库
--DROP DATABASE IF EXISTS `jeecg-boot`;
--create database `jeecg-boot` default character set utf8mb4 collate utf8mb4_general_ci;
+DROP DATABASE IF EXISTS `jeecg-boot`;
+create database `jeecg-boot` default character set utf8mb4 collate utf8mb4_general_ci;
 
 /*
  Navicat Premium Data Transfer
