@@ -58,20 +58,17 @@ module.exports = {
       .loader('file-loader')
       .end()
 
-    // 编译某些npm包里的es6代码
-    // TODO 导致online js lib启动报错
-    // config.module
-    //     //   .rule('vxe')
-    //     //   .test(/\.js$/)
-    //     //   .use()
-    //     //   .loader('babel-loader')
-    //     //   .options({
-    //     //     include: [
-    //     //       resolve('node_modules/vxe-table'),
-    //     //       resolve('node_modules/vxe-table-plugin-antd'),
-    //     //     ]
-    //     //   })
-    //     //   .end()
+     // 编译某些npm包里的es6代码
+    config.module
+      .rule('vxe')
+      .test(/\.js$/)
+      .include
+        .add(resolve('node_modules/vxe-table'))
+        .add(resolve('node_modules/vxe-table-plugin-antd'))
+        .end()
+      .use()
+      .loader('babel-loader')
+      .end()
 
   },
 
