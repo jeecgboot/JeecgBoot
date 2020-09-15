@@ -7,7 +7,7 @@
     <a-radio-button v-for="(item, key) in dictOptions" :key="key" :value="item.value">{{ item.text }}</a-radio-button>
   </a-radio-group>
 
-  <a-select v-else-if="tagType=='select'" :getPopupContainer = "(target) => target.parentNode" :placeholder="placeholder" :disabled="disabled" :value="getValueSting" @change="handleInput">
+  <a-select v-else-if="tagType=='select'" :getPopupContainer = "getPopupContainer" :placeholder="placeholder" :disabled="disabled" :value="getValueSting" @change="handleInput">
     <a-select-option :value="undefined">请选择</a-select-option>
     <a-select-option v-for="(item, key) in dictOptions" :key="key" :value="item.value">
       <span style="display: inline-block;width: 100%" :title=" item.text || item.label ">
@@ -28,7 +28,11 @@
       triggerChange: Boolean,
       disabled: Boolean,
       value: [String, Number],
-      type: String
+      type: String,
+      getPopupContainer:{
+        type: Function,
+        default: (node) => node.parentNode
+      }
     },
     data() {
       return {
@@ -56,7 +60,10 @@
     },
     computed: {
       getValueSting(){
-        return this.value != null ? this.value.toString() : null;
+        // update-begin author:wangshuai date:20200601 for: 不显示placeholder的文字 ------
+        // 当有null或“” placeholder不显示
+        return this.value != null ? this.value.toString() : undefined;
+        // update-end author:wangshuai date:20200601 for: 不显示placeholder的文字 ------
       },
     },
     methods: {

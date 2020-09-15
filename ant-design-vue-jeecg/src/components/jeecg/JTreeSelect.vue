@@ -236,7 +236,6 @@
           }else{
             try {
               let test=JSON.parse(mycondition);
-              console.log("aaaaasdsdd",typeof test)
               if(typeof test == 'object' && test){
                 resolve()
               }else{

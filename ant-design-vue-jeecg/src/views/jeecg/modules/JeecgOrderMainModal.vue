@@ -268,6 +268,9 @@
       },
       delRowCustom (index) {
         console.log(index)
+        let all = this.form.getFieldsValue()
+        all['jeecgOrderCustomerList'].splice(index,1);
+        this.form.setFieldsValue(all)
         this.orderMainModel.jeecgOrderCustomerList.splice(index,1);
         this.$forceUpdate();
       },
@@ -278,6 +281,9 @@
       },
       delRowTicket (index) {
         console.log(index)
+        let all = this.form.getFieldsValue()
+        all['jeecgOrderTicketList'].splice(index,1);
+        this.form.setFieldsValue(all)
         this.orderMainModel.jeecgOrderTicketList.splice(index,1);
         this.$forceUpdate();
       },

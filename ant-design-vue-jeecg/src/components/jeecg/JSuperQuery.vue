@@ -145,6 +145,10 @@
                 <j-date v-else-if=" item.type=='datetime' " v-model="item.val" placeholder="请选择时间" :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" style="width: 100%"></j-date>
                 <a-time-picker v-else-if="item.type==='time'" :value="item.val ? moment(item.val,'HH:mm:ss') : null" format="HH:mm:ss" style="width: 100%" @change="(time,value)=>item.val=value"/>
                 <a-input-number v-else-if=" item.type=='int'||item.type=='number' " style="width: 100%" placeholder="请输入数值" v-model="item.val"/>
+                <a-select v-else-if="item.type=='switch'" placeholder="请选择" v-model="item.val">
+                  <a-select-option value="Y">是</a-select-option>
+                  <a-select-option value="N">否</a-select-option>
+                </a-select>
                 <a-input v-else v-model="item.val" placeholder="请输入值"/>
               </a-col>
 
@@ -494,10 +498,9 @@
           } else {
             if (Array.isArray(item.options)) {
               // 如果有字典属性，就不需要保存 options 了
-              if (item.dictCode) {
-                // 去掉特殊属性
-                delete item.options
-              }
+              //update-begin-author:taoyan date:20200819 for:【开源问题】 高级查询 下拉框作为并且选项很多多多 LOWCOD-779
+              delete item.options
+              //update-end-author:taoyan date:20200819 for:【开源问题】 高级查询 下拉框作为并且选项很多多多 LOWCOD-779
             }
           }
         }
@@ -508,8 +511,17 @@
       renderSaveTreeData(item) {
         item.icon = this.treeIcon
         item.originTitle = item['title']
-        item.title = (fn, vNode) => {
-          let { originTitle } = vNode.dataRef
+        item.title = (arg1, arg2) => {
+          let vNode
+          // 兼容旧版的Antdv
+          if (arg1.dataRef) {
+            vNode = arg1
+          } else if (arg2.dataRef) {
+            vNode = arg2
+          } else {
+            return <span style="color:red;">Antdv版本不支持</span>
+          }
+          let {originTitle} = vNode.dataRef
           return (
             <div class="j-history-tree-title">
               <span>{originTitle}</span>

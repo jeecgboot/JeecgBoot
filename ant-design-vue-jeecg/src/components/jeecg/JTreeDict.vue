@@ -121,7 +121,6 @@
         getAction(this.url_root,param).then(res=>{
           if(res.success){
             this.handleTreeNodeValue(res.result)
-            console.log("aaaa",res.result)
             this.treeData = [...res.result]
           }else{
             this.$message.error(res.message)

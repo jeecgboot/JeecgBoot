@@ -225,7 +225,13 @@
         let arr = [];
 
         for(var a=0;a<uploadFiles.length;a++){
-          arr.push(uploadFiles[a].response.message)
+          // update-begin-author:lvdandan date:20200603 for:【TESTA-514】【开源issue】多个文件同时上传时，控制台报错
+          if(uploadFiles[a].status === 'done' ) {
+            arr.push(uploadFiles[a].response.message)
+          }else{
+            return;
+          }
+          // update-end-author:lvdandan date:20200603 for:【TESTA-514】【开源issue】多个文件同时上传时，控制台报错
         }
         if(arr.length>0){
           path = arr.join(",")
@@ -279,12 +285,18 @@
             //returnUrl为false时返回文件名称、文件路径及文件大小
             this.newFileList = [];
             for(var a=0;a<fileList.length;a++){
-              var fileJson = {
-                fileName:fileList[a].name,
-                filePath:fileList[a].response.message,
-                fileSize:fileList[a].size
-              };
-              this.newFileList.push(fileJson);
+              // update-begin-author:lvdandan date:20200603 for:【TESTA-514】【开源issue】多个文件同时上传时，控制台报错
+              if(fileList[a].status === 'done' ) {
+                var fileJson = {
+                  fileName:fileList[a].name,
+                  filePath:fileList[a].response.message,
+                  fileSize:fileList[a].size
+                };
+                this.newFileList.push(fileJson);
+              }else{
+                return;
+              }
+              // update-end-author:lvdandan date:20200603 for:【TESTA-514】【开源issue】多个文件同时上传时，控制台报错
             }
             this.$emit('change', this.newFileList);
           }

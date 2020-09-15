@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.util.RestUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -326,6 +327,39 @@ public class JeecgElasticsearchTemplate {
             //TODO 打印接口返回异常json
             return false;
         }
+    }
+
+    /**
+     * 批量保存数据
+     *
+     * @param indexName 索引名称
+     * @param typeName  type，一个任意字符串，用于分类
+     * @param dataList  要存储的数据数组，每行数据必须包含id
+     * @return
+     */
+    public boolean saveBatch(String indexName, String typeName, JSONArray dataList) {
+        String url = this.getBaseUrl().append("/_bulk").append("?refresh=wait_for").toString();
+        StringBuilder bodySB = new StringBuilder();
+        for (int i = 0; i < dataList.size(); i++) {
+            JSONObject data = dataList.getJSONObject(i);
+            String id = data.getString("id");
+            // 该行的操作
+            // {"create": {"_id":"${id}", "_index": "${indexName}", "_type": "${typeName}"}}
+            JSONObject action = new JSONObject();
+            JSONObject actionInfo = new JSONObject();
+            actionInfo.put("_id", id);
+            actionInfo.put("_index", indexName);
+            actionInfo.put("_type", typeName);
+            action.put("create", actionInfo);
+            bodySB.append(action.toJSONString()).append("\n");
+            // 该行的数据
+            data.remove("id");
+            bodySB.append(data.toJSONString()).append("\n");
+        }
+        System.out.println("+-+-+-: bodySB.toString(): " + bodySB.toString());
+        HttpHeaders headers = RestUtil.getHeaderApplicationJson();
+        RestUtil.request(url, HttpMethod.PUT, headers, null, bodySB, JSONObject.class);
+        return true;
     }
 
     /**

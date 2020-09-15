@@ -3,11 +3,13 @@ package org.jeecg.modules.system.service.impl;
 import java.util.*;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.FillRuleConstant;
 import org.jeecg.common.util.FillRuleUtil;
 import org.jeecg.common.util.YouBianCodeUtil;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.model.DepartIdModel;
@@ -45,6 +47,8 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	private SysDepartRolePermissionMapper departRolePermissionMapper;
 	@Autowired
 	private SysDepartRoleUserMapper departRoleUserMapper;
+	@Autowired
+	private SysUserMapper sysUserMapper;
 
 	@Override
 	public List<SysDepartTreeModel> queryMyDeptTreeList(String departIds) {
@@ -429,4 +433,40 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		}
 		return orgCode;
 	}
+    /**
+     * 获取部门树信息根据关键字
+     * @param keyWord
+     * @return
+     */
+    @Override
+    public List<SysDepartTreeModel> queryTreeByKeyWord(String keyWord) {
+        LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
+        query.eq(SysDepart::getDelFlag, CommonConstant.DEL_FLAG_0.toString());
+        query.orderByAsc(SysDepart::getDepartOrder);
+        List<SysDepart> list = this.list(query);
+        // 调用wrapTreeDataToTreeList方法生成树状数据
+        List<SysDepartTreeModel> listResult = FindsDepartsChildrenUtil.wrapTreeDataToTreeList(list);
+        List<SysDepartTreeModel> treelist =new ArrayList<>();
+        if(StringUtils.isNotBlank(keyWord)){
+            this.getTreeByKeyWord(keyWord,listResult,treelist);
+        }else{
+            return listResult;
+        }
+        return treelist;
+    }
+    /**
+     * 根据关键字筛选部门信息
+     * @param keyWord
+     * @return
+     */
+    public void getTreeByKeyWord(String keyWord,List<SysDepartTreeModel> allResult,List<SysDepartTreeModel>  newResult){
+        for (SysDepartTreeModel model:allResult) {
+            if (model.getDepartName().contains(keyWord)){
+                newResult.add(model);
+                continue;
+            }else if(model.getChildren()!=null){
+                getTreeByKeyWord(keyWord,model.getChildren(),newResult);
+            }
+        }
+    }
 }

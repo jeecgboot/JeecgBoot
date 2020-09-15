@@ -3,8 +3,8 @@ package org.jeecg.common.util;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
+import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 
@@ -35,32 +35,32 @@ public class TokenUtils {
     /**
      * 验证Token
      */
-    public static boolean verifyToken(HttpServletRequest request, ISysBaseAPI sysBaseAPI, RedisUtil redisUtil) {
+    public static boolean verifyToken(HttpServletRequest request, CommonAPI commonAPI, RedisUtil redisUtil) {
         log.info(" -- url --" + request.getRequestURL());
         String token = getTokenByRequest(request);
 
         if (StringUtils.isBlank(token)) {
-            throw new AuthenticationException("token不能为空!");
+            throw new AuthenticationException("Token不能为空!");
         }
 
         // 解密获得username，用于和数据库进行对比
         String username = JwtUtil.getUsername(token);
         if (username == null) {
-            throw new AuthenticationException("token非法无效!");
+            throw new AuthenticationException("Token非法无效!");
         }
 
         // 查询用户信息
-        LoginUser user = sysBaseAPI.getUserByName(username);
+        LoginUser user = commonAPI.getUserByName(username);
         if (user == null) {
             throw new AuthenticationException("用户不存在!");
         }
         // 判断用户状态
         if (user.getStatus() != 1) {
-            throw new AuthenticationException("账号已被锁定,请联系管理员!");
+            throw new AuthenticationException("账号已锁定,请联系管理员!");
         }
         // 校验token是否超时失效 & 或者账号密码是否错误
         if (!jwtTokenRefresh(token, username, user.getPassword(), redisUtil)) {
-            throw new AuthenticationException("Token失效，请重新登录!");
+            throw new AuthenticationException("Token失效，请重新登录");
         }
         return true;
     }
@@ -93,6 +93,36 @@ public class TokenUtils {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 验证Token
+     */
+    public static boolean verifyToken(String token, CommonAPI commonAPI, RedisUtil redisUtil) {
+        if (StringUtils.isBlank(token)) {
+            throw new AuthenticationException("token不能为空!");
+        }
+
+        // 解密获得username，用于和数据库进行对比
+        String username = JwtUtil.getUsername(token);
+        if (username == null) {
+            throw new AuthenticationException("token非法无效!");
+        }
+
+        // 查询用户信息
+        LoginUser user = commonAPI.getUserByName(username);
+        if (user == null) {
+            throw new AuthenticationException("用户不存在!");
+        }
+        // 判断用户状态
+        if (user.getStatus() != 1) {
+            throw new AuthenticationException("账号已被锁定,请联系管理员!");
+        }
+        // 校验token是否超时失效 & 或者账号密码是否错误
+        if (!jwtTokenRefresh(token, username, user.getPassword(), redisUtil)) {
+            throw new AuthenticationException("Token失效，请重新登录!");
+        }
+        return true;
     }
 
 }

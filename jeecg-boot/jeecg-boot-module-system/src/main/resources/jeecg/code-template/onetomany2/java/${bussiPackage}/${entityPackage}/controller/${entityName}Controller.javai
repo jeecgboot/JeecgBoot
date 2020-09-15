@@ -81,7 +81,7 @@ public class ${entityName}Controller {
 		QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap());
 		Page<${entityName}> page = new Page<${entityName}>(pageNo, pageSize);
 		IPage<${entityName}> pageList = ${entityName?uncap_first}Service.page(page, queryWrapper);
-		return Result.ok(pageList);
+		return Result.OK(pageList);
 	}
 	
 	/**
@@ -97,7 +97,7 @@ public class ${entityName}Controller {
        ${entityName} ${entityName?uncap_first} = new ${entityName}();
 		BeanUtils.copyProperties(${entityName?uncap_first}Page, ${entityName?uncap_first});
 		${entityName?uncap_first}Service.save(${entityName?uncap_first});
-		return Result.ok("添加成功！");
+		return Result.OK("添加成功！");
 	}
 	
 	/**
@@ -113,7 +113,7 @@ public class ${entityName}Controller {
 		${entityName} ${entityName?uncap_first} = new ${entityName}();
 		BeanUtils.copyProperties(${entityName?uncap_first}Page, ${entityName?uncap_first});
 		${entityName?uncap_first}Service.updateById(${entityName?uncap_first});
-		return Result.ok("编辑成功!");
+		return Result.OK("编辑成功!");
 	}
 	
 	/**
@@ -127,7 +127,7 @@ public class ${entityName}Controller {
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		${entityName?uncap_first}Service.delMain(id);
-		return Result.ok("删除成功!");
+		return Result.OK("删除成功!");
 	}
 	
 	/**
@@ -141,7 +141,7 @@ public class ${entityName}Controller {
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 	    this.${entityName?uncap_first}Service.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功！");
+		return Result.OK("批量删除成功！");
 	}
 	
 	/**
@@ -155,7 +155,7 @@ public class ${entityName}Controller {
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		${entityName} ${entityName?uncap_first} = ${entityName?uncap_first}Service.getById(id);
-		return Result.ok(${entityName?uncap_first});
+		return Result.OK(${entityName?uncap_first});
 	}
 	
 	//===========================以下是子表信息操作相关API====================================
@@ -194,9 +194,9 @@ ${sub.entityName?uncap_first}.get${key}()!=null<#rt/>
             QueryWrapper<${sub.entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${sub.entityName?uncap_first}, req.getParameterMap());
             Page<${sub.entityName}> page = new Page<${sub.entityName}>(pageNo, pageSize);
             IPage<${sub.entityName}> pageList =  ${sub.entityName?uncap_first}Service.page(page, queryWrapper);
-            return Result.ok(pageList);
+            return Result.OK(pageList);
         }else{
-            return Result.ok();
+            return Result.OK();
         }
     }
     <#--   update-end--Author:kangxiaolin  Date:20190905 for：[442]主子表分开维护，生成的代码子表的分页改为真实的分页--------------------          	 -->
@@ -212,7 +212,7 @@ ${sub.entityName?uncap_first}.get${key}()!=null<#rt/>
     @PostMapping(value = "/add${sub.entityName}")
     public Result<?> add${sub.entityName}(@RequestBody ${sub.entityName} ${sub.entityName?uncap_first}) {
         ${sub.entityName?uncap_first}Service.save(${sub.entityName?uncap_first});
-        return Result.ok("添加${sub.ftlDescription}成功！");
+        return Result.OK("添加${sub.ftlDescription}成功！");
     }
     
     /**
@@ -226,7 +226,7 @@ ${sub.entityName?uncap_first}.get${key}()!=null<#rt/>
     @PutMapping("/edit${sub.entityName}")
     public Result<?> edit${sub.entityName}(@RequestBody ${sub.entityName} ${sub.entityName?uncap_first}) {
         ${sub.entityName?uncap_first}Service.updateById(${sub.entityName?uncap_first});
-        return Result.ok("编辑${sub.ftlDescription}成功！");
+        return Result.OK("编辑${sub.ftlDescription}成功！");
     }
     
     /**
@@ -240,7 +240,7 @@ ${sub.entityName?uncap_first}.get${key}()!=null<#rt/>
     @DeleteMapping(value = "/delete${sub.entityName}")
     public Result<?> delete${sub.entityName}(@RequestParam(name = "id", required = true) String id) {
        ${sub.entityName?uncap_first}Service.removeById(id);
-        return Result.ok("删除${sub.ftlDescription}成功！");
+        return Result.OK("删除${sub.ftlDescription}成功！");
     }
 	
 	/**
@@ -257,7 +257,7 @@ ${sub.entityName?uncap_first}.get${key}()!=null<#rt/>
             return Result.error("参数不识别！");
         } 
         this.${sub.entityName?uncap_first}Service.removeByIds(Arrays.asList(ids.split(",")));
-       	return Result.ok("批量删除成功！");
+       	return Result.OK("批量删除成功！");
 
     }
     
@@ -320,7 +320,7 @@ ${sub.entityName?uncap_first}.get${key}()!=null<#rt/>
                   BeanUtils.copyProperties(page, po);
                   ${entityName?uncap_first}Service.saveMain(po, <#list subTables as sub>page.get${sub.entityName}List()<#if sub_has_next>,</#if></#list>);
               }
-              return Result.ok("文件导入成功！数据行数:" + list.size());
+              return Result.OK("文件导入成功！数据行数:" + list.size());
           } catch (Exception e) {
               log.error(e.getMessage(),e);
               return Result.error("文件导入失败:"+e.getMessage());
@@ -332,6 +332,6 @@ ${sub.entityName?uncap_first}.get${key}()!=null<#rt/>
               }
           }
       }
-      return Result.ok("文件导入失败！");
+      return Result.OK("文件导入失败！");
     }
 }

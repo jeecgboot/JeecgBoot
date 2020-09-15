@@ -75,11 +75,28 @@ public class JeecgDataAutorUtils {
 			request.setAttribute(MENU_DATA_AUTHOR_RULE_SQL,sql);
 		}
 	}
-	
+
+	/**
+	 * 将用户信息存到request
+	 * @param request
+	 * @param userinfo
+	 */
 	public static synchronized void installUserInfo(HttpServletRequest request, SysUserCacheInfo userinfo) {
 		request.setAttribute(SYS_USER_INFO, userinfo);
 	}
-	
+
+	/**
+	 * 将用户信息存到request
+	 * @param userinfo
+	 */
+	public static synchronized void installUserInfo(SysUserCacheInfo userinfo) {
+		SpringContextUtils.getHttpServletRequest().setAttribute(SYS_USER_INFO, userinfo);
+	}
+
+	/**
+	 * 从request获取用户信息
+	 * @return
+	 */
 	public static synchronized SysUserCacheInfo loadUserInfo() {
 		return (SysUserCacheInfo) SpringContextUtils.getHttpServletRequest().getAttribute(SYS_USER_INFO);
 				

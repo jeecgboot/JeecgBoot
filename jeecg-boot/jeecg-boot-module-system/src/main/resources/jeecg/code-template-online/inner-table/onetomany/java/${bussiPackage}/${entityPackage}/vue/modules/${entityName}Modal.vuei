@@ -25,9 +25,12 @@
 <#assign form_editor = false>
 <#assign form_cat_tree = false>
 <#assign form_cat_back = "">
-
+<#assign form_pca = false>
+<#assign form_md = false>
+<#assign form_switch=false>
+<#assign form_span = 24>
 <#list columns as po>
-<#if po.isShow =='Y'>
+<#if po.isShow =='Y' && po.fieldName != 'id'>
 <#assign form_field_dictCode="">
 	<#if po.dictTable?default("")?trim?length gt 1>
 		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
@@ -53,15 +56,26 @@
                 v-decorator="['${po.fieldName}'${autoWriteRules(po)}]"
                 :trigger-change="true"
                 org-fields="${po.dictField}"
-                dest-fields="${po.dictText}"
+                dest-fields="${Format.underlineToHump(po.dictText)}"
                 code="${po.dictTable}"
                 @callback="popupCallback"/>
-	<#elseif po.classType =='sel_depart'>
+    <#elseif po.classType =='sel_depart'>
 		<#assign form_sel_depart=true>
-              <j-select-depart v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true"/>
+              <j-select-depart v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" multi/>
+<#elseif po.classType =='switch'>
+        <#assign form_switch=true>
+              <j-switch v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" <#if po.dictField?default("")?trim?length gt 1>:options="${po.dictField}"</#if>></j-switch>
+	<#elseif po.classType =='pca'>
+		<#assign form_pca=true>
+		      <j-area-linkage type="cascader" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入省市区"/>
+	<#elseif po.classType =='markdown'>
+	    <#assign form_md=true>
+	          <j-markdown-editor v-decorator="['${po.fieldName}']" id="${po.fieldName}"></j-markdown-editor>
+    <#elseif po.classType =='password'>
+	          <a-input-password v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}"/>
 	<#elseif po.classType =='sel_user'>
 		<#assign form_sel_user = true>
-              <j-select-user-by-dep v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true"/>
+              <j-select-user-by-dep v-decorator="['${po.fieldName}'${autoWriteRules(po)}]"/>
 	<#elseif po.classType =='textarea'>
               <a-textarea v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" rows="4" placeholder="请输入${po.filedComment}"/>
 	<#elseif po.classType=='list' || po.classType=='radio'>
@@ -178,6 +192,15 @@
   <#if form_cat_tree>
   import JCategorySelect from '@/components/jeecg/JCategorySelect'
   </#if>
+  <#if form_pca>
+  import JAreaLinkage from '@comp/jeecg/JAreaLinkage'
+  </#if>
+  <#if form_md>
+  import JMarkdownEditor from '@/components/jeecg/JMarkdownEditor/index'
+  </#if>
+  <#if form_switch==true >
+  import JSwitch from '@/components/jeecg/JSwitch'
+  </#if>
 
   export default {
     name: '${entityName}Modal',
@@ -215,8 +238,17 @@
     <#if form_editor>
       JEditor,
     </#if>
+    <#if form_pca>
+      JAreaLinkage,
+    </#if>
     <#if form_cat_tree>
-      JCategorySelect
+      JCategorySelect,
+    </#if>
+    <#if form_md>
+      JMarkdownEditor,
+    </#if>
+    <#if form_switch==true >
+      JSwitch,
     </#if>
     },
     data() {

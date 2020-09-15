@@ -1,13 +1,11 @@
 package org.jeecg.common.util.jsonschema;
 
+import com.alibaba.fastjson.JSONObject;
+import org.jeecg.common.system.vo.DictModel;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.jeecg.common.system.vo.DictModel;
-
-import com.alibaba.fastjson.JSONObject;
 
 /**
  * 验证通用属性
@@ -161,7 +159,7 @@ public abstract class CommonProperty implements Serializable{
 			JSONObject ui = JSONObject.parseObject(str);
 			json.put("ui", ui);
 		}
-        if (StringUtils.isNotBlank(defVal)) {
+        if (defVal!=null && defVal.length()>0) {
             json.put("defVal", defVal);
         }
 		return json;

@@ -1,5 +1,6 @@
 package org.jeecg.common.util;
 
+import org.jeecg.config.StaticConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +58,12 @@ public class DySmsHelper {
     	//可自助调整超时时间
         System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
         System.setProperty("sun.net.client.defaultReadTimeout", "10000");
+
+        //update-begin-author：taoyan date:20200811 for:配置类数据获取
+        StaticConfig staticConfig = SpringContextUtils.getBean(StaticConfig.class);
+        setAccessKeyId(staticConfig.getAccessKeyId());
+        setAccessKeySecret(staticConfig.getAccessKeySecret());
+        //update-end-author：taoyan date:20200811 for:配置类数据获取
         
         //初始化acsClient,暂不支持region化
         IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, accessKeySecret);

@@ -5,10 +5,13 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.hutool.crypto.SecureUtil;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.modules.cas.util.CASServiceUtil;
 import org.jeecg.modules.cas.util.XmlUtils;
@@ -16,6 +19,7 @@ import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -82,7 +86,16 @@ public class CasClientController {
 	 		// 设置超时时间
 	 		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
 	 		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
-	  		//获取用户部门信息
+
+	 		//update-begin-author:taoyan date:20200812 for:登录缓存用户信息
+			LoginUser vo = new LoginUser();
+			BeanUtils.copyProperties(sysUser,vo);
+			vo.setPassword(SecureUtil.md5(sysUser.getPassword()));
+			redisUtil.set(CacheConstant.SYS_USERS_CACHE_JWT +":" +token, vo);
+			redisUtil.expire(CacheConstant.SYS_USERS_CACHE_JWT +":" +token, JwtUtil.EXPIRE_TIME*2 / 1000);
+			//update-end-author:taoyan date:20200812 for:登录缓存用户信息
+
+	 		//获取用户部门信息
 			JSONObject obj = new JSONObject();
 			List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());
 			obj.put("departs", departs);

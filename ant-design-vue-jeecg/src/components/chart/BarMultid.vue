@@ -1,7 +1,7 @@
 <template>
   <div :style="{ padding: '0 0 32px 32px' }">
     <h4 :style="{ marginBottom: '20px' }">{{ title }}</h4>
-    <v-chart :data="data" :height="height" :force-fit="true" :onClick="handleClick">
+    <v-chart :data="data" :height="height" :force-fit="true" :scale="scale" :onClick="handleClick">
       <v-tooltip/>
       <v-axis/>
       <v-legend/>
@@ -78,6 +78,14 @@
           }
         })
         return rows
+      },
+      scale() {
+        return [
+          {
+            type: 'cat',
+            dataKey: 'x'
+          }
+        ]
       }
     }
   }

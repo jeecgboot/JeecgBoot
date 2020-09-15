@@ -1,17 +1,17 @@
-Jeecg-Boot 快速开发平台
+Jeecg-Boot 低代码开发平台
 ===============
 
-当前最新版本： 2.2.0（发布日期：20200506）
+当前最新版本： 2.3（发布日期：20200914）
 
 
 ## 后端技术架构
 - 基础框架：Spring Boot 2.1.3.RELEASE
 
-- 持久层框架：Mybatis-plus_3.1.2
+- 持久层框架：Mybatis-plus_3.3.2
 
 - 安全框架：Apache Shiro 1.4.0，Jwt_3.7.0
 
-- 数据库连接池：阿里巴巴Druid 1.1.10
+- 数据库连接池：阿里巴巴Druid 1.1.17
 
 - 缓存框架：redis
 
@@ -100,7 +100,7 @@ QueryWrapper<?> queryWrapper = QueryGenerator.initQueryWrapper(?, req.getParamet
 > 功能说明：   一键生成的代码（包括：controller、service、dao、mapper、entity、vue）
  
  - 模板位置： src/main/resources/jeecg/code-template
- - 技术文档： http://doc.jeecg.com
+ - 技术文档： http://doc.jeecg.com/1273927
 
 
 
@@ -156,3 +156,34 @@ code: {
         }
       },
 ```
+
+
+## docker镜像用法
+ ``` 
+注意： 如果本地安装了mysql和redis,启动容器前先停掉本地服务，不然会端口冲突。
+       net stop redis
+       net stop mysql
+ 
+# 1.修改项目配置文件 application.yml
+    active: docker
+
+# 2.先进JAVA项目根路径 maven打包
+    mvn clean package
+ 
+
+# 3.构建镜像__容器组（当你改变本地代码，也可重新构建镜像）
+    docker-compose build
+
+# 4.配置host
+
+    # jeecgboot
+    127.0.0.1   jeecg-boot-redis
+    127.0.0.1   jeecg-boot-mysql
+    127.0.0.1   jeecg-boot-system
+
+# 5.启动镜像__容器组（也可取代运行中的镜像）
+    docker-compose up -d
+
+# 6.访问后台项目（注意要开启swagger）
+    http://localhost:8080/jeecg-boot/doc.html
+``` 

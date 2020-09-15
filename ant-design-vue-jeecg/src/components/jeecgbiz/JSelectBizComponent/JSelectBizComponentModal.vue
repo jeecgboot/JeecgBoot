@@ -1,9 +1,10 @@
 <template>
-  <a-modal
+  <j-modal
     centered
     :title="name + '选择'"
     :width="width"
     :visible="visible"
+    switchFullscreen
     @ok="handleOk"
     @cancel="close"
     cancelText="关闭">
@@ -11,28 +12,24 @@
     <a-row :gutter="18">
       <a-col :span="16">
         <!-- 查询区域 -->
-        <div class="table-page-search-wrapper">
-          <a-form layout="inline">
-            <a-row :gutter="24">
-
-              <a-col :span="14">
-                <a-form-item :label="(queryParamText||name)">
-                  <a-input v-model="queryParam[queryParamCode||valueKey]" :placeholder="'请输入' + (queryParamText||name)" @pressEnter="searchQuery"/>
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                  <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-                    <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-                    <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-                  </span>
-              </a-col>
-
-            </a-row>
-          </a-form>
-        </div>
+        <a-form layout="inline" class="j-inline-form">
+          <!-- 固定条件 -->
+          <a-form-item :label="(queryParamText||name)">
+            <a-input v-model="queryParam[queryParamCode||valueKey]" :placeholder="'请输入' + (queryParamText||name)" @pressEnter="searchQuery"/>
+          </a-form-item>
+          <!-- 动态生成的查询条件 -->
+          <j-select-biz-query-item v-if="queryConfig.length>0" v-show="showMoreQueryItems" :queryParam="queryParam" :queryConfig="queryConfig" @pressEnter="searchQuery"/>
+          <!-- 按钮 -->
+          <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+          <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+          <a v-if="queryConfig.length>0" @click="showMoreQueryItems=!showMoreQueryItems" style="margin-left: 8px">
+            {{ showMoreQueryItems ? '收起' : '展开' }}
+            <a-icon :type="showMoreQueryItems ? 'up' : 'down'"/>
+          </a>
+        </a-form>
 
         <a-table
-          size="small"
+          size="middle"
           bordered
           :rowKey="rowKey"
           :columns="innerColumns"
@@ -49,7 +46,7 @@
       <a-col :span="8">
         <a-card :title="'已选' + name" :bordered="false" :head-style="{padding:0}" :body-style="{padding:0}">
 
-          <a-table size="small" :rowKey="rowKey" bordered v-bind="selectedTable">
+          <a-table size="middle" :rowKey="rowKey" bordered v-bind="selectedTable">
               <span slot="action" slot-scope="text, record, index">
                 <a @click="handleDeleteSelected(record, index)">删除</a>
               </span>
@@ -58,7 +55,7 @@
         </a-card>
       </a-col>
     </a-row>
-  </a-modal>
+  </j-modal>
 </template>
 
 <script>
@@ -66,11 +63,12 @@
   import Ellipsis from '@/components/Ellipsis'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { cloneObject, pushIfNotExist } from '@/utils/util'
+  import JSelectBizQueryItem from './JSelectBizQueryItem'
 
   export default {
     name: 'JSelectBizComponentModal',
     mixins: [JeecgListMixin],
-    components: { Ellipsis },
+    components: {Ellipsis, JSelectBizQueryItem},
     props: {
       value: {
         type: Array,
@@ -126,6 +124,11 @@
         type: String,
         default: null
       },
+      // 查询配置
+      queryConfig: {
+        type: Array,
+        default: () => []
+      },
       rowKey: {
         type: String,
         default: 'id'
@@ -168,6 +171,7 @@
         },
         options: [],
         dataSourceMap: {},
+        showMoreQueryItems: false,
       }
     },
     computed: {
@@ -298,11 +302,13 @@
         this.$emit('input', value)
         this.close()
       },
-
       /** 删除已选择的 */
       handleDeleteSelected(record, index) {
         this.selectedRowKeys.splice(this.selectedRowKeys.indexOf(record[this.rowKey]), 1)
-        this.selectedTable.dataSource.splice(index, 1)
+        //update--begin--autor:wangshuai-----date:20200722------for：JSelectBizComponent组件切换页数值问题------
+        this.selectedTable.dataSource.splice(this.selectedTable.dataSource.indexOf(record), 1)
+        this.innerValue.splice(this.innerValue.indexOf(record[this.valueKey]), 1)
+        //update--begin--autor:wangshuai-----date:20200722------for：JSelectBizComponent组件切换页数值问题------
       },
 
       customRowFn(record) {
@@ -331,4 +337,29 @@
   }
 </script>
 <style lang="less" scoped>
+  .full-form-item {
+    display: flex;
+    margin-right: 0;
+
+    /deep/ .ant-form-item-control-wrapper {
+      flex: 1 1;
+      display: inline-block;
+    }
+  }
+
+  .j-inline-form {
+    /deep/ .ant-form-item {
+      margin-bottom: 12px;
+    }
+
+    /deep/ .ant-form-item-label {
+      line-height: 32px;
+      width: auto;
+    }
+
+    /deep/ .ant-form-item-control {
+      height: 32px;
+      line-height: 32px;
+    }
+  }
 </style>

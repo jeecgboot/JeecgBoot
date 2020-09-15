@@ -1,0 +1,134 @@
+<template>
+  <div class="j-markdown-editor" :id="id"/>
+</template>
+
+<script>
+import 'codemirror/lib/codemirror.css'
+import '@toast-ui/editor/dist/toastui-editor.css';
+import '@toast-ui/editor/dist/i18n/zh-cn';
+
+import Editor from '@toast-ui/editor';
+import defaultOptions from './default-options'
+
+export default {
+  name: 'JMarkdownEditor',
+  props: {
+    value: {
+      type: String,
+      default: ''
+    },
+    id: {
+      type: String,
+      required: false,
+      default() {
+        return 'markdown-editor-' + +new Date() + ((Math.random() * 1000).toFixed(0) + '')
+      }
+    },
+    options: {
+      type: Object,
+      default() {
+        return defaultOptions
+      }
+    },
+    mode: {
+      type: String,
+      default: 'markdown'
+    },
+    height: {
+      type: String,
+      required: false,
+      default: '300px'
+    },
+    language: {
+      type: String,
+      required: false,
+      default: 'zh-CN'
+    }
+  },
+  data() {
+    return {
+      editor: null
+    }
+  },
+  computed: {
+    editorOptions() {
+      const options = Object.assign({}, defaultOptions, this.options)
+      options.initialEditType = this.mode
+      options.height = this.height
+      options.language = this.language
+      return options
+    }
+  },
+  watch: {
+    value(newValue, preValue) {
+      if (newValue !== preValue && newValue !== this.editor.getMarkdown()) {
+        this.editor.setMarkdown(newValue)
+      }
+    },
+    language(val) {
+      this.destroyEditor()
+      this.initEditor()
+    },
+    height(newValue) {
+      this.editor.height(newValue)
+    },
+    mode(newValue) {
+      this.editor.changeMode(newValue)
+    }
+  },
+  mounted() {
+    this.initEditor()
+  },
+  destroyed() {
+    this.destroyEditor()
+  },
+  methods: {
+    initEditor() {
+      this.editor = new Editor({
+        el: document.getElementById(this.id),
+        ...this.editorOptions
+      })
+      if (this.value) {
+        this.editor.setMarkdown(this.value)
+      }
+      this.editor.on('change', () => {
+        this.$emit('change', this.editor.getMarkdown())
+      })
+    },
+    destroyEditor() {
+      if (!this.editor) return
+      this.editor.off('change')
+      this.editor.remove()
+    },
+    setMarkdown(value) {
+      this.editor.setMarkdown(value)
+    },
+    getMarkdown() {
+      return this.editor.getMarkdown()
+    },
+    setHtml(value) {
+      this.editor.setHtml(value)
+    },
+    getHtml() {
+      return this.editor.getHtml()
+    }
+  },
+  model: {
+    prop: 'value',
+    event: 'change'
+  }
+}
+</script>
+<style scoped lang="less">
+
+  .j-markdown-editor {
+    /deep/ .tui-editor-defaultUI {
+      .te-mode-switch,
+      .tui-scrollsync
+      {
+        line-height: 1.5;
+      }
+    }
+  }
+
+</style>

@@ -31,7 +31,7 @@ public class ${entityName} {
     <#list originalColumns as po>
 	/**${po.filedComment}*/
 	<#if po.fieldName == primaryKeyField>
-	@TableId(type = IdType.ID_WORKER_STR)
+	@TableId(type = IdType.ASSIGN_ID)
 	<#else>
   <#if po.fieldType =='java.util.Date'>
 	<#if po.fieldDbType =='date'>

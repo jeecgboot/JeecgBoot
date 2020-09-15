@@ -35,6 +35,7 @@
         size="middle"
         bordered
         rowKey="id"
+        :scroll="{x:true}"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -57,7 +58,7 @@
             type="primary"
             icon="download"
             size="small"
-            @click="uploadFile(text)">
+            @click="downloadFile(text)">
             下载
           </a-button>
         </template>
@@ -133,6 +134,9 @@
           {
             title:'${po.filedComment}',
             align:"center",
+            <#if po.sort=='Y'>
+            sorter: true,
+            </#if>
             <#if po.classType=='date'>
             dataIndex: '${po.fieldName}',
             customRender:function (text) {
@@ -161,6 +165,8 @@
             title: '操作',
             dataIndex: 'action',
             align:"center",
+            fixed:"right",
+            width:147,
             scopedSlots: { customRender: 'action' },
           }
         ],

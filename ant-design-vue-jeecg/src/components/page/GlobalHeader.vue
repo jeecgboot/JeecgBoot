@@ -58,7 +58,7 @@
     components: {
       UserMenu,
       SMenu,
-      Logo
+      Logo,
     },
     mixins: [mixin],
     props: {
@@ -96,7 +96,8 @@
           topNavHeader: {},
           headerIndexRight: {},
           topSmenuStyle: {}
-        }
+        },
+        chatStatus: '',
       }
     },
     watch: {
