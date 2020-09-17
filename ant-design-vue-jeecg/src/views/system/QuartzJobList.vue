@@ -225,7 +225,7 @@
           title:"确认暂停",
           content:"是否暂停选中任务?",
           onOk: function(){
-            getAction(that.url.pause,{jobClassName:record.jobClassName}).then((res)=>{
+            getAction(that.url.pause,{id:record.id}).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.loadData();
@@ -245,7 +245,7 @@
           title:"确认启动",
           content:"是否启动选中任务?",
           onOk: function(){
-            getAction(that.url.resume,{jobClassName:record.jobClassName}).then((res)=>{
+            getAction(that.url.resume,{id:record.id}).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.loadData();

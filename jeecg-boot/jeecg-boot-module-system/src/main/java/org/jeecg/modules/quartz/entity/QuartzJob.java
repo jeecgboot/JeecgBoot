@@ -45,6 +45,16 @@ public class QuartzJob implements Serializable {
 	/**任务类名*/
 	@Excel(name="任务类名",width=40)
 	private java.lang.String jobClassName;
+	/**
+	 * spring bean
+	 */
+	@Excel(name="spring bean ID",width=30)
+	private String springId;
+	/**
+	 * 任务调用的方法名
+	 */
+	@Excel(name="spring方法名",width=15)
+	private String springMethodName;
 	/**cron表达式*/
 	@Excel(name="cron表达式",width=30)
 	private java.lang.String cronExpression;

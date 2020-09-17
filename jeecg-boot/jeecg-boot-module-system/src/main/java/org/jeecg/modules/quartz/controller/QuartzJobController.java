@@ -15,8 +15,10 @@ import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.ImportExcelUtil;
+import org.jeecg.common.util.UUIDGenerator;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
+import org.jeecg.modules.quartz.util.SpringUtils;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -26,6 +28,8 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.IdGenerator;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -89,9 +93,24 @@ public class QuartzJobController {
 	//@RequiresRoles("admin")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<?> add(@RequestBody QuartzJob quartzJob) {
-		List<QuartzJob> list = quartzJobService.findByJobClassName(quartzJob.getJobClassName());
-		if (list != null && list.size() > 0) {
-			return Result.error("该定时任务类名已存在");
+		if(quartzJob==null){
+			return Result.error("创建定时任务失败");
+		}
+		quartzJob.setId(UUIDGenerator.generate());
+		String jobClassName=quartzJob.getJobClassName();
+		if(StringUtils.isEmpty(jobClassName)){
+			return Result.error("创建定时任务失败");
+		}
+
+		if(jobClassName.startsWith("spring:")){
+			String springStr=jobClassName.substring(7,jobClassName.length());
+			String[] springStrs=springStr.split("\\.");
+			if(springStrs!=null&&springStrs.length==2){
+				quartzJob.setSpringId(springStrs[0]);
+				quartzJob.setSpringMethodName(springStrs[1]);
+			}else{
+				return Result.error("springBean方法格式错误");
+			}
 		}
 		quartzJobService.saveAndScheduleJob(quartzJob);
 		return Result.ok("创建定时任务成功");
@@ -107,6 +126,21 @@ public class QuartzJobController {
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
 	public Result<?> eidt(@RequestBody QuartzJob quartzJob) {
 		try {
+			String jobClassName=quartzJob.getJobClassName();
+			if(StringUtils.isEmpty(jobClassName)){
+				return Result.error("修改定时任务失败");
+			}
+
+			if(jobClassName.startsWith("spring:")){
+				String springStr=jobClassName.substring(7,jobClassName.length());
+				String[] springStrs=springStr.split(".");
+				if(springStrs!=null&&springStrs.length==2){
+					quartzJob.setSpringId(springStrs[0]);
+					quartzJob.setSpringMethodName(springStrs[1]);
+				}else{
+					return Result.error("springBean方法格式错误");
+				}
+			}
 			quartzJobService.editAndScheduleJob(quartzJob);
 		} catch (SchedulerException e) {
 			log.error(e.getMessage(),e);
@@ -155,15 +189,15 @@ public class QuartzJobController {
 	/**
 	 * 暂停定时任务
 	 * 
-	 * @param jobClassName
+	 * @param id
 	 * @return
 	 */
 	//@RequiresRoles("admin")
 	@GetMapping(value = "/pause")
 	@ApiOperation(value = "暂停定时任务")
-	public Result<Object> pauseJob(@RequestParam(name = "jobClassName", required = true) String jobClassName) {
+	public Result<Object> pauseJob(@RequestParam(name = "id", required = true) String id) {
 		QuartzJob job = null;
-		job = quartzJobService.getOne(new LambdaQueryWrapper<QuartzJob>().eq(QuartzJob::getJobClassName, jobClassName));
+		job = quartzJobService.getOne(new LambdaQueryWrapper<QuartzJob>().eq(QuartzJob::getId, id));
 		if (job == null) {
 			return Result.error("定时任务不存在！");
 		}
@@ -174,14 +208,14 @@ public class QuartzJobController {
 	/**
 	 * 启动定时任务
 	 * 
-	 * @param jobClassName
+	 * @param id
 	 * @return
 	 */
 	//@RequiresRoles("admin")
 	@GetMapping(value = "/resume")
 	@ApiOperation(value = "恢复定时任务")
-	public Result<Object> resumeJob(@RequestParam(name = "jobClassName", required = true) String jobClassName) {
-		QuartzJob job = quartzJobService.getOne(new LambdaQueryWrapper<QuartzJob>().eq(QuartzJob::getJobClassName, jobClassName));
+	public Result<Object> resumeJob(@RequestParam(name = "id", required = true) String id) {
+		QuartzJob job = quartzJobService.getOne(new LambdaQueryWrapper<QuartzJob>().eq(QuartzJob::getId, id));
 		if (job == null) {
 			return Result.error("定时任务不存在！");
 		}
@@ -282,5 +316,14 @@ public class QuartzJobController {
 			return Result.error("执行失败!");
 		}
 		return Result.ok("执行成功!");
+	}
+	@GetMapping("/test")
+	public Result<?> test(@RequestParam(name = "id", required = true) String id) {
+		String[] all = SpringUtils.getAllBean();
+		StringBuilder sb=new StringBuilder();
+		for(String str:all){
+			sb.append(str+",");
+		}
+		return Result.ok(sb.toString());
 	}
 }
