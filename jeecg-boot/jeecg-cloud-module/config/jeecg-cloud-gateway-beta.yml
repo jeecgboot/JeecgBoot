@@ -1,0 +1,39 @@
+spring:
+  redis:
+    host: 127.0.0.1
+    password: ''
+    port: 6379
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowCredentials: true
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      routes:
+        - id: jeecg-online
+          uri: lb://jeecg-online
+          predicates:
+            - Path=/online/**
+        - id: jeecg-demo
+          uri: lb://jeecg-demo
+          predicates:
+            - Path=/mock/**,/big/**,/test/**,/dlglong/**
+        - id: jeecg-system
+          uri: lb://jeecg-system
+          predicates:
+            - Path=/sys/**,/online/**,/api/**,/bigscreen/**,/webSocketApi/**,/message/**,/filemanage/**,/email/**,/oa/im/**,/metting/**,/officialdoc/**,/eoa/plan/**,/sign/**,/biz/extBizLeave/**,/designform/**,/desform/**,/lib/**,/tinymce/**,/unpkg/**,/app/joa/**,/joa/**,/filedisk/**,/oa/im/**,/im/**,/desform/**,/process/**,/designer/**,/cms/**,/chat/eoaCmsMenu/**,/act/**,/plug-in/**,/design/report/**,/jmreport/bigscreen/**,/bigscreen/**,/jmreport/desreport_/**,/actuator/**
+        - id: jeecg-cloud-websocket
+          uri: lb:ws://jeecg-system
+          predicates:
+            - Path=/websocket/**
+management:
+  endpoints:
+    web:
+      exposure:
+        include: metrics,httptrace
