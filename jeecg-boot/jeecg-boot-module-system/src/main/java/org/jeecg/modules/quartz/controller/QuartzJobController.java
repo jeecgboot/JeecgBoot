@@ -317,13 +317,4 @@ public class QuartzJobController {
 		}
 		return Result.ok("执行成功!");
 	}
-	@GetMapping("/test")
-	public Result<?> test(@RequestParam(name = "id", required = true) String id) {
-		String[] all = SpringUtils.getAllBean();
-		StringBuilder sb=new StringBuilder();
-		for(String str:all){
-			sb.append(str+",");
-		}
-		return Result.ok(sb.toString());
-	}
 }
