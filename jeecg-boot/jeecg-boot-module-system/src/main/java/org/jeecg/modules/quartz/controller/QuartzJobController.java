@@ -133,7 +133,7 @@ public class QuartzJobController {
 
 			if(jobClassName.startsWith("spring:")){
 				String springStr=jobClassName.substring(7,jobClassName.length());
-				String[] springStrs=springStr.split(".");
+				String[] springStrs=springStr.split("\\.");
 				if(springStrs!=null&&springStrs.length==2){
 					quartzJob.setSpringId(springStrs[0]);
 					quartzJob.setSpringMethodName(springStrs[1]);
