@@ -76,8 +76,5 @@ public class AnnouncementSendModel implements Serializable {
 	 * 摘要
 	 */
 	private java.lang.String msgAbstract;
-	/**
-	 * 邮箱标题
-	 */
-	private java.lang.String emailTitle;
+
 }
