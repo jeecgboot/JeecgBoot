@@ -176,15 +176,15 @@ jeecg :
     webapp: D://opt//webapp
   #短信秘钥
   sms:
-     accessKeyId: LTAI4FgmzMSTfHUFWZVUgsjM
-     accessKeySecret: Ru4FYjh1gP0eLwVyf5qJNq4ckY38Lt
+     accessKeyId: ??
+     accessKeySecret: ??
   shiro:
     excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**
   #阿里云oss存储配置
   oss:
     endpoint: oss-cn-beijing.aliyuncs.com
-    accessKey: LTAI4FgmzMSTfHUFWZVUgsjM
-    secretKey: Ru4FYjh1gP0eLwVyf5qJNq4ckY38Lt
+    accessKey: ??
+    secretKey: ??
     bucketName: jeecgos
     staticDomain: https://static.jeecg.com
   # ElasticSearch 6设置
@@ -203,8 +203,8 @@ jeecg :
   # minio文件上传
   minio:
     minio_url: http://minio.jeecg.com
-    minio_name: admin
-    minio_pass: jeecg1357
+    minio_name: ??
+    minio_pass: ??
     bucketName: otatest
   #大屏报表参数设置
   jmreport:
