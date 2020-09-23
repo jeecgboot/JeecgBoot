@@ -1,23 +1,26 @@
 package org.jeecg.common.system.query;
 
+import cn.hutool.core.util.ArrayUtil;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
-import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.util.JeecgDataAutorUtils;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
+import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecgframework.core.util.ApplicationContextUtil;
 import org.springframework.util.NumberUtils;
 
 import java.beans.PropertyDescriptor;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.text.ParseException;
@@ -115,7 +118,26 @@ public class QueryGenerator {
 				if (judgedIsUselessField(name)|| !PropertyUtils.isReadable(searchObj, name)) {
 					continue;
 				}
-				
+
+				Object value = PropertyUtils.getSimpleProperty(searchObj, name);
+				// update-begin--Author:taoyan  Date:20200910 for：issues/1671 如果字段加注解了@TableField(exist = false),不走DB查询-------
+				//如果字段加注解了@TableField(exist = false),不走DB查询
+				//TODO 存在缺陷，这个写法 clazz.getDeclaredField(name) 获取不到继承的父实体字段
+				try {
+					if (oConvertUtils.isNotEmpty(value)) {
+						Field field = searchObj.getClass().getDeclaredField(name);
+						if (field != null) {
+							TableField tableField = field.getAnnotation(TableField.class);
+							if (tableField != null && tableField.exist() == false) {
+								continue;
+							}
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				// update-end--Author:taoyan  Date:20200910 for：issues/1671 如果字段加注解了@TableField(exist = false),不走DB查询 -------
+
 				//数据权限查询
 				if(ruleMap.containsKey(name)) {
 					addRuleToQueryWrapper(ruleMap.get(name), name, origDescriptors[i].getPropertyType(), queryWrapper);
@@ -140,7 +162,6 @@ public class QueryGenerator {
 
 				//判断单值  参数带不同标识字符串 走不同的查询
 				//TODO 这种前后带逗号的支持分割后模糊查询需要否 使多选字段的查询生效
-				Object value = PropertyUtils.getSimpleProperty(searchObj, name);
 				if (null != value && value.toString().startsWith(COMMA) && value.toString().endsWith(COMMA)) {
 					String multiLikeval = value.toString().replace(",,", COMMA);
 					String[] vals = multiLikeval.substring(1, multiLikeval.length()).split(COMMA);
@@ -446,9 +467,14 @@ public class QueryGenerator {
 				queryWrapper.in(name, (Object[])value.toString().split(","));
 			}else if(value instanceof String[]) {
 				queryWrapper.in(name, (Object[]) value);
+			}
+			//update-begin-author:taoyan date:20200909 for:【bug】in 类型多值查询 不适配postgresql #1671
+			else if(value.getClass().isArray()) {
+				queryWrapper.in(name, (Object[])value);
 			}else {
 				queryWrapper.in(name, value);
 			}
+			//update-end-author:taoyan date:20200909 for:【bug】in 类型多值查询 不适配postgresql #1671
 			break;
 		case LIKE:
 			queryWrapper.like(name, value);
@@ -498,6 +524,30 @@ public class QueryGenerator {
 		}
 		return ruleMap;
 	}
+
+	/**
+	 * 获取请求对应的数据权限规则
+	 * @return
+	 */
+	public static Map<String, SysPermissionDataRuleModel> getRuleMap(List<SysPermissionDataRuleModel> list) {
+		Map<String, SysPermissionDataRuleModel> ruleMap = new HashMap<String, SysPermissionDataRuleModel>();
+		if(list==null){
+			list =JeecgDataAutorUtils.loadDataSearchConditon();
+		}
+		if(list != null&&list.size()>0){
+			if(list.get(0)==null){
+				return ruleMap;
+			}
+			for (SysPermissionDataRuleModel rule : list) {
+				String column = rule.getRuleColumn();
+				if(QueryRuleEnum.SQL_RULES.getValue().equals(rule.getRuleConditions())) {
+					column = SQL_RULES_COLUMN+rule.getId();
+				}
+				ruleMap.put(column, rule);
+			}
+		}
+		return ruleMap;
+	}
 	
 	private static void addRuleToQueryWrapper(SysPermissionDataRuleModel dataRule, String name, Class propertyType, QueryWrapper<?> queryWrapper) {
 		QueryRuleEnum rule = QueryRuleEnum.getByValue(dataRule.getRuleConditions());
@@ -525,10 +575,7 @@ public class QueryGenerator {
 	}
 	
 	public static String converRuleValue(String ruleValue) {
-		String value = JwtUtil.getSessionData(ruleValue);
-		if(oConvertUtils.isEmpty(value)) {
-			value = JwtUtil.getUserSystemData(ruleValue,null);
-		}
+		String value = JwtUtil.getUserSystemData(ruleValue,null);
 		return value!= null ? value : ruleValue;
 	}
 
@@ -728,8 +775,7 @@ public class QueryGenerator {
 	
 	/**
 	 *   根据权限相关配置生成相关的SQL 语句
-	 * @param searchObj
-	 * @param parameterMap
+	 * @param clazz
 	 * @return
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -771,8 +817,8 @@ public class QueryGenerator {
 	
 	/**
 	  * 根据权限相关配置 组装mp需要的权限
-	 * @param searchObj
-	 * @param parameterMap
+	 * @param queryWrapper
+	 * @param clazz
 	 * @return
 	 */
 	public static void installAuthMplus(QueryWrapper<?> queryWrapper,Class<?> clazz) {
@@ -847,17 +893,7 @@ public class QueryGenerator {
 	 * 获取系统数据库类型
 	 */
 	private static String getDbType(){
-		if(oConvertUtils.isNotEmpty(DB_TYPE)){
-			return DB_TYPE;
-		}
-		try {
-			ISysBaseAPI sysBaseAPI = ApplicationContextUtil.getContext().getBean(ISysBaseAPI.class);
-			DB_TYPE = sysBaseAPI.getDatabaseType();
-			return DB_TYPE;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return DB_TYPE;
+		return CommonUtils.getDatabaseType();
 	}
 	
 }

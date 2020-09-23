@@ -1,6 +1,6 @@
 {
   "name": "vue-antd-jeecg",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "private": true,
   "scripts": {
     "pre": "cnpm install || yarn --registry https://registry.npm.taobao.org || npm install --registry https://registry.npm.taobao.org ",
@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "ant-design-vue": "^1.6.3",
+    "@jeecg/antd-online-mini": "2.3.0",
     "@antv/data-set": "^0.11.4",
-    "@jeecg/antd-online-mini": "2.2.12",
     "viser-vue": "^2.4.8",
     "axios": "^0.18.0",
     "dayjs": "^1.8.0",
@@ -39,7 +39,11 @@
     "@toast-ui/editor": "^2.1.2",
     "vue-area-linkage": "^5.1.0",
     "area-data": "^5.0.6",
-    "jsoneditor": "^9.0.0"
+    "jsoneditor": "^9.0.0",
+    "dom-align": "1.12.0",
+    "xe-utils": "2.4.8",
+    "vxe-table": "2.9.13",
+    "vxe-table-plugin-antd": "1.8.10"
   },
   "devDependencies": {
     "@babel/polyfill": "^7.2.5",
@@ -48,13 +52,14 @@
     "@vue/cli-service": "^3.3.0",
     "@vue/eslint-config-standard": "^4.0.0",
     "babel-eslint": "7.2.3",
-    "compression-webpack-plugin": "^3.1.0",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.1.0",
-    "html-webpack-plugin": "^4.2.0",
     "less": "^3.9.0",
     "less-loader": "^4.1.0",
-    "vue-template-compiler": "^2.6.10"
+    "vue-template-compiler": "^2.6.10",
+    "html-webpack-plugin": "^4.2.0",
+    "compression-webpack-plugin": "^3.1.0",
+    "babel-plugin-import": "^1.13.0"
   },
   "eslintConfig": {
     "root": true,

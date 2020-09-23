@@ -314,6 +314,9 @@
           {
             title:'${po.filedComment}',
             align:"center",
+            <#if po.sort=='Y'>
+            sorter: true,
+            </#if>
             <#if po.classType=='date'>
             dataIndex: '${po.fieldName}',
             customRender:function (text) {

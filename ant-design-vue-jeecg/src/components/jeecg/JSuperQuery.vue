@@ -498,10 +498,9 @@
           } else {
             if (Array.isArray(item.options)) {
               // 如果有字典属性，就不需要保存 options 了
-              if (item.dictCode) {
-                // 去掉特殊属性
-                delete item.options
-              }
+              //update-begin-author:taoyan date:20200819 for:【开源问题】 高级查询 下拉框作为并且选项很多多多 LOWCOD-779
+              delete item.options
+              //update-end-author:taoyan date:20200819 for:【开源问题】 高级查询 下拉框作为并且选项很多多多 LOWCOD-779
             }
           }
         }

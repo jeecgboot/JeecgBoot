@@ -27,12 +27,12 @@
         </a-form-item>
 
         <template v-if="!model.id">
-          <a-form-item label="登陆密码" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-            <a-input type="password" placeholder="请输入登陆密码" v-decorator="[ 'password']" />
+          <a-form-item label="登录密码" :labelCol="labelCol" :wrapperCol="wrapperCol" >
+            <a-input type="password" placeholder="请输入登录密码" v-decorator="[ 'password']" />
           </a-form-item>
 
           <a-form-item label="确认密码" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-            <a-input type="password" @blur="handleConfirmBlur" placeholder="请重新输入登陆密码" v-decorator="[ 'confirmpassword', validatorRules.confirmpassword]"/>
+            <a-input type="password" @blur="handleConfirmBlur" placeholder="请重新输入登录密码" v-decorator="[ 'confirmpassword', validatorRules.confirmpassword]"/>
           </a-form-item>
         </template>
 
@@ -51,6 +51,7 @@
         <a-form-item label="角色分配" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!roleDisabled" >
           <a-select
             mode="multiple"
+            :disabled="departDisabled"
             style="width: 100%"
             placeholder="请选择用户角色"
             optionFilterProp = "children"
@@ -218,7 +219,7 @@
           },
           confirmpassword:{
             rules: [{
-              required: true, message: '请重新输入登陆密码!',
+              required: true, message: '请重新输入登录密码!',
             }, {
               validator: this.compareToFirstPassword,
             }],

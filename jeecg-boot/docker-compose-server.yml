@@ -1,0 +1,51 @@
+#### 镜像上传
+# 仓库私服： 81.70.17.111:5000
+# 第一步：上传镜像到docker仓库
+#docker tag jeecg-boot-mysql 81.70.17.111:5000/jeecg-boot-mysql:1.1
+#docker tag jeecg-boot-system 81.70.17.111:5000/jeecg-boot-system:1.0
+#docker tag nginxhtml:jeecgboot 81.70.17.111:5000/nginxhtml:1.2
+
+#docker push 81.70.17.111:5000/jeecg-boot-mysql:1.1
+#docker push 81.70.17.111:5000/jeecg-boot-system:1.0
+#docker push 81.70.17.111:5000/nginxhtml:1.2
+
+# 第二步：将此yml文件上传服务器，执行启动命令 docker-compose -f ./docker-compose-server.yml up
+version: '2'
+services:
+  jeecg-boot-mysql:
+    image: 81.70.17.111:5000/jeecg-boot-mysql:1.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    restart: always
+    container_name: jeecg-boot-mysql
+    command:
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
+      --max_allowed_packet=128M
+    ports:
+      - 3306:3306
+
+  jeecg-boot-redis:
+    image: redis:5.0
+    ports:
+      - 6379:6379
+    restart: always
+    container_name: jeecg-boot-redis
+
+  jeecg-boot-system:
+    image: 81.70.17.111:5000/jeecg-boot-system:1.0
+    restart: always
+    container_name: jeecg-boot-system
+    volumes:
+      - /data/config:/jeecg-boot/config
+    ports:
+      - 8080:8080
+
+  jeecg-boot-nginx:
+    image: 81.70.17.111:5000/nginxhtml
+    restart: always
+    container_name: jeecg-boot-nginx
+    ports:
+      - 80:80

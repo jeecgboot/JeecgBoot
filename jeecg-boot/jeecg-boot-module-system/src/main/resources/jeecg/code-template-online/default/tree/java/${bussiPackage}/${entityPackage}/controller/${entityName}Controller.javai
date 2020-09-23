@@ -72,22 +72,31 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		String parentId = ${entityName?uncap_first}.get${pidFieldName?cap_first}();
-		if (oConvertUtils.isEmpty(parentId)) {
-			parentId = "0";
-		}
-		${entityName?uncap_first}.set${pidFieldName?cap_first}(null);
-		QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap());
-		// 使用 eq 防止模糊查询
-		queryWrapper.eq("${Format.humpToUnderline(pidFieldName)}", parentId);
-		Page<${entityName}> page = new Page<${entityName}>(pageNo, pageSize);
-		IPage<${entityName}> pageList = ${entityName?uncap_first}Service.page(page, queryWrapper);
-		return Result.ok(pageList);
+		String hasQuery = req.getParameter("hasQuery");
+        if(hasQuery != null && "true".equals(hasQuery)){
+            QueryWrapper<${entityName}> queryWrapper =  QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap());
+            List<${entityName}> list = ${entityName?uncap_first}Service.queryTreeListNoPage(queryWrapper);
+            IPage<${entityName}> pageList = new Page<>(1, 10, list.size());
+            pageList.setRecords(list);
+            return Result.OK(pageList);
+        }else{
+            String parentId = ${entityName?uncap_first}.get${pidFieldName?cap_first}();
+            if (oConvertUtils.isEmpty(parentId)) {
+                parentId = "0";
+            }
+            ${entityName?uncap_first}.set${pidFieldName?cap_first}(null);
+            QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap());
+            // 使用 eq 防止模糊查询
+            queryWrapper.eq("${Format.humpToUnderline(pidFieldName)}", parentId);
+            Page<${entityName}> page = new Page<${entityName}>(pageNo, pageSize);
+            IPage<${entityName}> pageList = ${entityName?uncap_first}Service.page(page, queryWrapper);
+            return Result.OK(pageList);
+        }
 	}
 
 	 /**
       * 获取子数据
-      * @param ${entityName}
+      * @param ${entityName?uncap_first}
       * @param req
       * @return
       */
@@ -99,7 +108,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 		List<${entityName}> list = ${entityName?uncap_first}Service.list(queryWrapper);
 		IPage<${entityName}> pageList = new Page<>(1, 10, list.size());
         pageList.setRecords(list);
-		return Result.ok(pageList);
+		return Result.OK(pageList);
 	}
 
     /**
@@ -120,7 +129,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
             List<${entityName}> list = ${entityName?uncap_first}Service.list(queryWrapper);
             IPage<${entityName}> pageList = new Page<>(1, 10, list.size());
             pageList.setRecords(list);
-            return Result.ok(pageList);
+            return Result.OK(pageList);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return Result.error("批量查询子节点失败：" + e.getMessage());
@@ -138,7 +147,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody ${entityName} ${entityName?uncap_first}) {
 		${entityName?uncap_first}Service.add${entityName}(${entityName?uncap_first});
-		return Result.ok("添加成功！");
+		return Result.OK("添加成功！");
 	}
 	
 	/**
@@ -152,7 +161,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody ${entityName} ${entityName?uncap_first}) {
 		${entityName?uncap_first}Service.update${entityName}(${entityName?uncap_first});
-		return Result.ok("编辑成功!");
+		return Result.OK("编辑成功!");
 	}
 	
 	/**
@@ -166,7 +175,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		${entityName?uncap_first}Service.delete${entityName}(id);
-		return Result.ok("删除成功!");
+		return Result.OK("删除成功!");
 	}
 	
 	/**
@@ -180,7 +189,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.${entityName?uncap_first}Service.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功！");
+		return Result.OK("批量删除成功！");
 	}
 	
 	/**
@@ -197,7 +206,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 		if(${entityName?uncap_first}==null) {
 			return Result.error("未找到对应数据");
 		}
-		return Result.ok(${entityName?uncap_first});
+		return Result.OK(${entityName?uncap_first});
 	}
 
     /**

@@ -138,7 +138,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	 * @return
 	 */
 	@Override
-	@Cacheable(value = CacheConstant.SYS_DICT_TABLE_CACHE)
+	@Cacheable(value = CacheConstant.SYS_DICT_TABLE_BY_KEYS_CACHE)
 	public List<String> queryTableDictByKeys(String table, String text, String code, String keys) {
 		if(oConvertUtils.isEmpty(keys)){
 			return null;

@@ -187,10 +187,10 @@ jeecg :
     accessKey: ??
     secretKey: ??
     bucketName: jeecgos
-    staticDomain: ??
+    staticDomain: https://static.jeecg.com
   # ElasticSearch 6设置
   elasticsearch:
-    cluster-name: jeecg-ES
+    cluster-name: docker-cluster
     cluster-nodes: 127.0.0.1:9200
     check-enabled: false
   # 表单设计器配置
@@ -200,7 +200,7 @@ jeecg :
     # 文件、图片上传方式，可选项：qiniu（七牛云）、system（跟随系统配置）
     upload-type: system
   # 在线预览文件服务器地址配置
-  file-view-domain: 127.0.0.1:8012
+  file-view-domain: http://fileview.jeecg.com
   # minio文件上传
   minio:
     minio_url: http://minio.jeecg.com

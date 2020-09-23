@@ -113,4 +113,7 @@ public class LoginUser {
 	/**多租户id配置，编辑用户的时候设置*/
 	private String relTenantIds;
 
+	/**设备id uniapp推送用*/
+	private String clientId;
+
 }

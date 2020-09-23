@@ -43,7 +43,6 @@
       </div>
     </div>
 
-
   </a-layout-header>
 </template>
 

@@ -16,8 +16,9 @@ export const SYS_BUTTON_AUTH = 'SYS_BUTTON_AUTH'
 export const ENCRYPTED_STRING = 'ENCRYPTED_STRING'
 export const ENHANCE_PRE = 'enhance_'
 export const UI_CACHE_DB_DICT_DATA = 'UI_CACHE_DB_DICT_DATA'
-export const INDEX_MAIN_PAGE_PATH =  "/dashboard/analysis"
+export const INDEX_MAIN_PAGE_PATH = '/dashboard/analysis'
 export const TENANT_ID = 'TENANT_ID'
+export const ONL_AUTH_FIELDS = 'ONL_AUTH_FIELDS'
 
 export const CONTENT_WIDTH_TYPE = {
   Fluid: 'Fluid',

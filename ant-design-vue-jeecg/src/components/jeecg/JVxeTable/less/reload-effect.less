@@ -1,0 +1,46 @@
+.j-vxe-reload-effect-box {
+
+  &,
+  .j-vxe-reload-effect-span {
+    display: inline;
+    height: 100%;
+    position: relative;
+  }
+
+  .j-vxe-reload-effect-span {
+
+    &.layer-top {
+      display: inline-block;
+      width: 100%;
+
+      position: absolute;
+      z-index: 2;
+      background-color: white;
+
+      transform-origin: 0 0;
+      animation: reload-effect 1.5s forwards;
+    }
+
+    &.layer-bottom {
+      z-index: 1;
+    }
+  }
+
+  // 定义动画
+  @keyframes reload-effect {
+    0% {
+      opacity: 1;
+      transform: rotateX(0);
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+      transform: rotateX(180deg);
+    }
+  }
+}

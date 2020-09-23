@@ -23,7 +23,7 @@
 	</select>
 	
 	<select id="getMyAnnouncementSendList" parameterType="Object"  resultMap="AnnouncementSendModel">
-	   select 
+	   select
 	   		sas.id,
 	   		sas.annt_id,
 	   		sas.user_id,
@@ -38,7 +38,7 @@
 			sa.open_type as open_type,
 			sa.open_page as open_page,
 			sa.msg_abstract
-	   from sys_announcement_send sas 
+	   from sys_announcement_send sas
 	   left join sys_announcement sa ON sas.annt_id = sa.id
 	   where sa.send_status = '1'
 	   and sa.del_flag = '0'

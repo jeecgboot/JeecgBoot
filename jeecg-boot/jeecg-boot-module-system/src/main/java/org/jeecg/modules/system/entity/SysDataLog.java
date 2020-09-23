@@ -19,7 +19,7 @@ import lombok.experimental.Accessors;
 public class SysDataLog implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@TableId(type = IdType.ID_WORKER_STR)
+	@TableId(type = IdType.ASSIGN_ID)
 	private String id; //id'
 	private String createBy; //创建人登录名称
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")

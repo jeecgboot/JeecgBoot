@@ -25,7 +25,7 @@ public class SysCategory implements Serializable,Comparable<SysCategory>{
     private static final long serialVersionUID = 1L;
     
 	/**主键*/
-	@TableId(type = IdType.ID_WORKER_STR)
+	@TableId(type = IdType.ASSIGN_ID)
 	private java.lang.String id;
 	/**父级节点*/
 	private java.lang.String pid;

@@ -26,7 +26,7 @@ public class SysAnnouncement implements Serializable {
     /**
      * id
      */
-    @TableId(type = IdType.ID_WORKER_STR)
+    @TableId(type = IdType.ASSIGN_ID)
     private java.lang.String id;
     /**
      * 标题

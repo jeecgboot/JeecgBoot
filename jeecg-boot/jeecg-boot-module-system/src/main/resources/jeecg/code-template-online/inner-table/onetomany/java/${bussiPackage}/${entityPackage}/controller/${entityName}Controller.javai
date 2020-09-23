@@ -83,7 +83,7 @@ public class ${entityName}Controller {
 		QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap());
 		Page<${entityName}> page = new Page<${entityName}>(pageNo, pageSize);
 		IPage<${entityName}> pageList = ${entityName?uncap_first}Service.page(page, queryWrapper);
-		return Result.ok(pageList);
+		return Result.OK(pageList);
 	}
 	
 	/**
@@ -99,7 +99,7 @@ public class ${entityName}Controller {
 		${entityName} ${entityName?uncap_first} = new ${entityName}();
 		BeanUtils.copyProperties(${entityName?uncap_first}Page, ${entityName?uncap_first});
 		${entityName?uncap_first}Service.saveMain(${entityName?uncap_first}, <#list subTables as sub>${entityName?uncap_first}Page.get${sub.entityName}List()<#if sub_has_next>,</#if></#list>);
-		return Result.ok("添加成功！");
+		return Result.OK("添加成功！");
 	}
 	
 	/**
@@ -119,7 +119,7 @@ public class ${entityName}Controller {
 			return Result.error("未找到对应数据");
 		}
 		${entityName?uncap_first}Service.updateMain(${entityName?uncap_first}, <#list subTables as sub>${entityName?uncap_first}Page.get${sub.entityName}List()<#if sub_has_next>,</#if></#list>);
-		return Result.ok("编辑成功!");
+		return Result.OK("编辑成功!");
 	}
 	
 	/**
@@ -133,7 +133,7 @@ public class ${entityName}Controller {
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		${entityName?uncap_first}Service.delMain(id);
-		return Result.ok("删除成功!");
+		return Result.OK("删除成功!");
 	}
 	
 	/**
@@ -147,7 +147,7 @@ public class ${entityName}Controller {
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.${entityName?uncap_first}Service.delBatchMain(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功！");
+		return Result.OK("批量删除成功！");
 	}
 	
 	/**
@@ -164,7 +164,7 @@ public class ${entityName}Controller {
 		if(${entityName?uncap_first}==null) {
 			return Result.error("未找到对应数据");
 		}
-		return Result.ok(${entityName?uncap_first});
+		return Result.OK(${entityName?uncap_first});
 
 	}
 	
@@ -184,7 +184,7 @@ public class ${entityName}Controller {
 		IPage <${sub.entityName}> page = new Page<>();
 		page.setRecords(${sub.entityName?uncap_first}List);
 		page.setTotal(${sub.entityName?uncap_first}List.size());
-		return Result.ok(page);
+		return Result.OK(page);
 	}
 	</#list>
 
@@ -257,7 +257,7 @@ public class ${entityName}Controller {
                   BeanUtils.copyProperties(page, po);
                   ${entityName?uncap_first}Service.saveMain(po, <#list subTables as sub>page.get${sub.entityName}List()<#if sub_has_next>,</#if></#list>);
               }
-              return Result.ok("文件导入成功！数据行数:" + list.size());
+              return Result.OK("文件导入成功！数据行数:" + list.size());
           } catch (Exception e) {
               log.error(e.getMessage(),e);
               return Result.error("文件导入失败:"+e.getMessage());
@@ -269,7 +269,7 @@ public class ${entityName}Controller {
               }
           }
       }
-      return Result.ok("文件导入失败！");
+      return Result.OK("文件导入失败！");
     }
 
 }

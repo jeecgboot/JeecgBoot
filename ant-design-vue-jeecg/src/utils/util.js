@@ -458,7 +458,7 @@ export function simpleDebounce(fn, delay = 100) {
       clearTimeout(timer)
     }
     timer = setTimeout(() => {
-      fn.apply(null, args)
+      fn.apply(this, args)
     }, delay)
   }
 }
@@ -527,4 +527,14 @@ export function getVmParentByName(vm, name) {
     }
   }
   return null
+}
+
+/**
+ * 使一个值永远不会为（null | undefined）
+ *
+ * @param value 要处理的值
+ * @param def 默认值，如果value为（null | undefined）则返回的默认值，可不传，默认为''
+ */
+export function neverNull(value, def) {
+  return value == null ? (neverNull(def, '')) : value
 }

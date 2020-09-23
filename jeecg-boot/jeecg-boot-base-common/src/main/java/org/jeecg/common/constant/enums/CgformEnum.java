@@ -23,9 +23,17 @@ public enum CgformEnum {
      */
     ERP(2, "erp", "/jeecg/code-template-online", "erp.onetomany", "ERP风格"),
     /**
+     * 多表（jvxe风格）
+     *  */
+    JVXE_TABLE(2, "jvxe", "/jeecg/code-template-online", "jvxe.onetomany", "JVXE风格"),
+    /**
      * 多表（内嵌子表风格）
      */
     INNER_TABLE(2, "innerTable", "/jeecg/code-template-online", "inner-table.onetomany", "内嵌子表风格"),
+    /**
+     * 多表（tab风格）
+     *  */
+    TAB(2, "tab", "/jeecg/code-template-online", "tab.onetomany", "Tab风格"),
     /**
      * 树形列表
      */
@@ -55,9 +63,10 @@ public enum CgformEnum {
     /**
      * 构造器
      *
-     * @param type
-     * @param code
-     * @param templatePath
+     * @param type 类型 1/单表 2/一对多 3/树
+     * @param code 模板编码
+     * @param templatePath  模板路径
+     * @param stylePath  模板子路径
      * @param note
      */
     CgformEnum(int type, String code, String templatePath, String stylePath, String note) {

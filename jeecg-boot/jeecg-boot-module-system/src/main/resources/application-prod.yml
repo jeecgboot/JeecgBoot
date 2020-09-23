@@ -169,7 +169,7 @@ mybatis-plus:
 #jeecg专用配置
 jeecg :
   # 本地：local\Minio：minio\阿里云：alioss
-  uploadType: local
+  uploadType: alioss
   path :
     #文件上传根目录 设置
     upload: /opt/jeecg-boot/upload

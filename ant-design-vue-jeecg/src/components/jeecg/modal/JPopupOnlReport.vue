@@ -214,8 +214,31 @@
         return filterObj(param);
       },
       handleChangeInTableSelect(selectedRowKeys, selectionRows) {
+        //update-begin-author:taoyan date:2020902 for:【issue】开源online的几个问题 LOWCOD-844
+        if(!selectedRowKeys || selectedRowKeys.length==0){
+          this.table.selectionRows = []
+        }else if(selectedRowKeys.length == selectionRows.length){
+          this.table.selectionRows = selectionRows
+        }else{
+          //当两者长度不一的时候 需要判断
+          let keys = this.table.selectedRowKeys
+          let rows = this.table.selectionRows;
+          //这个循环 添加新的记录
+          for(let i=0;i<selectionRows.length;i++){
+            let combineKey = this.combineRowKey(selectionRows[i])
+            if(keys.indexOf(combineKey)<0){
+              //如果 原来的key 不包含当前记录 push
+              rows.push(selectionRows[i])
+            }
+          }
+          //这个循环 移除取消选中的数据
+          this.table.selectionRows = rows.filter(item=>{
+            let combineKey = this.combineRowKey(item)
+            return selectedRowKeys.indexOf(combineKey)>=0
+          })
+        }
+        //update-end-author:taoyan date:2020902 for:【issue】开源online的几个问题 LOWCOD-844
         this.table.selectedRowKeys = selectedRowKeys
-        this.table.selectionRows = selectionRows
       },
       handleChangeInTable(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发

@@ -24,6 +24,11 @@
         type:String,
         required:false,
         default:''
+      },
+      trim:{
+        type: Boolean,
+        required: false,
+        default:false
       }
     },
     watch:{
@@ -56,7 +61,10 @@
           let text = this.value
           switch (this.type) {
             case JINPUT_QUERY_LIKE:
-              text = text.substring(1,text.length-1);
+              //修复路由传参的值传送到jinput框被前后各截取了一位 #1336
+              if(text.indexOf("*") != -1){
+                text = text.substring(1,text.length-1);
+              }
               break;
             case JINPUT_QUERY_NE:
               text = text.substring(1);
@@ -74,6 +82,9 @@
       },
       backValue(e){
         let text = e.target.value
+        if(text && this.trim===true){
+          text = text.trim()
+        }
         switch (this.type) {
           case JINPUT_QUERY_LIKE:
             text = "*"+text+"*";
