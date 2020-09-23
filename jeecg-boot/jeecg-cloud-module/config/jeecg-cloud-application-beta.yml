@@ -229,9 +229,3 @@ cas:
 #enable swagger
 swagger:
   enable: true
-#大屏报表参数设置
-jmreport:
-  #是否需要校验token
-  is_verify_token: false
-  #  必须校验方法
-  verify_methods: remove,delete,save,add,update
