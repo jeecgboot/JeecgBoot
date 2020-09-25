@@ -19,7 +19,7 @@ spring:
         - id: jeecg-demo
           uri: lb://jeecg-demo
           predicates:
-            - Path=/test/**,/api/**
+            - Path=/test/**,/api/**,/bigscreen/template1/**,/bigscreen/template2/**
         - id: jeecg-system
           uri: lb://jeecg-system
           predicates:
