@@ -23,7 +23,7 @@ spring:
         - id: jeecg-system
           uri: lb://jeecg-system
           predicates:
-            - Path=/sys/**,/webSocketApi/**,/online/**,/message/**
+            - Path=/sys/**,/oss/file/**,/webSocketApi/**,/online/**,/message/**
         - id: jeecg-system-websocket
           uri: lb:ws://jeecg-system
           predicates:
