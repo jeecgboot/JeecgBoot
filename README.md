@@ -39,11 +39,11 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 技术文档
 -----------------------------------
 
-- 在线演示 ： [http://boot.jeecg.com](http://boot.jeecg.com)
-
 - 技术官网：  [http://www.jeecg.com](http://www.jeecg.com)
 
 - 开发文档：  [http://doc.jeecg.com](http://doc.jeecg.com/1273753)
+
+- 在线演示 ： [http://boot.jeecg.com](http://boot.jeecg.com)
 
 - 视频教程  ：[JeecgBoot入门视频教程](http://www.jeecg.com/doc/video)
 
