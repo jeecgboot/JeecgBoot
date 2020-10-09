@@ -68,7 +68,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 为什么选择JEECG-BOOT?
 -----------------------------------
 * 1.采用最新主流前后分离框架（Springboot+Mybatis+antd），容易上手; 代码生成器依赖性低,灵活的扩展能力，可快速实现二次开发;
-* 2.支持微服务SpringCloud Alibaba，提供特殊机制支持单体和微服务自由切换
+* 2.支持微服务SpringCloud Alibaba(Nacos、Gateway、Sentinel、Skywarking)，提供切换机制支持单体和微服务自由切换
 * 3.开发效率高,采用代码生成器，单表、树列表、一对多、一对一等数据模型，增删改查功能一键生成，菜单配置直接使用；
 * 4.代码生成器提供强大模板机制，支持自定义模板，目前提供四套风格模板（单表两套、树模型一套、一对多三套）
 * 5.代码生成器非常智能，在线业务建模、在线配置、所见即所得支持23种类控件，一键生成前后端代码，大幅度提升开发效率，不再为重复工作发愁。
@@ -136,7 +136,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 安全框架：Apache Shiro 1.4.0，Jwt_3.7.0
 
-- 微服务技术：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywarking、SpringBootAdmin监控
+- 微服务技术：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywarking
 
 - 数据库连接池：阿里巴巴Druid 1.1.10
 
