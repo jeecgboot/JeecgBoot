@@ -136,6 +136,8 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 安全框架：Apache Shiro 1.4.0，Jwt_3.7.0
 
+- 微服务技术：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywarking、SpringBootAdmin监控
+
 - 数据库连接池：阿里巴巴Druid 1.1.10
 
 - 缓存框架：redis
@@ -294,6 +296,39 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
    └─更多功能开发中。。
    
 ```
+
+## 微服务整体解决方案(2.3+版本)
+
+
+1、服务注册和发现 Nacos √
+
+2、统一配置中心 Nacos  √
+
+3、路由网关 gateway √
+
+4、分布式 http feign √
+
+5、熔断和降级 Sentinel √
+
+6、分布式文件 Minio、阿里OSS √ 
+
+7、统一权限控制 JWT + Shiro √
+
+8、服务监控 SpringBootAdmin  [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1761865)
+
+9、链路跟踪 Skywarking  [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1771670)
+
+10、消息中间件 SpringCloudStream+RabbitMQ  [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1744409)
+
+11、分布式任务 xxl-job  [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1801263)
+
+12、分布式事务 Seata
+
+13、分布式日志 elk + kafa
+
+14、支持 docker-compose、k8s、jenkins
+
+15、CAS 单点登录   √
    
 #### 微服务架构图
 ![微服务架构图](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecgboot-weifuwu-cloud.png "在这里输入图片标题")
