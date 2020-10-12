@@ -8,11 +8,6 @@ package org.jeecg.common.constant;
 public interface CacheConstant {
 
 	/**
-	 * 缓存用户jwt
-	 */
-	public static final String SYS_USERS_CACHE_JWT = "sys:cache:user:jwt";
-
-	/**
 	 * 字典信息缓存
 	 */
     public static final String SYS_DICT_CACHE = "sys:cache:dict";

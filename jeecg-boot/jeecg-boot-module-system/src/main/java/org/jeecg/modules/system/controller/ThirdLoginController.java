@@ -109,14 +109,6 @@ public class ThirdLoginController {
     		// 设置超时时间
     		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME / 1000);
 
-			//update-begin-author:taoyan date:20200812 for:登录缓存用户信息
-			LoginUser redisUser = new LoginUser();
-			BeanUtils.copyProperties(user, redisUser);
-			redisUser.setPassword(SecureUtil.md5(user.getPassword()));
-			redisUtil.set(CacheConstant.SYS_USERS_CACHE_JWT +":" +token, redisUser);
-			redisUtil.expire(CacheConstant.SYS_USERS_CACHE_JWT +":" +token, JwtUtil.EXPIRE_TIME*2 / 1000);
-			//update-end-author:taoyan date:20200812 for:登录缓存用户信息
-
     		modelMap.addAttribute("token", token);
 		//update-begin--Author:wangshuai  Date:20200729 for：接口在签名校验失败时返回失败的标识码 issues#1441--------------------
         }else{

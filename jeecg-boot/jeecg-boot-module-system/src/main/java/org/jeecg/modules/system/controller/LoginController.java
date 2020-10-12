@@ -356,19 +356,10 @@ public class LoginController {
 		String syspassword = sysUser.getPassword();
 		String username = sysUser.getUsername();
 		// 生成token
-		String token = JwtUtil.sign(username, SecureUtil.md5(syspassword));
+		String token = JwtUtil.sign(username, syspassword);
         // 设置token缓存有效时间
 		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
 		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
-
-		//update-begin-author:taoyan date:20200812 for:登录缓存用户信息
-		LoginUser vo = new LoginUser();
-		BeanUtils.copyProperties(sysUser,vo);
-		//密码二次加密，因为存于redis会泄露
-		vo.setPassword(SecureUtil.md5(sysUser.getPassword()));
-		redisUtil.set(CacheConstant.SYS_USERS_CACHE_JWT +":" +token, vo);
-		redisUtil.expire(CacheConstant.SYS_USERS_CACHE_JWT +":" +token, JwtUtil.EXPIRE_TIME*2 / 1000);
-		//update-end-author:taoyan date:20200812 for:登录缓存用户信息
 
 		// 获取用户部门信息
 		JSONObject obj = new JSONObject();
@@ -483,14 +474,6 @@ public class LoginController {
 		// 设置超时时间
 		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
 		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
-
-		//update-begin-author:taoyan date:20200812 for:登录缓存用户信息
-		LoginUser vo = new LoginUser();
-		BeanUtils.copyProperties(sysUser,vo);
-		vo.setPassword(SecureUtil.md5(sysUser.getPassword()));
-		redisUtil.set(CacheConstant.SYS_USERS_CACHE_JWT +":" +token, vo);
-		redisUtil.expire(CacheConstant.SYS_USERS_CACHE_JWT +":" +token, JwtUtil.EXPIRE_TIME*2 / 1000);
-		//update-end-author:taoyan date:20200812 for:登录缓存用户信息
 
 		//token 信息
 		obj.put("token", token);
