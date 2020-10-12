@@ -81,7 +81,8 @@ public class LoginController {
         String lowerCaseCaptcha = captcha.toLowerCase();
 		String realKey = MD5Util.MD5Encode(lowerCaseCaptcha+sysLoginModel.getCheckKey(), "utf-8");
 		Object checkCode = redisUtil.get(realKey);
-		if(checkCode==null || !checkCode.equals(lowerCaseCaptcha)) {
+		//当进入登录页时，有一定几率出现验证码错误 #1714
+		if(checkCode==null || !checkCode.toString().equals(lowerCaseCaptcha)) {
 			result.error500("验证码错误");
 			return result;
 		}
@@ -355,7 +356,7 @@ public class LoginController {
 		String syspassword = sysUser.getPassword();
 		String username = sysUser.getUsername();
 		// 生成token
-		String token = JwtUtil.sign(username, syspassword);
+		String token = JwtUtil.sign(username, SecureUtil.md5(syspassword));
         // 设置token缓存有效时间
 		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
 		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
@@ -363,6 +364,7 @@ public class LoginController {
 		//update-begin-author:taoyan date:20200812 for:登录缓存用户信息
 		LoginUser vo = new LoginUser();
 		BeanUtils.copyProperties(sysUser,vo);
+		//密码二次加密，因为存于redis会泄露
 		vo.setPassword(SecureUtil.md5(sysUser.getPassword()));
 		redisUtil.set(CacheConstant.SYS_USERS_CACHE_JWT +":" +token, vo);
 		redisUtil.expire(CacheConstant.SYS_USERS_CACHE_JWT +":" +token, JwtUtil.EXPIRE_TIME*2 / 1000);

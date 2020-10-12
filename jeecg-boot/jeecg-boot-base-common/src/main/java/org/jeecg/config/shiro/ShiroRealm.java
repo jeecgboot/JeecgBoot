@@ -1,5 +1,6 @@
 package org.jeecg.config.shiro;
 
+import cn.hutool.crypto.SecureUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -118,6 +119,8 @@ public class ShiroRealm extends AuthorizingRealm {
         //如果redis缓存用户信息为空，则通过接口获取用户信息,避免超过两个小时操作中token过期
         if(loginUser==null){
             loginUser = commonAPI.getUserByName(username);
+            //密码二次加密，因为存于redis会泄露
+            loginUser.setPassword(SecureUtil.md5(loginUser.getPassword()));
         }
         if (loginUser == null) {
             throw new AuthenticationException("用户不存在!");
