@@ -114,14 +114,7 @@ public class ShiroRealm extends AuthorizingRealm {
 
         // 查询用户信息
         log.debug("———校验token是否有效————checkUserTokenIsEffect——————— "+ token);
-        LoginUser loginUser = (LoginUser) redisUtil.get(CacheConstant.SYS_USERS_CACHE_JWT+":"+token);
-        //TODO 当前写法导致两个小时操作中token过期
-        //如果redis缓存用户信息为空，则通过接口获取用户信息,避免超过两个小时操作中token过期
-        if(loginUser==null){
-            loginUser = commonAPI.getUserByName(username);
-            //密码二次加密，因为存于redis会泄露
-            loginUser.setPassword(SecureUtil.md5(loginUser.getPassword()));
-        }
+        LoginUser loginUser = commonAPI.getUserByName(username);
         if (loginUser == null) {
             throw new AuthenticationException("用户不存在!");
         }
