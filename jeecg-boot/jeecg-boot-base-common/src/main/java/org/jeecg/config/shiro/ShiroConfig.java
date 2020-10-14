@@ -145,6 +145,7 @@ public class ShiroConfig {
         //filterChainDefinitionMap.put("/test/jeecgDemo/redis/**", "anon"); //redis测试
 
         //流程模块组件请求
+        filterChainDefinitionMap.put("/test/jeecgDemo/hello", "anon");
 //		filterChainDefinitionMap.put("/act/process/**", "anon");
 //		filterChainDefinitionMap.put("/act/task/**", "anon");
 //		filterChainDefinitionMap.put("/act/model/**", "anon");
