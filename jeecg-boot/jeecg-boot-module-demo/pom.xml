@@ -18,7 +18,7 @@
         </dependency>
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-system-local-api</artifactId>
+            <artifactId>jeecg-system-cloud-api</artifactId>
         </dependency>
     </dependencies>
 </project>
