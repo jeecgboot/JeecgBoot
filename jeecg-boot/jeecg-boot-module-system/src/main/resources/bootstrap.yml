@@ -1,14 +1,30 @@
 server:
-  port: 7001
+ port: 8081
 spring:
-  profiles:
-    active: dev
-  application:
-    name: jeecg-system
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
+ application:
+   name: jeecg-system
+ cloud:
+   nacos:
+     discovery:
+       server-addr: 127.0.0.1:8848
+     config:
+       file-extension: yml
+       server-addr: 127.0.0.1:8848
+       shared-dataids: jeecg-cloud-application-beta.yml
 feign:
-  sentinel:
-    enabled: true
+ sentinel:
+   enabled: true
+#server:
+#  port: 7001
+#spring:
+#  profiles:
+#    active: dev
+#  application:
+#    name: jeecg-system
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: 127.0.0.1:8848
+#feign:
+#  sentinel:
+#    enabled: true

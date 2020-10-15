@@ -7,5 +7,18 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
-  profiles:
-    active: dev
+      config:
+        file-extension: yml
+        server-addr: 127.0.0.1:8848
+        shared-dataids: jeecg-cloud-gateway-beta.yml
+#server:
+#  port: 9999
+#spring:
+#  application:
+#    name: jeecg-cloud-gateway
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: 127.0.0.1:8848
+#  profiles:
+#    active: dev

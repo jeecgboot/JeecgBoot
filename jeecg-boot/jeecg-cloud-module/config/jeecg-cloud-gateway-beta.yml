@@ -1,7 +1,7 @@
 spring:
   redis:
     host: 127.0.0.1
-    password: ''
+    password: '123456'
     port: 6379
   cloud:
     gateway:
@@ -23,7 +23,7 @@ spring:
         - id: jeecg-system
           uri: lb://jeecg-system
           predicates:
-            - Path=/sys/**,/oss/file/**,/webSocketApi/**,/online/**,/message/**
+            - Path=/sys/**,/oss/file/**,/webSocketApi/**,/online/**,/message/**,/actuator/**
         - id: jeecg-system-websocket
           uri: lb:ws://jeecg-system
           predicates:
