@@ -87,14 +87,6 @@ public class CasClientController {
 	 		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
 	 		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
 
-	 		//update-begin-author:taoyan date:20200812 for:登录缓存用户信息
-			LoginUser vo = new LoginUser();
-			BeanUtils.copyProperties(sysUser,vo);
-			vo.setPassword(SecureUtil.md5(sysUser.getPassword()));
-			redisUtil.set(CacheConstant.SYS_USERS_CACHE_JWT +":" +token, vo);
-			redisUtil.expire(CacheConstant.SYS_USERS_CACHE_JWT +":" +token, JwtUtil.EXPIRE_TIME*2 / 1000);
-			//update-end-author:taoyan date:20200812 for:登录缓存用户信息
-
 	 		//获取用户部门信息
 			JSONObject obj = new JSONObject();
 			List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());
