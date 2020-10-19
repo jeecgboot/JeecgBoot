@@ -1,27 +1,30 @@
 <template>
-  <a-upload
-    name="file"
-    listType="picture-card"
-    :multiple="isMultiple"
-    :action="uploadAction"
-    :headers="headers"
-    :data="{biz:bizPath}"
-    :fileList="fileList"
-    :beforeUpload="beforeUpload"
-    :disabled="disabled"
-    :isMultiple="isMultiple"
-    :showUploadList="isMultiple"
-    @change="handleChange"
-    @preview="handlePreview">
-    <img v-if="!isMultiple && picUrl" :src="getAvatarView()" style="height:104px;max-width:300px"/>
-    <div v-else >
-      <a-icon :type="uploadLoading ? 'loading' : 'plus'" />
-      <div class="ant-upload-text">{{ text }}</div>
-    </div>
-    <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel()">
-      <img alt="example" style="width: 100%" :src="previewImage"/>
-    </a-modal>
-  </a-upload>
+  <div class="img">
+    <a-upload
+      name="file"
+      listType="picture-card"
+      :multiple="isMultiple"
+      :action="uploadAction"
+      :headers="headers"
+      :data="{biz:bizPath}"
+      :fileList="fileList"
+      :beforeUpload="beforeUpload"
+      :disabled="disabled"
+      :isMultiple="isMultiple"
+      :showUploadList="isMultiple"
+      @change="handleChange"
+      @preview="handlePreview"
+      :class="!isMultiple?'imgupload':''">
+      <img v-if="!isMultiple && picUrl" :src="getAvatarView()" style="height:104px;max-width:300px"/>
+      <div v-else class="iconp">
+        <a-icon :type="uploadLoading ? 'loading' : 'plus'" />
+        <div class="ant-upload-text">{{ text }}</div>
+      </div>
+      <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel()">
+        <img alt="example" style="width: 100%" :src="previewImage"/>
+      </a-modal>
+    </a-upload>
+  </div>
 </template>
 
 <script>
@@ -206,5 +209,12 @@
 </script>
 
 <style scoped>
-
+  /* update--begin--autor:lvdandan-----date:20201016------for：j-image-upload图片组件单张图片详情回显空白
+  * https://github.com/zhangdaiscott/jeecg-boot/issues/1810
+  * https://github.com/zhangdaiscott/jeecg-boot/issues/1779
+  */
+  /deep/ .imgupload .ant-upload-select{display:block}
+  /deep/ .imgupload .ant-upload.ant-upload-select-picture-card{ width:120px;height: 120px;}
+  /deep/ .imgupload .iconp{padding:32px;}
+  /* update--end--autor:lvdandan-----date:20201016------for：j-image-upload图片组件单张图片详情回显空白*/
 </style>
