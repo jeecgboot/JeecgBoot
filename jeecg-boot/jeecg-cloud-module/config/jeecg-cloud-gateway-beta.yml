@@ -20,6 +20,14 @@ spring:
           uri: lb://jeecg-demo
           predicates:
             - Path=/test/**,/api/**,/bigscreen/template1/**,/bigscreen/template2/**
+        - id: jeecg-hroop
+          uri: lb://jeecg-hroop
+          predicates:
+            - Path=/hroop/**
+        - id: jeecg-merck
+          uri: lb://jeecg-merck
+          predicates:
+            - Path=/merck/**
         - id: jeecg-system
           uri: lb://jeecg-system
           predicates:
@@ -36,4 +44,4 @@ management:
   endpoints:
     web:
       exposure:
-        include: metrics,httptrace
+        include: '*'

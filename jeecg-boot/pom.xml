@@ -22,7 +22,9 @@
 		<module>jeecg-boot-module-system</module>
 		<module>jeecg-boot-module-demo</module>
 		<module>jeecg-cloud-module</module>
-	</modules>
+		<module>jeecg-boot-module-merck</module>
+        <module>jeect-boot-module-hroop</module>
+    </modules>
 
 	<distributionManagement>
 	  	<repository>
