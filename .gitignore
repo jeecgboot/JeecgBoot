@@ -8,3 +8,31 @@
 
 ## front
 **/*.lock
+
+securitysdk.log
+target/
+.mvn
+logs/
+*.log.*
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts*
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
