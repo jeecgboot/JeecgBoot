@@ -11,7 +11,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+      <a-button @click="handleAdd" v-has="'user:addd'" type="primary" icon="plus">新增</a-button>
       <a-button type="primary" icon="download" @click="handleExportXls('更新状态表')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
@@ -97,6 +97,7 @@
   import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import ComStatusModal from './modules/ComStatusModal'
+  import { colAuthFilter } from '../../../utils/authFilter'
 
   export default {
     name: 'ComStatusList',
@@ -150,6 +151,7 @@
       }
     },
     created() {
+      this.columns = colAuthFilter(this.columns,'comstatus:');
     },
     computed: {
       importExcelUrl: function(){

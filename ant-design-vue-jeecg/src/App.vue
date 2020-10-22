@@ -1,3 +1,4 @@
+
 <template>
   <a-config-provider :locale="locale">
     <div id="app">
@@ -8,6 +9,8 @@
 <script>
   import zhCN from 'ant-design-vue/lib/locale-provider/zh_CN'
   import enquireScreen from '@/utils/device'
+  // Fontclass模式
+  import '@/components/iconfont/common.less'
 
   export default {
     data () {

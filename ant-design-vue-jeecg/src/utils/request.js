@@ -48,9 +48,11 @@ const err = (error) => {
                   let path = window.document.location.pathname
                   console.log("location pathname -> "+path)
                   if(path!="/" && path.indexOf('/user/login')==-1){
+                    // that.$router.push({ path: '/user/login' });
                     window.location.reload()
                   }
                 }catch (e) {
+                  // that.$router.push({ path: '/user/login' });
                   window.location.reload()
                 }
               })

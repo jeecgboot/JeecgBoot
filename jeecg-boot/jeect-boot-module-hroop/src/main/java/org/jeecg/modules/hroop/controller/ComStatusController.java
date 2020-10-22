@@ -9,8 +9,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.aspect.annotation.LimitSubmit;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.hroop.entity.ComStatus;
 import org.jeecg.modules.hroop.service.IComStatusService;
@@ -49,7 +53,21 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class ComStatusController extends JeecgController<ComStatus, IComStatusService> {
 	@Autowired
 	private IComStatusService comStatusService;
-	
+
+
+	 @GetMapping(value = "/hello")
+	 @LimitSubmit(key = "testLimit:%s:#orderId",limit = 10,needAllWait = true)
+	 public Result<String> hello() {
+		 Result<String> result = new Result<String>();
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 result.setResult("Hello World!");
+		 result.setMessage(sysUser.getRealname());
+		 result.setSuccess(true);
+		 return result;
+	 }
+
+
+
 	/**
 	 * 分页列表查询
 	 *

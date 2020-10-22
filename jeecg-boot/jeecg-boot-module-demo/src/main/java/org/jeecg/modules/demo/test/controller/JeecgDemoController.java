@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.aspect.annotation.LimitSubmit;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.base.controller.JeecgController;
@@ -61,7 +62,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
     /**
      * hello world
      *
-     * @param id
+     * @param
      * @return
      */
     @GetMapping(value = "/hello")
@@ -173,6 +174,9 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
     @RequestMapping(value = "/exportXls")
     @PermissionData(pageComponent = "jeecg/JeecgDemoList")
     public ModelAndView exportXls(HttpServletRequest request, JeecgDemo jeecgDemo) {
+        //获取导出表格字段
+//        String exportFields = jeecgDemoService.getExportFields();
+
         return super.exportXls(request, jeecgDemo, JeecgDemo.class, "单表模型");
     }
 
