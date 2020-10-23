@@ -62,7 +62,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 参与开源：  [欢迎加入JEECG开源团队，共同进步！！](http://www.jeecg.com/doc/join)
 
-- Online一分钟：  [1分钟快速学习](https://my.oschina.net/jeecg/blog/3083313)
+- Online一分钟：  [1分钟快速学习](https://jeecg.blog.csdn.net/article/details/106078912)
 
 
 为什么选择JEECG-BOOT?
