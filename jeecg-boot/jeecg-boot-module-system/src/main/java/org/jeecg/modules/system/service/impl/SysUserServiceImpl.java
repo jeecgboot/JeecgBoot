@@ -363,7 +363,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		}
 		//情况2：根据用户信息查询，该用户已注销
 		//update-begin---author:王帅   Date:20200601  for：if条件永远为falsebug------------
-		if (CommonConstant.DEL_FLAG_1==sysUser.getDelFlag()) {
+		if (CommonConstant.DEL_FLAG_1.equals(sysUser.getDelFlag())) {
 		//update-end---author:王帅   Date:20200601  for：if条件永远为falsebug------------
 			baseCommonService.addLog("用户登录失败，用户名:" + sysUser.getUsername() + "已注销！", CommonConstant.LOG_TYPE_1, null);
 			result.error500("该用户已注销");
