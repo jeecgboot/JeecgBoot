@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crj.java.task.front.modules.demo.test.mapper.TaskDemoMapper">
+
+	<!-- 根据用户名查询 -->
+	<select id="getDemoByName" resultType="com.crj.java.task.front.modules.demo.test.entity.TaskDemo">
+		select * from  demo  where name = #{name}
+	</select>
+
+	<!-- 根据权限sql查询数据集 -->
+	<select id="queryListWithPermission" parameterType="Object" resultType="com.crj.java.task.front.modules.demo.test.entity.TaskDemo">
+		select * from demo where 1=1 ${permissionSql}
+	</select>
+</mapper>
