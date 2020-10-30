@@ -13,6 +13,7 @@
       >
         <side-menu
           mode="inline"
+          v-if="device === 'mobile'"
           :menus="menus"
           @menuSelect="menuSelect"
           :theme="navTheme"
@@ -21,7 +22,7 @@
       </a-drawer>
 
       <side-menu
-        v-else
+        v-show="device === 'desktop'"
         mode="inline"
         :menus="menus"
         @menuSelect="myMenuSelect"
