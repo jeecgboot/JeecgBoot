@@ -63,12 +63,27 @@ public interface ISysUserService extends IService<SysUser> {
 	public SysUser getUserByName(String username);
 	
 	/**
+	 * 添加用户
+	 * @param selectedRoles
+	 * @param selectedDeparts
+	 * @param user
+	 */
+	public void addUser(String selectedRoles, String selectedDeparts, SysUser user);
+	
+	/**
 	 * 添加用户和用户角色关系
 	 * @param user
 	 * @param roles
 	 */
 	public void addUserWithRole(SysUser user,String roles);
 	
+	/**
+	 * 修改用户
+	 * @param user
+	 * @param roles
+	 * @param departs
+	 */
+	public void editUser(SysUser user, String roles, String departs);
 	
 	/**
 	 * 修改用户和用户角色关系
