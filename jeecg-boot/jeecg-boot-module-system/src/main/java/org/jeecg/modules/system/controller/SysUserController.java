@@ -37,6 +37,7 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -145,8 +146,7 @@ public class SysUserController {
 			user.setPassword(passwordEncode);
 			user.setStatus(1);
 			user.setDelFlag(CommonConstant.DEL_FLAG_0);
-			sysUserService.addUserWithRole(user, selectedRoles);
-            sysUserService.addUserWithDepart(user, selectedDeparts);
+			sysUserService.addUser(selectedRoles, selectedDeparts, user);
 			result.success("添加成功！");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -172,9 +172,7 @@ public class SysUserController {
 				user.setPassword(sysUser.getPassword());
 				String roles = jsonObject.getString("selectedroles");
                 String departs = jsonObject.getString("selecteddeparts");
-				sysUserService.editUserWithRole(user, roles);
-                sysUserService.editUserWithDepart(user, departs);
-                sysUserService.updateNullPhoneEmail();
+                this.sysUserService.editUser(user, roles, departs);
 				result.success("修改成功!");
 			}
 		} catch (Exception e) {

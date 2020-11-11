@@ -117,9 +117,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		return userMapper.getUserByName(username);
 	}
 	
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void addUser(String selectedRoles, String selectedDeparts, SysUser user) {
+		addUserWithRole(user, selectedRoles);
+		addUserWithDepart(user, selectedDeparts);
+	}
 	
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void addUserWithRole(SysUser user, String roles) {
 		this.save(user);
 		if(oConvertUtils.isNotEmpty(roles)) {
@@ -130,10 +136,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 			}
 		}
 	}
+	
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void editUser(SysUser user, String roles, String departs) {
+		editUserWithRole(user, roles);
+		if(1 == 1) {
+        	throw new RuntimeException();
+        }
+		editUserWithDepart(user, departs);
+		updateNullPhoneEmail();
+	}
 
 	@Override
 	@CacheEvict(value= {CacheConstant.SYS_USERS_CACHE}, allEntries=true)
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void editUserWithRole(SysUser user, String roles) {
 		this.updateById(user);
 		//先删后加
@@ -298,7 +315,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void addUserWithDepart(SysUser user, String selectedParts) {
 //		this.save(user);  //保存角色的时候已经添加过一次了
 		if(oConvertUtils.isNotEmpty(selectedParts)) {
@@ -363,7 +380,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		}
 		//情况2：根据用户信息查询，该用户已注销
 		//update-begin---author:王帅   Date:20200601  for：if条件永远为falsebug------------
-		if (CommonConstant.DEL_FLAG_1.equals(sysUser.getDelFlag())) {
+		if (CommonConstant.DEL_FLAG_1==sysUser.getDelFlag()) {
 		//update-end---author:王帅   Date:20200601  for：if条件永远为falsebug------------
 			baseCommonService.addLog("用户登录失败，用户名:" + sysUser.getUsername() + "已注销！", CommonConstant.LOG_TYPE_1, null);
 			result.error500("该用户已注销");
