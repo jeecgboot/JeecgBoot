@@ -36,7 +36,12 @@ public class FeignConfig {
                 HttpServletRequest request = attributes.getRequest();
                 log.info("Feign request: {}", request.getRequestURI());
                 // 将token信息放入header中
-                requestTemplate.header(CommonConstant.X_ACCESS_TOKEN, request.getHeader(CommonConstant.X_ACCESS_TOKEN));
+                String token = request.getHeader(CommonConstant.X_ACCESS_TOKEN);
+                if(token==null){
+                    token = request.getParameter("token");
+                }
+                log.info("Feign request token: {}", token);
+                requestTemplate.header(CommonConstant.X_ACCESS_TOKEN, token);
             }
         };
     }

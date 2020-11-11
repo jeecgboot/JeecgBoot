@@ -72,7 +72,7 @@ public interface CommonConstant {
     public static final Integer SC_JEECG_NO_AUTHZ=510;
 
     /** 登录用户Shiro权限缓存KEY前缀 */
-    public static String PREFIX_USER_SHIRO_CACHE  = "shiro:cache:org.jeecg.modules.shiro.authc.ShiroRealm.authorizationCache:";
+    public static String PREFIX_USER_SHIRO_CACHE  = "shiro:cache:org.jeecg.config.shiro.ShiroRealm.authorizationCache:";
     /** 登录用户Token令牌缓存KEY前缀 */
     public static final String PREFIX_USER_TOKEN  = "prefix_user_token_";
     /** Token缓存时间：3600秒即一小时 */
@@ -300,4 +300,9 @@ public interface CommonConstant {
      * 微服务读取配置文件属性 服务地址
      */
     public final static String CLOUD_SERVER_KEY = "spring.cloud.nacos.discovery.server-addr";
+
+    /**
+     * 第三方登录 验证密码/创建用户 都需要设置一个操作码 防止被恶意调用
+     */
+    public final static String THIRD_LOGIN_CODE = "third_login_code";
 }

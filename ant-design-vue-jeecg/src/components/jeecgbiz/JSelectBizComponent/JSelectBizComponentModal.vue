@@ -209,6 +209,11 @@
         immediate: true,
         deep: true,
         handler(val) {
+          //update--begin--autor:scott-----date:20200927------for：选取职务名称出现全选 #1753-----
+          if(this.innerValue){
+            this.innerValue.length=0;
+          }
+          //update--end--autor:scott-----date:20200927------for：选取职务名称出现全选 #1753-----
           this.selectedTable.dataSource = val.map(key => {
             for (let data of this.dataSource) {
               if (data[this.rowKey] === key) {
@@ -308,6 +313,8 @@
         //update--begin--autor:wangshuai-----date:20200722------for：JSelectBizComponent组件切换页数值问题------
         this.selectedTable.dataSource.splice(this.selectedTable.dataSource.indexOf(record), 1)
         this.innerValue.splice(this.innerValue.indexOf(record[this.valueKey]), 1)
+        console.log("this.selectedRowKeys:",this.selectedRowKeys)
+        console.log("this.selectedTable.dataSource:",this.selectedTable.dataSource)
         //update--begin--autor:wangshuai-----date:20200722------for：JSelectBizComponent组件切换页数值问题------
       },
 
