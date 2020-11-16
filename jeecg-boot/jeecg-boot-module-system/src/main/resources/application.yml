@@ -1,6 +1,13 @@
 spring:
-  profiles:
-    active: dev
+  datasource:
+    dynamic:
+      datasource:
+        #主数据源
+        master:
+          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false
+          username: root
+          password: maluwei0216MS
+          driver-class-name: com.mysql.jdbc.Driver
 swagger:
   production: false
   basic:
@@ -28,3 +35,20 @@ justauth:
     type: default
     prefix: 'demo::'
     timeout: 1h
+server:
+  port: 8080
+  servlet:
+    context-path: /jeecg-boot
+
+  redis:
+    database: 0
+    host: 127.0.0.1
+    lettuce:
+      pool:
+        max-active: 8   #最大连接数据库连接数,设 0 为没有限制
+        max-idle: 8     #最大等待连接中的数量,设 0 为没有限制
+        max-wait: -1ms  #最大建立连接等待时间。如果超过此时间将接到异常。设为-1表示无限制。
+        min-idle: 0     #最小等待连接中的数量,设 0 为没有限制
+      shutdown-timeout: 100ms
+    password: ''
+    port: 6379
