@@ -243,7 +243,7 @@
 		<dependency>
 			<groupId>org.jeecgframework</groupId>
 			<artifactId>autopoi-web</artifactId>
-			<version>1.2.1</version>
+			<version>1.2.2</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-codec</groupId>
