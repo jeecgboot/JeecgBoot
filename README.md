@@ -49,7 +49,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 视频教程  ：[JeecgBoot入门视频](http://www.jeecg.com/doc/video)
 
-- 常见问题：  [入门常见问题](http://bbs.jeecg.com/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
+- 常见问题：  [入门常见问题Q&A](http://jeecg.com/doc/qa)
 
 - 更新日志：  [版本日志](http://www.jeecg.com/doc/log)
 
