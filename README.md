@@ -7,14 +7,14 @@
 JEECG BOOT 低代码开发平台（前后端分离版本）
 ===============
 
-当前最新版本： 2.3（发布日期：2020-09-14）
-
-
-[![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
-[![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://www.jeecg.com)
-[![](https://img.shields.io/badge/version-2.3-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
-[![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
-[![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
+-当前最新版本： 2.3（发布日期：2020-09-14）
+ 
+ 
+ [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
+ [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://www.jeecg.com)
+ [![](https://img.shields.io/badge/version-2.3-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+ [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
+ [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
 
 
@@ -41,13 +41,15 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 技术官网：  [http://www.jeecg.com](http://www.jeecg.com)
 
-- 开发文档：  [http://doc.jeecg.com](http://doc.jeecg.com/1273753)
+- 开发文档：  [http://doc.jeecg.com](http://doc.jeecg.com)
+
+- 微服务启动：  [单体升级为微服务启动文档2.4+](http://doc.jeecg.com/2043906)
 
 - 在线演示 ： [http://boot.jeecg.com](http://boot.jeecg.com)
 
-- 视频教程  ：[JeecgBoot入门视频教程](http://www.jeecg.com/doc/video)
+- 视频教程  ：[JeecgBoot入门视频](http://www.jeecg.com/doc/video)
 
-- 常见问题：  [入门常见问题大全](http://bbs.jeecg.com/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
+- 常见问题：  [入门常见问题](http://bbs.jeecg.com/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
 
 - 更新日志：  [版本日志](http://www.jeecg.com/doc/log)
 
@@ -130,15 +132,17 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 
 #### 后端
-- 基础框架：Spring Boot 2.1.3.RELEASE \ Spring Cloud Alibaba 2.1.0.RELEASE
+- 基础框架：Spring Boot 2.3.5.RELEASE
 
-- 持久层框架：Mybatis-plus_3.1.2
+- 微服务框架： Spring Cloud Alibaba 2.2.3.RELEASE
 
-- 安全框架：Apache Shiro 1.4.0，Jwt_3.7.0
+- 持久层框架：Mybatis-plus 3.4.1
 
-- 微服务技术：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywarking
+- 安全框架：Apache Shiro 1.7.0，Jwt 3.11.0
 
-- 数据库连接池：阿里巴巴Druid 1.1.10
+- 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywarking
+
+- 数据库连接池：阿里巴巴Druid 1.1.22
 
 - 缓存框架：redis
 
@@ -297,14 +301,14 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
    
 ```
 
-## 微服务整体解决方案(2.3+版本)
+## 微服务整体解决方案(2.4+版本)
 
 
 1、服务注册和发现 Nacos √
 
 2、统一配置中心 Nacos  √
 
-3、路由网关 gateway √
+3、路由网关 gateway(三种加载方式) √
 
 4、分布式 http feign √
 
@@ -314,13 +318,13 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 7、统一权限控制 JWT + Shiro √
 
-8、服务监控 SpringBootAdmin  [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1761865)
+8、服务监控 SpringBootAdmin√
 
-9、链路跟踪 Skywarking  [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1771670)
+9、链路跟踪 Skywarking   [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1771670)
 
-10、消息中间件 SpringCloudStream+RabbitMQ  [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1744409)
+10、消息中间件 RabbitMQ  √
 
-11、分布式任务 xxl-job  [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1801263)
+11、分布式任务 xxl-job  √ 
 
 12、分布式事务 Seata
 
@@ -329,6 +333,9 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 14、支持 docker-compose、k8s、jenkins
 
 15、CAS 单点登录   √
+
+16、路由限流   √
+
    
 #### 微服务架构图
 ![微服务架构图](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecgboot-weifuwu-cloud.png "在这里输入图片标题")
