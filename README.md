@@ -23,8 +23,9 @@ JEECG BOOT 低代码开发平台（前后端分离版本）
 
 <h3 align="center">Java Low Code Platform for Enterprise web applications</h3>
 
-JeecgBoot 是一款基于代码生成器的`低代码`开发平台，零代码开发！采用前后端分离架构：SpringBoot2.x，Ant Design&Vue，Mybatis-plus，Shiro，JWT。强大的代码生成器让前后端代码一键生成，无需写任何代码! JeecgBoot引领新的开发模式(OnlineCoding-> 代码生成器-> 手工MERGE)， 帮助解决Java项目70%的重复工作，让开发更多关注业务逻辑。既能快速提高开发效率，帮助公司节省成本，同时又不失灵活性！
-JeecgBoot低代码开发模块：Online表单开发、Online报表、表单设计器、在线设计流程、流程自动化配置、报表配置能力、在线图表设计、移动配置能力、插件能力（可插拔）等等！
+JeecgBoot 是一款基于代码生成器的`低代码`开发平台！前后端分离架构：SpringBoot2.x，Ant Design&Vue，Mybatis-plus，Shiro，JWT。强大的代码生成器让前后端代码一键生成，无需写任何代码!  JeecgBoot 引领新的低代码开发模式(OnlineCoding-> 代码生成器-> 手工MERGE)， 帮助解决Java项目70%的重复工作，让开发更多关注业务逻辑。既能快速提高开发效率，帮助公司节省成本，同时又不失灵活性！
+
+JeecgBoot的`低代码模块`：Online表单开发、Online报表、表单设计器、在线设计流程、流程自动化配置、报表配置能力、在线图表设计、移动配置能力、插件能力（可插拔）等等！
 
 
 `JEECG宗旨是:` 简单功能由Online Coding配置实现 `零代码开发`或叫 `低代码开发` ，复杂功能由代码生成器生成进行手工Merge，既`智能`又`灵活`，实现了低代码开发的同时又支持灵活编码，解决当前低代码产品不灵活的弊端; 
