@@ -351,7 +351,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 - jdk8
 - mysql
 - redis
-- 数据库脚本：[jeecgboot-mysql-5.7.sql](https://github.com/zhangdaiscott/jeecg-boot/tree/master/jeecg-boot/db/jeecgboot-mysql-5.7.sql)
+- 数据库脚本：jeecg-boot/db/jeecgboot-mysql-5.7.sql
 - 默认登录账号： admin/123456
 
 
