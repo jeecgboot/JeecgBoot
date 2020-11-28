@@ -143,6 +143,8 @@
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
+      <!-- 高级查询区域 -->
+      <j-super-query :fieldList="superFieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -272,6 +274,7 @@
   <#if bpm_flag>
   import { postAction } from '@/api/manage'
   </#if>
+  import JSuperQuery from '@/components/jeecg/JSuperQuery.vue'
 
   export default {
     name: "${entityName}List",
@@ -304,7 +307,8 @@
       <#if query_sel_search>
       JSearchSelectTag,
       </#if>
-      ${entityName}Modal
+      ${entityName}Modal,
+      JSuperQuery
     },
     data () {
       return {
@@ -360,6 +364,13 @@
             dataIndex: '${po.fieldName}',
             customRender: (text, record) => (text ? record['${po.dictText}'] : '')
             </#if>
+            <#elseif po.classType=='switch'>
+            dataIndex: '${po.fieldName}',
+            <#if po.dictField?default("")?trim?length gt 1>
+            customRender: (text) => (!text ? "" : (text == ${po.dictField}[0] ? "是" : "否"))
+            <#else>
+            customRender: (text) => (!text ? "" : (text == "Y" ? "是" : "否"))
+            </#if>
 			<#else>
             dataIndex: '${po.fieldName}'
 			</#if>
@@ -381,18 +392,20 @@
           deleteBatch: "/${entityPackage}/${entityName?uncap_first}/deleteBatch",
           exportXlsUrl: "/${entityPackage}/${entityName?uncap_first}/exportXls",
           importExcelUrl: "${entityPackage}/${entityName?uncap_first}/importExcel",
-          <#if bpm_flag>startProcess: '/process/extActProcess/startMutilProcess'</#if>
+          <#if bpm_flag>startProcess: '/act/process/extActProcess/startMutilProcess'</#if>
         },
         <#if bpm_flag>
         flowCode: 'dev_${tableName}_001',
         </#if>
         dictOptions:{},
+        superFieldList:[],
       }
     },
     created() {
       <#if list_need_pca>
       this.pcaData = new Area()
       </#if>
+      this.getSuperFieldList();
     },
     computed: {
       importExcelUrl: function(){
@@ -445,7 +458,14 @@
         })
       },
       </#if>
-       
+      getSuperFieldList(){
+        <#include "/common/utils.ftl">
+        let fieldList=[];
+         <#list columns as po>
+        fieldList.push(${superQueryFieldList(po)})
+         </#list>
+        this.superFieldList = fieldList
+      }
     }
   }
 </script>

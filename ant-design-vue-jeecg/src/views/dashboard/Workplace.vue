@@ -205,20 +205,20 @@
     methods: {
       ...mapGetters(["nickname", "welcome"]),
       getProjects() {
-        this.$http.get('/api/list/search/projects')
+        this.$http.get('/mock/api/list/search/projects')
           .then(res => {
             this.projects = res.result && res.result.data
             this.loading = false
           })
       },
       getActivity() {
-        this.$http.get('/api/workplace/activity')
+        this.$http.get('/mock/api/workplace/activity')
           .then(res => {
             this.activities = res.result
           })
       },
       getTeams() {
-        this.$http.get('/api/workplace/teams')
+        this.$http.get('/mock/api/workplace/teams')
           .then(res => {
             this.teams = res.result
           })
@@ -226,7 +226,7 @@
       initRadar() {
         this.radarLoading = true
 
-        this.$http.get('/api/workplace/radar')
+        this.$http.get('/mock/api/workplace/radar')
           .then(res => {
 
             const dv = new DataSet.View().source(res.result)

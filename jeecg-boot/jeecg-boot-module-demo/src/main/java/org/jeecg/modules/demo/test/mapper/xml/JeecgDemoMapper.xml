@@ -11,4 +11,24 @@
 	<select id="queryListWithPermission" parameterType="Object" resultType="org.jeecg.modules.demo.test.entity.JeecgDemo">
 		select * from demo where 1=1 ${permissionSql}
 	</select>
+
+	<!-- 查询所有符合前缀且有效字段 -->
+	<select id="queryAllAuth" resultType="java.lang.String">
+        select perms from sys_permission
+        where perms
+        like concat(concat('%',#{permsPrefix}),'%')
+        and del_flag=0
+        and status='1'
+    </select>
+
+	<!-- 查询用户已授权字段 -->
+	<select id="queryUserAuth" resultType="java.lang.String">
+        select perms from sys_user_role sur,
+        sys_role_permission srp,
+        sys_permission sp
+        where sur.role_id = srp.role_id
+        and sp.id = srp.permission_id
+        and user_id = #{userId}
+        and sp.perms like concat(concat('%',#{permsPrefix}),'%')
+    </select>
 </mapper>

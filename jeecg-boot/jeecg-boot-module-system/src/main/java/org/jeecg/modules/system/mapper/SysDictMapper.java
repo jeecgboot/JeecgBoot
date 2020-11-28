@@ -41,6 +41,10 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	@Deprecated
 	public List<DictModel> queryTableDictItemsByCodeAndFilter(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("filterSql") String filterSql);
 
+	@Deprecated
+	@Select("select ${key} as \"label\",${value} as \"value\" from ${table}")
+	public List<Map<String,String>> getDictByTableNgAlain(@Param("table") String table, @Param("key") String key, @Param("value") String value);
+
 	public String queryDictTextByKey(@Param("code") String code,@Param("key") String key);
 
 	@Deprecated

@@ -60,6 +60,8 @@
         <#return true>
       </#if>
     </#if>
+  <#elseif po.defaultVal??>
+    <#return true>
   </#if>
   <#return false>
 </#function>
@@ -69,5 +71,28 @@
     <#return ", validatorRules.${po.fieldName}">
   <#else>
     <#return "">
+  </#if>
+</#function>
+
+<#-- ** 高级查询生成 * -->
+<#function superQueryFieldList po>
+  <#if po.classType=="popup">
+      <#return "{type:'${po.classType}',value:'${po.fieldName}',text:'${po.filedComment}', popup:{code:'${po.dictTable}',field:'${po.dictField?split(',')[0]}',orgFields:'${po.dictField?split(',')[0]}',destFields:'${po.dictText?split(',')[0]}'}}">
+  <#elseif po.classType=="sel_user" || po.classType=="sel_depart" || po.classType=="datetime" || po.classType=="date" || po.classType=="pca" || po.classType=="switch">
+      <#return "{type:'${po.classType}',value:'${po.fieldName}',text:'${po.filedComment}'}">
+  <#else>
+      <#if po.dictTable?? && po.dictTable!="" && po.classType!="sel_tree" && po.classType!="cat_tree" && po.classType!="link_down">
+          <#return "{type:'${po.fieldDbType}',value:'${po.fieldName}',text:'${po.filedComment}',dictCode:'${po.dictTable},${po.dictText},${po.dictField}'}">
+      <#elseif po.dictField?? && po.dictTable!="" && po.classType!="sel_tree" && po.classType!="cat_tree" && po.classType!="link_down">
+          <#return "{type:'${po.fieldDbType}',value:'${po.fieldName}',text:'${po.filedComment}',dictCode:'${po.dictField}'}">
+      <#elseif po.fieldDbType=="Text">
+          <#return "{type:'string',value:'${po.fieldName}',text:'${po.filedComment}'}">
+      <#elseif po.fieldDbType=="Blob">
+          <#return "{type:'byte',value:'${po.fieldName}',text:'${po.filedComment}'}">
+      <#elseif po.fieldDbType=="BigDecimal" || po.fieldDbType=="double">
+          <#return "{type:'number',value:'${po.fieldName}',text:'${po.filedComment}'}">
+      <#else>
+          <#return "{type:'${po.fieldDbType}',value:'${po.fieldName}',text:'${po.filedComment}'}">
+      </#if>
   </#if>
 </#function>

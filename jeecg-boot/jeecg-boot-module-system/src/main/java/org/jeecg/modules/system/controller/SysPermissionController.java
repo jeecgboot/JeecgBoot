@@ -5,10 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.MD5Util;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDepartPermission;
@@ -192,20 +194,20 @@ public class SysPermissionController {
 //	}
 
 	/**
-	 * 查询用户拥有的菜单权限和按钮权限（根据TOKEN）
+	 * 查询用户拥有的菜单权限和按钮权限
 	 * 
 	 * @return
 	 */
 	@RequestMapping(value = "/getUserPermissionByToken", method = RequestMethod.GET)
-	public Result<?> getUserPermissionByToken(@RequestParam(name = "token", required = true) String token) {
+	public Result<?> getUserPermissionByToken() {
 		Result<JSONObject> result = new Result<JSONObject>();
 		try {
-			if (oConvertUtils.isEmpty(token)) {
-				return Result.error("TOKEN不允许为空！");
+			//直接获取当前用户不适用前端token
+			LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			if (oConvertUtils.isEmpty(loginUser)) {
+				return Result.error("请登录系统！");
 			}
-			log.info(" ------ 通过令牌获取用户拥有的访问菜单 ---- TOKEN ------ " + token);
-			String username = JwtUtil.getUsername(token);
-			List<SysPermission> metaList = sysPermissionService.queryByUser(username);
+			List<SysPermission> metaList = sysPermissionService.queryByUser(loginUser.getUsername());
 			//添加首页路由
 			//update-begin-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
 			if(!PermissionDataUtil.hasIndexPage(metaList)){
@@ -608,6 +610,14 @@ public class SysPermissionController {
 			/* update_end author:wuxianquan date:20190908 for: 往菜单信息里添加外链菜单打开方式*/
 
 			meta.put("title", permission.getName());
+
+			//update-begin--Author:scott  Date:20201015 for：路由缓存问题，关闭了tab页时再打开就不刷新 #842
+			String component = permission.getComponent();
+			if(oConvertUtils.isNotEmpty(permission.getComponentName()) || oConvertUtils.isNotEmpty(component)){
+				meta.put("componentName", oConvertUtils.getString(permission.getComponentName(),component.substring(component.lastIndexOf("/")+1)));
+			}
+			//update-end--Author:scott  Date:20201015 for：路由缓存问题，关闭了tab页时再打开就不刷新 #842
+
 			if (oConvertUtils.isEmpty(permission.getParentId())) {
 				// 一级菜单跳转地址
 				json.put("redirect", permission.getRedirect());

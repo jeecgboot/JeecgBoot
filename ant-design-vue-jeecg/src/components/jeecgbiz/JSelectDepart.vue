@@ -68,9 +68,11 @@
     },
     watch:{
       value(val){
-        if (this.customReturnField === 'id') {
+        //update-begin-author:wangshuai date:20201124 for:组件 JSelectDepart.vue不是默认id时新内容编辑问题 gitee I247X2
+        // if (this.customReturnField === 'id') {
           this.departIds = val
-        }
+        // }
+        //update-end-author:wangshuai date:20201124 for:组件 JSelectDepart.vue不是默认id时新内容编辑问题 gitee I247X2
       }
     },
     methods:{

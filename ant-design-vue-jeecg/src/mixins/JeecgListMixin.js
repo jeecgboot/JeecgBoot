@@ -7,6 +7,8 @@ import { filterObj } from '@/utils/util';
 import { deleteAction, getAction,downFile,getFileAccessHttpUrl } from '@/api/manage'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from "@/store/mutation-types"
+import store from '@/store'
+import {Modal} from 'ant-design-vue'
 
 export const JeecgListMixin = {
   data(){
@@ -74,8 +76,13 @@ export const JeecgListMixin = {
       this.loading = true;
       getAction(this.url.list, params).then((res) => {
         if (res.success) {
-          this.dataSource = res.result.records;
-          this.ipagination.total = res.result.total;
+          //update-begin---author:zhangyafei    Date:20201118  for：适配不分页的数据列表------------
+          this.dataSource = res.result.records||res.result;
+          if(res.result.total)
+          {
+            this.ipagination.total = res.result.total;
+          }
+          //update-end---author:zhangyafei    Date:20201118  for：适配不分页的数据列表------------
         }
         if(res.code===510){
           this.$message.warning(res.message)
@@ -233,7 +240,7 @@ export const JeecgListMixin = {
       if(!fileName || typeof fileName != "string"){
         fileName = "导出文件"
       }
-      let param = {...this.getQueryParams()};
+      let param = this.getQueryParams();
       if(this.selectedRowKeys && this.selectedRowKeys.length>0){
         param['selections'] = this.selectedRowKeys.join(",")
       }
@@ -286,7 +293,26 @@ export const JeecgListMixin = {
           this.$message.error(`${info.file.name} ${info.file.response.message}.`);
         }
       } else if (info.file.status === 'error') {
-        this.$message.error(`文件上传失败: ${info.file.msg} `);
+        if (info.file.response.status === 500) {
+          let data = info.file.response
+          const token = Vue.ls.get(ACCESS_TOKEN)
+          if (token && data.message.includes("Token失效")) {
+            Modal.error({
+              title: '登录已过期',
+              content: '很抱歉，登录已过期，请重新登录',
+              okText: '重新登录',
+              mask: false,
+              onOk: () => {
+                store.dispatch('Logout').then(() => {
+                  Vue.ls.remove(ACCESS_TOKEN)
+                  window.location.reload();
+                })
+              }
+            })
+          }
+        } else {
+          this.$message.error(`文件上传失败: ${info.file.msg} `);
+        }
       }
     },
     /* 图片预览 */

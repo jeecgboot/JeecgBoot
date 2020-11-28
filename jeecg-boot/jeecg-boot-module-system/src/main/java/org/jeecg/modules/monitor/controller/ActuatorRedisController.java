@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/actuator/redis")
+@RequestMapping("/sys/actuator/redis")
 public class ActuatorRedisController {
 
     @Autowired

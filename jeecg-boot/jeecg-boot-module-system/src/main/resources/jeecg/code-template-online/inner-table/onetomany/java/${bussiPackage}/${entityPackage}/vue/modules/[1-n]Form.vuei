@@ -14,6 +14,7 @@
 <#assign form_sel_user = false>
 <#assign form_file = false>
 <#assign form_image = false>
+<#assign form_switch=false>
 
 <#list sub.colums as po>
 <#if po.isShow =='Y'>
@@ -45,6 +46,9 @@
               dest-fields="${Format.underlineToHump(po.dictText)}"
               code="${po.dictTable}"
               @callback="popupCallback"/>
+    <#elseif po.classType =='switch'>
+            <#assign form_switch=true>
+            <j-switch v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" <#if po.dictField?default("")?trim?length gt 1>:options="${po.dictField}"</#if>></j-switch>
 	<#elseif po.classType =='sel_depart'>
 		<#assign form_sel_depart=true>
             <j-select-depart v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true"/>
@@ -103,6 +107,9 @@
   <#if form_select_multi>
   import JMultiSelectTag from "@/components/dict/JMultiSelectTag"
   </#if>
+  <#if form_switch==true >
+  import JSwitch from '@/components/jeecg/JSwitch'
+  </#if>
 
   export default {
     name: '${sub.entityName}Form',
@@ -127,6 +134,9 @@
     </#if>
     <#if form_select_multi>
       JMultiSelectTag,
+    </#if>
+    <#if form_switch==true >
+      JSwitch,
     </#if>
     },
     data () {

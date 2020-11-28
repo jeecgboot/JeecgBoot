@@ -75,7 +75,7 @@
         // 加载中
         spinning:false,
         url: {
-          pdfList: "/api/pdfList",
+          pdfList: "/mock/api/pdfList",
         },
       }
     },

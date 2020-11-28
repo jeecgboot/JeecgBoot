@@ -16,11 +16,13 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.FieldPresenceUtil;
 import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
+import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysDictTree;
 import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecg.modules.system.service.ISysDictItemService;
@@ -124,7 +126,7 @@ public class SysDictController {
 			if(dictCode.indexOf(",")!=-1) {
 				//关联表字典（举例：sys_user,realname,id）
 				String[] params = dictCode.split(",");
-				
+
 				if(params.length<3) {
 					result.error500("字典Code格式不正确！");
 					return result;
@@ -132,7 +134,7 @@ public class SysDictController {
 				//SQL注入校验（只限制非法串改数据库）
 				final String[] sqlInjCheck = {params[0],params[1],params[2]};
 				SqlInjectionUtil.filterContent(sqlInjCheck);
-				
+
 				if(params.length==4) {
 					//SQL注入校验（查询条件SQL 特殊check，此方法仅供此处使用）
 					SqlInjectionUtil.specialFilterContent(params[3]);
@@ -276,6 +278,7 @@ public class SysDictController {
 		}
 		// SQL注入漏洞 sign签名校验(表名,label字段,val字段,条件)
 		String dictCode = tbname+","+text+","+code+","+condition;
+        SqlInjectionUtil.filterContent(dictCode);
 		List<TreeSelectModel> ls = sysDictService.queryTreeList(query,tbname, text, code, pidField, pid,hasChildField);
 		result.setSuccess(true);
 		result.setResult(ls);
@@ -297,6 +300,7 @@ public class SysDictController {
 		Result<List<DictModel>> res = new Result<List<DictModel>>();
 		// SQL注入漏洞 sign签名校验
 		String dictCode = query.getTable()+","+query.getText()+","+query.getCode();
+        SqlInjectionUtil.filterContent(dictCode);
 		List<DictModel> ls = this.sysDictService.queryDictTablePageList(query,pageSize,pageNo);
 		res.setResult(ls);
 		res.setSuccess(true);
@@ -445,6 +449,7 @@ public class SysDictController {
 	 * @param
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
 	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
  		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -456,6 +461,12 @@ public class SysDictController {
 			params.setHeadRows(2);
 			params.setNeedSave(true);
 			try {
+				//update-begin-author:wangshuai date:20201030 for:导入测试用例
+				boolean aBoolean = FieldPresenceUtil.fieldPresence(file.getInputStream(), SysDictPage.class, params);
+				if(!aBoolean){
+					throw  new RuntimeException("导入Excel标题格式不匹配！");
+				}
+				//update-end-author:wangshuai date:20201030 for:导入测试用例
 				List<SysDictPage> list = ExcelImportUtil.importExcel(file.getInputStream(), SysDictPage.class, params);
 				// 错误信息
 				List<String> errorMessage = new ArrayList<>();
@@ -493,7 +504,7 @@ public class SysDictController {
 		}
 		return Result.error("文件导入失败！");
 	}
-	
+
 
 	/**
 	 * 查询被删除的列表

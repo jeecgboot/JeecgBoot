@@ -80,18 +80,29 @@
         type:Boolean,
         required:false,
         default: false
+      },
+      //update-begin-author:wangshuai date:20201021 for:LOWCOD-969 新增number属性，用于判断上传数量
+      number:{
+        type:Number,
+        required:false,
+        default:0
       }
+      //update-end-author:wangshuai date:20201021 for:LOWCOD-969 新增number属性，用于判断上传数量
     },
     watch:{
-      value(val){
-        if (val instanceof Array) {
-          this.initFileList(val.join(','))
-        } else {
-          this.initFileList(val)
-        }
-        if(!val || val.length==0){
-          this.picUrl = false;
-        }
+      value: {
+        handler(val,oldValue) {
+          if (val instanceof Array) {
+            this.initFileList(val.join(','))
+          } else {
+            this.initFileList(val)
+          }
+          if(!val || val.length==0){
+            this.picUrl = false;
+          }
+        },
+        //立刻执行handler
+        immediate: true
       }
     },
     created(){
@@ -132,6 +143,11 @@
       handleChange(info) {
         this.picUrl = false;
         let fileList = info.fileList
+        //update-begin-author:wangshuai date:20201022 for:LOWCOD-969 判断number是否大于0和是否多选，返回选定的元素。
+        if(this.number>0 && this.isMultiple){
+          fileList = fileList.slice(-this.number);
+        }
+        //update-end-author:wangshuai date:20201022 for:LOWCOD-969 判断number是否大于0和是否多选，返回选定的元素。
         if(info.file.status==='done'){
           if(info.file.response.success){
             this.picUrl = true;

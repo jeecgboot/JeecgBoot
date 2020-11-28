@@ -42,7 +42,6 @@
         <user-menu class="header-index-right" :theme="theme" :style="topMenuStyle.headerIndexRight"/>
       </div>
     </div>
-
   </a-layout-header>
 </template>
 

@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Controller
-@RequestMapping("/oss/file")
+@RequestMapping("/sys/oss/file")
 public class OSSFileController {
 
 	@Autowired

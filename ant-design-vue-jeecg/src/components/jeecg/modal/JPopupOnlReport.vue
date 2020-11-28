@@ -78,7 +78,7 @@
   const MODAL_WIDTH = 1200;
   export default {
     name: 'JPopupOnlReport',
-    props: ['multi', 'code', 'groupId'],
+    props: ['multi', 'code', 'groupId', 'param'],
     components:{
     },
     data(){
@@ -121,16 +121,24 @@
         },
         cgRpConfigId:"",
         modalWidth:MODAL_WIDTH,
-        tableScroll:{x:MODAL_WIDTH-100}
+        tableScroll:{x:MODAL_WIDTH-100},
+        dynamicParam:{}
 
       }
     },
     mounted() {
-      this.loadColumnsInfo()
+      //this.loadColumnsInfo()
     },
     watch: {
       code() {
         this.loadColumnsInfo()
+      },
+      param:{
+        deep:true,
+        handler(){
+          this.dynamicParamHandler()
+          this.loadData();
+        },
       }
     },
     computed:{
@@ -162,7 +170,6 @@
             }
             this.table.columns = [...currColumns]
             this.initQueryInfo()
-            this.loadData(1)
           }
         })
       },
@@ -176,11 +183,42 @@
         httpGroupRequest(() => getAction(url), groupIdKey).then((res) => {
           // console.log("获取查询条件", res);
           if (res.success) {
+            this.dynamicParamHandler(res.result)
             this.queryInfo = res.result
+            //查询条件加载后再请求数据
+            this.loadData(1)
           } else {
             this.$message.warning(res.message)
           }
         })
+      },
+      //处理动态参数
+      dynamicParamHandler(arr){
+        if(arr && arr.length>0){
+          //第一次加载查询条件前 初始化queryParam为空对象
+          let queryTemp = {}
+          for(let item of arr){
+            if(item.mode==='single'){
+              queryTemp[item.field] = ''
+            }
+          }
+          this.queryParam = {...queryTemp}
+        }
+        let dynamicTemp = {}
+        if(this.param){
+          Object.keys(this.param).map(key=>{
+            let str = this.param[key]
+            if(key in this.queryParam){
+              if(str && str.startsWith("'") && str.endsWith("'")){
+                str = str.substring(1,str.length-1)
+              }
+              //如果查询条件包含参数 设置值
+              this.queryParam[key]=str
+            }
+            dynamicTemp[key] = this.param[key]
+          })
+        }
+        this.dynamicParam = {...dynamicTemp}
       },
       loadData(arg) {
         if (arg == 1) {
@@ -208,7 +246,14 @@
         })
       },
       getQueryParams() {
-        let param = Object.assign({}, this.queryParam, this.sorter);
+        let paramTarget = {}
+        if(this.dynamicParam){
+          //处理自定义参数
+         Object.keys(this.dynamicParam).map(key=>{
+           paramTarget['self_'+key] = this.dynamicParam[key]
+         })
+        }
+        let param = Object.assign(paramTarget, this.queryParam, this.sorter);
         param.pageNo = this.table.pagination.current;
         param.pageSize = this.table.pagination.pageSize;
         return filterObj(param);
@@ -272,7 +317,8 @@
         this.onClearSelected()
       },
       show(){
-        this.visible = true;
+        this.visible = true
+        this.loadColumnsInfo()
       },
       handleToggleSearch(){
         this.toggleSearchStatus = !this.toggleSearchStatus;
