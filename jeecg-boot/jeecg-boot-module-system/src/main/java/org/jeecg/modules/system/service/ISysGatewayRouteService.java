@@ -1,6 +1,6 @@
 package org.jeecg.modules.system.service;
 
-import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysGatewayRoute;
 
@@ -16,13 +16,19 @@ public interface ISysGatewayRouteService extends IService<SysGatewayRoute> {
      * 添加所有的路由信息到redis
      * @param key
      */
-    public void addRoute2Redis(String key);
+     void addRoute2Redis(String key);
+
+    /**
+     * 删除路由
+     * @param id
+     */
+     void deleteById(String id);
 
     /**
      * 保存路由配置
      * @param array
      */
-    void updateAll(JSONArray array);
+    void updateAll(JSONObject array);
 
     /**
      * 清空redis中的route信息

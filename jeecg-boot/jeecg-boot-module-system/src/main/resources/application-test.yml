@@ -2,6 +2,10 @@ server:
   port: 8080
   tomcat:
     max-swallow-size: -1
+  error:
+    include-exception: true
+    include-stacktrace: ALWAYS
+    include-message: ALWAYS
   servlet:
     context-path: /jeecg-boot
   compression:
@@ -61,16 +65,16 @@ spring:
   jackson:
     date-format:   yyyy-MM-dd HH:mm:ss
     time-zone:   GMT+8
-  jpa:
-    open-in-view: false
+  aop:
+    proxy-target-class: true
   activiti:
     check-process-definitions: false
     #启用作业执行器
     async-executor-activate: false
     #启用异步执行器
     job-executor-activate: false
-  aop:
-    proxy-target-class: true
+  jpa:
+    open-in-view: false
   #配置freemarker
   freemarker:
     # 设置模板后缀名
@@ -157,7 +161,7 @@ mybatis-plus:
     # 关闭MP3.0自带的banner
     banner: false
     db-config:
-      #主键类型  0:"数据库ID自增",1:"该类型为未设置主键类型", 2:"用户输入ID",3:"全局唯一ID (数字类型唯一ID)", 4:"全局唯一ID UUID",5:"字符串全局唯一ID (idWorker 的字符串表示)";
+      #主键类型
       id-type: ASSIGN_ID
       # 默认数据库表下划线命名
       table-underline: true
@@ -175,10 +179,6 @@ jeecg :
     upload: D://opt//upFiles
     #webapp文件路径
     webapp: D://opt//webapp
-  #短信秘钥
-  sms:
-     accessKeyId: LTAIpW4gUG7xYDNI
-     accessKeySecret: ??
   shiro:
      excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**
   #阿里云oss存储配置
@@ -209,6 +209,7 @@ jeecg :
     bucketName: otatest
   #大屏报表参数设置
   jmreport:
+    mode: prod
     #是否需要校验token
     is_verify_token: false
     #必须校验方法
@@ -218,9 +219,66 @@ jeecg :
     domain: https://wwo.wps.cn/office/
     appid: ??
     appsecret: ??
+  #xxl-job配置
+  xxljob:
+    enabled: false
+    adminAddresses: http://127.0.0.1:9080/xxl-job-admin
+    appname: ${spring.application.name}
+    accessToken: ''
+    address: 127.0.0.1:30007
+    ip: 127.0.0.1
+    port: 30007
+    logPath: logs/jeecg/job/jobhandler/
+    logRetentionDays: 30
+   #自定义路由配置 yml nacos database
+  route:
+    config:
+      data-id: jeecg-gateway-router
+      group: DEFAULT_GROUP
+      data-type: yml
+  #分布式锁配置
+  redisson:
+    address: 127.0.0.1:6379
+    password:
+    type: STANDALONE
+    enabled: true
+#Mybatis输出sql日志
+logging:
+  level:
+    org.jeecg.modules.system.mapper : debug
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas
 #enable swagger
 swagger:
   enable: true
+  production: false
+  basic:
+    enable: false
+    username: jeecg
+    password: jeecg1314
+#第三方登录
+justauth:
+  enabled: true
+  type:
+    GITHUB:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/github/callback
+    WECHAT_ENTERPRISE:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_enterprise/callback
+      agent-id: 1000002
+    DINGTALK:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/dingtalk/callback
+    WECHAT_OPEN:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_open/callback
+  cache:
+    type: default
+    prefix: 'demo::'
+    timeout: 1h

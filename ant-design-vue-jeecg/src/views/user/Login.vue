@@ -11,7 +11,7 @@
               size="large"
               v-decorator="['username',validatorRules.username,{ validator: this.handleUsernameOrEmail }]"
               type="text"
-              placeholder="请输入帐户名 / admin">
+              placeholder="请输入帐户名 / jeecg">
               <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
             </a-input>
           </a-form-item>
@@ -104,13 +104,6 @@
           :disabled="loginBtn">确定
         </a-button>
       </a-form-item>
-
-      <div class="user-login-other">
-        <span>其他登录方式</span>
-        <a @click="onThirdLogin('github')" title="github"><a-icon class="item-icon" type="github"></a-icon></a>
-        <a @click="onThirdLogin('wechat_enterprise')" title="企业微信"><a-icon class="item-icon" type="wechat"></a-icon></a>
-        <a @click="onThirdLogin('dingtalk')" title="钉钉"><a-icon class="item-icon" type="dingding"></a-icon></a>
-      </div>
     </a-form>
 
     <two-step-captcha
@@ -118,7 +111,8 @@
       :visible="stepCaptchaVisible"
       @success="stepCaptchaSuccess"
       @cancel="stepCaptchaCancel"></two-step-captcha>
-    <login-select-modal ref="loginSelect" @success="loginSelectOk"></login-select-modal>
+    <login-select-tenant ref="loginSelect" @success="loginSelectOk"></login-select-tenant>
+    <third-login ref="thirdLogin"></third-login>
   </div>
 </template>
 
@@ -134,12 +128,13 @@
   import { encryption , getEncryptedString } from '@/utils/encryption/aesEncrypt'
   import store from '@/store/'
   import { USER_INFO } from "@/store/mutation-types"
-  import LoginSelectModal from './LoginSelectModal.vue'
-
+  import ThirdLogin from './third/ThirdLogin'
+  import LoginSelectTenant from "./LoginSelectTenant";
   export default {
     components: {
+      LoginSelectTenant,
       TwoStepCaptcha,
-      LoginSelectModal
+      ThirdLogin
     },
     data () {
       return {
@@ -171,7 +166,7 @@
         currentUsername:"",
         currdatetime:'',
         randCodeImage:'',
-        requestCodeSuccess:false
+        requestCodeSuccess:false,
       }
     },
     created () {
@@ -184,34 +179,7 @@
       // update-end- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
     },
     methods: {
-      ...mapActions([ "Login", "Logout","PhoneLogin","ThirdLogin" ]),
-      //第三方登录
-      onThirdLogin(source){
-        let url = window._CONFIG['domianURL']+`/thirdLogin/render/${source}`
-        window.open(url, `login ${source}`, 'height=500, width=500, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=n o, status=no')
-        let that = this;
-        let receiveMessage = function(event){
-          var origin = event.origin
-          console.log("origin",origin);
-
-          let token = event.data
-          //update-begin--Author:wangshuai  Date:20200729 for：接口在签名校验失败时返回失败的标识码 #1441--------------------
-          if (token === '登录失败') {
-            that.$message.warning(token);
-          }else{
-          //update-end--Author:wangshuai  Date:20200729 for：接口在签名校验失败时返回失败的标识码 #1441--------------------
-          console.log("event.data",token)
-          that.ThirdLogin(token).then(res=>{
-            if(res.success){
-              that.loginSuccess()
-            }else{
-              that.requestFailed(res);
-            }
-          })
-          }
-        }
-        window.addEventListener("message", receiveMessage, false);
-      },
+      ...mapActions(['Login', 'Logout', 'PhoneLogin']),
       // handler
       handleUsernameOrEmail (rule, value, callback) {
         const regex = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/;
@@ -337,9 +305,6 @@
         })
       },
       loginSuccess () {
-        // update-begin- author:sunjianlei --- date:20190812 --- for: 登录成功后不解除禁用按钮，防止多次点击
-        // this.loginBtn = false
-        // update-end- author:sunjianlei --- date:20190812 --- for: 登录成功后不解除禁用按钮，防止多次点击
         this.$router.push({ path: "/dashboard/analysis" }).catch(()=>{
           console.log('登录跳转首页出错,这个错误从哪里来的')
         })

@@ -68,7 +68,7 @@
       console.log('props sex: ',this.sex);
       console.log('props name: ',this.name);
 
-      getAction('/api/area').then((res) => {
+      getAction('/mock/api/area').then((res) => {
           console.log("------------")
           console.log(res)
           this.areaOptions = res;

@@ -87,7 +87,7 @@
           </div>
           <div :style="{ marginTop: '24px' }">
             <a-list :split="false">
-              <a-list-item>
+              <a-list-item  slot="renderItem" slot-scope="item, index">
                 <a-tooltip slot="actions">
                   <template slot="title">
                     该设定仅 [顶部栏导航] 时有效
@@ -101,19 +101,19 @@
                   <div slot="title">内容区域宽度</div>
                 </a-list-item-meta>
               </a-list-item>
-              <a-list-item>
+              <a-list-item  slot="renderItem" slot-scope="item, index">
                 <a-switch slot="actions" size="small" :defaultChecked="fixedHeader" @change="handleFixedHeader" />
                 <a-list-item-meta>
                   <div slot="title">固定 Header</div>
                 </a-list-item-meta>
               </a-list-item>
-              <a-list-item>
+              <a-list-item  slot="renderItem" slot-scope="item, index">
                 <a-switch slot="actions" size="small" :disabled="!fixedHeader" :defaultChecked="autoHideHeader" @change="handleFixedHeaderHidden" />
                 <a-list-item-meta>
                   <div slot="title" :style="{ textDecoration: !fixedHeader ? 'line-through' : 'unset' }">下滑时隐藏 Header</div>
                 </a-list-item-meta>
               </a-list-item>
-              <a-list-item >
+              <a-list-item  slot="renderItem" slot-scope="item, index">
                 <a-switch slot="actions" size="small" :disabled="(layoutMode === 'topmenu')" :checked="dataFixSiderbar" @change="handleFixSiderbar" />
                 <a-list-item-meta>
                   <div slot="title" :style="{ textDecoration: layoutMode === 'topmenu' ? 'line-through' : 'unset' }">固定侧边菜单</div>
@@ -128,13 +128,13 @@
           <h3 class="setting-drawer-index-title">其他设置</h3>
           <div>
             <a-list :split="false">
-              <a-list-item>
+              <a-list-item  slot="renderItem" slot-scope="item, index">
                 <a-switch slot="actions" size="small" :defaultChecked="colorWeak" @change="onColorWeak" />
                 <a-list-item-meta>
                   <div slot="title">色弱模式</div>
                 </a-list-item-meta>
               </a-list-item>
-              <a-list-item>
+              <a-list-item  slot="renderItem" slot-scope="item, index">
                 <a-switch slot="actions" size="small" :defaultChecked="multipage" @change="onMultipageWeak" />
                 <a-list-item-meta>
                   <div slot="title">多页签模式</div>

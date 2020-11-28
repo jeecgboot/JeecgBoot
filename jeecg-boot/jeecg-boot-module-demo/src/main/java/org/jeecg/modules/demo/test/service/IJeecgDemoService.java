@@ -24,4 +24,10 @@ public interface IJeecgDemoService extends JeecgService<JeecgDemo> {
 	 * @return
 	 */
 	IPage<JeecgDemo> queryListWithPermission(int pageSize,int pageNo);
+
+	/**
+	 * 根据用户权限获取导出字段
+	 * @return
+	 */
+	String getExportFields();
 }

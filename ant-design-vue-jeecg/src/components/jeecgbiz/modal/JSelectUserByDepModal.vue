@@ -100,7 +100,7 @@
           {
             title: '部门',
             align: 'center',
-            dataIndex: 'orgCode'
+            dataIndex: 'orgCodeTxt'
           }
         ],
         scrollTrigger: {},

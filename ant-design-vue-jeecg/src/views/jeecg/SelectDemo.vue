@@ -130,7 +130,7 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="选择职务">
-              <j-select-position  v-model="formData.selectPosition" />
+              <j-select-position  :buttons="false" :disabled="true" v-model="formData.selectPosition" />
             </a-form-item>
           </a-col>
           <a-col :span="12">选中值：{{ formData.selectPosition}}</a-col>
@@ -285,7 +285,7 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="分类字典树">
-              <j-category-select v-model="formData.selectCategory" pcode="A01" :multiple="true"/>
+              <j-category-select v-model="formData.selectCategory" pcode="B01" :multiple="true"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">选中的值(v-model)：{{ formData.selectCategory }}</a-col>

@@ -87,6 +87,10 @@ public class CommonController {
             }
         }
         if(CommonConstant.UPLOAD_TYPE_LOCAL.equals(uploadType)){
+            //update-begin-author:lvdandan date:20200928 for:修改JEditor编辑器本地上传
+            savePath = this.uploadLocal(file,bizPath);
+            //update-begin-author:lvdandan date:20200928 for:修改JEditor编辑器本地上传
+            /**  富文本编辑器及markdown本地上传时，采用返回链接方式
             //针对jeditor编辑器如何使 lcaol模式，采用 base64格式存储
             String jeditor = request.getParameter("jeditor");
             if(oConvertUtils.isNotEmpty(jeditor)){
@@ -96,6 +100,7 @@ public class CommonController {
             }else{
                 savePath = this.uploadLocal(file,bizPath);
             }
+            */
         }else{
             //update-begin-author:taoyan date:20200814 for:文件上传改造
             savePath = CommonUtils.upload(file, bizPath, uploadType);

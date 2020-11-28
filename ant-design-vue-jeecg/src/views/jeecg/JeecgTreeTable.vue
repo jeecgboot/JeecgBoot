@@ -27,7 +27,7 @@
     components: { JTreeTable },
     data() {
       return {
-        url: '/api/asynTreeList',
+        url: '/mock/api/asynTreeList',
         columns: [
           {
             title: '菜单名称',

@@ -161,6 +161,8 @@
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
+      <!-- 高级查询区域 -->
+      <j-super-query :fieldList="superFieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -275,6 +277,7 @@
   <#if query_switch>
   import JSwitch from '@/components/jeecg/JSwitch'
   </#if>
+  import JSuperQuery from '@/components/jeecg/JSuperQuery.vue'
 
   export default {
     name: "${entityName}List",
@@ -310,7 +313,8 @@
       <#if query_switch>
       JSwitch,
       </#if>
-      ${entityName}Modal
+      ${entityName}Modal,
+      JSuperQuery
     },
     data () {
       return {
@@ -348,6 +352,13 @@
             scopedSlots: {customRender: 'imgSlot'}
             <#elseif po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
             dataIndex: '${po.fieldName}_dictText'
+            <#elseif po.classType=='switch'>
+            dataIndex: '${po.fieldName}',
+            <#if po.dictField?default("")?trim?length gt 1>
+            customRender: (text) => (!text ? "" : (text == ${po.dictField}[0] ? "是" : "否"))
+            <#else>
+            customRender: (text) => (!text ? "" : (text == "Y" ? "是" : "否"))
+            </#if>
 			<#else>
             dataIndex: '${po.fieldName}'
 			</#if>
@@ -376,8 +387,12 @@
         hasChildrenField:"${hasChildrenField}",
         pidField:"${pidFieldName}",
         dictOptions: {},
-        loadParent: false
+        loadParent: false,
+        superFieldList:[],
       }
+    },
+    created() {
+      this.getSuperFieldList();
     },
     computed: {
       importExcelUrl(){
@@ -401,6 +416,7 @@
         }
         this.loading = true
         let params = this.getQueryParams()
+        params.hasQuery = 'true'
         getAction(this.url.list,params).then(res=>{
           if(res.success){
             let result = res.result
@@ -504,6 +520,8 @@
           if (record.children.length>0 && record.children[0].isLoading === true) {
             let params = this.getQueryParams(1);//查询条件
             params[this.pidField] = record.id
+            params.hasQuery = 'false'
+            params.superQueryParams=""
             getAction(this.url.childList,params).then((res)=>{
               if(res.success){
                 if(res.result.records){
@@ -565,7 +583,14 @@
           });
         }
       },
-
+      getSuperFieldList(){
+        <#include "/common/utils.ftl">
+        let fieldList=[];
+         <#list columns as po>
+        fieldList.push(${superQueryFieldList(po)})
+         </#list>
+        this.superFieldList = fieldList
+      }
     }
   }
 </script>

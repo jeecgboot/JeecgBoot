@@ -177,9 +177,12 @@
   }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
   .ant-table-tbody .ant-table-row td{
     padding-top:10px;
     padding-bottom:10px;
+  }
+  /deep/ .ant-modal{
+    height: 700px;
   }
 </style>

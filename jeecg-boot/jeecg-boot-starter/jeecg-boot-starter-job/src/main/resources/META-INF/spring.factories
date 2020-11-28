@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.jeecg.boot.starter.job.config.XxlJobConfiguration

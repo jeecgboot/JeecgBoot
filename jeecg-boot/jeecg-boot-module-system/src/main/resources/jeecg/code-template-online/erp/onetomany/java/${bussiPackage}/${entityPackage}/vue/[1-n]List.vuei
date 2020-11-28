@@ -15,6 +15,8 @@
         @change="handleImportExcel">
           <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
+      <!-- 高级查询区域 -->
+      <j-super-query :fieldList="superFieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -82,13 +84,13 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import ${sub.entityName}Modal from './modules/${sub.entityName}Modal'
-
+  import JSuperQuery from '@/components/jeecg/JSuperQuery.vue'
 
 
   export default {
     name: "${sub.entityName}List",
     mixins:[JeecgListMixin],
-    components: { ${sub.entityName}Modal },
+    components: { ${sub.entityName}Modal,JSuperQuery },
     props:{
       mainId:{
         type:String,
@@ -155,6 +157,13 @@
             scopedSlots: {customRender: 'imgSlot'}
             <#elseif po.classType =='list' || po.classType =='radio' || po.classType =='list_multi' || po.classType =='checkbox' || po.classType =='sel_search' || po.classType =='cat_tree' || po.classType =='sel_depart'>
             dataIndex: '${po.fieldName}_dictText',
+			<#elseif po.classType=='switch'>
+            dataIndex: '${po.fieldName}',
+            <#if po.dictField?default("")?trim?length gt 1>
+            customRender: (text) => (!text ? "" : (text == ${po.dictField}[0] ? "是" : "否"))
+            <#else>
+            customRender: (text) => (!text ? "" : (text == "Y" ? "是" : "否"))
+            </#if>
 			<#else>
             dataIndex: '${po.fieldName}'
 			</#if>
@@ -186,8 +195,11 @@
          </#if>
          </#list>
         },
-
+        superFieldList:[],
       }
+    },
+    created() {
+      this.getSuperFieldList();
     },
     computed: {
       importExcelUrl(){
@@ -200,7 +212,14 @@
         this.selectedRowKeys=[]
         this.ipagination.current = 1
       },
-
+      getSuperFieldList(){
+        <#include "/common/utils.ftl">
+        let fieldList=[];
+         <#list columns as po>
+        fieldList.push(${superQueryFieldList(po)})
+         </#list>
+        this.superFieldList = fieldList
+      }
     }
   }
 </script>

@@ -1,5 +1,10 @@
 package org.jeecg.modules.system.controller;
 
+import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.core.util.HexUtil;
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
+import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -8,6 +13,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
@@ -15,6 +21,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.dynamic.db.DataSourceCachePool;
 import org.jeecg.modules.system.entity.SysDataSource;
 import org.jeecg.modules.system.service.ISysDataSourceService;
+import org.jeecg.modules.system.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -60,6 +67,18 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
         QueryWrapper<SysDataSource> queryWrapper = QueryGenerator.initQueryWrapper(sysDataSource, req.getParameterMap());
         Page<SysDataSource> page = new Page<>(pageNo, pageSize);
         IPage<SysDataSource> pageList = sysDataSourceService.page(page, queryWrapper);
+        try {
+            List<SysDataSource> records = pageList.getRecords();
+            records.forEach(item->{
+                String dbPassword = item.getDbPassword();
+                if(StringUtils.isNotBlank(dbPassword)){
+                    String decodedStr = SecurityUtil.jiemi(dbPassword);
+                    item.setDbPassword(decodedStr);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return Result.ok(pageList);
     }
 
@@ -88,7 +107,16 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
     @ApiOperation(value = "多数据源管理-添加", notes = "多数据源管理-添加")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody SysDataSource sysDataSource) {
-        sysDataSourceService.save(sysDataSource);
+        try {
+            String dbPassword = sysDataSource.getDbPassword();
+            if(StringUtils.isNotBlank(dbPassword)){
+                String encrypt = SecurityUtil.jiami(dbPassword);
+                sysDataSource.setDbPassword(encrypt);
+            }
+            sysDataSourceService.save(sysDataSource);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return Result.ok("添加成功！");
     }
 
@@ -102,9 +130,18 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
     @ApiOperation(value = "多数据源管理-编辑", notes = "多数据源管理-编辑")
     @PutMapping(value = "/edit")
     public Result<?> edit(@RequestBody SysDataSource sysDataSource) {
-        SysDataSource d = sysDataSourceService.getById(sysDataSource.getId());
-        DataSourceCachePool.removeCache(d.getCode());
-        sysDataSourceService.updateById(sysDataSource);
+        try {
+            SysDataSource d = sysDataSourceService.getById(sysDataSource.getId());
+            DataSourceCachePool.removeCache(d.getCode());
+            String dbPassword = sysDataSource.getDbPassword();
+            if(StringUtils.isNotBlank(dbPassword)){
+                String encrypt = SecurityUtil.jiami(dbPassword);
+                sysDataSource.setDbPassword(encrypt);
+            }
+            sysDataSourceService.updateById(sysDataSource);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return Result.ok("编辑成功!");
     }
 

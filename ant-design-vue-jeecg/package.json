@@ -1,16 +1,17 @@
 {
   "name": "vue-antd-jeecg",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "private": true,
   "scripts": {
     "pre": "cnpm install || yarn --registry https://registry.npm.taobao.org || npm install --registry https://registry.npm.taobao.org ",
     "serve": "vue-cli-service serve",
+    "build:preview": "vue-cli-service build --mode preview",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "ant-design-vue": "^1.6.3",
-    "@jeecg/antd-online-mini": "2.3.0",
+    "@jeecg/antd-online-mini": "2.4.0-beta2",
+    "ant-design-vue": "^1.7.2",
     "@antv/data-set": "^0.11.4",
     "viser-vue": "^2.4.8",
     "axios": "^0.18.0",
@@ -39,7 +40,6 @@
     "@toast-ui/editor": "^2.1.2",
     "vue-area-linkage": "^5.1.0",
     "area-data": "^5.0.6",
-    "jsoneditor": "^9.0.0",
     "dom-align": "1.12.0",
     "xe-utils": "2.4.8",
     "vxe-table": "2.9.13",
@@ -58,8 +58,7 @@
     "less-loader": "^4.1.0",
     "vue-template-compiler": "^2.6.10",
     "html-webpack-plugin": "^4.2.0",
-    "compression-webpack-plugin": "^3.1.0",
-    "babel-plugin-import": "^1.13.0"
+    "compression-webpack-plugin": "^3.1.0"
   },
   "eslintConfig": {
     "root": true,

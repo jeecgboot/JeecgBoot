@@ -5,14 +5,18 @@
     <parent>
         <artifactId>jeecg-boot-parent</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>2.3.0</version>
+        <version>2.4.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>jeecg-cloud-module</artifactId>
     <packaging>pom</packaging>
     <modules>
+        <module>jeecg-cloud-system-start</module>
         <module>jeecg-cloud-gateway</module>
+        <module>jeecg-cloud-monitor</module>
+        <module>jeecg-cloud-xxljob</module>
+        <module>jeecg-cloud-demo</module>
     </modules>
 
 

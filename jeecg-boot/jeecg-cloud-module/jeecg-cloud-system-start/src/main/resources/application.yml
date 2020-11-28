@@ -1,0 +1,6 @@
+server:
+  #微服务端口
+  port: 7001
+spring:
+  application:
+    name: jeecg-system

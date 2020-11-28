@@ -11,6 +11,7 @@
       :code="code"
       :multi="multi"
       :groupId="uniqGroupId"
+      :param="param"
       @ok="callBack"
     />
 
@@ -74,6 +75,12 @@
         type: Boolean,
         required: false,
         default: false
+      },
+      //popup动态参数 支持系统变量语法
+      param:{
+        type: Object,
+        required: false,
+        default: ()=>{}
       },
       /** 分组ID，用于将多个popup的请求合并到一起，不传不分组 */
       groupId: String

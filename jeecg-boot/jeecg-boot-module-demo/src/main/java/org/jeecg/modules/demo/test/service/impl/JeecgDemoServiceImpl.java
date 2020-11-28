@@ -3,8 +3,10 @@ package org.jeecg.modules.demo.test.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.demo.test.entity.JeecgDemo;
 import org.jeecg.modules.demo.test.mapper.JeecgDemoMapper;
 import org.jeecg.modules.demo.test.service.IJeecgDemoService;
@@ -12,6 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @Description: jeecg 测试demo
@@ -70,6 +77,35 @@ public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo
 		//编程方式，获取当前请求的数据权限规则SQL片段
 		String sql = QueryGenerator.installAuthJdbc(JeecgDemo.class);
 		return this.baseMapper.queryListWithPermission(page, sql);
+	}
+
+	@Override
+	public String getExportFields() {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		//权限配置列导出示例
+		//1.配置前缀与菜单中配置的列前缀一致
+		List<String> noAuthList = new ArrayList<>();
+		List<String> exportFieldsList = new ArrayList<>();
+		String permsPrefix = "testdemo:";
+		//查询配置菜单有效字段
+		List<String> allAuth = this.jeecgDemoMapper.queryAllAuth(permsPrefix);
+		//查询已授权字段
+		List<String> userAuth = this.jeecgDemoMapper.queryUserAuth(sysUser.getId(),permsPrefix);
+		//列出未授权字段
+		for(String perms : allAuth){
+			if(!userAuth.contains(perms)){
+				noAuthList.add(perms.substring(permsPrefix.length()));
+			}
+		}
+		//实体类中字段与未授权字段比较，列出需导出字段
+		Field[] fileds = JeecgDemo.class.getDeclaredFields();
+		List<Field> list = new ArrayList(Arrays.asList(fileds));
+		for(Field field : list){
+			if(!noAuthList.contains(field.getName())){
+				exportFieldsList.add(field.getName());
+			}
+		}
+		return exportFieldsList != null && exportFieldsList.size()>0 ? String.join(",", exportFieldsList) : "";
 	}
 
 }

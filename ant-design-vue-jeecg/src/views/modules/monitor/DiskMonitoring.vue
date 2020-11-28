@@ -27,7 +27,7 @@
         //数据集
         diskInfo:[],
         url:{
-          queryDiskInfo:'actuator/redis/queryDiskInfo',
+          queryDiskInfo:'sys/actuator/redis/queryDiskInfo',
         }
       }
     },

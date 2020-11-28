@@ -32,6 +32,14 @@ const err = (error) => {
         notification.error({ message: '系统提示', description: '拒绝访问',duration: 4})
         break
       case 500:
+        console.log("------error.response------",error.response)
+        // update-begin- --- author:liusq ------ date:20200910 ---- for:处理Blob情况----
+        let type=error.response.request.responseType;
+        if(type === 'blob'){
+          blobToJson(data);
+          break;
+        }
+        // update-end- --- author:liusq ------ date:20200910 ---- for:处理Blob情况----
         //notification.error({ message: '系统提示', description:'Token失效，请重新登录!',duration: 4})
         if(token && data.message.includes("Token失效")){
           // update-begin- --- author:scott ------ date:20190225 ---- for:Token失效采用弹框模式，不直接跳转----
@@ -122,6 +130,41 @@ const installer = {
   install (Vue, router = {}) {
     Vue.use(VueAxios, router, service)
   }
+}
+/**
+ * Blob解析
+ * @param data
+ */
+function blobToJson(data) {
+  let fileReader = new FileReader();
+  let token = Vue.ls.get(ACCESS_TOKEN);
+  fileReader.onload = function() {
+    try {
+      let jsonData = JSON.parse(this.result);  // 说明是普通对象数据，后台转换失败
+      console.log("jsonData",jsonData)
+      if (jsonData.status === 500) {
+        console.log("token----------》",token)
+        if(token && jsonData.message.includes("Token失效")){
+          Modal.error({
+            title: '登录已过期',
+            content: '很抱歉，登录已过期，请重新登录',
+            okText: '重新登录',
+            mask: false,
+            onOk: () => {
+              store.dispatch('Logout').then(() => {
+                Vue.ls.remove(ACCESS_TOKEN)
+                window.location.reload()
+              })
+            }
+          })
+        }
+      }
+    } catch (err) {
+      // 解析成对象失败，说明是正常的文件流
+      console.log("blob解析fileReader返回err",err)
+    }
+  };
+  fileReader.readAsText(data)
 }
 
 export {

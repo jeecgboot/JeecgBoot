@@ -41,7 +41,7 @@
               <a-menu-item v-if="originColumn.allowRemove !== false" @click="handleClickDeleteFile">
                 <span><a-icon type="delete"/>&nbsp;删除</span>
               </a-menu-item>
-              <a-menu-item @click="handleMoreOperation">
+              <a-menu-item @click="handleMoreOperation(originColumn)">
                 <span><a-icon type="bars"/> 更多</span>
               </a-menu-item>
             </a-menu>
@@ -63,7 +63,7 @@
     >
       <a-button icon="upload">{{originColumn.btnText || '上传图片'}}</a-button>
     </a-upload>
-    <j-file-pop ref="filePop" @ok="handleFileSuccess"/>
+    <j-file-pop ref="filePop" @ok="handleFileSuccess" :number="number"/>
   </div>
 </template>
 
@@ -83,6 +83,7 @@
     data() {
       return {
         innerFile: null,
+        number:0
       }
     },
     computed: {
@@ -146,7 +147,18 @@
     methods: {
 
       // 点击更多按钮
-      handleMoreOperation() {
+      handleMoreOperation(originColumn) {
+        //update-begin-author:wangshuai date:20201021 for:LOWCOD-969 判断传过来的字段是否存在number，用于控制上传文件
+        if (originColumn.number) {
+          this.number = originColumn.number
+        } else {
+          this.number = 0
+        }
+        //update-end-author:wangshuai date:20201021 for:LOWCOD-969 判断传过来的字段是否存在number，用于控制上传文件
+        if(originColumn && originColumn.fieldExtendJson){
+          let json = JSON.parse(originColumn.fieldExtendJson);
+          this.number = json.uploadnum?json.uploadnum:0;
+        }
         let path = ''
         if (this.innerFile) {
           path = this.innerFile.path

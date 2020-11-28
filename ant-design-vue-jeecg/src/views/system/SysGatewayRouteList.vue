@@ -1,101 +1,111 @@
 <template>
-  <a-card :bordered="false" style="height: 100%">
-    <div style="padding-bottom: 2px">
-      <a-alert type="warning" show-icon>
-        <div slot="message" style="width: 100%">
-          <span>路由配置请慎重</span>
-          <span style="display:inline-block;float:right;padding-right: 5px">
-            <a @click="clearRedis"><a-icon type="reload" />清除缓存</a>
-          </span>
-        </div>
-      </a-alert>
+  <a-card :bordered="false">
+    <!-- 操作按钮区域 -->
+    <div class="table-operator">
+      <a-button @click="showModal(null)" type="primary" icon="plus">新增</a-button>
     </div>
-    <div :id="eleId" :style="{ height: editorHeight + 'px', width: '100%' }"></div>
-    <div style="text-align: center;padding-top:10px">
-      <a-button type="primary" @click="submitForm" style="width:160px">保存</a-button>
+    <div>
+      <a-table
+        ref="table"
+        size="middle"
+        :scroll="{x:true}"
+        bordered
+        rowKey="id"
+        :columns="columns"
+        :dataSource="dataSource"
+        :pagination="false"
+        :loading="loading"
+        class="j-table-force-nowrap"
+        @change="handleTableChange">
+         <span slot="status" slot-scope="text, record, index">
+            <a-tag color="pink" v-if="text==0">禁用</a-tag>
+            <a-tag color="#87d068" v-if="text==1" >正常</a-tag>
+        </span>
+        <span slot="action" slot-scope="text, record">
+          <a @click="showModal(record)">编辑</a>
+
+          <a-divider type="vertical"/>
+          <a-dropdown>
+            <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
+            <a-menu slot="overlay">
+              <a-menu-item>
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                  <a>删除</a>
+                </a-popconfirm>
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown>
+        </span>
+
+      </a-table>
     </div>
+    <gate-way-route-modal ref="modalForm" @ok="modalFormOk"></gate-way-route-modal>
   </a-card>
 </template>
 
 <script>
-  import JsonEditor from 'jsoneditor'
-  import 'jsoneditor/dist/jsoneditor.min.css'
-  import { getAction, postAction } from '@/api/manage'
+
+  import '@/assets/less/TableExpand.less'
+  import { mixinDevice } from '@/utils/mixin'
+  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import GateWayRouteModal from './modules/GateWayRouteModal'
 
   export default {
-    name: "SysGatewayRouteList",
-    data () {
+    name: 'TenantList',
+    mixins: [JeecgListMixin, mixinDevice],
+    components: {
+      GateWayRouteModal
+    },
+    data() {
       return {
-        eleId:'jsoneditor',
-        description: 'gateway路由管理管理页面',
-        editor: null,
-        editorWidth:400,
-        editorHeight:500,
-        url:{
+        description: 'adad管理页面',
+        // 表头
+        columns: [
+          {
+            title: '路由ID',
+            align: 'center',
+            dataIndex: 'routerId'
+          }, {
+            title: '路由名称',
+            align: 'center',
+            dataIndex: 'name'
+          },
+          {
+            title: '路由URI',
+            align: 'center',
+            dataIndex: 'uri'
+          },
+          {
+            title: '状态',
+            align: 'center',
+            dataIndex: 'status',
+            scopedSlots: { customRender: 'status' }
+          },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            align: 'center',
+            fixed: 'right',
+            width: 147,
+            scopedSlots: { customRender: 'action' }
+          }
+        ],
+        url: {
           list: '/sys/gatewayRoute/list',
-          update: '/sys/gatewayRoute/updateAll',
-          clear: '/sys/gatewayRoute/clearRedis'
+          delete: '/sys/gatewayRoute/delete'
         },
-
+        dictOptions: {}
       }
     },
     created() {
-      let winWidth = window.innerWidth;
-      console.log("页面宽度",winWidth)
-      this.editorWidth = winWidth
-
-    },
-    mounted(){
-      this.initJsonEditor();
     },
     methods: {
-      initJsonEditor() {
-        let container = document.getElementById(this.eleId);
-        let options = {
-          modes: ['text', 'code', 'tree', 'form', 'view'],
-          mode: 'tree',
-          ace: ace,
-          sortObjectKeys: 'code',
-          mainMenuBar:['format']
-        };
-        this.editor = new JsonEditor(container, options);
-        this.initRouteData();
-      },
-      initRouteData(){
-        getAction(this.url.list).then(res=>{
-          if(res.success){
-            let array = res.result
-            console.log('当前路由配置信息为', array)
-            this.editor.set(array)
-          }
-        })
-      },
-      // 获取json
-      submitForm() {
-        let text = this.editor.getText()
-        console.log("保存的json数据",text)
-        if(!text || text.length<=0 || text=='{}' || text=='[]'){
-          this.$message.warning('未录入任何信息')
-          return ;
-        }
-        postAction(this.url.update,{
-          routes:text
-        }).then(res=>{
-          if(res.success){
-            this.$message.success(res.message)
-          }else{
-            this.$message.error(res.message)
-          }
-        })
-      },
-      clearRedis(){
-        getAction(this.url.clear).then(res=>{
-          if(res.success){
-            this.$message.success(res.message)
-          }
-        })
+      showModal(record) {
+        this.$refs['modalForm'].show(record)
       }
-
     }
   }
 </script>
+<style scoped>
+  @import '~@assets/less/common.less';
+</style>
