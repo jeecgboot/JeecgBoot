@@ -871,10 +871,10 @@
     cssnano-preset-default "^4.0.0"
     postcss "^7.0.0"
 
-"@jeecg/antd-online-mini@2.4.0-beta":
-  version "2.4.0-beta"
-  resolved "https://registry.npmjs.org/@jeecg/antd-online-mini/-/antd-online-mini-2.4.0-beta.tgz#b478ea52f004b127297c2e09f76a953d6474a710"
-  integrity sha512-sDNFBhDKFJm+Rwc88wJaLzBAR9jnYkJowqhIQxop6YPl9J2HDtbOQVvQl6ISDnfJyp9tFwzvKfJR81Q49Vac4A==
+"@jeecg/antd-online-mini@2.4.0-beta2":
+  version "2.4.0-beta2"
+  resolved "https://registry.yarnpkg.com/@jeecg/antd-online-mini/-/antd-online-mini-2.4.0-beta2.tgz#a246e6f79c543787d075cab6a0be03866f23d49e"
+  integrity sha512-qafkY9QYHeIa5LJ7tWz061cLyKI4zCxQ+A6zSdm4XLUkBQRnTbBPRaJu1KMOnnqMr28lLT4aHVP/fLlEcI4Ybw==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -5853,9 +5853,9 @@ hex-color-regex@^1.1.0:
   integrity sha512-l9sfDFsuqtOqKDsQdqrMRk0U85RZc0RtOR9yPI7mRVOa4FsR/BVnZ0shmQRM96Ji99kYZP/7hn1cedc1+ApsTQ==
 
 highlight.js@^9.6.0:
-  version "9.18.1"
-  resolved "https://registry.npmjs.org/highlight.js/-/highlight.js-9.18.1.tgz#ed21aa001fe6252bb10a3d76d47573c6539fe13c"
-  integrity sha512-OrVKYz70LHsnCgmbXctv/bfuvntIKDz177h0Co37DQ5jamGZLVmoCVMtjMtNZY3X9DrCcKfklHPNeA0uPZhSJg==
+  version "9.18.5"
+  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-9.18.5.tgz#d18a359867f378c138d6819edfc2a8acd5f29825"
+  integrity sha512-a5bFyofd/BHCX52/8i8uJkjr9DYwXIPnM/plwI6W7ezItLGqzt7X2G2nXuYSfsIJdkwwj/g9DG1LkcGJI/dDoA==
 
 hmac-drbg@^1.0.0:
   version "1.0.1"
