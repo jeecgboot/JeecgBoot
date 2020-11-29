@@ -11,7 +11,7 @@
  Target Server Version : 50727
  File Encoding         : 65001
 
- Date: 28/11/2020 00:38:41
+ Date: 29/11/2020 15:04:00
 */
 
 SET NAMES utf8mb4;
@@ -1785,7 +1785,7 @@ CREATE TABLE `qrtz_scheduler_state`  (
 -- ----------------------------
 -- Records of qrtz_scheduler_state
 -- ----------------------------
-INSERT INTO `qrtz_scheduler_state` VALUES ('MyScheduler', 'DESKTOP-32NS8B11606492475018', 1606493006136, 10000);
+INSERT INTO `qrtz_scheduler_state` VALUES ('MyScheduler', 'DESKTOP-32NS8B11606631952998', 1606633444304, 10000);
 
 -- ----------------------------
 -- Table structure for qrtz_simple_triggers
@@ -4158,6 +4158,17 @@ INSERT INTO `sys_log` VALUES ('1332354149398450177', 2, 'online表单数据查�
 INSERT INTO `sys_log` VALUES ('1332354277777707009', 2, 'online列表加载,表名:test_demo,操作成功！', 1, 'admin', '管理员', '0:0:0:0:0:0:0:1', 'org.jeecg.modules.online.cgform.b.a.a()', NULL, '', NULL, 50, NULL, '2020-11-28 00:03:08', NULL, NULL);
 INSERT INTO `sys_log` VALUES ('1332354277798678529', 2, 'online表单加载,表名:test_demo,操作成功！', 1, 'admin', '管理员', '0:0:0:0:0:0:0:1', 'org.jeecg.modules.online.cgform.b.a.b()', NULL, '', NULL, 58, NULL, '2020-11-28 00:03:08', NULL, NULL);
 INSERT INTO `sys_log` VALUES ('1332354279077941250', 2, 'online列表数据查询,表名:test_demo,操作成功！', 1, 'admin', '管理员', '0:0:0:0:0:0:0:1', 'org.jeecg.modules.online.cgform.b.a.a()', NULL, '', NULL, 41, NULL, '2020-11-28 00:03:09', NULL, NULL);
+INSERT INTO `sys_log` VALUES ('1332937567593144322', 1, '用户名: jeecg,退出成功！', NULL, 'jeecg', 'jeecg', '0:0:0:0:0:0:0:1', NULL, NULL, NULL, NULL, NULL, NULL, '2020-11-29 14:40:56', NULL, NULL);
+INSERT INTO `sys_log` VALUES ('1332937596093440002', 1, '用户名: admin,登录成功！', NULL, 'admin', '管理员', '0:0:0:0:0:0:0:1', NULL, NULL, NULL, NULL, NULL, NULL, '2020-11-29 14:41:02', NULL, NULL);
+INSERT INTO `sys_log` VALUES ('1332937664603201537', 2, '职务表-分页列表查询', 1, 'admin', '管理员', '0:0:0:0:0:0:0:1', 'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, '  sysPosition: SysPosition(id=null, code=总经理,, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null)  pageNo: 1  pageSize: 1  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@5e0ad5e6', NULL, 62, NULL, '2020-11-29 14:41:19', NULL, NULL);
+INSERT INTO `sys_log` VALUES ('1332937664661921794', 2, '职务表-分页列表查询', 1, 'admin', '管理员', '0:0:0:0:0:0:0:1', 'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, '  sysPosition: SysPosition(id=null, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null)  pageNo: 1  pageSize: 5  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@54fca482', NULL, 77, NULL, '2020-11-29 14:41:19', NULL, NULL);
+INSERT INTO `sys_log` VALUES ('1332937907080110082', 2, '职务表-分页列表查询', 1, 'admin', '管理员', '0:0:0:0:0:0:0:1', 'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, '  sysPosition: SysPosition(id=null, code=总经理,, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null)  pageNo: 1  pageSize: 1  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@13da8b9f', NULL, 16, NULL, '2020-11-29 14:42:16', NULL, NULL);
+INSERT INTO `sys_log` VALUES ('1332937907117858818', 2, '职务表-分页列表查询', 1, 'admin', '管理员', '0:0:0:0:0:0:0:1', 'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, '  sysPosition: SysPosition(id=null, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null)  pageNo: 1  pageSize: 5  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@f7965f5', NULL, 23, NULL, '2020-11-29 14:42:17', NULL, NULL);
+INSERT INTO `sys_log` VALUES ('1332938526612365313', 2, 'online列表加载,表名:ces_order_main,操作成功！', 1, 'admin', '管理员', '0:0:0:0:0:0:0:1', 'org.jeecg.modules.online.cgform.b.a.a()', NULL, '', NULL, 105, NULL, '2020-11-29 14:44:44', NULL, NULL);
+INSERT INTO `sys_log` VALUES ('1332938527056961537', 2, 'online表单加载,表名:ces_order_main,操作成功！', 1, 'admin', '管理员', '0:0:0:0:0:0:0:1', 'org.jeecg.modules.online.cgform.b.a.b()', NULL, '', NULL, 215, NULL, '2020-11-29 14:44:44', NULL, NULL);
+INSERT INTO `sys_log` VALUES ('1332938528680157186', 2, 'online列表数据查询,表名:ces_order_main,操作成功！', 1, 'admin', '管理员', '0:0:0:0:0:0:0:1', 'org.jeecg.modules.online.cgform.b.a.a()', NULL, '', NULL, 126, NULL, '2020-11-29 14:44:45', NULL, NULL);
+INSERT INTO `sys_log` VALUES ('1332942942459502593', 1, '用户名: 管理员,退出成功！', NULL, 'admin', '管理员', '0:0:0:0:0:0:0:1', NULL, NULL, NULL, NULL, NULL, NULL, '2020-11-29 15:02:17', NULL, NULL);
+INSERT INTO `sys_log` VALUES ('1332943215340920833', 1, '用户名: admin,登录成功！', NULL, 'admin', '管理员', '0:0:0:0:0:0:0:1', NULL, NULL, NULL, NULL, NULL, NULL, '2020-11-29 15:03:22', NULL, NULL);
 
 -- ----------------------------
 -- Table structure for sys_permission
@@ -5022,11 +5033,10 @@ CREATE TABLE `sys_user`  (
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
-INSERT INTO `sys_user` VALUES ('1260928527571730433', '1222', 'ddd', '066185c464da20fb', 'b1nEJIUx', NULL, NULL, NULL, NULL, NULL, NULL, 1, 1, NULL, NULL, 1, 'ddd', NULL, NULL, 'admin', '2020-05-14 21:42:43', NULL, NULL, 1, '', NULL, NULL);
-INSERT INTO `sys_user` VALUES ('3d464b4ea0d2491aab8a7bde74c57e95', 'zhangsan', '张三1', '02ea098224c7d0d2077c14b9a3a1ed16', 'x5xRdeKB', 'temp/20180607175028Fn1Lq7zw_1599633768948.png', NULL, NULL, NULL, NULL, '财务部', 1, 0, NULL, NULL, 1, '0005', '总经理', NULL, 'admin', '2020-05-14 21:26:24', 'admin', '2020-09-09 14:42:51', 1, '', '', NULL);
-INSERT INTO `sys_user` VALUES ('a75d45a015c44384a04449ee80dc3503', 'jeecg', 'jeecg', '58a714412072f0b9', 'mIgiYJow', 'user/20190220/e1fe9925bc315c60addea1b98eb1cb1349547719_1550656892940.jpg', NULL, 1, NULL, NULL, 'A02A01', 1, 0, NULL, NULL, 1, '00002', 'devleader', NULL, 'admin', '2019-02-13 16:02:36', 'admin', '2020-11-26 15:16:05', 1, '', NULL, NULL);
-INSERT INTO `sys_user` VALUES ('e9ca23d68d884d4ebb19d07889727dae', 'admin', '管理员', 'cb362cfeefbf3d8d', 'RCGTeGiH', 'http://minio.jeecg.com/otatest/temp/lgo33_1583397323099.png', '2018-12-05 00:00:00', 1, 'jeecg@163.com', '18611111111', 'A01', 1, 0, NULL, NULL, 1, '00001', '总经理', NULL, NULL, '2038-06-21 17:54:10', 'admin', '2020-07-10 15:27:10', 2, 'c6d7cb4deeac411cb3384b1b31278596', '', NULL);
-INSERT INTO `sys_user` VALUES ('f0019fdebedb443c98dcb17d88222c38', 'zhagnxiao', '张小红', 'f898134e5e52ae11a2ffb2c3b57a4e90', 'go3jJ4zX', 'user/20190401/20180607175028Fn1Lq7zw_1554118444672.png', '2019-04-01 00:00:00', NULL, NULL, NULL, '研发部,财务部', 2, 0, NULL, NULL, 1, '00003', '', NULL, 'admin', '2023-10-01 19:34:10', 'admin', '2020-11-26 15:24:59', 1, '', '', NULL);
+INSERT INTO `sys_user` VALUES ('3d464b4ea0d2491aab8a7bde74c57e95', 'zhangsan', '张三', '02ea098224c7d0d2077c14b9a3a1ed16', 'x5xRdeKB', 'https://static.jeecg.com/temp/jmlogo_1606575041993.png', NULL, NULL, NULL, NULL, '财务部', 1, 0, NULL, NULL, 1, '0005', '总经理', NULL, 'admin', '2020-05-14 21:26:24', 'admin', '2020-09-09 14:42:51', 1, '', '', NULL);
+INSERT INTO `sys_user` VALUES ('a75d45a015c44384a04449ee80dc3503', 'jeecg', 'jeecg', '58a714412072f0b9', 'mIgiYJow', 'https://static.jeecg.com/temp/国炬软件logo_1606575029126.png', NULL, 1, NULL, NULL, 'A02A01', 1, 0, NULL, NULL, 1, '00002', 'devleader', NULL, 'admin', '2019-02-13 16:02:36', 'admin', '2020-11-26 15:16:05', 1, '', NULL, NULL);
+INSERT INTO `sys_user` VALUES ('e9ca23d68d884d4ebb19d07889727dae', 'admin', '管理员', 'cb362cfeefbf3d8d', 'RCGTeGiH', 'https://static.jeecg.com/temp/国炬软件logo_1606575029126.png', '2018-12-05 00:00:00', 1, 'jeecg@163.com', '18611111111', 'A01', 1, 0, NULL, NULL, 1, '00001', '总经理', NULL, NULL, '2038-06-21 17:54:10', 'admin', '2020-07-10 15:27:10', 2, 'c6d7cb4deeac411cb3384b1b31278596', '', NULL);
+INSERT INTO `sys_user` VALUES ('f0019fdebedb443c98dcb17d88222c38', 'zhagnxiao', '张小红', 'f898134e5e52ae11a2ffb2c3b57a4e90', 'go3jJ4zX', 'https://static.jeecg.com/temp/jmlogo_1606575041993.png', '2019-04-01 00:00:00', NULL, NULL, NULL, '研发部,财务部', 2, 0, NULL, NULL, 1, '00003', '', NULL, 'admin', '2023-10-01 19:34:10', 'admin', '2020-11-26 15:24:59', 1, '', '', NULL);
 
 -- ----------------------------
 -- Table structure for sys_user_agent
