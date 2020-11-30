@@ -41,6 +41,7 @@ public class RedisConfiguration {
      * @return
      */
     @Bean
+    @ConditionalOnMissingBean(RedisTemplate.class)
     public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory lettuceConnectionFactory) {
         log.info(" --- redis config init --- ");
         // 设置序列化

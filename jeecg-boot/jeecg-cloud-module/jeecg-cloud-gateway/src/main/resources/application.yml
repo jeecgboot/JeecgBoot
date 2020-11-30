@@ -33,21 +33,21 @@ spring:
           uri: lb:ws://jeecg-demo
           predicates:
             - Path=/vxeSocket/**
-# 全局熔断降级配置
-default-filters:
-  - name: Hystrix
-    args:
-      name: default
-      #转发地址
-      fallbackUri: 'forward:/fallback'
-  - name: Retry
-    args:
-      #重试次数，默认值是 3 次
-      retries: 3
-      #HTTP 的状态返回码
-      statuses: BAD_GATEWAY,BAD_REQUEST
-      #指定哪些方法的请求需要进行重试逻辑，默认值是 GET 方法
-      methods: GET,POST
+      # 全局熔断降级配置
+      default-filters:
+        - name: Hystrix
+          args:
+            name: default
+            #转发地址
+            fallbackUri: 'forward:/fallback'
+        - name: Retry
+          args:
+            #重试次数，默认值是 3 次
+            retries: 3
+            #HTTP 的状态返回码
+            statuses: BAD_GATEWAY,BAD_REQUEST
+            #指定哪些方法的请求需要进行重试逻辑，默认值是 GET 方法
+            methods: GET,POST
 # hystrix 信号量隔离，3秒后自动超时
 hystrix:
   enabled: true
