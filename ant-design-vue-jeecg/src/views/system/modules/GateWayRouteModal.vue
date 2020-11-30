@@ -174,9 +174,6 @@
       showInput(item, index) {
         this.inputVisible = true
         this.currentNameIndex = index
-        this.$nextTick(function() {
-          this.$refs.input.focus()
-        })
       },
       //路由选项输入框失去焦点事件
       handleInputChange(e) {
