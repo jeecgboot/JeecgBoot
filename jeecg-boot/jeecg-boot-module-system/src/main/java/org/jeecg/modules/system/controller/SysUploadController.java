@@ -42,6 +42,9 @@ public class SysUploadController {
         String orgName = file.getOriginalFilename();// 获取文件名
         orgName = CommonUtils.getFileName(orgName);
         String file_url =  MinioUtil.upload(file,bizPath);
+        if(oConvertUtils.isEmpty(file_url)){
+            return Result.error("上传失败,请检查配置信息是否正确!");
+        }
         //保存文件信息
         OSSFile minioFile = new OSSFile();
         minioFile.setFileName(orgName);

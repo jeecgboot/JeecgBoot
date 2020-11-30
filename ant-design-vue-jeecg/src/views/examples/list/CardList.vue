@@ -5,7 +5,7 @@
       :dataSource="dataSource"
     >
       <a-list-item slot="renderItem" slot-scope="item, index">
-        <template v-if="item === null">
+        <template v-if="index === 0">
           <a-button class="new-btn" type="dashed">
             <a-icon type="plus"/>
             新增产品
@@ -32,8 +32,7 @@
 <script>
 
   const dataSource = []
-  dataSource.push(null)
-  for (let i = 0; i < 11; i++) {
+  for (let i = 0; i < 12; i++) {
     dataSource.push({
       title: 'Alipay',
       avatar: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
@@ -95,7 +94,7 @@
     background-color: #fff;
     border-radius: 2px;
     width: 100%;
-    height: 188px;
+    height: 186px;
   }
 
   .meta-content {

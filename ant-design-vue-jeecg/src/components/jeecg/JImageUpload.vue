@@ -15,10 +15,12 @@
       @change="handleChange"
       @preview="handlePreview"
       :class="!isMultiple?'imgupload':''">
-      <img v-if="!isMultiple && picUrl" :src="getAvatarView()" style="height:104px;max-width:300px"/>
-      <div v-else class="iconp">
-        <a-icon :type="uploadLoading ? 'loading' : 'plus'" />
-        <div class="ant-upload-text">{{ text }}</div>
+      <div style="width:104px;height:104px">
+        <img v-if="!isMultiple && picUrl" :src="getAvatarView()" style="width:100%;height:100%"/>
+        <div v-else class="iconp">
+          <a-icon :type="uploadLoading ? 'loading' : 'plus'" />
+          <div class="ant-upload-text">{{ text }}</div>
+        </div>
       </div>
       <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel()">
         <img alt="example" style="width: 100%" :src="previewImage"/>
