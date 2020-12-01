@@ -83,7 +83,7 @@
   <#else>
       <#if po.dictTable?? && po.dictTable!="" && po.classType!="sel_tree" && po.classType!="cat_tree" && po.classType!="link_down">
           <#return "{type:'${po.fieldDbType}',value:'${po.fieldName}',text:'${po.filedComment}',dictCode:'${po.dictTable},${po.dictText},${po.dictField}'}">
-      <#elseif po.dictField?? && po.dictTable!="" && po.classType!="sel_tree" && po.classType!="cat_tree" && po.classType!="link_down">
+      <#elseif po.dictField?? && po.classType!="sel_tree" && po.classType!="cat_tree" && po.classType!="link_down">
           <#return "{type:'${po.fieldDbType}',value:'${po.fieldName}',text:'${po.filedComment}',dictCode:'${po.dictField}'}">
       <#elseif po.fieldDbType=="Text">
           <#return "{type:'string',value:'${po.fieldName}',text:'${po.filedComment}'}">
