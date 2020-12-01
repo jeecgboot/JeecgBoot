@@ -39,9 +39,9 @@ Jeecg-Boot 低代码开发平台
 
 - 在线演示 ：  [http://boot.jeecg.com](http://boot.jeecg.com)
 
-- 在线文档：  [http://doc.jeecg.com/1273753](http://doc.jeecg.com/1273753)
+- 在线文档：  [http://doc.jeecg.com](http://doc.jeecg.com)
 
-- 常见问题：  [入门常见问题大全](http://bbs.jeecg.com/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
+- 常见问题：  [http://jeecg.com/doc/qa](http://jeecg.com/doc/qa)
 
 - QQ交流群 ：  ③816531124、①284271917、②769925425
 
@@ -100,7 +100,7 @@ QueryWrapper<?> queryWrapper = QueryGenerator.initQueryWrapper(?, req.getParamet
 > 功能说明：   一键生成的代码（包括：controller、service、dao、mapper、entity、vue）
  
  - 模板位置： src/main/resources/jeecg/code-template
- - 技术文档： http://doc.jeecg.com/1273927
+ - 技术文档： http://doc.jeecg.com/2043916
 
 
 

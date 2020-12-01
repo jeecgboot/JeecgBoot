@@ -111,7 +111,7 @@ Docker 镜像使用
 
  ``` 
 # 1.修改前端项目的后台域名
-    public/index.html  
+    .env.development
     域名改成： http://jeecg-boot-system:8080/jeecg-boot
    
 # 2.先进入打包前端项目
