@@ -20,15 +20,15 @@ import java.net.UnknownHostException;
 @Slf4j
 @SpringBootApplication
 @EnableFeignClients(basePackages = {"org.jeecg"})
-public class JeecgSystemApplication extends SpringBootServletInitializer {
+public class JeecgSystemCloudApplication extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(JeecgSystemApplication.class);
+        return application.sources(JeecgSystemCloudApplication.class);
     }
 
     public static void main(String[] args) throws UnknownHostException {
-        ConfigurableApplicationContext application = SpringApplication.run(JeecgSystemApplication.class, args);
+        ConfigurableApplicationContext application = SpringApplication.run(JeecgSystemCloudApplication.class, args);
         Environment env = application.getEnvironment();
         String ip = InetAddress.getLocalHost().getHostAddress();
         String port = env.getProperty("server.port");
