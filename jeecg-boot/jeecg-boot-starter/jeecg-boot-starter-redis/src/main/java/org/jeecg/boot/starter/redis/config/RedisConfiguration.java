@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.boot.starter.redis.prop.JeecgRedisProperties;
 import org.jeecg.boot.starter.redis.service.RedisReceiver;
 import org.jeecg.common.constant.GlobalConstants;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -41,7 +40,6 @@ public class RedisConfiguration {
      * @return
      */
     @Bean
-    @ConditionalOnMissingBean(RedisTemplate.class)
     public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory lettuceConnectionFactory) {
         log.info(" --- redis config init --- ");
         // 设置序列化
