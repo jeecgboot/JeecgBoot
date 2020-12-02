@@ -17004,10 +17004,10 @@ GO
 INSERT INTO [dbo].[sys_user]  VALUES (N'a75d45a015c44384a04449ee80dc3503', N'jeecg', N'jeecg', N'58a714412072f0b9', N'mIgiYJow', N'https://static.jeecg.com/temp/国炬软件logo_1606575029126.png', NULL, N'1', NULL, NULL, N'A02A01', N'1', N'0', NULL, NULL, N'1', N'00002', N'devleader', NULL, N'admin', N'2019-02-13 16:02:36.0000000', N'admin', N'2020-11-26 15:16:05.0000000', N'1', N'', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_user]  VALUES (N'e9ca23d68d884d4ebb19d07889727dae', N'admin', N'管理员', N'cb362cfeefbf3d8d', N'RCGTeGiH', N'https://static.jeecg.com/temp/国炬软件logo_1606575029126.png', N'2018-12-05 00:00:00.0000000', N'1', N'jeecg@163.com', N'18611111111', N'A01', N'1', N'0', NULL, NULL, N'1', N'00001', N'总经理', NULL, NULL, N'2038-06-21 17:54:10.0000000', N'admin', N'2020-07-10 15:27:10.0000000', N'2', N'c6d7cb4deeac411cb3384b1b31278596', N'', NULL)
+INSERT INTO [dbo].[sys_user]  VALUES (N'e9ca23d68d884d4ebb19d07889727dae', N'admin', N'管理员', N'cb362cfeefbf3d8d', N'RCGTeGiH', N'https://static.jeecg.com/temp/国炬软件logo_1606575029126.png', N'2018-12-05 00:00:00.0000000', N'1', N'jeecg@163.com', N'18611111111', N'A01', N'1', N'0', NULL, NULL, N'1', N'00001', N'总经理', NULL, NULL, N'2020-06-21 17:54:10.0000000', N'admin', N'2020-07-10 15:27:10.0000000', N'2', N'c6d7cb4deeac411cb3384b1b31278596', N'', NULL)
 GO
 
-INSERT INTO [dbo].[sys_user]  VALUES (N'f0019fdebedb443c98dcb17d88222c38', N'zhagnxiao', N'张小红', N'f898134e5e52ae11a2ffb2c3b57a4e90', N'go3jJ4zX', N'https://static.jeecg.com/temp/jmlogo_1606575041993.png', N'2019-04-01 00:00:00.0000000', NULL, NULL, NULL, N'研发部,财务部', N'2', N'0', NULL, NULL, N'1', N'00003', N'', NULL, N'admin', N'2023-10-01 19:34:10.0000000', N'admin', N'2020-11-26 15:24:59.0000000', N'1', N'', N'', NULL)
+INSERT INTO [dbo].[sys_user]  VALUES (N'f0019fdebedb443c98dcb17d88222c38', N'zhagnxiao', N'张小红', N'f898134e5e52ae11a2ffb2c3b57a4e90', N'go3jJ4zX', N'https://static.jeecg.com/temp/jmlogo_1606575041993.png', N'2019-04-01 00:00:00.0000000', NULL, NULL, NULL, N'研发部,财务部', N'2', N'0', NULL, NULL, N'1', N'00003', N'', NULL, N'admin', N'2020-10-01 19:34:10.0000000', N'admin', N'2020-11-26 15:24:59.0000000', N'1', N'', N'', NULL)
 GO
 
 
