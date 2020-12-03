@@ -13,6 +13,18 @@
 <#assign list_need_dict=false>
 <#-- 是否有分类字典 -->
 <#assign list_need_category=false>
+<#-- 是否有用户选择 -->
+<#assign query_sel_user=false>
+<#-- 是否有部门选择 -->
+<#assign query_sel_dep=false>
+<#-- 是否有下拉多选框 -->
+<#assign query_sel_multi=false>
+<#-- 是否有下拉搜索框 -->
+<#assign query_sel_search=false>
+<#-- 是否有省市区组件 -->
+<#assign query_field_pca=false>
+<#-- 是否有分类字典树 -->
+<#assign query_sel_cat=false>
 <template>
   <a-card class="j-inner-table-wrapper" :bordered="false">
 
@@ -24,6 +36,12 @@
 <#assign query_field_index=0>
 <#list columns as po>
   <#if po.isQuery=='Y'>
+  	<#assign query_field_dictCode="">
+    <#if po.dictTable?default("")?trim?length gt 1>
+      <#assign query_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+    <#elseif po.dictField?default("")?trim?length gt 1>
+      <#assign query_field_dictCode="${po.dictField}">
+    </#if>
     <#assign query_flag=true>
     <#-- 定义组件可能会需要的属性 -->
     <#assign attr_showTime="show-time date-format=\"YYYY-MM-DD HH:mm:ss\"">
@@ -57,9 +75,34 @@
         <#else>
           ${indent}<a-input ${getVModel(po)} ${getPlaceholder(po,"请输入")}/>
         </#if>
+      <#-- 用户选择组件 -->
+      <#elseif po.classType=='sel_user'>
+      <#assign query_sel_user=true>
+             ${indent}<j-select-user-by-dep placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"/>
+      <#-- 部门选择组件 -->
+      <#elseif po.classType=='sel_depart'>
+      <#assign query_sel_dep=true>
+             ${indent}<j-select-depart placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"/>
+      <#elseif po.classType=='list_multi'>
+      <#-- 下拉多选框组件 -->
+      <#assign query_sel_multi=true>
+             ${indent}<j-multi-select-tag placeholder="请选择${po.filedComment}" dictCode="${query_field_dictCode?default("")}" v-model="queryParam.${po.fieldName}"/>
+      <#-- popup组件 -->
+      <#elseif po.classType=='popup'>
+             ${indent}<j-popup placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" code="${po.dictTable}" org-fields="${po.dictField}" dest-fields="${po.dictText}" :field="getPopupField('${po.dictText}')"/>
+      <#-- 下拉搜索框 -->
+     <#elseif po.classType=='sel_search'>
+     <#assign query_sel_search=true>
+             ${indent}<j-search-select-tag placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" dict="${po.dictTable},${po.dictText},${po.dictField}"/>
+     <#elseif po.classType=='pca'>
+     <#assign query_field_pca=true>
+             ${indent}<j-area-linkage type="cascader" v-model="queryParam.${po.fieldName}" placeholder="请选择省市区"/>
+     <#elseif po.classType=='cat_tree'>
+     <#assign query_sel_cat=true>
+             ${indent}<j-category-select placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" pcode="${po.dictField?default("")}"/>
       <#-- 其他都归为输入框组件 -->
       <#else>
-          ${indent}<a-input ${getVModel(po)} ${getPlaceholder(po,"请输入")}/>
+             ${indent}<a-input ${getVModel(po)} ${getPlaceholder(po,"请输入")}/>
       </#if>
     <#-- 范围查询 -->
     <#else>
@@ -82,8 +125,8 @@
           ${indent}<a-input class="query-group-cust" ${getVModel(po, "_end")} ${getPlaceholder(po, "请输入最结束值",false)}/>
       </#if>
     </#if>
-        ${indent}</a-form-item>
-      ${indent}</a-col>
+            ${indent}</a-form-item>
+          ${indent}</a-col>
     <#assign query_field_index=query_field_index+1>
   </#if>
   <#-- 判断是否需要字典 -->
@@ -123,7 +166,8 @@
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
-
+      <!-- 高级查询区域 -->
+      <j-super-query :fieldList="superFieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel">
@@ -254,8 +298,26 @@
 <#if list_need_category>
   import { loadCategoryData } from '@/api/api'
 </#if>
+<#if query_sel_user>
+  import JSelectUserByDep from '@/components/jeecgbiz/JSelectUserByDep'
+</#if>
+<#if query_sel_dep>
+  import JSelectDepart from '@/components/jeecgbiz/JSelectDepart'
+</#if>
+<#if query_sel_multi>
+  import JMultiSelectTag from '@/components/dict/JMultiSelectTag'
+</#if>
+<#if query_sel_search>
+  import JSearchSelectTag from '@/components/dict/JSearchSelectTag'
+</#if>
+<#if query_field_pca>
+  import JAreaLinkage from '@comp/jeecg/JAreaLinkage'
+</#if>
+<#if query_sel_cat>
+  import JCategorySelect from '@comp/jeecg/JCategorySelect'
+</#if>
   import '@/assets/less/TableExpand.less'
-
+  import JSuperQuery from '@/components/jeecg/JSuperQuery.vue'
 
   export default {
     name: '${entityName}List',
@@ -271,6 +333,25 @@
 <#if query_field_select>
       JDictSelectTag,
 </#if>
+<#if query_sel_user>
+      JSelectUserByDep,
+</#if>
+<#if query_sel_dep>
+      JSelectDepart,
+</#if>
+<#if query_sel_multi>
+      JMultiSelectTag,
+</#if>
+<#if query_sel_search>
+      JSearchSelectTag,
+</#if>
+<#if query_field_pca>
+      JAreaLinkage,
+</#if>
+<#if query_sel_cat>
+      JCategorySelect,
+</#if>
+      JSuperQuery
     },
     data() {
       return {
@@ -316,6 +397,13 @@
             dataIndex: '${po.fieldName}',
             customRender: (text, record) => (text ? record['${po.dictText}'] : '')
       </#if>
+    <#elseif po.classType=='switch'>
+            dataIndex: '${po.fieldName}',
+            <#if po.dictField?default("")?trim?length gt 1>
+            customRender: (text) => (!text ? "" : (text == ${po.dictField}[0] ? "是" : "否"))
+            <#else>
+            customRender: (text) => (!text ? "" : (text == "Y" ? "是" : "否"))
+            </#if>
     <#else>
             dataIndex: '${po.fieldName}',
     </#if>
@@ -343,7 +431,11 @@
           exportXlsUrl: '${urlPrefix}/exportXls',
           importExcelUrl: '${urlPrefix}/importExcel',
         },
+        superFieldList:[],
       }
+    },
+    created() {
+      this.getSuperFieldList();
     },
     computed: {
       importExcelUrl() {
@@ -372,6 +464,14 @@
           this.expandedRowKeys.push(record.id)
         }
       },
+      getSuperFieldList(){
+        <#include "/common/utils.ftl">
+        let fieldList=[];
+         <#list columns as po>
+        fieldList.push(${superQueryFieldList(po)})
+         </#list>
+        this.superFieldList = fieldList
+      }
     }
   }
 </script>

@@ -109,8 +109,8 @@
         validatorRules: {},
         disableSubmit: true,
         url: {
-          add: "/message/sysMessage/add",
-          edit: "/message/sysMessage/edit",
+          add: "/sys/message/sysMessage/add",
+          edit: "/sys/message/sysMessage/edit",
         },
       }
     },

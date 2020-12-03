@@ -2,11 +2,11 @@ import Vue from 'vue'
 import { axios } from '@/utils/request'
 
 const api = {
-  user: '/api/user',
-  role: '/api/role',
-  service: '/api/service',
-  permission: '/api/permission',
-  permissionNoPager: '/api/permission/no-pager'
+  user: '/mock/api/user',
+  role: '/mock/api/role',
+  service: '/mock/api/service',
+  permission: '/mock/api/permission',
+  permissionNoPager: '/mock/api/permission/no-pager'
 }
 
 export default api

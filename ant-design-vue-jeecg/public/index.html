@@ -7,8 +7,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Jeecg-Boot 企业级快速开发平台</title>
   <link rel="icon" href="<%= BASE_URL %>logo.png">
-  <script src="/cdn/babel-polyfill/polyfill_7_2_5.js"></script>
-
+  <script src="<%= BASE_URL %>cdn/babel-polyfill/polyfill_7_2_5.js"></script>
   <style>
     html,
     body,
@@ -243,17 +242,10 @@
   <!-- 全局配置 -->
   <script>
     window._CONFIG = {};
-    window._CONFIG['domianURL'] = 'http://127.0.0.1:8080/jeecg-boot';
-    window._CONFIG['casPrefixUrl'] = 'http://cas.example.org:8443/cas';
-    window._CONFIG['onlinePreviewDomainURL'] = 'http://fileview.jeecg.com/onlinePreview'
-    window._CONFIG['staticDomainURL'] = window._CONFIG['domianURL'] + '/sys/common/static';
-    //window._CONFIG['downloadUrl'] = window._CONFIG['domianURL'] + '/sys/common/download';
-    window._CONFIG['pdfDomainURL'] =  window._CONFIG['domianURL'] + '/sys/common/pdf/pdfPreviewIframe';
   </script>
 </head>
 
 <body>
-<!-- built files will be auto injected -->
 <div id="app">
   <div id="loader-wrapper">
     <div id="loader"></div>

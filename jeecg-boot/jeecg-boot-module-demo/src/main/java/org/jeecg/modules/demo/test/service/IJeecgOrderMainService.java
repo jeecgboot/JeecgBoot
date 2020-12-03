@@ -41,4 +41,6 @@ public interface IJeecgOrderMainService extends IService<JeecgOrderMain> {
 	 * @param jformOrderMain
 	 */
 	public void delBatchMain (Collection<? extends Serializable> idList);
+
+	public void updateCopyMain(JeecgOrderMain jeecgOrderMain, List<JeecgOrderCustomer> jeecgOrderCustomerList, List<JeecgOrderTicket> jeecgOrderTicketList);
 }

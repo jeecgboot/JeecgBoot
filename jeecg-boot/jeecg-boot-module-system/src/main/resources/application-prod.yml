@@ -2,6 +2,10 @@ server:
   port: 8080
   tomcat:
     max-swallow-size: -1
+  error:
+    include-exception: true
+    include-stacktrace: ALWAYS
+    include-message: ALWAYS
   servlet:
     context-path: /jeecg-boot
   compression:
@@ -175,12 +179,8 @@ jeecg :
     upload: /opt/jeecg-boot/upload
     #webapp文件路径
     webapp: /opt/jeecg-boot/webapp
-  #短信秘钥
-  sms:
-     accessKeyId: LTAIpW4gUG7xYDNI
-     accessKeySecret: ??
   shiro:
-     excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**
+     excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**,/api/getUserInfo
   #阿里云oss存储配置
   oss:
     endpoint: oss-cn-beijing.aliyuncs.com
@@ -191,7 +191,7 @@ jeecg :
   # ElasticSearch 设置
   elasticsearch:
     cluster-name: jeecg-ES
-    cluster-nodes: 127.0.0.1:9200
+    cluster-nodes: 111.225.222.176:9200
     check-enabled: true
   # 表单设计器配置
   desform:
@@ -209,6 +209,7 @@ jeecg :
     bucketName: otatest
   #大屏报表参数设置
   jmreport:
+    mode: prod
     #是否需要校验token
     is_verify_token: true
     #必须校验方法
@@ -218,12 +219,66 @@ jeecg :
     domain: https://wwo.wps.cn/office/
     appid: ??
     appsecret: ??
+  #xxl-job配置
+  xxljob:
+    enabled: false
+    adminAddresses: http://127.0.0.1:9080/xxl-job-admin
+    appname: ${spring.application.name}
+    accessToken: ''
+    address: 127.0.0.1:30007
+    ip: 127.0.0.1
+    port: 30007
+    logPath: logs/jeecg/job/jobhandler/
+    logRetentionDays: 30
+   #自定义路由配置 yml nacos database
+  route:
+    config:
+      data-id: jeecg-gateway-router
+      group: DEFAULT_GROUP
+      data-type: yml
+  #分布式锁配置
+  redisson:
+    address: 127.0.0.1:6379
+    password:
+    type: STANDALONE
+    enabled: true
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas
+#Mybatis输出sql日志
 logging:
   level:
     org.jeecg.modules.system.mapper : debug
 #enable swagger
 swagger:
   enable: false
+  production: false
+  basic:
+    enable: false
+    username: jeecg
+    password: jeecg1314
+#第三方登录
+justauth:
+  enabled: true
+  type:
+    GITHUB:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/github/callback
+    WECHAT_ENTERPRISE:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_enterprise/callback
+      agent-id: 1000002
+    DINGTALK:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/dingtalk/callback
+    WECHAT_OPEN:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_open/callback
+  cache:
+    type: default
+    prefix: 'demo::'
+    timeout: 1h

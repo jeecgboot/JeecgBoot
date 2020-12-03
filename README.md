@@ -7,12 +7,12 @@
 JEECG BOOT 低代码开发平台（前后端分离版本）
 ===============
 
-当前最新版本： 2.3（发布日期：2020-09-14）
+当前最新版本： 2.4.0（发布日期：2020-12-01）
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://www.jeecg.com)
-[![](https://img.shields.io/badge/version-2.3-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-2.4-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -23,11 +23,14 @@ JEECG BOOT 低代码开发平台（前后端分离版本）
 
 <h3 align="center">Java Low Code Platform for Enterprise web applications</h3>
 
-JeecgBoot 是一款基于代码生成器的`低代码`开发平台，零代码开发！采用前后端分离架构：SpringBoot2.x，Ant Design&Vue，Mybatis-plus，Shiro，JWT。强大的代码生成器让前后端代码一键生成，无需写任何代码! JeecgBoot引领新的开发模式(Online Coding模式-> 代码生成器模式-> 手工MERGE智能开发)， 帮助解决Java项目70%的重复工作，让开发更多关注业务逻辑。既能快速提高开发效率，帮助公司节省成本，同时又不失灵活性！JeecgBoot还独创在线开发模式（No代码概念）：在线表单配置（表单设计器）、移动配置能力、工作流配置（在线设计流程）、报表配置能力、在线图表配置、插件能力（可插拔）等等！
+JeecgBoot 是一款基于代码生成器的`低代码`开发平台！前后端分离架构 SpringBoot2.x，SpringCloud，Ant Design&Vue，Mybatis-plus，Shiro，JWT，支持微服务。强大的代码生成器让前后端代码一键生成，实现低代码开发!  JeecgBoot 引领新的低代码开发模式(OnlineCoding-> 代码生成器-> 手工MERGE)， 帮助解决Java项目70%的重复工作，让开发更多关注业务。既能快速提高效率，节省研发成本，同时又不失灵活性！
+
+JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零代码`：Online表单开发、Online报表、报表配置能力、在线图表设计、大屏设计、移动配置能力、表单设计器、在线设计流程、流程自动化配置、插件能力（可插拔）等等！
 
 
-`JEECG宗旨是:` 简单功能由Online Coding配置实现既`零代码开发`（在线配置表单、在线配置报表、在线图表设计、在线设计流程、在线设计表单），复杂功能由代码生成器生成进行手工Merge，既保证了`智能`又兼顾了`灵活`; 
-业务流程采用工作流来实现、扩展出任务接口，供开发编写业务逻辑，表单提供多种解决方案： 表单设计器、online配置表单、编码表单。同时实现了流程与表单的分离设计（松耦合）、并支持任务节点灵活配置，既保证了公司流程的保密性，又减少了开发人员的工作量。
+`JEECG宗旨是:` 简单功能由OnlineCoding配置实现，做到`零代码开发`；复杂功能由代码生成器生成进行手工Merge 实现`低代码开发`，既保证了`智能`又兼顾`灵活`；实现了低代码开发的同时又支持灵活编码，解决了当前低代码产品普遍不灵活的弊端！
+
+`JEECG业务流程:` 采用工作流来实现、扩展出任务接口，供开发编写业务逻辑，表单提供多种解决方案： 表单设计器、online配置表单、编码表单。同时实现了流程与表单的分离设计（松耦合）、并支持任务节点灵活配置，既保证了公司流程的保密性，又减少了开发人员的工作量。
 
 
 适用项目
@@ -41,13 +44,15 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 技术官网：  [http://www.jeecg.com](http://www.jeecg.com)
 
-- 开发文档：  [http://doc.jeecg.com](http://doc.jeecg.com/1273753)
+- 开发文档：  [http://doc.jeecg.com](http://doc.jeecg.com)
+
+- 微服务启动：  [单体升级为微服务启动文档2.4+](http://doc.jeecg.com/2043906)
 
 - 在线演示 ： [http://boot.jeecg.com](http://boot.jeecg.com)
 
-- 视频教程  ：[JeecgBoot入门视频教程](http://www.jeecg.com/doc/video)
+- 视频教程  ：[JeecgBoot入门视频](http://www.jeecg.com/doc/video)
 
-- 常见问题：  [入门常见问题大全](http://bbs.jeecg.com/forum.php?mod=viewthread&tid=7816&extra=page%3D1)
+- 常见问题：  [入门常见问题Q&A](http://jeecg.com/doc/qa)
 
 - 更新日志：  [版本日志](http://www.jeecg.com/doc/log)
 
@@ -130,15 +135,17 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 
 #### 后端
-- 基础框架：Spring Boot 2.1.3.RELEASE \ Spring Cloud Alibaba 2.1.0.RELEASE
+- 基础框架：Spring Boot 2.3.5.RELEASE
 
-- 持久层框架：Mybatis-plus_3.1.2
+- 微服务框架： Spring Cloud Alibaba 2.2.3.RELEASE
 
-- 安全框架：Apache Shiro 1.4.0，Jwt_3.7.0
+- 持久层框架：Mybatis-plus 3.4.1
 
-- 微服务技术：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywarking
+- 安全框架：Apache Shiro 1.7.0，Jwt 3.11.0
 
-- 数据库连接池：阿里巴巴Druid 1.1.10
+- 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywarking
+
+- 数据库连接池：阿里巴巴Druid 1.1.22
 
 - 缓存框架：redis
 
@@ -182,7 +189,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 ├─消息中心
 │  ├─消息管理
 │  ├─模板管理
-├─智能化功能
+├─代码生成器(低代码)
 │  ├─代码生成器功能（一键生成前后端代码，生成后无需修改直接用，绝对是后端开发福音）
 │  ├─代码生成器模板（提供4套模板，分别支持单表和一对多模型，不同风格选择）
 │  ├─代码生成器模板（生成代码，自带excel导入导出）
@@ -271,14 +278,19 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 │  ├─提供单点登录CAS集成方案
 │  ├─提供APP发布方案
 │  ├─集成Websocket消息通知机制
-├─Online在线低代码开发(暂未开源)
+├─Online在线开发(低代码)
 │  ├─Online在线表单 - 功能已开放
-│  ├─在线代码生成器 - 功能已开放
+│  ├─Online代码生成器 - 功能已开放
 │  ├─Online在线报表 - 功能已开放
-│  ├─多数据源管理
-│  ├─Online在线图表
-│  ├─Online图表模板配置
-│  ├─高级表单设计器
+│  ├─Online在线图表(暂不开源)
+│  ├─Online图表模板配置(暂不开源)
+│  ├─Online布局设计(暂不开源)
+│  ├─多数据源管理 - 功能已开放
+├─积木报表设计器(低代码)
+│  ├─打印设计器
+│  ├─数据报表设计
+│  ├─图形报表设计（支持echart）
+│  ├─大屏设计器(暂不开源)
 │─流程模块功能 (暂不开源)
 │  ├─流程设计器
 │  ├─在线表单设计
@@ -297,14 +309,14 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
    
 ```
 
-## 微服务整体解决方案(2.3+版本)
+## 微服务整体解决方案(2.4+版本)
 
 
 1、服务注册和发现 Nacos √
 
 2、统一配置中心 Nacos  √
 
-3、路由网关 gateway √
+3、路由网关 gateway(三种加载方式) √
 
 4、分布式 http feign √
 
@@ -314,13 +326,13 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 7、统一权限控制 JWT + Shiro √
 
-8、服务监控 SpringBootAdmin  [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1761865)
+8、服务监控 SpringBootAdmin√
 
-9、链路跟踪 Skywarking  [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1771670)
+9、链路跟踪 Skywarking   [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1771670)
 
-10、消息中间件 SpringCloudStream+RabbitMQ  [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1744409)
+10、消息中间件 RabbitMQ  √
 
-11、分布式任务 xxl-job  [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1801263)
+11、分布式任务 xxl-job  √ 
 
 12、分布式事务 Seata
 
@@ -329,6 +341,9 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 14、支持 docker-compose、k8s、jenkins
 
 15、CAS 单点登录   √
+
+16、路由限流   √
+
    
 #### 微服务架构图
 ![微服务架构图](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecgboot-weifuwu-cloud.png "在这里输入图片标题")
@@ -344,7 +359,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 - jdk8
 - mysql
 - redis
-- 数据库脚本：jeecg-boot\docs\jeecg-boot-mysql.sql
+- 数据库脚本：jeecg-boot/db/jeecgboot-mysql-5.7.sql
 - 默认登录账号： admin/123456
 
 

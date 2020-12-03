@@ -181,6 +181,13 @@ export default {
         if (column.cellRender) {
           Object.assign(column.cellRender, renderOptions)
         }
+        // update--begin--autor:lvdandan-----date:20201019------for:LOWCOD-882 【新行编辑】列表上带按钮的遮挡问题
+        if (column.$type === JVXETypes.file || column.$type === JVXETypes.image) {
+          if (column.width && column.width.endsWith('px')) {
+            column.width = Number.parseInt(column.width.substr(0,column.width.length-2))+Number.parseInt(1)+'px';
+          }
+        }
+        // update--begin--autor:lvdandan-----date:20201019------for:LOWCOD-882 【新行编辑】列表上带按钮的遮挡问题
       })
       return this._innerColumns
     },
@@ -727,6 +734,11 @@ export default {
       newData.forEach(row => delete row.id)
       return newData
     },
+    /** 仅获取新增的数据,带有id */
+    getNewDataWithId() {
+      let newData = cloneObject(this.$refs.vxe.getInsertRecords())
+      return newData
+    },
     /** 根据ID获取行，新增的行也能查出来 */
     getIfRowById(id) {
       let row = this.getRowById(id), isNew = false
@@ -760,8 +772,8 @@ export default {
      * @param rows
      * @return
      */
-    async addRows(rows = {}) {
-      return this._addOrInsert(rows, -1, 'added')
+    async addRows(rows = {}, isOnlJs) {
+      return this._addOrInsert(rows, -1, 'added', isOnlJs)
     },
 
     /**
@@ -1005,7 +1017,7 @@ export default {
       return await xTable.updateData()
     },
 
-    async _addOrInsert(rows = {}, index, triggerName) {
+    async _addOrInsert(rows = {}, index, triggerName, isOnlJs) {
       let {xTable} = this.$refs.vxe.$refs
       let records
       if (Array.isArray(rows)) {
@@ -1017,14 +1029,19 @@ export default {
       records.forEach(record => this._createRow(record))
       let result = await this.pushRows(records, {index: index, setActive: true})
       // 遍历插入的行
-      for (let i = 0; i < result.rows.length; i++) {
-        let row = result.rows[i]
-        this.trigger(triggerName, {
-          row: row,
-          $table: xTable,
-          target: this,
-        })
+      // update--begin--autor:lvdandan-----date:20201117------for:LOWCOD-987 【新行编辑】js增强附表内置方法调用问题 #1819
+      // online js增强时以传过来值为准，不再赋默认值
+      if (isOnlJs != true) {
+        for (let i = 0; i < result.rows.length; i++) {
+          let row = result.rows[i]
+          this.trigger(triggerName, {
+            row: row,
+            $table: xTable,
+            target: this,
+          })
+        }
       }
+      // update--end--autor:lvdandan-----date:20201117------for:LOWCOD-987 【新行编辑】js增强附表内置方法调用问题 #1819
       return result
     },
     // 创建新行，自动添加默认值
@@ -1035,7 +1052,7 @@ export default {
         let col = column.own
         if (record[col.key] == null || record[col.key] === '') {
           // 设置默认值
-          let createValue = getEnhancedMixins(col.$type, 'createValue')
+          let createValue = getEnhancedMixins(col.$type || col.type, 'createValue')
           record[col.key] = createValue({row: record, column, $table: xTable})
         }
       })

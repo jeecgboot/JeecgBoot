@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "department": "技术部",
+      "post": "主管",
+      "data": "2020年6月25日",
+      "name": "张三",
+      "sex": "男",
+      "birth": "2020年6月25日",
+      "political": "党员",
+      "office": "法院",
+      "nation": "汉",
+      "health": "良好",
+      "register": "农民",
+      "education": "本科",
+      "major": "计算机",
+      "gdata": "2020年6月25日",
+      "mailbox": "123@qq.com",
+      "telphone": "18034569685",
+      "homephone": "",
+      "pworktime": "669633555222",
+      "entrytime": "2020年6月25日",
+      "school": "北京邮电大学",
+      "iDCard": "523698541123333",
+      "party": "2020年6月25日 上海",
+      "marital": "已婚",
+      "children": "有",
+      "hukoustreet": "北京市朝阳区亚运村街道",
+      "hukounum": "050000",
+      "hukoudi": "北京市朝阳区亚运村亚运村小区19号楼7单元901",
+      "Currentdi": "北京市朝阳区亚运村亚运村小区19号楼7单元901",
+      "Currentnum": "050000",
+      "socialsecurity": "是",
+      "providentfund": "是",
+      "hobby": "看书",
+      "sbtype": "城镇社保",
+      "archivesdi": "北京市朝阳区社保局"
+    }
+  ]
+}

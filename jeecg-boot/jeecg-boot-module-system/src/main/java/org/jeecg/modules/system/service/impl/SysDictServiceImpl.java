@@ -51,7 +51,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Override
 	@Cacheable(value = CacheConstant.SYS_DICT_CACHE,key = "#code")
 	public List<DictModel> queryDictItemsByCode(String code) {
-		log.info("无缓存dictCache的时候调用这里！");
+		log.debug("无缓存dictCache的时候调用这里！");
 		return sysDictMapper.queryDictItemsByCode(code);
 	}
 
@@ -73,7 +73,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			}).collect(Collectors.toList());
 			res.put(d.getDictCode(), dictModelList);
 		}
-		log.info("-------登录加载系统字典-----" + res.toString());
+		log.debug("-------登录加载系统字典-----" + res.toString());
 		return res;
 	}
 
@@ -87,7 +87,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Override
 	@Cacheable(value = CacheConstant.SYS_DICT_CACHE,key = "#code+':'+#key")
 	public String queryDictTextByKey(String code, String key) {
-		log.info("无缓存dictText的时候调用这里！");
+		log.debug("无缓存dictText的时候调用这里！");
 		return sysDictMapper.queryDictTextByKey(code, key);
 	}
 
@@ -102,13 +102,13 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Override
 	//@Cacheable(value = CacheConstant.SYS_DICT_TABLE_CACHE)
 	public List<DictModel> queryTableDictItemsByCode(String table, String text, String code) {
-		log.info("无缓存dictTableList的时候调用这里！");
+		log.debug("无缓存dictTableList的时候调用这里！");
 		return sysDictMapper.queryTableDictItemsByCode(table,text,code);
 	}
 
 	@Override
 	public List<DictModel> queryTableDictItemsByCodeAndFilter(String table, String text, String code, String filterSql) {
-		log.info("无缓存dictTableList的时候调用这里！");
+		log.debug("无缓存dictTableList的时候调用这里！");
 		return sysDictMapper.queryTableDictItemsByCodeAndFilter(table,text,code,filterSql);
 	}
 	
@@ -124,7 +124,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Override
 	@Cacheable(value = CacheConstant.SYS_DICT_TABLE_CACHE)
 	public String queryTableDictTextByKey(String table,String text,String code, String key) {
-		log.info("无缓存dictTable的时候调用这里！");
+		log.debug("无缓存dictTable的时候调用这里！");
 		return sysDictMapper.queryTableDictTextByKey(table,text,code,key);
 	}
 

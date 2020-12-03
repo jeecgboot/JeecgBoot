@@ -8,7 +8,7 @@
       cancelText="取消"
       @cancel="close">
       <!--style="top: 20px;"-->
-      <j-upload :file-type="fileType" :value="filePath" @change="handleChange" :disabled="disabled"></j-upload>
+      <j-upload :file-type="fileType" :value="filePath" @change="handleChange" :disabled="disabled" :number="number"></j-upload>
     </a-modal>
   </div>
 </template>
@@ -59,6 +59,11 @@
         type:Boolean,
         default:false,
         required:false
+      },
+      number:{
+        type:Number,
+        required:false,
+        default: 0
       }
     },
     data(){

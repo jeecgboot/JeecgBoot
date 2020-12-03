@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RestController
-@RequestMapping("/message/sysMessage")
+@RequestMapping("/sys/message/sysMessage")
 public class SysMessageController extends JeecgController<SysMessage, ISysMessageService> {
 	@Autowired
 	private ISysMessageService sysMessageService;

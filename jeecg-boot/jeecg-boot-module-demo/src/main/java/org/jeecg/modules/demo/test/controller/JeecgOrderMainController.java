@@ -108,7 +108,7 @@ public class JeecgOrderMainController extends JeecgController<JeecgOrderMain, IJ
     public Result<?> eidt(@RequestBody JeecgOrderMainPage jeecgOrderMainPage) {
         JeecgOrderMain jeecgOrderMain = new JeecgOrderMain();
         BeanUtils.copyProperties(jeecgOrderMainPage, jeecgOrderMain);
-        jeecgOrderMainService.updateMain(jeecgOrderMain, jeecgOrderMainPage.getJeecgOrderCustomerList(), jeecgOrderMainPage.getJeecgOrderTicketList());
+        jeecgOrderMainService.updateCopyMain(jeecgOrderMain, jeecgOrderMainPage.getJeecgOrderCustomerList(), jeecgOrderMainPage.getJeecgOrderTicketList());
         return Result.ok("编辑成功！");
     }
 

@@ -31,9 +31,13 @@ public class SysGatewayRoute implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**主键*/
-    @TableId(type = IdType.ID_WORKER_STR)
+    @TableId(type = IdType.ASSIGN_ID)
     @ApiModelProperty(value = "主键")
     private String id;
+
+    /**routerKEy*/
+    @ApiModelProperty(value = "路由ID")
+    private String routerId;
 
     /**服务名*/
     @Excel(name = "服务名", width = 15)

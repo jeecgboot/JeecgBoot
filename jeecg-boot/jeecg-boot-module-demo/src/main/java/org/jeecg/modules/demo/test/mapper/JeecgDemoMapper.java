@@ -27,4 +27,19 @@ public interface JeecgDemoMapper extends BaseMapper<JeecgDemo> {
 	 */
 	public IPage<JeecgDemo> queryListWithPermission(Page<JeecgDemo> page,@Param("permissionSql")String permissionSql);
 
+	/**
+	 * 根据前缀获取所有有效权限
+	 * @param permsPrefix
+	 * @return
+	 */
+	public List<String> queryAllAuth(@Param("permsPrefix")String permsPrefix);
+
+	/**
+	 * 查询用户已授权字段
+	 * @param userId
+	 * @param permsPrefix
+	 * @return
+	 */
+	public List<String> queryUserAuth(@Param("userId")String userId,@Param("permsPrefix")String permsPrefix);
+
 }

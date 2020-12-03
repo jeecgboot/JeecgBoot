@@ -1,7 +1,7 @@
 Ant Design Jeecg Vue
 ====
 
-当前最新版本： 2.3.0（发布日期：20200914）
+当前最新版本： 2.4.0（发布日期：20201201）
 
 Overview
 ----
@@ -111,7 +111,7 @@ Docker 镜像使用
 
  ``` 
 # 1.修改前端项目的后台域名
-    public/index.html  
+    .env.development
     域名改成： http://jeecg-boot-system:8080/jeecg-boot
    
 # 2.先进入打包前端项目

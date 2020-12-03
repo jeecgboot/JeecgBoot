@@ -11,9 +11,15 @@
 <script>
     window.onload = function () {
         setTimeout(function (){
-            var thirdLoginInfo = "${token}";
-            console.log("thirdLoginInfo",thirdLoginInfo);
-            window.opener.postMessage("${token}", "*");
+            var thirdLoginInfo = "${token!''}";
+            if(!thirdLoginInfo){
+                var thirdLoginModel = '${thirdLoginModel!""}';
+                if(thirdLoginModel){
+                    thirdLoginInfo = JSON.parse(thirdLoginModel);
+                    thirdLoginInfo['isObj'] = true
+                }
+            }
+            window.opener.postMessage(thirdLoginInfo, "*");
             window.close();
         },1000)
     }

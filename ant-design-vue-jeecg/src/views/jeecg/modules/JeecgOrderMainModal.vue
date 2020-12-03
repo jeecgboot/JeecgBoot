@@ -71,6 +71,11 @@
               </a-row>
 
               <a-row type="flex" style="margin-bottom:10px" :gutter="16" v-for="(item, index) in orderMainModel.jeecgOrderCustomerList" :key="index">
+                <a-col :span="6" style="display: none">
+                  <a-form-item>
+                    <a-input placeholder="id" v-decorator="['jeecgOrderCustomerList['+index+'].id', {'initialValue':item.id}]" />
+                  </a-form-item>
+                </a-col>
                 <a-col :span="5">
                   <a-form-item>
                     <a-input placeholder="客户名" v-decorator="['jeecgOrderCustomerList['+index+'].name', {'initialValue':item.name,rules: [{ required: true, message: '请输入用户名!' }]}]" />
@@ -112,6 +117,11 @@
                 <a-col :span="6">操作</a-col>
               </a-row>
               <a-row type="flex" style="margin-bottom:10px" :gutter="16" v-for="(item, index) in orderMainModel.jeecgOrderTicketList" :key="index">
+                <a-col :span="6" style="display: none">
+                  <a-form-item>
+                    <a-input placeholder="id" v-decorator="['jeecgOrderTicketList['+index+'].id', {'initialValue':item.id}]" />
+                  </a-form-item>
+                </a-col>
                 <a-col :span="6">
                   <a-form-item>
                     <a-input placeholder="航班号" v-decorator="['jeecgOrderTicketList['+index+'].ticketCode', {'initialValue':item.ticketCode,rules: [{ required: true, message: '请输入航班号!' }]}]" />
@@ -213,7 +223,6 @@
           this.form.setFieldsValue(pick(this.orderMainModel,'orderCode','ctype','orderMoney','content'))
           this.form.setFieldsValue({orderDate:this.orderMainModel.orderDate?moment(this.orderMainModel.orderDate):null}) //时间格式化
         });
-        console.log(this.orderMainModel)
       },
       close () {
         this.$emit('close');
@@ -242,7 +251,6 @@
               jeecgOrderCustomerList: orderMainData.jeecgOrderCustomerList,
               jeecgOrderTicketList: orderMainData.jeecgOrderTicketList
             }
-
             console.log(formData)
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){

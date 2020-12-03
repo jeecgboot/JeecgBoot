@@ -133,6 +133,15 @@
       this.searchMenus(lists,this.permissionMenuList)
       this.searchMenuOptions=[...lists]
     },
+    mounted() {
+      //如果是单点登录模式
+      if (process.env.VUE_APP_SSO == 'true') {
+        let depart = this.userInfo().orgCode
+        if (!depart) {
+          this.updateCurrentDepart()
+        }
+      }
+    },
     computed: {
       ...mapState({
         // 后台菜单

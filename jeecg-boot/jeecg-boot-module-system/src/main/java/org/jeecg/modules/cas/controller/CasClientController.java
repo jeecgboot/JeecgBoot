@@ -42,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RestController
-@RequestMapping("/cas/client")
+@RequestMapping("/sys/cas/client")
 public class CasClientController {
 
 	@Autowired

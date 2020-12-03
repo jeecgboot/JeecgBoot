@@ -1,13 +1,13 @@
 package org.jeecg.modules.demo.test.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.aspect.annotation.PermissionData;
@@ -19,27 +19,15 @@ import org.jeecg.common.util.RedisUtil;
 import org.jeecg.modules.demo.test.entity.JeecgDemo;
 import org.jeecg.modules.demo.test.service.IJeecgDemoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import lombok.extern.slf4j.Slf4j;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @Description: 单表示例
@@ -159,7 +147,9 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
     @RequestMapping(value = "/exportXls")
     @PermissionData(pageComponent = "jeecg/JeecgDemoList")
     public ModelAndView exportXls(HttpServletRequest request, JeecgDemo jeecgDemo) {
-        return super.exportXls(request, jeecgDemo, JeecgDemo.class, "单表模型");
+        //获取导出表格字段
+        String exportFields = jeecgDemoService.getExportFields();
+        return super.exportXls(request, jeecgDemo, JeecgDemo.class, "单表模型",exportFields);
     }
 
     /**
@@ -292,4 +282,18 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
     }
     /*----------------------------------------外部获取权限示例------------------------------------*/
 
+
+//    /**
+//    * 测试MQ
+//    */
+//    @GetMapping(value = "/rabbitMqClientTest")
+//    public Result<?> rabbitMqClientTest(HttpServletRequest req) {
+//        BaseMap map = new BaseMap();
+//        map.put("orderId", RandomUtil.randomNumbers(10));
+//        rabbitMqClient.sendMessage("jeecg_place_order", map);
+//        rabbitMqClient.sendMessage("jeecg_place_order_time", map,10);
+//        return Result.OK();
+//    }
+//    @Autowired
+//    private RabbitMqClient rabbitMqClient;
 }

@@ -11,6 +11,8 @@
     mode="multiple"
     :placeholder="placeholder"
     :getPopupContainer="(node) => node.parentNode"
+    optionFilterProp="children"
+    :filterOption="filterOption"
     allowClear>
     <a-select-option
       v-for="(item,index) in dictOptions"
@@ -97,7 +99,12 @@
       },
       getCurrentDictOptions(){
         return this.dictOptions
+      },
+      // update--begin--autor:lvdandan-----date:20201120------for：LOWCOD-1086 下拉多选框,搜索时只字典code进行搜索不能通过字典text搜索
+      filterOption(input, option) {
+        return option.componentOptions.children[0].children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
       }
+      // update--end--autor:lvdandan-----date:20201120------for：LOWCOD-1086 下拉多选框,搜索时只字典code进行搜索不能通过字典text搜索
     },
     model: {
       prop: 'value',

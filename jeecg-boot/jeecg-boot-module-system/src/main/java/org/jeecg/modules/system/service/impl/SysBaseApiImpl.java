@@ -10,9 +10,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
+import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.aspect.UrlMatchEnum;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
@@ -31,12 +32,14 @@ import org.jeecg.modules.message.websocket.WebSocket;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.service.*;
+import org.jeecg.modules.system.util.SecurityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
+
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -630,12 +633,22 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	@Override
 	public DynamicDataSourceModel getDynamicDbSourceById(String dbSourceId) {
 		SysDataSource dbSource = dataSourceService.getById(dbSourceId);
+		if(dbSource!=null && StringUtils.isNotBlank(dbSource.getDbPassword())){
+			String dbPassword = dbSource.getDbPassword();
+			String decodedStr = SecurityUtil.jiemi(dbPassword);
+			dbSource.setDbPassword(decodedStr);
+		}
 		return new DynamicDataSourceModel(dbSource);
 	}
 
 	@Override
 	public DynamicDataSourceModel getDynamicDbSourceByCode(String dbSourceCode) {
 		SysDataSource dbSource = dataSourceService.getOne(new LambdaQueryWrapper<SysDataSource>().eq(SysDataSource::getCode, dbSourceCode));
+		if(dbSource!=null && StringUtils.isNotBlank(dbSource.getDbPassword())){
+			String dbPassword = dbSource.getDbPassword();
+			String decodedStr = SecurityUtil.jiemi(dbPassword);
+			dbSource.setDbPassword(decodedStr);
+		}
 		return new DynamicDataSourceModel(dbSource);
 	}
 

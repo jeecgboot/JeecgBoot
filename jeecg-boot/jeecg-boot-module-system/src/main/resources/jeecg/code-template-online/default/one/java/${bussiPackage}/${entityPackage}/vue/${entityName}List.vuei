@@ -151,6 +151,8 @@
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
+      <!-- 高级查询区域 -->
+      <j-super-query :fieldList="superFieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -286,6 +288,7 @@
   <#if query_switch>
   import JSwitch from '@/components/jeecg/JSwitch'
   </#if>
+  import JSuperQuery from '@/components/jeecg/JSuperQuery.vue'
 
   export default {
     name: '${entityName}List',
@@ -321,7 +324,8 @@
       <#if query_switch>
       JSwitch,
       </#if>
-      ${entityName}Modal
+      ${entityName}Modal,
+      JSuperQuery,
     },
     data () {
       return {
@@ -403,7 +407,7 @@
           deleteBatch: "/${entityPackage}/${entityName?uncap_first}/deleteBatch",
           exportXlsUrl: "/${entityPackage}/${entityName?uncap_first}/exportXls",
           importExcelUrl: "${entityPackage}/${entityName?uncap_first}/importExcel",
-          <#if bpm_flag>startProcess: '/process/extActProcess/startMutilProcess'</#if>
+          <#if bpm_flag>startProcess: '/act/process/extActProcess/startMutilProcess'</#if>
         },
         <#if bpm_flag>
         //代码生成后需手动设置流程编码
@@ -411,8 +415,9 @@
         </#if>
         dictOptions:{},
         <#if list_need_pca>
-        pcaData:''
+        pcaData:'',
         </#if>
+        superFieldList:[],
       }
     },
     created() {
@@ -438,6 +443,7 @@
     </#if>
     </#list>
     </#if>
+    this.getSuperFieldList();
     },
     computed: {
       importExcelUrl: function(){
@@ -487,8 +493,16 @@
           }
         })
         </#if>
-      </#if>  
+      </#if>
       </#list>
+      },
+      getSuperFieldList(){
+        <#include "/common/utils.ftl">
+        let fieldList=[];
+         <#list columns as po>
+        fieldList.push(${superQueryFieldList(po)})
+         </#list>
+        this.superFieldList = fieldList
       }
     }
   }

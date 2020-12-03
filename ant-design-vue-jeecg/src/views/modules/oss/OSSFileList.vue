@@ -128,9 +128,9 @@
           }
         ],
         url: {
-          upload: "/oss/file/upload",
-          list: "/oss/file/list",
-          delete: "/oss/file/delete",
+          upload: "/sys/oss/file/upload",
+          list: "/sys/oss/file/list",
+          delete: "/sys/oss/file/delete",
           minioUpload: "/sys/upload/uploadMinio"
         }
       }

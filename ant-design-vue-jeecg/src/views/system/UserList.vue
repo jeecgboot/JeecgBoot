@@ -155,10 +155,6 @@
                 </a-popconfirm>
               </a-menu-item>
 
-              <a-menu-item>
-                <a href="javascript:;" @click="handleAgentSettings(record.username)">代理人</a>
-              </a-menu-item>
-
             </a-menu>
           </a-dropdown>
         </span>
@@ -169,10 +165,7 @@
     <!-- table区域-end -->
 
     <user-modal ref="modalForm" @ok="modalFormOk"></user-modal>
-
-    <password-modal ref="passwordmodal" @ok="passwordModalOk"></password-modal>
-
-    <sys-user-agent-modal ref="sysUserAgentModal"></sys-user-agent-modal>
+    <password-modal ref="passwordmodal"></password-modal>
 
     <!-- 用户回收站 -->
     <user-recycle-bin-modal :visible.sync="recycleBinVisible" @ok="modalFormOk"/>
@@ -291,7 +284,7 @@
           { type: 'select', value: 'sex', text: '性别', dictCode: 'sex' },
         ],
         url: {
-          syncUser: "/process/extActProcess/doSyncUser",
+          syncUser: "/act/process/extActProcess/doSyncUser",
           list: "/sys/user/list",
           delete: "/sys/user/delete",
           deleteBatch: "/sys/user/deleteBatch",
@@ -375,13 +368,6 @@
       handleChangePassword(username) {
         this.$refs.passwordmodal.show(username);
       },
-      handleAgentSettings(username){
-        this.$refs.sysUserAgentModal.agentSettings(username);
-        this.$refs.sysUserAgentModal.title = "用户代理人设置";
-      },
-      passwordModalOk() {
-        //TODO 密码修改完成 不需要刷新页面，可以把datasource中的数据更新一下
-      }
     }
 
   }

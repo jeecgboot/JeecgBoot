@@ -175,19 +175,6 @@ public class SysUser implements Serializable {
     @Dict(dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
     private String departIds;
 
-
-    /**
-     * 第三方登录的唯一标识
-     */
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String thirdId;
-
-    /**
-     * 第三方类型 <br>
-     * （github/github，wechat_enterprise/企业微信，dingtalk/钉钉）
-     */
-    private String thirdType;
-
     /**
      * 多租户id配置，编辑用户的时候设置
      */

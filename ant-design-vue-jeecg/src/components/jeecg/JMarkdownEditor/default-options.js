@@ -21,7 +21,6 @@ export default {
     'outdent',
     'divider',
     'table',
-    'image',
     'link',
     'divider',
     'code',

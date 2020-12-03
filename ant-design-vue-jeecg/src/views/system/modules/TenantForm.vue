@@ -48,7 +48,7 @@
   import pick from 'lodash.pick'
   import { validateDuplicateValue } from '@/utils/util'
   import JFormContainer from '@/components/jeecg/JFormContainer'
-  import JDate from '@/components/jeecg/JDate'  
+  import JDate from '@/components/jeecg/JDate'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
 
   export default {
@@ -167,13 +167,16 @@
                 that.$message.success(res.message);
                 that.$emit('ok');
               }else{
+                if("该编号已存在!" == res.message){
+                  this.model.id=""
+                }
                 that.$message.warning(res.message);
               }
             }).finally(() => {
               that.confirmLoading = false;
             })
           }
-         
+
         })
       },
       popupCallback(row){

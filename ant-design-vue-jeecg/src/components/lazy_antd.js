@@ -1,3 +1,6 @@
+/**
+ * 按需加载antd组件
+ */
 import Vue from 'vue'
 
 // base library
@@ -50,6 +53,7 @@ import {
   TreeSelect,
   Carousel,
   Pagination,
+  FormModel,
 } from 'ant-design-vue'
 import Viser from 'viser-vue'
 
@@ -99,6 +103,7 @@ Vue.use(Tree)
 Vue.use(TreeSelect)
 Vue.use(Carousel)
 Vue.use(Pagination)
+Vue.use(FormModel)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message

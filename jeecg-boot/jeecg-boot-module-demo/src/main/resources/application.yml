@@ -1,30 +1,5 @@
+server:
+  port: 7002
 spring:
-  profiles:
-    active: dev
-swagger:
-  production: false
-  basic:
-    enable: false
-    username: jeecg
-    password: jeecg1314
-# 第三方登录
-justauth:
-  enabled: true
-  type:
-    GITHUB:
-      client-id: 0277e675495f14a4a183
-      client-secret: ??
-      redirect-uri: http://sso.test.com:8080/jeecg-boot/thirdLogin/github/callback
-    WECHAT_ENTERPRISE:
-      client-id: wwc2a8c8b19c201bcc
-      client-secret: ??
-      redirect-uri: http://sso.test.com:8080/jeecg-boot/thirdLogin/wechat_enterprise/callback
-      agent-id: 1000002
-    DINGTALK:
-      client-id: dingoa33vjqxrbyidnmgwo
-      client-secret: ??
-      redirect-uri: http://sso.test.com:8080/jeecg-boot/thirdLogin/dingtalk/callback
-  cache:
-    type: default
-    prefix: 'demo::'
-    timeout: 1h
+  application:
+    name: jeecg-demo

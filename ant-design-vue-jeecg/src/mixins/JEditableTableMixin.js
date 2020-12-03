@@ -48,18 +48,23 @@ export const JEditableTableMixin = {
 
     /** 当点击新增按钮时调用此方法 */
     add() {
-      if (typeof this.addBefore === 'function') this.addBefore()
-      // 默认新增空数据
-      let rowNum = this.addDefaultRowNum
-      if (typeof rowNum !== 'number') {
-        rowNum = 1
-        console.warn('由于你没有在 data 中定义 addDefaultRowNum 或 addDefaultRowNum 不是数字，所以默认添加一条空数据，如果不想默认添加空数据，请将定义 addDefaultRowNum 为 0')
-      }
-      this.eachAllTable((item) => {
-        item.add(rowNum)
+      //update-begin-author:lvdandan date:20201113 for:LOWCOD-1049 JEditaTable,子表默认添加一条数据，addDefaultRowNum设置无效 #1930
+      return new Promise((resolve) => {
+        resolve();
+      }).then(() => {
+        // 默认新增空数据
+        let rowNum = this.addDefaultRowNum
+        if (typeof rowNum !== 'number') {
+          rowNum = 1
+          console.warn('由于你没有在 data 中定义 addDefaultRowNum 或 addDefaultRowNum 不是数字，所以默认添加一条空数据，如果不想默认添加空数据，请将定义 addDefaultRowNum 为 0')
+        }
+        this.eachAllTable((item) => {
+          item.add(rowNum)
+        })
+        if (typeof this.addAfter === 'function') this.addAfter(this.model)
+        this.edit({})
       })
-      if (typeof this.addAfter === 'function') this.addAfter(this.model)
-      this.edit({})
+      //update-end-author:lvdandan date:20201113 for:LOWCOD-1049 JEditaTable,子表默认添加一条数据，addDefaultRowNum设置无效 #1930
     },
     /** 当点击了编辑（修改）按钮时调用此方法 */
     edit(record) {
