@@ -864,6 +864,8 @@ export default {
     trigger(name, event = {}) {
       event.$target = this
       event.$table = this.$refs.vxe
+      //online增强参数兼容
+      event.target = this
       this.$emit(name, event)
     },
 
