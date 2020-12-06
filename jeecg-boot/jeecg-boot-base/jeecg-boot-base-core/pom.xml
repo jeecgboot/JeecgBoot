@@ -76,6 +76,12 @@
 			<version>${commons.version}</version>
 		</dependency>
 
+		<!-- 拼音库 -->
+		<dependency>
+			<groupId>com.belerweb</groupId>
+			<artifactId>pinyin4j</artifactId>
+			<version>${pinyin4j.version}</version>
+		</dependency>
 		<!-- freemarker -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
