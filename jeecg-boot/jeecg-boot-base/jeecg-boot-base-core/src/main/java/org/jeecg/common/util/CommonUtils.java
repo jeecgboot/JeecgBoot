@@ -1,5 +1,7 @@
 package org.jeecg.common.util;
 
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.pinyin.PinyinUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
@@ -16,9 +18,14 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class CommonUtils {
+
+   //中文正则
+    private static Pattern ZHONGWEN_PATTERN = Pattern.compile("[\u4e00-\u9fa5]");
 
     public static String uploadOnlineImage(byte[] data,String basePath,String bizPath,String uploadType){
         String dbPath = null;
@@ -68,7 +75,26 @@ public class CommonUtils {
         }
         //替换上传文件名字的特殊字符
         fileName = fileName.replace("=","").replace(",","").replace("&","").replace("#", "");
+       //替换上传文件名字中的中文
+        if(ifContainChinese(fileName)){
+            fileName= PinyinUtil.getPinyin(fileName,  StrUtil.EMPTY);
+        }
+        //替换上传文件名字中的空格
+        fileName=fileName.replaceAll("\\s","");
         return fileName;
+    }
+
+    // java 判断字符串里是否包含中文字符
+    public static boolean ifContainChinese(String str) {
+        if(str.getBytes().length == str.length()){
+            return false;
+        }else{
+            Matcher m = ZHONGWEN_PATTERN.matcher(str);
+            if (m.find()) {
+                return true;
+            }
+            return false;
+        }
     }
 
     /**
@@ -129,7 +155,7 @@ public class CommonUtils {
                 String dbType = md.getDatabaseProductName().toLowerCase();
                 if(dbType.indexOf("mysql")>=0) {
                     DB_TYPE = DataBaseConstant.DB_TYPE_MYSQL;
-                }else if(dbType.indexOf("oracle")>=0) {
+                }else if(dbType.indexOf("oracle")>=0 ||dbType.indexOf("dm")>=0) {
                     DB_TYPE = DataBaseConstant.DB_TYPE_ORACLE;
                 }else if(dbType.indexOf("sqlserver")>=0||dbType.indexOf("sql server")>=0) {
                     DB_TYPE = DataBaseConstant.DB_TYPE_SQLSERVER;

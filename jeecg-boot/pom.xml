@@ -45,6 +45,7 @@
 		<justauth-spring-boot-starter.version>1.3.2</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<qiniu-java-sdk.version>7.2.23</qiniu-java-sdk.version>
+		<pinyin4j.version>2.5.1</pinyin4j.version>
 	</properties>
 
 	<modules>
