@@ -62,7 +62,7 @@
     </div>
 
     <div class="table-operator">
-      <a-button type="primary" icon="plus" @click="() => $router.push({name: 'anime-add'})">新建</a-button>
+      <a-button type="primary" icon="plus" @click="() => this.handleModalVisible(true)">新建</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
@@ -111,7 +111,14 @@
         </div>
       </template>
     </s-table>
-
+    <a-modal title="新建规则" destroyOnClose :visible="visibleCreateModal" @ok="handleCreateModalOk" @cancel="handleCreateModalCancel">
+      <!---->
+      <a-form style="margin-top: 8px" :autoFormCreate="(form)=>{this.createForm = form}">
+        <a-form-item :labelCol="{ span: 5 }" :wrapperCol="{ span: 15 }" label="描述" fieldDecoratorId="description" :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入至少五个字符的规则描述！', min: 5 }]}">
+          <a-input placeholder="请输入" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </a-card>
 </template>
 
@@ -181,7 +188,8 @@
         },
 
         selectedRowKeys: [],
-        selectedRows: []
+        selectedRows: [],
+        visibleCreateModal:false
       }
     },
     methods: {
@@ -229,6 +237,16 @@
       },
       toggleAdvanced () {
         this.advanced = !this.advanced
+      },
+      //添加逻辑
+      handleModalVisible(isVisible) {
+        this.visibleCreateModal = isVisible;
+      },
+      handleCreateModalCancel() {
+        this.visibleCreateModal = false;
+      },
+      handleCreateModalOk() {
+        this.visibleCreateModal = false;
       },
     },
     watch: {

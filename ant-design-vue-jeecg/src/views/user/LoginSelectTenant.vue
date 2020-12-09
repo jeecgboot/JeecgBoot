@@ -16,7 +16,7 @@
           <template slot="title">
             <span>您有多个租户，请选择登录租户</span>
           </template>
-          <a-avatar style="backgroundColor:#87d068" icon="gold" />
+        <a-avatar style="backgroundColor:#87d068" icon="gold" />
         </a-tooltip>
 
         <a-select @change="handleTenantChange" :class="{'valid-error':validate_status1=='error'}" placeholder="请选择登录租户" style="margin-left:10px;width: 80%">
@@ -183,8 +183,8 @@
           return false
         }
         this.departResolve().then(()=>{
+          this.$store.dispatch('saveTenant', this.tenant_id);
           if(this.isMultiTenant){
-            this.$store.dispatch('saveTenant', this.tenant_id);
             this.$emit('success')
           }else{
             this.$emit('success')

@@ -89,10 +89,10 @@
           <a-popover title="自定义列" trigger="click" placement="leftBottom">
             <template slot="content">
               <a-checkbox-group @change="onColSettingsChange" v-model="settingColumns" :defaultValue="settingColumns">
-                <a-row>
+                <a-row style="width: 400px">
                   <template v-for="(item,index) in defColumns">
                     <template v-if="item.key!='rowIndex'&& item.dataIndex!='action'">
-                        <a-col :span="12"><a-checkbox :value="item.dataIndex">{{ item.title }}</a-checkbox></a-col>
+                        <a-col :span="12"><a-checkbox :value="item.dataIndex"><j-ellipsis :value="item.title" :length="10"></j-ellipsis></a-checkbox></a-col>
                     </template>
                   </template>
                 </a-row>
@@ -118,10 +118,10 @@
         <div slot="filterDropdown">
           <a-card>
             <a-checkbox-group @change="onColSettingsChange" v-model="settingColumns" :defaultValue="settingColumns">
-              <a-row>
+              <a-row style="width: 400px">
                 <template v-for="(item,index) in defColumns">
                   <template v-if="item.key!='rowIndex'&& item.dataIndex!='action'">
-                    <a-col :span="12"><a-checkbox :value="item.dataIndex">{{ item.title }}</a-checkbox></a-col>
+                    <a-col :span="12"><a-checkbox :value="item.dataIndex"><j-ellipsis :value="item.title" :length="10"></j-ellipsis></a-checkbox></a-col>
                   </template>
                 </template>
               </a-row>
