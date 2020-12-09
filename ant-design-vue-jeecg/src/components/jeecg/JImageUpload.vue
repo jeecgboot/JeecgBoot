@@ -15,7 +15,7 @@
       @change="handleChange"
       @preview="handlePreview"
       :class="!isMultiple?'imgupload':''">
-      <div style="width:104px;height:104px">
+      <div :style="{'width':(!isMultiple?'104px':'auto'),'height':(!isMultiple?'104px':'auto')}">
         <img v-if="!isMultiple && picUrl" :src="getAvatarView()" style="width:100%;height:100%"/>
         <div v-else class="iconp">
           <a-icon :type="uploadLoading ? 'loading' : 'plus'" />

@@ -889,8 +889,12 @@ public class SysUserController {
                 return result;
             }
         }
-
-		if (!smscode.equals(code)) {
+        if(null == code){
+            result.setMessage("手机验证码失效，请重新获取");
+            result.setSuccess(false);
+            return result;
+        }
+		if (!smscode.equals(code.toString())) {
 			result.setMessage("手机验证码错误");
 			result.setSuccess(false);
 			return result;
@@ -1039,7 +1043,7 @@ public class SysUserController {
 			if (oConvertUtils.isEmpty(token)) {
 				 username = JwtUtil.getUserNameByToken(request);
 			} else {
-				 username = JwtUtil.getUsername(token);				
+				 username = JwtUtil.getUsername(token);
 			}
 
 			log.info(" ------ 通过令牌获取部分用户信息，当前用户： " + username);
