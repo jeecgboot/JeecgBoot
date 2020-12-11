@@ -186,7 +186,12 @@
       },
       tabCallBack() {
         this.$nextTick(() => {
-          triggerWindowResizeEvent()
+          //update-begin-author:taoyan date: 20201211 for:【新版】online报错 JT-100
+         setTimeout(()=>{
+           //省市区组件里面给window绑定了个resize事件 导致切换页面的时候触发了他的resize，但是切换页面，省市区组件还没被销毁前就触发了该事件，导致控制台报错，加个延迟
+           triggerWindowResizeEvent()
+         },20)
+          //update-end-author:taoyan date: 20201211 for:【新版】online报错 JT-100
         })
       },
       editPage(key, action) {
