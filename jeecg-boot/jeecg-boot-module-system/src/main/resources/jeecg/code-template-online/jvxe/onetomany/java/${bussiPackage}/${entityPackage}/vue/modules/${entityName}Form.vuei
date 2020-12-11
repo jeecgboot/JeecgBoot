@@ -31,7 +31,7 @@
 <#list columns as po>
 <#if po.isShow =='Y' && po.fieldName != 'id'>
 <#assign form_field_dictCode="">
-	<#if po.dictTable?default("")?trim?length gt 1>
+	<#if po.dictTable?default("")?trim?length gt 1 && po.dictText?default("")?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
 		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
 	<#elseif po.dictField?default("")?trim?length gt 1>
 		<#assign form_field_dictCode="${po.dictField}">
@@ -106,6 +106,24 @@
               <j-editor v-decorator="['${po.fieldName}',{trigger:'input'}]" <#if po.readonly=='Y'>disabled</#if>/>
     <#elseif po.fieldDbType=='Blob'>
               <a-input v-decorator="['${po.fieldName}String'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>></a-input>
+		<#elseif po.classType == 'sel_tree'>
+  	    <#assign form_tree_select = true>
+  	          <j-tree-select
+                ref="treeSelect"
+                placeholder="请选择${po.filedComment}"
+                v-decorator="['${po.fieldName}'${autoWriteRules(po)}]"
+                <#if po.dictText??>
+                <#if po.dictText?split(',')[2]?? && po.dictText?split(',')[0]??>
+                dict="${po.dictTable},${po.dictText?split(',')[2]},${po.dictText?split(',')[0]}"
+                <#elseif po.dictText?split(',')[1]??>
+                pidField="${po.dictText?split(',')[1]}"
+                <#elseif po.dictText?split(',')[3]??>
+                hasChildField="${po.dictText?split(',')[3]}"
+                </#if>
+                </#if>
+                pidValue="${po.dictField}"
+                <#if po.readonly=='Y'>disabled</#if>>
+              </j-tree-select>
 	<#else>
               <a-input v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>></a-input>
     </#if>

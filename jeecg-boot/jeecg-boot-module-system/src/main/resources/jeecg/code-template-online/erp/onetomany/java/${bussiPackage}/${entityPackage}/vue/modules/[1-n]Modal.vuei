@@ -33,7 +33,7 @@
 <#list sub.originalColumns as po>
 <#if po.isShow =='Y' && po.fieldName != 'id'>
 <#assign form_field_dictCode="">
-	<#if po.dictTable?default("")?trim?length gt 1>
+	<#if po.dictTable?default("")?trim?length gt 1 && po.dictText?default("")?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
 		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
 	<#elseif po.dictField?default("")?trim?length gt 1>
 		<#assign form_field_dictCode="${po.dictField}">

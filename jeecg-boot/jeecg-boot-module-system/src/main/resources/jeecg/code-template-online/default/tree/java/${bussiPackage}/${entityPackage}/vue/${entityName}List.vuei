@@ -182,6 +182,8 @@
         ref="table"
         size="middle"
         rowKey="id"
+        class="j-table-force-nowrap"
+        :scroll="{x:true}"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -219,7 +221,7 @@
                 <a @click="handleAddChild(record)">添加下级</a>
               </a-menu-item>
               <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDeleteNode(record.id)">
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDeleteNode(record.id)" placement="topLeft">
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>

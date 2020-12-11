@@ -222,13 +222,6 @@
 			</exclusions>
 		</dependency>
 
-		<!-- hutool工具类-->
-		<dependency>
-			<groupId>cn.hutool</groupId>
-			<artifactId>hutool-all</artifactId>
-			<version>${hutool-all.version}</version>
-		</dependency>
-
 		<!-- mini文件存储服务 -->
 		<dependency>
 			<groupId>io.minio</groupId>

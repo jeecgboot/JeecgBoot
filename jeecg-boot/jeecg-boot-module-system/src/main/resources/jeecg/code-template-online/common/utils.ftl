@@ -76,12 +76,22 @@
 
 <#-- ** 高级查询生成 * -->
 <#function superQueryFieldList po>
+    <#assign superQuery_dictTable="">
+    <#assign superQuery_dictText="">
+    <#if po.dictTable?default("")?trim?length gt 1>
+        <#assign superQuery_dictTable="${po.dictTable}">
+    </#if>
+    <#if po.dictText?default("")?trim?length gt 1>
+        <#assign superQuery_dictText="${po.dictText}">
+    </#if>
   <#if po.classType=="popup">
       <#return "{type:'${po.classType}',value:'${po.fieldName}',text:'${po.filedComment}', popup:{code:'${po.dictTable}',field:'${po.dictField?split(',')[0]}',orgFields:'${po.dictField?split(',')[0]}',destFields:'${po.dictText?split(',')[0]}'}}">
   <#elseif po.classType=="sel_user" || po.classType=="sel_depart" || po.classType=="datetime" || po.classType=="date" || po.classType=="pca" || po.classType=="switch">
       <#return "{type:'${po.classType}',value:'${po.fieldName}',text:'${po.filedComment}'}">
   <#else>
-      <#if po.dictTable?? && po.dictTable!="" && po.classType!="sel_tree" && po.classType!="cat_tree" && po.classType!="link_down">
+      <#if po.classType=="sel_search" || po.classType=="list_multi">
+          <#return "{type:'${po.classType}',value:'${po.fieldName}',text:'${po.filedComment}',dictTable:'${superQuery_dictTable}', dictText:'${superQuery_dictText}', dictCode:'${po.dictField}'}">
+      <#elseif po.dictTable?? && po.dictTable!="" && po.classType!="sel_tree" && po.classType!="cat_tree" && po.classType!="link_down">
           <#return "{type:'${po.fieldDbType}',value:'${po.fieldName}',text:'${po.filedComment}',dictCode:'${po.dictTable},${po.dictText},${po.dictField}'}">
       <#elseif po.dictField?? && po.classType!="sel_tree" && po.classType!="cat_tree" && po.classType!="link_down">
           <#return "{type:'${po.fieldDbType}',value:'${po.fieldName}',text:'${po.filedComment}',dictCode:'${po.dictField}'}">
