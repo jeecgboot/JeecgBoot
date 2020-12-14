@@ -258,7 +258,7 @@ export default {
     components: { JTreeTable },
     data() {
       return {
-        url: '/api/asynTreeList',
+        url: '/mock/api/asynTreeList',
         columns: [
           { title: '菜单名称', dataIndex: 'name' },
           { title: '组件', dataIndex: 'component' },

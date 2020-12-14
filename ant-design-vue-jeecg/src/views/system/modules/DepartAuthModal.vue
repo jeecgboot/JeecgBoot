@@ -1,26 +1,28 @@
 <template>
   <a-card :bordered="false">
     <template v-if="this.departId">
-      <a-form>
-        <a-form-item label='所拥有的权限'>
-          <a-tree
-            checkable
-            @check="onCheck"
-            :checkedKeys="checkedKeys"
-            :treeData="treeData"
-            @expand="onExpand"
-            @select="onTreeNodeSelect"
-            :selectedKeys="selectedKeys"
-            :expandedKeys="expandedKeysss"
-            :checkStrictly="checkStrictly"
-            style="height:500px;overflow: auto;">
-            <span slot="hasDatarule" slot-scope="{slotTitle,ruleFlag}">
-              {{ slotTitle }}
-              <a-icon v-if="ruleFlag" type="align-left" style="margin-left:5px;color: red;"></a-icon>
-            </span>
-          </a-tree>
-        </a-form-item>
-      </a-form>
+      <a-spin :spinning="loading">
+        <a-form>
+          <a-form-item label='所拥有的权限'>
+            <a-tree
+              checkable
+              @check="onCheck"
+              :checkedKeys="checkedKeys"
+              :treeData="treeData"
+              @expand="onExpand"
+              @select="onTreeNodeSelect"
+              :selectedKeys="selectedKeys"
+              :expandedKeys="expandedKeysss"
+              :checkStrictly="checkStrictly"
+              style="height:500px;overflow: auto;">
+              <span slot="hasDatarule" slot-scope="{slotTitle,ruleFlag}">
+                {{ slotTitle }}
+                <a-icon v-if="ruleFlag" type="align-left" style="margin-left:5px;color: red;"></a-icon>
+              </span>
+            </a-tree>
+          </a-form-item>
+        </a-form>
+      </a-spin>
       <div class="anty-form-btn">
         <a-dropdown style="float: left" :trigger="['click']" placement="topCenter">
           <a-menu slot="overlay">
@@ -156,6 +158,7 @@
         this.form.resetFields()
       },
       loadData(){
+        this.loading = true;
         queryTreeListForRole().then((res) => {
           this.treeData = res.result.treeList
           this.allTreeKeys = res.result.ids
@@ -176,6 +179,7 @@
             this.halfCheckedKeys = [...halfCheckedKeys]
             this.defaultCheckedKeys = [...halfCheckedKeys, ...checkedKeys];
             this.expandedKeysss = this.allTreeKeys;
+            this.loading = false;
           })
         })
       }

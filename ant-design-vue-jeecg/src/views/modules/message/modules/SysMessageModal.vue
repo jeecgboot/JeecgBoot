@@ -7,7 +7,7 @@
     :closable="true"
     @close="close"
     :visible="visible"
-    style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
+    style="overflow: auto;padding-bottom: 53px;">
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
@@ -109,8 +109,8 @@
         validatorRules: {},
         disableSubmit: true,
         url: {
-          add: "/message/sysMessage/add",
-          edit: "/message/sysMessage/edit",
+          add: "/sys/message/sysMessage/add",
+          edit: "/sys/message/sysMessage/edit",
         },
       }
     },

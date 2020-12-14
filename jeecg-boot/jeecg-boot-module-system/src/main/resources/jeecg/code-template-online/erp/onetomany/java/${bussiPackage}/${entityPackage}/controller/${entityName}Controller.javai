@@ -80,7 +80,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 		QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap());
 		Page<${entityName}> page = new Page<${entityName}>(pageNo, pageSize);
 		IPage<${entityName}> pageList = ${entityName?uncap_first}Service.page(page, queryWrapper);
-		return Result.ok(pageList);
+		return Result.OK(pageList);
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody ${entityName} ${entityName?uncap_first}) {
         ${entityName?uncap_first}Service.save(${entityName?uncap_first});
-        return Result.ok("添加成功！");
+        return Result.OK("添加成功！");
     }
 
     /**
@@ -106,7 +106,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
     @PutMapping(value = "/edit")
     public Result<?> edit(@RequestBody ${entityName} ${entityName?uncap_first}) {
         ${entityName?uncap_first}Service.updateById(${entityName?uncap_first});
-        return Result.ok("编辑成功!");
+        return Result.OK("编辑成功!");
     }
 
     /**
@@ -119,7 +119,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name="id",required=true) String id) {
         ${entityName?uncap_first}Service.delMain(id);
-        return Result.ok("删除成功!");
+        return Result.OK("删除成功!");
     }
 
     /**
@@ -132,7 +132,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
         this.${entityName?uncap_first}Service.delBatchMain(Arrays.asList(ids.split(",")));
-        return Result.ok("批量删除成功!");
+        return Result.OK("批量删除成功!");
     }
 
     /**
@@ -171,7 +171,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
         QueryWrapper<${sub.entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${sub.entityName?uncap_first}, req.getParameterMap());
         Page<${sub.entityName}> page = new Page<${sub.entityName}>(pageNo, pageSize);
         IPage<${sub.entityName}> pageList = ${sub.entityName?uncap_first}Service.page(page, queryWrapper);
-        return Result.ok(pageList);
+        return Result.OK(pageList);
     }
 
 	/**
@@ -184,7 +184,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@PostMapping(value = "/add${sub.entityName}")
 	public Result<?> add${sub.entityName}(@RequestBody ${sub.entityName} ${sub.entityName?uncap_first}) {
 		${sub.entityName?uncap_first}Service.save(${sub.entityName?uncap_first});
-		return Result.ok("添加成功！");
+		return Result.OK("添加成功！");
 	}
 
     /**
@@ -197,7 +197,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@PutMapping(value = "/edit${sub.entityName}")
 	public Result<?> edit${sub.entityName}(@RequestBody ${sub.entityName} ${sub.entityName?uncap_first}) {
 		${sub.entityName?uncap_first}Service.updateById(${sub.entityName?uncap_first});
-		return Result.ok("编辑成功!");
+		return Result.OK("编辑成功!");
 	}
 
 	/**
@@ -210,7 +210,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@DeleteMapping(value = "/delete${sub.entityName}")
 	public Result<?> delete${sub.entityName}(@RequestParam(name="id",required=true) String id) {
 		${sub.entityName?uncap_first}Service.removeById(id);
-		return Result.ok("删除成功!");
+		return Result.OK("删除成功!");
 	}
 
 	/**
@@ -223,7 +223,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@DeleteMapping(value = "/deleteBatch${sub.entityName}")
 	public Result<?> deleteBatch${sub.entityName}(@RequestParam(name="ids",required=true) String ids) {
 	    this.${sub.entityName?uncap_first}Service.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功!");
+		return Result.OK("批量删除成功!");
 	}
 
     /**
@@ -282,7 +282,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 				 long start = System.currentTimeMillis();
 				 ${sub.entityName?uncap_first}Service.saveBatch(list);
 				 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
-				 return Result.ok("文件导入成功！数据行数：" + list.size());
+				 return Result.OK("文件导入成功！数据行数：" + list.size());
 			 } catch (Exception e) {
 				 log.error(e.getMessage(), e);
 				 return Result.error("文件导入失败:" + e.getMessage());

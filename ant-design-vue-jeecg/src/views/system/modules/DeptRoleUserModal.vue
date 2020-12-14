@@ -7,7 +7,7 @@
     :closable="true"
     @close="close"
     :visible="visible"
-    style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
+    style="overflow: auto;padding-bottom: 53px;">
 
     <a-spin :spinning="confirmLoading">
 
@@ -102,7 +102,7 @@
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
-        getAction(this.url.getDeptRoleByUserId,{userId:this.userId}).then((res) => {
+        getAction(this.url.getDeptRoleByUserId,{userId:this.userId,departId:this.currentDeptId}).then((res) => {
           if (res.success) {
             var designName = [];
             for (let value of res.result) {

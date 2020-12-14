@@ -196,9 +196,14 @@
         if(!value){
           this.$emit('change', '');
           this.treeValue = ''
-        } else if (value instanceof Array) {
-          //this.$emit('change', value.map(item => item.value).join(','))
-          //this.treeValue = value
+        } else if (Array.isArray(value)) {
+          let labels = []
+          let values = value.map(item => {
+            labels.push(item.label)
+            return item.value
+          })
+          this.backValue(values.join(','), labels.join(','))
+          this.treeValue = value
         } else {
           this.backValue(value.value,value.label)
           this.treeValue = value

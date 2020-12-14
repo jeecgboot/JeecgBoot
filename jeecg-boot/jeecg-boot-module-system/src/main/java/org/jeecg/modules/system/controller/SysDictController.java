@@ -1,31 +1,28 @@
 package org.jeecg.modules.system.controller;
 
 
-import java.io.InputStream;
-import java.util.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import cn.hutool.crypto.SecureUtil;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.FieldPresenceUtil;
 import org.jeecg.common.util.ImportExcelUtil;
-import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.shiro.vo.DefContants;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
+import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysDictTree;
 import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecg.modules.system.service.ISysDictItemService;
@@ -44,15 +41,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-
-import lombok.extern.slf4j.Slf4j;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 /**
  * <p>
@@ -135,7 +126,7 @@ public class SysDictController {
 			if(dictCode.indexOf(",")!=-1) {
 				//关联表字典（举例：sys_user,realname,id）
 				String[] params = dictCode.split(",");
-				
+
 				if(params.length<3) {
 					result.error500("字典Code格式不正确！");
 					return result;
@@ -143,7 +134,7 @@ public class SysDictController {
 				//SQL注入校验（只限制非法串改数据库）
 				final String[] sqlInjCheck = {params[0],params[1],params[2]};
 				SqlInjectionUtil.filterContent(sqlInjCheck);
-				
+
 				if(params.length==4) {
 					//SQL注入校验（查询条件SQL 特殊check，此方法仅供此处使用）
 					SqlInjectionUtil.specialFilterContent(params[3]);
@@ -242,7 +233,7 @@ public class SysDictController {
 	 * 根据字典code加载字典text 返回
 	 */
 	@RequestMapping(value = "/loadDictItem/{dictCode}", method = RequestMethod.GET)
-	public Result<List<String>> loadDictItem(@PathVariable String dictCode,@RequestParam(name="key") String key, @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
+	public Result<List<String>> loadDictItem(@PathVariable String dictCode,@RequestParam(name="key") String keys, @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
 		Result<List<String>> result = new Result<>();
 		try {
 			if(dictCode.indexOf(",")!=-1) {
@@ -251,7 +242,7 @@ public class SysDictController {
 					result.error500("字典Code格式不正确！");
 					return result;
 				}
-				List<String> texts = sysDictService.queryTableDictByKeys(params[0], params[1], params[2], key.split(","));
+				List<String> texts = sysDictService.queryTableDictByKeys(params[0], params[1], params[2], keys);
 
 				result.setSuccess(true);
 				result.setResult(texts);
@@ -287,6 +278,7 @@ public class SysDictController {
 		}
 		// SQL注入漏洞 sign签名校验(表名,label字段,val字段,条件)
 		String dictCode = tbname+","+text+","+code+","+condition;
+        SqlInjectionUtil.filterContent(dictCode);
 		List<TreeSelectModel> ls = sysDictService.queryTreeList(query,tbname, text, code, pidField, pid,hasChildField);
 		result.setSuccess(true);
 		result.setResult(ls);
@@ -308,6 +300,7 @@ public class SysDictController {
 		Result<List<DictModel>> res = new Result<List<DictModel>>();
 		// SQL注入漏洞 sign签名校验
 		String dictCode = query.getTable()+","+query.getText()+","+query.getCode();
+        SqlInjectionUtil.filterContent(dictCode);
 		List<DictModel> ls = this.sysDictService.queryDictTablePageList(query,pageSize,pageNo);
 		res.setResult(ls);
 		res.setSuccess(true);
@@ -456,6 +449,7 @@ public class SysDictController {
 	 * @param
 	 * @return
 	 */
+	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
 	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
  		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -467,6 +461,12 @@ public class SysDictController {
 			params.setHeadRows(2);
 			params.setNeedSave(true);
 			try {
+				//update-begin-author:wangshuai date:20201030 for:导入测试用例
+				boolean aBoolean = FieldPresenceUtil.fieldPresence(file.getInputStream(), SysDictPage.class, params);
+				if(!aBoolean){
+					throw  new RuntimeException("导入Excel标题格式不匹配！");
+				}
+				//update-end-author:wangshuai date:20201030 for:导入测试用例
 				List<SysDictPage> list = ExcelImportUtil.importExcel(file.getInputStream(), SysDictPage.class, params);
 				// 错误信息
 				List<String> errorMessage = new ArrayList<>();
@@ -504,7 +504,7 @@ public class SysDictController {
 		}
 		return Result.error("文件导入失败！");
 	}
-	
+
 
 	/**
 	 * 查询被删除的列表

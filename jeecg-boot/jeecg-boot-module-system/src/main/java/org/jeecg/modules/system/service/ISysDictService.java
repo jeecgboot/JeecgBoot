@@ -36,7 +36,7 @@ public interface ISysDictService extends IService<SysDict> {
 	String queryTableDictTextByKey(String table, String text, String code, String key);
 
 	@Deprecated
-	List<String> queryTableDictByKeys(String table, String text, String code, String[] keyArray);
+	List<String> queryTableDictByKeys(String table, String text, String code, String keys);
 
     /**
      * 根据字典类型删除关联表中其对应的数据

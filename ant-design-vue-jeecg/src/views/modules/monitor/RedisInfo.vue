@@ -76,9 +76,9 @@
           dataIndex: 'value'
         }],
         url: {
-          keysSize: '/actuator/redis/keysSize',
-          memoryInfo: '/actuator/redis/memoryInfo',
-          info: '/actuator/redis/info'
+          keysSize: '/sys/actuator/redis/keysSize',
+          memoryInfo: '/sys/actuator/redis/memoryInfo',
+          info: '/sys/actuator/redis/info'
         },
         path: '/monitor/redis/info'
       }

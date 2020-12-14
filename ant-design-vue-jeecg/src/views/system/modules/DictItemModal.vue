@@ -79,7 +79,7 @@
         form: this.$form.createForm(this),
         validatorRules: {
           itemText: {rules: [{required: true, message: '请输入名称!'}]},
-          itemValue: {rules: [{required: true, message: '请输入数据值!'}]},
+          itemValue: {rules: [{required: true, message: '请输入数据值!'},{validator: this.validateItemValue}]},
         },
       }
     },
@@ -153,6 +153,18 @@
         this.$emit('close');
         this.visible = false;
       },
+      validateItemValue(rule, value, callback){
+        if(value){
+          let reg=new RegExp("[`_~!@#$^&*()=|{}'.<>《》/?！￥（）—【】‘；：”“。，、？]")
+          if(reg.test(value)){
+            callback("数据值不能包含特殊字符！")
+          }else{
+            callback()
+          }
+        }else{
+          callback()
+        }
+      }
     }
   }
 </script>

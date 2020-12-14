@@ -42,7 +42,6 @@
         <user-menu class="header-index-right" :theme="theme" :style="topMenuStyle.headerIndexRight"/>
       </div>
     </div>
-
   </a-layout-header>
 </template>
 
@@ -58,7 +57,7 @@
     components: {
       UserMenu,
       SMenu,
-      Logo
+      Logo,
     },
     mixins: [mixin],
     props: {
@@ -96,7 +95,8 @@
           topNavHeader: {},
           headerIndexRight: {},
           topSmenuStyle: {}
-        }
+        },
+        chatStatus: '',
       }
     },
     watch: {

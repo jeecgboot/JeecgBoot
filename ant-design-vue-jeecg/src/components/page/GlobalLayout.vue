@@ -13,6 +13,7 @@
       >
         <side-menu
           mode="inline"
+          v-if="device === 'mobile'"
           :menus="menus"
           @menuSelect="menuSelect"
           :theme="navTheme"
@@ -21,7 +22,7 @@
       </a-drawer>
 
       <side-menu
-        v-else
+        v-show="device === 'desktop'"
         mode="inline"
         :menus="menus"
         @menuSelect="myMenuSelect"
@@ -131,10 +132,10 @@
       //this.menus = this.mainRouters.find((item) => item.path === '/').children;
       this.menus = this.permissionMenuList
       // 根据后台配置菜单，重新排序加载路由信息
-      console.log('----加载菜单逻辑----')
-      console.log(this.mainRouters)
-      console.log(this.permissionMenuList)
-      console.log('----navTheme------'+this.navTheme)
+      //console.log('----加载菜单逻辑----')
+      //console.log(this.mainRouters)
+      //console.log(this.permissionMenuList)
+      //console.log('----navTheme------'+this.navTheme)
       //--update-end----author:scott---date:20190320------for:根据后台菜单配置，判断是否路由菜单字段，动态选择是否生成路由（为了支持参数URL菜单）------
     },
     methods: {
@@ -343,7 +344,7 @@
           }
 
           .anticon {
-            color: white;
+            color: inherit;
           }
         }
       }
@@ -359,7 +360,7 @@
             }
 
             .anticon {
-              color: black;
+              color: inherit;
             }
           }
         }
@@ -527,8 +528,43 @@
       margin: 0 auto;
       width: 100%;
     }
+   /deep/ .ant-menu-dark{
+     background-color: rgb(48, 65, 86);
+     /deep/ .ant-menu-submenu:hover{
+       background-color: #263445;
+     }
+     /deep/ .ant-menu-item:hover{
+       background-color: #263445;
+     }
+   }
+    /deep/ .ant-menu.ant-menu-dark .ant-menu-item-selected{
+      background-color: #263445;
+    }
+    /deep/ .ant-menu.ant-menu-dark .ant-menu-item-selected i{
+      color: rgb(24, 144, 255);
+    }
+    /deep/ .ant-menu.ant-menu-dark .ant-menu-item-selected span{
+      color: rgb(24, 144, 255);
+    }
+    /deep/ .ant-menu-dark .ant-menu-submenu-active{
+      color: #FFFFFF !important;
+    }
   }
-
+   .dark.header-index-right{
+    background-color: rgb(48, 65, 86) !important;
+  }
+   .layout .top-nav-header-index.dark .user-wrapper .action:hover{
+    background-color: #263445 !important;
+  }
+  .layout .top-nav-header-index .dark .user-wrapper .action i{
+    color: #FFFFFF !important;
+  }
+  .layout .top-nav-header-index .user-wrapper .action .anticon{
+    color: inherit !important;
+  }
+  .dark.ant-dropdown-menu{
+    background-color: #999999;
+  }
   // drawer-sider 自定义
   .ant-drawer.drawer-sider {
     .sider {
@@ -677,6 +713,24 @@
       button {
         margin-right: 8px;
       }
+    }
+  }
+ .ant-menu-dark .ant-menu-vertical.ant-menu-sub li:hover{
+    background-color: #001528;
+  }
+   .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected{
+     background-color: #001528 !important;
+  }
+  .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected span{
+    color: rgb(24, 144, 255);
+  }
+   .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected i{
+    color: rgb(24, 144, 255);
+  }
+  .ant-menu-dark .ant-menu-sub{
+    background: #1f2d3d !important;
+   .ant-menu-submenu-open,.ant-menu-submenu-active{
+      color: #FFFFFF !important;
     }
   }
 </style>

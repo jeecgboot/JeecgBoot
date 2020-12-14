@@ -2,11 +2,20 @@
 <#if po.isShow == 'Y' && poHasCheck(po)>
   <#if po.fieldName != 'id'>
           ${po.fieldName}: {
+          <#if po.defaultVal??>
+            <#if po.fieldDbType=="BigDecimal" || po.fieldDbType=="double" || po.fieldDbType=="int">
+            initialValue:${po.defaultVal},
+            <#else>
+            initialValue:"${po.defaultVal}",
+            </#if>
+          </#if>
             rules: [
     <#assign fieldValidType = po.fieldValidType!''>
     <#-- 非空校验 -->
     <#if po.nullable == 'N' || fieldValidType == '*'>
               { required: true, message: '请输入${po.filedComment}!'},
+    <#elseif fieldValidType!=''>
+              { required: false},
     </#if>
     <#-- 唯一校验 -->
     <#if fieldValidType == 'only'>

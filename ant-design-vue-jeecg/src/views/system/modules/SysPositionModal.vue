@@ -16,7 +16,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="职务编码">
-          <a-input placeholder="请输入职务编码" v-decorator="['code', validatorRules.code]"/>
+          <a-input placeholder="请输入职务编码" v-decorator="['code', validatorRules.code]" :read-only="readOnly"/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -110,6 +110,7 @@
           add: '/sys/position/add',
           edit: '/sys/position/edit',
         },
+        readOnly:false
       }
     },
     created() {
@@ -122,6 +123,11 @@
         this.form.resetFields()
         this.model = Object.assign({}, record)
         this.visible = true
+        if(record.id){
+          this.readOnly=true
+        }else{
+          this.readOnly=false
+        }
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,
             'code',

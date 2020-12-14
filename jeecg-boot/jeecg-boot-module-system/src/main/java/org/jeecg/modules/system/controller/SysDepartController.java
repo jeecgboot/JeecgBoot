@@ -18,10 +18,13 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysPositionService;
+import org.jeecg.modules.system.service.ISysUserDepartService;
+import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -58,6 +61,10 @@ public class SysDepartController {
 	private ISysDepartService sysDepartService;
 	@Autowired
 	public RedisTemplate<String, Object> redisTemplate;
+	@Autowired
+	private ISysUserService sysUserService;
+	@Autowired
+	private ISysUserDepartService sysUserDepartService;
 	/**
 	 * 查询数据 查出我的部门,并以树结构数据格式响应给前端
 	 *
@@ -396,6 +403,63 @@ public class SysDepartController {
 		List<SysDepart> ls = this.sysDepartService.list(query);
 		result.setSuccess(true);
 		result.setResult(ls);
+		return result;
+	}
+	/**
+	 * 查询数据 查出所有部门,并以树结构数据格式响应给前端
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = "/queryTreeByKeyWord", method = RequestMethod.GET)
+	public Result<Map<String,Object>> queryTreeByKeyWord(@RequestParam(name = "keyWord", required = false) String keyWord) {
+		Result<Map<String,Object>> result = new Result<>();
+		try {
+			Map<String,Object> map=new HashMap<String,Object>();
+			List<SysDepartTreeModel> list = sysDepartService.queryTreeByKeyWord(keyWord);
+			//根据keyWord获取用户信息
+			LambdaQueryWrapper<SysUser> queryUser = new LambdaQueryWrapper<SysUser>();
+			queryUser.eq(SysUser::getDelFlag,CommonConstant.DEL_FLAG_0);
+			queryUser.and(i -> i.like(SysUser::getUsername, keyWord).or().like(SysUser::getRealname, keyWord));
+			List<SysUser> sysUsers = this.sysUserService.list(queryUser);
+			map.put("userList",sysUsers);
+			map.put("departList",list);
+			result.setResult(map);
+			result.setSuccess(true);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+		return result;
+	}
+
+	/**
+	 * 根据部门编码获取部门信息
+	 *
+	 * @param orgCode
+	 * @return
+	 */
+	@GetMapping("/getDepartName")
+	public Result<SysDepart> getDepartName(@RequestParam(name = "orgCode") String orgCode) {
+		Result<SysDepart> result = new Result<>();
+		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<>();
+		query.eq(SysDepart::getOrgCode, orgCode);
+		SysDepart sysDepart = sysDepartService.getOne(query);
+		result.setSuccess(true);
+		result.setResult(sysDepart);
+		return result;
+	}
+
+	/**
+	 * 根据部门id获取用户信息
+	 *
+	 * @param id
+	 * @return
+	 */
+	@GetMapping("/getUsersByDepartId")
+	public Result<List<SysUser>> getUsersByDepartId(@RequestParam(name = "id") String id) {
+		Result<List<SysUser>> result = new Result<>();
+		List<SysUser> sysUsers = sysUserDepartService.queryUserByDepId(id);
+		result.setSuccess(true);
+		result.setResult(sysUsers);
 		return result;
 	}
 }

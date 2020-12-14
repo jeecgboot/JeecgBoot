@@ -137,7 +137,7 @@
           return getFileAccessHttpUrl(this.avatar());
       },
       getTeams() {
-        this.$http.get('/api/workplace/teams')
+        this.$http.get('/mock/api/workplace/teams')
           .then(res => {
             this.teams = res.result
             this.teamSpinning = false

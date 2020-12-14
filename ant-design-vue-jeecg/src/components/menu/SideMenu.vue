@@ -1,7 +1,7 @@
 <template>
   <a-layout-sider
     :class="['sider', isDesktop() ? null : 'shadow', theme, fixSiderbar ? 'ant-fixed-sidemenu' : null ]"
-    width="200px"
+    width="208px"
     :collapsible="collapsible"
     v-model="collapsed"
     :trigger="null">
@@ -136,12 +136,44 @@
           background-color: #999999;
         }
       }
+      background-color: rgb(48, 65, 86);
+      /deep/ .ant-menu-submenu-title:hover{
+        background-color: #263445;
+      }
+      /deep/ .ant-menu-item:hover{
+        background-color: #263445;
+      }
+      /deep/ .ant-menu-item-selected {
+        background-color: #263445;
+      }
+      /deep/ .ant-menu-item-selected i{
+        color: rgb(24, 144, 255);
+      }
+      /deep/ .ant-menu-item-selected span{
+        color: rgb(24, 144, 255);
+      }
+      /deep/ .ant-menu-inline.ant-menu-sub{
+        background-color: #1f2d3d;
+      }
+      /deep/ .ant-menu-inline.ant-menu-sub li:hover{
+        background-color: #1f2d3d;
+      }
+      /deep/ .ant-menu-inline.ant-menu-sub .ant-menu-submenu-title:hover{
+        background-color: #1f2d3d;
+      }
+      /deep/ .ant-menu-inline.ant-menu-sub .ant-menu-item-selected{
+        background-color: #1f2d3d;
+      }
+      /deep/ .ant-menu-inline.ant-menu-sub .ant-menu-item-selected span{
+        color: rgb(24, 144, 255);
+      }
+      /deep/ .ant-menu-inline.ant-menu-sub .ant-menu-item-selected i{
+        color: rgb(24, 144, 255);
+      }
     }
-
   }
 
   /* update_end author:sunjianlei date:20190509 for: 修改侧边导航栏滚动条的样式 */
-
 </style>
 
 <!-- update_begin author:sunjianlei date:20190530 for: 选中首页的时候不显示背景颜色 -->

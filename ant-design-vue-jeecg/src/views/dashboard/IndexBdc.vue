@@ -7,7 +7,7 @@
             <a-icon type="info-circle-o" />
           </a-tooltip>
           <div>
-            <mini-area :datasource="chartData.sll" />
+            <mini-area :data-source="chartData.sll" />
           </div>
           <template slot="footer">今日受理量：<span>{{ todaySll }}</span></template>
         </chart-card>
@@ -18,7 +18,7 @@
             <a-icon type="info-circle-o" />
           </a-tooltip>
           <div>
-            <mini-area :datasource="chartData.bjl"/>
+            <mini-area :data-source="chartData.bjl"/>
           </div>
           <template slot="footer">今日办结量：<span>{{ todayBjl }}</span></template>
         </chart-card>

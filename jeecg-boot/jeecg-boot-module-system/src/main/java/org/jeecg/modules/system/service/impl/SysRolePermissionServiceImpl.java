@@ -1,12 +1,10 @@
 package org.jeecg.modules.system.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.jeecg.common.constant.CacheConstant;
+import org.jeecg.common.util.IPUtils;
+import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysRolePermission;
 import org.jeecg.modules.system.mapper.SysRolePermissionMapper;
@@ -18,6 +16,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * <p>
@@ -32,6 +32,15 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 
 	@Override
 	public void saveRolePermission(String roleId, String permissionIds) {
+		String ip = "";
+		try {
+			//获取request
+			HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
+			//获取IP地址
+			ip = IPUtils.getIpAddr(request);
+		} catch (Exception e) {
+			ip = "127.0.0.1";
+		}
 		LambdaQueryWrapper<SysRolePermission> query = new QueryWrapper<SysRolePermission>().lambda().eq(SysRolePermission::getRoleId, roleId);
 		this.remove(query);
 		List<SysRolePermission> list = new ArrayList<SysRolePermission>();
@@ -39,6 +48,8 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 		for (String p : arr) {
 			if(oConvertUtils.isNotEmpty(p)) {
 				SysRolePermission rolepms = new SysRolePermission(roleId, p);
+				rolepms.setOperateDate(new Date());
+				rolepms.setOperateIp(ip);
 				list.add(rolepms);
 			}
 		}
@@ -47,12 +58,23 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 
 	@Override
 	public void saveRolePermission(String roleId, String permissionIds, String lastPermissionIds) {
+		String ip = "";
+		try {
+			//获取request
+			HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
+			//获取IP地址
+			ip = IPUtils.getIpAddr(request);
+		} catch (Exception e) {
+			ip = "127.0.0.1";
+		}
 		List<String> add = getDiff(lastPermissionIds,permissionIds);
 		if(add!=null && add.size()>0) {
 			List<SysRolePermission> list = new ArrayList<SysRolePermission>();
 			for (String p : add) {
 				if(oConvertUtils.isNotEmpty(p)) {
 					SysRolePermission rolepms = new SysRolePermission(roleId, p);
+					rolepms.setOperateDate(new Date());
+					rolepms.setOperateIp(ip);
 					list.add(rolepms);
 				}
 			}

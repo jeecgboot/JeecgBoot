@@ -45,7 +45,7 @@
           {id:'000',sort: 0,filePath: 'https://static.jeecg.com/upload/test/1_1588149743473.jpg'},
           {id:'111',sort: 1,filePath: 'https://static.jeecg.com/upload/test/u27356337152749454924fm27gp0_1588149731821.jpg'},
           {id:'222',sort: 2,filePath: 'https://static.jeecg.com/upload/test/u24454681402491956848fm27gp0_1588149712663.jpg'},
-          {id:'333',sort: 3,filePath: 'https://static.jeecg.com/upload/test/8f22cd945be44388bacbf0b88cf86cfa.png'},
+          {id:'333',sort: 3,filePath: 'https://static.jeecg.com/temp/国炬软件logo_1606575029126.png'},
           {id:'444',sort: 4,filePath: 'https://static.jeecg.com/upload/test/u8891206113801177793fm27gp0_1588149704459.jpg'}
         ],
         oldDateSource:[],

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { login, logout, phoneLogin, thirdLogin } from "@/api/login"
-import { ACCESS_TOKEN, USER_NAME,USER_INFO,USER_AUTH,SYS_BUTTON_AUTH,UI_CACHE_DB_DICT_DATA } from "@/store/mutation-types"
+import { ACCESS_TOKEN, USER_NAME,USER_INFO,USER_AUTH,SYS_BUTTON_AUTH,UI_CACHE_DB_DICT_DATA,TENANT_ID,CACHE_INCLUDED_ROUTES } from "@/store/mutation-types"
 import { welcome } from "@/utils/util"
 import { queryPermissionsByUser } from '@/api/api'
 import { getAction } from '@/api/manage'
@@ -10,6 +10,7 @@ const user = {
     token: '',
     username: '',
     realname: '',
+    tenantid:'',
     welcome: '',
     avatar: '',
     permissionList: [],
@@ -34,13 +35,16 @@ const user = {
     SET_INFO: (state, info) => {
       state.info = info
     },
+    SET_TENANT: (state, id) => {
+      state.tenantid = id
+    },
   },
 
   actions: {
     // CAS验证登录
     ValidateLogin({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
-        getAction("/cas/client/validateLogin",userInfo).then(response => {
+        getAction("/sys/cas/client/validateLogin",userInfo).then(response => {
           console.log("----cas 登录--------",response);
           if(response.success){
             const result = response.result
@@ -112,9 +116,7 @@ const user = {
     // 获取用户信息
     GetPermissionList({ commit }) {
       return new Promise((resolve, reject) => {
-        let v_token = Vue.ls.get(ACCESS_TOKEN);
-        let params = {token:v_token};
-        queryPermissionsByUser(params).then(response => {
+        queryPermissionsByUser().then(response => {
           const menuData = response.result.menu;
           const authData = response.result.auth;
           const allAuthData = response.result.allAuth;
@@ -133,7 +135,7 @@ const user = {
                 }
               }
             })
-            console.log(" menu show json ", menuData)
+            //console.log(" menu show json ", menuData)
             //update--end--autor:qinfeng-----date:20200109------for：JEECG-63 一级菜单的子菜单全部是隐藏路由，则一级菜单不显示------
             commit('SET_PERMISSIONLIST', menuData)
           } else {
@@ -154,11 +156,14 @@ const user = {
         commit('SET_PERMISSIONLIST', [])
         Vue.ls.remove(ACCESS_TOKEN)
         Vue.ls.remove(UI_CACHE_DB_DICT_DATA)
+        Vue.ls.remove(CACHE_INCLUDED_ROUTES)
         //console.log('logoutToken: '+ logoutToken)
         logout(logoutToken).then(() => {
-          //let sevice = "http://"+window.location.host+"/";
-          //let serviceUrl = encodeURIComponent(sevice);
-          //window.location.href = window._CONFIG['casPrefixUrl']+"/logout?service="+serviceUrl;
+          if (process.env.VUE_APP_SSO == 'true') {
+            let sevice = 'http://' + window.location.host + '/'
+            let serviceUrl = encodeURIComponent(sevice)
+            window.location.href = process.env.VUE_APP_CAS_BASE_URL + '/logout?service=' + serviceUrl
+          }
           resolve()
         }).catch(() => {
           resolve()
@@ -166,9 +171,9 @@ const user = {
       })
     },
     // 第三方登录
-    ThirdLogin({ commit }, token) {
+    ThirdLogin({ commit }, param) {
       return new Promise((resolve, reject) => {
-        thirdLogin(token).then(response => {
+        thirdLogin(param.token,param.thirdType).then(response => {
           if(response.code =='200'){
             const result = response.result
             const userInfo = result.userInfo
@@ -188,6 +193,11 @@ const user = {
         })
       })
     },
+    saveTenant({ commit }, id){
+      Vue.ls.set(TENANT_ID, id, 7 * 24 * 60 * 60 * 1000)
+      commit('SET_TENANT', id)
+    }
+
 
   }
 }

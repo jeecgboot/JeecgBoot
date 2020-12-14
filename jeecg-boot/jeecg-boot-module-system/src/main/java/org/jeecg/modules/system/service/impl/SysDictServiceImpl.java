@@ -8,6 +8,7 @@ import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictQuery;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.mapper.SysDictItemMapper;
@@ -50,7 +51,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Override
 	@Cacheable(value = CacheConstant.SYS_DICT_CACHE,key = "#code")
 	public List<DictModel> queryDictItemsByCode(String code) {
-		log.info("无缓存dictCache的时候调用这里！");
+		log.debug("无缓存dictCache的时候调用这里！");
 		return sysDictMapper.queryDictItemsByCode(code);
 	}
 
@@ -86,7 +87,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Override
 	@Cacheable(value = CacheConstant.SYS_DICT_CACHE,key = "#code+':'+#key")
 	public String queryDictTextByKey(String code, String key) {
-		log.info("无缓存dictText的时候调用这里！");
+		log.debug("无缓存dictText的时候调用这里！");
 		return sysDictMapper.queryDictTextByKey(code, key);
 	}
 
@@ -101,13 +102,13 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Override
 	//@Cacheable(value = CacheConstant.SYS_DICT_TABLE_CACHE)
 	public List<DictModel> queryTableDictItemsByCode(String table, String text, String code) {
-		log.info("无缓存dictTableList的时候调用这里！");
+		log.debug("无缓存dictTableList的时候调用这里！");
 		return sysDictMapper.queryTableDictItemsByCode(table,text,code);
 	}
 
 	@Override
 	public List<DictModel> queryTableDictItemsByCodeAndFilter(String table, String text, String code, String filterSql) {
-		log.info("无缓存dictTableList的时候调用这里！");
+		log.debug("无缓存dictTableList的时候调用这里！");
 		return sysDictMapper.queryTableDictItemsByCodeAndFilter(table,text,code,filterSql);
 	}
 	
@@ -123,7 +124,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Override
 	@Cacheable(value = CacheConstant.SYS_DICT_TABLE_CACHE)
 	public String queryTableDictTextByKey(String table,String text,String code, String key) {
-		log.info("无缓存dictTable的时候调用这里！");
+		log.debug("无缓存dictTable的时候调用这里！");
 		return sysDictMapper.queryTableDictTextByKey(table,text,code,key);
 	}
 
@@ -133,12 +134,16 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	 * @param table
 	 * @param text
 	 * @param code
-	 * @param keyArray
+	 * @param keys (逗号分隔)
 	 * @return
 	 */
 	@Override
-	@Cacheable(value = CacheConstant.SYS_DICT_TABLE_CACHE)
-	public List<String> queryTableDictByKeys(String table, String text, String code, String[] keyArray) {
+	@Cacheable(value = CacheConstant.SYS_DICT_TABLE_BY_KEYS_CACHE)
+	public List<String> queryTableDictByKeys(String table, String text, String code, String keys) {
+		if(oConvertUtils.isEmpty(keys)){
+			return null;
+		}
+		String[] keyArray = keys.split(",");
 		List<DictModel> dicts = sysDictMapper.queryTableDictByKeys(table, text, code, keyArray);
 		List<String> texts = new ArrayList<>(dicts.size());
 		// 查询出来的顺序可能是乱的，需要排个序

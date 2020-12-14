@@ -183,7 +183,7 @@
           that.selectionRows=[];
           selectUser.forEach(function(record,index){
             console.log(record)
-            that.selectionRows.push({id: that.selectedRowKeys[index],realname:record})
+            that.selectionRows.push({id: that.selectedRowKeys[index],realname:record.label})
           })
           // this.selectionRows = selectUser;
         }

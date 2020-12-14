@@ -1,6 +1,6 @@
 import * as api from '@/api/api'
 import { isURL } from '@/utils/validate'
-import onlineCommons from '@jeecg/antd-online-beta220'
+import onlineCommons from '@jeecg/antd-online-mini'
 
 export function timeFix() {
   const time = new Date()
@@ -115,7 +115,6 @@ function  generateChildRouters (data) {
       item.meta.url = URL;
     }
 
-    //online菜单路由加载逻辑
     let componentPath
     if(item.component=="modules/online/cgform/OnlCgformHeadList"){
       componentPath = onlineCommons.OnlCgformHeadList
@@ -127,6 +126,8 @@ function  generateChildRouters (data) {
       componentPath = onlineCommons.OnlCgformTreeList
     }else if(item.component=="modules/online/cgform/auto/erp/OnlCgformErpList"){
       componentPath = onlineCommons.OnlCgformErpList
+    }else if(item.component=="modules/online/cgform/auto/tab/OnlCgformTabList"){
+      componentPath = onlineCommons.OnlCgformTabList
     }else if(item.component=="modules/online/cgform/auto/innerTable/OnlCgformInnerTableList"){
       componentPath = onlineCommons.OnlCgformInnerTableList
     }else if(item.component=="modules/online/cgreport/OnlCgreportHeadList"){
@@ -142,8 +143,8 @@ function  generateChildRouters (data) {
       name: item.name,
       redirect:item.redirect,
       component: componentPath,
+      //component: resolve => require(['@/' + component+'.vue'], resolve),
       hidden:item.hidden,
-      //component:()=> import(`@/views/${item.component}.vue`),
       meta: {
         title:item.meta.title ,
         icon: item.meta.icon,
@@ -151,8 +152,9 @@ function  generateChildRouters (data) {
         permissionList:item.meta.permissionList,
         keepAlive:item.meta.keepAlive,
         /*update_begin author:wuxianquan date:20190908 for:赋值 */
-        internalOrExternal:item.meta.internalOrExternal
+        internalOrExternal:item.meta.internalOrExternal,
         /*update_end author:wuxianquan date:20190908 for:赋值 */
+        componentName:item.meta.componentName
       }
     }
     if(item.alwaysShow){
@@ -458,7 +460,7 @@ export function simpleDebounce(fn, delay = 100) {
       clearTimeout(timer)
     }
     timer = setTimeout(() => {
-      fn.apply(null, args)
+      fn.apply(this, args)
     }, delay)
   }
 }
@@ -477,4 +479,64 @@ export function replaceAll(text, checker, replacer) {
     return replaceAll(text, checker, replacer)
   }
   return text
+}
+
+/**
+ * 获取事件冒泡路径，兼容 IE11，Edge，Chrome，Firefox，Safari
+ * 目前使用的地方：JEditableTable Span模式
+ */
+export function getEventPath(event) {
+  let target = event.target
+  let path = (event.composedPath && event.composedPath()) || event.path
+
+  if (path != null) {
+    return (path.indexOf(window) < 0) ? path.concat(window) : path
+  }
+
+  if (target === window) {
+    return [window]
+  }
+
+  let getParents = (node, memo) => {
+    memo = memo || []
+    const parentNode = node.parentNode
+
+    if (!parentNode) {
+      return memo
+    } else {
+      return getParents(parentNode, memo.concat(parentNode))
+    }
+  }
+  return [target].concat(getParents(target), window)
+}
+
+/**
+ * 根据组件名获取父级
+ * @param vm
+ * @param name
+ * @returns {Vue | null|null|Vue}
+ */
+export function getVmParentByName(vm, name) {
+  let parent = vm.$parent
+  if (parent && parent.$options) {
+    if (parent.$options.name === name) {
+      return parent
+    } else {
+      let res = getVmParentByName(parent, name)
+      if (res) {
+        return res
+      }
+    }
+  }
+  return null
+}
+
+/**
+ * 使一个值永远不会为（null | undefined）
+ *
+ * @param value 要处理的值
+ * @param def 默认值，如果value为（null | undefined）则返回的默认值，可不传，默认为''
+ */
+export function neverNull(value, def) {
+  return value == null ? (neverNull(def, '')) : value
 }

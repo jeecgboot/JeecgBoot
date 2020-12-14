@@ -68,14 +68,28 @@
     },
     watch:{
       value(val){
-        if (this.customReturnField === 'id') {
+        //update-begin-author:wangshuai date:20201124 for:组件 JSelectDepart.vue不是默认id时新内容编辑问题 gitee I247X2
+        // if (this.customReturnField === 'id') {
           this.departIds = val
-        }
+        // }
+        //update-end-author:wangshuai date:20201124 for:组件 JSelectDepart.vue不是默认id时新内容编辑问题 gitee I247X2
       }
     },
     methods:{
       initComp(departNames){
         this.departNames = departNames
+        //update-begin-author:lvdandan date:20200513 for:TESTA-438 部门选择组件自定义返回值，数据无法回填
+        //TODO 当返回字段为部门名称时会有问题,因为部门名称不唯一
+        //返回字段不为id时，根据返回字段获取id
+        if(this.customReturnField !== 'id' && this.value){
+          const dataList = this.$refs.innerDepartSelectModal.dataList;
+          console.log('this.value',this.value)
+          this.departIds = this.value.split(',').map(item => {
+            const data = dataList.filter(d=>d[this.customReturnField] === item)
+            return data.length > 0 ? data[0].id : ''
+          }).join(',')
+        }
+        //update-end-author:lvdandan date:20200513 for:TESTA-438 部门选择组件自定义返回值，数据无法回填
       },
       openModal(){
         this.$refs.innerDepartSelectModal.show()
