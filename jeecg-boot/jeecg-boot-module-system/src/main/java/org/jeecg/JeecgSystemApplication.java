@@ -21,7 +21,6 @@ import java.net.UnknownHostException;
 */
 @Slf4j
 @SpringBootApplication
-//@EnableAutoConfiguration(exclude={org.activiti.spring.boot.SecurityAutoConfiguration.class})
 public class JeecgSystemApplication extends SpringBootServletInitializer {
 
     @Override

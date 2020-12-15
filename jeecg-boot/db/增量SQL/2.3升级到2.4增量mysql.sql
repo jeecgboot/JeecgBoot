@@ -23,7 +23,7 @@ CREATE TABLE `sys_third_account` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `sys_user`
-DROP COLUMN `third_id`
+DROP COLUMN `third_id`,
 DROP COLUMN `third_type`;
 
 update sys_permission set component = 'examples/list/UserList' where id = '05b3c82ddb2536a4a5ee1a4c46b5abef';
