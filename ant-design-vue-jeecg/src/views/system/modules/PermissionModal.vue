@@ -294,7 +294,7 @@
 
         this.visible = true;
         this.loadTree();
-        let fieldsVal = pick(this.model,'name','perms','permsType','component','url','sortNo','menuType','status');
+        let fieldsVal = pick(this.model,'name','perms','permsType','component','redirect','url','sortNo','menuType','status');
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldsVal)
         });
