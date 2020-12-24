@@ -75,6 +75,7 @@ public class SysGatewayRoute implements Serializable {
     @Excel(name = "是否重试", width = 15)
     @ApiModelProperty(value = "保留数据")
     @Dict(dicCode = "yn")
+    @TableField(value = "`persist`")
     private Integer persist;
 
     /**是否在接口文档中展示:0-否 1-是*/
