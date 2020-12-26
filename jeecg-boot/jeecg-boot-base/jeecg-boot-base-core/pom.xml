@@ -227,6 +227,16 @@
 			<groupId>io.minio</groupId>
 			<artifactId>minio</artifactId>
 			<version>${minio.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>okio</artifactId>
+					<groupId>com.squareup.okio</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>okhttp</artifactId>
+					<groupId>com.squareup.okhttp3</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -261,6 +271,10 @@
 					<groupId>com.alibaba</groupId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
 		</dependency>
 	</dependencies>
 
