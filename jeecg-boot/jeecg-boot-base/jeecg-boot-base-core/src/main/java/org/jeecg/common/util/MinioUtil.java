@@ -1,17 +1,14 @@
 package org.jeecg.common.util;
 
 import io.minio.MinioClient;
-import io.minio.errors.*;
+import io.minio.errors.InvalidEndpointException;
+import io.minio.errors.InvalidPortException;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.util.filter.StrAttackFilter;
 import org.springframework.web.multipart.MultipartFile;
-import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * minio文件上传工具类
@@ -83,30 +80,13 @@ public class MinioUtil {
             String objectName = bizPath+"/"+orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.indexOf("."));
 
             // 使用putObject上传一个本地文件到存储桶中。
+            if(objectName.startsWith("/")){
+                objectName = objectName.substring(1);
+            }
             minioClient.putObject(newBucket,objectName, stream,stream.available(),"application/octet-stream");
             stream.close();
             file_url = minioUrl+newBucket+"/"+objectName;
-        }catch (IOException e){
-            log.error(e.getMessage(), e);
-        } catch (InvalidKeyException e) {
-            log.error(e.getMessage(), e);
-        } catch (NoSuchAlgorithmException e) {
-            log.error(e.getMessage(), e);
-        } catch (NoResponseException e) {
-            log.error(e.getMessage(), e);
-        } catch (XmlPullParserException e) {
-            log.error(e.getMessage(), e);
-        } catch (InvalidArgumentException e) {
-            log.error(e.getMessage(), e);
-        } catch (RegionConflictException e) {
-            log.error(e.getMessage(), e);
-        } catch (InvalidBucketNameException e) {
-            log.error(e.getMessage(), e);
-        } catch (ErrorResponseException e) {
-            log.error(e.getMessage(), e);
-        } catch (InternalException e) {
-            log.error(e.getMessage(), e);
-        } catch (InsufficientDataException e) {
+        }catch (Exception e){
             log.error(e.getMessage(), e);
         }
         return file_url;
@@ -198,7 +178,7 @@ public class MinioUtil {
      * @param relativePath
      * @return
      */
-    public static String upload(InputStream stream,String relativePath) throws IOException, InvalidKeyException, NoSuchAlgorithmException, InsufficientDataException, InternalException, NoResponseException, InvalidBucketNameException, XmlPullParserException, ErrorResponseException, RegionConflictException, InvalidArgumentException {
+    public static String upload(InputStream stream,String relativePath) throws Exception {
         initMinio(minioUrl, minioName,minioPass);
         if(minioClient.bucketExists(bucketName)) {
             log.info("Bucket already exists.");
