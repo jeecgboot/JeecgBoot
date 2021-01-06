@@ -871,10 +871,10 @@
     cssnano-preset-default "^4.0.0"
     postcss "^7.0.0"
 
-"@jeecg/antd-online-mini@2.4.0-beta":
-  version "2.4.0-beta"
-  resolved "https://registry.npmjs.org/@jeecg/antd-online-mini/-/antd-online-mini-2.4.0-beta.tgz#b478ea52f004b127297c2e09f76a953d6474a710"
-  integrity sha512-sDNFBhDKFJm+Rwc88wJaLzBAR9jnYkJowqhIQxop6YPl9J2HDtbOQVvQl6ISDnfJyp9tFwzvKfJR81Q49Vac4A==
+"@jeecg/antd-online-mini@2.4.0-beta4":
+  version "2.4.0-beta4"
+  resolved "https://registry.yarnpkg.com/@jeecg/antd-online-mini/-/antd-online-mini-2.4.0-beta4.tgz#341547415991c504168417d684b27d876b671b38"
+  integrity sha512-MJcBDEHrsR+Zyvp8i5VquD1T4I6PXCwyxmgQf9yWQGLiQuVUzsMJ27aLIx3U8/iR2ajMkqTDAggQ1AiJgcg3GA==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -10736,10 +10736,10 @@ tinycolor2@^1.4.1:
   resolved "https://registry.npmjs.org/tinycolor2/-/tinycolor2-1.4.1.tgz#f4fad333447bc0b07d4dc8e9209d8f39a8ac77e8"
   integrity sha1-9PrTM0R7wLB9TcjpIJ2POaisd+g=
 
-tinymce@^5.3.2:
-  version "5.3.2"
-  resolved "https://registry.npmjs.org/tinymce/-/tinymce-5.3.2.tgz#c53622edf9c4b214bb912658762d6ea831d7d469"
-  integrity sha512-d8LaanlW+i/V5Ncb49gR2ncx0Tl2iWJBsepdsuT5qOlFaAPueIfc+btwwERXra7M6KDx0mOwKJaE2FBI+lHz3Q==
+tinymce@^5.6.0:
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-5.6.0.tgz#b5eda4888e1a607ddd545619cfaa137d59de14b4"
+  integrity sha512-f8LsyT80j8hD4wrL8Sac0DWDG5k10cDyykL/qkJ6kexn1KMt7w1ByrGlUm53XCYDqtavBA5snTU7odioMwSXSQ==
 
 tmp@^0.0.33:
   version "0.0.33"
