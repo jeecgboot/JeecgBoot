@@ -191,7 +191,7 @@ jeecg :
   # ElasticSearch 设置
   elasticsearch:
     cluster-name: jeecg-ES
-    cluster-nodes: 111.225.222.176:9200
+    cluster-nodes: 127.0.0.1:9200
     check-enabled: true
   # 表单设计器配置
   desform:
