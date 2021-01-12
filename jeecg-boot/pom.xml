@@ -52,8 +52,10 @@
 		<module>jeecg-boot-base</module>
 		<module>jeecg-boot-module-demo</module>
 		<module>jeecg-boot-module-system</module>
+		
+		<!-- 需要微服务，请打开注释
 		<module>jeecg-boot-starter</module>
-		<module>jeecg-cloud-module</module>
+		<module>jeecg-cloud-module</module>-->
 	</modules>
 
 	<distributionManagement>
