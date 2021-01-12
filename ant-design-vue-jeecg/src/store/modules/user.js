@@ -116,6 +116,9 @@ const user = {
     // 获取用户信息
     GetPermissionList({ commit }) {
       return new Promise((resolve, reject) => {
+        //增加token参数传递,解决登陆后无法跳转首页的问题
+        let v_token = Vue.ls.get(ACCESS_TOKEN);
+        let params = {token:v_token};
         queryPermissionsByUser().then(response => {
           const menuData = response.result.menu;
           const authData = response.result.auth;
