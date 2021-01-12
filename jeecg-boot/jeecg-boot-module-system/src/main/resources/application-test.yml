@@ -191,7 +191,7 @@ jeecg :
   # ElasticSearch 设置
   elasticsearch:
     cluster-name: jeecg-ES
-    cluster-nodes: http://fileview.jeecg.com
+    cluster-nodes: ??
     check-enabled: false
   # 表单设计器配置
   desform:
