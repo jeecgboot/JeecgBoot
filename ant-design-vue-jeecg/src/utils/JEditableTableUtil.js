@@ -17,7 +17,8 @@ const FormTypes = {
   radio:'radio',
   checkbox_meta:"checkbox_meta",
   input_pop:'input_pop',
-
+  sel_depart: 'sel_depart',
+  sel_user: 'sel_user',
   slot: 'slot',
   hidden: 'hidden'
 }

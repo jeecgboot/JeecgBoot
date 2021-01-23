@@ -210,6 +210,8 @@ jeecg :
   #大屏报表参数设置
   jmreport:
     mode: prod
+    #数据字典是否可以全局看到
+    saas: false
     #是否需要校验token
     is_verify_token: false
     #必须校验方法
@@ -245,7 +247,7 @@ jeecg :
 #Mybatis输出sql日志
 logging:
   level:
-    org.jeecg.modules.system.mapper : debug
+    org.jeecg.modules.system.mapper : info
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas

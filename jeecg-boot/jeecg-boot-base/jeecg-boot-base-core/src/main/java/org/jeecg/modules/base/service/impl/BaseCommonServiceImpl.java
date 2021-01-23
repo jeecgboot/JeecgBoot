@@ -1,6 +1,7 @@
 package org.jeecg.modules.base.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.dto.LogDTO;
 import org.jeecg.common.constant.CacheConstant;
@@ -22,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @Service
+@Slf4j
 public class BaseCommonServiceImpl implements BaseCommonService {
 
     @Resource
@@ -32,7 +34,13 @@ public class BaseCommonServiceImpl implements BaseCommonService {
         if(oConvertUtils.isEmpty(logDTO.getId())){
             logDTO.setId(String.valueOf(IdWorker.getId()));
         }
-        baseCommonMapper.saveLog(logDTO);
+        //保存日志（异常捕获处理，防止数据太大存储失败，导致业务失败）JT-238
+        try {
+            baseCommonMapper.saveLog(logDTO);
+        } catch (Exception e) {
+            log.warn(" LogContent length : "+logDTO.getLogContent().length());
+            log.warn(e.getMessage());
+        }
     }
 
     @Override
@@ -64,8 +72,13 @@ public class BaseCommonServiceImpl implements BaseCommonService {
             sysLog.setUsername(user.getRealname());
         }
         sysLog.setCreateTime(new Date());
-        //保存系统日志
-        baseCommonMapper.saveLog(sysLog);
+        //保存日志（异常捕获处理，防止数据太大存储失败，导致业务失败）JT-238
+        try {
+            baseCommonMapper.saveLog(sysLog);
+        } catch (Exception e) {
+            log.warn(" LogContent length : "+sysLog.getLogContent().length());
+            log.warn(e.getMessage());
+        }
     }
 
     @Override

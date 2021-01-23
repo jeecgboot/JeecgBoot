@@ -2,8 +2,6 @@ spring:
   profiles:
     # 当前激活环境
     active: @profile.name@
-  main:
-    allow-bean-definition-overriding: true
   cloud:
     #配置Bus id(远程推送事件)
     bus:

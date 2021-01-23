@@ -14,7 +14,6 @@
 </template>
 
 <script>
-  import JUpload from '@/components/jeecg/JUpload'
   import { getFileAccessHttpUrl } from '@/api/manage';
 
   const getFileName=(path)=>{
@@ -27,7 +26,7 @@
 
   export default {
     name: 'JFilePop',
-    components: { JUpload },
+    components: { },
     props:{
       title:{
         type:String,

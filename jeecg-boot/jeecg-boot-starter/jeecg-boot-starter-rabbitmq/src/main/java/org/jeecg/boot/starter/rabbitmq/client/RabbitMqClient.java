@@ -61,7 +61,7 @@ public class RabbitMqClient {
         Map<String, Object> beansWithRqbbitComponentMap = this.applicationContext.getBeansWithAnnotation(RabbitComponent.class);
         Class<? extends Object> clazz = null;
         for (Map.Entry<String, Object> entry : beansWithRqbbitComponentMap.entrySet()) {
-            log.info("初始化时队列............");
+            log.info("初始化队列............");
             //获取到实例对象的class信息
             clazz = entry.getValue().getClass();
             Method[] methods = clazz.getMethods();

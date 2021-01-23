@@ -1,5 +1,7 @@
 package org.jeecg.boot.starter.lock.annotation;
 
+import org.jeecg.boot.starter.lock.enums.LockModel;
+
 import java.lang.annotation.*;
 
 /**
@@ -15,35 +17,37 @@ import java.lang.annotation.*;
 public @interface DistributedLock {
 
     /**
-     * 要锁的参数索引
+     * 锁的模式:如果不设置,自动模式,当参数只有一个.使用 REENTRANT 参数多个 MULTIPLE
      */
-    int[] fieldIndexs() default {};
+    LockModel lockModel() default LockModel.AUTO;
 
     /**
-     * 要锁的参数的属性名
+     * 如果keys有多个,如果不设置,则使用 联锁
+     * @return
      */
-    String[] fieldNames() default {};
+    String[] lockKey() default {};
 
     /**
-     * 分布式锁名称
-     *
-     * @return String
+     * key的静态常量:当key的spel的值是LIST,数组时使用+号连接将会被spel认为这个变量是个字符串,只能产生一把锁,达不到我们的目的,<br />
+     * 而我们如果又需要一个常量的话.这个参数将会在拼接在每个元素的后面
+     * @return
      */
-    String lockKey() default "";
+    String keyConstant() default "";
+
 
     /**
-     * 锁超时时间（单位：秒） 如果超过还没有解锁的话,就强制解锁
-     *
-     * @return int
-     */
-    int expireSeconds() default 10;
-
-    /**
-     * 等待多久（单位：秒）-1 则表示一直等待
+     * 锁超时时间,默认30000毫秒
      *
      * @return int
      */
-    int waitTime() default 5;
+    long expireSeconds() default 30000L;
+
+    /**
+     * 等待加锁超时时间,默认10000毫秒 -1 则表示一直等待
+     *
+     * @return int
+     */
+     long waitTime() default 10000L;
 
     /**
      * 未取到锁时提示信息

@@ -246,7 +246,21 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
+    public List<JSONObject> queryUsersByIds(String ids) {
+        return null;
+    }
+
+    @Override
     public List<JSONObject> queryDepartsByOrgcodes(String orgCodes) {
+        return null;
+    }
+    @Override
+    public void sendEmailMsg(String email,String title,String content) {
+
+    }
+
+    @Override
+    public List<JSONObject> queryDepartsByOrgIds(String ids) {
         return null;
     }
 }

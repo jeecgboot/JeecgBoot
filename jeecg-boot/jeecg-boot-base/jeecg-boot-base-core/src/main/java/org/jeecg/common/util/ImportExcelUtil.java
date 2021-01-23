@@ -47,7 +47,7 @@ public class ImportExcelUtil {
                     throw new Exception(errorFlag);
                 }
             } catch (Exception e) {
-                String message = e.getMessage();
+                String message = e.getMessage().toLowerCase();
                 int lineNumber = i + 1;
                 // 通过索引名判断出错信息
                 if (message.contains(CommonConstant.SQL_INDEX_UNIQ_SYS_ROLE_CODE)) {
@@ -75,7 +75,7 @@ public class ImportExcelUtil {
                 throw new Exception(errorFlag);
             }
         } catch (Exception e) {
-            String message = e.getMessage();
+            String message = e.getMessage().toLowerCase();
             int lineNumber = i + 1;
             // 通过索引名判断出错信息
             if (message.contains(CommonConstant.SQL_INDEX_UNIQ_SYS_ROLE_CODE)) {

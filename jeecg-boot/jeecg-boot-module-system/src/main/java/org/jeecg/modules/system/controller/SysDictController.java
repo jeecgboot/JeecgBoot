@@ -16,13 +16,11 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.FieldPresenceUtil;
 import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
-import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysDictTree;
 import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecg.modules.system.service.ISysDictItemService;
@@ -32,6 +30,7 @@ import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
+import org.jeecgframework.poi.excel.entity.result.ExcelImportResult;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +40,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
@@ -152,7 +152,7 @@ public class SysDictController {
 
 			 result.setSuccess(true);
 			 result.setResult(ls);
-			 log.info(result.toString());
+			 log.debug(result.toString());
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
 			result.error500("操作失败");
@@ -202,7 +202,10 @@ public class SysDictController {
 	 * @return
 	 */
 	@RequestMapping(value = "/loadDict/{dictCode}", method = RequestMethod.GET)
-	public Result<List<DictModel>> loadDict(@PathVariable String dictCode,@RequestParam(name="keyword") String keyword, @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
+	public Result<List<DictModel>> loadDict(@PathVariable String dictCode,
+			@RequestParam(name="keyword") String keyword,
+			@RequestParam(value = "sign",required = false) String sign,
+			@RequestParam(value = "pageSize", required = false) Integer pageSize) {
 		log.info(" 加载字典表数据,加载关键字: "+ keyword);
 		Result<List<DictModel>> result = new Result<List<DictModel>>();
 		List<DictModel> ls = null;
@@ -213,7 +216,11 @@ public class SysDictController {
 					result.error500("字典Code格式不正确！");
 					return result;
 				}
-				ls = sysDictService.queryTableDictItems(params[0],params[1],params[2],keyword);
+				if(pageSize!=null){
+					ls = sysDictService.queryLittleTableDictItems(params[0],params[1],params[2],keyword, pageSize);
+				}else{
+					ls = sysDictService.queryTableDictItems(params[0],params[1],params[2],keyword);
+				}
 				result.setSuccess(true);
 				result.setResult(ls);
 				log.info(result.toString());
@@ -312,7 +319,7 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysDict> add(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -333,7 +340,7 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
 	public Result<SysDict> edit(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -355,7 +362,7 @@ public class SysDictController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value=CacheConstant.SYS_DICT_CACHE, allEntries=true)
 	public Result<SysDict> delete(@RequestParam(name="id",required=true) String id) {
@@ -374,7 +381,7 @@ public class SysDictController {
 	 * @param ids
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value= CacheConstant.SYS_DICT_CACHE, allEntries=true)
 	public Result<SysDict> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
@@ -400,10 +407,14 @@ public class SysDictController {
 		Set keys2 = redisTemplate.keys(CacheConstant.SYS_DICT_TABLE_CACHE + "*");
 		Set keys3 = redisTemplate.keys(CacheConstant.SYS_DEPARTS_CACHE + "*");
 		Set keys4 = redisTemplate.keys(CacheConstant.SYS_DEPART_IDS_CACHE + "*");
+		Set keys5 = redisTemplate.keys( "jmreport:cache:dict*");
+		Set keys6 = redisTemplate.keys( "jmreport:cache:dictTable*");
 		redisTemplate.delete(keys);
 		redisTemplate.delete(keys2);
 		redisTemplate.delete(keys3);
 		redisTemplate.delete(keys4);
+		redisTemplate.delete(keys5);
+		redisTemplate.delete(keys6);
 		return result;
 	}
 
@@ -449,7 +460,7 @@ public class SysDictController {
 	 * @param
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
 	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
  		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -461,12 +472,11 @@ public class SysDictController {
 			params.setHeadRows(2);
 			params.setNeedSave(true);
 			try {
-				//update-begin-author:wangshuai date:20201030 for:导入测试用例
-				boolean aBoolean = FieldPresenceUtil.fieldPresence(file.getInputStream(), SysDictPage.class, params);
-				if(!aBoolean){
-					throw  new RuntimeException("导入Excel标题格式不匹配！");
+				//导入Excel格式校验，看匹配的字段文本概率
+				ExcelImportResult t = ExcelImportUtil.importExcelVerify(file.getInputStream(), SysDictPage.class, params);
+				if(t.isVerfiyFail()){
+					throw new RuntimeException("导入Excel校验失败 ！");
 				}
-				//update-end-author:wangshuai date:20201030 for:导入测试用例
 				List<SysDictPage> list = ExcelImportUtil.importExcel(file.getInputStream(), SysDictPage.class, params);
 				// 错误信息
 				List<String> errorMessage = new ArrayList<>();

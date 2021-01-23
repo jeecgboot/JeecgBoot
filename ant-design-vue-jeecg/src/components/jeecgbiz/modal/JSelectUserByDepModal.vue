@@ -4,6 +4,7 @@
     :visible="visible"
     :title="title"
     switchFullscreen
+    wrapClassName="j-user-select-modal"
     @ok="handleSubmit"
     @cancel="close"
     style="top:50px"

@@ -62,8 +62,8 @@ VXETable.interceptor.add('event.clearActived', function (params, event, target) 
     if (className.includes('j-input-pop')) {
       return false
     }
-    // 点击的标签是JPopup的弹出层
-    if (className.includes('j-popup-modal')) {
+    // 点击的标签是JPopup的弹出层、部门选择、用户选择
+    if (className.includes('j-popup-modal') || className.includes('j-depart-select-modal') || className.includes('j-user-select-modal')) {
       return false
     }
     // 执行增强

@@ -6,7 +6,7 @@
       :closable="false"
       @close="onClose"
       :visible="visible"
-      :style="{}"
+      style="height: 100%;overflow: auto;"
     >
       <div class="setting-drawer-index-content">
 
@@ -178,19 +178,12 @@
     mixins: [mixin, mixinDevice],
     data() {
       return {
-        visible: true,
+        visible: false,
         colorList,
         dataFixSiderbar: false
     }
     },
-    watch: {
-
-    },
     mounted () {
-      const vm = this
-      setTimeout(() => {
-        vm.visible = false
-      }, 16)
       // 当主题色不是默认色时，才进行主题编译
       if (this.primaryColor !== config.primaryColor) {
         updateTheme(this.primaryColor)

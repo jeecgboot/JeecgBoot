@@ -75,10 +75,6 @@ public class CommonUtils {
         }
         //替换上传文件名字的特殊字符
         fileName = fileName.replace("=","").replace(",","").replace("&","").replace("#", "");
-       //替换上传文件名字中的中文
-        if(ifContainChinese(fileName)){
-            fileName= PinyinUtil.getPinyin(fileName,  StrUtil.EMPTY);
-        }
         //替换上传文件名字中的空格
         fileName=fileName.replaceAll("\\s","");
         return fileName;

@@ -3,6 +3,7 @@
     <a-select-option
       v-for="(item,index) in options"
       :key="index"
+      :getPopupContainer="getParentContainer"
       :value="item.value">
       {{ item.text || item.label }}
     </a-select-option>
@@ -36,11 +37,21 @@
         type: Boolean,
         required: false,
         default: false
-      }
+      },
+      spliter:{
+        type: String,
+        required: false,
+        default: ','
+      },
+      popContainer:{
+        type:String,
+        default:'',
+        required:false
+      },
     },
     data(){
       return {
-        arrayValue:!this.value?[]:this.value.split(",")
+        arrayValue:!this.value?[]:this.value.split(this.spliter)
       }
     },
     watch:{
@@ -48,18 +59,25 @@
         if(!val){
           this.arrayValue = []
         }else{
-          this.arrayValue = this.value.split(",")
+          this.arrayValue = this.value.split(this.spliter)
         }
       }
     },
     methods:{
       onChange (selectedValue) {
         if(this.triggerChange){
-          this.$emit('change', selectedValue.join(","));
+          this.$emit('change', selectedValue.join(this.spliter));
         }else{
-          this.$emit('input', selectedValue.join(","));
+          this.$emit('input', selectedValue.join(this.spliter));
         }
       },
+      getParentContainer(node){
+        if(!this.popContainer){
+          return node.parentNode
+        }else{
+          return document.querySelector(this.popContainer)
+        }
+      }
     },
 
   }

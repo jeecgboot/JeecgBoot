@@ -1,11 +1,13 @@
-package org.jeecg.modules.init;
+package org.jeecg.config.init;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.CacheConstant;
+import org.jeecg.config.JeecgCloudCondition;
 import org.jeecg.modules.system.service.ISysGatewayRouteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
+@Conditional(JeecgCloudCondition.class)
 public class SystemInitListener implements ApplicationListener<ApplicationReadyEvent>, Ordered {
 
 
@@ -24,7 +27,7 @@ public class SystemInitListener implements ApplicationListener<ApplicationReadyE
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
 
-        log.info(" 服务已启动，准备初始化路由配置 ###################");
+        log.info(" 服务已启动，初始化路由配置 ###################");
         if (applicationReadyEvent.getApplicationContext().getDisplayName().indexOf("AnnotationConfigServletWebServerApplicationContext") > -1) {
             sysGatewayRouteService.addRoute2Redis(CacheConstant.GATEWAY_ROUTES);
         }

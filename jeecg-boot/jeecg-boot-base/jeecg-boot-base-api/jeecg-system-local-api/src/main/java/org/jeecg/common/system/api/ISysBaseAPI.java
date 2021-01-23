@@ -269,10 +269,32 @@ public interface ISysBaseAPI extends CommonAPI {
     List<JSONObject> queryUsersByUsernames(String usernames);
 
     /**
-     * 37根据多个部门编码(逗号分隔)，查询返回多个部门信息
+     * 37根据多个用户ID(逗号分隔)，查询返回多个用户信息
+     * @param ids
+     * @return
+     */
+    List<JSONObject> queryUsersByIds(String ids);
+
+    /**
+     * 38根据多个部门编码(逗号分隔)，查询返回多个部门信息
      * @param orgCodes
      * @return
      */
     List<JSONObject> queryDepartsByOrgcodes(String orgCodes);
+
+    /**
+     * 39根据多个部门id(逗号分隔)，查询返回多个部门信息
+     * @param ids
+     * @return
+     */
+    List<JSONObject> queryDepartsByIds(String ids);
+
+    /**
+     * 40发送邮件消息
+     * @param email
+     * @param title
+     * @param content
+     */
+    void sendEmailMsg(String email,String title,String content);
 
 }

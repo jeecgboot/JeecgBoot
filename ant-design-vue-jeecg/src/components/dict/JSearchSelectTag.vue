@@ -5,7 +5,7 @@
     showSearch
     labelInValue
     :disabled="disabled"
-    :getPopupContainer="(node) => node.parentNode"
+    :getPopupContainer="getParentContainer"
     @search="loadData"
     :placeholder="placeholder"
     v-model="selectedAsyncValue"
@@ -21,7 +21,7 @@
 
   <a-select
     v-else
-    :getPopupContainer="(node) => node.parentNode"
+    :getPopupContainer="getParentContainer"
     showSearch
     :disabled="disabled"
     :placeholder="placeholder"
@@ -55,6 +55,16 @@
         type:String,
         default:"请选择",
         required:false
+      },
+      popContainer:{
+        type:String,
+        default:'',
+        required:false
+      },
+      pageSize:{
+        type: Number,
+        default: 10,
+        required: false
       }
     },
     data(){
@@ -126,7 +136,7 @@
         this.options = []
         this.loading=true
         // 字典code格式：table,text,code
-        getAction(`/sys/dict/loadDict/${this.dict}`,{keyword:value}).then(res=>{
+        getAction(`/sys/dict/loadDict/${this.dict}`,{keyword:value, pageSize: this.pageSize}).then(res=>{
           this.loading=false
           if(res.success){
             if(currentLoad!=this.lastLoad){
@@ -171,6 +181,17 @@
                 })
             }
           }
+        }else{
+          //异步一开始也加载一点数据
+          this.loading=true
+          getAction(`/sys/dict/loadDict/${this.dict}`,{pageSize: this.pageSize, keyword:''}).then(res=>{
+            this.loading=false
+            if(res.success){
+              this.options = res.result
+            }else{
+              this.$message.warning(res.message)
+            }
+          })
         }
       },
       filterOption(input, option) {
@@ -182,9 +203,18 @@
         this.callback()
       },
       handleAsyncChange(selectedObj){
-        this.selectedAsyncValue = selectedObj
-        this.selectedValue = selectedObj.key
+        //update-begin-author:scott date:20201222 for:【搜索】搜索查询组件，删除条件，默认下拉还是上次的缓存数据，不好 JT-191
+        if(selectedObj){
+          this.selectedAsyncValue = selectedObj
+          this.selectedValue = selectedObj.key
+        }else{
+          this.selectedAsyncValue = null
+          this.selectedValue = null
+          this.options = null
+          this.loadData("")
+        }
         this.callback()
+        //update-end-author:scott date:20201222 for:【搜索】搜索查询组件，删除条件，默认下拉还是上次的缓存数据，不好 JT-191
       },
       callback(){
         this.$emit('change', this.selectedValue);
@@ -194,7 +224,14 @@
       },
       getCurrentDictOptions(){
         return this.options
-      }
+      },
+      getParentContainer(node){
+        if(!this.popContainer){
+          return node.parentNode
+        }else{
+          return document.querySelector(this.popContainer)
+        }
+      },
 
     },
     model: {

@@ -50,6 +50,7 @@ export const JEditableTableMixin = {
     add() {
       //update-begin-author:lvdandan date:20201113 for:LOWCOD-1049 JEditaTable,子表默认添加一条数据，addDefaultRowNum设置无效 #1930
       return new Promise((resolve) => {
+        this.tableReset();
         resolve();
       }).then(() => {
         // 默认新增空数据
@@ -68,6 +69,9 @@ export const JEditableTableMixin = {
     },
     /** 当点击了编辑（修改）按钮时调用此方法 */
     edit(record) {
+      if(record && '{}'!=JSON.stringify(record)){
+        this.tableReset();
+      }
       if (typeof this.editBefore === 'function') this.editBefore(record)
       this.visible = true
       this.activeKey = this.refKeys[0]
@@ -78,12 +82,14 @@ export const JEditableTableMixin = {
     /** 关闭弹窗，并将所有JEditableTable实例回归到初始状态 */
     close() {
       this.visible = false
-      this.eachAllTable((item) => {
-        item.initialize()
-      })
       this.$emit('close')
     },
-
+    //清空子表table的数据
+    tableReset(){
+      this.eachAllTable((item) => {
+        item.clearRow()
+      })
+    },
     /** 查询某个tab的数据 */
     requestSubTableData(url, params, tab, success) {
       tab.loading = true

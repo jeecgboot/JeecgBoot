@@ -1,6 +1,7 @@
 package org.jeecg.common.constant;
 
 import com.alibaba.fastjson.JSONObject;
+import org.jeecg.common.util.oConvertUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -14,10 +15,6 @@ import java.util.List;
 
 @Component("pca")
 public class ProvinceCityArea {
-
-    @Value("classpath:static/pca.json")
-    private Resource jsonData;
-
     List<Area> areaList;
 
     public String getText(String code){
@@ -57,8 +54,7 @@ public class ProvinceCityArea {
         if(this.areaList==null || this.areaList.size()==0){
             this.areaList = new ArrayList<Area>();
             try {
-                File file = jsonData.getFile();
-                String jsonData = this.jsonRead(file);
+                String jsonData = oConvertUtils.readStatic("classpath:static/pca.json");
                 JSONObject baseJson = JSONObject.parseObject(jsonData);
                 //第一层 省
                 JSONObject provinceJson = baseJson.getJSONObject("86");
@@ -83,7 +79,7 @@ public class ProvinceCityArea {
                         }
                     }
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

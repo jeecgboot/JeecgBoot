@@ -155,6 +155,8 @@ const user = {
         commit('SET_TOKEN', '')
         commit('SET_PERMISSIONLIST', [])
         Vue.ls.remove(ACCESS_TOKEN)
+        Vue.ls.remove(USER_INFO)
+        Vue.ls.remove(USER_NAME)
         Vue.ls.remove(UI_CACHE_DB_DICT_DATA)
         Vue.ls.remove(CACHE_INCLUDED_ROUTES)
         //console.log('logoutToken: '+ logoutToken)

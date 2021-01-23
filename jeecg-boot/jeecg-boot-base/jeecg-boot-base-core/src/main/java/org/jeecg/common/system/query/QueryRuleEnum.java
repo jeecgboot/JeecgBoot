@@ -19,6 +19,8 @@ public enum QueryRuleEnum {
     LIKE("LIKE","like","全模糊"),
     LEFT_LIKE("LEFT_LIKE","left_like","左模糊"),
     RIGHT_LIKE("RIGHT_LIKE","right_like","右模糊"),
+    EQ_WITH_ADD("EQWITHADD","eq_with_add","带加号等于"),
+    LIKE_WITH_AND("LIKEWITHAND","like_with_and","多词模糊匹配————暂时未用上"),
     SQL_RULES("USE_SQL_RULES","ext","自定义SQL片段");
 
     private String value;

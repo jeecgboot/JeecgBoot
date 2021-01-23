@@ -56,6 +56,7 @@
       || po.fieldValidType == 'n'
       || po.fieldValidType == 'z'
       || po.fieldValidType == 'money'
+      || po.fieldValidType != ''
       >
         <#return true>
       </#if>
@@ -71,6 +72,15 @@
     <#return ", validatorRules.${po.fieldName}">
   <#else>
     <#return "">
+  </#if>
+</#function>
+
+<#-- ** 如果Blob就显示 String * -->
+<#function autoStringSuffix po>
+  <#if  po.fieldDbType=='Blob'>
+    <#return "'${po.fieldName}String'">
+  <#else>
+    <#return "'${po.fieldName}'">
   </#if>
 </#function>
 

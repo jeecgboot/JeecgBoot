@@ -1,6 +1,6 @@
 import XEUtils from 'xe-utils'
 import PropTypes from 'ant-design-vue/es/_util/vue-types'
-import { JVXETypes } from '@/components/jeecg/JVxeTable/index'
+import { JVXETypes } from '@/components/jeecg/JVxeTable/jvxeTypes'
 import VxeWebSocketMixins from '../mixins/vxe.web.socket.mixins'
 import { initDictOptions } from '@/components/dict/JDictSelectUtil'
 
@@ -188,6 +188,21 @@ export default {
           }
         }
         // update--begin--autor:lvdandan-----date:20201019------for:LOWCOD-882 【新行编辑】列表上带按钮的遮挡问题
+
+        // update--begin--autor:lvdandan-----date:20201211------for:JT-118 【online】 日期、时间控件长度较小
+        if (column.$type === JVXETypes.datetime || column.$type === JVXETypes.userSelect || column.$type === JVXETypes.departSelect) {
+          let width = column.width && column.width.endsWith('px')?Number.parseInt(column.width.substr(0,column.width.length-2)):0;
+          if(width <= 190){
+            column.width = '190px'
+          }
+        }
+        if (column.$type === JVXETypes.date) {
+          let width = column.width && column.width.endsWith('px')?Number.parseInt(column.width.substr(0,column.width.length-2)):0;
+          if(width <= 135){
+            column.width = '135px'
+          }
+        }
+        // update--end--autor:lvdandan-----date:20201211------for:JT-118 【online】 日期、时间控件长度较小
       })
       return this._innerColumns
     },
@@ -709,6 +724,11 @@ export default {
         deleteData: this.getDeleteData()
       }
     },
+    /** 获取表格表单里的值 */
+    getValues(callback, rowIds) {
+      let tableData = this.getTableData({rowIds: rowIds})
+      callback('', tableData)
+    },
     /** 获取表格数据 */
     getTableData(options = {}) {
       let {rowIds} = options
@@ -887,7 +907,11 @@ export default {
         }
       })
     },
-
+    //options自定义赋值 刷新
+    virtualRefresh(){
+      this.scrolling = true
+      this.closeScrolling()
+    },
     // 设置 this.scrolling 防抖模式
     closeScrolling: simpleDebounce(function () {
       this.scrolling = false
@@ -1203,7 +1227,7 @@ export default {
 // 兼容 online 的规则
 const fooPatterns = [
   {title: '非空', value: '*', pattern: /^.+$/},
-  {title: '6到16位数字', value: 'n6-16', pattern: /^\d{6,18}$/},
+  {title: '6到16位数字', value: 'n6-16', pattern: /^\d{6,16}$/},
   {title: '6到16位任意字符', value: '*6-16', pattern: /^.{6,16}$/},
   {title: '6到18位字母', value: 's6-18', pattern: /^[a-z|A-Z]{6,18}$/},
   {title: '网址', value: 'url', pattern: /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/},

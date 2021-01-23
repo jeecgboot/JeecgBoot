@@ -17,8 +17,8 @@
             <a-form-item label="性别">
               <a-select v-model="queryParam.sex" placeholder="请选择性别">
                 <a-select-option value="">请选择</a-select-option>
-                <a-select-option value="1">男性</a-select-option>
-                <a-select-option value="2">女性</a-select-option>
+                <a-select-option value="1">男</a-select-option>
+                <a-select-option value="2">女</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -65,7 +65,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
-      <a-button @click="handleAdd" type="primary" icon="plus">添加用户</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus" >添加用户</a-button>
       <a-button type="primary" icon="download" @click="handleExportXls('用户信息')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
@@ -120,7 +120,7 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+          <a @click="handleEdit(record)" >编辑</a>
 
           <a-divider type="vertical"/>
 
@@ -155,6 +155,10 @@
                 </a-popconfirm>
               </a-menu-item>
 
+              <a-menu-item>
+                <a href="javascript:;" @click="handleAgentSettings(record.username)">代理人</a>
+              </a-menu-item>
+
             </a-menu>
           </a-dropdown>
         </span>
@@ -165,7 +169,8 @@
     <!-- table区域-end -->
 
     <user-modal ref="modalForm" @ok="modalFormOk"></user-modal>
-    <password-modal ref="passwordmodal"></password-modal>
+
+    <password-modal ref="passwordmodal" @ok="passwordModalOk"></password-modal>
 
     <!-- 用户回收站 -->
     <user-recycle-bin-modal :visible.sync="recycleBinVisible" @ok="modalFormOk"/>
@@ -179,7 +184,6 @@
   import {putAction,getFileAccessHttpUrl} from '@/api/manage';
   import {frozenBatch} from '@/api/api'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import SysUserAgentModal from "./modules/SysUserAgentModal";
   import JInput from '@/components/jeecg/JInput'
   import UserRecycleBinModal from './modules/UserRecycleBinModal'
   import JSuperQuery from '@/components/jeecg/JSuperQuery'
@@ -188,7 +192,6 @@
     name: "UserList",
     mixins: [JeecgListMixin],
     components: {
-      SysUserAgentModal,
       UserModal,
       PasswordModal,
       JInput,
@@ -368,6 +371,9 @@
       handleChangePassword(username) {
         this.$refs.passwordmodal.show(username);
       },
+      passwordModalOk() {
+        //TODO 密码修改完成 不需要刷新页面，可以把datasource中的数据更新一下
+      }
     }
 
   }
