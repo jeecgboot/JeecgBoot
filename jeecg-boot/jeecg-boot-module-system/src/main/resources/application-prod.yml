@@ -253,7 +253,7 @@ logging:
     org.jeecg.modules.system.mapper : info
 #enable swagger
 swagger:
-  enable: false
+  enable: true
   production: false
   basic:
     enable: false
