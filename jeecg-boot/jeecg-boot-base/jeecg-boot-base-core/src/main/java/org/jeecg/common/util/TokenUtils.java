@@ -1,7 +1,7 @@
 package org.jeecg.common.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.constant.CommonConstant;

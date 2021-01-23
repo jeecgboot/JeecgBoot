@@ -2,7 +2,7 @@ package org.jeecg.common.util.dynamic.db;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.DynamicDataSourceModel;

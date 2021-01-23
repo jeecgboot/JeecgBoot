@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-parent</artifactId>
-		<version>2.4.0</version>
+		<version>2.4.2</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -36,11 +36,25 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
+			<artifactId>jeecg-boot-starter-redis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>jeecg-boot-module-demo</artifactId>
 			<version>${jeecgboot.version}</version>
 		</dependency>
-
-
+		<!-- 积木报表 -->
+		<dependency>
+			<groupId>com.jimureport</groupId>
+			<artifactId>spring-boot-starter-jimureport</artifactId>
+			<version>1.1.08-beta</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>autopoi-web</artifactId>
+					<groupId>org.jeecgframework</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -49,7 +63,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<!--微服务模式下修改为 true,跳过此打包插件，否则微服务模块无法引用-->
+					<!--微服务模式下修改为true,跳过此打包插件，否则微服务模块无法引用-->
 					<skip>false</skip>
 				</configuration>
 			</plugin>

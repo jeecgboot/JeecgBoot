@@ -14,14 +14,6 @@ module.exports = {
    */
   // 如果你不需要生产环境的 source map，可以将其设置为 false 以加速生产环境构建。
   productionSourceMap: false,
-  // 多入口配置
-  // pages: {
-  //   index: {
-  //     entry: 'src/main.js',
-  //     template: 'public/index.html',
-  //     filename: 'index.html',
-  //   }
-  // },
   //打包app时放开该配置
   //publicPath:'./',
   configureWebpack: config => {
@@ -37,9 +29,6 @@ module.exports = {
       .set('@assets', resolve('src/assets'))
       .set('@comp', resolve('src/components'))
       .set('@views', resolve('src/views'))
-      .set('@layout', resolve('src/layout'))
-      .set('@static', resolve('src/static'))
-      .set('@mobile', resolve('src/modules/mobile'))
 
     //生产环境，开启js\css压缩
     if (process.env.NODE_ENV === 'production') {

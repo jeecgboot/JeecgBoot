@@ -374,14 +374,17 @@
     },
     mounted(){
       const moverObj = document.getElementById(this.containerId+'-mover');
-      moverObj.addEventListener('mouseover',()=>{
-        this.moverHold = true
-        this.moveDisplay = 'block';
-      });
-      moverObj.addEventListener('mouseout',()=>{
-        this.moverHold = false
-        this.moveDisplay = 'none';
-      });
+      if(moverObj){
+        moverObj.addEventListener('mouseover',()=>{
+          this.moverHold = true
+          this.moveDisplay = 'block';
+        });
+        moverObj.addEventListener('mouseout',()=>{
+          this.moverHold = false
+          this.moveDisplay = 'none';
+        });
+      }
+    
       let picList = document.getElementById(this.containerId)?document.getElementById(this.containerId).getElementsByClassName('ant-upload-list-picture-card'):[];
       if(picList && picList.length>0){
         picList[0].addEventListener('mouseover',(ev)=>{

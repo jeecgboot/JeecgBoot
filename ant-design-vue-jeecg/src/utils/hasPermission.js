@@ -108,6 +108,7 @@ export function filterGlobalPermission(el, binding, vnode) {
   }
   let permissions = [];
   for (let item of permissionList) {
+    //权限策略1显示2禁用
     if(item.type != '2'){
       //update--begin--autor:wangshuai-----date:20200729------for：按钮权限，授权标识的提示信息是多个用逗号分隔逻辑处理 gitee#I1OUGU-------
       if(item.action){

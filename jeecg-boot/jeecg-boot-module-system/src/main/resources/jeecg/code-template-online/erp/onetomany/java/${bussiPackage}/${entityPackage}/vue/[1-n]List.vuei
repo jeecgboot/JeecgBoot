@@ -84,13 +84,11 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import ${sub.entityName}Modal from './modules/${sub.entityName}Modal'
-  import JSuperQuery from '@/components/jeecg/JSuperQuery.vue'
-
 
   export default {
     name: "${sub.entityName}List",
     mixins:[JeecgListMixin],
-    components: { ${sub.entityName}Modal,JSuperQuery },
+    components: { ${sub.entityName}Modal },
     props:{
       mainId:{
         type:String,

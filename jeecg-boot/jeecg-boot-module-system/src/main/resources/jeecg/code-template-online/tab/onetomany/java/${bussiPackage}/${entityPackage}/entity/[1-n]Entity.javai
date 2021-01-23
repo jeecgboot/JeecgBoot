@@ -13,6 +13,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.io.UnsupportedEncodingException;
 
 /**
  * @Description: ${subTab.ftlDescription}
@@ -65,8 +66,8 @@ public class ${subTab.entityName} implements Serializable {
 	</#if>
 		</#if>
 	</#if>
-	@ApiModelProperty(value = "${po.filedComment}")
-	private <#if po.fieldType=='java.sql.Blob'>byte[]<#else>${po.fieldType}</#if> ${po.fieldName};
+	<#-- 大字段转换 -->
+    <#include "/common/blob.ftl">
 	</#list>
 }
 </#list>

@@ -6,6 +6,9 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
@@ -147,6 +150,34 @@ public class SysDictItemController {
 			result.success("删除成功!");
 		}
 		return result;
+	}
+
+	/**
+	 * 字典值重复校验
+	 * @param sysDictItem
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/dictItemCheck", method = RequestMethod.GET)
+	@ApiOperation("字典重复校验接口")
+	public Result<Object> doDictItemCheck(SysDictItem sysDictItem, HttpServletRequest request) {
+		int num = 0;
+		LambdaQueryWrapper<SysDictItem> queryWrapper = new LambdaQueryWrapper<SysDictItem>();
+		queryWrapper.eq(SysDictItem::getItemValue,sysDictItem.getItemValue());
+		queryWrapper.eq(SysDictItem::getDictId,sysDictItem.getDictId());
+		if (StringUtils.isNotBlank(sysDictItem.getId())) {
+			// 编辑页面校验
+			queryWrapper.ne(SysDictItem::getId,sysDictItem.getId());
+		}
+		num = sysDictItemService.count(queryWrapper);
+		if (num == 0) {
+			// 该值可用
+			return Result.ok("该值可用！");
+		} else {
+			// 该值不可用
+			log.info("该值不可用，系统中已存在！");
+			return Result.error("该值不可用，系统中已存在！");
+		}
 	}
 	
 }

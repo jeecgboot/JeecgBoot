@@ -3,6 +3,7 @@ package org.jeecg.modules.system.mapper;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.ResultType;
@@ -74,7 +75,19 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @return
 	 */
 	@Deprecated
-	public List<DictModel> queryTableDictItems(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("keyword") String keyword); 
+	public List<DictModel> queryTableDictItems(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("keyword") String keyword);
+
+
+	/**
+	 * 通过关键字查询出字典表
+	 * @param page
+	 * @param table
+	 * @param text
+	 * @param code
+	 * @param keyword
+	 * @return
+	 */
+	IPage<DictModel> queryTableDictItems(Page<DictModel> page, @Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("keyword") String keyword);
 
 	/**
 	  * 根据表名、显示字段名、存储字段名 查询树

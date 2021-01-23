@@ -472,6 +472,7 @@ public class SysPermissionController {
 			json = new JSONObject();
 			json.put("action", permission.getPerms());
 			json.put("status", permission.getStatus());
+			//1显示2禁用
 			json.put("type", permission.getPermsType());
 			json.put("describe", permission.getName());
 			jsonArray.add(json);

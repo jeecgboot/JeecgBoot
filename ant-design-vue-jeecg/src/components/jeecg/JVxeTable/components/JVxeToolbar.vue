@@ -59,7 +59,7 @@
         // TODO 需要将remove替换batch_delete
         // 系统默认的批量删除编码配置为 batch_delete 此处需要转化一下
         if(exclude.indexOf('batch_delete')>=0){
-          exclude.add('remove')
+          exclude.push('remove')
         }
         // 按钮权限 需要去掉不被授权的按钮
         return arr.filter(item=>{

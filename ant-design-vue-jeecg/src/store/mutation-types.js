@@ -21,7 +21,6 @@ export const TENANT_ID = 'TENANT_ID'
 export const ONL_AUTH_FIELDS = 'ONL_AUTH_FIELDS'
 //路由缓存问题，关闭了tab页时再打开就不刷新 #842
 export const CACHE_INCLUDED_ROUTES = 'CACHE_INCLUDED_ROUTES'
-
 export const CONTENT_WIDTH_TYPE = {
   Fluid: 'Fluid',
   Fixed: 'Fixed'

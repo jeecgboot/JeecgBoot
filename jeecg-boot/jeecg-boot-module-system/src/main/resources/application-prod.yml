@@ -180,7 +180,7 @@ jeecg :
     #webapp文件路径
     webapp: /opt/jeecg-boot/webapp
   shiro:
-     excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**,/api/getUserInfo
+     excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**
   #阿里云oss存储配置
   oss:
     endpoint: oss-cn-beijing.aliyuncs.com
@@ -191,7 +191,7 @@ jeecg :
   # ElasticSearch 设置
   elasticsearch:
     cluster-name: jeecg-ES
-    cluster-nodes: 127.0.0.1:9200
+    cluster-nodes: 111.225.222.176:9200
     check-enabled: true
   # 表单设计器配置
   desform:
@@ -210,6 +210,8 @@ jeecg :
   #大屏报表参数设置
   jmreport:
     mode: prod
+    #数据字典是否可以全局看到
+    saas: false
     #是否需要校验token
     is_verify_token: true
     #必须校验方法
@@ -217,8 +219,8 @@ jeecg :
   #Wps在线文档
   wps:
     domain: https://wwo.wps.cn/office/
-    appid: ??
-    appsecret: ??
+    appid: true
+    appsecret: true
   #xxl-job配置
   xxljob:
     enabled: false
@@ -248,7 +250,7 @@ cas:
 #Mybatis输出sql日志
 logging:
   level:
-    org.jeecg.modules.system.mapper : debug
+    org.jeecg.modules.system.mapper : info
 #enable swagger
 swagger:
   enable: false
@@ -262,21 +264,21 @@ justauth:
   enabled: true
   type:
     GITHUB:
-      client-id: ??
-      client-secret: ??
+      client-id: true
+      client-secret: true
       redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/github/callback
     WECHAT_ENTERPRISE:
-      client-id: ??
-      client-secret: ??
+      client-id: true
+      client-secret: true
       redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_enterprise/callback
       agent-id: 1000002
     DINGTALK:
-      client-id: ??
-      client-secret: ??
+      client-id: true
+      client-secret: true
       redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/dingtalk/callback
     WECHAT_OPEN:
-      client-id: ??
-      client-secret: ??
+      client-id: true
+      client-secret: true
       redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_open/callback
   cache:
     type: default
