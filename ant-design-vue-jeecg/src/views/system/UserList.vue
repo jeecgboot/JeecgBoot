@@ -154,11 +154,6 @@
                   <a>解冻</a>
                 </a-popconfirm>
               </a-menu-item>
-
-              <a-menu-item>
-                <a href="javascript:;" @click="handleAgentSettings(record.username)">代理人</a>
-              </a-menu-item>
-
             </a-menu>
           </a-dropdown>
         </span>
