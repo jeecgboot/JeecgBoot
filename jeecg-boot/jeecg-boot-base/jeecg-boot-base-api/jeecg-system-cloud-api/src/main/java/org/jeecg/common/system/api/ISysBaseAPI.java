@@ -140,7 +140,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * 15根据业务类型 busType 及业务 busId 修改消息已读
      */
     @GetMapping("/sys/api/updateSysAnnounReadFlag")
-    public void updateSysAnnounReadFlag(@RequestParam("busType") String busType, @RequestParam("busId")String busId);
+    public void updateSysAnnounReadFlag(@RequestParam("busType") String busType, @RequestParam("busId") String busId);
 
     /**
      * 16查询表字典 支持过滤数据
@@ -177,7 +177,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryAllUser")
-    public JSONObject queryAllUser(@RequestParam(name="userIds",required=false)String userIds, @RequestParam(name="pageNo",required=false) Integer pageNo,@RequestParam(name="pageSize",required=false) int pageSize);
+    public JSONObject queryAllUser(@RequestParam(name = "userIds", required = false) String userIds, @RequestParam(name = "pageNo", required = false) Integer pageNo, @RequestParam(name = "pageSize", required = false) int pageSize);
 
 
     /**
@@ -186,7 +186,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryAllRole")
-    public List<ComboModel> queryAllRole(@RequestParam(name = "roleIds",required = false)String[] roleIds);
+    public List<ComboModel> queryAllRole(@RequestParam(name = "roleIds", required = false) String[] roleIds);
 
     /**
      * 21通过用户账号查询角色Id集合
@@ -194,7 +194,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/getRoleIdsByUsername")
-    public List<String> getRoleIdsByUsername(@RequestParam("username")String username);
+    public List<String> getRoleIdsByUsername(@RequestParam("username") String username);
 
     /**
      * 22通过部门编号查询部门id
@@ -202,7 +202,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/getDepartIdsByOrgCode")
-    public String getDepartIdsByOrgCode(@RequestParam("orgCode")String orgCode);
+    public String getDepartIdsByOrgCode(@RequestParam("orgCode") String orgCode);
 
     /**
      * 23查询所有部门
@@ -217,7 +217,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/getParentDepartId")
-    DictModel getParentDepartId(@RequestParam("departId")String departId);
+    DictModel getParentDepartId(@RequestParam("departId") String departId);
 
     /**
      * 25根据部门Id获取部门负责人
@@ -233,7 +233,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param cmd
      */
     @GetMapping("/sys/api/sendWebSocketMsg")
-    public void sendWebSocketMsg(@RequestParam("userIds")String[] userIds, @RequestParam("cmd") String cmd);
+    public void sendWebSocketMsg(@RequestParam("userIds") String[] userIds, @RequestParam("cmd") String cmd);
 
     /**
      * 27根据id获取所有参与用户
@@ -250,7 +250,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param userId
      */
     @GetMapping("/sys/api/meetingSignWebsocket")
-    void meetingSignWebsocket(@RequestParam("userId")String userId);
+    void meetingSignWebsocket(@RequestParam("userId") String userId);
 
     /**
      * 29根据name获取所有参与用户
@@ -258,7 +258,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryUserByNames")
-    List<LoginUser> queryUserByNames(@RequestParam("userNames")String[] userNames);
+    List<LoginUser> queryUserByNames(@RequestParam("userNames") String[] userNames);
 
 
     /**
@@ -267,7 +267,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/getUserRoleSet")
-    Set<String> getUserRoleSet(@RequestParam("username")String username);
+    Set<String> getUserRoleSet(@RequestParam("username") String username);
 
     /**
      * 31获取用户的权限集合
@@ -308,7 +308,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryUserRoles")
-    Set<String> queryUserRoles(@RequestParam("username")String username);
+    Set<String> queryUserRoles(@RequestParam("username") String username);
 
     /**
      * 36查询用户权限信息
@@ -316,7 +316,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryUserAuths")
-    Set<String> queryUserAuths(@RequestParam("username")String username);
+    Set<String> queryUserAuths(@RequestParam("username") String username);
 
     /**
      * 37根据 id 查询数据库中存储的 DynamicDataSourceModel
@@ -368,7 +368,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryPermissionDataRule")
-    List<SysPermissionDataRuleModel> queryPermissionDataRule(@RequestParam("component") String component, @RequestParam("requestPath")String requestPath, @RequestParam("username") String username);
+    List<SysPermissionDataRuleModel> queryPermissionDataRule(@RequestParam("component") String component, @RequestParam("requestPath") String requestPath, @RequestParam("username") String username);
 
     /**
      * 43查询用户信息
@@ -408,7 +408,7 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     @GetMapping("/sys/api/queryDepartsByOrgIds")
     List<JSONObject> queryDepartsByOrgIds(String ids);
-    
+
     /**
      * 40发送邮件消息
      * @param email
@@ -416,5 +416,5 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param content
      */
     @GetMapping("/sys/api/sendEmailMsg")
-    void sendEmailMsg(String email,String title,String content);
+    void sendEmailMsg(@RequestParam("email") String email, @RequestParam("title") String title, @RequestParam("content") String content);
 }
