@@ -10,7 +10,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@jeecg/antd-online-mini": "2.4.21-beta",
+    "@jeecg/antd-online-mini": "2.4.22-beta",
     "ant-design-vue": "^1.7.2",
     "@antv/data-set": "^0.11.4",
     "viser-vue": "^2.4.8",
@@ -96,7 +96,10 @@
       "vue/html-closing-bracket-newline": 0,
       "vue/no-parsing-error": 0,
       "no-tabs": 0,
-      "indent": ["off", 2],
+      "indent": [
+        "off",
+        2
+      ],
       "no-console": 0,
       "space-before-function-paren": 0
     }
