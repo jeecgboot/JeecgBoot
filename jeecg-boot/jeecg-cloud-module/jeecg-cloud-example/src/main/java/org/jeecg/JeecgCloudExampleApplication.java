@@ -9,9 +9,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableFeignClients(basePackages = {"org.jeecg"})
 @SpringBootApplication(scanBasePackages = "org.jeecg")
-public class JeecgCloudDemoApplication {
+public class JeecgCloudExampleApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(JeecgCloudDemoApplication.class, args);
+        SpringApplication.run(JeecgCloudExampleApplication.class, args);
     }
 }

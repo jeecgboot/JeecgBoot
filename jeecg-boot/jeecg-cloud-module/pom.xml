@@ -16,7 +16,8 @@
         <module>jeecg-cloud-gateway</module>
         <module>jeecg-cloud-monitor</module>
         <module>jeecg-cloud-xxljob</module>
-        <module>jeecg-cloud-demo</module>
+        <!-- 微服务测试学习例子
+        <module>jeecg-cloud-example</module>-->
     </modules>
 
 
