@@ -40,24 +40,5 @@ public class JeecgSystemApplication extends SpringBootServletInitializer {
                 "External: \thttp://" + ip + ":" + port + path + "/\n\t" +
                 "Swagger文档: \thttp://" + ip + ":" + port + path + "/doc.html\n" +
                 "----------------------------------------------------------");
-
-    }
-
-    /**
-     * tomcat-embed-jasper引用后提示jar找不到的问题
-     */
-    @Bean
-    public TomcatServletWebServerFactory tomcatFactory() {
-        TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory() {
-            @Override
-            protected void postProcessContext(Context context) {
-                ((StandardJarScanner) context.getJarScanner()).setScanManifest(false);
-            }
-        };
-        factory.addConnectorCustomizers(connector -> {
-            connector.setProperty("relaxedPathChars", "[]{}");
-            connector.setProperty("relaxedQueryChars", "[]{}");
-        });
-        return factory;
     }
 }
