@@ -17,7 +17,7 @@ import java.util.List;
  *
  */
 @Slf4j
-@Api(tags = "jeecg-cloud-demo")
+@Api(tags = "jeecg-demo")
 @RestController
 @RequestMapping("/test")
 public class JeecgDemoController {

@@ -8,8 +8,8 @@
         <version>2.4.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>jeecg-cloud-demo</artifactId>
-    <description>jeecg-cloud-demo示例模块</description>
+    <artifactId>jeecg-cloud-example</artifactId>
+    <description>jeecg-cloud-example 微服务测试例子</description>
     <dependencies>
         <!-- 引入jeecg-boot-starter-cloud依赖-->
         <dependency>
