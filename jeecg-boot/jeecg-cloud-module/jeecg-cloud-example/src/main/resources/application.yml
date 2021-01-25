@@ -1,5 +1,5 @@
 server:
-  port: 7002
+  port: 7003
 spring:
   application:
-    name: jeecg-cloud-demo
+    name: jeecg-cloud-example
