@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.boot.starter.redis.prop.JeecgRedisProperties;
 import org.jeecg.boot.starter.redis.service.RedisReceiver;
 import org.jeecg.common.constant.GlobalConstants;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -39,8 +40,8 @@ public class RedisConfiguration {
      * @param lettuceConnectionFactory
      * @return
      */
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory lettuceConnectionFactory) {
+    @Bean("starterRedisTemplate")
+    public RedisTemplate<String, Object> starterRedisTemplate(LettuceConnectionFactory lettuceConnectionFactory) {
         log.info(" --- redis config init --- ");
         // 设置序列化
         Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<Object>(Object.class);

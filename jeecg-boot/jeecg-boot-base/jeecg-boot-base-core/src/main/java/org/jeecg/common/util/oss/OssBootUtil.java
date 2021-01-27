@@ -139,6 +139,19 @@ public class OssBootUtil {
     }
 
     /**
+     * 获取原始URL
+    * @param url: 原始URL
+    * @Return: java.lang.String
+    */
+    public static String getOriginalUrl(String url) {
+        String originalDomain = "https://" + bucketName + "." + endPoint;
+        if(url.indexOf(staticDomain)!=-1){
+            url = url.replace(staticDomain,originalDomain);
+        }
+        return url;
+    }
+
+    /**
      * 文件上传
      * @param file
      * @param fileDir

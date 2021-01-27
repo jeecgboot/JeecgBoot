@@ -3,7 +3,7 @@ package org.jeecg.common.es;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.util.RestUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.beans.factory.annotation.Value;

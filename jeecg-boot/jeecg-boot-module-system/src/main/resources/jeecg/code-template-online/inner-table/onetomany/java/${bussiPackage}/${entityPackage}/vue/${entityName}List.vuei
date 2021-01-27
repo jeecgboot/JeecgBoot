@@ -317,7 +317,6 @@
   import JCategorySelect from '@comp/jeecg/JCategorySelect'
 </#if>
   import '@/assets/less/TableExpand.less'
-  import JSuperQuery from '@/components/jeecg/JSuperQuery.vue'
 
   export default {
     name: '${entityName}List',
@@ -351,7 +350,6 @@
 <#if query_sel_cat>
       JCategorySelect,
 </#if>
-      JSuperQuery
     },
     data() {
       return {
@@ -377,7 +375,7 @@
     <#if po.classType == 'date'>
             dataIndex: '${po.fieldName}',
     <#elseif po.fieldDbType=='Blob'>
-            dataIndex: '${po.fieldName}String'
+           dataIndex: '${po.fieldName}String'
     <#elseif po.classType=='umeditor'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'htmlSlot'}

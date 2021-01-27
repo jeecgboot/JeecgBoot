@@ -145,6 +145,7 @@ function  generateChildRouters (data) {
       component: componentPath,
       //component: resolve => require(['@/' + component+'.vue'], resolve),
       hidden:item.hidden,
+      //component:()=> import(`@/views/${item.component}.vue`),
       meta: {
         title:item.meta.title ,
         icon: item.meta.icon,
@@ -539,4 +540,24 @@ export function getVmParentByName(vm, name) {
  */
 export function neverNull(value, def) {
   return value == null ? (neverNull(def, '')) : value
+}
+
+/**
+ * 根据元素值移除数组中的一个元素
+ * @param array 数组
+ * @param prod 属性名
+ * @param value 属性值
+ * @returns {string}
+ */
+export function removeArrayElement(array, prod, value) {
+  let index = -1
+  for(let i = 0;i<array.length;i++){
+    if(array[i][prod] == value){
+      index = i;
+      break;
+    }
+  }
+  if(index>=0){
+    array.splice(index, 1);
+  }
 }

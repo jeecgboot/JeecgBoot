@@ -75,7 +75,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="授权标识">
-          <a-input placeholder="多个用逗号分隔, 如: user:list,user:create" v-decorator="[ 'perms', {rules:[{ required: false, message: '请输入授权标识!' },{validator: this.validatePerms }]}]" :readOnly="disableSubmit"/>
+          <a-input placeholder="请输入授权标识, 如: user:list" v-decorator="[ 'perms', {rules:[{ required: false, message: '请输入授权标识!' },{validator: this.validatePerms }]}]" :readOnly="disableSubmit"/>
         </a-form-item>
 
         <a-form-item

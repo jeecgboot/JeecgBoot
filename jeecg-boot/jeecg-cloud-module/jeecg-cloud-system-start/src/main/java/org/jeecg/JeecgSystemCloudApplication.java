@@ -45,17 +45,4 @@ public class JeecgSystemCloudApplication extends SpringBootServletInitializer {
                 "----------------------------------------------------------");
 
     }
-
-    /**
-     * tomcat-embed-jasper引用后提示jar找不到的问题
-     */
-    @Bean
-    public TomcatServletWebServerFactory tomcatFactory() {
-        return new TomcatServletWebServerFactory() {
-            @Override
-            protected void postProcessContext(Context context) {
-                ((StandardJarScanner) context.getJarScanner()).setScanManifest(false);
-            }
-        };
-    }
 }

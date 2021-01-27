@@ -206,6 +206,37 @@ export function getNoAuthCols(pre){
   return cols;
 }
 
+/**
+ * 将Online的行编辑按钮权限，添加至本地存储
+ */
+export function addOnlineBtAuth2Storage(pre, authList){
+  let allAuthList = JSON.parse(sessionStorage.getItem(SYS_BUTTON_AUTH) || "[]");
+  let newAuthList = allAuthList.filter(item=>{
+    if(!item.action){
+      return true
+    }
+    return item.action.indexOf(pre)<0
+  })
+  if(authList && authList.length>0){
+    for(let item of authList){
+      newAuthList.push({
+        action: pre+item,
+        type:1,
+        status:1
+      })
+    }
+    let temp = JSON.parse(sessionStorage.getItem(USER_AUTH) || "[]");
+    let newArr = temp.filter(item=>{
+      if(!item.action){
+        return true
+      }
+      return item.action.indexOf(pre)<0 || authList.indexOf(item.action.replace(pre, ''))<0
+    })
+    sessionStorage.setItem(USER_AUTH, JSON.stringify(newArr))
+  }
+  sessionStorage.setItem(SYS_BUTTON_AUTH, JSON.stringify(newAuthList))
+}
+
 
 
 /**

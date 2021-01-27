@@ -161,7 +161,7 @@ mybatis-plus:
     # 关闭MP3.0自带的banner
     banner: false
     db-config:
-      #主键类型
+      #主键类型  0:"数据库ID自增",1:"该类型为未设置主键类型", 2:"用户输入ID",3:"全局唯一ID (数字类型唯一ID)", 4:"全局唯一ID UUID",5:"字符串全局唯一ID (idWorker 的字符串表示)";
       id-type: ASSIGN_ID
       # 默认数据库表下划线命名
       table-underline: true
@@ -210,6 +210,8 @@ jeecg :
   #大屏报表参数设置
   jmreport:
     mode: dev
+    #数据字典是否可以全局看到
+    saas: false
     #是否需要校验token
     is_verify_token: false
     #必须校验方法
@@ -262,17 +264,17 @@ justauth:
   enabled: true
   type:
     GITHUB:
-      client-id: ??
-      client-secret: ??
+      client-id: true
+      client-secret: true
       redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/github/callback
     WECHAT_ENTERPRISE:
-      client-id: ??
-      client-secret: ??
+      client-id: true
+      client-secret: true
       redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_enterprise/callback
       agent-id: 1000002
     DINGTALK:
-      client-id: ??
-      client-secret: ??
+      client-id: true
+      client-secret: true
       redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/dingtalk/callback
     WECHAT_OPEN:
       client-id: ??

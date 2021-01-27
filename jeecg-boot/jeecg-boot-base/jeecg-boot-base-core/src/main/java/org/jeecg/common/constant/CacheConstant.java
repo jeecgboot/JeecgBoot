@@ -52,7 +52,7 @@ public interface CacheConstant {
 	/**
 	 * gateway路由缓存
 	 */
-	public static final String GATEWAY_ROUTES = "geteway_routes";
+	public static final String GATEWAY_ROUTES = "gateway_routes";
 
 
 	/**

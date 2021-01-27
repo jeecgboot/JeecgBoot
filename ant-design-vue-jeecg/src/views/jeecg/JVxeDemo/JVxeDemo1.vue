@@ -134,7 +134,7 @@
             title: '下拉框_多选',
             key: 'select_multiple',
             type: JVXETypes.selectMultiple,
-            width: '180px',
+            width: '205px',
             options: [
               {title: 'String', value: 'string'},
               {title: 'Integer', value: 'int'},

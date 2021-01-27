@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-base</artifactId>
-		<version>2.4.0</version>
+		<version>2.4.2</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -75,13 +75,6 @@
 			<artifactId>commons-lang</artifactId>
 			<version>${commons.version}</version>
 		</dependency>
-
-		<!-- 拼音库 -->
-		<dependency>
-			<groupId>com.belerweb</groupId>
-			<artifactId>pinyin4j</artifactId>
-			<version>${pinyin4j.version}</version>
-		</dependency>
 		<!-- freemarker -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -121,6 +114,7 @@
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>sqljdbc4</artifactId>
 			<version>${sqljdbc4.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 		<!-- oracle驱动 -->
 		<dependency>
@@ -159,7 +153,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-re</artifactId>
-			<version>2.3.07</version>
+			<version>2.4.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -226,17 +220,6 @@
 		<dependency>
 			<groupId>io.minio</groupId>
 			<artifactId>minio</artifactId>
-			<version>${minio.version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>okio</artifactId>
-					<groupId>com.squareup.okio</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>okhttp</artifactId>
-					<groupId>com.squareup.okhttp3</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -260,17 +243,6 @@
 		<dependency>
 			<groupId>com.xkcoding.justauth</groupId>
 			<artifactId>justauth-spring-boot-starter</artifactId>
-			<version>${justauth-spring-boot-starter.version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>hutool-core</artifactId>
-					<groupId>cn.hutool</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>fastjson</artifactId>
-					<groupId>com.alibaba</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>

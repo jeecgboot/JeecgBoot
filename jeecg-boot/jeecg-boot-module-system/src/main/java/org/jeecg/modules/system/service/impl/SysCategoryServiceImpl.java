@@ -1,9 +1,12 @@
 package org.jeecg.modules.system.service.impl;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.jeecg.common.constant.FillRuleConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.FillRuleUtil;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @Description: 分类字典
@@ -105,6 +109,99 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 	@Override
 	public String queryIdByCode(String code) {
 		return baseMapper.queryIdByCode(code);
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void deleteSysCategory(String ids) {
+		String allIds = this.queryTreeChildIds(ids);
+		String pids = this.queryTreePids(ids);
+		//1.删除时将节点下所有子节点一并删除
+		this.baseMapper.deleteBatchIds(Arrays.asList(allIds.split(",")));
+		//2.将父节点中已经没有下级的节点，修改为没有子节点
+		if(oConvertUtils.isNotEmpty(pids)){
+			LambdaUpdateWrapper<SysCategory> updateWrapper = new UpdateWrapper<SysCategory>()
+					.lambda()
+					.in(SysCategory::getId,Arrays.asList(pids.split(",")))
+					.set(SysCategory::getHasChild,"0");
+			this.update(updateWrapper);
+		}
+	}
+
+	/**
+	 * 查询节点下所有子节点
+	 * @param ids
+	 * @return
+	 */
+	private String queryTreeChildIds(String ids) {
+		//获取id数组
+		String[] idArr = ids.split(",");
+		StringBuffer sb = new StringBuffer();
+		for (String pidVal : idArr) {
+			if(pidVal != null){
+				if(!sb.toString().contains(pidVal)){
+					if(sb.toString().length() > 0){
+						sb.append(",");
+					}
+					sb.append(pidVal);
+					this.getTreeChildIds(pidVal,sb);
+				}
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * 查询需修改标识的父节点ids
+	 * @param ids
+	 * @return
+	 */
+	private String queryTreePids(String ids) {
+		StringBuffer sb = new StringBuffer();
+		//获取id数组
+		String[] idArr = ids.split(",");
+		for (String id : idArr) {
+			if(id != null){
+				SysCategory category = this.baseMapper.selectById(id);
+				//根据id查询pid值
+				String metaPid = category.getPid();
+				//查询此节点上一级是否还有其他子节点
+				LambdaQueryWrapper<SysCategory> queryWrapper = new LambdaQueryWrapper<>();
+				queryWrapper.eq(SysCategory::getPid,metaPid);
+				queryWrapper.notIn(SysCategory::getId,Arrays.asList(idArr));
+				List<SysCategory> dataList = this.baseMapper.selectList(queryWrapper);
+				if((dataList == null || dataList.size()==0) && !Arrays.asList(idArr).contains(metaPid)
+						&& !sb.toString().contains(metaPid)){
+					//如果当前节点原本有子节点 现在木有了，更新状态
+					sb.append(metaPid).append(",");
+				}
+			}
+		}
+		if(sb.toString().endsWith(",")){
+			sb = sb.deleteCharAt(sb.length() - 1);
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * 递归 根据父id获取子节点id
+	 * @param pidVal
+	 * @param sb
+	 * @return
+	 */
+	private StringBuffer getTreeChildIds(String pidVal,StringBuffer sb){
+		LambdaQueryWrapper<SysCategory> queryWrapper = new LambdaQueryWrapper<>();
+		queryWrapper.eq(SysCategory::getPid,pidVal);
+		List<SysCategory> dataList = baseMapper.selectList(queryWrapper);
+		if(dataList != null && dataList.size()>0){
+			for(SysCategory category : dataList) {
+				if(!sb.toString().contains(category.getId())){
+					sb.append(",").append(category.getId());
+				}
+				this.getTreeChildIds(category.getId(), sb);
+			}
+		}
+		return sb;
 	}
 
 }

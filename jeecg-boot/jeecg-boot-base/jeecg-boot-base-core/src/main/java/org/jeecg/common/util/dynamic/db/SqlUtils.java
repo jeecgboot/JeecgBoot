@@ -1,6 +1,6 @@
 package org.jeecg.common.util.dynamic.db;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.system.vo.DynamicDataSourceModel;
 

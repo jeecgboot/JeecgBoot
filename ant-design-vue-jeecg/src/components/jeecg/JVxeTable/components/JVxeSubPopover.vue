@@ -1,5 +1,5 @@
 <template>
-  <a-popover :visible="visible" placement="bottom" overlayClassName="j-vxe-popover-overlay" :overlayStyle="overlayStyle">
+  <a-popover :visible="visible" :placement="placement" overlayClassName="j-vxe-popover-overlay" :overlayStyle="overlayStyle">
     <div class="j-vxe-popover-title" slot="title">
       <div>子表</div>
       <div class="j-vxe-popover-title-close" @click="close">
@@ -34,6 +34,7 @@
           width: null,
           zIndex: 100
         },
+        placement: 'bottom'
       }
     },
     created() {
@@ -41,6 +42,14 @@
     methods: {
 
       toggle(event) {
+
+        //update-begin-author:taoyan date:20200921 for: 弹出子表时，子表会闪一下，类似重新计算子表的位置
+        if(document.body.clientHeight - event.$event.clientY > 350){
+          this.placement = 'bottom'
+        }else{
+          this.placement = 'top'
+        }
+        //update-end-author:taoyan date:20200921 for: 弹出子表时，子表会闪一下，类似重新计算子表的位置
         if (this.row == null) {
           this.open(event)
         } else {
@@ -83,13 +92,22 @@
           this.$refs.div.style.height = clientHeight + 'px'
           this.overlayStyle.width = Number.parseInt((clientWidth - clientWidth * 0.04)) + 'px'
           this.overlayStyle.maxWidth = this.overlayStyle.width
-          domAlign(this.$refs.div, tr, {
+          //update-begin-author:taoyan date:20200921 for: 子表弹出位置存在现实位置问题。
+          //let realTable = getParentNodeByTagName(tr, 'table')
+          //let left = realTable.parentNode.scrollLeft
+          let h = event.$event.clientY
+          if(h){
+            h = h-140
+          }
+          let toolbar = this.$refs.div.nextSibling
+          domAlign(this.$refs.div, toolbar, {
             points: ['tl', 'tl'],
-            offset: [0, 0],
+            offset: [0, h],
             overflow: {
               alwaysByViewport: true
             },
           })
+          //update-end-author:taoyan date:20200921 for: 子表弹出位置存在现实位置问题。
           this.$nextTick(() => {
             this.visible = true
             this.$nextTick(() => {

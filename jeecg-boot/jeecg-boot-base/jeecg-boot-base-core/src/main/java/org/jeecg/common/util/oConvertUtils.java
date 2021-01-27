@@ -1,9 +1,12 @@
 package org.jeecg.common.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.BeanUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -646,4 +649,20 @@ public class oConvertUtils {
 		return !listIsEmpty(list);
 	}
 
+	/**
+	 * 读取静态文本内容
+	 * @param url
+	 * @return
+	 */
+	public static String readStatic(String url) {
+		String json = "";
+		try {
+			//换个写法，解决springboot读取jar包中文件的问题
+			InputStream stream = oConvertUtils.class.getClassLoader().getResourceAsStream(url.replace("classpath:", ""));
+			json = IOUtils.toString(stream,"UTF-8");
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		}
+		return json;
+	}
 }

@@ -19,10 +19,10 @@
     </#if>
     <#-- 唯一校验 -->
     <#if fieldValidType == 'only'>
-              { validator: (rule, value, callback) => validateDuplicateValue('${tableName}', '${po.fieldDbName}', value, this.model.id, callback)},
+              { validator: (rule, value, callback) => validateDuplicateValue(<#if sub?default("")?trim?length gt 1>'${sub.tableName}'<#else>'${tableName}'</#if>, '${po.fieldDbName}', value, this.model.id, callback)},
     <#-- 6到16位数字 -->
     <#elseif fieldValidType == 'n6-16'>
-              { pattern: /\d{6,18}/, message: '请输入6到16位数字!'},
+              { pattern: /^\d{6,16}$/, message: '请输入6到16位数字!'},
     <#-- 6到16位任意字符 -->
     <#elseif fieldValidType == '*6-16'>
               { pattern: /^.{6,16}$/, message: '请输入6到16位任意字符!'},
@@ -31,7 +31,7 @@
               { pattern: /^.{6,18}$/, message: '请输入6到18位任意字符!'},
     <#-- 网址 -->
     <#elseif fieldValidType == 'url'>
-              { pattern: /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/, message: '请输入正确的网址!'},
+              { pattern: /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/, message: '请输入正确的网址!'},
     <#-- 电子邮件 -->
     <#elseif fieldValidType == 'e'>
               { pattern: /^([\w]+\.*)([\w]+)@[\w]+\.\w{3}(\.\w{2}|)$/, message: '请输入正确的电子邮件!'},
@@ -53,6 +53,9 @@
     <#-- 金额 -->
     <#elseif fieldValidType == 'money'>
               { pattern: /^(([1-9][0-9]*)|([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2}))$/, message: '请输入正确的金额!'},
+    <#-- 正则校验 -->
+    <#elseif fieldValidType != '' && fieldValidType != '*'>
+              { pattern: '${fieldValidType}', message: '不符合校验规则!'},
     <#-- 无校验 -->
     <#else>
       <#t>

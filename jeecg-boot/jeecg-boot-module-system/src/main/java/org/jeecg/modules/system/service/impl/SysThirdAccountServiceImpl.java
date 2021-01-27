@@ -79,6 +79,8 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
         user.setSalt(salt);
         String passwordEncode = PasswordUtil.encrypt(user.getUsername(), "123456", salt);
         user.setPassword(passwordEncode);
+        user.setRealname(account.getRealname());
+        user.setAvatar(account.getAvatar());
         String s = this.saveThirdUser(user);
         //更新用户第三方账户表的userId
         SysThirdAccount sysThirdAccount = new SysThirdAccount();

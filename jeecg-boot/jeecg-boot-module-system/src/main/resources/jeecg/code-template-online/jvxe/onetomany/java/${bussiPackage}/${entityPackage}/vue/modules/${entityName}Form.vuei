@@ -5,21 +5,8 @@
       <!-- 主表单区域 -->
       <a-form :form="form" slot="detail">
         <a-row>
-<#assign form_date = false>
-<#assign form_select = false>
-<#assign form_select_multi = false>
-<#assign form_select_search = false>
-<#assign form_popup = false>
-<#assign form_sel_depart = false>
-<#assign form_sel_user = false>
-<#assign form_file = false>
-<#assign form_image = false>
-<#assign form_editor = false>
 <#assign form_cat_tree = false>
 <#assign form_cat_back = "">
-<#assign form_pca = false>
-<#assign form_md = false>
-<#assign form_switch=false>
 <#assign form_span = 24>
 <#if tableVo.fieldRowNum==2>
     <#assign form_span = 12>
@@ -44,13 +31,12 @@
             <a-form-item label="${po.filedComment}" :labelCol="labelCol" :wrapperCol="wrapperCol">
 	</#if>
 	<#if po.classType =='date'>
-		<#assign form_date=true>
               <j-date placeholder="请选择${po.filedComment}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
 	<#elseif po.classType =='datetime'>
-		<#assign form_date=true>
               <j-date placeholder="请选择${po.filedComment}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType =='time'>
+             <j-time placeholder="请选择${po.filedComment}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
 	<#elseif po.classType =='popup'>
-		<#assign form_popup=true>
               <j-popup
                 v-decorator="['${po.fieldName}'${autoWriteRules(po)}]"
                 :trigger-change="true"
@@ -60,32 +46,24 @@
                 @callback="popupCallback"
                 <#if po.readonly=='Y'>disabled</#if>/>
     <#elseif po.classType =='sel_depart'>
-		<#assign form_sel_depart=true>
               <j-select-depart v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" multi <#if po.readonly=='Y'>disabled</#if>/>
 <#elseif po.classType =='switch'>
-        <#assign form_switch=true>
               <j-switch v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" <#if po.dictField?default("")?trim?length gt 1>:options="${po.dictField}"</#if> <#if po.readonly=='Y'>disabled</#if>></j-switch>
 	<#elseif po.classType =='pca'>
-		<#assign form_pca=true>
 		      <j-area-linkage type="cascader" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入省市区" <#if po.readonly=='Y'>disabled</#if>/>
 	<#elseif po.classType =='markdown'>
-	    <#assign form_md=true>
-	          <j-markdown-editor v-decorator="['${po.fieldName}']" id="${po.fieldName}"></j-markdown-editor>
+	          <j-markdown-editor v-decorator="[${autoStringSuffix(po)},{initialValue:''}]" id="${po.fieldName}"></j-markdown-editor>
     <#elseif po.classType =='password'>
 	          <a-input-password v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
 	<#elseif po.classType =='sel_user'>
-		<#assign form_sel_user = true>
               <j-select-user-by-dep v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" <#if po.readonly=='Y'>disabled</#if>/>
 	<#elseif po.classType =='textarea'>
-              <a-textarea v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" rows="4" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
+              <a-textarea v-decorator="[${autoStringSuffix(po)}${autoWriteRules(po)}]" rows="4" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
 	<#elseif po.classType=='list' || po.classType=='radio'>
-		<#assign form_select = true>
               <j-dict-select-tag type="${po.classType}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
 	<#elseif po.classType=='list_multi' || po.classType=='checkbox'>
-		<#assign form_select_multi = true>
               <j-multi-select-tag type="${po.classType}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
 	<#elseif po.classType=='sel_search'>
-    	<#assign form_select_search = true>
               <j-search-select-tag v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" dict="${form_field_dictCode}" <#if po.readonly=='Y'>disabled</#if>/>
     <#elseif po.classType=='cat_tree'>
     	<#assign form_cat_tree = true>
@@ -96,18 +74,12 @@
 	<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
               <a-input-number v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
 	<#elseif po.classType=='file'>
-		<#assign form_file = true>
               <j-upload v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" <#if po.readonly=='Y'>disabled</#if> <#if po.uploadnum??>:number=${po.uploadnum}</#if>></j-upload>
 	<#elseif po.classType=='image'>
-	    <#assign form_image = true>
               <j-image-upload isMultiple <#if po.uploadnum??>:number=${po.uploadnum}</#if> v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" <#if po.readonly=='Y'>disabled</#if>></j-image-upload>
 	<#elseif po.classType=='umeditor'>
-        <#assign form_editor = true>
-              <j-editor v-decorator="['${po.fieldName}',{trigger:'input'}]" <#if po.readonly=='Y'>disabled</#if>/>
-    <#elseif po.fieldDbType=='Blob'>
-              <a-input v-decorator="['${po.fieldName}String'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>></a-input>
+              <j-editor v-decorator="[${autoStringSuffix(po)},{trigger:'input'}]" <#if po.readonly=='Y'>disabled</#if>/>
 		<#elseif po.classType == 'sel_tree'>
-  	    <#assign form_tree_select = true>
   	          <j-tree-select
                 ref="treeSelect"
                 placeholder="请选择${po.filedComment}"
@@ -125,7 +97,7 @@
                 <#if po.readonly=='Y'>disabled</#if>>
               </j-tree-select>
 	<#else>
-              <a-input v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>></a-input>
+              <a-input v-decorator="[${autoStringSuffix(po)}${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>></a-input>
     </#if>
             </a-form-item>
             <#if form_cat_tree && form_cat_back?length gt 1>
@@ -165,6 +137,7 @@
   </#if>
 </#list>
     </a-tabs>
+    <a-row v-if="showFlowSubmitButton" style="text-align: center;width: 100%;margin-top: 16px;"><a-button @click="handleOk">提 交</a-button></a-row>
   </a-spin>
 </template>
 
@@ -182,45 +155,6 @@
   import ${sub.entityName}Form from './${sub.entityName}Form.vue'
   </#if>
   </#list>
-  <#if form_date>
-  import JDate from '@/components/jeecg/JDate'  
-  </#if>
-  <#if form_file>
-  import JUpload from '@/components/jeecg/JUpload'
-  </#if>
-  <#if form_image>
-  import JImageUpload from '@/components/jeecg/JImageUpload'
-  </#if>
-  <#if form_sel_depart>
-  import JSelectDepart from '@/components/jeecgbiz/JSelectDepart'
-  </#if>
-  <#if form_sel_user>
-  import JSelectUserByDep from '@/components/jeecgbiz/JSelectUserByDep'
-  </#if>
-  <#if form_select>
-  import JDictSelectTag from "@/components/dict/JDictSelectTag"
-  </#if>
-  <#if form_select_multi>
-  import JMultiSelectTag from "@/components/dict/JMultiSelectTag"
-  </#if>
-  <#if form_select_search>
-  import JSearchSelectTag from '@/components/dict/JSearchSelectTag'
-  </#if>
-  <#if form_editor>
-  import JEditor from '@/components/jeecg/JEditor'
-  </#if>
-  <#if form_cat_tree>
-  import JCategorySelect from '@/components/jeecg/JCategorySelect'
-  </#if>
-  <#if form_pca>
-  import JAreaLinkage from '@comp/jeecg/JAreaLinkage'
-  </#if>
-  <#if form_md>
-  import JMarkdownEditor from '@/components/jeecg/JMarkdownEditor/index'
-  </#if>
-  <#if form_switch==true >
-  import JSwitch from '@/components/jeecg/JSwitch'
-  </#if>
 
   export default {
     name: '${entityName}Form',
@@ -232,45 +166,6 @@
       ${sub.entityName}Form,
     </#if>
     </#list>
-    <#if form_date>
-      JDate,
-    </#if>
-    <#if form_file>
-      JUpload,
-    </#if>
-    <#if form_image>
-      JImageUpload,
-    </#if>
-    <#if form_sel_depart>
-      JSelectDepart,
-    </#if>
-    <#if form_sel_user>
-      JSelectUserByDep,
-    </#if>
-    <#if form_select>
-      JDictSelectTag,
-    </#if>
-    <#if form_select_multi>
-      JMultiSelectTag,
-    </#if>
-    <#if form_select_search>
-      JSearchSelectTag,
-    </#if>
-    <#if form_editor>
-      JEditor,
-    </#if>
-    <#if form_pca>
-      JAreaLinkage,
-    </#if>
-    <#if form_cat_tree>
-      JCategorySelect,
-    </#if>
-    <#if form_md>
-      JMarkdownEditor,
-    </#if>
-    <#if form_switch==true >
-      JSwitch,
-    </#if>
     },
     data() {
       return {
@@ -312,7 +207,7 @@
     <#if col.filedComment !='外键' >
             {
               title: '${col.filedComment}',
-              key: '${col.fieldName}',
+              key:  ${autoStringSuffix(col)},
       <#if col.classType =='date'>
               type: JVXETypes.date,
               <#if col.readonly=='Y'>
@@ -556,7 +451,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model<#list columns as po><#if po.fieldName !='id'><#if po.fieldDbType=='Blob'>,'${po.fieldName}String'<#else>,'${po.fieldName}'</#if></#if></#list>)
+        let fieldval = pick(this.model<#list columns as po><#if po.fieldName !='id'>,${autoStringSuffix(po)}</#if></#list>)
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
 <#list subTables as sub><#rt/>
@@ -606,7 +501,7 @@
         this.$message.error(msg)
       },
      popupCallback(row){
-       this.form.setFieldsValue(pick(row<#list columns as po><#if po.fieldName !='id'><#if po.fieldDbType=='Blob'>,'${po.fieldName}String'<#else>,'${po.fieldName}'</#if></#if></#list>))
+       this.form.setFieldsValue(pick(row<#list columns as po><#if po.fieldName !='id'>,${autoStringSuffix(po)}</#if></#list>))
      },
    <#if form_cat_tree>
      handleCategoryChange(value,backObj){
