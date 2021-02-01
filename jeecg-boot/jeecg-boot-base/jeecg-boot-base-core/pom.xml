@@ -196,7 +196,7 @@
 		</dependency>
 
 		<!-- 代码生成器 -->
-		<!-- 如下载失败，请参考此文档  http://doc.jeecg.com/1273965 -->
+		<!-- 如下载失败，请参考此文档  http://doc.jeecg.com/2043876 -->
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>codegenerate</artifactId>
