@@ -244,11 +244,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 	@Override
 	public boolean hasPermission(String username, SysPermission sysPermission) {
 		int count = baseMapper.queryCountByUsername(username,sysPermission);
-		if(count>0){
-			return true;
-		}else{
-			return false;
-		}
+		  return count > 0 ;
 	}
 
 	@Override
@@ -256,11 +252,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 		SysPermission sysPermission = new SysPermission();
 		sysPermission.setUrl(url);
 		int count = baseMapper.queryCountByUsername(username,sysPermission);
-		if(count>0){
-			return true;
-		}else{
-			return false;
-		}
+		  return count > 0 ;
 	}
 
 }
