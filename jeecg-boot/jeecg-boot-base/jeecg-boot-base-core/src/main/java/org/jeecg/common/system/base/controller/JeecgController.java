@@ -15,6 +15,7 @@ import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -38,6 +39,8 @@ public class JeecgController<T, S extends IService<T>> {
     @Autowired
     S service;
 
+    @Value("${jeecg.path.upload}")
+    private String upLoadPath;
     /**
      * 导出excel
      *
@@ -65,7 +68,11 @@ public class JeecgController<T, S extends IService<T>> {
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
         mv.addObject(NormalExcelConstants.FILE_NAME, title); //此处设置的filename无效 ,前端会重更新设置一下
         mv.addObject(NormalExcelConstants.CLASS, clazz);
-        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams(title + "报表", "导出人:" + sysUser.getRealname(), title));
+        //update-begin--Author:liusq  Date:20210126 for：图片导出报错，ImageBasePath未设置--------------------
+        ExportParams  exportParams=new ExportParams(title + "报表", "导出人:" + sysUser.getRealname(), title);
+        exportParams.setImageBasePath(upLoadPath);
+        //update-end--Author:liusq  Date:20210126 for：图片导出报错，ImageBasePath未设置----------------------
+        mv.addObject(NormalExcelConstants.PARAMS,exportParams);
         mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
         return mv;
     }
