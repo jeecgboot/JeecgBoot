@@ -25,7 +25,8 @@ public class XxlJobConfiguration {
     @Autowired
     private XxlJobProperties xxlJobProperties;
 
-    @Bean(initMethod = "start", destroyMethod = "destroy")
+    //@Bean(initMethod = "start", destroyMethod = "destroy")
+    @Bean
     @ConditionalOnClass()
     public XxlJobSpringExecutor xxlJobExecutor() {
         log.info(">>>>>>>>>>> xxl-job config init.");
