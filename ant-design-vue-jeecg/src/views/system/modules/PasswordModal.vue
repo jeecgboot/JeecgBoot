@@ -16,12 +16,12 @@
           <a-input placeholder="请输入用户账号" v-decorator="[ 'username', {}]" :readOnly="true"/>
         </a-form-item>
 
-        <a-form-item label="登陆密码" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
-          <a-input type="password" placeholder="请输入登陆密码" v-decorator="[ 'password', validatorRules.password]" />
+        <a-form-item label="登录密码" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
+          <a-input type="password" placeholder="请输入登录密码" v-decorator="[ 'password', validatorRules.password]" />
         </a-form-item>
 
         <a-form-item label="确认密码" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
-          <a-input type="password" @blur="handleConfirmBlur" placeholder="请重新输入登陆密码" v-decorator="[ 'confirmpassword', validatorRules.confirmpassword]"/>
+          <a-input type="password" @blur="handleConfirmBlur" placeholder="请重新输入登录密码" v-decorator="[ 'confirmpassword', validatorRules.confirmpassword]"/>
         </a-form-item>
 
       </a-form>
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-  import {changPassword} from '@/api/api'
+  import {changePassword} from '@/api/api'
 
   export default {
     name: "PasswordModal",
@@ -51,7 +51,7 @@
           },
           confirmpassword:{
             rules: [{
-              required: true, message: '请重新输入登陆密码!',
+              required: true, message: '请重新输入登录密码!',
             }, {
               validator: this.compareToFirstPassword,
             }],
@@ -96,7 +96,7 @@
           if (!err) {
             this.confirmLoading = true;
             let formData = Object.assign(this.model, values);
-            changPassword(formData).then((res)=>{
+            changePassword(formData).then((res)=>{
               if(res.success){
                 this.$message.success(res.message);
                 this.$emit('ok');

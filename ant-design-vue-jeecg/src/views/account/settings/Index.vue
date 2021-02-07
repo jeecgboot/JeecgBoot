@@ -5,43 +5,39 @@
         <div class="account-settings-info-left">
           <a-menu
             :mode="device == 'mobile' ? 'horizontal' : 'inline'"
+            :default-selected-keys="['settings']"
             :style="{ border: '0', width: device == 'mobile' ? '560px' : 'auto'}"
-            :defaultSelectedKeys="defaultSelectedKeys"
             type="inner"
             @openChange="onOpenChange"
           >
-            <a-menu-item key="/account/settings/base">
-              <router-link :to="{ name: 'account-settings-base' }">
+            <a-menu-item key="settings">
+              <a  @click="settingsClick()">
                 基本设置
-              </router-link>
+              </a>
             </a-menu-item>
-            <a-menu-item key="/account/settings/security">
-              <router-link :to="{ name: 'account-settings-security' }">
-                安全设置
-              </router-link>
+            <a-menu-item key="security">
+              <a @click="securityClick()">安全设置</a>
             </a-menu-item>
-            <a-menu-item key="/account/settings/custom">
-              <router-link :to="{ name: 'account-settings-custom' }">
-                个性化
-              </router-link>
+            <a-menu-item key="custom">
+              <a @click="customClick()"> 个性化</a>
             </a-menu-item>
-            <a-menu-item key="/account/settings/binding">
-              <router-link :to="{ name: 'account-settings-binding' }">
-                账户绑定
-              </router-link>
+            <a-menu-item key="binding">
+              <a @click="bindingClick()">账户绑定</a>
             </a-menu-item>
-            <a-menu-item key="/account/settings/notification">
-              <router-link :to="{ name: 'account-settings-notification' }">
-                新消息通知
-              </router-link>
+            <a-menu-item key="notification">
+              <a @click="notificationClick()">新消息通知</a>
             </a-menu-item>
           </a-menu>
         </div>
         <div class="account-settings-info-right">
           <div class="account-settings-info-title">
-            <span>{{ $route.meta.title }}</span>
+            <span>{{ title }}</span>
           </div>
-          <route-view></route-view>
+          <security ref="security" v-if="security"></security>
+          <base-setting ref="baseSetting" v-if="baseSetting"></base-setting>
+          <custom ref="custom" v-if="custom"></custom>
+          <notification ref="notification" v-if="notification"></notification>
+          <binding ref="binding" v-if="binding"></binding>
         </div>
       </div>
     </a-card>
@@ -52,11 +48,20 @@
   import PageLayout from '@/components/page/PageLayout'
   import RouteView from "@/components/layouts/RouteView"
   import { mixinDevice } from '@/utils/mixin.js'
-
+  import security from './Security'
+  import baseSetting from './BaseSetting'
+  import  custom from  './Custom'
+  import notification from './Notification'
+  import binding from './Binding'
   export default {
     components: {
       RouteView,
-      PageLayout
+      PageLayout,
+      security,
+      baseSetting,
+      custom,
+      notification,
+      binding
     },
     mixins: [mixinDevice],
     data () {
@@ -85,7 +90,13 @@
           fixedNumber: [1, 1]
         },
 
-        pageTitle: ''
+        pageTitle: '',
+        title:"基本设置",
+        security:false,
+        baseSetting:true,
+        custom:false,
+        notification:false,
+        binding:false
       }
     },
     created () {
@@ -101,12 +112,54 @@
       updateMenu () {
         let routes = this.$route.matched.concat()
         this.defaultSelectedKeys = [ routes.pop().path ]
+      },
+      //update-begin--Author:wangshuai  Date:20200729 for：聚合路由错误 issues#1441--------------------
+      settingsClick(){
+        this.security=false
+        this.custom=false
+        this.notification=false
+        this.binding=false
+        this.baseSetting=true
+        this.title="基本设置"
+      },
+      securityClick(){
+        this.baseSetting=false
+        this.custom=false;
+        this.notification=false
+        this.binding=false
+        this.security=true
+        this.title="安全设置"
+      },
+      notificationClick(){
+        this.security=false
+        this.custom=false
+        this.baseSetting=false
+        this.binding=false
+        this.notification=true
+        this.title="新消息通知"
+      },
+      bindingClick(){
+        this.security=false
+        this.baseSetting=false
+        this.notification=false;
+        this.custom=false;
+        this.binding=true
+        this.title="账号绑定"
+      },
+      customClick(){
+        this.security=false
+        this.baseSetting=false
+        this.notification=false;
+        this.binding=false
+        this.custom=true;
+        this.title="个性化"
       }
+      //update-end--Author:wangshuai  Date:20200729 for：聚合路由错误 issues#1441--------------------
     },
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
   .account-settings-info-main {
     width: 100%;
     display: flex;

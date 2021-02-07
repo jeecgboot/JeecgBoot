@@ -1,3 +1,4 @@
+import { getFileAccessHttpUrl } from '@/api/manage'
 const getFileName=(path)=>{
   if(path.lastIndexOf("\\")>=0){
     let reg=new RegExp("\\\\","g");
@@ -15,7 +16,7 @@ const getFilePaths=(uploadFiles)=>{
   if(!uploadFiles){
     return ""
   }
-  for(var a=0;a<uploadFiles.length;a++){
+  for(let a=0;a<uploadFiles.length;a++){
     arr.push(uploadFiles[a].response.message)
   }
   if(arr && arr.length>0){
@@ -30,7 +31,7 @@ const getUploadFileList=(paths)=>{
   }
   let fileList = [];
   let arr = paths.split(",")
-  for(var a=0;a<arr.length;a++){
+  for(let a=0;a<arr.length;a++){
     if(!arr[a]){
       continue
     }else{
@@ -38,7 +39,7 @@ const getUploadFileList=(paths)=>{
         uid:uidGenerator(),
         name:getFileName(arr[a]),
         status: 'done',
-        url: window._CONFIG['domianURL']+"/sys/common/view/"+arr[a],
+        url: getFileAccessHttpUrl(arr[a]),
         response:{
           status:"history",
           message:arr[a]

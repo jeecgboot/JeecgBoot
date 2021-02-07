@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.demo.test.mapper.JeecgDemoMapper">
+
+	<!-- 根据用户名查询 -->
+	<select id="getDemoByName" resultType="org.jeecg.modules.demo.test.entity.JeecgDemo">
+		select * from  demo  where name = #{name}
+	</select>
+	
+	<!-- 根据权限sql查询数据集 -->
+	<select id="queryListWithPermission" parameterType="Object" resultType="org.jeecg.modules.demo.test.entity.JeecgDemo">
+		select * from demo where 1=1 ${permissionSql}
+	</select>
+
+	<!-- 查询所有符合前缀且有效字段 -->
+	<select id="queryAllAuth" resultType="java.lang.String">
+        select perms from sys_permission
+        where perms
+        like concat(concat('%',#{permsPrefix}),'%')
+        and del_flag=0
+        and status='1'
+    </select>
+
+	<!-- 查询用户已授权字段 -->
+	<select id="queryUserAuth" resultType="java.lang.String">
+        select perms from sys_user_role sur,
+        sys_role_permission srp,
+        sys_permission sp
+        where sur.role_id = srp.role_id
+        and sp.id = srp.permission_id
+        and user_id = #{userId}
+        and sp.perms like concat(concat('%',#{permsPrefix}),'%')
+    </select>
+</mapper>

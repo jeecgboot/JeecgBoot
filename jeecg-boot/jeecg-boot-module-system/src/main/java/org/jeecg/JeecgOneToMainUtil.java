@@ -9,6 +9,7 @@ import org.jeecgframework.codegenerate.generate.pojo.onetomany.SubTableVo;
 
 /**
  * 代码生成器入口【一对多】
+ * 【 GUI模式已弃用，请转移Online模式进行代码生成 】
  * @Author 张代浩
  * @site www.jeecg.org
  * 
@@ -23,17 +24,17 @@ public class JeecgOneToMainUtil {
 		//第一步：设置主表配置
 		MainTableVo mainTable = new MainTableVo();
 		mainTable.setTableName("jeecg_order_main");//表名
-		mainTable.setEntityName("TestOrderMain");	 //实体名
-		mainTable.setEntityPackage("test2");	 //包名
-		mainTable.setFtlDescription("订单");	 //描述
+		mainTable.setEntityName("GuiTestOrderMain");	 //实体名
+		mainTable.setEntityPackage("gui");	 //包名
+		mainTable.setFtlDescription("GUI订单管理");	 //描述
 		
 		//第二步：设置子表集合配置
 		List<SubTableVo> subTables = new ArrayList<SubTableVo>();
 		//[1].子表一
 		SubTableVo po = new SubTableVo();
 		po.setTableName("jeecg_order_customer");//表名
-		po.setEntityName("TestOrderCustom");	    //实体名
-		po.setEntityPackage("test2");	        //包名
+		po.setEntityName("GuiTestOrderCustom");	    //实体名
+		po.setEntityPackage("gui");	        //包名
 		po.setFtlDescription("客户明细");       //描述
 		//子表外键参数配置
 		/*说明: 
@@ -46,8 +47,8 @@ public class JeecgOneToMainUtil {
 		//[2].子表二
 		SubTableVo po2 = new SubTableVo();
 		po2.setTableName("jeecg_order_ticket");		//表名
-		po2.setEntityName("TestOrderTicket");			//实体名
-		po2.setEntityPackage("test2"); 				//包名
+		po2.setEntityName("GuiTestOrderTicket");			//实体名
+		po2.setEntityPackage("gui"); 				//包名
 		po2.setFtlDescription("产品明细");			//描述
 		//子表外键参数配置
 		/*说明: 
@@ -61,7 +62,7 @@ public class JeecgOneToMainUtil {
 		
 		//第三步：一对多(父子表)数据模型,代码生成
 		try {
-			new CodeGenerateOneToMany(mainTable,subTables).generateCodeFile();
+			new CodeGenerateOneToMany(mainTable,subTables).generateCodeFile(null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

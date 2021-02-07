@@ -35,6 +35,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
 import com.alibaba.fastjson.JSON;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.jeecg.common.aspect.annotation.AutoLog;
 
  /**
  * @Description: ${tableVo.ftlDescription}
@@ -42,6 +45,7 @@ import com.alibaba.fastjson.JSON;
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
+@Api(tags="${tableVo.ftlDescription}")
 @RestController
 @RequestMapping("/${entityPackage}/${entityName?uncap_first}")
 @Slf4j
@@ -68,7 +72,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 		QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap());
 		Page<${entityName}> page = new Page<${entityName}>(pageNo, pageSize);
 		IPage<${entityName}> pageList = ${entityName?uncap_first}Service.page(page, queryWrapper);
-		return Result.ok(pageList);
+		return Result.OK(pageList);
 
 	}
 	
@@ -82,7 +86,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody ${entityName} ${entityName?uncap_first}) {
 		${entityName?uncap_first}Service.save(${entityName?uncap_first});
-		return Result.ok("添加成功！");
+		return Result.OK("添加成功！");
 	}
 	
 	/**
@@ -96,7 +100,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody ${entityName} ${entityName?uncap_first}) {
 		${entityName?uncap_first}Service.updateById(${entityName?uncap_first});
-		return Result.ok("编辑成功!");
+		return Result.OK("编辑成功!");
 	}
 	
 	/**
@@ -109,7 +113,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		${entityName?uncap_first}Service.removeById(id);
-		return Result.ok("删除成功!");
+		return Result.OK("删除成功!");
 	}
 	
 	/**
@@ -123,7 +127,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.${entityName?uncap_first}Service.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功！");
+		return Result.OK("批量删除成功！");
 	}
 	
 	/**
@@ -137,7 +141,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		${entityName} ${entityName?uncap_first} = ${entityName?uncap_first}Service.getById(id);
-		return Result.ok(${entityName?uncap_first});
+		return Result.OK(${entityName?uncap_first});
 	}
 
 	/**

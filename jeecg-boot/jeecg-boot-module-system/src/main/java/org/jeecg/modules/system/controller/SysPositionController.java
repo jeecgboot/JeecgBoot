@@ -7,10 +7,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.quartz.service.IQuartzJobService;
 import org.jeecg.modules.system.entity.SysPosition;
 import org.jeecg.modules.system.service.ISysPositionService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -29,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -219,9 +224,12 @@ public class SysPositionController {
      * @return
      */
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
-    public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
+    public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response)throws IOException {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+        // 错误信息
+        List<String> errorMessage = new ArrayList<>();
+        int successLines = 0, errorLines = 0;
         for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
             MultipartFile file = entity.getValue();// 获取上传文件对象
             ImportParams params = new ImportParams();
@@ -229,9 +237,10 @@ public class SysPositionController {
             params.setHeadRows(1);
             params.setNeedSave(true);
             try {
-                List<SysPosition> listSysPositions = ExcelImportUtil.importExcel(file.getInputStream(), SysPosition.class, params);
-                sysPositionService.saveBatch(listSysPositions);
-                return Result.ok("文件导入成功！数据行数:" + listSysPositions.size());
+                List<Object>  listSysPositions = ExcelImportUtil.importExcel(file.getInputStream(), SysPosition.class, params);
+                List<String> list = ImportExcelUtil.importDateSave(listSysPositions, ISysPositionService.class, errorMessage,CommonConstant.SQL_INDEX_UNIQ_CODE);
+                errorLines+=list.size();
+                successLines+=(listSysPositions.size()-errorLines);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 return Result.error("文件导入失败:" + e.getMessage());
@@ -243,7 +252,29 @@ public class SysPositionController {
                 }
             }
         }
-        return Result.ok("文件导入失败！");
+        return ImportExcelUtil.imporReturnRes(errorLines,successLines,errorMessage);
     }
 
+    /**
+     * 通过code查询
+     *
+     * @param code
+     * @return
+     */
+    @AutoLog(value = "职务表-通过code查询")
+    @ApiOperation(value = "职务表-通过code查询", notes = "职务表-通过code查询")
+    @GetMapping(value = "/queryByCode")
+    public Result<SysPosition> queryByCode(@RequestParam(name = "code", required = true) String code) {
+        Result<SysPosition> result = new Result<SysPosition>();
+        QueryWrapper<SysPosition> queryWrapper = new QueryWrapper<SysPosition>();
+        queryWrapper.eq("code",code);
+        SysPosition sysPosition = sysPositionService.getOne(queryWrapper);
+        if (sysPosition == null) {
+            result.error500("未找到对应实体");
+        } else {
+            result.setResult(sysPosition);
+            result.setSuccess(true);
+        }
+        return result;
+    }
 }

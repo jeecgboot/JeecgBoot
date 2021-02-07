@@ -14,6 +14,12 @@
               <a-input placeholder="请输入文件地址" v-model="queryParam.url"></a-input>
             </a-form-item>
           </a-col>
+          <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+            </span>
+          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -31,7 +37,21 @@
           @change="handleChange">
         <a-button>
           <a-icon type="upload"/>
-          文件上传
+          OSS文件上传
+        </a-button>
+      </a-upload>
+
+      <a-upload
+        name="file"
+        :multiple="false"
+        :action="minioUploadAction"
+        :headers="tokenHeader"
+        :showUploadList="false"
+        :beforeUpload="beforeUpload"
+        @change="handleChange">
+        <a-button>
+          <a-icon type="upload"/>
+          MINIO文件上传
         </a-button>
       </a-upload>
     </div>
@@ -58,7 +78,9 @@
           @change="handleTableChange">
 
         <span slot="action" slot-scope="text, record">
-            <a @click="ossDelete(record.id)">删除</a>
+          <a @click="handlePreview(record)">预览</a>
+          <a-divider type="vertical"/>
+          <a @click="ossDelete(record.id)">删除</a>
         </span>
 
       </a-table>
@@ -106,16 +128,20 @@
           }
         ],
         url: {
-          upload: "/oss/file/upload",
-          list: "/oss/file/list",
-          delete: "/oss/file/delete"
+          upload: "/sys/oss/file/upload",
+          list: "/sys/oss/file/list",
+          delete: "/sys/oss/file/delete",
+          minioUpload: "/sys/upload/uploadMinio"
         }
       }
     },
     computed: {
       uploadAction() {
         return window._CONFIG['domianURL'] + this.url.upload;
-      }
+      },
+      minioUploadAction() {
+        return window._CONFIG['domianURL'] + this.url.minioUpload;
+      },
     },
     methods: {
       beforeUpload(file) {
@@ -139,10 +165,10 @@
             this.loadData()
             this.$message.success(`${info.file.name} 上传成功!`);
           } else {
-            this.$message.error(`${info.file.name} 上传失败.`);
+            this.$message.error(`${info.file.response.message}`);
           }
         } else if (info.file.status === 'error') {
-          this.$message.error(`${info.file.name} 上传失败.`);
+          this.$message.error(`${info.file.response.message}`);
         }
       },
       ossDelete(id) {
@@ -154,11 +180,17 @@
             that.handleDelete(id)
           }
         });
+      },
+      handlePreview(record) {
+        if (record && record.url) {
+          let url = window._CONFIG['onlinePreviewDomainURL'] + '?url=' + encodeURIComponent(record.url)
+          window.open(url, '_blank')
+        }
       }
     }
   }
 </script>
 
 <style scoped>
-  @import '~@assets/less/common.less'
+  @import '~@assets/less/common.less';
 </style>

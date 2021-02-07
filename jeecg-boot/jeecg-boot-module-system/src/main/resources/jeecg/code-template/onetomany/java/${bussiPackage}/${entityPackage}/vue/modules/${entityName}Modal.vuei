@@ -1,10 +1,11 @@
 <template>
-  <a-modal
+  <j-modal
     :title="title"
     :width="1200"
     :visible="visible"
     :maskClosable="false"
     :confirmLoading="confirmLoading"
+    switchFullscreen
     @ok="handleOk"
     @cancel="handleCancel">
     <a-spin :spinning="confirmLoading">
@@ -16,7 +17,7 @@
     <#if po.fieldName !='id'>
       <#list [po_index, po_index+1] as idx><#rt/>
         <#if idx lt columns?size>
-          <a-col :span="12">
+          <a-col :xs="24" :sm="12">
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
@@ -66,7 +67,7 @@
       </a-tabs>
 
     </a-spin>
-  </a-modal>
+  </j-modal>
 </template>
 
 <script>

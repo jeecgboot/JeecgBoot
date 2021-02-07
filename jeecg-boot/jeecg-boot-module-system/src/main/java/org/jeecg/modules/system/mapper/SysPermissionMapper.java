@@ -43,4 +43,15 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
 	@Select("SELECT url FROM sys_permission WHERE del_flag = 0 and menu_type = 2 and url like '%*%'")
     public List<String> queryPermissionUrlWithStar();
 
+
+	/**
+	 * 根据用户账号查询菜单权限
+	 * @param sysPermission
+	 * @param username
+	 * @return
+	 */
+	public int queryCountByUsername(@Param("username") String username, @Param("permission") SysPermission sysPermission);
+
+
+
 }

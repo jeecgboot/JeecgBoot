@@ -42,11 +42,11 @@
         spinning: false,
         //数据集
         dataSource: [
-          {id:'000',sort: 0,filePath: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2735633715,2749454924&fm=27&gp=0.jpg'},
-          {id:'111',sort: 1,filePath: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3967239004,1951414302&fm=27&gp=0.jpg'},
-          {id:'222',sort: 2,filePath: 'https://ss0.bdstatic.com/6Ox1bjeh1BF3odCf/it/u=3660968530,985748925&fm=191&app=48&size=h300&n=0&g=4n&f=JPEG?sec=1853310920&t=5e64af964be378c6c2a3b0acc65dfe24'},
-          {id:'333',sort: 3,filePath: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=889120611,3801177793&fm=27&gp=0.jpg'},
-          {id:'444',sort: 4,filePath: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2445468140,2491956848&fm=27&gp=0.jpg'}
+          {id:'000',sort: 0,filePath: 'https://static.jeecg.com/upload/test/1_1588149743473.jpg'},
+          {id:'111',sort: 1,filePath: 'https://static.jeecg.com/upload/test/u27356337152749454924fm27gp0_1588149731821.jpg'},
+          {id:'222',sort: 2,filePath: 'https://static.jeecg.com/upload/test/u24454681402491956848fm27gp0_1588149712663.jpg'},
+          {id:'333',sort: 3,filePath: 'https://static.jeecg.com/temp/国炬软件logo_1606575029126.png'},
+          {id:'444',sort: 4,filePath: 'https://static.jeecg.com/upload/test/u8891206113801177793fm27gp0_1588149704459.jpg'}
         ],
         oldDateSource:[],
         newDateSource:[],

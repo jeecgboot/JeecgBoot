@@ -35,12 +35,13 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="sex">
-          <a-select v-decorator="['sex', {}]" placeholder="请选择性别">
-            <a-select-option value="">请选择性别</a-select-option>
-            <a-select-option value="1">男性</a-select-option>
-            <a-select-option value="2">女性</a-select-option>
-          </a-select>
+          label="性别">
+         <!-- <a-select v-decorator="['sex', {}]" placeholder="请选择性别">
+            <a-select-option value="">请选择</a-select-option>
+            <a-select-option value="1">男</a-select-option>
+            <a-select-option value="2">女</a-select-option>
+          </a-select>-->
+          <j-dict-select-tag type="radio" v-decorator="['sex', {}]" :trigger-change="true" dictCode="sex"/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"

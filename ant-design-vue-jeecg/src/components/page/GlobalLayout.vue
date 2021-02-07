@@ -13,6 +13,7 @@
       >
         <side-menu
           mode="inline"
+          v-if="device === 'mobile'"
           :menus="menus"
           @menuSelect="menuSelect"
           :theme="navTheme"
@@ -21,7 +22,7 @@
       </a-drawer>
 
       <side-menu
-        v-else
+        v-show="device === 'desktop'"
         mode="inline"
         :menus="menus"
         @menuSelect="myMenuSelect"
@@ -131,10 +132,10 @@
       //this.menus = this.mainRouters.find((item) => item.path === '/').children;
       this.menus = this.permissionMenuList
       // 根据后台配置菜单，重新排序加载路由信息
-      console.log('----加载菜单逻辑----')
-      console.log(this.mainRouters)
-      console.log(this.permissionMenuList)
-      console.log('----navTheme------'+this.navTheme)
+      //console.log('----加载菜单逻辑----')
+      //console.log(this.mainRouters)
+      //console.log(this.permissionMenuList)
+      //console.log('----navTheme------'+this.navTheme)
       //--update-end----author:scott---date:20190320------for:根据后台菜单配置，判断是否路由菜单字段，动态选择是否生成路由（为了支持参数URL菜单）------
     },
     methods: {
@@ -154,6 +155,10 @@
         //此处触发动态路由被点击事件
         this.findMenuBykey(this.menus,value.key)
         this.$emit("dynamicRouterShow",value.key,this.activeMenu.meta.title)
+        // update-begin-author:sunjianlei date:20191223 for: 修复刷新后菜单Tab名字显示异常
+        let storeKey = 'route:title:' + this.activeMenu.path
+        this.$ls.set(storeKey, this.activeMenu.meta.title)
+        // update-end-author:sunjianlei date:20191223 for: 修复刷新后菜单Tab名字显示异常
       },
       findMenuBykey(menus,key){
         for(let i of menus){
@@ -170,7 +175,7 @@
 
 </script>
 
-<style lang="scss">
+<style lang="less">
   body {
     // 打开滚动条固定显示
     overflow-y: scroll;
@@ -337,6 +342,10 @@
             font-size: 16px;
             padding: 4px;
           }
+
+          .anticon {
+            color: inherit;
+          }
         }
       }
 
@@ -348,6 +357,10 @@
 
             &:hover {
               background: rgba(0, 0, 0, 0.05);
+            }
+
+            .anticon {
+              color: inherit;
             }
           }
         }

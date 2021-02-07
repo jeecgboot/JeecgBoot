@@ -1,0 +1,5 @@
+server:
+  port: 7002
+spring:
+  application:
+    name: jeecg-demo

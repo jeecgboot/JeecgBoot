@@ -2421,7 +2421,9 @@ a.listItemMetaTitle {
   color: rgba(0, 0, 0, 0.85);
 }
 .main {
-  background-color: #fff;
+  //update-begin---author:liusq   Date:20210108  for：[JT-409]编译主题色，然后退出登录后的首页是这样子------------
+  //background-color: #fff;
+  //update-end---author:liusq     Date:20210108  for：[JT-409]编译主题色，然后退出登录后的首页是这样子------------
 }
 .main .leftmenu {
   border-right: 1px solid #e8e8e8;
@@ -7678,4 +7680,41 @@ font.medium {
 }
 font.weak {
   color: #f5222d;
+}
+
+// 侧边导航栏首页颜色跟随主题变化
+.ant-menu.ant-menu-root > .ant-menu-item:first-child.ant-menu-item-selected {
+  & > a,
+  & > a:hover {
+    color: @primary-color;
+  }
+}
+
+// begin -------- JAreaLinkage 三级联动样式 --------------
+.cascader-menu-list .cascader-menu-option.hover,
+.cascader-menu-list .cascader-menu-option:hover {
+  background-color: color(~`colorPalette("@{primary-color}", 1)`);
+}
+
+.area-selectable-list .area-select-option.hover {
+  background-color: color(~`colorPalette("@{primary-color}", 1)`);
+}
+
+.area-select:hover {
+  border-color: @primary-color;
+}
+
+.area-select:active {
+  box-shadow: 0 0 0 2px color(~`colorPalette("@{primary-color}", 1)`);
+}
+// end -------- JAreaLinkage 三级联动样式 --------------
+
+// TESTA-521
+.ant-menu-submenu-selected {
+  color: @primary-color;
+}
+
+// TESTA-521
+.tab-layout-tabs.ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
+  border-color: @primary-color !important;
 }

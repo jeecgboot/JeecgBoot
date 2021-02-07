@@ -12,6 +12,9 @@
 		<result column="priority" property="priority" jdbcType="VARCHAR"/>
 		<result column="msg_category" property="msgCategory" jdbcType="VARCHAR"/>
 		<result column="send_time" property="sendTime" jdbcType="TIMESTAMP"/>
+		<result column="bus_id" property="busId" jdbcType="VARCHAR"/>
+		<result column="open_type" property="openType" jdbcType="VARCHAR"/>
+		<result column="open_page" property="openPage" jdbcType="VARCHAR"/>
 	</resultMap>
 	
 	<select id="queryByUserId" parameterType="String"  resultType="String">
@@ -20,7 +23,7 @@
 	</select>
 	
 	<select id="getMyAnnouncementSendList" parameterType="Object"  resultMap="AnnouncementSendModel">
-	   select 
+	   select
 	   		sas.id,
 	   		sas.annt_id,
 	   		sas.user_id,
@@ -30,19 +33,35 @@
 	   		sa.sender as sender,
 	   		sa.priority as priority,
 	   		sa.msg_category,
-	   		sa.send_time as send_time
-	   from sys_announcement_send sas 
+	   		sa.send_time as send_time,
+	   		sa.bus_id as bus_id,
+			sa.open_type as open_type,
+			sa.open_page as open_page,
+			sa.msg_abstract
+	   from sys_announcement_send sas
 	   left join sys_announcement sa ON sas.annt_id = sa.id
 	   where sa.send_status = '1'
 	   and sa.del_flag = '0'
 	   and sas.user_id = #{announcementSendModel.userId}
 	   <if test="announcementSendModel.titile !=null and announcementSendModel.titile != ''">
-	   		and sa.titile = #{announcementSendModel.titile}
+	   		and sa.titile LIKE concat(concat('%',#{announcementSendModel.titile}),'%')
 	   </if>
 	   <if test="announcementSendModel.sender !=null and announcementSendModel.sender != ''">
-	   		and sa.sender = #{announcementSendModel.sender}
+	   		and sa.sender LIKE concat(concat('%',#{announcementSendModel.sender}),'%')
 	   </if>
-	   order by sa.send_time desc
+	   <if test="announcementSendModel.readFlag !=null and announcementSendModel.readFlag != ''">
+	   		and sas.read_flag = #{announcementSendModel.readFlag}
+	   </if>
+	   <if test="announcementSendModel.busType !=null and announcementSendModel.busType != ''">
+	   		and sa.bus_type = #{announcementSendModel.busType}
+	   </if>
+		<if test="announcementSendModel.bizSource !=null and announcementSendModel.bizSource =='isNoBpm'">
+			and (sa.bus_type != 'bpm' or sa.bus_type is null)
+		</if>
+        <if test="announcementSendModel.msgCategory !=null and announcementSendModel.msgCategory != ''">
+            and sa.msg_category = #{announcementSendModel.msgCategory}
+        </if>
+	   order by sas.read_flag,sa.send_time desc
 	</select>
-	
+
 </mapper>

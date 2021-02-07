@@ -39,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RestController
-@RequestMapping("/message/sysMessageTemplate")
+@RequestMapping("/sys/message/sysMessageTemplate")
 public class SysMessageTemplateController extends JeecgController<SysMessageTemplate, ISysMessageTemplateService> {
 	@Autowired
 	private ISysMessageTemplateService sysMessageTemplateService;
@@ -128,7 +128,6 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	 * 导出excel
 	 *
 	 * @param request
-	 * @param response
 	 */
 	@GetMapping(value = "/exportXls")
 	public ModelAndView exportXls(HttpServletRequest request,SysMessageTemplate sysMessageTemplate) {

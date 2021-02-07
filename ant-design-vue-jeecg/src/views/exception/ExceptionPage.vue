@@ -37,7 +37,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
   .exception {
     min-height: 500px;
     height: 80%;

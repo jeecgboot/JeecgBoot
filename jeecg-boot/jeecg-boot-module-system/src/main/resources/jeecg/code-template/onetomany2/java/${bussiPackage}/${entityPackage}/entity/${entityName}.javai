@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @Description: ${tableVo.ftlDescription}
@@ -17,13 +19,14 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 @Data
 @TableName("${tableName}")
+@ApiModel(value="${tableName}对象", description="${tableVo.ftlDescription}")
 public class ${entityName} implements Serializable {
     private static final long serialVersionUID = 1L;
     
     <#list originalColumns as po>
 	/**${po.filedComment}*/
 	<#if po.fieldName == primaryKeyField>
-	@TableId(type = IdType.ID_WORKER_STR)
+	@TableId(type = IdType.ASSIGN_ID)
 	</#if>
   <#if po.fieldType =='java.util.Date'>
 	<#if po.fieldDbType =='date'>
@@ -34,6 +37,7 @@ public class ${entityName} implements Serializable {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	</#if>
   </#if>
+	@ApiModelProperty(value = "${po.filedComment}")
 	private <#if po.fieldType=='java.sql.Blob'>byte[]<#else>${po.fieldType}</#if> ${po.fieldName};
 	</#list>
 }

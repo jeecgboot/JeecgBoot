@@ -1,0 +1,70 @@
+<#--<#include "../../../../../../../common/utils.ftl">-->
+<#include "/common/utils.ftl">
+<#assign modal_width = 800>
+<#if tableVo.fieldRowNum==2>
+  <#assign modal_width = 896>
+<#elseif tableVo.fieldRowNum==3>
+  <#assign modal_width = 1024>
+<#elseif tableVo.fieldRowNum==4>
+  <#assign modal_width = 1280>
+</#if>
+<template>
+  <j-modal
+    :title="title"
+    :width="width"
+    :visible="visible"
+    switchFullscreen
+    @ok="handleOk"
+    :okButtonProps="{ class:{'jee-hidden': disableSubmit} }"
+    @cancel="handleCancel"
+    cancelText="关闭">
+    <${Format.humpToShortbar(entityName)}-form ref="realForm" @ok="submitCallback" :disabled="disableSubmit"></${Format.humpToShortbar(entityName)}-form>
+  </j-modal>
+</template>
+
+<script>
+
+  import ${entityName}Form from './${entityName}Form'
+  export default {
+    name: '${entityName}Modal',
+    components: {
+      ${entityName}Form
+    },
+    data () {
+      return {
+        title:'',
+        width:${modal_width},
+        visible: false,
+        disableSubmit: false
+      }
+    },
+    methods: {
+      add () {
+        this.visible=true
+        this.$nextTick(()=>{
+          this.$refs.realForm.add();
+        })
+      },
+      edit (record) {
+        this.visible=true
+        this.$nextTick(()=>{
+          this.$refs.realForm.edit(record);
+        })
+      },
+      close () {
+        this.$emit('close');
+        this.visible = false;
+      },
+      handleOk () {
+        this.$refs.realForm.submitForm();
+      },
+      submitCallback(){
+        this.$emit('ok');
+        this.visible = false;
+      },
+      handleCancel () {
+        this.close()
+      }
+    }
+  }
+</script>

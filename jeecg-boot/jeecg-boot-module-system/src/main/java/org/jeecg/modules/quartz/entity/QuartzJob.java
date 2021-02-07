@@ -2,6 +2,7 @@ package org.jeecg.modules.quartz.entity;
 
 import java.io.Serializable;
 
+import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -25,7 +26,7 @@ public class QuartzJob implements Serializable {
     private static final long serialVersionUID = 1L;
     
 	/**id*/
-	@TableId(type = IdType.ID_WORKER_STR)
+	@TableId(type = IdType.ASSIGN_ID)
 	private java.lang.String id;
 	/**创建人*/
 	private java.lang.String createBy;
@@ -54,7 +55,8 @@ public class QuartzJob implements Serializable {
 	@Excel(name="描述",width=40)
 	private java.lang.String description;
 	/**状态 0正常 -1停止*/
-	@Excel(name="状态",width=15)
+	@Excel(name="状态",width=15,dicCode="quartz_status")
+	@Dict(dicCode = "quartz_status")
 	private java.lang.Integer status;
 
 }

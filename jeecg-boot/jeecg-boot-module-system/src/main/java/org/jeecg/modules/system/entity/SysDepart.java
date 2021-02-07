@@ -29,7 +29,7 @@ public class SysDepart implements Serializable {
     private static final long serialVersionUID = 1L;
     
 	/**ID*/
-	@TableId(type = IdType.ID_WORKER_STR)
+	@TableId(type = IdType.ASSIGN_ID)
 	private String id;
 	/**父机构ID*/
 	private String parentId;
@@ -46,12 +46,11 @@ public class SysDepart implements Serializable {
 	private Integer departOrder;
 	/**描述*/
 	@Excel(name="描述",width=15)
-	private Object description;
-	/**机构类别 1组织机构，2岗位*/
-	@Excel(name="机构类别",width=15)
+	private String description;
+	/**机构类别 1公司，2组织机构，2岗位*/
+	@Excel(name="机构类别",width=15,dicCode="org_category")
 	private String orgCategory;
 	/**机构类型*/
-	@Excel(name="机构类型",width=15)
 	private String orgType;
 	/**机构编码*/
 	@Excel(name="机构编码",width=15)
@@ -69,11 +68,9 @@ public class SysDepart implements Serializable {
 	@Excel(name="备注",width=15)
 	private String memo;
 	/**状态（1启用，0不启用）*/
-	@Excel(name="状态",width=15)
 	@Dict(dicCode = "depart_status")
 	private String status;
 	/**删除状态（0，正常，1已删除）*/
-	@Excel(name="删除状态",width=15)
 	@Dict(dicCode = "del_flag")
 	private String delFlag;
 	/**创建人*/

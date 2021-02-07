@@ -37,7 +37,7 @@ public class SysUser implements Serializable {
     /**
      * id
      */
-    @TableId(type = IdType.ID_WORKER_STR)
+    @TableId(type = IdType.ASSIGN_ID)
     private String id;
 
     /**
@@ -67,7 +67,7 @@ public class SysUser implements Serializable {
     /**
      * 头像
      */
-    @Excel(name = "头像", width = 15)
+    @Excel(name = "头像", width = 15,type = 2)
     private String avatar;
 
     /**
@@ -98,9 +98,12 @@ public class SysUser implements Serializable {
     private String phone;
 
     /**
-     * 部门code
+     * 部门code(当前选择登录部门)
      */
     private String orgCode;
+
+    /**部门名称*/
+    private transient String orgCodeTxt;
 
     /**
      * 状态(1：正常  2：冻结 ）
@@ -114,7 +117,7 @@ public class SysUser implements Serializable {
      */
     @Excel(name = "删除状态", width = 15,dicCode="del_flag")
     @TableLogic
-    private String delFlag;
+    private Integer delFlag;
 
     /**
      * 工号，唯一键
@@ -126,6 +129,7 @@ public class SysUser implements Serializable {
      * 职务，关联职务表
      */
     @Excel(name = "职务", width = 15)
+    @Dict(dictTable ="sys_position",dicText = "name",dicCode = "code")
     private String post;
 
     /**
@@ -156,7 +160,26 @@ public class SysUser implements Serializable {
     /**
      * 同步工作流引擎1同步0不同步
      */
-    private String activitiSync;
+    private Integer activitiSync;
 
+    /**
+     * 身份（0 普通成员 1 上级）
+     */
+    @Excel(name="（1普通成员 2上级）",width = 15)
+    private Integer userIdentity;
 
+    /**
+     * 负责部门
+     */
+    @Excel(name="负责部门",width = 15,dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
+    @Dict(dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
+    private String departIds;
+
+    /**
+     * 多租户id配置，编辑用户的时候设置
+     */
+    private String relTenantIds;
+
+    /**设备id uniapp推送用*/
+    private String clientId;
 }

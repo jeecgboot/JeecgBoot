@@ -38,7 +38,7 @@
             <a-input placeholder="h3gSbecd"/>
           </a-form-item>
           <a-form-item
-            label="登陆密码"
+            label="登录密码"
             :required="false"
           >
             <a-input placeholder="密码"/>
@@ -103,7 +103,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 
   .avatar-upload-wrapper {
     height: 200px;

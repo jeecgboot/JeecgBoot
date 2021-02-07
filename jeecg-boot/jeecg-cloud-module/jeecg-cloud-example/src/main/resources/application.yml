@@ -1,0 +1,5 @@
+server:
+  port: 7003
+spring:
+  application:
+    name: jeecg-cloud-example

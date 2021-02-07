@@ -4,10 +4,10 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <!--<a-button type="primary" icon="download" @click="handleExportXls('分类字典')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :action="importExcelUrl" @change="handleImportExcel">
+      <a-button type="primary" icon="download" @click="handleExportXls('分类字典')">导出</a-button>
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader"  :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>-->
+      </a-upload>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -39,9 +39,11 @@
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
           <a-divider type="vertical" />
-          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
             <a>删除</a>
           </a-popconfirm>
+          <a-divider type="vertical" />
+          <a @click="handleAddSub(record)">添加下级</a>
         </span>
 
       </a-table>
@@ -56,6 +58,7 @@
   import { getAction } from '@/api/manage'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import SysCategoryModal from './modules/SysCategoryModal'
+  import { deleteAction } from '@/api/manage'
   
   export default {
     name: "SysCategoryList",
@@ -69,12 +72,12 @@
         // 表头
         columns: [
           {
-            title:'类型名称',
+            title:'分类名称',
             align:"left",
             dataIndex: 'name'
           },
           {
-            title:'类型编码',
+            title:'分类编码',
             align:"left",
             dataIndex: 'code'
           },
@@ -88,6 +91,7 @@
         url: {
           list: "/sys/category/rootList",
           childList: "/sys/category/childList",
+          getChildListBatch: "/sys/category/getChildListBatch",
           delete: "/sys/category/delete",
           deleteBatch: "/sys/category/deleteBatch",
           exportXlsUrl: "/sys/category/exportXls",
@@ -97,7 +101,8 @@
         hasChildrenField:"hasChild",
         pidField:"pid",
         dictOptions:{
-        } 
+        },
+        subExpandedKeys:[],
       }
     },
     computed: {
@@ -121,7 +126,6 @@
           this.ipagination.current=1
         }
         this.loading = true
-        this.expandedRowKeys = []
         let params = this.getQueryParams()
         return new Promise((resolve) => {
           getAction(this.url.list,params).then(res=>{
@@ -130,7 +134,9 @@
               if(Number(result.total)>0){
                 this.ipagination.total = Number(result.total)
                 this.dataSource = this.getDataByResult(res.result.records)
-                resolve()
+                //update--begin--autor:lvdandan-----date:20201204------for：JT-31 删除成功后默认展开已展开信息
+                return this.loadDataByExpandedRows(this.dataSource)
+                //update--end--autor:lvdandan-----date:20201204------for：JT-31 删除成功后默认展开已展开信息
               }else{
                 this.ipagination.total=0
                 this.dataSource=[]
@@ -138,6 +144,7 @@
             }else{
               this.$message.warning(res.message)
             }
+          }).finally(()=>{
             this.loading = false
           })
         })
@@ -228,6 +235,8 @@
                 this.dataSource = [...this.dataSource]
                 resolve()
               }else{
+                row.children=''
+                row.hasChildrenField='0'
                 reject()
               }
             }else{
@@ -245,6 +254,76 @@
               this.getFormDataById(id,arr[i].children)
             }
           }
+        }
+      },
+      handleAddSub(record){
+        this.subExpandedKeys = [];
+        this.getExpandKeysByPid(record.id,this.dataSource,this.dataSource)
+        this.$refs.modalForm.subExpandedKeys = this.subExpandedKeys;
+        this.$refs.modalForm.title = "添加子分类";
+        this.$refs.modalForm.edit({'pid':record.id});
+        this.$refs.modalForm.disableSubmit = false;
+      },
+      handleDelete: function (record) {
+        let that = this;
+        deleteAction(that.url.delete, {id: record.id}).then((res) => {
+          if (res.success) {
+            //update--begin--autor:lvdandan-----date:20201204------for：JT-31 删除成功后默认展开已展开信息
+            that.loadData();
+            //update--end--autor:lvdandan-----date:20201204------for：JT-31 删除成功后默认展开已展开信息
+          } else {
+            that.$message.warning(res.message);
+          }
+        });
+      },
+      // 添加子分类时获取所有父级id
+      getExpandKeysByPid(pid,arr,all){
+        if(pid && arr && arr.length>0){
+          for(let i=0;i<arr.length;i++){
+            if(arr[i].id==pid){
+              this.subExpandedKeys.push(arr[i].id)
+              this.getExpandKeysByPid(arr[i]['pid'],all,all)
+            }else{
+              this.getExpandKeysByPid(pid,arr[i].children,all)
+            }
+          }
+        }
+      },
+      // 根据已展开的行查询数据（用于保存后刷新时异步加载子级的数据）
+      loadDataByExpandedRows(dataList) {
+        if (this.expandedRowKeys.length > 0) {
+          return getAction(this.url.getChildListBatch,{ parentIds: this.expandedRowKeys.join(',') }).then(res=>{
+            if (res.success && res.result.records.length>0) {
+              //已展开的数据批量子节点
+              let records = res.result.records
+              const listMap = new Map();
+              for (let item of records) {
+                let pid = item[this.pidField];
+                if (this.expandedRowKeys.join(',').includes(pid)) {
+                  let mapList = listMap.get(pid);
+                  if (mapList == null) {
+                    mapList = [];
+                  }
+                  mapList.push(item);
+                  listMap.set(pid, mapList);
+                }
+              }
+              let childrenMap = listMap;
+              let fn = (list) => {
+                if(list) {
+                  list.forEach(data => {
+                    if (this.expandedRowKeys.includes(data.id)) {
+                      data.children = this.getDataByResult(childrenMap.get(data.id))
+                      fn(data.children)
+                    }
+                  })
+                }
+              }
+              fn(dataList)
+            }
+          })
+        } else {
+          return Promise.resolve()
         }
       },
       

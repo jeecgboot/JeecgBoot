@@ -1,0 +1,214 @@
+<#include "/common/utils.ftl">
+<template>
+  <j-modal
+    :title="title"
+    :width="width"
+    :visible="visible"
+    :confirmLoading="confirmLoading"
+    switchFullscreen
+    @ok="handleOk"
+    @cancel="handleCancel"
+    cancelText="关闭">
+    <a-spin :spinning="confirmLoading">
+      <a-form :form="form">
+        <a-row>
+<#assign form_cat_tree = false>
+<#assign form_cat_back = "">
+<#assign form_span = 24>
+<#list columns as po>
+<#if po.isShow =='Y' && po.fieldName != 'id'>
+<#assign form_field_dictCode="">
+	<#if po.dictTable?default("")?trim?length gt 1 && po.dictText?default("")?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
+		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+	<#elseif po.dictField?default("")?trim?length gt 1>
+		<#assign form_field_dictCode="${po.dictField}">
+	</#if>
+          <a-col :span="${form_span}">
+            <a-form-item label="${po.filedComment}" :labelCol="labelCol" :wrapperCol="wrapperCol">
+	<#if po.classType =='date'>
+              <j-date placeholder="请选择${po.filedComment}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType =='datetime'>
+              <j-date placeholder="请选择${po.filedComment}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType =='time'>
+               <j-time placeholder="请选择${po.filedComment}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType =='popup'>
+              <j-popup
+                v-decorator="['${po.fieldName}'${autoWriteRules(po)}]"
+                :trigger-change="true"
+                org-fields="${po.dictField}"
+                dest-fields="${Format.underlineToHump(po.dictText)}"
+                code="${po.dictTable}"
+                @callback="popupCallback"
+                <#if po.readonly=='Y'>disabled</#if>/>
+    <#elseif po.classType =='sel_depart'>
+              <j-select-depart v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" multi <#if po.readonly=='Y'>disabled</#if>/>
+<#elseif po.classType =='switch'>
+              <j-switch v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" <#if po.dictField?default("")?trim?length gt 1>:options="${po.dictField}"</#if> <#if po.readonly=='Y'>disabled</#if>></j-switch>
+	<#elseif po.classType =='pca'>
+		      <j-area-linkage type="cascader" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入省市区" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType =='markdown'>
+	          <j-markdown-editor v-decorator="[${autoStringSuffix(po)},{initialValue:''}]" id="${po.fieldName}"></j-markdown-editor>
+    <#elseif po.classType =='password'>
+	          <a-input-password v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType =='sel_user'>
+              <j-select-user-by-dep v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType =='textarea'>
+              <a-textarea v-decorator="[${autoStringSuffix(po)}${autoWriteRules(po)}]" rows="4" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType=='list' || po.classType=='radio'>
+              <j-dict-select-tag type="${po.classType}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType=='list_multi' || po.classType=='checkbox'>
+              <j-multi-select-tag type="${po.classType}" v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType=='sel_search'>
+              <j-search-select-tag v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" dict="${form_field_dictCode}" <#if po.readonly=='Y'>disabled</#if> />
+    <#elseif po.classType=='cat_tree'>
+    	<#assign form_cat_tree = true>
+              <j-category-select v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" pcode="${po.dictField?default("")}" placeholder="请选择${po.filedComment}" <#if po.dictText?default("")?trim?length gt 1>back="${po.dictText}" @change="handleCategoryChange"</#if> <#if po.readonly=='Y'>disabled</#if>/>
+    	<#if po.dictText?default("")?trim?length gt 1>
+    	<#assign form_cat_back = "${po.dictText}">
+    	</#if>
+	<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+              <a-input-number v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType=='file'>
+              <j-upload v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" :trigger-change="true" <#if po.readonly=='Y'>disabled</#if> <#if po.uploadnum??>:number=${po.uploadnum}</#if>></j-upload>
+	<#elseif po.classType=='image'>
+              <j-image-upload isMultiple <#if po.uploadnum??>:number=${po.uploadnum}</#if> v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" <#if po.readonly=='Y'>disabled</#if>></j-image-upload>
+	<#elseif po.classType=='umeditor'>
+              <j-editor v-decorator="[${autoStringSuffix(po)},{trigger:'input'}]" <#if po.readonly=='Y'>disabled</#if>/>
+    <#elseif po.fieldDbType=='Blob'>
+              <a-input v-decorator="['${po.fieldName}String'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>></a-input>
+    <#elseif po.classType == 'sel_tree'>
+              <j-tree-select
+                ref="treeSelect"
+                placeholder="请选择${po.filedComment}"
+                v-decorator="['${po.fieldName}'${autoWriteRules(po)}]"
+                <#if po.dictText??>
+                <#if po.dictText?split(',')[2]?? && po.dictText?split(',')[0]??>
+                dict="${po.dictTable},${po.dictText?split(',')[2]},${po.dictText?split(',')[0]}"
+                <#elseif po.dictText?split(',')[1]??>
+                pidField="${po.dictText?split(',')[1]}"
+                <#elseif po.dictText?split(',')[3]??>
+                hasChildField="${po.dictText?split(',')[3]}"
+                </#if>
+                </#if>
+                pidValue="${po.dictField}"
+                <#if po.readonly=='Y'>disabled</#if>>
+              </j-tree-select>
+	<#else>
+              <a-input v-decorator="['${po.fieldName}'${autoWriteRules(po)}]" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>></a-input>
+    </#if>
+            </a-form-item>
+          </a-col>
+</#if>
+</#list>
+        <#if form_cat_tree && form_cat_back?length gt 1>
+          <a-form-item v-show="false">
+            <a-input v-decorator="['${form_cat_back}']"></a-input>
+          </a-form-item>
+        </#if>
+        </a-row>
+      </a-form>
+    </a-spin>
+  </j-modal>
+</template>
+
+<script>
+
+  import { httpAction } from '@/api/manage'
+  import pick from 'lodash.pick'
+  import { validateDuplicateValue } from '@/utils/util'
+
+  export default {
+    name: "${entityName}Modal",
+    components: { 
+    },
+    data () {
+      return {
+        form: this.$form.createForm(this),
+        title:"操作",
+        width:800,
+        visible: false,
+        model: {},
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 5 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
+
+        confirmLoading: false,
+        <#include "/common/validatorRulesTemplate/main.ftl">
+        url: {
+          add: "/${entityPackage}/${entityName?uncap_first}/add",
+          edit: "/${entityPackage}/${entityName?uncap_first}/edit",
+        }
+     
+      }
+    },
+    created () {
+    },
+    methods: {
+      add () {
+        this.edit({});
+      },
+      edit (record) {
+        this.form.resetFields();
+        this.model = Object.assign({}, record);
+        this.visible = true;
+        this.$nextTick(() => {
+          this.form.setFieldsValue(pick(this.model<#list columns as po><#if po.fieldName !='id'><#if po.fieldDbType=='Blob'>,'${po.fieldName}String'<#else>,'${po.fieldName}'</#if></#if></#list>))
+        })
+      },
+      close () {
+        this.$emit('close');
+        this.visible = false;
+      },
+      handleOk () {
+        const that = this;
+        // 触发表单验证
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            that.confirmLoading = true;
+            let httpurl = '';
+            let method = '';
+            if(!this.model.id){
+              httpurl+=this.url.add;
+              method = 'post';
+            }else{
+              httpurl+=this.url.edit;
+               method = 'put';
+            }
+            let formData = Object.assign(this.model, values);
+            console.log("表单提交数据",formData)
+            httpAction(httpurl,formData,method).then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                that.$emit('ok');
+              }else{
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
+          }
+         
+        })
+      },
+      handleCancel () {
+        this.close()
+      },
+      popupCallback(row){
+        this.form.setFieldsValue(pick(row<#list columns as po><#if po.fieldName !='id'><#if po.fieldDbType=='Blob'>,'${po.fieldName}String'<#else>,'${po.fieldName}'</#if></#if></#list>))
+      },
+      <#if form_cat_tree>
+      handleCategoryChange(value,backObj){
+        this.form.setFieldsValue(backObj)
+      }
+      </#if>
+
+      
+    }
+  }
+</script>

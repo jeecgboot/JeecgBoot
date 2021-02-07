@@ -52,5 +52,11 @@ public interface ISysCategoryService extends IService<SysCategory> {
 	 * @return
 	 */
 	public String queryIdByCode(String code);
+
+	/**
+	 * 删除节点时同时删除子节点及修改父级节点
+	 * @param ids
+	 */
+	void deleteSysCategory(String ids);
 	
 }

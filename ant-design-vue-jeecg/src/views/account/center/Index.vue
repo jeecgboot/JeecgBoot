@@ -94,6 +94,7 @@
   import RouteView from "@/components/layouts/RouteView"
   import { AppPage, ArticlePage, ProjectPage } from './page'
   import { mapGetters } from 'vuex'
+  import { getFileAccessHttpUrl } from '@/api/manage';
 
   export default {
     components: {
@@ -133,10 +134,10 @@
     methods: {
       ...mapGetters(["nickname", "avatar"]),
       getAvatar(){
-          return window._CONFIG['imgDomainURL']+"/"+this.avatar();
+          return getFileAccessHttpUrl(this.avatar());
       },
       getTeams() {
-        this.$http.get('/api/workplace/teams')
+        this.$http.get('/mock/api/workplace/teams')
           .then(res => {
             this.teams = res.result
             this.teamSpinning = false
@@ -180,7 +181,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
   .page-header-wrapper-grid-content-main {
     width: 100%;
     height: 100%;

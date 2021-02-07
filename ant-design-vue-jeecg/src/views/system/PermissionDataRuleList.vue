@@ -3,9 +3,8 @@
     title="数据权限规则"
     :width="drawerWidth"
     @close="onClose"
-    :visible="visible"
-    :wrapStyle="{height: 'calc(100% - 108px)',overflow: 'auto',paddingBottom: '108px'}"
-  >
+    :visible="visible">
+
     <!-- 抽屉内容的border -->
     <div
       :style="{

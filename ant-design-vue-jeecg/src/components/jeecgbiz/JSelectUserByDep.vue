@@ -3,7 +3,8 @@
     <a-input-search
       v-model="userNames"
       placeholder="请先选择用户"
-      disabled
+      readOnly
+      unselectable="on"
       @search="onSearchDepUser">
       <a-button slot="enterButton" :disabled="disabled">选择用户</a-button>
     </a-input-search>
@@ -37,6 +38,11 @@
         default: true,
         required: false
       },
+      backUser: {
+        type: Boolean,
+        default: false,
+        required: false
+      }
     },
     data() {
       return {
@@ -59,6 +65,23 @@
     methods: {
       initComp(userNames) {
         this.userNames = userNames
+      },
+      //返回选中的用户信息
+      backDeparInfo(){
+        if(this.backUser===true){
+          if(this.userIds && this.userIds.length>0){
+            let arr1 = this.userIds.split(',')
+            let arr2 = this.userNames.split(',')
+            let info = []
+            for(let i=0;i<arr1.length;i++){
+              info.push({
+                value: arr1[i],
+                text: arr2[i]
+              })
+            }
+            this.$emit('back', info)
+          }
+        }
       },
       onSearchDepUser() {
         this.$refs.selectModal.showModal()

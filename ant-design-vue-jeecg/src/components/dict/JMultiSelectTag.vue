@@ -10,6 +10,9 @@
     :disabled="disabled"
     mode="multiple"
     :placeholder="placeholder"
+    :getPopupContainer="getParentContainer"
+    optionFilterProp="children"
+    :filterOption="filterOption"
     allowClear>
     <a-select-option
       v-for="(item,index) in dictOptions"
@@ -24,7 +27,7 @@
 </template>
 
 <script>
-  import {ajaxGetDictItems} from '@/api/api'
+  import {ajaxGetDictItems,getDictItemsFromCache} from '@/api/api'
   export default {
     name: 'JMultiSelectTag',
     props: {
@@ -33,13 +36,23 @@
       disabled: Boolean,
       value: String,
       type: String,
-      options:Array
+      options:Array,
+      spliter:{
+        type: String,
+        required: false,
+        default: ','
+      },
+      popContainer:{
+        type:String,
+        default:'',
+        required:false
+      },
     },
     data() {
       return {
         dictOptions: [],
         tagType:"",
-        arrayValue:!this.value?[]:this.value.split(",")
+        arrayValue:!this.value?[]:this.value.split(this.spliter)
       }
     },
     created() {
@@ -49,17 +62,23 @@
         this.tagType = this.type
       }
       //获取字典数据
-      this.initDictData();
+      //this.initDictData();
     },
     watch:{
       options: function(val){
         this.setCurrentDictOptions(val);
       },
+      dictCode:{
+        immediate:true,
+        handler() {
+          this.initDictData()
+        },
+      },
       value (val) {
         if(!val){
           this.arrayValue = []
         }else{
-          this.arrayValue = this.value.split(",")
+          this.arrayValue = this.value.split(this.spliter)
         }
       }
     },
@@ -68,6 +87,12 @@
         if(this.options && this.options.length>0){
           this.dictOptions = [...this.options]
         }else{
+          //优先从缓存中读取字典配置
+          let cacheOption = getDictItemsFromCache(this.dictCode)
+          if(cacheOption && cacheOption.length>0){
+            this.dictOptions = cacheOption
+            return
+          }
           //根据字典Code, 初始化字典数组
           ajaxGetDictItems(this.dictCode, null).then((res) => {
             if (res.success) {
@@ -78,14 +103,26 @@
 
       },
       onChange (selectedValue) {
-        this.$emit('change', selectedValue.join(","));
+        this.$emit('change', selectedValue.join(this.spliter));
       },
       setCurrentDictOptions(dictOptions){
         this.dictOptions = dictOptions
       },
       getCurrentDictOptions(){
         return this.dictOptions
+      },
+      getParentContainer(node){
+        if(!this.popContainer){
+          return node.parentNode
+        }else{
+          return document.querySelector(this.popContainer)
+        }
+      },
+      // update--begin--autor:lvdandan-----date:20201120------for：LOWCOD-1086 下拉多选框,搜索时只字典code进行搜索不能通过字典text搜索
+      filterOption(input, option) {
+        return option.componentOptions.children[0].children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
       }
+      // update--end--autor:lvdandan-----date:20201120------for：LOWCOD-1086 下拉多选框,搜索时只字典code进行搜索不能通过字典text搜索
     },
     model: {
       prop: 'value',

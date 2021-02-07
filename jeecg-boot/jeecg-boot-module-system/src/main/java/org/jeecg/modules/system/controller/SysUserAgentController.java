@@ -23,6 +23,7 @@ import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,6 +58,9 @@ import lombok.extern.slf4j.Slf4j;
 public class SysUserAgentController {
 	@Autowired
 	private ISysUserAgentService sysUserAgentService;
+
+	 @Value("${jeecg.path.upload}")
+	 private String upLoadPath;
 	
 	/**
 	  * 分页列表查询
@@ -199,8 +203,8 @@ public class SysUserAgentController {
   /**
       * 导出excel
    *
+   * @param sysUserAgent
    * @param request
-   * @param response
    */
   @RequestMapping(value = "/exportXls")
   public ModelAndView exportXls(SysUserAgent sysUserAgent,HttpServletRequest request) {
@@ -213,7 +217,9 @@ public class SysUserAgentController {
       mv.addObject(NormalExcelConstants.FILE_NAME, "用户代理人设置列表");
       mv.addObject(NormalExcelConstants.CLASS, SysUserAgent.class);
       LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-      mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("用户代理人设置列表数据", "导出人:"+user.getRealname(), "导出信息"));
+	  ExportParams exportParams = new ExportParams("用户代理人设置列表数据", "导出人:"+user.getRealname(), "导出信息");
+	  exportParams.setImageBasePath(upLoadPath);
+      mv.addObject(NormalExcelConstants.PARAMS, exportParams);
       mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
       return mv;
   }

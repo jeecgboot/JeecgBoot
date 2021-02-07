@@ -183,11 +183,11 @@
           }
         ],
         url: {
-          list: "/message/sysMessage/list",
-          delete: "/message/sysMessage/delete",
-          deleteBatch: "/message/sysMessage/deleteBatch",
-          exportXlsUrl: "message/sysMessage/exportXls",
-          importExcelUrl: "message/sysMessage/importExcel",
+          list: "/sys/message/sysMessage/list",
+          delete: "/sys/message/sysMessage/delete",
+          deleteBatch: "/sys/message/sysMessage/deleteBatch",
+          exportXlsUrl: "sys/message/sysMessage/exportXls",
+          importExcelUrl: "sys/message/sysMessage/importExcel",
         },
       }
     },

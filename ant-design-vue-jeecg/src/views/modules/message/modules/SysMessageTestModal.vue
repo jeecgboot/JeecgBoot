@@ -69,7 +69,7 @@
 
         confirmLoading: false,
         url: {
-          send: "/message/sysMessageTemplate/sendMsg",
+          send: "/sys/message/sysMessageTemplate/sendMsg",
         },
         templateName: "",
         templateContent: "",

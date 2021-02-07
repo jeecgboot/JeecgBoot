@@ -15,14 +15,14 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="名称">
-          <a-input placeholder="请输入名称" v-decorator="['itemText', validatorRules.itemText]"/>
+          <a-input placeholder="请输入名称" v-decorator.trim="['itemText', validatorRules.itemText]"/>
         </a-form-item>
 
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="数据值">
-          <a-input placeholder="请输入数据值" v-decorator="['itemValue', validatorRules.itemValue]"/>
+          <a-input placeholder="请输入数据值" v-decorator.trim="['itemValue', validatorRules.itemValue]"/>
         </a-form-item>
 
         <a-form-item
@@ -56,6 +56,7 @@
 <script>
   import pick from 'lodash.pick'
   import {addDictItem, editDictItem} from '@/api/api'
+  import { getAction } from '@api/manage'
 
   export default {
     name: "DictItemModal",
@@ -79,7 +80,7 @@
         form: this.$form.createForm(this),
         validatorRules: {
           itemText: {rules: [{required: true, message: '请输入名称!'}]},
-          itemValue: {rules: [{required: true, message: '请输入数据值!'}]},
+          itemValue: {rules: [{required: true, message: '请输入数据值!'},{validator: this.validateItemValue}]},
         },
       }
     },
@@ -153,6 +154,33 @@
         this.$emit('close');
         this.visible = false;
       },
+      validateItemValue(rule, value, callback){
+        let param = {
+          itemValue:value,
+          dictId:this.dictId,
+        }
+        if(this.model.id){
+          param.id = this.model.id
+        }
+        if(value){
+          let reg=new RegExp("[`_~!@#$^&*()=|{}'.<>《》/?！￥（）—【】‘；：”“。，、？]")
+          if(reg.test(value)){
+            callback("数据值不能包含特殊字符！")
+          }else{
+            //update--begin--autor:lvdandan-----date:20201203------for：JT-27【数据字典】字典 - 数据值可重复
+            getAction("/sys/dictItem/dictItemCheck",param).then((res)=>{
+              if(res.success){
+                callback()
+              }else{
+                callback(res.message);
+              }
+            });
+            //update--end--autor:lvdandan-----date:20201203------for：JT-27【数据字典】字典 - 数据值可重复
+          }
+        }else{
+          callback()
+        }
+      }
     }
   }
 </script>

@@ -1,9 +1,5 @@
 spring:
+  application:
+    name: jeecg-system
   profiles:
-    active: dev
-swagger:
-  production: false
-  basic:
-    enable: false
-    username: jeecg
-    password: jeecg1314
+    active: @profile.name@

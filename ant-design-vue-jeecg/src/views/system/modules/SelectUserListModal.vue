@@ -13,13 +13,13 @@
 
           <a-col :span="6">
             <a-form-item label="账号">
-              <a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>
+              <a-input placeholder="请输入账号" v-model="queryParam.username"></a-input>
             </a-form-item>
           </a-col>
 
           <a-col :span="6">
             <a-form-item label="性别">
-              <a-select v-model="queryParam.sex" placeholder="请选择性别查询">
+              <a-select v-model="queryParam.sex" placeholder="请选择性别">
                 <a-select-option value="">请选择性别查询</a-select-option>
                 <a-select-option value="1">男性</a-select-option>
                 <a-select-option value="2">女性</a-select-option>
@@ -31,20 +31,20 @@
           <template v-if="toggleSearchStatus">
             <a-col :span="6">
               <a-form-item label="邮箱">
-                <a-input placeholder="请输入邮箱查询" v-model="queryParam.email"></a-input>
+                <a-input placeholder="请输入邮箱" v-model="queryParam.email"></a-input>
               </a-form-item>
             </a-col>
 
             <a-col :span="6">
               <a-form-item label="手机号码">
-                <a-input placeholder="请输入手机号码查询" v-model="queryParam.phone"></a-input>
+                <a-input placeholder="请输入手机号码" v-model="queryParam.phone"></a-input>
               </a-form-item>
             </a-col>
 
             <a-col :span="6">
               <a-form-item label="状态">
-                <a-select v-model="queryParam.status" placeholder="请选择用户状态查询">
-                  <a-select-option value="">请选择用户状态</a-select-option>
+                <a-select v-model="queryParam.status" placeholder="请选择状态">
+                  <a-select-option value="">请选择状态</a-select-option>
                   <a-select-option value="1">正常</a-select-option>
                   <a-select-option value="2">解冻</a-select-option>
                 </a-select>
@@ -101,7 +101,7 @@
           fixed:'left',
           width:200
         },{
-          title: '真实姓名',
+          title: '用户名称',
           align:"center",
           dataIndex: 'realname',
         },{
@@ -170,10 +170,11 @@
         this.edit(selectUser,userIds);
       },
       edit(selectUser,userIds){
-        if(!userIds){
-          this.selectedRowKeys = []
-        }else{
+        //控制台报错
+        if(userIds&&userIds.length>0){
           this.selectedRowKeys = userIds.split(',');
+        }else{
+          this.selectedRowKeys = []
         }
         if(!selectUser){
           this.selectionRows=[]
@@ -182,7 +183,7 @@
           that.selectionRows=[];
           selectUser.forEach(function(record,index){
             console.log(record)
-            that.selectionRows.push({id: that.selectedRowKeys[index],realname:record})
+            that.selectionRows.push({id: that.selectedRowKeys[index],realname:record.label})
           })
           // this.selectionRows = selectUser;
         }

@@ -6,7 +6,7 @@
       :closable="false"
       @close="onClose"
       :visible="visible"
-      :style="{}"
+      style="height: 100%;overflow: auto;"
     >
       <div class="setting-drawer-index-content">
 
@@ -113,7 +113,7 @@
                   <div slot="title" :style="{ textDecoration: !fixedHeader ? 'line-through' : 'unset' }">下滑时隐藏 Header</div>
                 </a-list-item-meta>
               </a-list-item>
-              <a-list-item >
+              <a-list-item>
                 <a-switch slot="actions" size="small" :disabled="(layoutMode === 'topmenu')" :checked="dataFixSiderbar" @change="handleFixSiderbar" />
                 <a-list-item-meta>
                   <div slot="title" :style="{ textDecoration: layoutMode === 'topmenu' ? 'line-through' : 'unset' }">固定侧边菜单</div>
@@ -178,19 +178,12 @@
     mixins: [mixin, mixinDevice],
     data() {
       return {
-        visible: true,
+        visible: false,
         colorList,
         dataFixSiderbar: false
     }
     },
-    watch: {
-
-    },
     mounted () {
-      const vm = this
-      setTimeout(() => {
-        vm.visible = false
-      }, 16)
       // 当主题色不是默认色时，才进行主题编译
       if (this.primaryColor !== config.primaryColor) {
         updateTheme(this.primaryColor)
@@ -255,7 +248,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 
   .setting-drawer-index-content {
 

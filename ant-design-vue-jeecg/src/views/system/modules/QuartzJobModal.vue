@@ -47,12 +47,8 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="状态">
-          <a-radio-group buttonStyle="solid" v-decorator="[ 'status', {'initialValue':0}]">
-            <a-radio-button :value="0">正常</a-radio-button>
-            <a-radio-button :value="-1">停止</a-radio-button>
-          </a-radio-group>
+          <j-dict-select-tag type="radioButton"  v-decorator="[ 'status', {'initialValue':0}]" :trigger-change="true" dictCode="quartz_status"/>
         </a-form-item>
-
       </a-form>
     </a-spin>
   </a-modal>
@@ -72,6 +68,7 @@
     data () {
       return {
         title:"操作",
+        buttonStyle: 'solid',
         visible: false,
         model: {},
         labelCol: {

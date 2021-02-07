@@ -4,15 +4,15 @@
  * data中url定义 list为查询列表  delete为删除单条记录  deleteBatch为批量删除
  */
 import { filterObj } from '@/utils/util';
-import { deleteAction, getAction,downFile } from '@/api/manage'
+import { deleteAction, getAction,downFile,getFileAccessHttpUrl } from '@/api/manage'
 import Vue from 'vue'
-import { ACCESS_TOKEN } from "@/store/mutation-types"
+import { ACCESS_TOKEN, TENANT_ID } from "@/store/mutation-types"
+import store from '@/store'
+import {Modal} from 'ant-design-vue'
 
 export const JeecgListMixin = {
   data(){
     return {
-      //token header
-      tokenHeader: {'X-Access-Token': Vue.ls.get(ACCESS_TOKEN)},
       /* 查询条件-请不要在queryParam中声明非字符串值的属性 */
       queryParam: {},
       /* 数据源 */
@@ -47,15 +47,28 @@ export const JeecgListMixin = {
       /* 高级查询条件生效状态 */
       superQueryFlag:false,
       /* 高级查询条件 */
-      superQueryParams:""
+      superQueryParams: '',
+      /** 高级查询拼接方式 */
+      superQueryMatchType: 'and',
     }
   },
   created() {
-    if(!this.disableMixinCreated){
-      console.log(' -- mixin created -- ')
-      this.loadData();
-      //初始化字典配置 在自己页面定义
-      this.initDictConfig();
+      if(!this.disableMixinCreated){
+        console.log(' -- mixin created -- ')
+        this.loadData();
+        //初始化字典配置 在自己页面定义
+        this.initDictConfig();
+      }
+  },
+  computed: {
+    //token header
+    tokenHeader(){
+      let head = {'X-Access-Token': Vue.ls.get(ACCESS_TOKEN)}
+      let tenantid = Vue.ls.get(TENANT_ID)
+      if(tenantid){
+        head['tenant_id'] = tenantid
+      }
+      return head;
     }
   },
   methods:{
@@ -72,8 +85,15 @@ export const JeecgListMixin = {
       this.loading = true;
       getAction(this.url.list, params).then((res) => {
         if (res.success) {
-          this.dataSource = res.result.records;
-          this.ipagination.total = res.result.total;
+          //update-begin---author:zhangyafei    Date:20201118  for：适配不分页的数据列表------------
+          this.dataSource = res.result.records||res.result;
+          if(res.result.total)
+          {
+            this.ipagination.total = res.result.total;
+          }else{
+            this.ipagination.total = 0;
+          }
+          //update-end---author:zhangyafei    Date:20201118  for：适配不分页的数据列表------------
         }
         if(res.code===510){
           this.$message.warning(res.message)
@@ -84,22 +104,24 @@ export const JeecgListMixin = {
     initDictConfig(){
       console.log("--这是一个假的方法!")
     },
-    handleSuperQuery(arg) {
+    handleSuperQuery(params, matchType) {
       //高级查询方法
-      if(!arg){
+      if(!params){
         this.superQueryParams=''
         this.superQueryFlag = false
       }else{
         this.superQueryFlag = true
-        this.superQueryParams=JSON.stringify(arg)
+        this.superQueryParams=JSON.stringify(params)
+        this.superQueryMatchType = matchType
       }
-      this.loadData()
+      this.loadData(1)
     },
     getQueryParams() {
       //获取查询条件
       let sqp = {}
       if(this.superQueryParams){
         sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        sqp['superQueryMatchType'] = this.superQueryMatchType
       }
       var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
       param.field = this.getQueryField();
@@ -206,9 +228,15 @@ export const JeecgListMixin = {
     handleToggleSearch(){
       this.toggleSearchStatus = !this.toggleSearchStatus;
     },
+    // 给popup查询使用(查询区域不支持回填多个字段，限制只返回一个字段)
+    getPopupField(fields){
+      return fields.split(',')[0]
+    },
     modalFormOk() {
       // 新增/修改 成功时，重载列表
       this.loadData();
+      //清空列表选中
+      this.onClearSelected()
     },
     handleDetail:function(record){
       this.$refs.modalForm.edit(record);
@@ -225,7 +253,7 @@ export const JeecgListMixin = {
       if(!fileName || typeof fileName != "string"){
         fileName = "导出文件"
       }
-      let param = {...this.queryParam};
+      let param = this.getQueryParams();
       if(this.selectedRowKeys && this.selectedRowKeys.length>0){
         param['selections'] = this.selectedRowKeys.join(",")
       }
@@ -236,9 +264,9 @@ export const JeecgListMixin = {
           return
         }
         if (typeof window.navigator.msSaveBlob !== 'undefined') {
-          window.navigator.msSaveBlob(new Blob([data]), fileName+'.xls')
+          window.navigator.msSaveBlob(new Blob([data],{type: 'application/vnd.ms-excel'}), fileName+'.xls')
         }else{
-          let url = window.URL.createObjectURL(new Blob([data]))
+          let url = window.URL.createObjectURL(new Blob([data],{type: 'application/vnd.ms-excel'}))
           let link = document.createElement('a')
           link.style.display = 'none'
           link.href = url
@@ -263,8 +291,7 @@ export const JeecgListMixin = {
             let href = window._CONFIG['domianURL'] + fileUrl
             this.$warning({
               title: message,
-              content: (
-                <div>
+              content: (<div>
                   <span>{msg}</span><br/>
                   <span>具体详情请 <a href={href} target="_blank" download={fileName}>点击下载</a> </span>
                 </div>
@@ -278,7 +305,26 @@ export const JeecgListMixin = {
           this.$message.error(`${info.file.name} ${info.file.response.message}.`);
         }
       } else if (info.file.status === 'error') {
-        this.$message.error(`文件上传失败: ${info.file.msg} `);
+        if (info.file.response.status === 500) {
+          let data = info.file.response
+          const token = Vue.ls.get(ACCESS_TOKEN)
+          if (token && data.message.includes("Token失效")) {
+            Modal.error({
+              title: '登录已过期',
+              content: '很抱歉，登录已过期，请重新登录',
+              okText: '重新登录',
+              mask: false,
+              onOk: () => {
+                store.dispatch('Logout').then(() => {
+                  Vue.ls.remove(ACCESS_TOKEN)
+                  window.location.reload();
+                })
+              }
+            })
+          }
+        } else {
+          this.$message.error(`文件上传失败: ${info.file.msg} `);
+        }
       }
     },
     /* 图片预览 */
@@ -286,10 +332,11 @@ export const JeecgListMixin = {
       if(text && text.indexOf(",")>0){
         text = text.substring(0,text.indexOf(","))
       }
-      return window._CONFIG['imgDomainURL']+"/"+text
+      return getFileAccessHttpUrl(text)
     },
     /* 文件下载 */
-    uploadFile(text){
+    // update--autor:lvdandan-----date:20200630------for：修改下载文件方法名uploadFile改为downloadFile------
+    downloadFile(text){
       if(!text){
         this.$message.warning("未知的文件")
         return;
@@ -297,7 +344,8 @@ export const JeecgListMixin = {
       if(text.indexOf(",")>0){
         text = text.substring(0,text.indexOf(","))
       }
-      window.open(window._CONFIG['domianURL'] + "/sys/common/download/"+text);
+      let url = getFileAccessHttpUrl(text)
+      window.open(url);
     },
   }
 

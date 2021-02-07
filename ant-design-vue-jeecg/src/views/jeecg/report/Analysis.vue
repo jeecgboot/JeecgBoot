@@ -396,7 +396,7 @@
           countBjl:"sps/register/bjlTenDaysCount",
           countISll:'sps/register/ISllTenDaysCount',
           countIBjl:'sps/register/IBjlTenDaysCount',
-          queryDiskInfo:'api/queryDiskInfo'
+          queryDiskInfo:'sys/actuator/redis/queryDiskInfo'
         },
         chartData:{
           sll:[],
@@ -625,7 +625,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
   .extra-wrapper {
     line-height: 55px;
     padding-right: 24px;

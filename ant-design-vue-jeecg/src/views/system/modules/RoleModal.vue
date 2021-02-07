@@ -112,6 +112,8 @@
         this.form.validateFields((err, values) => {
           if (!err) {
             that.confirmLoading = true;
+            values.roleName = (values.roleName || '').trim()
+            values.roleCode = (values.roleCode || '').trim()
             let formData = Object.assign(this.model, values);
             let obj;
             console.log(formData)

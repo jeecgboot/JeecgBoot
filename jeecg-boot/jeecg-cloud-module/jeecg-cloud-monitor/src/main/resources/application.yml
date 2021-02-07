@@ -1,0 +1,37 @@
+server:
+  port: 9111
+spring:
+  boot:
+    admin:
+      ui:
+        title: JeecgCloud监控中心
+      client:
+        instance:
+          metadata:
+            tags:
+              environment: local
+  security:
+    user:
+      name: "admin"
+      password: "admin"
+  application:
+    name: jeecg-monitor
+  cloud:
+    nacos:
+      discovery:
+        server-addr: @config.server-addr@
+        metadata:
+          user.name: ${spring.security.user.name}
+          user.password: ${spring.security.user.password}
+# 服务端点检查
+management:
+  trace:
+    http:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

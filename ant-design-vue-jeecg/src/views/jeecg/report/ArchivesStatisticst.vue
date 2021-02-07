@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <a-tabs defaultActiveKey="1" @change="callback">
       <a-tab-pane tab="柱状图" key="1">
-        <a-row :gutter="24">
+        <a-row>
           <a-col :span="10">
             <a-radio-group :value="barType" @change="statisticst">
               <a-radio-button value="year">按年统计</a-radio-button>
@@ -93,10 +93,10 @@
         // 统计图类型
         tabStatus:"bar",
         url: {
-          getYearCountInfo: "/api/report/getYearCountInfo",
-          getMonthCountInfo:"/api/report/getMonthCountInfo",
-          getCntrNoCountInfo:"/api/report/getCntrNoCountInfo",
-          getCabinetCountInfo:"/api/report/getCabinetCountInfo",
+          getYearCountInfo: "/mock/api/report/getYearCountInfo",
+          getMonthCountInfo:"/mock/api/report/getMonthCountInfo",
+          getCntrNoCountInfo:"/mock/api/report/getCntrNoCountInfo",
+          getCabinetCountInfo:"/mock/api/report/getCabinetCountInfo",
         },
       }
     },

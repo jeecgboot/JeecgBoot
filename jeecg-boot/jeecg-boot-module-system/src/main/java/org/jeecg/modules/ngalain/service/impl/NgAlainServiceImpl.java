@@ -2,11 +2,10 @@ package org.jeecg.modules.ngalain.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.jeecg.common.util.MD5Util;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.ngalain.mapper.NgAlainMapper;
 import org.jeecg.modules.ngalain.service.NgAlainService;
 import org.jeecg.modules.system.entity.SysPermission;
+import org.jeecg.modules.system.mapper.SysDictMapper;
 import org.jeecg.modules.system.service.ISysPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,12 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 @Service("ngAlainService")
-@Transactional
 public class NgAlainServiceImpl implements NgAlainService {
     @Autowired
     private ISysPermissionService sysPermissionService;
     @Autowired
-    private NgAlainMapper mapper;
+    private SysDictMapper mapper;
     @Override
     public JSONArray getMenu(String id) throws Exception {
         return getJeecgMenu(id);
@@ -44,7 +42,7 @@ public class NgAlainServiceImpl implements NgAlainService {
 
     @Override
     public List<Map<String, String>> getDictByTable(String table, String key, String value) {
-        return this.mapper.getDictByTable(table,key,value);
+        return this.mapper.getDictByTableNgAlain(table,key,value);
     }
 
     private JSONArray parseNgAlain(JSONArray jsonArray) {

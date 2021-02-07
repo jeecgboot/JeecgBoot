@@ -40,6 +40,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import com.alibaba.fastjson.JSON;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.jeecg.common.aspect.annotation.AutoLog;
 
  /**
  * @Description: ${tableVo.ftlDescription}
@@ -47,6 +50,7 @@ import com.alibaba.fastjson.JSON;
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
+@Api(tags="${tableVo.ftlDescription}")
 @RestController
 @RequestMapping("/${entityPackage}/${entityName?uncap_first}")
 @Slf4j
@@ -67,6 +71,8 @@ public class ${entityName}Controller {
 	 * @param req
 	 * @return
 	 */
+	@AutoLog(value = "${tableVo.ftlDescription}-分页列表查询")
+	@ApiOperation(value="${tableVo.ftlDescription}-分页列表查询", notes="${tableVo.ftlDescription}-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(${entityName} ${entityName?uncap_first},
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -75,7 +81,7 @@ public class ${entityName}Controller {
 		QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap());
 		Page<${entityName}> page = new Page<${entityName}>(pageNo, pageSize);
 		IPage<${entityName}> pageList = ${entityName?uncap_first}Service.page(page, queryWrapper);
-		return Result.ok(pageList);
+		return Result.OK(pageList);
 	}
 	
 	/**
@@ -84,12 +90,14 @@ public class ${entityName}Controller {
 	 * @param ${entityName?uncap_first}Page
 	 * @return
 	 */
+	@AutoLog(value = "${tableVo.ftlDescription}-添加")
+	@ApiOperation(value="${tableVo.ftlDescription}-添加", notes="${tableVo.ftlDescription}-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody ${entityName}Page ${entityName?uncap_first}Page) {
        ${entityName} ${entityName?uncap_first} = new ${entityName}();
 		BeanUtils.copyProperties(${entityName?uncap_first}Page, ${entityName?uncap_first});
 		${entityName?uncap_first}Service.save(${entityName?uncap_first});
-		return Result.ok("添加成功！");
+		return Result.OK("添加成功！");
 	}
 	
 	/**
@@ -98,12 +106,14 @@ public class ${entityName}Controller {
 	 * @param ${entityName?uncap_first}Page
 	 * @return
 	 */
+	@AutoLog(value = "${tableVo.ftlDescription}-编辑")
+	@ApiOperation(value="${tableVo.ftlDescription}-", notes="${tableVo.ftlDescription}-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody ${entityName}Page ${entityName?uncap_first}Page) {
 		${entityName} ${entityName?uncap_first} = new ${entityName}();
 		BeanUtils.copyProperties(${entityName?uncap_first}Page, ${entityName?uncap_first});
 		${entityName?uncap_first}Service.updateById(${entityName?uncap_first});
-		return Result.ok("编辑成功!");
+		return Result.OK("编辑成功!");
 	}
 	
 	/**
@@ -112,10 +122,12 @@ public class ${entityName}Controller {
 	 * @param id
 	 * @return
 	 */
+	@AutoLog(value = "${tableVo.ftlDescription}-通过id删除")
+	@ApiOperation(value="${tableVo.ftlDescription}-通过id删除", notes="${tableVo.ftlDescription}-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		${entityName?uncap_first}Service.delMain(id);
-		return Result.ok("删除成功!");
+		return Result.OK("删除成功!");
 	}
 	
 	/**
@@ -124,10 +136,12 @@ public class ${entityName}Controller {
 	 * @param ids
 	 * @return
 	 */
+	@AutoLog(value = "${tableVo.ftlDescription}-批量删除")
+	@ApiOperation(value="${tableVo.ftlDescription}-批量删除", notes="${tableVo.ftlDescription}-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 	    this.${entityName?uncap_first}Service.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功！");
+		return Result.OK("批量删除成功！");
 	}
 	
 	/**
@@ -136,10 +150,12 @@ public class ${entityName}Controller {
 	 * @param id
 	 * @return
 	 */
+	@AutoLog(value = "${tableVo.ftlDescription}-通过id查询")
+	@ApiOperation(value="${tableVo.ftlDescription}-通过id查询", notes="${tableVo.ftlDescription}-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		${entityName} ${entityName?uncap_first} = ${entityName?uncap_first}Service.getById(id);
-		return Result.ok(${entityName?uncap_first});
+		return Result.OK(${entityName?uncap_first});
 	}
 	
 	//===========================以下是子表信息操作相关API====================================
@@ -151,6 +167,8 @@ public class ${entityName}Controller {
   	 * @param ${sub.entityName?uncap_first}
 	 * @return
 	 */
+	@AutoLog(value = "${sub.ftlDescription}-通过主表id查询")
+	@ApiOperation(value="${sub.ftlDescription}-通过主表id查询", notes="${sub.ftlDescription}-通过主表id查询")
 	 <#--  update-begin--Author:kangxiaolin  Date:20190905 for：[442]主子表分开维护，生成的代码子表的分页改为真实的分页--------------------          	 -->
 	@GetMapping(value = "/list${sub.entityName}ByMainId")
 	public Result<?> list${sub.entityName}ByMainId(${sub.entityName} ${sub.entityName?uncap_first},
@@ -176,9 +194,9 @@ ${sub.entityName?uncap_first}.get${key}()!=null<#rt/>
             QueryWrapper<${sub.entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${sub.entityName?uncap_first}, req.getParameterMap());
             Page<${sub.entityName}> page = new Page<${sub.entityName}>(pageNo, pageSize);
             IPage<${sub.entityName}> pageList =  ${sub.entityName?uncap_first}Service.page(page, queryWrapper);
-            return Result.ok(pageList);
+            return Result.OK(pageList);
         }else{
-            return Result.ok();
+            return Result.OK();
         }
     }
     <#--   update-end--Author:kangxiaolin  Date:20190905 for：[442]主子表分开维护，生成的代码子表的分页改为真实的分页--------------------          	 -->
@@ -189,10 +207,12 @@ ${sub.entityName?uncap_first}.get${key}()!=null<#rt/>
      * @param ${sub.entityName?uncap_first}
      * @return
      */
+    @AutoLog(value = "${sub.ftlDescription}-添加")
+    @ApiOperation(value="${sub.ftlDescription}-添加", notes="${sub.ftlDescription}-添加")
     @PostMapping(value = "/add${sub.entityName}")
     public Result<?> add${sub.entityName}(@RequestBody ${sub.entityName} ${sub.entityName?uncap_first}) {
         ${sub.entityName?uncap_first}Service.save(${sub.entityName?uncap_first});
-        return Result.ok("添加${sub.ftlDescription}成功！");
+        return Result.OK("添加${sub.ftlDescription}成功！");
     }
     
     /**
@@ -201,10 +221,12 @@ ${sub.entityName?uncap_first}.get${key}()!=null<#rt/>
      * @param ${sub.entityName?uncap_first}
      * @return
      */
+    @AutoLog(value = "${sub.ftlDescription}-编辑")
+    @ApiOperation(value="${sub.ftlDescription}-编辑", notes="${sub.ftlDescription}-编辑")
     @PutMapping("/edit${sub.entityName}")
     public Result<?> edit${sub.entityName}(@RequestBody ${sub.entityName} ${sub.entityName?uncap_first}) {
         ${sub.entityName?uncap_first}Service.updateById(${sub.entityName?uncap_first});
-        return Result.ok("编辑${sub.ftlDescription}成功！");
+        return Result.OK("编辑${sub.ftlDescription}成功！");
     }
     
     /**
@@ -213,10 +235,12 @@ ${sub.entityName?uncap_first}.get${key}()!=null<#rt/>
      * @param id
      * @return
      */
+    @AutoLog(value = "${sub.ftlDescription}-通过id删除")
+    @ApiOperation(value="${sub.ftlDescription}-通过id删除", notes="${sub.ftlDescription}-通过id删除")
     @DeleteMapping(value = "/delete${sub.entityName}")
     public Result<?> delete${sub.entityName}(@RequestParam(name = "id", required = true) String id) {
        ${sub.entityName?uncap_first}Service.removeById(id);
-        return Result.ok("删除${sub.ftlDescription}成功！");
+        return Result.OK("删除${sub.ftlDescription}成功！");
     }
 	
 	/**
@@ -225,13 +249,15 @@ ${sub.entityName?uncap_first}.get${key}()!=null<#rt/>
      * @param ids
      * @return
      */
+    @AutoLog(value = "${sub.ftlDescription}-批量删除")
+    @ApiOperation(value="${sub.ftlDescription}-批量删除", notes="${sub.ftlDescription}-批量删除")
     @DeleteMapping(value = "/deleteBatch${sub.entityName}")
     public Result<?> deleteBatch${sub.entityName}(@RequestParam(name = "ids", required = true) String ids) {
         if (ids == null || "".equals(ids.trim())) {
             return Result.error("参数不识别！");
         } 
         this.${sub.entityName?uncap_first}Service.removeByIds(Arrays.asList(ids.split(",")));
-       	return Result.ok("批量删除成功！");
+       	return Result.OK("批量删除成功！");
 
     }
     
@@ -294,7 +320,7 @@ ${sub.entityName?uncap_first}.get${key}()!=null<#rt/>
                   BeanUtils.copyProperties(page, po);
                   ${entityName?uncap_first}Service.saveMain(po, <#list subTables as sub>page.get${sub.entityName}List()<#if sub_has_next>,</#if></#list>);
               }
-              return Result.ok("文件导入成功！数据行数:" + list.size());
+              return Result.OK("文件导入成功！数据行数:" + list.size());
           } catch (Exception e) {
               log.error(e.getMessage(),e);
               return Result.error("文件导入失败:"+e.getMessage());
@@ -306,6 +332,6 @@ ${sub.entityName?uncap_first}.get${key}()!=null<#rt/>
               }
           }
       }
-      return Result.ok("文件导入失败！");
+      return Result.OK("文件导入失败！");
     }
 }

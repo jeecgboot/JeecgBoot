@@ -18,12 +18,11 @@ import lombok.Data;
  * @Version: V1.0
  */
 @Data
-@TableName("sys_announcement_send")
 public class AnnouncementSendModel implements Serializable {
     private static final long serialVersionUID = 1L;
     
 	/**id*/
-	@TableId(type = IdType.ID_WORKER_STR)
+	@TableId(type = IdType.ASSIGN_ID)
 	private java.lang.String id;
 	/**通告id*/
 	private java.lang.String anntId;
@@ -51,4 +50,31 @@ public class AnnouncementSendModel implements Serializable {
      * 消息类型1:通知公告2:系统消息
      */
     private java.lang.String msgCategory;
+	/**
+	 * 业务id
+	 */
+	private java.lang.String busId;
+	/**
+	 * 业务类型
+	 */
+	private java.lang.String busType;
+	/**
+	 * 打开方式 组件：component 路由：url
+	 */
+	private java.lang.String openType;
+	/**
+	 * 组件/路由 地址
+	 */
+	private java.lang.String openPage;
+
+	/**
+	 * 业务类型查询（0.非bpm业务）
+	 */
+	private java.lang.String bizSource;
+
+	/**
+	 * 摘要
+	 */
+	private java.lang.String msgAbstract;
+
 }

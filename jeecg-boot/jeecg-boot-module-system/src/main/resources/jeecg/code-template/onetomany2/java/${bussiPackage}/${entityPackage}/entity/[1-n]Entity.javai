@@ -10,6 +10,8 @@ import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @Description: ${subTab.ftlDescription}
@@ -19,13 +21,14 @@ import org.jeecgframework.poi.excel.annotation.Excel;
  */
 @Data
 @TableName("${subTab.tableName}")
+@ApiModel(value="${tableName}对象", description="${tableVo.ftlDescription}")
 public class ${subTab.entityName} implements Serializable {
     private static final long serialVersionUID = 1L;
 
     <#list subTab.originalColumns as po>
 	/**${po.filedComment}*/
 	<#if po.fieldName == primaryKeyField>
-	@TableId(type = IdType.ID_WORKER_STR)
+	@TableId(type = IdType.ASSIGN_ID)
 	<#else>
   <#if po.fieldType =='java.util.Date'>
 	<#if po.fieldDbType =='date'>
@@ -43,6 +46,7 @@ public class ${subTab.entityName} implements Serializable {
     </#if>
   </#if>
   </#if>
+	@ApiModelProperty(value = "${po.filedComment}")
 	private <#if po.fieldType=='java.sql.Blob'>byte[]<#else>${po.fieldType}</#if> ${po.fieldName};
 	</#list>
 }

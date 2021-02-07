@@ -32,12 +32,12 @@
         </div>
         <!-- 操作按钮区域 -->
         <div class="table-operator" style="margin: 5px 0 10px 2px">
-          <a-button @click="handleAdd" type="primary" icon="plus">角色录入</a-button>
+          <a-button @click="handleAdd" type="primary" icon="plus">新建角色</a-button>
           <!--<a-button @click="handleEdit(model1)" type="primary" icon="plus">角色编辑</a-button>-->
           <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
             <a-button type="primary" icon="import">导入</a-button>
           </a-upload>
-          <a-button type="primary" icon="download" @click="handleExportXls">导出</a-button>
+          <a-button type="primary" icon="download" @click="handleExportXls('角色管理')">导出</a-button>
         </div>
 
         <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
@@ -60,26 +60,27 @@
             :rowSelection="{selectedRowKeys: selectedRowKeys1, onChange: onSelectChange1, type:'radio'}"
             @change="handleTableChange">
           <span slot="action" slot-scope="text, record">
-          <a @click="handleOpen(record)">用户</a>
-          <a-divider type="vertical"/>
-          <a-dropdown>
-            <a class="ant-dropdown-link">
-              更多 <a-icon type="down"/>
-            </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a @click="handlePerssion(record.id)">授权</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a @click="handleEdit(record)">编辑</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete1(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+            <a @click="handleOpen(record)">用户</a>
+            <a-divider type="vertical"/>
+
+            <a-dropdown>
+              <a class="ant-dropdown-link">
+                更多 <a-icon type="down"/>
+              </a>
+              <a-menu slot="overlay">
+                <a-menu-item>
+                  <a @click="handlePerssion(record.id)">授权</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a @click="handleEdit(record)">编辑</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete1(record.id)">
+                    <a>删除</a>
+                  </a-popconfirm>
+                </a-menu-item>
+              </a-menu>
+            </a-dropdown>
         </span>
           </a-table>
         </div>
@@ -114,10 +115,10 @@
           </a-form>
         </div>
         <!-- 操作按钮区域 -->
-        <div class="table-operator" :md="24" :sm="24" style="margin: -25px 0px 10px 2px">
-          <a-button @click="handleAdd2" type="primary" icon="plus" style="margin-top: 16px">用户录入</a-button>
+        <div class="table-operator" :md="24" :sm="24">
+          <a-button @click="handleAdd2" type="primary" icon="plus" style="margin-top: 16px">新增用户</a-button>
           <!--<a-button @click="handleEdit2" type="primary" icon="edit" style="margin-top: 16px">用户编辑</a-button>-->
-          <a-button @click="handleAddUserRole" type="primary" icon="plus" style="margin-top: 16px">添加已有用户</a-button>
+          <a-button @click="handleAddUserRole" type="primary" icon="plus" style="margin-top: 16px">已有用户</a-button>
 
           <a-dropdown v-if="selectedRowKeys2.length > 0">
             <a-menu slot="overlay">
@@ -300,7 +301,10 @@
             width: 120
           }],
 
-
+        // 高级查询参数
+        superQueryParams2: '',
+        // 高级查询拼接条件
+        superQueryMatchType2: 'and',
         url: {
           list: '/sys/role/list',
           delete: '/sys/role/delete',
@@ -354,6 +358,7 @@
         let sqp = {}
         if (this.superQueryParams2) {
           sqp['superQueryParams'] = encodeURI(this.superQueryParams2)
+          sqp['superQueryMatchType'] = this.superQueryMatchType2
         }
         var param = Object.assign(sqp, this.queryParam2, this.isorter2, this.filters2)
         param.field = this.getQueryField2()
@@ -530,7 +535,7 @@
       },
       handlePerssion(roleId){
         this.$refs.modalUserRole.show(roleId);
-      }
+      },
     }
   }
 </script>

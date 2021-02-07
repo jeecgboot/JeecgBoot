@@ -29,7 +29,9 @@
         :dataSource="dataSource"
         :loading="loading"
         @expand="expandSubmenu"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}">
+        :expandedRowKeys="expandedRowKeys"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        @expandedRowsChange="handleExpandedRowsChange">
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
@@ -44,14 +46,14 @@
                 <a href="javascript:;" @click="handleDetail(record)">详情</a>
               </a-menu-item>
               <a-menu-item>
-                <a href="javascript:;" @click="handleAddSub(record)">添加子菜单</a>
+                <a href="javascript:;" @click="handleAddSub(record)">添加下级</a>
               </a-menu-item>
               <a-menu-item>
                 <a href="javascript:;" @click="handleDataRule(record)">数据规则</a>
               </a-menu-item>
 
               <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)" placement="topLeft">
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
@@ -79,7 +81,7 @@
 
 <script>
   import PermissionModal from './modules/PermissionModal'
-  import { getSystemMenuList,getSystemSubmenu } from '@/api/api'
+  import { getSystemMenuList, getSystemSubmenu, getSystemSubmenuBatch } from '@/api/api'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PermissionDataRuleList from './PermissionDataRuleList'
   import JEllipsis from '@/components/jeecg/JEllipsis'
@@ -140,7 +142,7 @@
   ]
 
   export default {
-    name: 'PermissionList',
+    name: 'PermissionListAsync',
     mixins: [JeecgListMixin],
     components: {
       PermissionDataRuleList,
@@ -153,6 +155,8 @@
         // 表头
         columns: columns,
         loading: false,
+        // 展开的行，受控属性
+        expandedRowKeys: [],
         url: {
           list: '/sys/permission/list',
           delete: '/sys/permission/delete',
@@ -162,23 +166,47 @@
     },
     methods: {
       loadData() {
-        this.dataSource = []
+        this.loading = true
         getSystemMenuList().then((res) => {
           if (res.success) {
-            console.log(res.result)
             this.dataSource = res.result
+            return this.loadDataByExpandedRows(this.dataSource)
           }
+        }).finally(()=>{
+          this.loading = false
         })
       },
       expandSubmenu(expanded, record){
-        if(expanded){
+        if (expanded && (!record.children || record.children.length === 0)) {
           getSystemSubmenu({parentId:record.id}).then((res) => {
             if (res.success) {
               record.children = res.result
             }
           })
         }
-
+      },
+      // 根据已展开的行查询数据（用于保存后刷新时异步加载子级的数据）
+      loadDataByExpandedRows(dataList) {
+        if (this.expandedRowKeys.length > 0) {
+          return getSystemSubmenuBatch({ parentIds: this.expandedRowKeys.join(',') }).then((res) => {
+            if (res.success) {
+              let childrenMap = res.result
+              let fn = (list) => {
+                if(list&&list.length>0){
+                  list.forEach(data => {
+                    if (this.expandedRowKeys.includes(data.id)) {
+                      data.children = childrenMap[data.id]
+                      fn(data.children)
+                    }
+                  })
+                } 
+              }
+              fn(dataList)
+            }
+          })
+        } else {
+          return Promise.resolve()
+        }
       },
       // 打开数据规则编辑
       handleDataRule(record) {
@@ -189,10 +217,13 @@
         this.$refs.modalForm.localMenuType = 1;
         this.$refs.modalForm.disableSubmit = false;
         this.$refs.modalForm.edit({status:'1',permsType:'1',route:true,'parentId':record.id});
-      }
+      },
+      handleExpandedRowsChange(expandedRows) {
+        this.expandedRowKeys = expandedRows
+      },
     }
   }
 </script>
 <style scoped>
-  @import '~@assets/less/common.less'
+  @import '~@assets/less/common.less';
 </style>

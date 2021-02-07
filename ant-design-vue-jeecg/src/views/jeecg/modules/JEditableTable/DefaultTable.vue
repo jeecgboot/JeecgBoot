@@ -25,7 +25,7 @@
       @selectRowChange="handleSelectRowChange">
 
       <template v-slot:action="props">
-        <a @click="handleDelete(props)">{{ props.text }}</a>
+        <a @click="handleDelete(props)">删除</a>
       </template>
 
     </j-editable-table>
@@ -154,6 +154,8 @@
             type: FormTypes.inputNumber,
             defaultValue: 32,
             placeholder: '${title}',
+            // 是否是统计列，只有 inputNumber 才能设置统计列
+            statistics: true,
             validateRules: [{ required: true, message: '请输入${title}' }]
           },
           {
@@ -167,6 +169,15 @@
             validateRules: [{ required: true, message: '请选择${title}' }]
           },
           {
+            title: '数字',
+            key: 'money',
+            width: '320px',
+            type: FormTypes.inputNumber,
+            defaultValue: '100.32',
+            placeholder: '请选择${title}',
+            validateRules: [{ required: true, message: '请选择${title}' }]
+          },
+          {
             title: '可以为空',
             key: 'isNull',
             // width: '8%',
@@ -176,13 +187,22 @@
             defaultChecked: false
           },
           {
+            type: FormTypes.popup,
+            key: 'popup',
+            title: 'JPopup',
+            width: '180px',
+            popupCode: 'demo',
+            field: 'name',
+            orgFields: 'name',
+            destFields: 'name'
+          },
+          {
             title: '操作',
             key: 'action',
             // width: '8%',
             width: '100px',
             type: FormTypes.slot,
             slotName: 'action',
-            defaultValue: '删除'
           }
 
         ],

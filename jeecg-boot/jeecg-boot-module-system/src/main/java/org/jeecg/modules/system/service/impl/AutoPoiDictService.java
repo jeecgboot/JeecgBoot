@@ -52,7 +52,9 @@ public class AutoPoiDictService implements AutoPoiDictServiceI {
 			}
 		}
 		for (DictModel t : dictList) {
-			dictReplaces.add(t.getText() + "_" + t.getValue());
+			if(t!=null){
+				dictReplaces.add(t.getText() + "_" + t.getValue());
+			}
 		}
 		if (dictReplaces != null && dictReplaces.size() != 0) {
 			log.info("---AutoPoi--Get_DB_Dict------"+ dictReplaces.toString());

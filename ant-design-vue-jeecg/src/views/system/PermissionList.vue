@@ -24,11 +24,14 @@
 
       <a-table
         :columns="columns"
+        :scroll="{x: 1500}"
         size="middle"
         :pagination="false"
         :dataSource="dataSource"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}">
+        :expandedRowKeys="expandedRowKeys"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        @expandedRowsChange="handleExpandedRowsChange">
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
@@ -43,7 +46,7 @@
                 <a href="javascript:;" @click="handleDetail(record)">详情</a>
               </a-menu-item>
               <a-menu-item>
-                <a href="javascript:;" @click="handleAddSub(record)">添加子菜单</a>
+                <a href="javascript:;" @click="handleAddSub(record)">添加下级</a>
               </a-menu-item>
               <a-menu-item>
                 <a href="javascript:;" @click="handleDataRule(record)">数据规则</a>
@@ -132,6 +135,7 @@
     {
       title: '操作',
       dataIndex: 'action',
+      fixed: 'right',
       scopedSlots: { customRender: 'action' },
       align: 'center',
       width: 150
@@ -152,6 +156,8 @@
         // 表头
         columns: columns,
         loading: false,
+        // 展开的行，受控属性
+        expandedRowKeys: [],
         url: {
           list: '/sys/permission/list',
           delete: '/sys/permission/delete',
@@ -178,10 +184,13 @@
         this.$refs.modalForm.localMenuType = 1;
         this.$refs.modalForm.disableSubmit = false;
         this.$refs.modalForm.edit({status:'1',permsType:'1',route:true,'parentId':record.id});
-      }
+      },
+      handleExpandedRowsChange(expandedRows) {
+        this.expandedRowKeys = expandedRows
+      },
     }
   }
 </script>
 <style scoped>
-  @import '~@assets/less/common.less'
+  @import '~@assets/less/common.less';
 </style>

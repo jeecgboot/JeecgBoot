@@ -58,6 +58,7 @@
             :pagination="ipagination"
             :loading="loading"
             @change="handleTableChange"
+            :rowClassName="getRowClassname"
           >
 
           <span slot="action" slot-scope="text, record">
@@ -166,11 +167,18 @@
       },
 
       getQueryParams() {
+        //update--begin--autor:wangshuai-----date:20191204------for：清空总条数 teambition JT-113------
+        this.ipagination.total=0;
+        //update--end--autor:wangshuai-----date:20191204------for：清空总条数 teambition JT-113------
         var param = Object.assign({}, this.queryParam);
         param.dictId = this.dictId;
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
+        if (this.superQueryParams) {
+          param['superQueryParams'] = encodeURI(this.superQueryParams)
+          param['superQueryMatchType'] = this.superQueryMatchType
+        }
         return filterObj(param);
       },
 
@@ -196,8 +204,22 @@
           this.screenWidth = 600;
         }
       },
+      //update--begin--autor:wangshuai-----date:20191204------for：系统管理 数据字典禁用和正常区别开，添加背景颜色 teambition JT-22------
+      //增加样式方法返回值
+      getRowClassname(record){
+        if(record.status==0){
+          return "data-rule-invalid"
+        }
+      }
+      //update--end--autor:wangshuai-----date:20191204------for：系统管理 数据字典禁用和正常区别开，添加背景颜色 teambition JT-22------
     }
   }
 </script>
-<style scoped>
+<style lang="less" scoped>
+//update--begin--autor:wangshuai-----date:20191204------for：系统管理 数据字典禁用和正常区别开，添加背景颜色 teambition JT-22------
+/deep/ .data-rule-invalid{
+  background: #f4f4f4;
+  color: #bababa;
+}
+//update--begin--autor:wangshuai-----date:20191204------for：系统管理 数据字典禁用和正常区别开，添加背景颜色 teambition JT-22------
 </style>

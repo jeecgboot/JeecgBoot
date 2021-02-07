@@ -1,0 +1,60 @@
+[{
+  "id": "jeecg-system",
+  "order": 0,
+  "predicates": [{
+    "name": "Path",
+    "args": {
+      "_genkey_0": "/sys/**",
+      "_genkey_1": "/eoa/**",
+      "_genkey_2": "/joa/**",
+      "_genkey_3": "/jmreport/**",
+      "_genkey_4": "/bigscreen/**",
+      "_genkey_5": "/desform/**",
+      "_genkey_6": "/online/**",
+      "_genkey_8": "/act/**",
+      "_genkey_9": "/plug-in/**",
+      "_genkey_10": "/generic/**",
+      "_genkey_11": "/v1/**"
+    }
+  }],
+  "filters": [],
+  "uri": "lb://jeecg-system"
+}, {
+  "id": "jeecg-demo",
+  "order": 1,
+  "predicates": [{
+    "name": "Path",
+    "args": {
+      "_genkey_0": "/mock/**",
+      "_genkey_1": "/test/**",
+      "_genkey_2": "/bigscreen/template1/**",
+      "_genkey_3": "/bigscreen/template2/**"
+    }
+  }],
+  "filters": [],
+  "uri": "lb://jeecg-demo"
+}, {
+  "id": "jeecg-system-websocket",
+  "order": 2,
+  "predicates": [{
+    "name": "Path",
+    "args": {
+      "_genkey_0": "/websocket/**",
+      "_genkey_1": "/eoaSocket/**",
+      "_genkey_2": "/newsWebsocket/**"
+    }
+  }],
+  "filters": [],
+  "uri": "lb:ws://jeecg-system"
+}, {
+  "id": "jeecg-demo-websocket",
+  "order": 3,
+  "predicates": [{
+    "name": "Path",
+    "args": {
+      "_genkey_0": "/vxeSocket/**"
+    }
+  }],
+  "filters": [],
+  "uri": "lb:ws://jeecg-demo"
+}]

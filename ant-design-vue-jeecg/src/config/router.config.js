@@ -11,7 +11,7 @@ export const asyncRouterMap = [
     name: 'dashboard',
     component: TabLayout,
     meta: { title: '首页' },
-    redirect: '/dashboard/workplace',
+    redirect: '/dashboard/analysis',
     children: [
 
       // // dashboard
@@ -308,17 +308,17 @@ export const constantRouterMap = [
       {
         path: 'register',
         name: 'register',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Register')
+        component: () => import(/* webpackChunkName: "user" */ '@/views/user/register/Register')
       },
       {
         path: 'register-result',
         name: 'registerResult',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/RegisterResult')
+        component: () => import(/* webpackChunkName: "user" */ '@/views/user/register/RegisterResult')
       },
       {
         path: 'alteration',
         name: 'alteration',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Alteration')
+        component: () => import(/* webpackChunkName: "user" */ '@/views/user/alteration/Alteration')
       },
     ]
   },

@@ -28,7 +28,7 @@
                 </div>
               </template>
               <template v-else>
-                (暂无材料，点击右侧"选择文件"或"扫描上传"上传文件)
+                (暂无材料，点击"选择文件"或"扫描上传"上传文件)
               </template>
             </a-col>
           </a-row>
@@ -75,7 +75,7 @@
         // 加载中
         spinning:false,
         url: {
-          pdfList: "/api/pdfList",
+          pdfList: "/mock/api/pdfList",
         },
       }
     },

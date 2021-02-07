@@ -16,6 +16,11 @@ import java.util.List;
  */
 public interface ISysDepartService extends IService<SysDepart>{
 
+    /**
+     * 查询我的部门信息,并分节点进行显示
+     * @return
+     */
+    List<SysDepartTreeModel> queryMyDeptTreeList(String departIds);
 
     /**
      * 查询所有部门信息,并分节点进行显示
@@ -54,7 +59,7 @@ public interface ISysDepartService extends IService<SysDepart>{
      * @param keyWord
      * @return
      */
-    List<SysDepartTreeModel> searhBy(String keyWord);
+    List<SysDepartTreeModel> searhBy(String keyWord,String myDeptSearch,String departIds);
     
     /**
      * 根据部门id删除并删除其可能存在的子级部门
@@ -84,5 +89,22 @@ public interface ISysDepartService extends IService<SysDepart>{
      * @return
      */
 	void deleteBatchWithChildren(List<String> ids);
-    
+
+    /**
+     *  根据部门Id查询,当前和下级所有部门IDS
+     * @param departId
+     * @return
+     */
+    List<String> getSubDepIdsByDepId(String departId);
+
+    /**
+     * 获取我的部门下级所有部门IDS
+     * @return
+     */
+    List<String> getMySubDepIdsByDepId(String departIds);
+    /**
+     * 根据关键字获取部门信息（通讯录）
+     * @return
+     */
+    List<SysDepartTreeModel> queryTreeByKeyWord(String keyWord);
 }
