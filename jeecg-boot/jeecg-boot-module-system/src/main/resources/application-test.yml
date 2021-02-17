@@ -251,9 +251,8 @@ logging:
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas
-#enable swagger
-swagger:
-  enable: true
+#swagger
+knife4j:
   production: false
   basic:
     enable: false

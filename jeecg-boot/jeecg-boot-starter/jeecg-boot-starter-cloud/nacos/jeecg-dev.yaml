@@ -156,9 +156,13 @@ logging:
 #cas单点登录
 cas:
   prefixUrl: http://localhost:8888/cas
-#enable swagger
-swagger:
-  enable: true
+#swagger
+knife4j:
+  production: false
+  basic:
+    enable: false
+    username: jeecg
+    password: jeecg1314
 
 #第三方登录
 justauth:
