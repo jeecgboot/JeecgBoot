@@ -35,25 +35,26 @@ public class JeecgFeignService implements IJeecgFeignService {
                 .encoder(encoder)
                 .decoder(decoder)
                 .contract(contract);
+
+        builder.requestInterceptor(requestTemplate -> {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (null != attributes) {
+                HttpServletRequest request = attributes.getRequest();
+                log.info("Feign request: {}", request.getRequestURI());
+                // 将token信息放入header中
+                String token = request.getHeader(CommonConstant.X_ACCESS_TOKEN);
+                if(token==null){
+                    token = request.getParameter("token");
+                }
+                log.info("Feign request token: {}", token);
+                requestTemplate.header(CommonConstant.X_ACCESS_TOKEN, token);
+            }
+        });
     }
 
 
     @Override
     public <T> T newInstance(Class<T> clientClass, String serviceName) {
-          builder.requestInterceptor(requestTemplate -> {
-              ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-              if (null != attributes) {
-                  HttpServletRequest request = attributes.getRequest();
-                  log.info("Feign request: {}", request.getRequestURI());
-                  // 将token信息放入header中
-                  String token = request.getHeader(CommonConstant.X_ACCESS_TOKEN);
-                  if(token==null){
-                      token = request.getParameter("token");
-                  }
-                  log.info("Feign request token: {}", token);
-                  requestTemplate.header(CommonConstant.X_ACCESS_TOKEN, token);
-              }
-          });
         return builder.target(clientClass, String.format("http://%s/", serviceName));
     }
 }
