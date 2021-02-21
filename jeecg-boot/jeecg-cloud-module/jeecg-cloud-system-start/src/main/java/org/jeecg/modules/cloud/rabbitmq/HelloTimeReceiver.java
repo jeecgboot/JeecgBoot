@@ -1,16 +1,19 @@
 package org.jeecg.modules.cloud.rabbitmq;
 
 import com.rabbitmq.client.Channel;
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.boot.starter.rabbitmq.core.BaseRabbiMqHandler;
 import org.jeecg.boot.starter.rabbitmq.listenter.MqListener;
 import org.jeecg.common.annotation.RabbitComponent;
 import org.jeecg.common.base.BaseMap;
+import org.jeecg.modules.cloud.constant.CloudConstant;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 
-@RabbitListener(queues = "jeecg_place_order_time")
+@Slf4j
+@RabbitListener(queues = CloudConstant.MQ_JEECG_PLACE_ORDER_TIME)
 @RabbitComponent(value = "helloTimeReceiver")
 public class HelloTimeReceiver extends BaseRabbiMqHandler<BaseMap> {
 
@@ -21,7 +24,7 @@ public class HelloTimeReceiver extends BaseRabbiMqHandler<BaseMap> {
             public void handler(BaseMap map, Channel channel) {
                 //业务处理
                 String orderId = map.get("orderId").toString();
-                System.out.println("Receiver1  : " + orderId);
+                log.info("Time Receiver1，orderId : " + orderId);
             }
         });
     }
