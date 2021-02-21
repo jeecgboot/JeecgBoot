@@ -175,7 +175,7 @@ export const JeecgThirdLoginMixin = {
           this.bindingPhoneModal = false
           this.doThirdLogin(res.result)
         } else {
-          this.$message.$warning(res.message)
+          this.$message.warning(res.message)
         }
       })
     },
