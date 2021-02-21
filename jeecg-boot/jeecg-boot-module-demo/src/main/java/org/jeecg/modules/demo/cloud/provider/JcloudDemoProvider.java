@@ -1,7 +1,7 @@
-package org.jeecg.cloud.demo.test.provider;
+package org.jeecg.modules.demo.cloud.provider;
 
-import org.jeecg.cloud.demo.test.service.JeecgDemoService;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.modules.demo.cloud.service.JcloudDemoService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,14 +14,14 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("/test")
-public class JeecgDemoProvider {
+public class JcloudDemoProvider {
 
     @Resource
-    private JeecgDemoService jeecgDemoService;
+    private JcloudDemoService jcloudDemoService;
 
     @GetMapping("/getMessage")
     public Result<String> getMessage(@RequestParam String name) {
-        return jeecgDemoService.getMessage(name);
+        return jcloudDemoService.getMessage(name);
     }
 
 }

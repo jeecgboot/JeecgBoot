@@ -1,7 +1,7 @@
-package org.jeecg.cloud.demo.test.service;
+package org.jeecg.modules.demo.cloud.service;
 
 import org.jeecg.common.api.vo.Result;
 
-public interface JeecgDemoService {
+public interface JcloudDemoService {
     Result<String> getMessage(String name);
 }
