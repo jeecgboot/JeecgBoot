@@ -1,5 +1,5 @@
 
-package org.jeecg.cloud.demo.job;
+package org.jeecg.modules.cloud.xxljob;;
 
 
 import com.xxl.job.core.biz.model.ReturnT;
@@ -230,5 +230,6 @@ public class DemoJobHandler {
     public void destroy() {
         log.info("destory");
     }
+
 }
 

@@ -9,14 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jeecg-cloud-system-start</artifactId>
-    <description>jeecg-cloud-system-start基础启动模块</description>
+    <description>System项目微服务启动</description>
 
     <dependencies>
-        <!-- 引入jeecg-boot-module-system依赖 -->
-        <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-module-system</artifactId>
-        </dependency>
         <!-- 引入jeecg-boot-starter-cloud依赖 -->
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
@@ -29,6 +24,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- 引入jeecg-boot-module-system依赖 -->
+        <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>jeecg-boot-module-system</artifactId>
+        </dependency>
+
         <!--rabbitmq消息队列-->
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
@@ -39,6 +40,12 @@
             <groupId>org.jeecgframework.boot</groupId>
             <artifactId>jeecg-boot-starter-job</artifactId>
         </dependency>
+        <!-- 分布式锁依赖 -->
+        <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>jeecg-boot-starter-lock</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
