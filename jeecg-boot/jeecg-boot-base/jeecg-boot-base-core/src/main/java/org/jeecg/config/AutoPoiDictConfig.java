@@ -1,17 +1,16 @@
-package org.jeecg.modules.system.service.impl;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.jeecg.common.system.vo.DictModel;
-import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.system.mapper.SysDictMapper;
-import org.jeecgframework.dict.service.AutoPoiDictServiceI;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+package org.jeecg.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.api.CommonAPI;
+import org.jeecg.common.system.vo.DictModel;
+import org.jeecg.common.util.oConvertUtils;
+import org.jeecgframework.dict.service.AutoPoiDictServiceI;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 描述：AutoPoi Excel注解支持字典参数设置
@@ -25,9 +24,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-public class AutoPoiDictService implements AutoPoiDictServiceI {
-	@Autowired
-	private SysDictMapper sysDictMapper;
+public class AutoPoiDictConfig implements AutoPoiDictServiceI {
+	@Lazy
+	@Resource
+	private CommonAPI commonAPI;
 
 	/**
 	 * 通过字典查询easypoi，所需字典文本
@@ -42,11 +42,11 @@ public class AutoPoiDictService implements AutoPoiDictServiceI {
 		List<DictModel> dictList = null;
 		// step.1 如果没有字典表则使用系统字典表
 		if (oConvertUtils.isEmpty(dicTable)) {
-			dictList = sysDictMapper.queryDictItemsByCode(dicCode);
+			dictList = commonAPI.queryDictItemsByCode(dicCode);
 		} else {
 			try {
 				dicText = oConvertUtils.getString(dicText, dicCode);
-				dictList = sysDictMapper.queryTableDictItemsByCode(dicTable, dicText, dicCode);
+				dictList = commonAPI.queryTableDictItemsByCode(dicTable, dicText, dicCode);
 			} catch (Exception e) {
 				log.error(e.getMessage(),e);
 			}
