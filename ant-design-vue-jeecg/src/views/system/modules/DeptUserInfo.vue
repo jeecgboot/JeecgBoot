@@ -123,6 +123,7 @@
       return {
         description: '用户信息',
         currentDeptId: '',
+        currentDept: {},
         // 表头
         columns: [{
             title: '用户账号',
@@ -260,6 +261,7 @@
       open(record) {
         //console.log(record);
         this.currentDeptId = record.id;
+        this.currentDept = record;
         this.loadData(1);
       },
       clearList() {
@@ -291,8 +293,12 @@
           this.$message.error("请选择一个部门!")
         } else {
           this.$refs.modalForm.departDisabled = true;
+          //初始化负责部门
           this.$refs.modalForm.userDepartModel.departIdList = [this.currentDeptId];  //传入一个部门id
           this.$refs.modalForm.add();
+          //update-begin---author:liusq   Date:20210223  for：https://gitee.com/jeecg/jeecg-boot/issues/I2SDU1------------
+          this.$refs.modalForm.resultDepartOptions=[{key:this.currentDept.key,title:this.currentDept.title}]
+          //update-end---author:liusq   Date:20210223  for：https://gitee.com/jeecg/jeecg-boot/issues/I2SDU1------------
           this.$refs.modalForm.title = "新增";
         }
       },
