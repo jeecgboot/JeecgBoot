@@ -60,4 +60,28 @@
             <version>${xxl-job-core.version}</version>
         </dependency>
     </dependencies>
+
+    <!-- update-begin-author:taoyan date:20210226 for:docker部署报错：no main manifest attribute -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includeSystemScope>true</includeSystemScope>
+                    <mainClass>com.xxl.job.admin.XxlJobAdminApplication</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <!-- update-end-author:taoyan date:20210226 for:docker部署报错：no main manifest attribute -->
 </project>

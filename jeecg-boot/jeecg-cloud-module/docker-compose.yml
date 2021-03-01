@@ -67,4 +67,10 @@ services:
     environment:
       - TZ=Asia/Shanghai
 
-
+  jeecg-boot-xxljob:
+    build:
+      context: ./jeecg-cloud-xxljob
+    ports:
+      - 9080:9080
+    container_name: jeecg-boot-xxljob
+    hostname: jeecg-boot-xxljob
