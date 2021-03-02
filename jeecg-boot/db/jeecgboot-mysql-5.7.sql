@@ -1,3 +1,7 @@
+-- 创建mysql库
+DROP DATABASE IF EXISTS `jeecg-boot`;
+create database `jeecg-boot` default character set utf8mb4 collate utf8mb4_general_ci;
+
 /*
  Navicat Premium Data Transfer
 
@@ -16,6 +20,7 @@
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+USE `jeecg-boot`;
 
 -- ----------------------------
 -- Table structure for ces_field_kongj
