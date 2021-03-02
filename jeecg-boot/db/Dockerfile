@@ -7,3 +7,5 @@ ENV TZ=Asia/Shanghai
 RUN ln -sf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 COPY ./jeecgboot-mysql-5.7.sql /docker-entrypoint-initdb.d
+
+COPY ./tables_xxl_job.sql /docker-entrypoint-initdb.d
