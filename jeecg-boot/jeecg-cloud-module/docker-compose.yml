@@ -29,19 +29,34 @@ services:
 
   jeecg-boot-nacos:
     restart: always
-    image: nacos/nacos-server
+    image: nacos/nacos-server:1.4.0
     container_name: jeecg-boot-nacos
     hostname: jeecg-boot-nacos
     ports:
       - 8848:8848
+    depends_on:
+      - jeecg-boot-mysql
+#    volumes:
+#      - ./init/docker-startup.sh:/home/nacos/bin/docker-startup.sh
+#      - ./init/application.properties:/home/nacos/conf/application.properties
     environment:
       MODE: standalone
+      PREFER_HOST_MODE: hostname
+      SPRING_DATASOURCE_PLATFORM: mysql
+      MYSQL_SERVICE_HOST: jeecg-boot-mysql
+      MYSQL_SERVICE_PORT: 3306
+      MYSQL_SERVICE_USER: root
+      MYSQL_SERVICE_PASSWORD: root
+      MYSQL_SERVICE_DB_NAME: nacos
 
   jeecg-boot-gateway:
     build:
       context: ./jeecg-cloud-gateway
     ports:
       - 9999:9999
+    depends_on:
+      - jeecg-boot-nacos
+      - jeecg-boot-redis
     container_name: jeecg-boot-gateway
     hostname: jeecg-boot-gateway
 
@@ -58,6 +73,14 @@ services:
     environment:
       - TZ=Asia/Shanghai
 
+#  jeecg-boot-xxljob:
+#    build:
+#      context: ./jeecg-cloud-xxljob
+#    ports:
+#      - 9080:9080
+#    container_name: jeecg-boot-xxljob
+#    hostname: jeecg-boot-xxljob
+
 #  jeecg-boot-rabbitmq:
 #    #    image: rabbitmq:3-management
 #    image: rabbitmq:3
@@ -67,11 +90,3 @@ services:
 #    restart: always
 #    container_name: jeecg-boot-rabbitmq
 #    hostname: jeecg-boot-rabbitmq
-
-#  jeecg-boot-xxljob:
-#    build:
-#      context: ./jeecg-cloud-xxljob
-#    ports:
-#      - 9080:9080
-#    container_name: jeecg-boot-xxljob
-#    hostname: jeecg-boot-xxljob
