@@ -132,9 +132,6 @@ jeecg :
     adminAddresses: http://127.0.0.1:9080/xxl-job-admin
     appname: ${spring.application.name}
     accessToken: ''
-    address: 127.0.0.1:30007
-    ip: 127.0.0.1
-    port: 30007
     logPath: logs/jeecg/job/jobhandler/
     logRetentionDays: 30
    #自定义路由配置 yml nacos database
@@ -160,7 +157,7 @@ cas:
 knife4j:
   production: false
   basic:
-    enable: false
+    enable: true
     username: jeecg
     password: jeecg1314
 
