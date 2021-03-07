@@ -251,12 +251,11 @@ cas:
 logging:
   level:
     org.jeecg.modules.system.mapper : info
-#enable swagger
-swagger:
-  enable: true
+#swagger
+knife4j:
   production: false
   basic:
-    enable: false
+    enable: true
     username: jeecg
     password: jeecg1314
 #第三方登录

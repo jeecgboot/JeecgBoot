@@ -95,6 +95,9 @@
 <#if po.classType=='pca'>
 <#assign list_need_pca=true>
 </#if>
+<#if po.classType=='switch'>
+<#assign list_need_switch=true>
+</#if>
 </#list>
 <#-- 结束循环 -->
 <#t>

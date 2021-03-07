@@ -13,22 +13,21 @@ import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 
 /**
- * RabbitMq接受者1
- * （@RabbitListener声明类上，一个类只能监听一个队列）
+ * RabbitMq接受者3
+ * （@RabbitListener声明类方法上，一个类可以多监听多个队列）
  */
 @Slf4j
-@RabbitListener(queues = CloudConstant.MQ_JEECG_PLACE_ORDER)
-@RabbitComponent(value = "helloReceiver1")
-public class HelloReceiver1 extends BaseRabbiMqHandler<BaseMap> {
+@RabbitComponent(value = "helloReceiver3")
+public class HelloReceiver3 extends BaseRabbiMqHandler<BaseMap> {
 
-    @RabbitHandler
+    @RabbitListener(queues = CloudConstant.MQ_JEECG_PLACE_ORDER)
     public void onMessage(BaseMap baseMap, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
         super.onMessage(baseMap, deliveryTag, channel, new MqListener<BaseMap>() {
             @Override
             public void handler(BaseMap map, Channel channel) {
                 //业务处理
                 String orderId = map.get("orderId").toString();
-                log.info("MQ Receiver1，orderId : " + orderId);
+                log.info("MQ Receiver3，orderId : " + orderId);
             }
         });
     }

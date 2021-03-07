@@ -94,6 +94,7 @@
       edit(record) {
         if (record.id) {
           this.dictId = record.dictId;
+          this.status = record.status;
           this.visibleCheck = (record.status == 1) ? true : false;
         }
         this.form.resetFields();

@@ -26,11 +26,11 @@ import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecg.modules.system.service.ISysDictItemService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.vo.SysDictPage;
+import org.jeecgframework.poi.excel.ExcelImportCheckUtil;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
-import org.jeecgframework.poi.excel.entity.result.ExcelImportResult;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,8 +66,8 @@ public class SysDictController {
 	public RedisTemplate<String, Object> redisTemplate;
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public Result<IPage<SysDict>> queryPageList(SysDict sysDict,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
+	public Result<IPage<SysDict>> queryPageList(SysDict sysDict, @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                                @RequestParam(name="pageSize", defaultValue="10") Integer pageSize, HttpServletRequest req) {
 		Result<IPage<SysDict>> result = new Result<IPage<SysDict>>();
 		QueryWrapper<SysDict> queryWrapper = QueryGenerator.initQueryWrapper(sysDict, req.getParameterMap());
 		Page<SysDict> page = new Page<SysDict>(pageNo, pageSize);
@@ -91,8 +91,8 @@ public class SysDictController {
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/treeList", method = RequestMethod.GET)
-	public Result<List<SysDictTree>> treeList(SysDict sysDict,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
+	public Result<List<SysDictTree>> treeList(SysDict sysDict, @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                              @RequestParam(name="pageSize", defaultValue="10") Integer pageSize, HttpServletRequest req) {
 		Result<List<SysDictTree>> result = new Result<>();
 		LambdaQueryWrapper<SysDict> query = new LambdaQueryWrapper<>();
 		// 构造查询条件
@@ -118,7 +118,7 @@ public class SysDictController {
 	 * @return
 	 */
 	@RequestMapping(value = "/getDictItems/{dictCode}", method = RequestMethod.GET)
-	public Result<List<DictModel>> getDictItems(@PathVariable String dictCode, @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
+	public Result<List<DictModel>> getDictItems(@PathVariable String dictCode, @RequestParam(value = "sign",required = false) String sign, HttpServletRequest request) {
 		log.info(" dictCode : "+ dictCode);
 		Result<List<DictModel>> result = new Result<List<DictModel>>();
 		List<DictModel> ls = null;
@@ -203,9 +203,9 @@ public class SysDictController {
 	 */
 	@RequestMapping(value = "/loadDict/{dictCode}", method = RequestMethod.GET)
 	public Result<List<DictModel>> loadDict(@PathVariable String dictCode,
-			@RequestParam(name="keyword") String keyword,
-			@RequestParam(value = "sign",required = false) String sign,
-			@RequestParam(value = "pageSize", required = false) Integer pageSize) {
+                                            @RequestParam(name="keyword") String keyword,
+                                            @RequestParam(value = "sign",required = false) String sign,
+                                            @RequestParam(value = "pageSize", required = false) Integer pageSize) {
 		log.info(" 加载字典表数据,加载关键字: "+ keyword);
 		Result<List<DictModel>> result = new Result<List<DictModel>>();
 		List<DictModel> ls = null;
@@ -240,7 +240,7 @@ public class SysDictController {
 	 * 根据字典code加载字典text 返回
 	 */
 	@RequestMapping(value = "/loadDictItem/{dictCode}", method = RequestMethod.GET)
-	public Result<List<String>> loadDictItem(@PathVariable String dictCode,@RequestParam(name="key") String keys, @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
+	public Result<List<String>> loadDictItem(@PathVariable String dictCode, @RequestParam(name="key") String keys, @RequestParam(value = "sign",required = false) String sign, HttpServletRequest request) {
 		Result<List<String>> result = new Result<>();
 		try {
 			if(dictCode.indexOf(",")!=-1) {
@@ -271,13 +271,13 @@ public class SysDictController {
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/loadTreeData", method = RequestMethod.GET)
-	public Result<List<TreeSelectModel>> loadTreeData(@RequestParam(name="pid") String pid,@RequestParam(name="pidField") String pidField,
-												  @RequestParam(name="tableName") String tbname,
-												  @RequestParam(name="text") String text,
-												  @RequestParam(name="code") String code,
-												  @RequestParam(name="hasChildField") String hasChildField,
-												  @RequestParam(name="condition") String condition,
-												  @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
+	public Result<List<TreeSelectModel>> loadTreeData(@RequestParam(name="pid") String pid, @RequestParam(name="pidField") String pidField,
+                                                      @RequestParam(name="tableName") String tbname,
+                                                      @RequestParam(name="text") String text,
+                                                      @RequestParam(name="code") String code,
+                                                      @RequestParam(name="hasChildField") String hasChildField,
+                                                      @RequestParam(name="condition") String condition,
+                                                      @RequestParam(value = "sign",required = false) String sign, HttpServletRequest request) {
 		Result<List<TreeSelectModel>> result = new Result<List<TreeSelectModel>>();
 		Map<String, String> query = null;
 		if(oConvertUtils.isNotEmpty(condition)) {
@@ -293,17 +293,18 @@ public class SysDictController {
 	}
 
 	/**
-	 * 【APP接口】根据字典配置查询表字典数据
+	 * 【APP接口】根据字典配置查询表字典数据（目前暂未找到调用的地方）
 	 * @param query
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 */
+	@Deprecated
 	@GetMapping("/queryTableData")
 	public Result<List<DictModel>> queryTableData(DictQuery query,
-												  @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-												  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-												  @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request){
+                                                  @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                  @RequestParam(value = "sign",required = false) String sign, HttpServletRequest request){
 		Result<List<DictModel>> res = new Result<List<DictModel>>();
 		// SQL注入漏洞 sign签名校验
 		String dictCode = query.getTable()+","+query.getText()+","+query.getCode();
@@ -319,7 +320,7 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysDict> add(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -340,7 +341,7 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
 	public Result<SysDict> edit(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -362,7 +363,7 @@ public class SysDictController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value=CacheConstant.SYS_DICT_CACHE, allEntries=true)
 	public Result<SysDict> delete(@RequestParam(name="id",required=true) String id) {
@@ -381,7 +382,7 @@ public class SysDictController {
 	 * @param ids
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value= CacheConstant.SYS_DICT_CACHE, allEntries=true)
 	public Result<SysDict> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
@@ -424,7 +425,7 @@ public class SysDictController {
 	 * @param request
 	 */
 	@RequestMapping(value = "/exportXls")
-	public ModelAndView exportXls(SysDict sysDict,HttpServletRequest request) {
+	public ModelAndView exportXls(SysDict sysDict, HttpServletRequest request) {
 		// Step.1 组装查询条件
 		QueryWrapper<SysDict> queryWrapper = QueryGenerator.initQueryWrapper(sysDict, request.getParameterMap());
 		//Step.2 AutoPoi 导出Excel
@@ -460,7 +461,7 @@ public class SysDictController {
 	 * @param
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+	@RequiresRoles({"admin"})
 	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
 	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
  		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -473,8 +474,8 @@ public class SysDictController {
 			params.setNeedSave(true);
 			try {
 				//导入Excel格式校验，看匹配的字段文本概率
-				ExcelImportResult t = ExcelImportUtil.importExcelVerify(file.getInputStream(), SysDictPage.class, params);
-				if(t.isVerfiyFail()){
+				Boolean t = ExcelImportCheckUtil.check(file.getInputStream(), SysDictPage.class, params);
+				if(!t){
 					throw new RuntimeException("导入Excel校验失败 ！");
 				}
 				List<SysDictPage> list = ExcelImportUtil.importExcel(file.getInputStream(), SysDictPage.class, params);
