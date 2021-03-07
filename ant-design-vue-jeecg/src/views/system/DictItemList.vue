@@ -167,6 +167,9 @@
       },
 
       getQueryParams() {
+        //update--begin--autor:wangshuai-----date:20191204------for：清空总条数 teambition JT-113------
+        this.ipagination.total=0;
+        //update--end--autor:wangshuai-----date:20191204------for：清空总条数 teambition JT-113------
         var param = Object.assign({}, this.queryParam);
         param.dictId = this.dictId;
         param.field = this.getQueryField();

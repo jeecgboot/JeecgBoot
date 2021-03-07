@@ -1,14 +1,11 @@
 package org.jeecg.common.system.api;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.system.vo.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -80,12 +77,7 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     List<String> getDepartNamesByUsername(String username);
 
-    /**
-     * 10获取数据字典
-     * @param code
-     * @return
-     */
-    public List<DictModel> queryDictItemsByCode(String code);
+
 
     /** 11查询所有的父级字典，按照create_time排序 */
     public List<DictModel> queryAllDict();
@@ -96,14 +88,6 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     public List<SysCategoryModel> queryAllDSysCategory();
 
-    /**
-     * 13获取表数据字典
-     * @param table
-     * @param text
-     * @param code
-     * @return
-     */
-    List<DictModel> queryTableDictItemsByCode(String table, String text, String code);
 
     /**
      * 14查询所有部门 作为字典信息 id -->value,departName -->text
@@ -269,10 +253,32 @@ public interface ISysBaseAPI extends CommonAPI {
     List<JSONObject> queryUsersByUsernames(String usernames);
 
     /**
-     * 37根据多个部门编码(逗号分隔)，查询返回多个部门信息
+     * 37根据多个用户ID(逗号分隔)，查询返回多个用户信息
+     * @param ids
+     * @return
+     */
+    List<JSONObject> queryUsersByIds(String ids);
+
+    /**
+     * 38根据多个部门编码(逗号分隔)，查询返回多个部门信息
      * @param orgCodes
      * @return
      */
     List<JSONObject> queryDepartsByOrgcodes(String orgCodes);
+
+    /**
+     * 39根据多个部门id(逗号分隔)，查询返回多个部门信息
+     * @param ids
+     * @return
+     */
+    List<JSONObject> queryDepartsByIds(String ids);
+
+    /**
+     * 40发送邮件消息
+     * @param email
+     * @param title
+     * @param content
+     */
+    void sendEmailMsg(String email,String title,String content);
 
 }

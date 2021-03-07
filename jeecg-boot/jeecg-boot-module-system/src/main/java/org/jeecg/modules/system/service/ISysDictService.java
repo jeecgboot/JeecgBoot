@@ -73,7 +73,16 @@ public interface ISysDictService extends IService<SysDict> {
 	 */
 	@Deprecated
 	public List<DictModel> queryTableDictItems(String table, String text, String code,String keyword);
-	
+
+	/**
+	 * 查询字典表数据 只查询前10条
+	 * @param table
+	 * @param text
+	 * @param code
+	 * @param keyword
+	 * @return
+	 */
+	public List<DictModel> queryLittleTableDictItems(String table, String text, String code,String keyword, int pageSize);
 	/**
 	  * 根据表名、显示字段名、存储字段名 查询树
 	 * @param table

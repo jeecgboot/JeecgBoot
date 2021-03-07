@@ -1,3 +1,4 @@
+import * as jvxeTypes from './jvxeTypes'
 import { installCell, mapCell } from './install'
 import JVxeTable from './components/JVxeTable'
 
@@ -12,46 +13,13 @@ import { TagsInputCell, TagsSpanCell } from './components/cells/JVxeTagsCell'
 import JVxeProgressCell from './components/cells/JVxeProgressCell'
 import JVxeTextareaCell from './components/cells/JVxeTextareaCell'
 import JVxeDragSortCell from './components/cells/JVxeDragSortCell'
+import JVxeDepartSelectCell from './components/cells/JVxeDepartSelectCell'
+import JVxeUserSelectCell from './components/cells/JVxeUserSelectCell'
 
+//update--begin--autor:lvdandan-----date:20201216------for：JVxeTable--JVXETypes 【online】代码结构调整，便于online打包
 // 组件类型
-export const JVXETypes = {
-  // 为了防止和 vxe 内置的类型冲突，所以加上一个前缀
-  // 前缀是自动加的，代码中直接用就行（JVXETypes.input）
-  _prefix: 'j-',
-
-  // 行号列
-  rowNumber: 'row-number',
-  // 选择列
-  rowCheckbox: 'row-checkbox',
-  // 单选列
-  rowRadio: 'row-radio',
-  // 展开列
-  rowExpand: 'row-expand',
-  // 上下排序
-  rowDragSort: 'row-drag-sort',
-
-  input: 'input',
-  inputNumber: 'inputNumber',
-  textarea: 'textarea',
-  select: 'select',
-  date: 'date',
-  datetime: 'datetime',
-  checkbox: 'checkbox',
-  upload: 'upload',
-  // 下拉搜索
-  selectSearch: 'select-search',
-  // 下拉多选
-  selectMultiple: 'select-multiple',
-  // 进度条
-  progress: 'progress',
-
-  // 拖轮Tags（暂无用）
-  tags: 'tags',
-
-  slot: 'slot',
-  normal: 'normal',
-  hidden: 'hidden',
-}
+export const JVXETypes = jvxeTypes.JVXETypes
+//update--end--autor:lvdandan-----date:20201216------for：JVxeTable--JVXETypes 【online】代码结构调整，便于online打包
 
 // 注册自定义组件
 export const AllCells = {
@@ -72,6 +40,8 @@ export const AllCells = {
 
   ...mapCell(JVXETypes.rowDragSort, JVxeDragSortCell),
   ...mapCell(JVXETypes.slot, JVxeSlotCell),
+  ...mapCell(JVXETypes.departSelect, JVxeDepartSelectCell),
+  ...mapCell(JVXETypes.userSelect, JVxeUserSelectCell)
 
   /* hidden 是特殊的组件，不在这里注册 */
 }

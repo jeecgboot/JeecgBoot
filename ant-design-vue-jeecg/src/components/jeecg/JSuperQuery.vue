@@ -101,7 +101,15 @@
               </a-col>
 
               <a-col :md="8" :xs="24" style="margin-bottom: 12px;">
-                <template v-if="item.dictCode">
+                <!-- 下拉搜索 -->
+                <j-search-select-tag v-if="item.type==='sel_search'" v-model="item.val" :dict="getDictInfo(item)" placeholder="请选择"/>
+                <!-- 下拉多选 -->
+                <template v-else-if="item.type==='list_multi'">
+                  <j-multi-select-tag v-if="item.options" v-model="item.val" :options="item.options" placeholder="请选择"/>
+                  <j-multi-select-tag v-else v-model="item.val" :dictCode="getDictInfo(item)" placeholder="请选择"/>
+                </template>
+
+                <template v-else-if="item.dictCode">
                   <template v-if="item.type === 'table-dict'">
                     <j-popup
                       v-model="item.val"
@@ -109,6 +117,7 @@
                       :field="item.dictCode"
                       :orgFields="item.dictCode"
                       :destFields="item.dictCode"
+                      :multi="true"
                     ></j-popup>
                   </template>
                   <template v-else>
@@ -116,7 +125,13 @@
                     <j-dict-select-tag v-show="!allowMultiple(item)" v-model="item.val" :dictCode="item.dictCode" placeholder="请选择"/>
                   </template>
                 </template>
-                <j-popup v-else-if="item.type === 'popup'" :value="item.val" v-bind="item.popup" group-id="superQuery" @input="(e,v)=>handleChangeJPopup(item,e,v)"/>
+                <j-popup
+                  v-else-if="item.type === 'popup'"
+                  :value="item.val"
+                  v-bind="item.popup"
+                  group-id="superQuery"
+                  @input="(e,v)=>handleChangeJPopup(item,e,v)"
+                  :multi="true"/>
                 <j-select-multi-user
                   v-else-if="item.type === 'select-user' || item.type === 'sel_user'"
                   v-model="item.val"
@@ -338,6 +353,17 @@
         }
         this.visible = true
       },
+
+      getDictInfo(item) {
+        let str = ''
+        if(!item.dictTable){
+          str = item.dictCode
+        }else{
+          str = item.dictTable+','+item.dictText+','+item.dictCode
+        }
+        console.log('高级查询字典信息',str)
+        return str
+      },
       handleOk() {
         if (!this.isNullArray(this.queryParamsModel)) {
           let event = {
@@ -386,11 +412,12 @@
         this.queryParamsModel.splice(index, 1)
       },
       handleSelected(node, item) {
-        let { type, options, dictCode, dictTable, customReturnField, popup } = node.dataRef
+        let { type, options, dictCode, dictTable, dictText, customReturnField, popup } = node.dataRef
         item['type'] = type
         item['options'] = options
         item['dictCode'] = dictCode
         item['dictTable'] = dictTable
+        item['dictText'] = dictText
         item['customReturnField'] = customReturnField
         if (popup) {
           item['popup'] = popup

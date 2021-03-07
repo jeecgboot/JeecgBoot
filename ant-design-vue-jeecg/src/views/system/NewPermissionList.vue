@@ -192,12 +192,14 @@
             if (res.success) {
               let childrenMap = res.result
               let fn = (list) => {
-                list.forEach(data => {
-                  if (this.expandedRowKeys.includes(data.id)) {
-                    data.children = childrenMap[data.id]
-                    fn(data.children)
-                  }
-                })
+                if(list&&list.length>0){
+                  list.forEach(data => {
+                    if (this.expandedRowKeys.includes(data.id)) {
+                      data.children = childrenMap[data.id]
+                      fn(data.children)
+                    }
+                  })
+                } 
               }
               fn(dataList)
             }

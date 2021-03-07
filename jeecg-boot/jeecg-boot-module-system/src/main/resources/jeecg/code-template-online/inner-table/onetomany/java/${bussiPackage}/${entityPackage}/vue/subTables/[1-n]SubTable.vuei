@@ -68,8 +68,8 @@
             align: 'center',
     <#if po.classType == 'date'>
             dataIndex: '${po.fieldName}',
-    <#elseif po.fieldDbType=='Blob'>
-            dataIndex: '${po.fieldName}String'
+     <#elseif po.fieldDbType=='Blob'>
+           dataIndex: '${po.fieldName}String'
     <#elseif po.classType=='umeditor'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'htmlSlot'}

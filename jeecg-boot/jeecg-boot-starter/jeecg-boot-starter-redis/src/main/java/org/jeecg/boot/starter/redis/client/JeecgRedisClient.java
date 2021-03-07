@@ -13,7 +13,8 @@ import java.util.Map;
  */
 @Configuration
 public class JeecgRedisClient {
-    @Resource
+
+    @Resource(name = "starterRedisTemplate")
     private RedisTemplate<String, Object> redisTemplate;
 
 

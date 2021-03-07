@@ -56,6 +56,8 @@ public abstract class CommonProperty implements Serializable{
 
 	protected String fieldExtendJson;//扩展参数
 
+	protected Integer dbPointLength;//小数点
+
     public String getDefVal() {
         return defVal;
     }
@@ -136,6 +138,14 @@ public abstract class CommonProperty implements Serializable{
 		this.fieldExtendJson = fieldExtendJson;
 	}
 
+	public Integer getDbPointLength() {
+		return dbPointLength;
+	}
+
+	public void setDbPointLength(Integer dbPointLength) {
+		this.dbPointLength = dbPointLength;
+	}
+
 	/**
 	 * 返回一个map有两个key
 	 * <P>key ---> Property JSON的key
@@ -174,6 +184,9 @@ public abstract class CommonProperty implements Serializable{
         }
         if(fieldExtendJson != null){
 			json.put("fieldExtendJson", fieldExtendJson);
+		}
+		if(dbPointLength !=null ) {
+			json.put("dbPointLength", dbPointLength);
 		}
 		return json;
 	}

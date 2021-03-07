@@ -40,6 +40,10 @@ public class QueryGenerator {
 	private static final String MULTI = "_MultiString";
 	private static final String STAR = "*";
 	private static final String COMMA = ",";
+	/**
+	 * 查询 逗号转义符 相当于一个逗号【作废】
+	 */
+	public static final String QUERY_COMMA_ESCAPE = "++";
 	private static final String NOT_EQUAL = "!";
 	/**页面带有规则值查询，空格作为分隔符*/
 	private static final String QUERY_SEPARATE_KEYWORD = " ";
@@ -261,7 +265,16 @@ public class QueryGenerator {
                                 && oConvertUtils.isNotEmpty(rule.getVal())) {
 
                             log.debug("SuperQuery ==> " + rule.toString());
-                            addEasyQuery(andWrapper, fieldColumnMap.get(rule.getField()), QueryRuleEnum.getByValue(rule.getRule()), rule.getVal());
+
+                            //update-begin-author:taoyan date:20201228 for: 【高级查询】 oracle 日期等于查询报错
+							Object queryValue = rule.getVal();
+                            if("date".equals(rule.getType())){
+								queryValue = DateUtils.str2Date(rule.getVal(),DateUtils.date_sdf.get());
+							}else if("datetime".equals(rule.getType())){
+								queryValue = DateUtils.str2Date(rule.getVal(), DateUtils.datetimeFormat.get());
+							}
+                            addEasyQuery(andWrapper, fieldColumnMap.get(rule.getField()), QueryRuleEnum.getByValue(rule.getRule()), queryValue);
+							//update-end-author:taoyan date:20201228 for: 【高级查询】 oracle 日期等于查询报错
 
                             // 如果拼接方式是OR，就拼接OR
                             if (MatchTypeEnum.OR == matchType && i < (conditions.size() - 1)) {
@@ -324,6 +337,7 @@ public class QueryGenerator {
 				rule = QueryRuleEnum.RIGHT_LIKE;
 			}
 		}
+
 		// step 4 in
 		if (rule == null && val.contains(COMMA)) {
 			//TODO in 查询这里应该有个bug  如果一字段本身就是多选 此时用in查询 未必能查询出来
@@ -333,6 +347,18 @@ public class QueryGenerator {
 		if(rule == null && val.startsWith(NOT_EQUAL)){
 			rule = QueryRuleEnum.NE;
 		}
+		// step 6 xx+xx+xx 这种情况适用于如果想要用逗号作精确查询 但是系统默认逗号走in 所以可以用++替换【此逻辑作废】
+		if(rule == null && val.indexOf(QUERY_COMMA_ESCAPE)>0){
+			rule = QueryRuleEnum.EQ_WITH_ADD;
+		}
+
+		//update-begin--Author:taoyan  Date:20201229 for：initQueryWrapper组装sql查询条件错误 #284---------------------
+		//特殊处理：Oracle的表达式to_date('xxx','yyyy-MM-dd')含有逗号，会被识别为in查询，转为等于查询
+		if(rule == QueryRuleEnum.IN && val.indexOf("yyyy-MM-dd")>=0 && val.indexOf("to_date")>=0){
+			rule = QueryRuleEnum.EQ;
+		}
+		//update-end--Author:taoyan  Date:20201229 for：initQueryWrapper组装sql查询条件错误 #284---------------------
+
 		return rule != null ? rule : QueryRuleEnum.EQ;
 	}
 	
@@ -365,7 +391,9 @@ public class QueryGenerator {
 			value = specialStrConvert(value.toString());
 		} else if (rule == QueryRuleEnum.IN) {
 			value = val.split(",");
-		} else {
+		} else if (rule == QueryRuleEnum.EQ_WITH_ADD) {
+			value = val.replaceAll("\\+\\+", COMMA);
+		}else {
 			//update-begin--Author:scott  Date:20190724 for：initQueryWrapper组装sql查询条件错误 #284-------------------
 			if(val.startsWith(rule.getValue())){
 				//TODO 此处逻辑应该注释掉-> 如果查询内容中带有查询匹配规则符号，就会被截取的（比如：>=您好）
@@ -470,6 +498,7 @@ public class QueryGenerator {
 			queryWrapper.le(name, value);
 			break;
 		case EQ:
+		case EQ_WITH_ADD:
 			queryWrapper.eq(name, value);
 			break;
 		case NE:
@@ -653,34 +682,59 @@ public class QueryGenerator {
 	 * @return
 	 */
 	public static String getSingleQueryConditionSql(String field,String alias,Object value,boolean isString) {
+		return getSingleQueryConditionSql(field, alias, value, isString,null);
+	}
+
+	/**
+	 * 报表获取查询条件 支持多数据源
+	 * @param field
+	 * @param alias
+	 * @param value
+	 * @param isString
+	 * @param dataBaseType
+	 * @return
+	 */
+	public static String getSingleQueryConditionSql(String field,String alias,Object value,boolean isString, String dataBaseType) {
 		if (value == null) {
 			return "";
 		}
 		field =  alias+oConvertUtils.camelToUnderline(field);
 		QueryRuleEnum rule = QueryGenerator.convert2Rule(value);
-		return getSingleSqlByRule(rule, field, value, isString);
+		return getSingleSqlByRule(rule, field, value, isString, dataBaseType);
 	}
-	
-	public static String getSingleSqlByRule(QueryRuleEnum rule,String field,Object value,boolean isString) {
+
+	/**
+	 * 获取单个查询条件的值
+	 * @param rule
+	 * @param field
+	 * @param value
+	 * @param isString
+	 * @param dataBaseType
+	 * @return
+	 */
+	public static String getSingleSqlByRule(QueryRuleEnum rule,String field,Object value,boolean isString, String dataBaseType) {
 		String res = "";
 		switch (rule) {
 		case GT:
-			res =field+rule.getValue()+getFieldConditionValue(value, isString);
+			res =field+rule.getValue()+getFieldConditionValue(value, isString, dataBaseType);
 			break;
 		case GE:
-			res = field+rule.getValue()+getFieldConditionValue(value, isString);
+			res = field+rule.getValue()+getFieldConditionValue(value, isString, dataBaseType);
 			break;
 		case LT:
-			res = field+rule.getValue()+getFieldConditionValue(value, isString);
+			res = field+rule.getValue()+getFieldConditionValue(value, isString, dataBaseType);
 			break;
 		case LE:
-			res = field+rule.getValue()+getFieldConditionValue(value, isString);
+			res = field+rule.getValue()+getFieldConditionValue(value, isString, dataBaseType);
 			break;
 		case EQ:
-			res = field+rule.getValue()+getFieldConditionValue(value, isString);
+			res = field+rule.getValue()+getFieldConditionValue(value, isString, dataBaseType);
+			break;
+		case EQ_WITH_ADD:
+			res = field+" = "+getFieldConditionValue(value, isString, dataBaseType);
 			break;
 		case NE:
-			res = field+" <> "+getFieldConditionValue(value, isString);
+			res = field+" <> "+getFieldConditionValue(value, isString, dataBaseType);
 			break;
 		case IN:
 			res = field + " in "+getInConditionValue(value, isString);
@@ -695,12 +749,33 @@ public class QueryGenerator {
 			res = field + " like "+getLikeConditionValue(value);
 			break;
 		default:
-			res = field+" = "+getFieldConditionValue(value, isString);
+			res = field+" = "+getFieldConditionValue(value, isString, dataBaseType);
 			break;
 		}
 		return res;
 	}
-	private static String getFieldConditionValue(Object value,boolean isString) {
+
+
+	/**
+	 * 获取单个查询条件的值
+	 * @param rule
+	 * @param field
+	 * @param value
+	 * @param isString
+	 * @return
+	 */
+	public static String getSingleSqlByRule(QueryRuleEnum rule,String field,Object value,boolean isString) {
+		return getSingleSqlByRule(rule, field, value, isString, null);
+	}
+
+	/**
+	 * 获取查询条件的值
+	 * @param value
+	 * @param isString
+	 * @param dataBaseType
+	 * @return
+	 */
+	private static String getFieldConditionValue(Object value,boolean isString, String dataBaseType) {
 		String str = value.toString().trim();
 		if(str.startsWith("!")) {
 			str = str.substring(1);
@@ -712,22 +787,27 @@ public class QueryGenerator {
 			str = str.substring(1);
 		}else if(str.startsWith("<")) {
 			str = str.substring(1);
+		}else if(str.indexOf(QUERY_COMMA_ESCAPE)>0) {
+			str = str.replaceAll("\\+\\+", COMMA);
+		}
+		if(dataBaseType==null){
+			dataBaseType = getDbType();
 		}
 		if(isString) {
-			if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())){
+			if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(dataBaseType)){
 				return " N'"+str+"' ";
 			}else{
 				return " '"+str+"' ";
 			}
 		}else {
 			// 如果不是字符串 有一种特殊情况 popup调用都走这个逻辑 参数传递的可能是“‘admin’”这种格式的
-			if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType()) && str.endsWith("'") && str.startsWith("'")){
+			if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(dataBaseType) && str.endsWith("'") && str.startsWith("'")){
 				return " N"+str;
 			}
 			return value.toString();
 		}
 	}
-	
+
 	private static String getInConditionValue(Object value,boolean isString) {
 		if(isString) {
 			String temp[] = value.toString().split(",");

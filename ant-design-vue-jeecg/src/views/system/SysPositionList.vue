@@ -162,7 +162,7 @@
           delete: '/sys/position/delete',
           deleteBatch: '/sys/position/deleteBatch',
           exportXlsUrl: '/sys/position/exportXls',
-          importExcelUrl: '/sys/position/importExcel',
+          importExcelUrl: 'sys/position/importExcel',
         },
       }
     },

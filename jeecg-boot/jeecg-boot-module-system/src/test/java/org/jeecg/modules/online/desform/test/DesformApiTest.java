@@ -1,6 +1,7 @@
 package org.jeecg.modules.online.desform.test;
 
 import com.alibaba.fastjson.JSONObject;
+import org.jeecg.JeecgSystemApplication;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.util.RedisUtil;
@@ -19,7 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * 表单设计器 API 接口单元测试
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,classes = JeecgSystemApplication.class)
 @SuppressWarnings({"FieldCanBeLocal", "SpringJavaAutowiredMembersInspection"})
 public class DesformApiTest {
 

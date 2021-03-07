@@ -460,7 +460,7 @@ public class SysUserController {
                         successLines++;
                     } catch (Exception e) {
                         errorLines++;
-                        String message = e.getMessage();
+                        String message = e.getMessage().toLowerCase();
                         int lineNumber = i + 1;
                         // 通过索引名判断出错信息
                         if (message.contains(CommonConstant.SQL_INDEX_UNIQ_SYS_USER_USERNAME)) {
@@ -1043,10 +1043,10 @@ public class SysUserController {
 			if (oConvertUtils.isEmpty(token)) {
 				 username = JwtUtil.getUserNameByToken(request);
 			} else {
-				 username = JwtUtil.getUsername(token);
+				 username = JwtUtil.getUsername(token);				
 			}
 
-			log.info(" ------ 通过令牌获取部分用户信息，当前用户： " + username);
+			log.debug(" ------ 通过令牌获取部分用户信息，当前用户： " + username);
 
 			// 根据用户名查询用户信息
 			SysUser sysUser = sysUserService.getUserByName(username);
@@ -1056,7 +1056,7 @@ public class SysUserController {
 			map.put("sysUserName", sysUser.getRealname()); // 当前登录用户真实名称
 			map.put("sysOrgCode", sysUser.getOrgCode()); // 当前登录用户部门编号
 
-			log.info(" ------ 通过令牌获取部分用户信息，已获取的用户信息： " + map);
+			log.debug(" ------ 通过令牌获取部分用户信息，已获取的用户信息： " + map);
 
 			return Result.ok(map);
 		} catch (Exception e) {
