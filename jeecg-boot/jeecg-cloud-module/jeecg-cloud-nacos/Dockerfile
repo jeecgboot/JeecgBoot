@@ -12,4 +12,4 @@ EXPOSE 8848
 
 ADD ./target/jeecg-cloud-nacos-2.4.2.jar ./
 
-CMD sleep 50;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-nacos-2.4.2.jar
+CMD sleep 5;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-nacos-2.4.2.jar
