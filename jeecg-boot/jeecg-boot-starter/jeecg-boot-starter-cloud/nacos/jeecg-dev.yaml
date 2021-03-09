@@ -35,9 +35,9 @@ spring:
 
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
-          username: root
-          password: root
+          url: jdbc:mysql://${MYSQL-HOST:jeecg-boot-mysql}:${MYSQL-PORT:3306}/${MYSQL-DB:jeecg-boot}?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          username: ${MYSQL-USER:root}
+          password: ${MYSQL-PWD:root}
           driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
@@ -48,7 +48,7 @@ spring:
   #redis 配置
   redis:
     database: 0
-    host: 127.0.0.1
+    host: jeecg-boot-redis
     lettuce:
       pool:
         max-active: 8   #最大连接数据库连接数,设 0 为没有限制
@@ -60,7 +60,7 @@ spring:
     port: 6379
   #rabbitmq配置
   rabbitmq:
-    host: 127.0.0.1
+    host: jeecg-boot-rabbitmq
     username: guest
     password: guest
     port: 5672
@@ -129,7 +129,7 @@ jeecg :
   #xxl-job配置
   xxljob:
     enabled: false
-    adminAddresses: http://127.0.0.1:9080/xxl-job-admin
+    adminAddresses: http://jeecg-boot-xxljob:9080/xxl-job-admin
     appname: ${spring.application.name}
     accessToken: ''
     logPath: logs/jeecg/job/jobhandler/
@@ -142,7 +142,7 @@ jeecg :
       data-type: yml
   #分布式锁配置
   redisson:
-    address: 127.0.0.1:6379
+    address: jeecg-boot-redis:6379
     password:
     type: STANDALONE
     enabled: true
