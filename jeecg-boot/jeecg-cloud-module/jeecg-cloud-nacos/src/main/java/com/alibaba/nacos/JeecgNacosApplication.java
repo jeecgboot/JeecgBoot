@@ -29,6 +29,7 @@ public class JeecgNacosApplication {
     public static void main(String[] args) {
         System.setProperty("nacos.standalone", standalone);
         System.setProperty("nacos.core.auth.enabled", enabled);
+        System.setProperty("server.tomcat.basedir","logs");
         SpringApplication.run(JeecgNacosApplication.class, args);
     }
 }
