@@ -15,7 +15,7 @@ db:
   password:
     '0': ${MYSQL-PWD:root}
   url:
-    '0': jdbc:mysql://${MYSQL-HOST:jeecg-boot-mysql}:${MYSQL-PORT:3306}/${MYSQL-DB:nacos}?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=UTC
+    '0': jdbc:mysql://${MYSQL-HOST:jeecg-boot-mysql}:${MYSQL-PORT:3306}/${MYSQL-DB:nacos}?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
   user:
     '0': ${MYSQL-USER:root}
 management:
