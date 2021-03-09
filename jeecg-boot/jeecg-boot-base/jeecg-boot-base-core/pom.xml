@@ -151,7 +151,7 @@
 			<version>${shiro.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>hibernate-re</artifactId>
 			<version>2.4.2</version>
 		</dependency>

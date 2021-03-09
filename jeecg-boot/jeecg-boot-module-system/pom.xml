@@ -45,9 +45,9 @@
 		</dependency>
 		<!-- 积木报表 -->
 		<dependency>
-			<groupId>com.jimureport</groupId>
+			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>spring-boot-starter-jimureport</artifactId>
-			<version>1.1.09-beta</version>
+			<version>1.2.0</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>autopoi-web</artifactId>
