@@ -5,6 +5,8 @@ services:
       context: ./db
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: '%'
+      TZ: Asia/Shanghai
     restart: always
     container_name: jeecg-boot-mysql
     image: jeecg-boot-mysql
@@ -14,6 +16,7 @@ services:
       --explicit_defaults_for_timestamp=true
       --lower_case_table_names=1
       --max_allowed_packet=128M
+      --default-authentication-plugin=caching_sha2_password
     ports:
       - 3306:3306
 
@@ -22,14 +25,18 @@ services:
     ports:
       - 6379:6379
     restart: always
+    hostname: jeecg-boot-redis
     container_name: jeecg-boot-redis
-
 
   jeecg-boot-system:
     build:
       context: ./jeecg-boot-module-system
-    restart: always
+    restart: on-failure
+    depends_on:
+      - jeecg-boot-mysql
+      - jeecg-boot-redis
     container_name: jeecg-boot-system
     image: jeecg-boot-system
+    hostname: jeecg-boot-system
     ports:
       - 8080:8080
