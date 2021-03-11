@@ -73,7 +73,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 为什么选择JEECG-BOOT?
 -----------------------------------
 * 1.采用最新主流前后分离框架（Springboot+Mybatis+antd），容易上手; 代码生成器依赖性低,灵活的扩展能力，可快速实现二次开发;
-* 2.支持微服务SpringCloud Alibaba(Nacos、Gateway、Sentinel、Skywarking)，提供切换机制支持单体和微服务自由切换
+* 2.支持微服务SpringCloud Alibaba(Nacos、Gateway、Sentinel、Skywalking)，提供切换机制支持单体和微服务自由切换
 * 3.开发效率高,采用代码生成器，单表、树列表、一对多、一对一等数据模型，增删改查功能一键生成，菜单配置直接使用；
 * 4.代码生成器提供强大模板机制，支持自定义模板，目前提供四套风格模板（单表两套、树模型一套、一对多三套）
 * 5.代码生成器非常智能，在线业务建模、在线配置、所见即所得支持23种类控件，一键生成前后端代码，大幅度提升开发效率，不再为重复工作发愁。
@@ -143,7 +143,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 安全框架：Apache Shiro 1.7.0，Jwt 3.11.0
 
-- 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywarking
+- 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywalking
 
 - 数据库连接池：阿里巴巴Druid 1.1.22
 
@@ -328,7 +328,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 8、服务监控 SpringBootAdmin√
 
-9、链路跟踪 Skywarking   [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1771670)
+9、链路跟踪 Skywalking   [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1771670)
 
 10、消息中间件 RabbitMQ  √
 
@@ -336,7 +336,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 12、分布式事务 Seata
 
-13、分布式日志 elk + kafa
+13、分布式日志 elk + kafka
 
 14、支持 docker-compose、k8s、jenkins
 
