@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-JeecgSystemApplication<jeecg-boot-module-system>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "org.jeecg.JeecgSystemApplication",
+            "projectName": "jeecg-boot-module-system",
+            "args": ""
+        }
+    ]
+}
