@@ -28,28 +28,18 @@ services:
     hostname: jeecg-boot-redis
 
   jeecg-boot-nacos:
-    restart: always
-    image: nacos/nacos-server:1.4.0
-    container_name: jeecg-boot-nacos
-    hostname: jeecg-boot-nacos
+    restart: on-failure
+    build:
+      context: ./jeecg-cloud-nacos
     ports:
       - 8848:8848
     depends_on:
       - jeecg-boot-mysql
-#    volumes:
-#      - ./init/docker-startup.sh:/home/nacos/bin/docker-startup.sh
-#      - ./init/application.properties:/home/nacos/conf/application.properties
-    environment:
-      MODE: standalone
-      PREFER_HOST_MODE: hostname
-      SPRING_DATASOURCE_PLATFORM: mysql
-      MYSQL_SERVICE_HOST: jeecg-boot-mysql
-      MYSQL_SERVICE_PORT: 3306
-      MYSQL_SERVICE_USER: root
-      MYSQL_SERVICE_PASSWORD: root
-      MYSQL_SERVICE_DB_NAME: nacos
+    container_name: jeecg-boot-nacos
+    hostname: jeecg-boot-nacos
 
   jeecg-boot-gateway:
+    restart: on-failure
     build:
       context: ./jeecg-cloud-gateway
     ports:
