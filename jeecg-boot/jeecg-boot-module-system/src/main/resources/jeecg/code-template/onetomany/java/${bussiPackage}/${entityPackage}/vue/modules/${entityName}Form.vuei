@@ -1,0 +1,146 @@
+<template>
+ <a-spin :spinning="confirmLoading">
+      <!-- 主表单区域 -->
+      <a-form-model ref="form" :model="model" :rules="validatorRules">
+<#list columns as po><#rt/>
+  <#if po_index % 2 == 0 ><#rt/>
+        <a-row>
+    <#if po.fieldName !='id'>
+      <#list [po_index, po_index+1] as idx><#rt/>
+        <#if idx lt columns?size>
+          <a-col :xs="24" :sm="12">
+            <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" prop="${columns[idx].fieldName}" label="${columns[idx].filedComment}">
+            <#if columns[idx].fieldType =='date'>
+              <a-date-picker placeholder="请输入${columns[idx].filedComment}" style="width:100%" v-model="model.${columns[idx].fieldName}"/>
+            <#elseif columns[idx].fieldType =='datetime'>
+              <a-date-picker placeholder="请输入${columns[idx].filedComment}" style="width:100%" :showTime="true" valueFormat="YYYY-MM-DD HH:mm:ss" v-model="model.${columns[idx].fieldName}"/>
+            <#elseif "int,decimal,double,"?contains(columns[idx].fieldType)>
+              <a-input-number placeholder="请输入${columns[idx].filedComment}" style="width:100%" v-model="model.${columns[idx].fieldName}"/>
+            <#else>
+              <a-input placeholder="请输入${columns[idx].filedComment}" v-model="model.${columns[idx].fieldName}"/>
+            </#if>
+            </a-form-model-item>
+          </a-col>
+        </#if>
+      </#list><#rt/>
+    </#if><#rt/>
+        </a-row>
+  </#if><#rt/>
+</#list>
+      </a-form-model>
+
+      <!-- 子表单区域 -->
+      <a-tabs v-model="activeKey" @change="handleChangeTabs">
+<#list subTables as sub><#rt/>
+        <a-tab-pane tab="${sub.ftlDescription}" :key="refKeys[${sub_index}]" :forceRender="true">
+          <j-editable-table
+            :ref="refKeys[${sub_index}]"
+            :loading="${sub.entityName?uncap_first}Table.loading"
+            :columns="${sub.entityName?uncap_first}Table.columns"
+            :dataSource="${sub.entityName?uncap_first}Table.dataSource"
+            :maxHeight="300"
+            :rowNumber="true"
+            :rowSelection="true"
+            :actionButton="true"/>
+        </a-tab-pane>
+</#list>
+      </a-tabs>
+    </a-spin>
+</template>
+
+<script>
+
+    import { FormTypes } from '@/utils/JEditableTableUtil'
+    import { JEditableTableModelMixin } from '@/mixins/JEditableTableModelMixin'
+
+    export default {
+      name: '${entityName}Form',
+      mixins: [JEditableTableModelMixin],
+      data() {
+        return {
+          // 新增时子表默认添加几行空数据
+          addDefaultRowNum: 1,
+          model: {
+          //设置默认值
+           },
+          validatorRules: {
+  <#list columns as po>
+    <#if po.fieldName !='id'>
+      <#if po.nullable =='N'>
+            ${po.fieldName}: [{ required: true, message: '请输入${po.filedComment}!' }],
+      </#if>
+    </#if>
+  </#list>
+          },
+          refKeys: [<#list subTables as sub>'${sub.entityName?uncap_first}', </#list>],
+          activeKey: '${subTables[0].entityName?uncap_first}',
+  <#list subTables as sub><#rt/>
+          // ${sub.ftlDescription}
+          ${sub.entityName?uncap_first}Table: {
+            loading: false,
+            dataSource: [],
+            columns: [
+  <#list sub.colums as col><#rt/>
+      <#if col.filedComment !='外键'>
+              {
+                title: '${col.filedComment}',
+                key: '${col.fieldName}',
+        <#if col.fieldType =='date'>
+                type: FormTypes.date,
+        <#elseif col.fieldType =='datetime'>
+                type: FormTypes.datetime,
+        <#elseif "int,decimal,double,"?contains(col.fieldType)>
+                type: FormTypes.inputNumber,
+        <#else>
+                type: FormTypes.input,
+        </#if>
+                defaultValue: '',
+                placeholder: '请输入${'$'}{title}',
+        <#if col.nullable =='N'>
+                validateRules: [{ required: true, message: '${'$'}{title}不能为空' }],
+        </#if>
+              },
+      </#if>
+  </#list>
+            ]
+          },
+  </#list>
+          url: {
+            add: "/${entityPackage}/${entityName?uncap_first}/add",
+            edit: "/${entityPackage}/${entityName?uncap_first}/edit",
+  <#list subTables as sub><#rt/>
+            ${sub.entityName?uncap_first}: {
+              list: '/${entityPackage}/${entityName?uncap_first}/query${sub.entityName}ByMainId'
+            },
+  </#list>
+          }
+        }
+      },
+      methods: {
+        /** 调用完edit()方法之后会自动调用此方法 */
+        editAfter() {
+          // 加载子表数据
+          if (this.model.id) {
+            let params = { id: this.model.id }
+  <#list subTables as sub><#rt/>
+            this.requestSubTableData(this.url.${sub.entityName?uncap_first}.list, params, this.${sub.entityName?uncap_first}Table)
+  </#list>
+          }
+        },
+
+        /** 整理成formData */
+        classifyIntoFormData(allValues) {
+          let main = Object.assign(this.model, allValues.formValue)
+          return {
+            ...main, // 展开
+  <#list subTables as sub><#rt/>
+            ${sub.entityName?uncap_first}List: allValues.tablesValue[${sub_index}].values,
+  </#list>
+          }
+        }
+      }
+    }
+</script>
+
+<style scoped>
+</style>

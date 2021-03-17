@@ -115,6 +115,24 @@ public class SysDepartController {
 	}
 
 	/**
+	 * 异步查询部门list
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = "/queryDepartTreeSync", method = RequestMethod.GET)
+	public Result<List<SysDepartTreeModel>> queryDepartTreeSync(@RequestParam(name = "pid", required = false) String parentId) {
+		Result<List<SysDepartTreeModel>> result = new Result<>();
+		try {
+			List<SysDepartTreeModel> list = sysDepartService.queryTreeListByPid(parentId);
+			result.setResult(list);
+			result.setSuccess(true);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+		return result;
+	}
+
+	/**
 	 * 添加新数据 添加用户新建的部门对象数据,并保存到数据库
 	 * 
 	 * @param sysDepart
@@ -333,7 +351,7 @@ public class SysDepartController {
             params.setNeedSave(true);
             try {
             	// orgCode编码长度
-				int codeLength = YouBianCodeUtil.zhanweiLength;
+            	int codeLength = YouBianCodeUtil.zhanweiLength;
                 listSysDeparts = ExcelImportUtil.importExcel(file.getInputStream(), SysDepart.class, params);
                 //按长度排序
                 Collections.sort(listSysDeparts, new Comparator<SysDepart>() {
@@ -363,9 +381,9 @@ public class SysDepartController {
                 	}else{
                 		sysDepart.setParentId("");
 					}
-					//update-begin---author:liusq   Date:20210223  for：批量导入部门以后，不能追加下一级部门 #2245------------
+                    //update-begin---author:liusq   Date:20210223  for：批量导入部门以后，不能追加下一级部门 #2245------------
 					sysDepart.setOrgType(sysDepart.getOrgCode().length()/codeLength+"");
-					//update-end---author:liusq   Date:20210223  for：批量导入部门以后，不能追加下一级部门 #2245------------
+                    //update-end---author:liusq   Date:20210223  for：批量导入部门以后，不能追加下一级部门 #2245------------
 					sysDepart.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
 					ImportExcelUtil.importDateSaveOne(sysDepart, ISysDepartService.class, errorMessageList, num, CommonConstant.SQL_INDEX_UNIQ_DEPART_ORG_CODE);
 					num++;

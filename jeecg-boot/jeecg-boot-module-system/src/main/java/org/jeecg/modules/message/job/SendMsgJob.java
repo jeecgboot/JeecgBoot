@@ -59,6 +59,7 @@ public class SendMsgJob implements Job {
 				// 发送消息成功
 				sysMessage.setEsSendStatus(SendMsgStatusEnum.SUCCESS.getCode());
 			} catch (Exception e) {
+				e.printStackTrace();
 				// 发送消息出现异常
 				sysMessage.setEsSendStatus(SendMsgStatusEnum.FAIL.getCode());
 			}

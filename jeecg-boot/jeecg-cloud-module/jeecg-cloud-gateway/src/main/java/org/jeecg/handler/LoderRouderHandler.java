@@ -1,8 +1,8 @@
 package org.jeecg.handler;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jeecg.boot.starter.redis.listener.JeecgRedisListerer;
 import org.jeecg.common.base.BaseMap;
+import org.jeecg.common.modules.redis.listener.JeecgRedisListerer;
 import org.jeecg.loader.DynamicRouteLoader;
 import org.springframework.stereotype.Component;
 

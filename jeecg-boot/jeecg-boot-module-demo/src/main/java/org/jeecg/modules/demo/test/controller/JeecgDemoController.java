@@ -149,7 +149,8 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
     public ModelAndView exportXls(HttpServletRequest request, JeecgDemo jeecgDemo) {
         //获取导出表格字段
         String exportFields = jeecgDemoService.getExportFields();
-        return super.exportXls(request, jeecgDemo, JeecgDemo.class, "单表模型",exportFields);
+        //分sheet导出表格字段
+        return super.exportXlsSheet(request, jeecgDemo, JeecgDemo.class, "单表模型",exportFields,500);
     }
 
     /**
@@ -281,19 +282,4 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
         return Result.OK(pageList);
     }
     /*----------------------------------------外部获取权限示例------------------------------------*/
-
-
-//    /**
-//    * 测试MQ
-//    */
-//    @GetMapping(value = "/rabbitMqClientTest")
-//    public Result<?> rabbitMqClientTest(HttpServletRequest req) {
-//        BaseMap map = new BaseMap();
-//        map.put("orderId", RandomUtil.randomNumbers(10));
-//        rabbitMqClient.sendMessage("jeecg_place_order", map);
-//        rabbitMqClient.sendMessage("jeecg_place_order_time", map,10);
-//        return Result.OK();
-//    }
-//    @Autowired
-//    private RabbitMqClient rabbitMqClient;
 }

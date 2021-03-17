@@ -131,7 +131,7 @@ spring:
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot-os-re?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: root
           password: root
           driver-class-name: com.mysql.cj.jdbc.Driver
@@ -210,7 +210,7 @@ jeecg :
   #大屏报表参数设置
   jmreport:
     mode: dev
-    #数据字典是否可以全局看到
+    #数据字典是否进行saas数据隔离，自己看自己的字典
     saas: false
     #是否需要校验token
     is_verify_token: false
@@ -255,7 +255,7 @@ logging:
 knife4j:
   production: false
   basic:
-    enable: false
+    enable: true
     username: jeecg
     password: jeecg1314
 #第三方登录
@@ -263,17 +263,17 @@ justauth:
   enabled: true
   type:
     GITHUB:
-      client-id: true
-      client-secret: true
+      client-id: ??
+      client-secret: ??
       redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/github/callback
     WECHAT_ENTERPRISE:
-      client-id: true
-      client-secret: true
+      client-id: ??
+      client-secret: ??
       redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_enterprise/callback
       agent-id: 1000002
     DINGTALK:
-      client-id: true
-      client-secret: true
+      client-id: ??
+      client-secret: ??
       redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/dingtalk/callback
     WECHAT_OPEN:
       client-id: ??

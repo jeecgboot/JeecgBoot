@@ -191,7 +191,7 @@ jeecg :
   # ElasticSearch 设置
   elasticsearch:
     cluster-name: jeecg-ES
-    cluster-nodes: ??
+    cluster-nodes: http://fileview.jeecg.com
     check-enabled: false
   # 表单设计器配置
   desform:
@@ -210,7 +210,7 @@ jeecg :
   #大屏报表参数设置
   jmreport:
     mode: prod
-    #数据字典是否可以全局看到
+    #数据字典是否进行saas数据隔离，自己看自己的字典
     saas: false
     #是否需要校验token
     is_verify_token: false
@@ -255,7 +255,7 @@ cas:
 knife4j:
   production: false
   basic:
-    enable: false
+    enable: true
     username: jeecg
     password: jeecg1314
 #第三方登录

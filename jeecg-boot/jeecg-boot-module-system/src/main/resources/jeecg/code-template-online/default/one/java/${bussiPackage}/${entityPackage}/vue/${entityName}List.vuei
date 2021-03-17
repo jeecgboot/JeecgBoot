@@ -36,7 +36,7 @@
             <#elseif po.classType=='sel_user'>
               <#if query_field_no gt 1>  </#if><j-select-user-by-dep placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"/>
             <#elseif po.classType=='switch'>
-              <#if query_field_no gt 1>  </#if><j-switch placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" <#if po.dictField?default("")?trim?length gt 1>:options="${po.dictField}"</#if> query></j-switch>
+              <#if query_field_no gt 1>  </#if><j-switch placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" <#if po.dictField!= 'is_open'>:options="${po.dictField}"</#if> query></j-switch>
             <#elseif po.classType=='sel_depart'>
               <#if query_field_no gt 1>  </#if><j-select-depart placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"/>
             <#elseif po.classType=='list_multi'>
@@ -342,10 +342,9 @@
     <#if list_need_switch>
     <#list columns as po>
     <#if po.classType=='switch'>
-      <#if po.dictField?default("")?trim?length gt 1>
-      <#assign switch_extend_arr=po.dictField?eval>
-      <#else>
-       <#assign switch_extend_arr=['Y','N']>
+      <#assign switch_extend_arr=['Y','N']>
+      <#if po.dictField?default("")?contains("[")>
+        <#assign switch_extend_arr=po.dictField?eval>
       </#if>
       <#list switch_extend_arr as a>
        <#if a_index == 0>

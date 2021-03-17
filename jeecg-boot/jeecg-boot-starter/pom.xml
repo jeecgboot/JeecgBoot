@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jeecgframework.boot</groupId>
         <artifactId>jeecg-boot-parent</artifactId>
-        <version>2.4.2</version>
+        <version>2.4.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jeecg-boot-starter</artifactId>
@@ -20,7 +20,6 @@
         <module>jeecg-boot-starter-job</module>
         <module>jeecg-boot-starter-lock</module>
         <module>jeecg-boot-starter-rabbitmq</module>
-        <module>jeecg-boot-starter-redis</module>
     </modules>
     <dependencies>
         <!--jeecg-tools-->

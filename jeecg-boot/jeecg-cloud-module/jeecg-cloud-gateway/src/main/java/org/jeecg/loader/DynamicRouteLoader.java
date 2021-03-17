@@ -11,7 +11,8 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.jeecg.boot.starter.redis.client.JeecgRedisClient;
+import org.jeecg.common.modules.redis.client.JeecgRedisClient;
+import org.jeecg.common.util.RedisUtil;
 import org.jeecg.config.GatewayRoutersConfiguration;
 import org.jeecg.config.RouterDataType;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
@@ -53,14 +54,14 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
 
     private ConfigService configService;
 
-    private JeecgRedisClient redisClient;
+    private RedisUtil redisUtil;
 
 
-    public DynamicRouteLoader(InMemoryRouteDefinitionRepository repository, DynamicRouteService dynamicRouteService, JeecgRedisClient redisClient) {
+    public DynamicRouteLoader(InMemoryRouteDefinitionRepository repository, DynamicRouteService dynamicRouteService, RedisUtil redisUtil) {
 
         this.repository = repository;
         this.dynamicRouteService = dynamicRouteService;
-        this.redisClient = redisClient;
+        this.redisUtil = redisUtil;
     }
 
     @PostConstruct
@@ -132,10 +133,10 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
         if (configService == null) {
             log.warn("initConfigService fail");
         }
-        String configInfo = redisClient.get("gateway_routes");
-        if (StringUtils.isNotBlank(configInfo)) {
+        Object configInfo = redisUtil.get("gateway_routes");
+        if (ObjectUtil.isNotEmpty(configInfo)) {
             log.info("获取网关当前配置:\r\n{}", configInfo);
-            JSONArray array = JSON.parseArray(configInfo);
+            JSONArray array = JSON.parseArray(configInfo.toString());
             try {
                 routes = getRoutesByJson(array);
             } catch (URISyntaxException e) {
