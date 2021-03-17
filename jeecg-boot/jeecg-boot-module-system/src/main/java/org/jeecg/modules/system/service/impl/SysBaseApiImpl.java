@@ -1,4 +1,6 @@
 package org.jeecg.modules.system.service.impl;
+import	java.util.HashMap;
+import	java.util.ArrayList;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -989,6 +991,44 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public void sendEmailMsg(String email, String title, String content) {
 			EmailSendMsgHandle emailHandle=new EmailSendMsgHandle();
 			emailHandle.SendMsg(email, title, content);
+	}
+
+	/**
+	 * 获取公司下级部门和所有用户id信息
+	 * @param orgCode
+	 * @return
+	 */
+	@Override
+	public List<Map> getDeptUserByOrgCode(String orgCode) {
+		//1.获取公司信息
+		SysDepart comp=sysDepartService.queryCompByOrgCode(orgCode);
+		if(comp!=null){
+			//2.获取公司下级部门
+			List<SysDepart> departs=sysDepartService.queryDeptByPid(comp.getId());
+			//3.获取部门下的人员信息
+			 List<Map> list=new ArrayList();
+			 //4.处理部门和下级用户数据
+			for (SysDepart dept:departs) {
+				Map map=new HashMap();
+				//部门名称
+				String departName = dept.getDepartName();
+				//根据部门编码获取下级部门id
+				List<String> listIds = departMapper.getSubDepIdsByDepId(dept.getId());
+				//根据下级部门ids获取下级部门的所有用户
+				List<SysUserDepart> userList = sysUserDepartService.list(new QueryWrapper<SysUserDepart>().in("dep_id",listIds));
+				List<String> userIds = new ArrayList<>();
+				for(SysUserDepart userDepart : userList){
+					if(!userIds.contains(userDepart.getUserId())){
+						userIds.add(userDepart.getUserId());
+					}
+				}
+				map.put("name",departName);
+				map.put("ids",userIds);
+				list.add(map);
+			}
+			return list;
+		}
+		return null;
 	}
 
 }

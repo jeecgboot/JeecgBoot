@@ -1,8 +1,8 @@
 package org.jeecg.modules.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
+import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.*;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -521,4 +522,12 @@ public class SystemAPIController {
     public void sendEmailMsg(@RequestParam("email")String email,@RequestParam("title")String title,@RequestParam("content")String content){
          this.sysBaseAPI.sendEmailMsg(email,title,content);
     };
+    /**
+     * 41 获取公司下级部门和公司下所有用户信息
+     * @param orgCode
+     */
+    @GetMapping("/getDeptUserByOrgCode")
+    List<Map> getDeptUserByOrgCode(@RequestParam("orgCode")String orgCode){
+       return this.sysBaseAPI.getDeptUserByOrgCode(orgCode);
+    }
 }

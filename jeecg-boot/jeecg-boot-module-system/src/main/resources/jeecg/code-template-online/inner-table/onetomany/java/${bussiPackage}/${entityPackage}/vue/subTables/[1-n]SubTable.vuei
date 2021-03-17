@@ -91,7 +91,7 @@
       </#if>
       <#elseif po.classType=='switch'>
             dataIndex: '${po.fieldName}',
-            <#if po.dictField?default("")?trim?length gt 1>
+            <#if po.dictField != 'is_open'>
             customRender: (text) => (!text ? "" : (text == ${po.dictField}[0] ? "是" : "否"))
             <#else>
             customRender: (text) => (!text ? "" : (text == "Y" ? "是" : "否"))

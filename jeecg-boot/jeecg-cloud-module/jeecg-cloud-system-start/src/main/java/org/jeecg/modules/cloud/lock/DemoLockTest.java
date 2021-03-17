@@ -1,7 +1,7 @@
 package org.jeecg.modules.cloud.lock;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jeecg.boot.starter.lock.annotation.DistributedLock;
+import org.jeecg.boot.starter.lock.annotation.JLock;
 import org.jeecg.boot.starter.lock.client.RedissonLockClient;
 import org.jeecg.boot.starter.rabbitmq.client.RabbitMqClient;
 import org.jeecg.common.base.BaseMap;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -28,7 +27,7 @@ public class DemoLockTest {
      * 测试分布式锁【注解方式】
      */
     @Scheduled(cron = "0/5 * * * * ?")
-    @DistributedLock(lockKey = CloudConstant.REDISSON_DEMO_LOCK_KEY1)
+    @JLock(lockKey = CloudConstant.REDISSON_DEMO_LOCK_KEY1)
     public void execute() throws InterruptedException {
         log.info("执行execute任务开始，休眠三秒");
         Thread.sleep(3000);

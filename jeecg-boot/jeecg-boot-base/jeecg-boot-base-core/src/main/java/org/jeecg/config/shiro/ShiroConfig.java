@@ -230,13 +230,14 @@ public class ShiroConfig {
             RedisManager redisManager = new RedisManager();
             redisManager.setHost(lettuceConnectionFactory.getHostName());
             redisManager.setPort(lettuceConnectionFactory.getPort());
+            redisManager.setDatabase(lettuceConnectionFactory.getDatabase());
             redisManager.setTimeout(0);
             if (!StringUtils.isEmpty(lettuceConnectionFactory.getPassword())) {
                 redisManager.setPassword(lettuceConnectionFactory.getPassword());
             }
             manager = redisManager;
         }else{
-            // redis 集群支持，优先使用集群配置	add by jzyadmin@163.com
+            // redis集群支持，优先使用集群配置
             RedisClusterManager redisManager = new RedisClusterManager();
             Set<HostAndPort> portSet = new HashSet<>();
             lettuceConnectionFactory.getClusterConfiguration().getClusterNodes().forEach(node -> portSet.add(new HostAndPort(node.getHost() , node.getPort())));

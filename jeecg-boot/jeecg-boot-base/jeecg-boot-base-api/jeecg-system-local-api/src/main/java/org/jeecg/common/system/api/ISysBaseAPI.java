@@ -1,12 +1,16 @@
 package org.jeecg.common.system.api;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.system.vo.*;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -280,5 +284,9 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param content
      */
     void sendEmailMsg(String email,String title,String content);
-
+    /**
+     * 41 获取公司下级部门和公司下所有用户信息
+     * @param orgCode
+     */
+    List<Map> getDeptUserByOrgCode(String orgCode);
 }

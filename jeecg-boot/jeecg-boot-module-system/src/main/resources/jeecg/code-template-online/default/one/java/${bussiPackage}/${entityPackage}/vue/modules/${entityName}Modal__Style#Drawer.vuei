@@ -14,6 +14,7 @@
     placement="right"
     :closable="false"
     @close="close"
+    destroyOnClose
     :visible="visible">
     <${Format.humpToShortbar(entityName)}-form ref="realForm" @ok="submitCallback" :disabled="disableSubmit" normal></${Format.humpToShortbar(entityName)}-form>
     <div class="drawer-footer">

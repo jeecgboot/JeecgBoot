@@ -12,6 +12,8 @@ public interface CommonSendStatus {
 	public static final String PUBLISHED_STATUS_1 = "1";		//已发布
 	
 	public static final String REVOKE_STATUS_2 = "2";			//撤销
+	//app端推送会话标识后缀
+	public static final String  APP_SESSION_SUFFIX = "_app";	//app端推送会话标识后缀
 
 
 

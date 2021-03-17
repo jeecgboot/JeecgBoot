@@ -265,7 +265,7 @@ public interface CommonConstant {
     /**
      * 在线聊天 用户好友缓存前缀
      */
-    public static final String IM_PREFIX_USER_FRIEND_CACHE = "im_prefix_user_friend_";
+    public static final String IM_PREFIX_USER_FRIEND_CACHE = "sys:cache:im:im_prefix_user_friend_";
 
     /**
      * 考勤补卡业务状态 （1：同意  2：不同意）
@@ -294,7 +294,7 @@ public interface CommonConstant {
     /**
      * 多租户 请求头
      */
-    public final static String TENANT_ID = "tenant_id";
+    public final static String TENANT_ID = "tenant-id";
 
     /**
      * 微服务读取配置文件属性 服务地址

@@ -45,7 +45,7 @@
             <#elseif po.classType=='sel_user'>
               <#if query_field_no gt 1>  </#if><j-select-user-by-dep placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"/>
             <#elseif po.classType=='switch'>
-              <#if query_field_no gt 1>  </#if><j-switch placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" <#if po.dictField?default("")?trim?length gt 1>:options="${po.dictField}"</#if> query></j-switch>
+              <#if query_field_no gt 1>  </#if><j-switch placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" <#if po.dictField!= 'is_open'>:options="${po.dictField}"</#if> query></j-switch>
             <#elseif po.classType=='sel_depart'>
               <#if query_field_no gt 1>  </#if><j-select-depart placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"/>
             <#elseif po.classType=='list_multi'>
@@ -269,7 +269,7 @@
             dataIndex: '${po.fieldName}_dictText'
             <#elseif po.classType=='switch'>
             dataIndex: '${po.fieldName}',
-            <#if po.dictField?default("")?trim?length gt 1>
+            <#if po.dictField != 'is_open'>
             customRender: (text) => (!text ? "" : (text == ${po.dictField}[0] ? "是" : "否"))
             <#else>
             customRender: (text) => (!text ? "" : (text == "Y" ? "是" : "否"))
