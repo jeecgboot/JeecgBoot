@@ -9,51 +9,54 @@
     cancelText="关闭">
 
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+      <a-form-model ref="form" :model="model" :rules="validatorRules">
 
-        <a-form-item
+        <a-form-model-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
+          prop="ruleName"
           label="规则名称">
-          <a-input placeholder="请输入规则名称" v-decorator="['ruleName', validatorRules.ruleName]"/>
-        </a-form-item>
-        <a-form-item
+          <a-input placeholder="请输入规则名称" v-model="model.ruleName"/>
+        </a-form-model-item>
+        <a-form-model-item
           v-show="showRuleColumn"
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
+          prop="ruleColumn"
           label="规则字段">
-          <a-input placeholder="请输入规则字段" v-decorator="['ruleColumn', validatorRules.ruleColumn]"/>
-        </a-form-item>
-        <a-form-item
+          <a-input placeholder="请输入规则字段" v-model.trim="model.ruleColumn"/>
+        </a-form-model-item>
+        <a-form-model-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
+          prop="ruleConditions"
           label="条件规则">
-          <j-dict-select-tag @change="handleChangeRuleCondition" v-decorator="['ruleConditions', validatorRules.ruleConditions]" placeholder="请输入条件规则" :triggerChange="true" dictCode="rule_conditions"/>
-        </a-form-item>
-        <a-form-item
+          <j-dict-select-tag @input="handleChangeRuleCondition" v-model="model.ruleConditions" placeholder="请输入条件规则" dictCode="rule_conditions"/>
+        </a-form-model-item>
+        <a-form-model-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
+          prop="ruleValue"
           label="规则值">
-          <a-input placeholder="请输入规则值" v-decorator="['ruleValue', validatorRules.ruleValue]"/>
-        </a-form-item>
+          <a-input placeholder="请输入规则值" v-model.trim="model.ruleValue"/>
+        </a-form-model-item>
 
-        <a-form-item
+        <a-form-model-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="状态">
-          <a-radio-group buttonStyle="solid" v-decorator="['status',{initialValue:'1'}]">
+          <a-radio-group buttonStyle="solid" v-model="model.status">
             <a-radio-button value="1">有效</a-radio-button>
             <a-radio-button value="0">无效</a-radio-button>
           </a-radio-group>
-        </a-form-item>
+        </a-form-model-item>
 
-      </a-form>
+      </a-form-model>
     </a-spin>
   </a-modal>
 </template>
 <script>
   import { httpAction } from '@/api/manage'
-  import pick from 'lodash.pick'
 
   export default {
     name: 'PermissionDataRuleModal',
@@ -73,13 +76,12 @@
           sm: {span: 16}
         },
         confirmLoading: false,
-        form: this.$form.createForm(this),
         permissionId: '',
         validatorRules: {
-          ruleConditions: {rules: [{required: true, message: '请选择条件!'}]},
-          ruleName: {rules: [{required: true, message: '请输入规则名称!'}]},
-          ruleValue: {rules: [{required: true, message: '请输入规则值!'}]},
-          ruleColumn: {rules: []}
+          ruleConditions:  [{required: true, message: '请选择条件!'}],
+          ruleName:[{required: true, message: '请输入规则名称!'}],
+          ruleValue:  [{required: true, message: '请输入规则值!'}],
+          ruleColumn: []
         },
         url: {
           list: '/sys/dictItem/list',
@@ -94,10 +96,10 @@
     methods: {
       add(permId) {
         this.permissionId = permId
-        this.edit({})
+        //初始化默认值
+        this.edit({status:'1'})
       },
       edit(record) {
-        this.form.resetFields()
         this.model = Object.assign({}, record)
         if (record.permissionId) {
           this.model.permissionId = record.permissionId
@@ -106,19 +108,17 @@
         }
         this.visible = true
         this.initRuleCondition()
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'status','ruleName', 'ruleColumn', 'ruleConditions', 'ruleValue'))
-        })
       },
       close() {
         this.$emit('close')
         this.visible = false
+        this.$refs.form.resetFields()
       },
       handleOk() {
         const that = this
         // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
+        this.$refs.form.validate(valid => {
+          if (valid) {
             that.confirmLoading = true
             let httpurl = ''
             let method = ''
@@ -129,14 +129,7 @@
               httpurl += this.url.edit
               method = 'put'
             }
-            let formData = Object.assign(this.model, values)
-            if(formData.ruleColumn && formData.ruleColumn.length>0){
-              formData.ruleColumn = formData.ruleColumn.trim()
-            }
-            if(formData.ruleValue && formData.ruleValue.length>0){
-              formData.ruleValue = formData.ruleValue.trim()
-            }
-            httpAction(httpurl, formData, method).then((res) => {
+            httpAction(httpurl, this.model, method).then((res) => {
               if (res.success) {
                 that.$message.success(res.message)
                 that.$emit('ok')
@@ -147,6 +140,8 @@
               that.confirmLoading = false
               that.close()
             })
+          }else{
+            return false;
           }
         })
       },
@@ -162,9 +157,7 @@
       },
       handleChangeRuleCondition(val){
         if(val=='USE_SQL_RULES'){
-          this.form.setFieldsValue({
-            ruleColumn:''
-          })
+          this.model.ruleColumn=''
           this.showRuleColumn = false
         }else{
           this.showRuleColumn = true

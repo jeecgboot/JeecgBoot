@@ -20,7 +20,6 @@ import 'ant-design-vue/dist/antd.less';  // or 'ant-design-vue/dist/antd.less'
 import '@/permission' // permission control
 import '@/utils/filter' // base filter
 import Print from 'vue-print-nb-jeecg'
-/*import '@babel/polyfill'*/
 import preview from 'vue-photo-preview'
 import 'vue-photo-preview/dist/skin.css'
 import SSO from '@/cas/sso.js'
@@ -47,7 +46,9 @@ import '@/assets/less/JAreaLinkage.less'
 import VueAreaLinkage from 'vue-area-linkage'
 import '@/components/jeecg/JVxeTable/install'
 import '@/components/JVxeCells/install'
-
+//表单验证
+import { rules } from '@/utils/rules'
+Vue.prototype.rules = rules
 Vue.config.productionTip = false
 Vue.use(Storage, config.storageOptions)
 Vue.use(Antd)

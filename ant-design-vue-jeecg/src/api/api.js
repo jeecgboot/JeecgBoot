@@ -38,6 +38,7 @@ const queryPermissionRule = (params)=>getAction("/sys/permission/queryPermission
 
 // 部门管理
 const queryDepartTreeList = (params)=>getAction("/sys/sysDepart/queryTreeList",params);
+const queryDepartTreeSync = (params)=>getAction("/sys/sysDepart/queryDepartTreeSync",params);
 const queryIdTree = (params)=>getAction("/sys/sysDepart/queryIdTree",params);
 const queryParentName   = (params)=>getAction("/sys/sysDepart/queryParentName",params);
 const searchByKeywords   = (params)=>getAction("/sys/sysDepart/searchBy",params);
@@ -52,7 +53,6 @@ const saveDeptRolePermission = (params)=>postAction("/sys/sysDepartPermission/sa
 const queryMyDepartTreeList = (params)=>getAction("/sys/sysDepart/queryMyDeptTreeList",params);
 
 //日志管理
-//const getLogList = (params)=>getAction("/sys/log/list",params);
 const deleteLog = (params)=>deleteAction("/sys/log/delete",params);
 const deleteLogList = (params)=>deleteAction("/sys/log/deleteBatch",params);
 
@@ -69,7 +69,7 @@ export const ajaxGetDictItems = (code, params)=>getAction(`/sys/dict/getDictItem
 function getDictItemsFromCache(dictCode) {
   if (Vue.ls.get(UI_CACHE_DB_DICT_DATA) && Vue.ls.get(UI_CACHE_DB_DICT_DATA)[dictCode]) {
     let dictItems = Vue.ls.get(UI_CACHE_DB_DICT_DATA)[dictCode];
-    console.log("-----------getDictItemsFromCache----------dictCode="+dictCode+"---- dictItems=",dictItems)
+    //console.log("-----------getDictItemsFromCache----------dictCode="+dictCode+"---- dictItems=",dictItems)
     return dictItems;
   }
 }
@@ -101,6 +101,8 @@ export const transitRESTful = {
 }
 
 export {
+  // imgView,
+  // doMian,
   addRole,
   editRole,
   checkRoleCode,
@@ -124,6 +126,7 @@ export {
   getPermissionRuleList,
   queryPermissionRule,
   queryDepartTreeList,
+  queryDepartTreeSync,
   queryIdTree,
   queryParentName,
   searchByKeywords,

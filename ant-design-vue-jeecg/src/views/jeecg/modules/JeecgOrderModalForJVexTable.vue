@@ -3,6 +3,7 @@
     :title="title"
     :width="1200"
     :visible="visible"
+    :destroyOnClose="true"
     :maskClosable="false"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
@@ -48,31 +49,32 @@
       <!-- 子表单区域 -->
       <a-tabs v-model="activeKey" @change="handleChangeTabs">
         <a-tab-pane tab="客户信息" key="1" :forceRender="true">
-
-          <j-editable-table
+          <j-vxe-table
             ref="editableTable1"
+            toolbar
+            row-number
+            row-selection
+            keep-source
+            :height="300"
             :loading="table1.loading"
-            :columns="table1.columns"
             :dataSource="table1.dataSource"
-            :maxHeight="300"
-            :rowNumber="true"
-            :rowSelection="true"
-            :actionButton="true"/>
+            :columns="table1.columns"
+            style="margin-top: 8px;"/>
 
         </a-tab-pane>
 
         <a-tab-pane tab="机票信息" key="2" :forceRender="true">
-
-          <j-editable-table
+          <j-vxe-table
             ref="editableTable2"
+            toolbar
+            row-number
+            row-selection
+            keep-source
+            :height="300"
             :loading="table2.loading"
-            :columns="table2.columns"
             :dataSource="table2.dataSource"
-            :maxHeight="300"
-            :rowNumber="true"
-            :rowSelection="true"
-            :actionButton="true"/>
-
+            :columns="table2.columns"
+            style="margin-top: 8px;"/>
         </a-tab-pane>
       </a-tabs>
 
@@ -83,12 +85,13 @@
 <script>
 
   import JEditableTable from '@/components/jeecg/JEditableTable'
-  import { FormTypes, VALIDATE_NO_PASSED, getRefPromise, validateFormModelAndTables } from '@/utils/JEditableTableUtil'
+  import { VALIDATE_FAILED, getRefPromise, validateFormModelAndTables } from '@/components/jeecg/JVxeTable/utils/vxeUtils'
   import { httpAction, getAction } from '@/api/manage'
+  import { JVXETypes } from '@/components/jeecg/JVxeTable'
   import JDate from '@/components/jeecg/JDate'
 
   export default {
-    name: 'JeecgOrderModalForJEditableTable',
+    name: 'JeecgOrderModalForJvexTable',
     components: {
       JDate, JEditableTable
     },
@@ -116,7 +119,7 @@
               title: '客户名',
               key: 'name',
               width: '24%',
-              type: FormTypes.input,
+              type: JVXETypes.input,
               defaultValue: '',
               placeholder: '请输入${title}',
               validateRules: [{ required: true, message: '${title}不能为空' }]
@@ -125,7 +128,7 @@
               title: '性别',
               key: 'sex',
               width: '18%',
-              type: FormTypes.select,
+              type: JVXETypes.select,
               options: [ // 下拉选项
                 { title: '男', value: '1' },
                 { title: '女', value: '2' }
@@ -137,7 +140,7 @@
               title: '身份证号',
               key: 'idcard',
               width: '24%',
-              type: FormTypes.input,
+              type: JVXETypes.input,
               defaultValue: '',
               placeholder: '请输入${title}',
               validateRules: [{
@@ -149,7 +152,7 @@
               title: '手机号',
               key: 'telphone',
               width: '24%',
-              type: FormTypes.input,
+              type: JVXETypes.input,
               defaultValue: '',
               placeholder: '请输入${title}',
               validateRules: [{
@@ -168,7 +171,7 @@
               title: '航班号',
               key: 'ticketCode',
               width: '40%',
-              type: FormTypes.input,
+              type: JVXETypes.input,
               defaultValue: '',
               placeholder: '请输入${title}',
               validateRules: [{ required: true, message: '${title}不能为空' }]
@@ -177,7 +180,7 @@
               title: '航班时间',
               key: 'tickectDate',
               width: '30%',
-              type: FormTypes.date,
+              type: JVXETypes.date,
               placeholder: '请选择${title}',
               defaultValue: ''
             }
@@ -206,10 +209,9 @@
       add() {
         // 默认新增一条数据
         this.getAllTable().then(editableTables => {
-          editableTables[0].add()
-          editableTables[1].add()
+          //editableTables[0].add()
+          //editableTables[1].add()
         })
-
         this.edit({})
       },
       edit(record) {
@@ -227,11 +229,10 @@
       close() {
         this.visible = false
         this.getAllTable().then(editableTables => {
-          editableTables[0].initialize()
-          editableTables[1].initialize()
+          this.table1.dataSource=[];
+          this.table2.dataSource=[];
         })
         this.$emit('close')
-        this.$refs.form.resetFields();
       },
       /** 查询某个tab的数据 */
       requestTableData(url, params, tab) {
@@ -265,7 +266,7 @@
           // 发起请求
           return this.requestAddOrEdit(formData)
         }).catch(e => {
-          if (e.error === VALIDATE_NO_PASSED) {
+          if (e.error === VALIDATE_FAILED) {
             // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
             this.activeKey = e.index == null ? this.activeKey : (e.index + 1).toString()
           } else {
@@ -278,8 +279,8 @@
         let orderMain = Object.assign(this.model, allValues.formValue)
         return {
           ...orderMain, // 展开
-          jeecgOrderCustomerList: allValues.tablesValue[0].values,
-          jeecgOrderTicketList: allValues.tablesValue[1].values
+          jeecgOrderCustomerList: allValues.tablesValue[0].tableData,
+          jeecgOrderTicketList: allValues.tablesValue[1].tableData
         }
       },
       /** 发起新增或修改的请求 */

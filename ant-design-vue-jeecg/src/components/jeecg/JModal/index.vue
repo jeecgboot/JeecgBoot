@@ -8,15 +8,24 @@
     v-on="$listeners"
     @ok="handleOk"
     @cancel="handleCancel"
+    destroyOnClose
   >
 
     <slot></slot>
-
+    <!--有设置标题-->
     <template v-if="!isNoTitle" slot="title">
       <a-row class="j-modal-title-row" type="flex">
         <a-col class="left">
           <slot name="title">{{ title }}</slot>
         </a-col>
+        <a-col v-if="switchFullscreen" class="right" @click="toggleFullscreen">
+          <a-button class="ant-modal-close ant-modal-close-x" ghost type="link" :icon="fullscreenButtonIcon"/>
+        </a-col>
+      </a-row>
+    </template>
+    <!--没有设置标题-->
+    <template v-else slot="title">
+      <a-row class="j-modal-title-row" type="flex">
         <a-col v-if="switchFullscreen" class="right" @click="toggleFullscreen">
           <a-button class="ant-modal-close ant-modal-close-x" ghost type="link" :icon="fullscreenButtonIcon"/>
         </a-col>
@@ -161,7 +170,6 @@
 
 <style lang="less">
   .j-modal-box {
-
     &.fullscreen {
       top: 0;
       left: 0;
@@ -190,7 +198,6 @@
           height: calc(100% - 55px);
         }
       }
-
       &.no-title.no-footer {
         .ant-modal-body {
           height: 100%;
@@ -215,6 +222,12 @@
             color: rgba(0, 0, 0, 0.75);
           }
         }
+      }
+    }
+    &.no-title{
+      .ant-modal-header {
+        padding: 0px 24px;
+        border-bottom: 0px !important;
       }
     }
   }

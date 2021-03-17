@@ -150,14 +150,16 @@
         })
       },
       getDataByResult(result){
-        return result.map(item=>{
-          //判断是否标记了带有子节点
-          if(item[this.hasChildrenField]=='1'){
-            let loadChild = { id: item.id+'_loadChild', name: 'loading...', isLoading: true }
-            item.children = [loadChild]
-          }
-          return item
-        })
+        if(result && result.length>0){
+          return result.map(item=>{
+            //判断是否标记了带有子节点
+            if(item[this.hasChildrenField]=='1'){
+              let loadChild = { id: item.id+'_loadChild', name: 'loading...', isLoading: true }
+              item.children = [loadChild]
+            }
+            return item
+          })
+        }
       },
       handleExpand(expanded, record){
         // 判断是否是展开状态

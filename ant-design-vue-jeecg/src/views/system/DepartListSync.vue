@@ -12,7 +12,6 @@
             <a-button type="primary" icon="import">导入</a-button>
           </a-upload>
           <a-button title="删除多条数据" @click="batchDel" type="default">批量删除</a-button>
-          <!--<a-button @click="refresh" type="default" icon="reload" :loading="loading">刷新</a-button>-->
         </a-row>
         <div style="background: #fff;padding-left:16px;height: 100%; margin-top: 5px">
           <a-alert type="info" :showIcon="true">
@@ -38,7 +37,7 @@
               :treeData="departTree"
               :checkStrictly="checkStrictly"
               :expandedKeys="iExpandedKeys"
-              :autoExpandParent="autoExpandParent"
+              :load-data="loadSubTree"
               @expand="onExpand"/>
                 </span>
                 <!--新增右键点击事件,和增加添加和删除功能-->
@@ -74,11 +73,14 @@
       <a-tabs defaultActiveKey="1">
         <a-tab-pane tab="基本信息" key="1" >
           <a-card :bordered="false" v-if="selectedKeys.length>0">
-            <a-form-model ref="form" :model="model" :rules="validatorRules">
-              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" prop="departName" label="机构名称">
-                <a-input placeholder="请输入机构/部门名称" v-model="model.departName" />
-              </a-form-model-item>
-              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门">
+            <a-form :form="form">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="机构名称">
+                <a-input placeholder="请输入机构/部门名称" v-decorator="['departName', validatorRules.departName ]"/>
+              </a-form-item>
+              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门">
                 <a-tree-select
                   style="width:100%"
                   :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
@@ -87,20 +89,26 @@
                   v-model="model.parentId"
                   placeholder="无">
                 </a-tree-select>
-              </a-form-model-item>
-              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" prop="orgCode" label="机构编码">
-                <a-input disabled placeholder="请输入机构编码" v-model="model.orgCode" />
-              </a-form-model-item>
-              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" prop="orgCategory" label="机构类型">
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="机构编码">
+                <a-input disabled placeholder="请输入机构编码" v-decorator="['orgCode', validatorRules.orgCode ]"/>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="机构类型">
                 <template v-if="orgCategoryDisabled">
-                  <a-radio-group v-model="model.orgCategory" placeholder="请选择机构类型">
+                  <a-radio-group v-decorator="['orgCategory',validatorRules.orgCategory]" placeholder="请选择机构类型">
                     <a-radio value="1">
                       公司
                     </a-radio>
                   </a-radio-group>
                 </template>
                 <template v-else>
-                  <a-radio-group v-model="model.orgCategory" placeholder="请选择机构类型">
+                  <a-radio-group v-decorator="['orgCategory',validatorRules.orgCategory]" placeholder="请选择机构类型">
                     <a-radio value="2">
                       部门
                     </a-radio>
@@ -109,20 +117,32 @@
                     </a-radio>
                   </a-radio-group>
                 </template>
-              </a-form-model-item>
-              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="排序">
-                <a-input-number v-model="model.departOrder" />
-              </a-form-model-item>
-              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="手机号">
-                <a-input placeholder="请输入手机号" v-model="model.mobile" />
-              </a-form-model-item>
-              <a-form-model-item  :labelCol="labelCol" :wrapperCol="wrapperCol"  label="地址">
-                <a-input placeholder="请输入地址" v-model="model.address"/>
-              </a-form-model-item>
-              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="备注">
-                <a-textarea placeholder="请输入备注" v-model="model.memo"/>
-              </a-form-model-item>
-            </a-form-model>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="排序">
+                <a-input-number v-decorator="[ 'departOrder',{'initialValue':0}]"/>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="手机号">
+                <a-input placeholder="请输入手机号" v-decorator="['mobile', {'initialValue':''}]"/>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="地址">
+                <a-input placeholder="请输入地址" v-decorator="['address', {'initialValue':''}]"/>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="备注">
+                <a-textarea placeholder="请输入备注" v-decorator="['memo', {'initialValue':''}]"/>
+              </a-form-item>
+            </a-form>
             <div class="anty-form-btn">
               <a-button @click="emptyCurrForm" type="default" htmlType="button" icon="sync">重置</a-button>
               <a-button @click="submitCurrForm" type="primary" htmlType="button" icon="form">保存</a-button>
@@ -145,7 +165,8 @@
 </template>
 <script>
   import DepartModal from './modules/DepartModal'
-  import {queryDepartTreeList, searchByKeywords, deleteByDepartId} from '@/api/api'
+  import pick from 'lodash.pick'
+  import {queryDepartTreeSync, searchByKeywords, deleteByDepartId} from '@/api/api'
   import {httpAction, deleteAction} from '@/api/manage'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import DepartAuthModal from './modules/DepartAuthModal'
@@ -199,13 +220,16 @@
       return {
         iExpandedKeys: [],
         loading: false,
-        autoExpandParent: true,
+        autoExpandParent: false,
         currFlowId: '',
         currFlowName: '',
         disable: true,
         treeData: [],
         visible: false,
         departTree: [],
+        departTreeAll: [],
+        loadedKeys: [],
+        allIds: [],
         rightClickSelectedKey: '',
         rightClickSelectedOrgCode: '',
         hiding: true,
@@ -218,8 +242,11 @@
         selectedKeys: [],
         autoIncr: 1,
         currSelected: {},
+
         allTreeKeys:[],
         checkStrictly: true,
+
+        form: this.$form.createForm(this),
         labelCol: {
           xs: {span: 24},
           sm: {span: 5}
@@ -233,10 +260,10 @@
           edges: []
         },
         validatorRules: {
-          departName: [{required: true, message: '请输入机构/部门名称!'}],
-          orgCode: [{required: true, message: '请输入机构编码!'}],
-          orgCategory:[{required: true, message: '请输入机构类型!'}],
-          mobile:[{validator: this.validateMobile}]
+          departName: {rules: [{required: true, message: '请输入机构/部门名称!'}]},
+          orgCode: {rules: [{required: true, message: '请输入机构编码!'}]},
+          orgCategory: {rules: [{required: true, message: '请输入机构类型!'}]},
+          mobile: {rules: [{validator: this.validateMobile}]}
         },
         url: {
           delete: '/sys/sysDepart/delete',
@@ -259,31 +286,51 @@
       },
       loadTree() {
         var that = this
+        //上级部门树信息
         that.treeData = []
+        //保存的树信息，搜索是需要用到
+        that.departTreeAll = []
+        //所有的树信息
         that.departTree = []
-        queryDepartTreeList().then((res) => {
+        //所有的树节点key信息
+        that.allIds = []
+        queryDepartTreeSync().then((res) => {
           if (res.success) {
-            //部门全选后，再添加部门，选中数量增多
             this.allTreeKeys = [];
             for (let i = 0; i < res.result.length; i++) {
               let temp = res.result[i]
               that.treeData.push(temp)
+              that.departTreeAll.push(temp)
               that.departTree.push(temp)
-              that.setThisExpandedKeys(temp)
-              that.getAllKeys(temp);
-              // console.log(temp.id)
+              that.allIds.push(temp.key)
+              that.allTreeKeys.push(temp.key)
             }
             this.loading = false
           }
         })
       },
-      setThisExpandedKeys(node) {
-        if (node.children && node.children.length > 0) {
-          this.iExpandedKeys.push(node.key)
-          for (let a = 0; a < node.children.length; a++) {
-            this.setThisExpandedKeys(node.children[a])
-          }
-        }
+      loadSubTree(treeNode) {
+        var that = this;
+        return new Promise(resolve => {
+            queryDepartTreeSync({pid:treeNode.dataRef.id}).then((res) => {
+              if (res.success) {
+                //判断chidlren是否为空，并修改isLeaf属性值
+                if(res.result.length == 0){
+                  treeNode.dataRef['isLeaf']=true
+                  return;
+                }else{
+                  treeNode.dataRef['children']= res.result;
+                }
+                for (let i = 0; i < res.result.length; i++) {
+                  let temp = res.result[i]
+                  that.allIds.push(temp.key)
+                }
+              }
+            })
+            resolve();
+        });
+        //保存全部部门信息，方便后面搜索使用
+        that.departTreeAll=that.departTree
       },
       refresh() {
         this.loading = true
@@ -293,13 +340,15 @@
       rightHandle(node) {
         this.dropTrigger = 'contextmenu'
         console.log(node.node.eventKey)
-        this.rightClickSelectedKey = node.node.eventKey
+        //注释：异步书加载key拼接__,以便于每次展开节点会刷新数据
+        this.rightClickSelectedKey =  node.node.eventKey.split('__')[0]
         this.rightClickSelectedOrgCode = node.node.dataRef.orgCode
       },
       onExpand(expandedKeys) {
         console.log('onExpand', expandedKeys)
         this.iExpandedKeys = expandedKeys
         this.autoExpandParent = false
+        this.allTreeKeys=expandedKeys
       },
       backFlowList() {
         this.$router.back(-1)
@@ -310,7 +359,7 @@
           this.dropTrigger = ''
         }
       },
-      // 右键下拉关闭下拉框
+      // 右键店家下拉关闭下拉框
       closeDrop() {
         this.dropTrigger = ''
       },
@@ -324,7 +373,7 @@
         } else {
           var ids = ''
           for (var a = 0; a < this.checkedKeys.length; a++) {
-            ids += this.checkedKeys[a] + ','
+            ids += this.checkedKeys[a].split('__')[0] + ','
           }
           var that = this
           this.$confirm({
@@ -359,7 +408,7 @@
             }
           })
         } else {
-          that.loadTree()
+          that.departTree=that.departTreeAll
         }
 
       },
@@ -369,19 +418,19 @@
       nodeModalClose() {
       },
       hide() {
-        console.log(111)
         this.visible = false
       },
       onCheck(checkedKeys, info) {
         console.log('onCheck', checkedKeys, info)
         this.hiding = false
-        //---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------
+        //this.checkedKeys = checkedKeys.checked
+        // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
         if(this.checkStrictly){
           this.checkedKeys = checkedKeys.checked;
         }else{
           this.checkedKeys = checkedKeys
         }
-        //---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------
+        // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
       },
       onSelect(selectedKeys, e) {
         console.log('selected', selectedKeys, e)
@@ -403,6 +452,10 @@
         }else{
           this.orgCategoryDisabled = false;
         }
+        this.$nextTick(() => {
+          this.form.getFieldDecorator('fax', {initialValue: ''})
+          this.form.setFieldsValue(pick(record, 'departName','orgCategory', 'orgCode', 'departOrder', 'mobile', 'fax', 'address', 'memo'))
+        })
       },
       getCurrSelectedTitle() {
         return !this.currSelected.title ? '' : this.currSelected.title
@@ -411,6 +464,7 @@
         this.hiding = true
         this.checkedKeys = []
         this.currSelected = {}
+        this.form.resetFields()
         this.selectedKeys = []
         this.$refs.departAuth.departId = ''
       },
@@ -424,14 +478,16 @@
         this.currSelected.receiptTriggerType = value
       },
       submitCurrForm() {
-        this.$refs.form.validate(valid => {
-          if (valid) {
+        this.form.validateFields((err, values) => {
+          if (!err) {
             if (!this.currSelected.id) {
               this.$message.warning('请点击选择要修改部门!')
               return
             }
 
-            httpAction(this.url.edit, this.currSelected, 'put').then((res) => {
+            let formData = Object.assign(this.currSelected, values)
+            console.log('Received values of form: ', formData)
+            httpAction(this.url.edit, formData, 'put').then((res) => {
               if (res.success) {
                 this.$message.success('保存成功!')
                 this.loadTree()
@@ -443,13 +499,12 @@
         })
       },
       emptyCurrForm() {
-        this.$refs.form.resetFields();
-        this.model={}
+        this.form.resetFields()
       },
       nodeSettingFormSubmit() {
-        this.$refs.form.validate(valid => {
-          if (valid) {
-            console.log('Received values of form: ', this.model)
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            console.log('Received values of form: ', values)
           }
         })
       },
@@ -466,7 +521,7 @@
             this.$message.warning('请先点击选中上级部门！')
             return false
           }
-          this.$refs.departModal.add(this.selectedKeys)
+          this.$refs.departModal.add(this.selectedKeys[0].split('__')[0])
           this.$refs.departModal.title = '新增'
         } else {
           this.$refs.departModal.add(this.rightClickSelectedKey)
@@ -486,7 +541,7 @@
                 that.$message.success('删除成功!')
                 that.loadTree()
                 //删除后同步清空右侧基本信息内容
-                let orgCode=that.model.orgCode;
+                let orgCode=that.form.getFieldValue("orgCode");
                 if(orgCode && orgCode === that.rightClickSelectedOrgCode){
                   that.onClearSelected()
                 }
@@ -518,7 +573,7 @@
           }
         }
       },
-     //---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------
+     // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
       expandAll () {
         this.iExpandedKeys = this.allTreeKeys
       },
@@ -527,7 +582,8 @@
       },
       checkALL () {
         this.checkStriccheckStrictlytly = false
-        this.checkedKeys = this.allTreeKeys
+        //this.checkedKeys = this.allTreeKeys
+        this.checkedKeys = this.allIds
       },
       cancelCheckALL () {
         //this.checkedKeys = this.defaultCheckedKeys
@@ -549,7 +605,7 @@
           }
         }
       }
-      //---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------
+      // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
       
     },
     created() {

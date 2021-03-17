@@ -5,7 +5,7 @@ const hasPermission = {
           //console.log(options);
           Vue.directive('has', {
             inserted: (el, binding, vnode)=>{
-                console.log("页面权限控制----");
+                //console.log("页面权限控制----");
                 //console.time()
                 //节点权限处理，如果命中则不进行全局权限处理
                 if(!filterNodePermission(el, binding, vnode)){
@@ -68,7 +68,7 @@ export function filterNodePermission(el, binding, vnode) {
  * 全局权限控制
  */
 export function filterGlobalPermission(el, binding, vnode) {
-  console.log("全局页面权限--Global--");
+  //console.log("全局页面权限--Global--");
 
   let permissionList = [];
   let allPermissionList = [];

@@ -104,7 +104,7 @@ service.interceptors.request.use(config => {
   if (!tenantid) {
     tenantid = 0;
   }
-  config.headers[ 'tenant_id' ] = tenantid
+  config.headers[ 'tenant-id' ] = tenantid
   //update-end-author:taoyan date:2020707 for:多租户
   if(config.method=='get'){
     if(config.url.indexOf("sys/dict/getDictItems")<0){
