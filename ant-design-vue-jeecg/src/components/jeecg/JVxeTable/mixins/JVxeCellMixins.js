@@ -298,7 +298,11 @@ export function dispatchEvent({cell, $event}, className, handler) {
         handler(element[0])
       } else {
         // 模拟触发点击事件
-        element[0].dispatchEvent($event)
+        console.log($event)
+        if($event){
+          console.log("$event===>",$event)
+          element[0].dispatchEvent($event)
+        }
       }
     }
   }, 10)

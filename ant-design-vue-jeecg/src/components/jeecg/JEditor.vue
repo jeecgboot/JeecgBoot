@@ -128,6 +128,9 @@
               this.reload()
             }
           })
+          //update--begin--autor:liusq-----date:20210316------for：富文本编辑器tab父组件可能导致的赋值问题------
+          this.reload()
+          //update--end--autor:liusq-----date:20210316------for：富文本编辑器tab父组件可能导致的赋值问题------
         }else{
           //update--begin--autor:wangshuai-----date:20200724------for：富文本编辑器切换tab无法修改------
           let tabLayout = getVmParentByName(this, 'TabLayout')

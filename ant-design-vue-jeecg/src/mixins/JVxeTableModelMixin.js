@@ -1,12 +1,11 @@
-import { VALIDATE_FAILED, getRefPromise, validateFormAndTables} from '@/components/jeecg/JVxeTable/utils/vxeUtils.js'
+import { VALIDATE_FAILED, getRefPromise, validateFormAndTables,validateFormModelAndTables} from '@/components/jeecg/JVxeTable/utils/vxeUtils.js'
 import { httpAction, getAction } from '@/api/manage'
 
-export const JVxeTableMixin = {
+export const JVxeTableModelMixin = {
   data() {
     return {
       title: '操作',
       visible: false,
-      form: this.$form.createForm(this),
       confirmLoading: false,
       scrolling: true,
       model: {},
@@ -35,6 +34,7 @@ export const JVxeTableMixin = {
     eachAllTable(callback) {
       // 开始遍历
       this.getAllTable().then(tables => {
+        console.log("tables",tables)
         tables.forEach((item, index) => {
           if (typeof callback === 'function') {
             callback(item, index)
@@ -52,22 +52,22 @@ export const JVxeTableMixin = {
         rowNum = 1
         console.warn('由于你没有在 data 中定义 addDefaultRowNum 或 addDefaultRowNum 不是数字，所以默认添加一条空数据，如果不想默认添加空数据，请将定义 addDefaultRowNum 为 0')
       }
-      //update-begin-author:taoyan date:20210315 for: 一对多jvex 默认几行不好使了 LOWCOD-1349
       this.eachAllTable((item) => {
+        //update-begin-author:taoyan date:20210315 for: 一对多jvex 默认几行不好使了 LOWCOD-1349
         setTimeout(()=>{
           item.addRows()
         }, 30)
+        //update-end-author:taoyan date:20210315 for: 一对多jvex 默认几行不好使了 LOWCOD-1349
       })
-       //update-end-author:taoyan date:20210315 for: 一对多jvex 默认几行不好使了 LOWCOD-1349
       if (typeof this.addAfter === 'function') this.addAfter(this.model)
-      this.edit({})
+      this.edit(this.model)
     },
     /** 当点击了编辑（修改）按钮时调用此方法 */
     edit(record) {
       if (typeof this.editBefore === 'function') this.editBefore(record)
       this.visible = true
       this.activeKey = this.refKeys[0]
-      this.form.resetFields()
+      this.$refs.form.resetFields()
       this.model = Object.assign({}, record)
       if (typeof this.editAfter === 'function') this.editAfter(this.model)
     },
@@ -139,7 +139,10 @@ export const JVxeTableMixin = {
       /** 触发表单验证 */
       this.getAllTable().then(tables => {
         /** 一次性验证主表和所有的次表 */
-        return validateFormAndTables(this.form, tables)
+        return validateFormModelAndTables(this.$refs.form,this.model, tables)
+      }).then(allValues => {
+        /** 一次性验证一对一的所有子表 */
+        return this.validateSubForm(allValues)
       }).then(allValues => {
         if (typeof this.classifyIntoFormData !== 'function') {
           throw this.throwNotFunction('classifyIntoFormData')
@@ -148,7 +151,7 @@ export const JVxeTableMixin = {
         // 发起请求
         return this.request(formData)
       }).catch(e => {
-        if (e.error === VALIDATE_NO_PASSED) {
+        if (e.error === VALIDATE_FAILED) {
           // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
           this.activeKey = e.index == null ? this.activeKey : this.refKeys[e.index]
         } else {
@@ -156,7 +159,12 @@ export const JVxeTableMixin = {
         }
       })
     },
-
+//校验所有子表表单
+    validateSubForm(allValues){
+      return new Promise((resolve) => {
+        resolve(allValues)
+      })
+    },
     /* --- throw --- */
 
     /** not a function */

@@ -342,7 +342,13 @@
       combineRowKey(record){
         let res = ''
          Object.keys(record).forEach(key=>{
-           res+=record[key]
+           //update-begin---author:liusq   Date:20210203  for：pop选择器列主键问题 issues/I29P9Q------------
+           if(key=='id'){
+             res=record[key]+res
+           }else{
+             res+=record[key]
+           }
+           //update-end---author:liusq     Date:20210203  for：pop选择器列主键问题 issues/I29P9Q------------
          })
         if(res.length>50){
           res = res.substring(0,50)
