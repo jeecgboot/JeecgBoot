@@ -11,7 +11,7 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.jeecg.common.modules.redis.client.JeecgRedisClient;
+import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.config.GatewayRoutersConfiguration;
 import org.jeecg.config.RouterDataType;
@@ -133,7 +133,7 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
         if (configService == null) {
             log.warn("initConfigService fail");
         }
-        Object configInfo = redisUtil.get("gateway_routes");
+        Object configInfo = redisUtil.get(CacheConstant.GATEWAY_ROUTES);
         if (ObjectUtil.isNotEmpty(configInfo)) {
             log.info("获取网关当前配置:\r\n{}", configInfo);
             JSONArray array = JSON.parseArray(configInfo.toString());
