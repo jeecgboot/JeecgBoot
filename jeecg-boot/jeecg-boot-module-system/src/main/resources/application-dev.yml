@@ -255,7 +255,7 @@ logging:
 knife4j:
   production: false
   basic:
-    enable: true
+    enable: false
     username: jeecg
     password: jeecg1314
 #第三方登录
