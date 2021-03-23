@@ -8,6 +8,7 @@
 <#assign form_popup = false>
 <#assign form_cat_tree = false>
 <#assign form_cat_back = "">
+<#assign bpm_flag=false>
 <#assign form_span = 24>
 <#if tableVo.fieldRowNum==2>
 <#assign form_span = 12>
@@ -17,6 +18,9 @@
 <#assign form_span = 6>
 </#if>
 <#list columns as po>
+<#if po.fieldDbName=='bpm_status'>
+  <#assign bpm_flag=true>
+</#if>
 <#if po.isShow =='Y' && po.fieldName != 'id'>
 <#assign form_field_dictCode="">
 	<#if po.dictTable?default("")?trim?length gt 1 && po.dictText?default("")?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
@@ -102,9 +106,11 @@
           </a-col>
 </#if>
 </#list>
+      <#if bpm_flag>
           <a-col v-if="showFlowSubmitButton" :span="24" style="text-align: center">
             <a-button @click="submitForm">提 交</a-button>
           </a-col>
+     </#if>
         </a-row>
       </a-form-model>
     </j-form-container>
@@ -121,6 +127,7 @@
     components: {
     },
     props: {
+     <#if bpm_flag>
       //流程表单data
       formData: {
         type: Object,
@@ -133,6 +140,7 @@
         default: false,
         required: false
       },
+       </#if>
       //表单禁用
       disabled: {
         type: Boolean,
@@ -164,14 +172,17 @@
     },
     computed: {
       formDisabled(){
+       <#if bpm_flag>
         if(this.formBpm===true){
           if(this.formData.disabled===false){
             return false
           }
           return true
         }
+        </#if>
         return this.disabled
       },
+       <#if bpm_flag>
       showFlowSubmitButton(){
         if(this.formBpm===true){
           if(this.formData.disabled===false){
@@ -180,12 +191,15 @@
         }
         return false
       }
+     </#if>
     },
     created () {
        //备份model原始值
       this.modelDefault = JSON.parse(JSON.stringify(this.model));
+      <#if bpm_flag>
       //如果是流程中表单，则需要加载流程表单data
       this.showFlowData();
+      </#if>
     },
     methods: {
       add () {
@@ -195,6 +209,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
       },
+        <#if bpm_flag>
       //渲染流程表单数据
       showFlowData(){
         if(this.formBpm === true){
@@ -206,6 +221,7 @@
           });
         }
       },
+       </#if>
       submitForm () {
         const that = this;
         // 触发表单验证
