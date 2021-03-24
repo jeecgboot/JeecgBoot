@@ -274,6 +274,14 @@
             <#else>
             customRender: (text) => (!text ? "" : (text == "Y" ? "是" : "否"))
             </#if>
+            <#elseif po.classType=='cat_tree'>
+            <#if list_need_category>
+            dataIndex: '${po.fieldName}',
+            customRender: (text) => (text ? filterMultiDictText(this.dictOptions['${po.fieldName}'], text) : '')
+            <#else>
+            dataIndex: '${po.fieldName}',
+            customRender: (text, record) => (text ? record['${po.dictText}'] : '')
+            </#if>
 			<#else>
             dataIndex: '${po.fieldName}'
 			</#if>
@@ -285,6 +293,7 @@
             title: '操作',
             dataIndex: 'action',
             align:"center",
+            fixed:"right",
             width:147,
             scopedSlots: { customRender: 'action' },
           }
