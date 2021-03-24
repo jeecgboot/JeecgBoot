@@ -155,6 +155,7 @@
     },
     methods: {
       add (obj) {
+        this.modelDefault.${pidFieldName}=''
         this.edit(Object.assign(this.modelDefault , obj));
       },
       edit (record) {
