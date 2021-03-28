@@ -299,6 +299,8 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
             Properties properties = new Properties();
             properties.setProperty("serverAddr", GatewayRoutersConfiguration.SERVER_ADDR);
             properties.setProperty("namespace", GatewayRoutersConfiguration.NAMESPACE);
+            properties.setProperty("username",GatewayRoutersConfiguration.USERNAME);
+            properties.setProperty("password",GatewayRoutersConfiguration.PASSWORD);
             return configService = NacosFactory.createConfigService(properties);
         } catch (Exception e) {
             log.error("创建ConfigService异常", e);
