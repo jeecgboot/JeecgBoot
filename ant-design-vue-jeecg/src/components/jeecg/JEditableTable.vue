@@ -2704,7 +2704,7 @@
         }
         this.setOneValue(this.popupValues, id, popupValue)
         // 做单个表单验证
-        this.validateOneInput(value, row, column, this.notPassedIds, true, 'change')
+        this.validateOneInput(popupValue, row, column, this.notPassedIds, true, 'change')
         // 触发valueChange 事件
         this.elemValueChange('input', row, column, value)
       },
