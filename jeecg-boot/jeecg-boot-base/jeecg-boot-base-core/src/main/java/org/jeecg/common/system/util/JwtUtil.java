@@ -6,12 +6,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.common.base.Joiner;
-
-import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.LoginUser;
@@ -19,6 +15,10 @@ import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.Date;
 
 /**
  * @Author Scott
@@ -197,6 +197,14 @@ public class JwtUtil {
 		else if (key.equals(DataBaseConstant.BPM_STATUS)|| key.toLowerCase().equals(DataBaseConstant.BPM_STATUS_TABLE)) {
 			returnValue = "1";
 		}
+		//update-begin-author:taoyan date:20210330 for:多租户ID作为系统变量
+		else if (key.equals(DataBaseConstant.TENANT_ID) || key.toLowerCase().equals(DataBaseConstant.TENANT_ID_TABLE)){
+			returnValue = sysUser.getRelTenantIds();
+			if(oConvertUtils.isEmpty(returnValue) || (returnValue!=null && returnValue.indexOf(",")>0)){
+				returnValue = SpringContextUtils.getHttpServletRequest().getHeader(CommonConstant.TENANT_ID);
+			}
+		}
+		//update-end-author:taoyan date:20210330 for:多租户ID作为系统变量
 		if(returnValue!=null){returnValue = returnValue + moshi;}
 		return returnValue;
 	}
