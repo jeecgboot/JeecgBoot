@@ -43,7 +43,7 @@
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>spring-boot-starter-jimureport</artifactId>
-			<version>1.2.1</version>
+			<version>1.2.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.jeecgframework</groupId>
