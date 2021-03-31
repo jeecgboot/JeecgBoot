@@ -11,13 +11,13 @@
       :beforeUpload="beforeUpload"
       :disabled="disabled"
       :isMultiple="isMultiple"
-      :showUploadList="isMultiple"
+
       @change="handleChange"
       @preview="handlePreview"
-      :class="!isMultiple?'imgupload':''">
-      <div :style="{'width':(!isMultiple?'104px':'auto'),'height':(!isMultiple?'104px':'auto')}">
-        <img v-if="!isMultiple && picUrl" :src="getAvatarView()" style="width:100%;height:100%"/>
-        <div v-else class="iconp">
+      :class="[!isMultiple?'imgupload':'', (!isMultiple && picUrl)?'image-upload-single-over':'' ]">
+      <div>
+        <!--<img v-if="!isMultiple && picUrl" :src="getAvatarView()" style="width:100%;height:100%"/>-->
+        <div class="iconp">
           <a-icon :type="uploadLoading ? 'loading' : 'plus'" />
           <div class="ant-upload-text">{{ text }}</div>
         </div>
@@ -189,7 +189,7 @@
           path = ''
         }
         let arr = [];
-        if(!this.isMultiple){
+        if(!this.isMultiple && uploadFiles.length>0){
           arr.push(uploadFiles[uploadFiles.length-1].response.message)
         }else{
           for(let a=0;a<uploadFiles.length;a++){
@@ -231,8 +231,9 @@
   * https://github.com/zhangdaiscott/jeecg-boot/issues/1810
   * https://github.com/zhangdaiscott/jeecg-boot/issues/1779
   */
-  /deep/ .imgupload .ant-upload-select{display:block}
-  /deep/ .imgupload .ant-upload.ant-upload-select-picture-card{ width:120px;height: 120px;}
-  /deep/ .imgupload .iconp{padding:32px;}
+
+  /deep/ .imgupload .iconp{padding:20px;}
   /* update--end--autor:lvdandan-----date:20201016------for：j-image-upload图片组件单张图片详情回显空白*/
+
+  /deep/ .image-upload-single-over .ant-upload-select{display: none}
 </style>
