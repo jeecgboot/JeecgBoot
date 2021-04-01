@@ -111,7 +111,7 @@ public class OssBootUtil {
               orgName=file.getName();
             }
             orgName = CommonUtils.getFileName(orgName);
-            String fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.indexOf("."));
+            String fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.lastIndexOf("."));
             if (!fileDir.endsWith("/")) {
                 fileDir = fileDir.concat("/");
             }
