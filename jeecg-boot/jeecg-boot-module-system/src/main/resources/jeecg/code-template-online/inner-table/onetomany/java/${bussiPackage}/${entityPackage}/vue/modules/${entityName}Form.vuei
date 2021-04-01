@@ -8,8 +8,12 @@
 <#assign form_popup = false>
 <#assign form_cat_tree = false>
 <#assign form_cat_back = "">
+<#assign bpm_flag=false>
 <#assign form_span = 24>
 <#list columns as po>
+<#if po.fieldDbName=='bpm_status'>
+  <#assign bpm_flag=true>
+</#if>
 <#if po.isShow =='Y' && po.fieldName != 'id'>
 <#assign form_field_dictCode="">
   <#if po.dictTable?default("")?trim?length gt 1 && po.dictText?default("")?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
@@ -125,7 +129,9 @@
   </#if>
 </#list>
       </a-tabs>
+       <#if bpm_flag>
        <a-row v-if="showFlowSubmitButton" style="text-align: center;width: 100%;margin-top: 16px;"><a-button @click="handleOk">提 交</a-button></a-row>
+       </#if>
     </a-spin>
 </template>
 
@@ -362,6 +368,7 @@
       }
     },
     props: {
+     <#if bpm_flag>
       //流程表单data
       formData: {
         type: Object,
@@ -374,6 +381,7 @@
         default: false,
         required: false
       },
+      </#if>
       //表单禁用
       disabled: {
         type: Boolean,
@@ -383,14 +391,17 @@
     },
     computed: {
       formDisabled(){
+       <#if bpm_flag>
         if(this.formBpm===true){
           if(this.formData.disabled===false){
             return false
           }
           return true
         }
+         </#if>
         return this.disabled
       },
+       <#if bpm_flag>
       showFlowSubmitButton(){
         if(this.formBpm===true){
           if(this.formData.disabled===false){
@@ -399,10 +410,13 @@
         }
         return false
       }
+       </#if>
     },
     created () {
+     <#if bpm_flag>
       //如果是流程中表单，则需要加载流程表单data
       this.showFlowData();
+       </#if>
     },
     methods: {
      addBefore(){
@@ -475,6 +489,7 @@
 </#list>
         }
       },
+        <#if bpm_flag>
       //渲染流程表单数据
      showFlowData(){
         if(this.formBpm === true){
@@ -486,6 +501,7 @@
             })
          }
       },
+       </#if>
       validateError(msg){
         this.$message.error(msg)
       },
