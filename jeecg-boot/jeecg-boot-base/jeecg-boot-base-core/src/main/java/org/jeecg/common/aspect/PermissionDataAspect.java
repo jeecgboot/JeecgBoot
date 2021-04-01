@@ -70,7 +70,7 @@ public class PermissionDataAspect {
         String url = "";
         if(oConvertUtils.isNotEmpty(requestPath)){
             url = requestPath.replace("\\", "/");
-            url = requestPath.replace("//", "/");
+            url = url.replace("//", "/");
             if(url.indexOf("//")>=0){
                 url = filterUrl(url);
             }

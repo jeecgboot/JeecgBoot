@@ -6,7 +6,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.jeecg.boot.starter.lock.annotation.DistributedLock;
+import org.jeecg.boot.starter.lock.annotation.JLock;
 import org.jeecg.boot.starter.lock.enums.LockModel;
 import org.redisson.RedissonMultiLock;
 import org.redisson.RedissonRedLock;
@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Aspect
 @Component
-public class DistributedLockHandler {
+public class DistributedLockHandler extends BaseAspect{
 
 
     @Autowired(required = false)
@@ -45,20 +45,20 @@ public class DistributedLockHandler {
      * 切面环绕通知
      *
      * @param joinPoint
-     * @param distributedLock
+     * @param jLock
      * @return Object
      */
     @SneakyThrows
-    @Around("@annotation(distributedLock)")
-    public Object around(ProceedingJoinPoint joinPoint, DistributedLock distributedLock) {
+    @Around("@annotation(jLock)")
+    public Object around(ProceedingJoinPoint joinPoint, JLock jLock) {
         Object obj = null;
         log.info("进入RedisLock环绕通知...");
-        RLock rLock = getLock(joinPoint, distributedLock);
+        RLock rLock = getLock(joinPoint, jLock);
         boolean res = false;
         //获取超时时间
-        long expireSeconds = distributedLock.expireSeconds();
+        long expireSeconds = jLock.expireSeconds();
         //等待多久,n秒内获取不到锁，则直接返回
-        long waitTime = distributedLock.waitTime();
+        long waitTime = jLock.waitTime();
         //执行aop
         if (rLock != null) {
             try {
@@ -85,20 +85,20 @@ public class DistributedLockHandler {
     }
 
     @SneakyThrows
-    private RLock getLock(ProceedingJoinPoint joinPoint, DistributedLock distributedLock) {
-        String[] keys = distributedLock.lockKey();
+    private RLock getLock(ProceedingJoinPoint joinPoint, JLock jLock) {
+        String[] keys = jLock.lockKey();
         if (keys.length == 0) {
             throw new RuntimeException("keys不能为空");
         }
         String[] parameterNames = new LocalVariableTableParameterNameDiscoverer().getParameterNames(((MethodSignature) joinPoint.getSignature()).getMethod());
         Object[] args = joinPoint.getArgs();
 
-        LockModel lockModel = distributedLock.lockModel();
+        LockModel lockModel = jLock.lockModel();
         if (!lockModel.equals(LockModel.MULTIPLE) && !lockModel.equals(LockModel.REDLOCK) && keys.length > 1) {
             throw new RuntimeException("参数有多个,锁模式为->" + lockModel.name() + ".无法锁定");
         }
         RLock rLock = null;
-        String keyConstant = distributedLock.keyConstant();
+        String keyConstant = jLock.keyConstant();
         if (lockModel.equals(LockModel.AUTO)) {
             if (keys.length > 1) {
                 lockModel = LockModel.REDLOCK;
@@ -162,57 +162,6 @@ public class DistributedLockHandler {
                 rLock = redissonClient.getReadWriteLock(getValueBySpEL(keys[0], parameterNames, args, keyConstant).get(0)).writeLock();
                 break;
         }
-
-
         return rLock;
-    }
-
-    /**
-     * 通过spring SpEL 获取参数
-     *
-     * @param key            定义的key值 以#开头 例如:#user
-     * @param parameterNames 形参
-     * @param values         形参值
-     * @param keyConstant    key的常亮
-     * @return
-     */
-    public List<String> getValueBySpEL(String key, String[] parameterNames, Object[] values, String keyConstant) {
-        List<String> keys = new ArrayList<>();
-        if (!key.contains("#")) {
-            String s = "redis:lock:" + key + keyConstant;
-            log.info("lockKey:" + s);
-            keys.add(s);
-            return keys;
-        }
-        //spel解析器
-        ExpressionParser parser = new SpelExpressionParser();
-        //spel上下文
-        EvaluationContext context = new StandardEvaluationContext();
-        for (int i = 0; i < parameterNames.length; i++) {
-            context.setVariable(parameterNames[i], values[i]);
-        }
-        Expression expression = parser.parseExpression(key);
-        Object value = expression.getValue(context);
-        if (value != null) {
-            if (value instanceof List) {
-                List value1 = (List) value;
-                for (Object o : value1) {
-                    addKeys(keys, o, keyConstant);
-                }
-            } else if (value.getClass().isArray()) {
-                Object[] obj = (Object[]) value;
-                for (Object o : obj) {
-                    addKeys(keys, o, keyConstant);
-                }
-            } else {
-                addKeys(keys, value, keyConstant);
-            }
-        }
-        log.info("表达式key={},value={}", key, keys);
-        return keys;
-    }
-
-    private void addKeys(List<String> keys, Object o, String keyConstant) {
-        keys.add("redis:lock:" + o.toString() + keyConstant);
     }
 }

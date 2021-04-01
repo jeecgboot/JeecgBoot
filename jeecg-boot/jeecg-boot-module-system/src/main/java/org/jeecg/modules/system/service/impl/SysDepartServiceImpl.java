@@ -454,7 +454,47 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         }
         return treelist;
     }
-    /**
+
+	/**
+	 * 根据parentId查询部门树
+	 * @param parentId
+	 * @return
+	 */
+	@Override
+	public List<SysDepartTreeModel> queryTreeListByPid(String parentId) {
+		List<SysDepart> list = this.baseMapper.queryTreeListByPid(parentId);
+		List<SysDepartTreeModel> records = new ArrayList<>();
+		for (int i = 0; i < list.size(); i++) {
+			SysDepart depart = list.get(i);
+            SysDepartTreeModel treeModel = new SysDepartTreeModel(depart);
+            //TODO 异步树加载key拼接__+时间戳,以便于每次展开节点会刷新数据
+			treeModel.setKey(treeModel.getKey()+"__"+System.currentTimeMillis());
+            Integer count=this.baseMapper.queryCountByPid(depart.getId());
+            if(count>0){
+                treeModel.setIsLeaf(false);
+            }else{
+                treeModel.setIsLeaf(true);
+            }
+            records.add(treeModel);
+        }
+		return records;
+	}
+	@Override
+	public SysDepart queryCompByOrgCode(String orgCode) {
+		int length = YouBianCodeUtil.zhanweiLength;
+		String compyOrgCode = orgCode.substring(0,length);
+		return this.baseMapper.queryCompByOrgCode(compyOrgCode);
+	}
+	/**
+	 * 根据id查询下级部门
+	 * @param pid
+	 * @return
+	 */
+	@Override
+	public List<SysDepart> queryDeptByPid(String pid) {
+		return this.baseMapper.queryDeptByPid(pid);
+	}
+	/**
      * 根据关键字筛选部门信息
      * @param keyWord
      * @return

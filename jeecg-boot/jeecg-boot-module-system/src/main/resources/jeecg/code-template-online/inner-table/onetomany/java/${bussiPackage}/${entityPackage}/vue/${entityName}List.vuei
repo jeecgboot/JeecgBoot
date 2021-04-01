@@ -13,6 +13,8 @@
 <#assign list_need_dict=false>
 <#-- 是否有分类字典 -->
 <#assign list_need_category=false>
+<#-- 是否有省市区 -->
+<#assign list_need_pca=false>
 <#-- 是否有用户选择 -->
 <#assign query_sel_user=false>
 <#-- 是否有部门选择 -->
@@ -137,6 +139,10 @@
   <#if po.classType == 'cat_tree' && (po.dictText!"")?trim?length == 0>
     <#assign list_need_category=true>
   </#if>
+   <#-- 判断是否需要省市区 -->
+  <#if po.classType=='pca'>
+  <#assign list_need_pca=true>
+  </#if>
 </#list>
 <#-- 查询区域-结束循环 -->
 <#if query_field_index gt 2>
@@ -236,6 +242,12 @@
           </div>
         </template>
 
+        <#if list_need_pca>
+        <template slot="pcaSlot" slot-scope="text">
+          <div>{{ getPcaText(text) }}</div>
+        </template>
+        </#if>
+
         <template slot="fileSlot" slot-scope="text">
           <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
           <a-button
@@ -316,6 +328,9 @@
 <#if query_sel_cat>
   import JCategorySelect from '@comp/jeecg/JCategorySelect'
 </#if>
+ <#if list_need_pca>
+  import Area from '@/components/_util/Area'
+  </#if>
   import '@/assets/less/TableExpand.less'
 
   export default {
@@ -379,6 +394,9 @@
     <#elseif po.classType=='umeditor'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'htmlSlot'}
+    <#elseif po.classType=='pca'>
+            dataIndex: '${po.fieldName}',
+            scopedSlots: {customRender: 'pcaSlot'}
     <#elseif po.classType=='file'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'fileSlot'}
@@ -397,7 +415,7 @@
       </#if>
     <#elseif po.classType=='switch'>
             dataIndex: '${po.fieldName}',
-            <#if po.dictField?default("")?trim?length gt 1>
+            <#if po.dictField != 'is_open'>
             customRender: (text) => (!text ? "" : (text == ${po.dictField}[0] ? "是" : "否"))
             <#else>
             customRender: (text) => (!text ? "" : (text == "Y" ? "是" : "否"))
@@ -429,10 +447,16 @@
           exportXlsUrl: '${urlPrefix}/exportXls',
           importExcelUrl: '${urlPrefix}/importExcel',
         },
+        <#if list_need_pca>
+        pcaData:'',
+        </#if>
         superFieldList:[],
       }
     },
     created() {
+      <#if list_need_pca>
+      this.pcaData = new Area()
+      </#if>
       this.getSuperFieldList();
     },
     computed: {
@@ -441,7 +465,11 @@
       }
     },
     methods: {
-
+     <#if list_need_pca>
+      getPcaText(code){
+        return this.pcaData.getText(code);
+      },
+     </#if>
       initDictConfig() {
 <#list columns as po>
   <#if (po.isQuery=='Y' || po.isShowList=='Y') && po.classType!='popup'>

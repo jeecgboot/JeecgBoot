@@ -219,7 +219,7 @@ public class CommonController {
             File file = new File(filePath);
             if(!file.exists()){
                 response.setStatus(404);
-                throw new RuntimeException("文件不存在..");
+                throw new RuntimeException("文件["+imgPath+"]不存在..");
             }
             response.setContentType("application/force-download");// 设置强制下载不打开
             response.addHeader("Content-Disposition", "attachment;fileName=" + new String(file.getName().getBytes("UTF-8"),"iso-8859-1"));

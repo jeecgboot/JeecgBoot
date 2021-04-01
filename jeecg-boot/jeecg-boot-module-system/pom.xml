@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-parent</artifactId>
-		<version>2.4.2</version>
+		<version>2.4.3</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -36,22 +36,18 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
-			<artifactId>jeecg-boot-starter-redis</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>jeecg-boot-module-demo</artifactId>
 			<version>${jeecgboot.version}</version>
 		</dependency>
 		<!-- 积木报表 -->
 		<dependency>
-			<groupId>com.jimureport</groupId>
+			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>spring-boot-starter-jimureport</artifactId>
-			<version>1.1.09-beta</version>
+			<version>1.2.0</version>
 			<exclusions>
 				<exclusion>
-					<artifactId>autopoi-web</artifactId>
 					<groupId>org.jeecgframework</groupId>
+					<artifactId>autopoi-web</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

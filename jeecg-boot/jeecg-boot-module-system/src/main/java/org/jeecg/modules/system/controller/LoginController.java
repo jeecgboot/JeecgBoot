@@ -109,7 +109,9 @@ public class LoginController {
 				
 		//用户登录信息
 		userInfo(sysUser, result);
-		//update-begin--Author:wangshuai  Date:20200714  for：登录日志没有记录人员
+		//update-begin--Author:liusq  Date:20210126  for：登录成功，删除redis中的验证码
+		redisUtil.del(realKey);
+		//update-begin--Author:liusq  Date:20210126  for：登录成功，删除redis中的验证码
 		LoginUser loginUser = new LoginUser();
 		BeanUtils.copyProperties(sysUser, loginUser);
 		baseCommonService.addLog("用户名: " + username + ",登录成功！", CommonConstant.LOG_TYPE_1, null,loginUser);

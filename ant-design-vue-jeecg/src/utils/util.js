@@ -145,7 +145,6 @@ function  generateChildRouters (data) {
       component: componentPath,
       //component: resolve => require(['@/' + component+'.vue'], resolve),
       hidden:item.hidden,
-      //component:()=> import(`@/views/${item.component}.vue`),
       meta: {
         title:item.meta.title ,
         icon: item.meta.icon,

@@ -291,6 +291,7 @@
         })
       },
       handleChangeCheckCode(){
+        this.form.setFieldsValue({inputCode: ''});
         this.currdatetime = new Date().getTime();
         getAction(`/sys/randomImage/${this.currdatetime}`).then(res=>{
           if(res.success){
@@ -321,11 +322,16 @@
         });
       },
       requestFailed (err) {
+        let errMsg=((err.response || {}).data || {}).message || err.message || "请求出现错误，请稍后再试";
         this.$notification[ 'error' ]({
           message: '登录失败',
-          description: ((err.response || {}).data || {}).message || err.message || "请求出现错误，请稍后再试",
+          description: errMsg,
           duration: 4,
         });
+        //密码错误后更新验证码
+        if(errMsg.indexOf('密码错误')>0){
+          this.handleChangeCheckCode();
+        }
         this.loginBtn = false;
       },
       validateMobile(rule,value,callback){

@@ -10,6 +10,7 @@ import org.jeecg.common.system.vo.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -80,12 +81,7 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     List<String> getDepartNamesByUsername(String username);
 
-    /**
-     * 10获取数据字典
-     * @param code
-     * @return
-     */
-    public List<DictModel> queryDictItemsByCode(String code);
+
 
     /** 11查询所有的父级字典，按照create_time排序 */
     public List<DictModel> queryAllDict();
@@ -96,14 +92,6 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     public List<SysCategoryModel> queryAllDSysCategory();
 
-    /**
-     * 13获取表数据字典
-     * @param table
-     * @param text
-     * @param code
-     * @return
-     */
-    List<DictModel> queryTableDictItemsByCode(String table, String text, String code);
 
     /**
      * 14查询所有部门 作为字典信息 id -->value,departName -->text
@@ -296,5 +284,9 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param content
      */
     void sendEmailMsg(String email,String title,String content);
-
+    /**
+     * 41 获取公司下级部门和公司下所有用户信息
+     * @param orgCode
+     */
+    List<Map> getDeptUserByOrgCode(String orgCode);
 }

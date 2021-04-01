@@ -5,41 +5,39 @@
       placement="right"
       :closable="false"
       @close="close"
-      :visible="visible"
-  >
+      :visible="visible">
 
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+      <a-form-model ref="form" :model="model" :rules="validatorRules">
       
 <#list columns as po><#rt/>
 <#if po.fieldName !='id'><#rt/>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="${po.filedComment}">
+        <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" prop="${po.fieldName}" label="${po.filedComment}">
           <#if po.fieldType =='date'>
-          <a-date-picker v-decorator="[ '${po.fieldName}', <#if po.nullable =='N'>validatorRules.${po.fieldName} <#else>{}</#if>]" />
+          <a-date-picker v-model="model.${po.fieldName}" />
           <#elseif po.fieldType =='datetime'>
-          <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ '${po.fieldName}', <#if po.nullable =='N'>validatorRules.${po.fieldName} <#else>{}</#if>]" />
+          <a-date-picker showTime valueFormat='YYYY-MM-DD HH:mm:ss' v-model="model.${po.fieldName}" />
           <#elseif "int,decimal,double,"?contains(po.fieldType)>
-          <a-input-number v-decorator="[ '${po.fieldName}', <#if po.nullable =='N'>validatorRules.${po.fieldName} <#else>{}</#if>]" />
+          <a-input-number v-model="model.${po.fieldName}" />
           <#else>
-          <a-input placeholder="请输入${po.filedComment}" v-decorator="['${po.fieldName}', <#if po.nullable =='N'>validatorRules.${po.fieldName} <#else>{}</#if>]" />
+          <a-input placeholder="请输入${po.filedComment}" v-model="model.${po.fieldName}" />
           </#if>
-        </a-form-item>
+        </a-form-model-item>
 </#if>
 </#list>
 		
-      </a-form>
+      </a-form-model>
     </a-spin>
-    <a-button type="primary" @click="handleOk">确定</a-button>
-    <a-button type="primary" @click="handleCancel">取消</a-button>
+
+    <div class="drawer-bootom-button">
+      <a-button type="primary" @click="handleOk">确定</a-button>
+      <a-button type="primary" @click="handleCancel">取消</a-button>
+    </div>
   </a-drawer>
 </template>
 
 <script>
   import { httpAction } from '@/api/manage'
-  import pick from 'lodash.pick'
   import moment from "moment"
 
   export default {
@@ -59,12 +57,11 @@
         },
 
         confirmLoading: false,
-        form: this.$form.createForm(this),
         validatorRules:{
         <#list columns as po>
         <#if po.fieldName !='id'>
         <#if po.nullable =='N'>
-        ${po.fieldName}:{rules: [{ required: true, message: '请输入${po.filedComment}!' }]},
+        ${po.fieldName}:[{ required: true, message: '请输入${po.filedComment}!' }],
         </#if>
         </#if>
 	    </#list>
@@ -79,32 +76,23 @@
     },
     methods: {
       add () {
+        //初始化默认值
         this.edit({});
       },
       edit (record) {
-        this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model<#list columns as po><#if po.fieldName !='id' && po.fieldType?index_of("date")==-1>,'${po.fieldName}'</#if></#list>))
-		  //时间格式化
-          <#list columns as po>
-          <#if po.fieldName !='id' && po.fieldType?index_of("date")!=-1>
-          this.form.setFieldsValue({${po.fieldName}:this.model.${po.fieldName}?moment(this.model.${po.fieldName}):null})
-          </#if>
-          </#list>
-        });
-
       },
       close () {
         this.$emit('close');
         this.visible = false;
+        this.$refs.form.clearValidate();
       },
       handleOk () {
         const that = this;
         // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
+        this.$refs.form.validate(valid => {
+          if (valid) {
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
@@ -115,18 +103,7 @@
               httpurl+=this.url.edit;
                method = 'put';
             }
-            let formData = Object.assign(this.model, values);
-            //时间格式化
-            <#list columns as po>
-            <#if po.fieldName !='id' && po.fieldType =='date'>
-            formData.${po.fieldName} = formData.${po.fieldName}?formData.${po.fieldName}.format():null;
-            <#elseif po.fieldName !='id' && po.fieldType =='datetime'>
-            formData.${po.fieldName} = formData.${po.fieldName}?formData.${po.fieldName}.format('YYYY-MM-DD HH:mm:ss'):null;
-            </#if>
-            </#list>
-            
-            console.log(formData)
-            httpAction(httpurl,formData,method).then((res)=>{
+            httpAction(httpurl,this.model,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');
@@ -137,10 +114,9 @@
               that.confirmLoading = false;
               that.close();
             })
-
-
-
-          }
+          }else{
+            return false;
+         }
         })
       },
       handleCancel () {
@@ -153,10 +129,22 @@
 </script>
 
 <style lang="less" scoped>
-/** Button按钮间距 */
+  /**Button按钮间距*/
   .ant-btn {
     margin-left: 30px;
     margin-bottom: 30px;
     float: right;
+  }
+ /**抽屉按钮样式*/
+  .drawer-bootom-button {
+    position: absolute;
+    bottom: -8px;
+    width: 100%;
+    border-top: 1px solid #e8e8e8;
+    padding: 10px 16px;
+    text-align: right;
+    left: 0;
+    background: #fff;
+    border-radius: 0 0 2px 2px;
   }
 </style>

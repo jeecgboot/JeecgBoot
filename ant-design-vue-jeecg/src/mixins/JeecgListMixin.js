@@ -66,7 +66,7 @@ export const JeecgListMixin = {
       let head = {'X-Access-Token': Vue.ls.get(ACCESS_TOKEN)}
       let tenantid = Vue.ls.get(TENANT_ID)
       if(tenantid){
-        head['tenant_id'] = tenantid
+        head['tenant-id'] = tenantid
       }
       return head;
     }
@@ -177,6 +177,8 @@ export const JeecgListMixin = {
             that.loading = true;
             deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
               if (res.success) {
+                //重新计算分页问题
+                that.reCalculatePage(that.selectedRowKeys.length)
                 that.$message.success(res.message);
                 that.loadData();
                 that.onClearSelected();
@@ -198,12 +200,25 @@ export const JeecgListMixin = {
       var that = this;
       deleteAction(that.url.delete, {id: id}).then((res) => {
         if (res.success) {
+          //重新计算分页问题
+          that.reCalculatePage(1)
           that.$message.success(res.message);
           that.loadData();
         } else {
           that.$message.warning(res.message);
         }
       });
+    },
+    reCalculatePage(count){
+      //总数量-count
+      let total=this.ipagination.total-count;
+      //获取删除后的分页数
+      let currentIndex=Math.ceil(total/this.ipagination.pageSize);
+      //删除后的分页数<所在当前页
+      if(currentIndex<this.ipagination.current){
+        this.ipagination.current=currentIndex;
+      }
+      console.log('currentIndex',currentIndex)
     },
     handleEdit: function (record) {
       this.$refs.modalForm.edit(record);
@@ -218,6 +233,7 @@ export const JeecgListMixin = {
     handleTableChange(pagination, filters, sorter) {
       //分页、排序、筛选变化时触发
       //TODO 筛选
+      console.log(pagination)
       if (Object.keys(sorter).length > 0) {
         this.isorter.column = sorter.field;
         this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"

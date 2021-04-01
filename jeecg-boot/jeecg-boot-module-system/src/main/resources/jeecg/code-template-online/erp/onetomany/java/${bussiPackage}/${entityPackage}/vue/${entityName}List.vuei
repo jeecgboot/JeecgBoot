@@ -84,6 +84,9 @@
 <#if po.classType=='cat_tree' && po.dictText?default("")?trim?length == 0>
 <#assign list_need_category=true>
 </#if>
+<#if po.classType=='pca'>
+<#assign list_need_pca=true>
+</#if>
 </#list>
 <#-- 结束循环 -->
 <#t>
@@ -264,7 +267,7 @@
             dataIndex: '${po.fieldName}_dictText',
             <#elseif po.classType=='switch'>
             dataIndex: '${po.fieldName}',
-            <#if po.dictField?default("")?trim?length gt 1>
+            <#if po.dictField != 'is_open'>
             customRender: (text) => (!text ? "" : (text == ${po.dictField}[0] ? "是" : "否"))
             <#else>
             customRender: (text) => (!text ? "" : (text == "Y" ? "是" : "否"))

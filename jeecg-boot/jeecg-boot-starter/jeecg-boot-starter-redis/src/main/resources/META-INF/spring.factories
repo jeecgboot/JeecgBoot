@@ -1,4 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  org.jeecg.boot.starter.redis.config.RedisConfiguration
-
-

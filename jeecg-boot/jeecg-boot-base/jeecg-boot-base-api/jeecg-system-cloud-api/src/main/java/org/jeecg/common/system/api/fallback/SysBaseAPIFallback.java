@@ -9,6 +9,7 @@ import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -257,6 +258,11 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     @Override
     public void sendEmailMsg(String email,String title,String content) {
 
+    }
+
+    @Override
+    public List<Map> getDeptUserByOrgCode(String orgCode) {
+        return null;
     }
 
     @Override

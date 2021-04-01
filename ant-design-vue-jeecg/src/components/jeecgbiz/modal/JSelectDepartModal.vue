@@ -167,7 +167,9 @@
         if(!this.checkedKeys || this.checkedKeys.length==0){
           this.$emit("ok",'')
         }else{
-          this.$emit("ok",this.checkedRows,this.checkedKeys.join(","))
+          let checkRow = this.getCheckedRows(this.checkedKeys)
+          let keyStr = this.checkedKeys.join(",")
+          this.$emit("ok", checkRow, keyStr)
         }
         this.handleClear()
       },

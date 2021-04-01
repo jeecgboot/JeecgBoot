@@ -26,31 +26,27 @@ services:
     restart: always
     container_name: jeecg-boot-redis
     hostname: jeecg-boot-redis
-  jeecg-boot-rabbitmq:
-    #    image: rabbitmq:3-management
-    image: rabbitmq:3
-    ports:
-      - 5672:5672
-    #      - 15672:15672
-    restart: always
-    container_name: jeecg-boot-rabbitmq
-    hostname: jeecg-boot-rabbitmq
 
   jeecg-boot-nacos:
-    restart: always
-    image: nacos/nacos-server
-    container_name: jeecg-boot-nacos
-    hostname: jeecg-boot-nacos
+    restart: on-failure
+    build:
+      context: ./jeecg-cloud-nacos
     ports:
       - 8848:8848
-    environment:
-      MODE: standalone
+    depends_on:
+      - jeecg-boot-mysql
+    container_name: jeecg-boot-nacos
+    hostname: jeecg-boot-nacos
 
   jeecg-boot-gateway:
+    restart: on-failure
     build:
       context: ./jeecg-cloud-gateway
     ports:
       - 9999:9999
+    depends_on:
+      - jeecg-boot-nacos
+      - jeecg-boot-redis
     container_name: jeecg-boot-gateway
     hostname: jeecg-boot-gateway
 
@@ -67,4 +63,20 @@ services:
     environment:
       - TZ=Asia/Shanghai
 
+#  jeecg-boot-xxljob:
+#    build:
+#      context: ./jeecg-cloud-xxljob
+#    ports:
+#      - 9080:9080
+#    container_name: jeecg-boot-xxljob
+#    hostname: jeecg-boot-xxljob
 
+#  jeecg-boot-rabbitmq:
+#    #    image: rabbitmq:3-management
+#    image: rabbitmq:3
+#    ports:
+#      - 5672:5672
+#    #      - 15672:15672
+#    restart: always
+#    container_name: jeecg-boot-rabbitmq
+#    hostname: jeecg-boot-rabbitmq

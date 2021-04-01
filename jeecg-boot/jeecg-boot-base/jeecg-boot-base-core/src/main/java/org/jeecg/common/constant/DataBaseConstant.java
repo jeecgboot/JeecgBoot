@@ -6,6 +6,7 @@ public interface DataBaseConstant {
 	//*********数据库类型****************************************
 	public static final String DB_TYPE_MYSQL = "MYSQL";
 	public static final String DB_TYPE_ORACLE = "ORACLE";
+	public static final String DB_TYPE_DM = "DM";//达梦数据库
 	public static final String DB_TYPE_POSTGRESQL = "POSTGRESQL";
 	public static final String DB_TYPE_SQLSERVER = "SQLSERVER";
 
@@ -110,4 +111,14 @@ public interface DataBaseConstant {
 	 */
 	public static final String BPM_STATUS_TABLE = "bpm_status";
 	//*********系统建表标准字段****************************************
+
+
+	/**
+	 * 租户ID 实体字段名
+	 */
+	String TENANT_ID = "tenantId";
+	/**
+	 * 租户ID 数据库字段名
+	 */
+	String TENANT_ID_TABLE = "tenant_id";
 }

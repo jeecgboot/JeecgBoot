@@ -9,58 +9,41 @@
     @cancel="handleCancel">
 
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+      <a-form-model ref="form" :label-col="labelCol" :wrapper-col="wrapperCol"  :model="model" >
         <!-- 主表单区域 -->
         <a-row class="form-row" :gutter="0">
           <a-col :lg="8">
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="订单号">
-              <a-input
-                placeholder="请输入订单号"
-                v-decorator="['orderCode', {rules: [{ required: true, message: '请输入订单号!' }]}]"/>
-            </a-form-item>
+            <a-form-model-item  label="订单号" prop="orderCode" :rules="[{ required: true, message: '请输入订单号!' }]">
+              <a-input placeholder="请输入订单号" v-model="model.orderCode"/>
+            </a-form-model-item>
           </a-col>
           <a-col :lg="8">
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="订单类型">
-              <a-select placeholder="请选择订单类型" v-decorator="['ctype',{}]">
+            <a-form-model-item  label="订单类型">
+              <a-select placeholder="请选择订单类型" v-model="model.ctype">
                 <a-select-option value="1">国内订单</a-select-option>
                 <a-select-option value="2">国际订单</a-select-option>
               </a-select>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :lg="8">
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="订单日期">
-              <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss" style="width: 100%" v-decorator="[ 'orderDate',{}]"/>
-            </a-form-item>
+            <a-form-model-item  label="订单日期">
+              <a-date-picker showTime valueFormat="YYYY-MM-DD HH:mm:ss" style="width: 100%" v-model="model.orderDate"/>
+            </a-form-model-item>
           </a-col>
         </a-row>
         <a-row class="form-row" :gutter="0">
           <a-col :lg="8">
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="订单金额">
-              <a-input-number placeholder="请输入订单金额" style="width: 100%" v-decorator="[ 'orderMoney', {}]"/>
-            </a-form-item>
+            <a-form-model-item  label="订单金额">
+              <a-input-number placeholder="请输入订单金额" style="width: 100%" v-model="model.orderMoney"/>
+            </a-form-model-item>
           </a-col>
           <a-col :lg="8">
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="订单备注">
-              <a-input placeholder="请输入订单备注" v-decorator="['content', {}]"/>
-            </a-form-item>
+            <a-form-model-item  label="订单备注">
+              <a-input placeholder="请输入订单备注" v-model="model.content"/>
+            </a-form-model-item>
           </a-col>
         </a-row>
-      </a-form>
+      </a-form-model>
 
       <!-- 子表单区域 -->
       <a-tabs v-model="activeKey" @change="handleChangeTabs">
@@ -100,11 +83,9 @@
 <script>
 
   import JEditableTable from '@/components/jeecg/JEditableTable'
-  import { FormTypes, VALIDATE_NO_PASSED, getRefPromise, validateFormAndTables } from '@/utils/JEditableTableUtil'
+  import { FormTypes, VALIDATE_NO_PASSED, getRefPromise, validateFormModelAndTables } from '@/utils/JEditableTableUtil'
   import { httpAction, getAction } from '@/api/manage'
   import JDate from '@/components/jeecg/JDate'
-  import pick from 'lodash.pick'
-  import moment from 'moment'
 
   export default {
     name: 'JeecgOrderModalForJEditableTable',
@@ -115,7 +96,6 @@
       return {
         title: '操作',
         visible: false,
-        form: this.$form.createForm(this),
         confirmLoading: false,
         model: {},
         labelCol: {
@@ -235,15 +215,7 @@
       edit(record) {
         this.visible = true
         this.activeKey = '1'
-        this.form.resetFields()
         this.model = Object.assign({}, record)
-
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'orderCode', 'ctype', 'orderMoney', 'content'))
-          //时间格式化
-          this.form.setFieldsValue({ orderDate: this.model.orderDate ? moment(this.model.orderDate) : null })
-        })
-
         // 加载子表数据
         if (this.model.id) {
           let params = { id: this.model.id }
@@ -259,6 +231,7 @@
           editableTables[1].initialize()
         })
         this.$emit('close')
+        this.$refs.form.resetFields();
       },
       /** 查询某个tab的数据 */
       requestTableData(url, params, tab) {
@@ -286,7 +259,7 @@
       validateFields() {
         this.getAllTable().then(tables => {
           /** 一次性验证主表和所有的次表 */
-          return validateFormAndTables(this.form, tables)
+          return validateFormModelAndTables(this.$refs.form,this.model, tables)
         }).then(allValues => {
           let formData = this.classifyIntoFormData(allValues)
           // 发起请求
@@ -303,8 +276,6 @@
       /** 整理成formData */
       classifyIntoFormData(allValues) {
         let orderMain = Object.assign(this.model, allValues.formValue)
-        //时间格式化
-        orderMain.orderDate = orderMain.orderDate ? orderMain.orderDate.format('YYYY-MM-DD HH:mm:ss') : null
         return {
           ...orderMain, // 展开
           jeecgOrderCustomerList: allValues.tablesValue[0].values,

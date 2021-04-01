@@ -142,6 +142,33 @@ export async function validateFormAndTables(form, cases, autoJumpTab) {
 }
 
 /**
+ * 一次性验证主表单和所有的次表单
+ * @param form 主表单 form 对象
+ * @param cases 接收一个数组，每项都是一个JVxeTable实例
+ * @param autoJumpTab
+ * @returns {Promise<any>}
+ * @author sunjianlei
+ */
+export async function validateFormModelAndTables(form,formData, cases, autoJumpTab) {
+  if (!(form && typeof form.validate === 'function')) {
+    throw `form 参数需要的是一个form对象，而传入的却是${typeof form}`
+  }
+  let dataMap = {}
+  let values = await new Promise((resolve, reject) => {
+    // 验证主表表单
+    form.validate((valid,obj) => {
+      valid ?resolve(formData): reject({error: VALIDATE_FAILED, originError: valid})
+    })
+  })
+  Object.assign(dataMap, {formValue: values})
+  // 验证所有子表的表单
+  let subData = await validateTables(cases, autoJumpTab)
+  // 合并最终数据
+  dataMap = Object.assign(dataMap, {tablesValue: subData})
+  return dataMap
+}
+
+/**
  * 验证并获取一个或多个表格的所有值
  *
  * @param cases 接收一个数组，每项都是一个JVxeTable实例

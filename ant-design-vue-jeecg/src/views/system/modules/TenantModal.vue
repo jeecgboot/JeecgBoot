@@ -13,7 +13,6 @@
 </template>
 
 <script>
-
   import TenantForm from './TenantForm'
   export default {
     name: "TenantModal",
@@ -32,13 +31,13 @@
       add () {
         this.visible=true
         this.$nextTick(()=>{
-          this.$refs.realForm.add();
+          this.$refs.realForm.show();
         })
       },
       edit (record) {
         this.visible=true
         this.$nextTick(()=>{
-          this.$refs.realForm.edit(record);
+          this.$refs.realForm.show(record);
         })
       },
       close () {

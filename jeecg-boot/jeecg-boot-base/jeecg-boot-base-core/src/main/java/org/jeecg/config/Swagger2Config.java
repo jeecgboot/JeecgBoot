@@ -36,7 +36,6 @@ import java.util.List;
 @EnableSwagger2
 @EnableKnife4j
 @Import(BeanValidatorPluginsConfiguration.class)
-@ConditionalOnProperty(name = "swagger.enable", havingValue = "true")
 public class Swagger2Config implements WebMvcConfigurer {
 
     /**

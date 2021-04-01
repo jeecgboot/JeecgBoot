@@ -63,7 +63,7 @@
 
             <a-table :columns="columns" :dataSource="data" :pagination="false" size="middle">
               <template v-for="(col, i) in ['name', 'workId', 'department']" :slot="col" slot-scope="text, record, index">
-                <a-tooltip  title="必填项" :defaultVisible="false" overlayStyle="{ color: 'red' }">
+                <a-tooltip  title="必填项" :defaultVisible="false" :overlayStyle="{ color: 'red' }">
                   <a-input :key="col" v-if="record.editable" style="margin: -5px 0"  :value="text" :placeholder="columns[i].title" @change="e => handlerRowChange(e.target.value, record.key, col)"/>
                 <template v-else>{{ text }}</template>
                 </a-tooltip>

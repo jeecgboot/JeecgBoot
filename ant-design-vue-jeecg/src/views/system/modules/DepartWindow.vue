@@ -38,11 +38,9 @@
   import pick from 'lodash.pick'
   import { getAction } from '@/api/manage'
   import { queryIdTree } from '@/api/api'
-  import userModal from './UserModal'
   export default {
     name: "DepartWindow",
     components: {
-      userModal,
     },
     data () {
       return {

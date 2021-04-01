@@ -33,5 +33,22 @@
             org_code LIKE CONCAT(#{item},'%')
         </foreach>
 	</select>
+     <!--根据parent_id查询下级部门-->
+    <select id="queryTreeListByPid" parameterType="Object"  resultType="org.jeecg.modules.system.entity.SysDepart">
+        SELECT * FROM  sys_depart where del_flag = '0'
+        <choose>
+            <when test="parentId != null and parentId != ''">
+                AND parent_id =  #{parentId,jdbcType=VARCHAR}
+            </when>
+            <otherwise>
+                AND parent_id is null or parent_id=''
+            </otherwise>
+        </choose>
+        order by depart_order
+    </select>
 
+    <!-- 根据OrgCod查询公司信息 -->
+    <select id="queryCompByOrgCode" resultType="org.jeecg.modules.system.entity.SysDepart">
+		select * from sys_depart where del_flag = '0' and org_category='1' and org_code= #{orgCode,jdbcType=VARCHAR}
+	</select>
 </mapper>

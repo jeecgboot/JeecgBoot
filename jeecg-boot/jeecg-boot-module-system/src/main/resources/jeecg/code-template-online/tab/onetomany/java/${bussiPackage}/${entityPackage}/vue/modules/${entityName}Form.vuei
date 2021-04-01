@@ -1,0 +1,490 @@
+<#include "/common/utils.ftl">
+<template>
+<a-spin :spinning="confirmLoading">
+<#assign form_popup = false>
+<#assign form_cat_tree = false>
+<#assign form_cat_back = "">
+<#assign form_span = 24>
+
+   <a-tabs v-model="activeKey" @change="handleChangeTabs">
+   <!--主表区域 -->
+    <a-tab-pane tab="${tableVo.ftlDescription}" :key="refKeys[0]" :forceRender="true">
+         <a-form-model ref="form" :model="model" :rules="validatorRules">
+           <a-row>
+        <#list columns as po>
+        <#if po.isShow =='Y' && po.fieldName != 'id'>
+        <#assign form_field_dictCode="">
+            <#if po.dictTable?default("")?trim?length gt 1 && po.dictText?default("")?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
+                <#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+            <#elseif po.dictField?default("")?trim?length gt 1>
+                <#assign form_field_dictCode="${po.dictField}">
+            </#if>
+            <#if po.classType =='textarea'>
+                  <a-col :span="24">
+                    <a-form-model-item label="${po.filedComment}" :labelCol="labelCol2" :wrapperCol="wrapperCol2" prop="${autoStringSuffixForModel(po)}">
+            <#else>
+                  <a-col :xs="24" :sm="12">
+                    <a-form-model-item label="${po.filedComment}" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="${autoStringSuffixForModel(po)}">
+            </#if>
+            <#if po.classType =='date'>
+                      <j-date placeholder="请选择${po.filedComment}" v-model="model.${po.fieldName}" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
+            <#elseif po.classType =='datetime'>
+                      <j-date placeholder="请选择${po.filedComment}" v-model="model.${po.fieldName}" :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
+            <#elseif po.classType =='time'>
+                      <j-time placeholder="请选择${po.filedComment}" v-model="model.${po.fieldName}" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
+            <#elseif po.classType =='popup'>
+                 <#assign form_popup=true>
+                      <j-popup
+                        v-model="model.${po.fieldName}"
+                        field="${po.fieldName}"
+                        org-fields="${po.dictField}"
+                        dest-fields="${Format.underlineToHump(po.dictText)}"
+                        code="${po.dictTable}"
+                        @input="popupCallback"
+                        <#if po.readonly=='Y'>disabled</#if>/>
+            <#elseif po.classType =='sel_depart'>
+                      <j-select-depart v-model="model.${po.fieldName}" multi <#if po.readonly=='Y'>disabled</#if>/>
+           <#elseif po.classType =='switch'>
+                      <j-switch v-model="model.${po.fieldName}" <#if po.dictField!= 'is_open'>:options="${po.dictField}"</#if> <#if po.readonly=='Y'>disabled</#if>></j-switch>
+            <#elseif po.classType =='pca'>
+                      <j-area-linkage type="cascader" v-model="model.${po.fieldName}" placeholder="请输入省市区" <#if po.readonly=='Y'>disabled</#if>/>
+            <#elseif po.classType =='markdown'>
+                      <j-markdown-editor v-model="model.${autoStringSuffixForModel(po)}" id="${po.fieldName}"></j-markdown-editor>
+            <#elseif po.classType =='password'>
+                      <a-input-password v-model="model.${po.fieldName}" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
+            <#elseif po.classType =='sel_user'>
+                      <j-select-user-by-dep v-model="model.${po.fieldName}" <#if po.readonly=='Y'>disabled</#if>/>
+            <#elseif po.classType =='textarea'>
+                      <a-textarea v-model="model.${autoStringSuffixForModel(po)}" rows="4" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
+            <#elseif po.classType=='list' || po.classType=='radio'>
+                      <j-dict-select-tag type="${po.classType}" v-model="model.${po.fieldName}"  dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
+            <#elseif po.classType=='list_multi' || po.classType=='checkbox'>
+                      <j-multi-select-tag type="${po.classType}" v-model="model.${po.fieldName}"  dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
+            <#elseif po.classType=='sel_search'>
+                      <j-search-select-tag v-model="model.${po.fieldName}" dict="${form_field_dictCode}" <#if po.readonly=='Y'>disabled</#if>/>
+            <#elseif po.classType=='cat_tree'>
+                <#assign form_cat_tree = true>
+                      <j-category-select v-model="model.${po.fieldName}" pcode="${po.dictField?default("")}" placeholder="请选择${po.filedComment}" <#if po.dictText?default("")?trim?length gt 1>back="${dashedToCamel(po.dictText)}" @change="handleCategoryChange"</#if> <#if po.readonly=='Y'>disabled</#if>/>
+                <#if po.dictText?default("")?trim?length gt 1>
+                <#assign form_cat_back = "${po.dictText}">
+                </#if>
+            <#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+                      <a-input-number v-model="model.${po.fieldName}" placeholder="请输入${po.filedComment}" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
+            <#elseif po.classType=='file'>
+                      <j-upload v-model="model.${po.fieldName}"  <#if po.readonly=='Y'>disabled</#if> <#if po.uploadnum??>:number=${po.uploadnum}</#if>></j-upload>
+            <#elseif po.classType=='image'>
+                      <j-image-upload isMultiple <#if po.uploadnum??>:number=${po.uploadnum}</#if> v-model="model.${po.fieldName}" <#if po.readonly=='Y'>disabled</#if>></j-image-upload>
+            <#elseif po.classType=='umeditor'>
+                      <j-editor v-model="model.${po.fieldName}" <#if po.readonly=='Y'>disabled</#if>/>
+            <#elseif po.classType == 'sel_tree'>
+                      <j-tree-select
+                      ref="treeSelect"
+                      placeholder="请选择${po.filedComment}"
+                      v-model="model.${po.fieldName}"
+                      <#if po.dictText??>
+                      <#if po.dictText?split(',')[2]?? && po.dictText?split(',')[0]??>
+                      dict="${po.dictTable},${po.dictText?split(',')[2]},${po.dictText?split(',')[0]}"
+                      <#elseif po.dictText?split(',')[1]??>
+                      pidField="${po.dictText?split(',')[1]}"
+                      <#elseif po.dictText?split(',')[3]??>
+                      hasChildField="${po.dictText?split(',')[3]}"
+                      </#if>
+                      </#if>
+                      pidValue="${po.dictField}"
+                      <#if po.readonly=='Y'>disabled</#if>>
+                    </j-tree-select>
+            <#else>
+                      <a-input v-model="model.${autoStringSuffixForModel(po)}" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>></a-input>
+            </#if>
+                    </a-form-model-item>
+                  </a-col>
+        </#if>
+        </#list>
+
+                </a-row>
+              </a-form-model>
+
+     </a-tab-pane>
+   <!--子表单区域 -->
+<#list subTables as sub><#rt/>
+<#if sub.foreignRelationType =='1'>
+     <a-tab-pane tab="${sub.ftlDescription}" :key="refKeys[${sub_index+1}]" :forceRender="true">
+       <${Format.humpToShortbar(sub.entityName)}-form ref="${sub.entityName?uncap_first}Form" @validateError="validateError"></${Format.humpToShortbar(sub.entityName)}-form>
+     </a-tab-pane>
+
+<#else>
+     <a-tab-pane tab="${sub.ftlDescription}" :key="refKeys[${sub_index+1}]" :forceRender="true">
+       <j-editable-table
+         :ref="refKeys[${sub_index+1}]"
+         :loading="${sub.entityName?uncap_first}Table.loading"
+         :columns="${sub.entityName?uncap_first}Table.columns"
+         :dataSource="${sub.entityName?uncap_first}Table.dataSource"
+         :maxHeight="300"
+         :rowNumber="true"
+         :rowSelection="true"
+         :actionButton="true"/>
+     </a-tab-pane>
+
+</#if>
+</#list>
+   </a-tabs>
+
+ </a-spin>
+</j-modal>
+</template>
+
+<script>
+
+import { FormTypes,getRefPromise } from '@/utils/JEditableTableUtil'
+import { JEditableTableModelMixin } from '@/mixins/JEditableTableModelMixin'
+import { validateDuplicateValue } from '@/utils/util'
+import { VALIDATE_NO_PASSED, validateFormModelAndTables } from '@/utils/JEditableTableUtil'
+<#list subTables as sub>
+<#if sub.foreignRelationType =='1'>
+import ${sub.entityName}Form from './${sub.entityName}Form.vue'
+</#if>
+</#list>
+
+export default {
+ name: '${entityName}Forml',
+ mixins: [JEditableTableModelMixin],
+ components: {
+ <#list subTables as sub>
+ <#if sub.foreignRelationType =='1'>
+ ${sub.entityName}Form,
+ </#if>
+ </#list>
+ },
+ data() {
+   return {
+     labelCol: {
+       xs: { span: 24 },
+       sm: { span: 6 },
+     },
+     wrapperCol: {
+       xs: { span: 24 },
+       sm: { span: 16 },
+     },
+     labelCol2: {
+       xs: { span: 24 },
+       sm: { span: 3 },
+     },
+     wrapperCol2: {
+       xs: { span: 24 },
+       sm: { span: 20 },
+     },
+     // 新增时子表默认添加几行空数据
+     addDefaultRowNum: 1,
+     model:{
+       <#include "/common/init/initValue.ftl">
+     },
+     <#include "/common/validatorRulesTemplate/main.ftl">
+     refKeys: ['${tableVo.entityName?uncap_first}',<#list subTables as sub>'${sub.entityName?uncap_first}', </#list>],
+     <#assign hasOne2Many = false>
+     tableKeys:[<#list subTables as sub><#if sub.foreignRelationType =='0'>'${sub.entityName?uncap_first}', <#assign hasOne2Many = true></#if></#list>],
+     activeKey: '${tableVo.entityName?uncap_first}',
+<#list subTables as sub><#rt/>
+     // ${sub.ftlDescription}
+     ${sub.entityName?uncap_first}Table: {
+       loading: false,
+       dataSource: [],
+       columns: [
+<#if sub.foreignRelationType =='0'>
+<#assign popupBackFields = "">
+
+<#-- 循环子表的列 开始 -->
+<#list sub.colums as col><#rt/>
+<#if col.isShow =='Y'>
+ <#if col.filedComment !='外键' >
+         {
+           title: '${col.filedComment}',
+           key: '${autoStringSuffixForModel(col)}',
+   <#if col.classType =='date'>
+           type: FormTypes.date,
+           <#if col.readonly=='Y'>
+           disabled:true,
+           </#if>
+   <#elseif col.classType =='datetime'>
+           type: FormTypes.datetime,
+           <#if col.readonly=='Y'>
+           disabled:true,
+           </#if>
+   <#elseif "int,decimal,double,"?contains(col.classType)>
+           type: FormTypes.inputNumber,
+           <#if col.readonly=='Y'>
+           disabled:true,
+           </#if>
+   <#elseif col.classType =='list' || col.classType =='radio'>
+           type: FormTypes.select,
+           <#if col.dictTable?default("")?trim?length gt 1>
+           dictCode:"${col.dictTable},${col.dictText},${col.dictField}",
+           <#else>
+           dictCode:"${col.dictField}",
+           </#if>
+           <#if col.readonly=='Y'>
+           disabled:true,
+           </#if>
+   <#elseif col.classType =='list_multi' || col.classType =='checkbox'>
+           type: FormTypes.list_multi,
+           <#if col.dictTable?default("")?trim?length gt 1>
+           dictCode:"${col.dictTable},${col.dictText},${col.dictField}",
+           <#else>
+           dictCode:"${col.dictField}",
+           </#if>
+           <#if col.readonly=='Y'>
+           disabled:true,
+           </#if>
+   <#elseif col.classType =='sel_search'>
+           type: FormTypes.sel_search,
+           <#if col.dictTable?default("")?trim?length gt 1>
+           dictCode:"${col.dictTable},${col.dictText},${col.dictField}",
+           <#else>
+           dictCode:"${col.dictField}",
+           </#if>
+           <#if col.readonly=='Y'>
+           disabled:true,
+           </#if>
+   <#elseif col.classType =='switch'>
+           type: FormTypes.checkbox,
+           <#if col.dictField == 'is_open'>
+           customValue: ['Y', 'N'],
+           <#else>
+           customValue: ${col.dictField},
+           </#if>
+           <#if col.readonly=='Y'>
+           disabled:true,
+           </#if>
+   <#elseif col.classType =='image'>
+           type: FormTypes.image,
+           token:true,
+           responseName:"message",
+           <#if col.readonly=='Y'>
+           disabled:true,
+           </#if>
+           <#if col.uploadnum??>
+           number: ${col.uploadnum},
+           </#if>
+   <#elseif col.classType =='file'>
+           type: FormTypes.file,
+           token:true,
+           responseName:"message",
+           <#if col.readonly=='Y'>
+           disabled:true,
+           </#if>
+           <#if col.uploadnum??>
+           number: ${col.uploadnum},
+           </#if>
+   <#elseif col.classType =='popup'>
+     <#if popupBackFields?length gt 0>
+         <#assign popupBackFields = "${popupBackFields}"+","+"${col.dictText}">
+     <#else>
+         <#assign popupBackFields = "${col.dictText}">
+     </#if>
+           type: FormTypes.popup,
+           popupCode:"${col.dictTable}",
+           destFields:"${Format.underlineToHump(col.dictText)}",
+           orgFields:"${col.dictField}",
+           <#if col.readonly=='Y'>
+           disabled:true,
+           </#if>
+   <#elseif col.fieldDbType=='int' || col.fieldDbType=='double' || col.fieldDbType=='BigDecimal'>
+           type: FormTypes.inputNumber,
+           <#if col.readonly=='Y'>
+           disabled:true,
+           </#if>
+   <#else>
+           type: FormTypes.input,
+           <#if col.readonly=='Y'>
+           disabled:true,
+           </#if>
+   </#if>
+   <#if col.classType =='list_multi' || col.classType =='checkbox'>
+           width:"250px",
+   <#else>
+           width:"200px",
+   </#if>
+   <#if col.classType =='file'>
+           placeholder: '请选择文件',
+   <#else>
+           placeholder: '请输入${'$'}{title}',
+   </#if>
+   <#if col.defaultVal??>
+     <#if col.fieldDbType=="BigDecimal" || col.fieldDbType=="double" || col.fieldDbType=="int">
+           defaultValue:${col.defaultVal},
+           <#else>
+           defaultValue:"${col.defaultVal}",
+     </#if>
+   <#else>
+           defaultValue:'',
+   </#if>
+   <#-- 子表的校验 -->
+   <#assign subFieldValidType = col.fieldValidType!''>
+   <#-- 非空校验 -->
+   <#if col.nullable == 'N' || subFieldValidType == '*'>
+           validateRules: [{ required: true, message: '${'$'}{title}不能为空' }],
+   <#-- 其他情况下，只要有值就被认为是正则校验 -->
+   <#elseif subFieldValidType?length gt 0>
+     <#assign subMessage = '格式不正确'>
+     <#if subFieldValidType == 'only' >
+       <#assign subMessage = '不能重复'>
+     </#if>
+           validateRules: [{ pattern: "${subFieldValidType}", message: "${'$'}{title}${subMessage}" }],
+   </#if>
+         },
+ </#if>
+</#if>
+</#list>
+<#-- 循环子表的列 结束 -->
+
+<#-- 处理popup的隐藏列 -->
+<#if popupBackFields?length gt 0>
+<#list popupBackFields?split(",") as item>
+<#if item?length gt 0>
+<#assign tempItemFlag = true>
+
+<#list sub.colums as col>
+<#if col.isShow =='Y' && col.fieldName == item>
+<#assign tempItemFlag = false>
+</#if>
+</#list>
+<#if tempItemFlag>
+         {
+           title: '${item}',
+           key: '${item}',
+           type:"hidden"
+         },
+</#if>
+</#if>
+</#list>
+</#if>
+</#if>
+       ]
+     },
+</#list>
+     url: {
+       add: "/${entityPackage}/${entityName?uncap_first}/add",
+       edit: "/${entityPackage}/${entityName?uncap_first}/edit",
+        ${tableVo.entityName?uncap_first}: {
+         list: '/${entityPackage}/${entityName?uncap_first}/queryById'
+        },
+<#list subTables as sub><#rt/>
+       ${sub.entityName?uncap_first}: {
+         list: '/${entityPackage}/${entityName?uncap_first}/query${sub.entityName}ByMainId'
+       },
+</#list>
+     }
+   }
+ },
+ methods: {
+   getAllTable() {
+     <#if hasOne2Many==true>
+     let values = this.tableKeys.map(key => getRefPromise(this, key))
+     return Promise.all(values)
+     <#else>
+     return new Promise(resolve => {
+       resolve([]);
+     })
+     </#if>
+   },
+   /** 调用完edit()方法之后会自动调用此方法 */
+   editAfter() {
+     this.$nextTick(() => {
+<#list subTables as sub><#rt/>
+<#if sub.foreignRelationType =='1'>
+       this.$refs.${sub.entityName?uncap_first}Form.initFormData(this.url.${sub.entityName?uncap_first}.list,this.model.id)
+</#if>
+</#list>
+     })
+     // 加载子表数据
+     if (this.model.id) {
+       let params = { id: this.model.id }
+<#list subTables as sub><#rt/>
+<#if sub.foreignRelationType =='0'>
+       this.requestSubTableData(this.url.${sub.entityName?uncap_first}.list, params, this.${sub.entityName?uncap_first}Table)
+</#if>
+</#list>
+     }
+   },
+   //校验所有一对一子表表单
+   validateSubForm(allValues){
+     return new Promise((resolve,reject)=>{
+       Promise.all([
+   <#list subTables as sub><#rt/>
+     <#if sub.foreignRelationType =='1'>
+           this.$refs.${sub.entityName?uncap_first}Form.validate(${sub_index}),
+     </#if>
+   </#list>
+       ]).then(() => {
+         resolve(allValues)
+       }).catch(e => {
+         reject(e)
+       })
+     })
+   },
+   /** 整理成formData */
+   classifyIntoFormData(allValues) {
+     let main = Object.assign(this.model, allValues.formValue)
+     return {
+       ...main, // 展开
+<#assign subManyIndex = 0>
+<#list subTables as sub><#rt/>
+<#if sub.foreignRelationType =='0'>
+       ${sub.entityName?uncap_first}List: allValues.tablesValue[${subManyIndex}].values,
+       <#assign subManyIndex = subManyIndex+1>
+<#else>
+       ${sub.entityName?uncap_first}List: this.$refs.${sub.entityName?uncap_first}Form.getFormData(),
+</#if>
+</#list>
+     }
+   },
+    /** 确定按钮点击事件 */
+     handleOk() {
+       /** 触发表单验证 */
+       this.getAllTable().then(tables => {
+          return validateFormModelAndTables(this.$refs.form,this.model, tables)
+       }).then(allValues => {
+         /** 一次性验证一对一的所有子表 */
+         return this.validateSubForm(allValues)
+       }).then(allValues => {
+         if (typeof this.classifyIntoFormData !== 'function') {
+           throw this.throwNotFunction('classifyIntoFormData')
+         }
+         console.log("this.classifyIntoFormData",typeof this.classifyIntoFormData)
+         let formData = this.classifyIntoFormData(allValues)
+
+         // 发起请求
+         return this.request(formData)
+       }).catch(e => {
+         if (e.error === VALIDATE_NO_PASSED) {
+           // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
+           this.activeKey = e.index == null ? this.refKeys[0] : this.refKeys[e.index+1]
+         } else {
+           console.error(e)
+         }
+       })
+     },
+   validateError(msg){
+     this.$message.error(msg)
+   },
+ close() {
+   this.visible = false
+   this.$emit('close')
+   this.$refs.form.clearValidate();
+ },
+  <#if form_popup>
+  popupCallback(value,row){
+    this.model = Object.assign(this.model, row);
+  },
+  </#if>
+<#if form_cat_tree>
+  handleCategoryChange(value,backObj){
+    this.model = Object.assign(this.model, backObj);
+   }
+</#if>
+
+ }
+}
+</script>
+
+<style scoped>
+</style>
