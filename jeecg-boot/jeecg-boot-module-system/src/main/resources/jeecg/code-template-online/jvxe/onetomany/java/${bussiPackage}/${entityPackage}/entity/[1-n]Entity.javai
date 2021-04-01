@@ -21,7 +21,7 @@ import java.io.UnsupportedEncodingException;
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
-@ApiModel(value="${tableName}对象", description="${tableVo.ftlDescription}")
+@ApiModel(value="${subTab.tableName}对象", description="${subTab.ftlDescription}")
 @Data
 @TableName("${subTab.tableName}")
 public class ${subTab.entityName} implements Serializable {
