@@ -2,7 +2,7 @@
   <a-card :bordered="false" style="width: 130%;text-align: center;margin-left:-10%">
     <a-steps class="steps" :current="currentTab">
       <a-step title="手机验证"/>
-      <a-step title="密码"/>
+      <a-step title="更改密码"/>
       <a-step title="完成"/>
     </a-steps>
     <div class="content">
@@ -14,7 +14,6 @@
 </template>
 
 <script>
-  import Step1 from './Step1'
   import Step2 from './Step2'
   import Step3 from './Step3'
   import Step4 from './Step4'
@@ -22,7 +21,6 @@
   export default {
     name: "Alteration",
     components: {
-      Step1,
       Step2,
       Step3,
       Step4
@@ -63,4 +61,12 @@
     max-width: 750px;
     margin: 16px auto;
   }
+  /deep/ .password-retrieval-form{
+    max-width: 500px;
+    margin: 40px auto 0;
+    .ant-form-explain{
+      text-align: left;
+    }
+  }
 </style>
+

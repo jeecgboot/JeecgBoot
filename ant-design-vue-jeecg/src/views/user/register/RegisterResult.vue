@@ -21,25 +21,25 @@
     },
     data () {
       return {
-        form: {},
+        model: {},
       }
     },
     computed: {
       email () {
-        let v = this.form ? this.form.username || this.form.mobile : ' XXX '
+        let v = this.model ? this.model.username || this.model.mobile : ' XXX '
         let title = `你的账户：${v} 注册成功`
         this.username = v;
         return title
       }
     },
     created () {
-      this.form = this.$route.params
+      this.model = this.$route.params
     },
     methods: {
       goHomeHandle () {
         let params={};
-        params.username=this.form.username;
-        params.password=this.form.password;
+        params.username=this.model.username;
+        params.password=this.model.password;
         console.log(params);
         this.$router.push({name:'login',params})
       },
