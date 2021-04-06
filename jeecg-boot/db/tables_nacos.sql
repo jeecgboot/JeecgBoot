@@ -1,3 +1,6 @@
+DROP DATABASE IF EXISTS `nacos`;
+create database `nacos` default character set utf8mb4 collate utf8mb4_general_ci;
+
 /*
  Navicat Premium Data Transfer
 
@@ -14,11 +17,9 @@
  Date: 05/04/2021 18:27:15
 */
 
-CREATE database if NOT EXISTS `nacos` default character set utf8mb4 collate utf8mb4_unicode_ci;
-use `nacos`;
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
-
+use `nacos`;
 -- ----------------------------
 -- Table structure for config_info
 -- ----------------------------
