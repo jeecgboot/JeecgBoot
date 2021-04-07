@@ -46,7 +46,7 @@ public class DictAspect {
 
     @Around("excudeService()")
     public Object doAround(ProceedingJoinPoint pjp) throws Throwable {
-    	long time1=System.currentTimeMillis();	
+    	long time1=System.currentTimeMillis();
         Object result = pjp.proceed();
         long time2=System.currentTimeMillis();
         log.debug("获取JSON数据 耗时："+(time2-time1)+"ms");
@@ -103,12 +103,27 @@ public class DictAspect {
                             String table = field.getAnnotation(Dict.class).dictTable();
                             String key = String.valueOf(item.get(field.getName()));
 
-                            //翻译字典值对应的txt
-                            String textValue = translateDictValue(code, text, table, key);
+                            //update-begin--Author:zhangkaihang -- Date:20210407 ----for：增加以逗号为分隔符支持一对多字典------
+                            String[] textArry = text.split(",");
+                            for(int index=0;index<textArry.length;index++){
+                                //翻译字典值对应的txt
+                                String textValue = translateDictValue(code, textArry[index], table, key);
 
-                            log.debug(" 字典Val : "+ textValue);
-                            log.debug(" __翻译字典字段__ "+field.getName() + CommonConstant.DICT_TEXT_SUFFIX+"： "+ textValue);
-                            item.put(field.getName() + CommonConstant.DICT_TEXT_SUFFIX, textValue);
+                                log.debug(" 字典Val : "+ textValue);
+                                log.debug(" __翻译字典字段__ "+field.getName() + CommonConstant.DICT_TEXT_SUFFIX+"： "+ textValue);
+                                if (index > 0) {
+                                    item.put(field.getName() + CommonConstant.DICT_TEXT_SUFFIX + index, textValue);
+                                }else
+                                    item.put(field.getName() + CommonConstant.DICT_TEXT_SUFFIX, textValue);
+                            }
+
+//                            //翻译字典值对应的txt
+//                            String textValue = translateDictValue(code, text, table, key);
+//
+//                            log.debug(" 字典Val : "+ textValue);
+//                            log.debug(" __翻译字典字段__ "+field.getName() + CommonConstant.DICT_TEXT_SUFFIX+"： "+ textValue);
+//                            item.put(field.getName() + CommonConstant.DICT_TEXT_SUFFIX, textValue);
+                            //update-end--Author:zhangkaihang -- Date:20210407 ----for：增加以逗号为分隔符支持一对多字典------
                         }
                         //date类型默认转换string格式化日期
                         if (field.getType().getName().equals("java.util.Date")&&field.getAnnotation(JsonFormat.class)==null&&item.get(field.getName())!=null){
