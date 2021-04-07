@@ -67,6 +67,12 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 		} catch (Exception e) {
 			ip = "127.0.0.1";
 		}
+		//update-begin--Author:zhangkaihang -- Date:20210407 ----for：解决ip地址超长无法insert到数据库报错“授权失败”------
+		String[] ipArray = ip.split(",");
+		if(ipArray.length>1){
+			ip = ipArray[0];
+		}
+		//update-end--Author:zhangkaihang -- Date:20210407 ----for：解决ip地址超长无法insert到数据库报错“授权失败”------
 		List<String> add = getDiff(lastPermissionIds,permissionIds);
 		if(add!=null && add.size()>0) {
 			List<SysRolePermission> list = new ArrayList<SysRolePermission>();
@@ -80,7 +86,7 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 			}
 			this.saveBatch(list);
 		}
-		
+
 		List<String> delete = getDiff(permissionIds,lastPermissionIds);
 		if(delete!=null && delete.size()>0) {
 			for (String permissionId : delete) {
@@ -88,7 +94,7 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 			}
 		}
 	}
-	
+
 	/**
 	 * 从diff中找出main中没有的元素
 	 * @param main
@@ -102,7 +108,7 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 		if(oConvertUtils.isEmpty(main)) {
 			return Arrays.asList(diff.split(","));
 		}
-		
+
 		String[] mainArr = main.split(",");
 		String[] diffArr = diff.split(",");
 		Map<String, Integer> map = new HashMap<>();
