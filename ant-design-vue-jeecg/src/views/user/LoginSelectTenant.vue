@@ -10,8 +10,8 @@
       <a-button type="primary" @click="selectOk">确认</a-button>
     </template>
 
-    <a-form>
-      <a-form-item v-if="isMultiTenant" :labelCol="{span:4}" :wrapperCol="{span:20}" style="margin-bottom:10px" :validate-status="validate_status1">
+    <a-form-model>
+      <a-form-model-item v-if="isMultiTenant" :labelCol="{span:4}" :wrapperCol="{span:20}" style="margin-bottom:10px" :validate-status="validate_status1">
         <a-tooltip placement="topLeft" >
           <template slot="title">
             <span>您有多个租户，请选择登录租户</span>
@@ -25,10 +25,10 @@
             {{ d.name }}
           </a-select-option>
         </a-select>
-      </a-form-item>
+      </a-form-model-item>
 
 
-      <a-form-item v-if="isMultiDepart" :labelCol="{span:4}" :wrapperCol="{span:20}" style="margin-bottom:10px" :validate-status="validate_status2">
+      <a-form-model-item v-if="isMultiDepart" :labelCol="{span:4}" :wrapperCol="{span:20}" style="margin-bottom:10px" :validate-status="validate_status2">
         <a-tooltip placement="topLeft" >
           <template slot="title">
             <span>您有多个部门，请选择登录部门</span>
@@ -42,9 +42,9 @@
             {{ d.departName }}
           </a-select-option>
         </a-select>
-      </a-form-item>
+      </a-form-model-item>
 
-    </a-form>
+    </a-form-model>
   </a-modal>
 </template>
 

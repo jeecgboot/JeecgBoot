@@ -77,6 +77,10 @@ spring:
         #是否支持重试
         retry:
           enabled: true
+#minidao 设置
+minidao :
+  base-package: org.jeecg.modules.jmreport.*
+  db-type: mysql
 #jeecg专用配置
 jeecg :
   # 本地：local\Minio：minio\阿里云：alioss

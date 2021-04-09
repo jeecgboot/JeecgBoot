@@ -1,31 +1,20 @@
 <template>
   <div>
-    <a-form :form="form" style="max-width: 500px; margin: 40px auto 0;" @keyup.enter.native="nextStep">
-      <a-form-item
-        label="手机"
-        :labelCol="{span: 5}"
-        :wrapperCol="{span: 19}"
-      >
-        <a-input
-          type="text"
-          autocomplete="false"
-          style="width:310px;margin-left:-10px"
-          v-decorator="['phone',{ rules: validatorRules.phone.rule}]"
-          placeholder="请输入手机号">
-          <a-icon slot="prefix" type="phone" :style="{ color: 'rgba(0,0,0,.25)'}"/>
-        </a-input>
-      </a-form-item>
-      <a-form-item
-        label="验证码"
-        :labelCol="{span: 5}"
-        :wrapperCol="{span: 19}"
-        v-if="show">
-        <a-row :gutter="16" style="margin-left: 2px">
+    <a-form-model ref="form" :model="model" :rules="validatorRules" class="password-retrieval-form" @keyup.enter.native="nextStep">
+      <a-form-model-item label="手机" required prop="phone" :labelCol="{span: 5}" :wrapperCol="{span: 19}">
+        <a-row :gutter="16">
+          <a-col class="gutter-row" :span="20">
+            <a-input v-model="model.phone" type="text" autocomplete="false" placeholder="请输入手机号">
+              <a-icon slot="prefix" type="phone" :style="{ color: 'rgba(0,0,0,.25)'}"/>
+            </a-input>
+          </a-col>
+        </a-row>
+      </a-form-model-item>
+      <a-form-model-item v-if="show" required prop="captcha" label="验证码" :labelCol="{span: 5}" :wrapperCol="{span: 19}">
+        <a-row :gutter="16">
           <a-col class="gutter-row" :span="12">
-            <a-input
-              v-decorator="['captcha',validatorRules.captcha]"
-              type="text"
-              placeholder="手机短信验证码">
+            <a-input v-model="model.captcha" type="text" placeholder="手机短信验证码">
+              <a-icon slot="prefix" type="code" :style="{ color: 'rgba(0,0,0,.25)'}"/>
             </a-input>
           </a-col>
           <a-col class="gutter-row" :span="8">
@@ -37,12 +26,12 @@
               v-text="!state.smsSendBtn && '获取验证码' || (state.time+' s')"></a-button>
           </a-col>
         </a-row>
-      </a-form-item>
-      <a-form-item :wrapperCol="{span: 19, offset: 5}">
+      </a-form-model-item>
+      <a-form-model-item :wrapperCol="{span: 19, offset: 5}">
         <router-link style="float: left;line-height: 40px;" :to="{ name: 'login' }">使用已有账户登录</router-link>
         <a-button type="primary" @click="nextStep" style="margin-left: 20px">下一步</a-button>
-      </a-form-item>
-    </a-form>
+      </a-form-model-item>
+    </a-form-model>
   </div>
 </template>
 
@@ -54,7 +43,7 @@
     props: ['userList'],
     data() {
       return {
-        form: this.$form.createForm(this),
+        model: {},
         loading: false,
         // accountName: this.userList.username,
         dropList: "0",
@@ -69,8 +58,13 @@
           mobile: "",
         },
         validatorRules: {
-          captcha: {rule: [{required: true, message: '请输入短信验证码!'}, {validator: this.validateCaptcha}]},
-          phone: {rule: [{required: true, message: '请输入手机号码!'}, {validator: this.validatePhone}]},
+          phone: [
+            { required: true, message: '请输入手机号码!' },
+            { validator: this.validatePhone }
+          ],
+          captcha: [
+            { required: true, message: '请输入短信验证码!' }
+          ]
         },
       }
     },
@@ -80,67 +74,59 @@
       nextStep() {
         let that = this
         that.loading = true
-        this.form.validateFields((err, values) => {
-          console.log(values);
-          if (!err) {
-            if (that.dropList == "0") {
-              if (values.captcha == undefined) {
-                this.cmsFailed("请输入短信验证码!");
-              } else {
-                var params = {}
-                params.phone = values.phone;
-                params.smscode = values.captcha;
-                postAction("/sys/user/phoneVerification", params).then((res) => {
-                  if (res.success) {
-                    console.log(res);
-                    var userList = {
-                      username: res.result.username,
-                      phone: values.phone,
-                      smscode: res.result.smscode
-                    };
-                    setTimeout(function () {
-                      that.$emit('nextStep', userList)
-                    }, 0)
-                  } else {
-                    this.cmsFailed(res.message);
-                  }
-                })
-
-              }
+        this.$refs['form'].validate((success) => {
+          if(success==true){
+            let params = {
+              phone: this.model.phone,
+              smscode: this.model.captcha
             }
-
-
+            postAction("/sys/user/phoneVerification", params).then((res) => {
+              if (res.success) {
+                console.log(res);
+                let userList = {
+                  username: res.result.username,
+                  phone: params.phone,
+                  smscode: res.result.smscode
+                };
+                setTimeout(function () {
+                  that.$emit('nextStep', userList)
+                }, 0)
+              } else {
+                this.cmsFailed(res.message);
+              }
+            });
           }
+
         })
       },
       getCaptcha(e) {
         e.preventDefault();
-        let that = this;
-        let phone=that.form.getFieldValue("phone")
-        if(!phone){
-          this.cmsFailed("手机号不能为空!");
-          return;
-        }
-        this.state.smsSendBtn = true;
-        let interval = window.setInterval(() => {
-          if (that.state.time-- <= 0) {
-            that.state.time = 60;
-            that.state.smsSendBtn = false;
-            window.clearInterval(interval);
+        const that = this
+        that.$refs['form'].validateField('phone', err=>{
+          if(!err){
+            that.state.smsSendBtn = true;
+            let interval = window.setInterval(() => {
+              if (that.state.time-- <= 0) {
+                that.state.time = 60;
+                that.state.smsSendBtn = false;
+                window.clearInterval(interval);
+              }
+            }, 1000);
+            const hide = that.$message.loading('验证码发送中..', 0);
+            let smsParams = {
+              mobile: that.model.phone,
+              smsmode: "2"
+            };
+            postAction("/sys/sms", smsParams).then(res => {
+              if (!res.success) {
+                setTimeout(hide, 1);
+                that.cmsFailed(res.message);
+              }
+              setTimeout(hide, 500);
+            })
+          }else{
+            that.cmsFailed(err);
           }
-        }, 1000);
-
-        const hide = this.$message.loading('验证码发送中..', 0);
-        let smsParams = {
-          mobile: phone,
-          smsmode: "2"
-        };
-        postAction("/sys/sms", smsParams).then(res => {
-          if (!res.success) {
-            setTimeout(hide, 1);
-            this.cmsFailed(res.message);
-          }
-          setTimeout(hide, 500);
         })
       },
       cmsFailed(err) {

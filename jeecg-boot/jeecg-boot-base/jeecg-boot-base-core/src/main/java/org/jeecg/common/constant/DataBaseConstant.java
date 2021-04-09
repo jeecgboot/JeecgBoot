@@ -111,4 +111,14 @@ public interface DataBaseConstant {
 	 */
 	public static final String BPM_STATUS_TABLE = "bpm_status";
 	//*********系统建表标准字段****************************************
+
+
+	/**
+	 * 租户ID 实体字段名
+	 */
+	String TENANT_ID = "tenantId";
+	/**
+	 * 租户ID 数据库字段名
+	 */
+	String TENANT_ID_TABLE = "tenant_id";
 }

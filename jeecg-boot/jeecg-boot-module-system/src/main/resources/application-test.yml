@@ -170,6 +170,10 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     # 返回类型为Map,显示null对应的字段
     call-setters-on-nulls: true
+#minidao 设置
+minidao :
+  base-package: org.jeecg.modules.jmreport.*
+  db-type: mysql
 #jeecg专用配置
 jeecg :
   # 本地：local\Minio：minio\阿里云：alioss
