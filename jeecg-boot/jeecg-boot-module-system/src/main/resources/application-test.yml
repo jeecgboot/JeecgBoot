@@ -173,6 +173,7 @@ mybatis-plus:
 #minidao 设置
 minidao :
   base-package: org.jeecg.modules.jmreport.*
+  #DB类型（mysql | postgresql | oracle | sqlserver）
   db-type: mysql
 #jeecg专用配置
 jeecg :
@@ -190,7 +191,7 @@ jeecg :
     endpoint: oss-cn-beijing.aliyuncs.com
     accessKey: ??
     secretKey: ??
-    bucketName: jeecgos
+    bucketName: ??
     staticDomain: https://static.jeecg.com
   # ElasticSearch 设置
   elasticsearch:
