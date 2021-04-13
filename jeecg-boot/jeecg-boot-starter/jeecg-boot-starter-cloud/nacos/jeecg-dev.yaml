@@ -97,8 +97,7 @@ jeecg :
     endpoint: oss-cn-beijing.aliyuncs.com
     accessKey: ??
     secretKey: ??
-    bucketName: jeecgos
-    staticDomain: ??
+    bucketName: ??
   # ElasticSearch 6设置
   elasticsearch:
     cluster-name: jeecg-ES
