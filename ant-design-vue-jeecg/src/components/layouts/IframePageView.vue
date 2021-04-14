@@ -44,6 +44,8 @@
           if(url.indexOf(tokenStr)!=-1) {
             let token = Vue.ls.get(ACCESS_TOKEN);
             this.url = url.replace(tokenStr, token);
+          } else {
+            this.url = url
           }
           //-----------------------------------------------------------------------------------------
 
