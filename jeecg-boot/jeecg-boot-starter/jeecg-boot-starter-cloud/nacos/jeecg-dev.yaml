@@ -77,9 +77,10 @@ spring:
         #是否支持重试
         retry:
           enabled: true
-#minidao 设置
+#minidao
 minidao :
   base-package: org.jeecg.modules.jmreport.*
+  #DB类型（mysql | postgresql | oracle | sqlserver| other）
   db-type: mysql
 #jeecg专用配置
 jeecg :
@@ -91,13 +92,14 @@ jeecg :
     #webapp文件路径
     webapp: D://opt//webapp
   shiro:
-    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**
+    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/map/**,/jmreport/bigscreen2/**
   #阿里云oss存储配置
   oss:
     endpoint: oss-cn-beijing.aliyuncs.com
     accessKey: ??
     secretKey: ??
-    bucketName: ??
+    bucketName: jeecgdev
+    staticDomain: ??
   # ElasticSearch 6设置
   elasticsearch:
     cluster-name: jeecg-ES
@@ -109,6 +111,9 @@ jeecg :
     theme-color: "#1890ff"
     # 文件、图片上传方式，可选项：qiniu（七牛云）、system（跟随系统配置）
     upload-type: system
+    map:
+      # 配置百度地图的AK，申请地址：https://lbs.baidu.com/apiconsole/key?application=key#/home
+      baidu: ??
   # 在线预览文件服务器地址配置
   file-view-domain: 127.0.0.1:8012
   # minio文件上传
@@ -185,3 +190,25 @@ justauth:
     type: default
     prefix: 'demo::'
     timeout: 1h
+#第三方APP对接
+third-app:
+  enabled: false
+  type:
+    #企业微信
+    WECHAT_ENTERPRISE:
+      enabled: false
+      #CORP_ID
+      client-id: ??
+      #SECRET
+      client-secret: ??
+      agent-id: ??
+      #自建应用秘钥（新版企微需要配置）
+      # agent-app-secret: ??
+    #钉钉
+    DINGTALK:
+      enabled: false
+      # appKey
+      client-id: ??
+      # appSecret
+      client-secret: ??
+      agent-id: ??
