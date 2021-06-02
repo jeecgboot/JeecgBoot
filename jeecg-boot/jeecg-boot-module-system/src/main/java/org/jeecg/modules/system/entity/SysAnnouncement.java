@@ -1,16 +1,15 @@
 package org.jeecg.modules.system.entity;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.io.Serializable;
 
 /**
  * @Description: 系统通告表
@@ -144,4 +143,8 @@ public class SysAnnouncement implements Serializable {
      * 摘要
      */
     private java.lang.String msgAbstract;
+    /**
+     * 钉钉task_id，用于撤回消息
+     */
+    private java.lang.String dtTaskId;
 }

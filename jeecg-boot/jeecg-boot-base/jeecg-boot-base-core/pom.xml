@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-base</artifactId>
-		<version>2.4.3</version>
+		<version>2.4.5</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -114,7 +114,7 @@
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>hibernate-re</artifactId>
-			<version>2.4.3-RC</version>
+			<version>2.4.5-RC</version>
 		</dependency>
 
 		<!--mysql-->

@@ -14,16 +14,15 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.enums.ModuleType;
+import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.IPUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.base.service.BaseCommonService;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;

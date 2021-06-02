@@ -6,7 +6,6 @@ import java.util.Map;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.ResultType;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.jeecg.common.system.vo.DictModel;
@@ -132,4 +131,26 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 */
 	@Deprecated
 	public Page<DictModel> queryDictTablePageList(Page page, @Param("query") DictQuery query);
+
+
+	/**
+	 * 查询 字典表数据 支持查询条件 分页
+	 * @param page
+	 * @param table
+	 * @param text
+	 * @param code
+	 * @param filterSql
+	 * @return
+	 */
+	IPage<DictModel> queryTableDictWithFilter(Page<DictModel> page, @Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("filterSql") String filterSql);
+
+	/**
+	 * 查询 字典表数据 支持查询条件 查询所有
+	 * @param table
+	 * @param text
+	 * @param code
+	 * @param filterSql
+	 * @return
+	 */
+	List<DictModel> queryAllTableDictItems(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("filterSql") String filterSql);
 }

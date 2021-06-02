@@ -2,4 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.system.mapper.SysThirdAccountMapper">
 
+    <!-- 通过 sysUsername 集合批量查询 -->
+    <select id="selectThirdIdsByUsername" resultType="org.jeecg.modules.system.entity.SysThirdAccount">
+        SELECT third_user_id FROM sys_third_account
+        INNER JOIN sys_user ON sys_user.id = sys_third_account.sys_user_id
+        WHERE third_type = #{thirdType} AND
+        <!-- TODO in 查询数据量大的时候可能会报错 -->
+        <foreach collection="sysUsernameArr" item="item" open=" sys_user.username IN (" close=")" separator=",">#{item}</foreach>
+    </select>
+
 </mapper>

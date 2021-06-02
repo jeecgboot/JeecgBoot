@@ -19,7 +19,7 @@ public class OssConfiguration {
     private String accessKeySecret;
     @Value("${jeecg.oss.bucketName}")
     private String bucketName;
-    @Value("${jeecg.oss.staticDomain}")
+    @Value("${jeecg.oss.staticDomain:}")
     private String staticDomain;
 
 

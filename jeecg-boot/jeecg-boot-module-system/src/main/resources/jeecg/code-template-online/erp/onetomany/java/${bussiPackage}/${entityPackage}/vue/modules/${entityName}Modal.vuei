@@ -40,6 +40,7 @@
                 org-fields="${po.dictField}"
                 dest-fields="${Format.underlineToHump(po.dictText)}"
                 code="${po.dictTable}"
+                :multi="${po.extendParams.popupMulti?c}"
                 @input="popupCallback"
                 <#if po.readonly=='Y'>disabled</#if>/>
     <#elseif po.classType =='sel_depart'>

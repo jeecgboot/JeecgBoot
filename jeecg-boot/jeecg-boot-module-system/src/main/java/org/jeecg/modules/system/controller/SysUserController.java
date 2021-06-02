@@ -145,8 +145,8 @@ public class SysUserController {
 			user.setPassword(passwordEncode);
 			user.setStatus(1);
 			user.setDelFlag(CommonConstant.DEL_FLAG_0);
-			sysUserService.addUserWithRole(user, selectedRoles);
-            sysUserService.addUserWithDepart(user, selectedDeparts);
+			// 保存用户走一个service 保证事务
+			sysUserService.saveUser(user, selectedRoles, selectedDeparts);
 			result.success("添加成功！");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -172,9 +172,8 @@ public class SysUserController {
 				user.setPassword(sysUser.getPassword());
 				String roles = jsonObject.getString("selectedroles");
                 String departs = jsonObject.getString("selecteddeparts");
-				sysUserService.editUserWithRole(user, roles);
-                sysUserService.editUserWithDepart(user, departs);
-                sysUserService.updateNullPhoneEmail();
+                // 修改用户走一个service 保证事务
+				sysUserService.editUser(user, roles, departs);
 				result.success("修改成功!");
 			}
 		} catch (Exception e) {
@@ -279,6 +278,7 @@ public class SysUserController {
         result.setResult(true);
         try {
             //通过传入信息查询新的用户信息
+            sysUser.setPassword(null);
             SysUser user = sysUserService.getOne(new QueryWrapper<SysUser>(sysUser));
             if (user != null) {
                 result.setSuccess(false);
@@ -298,6 +298,7 @@ public class SysUserController {
     /**
      * 修改密码
      */
+    //@RequiresRoles({"admin"})
     @RequestMapping(value = "/changePassword", method = RequestMethod.PUT)
     public Result<?> changePassword(@RequestBody SysUser sysUser) {
         SysUser u = this.sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, sysUser.getUsername()));
@@ -386,6 +387,23 @@ public class SysUserController {
             result.setSuccess(false);
             return result;
         }
+    }
+
+    /**
+     * 用户选择组件 专用  根据用户账号或部门分页查询
+     * @param departId
+     * @param username
+     * @return
+     */
+    @RequestMapping(value = "/queryUserComponentData", method = RequestMethod.GET)
+    public Result<IPage<SysUser>> queryUserComponentData(
+            @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+            @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+            @RequestParam(name = "departId", required = false) String departId,
+            @RequestParam(name="realname",required=false) String realname,
+            @RequestParam(name="username",required=false) String username) {
+        IPage<SysUser> pageList = sysUserDepartService.queryDepartUserPageList(departId, username, realname, pageSize, pageNo);
+        return Result.OK(pageList);
     }
 
     /**
@@ -521,13 +539,17 @@ public class SysUserController {
 	/**
 	 * 首页用户重置密码
 	 */
-	//@RequiresRoles({"admin"})
-	@RequestMapping(value = "/updatePassword", method = RequestMethod.PUT)
-	public Result<?> changPassword(@RequestBody JSONObject json) {
+    //@RequiresRoles({"admin"})
+    @RequestMapping(value = "/updatePassword", method = RequestMethod.PUT)
+	public Result<?> updatePassword(@RequestBody JSONObject json) {
 		String username = json.getString("username");
 		String oldpassword = json.getString("oldpassword");
 		String password = json.getString("password");
 		String confirmpassword = json.getString("confirmpassword");
+        LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+        if(!sysUser.getUsername().equals(username)){
+            return Result.error("只允许修改自己的密码！");
+        }
 		SysUser user = this.sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username));
 		if(user==null) {
 			return Result.error("用户不存在！");
@@ -1338,4 +1360,6 @@ public class SysUserController {
         sysUserService.updateById(user);
         return Result.ok("手机号设置成功!");
     }
+
+    
 }

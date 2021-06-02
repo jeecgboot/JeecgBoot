@@ -59,7 +59,7 @@
             <#elseif po.classType=='pca'>
               <#if query_field_no gt 1>  </#if><j-area-linkage type="cascader" v-model="queryParam.${po.fieldName}" placeholder="请选择省市区"/>
             <#elseif po.classType=='popup'>
-              <#if query_field_no gt 1>  </#if><j-popup placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" code="${po.dictTable}" org-fields="${po.dictField}" dest-fields="${po.dictText}" :field="getPopupField('${po.dictText}')"/>
+              <#if query_field_no gt 1>  </#if><j-popup placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" code="${po.dictTable}" org-fields="${po.dictField}" dest-fields="${po.dictText}" :field="getPopupField('${po.dictText}')" :multi="${po.extendParams.popupMulti?c}"/>
             <#elseif po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
             <#--  ---------------------------下拉或是单选 判断数据字典是表字典还是普通字典------------------------------- -->
             <#if po.dictTable?default("")?trim?length gt 1>
@@ -265,7 +265,7 @@
             <#elseif po.classType=='image'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'imgSlot'}
-            <#elseif po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
+            <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
             dataIndex: '${po.fieldName}_dictText'
             <#elseif po.classType=='switch'>
             dataIndex: '${po.fieldName}',

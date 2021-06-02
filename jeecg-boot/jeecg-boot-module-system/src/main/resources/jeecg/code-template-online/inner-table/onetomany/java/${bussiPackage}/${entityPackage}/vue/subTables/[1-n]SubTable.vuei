@@ -79,7 +79,7 @@
     <#elseif po.classType=='image'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'imgSlot'}
-    <#elseif po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
+    <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
             dataIndex: '${po.fieldName}_dictText'
     <#elseif po.classType=='cat_tree'>
       <#if list_need_category>

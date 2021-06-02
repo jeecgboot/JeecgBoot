@@ -81,4 +81,14 @@ public interface CacheConstant {
 	 * online表单页配置信息缓存key
 	 */
 	public static final String ONLINE_FORM = "sys:cache:online:form";
+
+	/**
+	 * online报表
+	 */
+	public static final String ONLINE_RP = "sys:cache:online:rp";
+
+	/**
+	 * online图表
+	 */
+	public static final String ONLINE_GRAPH = "sys:cache:online:graph";
 }

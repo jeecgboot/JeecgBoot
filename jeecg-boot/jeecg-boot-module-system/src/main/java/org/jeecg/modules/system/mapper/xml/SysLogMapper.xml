@@ -24,7 +24,7 @@
     
    	<!-- 首页访问统计 -->
     <select id="findVisitCount" resultType="java.util.HashMap">
-       <if test="dbType == 'MYSQL'">
+       <if test="dbType == 'MYSQL' || dbType == 'MARIADB'">
          select count(*) as visit
         	   ,count(distinct(ip)) as ip
         	   ,DATE_FORMAT(create_time, '%Y-%m-%d') as tian
@@ -34,7 +34,7 @@
          group by tian,type
          order by tian asc
        </if>
-       <if test="dbType == 'ORACLE'">
+       <if test="dbType == 'ORACLE' || dbType == 'DM'">
         select count(*) as visit
         	   ,count(distinct(ip)) as ip
         	  ,to_char(create_time, 'yyyy-mm-dd') as tian

@@ -1,8 +1,11 @@
 package org.jeecg.modules.system.service.impl;
 
-import java.util.*;
-
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.netty.util.internal.StringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
@@ -21,10 +24,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
-import io.netty.util.internal.StringUtil;
+import java.util.*;
 
 /**
  * <p>
@@ -468,7 +468,8 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 			SysDepart depart = list.get(i);
             SysDepartTreeModel treeModel = new SysDepartTreeModel(depart);
             //TODO 异步树加载key拼接__+时间戳,以便于每次展开节点会刷新数据
-			treeModel.setKey(treeModel.getKey()+"__"+System.currentTimeMillis());
+			//treeModel.setKey(treeModel.getKey()+"__"+System.currentTimeMillis());
+			treeModel.setKey(treeModel.getKey());
             Integer count=this.baseMapper.queryCountByPid(depart.getId());
             if(count>0){
                 treeModel.setIsLeaf(false);
@@ -479,6 +480,59 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         }
 		return records;
 	}
+
+	@Override
+	public JSONObject queryAllParentIdByDepartId(String departId) {
+		JSONObject result = new JSONObject();
+		for (String id : departId.split(",")) {
+			JSONObject all = this.queryAllParentId("id", id);
+			result.put(id, all);
+		}
+		return result;
+	}
+
+	@Override
+	public JSONObject queryAllParentIdByOrgCode(String orgCode) {
+		JSONObject result = new JSONObject();
+		for (String code : orgCode.split(",")) {
+			JSONObject all = this.queryAllParentId("org_code", code);
+			result.put(code, all);
+		}
+		return result;
+	}
+
+	/**
+	 * 查询某个部门的所有父ID信息
+	 *
+	 * @param fieldName 字段名
+	 * @param value     值
+	 */
+	private JSONObject queryAllParentId(String fieldName, String value) {
+		JSONObject data = new JSONObject();
+		// 父ID集合，有序
+		data.put("parentIds", new JSONArray());
+		// 父ID的部门数据，key是id，value是数据
+		data.put("parentMap", new JSONObject());
+		this.queryAllParentIdRecursion(fieldName, value, data);
+		return data;
+	}
+
+	/**
+	 * 递归调用查询父部门接口
+	 */
+	private void queryAllParentIdRecursion(String fieldName, String value, JSONObject data) {
+		QueryWrapper<SysDepart> queryWrapper = new QueryWrapper<>();
+		queryWrapper.eq(fieldName, value);
+		SysDepart depart = super.getOne(queryWrapper);
+		if (depart != null) {
+			data.getJSONArray("parentIds").add(0, depart.getId());
+			data.getJSONObject("parentMap").put(depart.getId(), depart);
+			if (oConvertUtils.isNotEmpty(depart.getParentId())) {
+				this.queryAllParentIdRecursion("id", depart.getParentId(), data);
+			}
+		}
+	}
+
 	@Override
 	public SysDepart queryCompByOrgCode(String orgCode) {
 		int length = YouBianCodeUtil.zhanweiLength;
