@@ -26,6 +26,7 @@ import JSlider from './JSlider.vue'
 import JSwitch from './JSwitch.vue'
 import JTime from './JTime.vue'
 import JTreeTable from './JTreeTable.vue'
+import JEasyCron from "@/components/jeecg/JEasyCron";
 
 //jeecgbiz
 import JSelectDepart from '../jeecgbiz/JSelectDepart.vue'
@@ -71,5 +72,6 @@ export default {
     Vue.component('JSelectPosition', JSelectPosition)
     Vue.component('JSelectRole', JSelectRole)
     Vue.component('JSelectUserByDep', JSelectUserByDep)
+    Vue.component(JEasyCron.name, JEasyCron)
   }
 }

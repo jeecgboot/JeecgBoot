@@ -82,18 +82,49 @@ export default {
       } else {
         this.selectedKeys = [routes.pop().path]
       }
-      const openKeys = []
+      let openKeys = []
       if (this.mode === 'inline') {
         routes.forEach(item => {
           openKeys.push(item.path)
         })
       }
+
+      // update-begin-author:sunjianlei date:20210409 for: 修复动态功能测试菜单、带参数菜单标题错误、展开错误的问题
+      // 包含冒号的是动态菜单
+      if (this.selectedKeys[0].includes(':')) {
+        let selectedKey = this.$route.fullPath
+        this.selectedKeys = [selectedKey]
+        let newOpenKeys = []
+        this.fullOpenKeys(this.menu, selectedKey, newOpenKeys)
+        if (newOpenKeys.length > 0) {
+          openKeys = newOpenKeys.reverse()
+        }
+      }
+      // update-end-author:sunjianlei date:20210409 for: 修复动态功能测试菜单、带参数菜单标题错误、展开错误的问题
+
       //update-begin-author:taoyan date:20190510 for:online表单菜单点击展开的一级目录不对
       if(!this.selectedKeys || this.selectedKeys[0].indexOf(":")<0){
         this.collapsed ? (this.cachedOpenKeys = openKeys) : (this.openKeys = openKeys)
       }
       //update-end-author:taoyan date:20190510 for:online表单菜单点击展开的一级目录不对
     },
+    // update-begin-author:sunjianlei date:20210409 for: 修复动态功能测试菜单、带参数菜单标题错误、展开错误的问题
+    // 递归查找当前选中的菜单和父级菜单，填充openKeys
+    fullOpenKeys(menus, selectedKey, openKeys) {
+      for (let item of menus) {
+        if (item.path === selectedKey) {
+          openKeys.push(item.path)
+          this.$emit('updateMenuTitle', item)
+          return true
+        } else if (Array.isArray(item.children)) {
+          if (this.fullOpenKeys(item.children, selectedKey, openKeys)) {
+            openKeys.push(item.path)
+            return true
+          }
+        }
+      }
+    },
+    // update-end-author:sunjianlei date:20210409 for: 修复动态功能测试菜单、带参数菜单标题错误、展开错误的问题
 
     // render
     renderItem (menu) {

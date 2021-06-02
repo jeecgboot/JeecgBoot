@@ -102,6 +102,11 @@
 
     <!-- 表单区域 -->
     <sysAnnouncement-modal ref="modalForm" @ok="modalFormOk"></sysAnnouncement-modal>
+    <!-- 查看详情 -->
+    <j-modal class="detail-modal" title="查看详情" :visible.sync="detailModal.visible" :top="50" :width="600" switchFullscreen :footer="null">
+      <iframe v-if="detailModal.url" class="detail-iframe" :src="detailModal.url"/>
+    </j-modal>
+
   </a-card>
 </template>
 
@@ -110,6 +115,7 @@
   import {doReleaseData, doReovkeData} from '@/api/api'
   import {getAction} from '@/api/manage'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import { ACCESS_TOKEN } from '@/store/mutation-types'
 
   export default {
     name: "SysAnnouncementList",
@@ -237,6 +243,7 @@
             scopedSlots: {customRender: 'action'},
           }
         ],
+        detailModal: {visible: false, url: '',},
         url: {
           list: "/sys/annountCement/list",
           delete: "/sys/annountCement/delete",
@@ -284,14 +291,42 @@
         getAction("sys/annountCement/syncNotic",{anntId:anntId})
       },
       handleDetail:function(record){
-        this.$refs.modalForm.edit(record);
-        this.$refs.modalForm.title="详情";
-        this.$refs.modalForm.disableSubmit = true;
-        this.$refs.modalForm.disabled = true;
+        const domain = window._CONFIG['domianURL']
+        const token = this.$ls.get(ACCESS_TOKEN)
+        this.detailModal.url = `${domain}/sys/annountCement/show/${record.id}?token=${token}`
+        this.detailModal.visible = true
       },
     }
   }
 </script>
-<style scoped>
-  @import '~@assets/less/common.less'
+<style scoped lang="less">
+  @import '~@assets/less/common.less';
+
+  /** 查看详情弹窗的样式 */
+  .detail-modal {
+    .detail-iframe {
+      border: 0;
+      width: 100%;
+      height: 88vh;
+      min-height: 600px;
+    }
+
+    &.fullscreen .detail-iframe {
+      height: 100%;
+    }
+  }
+
+  .detail-modal /deep/ .ant-modal {
+    top: 30px;
+
+    .ant-modal-body {
+      font-size: 0;
+      padding: 0;
+    }
+  }
+
+  .detail-modal.fullscreen /deep/ .ant-modal {
+    top: 0;
+  }
+
 </style>

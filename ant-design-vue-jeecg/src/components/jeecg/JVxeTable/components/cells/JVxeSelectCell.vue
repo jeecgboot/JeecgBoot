@@ -116,7 +116,9 @@
     // 【组件增强】注释详见：JVxeCellMixins.js
     enhanced: {
       aopEvents: {
-        editActived: event => dispatchEvent(event, 'ant-select'),
+        editActived(event) {
+          dispatchEvent.call(this, event, 'ant-select')
+        },
       },
       translate: {enabled: true},
       getValue(value) {

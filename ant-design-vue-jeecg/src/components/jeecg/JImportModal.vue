@@ -6,6 +6,13 @@
     :confirmLoading="uploading"
     @cancel="handleClose">
 
+    <div style="margin: 0px 0px 5px 1px" v-if="online">
+      <span style="display: inline-block;height: 32px;line-height: 32px;vertical-align: middle;">是否开启校验:</span>
+      <span style="display: inline-block;height: 32px;margin-left: 6px">
+         <a-switch :checked="validateStatus==1" @change="handleChangeValidateStatus" checked-children="是" un-checked-children="否" size="small"/>
+      </span>
+    </div>
+
     <a-upload
       name="file"
       :multiple="true"
@@ -47,6 +54,12 @@
         type: String,
         default: '',
         required: false
+      },
+      //是否online导入
+      online:{
+        type: Boolean,
+        default: false,
+        required: false
       }
     },
     data(){
@@ -55,7 +68,8 @@
         uploading:false,
         fileList:[],
         uploadAction:'',
-        foreignKeys:''
+        foreignKeys:'',
+        validateStatus: 0
       }
     },
     watch: {
@@ -78,6 +92,7 @@
         this.uploading = false
         this.visible = true
         this.foreignKeys = arg;
+        this.validateStatus = 0
       },
       handleRemove(file) {
         const index = this.fileList.indexOf(file);
@@ -98,6 +113,9 @@
         if(this.foreignKeys && this.foreignKeys.length>0){
           formData.append('foreignKeys',this.foreignKeys);
         }
+        if(this.online==true){
+          formData.append('validateStatus',this.validateStatus);
+        }
         fileList.forEach((file) => {
           formData.append('files[]', file);
         });
@@ -105,14 +123,41 @@
         postAction(this.uploadAction, formData).then((res) => {
           this.uploading = false
           if(res.success){
-            this.$message.success(res.message)
+            if(res.code == 201){
+              this.errorTip(res.message, res.result)
+            }else{
+              this.$message.success(res.message)
+            }
             this.visible=false
             this.$emit('ok')
           }else{
             this.$message.warning(res.message)
           }
         })
-      }
+      },
+      // 是否开启校验 开关改变事件
+      handleChangeValidateStatus(checked){
+        this.validateStatus = checked==true?1:0
+      },
+      // 错误信息提示
+      errorTip(tipMessage, fileUrl) {
+        const h = this.$createElement;
+        let href = window._CONFIG['domianURL'] + fileUrl
+        this.$warning({
+          title: '导入成功,但是有错误数据!',
+          content: h('div', {}, [
+            h('div', tipMessage),
+            h('span', '具体详情请 '),
+            h('a', {
+              attrs: {
+                href: href,
+                target: '_blank'
+              },
+            },'点击下载'),
+          ]),
+          onOk() {},
+        });
+      },
 
     }
   }

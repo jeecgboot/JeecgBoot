@@ -36,6 +36,9 @@ export default {
     rows() {
       return this.params.data
     },
+    fullDataLength() {
+      return this.params.$table.tableFullData.length
+    },
     rowIndex() {
       return this.params.rowIndex
     },
@@ -291,6 +294,10 @@ export function vModel(value, row, property) {
 
 /** 模拟触发事件 */
 export function dispatchEvent({cell, $event}, className, handler) {
+  // alwaysEdit 下不模拟触发事件，否者会导致触发两次
+  if (this && this.alwaysEdit) {
+    return
+  }
   window.setTimeout(() => {
     let element = cell.getElementsByClassName(className)
     if (element && element.length > 0) {
@@ -298,9 +305,7 @@ export function dispatchEvent({cell, $event}, className, handler) {
         handler(element[0])
       } else {
         // 模拟触发点击事件
-        console.log($event)
         if($event){
-          console.log("$event===>",$event)
           element[0].dispatchEvent($event)
         }
       }

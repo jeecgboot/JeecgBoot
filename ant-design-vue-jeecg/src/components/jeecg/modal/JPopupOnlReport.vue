@@ -78,7 +78,7 @@
   const MODAL_WIDTH = 1200;
   export default {
     name: 'JPopupOnlReport',
-    props: ['multi', 'code', 'groupId', 'param'],
+    props: ['multi', 'code', 'sorter', 'groupId', 'param'],
     components:{
     },
     data(){
@@ -122,8 +122,9 @@
         cgRpConfigId:"",
         modalWidth:MODAL_WIDTH,
         tableScroll:{x:true},
-        dynamicParam:{}
-
+        dynamicParam:{},
+        // 排序字段，默认无排序
+        iSorter: null,
       }
     },
     mounted() {
@@ -139,7 +140,28 @@
           this.dynamicParamHandler()
           this.loadData();
         },
-      }
+      },
+      sorter: {
+        immediate: true,
+        handler() {
+          if (this.sorter) {
+            let arr = this.sorter.split('=')
+            if (arr.length === 2 && ['asc', 'desc'].includes(arr[1].toLowerCase())) {
+              this.iSorter = {column: arr[0], order: arr[1].toLowerCase()}
+              // 排序字段受控
+              this.table.columns.forEach(col => {
+                if (col.dataIndex === this.iSorter.column) {
+                  this.$set(col, 'sortOrder', this.iSorter.order === 'asc' ? 'ascend' : 'descend')
+                } else {
+                  this.$set(col, 'sortOrder', false)
+                }
+              })
+            } else {
+              console.warn('【JPopup】sorter参数不合法')
+            }
+          }
+        },
+      },
     },
     computed:{
       showSearchFlag(){
@@ -166,6 +188,10 @@
                 currColumns[a].customRender=(text)=>{
                   return filterMultiDictText(this.dictOptions[dictCode], text+"");
                 }
+              }
+              // 排序字段受控
+              if (this.iSorter && currColumns[a].dataIndex === this.iSorter.column) {
+                currColumns[a].sortOrder = this.iSorter.order === 'asc' ? 'ascend' : 'descend'
               }
             }
             this.table.columns = [...currColumns]
@@ -253,7 +279,7 @@
            paramTarget['self_'+key] = this.dynamicParam[key]
          })
         }
-        let param = Object.assign(paramTarget, this.queryParam, this.sorter);
+        let param = Object.assign(paramTarget, this.queryParam, this.iSorter);
         param.pageNo = this.table.pagination.current;
         param.pageSize = this.table.pagination.pageSize;
         return filterObj(param);
@@ -288,8 +314,18 @@
       handleChangeInTable(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发
         if (Object.keys(sorter).length > 0) {
-          this.sorter.column = sorter.field
-          this.sorter.order = 'ascend' == sorter.order ? 'asc' : 'desc'
+          this.iSorter = {
+            column: sorter.field,
+            order: 'ascend' === sorter.order ? 'asc' : 'desc'
+          }
+          // 排序字段受控
+          this.table.columns.forEach(col => {
+            if (col.dataIndex === sorter.field) {
+              this.$set(col, 'sortOrder',sorter.order)
+            } else {
+              this.$set(col, 'sortOrder', false)
+            }
+          })
         }
         this.table.pagination = pagination
         this.loadData()

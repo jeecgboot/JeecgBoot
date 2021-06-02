@@ -10,60 +10,38 @@
     cancelText="关闭">
 
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+      <a-form-model ref="form" :model="model" :rules="validatorRules">
 
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="任务类名"
-          hasFeedback >
-          <a-input placeholder="请输入任务类名" v-decorator="['jobClassName', {rules: [{ required: true, message: '请输入任务类名!' }]}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="cron表达式">
-<!--                    <a-input placeholder="请输入cron表达式" v-decorator="['cronExpression', {'initialValue':'0/1 * * * * ?',rules: [{ required: true, message: '请输入任务类名!' }]}]" />-->
-<!--                    <a target="_blank" href="http://cron.qqe2.com/">-->
-<!--                      <a-icon type="share-alt" />-->
-<!--                      在线cron表达式生成-->
-<!--                    </a>-->
-<!--          <j-cron ref="innerVueCron" v-decorator="['cronExpression', {'initialValue':'0/1 * * * * ?',rules: [{ required: true, message: '请输入cron表达式!' }]}]"  @change="setCorn"></j-cron>-->
-          <j-cron ref="innerVueCron" v-decorator="['cronExpression', { initialValue: '* * * * * ? *' }]" @change="setCorn"></j-cron>
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="参数">
-          <a-textarea placeholder="请输入参数" :rows="5" v-decorator="['parameter', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="描述">
-          <a-textarea placeholder="请输入描述" :rows="3" v-decorator="['description', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="状态">
-          <j-dict-select-tag type="radioButton"  v-decorator="[ 'status', {'initialValue':0}]" :trigger-change="true" dictCode="quartz_status"/>
-        </a-form-item>
-      </a-form>
+        <a-form-model-item :labelCol="labelCol"  :wrapperCol="wrapperCol" label="任务类名" prop="jobClassName" hasFeedback >
+          <a-input placeholder="请输入任务类名" v-model="model.jobClassName" />
+        </a-form-model-item>
+        <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="Cron表达式" prop="cronExpression">
+          <!-- <j-cron v-model="model.cronExpression"/>-->
+          <j-easy-cron v-model="model.cronExpression" />
+        </a-form-model-item>
+        <a-form-model-item  :labelCol="labelCol" :wrapperCol="wrapperCol" label="参数" prop="parameter" >
+          <a-textarea placeholder="请输入参数" :rows="5" v-model="model.parameter" />
+        </a-form-model-item>
+        <a-form-model-item :labelCol="labelCol"  :wrapperCol="wrapperCol" label="描述" prop="description">
+          <a-textarea placeholder="请输入描述" :rows="3" v-model="model.description" />
+        </a-form-model-item>
+        <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol"  label="状态" prop="status">
+          <j-dict-select-tag type="radioButton" v-model="model.status" dictCode="quartz_status"/>
+        </a-form-model-item>
+      </a-form-model>
     </a-spin>
   </a-modal>
 </template>
 
 <script>
   import { httpAction } from '@/api/manage'
-  import JCron from "@/components/jeecg/JCron";
-  import pick from 'lodash.pick'
-  // import moment from "moment"
+  // import JCron from "@/components/jeecg/JCron";
+  import cronValidator from "@/components/jeecg/JEasyCron/validator";
 
   export default {
     name: "QuartzJobModal",
     components: {
-      JCron
+      // JCron,
     },
     data () {
       return {
@@ -84,13 +62,12 @@
           value: ''
         },
         confirmLoading: false,
-        form: this.$form.createForm(this),
         validatorRules: {
-          cron: {
-            rules: [{
-              required: true, message: '请输入cron表达式!'
-            }]
-          }
+          cronExpression: [
+            {required: true, message: '请输入cron表达式!'},
+            {validator: cronValidator,}
+          ],
+          jobClassName: [{required: true, message: '请输入任务类名!'}]
         },
         url: {
           add: "/sys/quartzJob/add",
@@ -101,19 +78,19 @@
     created () {
     },
     methods: {
-      add () {
-        this.edit({});
+      add() {
+        // 统一设置默认值
+        this.edit({
+          cronExpression: '* * * * * ? *',
+          status: 0,
+        })
       },
       edit (record) {
-        let that = this;
-        that.form.resetFields();
-        this.model = Object.assign({},record);
-        console.log(this.model)
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'jobClassName','cronExpression','parameter','description','status'));
-        });
-
+          this.$refs.form.resetFields()
+          this.model = Object.assign({}, record)
+        })
       },
       close () {
         this.$emit('close');
@@ -122,14 +99,8 @@
       handleOk () {
         const that = this;
         // 触发表单验证
-        this.form.validateFields((err, values) => {
-          console.log('values',values)
-          if (!err) {
-            if (typeof values.cronExpression == "undefined" || Object.keys(values.cronExpression).length==0 ) {
-              this.$message.warning('请输入cron表达式!');
-              return false;
-            }
-
+        this.$refs.form.validate((ok, err) => {
+          if (ok) {
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
@@ -140,20 +111,18 @@
               httpurl+=this.url.edit;
               method = 'put';
             }
-            let formData = Object.assign(this.model, values);
-            //时间格式化
 
-            console.log('提交参数',formData)
-            httpAction(httpurl,formData,method).then((res)=>{
+            console.log('提交参数',this.model)
+            httpAction(httpurl,this.model,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');
+                that.close();
               }else{
                 that.$message.warning(res.message);
               }
             }).finally(() => {
               that.confirmLoading = false;
-              that.close();
             })
 
           }
@@ -161,24 +130,6 @@
       },
       handleCancel () {
         this.close()
-      },
-      setCorn(data){
-        console.log('data)',data);
-        this.$nextTick(() => {
-          this.model.cronExpression = data;
-        })
-
-        // console.log(Object.keys(data).length==0);
-        if (Object.keys(data).length==0) {
-          this.$message.warning('请输入cron表达式!');
-        }
-      },
-      validateCron(rule, value, callback){
-        if(!value){
-          callback()
-        }else if (Object.keys(value).length==0) {
-          callback("请输入cron表达式!");
-        }
       },
 
     }

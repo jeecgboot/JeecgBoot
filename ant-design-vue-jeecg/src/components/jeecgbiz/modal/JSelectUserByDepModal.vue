@@ -56,8 +56,9 @@
 </template>
 
 <script>
-  import {filterObj} from '@/utils/util'
+  import { pushIfNotExist, filterObj } from '@/utils/util'
   import {queryDepartTreeList, getUserList, queryUserByDepId} from '@/api/api'
+  import { getAction } from '@/api/manage'
 
   export default {
     name: 'JSelectUserByDepModal',
@@ -106,6 +107,7 @@
         ],
         scrollTrigger: {},
         dataSource: [],
+        selectionRows: [],
         selectedRowKeys: [],
         selectUserRows: [],
         selectUserIds: [],
@@ -163,11 +165,13 @@
             pageSize: values.length
           }).then((res) => {
             if (res.success) {
+              this.selectionRows = []
               let selectedRowKeys = []
               let realNames = []
               res.result.records.forEach(user => {
                 realNames.push(user['realname'])
                 selectedRowKeys.push(user['id'])
+                this.selectionRows.push(user)
               })
               this.selectedRowKeys = selectedRowKeys
               this.$emit('initComp', realNames.join(','))
@@ -182,20 +186,16 @@
         if (arg === 1) {
           this.ipagination.current = 1;
         }
-        if (this.selectedDepIds && this.selectedDepIds.length > 0) {
-          await this.initQueryUserByDepId(this.selectedDepIds)
-        } else {
-          this.loading = true
-          let params = this.getQueryParams()//查询条件
-          await getUserList(params).then((res) => {
-            if (res.success) {
-              this.dataSource = res.result.records
-              this.ipagination.total = res.result.total
-            }
-          }).finally(() => {
-            this.loading = false
-          })
-        }
+        let params = this.getQueryParams()//查询条件
+        this.loading = true
+        getAction('/sys/user/queryUserComponentData', params).then(res=>{
+          if (res.success) {
+            this.dataSource = res.result.records
+            this.ipagination.total = res.result.total
+          }
+        }).finally(() => {
+          this.loading = false
+        })
       },
       // 触发屏幕自适应
       resetScreenSize() {
@@ -218,6 +218,7 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
+        param.departId = this.selectedDepIds.join(',')
         return filterObj(param);
       },
       getQueryField() {
@@ -229,13 +230,13 @@
       },
       searchReset(num) {
         let that = this;
+        that.selectedRowKeys = [];
+        that.selectUserIds = [];
+        that.selectedDepIds = [];
         if (num !== 0) {
           that.queryParam = {};
           that.loadData(1);
         }
-        that.selectedRowKeys = [];
-        that.selectUserIds = [];
-        that.selectedDepIds = [];
       },
       close() {
         this.searchReset(0);
@@ -258,30 +259,27 @@
         that.close();
       },
       //获取选择用户信息
-      getSelectUserRows(rowId) {
-        let dataSource = this.dataSource;
-        let userIds = "";
-        this.selectUserRows = [];
-        for (let i = 0, len = dataSource.length; i < len; i++) {
-          if (this.selectedRowKeys.includes(dataSource[i].id)) {
-            this.selectUserRows.push(dataSource[i]);
-            userIds = userIds + "," + dataSource[i].username
+      getSelectUserRows() {
+        this.selectUserRows = []
+        for (let row of this.selectionRows) {
+          if (this.selectedRowKeys.includes(row.id)) {
+            this.selectUserRows.push(row)
           }
         }
-        this.selectUserIds = userIds.substring(1);
+        this.selectUserIds = this.selectUserRows.map(row => row.username).join(',')
       },
       // 点击树节点,筛选出对应的用户
       onDepSelect(selectedDepIds) {
         if (selectedDepIds[0] != null) {
-          this.initQueryUserByDepId(selectedDepIds); // 调用方法根据选选择的id查询用户信息
           if (this.selectedDepIds[0] !== selectedDepIds[0]) {
             this.selectedDepIds = [selectedDepIds[0]];
           }
+          this.loadData(1);
         }
       },
       onSelectChange(selectedRowKeys, selectionRows) {
         this.selectedRowKeys = selectedRowKeys;
-        this.selectionRows = selectionRows;
+        selectionRows.forEach(row => pushIfNotExist(this.selectionRows, row, 'id'))
       },
       onSearch() {
         this.loadData(1);

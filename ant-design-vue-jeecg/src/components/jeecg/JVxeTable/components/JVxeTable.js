@@ -13,7 +13,7 @@ import JVxeDetailsModal from './JVxeDetailsModal'
 import JVxePagination from './JVxePagination'
 import { cloneObject, getVmParentByName, pushIfNotExist, randomString, simpleDebounce } from '@/utils/util'
 import { UtilTools } from 'vxe-table/packages/tools/src/utils'
-import { getNoAuthCols } from "@/utils/authFilter"
+import { getNoAuthCols } from '@/utils/authFilter'
 
 export default {
   name: 'JVxeTable',
@@ -95,6 +95,9 @@ export default {
     // 是否异步删除行，如果你要实现异步删除，那么需要把这个选项开启，
     // 在remove事件里调用confirmRemove方法才会真正删除（除非删除的全是新增的行）
     asyncRemove: PropTypes.bool.def(false),
+    // 是否一直显示组件，如果为false则只有点击的时候才出现组件
+    // 注：该参数不能动态修改；如果行、列字段多的情况下，会根据机器性能造成不同程度的卡顿。
+    alwaysEdit: PropTypes.bool.def(false),
   },
   data() {
     return {
@@ -354,7 +357,7 @@ export default {
                   col.visible = false
                 } else if (enhanced.switches.editRender) {
                   renderName = 'editRender'
-                  renderOptions.type = enhanced.switches.visible ? 'visible' : 'default'
+                  renderOptions.type = (enhanced.switches.visible || this.alwaysEdit) ? 'visible' : 'default'
                 }
               } else {
                 renderOptions.name = JVXETypes._prefix + JVXETypes.normal
@@ -1076,7 +1079,7 @@ export default {
       // 添加默认值
       xTable.tableFullColumn.forEach(column => {
         let col = column.own
-        if (record[col.key] == null || record[col.key] === '') {
+        if (col.key && (record[col.key] == null || record[col.key] === '')) {
           // 设置默认值
           let createValue = getEnhancedMixins(col.$type || col.type, 'createValue')
           record[col.key] = createValue({row: record, column, $table: xTable})

@@ -23,7 +23,9 @@
         autofocus: '.ant-input',
       },
       aopEvents: {
-        editActived: event => dispatchEvent(event, 'anticon-fullscreen'),
+        editActived(event) {
+          dispatchEvent.call(this, event, 'anticon-fullscreen')
+        },
       },
     },
   }
