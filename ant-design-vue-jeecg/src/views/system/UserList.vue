@@ -65,11 +65,12 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
-      <a-button @click="handleAdd" type="primary" icon="plus">添加用户</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus" >添加用户</a-button>
       <a-button type="primary" icon="download" @click="handleExportXls('用户信息')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
+      <j-third-app-button biz-type="user" :selected-row-keys="selectedRowKeys" syncToApp syncToLocal @sync-finally="onSyncFinally"/>
       <a-button type="primary" icon="hdd" @click="recycleBinVisible=true">回收站</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay" @click="handleMenuClick">
@@ -120,9 +121,9 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+          <a @click="handleEdit(record)" >编辑</a>
 
-          <a-divider type="vertical"/>
+          <a-divider type="vertical" />
 
           <a-dropdown>
             <a class="ant-dropdown-link">
@@ -154,6 +155,11 @@
                   <a>解冻</a>
                 </a-popconfirm>
               </a-menu-item>
+
+              <a-menu-item>
+                <a href="javascript:;" @click="handleAgentSettings(record.username)">代理人</a>
+              </a-menu-item>
+
             </a-menu>
           </a-dropdown>
         </span>
@@ -167,6 +173,8 @@
 
     <password-modal ref="passwordmodal" @ok="passwordModalOk"></password-modal>
 
+    <sys-user-agent-modal ref="sysUserAgentModal"></sys-user-agent-modal>
+
     <!-- 用户回收站 -->
     <user-recycle-bin-modal :visible.sync="recycleBinVisible" @ok="modalFormOk"/>
 
@@ -179,14 +187,18 @@
   import {putAction,getFileAccessHttpUrl} from '@/api/manage';
   import {frozenBatch} from '@/api/api'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import SysUserAgentModal from "./modules/SysUserAgentModal";
   import JInput from '@/components/jeecg/JInput'
   import UserRecycleBinModal from './modules/UserRecycleBinModal'
   import JSuperQuery from '@/components/jeecg/JSuperQuery'
+  import JThirdAppButton from '@/components/jeecgbiz/thirdApp/JThirdAppButton'
 
   export default {
     name: "UserList",
     mixins: [JeecgListMixin],
     components: {
+      JThirdAppButton,
+      SysUserAgentModal,
       UserModal,
       PasswordModal,
       JInput,
@@ -366,9 +378,19 @@
       handleChangePassword(username) {
         this.$refs.passwordmodal.show(username);
       },
+      handleAgentSettings(username){
+        this.$refs.sysUserAgentModal.agentSettings(username);
+        this.$refs.sysUserAgentModal.title = "用户代理人设置";
+      },
       passwordModalOk() {
         //TODO 密码修改完成 不需要刷新页面，可以把datasource中的数据更新一下
-      }
+      },
+      onSyncFinally({isToLocal}) {
+        // 同步到本地时刷新下数据
+        if (isToLocal) {
+          this.loadData()
+        }
+      },
     }
 
   }

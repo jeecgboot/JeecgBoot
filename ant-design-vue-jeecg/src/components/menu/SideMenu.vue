@@ -11,6 +11,7 @@
       :menu="menus"
       :theme="theme"
       @select="onSelect"
+      @updateMenuTitle="onUpdateMenuTitle"
       :mode="mode"
       :style="smenuStyle">
     </s-menu>
@@ -19,7 +20,7 @@
 </template>
 
 <script>
-  import ALayoutSider from "ant-design-vue/es/layout/Sider"
+  import ALayoutSider from 'ant-design-vue/es/layout/Sider'
   import Logo from '../tools/Logo'
   import SMenu from './index'
   import { mixin, mixinDevice } from '@/utils/mixin.js'
@@ -68,6 +69,9 @@
     methods: {
       onSelect (obj) {
         this.$emit('menuSelect', obj)
+      },
+      onUpdateMenuTitle (obj) {
+        this.$emit('updateMenuTitle', obj)
       }
     }
   }

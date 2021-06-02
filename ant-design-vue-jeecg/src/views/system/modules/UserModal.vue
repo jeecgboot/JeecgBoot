@@ -168,7 +168,7 @@
           confirmpassword: [{required: true, message: '请重新输入登录密码!',},
                             { validator: this.compareToFirstPassword,}],
           realname:[{ required: true, message: '请输入用户名称!' }],
-          phone: [{validator: this.validatePhone}],
+          phone: [{required: true, message: '请输入手机号!'}, {validator: this.validatePhone}],
           email: [{validator: this.validateEmail}],
           roles:{},
           workNo:[ { required: true, message: '请输入工号' },
