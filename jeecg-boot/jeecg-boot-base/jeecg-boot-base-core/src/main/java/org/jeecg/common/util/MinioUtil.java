@@ -75,7 +75,11 @@ public class MinioUtil {
                 orgName=file.getName();
             }
             orgName = CommonUtils.getFileName(orgName);
-            String objectName = bizPath+"/"+orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.lastIndexOf("."));
+            String objectName = bizPath+"/"
+                                +( orgName.indexOf(".")==-1
+                                   ?orgName + "_" + System.currentTimeMillis()
+                                   :orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.lastIndexOf("."))
+                                 );
 
             // 使用putObject上传一个本地文件到存储桶中。
             if(objectName.startsWith("/")){

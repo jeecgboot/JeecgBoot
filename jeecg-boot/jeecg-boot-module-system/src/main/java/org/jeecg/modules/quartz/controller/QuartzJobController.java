@@ -1,18 +1,14 @@
 package org.jeecg.modules.quartz.controller;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.modules.quartz.entity.QuartzJob;
@@ -22,28 +18,21 @@ import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 定时任务在线管理
@@ -89,10 +78,6 @@ public class QuartzJobController {
 	//@RequiresRoles("admin")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<?> add(@RequestBody QuartzJob quartzJob) {
-		List<QuartzJob> list = quartzJobService.findByJobClassName(quartzJob.getJobClassName());
-		if (list != null && list.size() > 0) {
-			return Result.error("该定时任务类名已存在");
-		}
 		quartzJobService.saveAndScheduleJob(quartzJob);
 		return Result.ok("创建定时任务成功");
 	}
@@ -155,15 +140,14 @@ public class QuartzJobController {
 	/**
 	 * 暂停定时任务
 	 * 
-	 * @param jobClassName
+	 * @param id
 	 * @return
 	 */
 	//@RequiresRoles("admin")
 	@GetMapping(value = "/pause")
 	@ApiOperation(value = "暂停定时任务")
-	public Result<Object> pauseJob(@RequestParam(name = "jobClassName", required = true) String jobClassName) {
-		QuartzJob job = null;
-		job = quartzJobService.getOne(new LambdaQueryWrapper<QuartzJob>().eq(QuartzJob::getJobClassName, jobClassName));
+	public Result<Object> pauseJob(@RequestParam(name = "id") String id) {
+		QuartzJob job = quartzJobService.getById(id);
 		if (job == null) {
 			return Result.error("定时任务不存在！");
 		}
@@ -174,14 +158,14 @@ public class QuartzJobController {
 	/**
 	 * 启动定时任务
 	 * 
-	 * @param jobClassName
+	 * @param id
 	 * @return
 	 */
 	//@RequiresRoles("admin")
 	@GetMapping(value = "/resume")
 	@ApiOperation(value = "恢复定时任务")
-	public Result<Object> resumeJob(@RequestParam(name = "jobClassName", required = true) String jobClassName) {
-		QuartzJob job = quartzJobService.getOne(new LambdaQueryWrapper<QuartzJob>().eq(QuartzJob::getJobClassName, jobClassName));
+	public Result<Object> resumeJob(@RequestParam(name = "id") String id) {
+		QuartzJob job = quartzJobService.getById(id);
 		if (job == null) {
 			return Result.error("定时任务不存在！");
 		}

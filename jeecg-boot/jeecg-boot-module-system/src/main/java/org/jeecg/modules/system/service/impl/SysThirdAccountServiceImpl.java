@@ -1,7 +1,9 @@
 package org.jeecg.modules.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.UUIDGenerator;
 import org.jeecg.common.util.oConvertUtils;
@@ -14,12 +16,10 @@ import org.jeecg.modules.system.mapper.SysThirdAccountMapper;
 import org.jeecg.modules.system.mapper.SysUserMapper;
 import org.jeecg.modules.system.mapper.SysUserRoleMapper;
 import org.jeecg.modules.system.service.ISysThirdAccountService;
-import org.jeecg.modules.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -55,7 +55,8 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
         thirdQuery.eq(SysThirdAccount::getThirdType,account.getThirdType());
         SysThirdAccount sysThirdAccounts = sysThirdAccountMapper.selectOne(thirdQuery);
         if(sysThirdAccounts!=null){
-          sysThirdAccountMapper.deleteById(sysThirdAccounts.getId());
+            sysThirdAccount.setThirdUserId(sysThirdAccounts.getThirdUserId());
+            sysThirdAccountMapper.deleteById(sysThirdAccounts.getId());
         }
         //更新用户账户表sys_user_id
         sysThirdAccountMapper.update(sysThirdAccount,query);
@@ -67,6 +68,13 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
         LambdaQueryWrapper<SysThirdAccount> query = new LambdaQueryWrapper<>();
         query.eq(SysThirdAccount::getThirdUserUuid,thirdUserUuid);
         SysThirdAccount account = sysThirdAccountMapper.selectOne(query);
+        //通过用户名查询数据库是否已存在
+        SysUser userByName = sysUserMapper.getUserByName(thirdUserUuid);
+        if(null!=userByName){
+            //如果账号存在的话，则自动加上一个时间戳
+            String format = DateUtils.yyyymmddhhmmss.get().format(new Date());
+            thirdUserUuid = thirdUserUuid + format;
+        }
         //添加用户
         SysUser user = new SysUser();
         user.setActivitiSync(CommonConstant.ACT_SYNC_0);
@@ -103,4 +111,26 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
         sysUserRoleMapper.insert(userRole);
         return userid;
     }
+
+    @Override
+    public SysThirdAccount getOneBySysUserId(String sysUserId, String thirdType) {
+        LambdaQueryWrapper<SysThirdAccount> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysThirdAccount::getSysUserId, sysUserId);
+        queryWrapper.eq(SysThirdAccount::getThirdType, thirdType);
+        return super.getOne(queryWrapper);
+    }
+
+    @Override
+    public SysThirdAccount getOneByThirdUserId(String thirdUserId, String thirdType) {
+        LambdaQueryWrapper<SysThirdAccount> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysThirdAccount::getThirdUserId, thirdUserId);
+        queryWrapper.eq(SysThirdAccount::getThirdType, thirdType);
+        return super.getOne(queryWrapper);
+    }
+
+    @Override
+    public List<SysThirdAccount> listThirdUserIdByUsername(String[] sysUsernameArr, String thirdType) {
+        return sysThirdAccountMapper.selectThirdIdsByUsername(sysUsernameArr, thirdType);
+    }
+
 }

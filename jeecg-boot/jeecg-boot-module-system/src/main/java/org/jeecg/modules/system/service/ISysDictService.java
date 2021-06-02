@@ -1,14 +1,14 @@
 package org.jeecg.modules.system.service;
 
-import java.util.List;
-import java.util.Map;
-
+import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.modules.system.entity.SysDict;
-import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.model.TreeSelectModel;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -37,6 +37,8 @@ public interface ISysDictService extends IService<SysDict> {
 
 	@Deprecated
 	List<String> queryTableDictByKeys(String table, String text, String code, String keys);
+	@Deprecated
+	List<String> queryTableDictByKeys(String table, String text, String code, String keys,boolean delNotExist);
 
     /**
      * 根据字典类型删除关联表中其对应的数据
@@ -50,19 +52,19 @@ public interface ISysDictService extends IService<SysDict> {
      * 添加一对多
      */
     public Integer saveMain(SysDict sysDict, List<SysDictItem> sysDictItemList);
-    
+
     /**
 	 * 查询所有部门 作为字典信息 id -->value,departName -->text
 	 * @return
 	 */
 	public List<DictModel> queryAllDepartBackDictModel();
-	
+
 	/**
 	 * 查询所有用户  作为字典信息 username -->value,realname -->text
 	 * @return
 	 */
 	public List<DictModel> queryAllUserBackDictModel();
-	
+
 	/**
 	 * 通过关键字查询字典表
 	 * @param table
@@ -82,7 +84,18 @@ public interface ISysDictService extends IService<SysDict> {
 	 * @param keyword
 	 * @return
 	 */
-	public List<DictModel> queryLittleTableDictItems(String table, String text, String code,String keyword, int pageSize);
+	public List<DictModel> queryLittleTableDictItems(String table, String text, String code, String condition, String keyword, int pageSize);
+
+	/**
+	 * 查询字典表所有数据
+	 * @param table
+	 * @param text
+	 * @param code
+	 * @param condition
+	 * @param keyword
+	 * @return
+	 */
+	public List<DictModel> queryAllTableDictItems(String table, String text, String code, String condition, String keyword);
 	/**
 	  * 根据表名、显示字段名、存储字段名 查询树
 	 * @param table
@@ -124,5 +137,22 @@ public interface ISysDictService extends IService<SysDict> {
 	 */
 	@Deprecated
 	public List<DictModel> queryDictTablePageList(DictQuery query,int pageSize, int pageNo);
+
+    /**
+     * 获取字典数据
+     * @param dictCode 字典code
+     * @param dictCode 表名,文本字段,code字段  | 举例：sys_user,realname,id
+     * @return
+     */
+    List<DictModel> getDictItems(String dictCode);
+
+    /**
+     * 【JSearchSelectTag下拉搜索组件专用接口】
+     * 大数据量的字典表 走异步加载  即前端输入内容过滤数据
+     *
+     * @param dictCode 字典code格式：table,text,code
+     * @return
+     */
+    List<DictModel> loadDict(String dictCode, String keyword, Integer pageSize);
 
 }

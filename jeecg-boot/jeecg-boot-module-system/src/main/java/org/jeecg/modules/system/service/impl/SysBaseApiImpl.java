@@ -1,7 +1,4 @@
 package org.jeecg.modules.system.service.impl;
-import	java.util.HashMap;
-import	java.util.ArrayList;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -94,6 +91,11 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	private SysPermissionMapper sysPermissionMapper;
 	@Autowired
 	private ISysPermissionDataRuleService sysPermissionDataRuleService;
+
+	@Autowired
+	private ThirdAppWechatEnterpriseServiceImpl wechatEnterpriseService;
+	@Autowired
+	private ThirdAppDingtalkServiceImpl dingtalkService;
 
 	@Override
 	@Cacheable(cacheNames=CacheConstant.SYS_USERS_CACHE, key="#username")
@@ -201,6 +203,8 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			info.setSysUserCode(user.getUsername());
 			info.setSysUserName(user.getRealname());
 			info.setSysOrgCode(user.getOrgCode());
+		}else{
+			return null;
 		}
 		//多部门支持in查询
 		List<SysDepart> list = departMapper.queryUserDeparts(user.getId());
@@ -267,7 +271,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	}
 
 	@Override
-	@Cacheable(value = CacheConstant.SYS_DICT_CACHE,key = "#code")
+	@Cacheable(value = CacheConstant.SYS_DICT_CACHE,key = "#code", unless = "#result == null ")
 	public List<DictModel> queryDictItemsByCode(String code) {
 		return sysDictService.queryDictItemsByCode(code);
 	}
@@ -294,6 +298,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				message.getTitle(),
 				message.getContent(),
 				message.getCategory());
+		try {
+			// 同步发送第三方APP消息
+			wechatEnterpriseService.sendMessage(message, true);
+			dingtalkService.sendMessage(message, true);
+		} catch (Exception e) {
+			log.error("同步发送第三方APP消息失败！", e);
+		}
 	}
 
 	@Override
@@ -305,6 +316,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				message.getCategory(),
 				message.getBusType(),
 				message.getBusId());
+		try {
+			// 同步发送第三方APP消息
+			wechatEnterpriseService.sendMessage(message, true);
+			dingtalkService.sendMessage(message, true);
+		} catch (Exception e) {
+			log.error("同步发送第三方APP消息失败！", e);
+		}
 	}
 
 	@Override
@@ -367,6 +385,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				obj.put(WebsocketConst.MSG_TXT, announcement.getTitile());
 				webSocket.sendMessage(sysUser.getId(), obj.toJSONString());
 			}
+		}
+		try {
+			// 同步企业微信、钉钉的消息通知
+			dingtalkService.sendActionCardMessage(announcement, true);
+			wechatEnterpriseService.sendTextCardMessage(announcement, true);
+		} catch (Exception e) {
+			log.error("同步发送第三方APP消息失败！", e);
 		}
 
 	}
@@ -435,6 +460,14 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				webSocket.sendMessage(sysUser.getId(), obj.toJSONString());
 			}
 		}
+		try {
+			// 同步企业微信、钉钉的消息通知
+			dingtalkService.sendActionCardMessage(announcement, true);
+			wechatEnterpriseService.sendTextCardMessage(announcement, true);
+		} catch (Exception e) {
+			log.error("同步发送第三方APP消息失败！", e);
+		}
+
 	}
 
 	@Override
@@ -492,8 +525,11 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 					DB_TYPE = DataBaseConstant.DB_TYPE_SQLSERVER;
 				}else if(dbType.indexOf("postgresql")>=0) {
 					DB_TYPE = DataBaseConstant.DB_TYPE_POSTGRESQL;
+				}else if(dbType.indexOf("mariadb")>=0) {
+					DB_TYPE = DataBaseConstant.DB_TYPE_MARIADB;
 				}else {
-					throw new JeecgBootException("数据库类型:["+dbType+"]不识别!");
+					log.error("数据库类型:[" + dbType + "]不识别!");
+					//throw new JeecgBootException("数据库类型:["+dbType+"]不识别!");
 				}
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
@@ -848,7 +884,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	/**
 	 * 36根据多个用户账号(逗号分隔)，查询返回多个用户信息
-	 * @param orgCodes
+	 * @param usernames
 	 * @return
 	 */
 	@Override
@@ -867,7 +903,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	/**
 	 * 37根据多个部门编码(逗号分隔)，查询返回多个部门信息
-	 * @param usernames
+	 * @param orgCodes
 	 * @return
 	 */
 	@Override

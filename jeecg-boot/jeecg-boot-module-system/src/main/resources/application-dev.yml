@@ -14,16 +14,16 @@ server:
     mime-types: application/javascript,application/json,application/xml,text/html,text/xml,text/plain,text/css,image/*
 
 management:
- endpoints:
-  web:
-   exposure:
-    include: metrics,httptrace
+  endpoints:
+    web:
+      exposure:
+        include: metrics,httptrace
 
 spring:
   servlet:
-     multipart:
-        max-file-size: 10MB
-        max-request-size: 10MB
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   mail:
     host: smtp.163.com
     username: jeecgos@163.com
@@ -131,7 +131,7 @@ spring:
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot-os-re?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: root
           password: root
           driver-class-name: com.mysql.cj.jdbc.Driver
@@ -147,7 +147,7 @@ spring:
     host: 127.0.0.1
     lettuce:
       pool:
-        max-active: 8   #最大连接数据库连接数,设 0 为没有限制
+        max-active: 8   #最大连接数据库连接数,设 -1 为没有限制
         max-idle: 8     #最大等待连接中的数量,设 0 为没有限制
         max-wait: -1ms  #最大建立连接等待时间。如果超过此时间将接到异常。设为-1表示无限制。
         min-idle: 0     #最小等待连接中的数量,设 0 为没有限制
@@ -170,29 +170,27 @@ mybatis-plus:
     #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     # 返回类型为Map,显示null对应的字段
     call-setters-on-nulls: true
-#minidao 设置
+#jeecg专用配置
 minidao :
   base-package: org.jeecg.modules.jmreport.*
-  #DB类型（mysql | postgresql | oracle | sqlserver）
+  #DB类型（mysql | postgresql | oracle | sqlserver| other）
   db-type: mysql
-#jeecg专用配置
 jeecg :
   # 本地：local\Minio：minio\阿里云：alioss
   uploadType: local
   path :
     #文件上传根目录 设置
-    upload: D://opt//upFiles
+    upload: /opt/upFiles
     #webapp文件路径
-    webapp: D://opt//webapp
+    webapp: /opt/webapp
   shiro:
     excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**
-  #阿里云oss存储配置
+  #阿里云oss存储和大鱼短信秘钥配置
   oss:
-    endpoint: oss-cn-beijing.aliyuncs.com
     accessKey: ??
     secretKey: ??
+    endpoint: oss-cn-beijing.aliyuncs.com
     bucketName: ??
-    staticDomain: ??
   # ElasticSearch 6设置
   elasticsearch:
     cluster-name: jeecg-ES
@@ -204,6 +202,9 @@ jeecg :
     theme-color: "#1890ff"
     # 文件、图片上传方式，可选项：qiniu（七牛云）、system（跟随系统配置）
     upload-type: system
+    map:
+      # 配置百度地图的AK，申请地址：https://lbs.baidu.com/apiconsole/key?application=key#/home
+      baidu: ??
   # 在线预览文件服务器地址配置
   file-view-domain: 127.0.0.1:8012
   # minio文件上传
@@ -218,7 +219,7 @@ jeecg :
     #数据字典是否进行saas数据隔离，自己看自己的字典
     saas: false
     #是否需要校验token
-    is_verify_token: false
+    is_verify_token: true
     #必须校验方法
     verify_methods: remove,delete,save,add,update
   #Wps在线文档
@@ -260,7 +261,7 @@ logging:
 knife4j:
   production: false
   basic:
-    enable: false
+    enable: true
     username: jeecg
     password: jeecg1314
 #第三方登录
@@ -275,7 +276,7 @@ justauth:
       client-id: ??
       client-secret: ??
       redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_enterprise/callback
-      agent-id: 1000002
+      agent-id: ??
     DINGTALK:
       client-id: ??
       client-secret: ??
@@ -288,3 +289,26 @@ justauth:
     type: default
     prefix: 'demo::'
     timeout: 1h
+#第三方APP对接
+third-app:
+  enabled: false
+  type:
+    #企业微信
+    WECHAT_ENTERPRISE:
+      enabled: false
+      #CORP_ID
+      client-id: ??
+      #SECRET
+      client-secret: ??
+      #自建应用id
+      agent-id: ??
+      #自建应用秘钥（新版企微需要配置）
+      # agent-app-secret: ??
+    #钉钉
+    DINGTALK:
+      enabled: false
+      # appKey
+      client-id: ??
+      # appSecret
+      client-secret: ??
+      agent-id: ??

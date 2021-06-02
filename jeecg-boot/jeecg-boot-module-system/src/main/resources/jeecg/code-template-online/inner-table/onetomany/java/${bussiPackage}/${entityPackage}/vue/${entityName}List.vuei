@@ -91,7 +91,7 @@
              ${indent}<j-multi-select-tag placeholder="请选择${po.filedComment}" dictCode="${query_field_dictCode?default("")}" v-model="queryParam.${po.fieldName}"/>
       <#-- popup组件 -->
       <#elseif po.classType=='popup'>
-             ${indent}<j-popup placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" code="${po.dictTable}" org-fields="${po.dictField}" dest-fields="${po.dictText}" :field="getPopupField('${po.dictText}')"/>
+             ${indent}<j-popup placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" code="${po.dictTable}" org-fields="${po.dictField}" dest-fields="${po.dictText}" :field="getPopupField('${po.dictText}')" :multi="${po.extendParams.popupMulti?c}"/>
       <#-- 下拉搜索框 -->
      <#elseif po.classType=='sel_search'>
      <#assign query_sel_search=true>
@@ -403,7 +403,7 @@
     <#elseif po.classType=='image'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'imgSlot'}
-    <#elseif po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
+    <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
             dataIndex: '${po.fieldName}_dictText'
     <#elseif po.classType=='cat_tree'>
       <#if list_need_category>

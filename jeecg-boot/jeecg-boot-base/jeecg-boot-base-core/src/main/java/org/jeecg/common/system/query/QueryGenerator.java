@@ -221,20 +221,31 @@ public class QueryGenerator {
 		if(parameterMap!=null&& parameterMap.containsKey(ORDER_TYPE)) {
 			order = parameterMap.get(ORDER_TYPE)[0];
 		}
-		log.debug("排序规则>>列:"+column+",排序方式:"+order);
+        log.info("排序规则>>列:" + column + ",排序方式:" + order);
 		if (oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
 			//字典字段，去掉字典翻译文本后缀
 			if(column.endsWith(CommonConstant.DICT_TEXT_SUFFIX)) {
 				column = column.substring(0, column.lastIndexOf(CommonConstant.DICT_TEXT_SUFFIX));
 			}
 			//SQL注入check
-			SqlInjectionUtil.filterContent(column); 
-			
+			SqlInjectionUtil.filterContent(column);
+
+			//update-begin--Author:scott  Date:20210531 for：36 多条件排序无效问题修正-------
+			// 排序规则修改
+			// 将现有排序 _ 前端传递排序条件{....,column: 'column1,column2',order: 'desc'} 翻译成sql "column1,column2 desc"
+			// 修改为 _ 前端传递排序条件{....,column: 'column1,column2',order: 'desc'} 翻译成sql "column1 desc,column2 desc"
 			if (order.toUpperCase().indexOf(ORDER_TYPE_ASC)>=0) {
 				queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));
+				String columnStr = oConvertUtils.camelToUnderline(column);
+				String[] columnArray = columnStr.split(",");
+				queryWrapper.orderByAsc(columnArray);
 			} else {
 				queryWrapper.orderByDesc(oConvertUtils.camelToUnderline(column));
+				String columnStr = oConvertUtils.camelToUnderline(column);
+				String[] columnArray = columnStr.split(",");
+				queryWrapper.orderByDesc(columnArray);
 			}
+			//update-end--Author:scott  Date:20210531 for：36 多条件排序无效问题修正-------
 		}
 	}
 	
@@ -1073,7 +1084,7 @@ public class QueryGenerator {
 	 * @Return: java.lang.String
 	 */
 	private static String specialStrConvert(String value) {
-		if (DataBaseConstant.DB_TYPE_MYSQL.equals(getDbType())) {
+		if (DataBaseConstant.DB_TYPE_MYSQL.equals(getDbType()) || DataBaseConstant.DB_TYPE_MARIADB.equals(getDbType())) {
 			String[] special_str = QueryGenerator.LIKE_MYSQL_SPECIAL_STRS.split(",");
 			for (String str : special_str) {
 				if (value.indexOf(str) !=-1) {

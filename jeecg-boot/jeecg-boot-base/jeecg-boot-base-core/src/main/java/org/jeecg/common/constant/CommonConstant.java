@@ -305,4 +305,21 @@ public interface CommonConstant {
      * 第三方登录 验证密码/创建用户 都需要设置一个操作码 防止被恶意调用
      */
     public final static String THIRD_LOGIN_CODE = "third_login_code";
+
+    /**
+     * 第三方APP同步方向：本地 --> 第三方APP
+     */
+    String THIRD_SYNC_TO_APP = "SYNC_TO_APP";
+    /**
+     * 第三方APP同步方向：第三方APP --> 本地
+     */
+    String THIRD_SYNC_TO_LOCAL = "SYNC_TO_LOCAL";
+
+    /** 系统通告消息状态：0=未发布 */
+    String ANNOUNCEMENT_SEND_STATUS_0 = "0";
+    /** 系统通告消息状态：1=已发布 */
+    String ANNOUNCEMENT_SEND_STATUS_1 = "1";
+    /** 系统通告消息状态：2=已撤销 */
+    String ANNOUNCEMENT_SEND_STATUS_2 = "2";
+
 }

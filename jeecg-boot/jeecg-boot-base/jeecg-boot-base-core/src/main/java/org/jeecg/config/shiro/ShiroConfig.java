@@ -1,6 +1,7 @@
 package org.jeecg.config.shiro;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
@@ -110,6 +111,11 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/webjars/**", "anon");
         filterChainDefinitionMap.put("/v2/**", "anon");
 
+
+        // update-begin--Author:sunjianlei Date:20210510 for：排除消息通告查看详情页面（用于第三方APP）
+        filterChainDefinitionMap.put("/sys/annountCement/show/**", "anon");
+        // update-end--Author:sunjianlei Date:20210510 for：排除消息通告查看详情页面（用于第三方APP）
+
         //积木报表排除
         filterChainDefinitionMap.put("/jmreport/**", "anon");
         filterChainDefinitionMap.put("/**/*.js.map", "anon");
@@ -127,7 +133,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/websocket/**", "anon");//系统通知和公告
         filterChainDefinitionMap.put("/newsWebsocket/**", "anon");//CMS模块
         filterChainDefinitionMap.put("/vxeSocket/**", "anon");//JVxeTable无痕刷新示例
-        filterChainDefinitionMap.put("/eoaSocket/**","anon");//我的聊天
+
 
         //性能监控  TODO 存在安全漏洞泄露TOEKN（durid连接池也有）
         filterChainDefinitionMap.put("/actuator/**", "anon");
@@ -241,8 +247,17 @@ public class ShiroConfig {
             RedisClusterManager redisManager = new RedisClusterManager();
             Set<HostAndPort> portSet = new HashSet<>();
             lettuceConnectionFactory.getClusterConfiguration().getClusterNodes().forEach(node -> portSet.add(new HostAndPort(node.getHost() , node.getPort())));
-            JedisCluster jedisCluster = new JedisCluster(portSet);
-            redisManager.setJedisCluster(jedisCluster);
+            //update-begin--Author:scott Date:20210531 for：修改集群模式下未设置redis密码的bug issues/I3QNIC
+            if (oConvertUtils.isNotEmpty(lettuceConnectionFactory.getPassword())) {
+                JedisCluster jedisCluster = new JedisCluster(portSet, 2000, 2000, 5,
+                    lettuceConnectionFactory.getPassword(), new GenericObjectPoolConfig());
+                redisManager.setPassword(lettuceConnectionFactory.getPassword());
+                redisManager.setJedisCluster(jedisCluster);
+            } else {
+                JedisCluster jedisCluster = new JedisCluster(portSet);
+                redisManager.setJedisCluster(jedisCluster);
+            }
+            //update-end--Author:scott Date:20210531 for：修改集群模式下未设置redis密码的bug issues/I3QNIC
             manager = redisManager;
         }
         return manager;

@@ -1,26 +1,26 @@
 package org.jeecg.modules.system.service.impl;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.common.constant.FillRuleConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.FillRuleUtil;
-import org.jeecg.common.util.YouBianCodeUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysCategory;
 import org.jeecg.modules.system.mapper.SysCategoryMapper;
 import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecg.modules.system.service.ISysCategoryService;
 import org.springframework.stereotype.Service;
-
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Description: 分类字典
@@ -202,6 +202,34 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 			}
 		}
 		return sb;
+	}
+
+	@Override
+	public List<String> loadDictItem(String ids) {
+		return this.loadDictItem(ids, true);
+	}
+
+	@Override
+	public List<String> loadDictItem(String ids, boolean delNotExist) {
+		String[] idArray = ids.split(",");
+		LambdaQueryWrapper<SysCategory> query = new LambdaQueryWrapper<>();
+		query.in(SysCategory::getId, Arrays.asList(idArray));
+		// 查询数据
+		List<SysCategory> list = super.list(query);
+		// 取出name并返回
+		List<String> textList;
+		// update-begin--author:sunjianlei--date:20210514--for：新增delNotExist参数，设为false不删除数据库里不存在的key ----
+		if (delNotExist) {
+			textList = list.stream().map(SysCategory::getName).collect(Collectors.toList());
+		} else {
+			textList = new ArrayList<>();
+			for (String id : idArray) {
+				List<SysCategory> res = list.stream().filter(i -> id.equals(i.getId())).collect(Collectors.toList());
+				textList.add(res.size() > 0 ? res.get(0).getName() : id);
+			}
+		}
+		// update-end--author:sunjianlei--date:20210514--for：新增delNotExist参数，设为false不删除数据库里不存在的key ----
+		return textList;
 	}
 
 }

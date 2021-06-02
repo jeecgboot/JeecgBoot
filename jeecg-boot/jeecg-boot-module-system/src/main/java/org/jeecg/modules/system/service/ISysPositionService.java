@@ -11,4 +11,9 @@ import org.jeecg.modules.system.entity.SysPosition;
  */
 public interface ISysPositionService extends IService<SysPosition> {
 
+    /**
+     * 通过code查询
+     */
+    SysPosition getByCode(String code);
+
 }

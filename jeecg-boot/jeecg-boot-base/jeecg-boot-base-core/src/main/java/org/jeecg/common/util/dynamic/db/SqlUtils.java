@@ -13,6 +13,7 @@ import java.util.Map;
 public class SqlUtils {
 
     public static final String DATABSE_TYPE_MYSQL = "mysql";
+    public static final String DATABSE_TYPE_MARIADB = "mariadb";
     public static final String DATABSE_TYPE_POSTGRE = "postgresql";
     public static final String DATABSE_TYPE_ORACLE = "oracle";
     public static final String DATABSE_TYPE_SQLSERVER = "sqlserver";
@@ -47,7 +48,7 @@ public class SqlUtils {
      */
 
     public static boolean dbTypeIsMySQL(String dbType) {
-        return dbTypeIf(dbType, DATABSE_TYPE_MYSQL, DataBaseConstant.DB_TYPE_MYSQL_NUM);
+        return dbTypeIf(dbType, DATABSE_TYPE_MYSQL, DataBaseConstant.DB_TYPE_MYSQL_NUM) || dbTypeIf(dbType, DATABSE_TYPE_MARIADB, DataBaseConstant.DB_TYPE_MARIADB_NUM);
     }
 
     public static boolean dbTypeIsOracle(String dbType) {

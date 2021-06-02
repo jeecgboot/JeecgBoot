@@ -36,6 +36,7 @@
               org-fields="${po.dictField}"
               dest-fields="${Format.underlineToHump(po.dictText)}"
               code="${po.dictTable}"
+              :multi="${po.extendParams.popupMulti?c}"
               @input="popupCallback"/>
     <#elseif po.classType =='switch'>
             <j-switch v-model="model.${po.fieldName}" <#if po.dictField!= 'is_open'>:options="${po.dictField}"</#if>></j-switch>
