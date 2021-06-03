@@ -55,6 +55,11 @@ ADD COLUMN `connect_times` int(1) NULL COMMENT '连接失败次数' AFTER `updat
 ALTER TABLE `jimu_report_link`
 ADD COLUMN `link_chart_id` varchar(50) NULL COMMENT '联动图表的ID' AFTER `api_url`;
 
+-- 类转换器字段添加
+ALTER TABLE `jimu_report_db` 
+ADD COLUMN `api_convert` varchar(255) NULL COMMENT 'api转换器' AFTER `json_data`;
+
+
 -- 修复脚本的一些问题---
 update sys_permission set url="{{ window._CONFIG['domianURL'] }}/jmreport/view/1352160857479581696?token=${token}" where id ='1352200630711652354';
 UPDATE `jimu_report_db` SET `jimu_report_id` = '1352160857479581696', `create_by` = 'admin', `update_by` = 'admin', `create_time` = '2021-05-19 19:20:44', `update_time` = '2021-05-19 19:20:44', `db_code` = 'infoForReport', `db_ch_name` = '信息', `db_type` = '1', `db_table_name` = NULL, `db_dyn_sql` = NULL, `db_key` = NULL, `tb_db_key` = NULL, `tb_db_table_name` = NULL, `java_type` = NULL, `java_value` = NULL, `api_url` = '{{ domainURL }}/sys/actuator/redis/infoForReport', `api_method` = '0', `is_list` = 1, `is_page` = '1', `db_source` = '', `db_source_type` = NULL, `json_data` = NULL WHERE `id` = '60b3feffadc55eb49baa5a48fdf1ff0e';
