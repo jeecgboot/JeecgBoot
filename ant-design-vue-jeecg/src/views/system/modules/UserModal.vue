@@ -112,7 +112,7 @@
         </a-form-model-item>
 
         <a-form-model-item label="手机号码" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="phone">
-          <a-input placeholder="请输入手机号码" :disabled="isDisabledAuth('user:form:phone')" v-model="model.phone" />
+          <a-input placeholder="请输入手机号码" v-model="model.phone" />
         </a-form-model-item>
 
         <a-form-model-item label="座机" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="telephone">
