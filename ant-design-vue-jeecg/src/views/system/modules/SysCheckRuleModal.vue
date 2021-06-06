@@ -9,41 +9,24 @@
     cancelText="关闭">
 
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+      <a-form-model ref="form" :model="model" :rules="validatorRules">
 
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="规则名称">
-          <a-input placeholder="请输入规则名称" v-decorator="['ruleName', validatorRules.ruleName]"/>
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="规则Code">
-          <a-input placeholder="请输入规则Code" v-decorator="['ruleCode', validatorRules.ruleCode]"/>
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="规则描述">
-          <a-textarea placeholder="请输入规则描述" v-decorator="['ruleDescription', {}]"/>
-        </a-form-item>
+        <a-form-model-item :labelCol="labelCol"  :wrapperCol="wrapperCol" label="规则名称" prop="ruleName" >
+          <a-input placeholder="请输入规则名称" v-model="model.ruleName"/>
+        </a-form-model-item>
+        <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="规则Code" prop="ruleCode">
+          <a-input placeholder="请输入规则Code" v-model="model.ruleCode"/>
+        </a-form-model-item>
+        <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="规则描述" prop="ruleDescription">
+          <a-textarea placeholder="请输入规则描述" v-model="model.ruleDescription"/>
+        </a-form-model-item>
 
-      </a-form>
+      </a-form-model>
       <!-- 规则设计 -->
       <a-tabs v-model="tabs.activeKey">
         <a-tab-pane tab="局部规则" :key="tabs.design.key" forceRender>
           <a-alert type="info" showIcon message="局部规则按照你输入的位数有序的校验。"/>
-          <j-editable-table
-            ref="designTable"
-            dragSort
-            rowNumber
-            :maxHeight="240"
-            :columns="tabs.design.columns"
-            :dataSource="tabs.design.dataSource"
-            style="margin-top: 8px;"
-          >
+          <j-editable-table ref="designTable" dragSort rowNumber  :maxHeight="240" :columns="tabs.design.columns" :dataSource="tabs.design.dataSource" style="margin-top: 8px;">
 
             <template #action="props">
               <my-action-button :rowEvent="props"/>
@@ -51,16 +34,9 @@
 
           </j-editable-table>
         </a-tab-pane>
+
         <a-tab-pane tab="全局规则" :key="tabs.global.key" forceRender>
-          <j-editable-table
-            ref="globalTable"
-            dragSort
-            rowNumber
-            actionButton
-            :maxHeight="240"
-            :columns="tabs.global.columns"
-            :dataSource="tabs.global.dataSource"
-          >
+          <j-editable-table ref="globalTable" dragSort rowNumber actionButton :maxHeight="240" :columns="tabs.global.columns"  :dataSource="tabs.global.dataSource">
 
             <template #actionButtonAfter>
               <a-alert type="info" showIcon message="全局规则可校验用户输入的所有字符；全局规则的优先级比局部规则的要高。" style="margin-bottom: 8px;"/>
@@ -146,15 +122,12 @@
           sm: { span: 16 },
         },
         confirmLoading: false,
-        form: this.$form.createForm(this),
         validatorRules: {
-          ruleName: { rules: [{ required: true, message: '请输入规则名称!' },] },
-          ruleCode: {
-            rules: [
-              { required: true, message: '请输入规则Code!' },
-              { validator: (rule, value, callback) => validateDuplicateValue('sys_check_rule', 'rule_code', value, this.model.id, callback) }
-            ]
-          },
+          ruleName: [{required: true, message: '请输入规则名称!'}],
+          ruleCode: [
+            {required: true, message: '请输入规则Code!'},
+            {validator: (rule, value, callback) => validateDuplicateValue('sys_check_rule', 'rule_code', value, this.model.id, callback)}
+          ],
         },
         tabs: {
           activeKey: 'design',
@@ -272,14 +245,14 @@
         this.edit({})
       },
       edit(record) {
-        this.form.resetFields()
         this.tabs.activeKey = this.tabs.design.key
         this.tabs.global.dataSource = []
         this.tabs.design.dataSource = [{ digits: '', pattern: '', message: '' }]
-        this.model = Object.assign({}, record)
         this.visible = true
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'ruleName', 'ruleCode', 'ruleDescription'))
+          this.$refs.form.resetFields()
+          this.model = Object.assign({}, record)
+
           // 子表数据
           let ruleJson = this.model.ruleJson
           if (ruleJson) {
@@ -307,7 +280,7 @@
         Promise.all([
           // 主表单校验
           alwaysResolve(new Promise((resolve, reject) => {
-            this.form.validateFields((error, values) => error ? reject(error) : resolve(values))
+            this.$refs.form.validate((ok, err) => ok ? resolve(this.model) : reject(err))
           })),
           // 局部规则子表校验
           alwaysResolve(this.$refs.designTable.getValuesPromise),

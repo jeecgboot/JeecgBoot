@@ -106,4 +106,22 @@
 		</if>
 	</select>
 
+	<!--通过查询指定table的 text code 获取字典数据，且支持关键字和自定义查询条件查询 分页-->
+	<select id="queryTableDictWithFilter" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		select ${text} as "text", ${code} as "value" from ${table}
+		<if test="filterSql != null and filterSql != ''">
+			${filterSql}
+		</if>
+	</select>
+
+	<!--通过查询指定table的 text code 获取字典数据，且支持关键字和自定义查询条件查询 获取所有 -->
+	<select id="queryAllTableDictItems" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		select ${text} as "text", ${code} as "value" from ${table}
+		<if test="filterSql != null and filterSql != ''">
+			${filterSql}
+		</if>
+	</select>
+
+
+
 </mapper>

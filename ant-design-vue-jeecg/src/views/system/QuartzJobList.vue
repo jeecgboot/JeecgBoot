@@ -3,22 +3,22 @@
 
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline" @keyup.enter.native="searchQuery">
+      <a-form-model layout="inline" :model="queryParam" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
 
           <a-col :md="6" :sm="10">
-            <a-form-item label="任务类名">
+            <a-form-model-item label="任务类名" prop="jobClassName">
               <a-input placeholder="请输入任务类名" v-model="queryParam.jobClassName"></a-input>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :md="6" :sm="10">
-            <a-form-item label="任务状态">
+            <a-form-model-item label="任务状态" prop="status">
               <a-select style="width: 220px" v-model="queryParam.status" placeholder="请选择状态">
                 <a-select-option value="">全部</a-select-option>
                 <a-select-option value="0">正常</a-select-option>
                 <a-select-option value="-1">停止</a-select-option>
               </a-select>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
 
           <a-col :md="6" :sm="10" >
@@ -29,7 +29,7 @@
           </a-col>
 
         </a-row>
-      </a-form>
+      </a-form-model>
     </div>
 
     <!-- 操作按钮区域 -->
@@ -225,7 +225,7 @@
           title:"确认暂停",
           content:"是否暂停选中任务?",
           onOk: function(){
-            getAction(that.url.pause,{jobClassName:record.jobClassName}).then((res)=>{
+            getAction(that.url.pause,{id:record.id}).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.loadData();
@@ -245,7 +245,7 @@
           title:"确认启动",
           content:"是否启动选中任务?",
           onOk: function(){
-            getAction(that.url.resume,{jobClassName:record.jobClassName}).then((res)=>{
+            getAction(that.url.resume,{id:record.id}).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.loadData();

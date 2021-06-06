@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -74,7 +75,8 @@ public class CommonUtils {
             fileName = fileName.substring(pos + 1);
         }
         //替换上传文件名字的特殊字符
-        fileName = fileName.replace("=","").replace(",","").replace("&","").replace("#", "");
+        fileName = fileName.replace("=","").replace(",","").replace("&","")
+                .replace("#", "").replace("“", "").replace("”", "");
         //替换上传文件名字中的空格
         fileName=fileName.replaceAll("\\s","");
         return fileName;
@@ -106,6 +108,44 @@ public class CommonUtils {
         }
         return url;
     }
+    /**
+     * 本地文件上传
+     * @param mf 文件
+     * @param bizPath  自定义路径
+     * @return
+     */
+    public static String uploadLocal(MultipartFile mf,String bizPath,String uploadpath){
+        try {
+            String fileName = null;
+            File file = new File(uploadpath + File.separator + bizPath + File.separator );
+            if (!file.exists()) {
+                file.mkdirs();// 创建文件根目录
+            }
+            String orgName = mf.getOriginalFilename();// 获取文件名
+            orgName = CommonUtils.getFileName(orgName);
+            if(orgName.indexOf(".")!=-1){
+                fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.lastIndexOf("."));
+            }else{
+                fileName = orgName+ "_" + System.currentTimeMillis();
+            }
+            String savePath = file.getPath() + File.separator + fileName;
+            File savefile = new File(savePath);
+            FileCopyUtils.copy(mf.getBytes(), savefile);
+            String dbpath = null;
+            if(oConvertUtils.isNotEmpty(bizPath)){
+                dbpath = bizPath + File.separator + fileName;
+            }else{
+                dbpath = fileName;
+            }
+            if (dbpath.contains("\\")) {
+                dbpath = dbpath.replace("\\", "/");
+            }
+            return dbpath;
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+        return "";
+    }
 
     /**
      * 统一全局上传 带桶
@@ -132,7 +172,7 @@ public class CommonUtils {
             return getDatabaseTypeByDataSource(dataSource);
         } catch (SQLException e) {
             //e.printStackTrace();
-            log.warn(e.getMessage());
+            log.warn(e.getMessage(),e);
             return "";
         }
     }
@@ -157,8 +197,11 @@ public class CommonUtils {
                     DB_TYPE = DataBaseConstant.DB_TYPE_SQLSERVER;
                 }else if(dbType.indexOf("postgresql")>=0) {
                     DB_TYPE = DataBaseConstant.DB_TYPE_POSTGRESQL;
+                }else if(dbType.indexOf("mariadb")>=0) {
+                    DB_TYPE = DataBaseConstant.DB_TYPE_MARIADB;
                 }else {
-                    throw new JeecgBootException("数据库类型:["+dbType+"]不识别!");
+                    log.error("数据库类型:[" + dbType + "]不识别!");
+                    //throw new JeecgBootException("数据库类型:["+dbType+"]不识别!");
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(), e);

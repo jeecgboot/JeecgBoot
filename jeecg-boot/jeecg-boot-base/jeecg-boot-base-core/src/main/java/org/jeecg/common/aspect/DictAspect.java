@@ -17,6 +17,7 @@ import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import java.lang.reflect.Field;
@@ -38,6 +39,8 @@ public class DictAspect {
 
     @Autowired
     private CommonAPI commonAPI;
+    @Autowired
+    public RedisTemplate redisTemplate;
 
     // 定义切点Pointcut
     @Pointcut("execution(public * org.jeecg.modules..*.*Controller.*(..))")
@@ -144,12 +147,33 @@ public class DictAspect {
             if (k.trim().length() == 0) {
                 continue; //跳过循环
             }
+            //update-begin--Author:scott -- Date:20210531 ----for： !56 优化微服务应用下存在表字段需要字典翻译时加载缓慢问题-----
             if (!StringUtils.isEmpty(table)){
-                log.debug("--DictAspect------dicTable="+ table+" ,dicText= "+text+" ,dicCode="+code);
-                tmpValue= commonAPI.translateDictFromTable(table,text,code,k.trim());
+                log.info("--DictAspect------dicTable="+ table+" ,dicText= "+text+" ,dicCode="+code);
+                String keyString = String.format("sys:cache:dictTable::SimpleKey [%s,%s,%s,%s]",table,text,code,k.trim());
+                if (redisTemplate.hasKey(keyString)){
+                    try {
+                        tmpValue = oConvertUtils.getString(redisTemplate.opsForValue().get(keyString));
+                    } catch (Exception e) {
+                        log.warn(e.getMessage());
+                    }
+                }else {
+                    tmpValue= commonAPI.translateDictFromTable(table,text,code,k.trim());
+                }
             }else {
-                tmpValue = commonAPI.translateDict(code, k.trim());
+                String keyString = String.format("sys:cache:dict::%s:%s",code,k.trim());
+                if (redisTemplate.hasKey(keyString)){
+                    try {
+                        tmpValue = oConvertUtils.getString(redisTemplate.opsForValue().get(keyString));
+                    } catch (Exception e) {
+                       log.warn(e.getMessage());
+                    }
+                }else {
+                    tmpValue = commonAPI.translateDict(code, k.trim());
+                }
             }
+            //update-end--Author:scott -- Date:20210531 ----for： !56 优化微服务应用下存在表字段需要字典翻译时加载缓慢问题-----
+
             if (tmpValue != null) {
                 if (!"".equals(textValue.toString())) {
                     textValue.append(",");

@@ -31,7 +31,6 @@ import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
-import org.jeecgframework.poi.excel.entity.result.ExcelImportResult;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,44 +121,20 @@ public class SysDictController {
 	public Result<List<DictModel>> getDictItems(@PathVariable String dictCode, @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
 		log.info(" dictCode : "+ dictCode);
 		Result<List<DictModel>> result = new Result<List<DictModel>>();
-		List<DictModel> ls = null;
 		try {
-			if(dictCode.indexOf(",")!=-1) {
-				//关联表字典（举例：sys_user,realname,id）
-				String[] params = dictCode.split(",");
-
-				if(params.length<3) {
-					result.error500("字典Code格式不正确！");
-					return result;
-				}
-				//SQL注入校验（只限制非法串改数据库）
-				final String[] sqlInjCheck = {params[0],params[1],params[2]};
-				SqlInjectionUtil.filterContent(sqlInjCheck);
-
-				if(params.length==4) {
-					//SQL注入校验（查询条件SQL 特殊check，此方法仅供此处使用）
-					SqlInjectionUtil.specialFilterContent(params[3]);
-					ls = sysDictService.queryTableDictItemsByCodeAndFilter(params[0],params[1],params[2],params[3]);
-				}else if (params.length==3) {
-					ls = sysDictService.queryTableDictItemsByCode(params[0],params[1],params[2]);
-				}else{
-					result.error500("字典Code格式不正确！");
-					return result;
-				}
-			}else {
-				//字典表
-				 ls = sysDictService.queryDictItemsByCode(dictCode);
+			List<DictModel> ls = sysDictService.getDictItems(dictCode);
+			if (ls == null) {
+				result.error500("字典Code格式不正确！");
+				return result;
 			}
-
-			 result.setSuccess(true);
-			 result.setResult(ls);
-			 log.debug(result.toString());
+			result.setSuccess(true);
+			result.setResult(ls);
+			log.debug(result.toString());
 		} catch (Exception e) {
-			log.error(e.getMessage(),e);
+			log.error(e.getMessage(), e);
 			result.error500("操作失败");
 			return result;
 		}
-
 		return result;
 	}
 
@@ -198,8 +173,9 @@ public class SysDictController {
 	}
 
 	/**
+	 * 【JSearchSelectTag下拉搜索组件专用接口】
 	 * 大数据量的字典表 走异步加载  即前端输入内容过滤数据
-	 * @param dictCode
+	 * @param dictCode 字典code格式：table,text,code
 	 * @return
 	 */
 	@RequestMapping(value = "/loadDict/{dictCode}", method = RequestMethod.GET)
@@ -209,39 +185,75 @@ public class SysDictController {
 			@RequestParam(value = "pageSize", required = false) Integer pageSize) {
 		log.info(" 加载字典表数据,加载关键字: "+ keyword);
 		Result<List<DictModel>> result = new Result<List<DictModel>>();
-		List<DictModel> ls = null;
 		try {
-			if(dictCode.indexOf(",")!=-1) {
-				String[] params = dictCode.split(",");
-				if(params.length!=3) {
-					result.error500("字典Code格式不正确！");
-					return result;
-				}
-				if(pageSize!=null){
-					ls = sysDictService.queryLittleTableDictItems(params[0],params[1],params[2],keyword, pageSize);
-				}else{
-					ls = sysDictService.queryTableDictItems(params[0],params[1],params[2],keyword);
-				}
-				result.setSuccess(true);
-				result.setResult(ls);
-				log.info(result.toString());
-			}else {
+			List<DictModel> ls = sysDictService.loadDict(dictCode, keyword, pageSize);
+			if (ls == null) {
 				result.error500("字典Code格式不正确！");
+				return result;
 			}
+			result.setSuccess(true);
+			result.setResult(ls);
+			log.info(result.toString());
+			return result;
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
 			result.error500("操作失败");
 			return result;
 		}
+	}
 
+	/**
+	 * 【给表单设计器的表字典使用】下拉搜索模式，有值时动态拼接数据
+	 * @param dictCode
+	 * @param keyword 当前控件的值，可以逗号分割
+	 * @param sign
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping(value = "/loadDictOrderByValue/{dictCode}", method = RequestMethod.GET)
+	public Result<List<DictModel>> loadDictOrderByValue(
+			@PathVariable String dictCode,
+			@RequestParam(name = "keyword") String keyword,
+			@RequestParam(value = "sign", required = false) String sign,
+			@RequestParam(value = "pageSize", required = false) Integer pageSize) {
+		// 首次查询查出来用户选中的值，并且不分页
+		Result<List<DictModel>> firstRes = this.loadDict(dictCode, keyword, sign, null);
+		if (!firstRes.isSuccess()) {
+			return firstRes;
+		}
+		// 然后再查询出第一页的数据
+		Result<List<DictModel>> result = this.loadDict(dictCode, "", sign, pageSize);
+		if (!result.isSuccess()) {
+			return result;
+		}
+		// 合并两次查询的数据
+		List<DictModel> firstList = firstRes.getResult();
+		List<DictModel> list = result.getResult();
+		for (DictModel firstItem : firstList) {
+			// anyMatch 表示：判断的条件里，任意一个元素匹配成功，返回true
+			// allMatch 表示：判断条件里的元素，所有的都匹配成功，返回true
+			// noneMatch 跟 allMatch 相反，表示：判断条件里的元素，所有的都匹配失败，返回true
+			boolean none = list.stream().noneMatch(item -> item.getValue().equals(firstItem.getValue()));
+			// 当元素不存在时，再添加到集合里
+			if (none) {
+				list.add(0, firstItem);
+			}
+		}
 		return result;
 	}
 
 	/**
+	 *
 	 * 根据字典code加载字典text 返回
+	 * @param dictCode 顺序：tableName,text,code
+	 * @param keys 要查询的key
+	 * @param sign
+	 * @param delNotExist 是否移除不存在的项，默认为true，设为false如果某个key不存在数据库中，则直接返回key本身
+	 * @param request
+	 * @return
 	 */
 	@RequestMapping(value = "/loadDictItem/{dictCode}", method = RequestMethod.GET)
-	public Result<List<String>> loadDictItem(@PathVariable String dictCode,@RequestParam(name="key") String keys, @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
+	public Result<List<String>> loadDictItem(@PathVariable String dictCode,@RequestParam(name="key") String keys, @RequestParam(value = "sign",required = false) String sign,@RequestParam(value = "delNotExist",required = false,defaultValue = "true") boolean delNotExist,HttpServletRequest request) {
 		Result<List<String>> result = new Result<>();
 		try {
 			if(dictCode.indexOf(",")!=-1) {
@@ -250,7 +262,7 @@ public class SysDictController {
 					result.error500("字典Code格式不正确！");
 					return result;
 				}
-				List<String> texts = sysDictService.queryTableDictByKeys(params[0], params[1], params[2], keys);
+				List<String> texts = sysDictService.queryTableDictByKeys(params[0], params[1], params[2], keys, delNotExist);
 
 				result.setSuccess(true);
 				result.setResult(texts);
@@ -407,12 +419,14 @@ public class SysDictController {
 		//清空字典缓存
 		Set keys = redisTemplate.keys(CacheConstant.SYS_DICT_CACHE + "*");
 		Set keys2 = redisTemplate.keys(CacheConstant.SYS_DICT_TABLE_CACHE + "*");
+		Set keys21 = redisTemplate.keys(CacheConstant.SYS_DICT_TABLE_BY_KEYS_CACHE + "*");
 		Set keys3 = redisTemplate.keys(CacheConstant.SYS_DEPARTS_CACHE + "*");
 		Set keys4 = redisTemplate.keys(CacheConstant.SYS_DEPART_IDS_CACHE + "*");
 		Set keys5 = redisTemplate.keys( "jmreport:cache:dict*");
 		Set keys6 = redisTemplate.keys( "jmreport:cache:dictTable*");
 		redisTemplate.delete(keys);
 		redisTemplate.delete(keys2);
+		redisTemplate.delete(keys21);
 		redisTemplate.delete(keys3);
 		redisTemplate.delete(keys4);
 		redisTemplate.delete(keys5);

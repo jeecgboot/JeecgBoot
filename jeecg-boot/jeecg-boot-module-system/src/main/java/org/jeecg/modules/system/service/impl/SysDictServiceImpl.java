@@ -9,6 +9,7 @@ import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictQuery;
+import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
@@ -50,7 +51,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	 * @return
 	 */
 	@Override
-	@Cacheable(value = CacheConstant.SYS_DICT_CACHE,key = "#code")
+	@Cacheable(value = CacheConstant.SYS_DICT_CACHE,key = "#code", unless = "#result == null ")
 	public List<DictModel> queryDictItemsByCode(String code) {
 		log.debug("无缓存dictCache的时候调用这里！");
 		return sysDictMapper.queryDictItemsByCode(code);
@@ -86,7 +87,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	 */
 
 	@Override
-	@Cacheable(value = CacheConstant.SYS_DICT_CACHE,key = "#code+':'+#key")
+	@Cacheable(value = CacheConstant.SYS_DICT_CACHE,key = "#code+':'+#key", unless = "#result == null ")
 	public String queryDictTextByKey(String code, String key) {
 		log.debug("无缓存dictText的时候调用这里！");
 		return sysDictMapper.queryDictTextByKey(code, key);
@@ -123,10 +124,15 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	 * @return
 	 */
 	@Override
-	@Cacheable(value = CacheConstant.SYS_DICT_TABLE_CACHE)
+	@Cacheable(value = CacheConstant.SYS_DICT_TABLE_CACHE, unless = "#result == null ")
 	public String queryTableDictTextByKey(String table,String text,String code, String key) {
 		log.debug("无缓存dictTable的时候调用这里！");
 		return sysDictMapper.queryTableDictTextByKey(table,text,code,key);
+	}
+
+	@Override
+	public List<String> queryTableDictByKeys(String table, String text, String code, String keys) {
+		return this.queryTableDictByKeys(table, text, code, keys, true);
 	}
 
 	/**
@@ -136,28 +142,33 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	 * @param text
 	 * @param code
 	 * @param keys (逗号分隔)
+	 * @param delNotExist 是否移除不存在的项，默认为true，设为false如果某个key不存在数据库中，则直接返回key本身
 	 * @return
 	 */
 	@Override
 	//update-begin--Author:lvdandan  Date:20201204 for：JT-36【online】树形列表bug修改后，还是显示原来值 暂时去掉缓存
 	//@Cacheable(value = CacheConstant.SYS_DICT_TABLE_BY_KEYS_CACHE)
 	//update-end--Author:lvdandan  Date:20201204 for：JT-36【online】树形列表bug修改后，还是显示原来值 暂时去掉缓存
-	public List<String> queryTableDictByKeys(String table, String text, String code, String keys) {
+	public List<String> queryTableDictByKeys(String table, String text, String code, String keys, boolean delNotExist) {
 		if(oConvertUtils.isEmpty(keys)){
 			return null;
 		}
 		String[] keyArray = keys.split(",");
 		List<DictModel> dicts = sysDictMapper.queryTableDictByKeys(table, text, code, keyArray);
 		List<String> texts = new ArrayList<>(dicts.size());
+
+		// update-begin--author:sunjianlei--date:20210514--for：新增delNotExist参数，设为false不删除数据库里不存在的key ----
 		// 查询出来的顺序可能是乱的，需要排个序
 		for (String key : keyArray) {
-			for (DictModel dict : dicts) {
-				if (key.equals(dict.getValue())) {
-					texts.add(dict.getText());
-					break;
-				}
+			List<DictModel> res = dicts.stream().filter(i -> key.equals(i.getValue())).collect(Collectors.toList());
+			if (res.size() > 0) {
+				texts.add(res.get(0).getText());
+			} else if (!delNotExist) {
+				texts.add(key);
 			}
 		}
+		// update-end--author:sunjianlei--date:20210514--for：新增delNotExist参数，设为false不删除数据库里不存在的key ----
+
 		return texts;
 	}
 
@@ -205,10 +216,47 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	}
 
 	@Override
-	public List<DictModel> queryLittleTableDictItems(String table, String text, String code, String keyword, int pageSize) {
+	public List<DictModel> queryLittleTableDictItems(String table, String text, String code, String condition, String keyword, int pageSize) {
     	Page<DictModel> page = new Page<DictModel>(1, pageSize);
-		IPage<DictModel> pageList = baseMapper.queryTableDictItems(page, table, text, code, "%"+keyword+"%");
+		page.setSearchCount(false);
+		String filterSql = getFilterSql(text, code, condition, keyword);
+		IPage<DictModel> pageList = baseMapper.queryTableDictWithFilter(page, table, text, code, filterSql);
 		return pageList.getRecords();
+	}
+
+	/**
+	 * 获取条件语句
+	 * @param text
+	 * @param code
+	 * @param condition
+	 * @param keyword
+	 * @return
+	 */
+	private String getFilterSql(String text, String code, String condition, String keyword){
+		String keywordSql = null, filterSql = "", sql_where = " where ";
+		if(oConvertUtils.isNotEmpty(keyword)){
+			// 判断是否是多选
+			if (keyword.contains(",")) {
+				String inKeywords = "\"" + keyword.replaceAll(",", "\",\"") + "\"";
+				keywordSql = "(" + text + " in (" + inKeywords + ") or " + code + " in (" + inKeywords + "))";
+			} else {
+				keywordSql = "("+text + " like '%"+keyword+"%' or "+ code + " like '%"+keyword+"%')";
+			}
+		}
+		if(oConvertUtils.isNotEmpty(condition) && oConvertUtils.isNotEmpty(keywordSql)){
+			filterSql+= sql_where + condition + " and " + keywordSql;
+		}else if(oConvertUtils.isNotEmpty(condition)){
+			filterSql+= sql_where + condition;
+		}else if(oConvertUtils.isNotEmpty(keywordSql)){
+			filterSql+= sql_where + keywordSql;
+		}
+		return filterSql;
+	}
+	@Override
+	public List<DictModel> queryAllTableDictItems(String table, String text, String code, String condition, String keyword) {
+		String filterSql = getFilterSql(text, code, condition, keyword);
+		List<DictModel> ls = baseMapper.queryAllTableDictItems(table, text, code, filterSql);
+    	return ls;
 	}
 
 	@Override
@@ -238,4 +286,61 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		Page<DictModel> pageList = baseMapper.queryDictTablePageList(page, query);
 		return pageList.getRecords();
 	}
+
+	@Override
+	public List<DictModel> getDictItems(String dictCode) {
+		List<DictModel> ls;
+		if (dictCode.contains(",")) {
+			//关联表字典（举例：sys_user,realname,id）
+			String[] params = dictCode.split(",");
+			if (params.length < 3) {
+				// 字典Code格式不正确
+				return null;
+			}
+			//SQL注入校验（只限制非法串改数据库）
+			final String[] sqlInjCheck = {params[0], params[1], params[2]};
+			SqlInjectionUtil.filterContent(sqlInjCheck);
+			if (params.length == 4) {
+				// SQL注入校验（查询条件SQL 特殊check，此方法仅供此处使用）
+				SqlInjectionUtil.specialFilterContent(params[3]);
+				ls = this.queryTableDictItemsByCodeAndFilter(params[0], params[1], params[2], params[3]);
+			} else if (params.length == 3) {
+				ls = this.queryTableDictItemsByCode(params[0], params[1], params[2]);
+			} else {
+				// 字典Code格式不正确
+				return null;
+			}
+		} else {
+			//字典表
+			ls = this.queryDictItemsByCode(dictCode);
+		}
+		return ls;
+	}
+
+	@Override
+	public List<DictModel> loadDict(String dictCode, String keyword, Integer pageSize) {
+		if (dictCode.contains(",")) {
+			//update-begin-author:taoyan date:20210329 for: 下拉搜索不支持表名后加查询条件
+			String[] params = dictCode.split(",");
+			String condition = null;
+			if (params.length != 3 && params.length != 4) {
+				// 字典Code格式不正确
+				return null;
+			} else if (params.length == 4) {
+				condition = params[3];
+			}
+			List<DictModel> ls;
+			if (pageSize != null) {
+				ls = this.queryLittleTableDictItems(params[0], params[1], params[2], condition, keyword, pageSize);
+			} else {
+				ls = this.queryAllTableDictItems(params[0], params[1], params[2], condition, keyword);
+			}
+			//update-end-author:taoyan date:20210329 for: 下拉搜索不支持表名后加查询条件
+			return ls;
+		} else {
+			// 字典Code格式不正确
+			return null;
+		}
+	}
+
 }

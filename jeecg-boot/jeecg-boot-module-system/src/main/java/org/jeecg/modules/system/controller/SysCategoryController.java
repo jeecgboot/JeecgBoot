@@ -409,10 +409,11 @@ public class SysCategoryController {
 	  * 分类字典控件数据回显[表单页面]
 	  *
 	  * @param ids
+	  * @param delNotExist 是否移除不存在的项，默认为true，设为false如果某个key不存在数据库中，则直接返回key本身
 	  * @return
 	  */
 	 @RequestMapping(value = "/loadDictItem", method = RequestMethod.GET)
-	 public Result<List<String>> loadDictItem(@RequestParam(name = "ids") String ids) {
+	 public Result<List<String>> loadDictItem(@RequestParam(name = "ids") String ids, @RequestParam(name = "delNotExist", required = false, defaultValue = "true") boolean delNotExist) {
 		 Result<List<String>> result = new Result<>();
 		 // 非空判断
 		 if (StringUtils.isBlank(ids)) {
@@ -420,13 +421,8 @@ public class SysCategoryController {
 			 result.setMessage("ids 不能为空");
 			 return result;
 		 }
-		 String[] idArray = ids.split(",");
-		 LambdaQueryWrapper<SysCategory> query = new LambdaQueryWrapper<>();
-		 query.in(SysCategory::getId, Arrays.asList(idArray));
 		 // 查询数据
-		 List<SysCategory> list = this.sysCategoryService.list(query);
-		 // 取出name并返回
-		 List<String> textList = list.stream().map(SysCategory::getName).collect(Collectors.toList());
+		 List<String> textList = sysCategoryService.loadDictItem(ids, delNotExist);
 		 result.setSuccess(true);
 		 result.setResult(textList);
 		 return result;

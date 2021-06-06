@@ -12,7 +12,7 @@
 
     <a-upload
       name="file"
-      :multiple="true"
+      :multiple="multiple"
       :action="uploadAction"
       :headers="headers"
       :data="{'biz':bizPath}"
@@ -133,6 +133,10 @@
       buttonVisible:{
         type:Boolean,
         required:false,
+        default: true
+      },
+      multiple: {
+        type: Boolean,
         default: true
       },
     },

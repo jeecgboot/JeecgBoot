@@ -34,7 +34,7 @@
         return this.rowIndex === 0
       },
       disabledMoveDown() {
-        return this.rowIndex === (this.rows.length - 1)
+        return this.rowIndex === (this.fullDataLength - 1)
       },
     },
     methods: {

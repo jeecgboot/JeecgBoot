@@ -1,13 +1,12 @@
 package org.jeecg.modules.system.service;
 
-import java.util.List;
-import java.util.Map;
-
+import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.modules.system.entity.SysCategory;
 import org.jeecg.modules.system.model.TreeSelectModel;
 
-import com.baomidou.mybatisplus.extension.service.IService;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 分类字典
@@ -58,5 +57,22 @@ public interface ISysCategoryService extends IService<SysCategory> {
 	 * @param ids
 	 */
 	void deleteSysCategory(String ids);
-	
+
+	/**
+	 * 分类字典控件数据回显[表单页面]
+	 *
+	 * @param ids
+	 * @return
+	 */
+	List<String> loadDictItem(String ids);
+
+	/**
+	 * 分类字典控件数据回显[表单页面]
+	 *
+	 * @param ids
+	 * @param delNotExist 是否移除不存在的项，设为false如果某个key不存在数据库中，则直接返回key本身
+	 * @return
+	 */
+	List<String> loadDictItem(String ids, boolean delNotExist);
+
 }

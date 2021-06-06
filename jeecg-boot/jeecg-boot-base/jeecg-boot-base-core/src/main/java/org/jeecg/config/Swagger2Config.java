@@ -23,7 +23,7 @@ import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +33,7 @@ import java.util.List;
  * @Author scott
  */
 @Configuration
-@EnableSwagger2
+@EnableSwagger2WebMvc
 @EnableKnife4j
 @Import(BeanValidatorPluginsConfiguration.class)
 public class Swagger2Config implements WebMvcConfigurer {

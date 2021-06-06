@@ -3,18 +3,18 @@
 
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline" @keyup.enter.native="searchQuery">
+      <a-form-model layout="inline" :model="queryParam" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
 
           <a-col :md="6" :sm="8">
-            <a-form-item label="规则名称">
+            <a-form-model-item label="规则名称" prop="ruleName">
               <a-input placeholder="请输入规则名称" v-model="queryParam.ruleName"/>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="规则Code">
+            <a-form-model-item label="规则Code" prop="ruleCode">
               <a-input placeholder="请输入规则Code" v-model="queryParam.ruleCode"/>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <template v-if="toggleSearchStatus">
           </template>
@@ -30,7 +30,7 @@
           </a-col>
 
         </a-row>
-      </a-form>
+      </a-form-model>
     </div>
 
     <!-- 操作按钮区域 -->

@@ -25,7 +25,7 @@
           <div style="margin-top: 24px;" v-else-if="userIdentity === '2' && departTree.length==0">
             <h3><span>您的部门下暂无有效部门信息</span></h3>
           </div>
-          <div style="margin-top: 24px;" v-else><h3>普通员工暂此权限</h3></div>
+          <div style="margin-top: 24px;" v-else><h3>普通员工暂无此权限</h3></div>
         </div>
       </a-card>
     </a-col>
@@ -49,8 +49,8 @@
 <script>
   import DeptBaseInfo from './modules/DeptBaseInfo'
   import DeptUserInfo from './modules/DeptUserInfo'
-  import {queryMyDepartTreeList, searchByKeywords} from '@/api/api'
-  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import { queryMyDepartTreeList, searchByKeywords } from '@/api/api'
+  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import DeptRoleInfo from './modules/DeptRoleInfo'
 
   export default {

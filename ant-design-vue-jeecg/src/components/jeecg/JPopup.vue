@@ -10,6 +10,7 @@
       ref="jPopupOnlReport"
       :code="code"
       :multi="multi"
+      :sorter="sorter"
       :groupId="uniqGroupId"
       :param="param"
       @ok="callBack"
@@ -46,6 +47,11 @@
         type: String,
         default: '',
         required: false
+      },
+      /** 排序列，指定要排序的列，使用方式：列名=desc|asc */
+      sorter: {
+        type: String,
+        default: ''
       },
       width: {
         type: Number,

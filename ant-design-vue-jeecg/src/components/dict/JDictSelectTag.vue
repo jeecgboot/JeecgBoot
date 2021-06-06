@@ -25,7 +25,6 @@
     props: {
       dictCode: String,
       placeholder: String,
-      triggerChange: Boolean,
       disabled: Boolean,
       value: [String, Number],
       type: String,
@@ -82,19 +81,15 @@
           }
         })
       },
-      handleInput(e) {
+      handleInput(e='') {
         let val;
-        if(this.tagType=="radio"){
+        if(Object.keys(e).includes('target')){
           val = e.target.value
         }else{
           val = e
         }
         console.log(val);
-        if(this.triggerChange){
-          this.$emit('change', val);
-        }else{
-          this.$emit('input', val);
-        }
+        this.$emit('change', val);
       },
       setCurrentDictOptions(dictOptions){
         this.dictOptions = dictOptions
@@ -102,6 +97,10 @@
       getCurrentDictOptions(){
         return this.dictOptions
       }
+    },
+    model:{
+      prop: 'value',
+      event: 'change'
     }
   }
 </script>
