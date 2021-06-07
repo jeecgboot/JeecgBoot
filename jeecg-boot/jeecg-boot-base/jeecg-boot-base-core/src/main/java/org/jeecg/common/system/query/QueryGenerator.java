@@ -235,12 +235,12 @@ public class QueryGenerator {
 			// 将现有排序 _ 前端传递排序条件{....,column: 'column1,column2',order: 'desc'} 翻译成sql "column1,column2 desc"
 			// 修改为 _ 前端传递排序条件{....,column: 'column1,column2',order: 'desc'} 翻译成sql "column1 desc,column2 desc"
 			if (order.toUpperCase().indexOf(ORDER_TYPE_ASC)>=0) {
-				queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));
+				//queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));
 				String columnStr = oConvertUtils.camelToUnderline(column);
 				String[] columnArray = columnStr.split(",");
 				queryWrapper.orderByAsc(columnArray);
 			} else {
-				queryWrapper.orderByDesc(oConvertUtils.camelToUnderline(column));
+				//queryWrapper.orderByDesc(oConvertUtils.camelToUnderline(column));
 				String columnStr = oConvertUtils.camelToUnderline(column);
 				String[] columnArray = columnStr.split(",");
 				queryWrapper.orderByDesc(columnArray);
