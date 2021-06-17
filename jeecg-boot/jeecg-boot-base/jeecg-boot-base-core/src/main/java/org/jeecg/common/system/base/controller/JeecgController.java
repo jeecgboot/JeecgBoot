@@ -1,5 +1,7 @@
 package org.jeecg.common.system.base.controller;
 
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -11,6 +13,10 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.online.cgform.entity.OnlCgformField;
+import org.jeecg.modules.online.cgform.entity.OnlCgformHead;
+import org.jeecg.modules.online.cgform.service.IOnlCgformFieldService;
+import org.jeecg.modules.online.cgform.service.IOnlCgformHeadService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -19,6 +25,7 @@ import org.jeecgframework.poi.excel.entity.enmus.ExcelType;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -26,6 +33,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,6 +50,12 @@ public class JeecgController<T, S extends IService<T>> {
 
     @Value("${jeecg.path.upload}")
     private String upLoadPath;
+
+    @Autowired
+    private IOnlCgformFieldService onlCgformFieldService;
+
+    @Autowired
+    private IOnlCgformHeadService onlCgformHeadService;
     /**
      * 导出excel
      *
@@ -172,6 +186,7 @@ public class JeecgController<T, S extends IService<T>> {
                 List<T> list = ExcelImportUtil.importExcel(file.getInputStream(), clazz, params);
                 //update-begin-author:taoyan date:20190528 for:批量插入数据
                 long start = System.currentTimeMillis();
+                checkImportList(clazz, list);
                 service.saveBatch(list);
                 //400条 saveBatch消耗时间1592毫秒  循环插入消耗时间1947毫秒
                 //1200条  saveBatch消耗时间3687毫秒 循环插入消耗时间5212毫秒
@@ -190,5 +205,75 @@ public class JeecgController<T, S extends IService<T>> {
             }
         }
         return Result.error("文件导入失败！");
+    }
+
+    private void checkImportList(Class<T> clazz, List<T> dataList) throws Exception {
+        TableName tableName = clazz.getAnnotation(TableName.class);
+        String tableNameValue = tableName.value();
+        OnlCgformHead onlCgformHead = new OnlCgformHead();
+        onlCgformHead.setTableName(tableNameValue);
+        Map<String, String[]> headParameterMap = new HashMap<>();
+        headParameterMap.put("tableName", new String[]{tableNameValue});
+        QueryWrapper<OnlCgformHead> headQueryWrapper = QueryGenerator.initQueryWrapper(onlCgformHead, headParameterMap);
+
+        List<OnlCgformHead> onlCgformHeads = onlCgformHeadService.list(headQueryWrapper);
+        if (onlCgformHeads.size() != 1) {
+            return ;
+        }
+
+        OnlCgformField onlCgformField = new OnlCgformField();
+        String cgformHeadId = onlCgformHeads.get(0).getId();
+        onlCgformField.setCgformHeadId(cgformHeadId);
+        Map<String, String[]> fieldParameterMap = new HashMap<>();
+        fieldParameterMap.put("cgformHeadId", new String[]{cgformHeadId});
+        QueryWrapper<OnlCgformField> fieldQqueryWrapper = QueryGenerator.initQueryWrapper(onlCgformField, fieldParameterMap);
+        List<OnlCgformField> onlCgformFieldList = onlCgformFieldService.list(fieldQqueryWrapper);
+
+        for (OnlCgformField onlCgformFieldOld : onlCgformFieldList) {
+            String fieldValidType = onlCgformFieldOld.getFieldValidType();
+            Field field = null;
+            Object fieldValue = null;
+            // 必填字段判断
+            String fieldMustInput = onlCgformFieldOld.getFieldMustInput();
+            if ("1".equals(fieldMustInput)) {
+                for (T element : dataList) {
+                    try {
+                        field = element.getClass().getDeclaredField(onlCgformFieldOld.getDbFieldName());
+                        field.setAccessible(true);
+                        fieldValue = field.get(element);
+                        if (null == fieldValue || "".equals(fieldValue.toString())) {
+                            throw new Exception(String.format("字段：%s 为必填字段", onlCgformFieldOld.getDbFieldTxt()));
+                        }
+                    } catch (NoSuchFieldException | IllegalAccessException ignored) {
+                    }
+                }
+            }
+
+            // 唯一字段判断
+            if ("only".equals(fieldValidType)) {
+                List<Object> valueList = new ArrayList<>();
+                for (T element : dataList) {
+                    try {
+                        field = element.getClass().getDeclaredField(onlCgformFieldOld.getDbFieldName());
+                        field.setAccessible(true);
+                        fieldValue = field.get(element);
+                        valueList.add(fieldValue);
+                    } catch (NoSuchFieldException | IllegalAccessException ignored) {
+                    }
+                }
+                QueryWrapper<T> queryWrapper = new QueryWrapper<>();
+                queryWrapper.in(onlCgformFieldOld.getDbFieldName(), valueList);
+                List<T> oldDataList = service.list(queryWrapper);
+                if (!CollectionUtils.isEmpty(oldDataList)) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append(String.format("字段：%s 以下数据已在数据中存在:", onlCgformFieldOld.getDbFieldTxt()));
+                    for (Object value : valueList) {
+                        stringBuilder.append(value.toString());
+                        stringBuilder.append(",");
+                    }
+                    throw new Exception(stringBuilder.toString());
+                }
+            }
+        }
     }
 }
