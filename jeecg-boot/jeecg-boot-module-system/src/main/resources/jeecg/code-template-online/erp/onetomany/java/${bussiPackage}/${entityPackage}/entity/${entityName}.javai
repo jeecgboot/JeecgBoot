@@ -39,9 +39,9 @@ public class ${entityName} implements Serializable {
         <#assign list_field_dictCode=', dictTable = "${po.dictTable}", dicText = "${po.dictText}", dicCode = "${po.dictField}"'>
       <#elseif po.dictField?default("")?trim?length gt 1>
         <#assign list_field_dictCode=', dicCode = "${po.dictField}"'>
-      <#elseif po.classType=='sel_tree'>
-          <#assign list_field_dictCode=', dictTable = "${po.dictTable}", dicText = "${po.dictText?split(",")[2]}", dicCode = "${po.dictText?split(",")[0]}"'>
-      </#if>
+    </#if>
+    <#elseif po.classType=='sel_tree'>
+        <#assign list_field_dictCode=', dictTable = "${po.dictTable}", dicText = "${po.dictText?split(",")[2]}", dicCode = "${po.dictText?split(",")[0]}"'>
     </#if>
 	/**${po.filedComment}*/
 	<#if po.fieldName == primaryKeyField>
