@@ -39,9 +39,9 @@ public class ${entityName} implements Serializable {
         <#assign list_field_dictCode=', dictTable = "${po.dictTable}", dicText = "${po.dictText}", dicCode = "${po.dictField}"'>
       <#elseif po.dictField?default("")?trim?length gt 1>
         <#assign list_field_dictCode=', dicCode = "${po.dictField}"'>
-      <#elseif po.classType=='sel_tree'>
-          <#assign list_field_dictCode=', dictTable = "${po.dictTable}", dicText = "${po.dictText?split(",")[2]}", dicCode = "${po.dictText?split(",")[0]}"'>
-      </#if>
+    </#if>
+    <#elseif po.classType=='sel_tree'>
+        <#assign list_field_dictCode=', dictTable = "${po.dictTable}", dicText = "${po.dictText?split(",")[2]}", dicCode = "${po.dictText?split(",")[0]}"'>
     </#if>
 	/**${po.filedComment}*/
 	<#if po.fieldName == primaryKeyField>
@@ -50,13 +50,13 @@ public class ${entityName} implements Serializable {
 		<#if po.fieldDbType =='Date'>
 			<#if po.classType=='date'>
     <#if !excel_ignore_arr?seq_contains("${po.fieldName}")>
-	@Excel(name = "${po.filedComment}", width = 15, format = "yyyy-MM-dd"${list_field_dictCode})
+	@Excel(name = "${po.filedComment}", width = 15, format = "yyyy-MM-dd")
 	</#if>
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
 			<#else>
     <#if !excel_ignore_arr?seq_contains("${po.fieldName}")>
-	@Excel(name = "${po.filedComment}", width = 20, format = "yyyy-MM-dd HH:mm:ss"${list_field_dictCode})
+	@Excel(name = "${po.filedComment}", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	</#if>
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
