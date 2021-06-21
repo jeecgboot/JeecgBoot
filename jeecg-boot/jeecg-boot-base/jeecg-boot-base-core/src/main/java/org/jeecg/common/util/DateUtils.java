@@ -291,7 +291,7 @@ public class DateUtils extends PropertyEditorSupport {
         Date dt = new Date();
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String nowTime = df.format(dt);
-        java.sql.Timestamp buydate = java.sql.Timestamp.valueOf(nowTime);
+        Timestamp buydate = Timestamp.valueOf(nowTime);
         return buydate;
     }
 
@@ -614,6 +614,10 @@ public class DateUtils extends PropertyEditorSupport {
         }
 
         return 0;
+    }
+
+    public static Long getCurrentTimestamp() {
+        return Long.valueOf(DateUtils.yyyymmddhhmmss.get().format(new Date()));
     }
 
     /**
