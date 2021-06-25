@@ -6,11 +6,14 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * online 拦截器配置
+ * 签名 拦截器配置
  */
 @Configuration
 public class SignAuthConfiguration implements WebMvcConfigurer {
-
+    public static String[] urlList = new String[] {"/sys/dict/getDictItems/*", "/sys/dict/loadDict/*",
+            "/sys/dict/loadDictOrderByValue/*", "/sys/dict/loadDictItem/*", "/sys/dict/loadTreeData",
+            "/sys/api/queryTableDictItemsByCode", "/sys/api/queryFilterTableDictInfo", "/sys/api/queryTableDictByKeys",
+            "/sys/api/translateDictFromTable", "/sys/api/translateDictFromTableByKeys"};
     @Bean
     public SignAuthInterceptor signAuthInterceptor() {
         return new SignAuthInterceptor();
@@ -18,10 +21,6 @@ public class SignAuthConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        String[] inculudes = new String[] {"/sys/dict/getDictItems/*", "/sys/dict/loadDict/*",
-            "/sys/dict/loadDictOrderByValue/*", "/sys/dict/loadDictItem/*", "/sys/dict/loadTreeData",
-            "/sys/api/queryTableDictItemsByCode", "/sys/api/queryFilterTableDictInfo", "/sys/api/queryTableDictByKeys",
-            "/sys/api/translateDictFromTable", "/sys/api/translateDictFromTableByKeys"};
-        registry.addInterceptor(signAuthInterceptor()).addPathPatterns(inculudes);
+        registry.addInterceptor(signAuthInterceptor()).addPathPatterns(urlList);
     }
 }

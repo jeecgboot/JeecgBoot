@@ -1,22 +1,20 @@
 package org.jeecg.config.sign.interceptor;
 
 
-import java.io.PrintWriter;
-import java.util.SortedMap;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.alibaba.fastjson.JSON;
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.config.sign.util.BodyReaderHttpServletRequestWrapper;
 import org.jeecg.config.sign.util.HttpUtils;
 import org.jeecg.config.sign.util.SignUtil;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import com.alibaba.fastjson.JSON;
-
-import lombok.extern.slf4j.Slf4j;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+import java.util.SortedMap;
 
 /**
  * 签名拦截器
@@ -31,13 +29,13 @@ public class SignAuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        log.debug("request URI = " + request.getRequestURI());
+        log.info("request URI = " + request.getRequestURI());
         HttpServletRequest requestWrapper = new BodyReaderHttpServletRequestWrapper(request);
         //获取全部参数(包括URL和body上的)
         SortedMap<String, String> allParams = HttpUtils.getAllParams(requestWrapper);
         //对参数进行签名验证
-        String headerSign = request.getHeader("X-Sign");
-        String timesTamp = request.getHeader("X-TIMESTAMP");
+        String headerSign = request.getHeader(CommonConstant.X_SIGN);
+        String timesTamp = request.getHeader(CommonConstant.X_TIMESTAMP);
 
         //1.校验时间有消息
         try {
@@ -60,15 +58,6 @@ public class SignAuthInterceptor implements HandlerInterceptor {
         } else {
             log.error("request URI = " + request.getRequestURI());
             log.error("Sign 签名校验失败！Header Sign : {}",headerSign);
-//            //打印日志参数
-//            Set<String> keySet = allParams.keySet();
-//            Iterator<String> paramIt = keySet.iterator();
-//            while(paramIt.hasNext()){
-//                String pkey = paramIt.next();
-//                String pval = allParams.get(pkey);
-//                log.error(" ["+pkey+":"+pval+"] ");
-//            }
-
             //校验失败返回前端
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json; charset=utf-8");
