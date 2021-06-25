@@ -1,6 +1,7 @@
 package org.jeecg.config.sign.util;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.http.HttpMethod;
 
@@ -21,6 +22,7 @@ import java.util.TreeMap;
  * @author jeecg
  * @date 20210621
  */
+@Slf4j
 public class HttpUtils {
 
     /**
@@ -36,7 +38,10 @@ public class HttpUtils {
         // 获取URL上最后带逗号的参数变量 sys/dict/getDictItems/sys_user,realname,username
         String pathVariable = request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/") + 1);
         if (pathVariable.contains(",")) {
-            result.put(SignUtil.xPathVariable, pathVariable);
+            log.info(" pathVariable: {}",pathVariable);
+            String deString = URLDecoder.decode(pathVariable, "UTF-8");
+            log.info(" pathVariable decode: {}",deString);
+            result.put(SignUtil.xPathVariable, deString);
         }
         // 获取URL上的参数
         Map<String, String> urlParams = getUrlParams(request);
@@ -71,7 +76,10 @@ public class HttpUtils {
         // 获取URL上最后带逗号的参数变量 sys/dict/getDictItems/sys_user,realname,username
         String pathVariable = url.substring(url.lastIndexOf("/") + 1);
         if (pathVariable.contains(",")) {
-            result.put(SignUtil.xPathVariable, pathVariable);
+            log.info(" pathVariable: {}",pathVariable);
+            String deString = URLDecoder.decode(pathVariable, "UTF-8");
+            log.info(" pathVariable decode: {}",deString);
+            result.put(SignUtil.xPathVariable, deString);
         }
         // 获取URL上的参数
         Map<String, String> urlParams = getUrlParams(queryString);
