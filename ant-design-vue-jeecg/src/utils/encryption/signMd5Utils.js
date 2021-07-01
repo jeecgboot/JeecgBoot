@@ -54,7 +54,7 @@ export default class signMd5Utils {
       if(lastpathVariable.includes("?")){
         lastpathVariable = lastpathVariable.substring(0, lastpathVariable.indexOf("?"));
       }
-      result["x-path-variable"] = lastpathVariable;
+      result["x-path-variable"] = decodeURI(lastpathVariable);
     }
     if (urlArray && urlArray[1]) {
       let paramString = urlArray[1], paramResult;
