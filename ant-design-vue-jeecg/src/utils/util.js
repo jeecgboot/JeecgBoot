@@ -159,7 +159,6 @@ function  generateChildRouters (data) {
     }
     if(item.alwaysShow){
       menu.alwaysShow = true;
-      menu.redirect = menu.path;
     }
     if (item.children && item.children.length > 0) {
       menu.children = [...generateChildRouters( item.children)];
