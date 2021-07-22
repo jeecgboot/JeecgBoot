@@ -18,8 +18,10 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.mybatis.TenantContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.Set;
@@ -97,6 +99,14 @@ public class ShiroRealm extends AuthorizingRealm {
         }
         // 校验token有效性
         LoginUser loginUser = this.checkUserTokenIsEffect(token);
+        // 检查租户信息
+        String currentTenant = TenantContext.getTenant();
+        if (!StringUtils.isEmpty(currentTenant)) {
+            Set<String> tenantIds = StringUtils.commaDelimitedListToSet(loginUser.getRelTenantIds());
+            if (!tenantIds.contains(currentTenant)) {
+                throw new AuthenticationException("租户信息不匹配!");
+            }
+        }
         return new SimpleAuthenticationInfo(loginUser, token, getName());
     }
 
