@@ -139,7 +139,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 微服务框架： Spring Cloud Alibaba 2.2.3.RELEASE
 
-- 持久层框架：Mybatis-plus 3.4.1
+- 持久层框架：Mybatis-plus 3.4.1、minidao
 
 - 安全框架：Apache Shiro 1.7.0，Jwt 3.11.0
 
