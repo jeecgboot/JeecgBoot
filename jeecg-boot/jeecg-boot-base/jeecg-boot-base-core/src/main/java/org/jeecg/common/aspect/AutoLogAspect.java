@@ -1,34 +1,32 @@
 package org.jeecg.common.aspect;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.PropertyFilter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.jeecg.common.api.dto.LogDTO;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.enums.ModuleType;
-import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.IPUtils;
-import org.jeecg.common.util.SpringContextUtils;
-import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.util.*;
+import org.jeecg.modules.base.service.BaseCommonService;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
-import javax.annotation.Resource;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
-import java.util.Date;
+import java.util.*;
 
 
 /**
@@ -40,10 +38,13 @@ import java.util.Date;
  */
 @Aspect
 @Component
+@RequiredArgsConstructor
 public class AutoLogAspect {
 
-    @Resource
-    private BaseCommonService baseCommonService;
+    private static final List<Class<?>> ignoreArgClasses = Arrays.asList(BindingResult.class, ServletRequest.class,
+            ServletResponse.class, MultipartFile.class, ShiroHttpServletRequest.class);
+
+    private final BaseCommonService baseCommonService;
 
     @Pointcut("@annotation(org.jeecg.common.aspect.annotation.AutoLog)")
     public void logPointCut() {
@@ -70,10 +71,10 @@ public class AutoLogAspect {
 
         LogDTO dto = new LogDTO();
         AutoLog syslog = method.getAnnotation(AutoLog.class);
-        if(syslog != null){
+        if (syslog != null) {
             //update-begin-author:taoyan date:
             String content = syslog.value();
-            if(syslog.module()== ModuleType.ONLINE){
+            if (syslog.module() == ModuleType.ONLINE) {
                 content = getOnlineLogContent(obj, content);
             }
             //注解上的描述,操作日志内容
@@ -86,7 +87,6 @@ public class AutoLogAspect {
         String methodName = signature.getName();
         dto.setMethod(className + "." + methodName + "()");
 
-
         //设置操作类型
         if (dto.getLogType() == CommonConstant.LOG_TYPE_2) {
             dto.setOperateType(getOperateType(methodName, syslog.operateType()));
@@ -95,15 +95,14 @@ public class AutoLogAspect {
         //获取request
         HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
         //请求的参数
-        dto.setRequestParam(getReqestParams(request,joinPoint));
+        dto.setRequestParam(getRequestParams(joinPoint));
         //设置IP地址
         dto.setIp(IPUtils.getIpAddr(request));
         //获取登录用户信息
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        if(sysUser!=null){
+        if (sysUser != null) {
             dto.setUserid(sysUser.getUsername());
             dto.setUsername(sysUser.getRealname());
-
         }
         //耗时
         dto.setCostTime(time);
@@ -116,7 +115,7 @@ public class AutoLogAspect {
     /**
      * 获取操作类型
      */
-    private int getOperateType(String methodName,int operateType) {
+    private int getOperateType(String methodName, int operateType) {
         if (operateType > 0) {
             return operateType;
         }
@@ -142,129 +141,69 @@ public class AutoLogAspect {
     }
 
     /**
+     * @param joinPoint: joinPoint
      * @Description: 获取请求参数
      * @author: scott
      * @date: 2020/4/16 0:10
-     * @param request:  request
-     * @param joinPoint:  joinPoint
      * @Return: java.lang.String
      */
-    private String getReqestParams(HttpServletRequest request, JoinPoint joinPoint) {
-        String httpMethod = request.getMethod();
-        String params = "";
-        if ("POST".equals(httpMethod) || "PUT".equals(httpMethod) || "PATCH".equals(httpMethod)) {
-            Object[] paramsArray = joinPoint.getArgs();
-            // java.lang.IllegalStateException: It is illegal to call this method if the current request is not in asynchronous mode (i.e. isAsyncStarted() returns false)
-            //  https://my.oschina.net/mengzhang6/blog/2395893
-            Object[] arguments  = new Object[paramsArray.length];
-            for (int i = 0; i < paramsArray.length; i++) {
-                if (paramsArray[i] instanceof BindingResult || paramsArray[i] instanceof ServletRequest || paramsArray[i] instanceof ServletResponse || paramsArray[i] instanceof MultipartFile) {
-                    //ServletRequest不能序列化，从入参里排除，否则报异常：java.lang.IllegalStateException: It is illegal to call this method if the current request is not in asynchronous mode (i.e. isAsyncStarted() returns false)
-                    //ServletResponse不能序列化 从入参里排除，否则报异常：java.lang.IllegalStateException: getOutputStream() has already been called for this response
-                    continue;
-                }
-                arguments[i] = paramsArray[i];
-            }
-            //update-begin-author:taoyan date:20200724 for:日志数据太长的直接过滤掉
-            PropertyFilter profilter = new PropertyFilter() {
-                @Override
-                public boolean apply(Object o, String name, Object value) {
-                    if(value!=null && value.toString().length()>500){
-                        return false;
-                    }
-                    return true;
-                }
-            };
-            params = JSONObject.toJSONString(arguments, profilter);
-            //update-end-author:taoyan date:20200724 for:日志数据太长的直接过滤掉
-        } else {
-            MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-            Method method = signature.getMethod();
-            // 请求的方法参数值
-            Object[] args = joinPoint.getArgs();
-            // 请求的方法参数名称
-            LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
-            String[] paramNames = u.getParameterNames(method);
-            if (args != null && paramNames != null) {
-                for (int i = 0; i < args.length; i++) {
-                    params += "  " + paramNames[i] + ": " + args[i];
-                }
+    //update-begin-author:season date:20210730 for:统一日志格式为JSON
+    private String getRequestParams(JoinPoint joinPoint) {
+        Map<String, Object> loggingArguments = getLoggingArguments(joinPoint);
+        //update-begin-author:taoyan date:20200724 for:日志数据太长的直接过滤掉
+        PropertyFilter propFilter = (o, name, value) -> value == null || value.toString().length() <= 500;
+        //update-end-author:taoyan date:20200724 for:日志数据太长的直接过滤掉
+        return JSON.toJSONString(loggingArguments, propFilter);
+    }
+
+    private Map<String, Object> getLoggingArguments(JoinPoint joinPoint) {
+        Object[] args = joinPoint.getArgs();
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Method method = signature.getMethod();
+        LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
+        String[] names = u.getParameterNames(method);
+        Map<String, Object> result = new HashMap<>();
+        for (int i = 0; i < names.length; i++) {
+            if (isLoggingArgument(args[i])) {
+                result.put(names[i], args[i]);
             }
         }
-        return params;
+        return result;
     }
 
     /**
+     * 是否为需要记录日志的参数
+     *
+     * @param arg
+     * @return
+     */
+    protected boolean isLoggingArgument(Object arg) {
+        return ignoreArgClasses.stream().filter(c -> c.isAssignableFrom(arg.getClass())).count() == 0;
+    }
+    //update-end-author:season date:20210730 for:统一日志格式为JSON
+    
+    /**
      * online日志内容拼接
+     *
      * @param obj
      * @param content
      * @return
      */
-    private String getOnlineLogContent(Object obj, String content){
-        if (Result.class.isInstance(obj)){
-            Result res = (Result)obj;
+    private String getOnlineLogContent(Object obj, String content) {
+        if (Result.class.isInstance(obj)) {
+            Result res = (Result) obj;
             String msg = res.getMessage();
             String tableName = res.getOnlTable();
-            if(oConvertUtils.isNotEmpty(tableName)){
-                content+=",表名:"+tableName;
+            if (oConvertUtils.isNotEmpty(tableName)) {
+                content += ",表名:" + tableName;
             }
-            if(res.isSuccess()){
-                content+= ","+(oConvertUtils.isEmpty(msg)?"操作成功":msg);
-            }else{
-                content+= ","+(oConvertUtils.isEmpty(msg)?"操作失败":msg);
+            if (res.isSuccess()) {
+                content += "," + (oConvertUtils.isEmpty(msg) ? "操作成功" : msg);
+            } else {
+                content += "," + (oConvertUtils.isEmpty(msg) ? "操作失败" : msg);
             }
         }
         return content;
     }
 
-
-    /*    private void saveSysLog(ProceedingJoinPoint joinPoint, long time, Object obj) {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Method method = signature.getMethod();
-
-        SysLog sysLog = new SysLog();
-        AutoLog syslog = method.getAnnotation(AutoLog.class);
-        if(syslog != null){
-            //update-begin-author:taoyan date:
-            String content = syslog.value();
-            if(syslog.module()== ModuleType.ONLINE){
-                content = getOnlineLogContent(obj, content);
-            }
-            //注解上的描述,操作日志内容
-            sysLog.setLogContent(content);
-            sysLog.setLogType(syslog.logType());
-        }
-
-        //请求的方法名
-        String className = joinPoint.getTarget().getClass().getName();
-        String methodName = signature.getName();
-        sysLog.setMethod(className + "." + methodName + "()");
-
-
-        //设置操作类型
-        if (sysLog.getLogType() == CommonConstant.LOG_TYPE_2) {
-            sysLog.setOperateType(getOperateType(methodName, syslog.operateType()));
-        }
-
-        //获取request
-        HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
-        //请求的参数
-        sysLog.setRequestParam(getReqestParams(request,joinPoint));
-
-        //设置IP地址
-        sysLog.setIp(IPUtils.getIpAddr(request));
-
-        //获取登录用户信息
-        LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
-        if(sysUser!=null){
-            sysLog.setUserid(sysUser.getUsername());
-            sysLog.setUsername(sysUser.getRealname());
-
-        }
-        //耗时
-        sysLog.setCostTime(time);
-        sysLog.setCreateTime(new Date());
-        //保存系统日志
-        sysLogService.save(sysLog);
-    }*/
 }
