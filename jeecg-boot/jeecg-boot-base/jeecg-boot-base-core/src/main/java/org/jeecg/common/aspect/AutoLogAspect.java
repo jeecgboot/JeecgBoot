@@ -178,10 +178,10 @@ public class AutoLogAspect {
      * @return
      */
     protected boolean isLoggingArgument(Object arg) {
-        return ignoreArgClasses.stream().filter(c -> c.isAssignableFrom(arg.getClass())).count() == 0;
+        return ignoreArgClasses.stream().filter(c -> arg != null && c.isAssignableFrom(arg.getClass())).count() == 0;
     }
     //update-end-author:season date:20210730 for:统一日志格式为JSON
-    
+
     /**
      * online日志内容拼接
      *

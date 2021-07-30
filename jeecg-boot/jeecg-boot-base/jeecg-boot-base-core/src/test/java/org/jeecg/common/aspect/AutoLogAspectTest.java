@@ -35,6 +35,7 @@ public class AutoLogAspectTest {
         assertFalse(aspect.isLoggingArgument(mock(MultipartFile.class)));
         assertFalse(aspect.isLoggingArgument(mock(ShiroHttpServletRequest.class)));
         assertTrue(aspect.isLoggingArgument("test"));
+        assertTrue(aspect.isLoggingArgument(null));
     }
 
 }
