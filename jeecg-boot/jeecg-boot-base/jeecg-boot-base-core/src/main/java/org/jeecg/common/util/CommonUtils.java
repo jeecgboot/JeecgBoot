@@ -1,25 +1,26 @@
 package org.jeecg.common.util;
 
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.extra.pinyin.PinyinUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.constant.DataBaseConstant;
-import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.util.oss.OssBootUtil;
-import org.jeecgframework.poi.util.PoiPublicUtil;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.sql.DataSource;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.sql.DataSource;
+
+import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.DataBaseConstant;
+import org.jeecg.common.util.filter.FileTypeFilter;
+import org.jeecg.common.util.oss.OssBootUtil;
+import org.jeecgframework.poi.util.PoiPublicUtil;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.extension.toolkit.JdbcUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CommonUtils {
@@ -74,7 +75,8 @@ public class CommonUtils {
             fileName = fileName.substring(pos + 1);
         }
         //替换上传文件名字的特殊字符
-        fileName = fileName.replace("=","").replace(",","").replace("&","").replace("#", "");
+        fileName = fileName.replace("=","").replace(",","").replace("&","")
+                .replace("#", "").replace("“", "").replace("”", "");
         //替换上传文件名字中的空格
         fileName=fileName.replaceAll("\\s","");
         return fileName;
@@ -106,6 +108,49 @@ public class CommonUtils {
         }
         return url;
     }
+    /**
+     * 本地文件上传
+     * @param mf 文件
+     * @param bizPath  自定义路径
+     * @return
+     */
+    public static String uploadLocal(MultipartFile mf,String bizPath,String uploadpath){
+        try {
+            //update-begin-author:liusq date:20210809 for: 过滤上传文件类型
+            FileTypeFilter.fileTypeFilter(mf);
+            //update-end-author:liusq date:20210809 for: 过滤上传文件类型
+            String fileName = null;
+            File file = new File(uploadpath + File.separator + bizPath + File.separator );
+            if (!file.exists()) {
+                file.mkdirs();// 创建文件根目录
+            }
+            String orgName = mf.getOriginalFilename();// 获取文件名
+            orgName = CommonUtils.getFileName(orgName);
+            if(orgName.indexOf(".")!=-1){
+                fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.lastIndexOf("."));
+            }else{
+                fileName = orgName+ "_" + System.currentTimeMillis();
+            }
+            String savePath = file.getPath() + File.separator + fileName;
+            File savefile = new File(savePath);
+            FileCopyUtils.copy(mf.getBytes(), savefile);
+            String dbpath = null;
+            if(oConvertUtils.isNotEmpty(bizPath)){
+                dbpath = bizPath + File.separator + fileName;
+            }else{
+                dbpath = fileName;
+            }
+            if (dbpath.contains("\\")) {
+                dbpath = dbpath.replace("\\", "/");
+            }
+            return dbpath;
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return "";
+    }
 
     /**
      * 统一全局上传 带桶
@@ -123,6 +168,13 @@ public class CommonUtils {
 
     /** 当前系统数据库类型 */
     private static String DB_TYPE = "";
+    private static DbType dbTypeEnum = null;
+
+    /**
+     * 全局获取平台数据库类型（作废了）
+     * @return
+     */
+    @Deprecated
     public static String getDatabaseType() {
         if(oConvertUtils.isNotEmpty(DB_TYPE)){
             return DB_TYPE;
@@ -132,8 +184,26 @@ public class CommonUtils {
             return getDatabaseTypeByDataSource(dataSource);
         } catch (SQLException e) {
             //e.printStackTrace();
-            log.warn(e.getMessage());
+            log.warn(e.getMessage(),e);
             return "";
+        }
+    }
+
+    /**
+     * 全局获取平台数据库类型（对应mybaisPlus枚举）
+     * @return
+     */
+    public static DbType getDatabaseTypeEnum() {
+        if (oConvertUtils.isNotEmpty(dbTypeEnum)) {
+            return dbTypeEnum;
+        }
+        try {
+            DataSource dataSource = SpringContextUtils.getApplicationContext().getBean(DataSource.class);
+            dbTypeEnum = JdbcUtils.getDbType(dataSource.getConnection().getMetaData().getURL());
+            return dbTypeEnum;
+        } catch (SQLException e) {
+            log.warn(e.getMessage(), e);
+            return null;
         }
     }
 
@@ -157,8 +227,11 @@ public class CommonUtils {
                     DB_TYPE = DataBaseConstant.DB_TYPE_SQLSERVER;
                 }else if(dbType.indexOf("postgresql")>=0) {
                     DB_TYPE = DataBaseConstant.DB_TYPE_POSTGRESQL;
+                }else if(dbType.indexOf("mariadb")>=0) {
+                    DB_TYPE = DataBaseConstant.DB_TYPE_MARIADB;
                 }else {
-                    throw new JeecgBootException("数据库类型:["+dbType+"]不识别!");
+                    log.error("数据库类型:[" + dbType + "]不识别!");
+                    //throw new JeecgBootException("数据库类型:["+dbType+"]不识别!");
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(), e);

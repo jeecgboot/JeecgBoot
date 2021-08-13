@@ -49,7 +49,7 @@ public class DynamicDBUtil {
         dataSource.setBreakAfterAcquireFailure(true);
         dataSource.setConnectionErrorRetryAttempts(0);
         dataSource.setUsername(dbUser);
-        dataSource.setMaxWait(60000);
+        dataSource.setMaxWait(30000);
         dataSource.setPassword(dbPassword);
 
         log.info("******************************************");
@@ -151,6 +151,7 @@ public class DynamicDBUtil {
         list = findList(dbKey, sql, param);
         if (oConvertUtils.listIsEmpty(list)) {
             log.error("Except one, but not find actually");
+            return null;
         }
         if (list.size() > 1) {
             log.error("Except one, but more than one actually");

@@ -1,5 +1,5 @@
 <!-- JEditableTable -->
-<!-- @version 1.6.1 -->
+<!-- @version 1.6.2 -->
 <!-- @author sjlei -->
 <template>
   <a-spin :spinning="loading">
@@ -11,7 +11,33 @@
       <a-col>
         <!-- 操作按钮 -->
         <div v-if="actionButton" class="action-button">
-          <a-button v-if="buttonPermission('add')" type="primary" icon="plus" @click="handleClickAdd" :disabled="disabled">新增</a-button>
+          <a-button-group v-if="buttonPermission('add')">
+            <a-button type="primary" icon="plus" @click="handleClickAdd" :disabled="disabled">新增</a-button>
+            <a-popover v-if="addButtonSettings" placement="right" overlayClassName="j-add-btn-settings">
+              <a-row slot="title">
+                <a-col :span="12">选项</a-col>
+                <a-col :span="12" style="text-align: right;">
+                  <a-tooltip title="保存为默认值">
+                    <a-button type="link" icon="save" size="small" style="position: relative;left:4px;" @click="onAddButtonSettingsSave"/>
+                  </a-tooltip>
+                </a-col>
+              </a-row>
+              <template slot="content">
+                <a-form-model layout="horizontal" :labelCol="{span:8}" :wrapperCol="{span:16}">
+                  <a-form-model-item label="添加行数">
+                    <a-input-number v-model="settings.addRowNum" :min="1"/>
+                  </a-form-model-item>
+                  <a-form-model-item label="添加位置">
+                    <a-input-number v-model="settings.addIndex" :min="0" :max="rows.length"/>
+                    <p style="font-size: 12px;color:#aaa;line-height: 14px;text-align: right;margin: 0;">0 = 最底部</p>
+                  </a-form-model-item>
+                  <a-divider style="margin: 8px 0;"/>
+                  <a-checkbox v-model="settings.addScrollToBottom">添加后滚动到底部</a-checkbox>
+                </a-form-model>
+              </template>
+              <a-button icon="setting" type="primary"></a-button>
+            </a-popover>
+          </a-button-group>
           <span class="gap"></span>
           <template v-if="selectedRowIds.length>0">
             <a-popconfirm
@@ -318,7 +344,7 @@
                             <a-tooltip v-else-if="file.status==='done'" title="上传完成">
                               <a-icon type="check-circle" style="color:#00DB00;"/>
                             </a-tooltip>
-                            <a-tooltip v-else title="上传失败">
+                            <a-tooltip v-else :title="file.message||'上传失败'">
                               <a-icon type="exclamation-circle" style="color:red;"/>
                             </a-tooltip>
                           </template>
@@ -350,7 +376,7 @@
                         <a-tooltip v-bind="buildTooltipProps(row, col, id)">
                           <a-upload
                             name="file"
-                            :data="{'isup':1}"
+                            :data="{'isup':1, ...(col.data||{})}"
                             :multiple="false"
                             :action="col.action"
                             :headers="uploadGetHeaders(row,col)"
@@ -381,6 +407,8 @@
                           :dest-fields="col.destFields"
                           :code="col.popupCode"
                           :groupId="caseId"
+                          :param="col.param"
+                          :sorter="col.sorter"
                           @input="(value,others)=>popupCallback(value,others,id,row,col,rowIndex)"
                         />
                         <span
@@ -407,9 +435,9 @@
                             <span style="margin-left:5px">{{ getEllipsisWord(file.name,5) }}</span>
                           </a-tooltip>
 
-                          <a-tooltip v-else :title="file.name">
-                            <a-icon type="paper-clip" style="color:red;"/>
-                            <span style="color:red;margin-left:5px">{{ getEllipsisWord(file.name,5) }}</span>
+                          <a-tooltip v-else :title="file.message||'上传失败'">
+                            <a-icon type="exclamation-circle" style="color:red;"/>
+                            <span style="margin-left:5px">{{ getEllipsisWord(file.name,5) }}</span>
                           </a-tooltip>
 
                           <template style="width: 30px">
@@ -462,20 +490,9 @@
                           <template v-else-if="uploadValues[id]['path']">
                             <img class="j-editable-image" :src="getCellImageView(id)" alt="无图片" @click="handleMoreOperation(id,'img',col)"/>
                           </template>
-                          <template v-else>
-                            <a-icon type="exclamation-circle" style="color: red;" @click="handleClickShowImageError(id)"/>
-                          </template>
-                          <template slot="addonBefore" style="width: 30px">
-                            <a-tooltip v-if="file.status==='uploading'" :title="`上传中(${Math.floor(file.percent)}%)`">
-                              <a-icon type="loading"/>
-                            </a-tooltip>
-                            <a-tooltip v-else-if="file.status==='done'" title="上传完成">
-                              <a-icon type="check-circle" style="color:#00DB00;"/>
-                            </a-tooltip>
-                            <a-tooltip v-else title="上传失败">
-                              <a-icon type="exclamation-circle" style="color:red;"/>
-                            </a-tooltip>
-                          </template>
+                          <a-tooltip v-else :title="file.message||'上传失败'" @click="handleClickShowImageError(id)">
+                            <a-icon type="exclamation-circle" style="color:red;"/>
+                          </a-tooltip>
 
                           <template style="width: 30px">
                             <a-dropdown :trigger="['click']" placement="bottomRight" :getPopupContainer="getParentContainer" style="margin-left: 10px;">
@@ -595,6 +612,33 @@
                     </template>
                     <!-- select搜索 -end -->
 
+                    <!-- select异步搜索 -begin -->
+                    <template v-else-if="col.type === formTypes.sel_search_async">
+                      <a-tooltip v-bind="buildTooltipProps(row, col, id)">
+                        <j-search-select-tag
+                          v-if="isEditRow(row, col)"
+                          :id="id"
+                          :key="i"
+                          :value="searchSelectAsyncValues[id]"
+                          :placeholder="replaceProps(col, col.placeholder)"
+                          :dict="col.dict"
+                          :async="true"
+                          :getPopupContainer="getParentContainer"
+                          v-bind="buildProps(row,col)"
+                          style="width: 100%;"
+                          @change="(v)=>handleSearchSelectAsyncChange(v,id,row,col)"
+                        >
+                        </j-search-select-tag>
+                        <span
+                          v-else
+                          class="j-td-span no-edit"
+                          :class="{disabled: buildProps(row,col).disabled}"
+                          @click="handleEditRow(row, col)"
+                        >{{ searchSelectAsyncValues[id] }}</span>
+                      </a-tooltip>
+                    </template>
+                    <!-- select异步搜索 -end -->
+
                     <div v-else-if="col.type === formTypes.slot" :key="i">
                       <a-tooltip v-bind="buildTooltipProps(row, col, id)">
                         <slot
@@ -615,7 +659,7 @@
                     </div>
 
                     <!-- else (normal) -->
-                    <span v-else :key="i" v-bind="buildProps(row,col)">{{ inputValues[rowIndex][col.key] }}</span>
+                    <span class="comp-normal" v-else :key="i" :title="inputValues[rowIndex][col.key]" v-bind="buildProps(row,col)">{{ inputValues[rowIndex][col.key] }}</span>
                   </template>
                 </div>
               </div>
@@ -672,13 +716,13 @@
   import Draggable from 'vuedraggable'
   import { ACCESS_TOKEN } from '@/store/mutation-types'
   import { FormTypes, VALIDATE_NO_PASSED } from '@/utils/JEditableTableUtil'
-  import { cloneObject, randomString, randomNumber, getEventPath } from '@/utils/util'
+  import { cloneObject, getEventPath, randomNumber, randomString } from '@/utils/util'
   import JDate from '@/components/jeecg/JDate'
   import { filterDictText, initDictOptions } from '@/components/dict/JDictSelectUtil'
-  import { getFileAccessHttpUrl } from '@/api/manage';
+  import { getFileAccessHttpUrl } from '@/api/manage'
   import JInputPop from '@/components/jeecg/minipop/JInputPop'
   import JFilePop from '@/components/jeecg/minipop/JFilePop'
-  import { getNoAuthCols } from "@/utils/authFilter"
+  import { getNoAuthCols } from '@/utils/authFilter'
 
   // 行高，需要在实例加载完成前用到
   let rowHeight = 61
@@ -706,6 +750,11 @@
       },
       // 是否显示操作按钮
       actionButton: {
+        type: Boolean,
+        default: false
+      },
+      // 是否显示添加按钮选项
+      addButtonSettings: {
         type: Boolean,
         default: false
       },
@@ -814,6 +863,7 @@
         metaCheckboxValues: {},
         multiSelectValues: {},
         searchSelectValues: {},
+        searchSelectAsyncValues: {},
         // 绑定左侧选择框已选择的id
         selectedRowIds: [],
         // 存储被删除行的id
@@ -836,7 +886,16 @@
         lastPushTimeMap: new Map(),
         number:0,
         //不显示的按钮编码
-        excludeCode:[]
+        excludeCode:[],
+        // 选项配置
+        settings: {
+          // 添加行数
+          addRowNum: 1,
+          // 添加位置（下标），0 = 最底部
+          addIndex: 0,
+          // 添加后滚动到底部
+          addScrollToBottom: false,
+        },
       }
     },
     created() {
@@ -851,6 +910,7 @@
           event.stopPropagation()
         }
       }
+      this.getSavedAddButtonSettings()
     },
     // 计算属性
     computed: {
@@ -1048,6 +1108,10 @@
         this.inputValues = []
         this.rows = []
         this.deleteIds = []
+        this.selectedRowIds = []
+        this.tooltips = {}
+        this.notPassedIds = []
+        // 重置values
         this.selectValues = {}
         this.checkboxValues = {}
         this.jdateValues = {}
@@ -1055,14 +1119,16 @@
         this.departCompValues = {}
         this.userCompValues = {}
         this.slotValues = {}
-        this.selectedRowIds = []
-        this.tooltips = {}
-        this.notPassedIds = []
-        this.uploadValues = []
-        this.popupValues = []
-        this.radioValues = []
-        this.multiSelectValues = []
-        this.searchSelectValues = []
+        //update-begin-author:shunjlei date:20210415 for:类型赋值错误
+        this.uploadValues = {}
+        this.popupValues = {}
+        this.radioValues = {}
+        this.multiSelectValues = {}
+        this.searchSelectValues = {}
+        this.searchSelectAsyncValues = {}
+        //update-end-author:shunjlei date:20210415 for:类型赋值错误
+
+        // 重置滚动条
         this.scrollTop = 0
         this.$nextTick(() => {
           this.getElement('tbody').scrollTop = 0
@@ -1136,6 +1202,7 @@
         let radioValues = { ...this.radioValues }
         let multiSelectValues = { ...this.multiSelectValues }
         let searchSelectValues = { ...this.searchSelectValues }
+        let searchSelectAsyncValues = { ...this.searchSelectAsyncValues }
         // 禁用行的id
         let disabledRowIds = (this.disabledRowIds || [])
         dataSource.forEach((data, newValueIndex) => {
@@ -1225,6 +1292,8 @@
               radioValues[inputId] = sourceValue
             } else if (column.type === FormTypes.sel_search) {
               searchSelectValues[inputId] = sourceValue
+            } else if (column.type === FormTypes.sel_search_async) {
+              searchSelectAsyncValues[inputId] = sourceValue
             } else if (column.type === FormTypes.list_multi) {
               if (typeof sourceValue === 'string' && sourceValue.length > 0) {
                 multiSelectValues[inputId] = sourceValue.split(',')
@@ -1245,6 +1314,8 @@
                   status: 'done',
                   path: sourceValue
                 }
+              } else {
+                uploadValues[inputId] = null
               }
             } else {
               value[column.key] = sourceValue
@@ -1309,6 +1380,7 @@
         this.radioValues = radioValues
         this.multiSelectValues = multiSelectValues
         this.searchSelectValues = searchSelectValues
+        this.searchSelectAsyncValues = searchSelectAsyncValues
         // 重新计算所有统计列
         this.recalcAllStatisticsColumns()
         // 更新到 dom
@@ -1370,22 +1442,18 @@
         let tbody = this.getElement('tbody')
         let offsetHeight = tbody.offsetHeight
         let realScrollTop = tbody.scrollTop + offsetHeight
-        if (forceScrollToBottom === false) {
-          // 只有滚动条在底部的时候才自动滚动
-          if (!((tbody.scrollHeight - realScrollTop) <= 10)) {
-            return
-          }
+        if (forceScrollToBottom) {
+          this.$nextTick(() => {
+            this.resetScrollTop(this.$refs.scrollView.scrollHeight)
+          })
         }
-        this.$nextTick(() => {
-          tbody.scrollTop = tbody.scrollHeight
-        })
       },
       /**
        * 在指定位置添加一行
        * @param insertIndex 添加位置下标
        * @param num 添加的行数，默认1
        */
-      insert(insertIndex, num = 1) {
+      insert(insertIndex, num = 1, forceScrollToBottom = false) {
         if (this.checkTooFastClick('insert', 1500)) {
           return
         }
@@ -1413,6 +1481,12 @@
           num, insertIndex,
           target: this
         })
+        // 设置滚动条位置
+        if (forceScrollToBottom) {
+          this.$nextTick(() => {
+            this.resetScrollTop(this.$refs.scrollView.scrollHeight)
+          })
+        }
       },
       /** 删除被选中的行 */
       removeSelectedRows() {
@@ -1543,6 +1617,8 @@
               value[column.key] = this.radioValues[inputId]
             } else if (column.type === FormTypes.sel_search) {
               value[column.key] = this.searchSelectValues[inputId]
+            } else if (column.type === FormTypes.sel_search_async) {
+              value[column.key] = this.searchSelectAsyncValues[inputId]
             } else if (column.type === FormTypes.list_multi) {
               if (!this.multiSelectValues[inputId] || this.multiSelectValues[inputId].length === 0) {
                 value[column.key] = ''
@@ -1671,6 +1747,7 @@
           radioValues: this.radioValues,
           multiSelectValues: this.multiSelectValues,
           searchSelectValues: this.searchSelectValues,
+          searchSelectAsyncValues: this.searchSelectAsyncValues,
         })
       },
       /** 设置某行某列的值 */
@@ -1736,6 +1813,8 @@
                       edited = this.setOneValue(this.multiSelectValues, modelKey, newValue, true)
                     } else if (column.type === FormTypes.sel_search) {
                       edited = this.setOneValue(this.searchSelectValues, modelKey, newValue)
+                    } else if (column.type === FormTypes.sel_search_async) {
+                      edited = this.setOneValue(this.searchSelectAsyncValues, modelKey, newValue)
                     } else {
                       edited = false
                     }
@@ -2048,7 +2127,12 @@
 
       },
       handleClickAdd() {
-        this.add()
+        let {addRowNum, addIndex, addScrollToBottom} = this.settings
+        if (addIndex <= 0) {
+          this.add(addRowNum, addScrollToBottom)
+        } else {
+          this.insert(addIndex, addRowNum, addScrollToBottom)
+        }
       },
       handleConfirmDelete() {
         this.removeSelectedRows()
@@ -2306,7 +2390,21 @@
           value['responseName'] = file.response[column.responseName]
         }
         if (file.status === 'done') {
-          value['path'] = file.response[column.responseName]
+          if (typeof file.response.success === 'boolean') {
+            // 如果文件上传，被拦截器拦下，还会返回最外层的status = done
+            // 但是内部的success会返回false并携带异常信息
+            // 整个上传操作还是失败的
+            // https://github.com/zhangdaiscott/jeecg-boot/issues/2691
+            if (file.response.success) {
+              value['path'] = file.response[column.responseName]
+            } else {
+              value['status'] = 'error'
+              value['message'] = file.response.message || '未知错误'
+            }
+          } else {
+            // 考虑到如果设置action上传路径为非jeecg-boot后台，可能不会返回 success 属性的情况，就默认为成功
+            value['path'] = file.response[column.responseName]
+          }
         } else if (file.status === 'error') {
           value['message'] = file.response.message || '未知错误'
         }
@@ -2368,6 +2466,25 @@
           })
         }
       },
+
+      /** 添加按钮设置保存为默认值 */
+      onAddButtonSettingsSave() {
+        let obj = {
+          addRowNum: this.settings.addRowNum,
+          addIndex: this.settings.addIndex,
+          addScrollToBottom: this.settings.addScrollToBottom,
+        }
+        this.$ls.set('jet-add-btn-settings', obj)
+        this.$message.success('保存成功')
+      },
+      /** 获取保存的添加按钮默认值 */
+      getSavedAddButtonSettings() {
+        let obj= this.$ls.get('jet-add-btn-settings')
+        if (obj) {
+          Object.assign(this.settings, obj)
+        }
+      },
+
       /** 记录用到数据绑定的组件的值 */
       bindValuesChange(value, id, key) {
         this.$set(this[key], id, value)
@@ -2731,6 +2848,11 @@
         this.validateOneInput(value, row, column, this.notPassedIds, true, 'change')
         this.elemValueChange(FormTypes.sel_search, row, column, value)
       },
+      handleSearchSelectAsyncChange(value, id, row, column) {
+        this.searchSelectAsyncValues = this.bindValuesChange(value, id, 'searchSelectAsyncValues')
+        this.validateOneInput(value, row, column, this.notPassedIds, true, 'change')
+        this.elemValueChange(FormTypes.sel_search_async, row, column, value)
+      },
       filterOption(input, option) {
         return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
       },
@@ -2992,6 +3114,8 @@
         border-bottom: @border;
         transition: background-color 300ms;
         width: 100%;
+        height: 61px;
+        overflow: hidden;
         position: absolute;
         left: 0;
         z-index: 10;
@@ -3099,6 +3223,12 @@
           &.ant-checkbox-wrapper {
             height: auto;
           }
+        }
+
+        .comp-normal {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .j-td-span {
@@ -3219,4 +3349,20 @@
 
   }
 
+</style>
+<style lang="less">
+// 新增按钮配置气泡的样式
+.j-add-btn-settings {
+  width: 240px;
+
+  .ant-form {
+    .ant-form-item {
+      margin-bottom: 0;
+
+      .ant-input-number {
+        width: 100%;
+      }
+    }
+  }
+}
 </style>

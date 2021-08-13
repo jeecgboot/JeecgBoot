@@ -1,14 +1,11 @@
 package org.jeecg.common.system.api;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.system.vo.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -289,4 +286,45 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param orgCode
      */
     List<Map> getDeptUserByOrgCode(String orgCode);
+
+    /**
+     * 查询分类字典翻译
+     */
+    List<String> loadCategoryDictItem(String ids);
+
+    /**
+     * 根据字典code加载字典text
+     *
+     * @param dictCode 顺序：tableName,text,code
+     * @param keys     要查询的key
+     * @return
+     */
+    List<String> loadDictItem(String dictCode, String keys);
+
+    /**
+     * 根据字典code查询字典项
+     *
+     * @param dictCode 顺序：tableName,text,code
+     * @param dictCode 要查询的key
+     * @return
+     */
+    List<DictModel> getDictItems(String dictCode);
+
+    /**
+     *  根据多个字典code查询多个字典项
+     * @param dictCodeList
+     * @return key = dictCode ； value=对应的字典项
+     */
+    Map<String, List<DictModel>> getManyDictItems(List<String> dictCodeList);
+
+    /**
+     * 【JSearchSelectTag下拉搜索组件专用接口】
+     * 大数据量的字典表 走异步加载  即前端输入内容过滤数据
+     *
+     * @param dictCode 字典code格式：table,text,code
+     * @param keyword 过滤关键字
+     * @return
+     */
+    List<DictModel> loadDictItemByKeyword(String dictCode, String keyword, Integer pageSize);
+
 }

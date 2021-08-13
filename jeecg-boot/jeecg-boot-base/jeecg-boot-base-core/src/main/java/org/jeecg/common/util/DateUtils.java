@@ -616,6 +616,10 @@ public class DateUtils extends PropertyEditorSupport {
         return 0;
     }
 
+    public static Long getCurrentTimestamp() {
+        return Long.valueOf(DateUtils.yyyymmddhhmmss.get().format(new Date()));
+    }
+
     /**
      * String类型 转换为Date, 如果参数长度为10 转换格式”yyyy-MM-dd“ 如果参数长度为19 转换格式”yyyy-MM-dd
      * HH:mm:ss“ * @param text String类型的时间值

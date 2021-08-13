@@ -5,11 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.constant.enums.RoleIndexConfigEnum;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.MD5Util;
 import org.jeecg.common.util.oConvertUtils;
@@ -51,6 +51,9 @@ public class SysPermissionController {
 
 	@Autowired
 	private ISysDepartPermissionService sysDepartPermissionService;
+
+	@Autowired
+	private ISysUserService sysUserService;
 
 	/**
 	 * 加载数据节点
@@ -212,6 +215,18 @@ public class SysPermissionController {
 			//update-begin-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
 			if(!PermissionDataUtil.hasIndexPage(metaList)){
 				SysPermission indexMenu = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().eq(SysPermission::getName,"首页")).get(0);
+				//update-begin--Author:liusq  Date:20210624  for:自定义首页地址LOWCOD-1578
+				List<String> roles = sysUserService.getRole(loginUser.getUsername());
+				if(roles.size()>0){
+					for (String code:roles) {
+						String componentUrl = RoleIndexConfigEnum.getIndexByCode(code);
+						if(StringUtils.isNotBlank(componentUrl)){
+							indexMenu.setComponent(componentUrl);
+							break;
+						}
+					}
+				}
+				//update-end--Author:liusq  Date:20210624  for：自定义首页地址LOWCOD-1578
 				metaList.add(0,indexMenu);
 			}
 			//update-end-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存

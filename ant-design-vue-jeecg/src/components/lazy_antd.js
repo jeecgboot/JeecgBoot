@@ -57,7 +57,8 @@ import {
   Cascader,
   Slider,
   Transfer,
-  Rate
+  Rate,
+  Collapse,
 } from 'ant-design-vue'
 import Viser from 'viser-vue'
 
@@ -112,6 +113,7 @@ Vue.use(Cascader)
 Vue.use(Slider)
 Vue.use(Transfer)
 Vue.use(Rate)
+Vue.use(Collapse)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message

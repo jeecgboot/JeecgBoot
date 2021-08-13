@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.model.DepartIdModel;
@@ -112,6 +113,20 @@ public interface ISysDepartService extends IService<SysDepart>{
      * @return
      */
     List<SysDepartTreeModel> queryTreeListByPid(String parentId);
+
+    /**
+     * 获取某个部门的所有父级部门的ID
+     *
+     * @param departId 根据departId查
+     */
+    JSONObject queryAllParentIdByDepartId(String departId);
+
+    /**
+     * 获取某个部门的所有父级部门的ID
+     *
+     * @param orgCode 根据orgCode查
+     */
+    JSONObject queryAllParentIdByOrgCode(String orgCode);
     /**
      * 获取公司信息
      * @return

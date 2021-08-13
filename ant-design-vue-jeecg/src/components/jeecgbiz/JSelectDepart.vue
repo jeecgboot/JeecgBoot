@@ -1,9 +1,9 @@
 <template>
   <div class="components-input-demo-presuffix">
     <!---->
-    <a-input @click="openModal" placeholder="请点击选择部门" v-model="departNames" readOnly :disabled="disabled">
+    <a-input @click="openModal" placeholder="请点击选择部门" v-model="textVals" readOnly :disabled="disabled">
       <a-icon slot="prefix" type="cluster" title="部门选择控件"/>
-      <a-icon v-if="departIds" slot="suffix" type="close-circle" @click="handleEmpty" title="清空"/>
+      <a-icon v-if="storeVals" slot="suffix" type="close-circle" @click="handleEmpty" title="清空"/>
     </a-input>
 
     <j-select-depart-modal
@@ -11,7 +11,10 @@
       :modal-width="modalWidth"
       :multi="multi"
       :rootOpened="rootOpened"
-      :depart-id="departIds"
+      :depart-id="value"
+      :store="storeField"
+      :text="textField"
+      :treeOpera="treeOpera"
       @ok="handleOK"
       @initComp="initComp"/>
   </div>
@@ -19,6 +22,7 @@
 
 <script>
   import JSelectDepartModal from './modal/JSelectDepartModal'
+  import { underLinetoHump } from '@/components/_util/StringUtil'
   export default {
     name: 'JSelectDepart',
     components:{
@@ -52,56 +56,70 @@
       // 自定义返回字段，默认返回 id
       customReturnField: {
         type: String,
-        default: 'id'
+        default: ''
       },
       backDepart: {
         type: Boolean,
         default: false,
         required: false
+      },
+      // 存储字段 [key field]
+      store: {
+        type: String,
+        default: 'id',
+        required: false
+      },
+      // 显示字段 [label field]
+      text: {
+        type: String,
+        default: 'departName',
+        required: false
+      },
+      treeOpera: {
+        type: Boolean,
+        default: false,
+        required: false
       }
+      
     },
     data(){
       return {
         visible:false,
         confirmLoading:false,
-        departNames:"",
-        departIds:''
+        storeVals: '', //[key values]
+        textVals: '' //[label values]
+      }
+    },
+    computed:{
+      storeField(){
+        let field = this.customReturnField
+        if(!field){
+          field = this.store;
+        }
+        return underLinetoHump(field)
+      },
+      textField(){
+        return underLinetoHump(this.text)
       }
     },
     mounted(){
-      this.departIds = this.value
+      this.storeVals = this.value
     },
     watch:{
       value(val){
-        //update-begin-author:wangshuai date:20201124 for:组件 JSelectDepart.vue不是默认id时新内容编辑问题 gitee I247X2
-        // if (this.customReturnField === 'id') {
-          this.departIds = val
-        // }
-        //update-end-author:wangshuai date:20201124 for:组件 JSelectDepart.vue不是默认id时新内容编辑问题 gitee I247X2
+        this.storeVals = val
       }
     },
     methods:{
-      initComp(departNames){
-        this.departNames = departNames
-        //update-begin-author:lvdandan date:20200513 for:TESTA-438 部门选择组件自定义返回值，数据无法回填
-        //TODO 当返回字段为部门名称时会有问题,因为部门名称不唯一
-        //返回字段不为id时，根据返回字段获取id
-        if(this.customReturnField !== 'id' && this.value){
-          const dataList = this.$refs.innerDepartSelectModal.dataList;
-          console.log('this.value',this.value)
-          this.departIds = this.value.split(',').map(item => {
-            const data = dataList.filter(d=>d[this.customReturnField] === item)
-            return data.length > 0 ? data[0].id : ''
-          }).join(',')
-        }
-        //update-end-author:lvdandan date:20200513 for:TESTA-438 部门选择组件自定义返回值，数据无法回填
+      initComp(textVals){
+        this.textVals = textVals
       },
       //返回选中的部门信息
       backDeparInfo(){
         if(this.backDepart===true){
           if(this.departIds && this.departIds.length>0){
-            let arr1 = this.departIds.split(',')
-            let arr2 = this.departNames.split(',')
+            let arr1 = this.storeVals.split(',')
+            let arr2 = this.textVals.split(',')
             let info = []
             for(let i=0;i<arr1.length;i++){
               info.push({
@@ -116,17 +134,21 @@
       openModal(){
         this.$refs.innerDepartSelectModal.show()
       },
-      handleOK(rows, idstr) {
-        let value = ''
+      handleOK(rows) {
         if (!rows && rows.length <= 0) {
-          this.departNames = ''
-          this.departIds = ''
+          this.textVals = ''
+          this.storeVals = ''
         } else {
-          value = rows.map(row => row[this.customReturnField]).join(',')
-          this.departNames = rows.map(row => row['departName']).join(',')
-          this.departIds = idstr
+          let arr1 = []
+          let arr2 = []
+          for(let dep of rows){
+            arr1.push(dep[this.storeField])
+            arr2.push(dep[this.textField])
+          }
+          this.storeVals = arr1.join(',')
+          this.textVals = arr2.join(',')
         }
-        this.$emit("change", value)
+        this.$emit("change", this.storeVals)
         this.backDeparInfo()
       },
       getDepartNames(){

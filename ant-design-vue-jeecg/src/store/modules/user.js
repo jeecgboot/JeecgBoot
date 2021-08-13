@@ -159,6 +159,7 @@ const user = {
         Vue.ls.remove(USER_NAME)
         Vue.ls.remove(UI_CACHE_DB_DICT_DATA)
         Vue.ls.remove(CACHE_INCLUDED_ROUTES)
+        Vue.ls.remove(TENANT_ID)
         //console.log('logoutToken: '+ logoutToken)
         logout(logoutToken).then(() => {
           if (process.env.VUE_APP_SSO == 'true') {

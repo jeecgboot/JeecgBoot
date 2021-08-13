@@ -1,5 +1,4 @@
 server:
-  port: 8848
   servlet:
     contextPath: /nacos
   tomcat:

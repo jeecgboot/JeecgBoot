@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import { axios } from '@/utils/request'
+import signMd5Utils from '@/utils/encryption/signMd5Utils'
 
 const api = {
   user: '/mock/api/user',
@@ -13,19 +14,29 @@ export default api
 
 //post
 export function postAction(url,parameter) {
+  let sign = signMd5Utils.getSign(url, parameter);
+  //将签名和时间戳，添加在请求接口 Header
+  let signHeader = {"X-Sign": sign,"X-TIMESTAMP": signMd5Utils.getDateTimeToString()};
+
   return axios({
     url: url,
     method:'post' ,
-    data: parameter
+    data: parameter,
+    headers: signHeader
   })
 }
 
 //post method= {post | put}
 export function httpAction(url,parameter,method) {
+  let sign = signMd5Utils.getSign(url, parameter);
+  //将签名和时间戳，添加在请求接口 Header
+  let signHeader = {"X-Sign": sign,"X-TIMESTAMP": signMd5Utils.getDateTimeToString()};
+
   return axios({
     url: url,
     method:method ,
-    data: parameter
+    data: parameter,
+    headers: signHeader
   })
 }
 
@@ -40,10 +51,15 @@ export function putAction(url,parameter) {
 
 //get
 export function getAction(url,parameter) {
+  let sign = signMd5Utils.getSign(url, parameter);
+  //将签名和时间戳，添加在请求接口 Header
+  let signHeader = {"X-Sign": sign,"X-TIMESTAMP": signMd5Utils.getDateTimeToString()};
+
   return axios({
     url: url,
     method: 'get',
-    params: parameter
+    params: parameter,
+    headers: signHeader
   })
 }
 

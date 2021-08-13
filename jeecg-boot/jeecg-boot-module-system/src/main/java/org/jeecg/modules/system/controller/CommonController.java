@@ -133,7 +133,7 @@ public class CommonController {
             String orgName = mf.getOriginalFilename();// 获取文件名
             orgName = CommonUtils.getFileName(orgName);
             if(orgName.indexOf(".")!=-1){
-                fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.indexOf("."));
+                fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.lastIndexOf("."));
             }else{
                 fileName = orgName+ "_" + System.currentTimeMillis();
             }
@@ -211,7 +211,7 @@ public class CommonController {
         InputStream inputStream = null;
         OutputStream outputStream = null;
         try {
-            imgPath = imgPath.replace("..", "");
+            imgPath = imgPath.replace("..", "").replace("../","");
             if (imgPath.endsWith(",")) {
                 imgPath = imgPath.substring(0, imgPath.length() - 1);
             }

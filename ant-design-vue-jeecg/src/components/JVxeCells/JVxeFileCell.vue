@@ -12,9 +12,9 @@
           <span style="margin-left:5px">{{ ellipsisFileName }}</span>
         </a-tooltip>
 
-        <a-tooltip v-else :title="file.name">
-          <a-icon type="paper-clip" style="color:red;"/>
-          <span style="color:red;margin-left:5px">{{ ellipsisFileName }}</span>
+        <a-tooltip v-else :title="file.message||'上传失败'">
+          <a-icon type="exclamation-circle" style="color:red;"/>
+          <span style="margin-left:5px">{{ ellipsisFileName }}</span>
         </a-tooltip>
 
         <template style="width: 30px">
@@ -179,8 +179,19 @@
           value['responseName'] = file.response[this.responseName]
         }
         if (file.status === 'done') {
-          value['path'] = file.response[this.responseName]
-          this.handleChangeCommon(value)
+          if (typeof file.response.success === 'boolean') {
+            if (file.response.success) {
+              value['path'] = file.response[this.responseName]
+              this.handleChangeCommon(value)
+            } else {
+              value['status'] = 'error'
+              value['message'] = file.response.message || '未知错误'
+            }
+          } else {
+            // 考虑到如果设置action上传路径为非jeecg-boot后台，可能不会返回 success 属性的情况，就默认为成功
+            value['path'] = file.response[this.responseName]
+            this.handleChangeCommon(value)
+          }
         } else if (file.status === 'error') {
           value['message'] = file.response.message || '未知错误'
         }

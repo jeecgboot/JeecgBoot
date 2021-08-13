@@ -109,7 +109,8 @@
         visible: false,
         condition:true,
         disableSubmit:false,
-        model: {
+        model: {},
+        defaultModel:{
           departOrder:0,
           orgCategory:'1'
         },
@@ -165,6 +166,7 @@
       },
       edit (record) {
           this.visible = true;
+          this.model = Object.assign({}, this.defaultModel, record)
           this.loadTreeData();
           this.model.parentId = record!=null?record.toString():null;
            if(this.seen){

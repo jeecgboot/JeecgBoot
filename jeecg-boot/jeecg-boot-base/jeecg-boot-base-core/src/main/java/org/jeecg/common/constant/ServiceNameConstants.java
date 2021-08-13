@@ -29,6 +29,7 @@ public interface ServiceNameConstants {
 	 * 系统管理 admin
 	 */
 	String SYSTEM_SERVICE = "jeecg-system";
+	String SYSTEM_ONLINE = "jeecg-online";
 
 	/**
 	 * gateway通过header传递根路径 basePath

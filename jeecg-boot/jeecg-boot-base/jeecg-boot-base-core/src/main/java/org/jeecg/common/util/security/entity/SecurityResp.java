@@ -1,6 +1,6 @@
 package org.jeecg.common.util.security.entity;
 
-import cn.hutool.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
 @Data

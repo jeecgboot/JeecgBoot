@@ -35,6 +35,8 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
 
 	@Override
 	public void add${entityName}(${entityName} ${entityName?uncap_first}) {
+	   //新增时设置hasChild为0
+	    ${entityName?uncap_first}.set${hasChildrenField?cap_first}(I${entityName}Service.NOCHILD);
 		if(oConvertUtils.isEmpty(${entityName?uncap_first}.get${pidFieldName?cap_first}())){
 			${entityName?uncap_first}.set${pidFieldName?cap_first}(I${entityName}Service.ROOT_PID_VALUE);
 		}else{

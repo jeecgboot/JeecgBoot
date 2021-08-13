@@ -348,6 +348,21 @@ export const constantRouterMap = [
   // },
 
   {
+    // OAuth2 APP页面路由
+    path: '/oauth2-app',
+    component: BlankLayout,
+    redirect: '/oauth2-app/login',
+    children: [
+      {
+        // OAuth2 登录路由
+        path: 'login',
+        name: 'login',
+        component: () => import(/* webpackChunkName: "oauth2-app.login" */ '@/views/user/oauth2/OAuth2Login')
+      },
+    ]
+  },
+
+  {
     path: '/test',
     component: BlankLayout,
     redirect: '/test/home',

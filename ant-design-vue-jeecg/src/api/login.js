@@ -72,3 +72,16 @@ export function thirdLogin(token,thirdType) {
     }
   })
 }
+
+/**
+ * 强退其他账号
+ * @param token
+ * @returns {*}
+ */
+export function forceLogout(parameter) {
+  return axios({
+    url: '/sys/online/forceLogout',
+    method: 'post',
+    data: parameter
+  })
+}

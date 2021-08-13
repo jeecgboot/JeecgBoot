@@ -1,5 +1,3 @@
-import { pcaa } from 'area-data'
-
 /**
  * 省市区
  */
@@ -8,7 +6,7 @@ export default class Area {
    * 构造器
    * @param express
    */
-  constructor() {
+  constructor(pcaa) {
     let arr = []
     const province = pcaa['86']
     Object.keys(province).map(key=>{
@@ -17,9 +15,11 @@ export default class Area {
       Object.keys(city).map(key2=>{
         arr.push({id:key2, text:city[key2], pid:key, index:2});
         const qu = pcaa[key2];
-        Object.keys(qu).map(key3=>{
-          arr.push({id:key3, text:qu[key3], pid:key2, index:3});
-        })
+        if(qu){
+          Object.keys(qu).map(key3=>{
+            arr.push({id:key3, text:qu[key3], pid:key2, index:3});
+          })
+        }
       })
     })
     this.all = arr;
