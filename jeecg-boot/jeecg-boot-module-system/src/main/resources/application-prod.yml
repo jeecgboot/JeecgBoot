@@ -173,8 +173,6 @@ mybatis-plus:
 #jeecg专用配置
 minidao :
   base-package: org.jeecg.modules.jmreport.*
-  #DB类型（mysql | postgresql | oracle | sqlserver| other）
-  db-type: mysql
 jeecg :
   # 签名密钥串(前后端要一致，正式发布请自行修改)
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
