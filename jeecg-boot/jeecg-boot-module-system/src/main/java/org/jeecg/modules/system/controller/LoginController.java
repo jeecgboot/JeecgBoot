@@ -1,7 +1,6 @@
 package org.jeecg.modules.system.controller;
 
 import cn.hutool.core.util.RandomUtil;
-import cn.hutool.crypto.SecureUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.exceptions.ClientException;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -13,18 +12,16 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.api.ISysBaseAPI;
-import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
 import org.jeecg.common.util.encryption.EncryptedString;
+import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysLoginModel;
-import org.jeecg.modules.system.service.ISysDepartService;
-import org.jeecg.modules.system.service.ISysDictService;
-import org.jeecg.modules.system.service.ISysLogService;
-import org.jeecg.modules.system.service.ISysUserService;
+import org.jeecg.modules.system.service.*;
 import org.jeecg.modules.system.util.RandImageUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +51,8 @@ public class LoginController {
     private RedisUtil redisUtil;
 	@Autowired
     private ISysDepartService sysDepartService;
+	@Autowired
+	private ISysTenantService sysTenantService;
 	@Autowired
     private ISysDictService sysDictService;
 	@Resource
@@ -357,12 +356,6 @@ public class LoginController {
 	private Result<JSONObject> userInfo(SysUser sysUser, Result<JSONObject> result) {
 		String syspassword = sysUser.getPassword();
 		String username = sysUser.getUsername();
-		// 生成token
-		String token = JwtUtil.sign(username, syspassword);
-        // 设置token缓存有效时间
-		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
-		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
-
 		// 获取用户部门信息
 		JSONObject obj = new JSONObject();
 		List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());
@@ -382,6 +375,25 @@ public class LoginController {
 			// update-end--Author:wangshuai Date:20200805 for：如果用戶为选择部门，数据库为存在上一次登录部门，则取一条存进去
 			obj.put("multi_depart", 2);
 		}
+		// update-begin--Author:sunjianlei Date:20210802 for：获取用户租户信息
+		String tenantIds = sysUser.getRelTenantIds();
+		if (oConvertUtils.isNotEmpty(tenantIds)) {
+			List<String> tenantIdList = Arrays.asList(tenantIds.split(","));
+			// 该方法仅查询有效的租户，如果返回0个就说明所有的租户均无效。
+			List<SysTenant> tenantList = sysTenantService.queryEffectiveTenant(tenantIdList);
+			if (tenantList.size() == 0) {
+				result.error500("与该用户关联的租户均已被冻结，无法登录！");
+				return result;
+			} else {
+				obj.put("tenantList", tenantList);
+			}
+		}
+		// update-end--Author:sunjianlei Date:20210802 for：获取用户租户信息
+		// 生成token
+		String token = JwtUtil.sign(username, syspassword);
+		// 设置token缓存有效时间
+		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
+		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 2 / 1000);
 		obj.put("token", token);
 		obj.put("userInfo", sysUser);
 		obj.put("sysAllDictItems", sysDictService.queryAllDictItems());

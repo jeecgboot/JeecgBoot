@@ -1,17 +1,13 @@
 package org.jeecg.config;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.alibaba.fastjson.support.config.FastJsonConfig;
-import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
-import com.alibaba.fastjson.support.springfox.SwaggerJsonSerializer;
-import feign.Feign;
-import feign.Logger;
-import feign.RequestInterceptor;
-import feign.codec.Decoder;
-import feign.codec.Encoder;
-import feign.form.spring.SpringFormEncoder;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.SortedMap;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.PathMatcherUtil;
@@ -33,12 +29,19 @@ import org.springframework.http.MediaType;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.SortedMap;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson.support.config.FastJsonConfig;
+import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.alibaba.fastjson.support.springfox.SwaggerJsonSerializer;
+
+import feign.Feign;
+import feign.Logger;
+import feign.RequestInterceptor;
+import feign.codec.Decoder;
+import feign.codec.Encoder;
+import feign.form.spring.SpringFormEncoder;
+import lombok.extern.slf4j.Slf4j;
 
 @ConditionalOnClass(Feign.class)
 @AutoConfigureBefore(FeignAutoConfiguration.class)
@@ -52,13 +55,13 @@ public class FeignConfig {
             ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if (null != attributes) {
                 HttpServletRequest request = attributes.getRequest();
-                log.info("Feign request: {}", request.getRequestURI());
+                log.debug("Feign request: {}", request.getRequestURI());
                 // 将token信息放入header中
                 String token = request.getHeader(CommonConstant.X_ACCESS_TOKEN);
                 if(token==null || "".equals(token)){
                     token = request.getParameter("token");
                 }
-                log.info("Feign request token: {}", token);
+                log.debug("Feign request token: {}", token);
                 requestTemplate.header(CommonConstant.X_ACCESS_TOKEN, token);
 
                 //根据URL地址过滤请求 【字典表参数签名验证】

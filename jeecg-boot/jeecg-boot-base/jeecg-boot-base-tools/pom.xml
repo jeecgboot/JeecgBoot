@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jeecgframework.boot</groupId>
         <artifactId>jeecg-boot-base</artifactId>
-        <version>2.4.5</version>
+        <version>2.4.6</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <description>公共模块</description>
@@ -29,7 +29,11 @@
         <!--加载hutool-->
         <dependency>
             <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
+            <artifactId>hutool-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-crypto</artifactId>
         </dependency>
         <!--加载beanutils-->
         <dependency>

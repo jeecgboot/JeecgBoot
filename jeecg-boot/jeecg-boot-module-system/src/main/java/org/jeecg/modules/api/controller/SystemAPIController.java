@@ -1,8 +1,8 @@
 package org.jeecg.modules.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
+import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.*;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -143,6 +143,17 @@ public class SystemAPIController {
         return sysBaseAPI.queryDictItemsByCode(code);
     }
 
+    /**
+     * 获取有效的数据字典
+     * @param code
+     * @return
+     */
+    @GetMapping("/queryEnableDictItemsByCode")
+    List<DictModel> queryEnableDictItemsByCode(@RequestParam("code") String code){
+        return sysBaseAPI.queryEnableDictItemsByCode(code);
+    }
+
+
     /** 查询所有的父级字典，按照create_time排序 */
     @GetMapping("/queryAllDict")
     List<DictModel> queryAllDict(){
@@ -158,17 +169,6 @@ public class SystemAPIController {
         return sysBaseAPI.queryAllDSysCategory();
     }
 
-    /**
-     * 获取表数据字典
-     * @param table
-     * @param text
-     * @param code
-     * @return
-     */
-    @GetMapping("/queryTableDictItemsByCode")
-    List<DictModel> queryTableDictItemsByCode(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code){
-        return sysBaseAPI.queryTableDictItemsByCode(table, text, code);
-    }
 
     /**
      * 查询所有部门 作为字典信息 id -->value,departName -->text
@@ -177,34 +177,6 @@ public class SystemAPIController {
     @GetMapping("/queryAllDepartBackDictModel")
     List<DictModel> queryAllDepartBackDictModel(){
         return sysBaseAPI.queryAllDepartBackDictModel();
-    }
-
-
-    /**
-     * 查询表字典 支持过滤数据
-     * @param table
-     * @param text
-     * @param code
-     * @param filterSql
-     * @return
-     */
-    @GetMapping("/queryFilterTableDictInfo")
-    List<DictModel> queryFilterTableDictInfo(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("filterSql") String filterSql){
-        return sysBaseAPI.queryFilterTableDictInfo(table, text, code, filterSql);
-    }
-
-    /**
-     * 查询指定table的 text code 获取字典，包含text和value
-     * @param table
-     * @param text
-     * @param code
-     * @param keyArray
-     * @return
-     */
-    @Deprecated
-    @GetMapping("/queryTableDictByKeys")
-    public List<String> queryTableDictByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keyArray") String[] keyArray){
-        return sysBaseAPI.queryTableDictByKeys(table, text, code, keyArray);
     }
 
     /**
@@ -448,19 +420,6 @@ public class SystemAPIController {
     }
 
     /**
-     * 字典表的 翻译
-     * @param table
-     * @param text
-     * @param code
-     * @param key
-     * @return
-     */
-    @GetMapping("/translateDictFromTable")
-    public String translateDictFromTable(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("key") String key){
-        return sysBaseAPI.translateDictFromTable(table, text, code, key);
-    }
-
-    /**
      * 普通字典的翻译
      * @param code
      * @param key
@@ -477,18 +436,18 @@ public class SystemAPIController {
      * @param usernames
      * @return
      */
-    @GetMapping("/queryUsersByUsernames")
-    List<JSONObject> queryUsersByUsernames(String usernames){
+    @RequestMapping("/queryUsersByUsernames")
+    List<JSONObject> queryUsersByUsernames(@RequestParam("usernames") String usernames){
         return this.sysBaseAPI.queryUsersByUsernames(usernames);
     }
 
     /**
      * 37根据多个用户id(逗号分隔)，查询返回多个用户信息
-     * @param usernames
+     * @param ids
      * @return
      */
-    @GetMapping("/queryUsersByIds")
-    List<JSONObject> queryUsersByIds(String ids){
+    @RequestMapping("/queryUsersByIds")
+    List<JSONObject> queryUsersByIds(@RequestParam("ids") String ids){
         return this.sysBaseAPI.queryUsersByIds(ids);
     }
 
@@ -498,18 +457,18 @@ public class SystemAPIController {
      * @return
      */
     @GetMapping("/queryDepartsByOrgcodes")
-    List<JSONObject> queryDepartsByOrgcodes(String orgCodes){
+    List<JSONObject> queryDepartsByOrgcodes(@RequestParam("orgCodes") String orgCodes){
         return this.sysBaseAPI.queryDepartsByOrgcodes(orgCodes);
     }
 
     /**
      * 39根据多个部门ID(逗号分隔)，查询返回多个部门信息
-     * @param orgCodes
+     * @param ids
      * @return
      */
     @GetMapping("/queryDepartsByIds")
-    List<JSONObject> queryDepartsByIds(String orgCodes){
-        return this.sysBaseAPI.queryDepartsByIds(orgCodes);
+    List<JSONObject> queryDepartsByIds(@RequestParam("ids") String ids){
+        return this.sysBaseAPI.queryDepartsByIds(ids);
     }
 
     /**
@@ -530,4 +489,146 @@ public class SystemAPIController {
     List<Map> getDeptUserByOrgCode(@RequestParam("orgCode")String orgCode){
        return this.sysBaseAPI.getDeptUserByOrgCode(orgCode);
     }
+
+    /**
+     * 查询分类字典翻译
+     *
+     * @param ids 分类字典表id
+     * @return
+     */
+    @GetMapping("/loadCategoryDictItem")
+    public List<String> loadCategoryDictItem(@RequestParam("ids") String ids) {
+        return sysBaseAPI.loadCategoryDictItem(ids);
+    }
+
+    /**
+     * 根据字典code加载字典text
+     *
+     * @param dictCode 顺序：tableName,text,code
+     * @param keys     要查询的key
+     * @return
+     */
+    @GetMapping("/loadDictItem")
+    public List<String> loadDictItem(@RequestParam("dictCode") String dictCode, @RequestParam("keys") String keys) {
+        return sysBaseAPI.loadDictItem(dictCode, keys);
+    }
+
+    /**
+     * 根据字典code查询字典项
+     *
+     * @param dictCode 顺序：tableName,text,code
+     * @param dictCode 要查询的key
+     * @return
+     */
+    @GetMapping("/getDictItems")
+    public List<DictModel> getDictItems(@RequestParam("dictCode") String dictCode) {
+        return sysBaseAPI.getDictItems(dictCode);
+    }
+
+    /**
+     * 根据多个字典code查询多个字典项
+     *
+     * @param dictCodeList
+     * @return key = dictCode ； value=对应的字典项
+     */
+    @RequestMapping("/getManyDictItems")
+    public Map<String, List<DictModel>> getManyDictItems(@RequestParam("dictCodeList") List<String> dictCodeList) {
+        return sysBaseAPI.getManyDictItems(dictCodeList);
+    }
+
+    /**
+     * 【下拉搜索】
+     * 大数据量的字典表 走异步加载，即前端输入内容过滤数据
+     *
+     * @param dictCode 字典code格式：table,text,code
+     * @param keyword  过滤关键字
+     * @return
+     */
+    @GetMapping("/loadDictItemByKeyword")
+    public List<DictModel> loadDictItemByKeyword(@RequestParam("dictCode") String dictCode, @RequestParam("keyword") String keyword, @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        return sysBaseAPI.loadDictItemByKeyword(dictCode, keyword, pageSize);
+    }
+
+    /**
+     * 48 普通字典的翻译，根据多个dictCode和多条数据，多个以逗号分割
+     * @param dictCodes
+     * @param keys
+     * @return
+     */
+    @GetMapping("/translateManyDict")
+    public Map<String, List<DictModel>> translateManyDict(@RequestParam("dictCodes") String dictCodes, @RequestParam("keys") String keys){
+        return this.sysBaseAPI.translateManyDict(dictCodes, keys);
+    }
+
+
+    /**
+     * 获取表数据字典 【接口签名验证】
+     * @param table
+     * @param text
+     * @param code
+     * @return
+     */
+    @GetMapping("/queryTableDictItemsByCode")
+    List<DictModel> queryTableDictItemsByCode(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code){
+        return sysBaseAPI.queryTableDictItemsByCode(table, text, code);
+    }
+
+    /**
+     * 查询表字典 支持过滤数据 【接口签名验证】
+     * @param table
+     * @param text
+     * @param code
+     * @param filterSql
+     * @return
+     */
+    @GetMapping("/queryFilterTableDictInfo")
+    List<DictModel> queryFilterTableDictInfo(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("filterSql") String filterSql){
+        return sysBaseAPI.queryFilterTableDictInfo(table, text, code, filterSql);
+    }
+
+    /**
+     * 【接口签名验证】
+     * 查询指定table的 text code 获取字典，包含text和value
+     * @param table
+     * @param text
+     * @param code
+     * @param keyArray
+     * @return
+     */
+    @Deprecated
+    @GetMapping("/queryTableDictByKeys")
+    public List<String> queryTableDictByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keyArray") String[] keyArray){
+        return sysBaseAPI.queryTableDictByKeys(table, text, code, keyArray);
+    }
+
+
+    /**
+     * 字典表的 翻译【接口签名验证】
+     * @param table
+     * @param text
+     * @param code
+     * @param key
+     * @return
+     */
+    @GetMapping("/translateDictFromTable")
+    public String translateDictFromTable(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("key") String key){
+        return sysBaseAPI.translateDictFromTable(table, text, code, key);
+    }
+
+
+    /**
+     * 【接口签名验证】
+     * 49 字典表的 翻译，可批量
+     *
+     * @param table
+     * @param text
+     * @param code
+     * @param keys  多个用逗号分割
+     * @return
+     */
+    @GetMapping("/translateDictFromTableByKeys")
+    public List<DictModel> translateDictFromTableByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keys") String keys) {
+        return this.sysBaseAPI.translateDictFromTableByKeys(table, text, code, keys);
+    }
+
 }

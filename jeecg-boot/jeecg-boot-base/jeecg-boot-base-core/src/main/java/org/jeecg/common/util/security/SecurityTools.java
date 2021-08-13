@@ -8,9 +8,8 @@ import cn.hutool.crypto.asymmetric.RSA;
 import cn.hutool.crypto.asymmetric.Sign;
 import cn.hutool.crypto.asymmetric.SignAlgorithm;
 import cn.hutool.crypto.symmetric.AES;
-import cn.hutool.json.JSONObject;
 import org.jeecg.common.util.security.entity.*;
-
+import com.alibaba.fastjson.JSONObject;
 import javax.crypto.SecretKey;
 import java.security.KeyPair;
 
@@ -34,7 +33,7 @@ public class SecurityTools {
 
         String dencrptValue =aes.decryptStr(data);
         //log.info("解密后报文"+dencrptValue);
-        resp.setData(new JSONObject(dencrptValue));
+        resp.setData(JSONObject.parseObject(dencrptValue));
 
         boolean verify = sign.verify(dencrptValue.getBytes(), Base64Decoder.decode(signData));
         resp.setSuccess(verify);

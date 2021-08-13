@@ -11,6 +11,7 @@ import org.jeecg.modules.quartz.service.IQuartzJobService;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -43,6 +44,7 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 	 * 保存&启动定时任务
 	 */
 	@Override
+	@Transactional(rollbackFor = JeecgBootException.class)
 	public boolean saveAndScheduleJob(QuartzJob quartzJob) {
 		// DB设置修改
 		quartzJob.setDelFlag(CommonConstant.DEL_FLAG_0);
@@ -60,6 +62,7 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 	 * 恢复定时任务
 	 */
 	@Override
+	@Transactional(rollbackFor = JeecgBootException.class)
 	public boolean resumeJob(QuartzJob quartzJob) {
 		schedulerDelete(quartzJob.getId());
 		schedulerAdd(quartzJob.getId(), quartzJob.getJobClassName().trim(), quartzJob.getCronExpression().trim(), quartzJob.getParameter());
@@ -72,6 +75,7 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 	 * @throws SchedulerException 
 	 */
 	@Override
+	@Transactional(rollbackFor = JeecgBootException.class)
 	public boolean editAndScheduleJob(QuartzJob quartzJob) throws SchedulerException {
 		if (CommonConstant.STATUS_NORMAL.equals(quartzJob.getStatus())) {
 			schedulerDelete(quartzJob.getId());
@@ -86,6 +90,7 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 	 * 删除&停止删除定时任务
 	 */
 	@Override
+	@Transactional(rollbackFor = JeecgBootException.class)
 	public boolean deleteAndStopJob(QuartzJob job) {
 		schedulerDelete(job.getId());
 		boolean ok = this.removeById(job.getId());
@@ -116,6 +121,7 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 	}
 
 	@Override
+	@Transactional(rollbackFor = JeecgBootException.class)
 	public void pause(QuartzJob quartzJob){
 		schedulerDelete(quartzJob.getId());
 		quartzJob.setStatus(CommonConstant.STATUS_DISABLE);

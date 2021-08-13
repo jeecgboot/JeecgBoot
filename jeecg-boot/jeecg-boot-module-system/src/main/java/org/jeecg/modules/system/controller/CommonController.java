@@ -211,7 +211,7 @@ public class CommonController {
         InputStream inputStream = null;
         OutputStream outputStream = null;
         try {
-            imgPath = imgPath.replace("..", "");
+            imgPath = imgPath.replace("..", "").replace("../","");
             if (imgPath.endsWith(",")) {
                 imgPath = imgPath.substring(0, imgPath.length() - 1);
             }

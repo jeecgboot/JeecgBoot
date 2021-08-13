@@ -3,6 +3,7 @@ package org.jeecg.modules.system.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysThirdAccount;
 import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.model.ThirdLoginModel;
 
 import java.util.List;
 
@@ -31,5 +32,12 @@ public interface ISysThirdAccountService extends IService<SysThirdAccount> {
      * @return
      */
     List<SysThirdAccount> listThirdUserIdByUsername(String[] sysUsernameArr, String thirdType);
+
+    /**
+     * 创建新用户
+     *
+     * @param tlm 第三方登录信息
+     */
+    SysThirdAccount saveThirdUser(ThirdLoginModel tlm);
 
 }

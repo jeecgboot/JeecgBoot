@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-cloud-module</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>2.4.5</version>
+        <version>2.4.6</version>
     </parent>
     <artifactId>jeecg-cloud-nacos</artifactId>
     <name>jeecg-cloud-nacos</name>
@@ -15,7 +15,7 @@
         <repository>
             <id>aliyun</id>
             <name>aliyun Repository</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+            <url>https://maven.aliyun.com/repository/public</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -23,7 +23,7 @@
         <repository>
             <id>jeecg</id>
             <name>jeecg Repository</name>
-            <url>http://maven.jeecg.org/nexus/content/repositories/jeecg</url>
+            <url>https://maven.jeecg.org/nexus/content/repositories/jeecg</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>

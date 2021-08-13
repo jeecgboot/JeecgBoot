@@ -9,10 +9,7 @@ import org.jeecg.common.system.api.factory.SysBaseAPIFallbackFactory;
 import org.jeecg.common.system.vo.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -108,6 +105,14 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     @GetMapping("/sys/api/queryDictItemsByCode")
     List<DictModel> queryDictItemsByCode(@RequestParam("code") String code);
+
+    /**
+     * 获取有效的数据字典项
+     * @param code
+     * @return
+     */
+    @GetMapping("/sys/api/queryEnableDictItemsByCode")
+    public List<DictModel> queryEnableDictItemsByCode(@RequestParam("code") String code);
 
     /** 11查询所有的父级字典，按照create_time排序 */
     @GetMapping("/sys/api/queryAllDict")
@@ -385,30 +390,31 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryUsersByUsernames")
-    List<JSONObject> queryUsersByUsernames(String usernames);
+    List<JSONObject> queryUsersByUsernames(@RequestParam("usernames") String usernames);
 
     /**
      * 37根据多个用户ID(逗号分隔)，查询返回多个用户信息
      * @param ids
      * @return
      */
-    @GetMapping("/sys/api/queryUsersByIds")
-    List<JSONObject> queryUsersByIds(String ids);
+    @RequestMapping("/sys/api/queryUsersByIds")
+    List<JSONObject> queryUsersByIds(@RequestParam("ids") String ids);
 
     /**
      * 38根据多个部门编码(逗号分隔)，查询返回多个部门信息
      * @param orgCodes
      * @return
      */
-    @GetMapping("/sys/api/queryDepartsByOrgcodes")
-    List<JSONObject> queryDepartsByOrgcodes(String orgCodes);
+    @RequestMapping("/sys/api/queryDepartsByOrgcodes")
+    List<JSONObject> queryDepartsByOrgcodes(@RequestParam("orgCodes") String orgCodes);
+
     /**
      * 39根据多个部门编码(逗号分隔)，查询返回多个部门信息
      * @param ids
      * @return
      */
     @GetMapping("/sys/api/queryDepartsByOrgIds")
-    List<JSONObject> queryDepartsByOrgIds(String ids);
+    List<JSONObject> queryDepartsByOrgIds(@RequestParam("ids") String ids);
     
     /**
      * 40发送邮件消息
@@ -424,4 +430,81 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     @GetMapping("/sys/api/getDeptUserByOrgCode")
     List<Map> getDeptUserByOrgCode(@RequestParam("orgCode")String orgCode);
+
+    /**
+     * 42 查询分类字典翻译
+     */
+    @GetMapping("/sys/api/loadCategoryDictItem")
+    List<String> loadCategoryDictItem(@RequestParam("ids") String ids);
+
+    /**
+     * 43 根据字典code加载字典text
+     *
+     * @param dictCode 顺序：tableName,text,code
+     * @param keys     要查询的key
+     * @return
+     */
+    @GetMapping("/sys/api/loadDictItem")
+    List<String> loadDictItem(@RequestParam("dictCode") String dictCode, @RequestParam("keys") String keys);
+
+    /**
+     * 44 根据字典code查询字典项
+     *
+     * @param dictCode 顺序：tableName,text,code
+     * @param dictCode 要查询的key
+     * @return
+     */
+    @GetMapping("/sys/api/getDictItems")
+    List<DictModel> getDictItems(@RequestParam("dictCode") String dictCode);
+
+    /**
+     * 45 根据多个字典code查询多个字典项
+     *
+     * @param dictCodeList
+     * @return key = dictCode ； value=对应的字典项
+     */
+    @RequestMapping("/sys/api/getManyDictItems")
+    Map<String, List<DictModel>> getManyDictItems(@RequestParam("dictCodeList") List<String> dictCodeList);
+
+    /**
+     * 46 【JSearchSelectTag下拉搜索组件专用接口】
+     * 大数据量的字典表 走异步加载  即前端输入内容过滤数据
+     *
+     * @param dictCode 字典code格式：table,text,code
+     * @param keyword  过滤关键字
+     * @return
+     */
+    @GetMapping("/sys/api/loadDictItemByKeyword")
+    List<DictModel> loadDictItemByKeyword(@RequestParam("dictCode") String dictCode, @RequestParam("keyword") String keyword, @RequestParam(value = "pageSize", required = false) Integer pageSize);
+
+    /**
+     * 47 根据多个部门id(逗号分隔)，查询返回多个部门信息
+     * @param ids
+     * @return
+     */
+    @GetMapping("/sys/api/queryDepartsByIds")
+    List<JSONObject> queryDepartsByIds(@RequestParam("ids") String ids);
+
+    /**
+     * 48 普通字典的翻译，根据多个dictCode和多条数据，多个以逗号分割
+     * @param dictCodes
+     * @param keys
+     * @return
+     */
+    @Override
+    @GetMapping("/sys/api/translateManyDict")
+    Map<String, List<DictModel>> translateManyDict(@RequestParam("dictCodes") String dictCodes, @RequestParam("keys") String keys);
+
+    /**
+     * 49 字典表的 翻译，可批量
+     * @param table
+     * @param text
+     * @param code
+     * @param keys 多个用逗号分割
+     * @return
+     */
+    @Override
+    @GetMapping("/sys/api/translateDictFromTableByKeys")
+    List<DictModel> translateDictFromTableByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keys") String keys);
+
 }

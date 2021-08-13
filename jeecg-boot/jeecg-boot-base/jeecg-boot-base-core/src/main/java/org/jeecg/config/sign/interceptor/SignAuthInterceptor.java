@@ -1,8 +1,12 @@
 package org.jeecg.config.sign.interceptor;
 
 
-import com.alibaba.fastjson.JSON;
-import lombok.extern.slf4j.Slf4j;
+import java.io.PrintWriter;
+import java.util.SortedMap;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.DateUtils;
@@ -11,10 +15,9 @@ import org.jeecg.config.sign.util.HttpUtils;
 import org.jeecg.config.sign.util.SignUtil;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import java.util.SortedMap;
+import com.alibaba.fastjson.JSON;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 签名拦截器

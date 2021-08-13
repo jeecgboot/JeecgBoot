@@ -1,5 +1,6 @@
 package org.jeecg.handler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -13,6 +14,7 @@ import java.util.*;
  * 聚合各个服务的swagger接口
  */
 @Component
+@Slf4j
 public class MySwaggerResourceProvider implements SwaggerResourcesProvider {
     /**
      * swagger2默认的url后缀
@@ -51,6 +53,7 @@ public class MySwaggerResourceProvider implements SwaggerResourcesProvider {
             String url = "/" + instance.toLowerCase() + SWAGGER2URL;
             if (!dealed.contains(url)) {
                 dealed.add(url);
+                log.info(" Gateway add SwaggerResource: {}",url);
                 SwaggerResource swaggerResource = new SwaggerResource();
                 swaggerResource.setUrl(url);
                 swaggerResource.setSwaggerVersion("2.0");

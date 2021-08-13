@@ -2,6 +2,10 @@ package org.jeecg.config.sign.util;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.common.util.SpringContextUtils;
+import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.StaticConfig;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
@@ -10,13 +14,11 @@ import java.util.SortedMap;
 /**
  * 签名工具类
  * 
- * @author show
- * @date 10:01 2019/5/30
+ * @author jeecg
+ * @date 20210621
  */
 @Slf4j
 public class SignUtil {
-    //签名密钥串(前后端要一致，正式发布请自行修改)
-    private static final String signatureSecret = "dd05f1c54d63749eda95f9fa6d49v442a";
     public static final String xPathVariable = "x-path-variable";
 
     /**
@@ -44,6 +46,11 @@ public class SignUtil {
         params.remove("_t");
         String paramsJsonStr = JSONObject.toJSONString(params);
         log.info("Param paramsJsonStr : {}", paramsJsonStr);
-        return DigestUtils.md5DigestAsHex((paramsJsonStr+signatureSecret).getBytes()).toUpperCase();
+        StaticConfig staticConfig = SpringContextUtils.getBean(StaticConfig.class);
+        String signatureSecret = staticConfig.getSignatureSecret();
+        if(oConvertUtils.isEmpty(signatureSecret) || signatureSecret.contains("${")){
+            throw new JeecgBootException("签名密钥 ${jeecg.signatureSecret} 缺少配置 ！！");
+        }
+        return DigestUtils.md5DigestAsHex((paramsJsonStr + signatureSecret).getBytes()).toUpperCase();
     }
 }

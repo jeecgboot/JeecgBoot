@@ -24,7 +24,7 @@
     
    	<!-- 首页访问统计 -->
     <select id="findVisitCount" resultType="java.util.HashMap">
-       <if test="dbType == 'MYSQL' || dbType == 'MARIADB'">
+       <if test="dbType == 'mysql' || dbType == 'mariadb'  || dbType == 'clickhouse'|| dbType == 'sqlite'">
          select count(*) as visit
         	   ,count(distinct(ip)) as ip
         	   ,DATE_FORMAT(create_time, '%Y-%m-%d') as tian
@@ -34,30 +34,30 @@
          group by tian,type
          order by tian asc
        </if>
-       <if test="dbType == 'ORACLE' || dbType == 'DM'">
+       <if test="dbType == 'oracle' || dbType == 'oracle12c' || dbType == 'dm'">
         select count(*) as visit
         	   ,count(distinct(ip)) as ip
-        	  ,to_char(create_time, 'yyyy-mm-dd') as tian
+        	   ,to_char(create_time, 'yyyy-mm-dd') as tian
         	   ,to_char(create_time, 'mm-dd') as type
          from sys_log 
          where log_type = 1 and create_time &gt;= #{dayStart} and create_time &lt; #{dayEnd}
          group by to_char(create_time, 'yyyy-mm-dd'),to_char(create_time, 'mm-dd') 
          order by to_char(create_time, 'yyyy-mm-dd') asc
        </if>
-      <if test="dbType == 'POSTGRESQL'">
+      <if test="dbType == 'postgresql' || dbType == 'kingbasees' || dbType == 'zenith'">
        select count(*) as visit
         	   ,count(distinct(ip)) as ip
-        	  ,to_char(create_time, 'yyyy-mm-dd') as tian
+        	   ,to_char(create_time, 'yyyy-mm-dd') as tian
         	   ,to_char(create_time, 'mm-dd') as type
          from sys_log 
          where log_type = 1 and create_time &gt;= #{dayStart} and create_time &lt; #{dayEnd}
          group by tian,type 
          order by tian asc 	   
      </if>
-     <if test="dbType == 'SQLSERVER'">
+     <if test="dbType == 'sqlserver' || dbType == 'sqlserver2005'">
         select count(*) as visit
         	   ,count(distinct(ip)) as ip
-             ,CONVERT(varchar(100), create_time, 23) as tian
+               ,CONVERT(varchar(100), create_time, 23) as tian
         	   ,RIGHT(CONVERT(varchar(100), create_time, 23),5) as type
          from sys_log 
          where log_type = 1 and create_time &gt;= #{dayStart} and create_time &lt; #{dayEnd} 

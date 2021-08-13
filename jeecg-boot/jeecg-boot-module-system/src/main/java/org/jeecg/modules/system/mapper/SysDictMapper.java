@@ -1,20 +1,20 @@
 package org.jeecg.modules.system.mapper;
 
-import java.util.List;
-import java.util.Map;
-
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.jeecg.common.system.vo.DictModel;
+import org.jeecg.common.system.vo.DictModelMany;
 import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.model.DuplicateCheckVo;
 import org.jeecg.modules.system.model.TreeSelectModel;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -30,10 +30,28 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	  *  重复检查SQL
 	 * @return
 	 */
+	@Deprecated
 	public Long duplicateCheckCountSql(DuplicateCheckVo duplicateCheckVo);
+	@Deprecated
 	public Long duplicateCheckCountSqlNoDataId(DuplicateCheckVo duplicateCheckVo);
 	
 	public List<DictModel> queryDictItemsByCode(@Param("code") String code);
+
+	/**
+	 * 查询有效的数据字典项
+	 * @param code
+	 * @return
+	 */
+	List<DictModel> queryEnableDictItemsByCode(@Param("code") String code);
+
+
+	/**
+	 * 通过多个字典code获取字典数据
+	 *
+	 * @param dictCodeList
+	 * @return
+	 */
+	public List<DictModelMany> queryDictItemsByCodeList(@Param("dictCodeList") List<String> dictCodeList);
 
 	@Deprecated
 	public List<DictModel> queryTableDictItemsByCode(@Param("table") String table,@Param("text") String text,@Param("code") String code);
@@ -47,8 +65,28 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 
 	public String queryDictTextByKey(@Param("code") String code,@Param("key") String key);
 
+	/**
+	 * 可通过多个字典code查询翻译文本
+	 * @param dictCodeList 多个字典code
+	 * @param keys 数据列表
+	 * @return
+	 */
+	List<DictModelMany> queryManyDictByKeys(@Param("dictCodeList") List<String> dictCodeList, @Param("keys") List<String> keys);
+
 	@Deprecated
 	public String queryTableDictTextByKey(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("key") String key);
+
+	/**
+	 * 通过查询指定table的 text code key 获取字典值，可批量查询
+	 *
+	 * @param table
+	 * @param text
+	 * @param code
+	 * @param keys
+	 * @return
+	 */
+	@Deprecated
+	List<DictModel> queryTableDictTextByKeys(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("keys") List<String> keys);
 
 	@Deprecated
 	public List<DictModel> queryTableDictByKeys(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("keyArray") String[] keyArray);
@@ -142,6 +180,7 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @param filterSql
 	 * @return
 	 */
+	@Deprecated
 	IPage<DictModel> queryTableDictWithFilter(Page<DictModel> page, @Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("filterSql") String filterSql);
 
 	/**
@@ -152,5 +191,6 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @param filterSql
 	 * @return
 	 */
+	@Deprecated
 	List<DictModel> queryAllTableDictItems(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("filterSql") String filterSql);
 }

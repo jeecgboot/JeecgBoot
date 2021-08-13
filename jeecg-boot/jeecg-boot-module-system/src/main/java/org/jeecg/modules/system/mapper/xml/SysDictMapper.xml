@@ -8,7 +8,32 @@
 		   where dict_id = (select id from sys_dict where dict_code = #{code})
 		   order by s.sort_order asc
 	</select>
-	
+
+	<!-- 通过字典code获取有效的字典数据项 -->
+	<select id="queryEnableDictItemsByCode" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		   select s.item_value as "value",s.item_text as "text" from sys_dict_item s
+		   where dict_id = (select id from sys_dict where dict_code = #{code})
+		   and s.status = 1
+		   order by s.sort_order asc
+	</select>
+
+	<!-- 通过多个字典code获取字典数据 -->
+	<select id="queryDictItemsByCodeList" parameterType="String" resultType="org.jeecg.common.system.vo.DictModelMany">
+		SELECT
+			dict.dict_code,
+			item.item_text AS "text",
+			item.item_value AS "value"
+		FROM
+			sys_dict_item item
+		INNER JOIN sys_dict dict ON dict.id = item.dict_id
+		WHERE dict.dict_code IN (
+			<foreach item="dictCode" collection="dictCodeList" separator=",">
+				#{dictCode}
+			</foreach>
+		)
+		ORDER BY item.sort_order ASC
+	</select>
+
 	<!-- 通过字典code获取字典数据 -->
 	<select id="queryDictTextByKey" parameterType="String"  resultType="String">
 		   select s.item_text from sys_dict_item s 
@@ -16,6 +41,26 @@
 		   and s.item_value = #{key}
 	</select>
 
+	<!-- 通过字典code获取字典数据，可批量查询 -->
+	<select id="queryManyDictByKeys" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModelMany">
+		SELECT
+			dict.dict_code,
+			item.item_text AS "text",
+			item.item_value AS "value"
+		FROM
+			sys_dict_item item
+		INNER JOIN sys_dict dict ON dict.id = item.dict_id
+		WHERE dict.dict_code IN (
+			<foreach item="dictCode" collection="dictCodeList" separator=",">
+				#{dictCode}
+			</foreach>
+		)
+		AND item.item_value IN (
+			<foreach item="key" collection="keys" separator=",">
+				#{key}
+			</foreach>
+		)
+	</select>
 
 	<!--通过查询指定table的 text code 获取字典-->
 	<select id="queryTableDictItemsByCode" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
@@ -33,6 +78,15 @@
 	<!--通过查询指定table的 text code key 获取字典值-->
 	<select id="queryTableDictTextByKey" parameterType="String" resultType="String">
 		   select ${text} as "text" from ${table} where ${code}= #{key}
+	</select>
+
+	<!--通过查询指定table的 text code key 获取字典值，可批量查询-->
+	<select id="queryTableDictTextByKeys" parameterType="String" resultType="org.jeecg.common.system.vo.DictModel">
+		select ${text} as "text", ${code} as "value" from ${table} where ${code} IN (
+			<foreach item="key" collection="keys" separator=",">
+				#{key}
+			</foreach>
+		)
 	</select>
 
 	<!--通过查询指定table的 text code key 获取字典值，包含value-->

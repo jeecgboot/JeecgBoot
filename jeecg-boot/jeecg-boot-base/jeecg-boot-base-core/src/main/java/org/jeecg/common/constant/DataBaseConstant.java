@@ -11,12 +11,14 @@ public interface DataBaseConstant {
 	public static final String DB_TYPE_SQLSERVER = "SQLSERVER";
 	public static final String DB_TYPE_MARIADB = "MARIADB";
 
-	// 数据库类型，对应 database_type 字典
-	public static final String DB_TYPE_MYSQL_NUM = "1";
-	public static final String DB_TYPE_ORACLE_NUM = "2";
-	public static final String DB_TYPE_SQLSERVER_NUM = "3";
-	public static final String DB_TYPE_POSTGRESQL_NUM = "4";
-	public static final String DB_TYPE_MARIADB_NUM = "5";
+//	// 数据库类型，对应 database_type 字典
+//	public static final String DB_TYPE_MYSQL_NUM = "1";
+//	public static final String DB_TYPE_MYSQL7_NUM = "6";
+//	public static final String DB_TYPE_ORACLE_NUM = "2";
+//	public static final String DB_TYPE_SQLSERVER_NUM = "3";
+//	public static final String DB_TYPE_POSTGRESQL_NUM = "4";
+//	public static final String DB_TYPE_MARIADB_NUM = "5";
+
 	//*********系统上下文变量****************************************
 	/**
 	 * 数据-所属机构编码

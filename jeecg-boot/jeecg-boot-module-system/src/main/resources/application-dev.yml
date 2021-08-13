@@ -39,7 +39,7 @@ spring:
   quartz:
     job-store-type: jdbc
     initialize-schema: embedded
-    #设置自动启动，默认为 true
+    #定时任务启动开关，true-开  false-关
     auto-startup: true
     #启动时更新己存在的Job
     overwrite-existing-jobs: true
@@ -118,7 +118,7 @@ spring:
         timeBetweenEvictionRunsMillis: 60000
         # 配置一个连接在池中最小生存的时间，单位是毫秒
         minEvictableIdleTimeMillis: 300000
-        validationQuery: SELECT 1 FROM DUAL
+        validationQuery: SELECT 1
         testWhileIdle: true
         testOnBorrow: false
         testOnReturn: false
@@ -131,7 +131,7 @@ spring:
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot-os-re?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: root
           password: root
           driver-class-name: com.mysql.cj.jdbc.Driver
@@ -176,8 +176,10 @@ minidao :
   #DB类型（mysql | postgresql | oracle | sqlserver| other）
   db-type: mysql
 jeecg :
+  # 签名密钥串(前后端要一致，正式发布请自行修改)
+  signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
   # 本地：local\Minio：minio\阿里云：alioss
-  uploadType: local
+  uploadType: minio
   path :
     #文件上传根目录 设置
     upload: /opt/upFiles
@@ -190,7 +192,7 @@ jeecg :
     accessKey: ??
     secretKey: ??
     endpoint: oss-cn-beijing.aliyuncs.com
-    bucketName: ??
+    bucketName: jeecgdev
   # ElasticSearch 6设置
   elasticsearch:
     cluster-name: jeecg-ES
@@ -238,12 +240,12 @@ jeecg :
     port: 30007
     logPath: logs/jeecg/job/jobhandler/
     logRetentionDays: 30
-   #自定义路由配置 yml nacos database
   route:
     config:
       data-id: jeecg-gateway-router
       group: DEFAULT_GROUP
-      data-type: yml
+      #自定义路由配置 yml nacos database
+      data-type: database
   #分布式锁配置
   redisson:
     address: 127.0.0.1:6379
@@ -259,9 +261,12 @@ logging:
     org.jeecg.modules.system.mapper : info
 #swagger
 knife4j:
+  #开启增强配置
+  enable: true
+  #开启生产环境屏蔽
   production: false
   basic:
-    enable: true
+    enable: false
     username: jeecg
     password: jeecg1314
 #第三方登录

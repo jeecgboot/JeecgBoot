@@ -26,6 +26,7 @@ import org.jeecg.modules.system.service.ISysAnnouncementSendService;
 import org.jeecg.modules.system.service.ISysAnnouncementService;
 import org.jeecg.modules.system.service.impl.ThirdAppDingtalkServiceImpl;
 import org.jeecg.modules.system.service.impl.ThirdAppWechatEnterpriseServiceImpl;
+import org.jeecg.modules.system.util.XSSUtils;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -119,6 +120,10 @@ public class SysAnnouncementController {
 	public Result<SysAnnouncement> add(@RequestBody SysAnnouncement sysAnnouncement) {
 		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
 		try {
+			// update-begin-author:liusq date:20210804 for:标题处理xss攻击的问题
+			String title = XSSUtils.striptXSS(sysAnnouncement.getTitile());
+			sysAnnouncement.setTitile(title);
+			// update-end-author:liusq date:20210804 for:标题处理xss攻击的问题
 			sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
 			sysAnnouncement.setSendStatus(CommonSendStatus.UNPUBLISHED_STATUS_0);//未发布
 			sysAnnouncementService.saveAnnouncement(sysAnnouncement);
@@ -142,6 +147,10 @@ public class SysAnnouncementController {
 		if(sysAnnouncementEntity==null) {
 			result.error500("未找到对应实体");
 		}else {
+			// update-begin-author:liusq date:20210804 for:标题处理xss攻击的问题
+			String title = XSSUtils.striptXSS(sysAnnouncement.getTitile());
+			sysAnnouncement.setTitile(title);
+			// update-end-author:liusq date:20210804 for:标题处理xss攻击的问题
 			boolean ok = sysAnnouncementService.upDateAnnouncement(sysAnnouncement);
 			//TODO 返回false说明什么？
 			if(ok) {

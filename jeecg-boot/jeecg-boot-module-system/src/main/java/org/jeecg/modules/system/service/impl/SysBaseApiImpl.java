@@ -97,6 +97,9 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	@Autowired
 	private ThirdAppDingtalkServiceImpl dingtalkService;
 
+	@Autowired
+	ISysCategoryService sysCategoryService;
+
 	@Override
 	@Cacheable(cacheNames=CacheConstant.SYS_USERS_CACHE, key="#username")
 	public LoginUser getUserByName(String username) {
@@ -274,6 +277,12 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	@Cacheable(value = CacheConstant.SYS_DICT_CACHE,key = "#code", unless = "#result == null ")
 	public List<DictModel> queryDictItemsByCode(String code) {
 		return sysDictService.queryDictItemsByCode(code);
+	}
+
+	@Override
+	@Cacheable(value = CacheConstant.SYS_ENABLE_DICT_CACHE,key = "#code", unless = "#result == null ")
+	public List<DictModel> queryEnableDictItemsByCode(String code) {
+		return sysDictService.queryEnableDictItemsByCode(code);
 	}
 
 	@Override
@@ -1065,6 +1074,82 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			return list;
 		}
 		return null;
+	}
+
+	/**
+	 * 查询分类字典翻译
+	 *
+	 * @param ids 分类字典表id
+	 * @return
+	 */
+	@Override
+	public List<String> loadCategoryDictItem(String ids) {
+		return sysCategoryService.loadDictItem(ids, false);
+	}
+
+	/**
+	 * 根据字典code加载字典text
+	 *
+	 * @param dictCode 顺序：tableName,text,code
+	 * @param keys     要查询的key
+	 * @return
+	 */
+	@Override
+	public List<String> loadDictItem(String dictCode, String keys) {
+		String[] params = dictCode.split(",");
+		return sysDictService.queryTableDictByKeys(params[0], params[1], params[2], keys, false);
+	}
+
+	/**
+	 * 根据字典code查询字典项
+	 *
+	 * @param dictCode 顺序：tableName,text,code
+	 * @param dictCode 要查询的key
+	 * @return
+	 */
+	@Override
+	public List<DictModel> getDictItems(String dictCode) {
+		List<DictModel> ls = sysDictService.getDictItems(dictCode);
+		if (ls == null) {
+			ls = new ArrayList<>();
+		}
+		return ls;
+	}
+
+	/**
+	 * 根据多个字典code查询多个字典项
+	 *
+	 * @param dictCodeList
+	 * @return key = dictCode ； value=对应的字典项
+	 */
+	@Override
+	public Map<String, List<DictModel>> getManyDictItems(List<String> dictCodeList) {
+		return sysDictService.queryDictItemsByCodeList(dictCodeList);
+	}
+
+	/**
+	 * 【下拉搜索】
+	 * 大数据量的字典表 走异步加载，即前端输入内容过滤数据
+	 *
+	 * @param dictCode 字典code格式：table,text,code
+	 * @param keyword  过滤关键字
+	 * @return
+	 */
+	@Override
+	public List<DictModel> loadDictItemByKeyword(String dictCode, String keyword, Integer pageSize) {
+		return sysDictService.loadDict(dictCode, keyword, pageSize);
+	}
+
+	@Override
+	public Map<String, List<DictModel>> translateManyDict(String dictCodes, String keys) {
+		List<String> dictCodeList = Arrays.asList(dictCodes.split(","));
+		List<String> values = Arrays.asList(keys.split(","));
+		return sysDictService.queryManyDictByKeys(dictCodeList, values);
+	}
+
+	@Override
+	public List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys) {
+		return sysDictService.queryTableDictTextByKeys(table, text, code, Arrays.asList(keys.split(",")));
 	}
 
 }

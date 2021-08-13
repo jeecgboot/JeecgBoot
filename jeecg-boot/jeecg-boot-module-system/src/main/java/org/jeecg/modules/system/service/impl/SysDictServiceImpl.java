@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.DictModel;
+import org.jeecg.common.system.vo.DictModelMany;
 import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
@@ -58,6 +59,25 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	}
 
 	@Override
+	@Cacheable(value = CacheConstant.SYS_ENABLE_DICT_CACHE,key = "#code", unless = "#result == null ")
+	public List<DictModel> queryEnableDictItemsByCode(String code) {
+		log.debug("无缓存dictCache的时候调用这里！");
+		return sysDictMapper.queryEnableDictItemsByCode(code);
+	}
+
+	@Override
+	public Map<String, List<DictModel>> queryDictItemsByCodeList(List<String> dictCodeList) {
+		List<DictModelMany> list = sysDictMapper.queryDictItemsByCodeList(dictCodeList);
+		Map<String, List<DictModel>> dictMap = new HashMap<>();
+		for (DictModelMany dict : list) {
+			List<DictModel> dictItemList = dictMap.computeIfAbsent(dict.getDictCode(), i -> new ArrayList<>());
+			dict.setDictCode(null);
+			dictItemList.add(new DictModel(dict.getValue(), dict.getText()));
+		}
+		return dictMap;
+	}
+
+	@Override
 	public Map<String, List<DictModel>> queryAllDictItems() {
 		Map<String, List<DictModel>> res = new HashMap<String, List<DictModel>>();
 		List<SysDict> ls = sysDictMapper.selectList(null);
@@ -91,6 +111,17 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	public String queryDictTextByKey(String code, String key) {
 		log.debug("无缓存dictText的时候调用这里！");
 		return sysDictMapper.queryDictTextByKey(code, key);
+	}
+
+	@Override
+	public Map<String, List<DictModel>> queryManyDictByKeys(List<String> dictCodeList, List<String> keys) {
+		List<DictModelMany> list = sysDictMapper.queryManyDictByKeys(dictCodeList, keys);
+		Map<String, List<DictModel>> dictMap = new HashMap<>();
+		for (DictModelMany dict : list) {
+			List<DictModel> dictItemList = dictMap.computeIfAbsent(dict.getDictCode(), i -> new ArrayList<>());
+			dictItemList.add(new DictModel(dict.getValue(), dict.getText()));
+		}
+		return dictMap;
 	}
 
 	/**
@@ -128,6 +159,11 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	public String queryTableDictTextByKey(String table,String text,String code, String key) {
 		log.debug("无缓存dictTable的时候调用这里！");
 		return sysDictMapper.queryTableDictTextByKey(table,text,code,key);
+	}
+
+	@Override
+	public List<DictModel> queryTableDictTextByKeys(String table, String text, String code, List<String> keys) {
+		return sysDictMapper.queryTableDictTextByKeys(table, text, code, keys);
 	}
 
 	@Override
