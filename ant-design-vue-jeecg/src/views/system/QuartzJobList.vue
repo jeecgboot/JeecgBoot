@@ -214,7 +214,12 @@
           this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
         }
         //这种筛选方式只支持单选
-        this.filters.status = filters.status[0];
+        
+        // update-begin-author:liusq date:20210624 for:前台定时任务无法翻页  #2666
+        if(filters && Object.keys(filters).length>0 && filters.status){
+          this.filters.status = filters.status[0];
+        }
+        // update-end-author:liusq date:20210624 for:前台定时任务无法翻页  #2666
         this.ipagination = pagination;
         this.loadData();
       },

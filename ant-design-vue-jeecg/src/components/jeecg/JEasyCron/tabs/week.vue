@@ -36,8 +36,8 @@
         <a-radio value="TYPE_SPECIFY" class="choice" :disabled="disableChoice">指定</a-radio>
         <div class="list">
           <a-checkbox-group v-model="valueList">
-            <template v-for="i in maxValue+1">
-              <a-checkbox class="list-check-item" :key="`key-${i-1}`" :value="i-1" :disabled="type!==TYPE_SPECIFY || disabled">{{i-1}}</a-checkbox>
+            <template v-for="i in specifyRange">
+              <a-checkbox class="list-check-item" :key="`key-${i}`" :value="i" :disabled="type!==TYPE_SPECIFY || disabled">{{i}}</a-checkbox>
             </template>
           </a-checkbox-group>
         </div>
@@ -51,13 +51,14 @@ import mixin from './mixin'
 import { replaceWeekName, WEEK_MAP_EN } from './const.js'
 
 const WEEK_MAP = {
-  '周日': 0,
   '周一': 1,
   '周二': 2,
   '周三': 3,
   '周四': 4,
   '周五': 5,
-  '周六': 6
+  '周六': 6,
+  // 按照国人习惯，将周日放到每周的最后一天
+  '周日': 7,
 }
 
 export default {
@@ -101,10 +102,10 @@ export default {
   created() {
     this.DEFAULT_VALUE = '*'
     // 0,7表示周日 1表示周一
-    this.minValue = 0
-    this.maxValue = 6
-    this.valueRange.start = 0
-    this.valueRange.end = 6
+    this.minValue = 1
+    this.maxValue = 7
+    this.valueRange.start = 1
+    this.valueRange.end = 7
     this.valueLoop.start = 2
     this.valueLoop.interval = 1
     this.parseProp(this.prop)

@@ -668,7 +668,11 @@ export default {
     async loadNewData(dataSource) {
       if (Array.isArray(dataSource)) {
         let {xTable} = this.$refs.vxe.$refs
-        return await xTable.loadData(dataSource)
+        // issues/2784
+        // 先清空所有数据
+        xTable.loadData([])
+        // 再新增
+        return xTable.insertAt(dataSource)
       }
       return []
     },

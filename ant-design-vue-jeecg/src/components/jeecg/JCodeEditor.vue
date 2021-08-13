@@ -400,6 +400,10 @@
     .null-tip-hidden{
       display: none;
     }
+    /**选中样式偶然出现高度不够的情况*/
+    .CodeMirror-selected{
+      min-height: 19px !important;
+    }
   }
 
   /* 全屏样式 */

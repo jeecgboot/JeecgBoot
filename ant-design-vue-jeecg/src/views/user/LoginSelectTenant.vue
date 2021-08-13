@@ -50,12 +50,11 @@
 
 <script>
 
-  import Vue from 'vue'
-  import { getAction,putAction } from '@/api/manage'
-  import { USER_INFO } from "@/store/mutation-types"
-  import store from './Login'
+import Vue from 'vue'
+import { putAction } from '@/api/manage'
+import { USER_INFO } from '@/store/mutation-types'
 
-  export default {
+export default {
     name: 'LoginSelectTenant',
     data(){
       return {
@@ -111,18 +110,19 @@
           this.isMultiDepart = false
         }
       },
-      bizTenant(ids){
-        if(!ids || ids.length==0){
-          this.isMultiTenant = false
-        } else if(ids.indexOf(',')<0){
-          this.tenant_id = ids;
-          this.isMultiTenant = false
-        }else{
-          this.visible = true
-          this.isMultiTenant = true
-          getAction('/sys/tenant/queryList', {ids: ids}).then(res=>{
-            this.tenantList = res.result
-          })
+      bizTenantList(loginResult) {
+        let tenantList = loginResult.tenantList
+        if (Array.isArray(tenantList)) {
+          if (tenantList.length === 0) {
+            this.isMultiTenant = false
+          } else if (tenantList.length === 1) {
+            this.tenant_id = tenantList[0].id
+            this.isMultiTenant = false
+          } else {
+            this.visible = true
+            this.isMultiTenant = true
+            this.tenantList = tenantList
+          }
         }
       },
       show(loginResult){
@@ -131,8 +131,7 @@
 
         let user = Vue.ls.get(USER_INFO)
         this.username = user.username
-        let ids = user.relTenantIds
-        this.bizTenant(ids);
+        this.bizTenantList(loginResult);
 
         if(this.visible===false){
           this.$store.dispatch('saveTenant', this.tenant_id);

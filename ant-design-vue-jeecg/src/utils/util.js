@@ -1,5 +1,7 @@
+import Vue from 'vue'
 import * as api from '@/api/api'
 import { isURL } from '@/utils/validate'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
 import onlineCommons from '@jeecg/antd-online-mini'
 
 export function timeFix() {
@@ -145,6 +147,7 @@ function  generateChildRouters (data) {
       component: componentPath,
       //component: resolve => require(['@/' + component+'.vue'], resolve),
       hidden:item.hidden,
+      //component:()=> import(`@/views/${item.component}.vue`),
       meta: {
         title:item.meta.title ,
         icon: item.meta.icon,
@@ -559,4 +562,32 @@ export function removeArrayElement(array, prod, value) {
   if(index>=0){
     array.splice(index, 1);
   }
+}
+
+/** 判断是否是OAuth2APP环境 */
+export function isOAuth2AppEnv() {
+  return /wxwork|dingtalk/i.test(navigator.userAgent)
+}
+
+/**
+ * 获取积木报表打印地址
+ * @param url
+ * @param id
+ * @param open 是否自动打开
+ * @returns {*}
+ */
+export function getReportPrintUrl(url, id, open) {
+  // URL支持{{ window.xxx }}占位符变量
+  url = url.replace(/{{([^}]+)?}}/g, (s1, s2) => eval(s2))
+  if (url.includes('?')) {
+    url += '&'
+  } else {
+    url += '?'
+  }
+  url += `id=${id}`
+  url += `&token=${Vue.ls.get(ACCESS_TOKEN)}`
+  if (open) {
+    window.open(url)
+  }
+  return url
 }

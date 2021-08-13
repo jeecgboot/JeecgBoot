@@ -305,7 +305,7 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-model-item label="cron表达式" prop="cronExpression">
-              <j-cron v-model="formData.cronExpression"></j-cron>
+               <j-easy-cron v-model="formData.cronExpression"></j-easy-cron>
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -457,6 +457,7 @@
   import JSelectMultiple from '@/components/jeecg/JSelectMultiple'
   import JTreeDict from "../../components/jeecg/JTreeDict.vue";
   import JCron from "@/components/jeecg/JCron.vue";
+  import JEasyCron from "@/components/jeecg/JEasyCron";
   import JTreeSelect from '@/components/jeecg/JTreeSelect'
   import JSuperQuery from '@/components/jeecg/JSuperQuery'
   import JUpload from '@/components/jeecg/JUpload'
@@ -489,7 +490,7 @@
       JCheckbox,
       JCodeEditor,
       JDate, JEditor, JEllipsis, JSlider, JSelectMultiple,
-      JCron, JTreeSelect, JSuperQuery, JMultiSelectTag,
+      JCron, JEasyCron,JTreeSelect, JSuperQuery, JMultiSelectTag,
       JSearchSelectTag
     },
     data() {

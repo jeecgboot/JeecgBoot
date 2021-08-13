@@ -8,7 +8,7 @@
     :showTime="showTime"
     :format="dateFormat"
     :getCalendarContainer="getCalendarContainer"
-  />
+    v-bind="$attrs"/>
 </template>
 <script>
   import moment from 'moment'

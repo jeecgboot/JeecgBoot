@@ -35,18 +35,18 @@
 </template>
 
 <script>
-  import Vue from 'vue'
-  import { ACCESS_TOKEN ,ENCRYPTED_STRING} from "@/store/mutation-types"
-  import ThirdLogin from './third/ThirdLogin'
-  import LoginSelectTenant from "./LoginSelectTenant"
-  import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
-  import { encryption , getEncryptedString } from '@/utils/encryption/aesEncrypt'
-  import { timeFix } from "@/utils/util"
+import Vue from 'vue'
+import { ACCESS_TOKEN, ENCRYPTED_STRING } from '@/store/mutation-types'
+import ThirdLogin from './third/ThirdLogin'
+import LoginSelectTenant from './LoginSelectTenant'
+import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
+import { getEncryptedString } from '@/utils/encryption/aesEncrypt'
+import { timeFix } from '@/utils/util'
 
-  import LoginAccount from './LoginAccount'
-  import LoginPhone from './LoginPhone'
+import LoginAccount from './LoginAccount'
+import LoginPhone from './LoginPhone'
 
-  export default {
+export default {
     components: {
       LoginSelectTenant,
       TwoStepCaptcha,

@@ -26,19 +26,24 @@ import JSlider from './JSlider.vue'
 import JSwitch from './JSwitch.vue'
 import JTime from './JTime.vue'
 import JTreeTable from './JTreeTable.vue'
-import JEasyCron from "@/components/jeecg/JEasyCron";
-
+import JEasyCron from '@/components/jeecg/JEasyCron'
 //jeecgbiz
 import JSelectDepart from '../jeecgbiz/JSelectDepart.vue'
 import JSelectMultiUser from '../jeecgbiz/JSelectMultiUser.vue'
 import JSelectPosition from '../jeecgbiz/JSelectPosition.vue'
 import JSelectRole from '../jeecgbiz/JSelectRole.vue'
 import JSelectUserByDep from '../jeecgbiz/JSelectUserByDep.vue'
+//引入需要全局注册的js函数和变量
+import { Modal, notification,message } from 'ant-design-vue'
+import lodash_object from 'lodash'
+import debounce from 'lodash/debounce'
+import pick from 'lodash.pick'
+import data from 'china-area-data'
 
 export default {
   install(Vue) {
+    Vue.use(JModal)
     Vue.component('JMarkdownEditor', JMarkdownEditor)
-    Vue.component(JModal.name, JModal)
     Vue.component('JPopupOnlReport', JPopupOnlReport)
     Vue.component('JFilePop', JFilePop)
     Vue.component('JInputPop', JInputPop)
@@ -73,5 +78,14 @@ export default {
     Vue.component('JSelectRole', JSelectRole)
     Vue.component('JSelectUserByDep', JSelectUserByDep)
     Vue.component(JEasyCron.name, JEasyCron)
+
+    //注册全局js函数和变量
+    Vue.prototype.$Jnotification = notification
+    Vue.prototype.$Jmodal = Modal
+    Vue.prototype.$Jmessage = message
+    Vue.prototype.$Jlodash = lodash_object
+    Vue.prototype.$Jdebounce= debounce
+    Vue.prototype.$Jpick = pick
+    Vue.prototype.$Jpcaa = data
   }
 }
