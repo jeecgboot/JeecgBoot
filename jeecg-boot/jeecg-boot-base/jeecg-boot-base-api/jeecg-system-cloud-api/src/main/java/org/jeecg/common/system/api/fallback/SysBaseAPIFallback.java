@@ -73,6 +73,11 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
+    public List<DictModel> queryEnableDictItemsByCode(String code) {
+        return null;
+    }
+
+    @Override
     public List<DictModel> queryAllDict() {
         return null;
     }
@@ -255,6 +260,22 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     public List<JSONObject> queryDepartsByOrgcodes(String orgCodes) {
         return null;
     }
+
+    @Override
+    public List<JSONObject> queryDepartsByIds(String ids) {
+        return null;
+    }
+
+    @Override
+    public Map<String, List<DictModel>> translateManyDict(String dictCodes, String keys) {
+        return null;
+    }
+
+    @Override
+    public List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys) {
+        return null;
+    }
+
     @Override
     public void sendEmailMsg(String email,String title,String content) {
 
@@ -267,6 +288,31 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
 
     @Override
     public List<JSONObject> queryDepartsByOrgIds(String ids) {
+        return null;
+    }
+
+    @Override
+    public List<String> loadCategoryDictItem(String ids) {
+        return null;
+    }
+
+    @Override
+    public List<String> loadDictItem(String dictCode, String keys) {
+        return null;
+    }
+
+    @Override
+    public List<DictModel> getDictItems(String dictCode) {
+        return null;
+    }
+
+    @Override
+    public Map<String, List<DictModel>> getManyDictItems(List<String> dictCodeList) {
+        return null;
+    }
+
+    @Override
+    public List<DictModel> loadDictItemByKeyword(String dictCode, String keyword, Integer pageSize) {
         return null;
     }
 }

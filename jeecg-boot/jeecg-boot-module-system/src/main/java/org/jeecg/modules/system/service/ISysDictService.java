@@ -22,6 +22,21 @@ public interface ISysDictService extends IService<SysDict> {
 
     public List<DictModel> queryDictItemsByCode(String code);
 
+	/**
+	 * 查询有效的数据字典项
+	 * @param code
+	 * @return
+	 */
+	List<DictModel> queryEnableDictItemsByCode(String code);
+
+	/**
+	 * 通过多个字典code获取字典数据
+	 *
+	 * @param dictCodeList
+	 * @return key = 字典code，value=对应的字典选项
+	 */
+	Map<String, List<DictModel>> queryDictItemsByCodeList(List<String> dictCodeList);
+
     public Map<String,List<DictModel>> queryAllDictItems();
 
     @Deprecated
@@ -32,8 +47,27 @@ public interface ISysDictService extends IService<SysDict> {
 
     public String queryDictTextByKey(String code, String key);
 
+	/**
+	 * 可通过多个字典code查询翻译文本
+	 * @param dictCodeList 多个字典code
+	 * @param keys 数据列表
+	 * @return
+	 */
+	Map<String, List<DictModel>> queryManyDictByKeys(List<String> dictCodeList, List<String> keys);
+
     @Deprecated
 	String queryTableDictTextByKey(String table, String text, String code, String key);
+
+	/**
+	 * 通过查询指定table的 text code key 获取字典值，可批量查询
+	 *
+	 * @param table
+	 * @param text
+	 * @param code
+	 * @param keys
+	 * @return
+	 */
+	List<DictModel> queryTableDictTextByKeys(String table, String text, String code, List<String> keys);
 
 	@Deprecated
 	List<String> queryTableDictByKeys(String table, String text, String code, String keys);

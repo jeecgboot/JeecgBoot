@@ -15,6 +15,7 @@ import org.jeecg.modules.system.mapper.SysRoleMapper;
 import org.jeecg.modules.system.mapper.SysThirdAccountMapper;
 import org.jeecg.modules.system.mapper.SysUserMapper;
 import org.jeecg.modules.system.mapper.SysUserRoleMapper;
+import org.jeecg.modules.system.model.ThirdLoginModel;
 import org.jeecg.modules.system.service.ISysThirdAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -131,6 +132,20 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
     @Override
     public List<SysThirdAccount> listThirdUserIdByUsername(String[] sysUsernameArr, String thirdType) {
         return sysThirdAccountMapper.selectThirdIdsByUsername(sysUsernameArr, thirdType);
+    }
+
+    @Override
+    public SysThirdAccount saveThirdUser(ThirdLoginModel tlm) {
+        SysThirdAccount user = new SysThirdAccount();
+        user.setDelFlag(CommonConstant.DEL_FLAG_0);
+        user.setStatus(1);
+        user.setThirdType(tlm.getSource());
+        user.setAvatar(tlm.getAvatar());
+        user.setRealname(tlm.getUsername());
+        user.setThirdUserUuid(tlm.getUuid());
+        user.setThirdUserId(tlm.getUuid());
+        super.save(user);
+        return user;
     }
 
 }

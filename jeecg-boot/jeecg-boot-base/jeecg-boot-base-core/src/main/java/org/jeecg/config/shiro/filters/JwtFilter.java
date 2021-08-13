@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.TenantContext;
 import org.jeecg.config.shiro.JwtToken;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,10 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 public class JwtFilter extends BasicHttpAuthenticationFilter {
 
+    /**
+     * 默认开启跨域设置（使用单体）
+     * 微服务情况下，此属性设置为false
+     */
     private boolean allowOrigin = true;
 
     public JwtFilter(){}
@@ -55,7 +60,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String token = httpServletRequest.getHeader(CommonConstant.X_ACCESS_TOKEN);
         // update-begin--Author:lvdandan Date:20210105 for：JT-355 OA聊天添加token验证，获取token参数
-        if(token == null){
+        if (oConvertUtils.isEmpty(token)) {
             token = httpServletRequest.getParameter("token");
         }
         // update-end--Author:lvdandan Date:20210105 for：JT-355 OA聊天添加token验证，获取token参数

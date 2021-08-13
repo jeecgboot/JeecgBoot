@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.jeecg.dingtalk.api.base.JdtBaseAPI;
@@ -12,6 +13,8 @@ import com.jeecg.dingtalk.api.message.JdtMessageAPI;
 import com.jeecg.dingtalk.api.message.vo.ActionCardMessage;
 import com.jeecg.dingtalk.api.message.vo.Message;
 import com.jeecg.dingtalk.api.message.vo.TextMessage;
+import com.jeecg.dingtalk.api.oauth2.JdtOauth2API;
+import com.jeecg.dingtalk.api.oauth2.vo.ContactUser;
 import com.jeecg.dingtalk.api.user.JdtUserAPI;
 import com.jeecg.dingtalk.api.user.body.GetUserListBody;
 import com.jeecg.dingtalk.api.user.vo.User;
@@ -25,9 +28,11 @@ import org.jeecg.common.util.RestUtil;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.thirdapp.ThirdAppConfig;
+import org.jeecg.config.thirdapp.ThirdAppTypeItemVo;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.SysAnnouncementSendMapper;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
+import org.jeecg.modules.system.model.ThirdLoginModel;
 import org.jeecg.modules.system.service.*;
 import org.jeecg.modules.system.vo.thirdapp.JdtDepartmentTreeVo;
 import org.jeecg.modules.system.vo.thirdapp.SyncInfoVo;
@@ -64,6 +69,9 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
     private ISysPositionService sysPositionService;
     @Autowired
     private SysAnnouncementSendMapper sysAnnouncementSendMapper;
+
+    // 第三方APP类型，当前固定为 dingtalk
+    public final String THIRD_TYPE = ThirdAppConfig.DINGTALK.toLowerCase();
 
     @Override
     public String getAccessToken() {
@@ -273,7 +281,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
              * 1. 查询 sys_third_account（第三方账号表）是否有数据，如果有代表已同步
              * 2. 本地表里没有，就先用手机号判断，不通过再用username判断。
              */
-            SysThirdAccount sysThirdAccount = sysThirdAccountService.getOneBySysUserId(sysUser.getId(), ThirdAppConfig.DINGTALK.toLowerCase());
+            SysThirdAccount sysThirdAccount = sysThirdAccountService.getOneBySysUserId(sysUser.getId(), THIRD_TYPE);
             if (sysThirdAccount != null && oConvertUtils.isNotEmpty(sysThirdAccount.getThirdUserId())) {
                 // sys_third_account 表匹配成功，通过第三方userId查询出第三方userInfo
                 dtUserInfo = JdtUserAPI.getUserById(sysThirdAccount.getThirdUserId(), accessToken);
@@ -315,7 +323,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
                     sysThirdAccount.setSysUserId(sysUser.getId());
                     sysThirdAccount.setStatus(1);
                     sysThirdAccount.setDelFlag(0);
-                    sysThirdAccount.setThirdType(ThirdAppConfig.DINGTALK.toLowerCase());
+                    sysThirdAccount.setThirdType(THIRD_TYPE);
                 }
                 // 设置第三方app用户ID
                 sysThirdAccount.setThirdUserId(dtUserId);
@@ -343,7 +351,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         List<User> ddUserList = this.getDtAllUserByDepartment(allDepartment, accessToken);
 
         for (User dtUserInfo : ddUserList) {
-            SysThirdAccount sysThirdAccount = sysThirdAccountService.getOneByThirdUserId(dtUserInfo.getUserid(), ThirdAppConfig.DINGTALK.toLowerCase());
+            SysThirdAccount sysThirdAccount = sysThirdAccountService.getOneByThirdUserId(dtUserInfo.getUserid(), THIRD_TYPE);
             List<SysUser> collect = sysUsersList.stream().filter(user -> (dtUserInfo.getMobile().equals(user.getPhone()) || dtUserInfo.getUserid().equals(user.getUsername()))
                                                                  ).collect(Collectors.toList());
             if (collect != null && collect.size() > 0) {
@@ -414,7 +422,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
             sysThirdAccount.setSysUserId(sysUserId);
             sysThirdAccount.setStatus(1);
             sysThirdAccount.setDelFlag(0);
-            sysThirdAccount.setThirdType(ThirdAppConfig.DINGTALK.toLowerCase());
+            sysThirdAccount.setThirdType(THIRD_TYPE);
         }
         sysThirdAccount.setThirdUserId(dtUserId);
         sysThirdAccountService.saveOrUpdate(sysThirdAccount);
@@ -517,6 +525,9 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         String passwordEncode = PasswordUtil.encrypt(sysUser.getUsername(), password, salt);
         sysUser.setSalt(salt);
         sysUser.setPassword(passwordEncode);
+        // update-begin--Author:liusq Date:20210713 for：钉钉同步到本地的人员没有状态，导致同步之后无法登录 #I3ZC2L
+        sysUser.setStatus(1);
+        // update-end--Author:liusq Date:20210713 for：钉钉同步到本地的人员没有状态，导致同步之后无法登录 #I3ZC2L
         return this.dtUserToSysUser(dtUser, sysUser);
     }
 
@@ -629,7 +640,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
                 return count;
             }
             LambdaQueryWrapper<SysThirdAccount> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(SysThirdAccount::getThirdType, ThirdAppConfig.DINGTALK.toLowerCase());
+            queryWrapper.eq(SysThirdAccount::getThirdType, THIRD_TYPE);
             queryWrapper.in(SysThirdAccount::getSysUserId, userIdList);
             // 根据userId，获取第三方用户的id
             List<SysThirdAccount> thirdAccountList = sysThirdAccountService.list(queryWrapper);
@@ -686,7 +697,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         } else {
             String[] toUsers = message.getToUser().split(",");
             // 通过第三方账号表查询出第三方userId
-            List<SysThirdAccount> thirdAccountList = sysThirdAccountService.listThirdUserIdByUsername(toUsers, ThirdAppConfig.DINGTALK.toLowerCase());
+            List<SysThirdAccount> thirdAccountList = sysThirdAccountService.listThirdUserIdByUsername(toUsers, THIRD_TYPE);
             List<String> dtUserIds = thirdAccountList.stream().map(SysThirdAccount::getThirdUserId).collect(Collectors.toList());
             textMessage.setUserid_list(dtUserIds);
         }
@@ -757,13 +768,100 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
             if(userIds!=null){
                 String[] usernameList = sysUserService.userIdToUsername(Arrays.asList(userIds)).toArray(new String[]{});
                 // 通过第三方账号表查询出第三方userId
-                List<SysThirdAccount> thirdAccountList = sysThirdAccountService.listThirdUserIdByUsername(usernameList, ThirdAppConfig.DINGTALK.toLowerCase());
+                List<SysThirdAccount> thirdAccountList = sysThirdAccountService.listThirdUserIdByUsername(usernameList, THIRD_TYPE);
                 List<String> dtUserIds = thirdAccountList.stream().map(SysThirdAccount::getThirdUserId).collect(Collectors.toList());
                 actionCardMessage.setUserid_list(dtUserIds);
                 return JdtMessageAPI.sendActionCardMessage(actionCardMessage, accessToken);
             }
         }
         return null;
+    }
+
+    /**
+     * OAuth2登录，成功返回登录的SysUser，失败返回null
+     */
+    public SysUser oauth2Login(String authCode) {
+        ThirdAppTypeItemVo dtConfig = thirdAppConfig.getDingtalk();
+        // 1. 根据免登授权码获取用户 AccessToken
+        String userAccessToken = JdtOauth2API.getUserAccessToken(dtConfig.getClientId(), dtConfig.getClientSecret(), authCode);
+        if (userAccessToken == null) {
+            log.error("oauth2Login userAccessToken is null");
+            return null;
+        }
+        // 2. 根据用户 AccessToken 获取当前用户的基本信息（不包括userId）
+        ContactUser contactUser = JdtOauth2API.getContactUsers("me", userAccessToken);
+        if (contactUser == null) {
+            log.error("oauth2Login contactUser is null");
+            return null;
+        }
+        String unionId = contactUser.getUnionId();
+        // 3. 根据获取到的 unionId 换取用户 userId
+        String accessToken = this.getAccessToken();
+        if (accessToken == null) {
+            log.error("oauth2Login accessToken is null");
+            return null;
+        }
+        Response<String> getUserIdRes = JdtUserAPI.getUseridByUnionid(unionId, accessToken);
+        if (!getUserIdRes.isSuccess()) {
+            log.error("oauth2Login getUseridByUnionid failed: " + JSON.toJSONString(getUserIdRes));
+            return null;
+        }
+        String appUserId = getUserIdRes.getResult();
+        log.info("appUserId: " + appUserId);
+        if (appUserId != null) {
+            // 判断第三方用户表有没有这个人
+            LambdaQueryWrapper<SysThirdAccount> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(SysThirdAccount::getThirdUserUuid, appUserId);
+            queryWrapper.or().eq(SysThirdAccount::getThirdUserId, appUserId);
+            queryWrapper.eq(SysThirdAccount::getThirdType, THIRD_TYPE);
+            SysThirdAccount thirdAccount = sysThirdAccountService.getOne(queryWrapper);
+            if (thirdAccount != null) {
+                return this.getSysUserByThird(thirdAccount, null, appUserId, accessToken);
+            } else {
+                // 直接创建新账号
+                User appUser = JdtUserAPI.getUserById(appUserId, accessToken).getResult();
+                ThirdLoginModel tlm = new ThirdLoginModel(THIRD_TYPE, appUser.getUserid(), appUser.getName(), appUser.getAvatar());
+                thirdAccount = sysThirdAccountService.saveThirdUser(tlm);
+                return this.getSysUserByThird(thirdAccount, appUser, null, null);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 根据第三方账号获取本地账号，如果不存在就创建
+     *
+     * @param thirdAccount
+     * @param appUser
+     * @param appUserId
+     * @param accessToken
+     * @return
+     */
+    private SysUser getSysUserByThird(SysThirdAccount thirdAccount, User appUser, String appUserId, String accessToken) {
+        String sysUserId = thirdAccount.getSysUserId();
+        if (oConvertUtils.isNotEmpty(sysUserId)) {
+            return sysUserService.getById(sysUserId);
+        } else {
+            // 如果没有 sysUserId ，说明没有绑定账号，获取到手机号之后进行绑定
+            if (appUser == null) {
+                appUser = JdtUserAPI.getUserById(appUserId, accessToken).getResult();
+            }
+            // 判断系统里是否有这个手机号的用户
+            SysUser sysUser = sysUserService.getUserByPhone(appUser.getMobile());
+            if (sysUser != null) {
+                thirdAccount.setAvatar(appUser.getAvatar());
+                thirdAccount.setRealname(appUser.getName());
+                thirdAccount.setThirdUserId(appUser.getUserid());
+                thirdAccount.setThirdUserUuid(appUser.getUserid());
+                thirdAccount.setSysUserId(sysUser.getId());
+                sysThirdAccountService.updateById(thirdAccount);
+                return sysUser;
+            } else {
+                // 没有就走创建逻辑
+                return sysThirdAccountService.createUser(appUser.getMobile(), appUser.getUserid());
+            }
+
+        }
     }
 
 }

@@ -131,6 +131,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	int deleteLogicDeleted(@Param("userIds") String userIds);
 
     /** 更新空字符串为null【此写法有sql注入风险，禁止随便用】 */
+    @Deprecated
     int updateNullByEmptyString(@Param("fieldName") String fieldName);
     
 	/**

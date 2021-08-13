@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-cloud-module</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>2.4.5</version>
+        <version>2.4.6</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -26,6 +26,19 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
+        </dependency>
+        <!--sentinel断路器依赖-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-alibaba-sentinel-gateway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-web-servlet</artifactId>
         </dependency>
         <!--Spring Webflux-->
         <dependency>

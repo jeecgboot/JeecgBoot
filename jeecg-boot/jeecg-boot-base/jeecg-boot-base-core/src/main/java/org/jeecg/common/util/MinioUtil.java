@@ -2,6 +2,7 @@ package org.jeecg.common.util;
 
 import io.minio.*;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.util.filter.FileTypeFilter;
 import org.jeecg.common.util.filter.StrAttackFilter;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -68,6 +69,9 @@ public class MinioUtil {
                 minioClient.makeBucket(MakeBucketArgs.builder().bucket(newBucket).build());
                 log.info("create a new bucket.");
             }
+            //update-begin-author:liusq date:20210809 for: 过滤上传文件类型
+            FileTypeFilter.fileTypeFilter(file);
+            //update-end-author:liusq date:20210809 for: 过滤上传文件类型
             InputStream stream = file.getInputStream();
             // 获取文件名
             String orgName = file.getOriginalFilename();

@@ -193,6 +193,23 @@ public class ReflectHelper {
     }
 
     /**
+     * 获取属性值
+     */
+    public static Object getFieldVal(String fieldName, Object o) {
+        try {
+            // 暴力反射获取属性
+            Field filed = o.getClass().getDeclaredField(fieldName);
+            // 设置反射时取消Java的访问检查，暴力访问
+            filed.setAccessible(true);
+            Object val = filed.get(o);
+            return val;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * 获取属性名数组
      */
     public static String[] getFiledName(Object o) {

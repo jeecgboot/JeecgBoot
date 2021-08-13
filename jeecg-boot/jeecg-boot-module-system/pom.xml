@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-parent</artifactId>
-		<version>2.4.5</version>
+		<version>2.4.6</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -14,7 +14,7 @@
 		<repository>
 			<id>aliyun</id>
 			<name>aliyun Repository</name>
-			<url>http://maven.aliyun.com/nexus/content/groups/public</url>
+			<url>https://maven.aliyun.com/repository/public</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -22,7 +22,7 @@
 		<repository>
 			<id>jeecg</id>
 			<name>jeecg Repository</name>
-			<url>http://maven.jeecg.org/nexus/content/repositories/jeecg</url>
+			<url>https://maven.jeecg.org/nexus/content/repositories/jeecg</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -34,28 +34,35 @@
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>jeecg-system-local-api</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.jeecgframework</groupId>
-			<artifactId>jeewx-api</artifactId>
-			<version>1.4.2</version>
-		</dependency>
-
+		<!-- DEMO 示例模块 -->
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>jeecg-boot-module-demo</artifactId>
-			<version>${jeecgboot.version}</version>
+			<version>2.4.6</version>
 		</dependency>
+		<!-- jeewx api -->
 		<dependency>
-			<groupId>org.jeecgframework.jimureport</groupId>
-			<artifactId>spring-boot-starter-jimureport</artifactId>
-			<version>1.3.4-beta</version>
+			<groupId>org.jeecgframework</groupId>
+			<artifactId>jeewx-api</artifactId>
+			<version>1.4.5</version>
 			<exclusions>
 				<exclusion>
-					<groupId>org.jeecgframework</groupId>
-					<artifactId>autopoi-web</artifactId>
+					<artifactId>commons-beanutils</artifactId>
+					<groupId>commons-beanutils</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>commons-lang</artifactId>
+					<groupId>commons-lang</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- 积木报表 -->
+		<dependency>
+			<groupId>org.jeecgframework.jimureport</groupId>
+			<artifactId>jimureport-spring-boot-starter</artifactId>
+			<version>1.3.78</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

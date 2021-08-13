@@ -4,6 +4,13 @@ spring:
   application:
     name: jeecg-gateway
   cloud:
+    #Sentinel配置
+    sentinel:
+      web-context-unify: false
+      transport:
+        dashboard: localhost:8087
+      # 懒加载Sentinel Dashboard菜单
+      eager: false
     gateway:
       discovery:
         locator:

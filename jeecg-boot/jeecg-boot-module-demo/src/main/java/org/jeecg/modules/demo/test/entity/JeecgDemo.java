@@ -75,4 +75,7 @@ public class JeecgDemo extends JeecgEntity implements Serializable {
 	/** 个人简介 */
 	@ApiModelProperty(value = "个人简介")
 	private java.lang.String content;
+
+	@ApiModelProperty(value = "租户ID")
+	private java.lang.Integer tenantId;
 }

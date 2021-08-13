@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
@@ -71,8 +72,13 @@ public class SysDepartController {
 		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		try {
 			if(oConvertUtils.isNotEmpty(user.getUserIdentity()) && user.getUserIdentity().equals( CommonConstant.USER_IDENTITY_2 )){
-				List<SysDepartTreeModel> list = sysDepartService.queryMyDeptTreeList(user.getDepartIds());
-				result.setResult(list);
+				//update-begin--Author:liusq  Date:20210624  for:部门查询ids为空后的前端显示问题 issues/I3UD06
+				String departIds = user.getDepartIds();
+				if(StringUtils.isNotBlank(departIds)){
+					List<SysDepartTreeModel> list = sysDepartService.queryMyDeptTreeList(departIds);
+					result.setResult(list);
+				}
+				//update-end--Author:liusq  Date:20210624  for:部门查询ids为空后的前端显示问题 issues/I3UD06
 				result.setMessage(CommonConstant.USER_IDENTITY_2.toString());
 				result.setSuccess(true);
 			}else{

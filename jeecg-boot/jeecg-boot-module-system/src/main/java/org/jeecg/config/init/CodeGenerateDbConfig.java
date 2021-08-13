@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
  * @Description: 代码生成器,自定义DB配置
  * 【加了此类，则online模式DB连接，使用平台的配置，jeecg_database.properties配置无效;
  *  但是使用GUI模式代码生成，还是走jeecg_database.properties配置】
+ *  提醒： 达梦数据库需要修改下面的参数${spring.datasource.dynamic.datasource.master.url:}配置
  * @author: scott
  * @date: 2021年02月18日 16:30
  */

@@ -26,6 +26,8 @@ public class JeecgElasticsearchTemplate {
     /** es服务地址 */
     private String baseUrl;
     private final String FORMAT_JSON = "format=json";
+    /** Elasticsearch 的版本号 */
+    private String version = null;
 
     // ElasticSearch 最大可返回条目数
     public static final int ES_MAX_SIZE = 10000;
@@ -37,11 +39,27 @@ public class JeecgElasticsearchTemplate {
             // 验证配置的ES地址是否有效
             if (checkEnabled) {
                 try {
-                    RestUtil.get(this.getBaseUrl().toString());
+                    this.getElasticsearchVersion();
                     log.info("ElasticSearch 服务连接成功");
+                    log.info("ElasticSearch version: " + this.version);
                 } catch (Exception e) {
+                    this.version = "";
                     log.warn("ElasticSearch 服务连接失败，原因：配置未通过。可能是BaseURL未配置或配置有误，也可能是Elasticsearch服务未启动。接下来将会拒绝执行任何方法！");
                 }
+            }
+        }
+    }
+
+    /**
+     * 获取 Elasticsearch 的版本号信息，失败返回null
+     */
+    private void getElasticsearchVersion() {
+        if (this.version == null) {
+            String url = this.getBaseUrl().toString();
+            JSONObject result = RestUtil.get(url);
+            if (result != null) {
+                JSONObject v = result.getJSONObject("version");
+                this.version = v.getString("number");
             }
         }
     }
@@ -185,6 +203,11 @@ public class JeecgElasticsearchTemplate {
      */
     public JSONObject getIndexMapping(String indexName, String typeName) {
         String url = this.getBaseUrl(indexName, typeName).append("/_mapping?").append(FORMAT_JSON).toString();
+        // 针对 es 7.x 版本做兼容
+        this.getElasticsearchVersion();
+        if (oConvertUtils.isNotEmpty(this.version) && this.version.startsWith("7")) {
+            url += "&include_type_name=true";
+        }
         log.info("getIndexMapping-url:" + url);
         /*
          * 参考返回JSON结构：

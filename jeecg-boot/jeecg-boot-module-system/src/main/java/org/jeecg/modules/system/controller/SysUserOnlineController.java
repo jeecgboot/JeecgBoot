@@ -1,7 +1,11 @@
 package org.jeecg.modules.system.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
@@ -14,17 +18,15 @@ import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.service.ISysUserService;
-import org.jeecg.modules.system.vo.SysOnlineVO;
+import org.jeecg.modules.system.vo.SysUserOnlineVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Description: 在线用户
@@ -35,7 +37,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/sys/online")
 @Slf4j
-public class SysOnlineController {
+public class SysUserOnlineController {
 
     @Autowired
     private RedisUtil redisUtil;
@@ -53,13 +55,13 @@ public class SysOnlineController {
     private BaseCommonService baseCommonService;
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public Result<Page<SysOnlineVO>> list(@RequestParam(name="username", required=false) String username, @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-                                          @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
+    public Result<Page<SysUserOnlineVO>> list(@RequestParam(name="username", required=false) String username, @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                              @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
         Collection<String> keys = redisTemplate.keys(CommonConstant.PREFIX_USER_TOKEN + "*");
-        SysOnlineVO online;
-        List<SysOnlineVO> onlineList = new ArrayList<SysOnlineVO>();
+        SysUserOnlineVO online;
+        List<SysUserOnlineVO> onlineList = new ArrayList<SysUserOnlineVO>();
         for (String key : keys) {
-            online = new SysOnlineVO();
+            online = new SysUserOnlineVO();
             String token = (String) redisUtil.get(key);
             if (!StringUtils.isEmpty(token)){
                 online.setToken(token);
@@ -75,9 +77,9 @@ public class SysOnlineController {
             }
         }
 
-        Page<SysOnlineVO> page = new Page<SysOnlineVO>(pageNo, pageSize);
+        Page<SysUserOnlineVO> page = new Page<SysUserOnlineVO>(pageNo, pageSize);
         int count = onlineList.size();
-        List<SysOnlineVO> pages = new ArrayList<>();
+        List<SysUserOnlineVO> pages = new ArrayList<>();
         //计算当前页第一条数据的下标
         int currId = pageNo>1 ? (pageNo-1)*pageSize:0;
         for (int i=0; i<pageSize && i<count - currId;i++){
@@ -92,7 +94,7 @@ public class SysOnlineController {
 
         Collections.reverse(onlineList);
         onlineList.removeAll(Collections.singleton(null));
-        Result<Page<SysOnlineVO>> result = new Result<Page<SysOnlineVO>>();
+        Result<Page<SysUserOnlineVO>> result = new Result<Page<SysUserOnlineVO>>();
         result.setSuccess(true);
         result.setResult(page);
         return result;
@@ -102,7 +104,7 @@ public class SysOnlineController {
      * 强退用户
      */
     @RequestMapping(value = "/forceLogout",method = RequestMethod.POST)
-    public Result<Object> forceLogout(@RequestBody SysOnlineVO online) {
+    public Result<Object> forceLogout(@RequestBody SysUserOnlineVO online) {
         //用户退出逻辑
         if(oConvertUtils.isEmpty(online.getToken())) {
             return Result.error("退出登录失败！");

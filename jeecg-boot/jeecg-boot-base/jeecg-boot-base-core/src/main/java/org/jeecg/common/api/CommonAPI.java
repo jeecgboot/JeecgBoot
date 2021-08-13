@@ -3,6 +3,7 @@ package org.jeecg.common.api;
 import org.jeecg.common.system.vo.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface CommonAPI {
@@ -86,6 +87,13 @@ public interface CommonAPI {
     public List<DictModel> queryDictItemsByCode(String code);
 
     /**
+     * 获取有效的数据字典项
+     * @param code
+     * @return
+     */
+    public List<DictModel> queryEnableDictItemsByCode(String code);
+
+    /**
      * 13获取表数据字典
      * @param table
      * @param text
@@ -93,5 +101,23 @@ public interface CommonAPI {
      * @return
      */
     List<DictModel> queryTableDictItemsByCode(String table, String text, String code);
+
+    /**
+     * 14 普通字典的翻译，根据多个dictCode和多条数据，多个以逗号分割
+     * @param dictCodes 例如：user_status,sex
+     * @param keys 例如：1,2,0
+     * @return
+     */
+    Map<String, List<DictModel>> translateManyDict(String dictCodes, String keys);
+
+    /**
+     * 15 字典表的 翻译，可批量
+     * @param table
+     * @param text
+     * @param code
+     * @param keys 多个用逗号分割
+     * @return
+     */
+    List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys);
 
 }

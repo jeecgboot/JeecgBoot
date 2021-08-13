@@ -112,33 +112,6 @@ public class SysDictController {
 	}
 
 	/**
-	 * 获取字典数据
-	 * @param dictCode 字典code
-	 * @param dictCode 表名,文本字段,code字段  | 举例：sys_user,realname,id
-	 * @return
-	 */
-	@RequestMapping(value = "/getDictItems/{dictCode}", method = RequestMethod.GET)
-	public Result<List<DictModel>> getDictItems(@PathVariable String dictCode, @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
-		log.info(" dictCode : "+ dictCode);
-		Result<List<DictModel>> result = new Result<List<DictModel>>();
-		try {
-			List<DictModel> ls = sysDictService.getDictItems(dictCode);
-			if (ls == null) {
-				result.error500("字典Code格式不正确！");
-				return result;
-			}
-			result.setSuccess(true);
-			result.setResult(ls);
-			log.debug(result.toString());
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-			result.error500("操作失败");
-			return result;
-		}
-		return result;
-	}
-
-	/**
 	 * 获取全部字典数据
 	 *
 	 * @return
@@ -172,7 +145,36 @@ public class SysDictController {
 		return result;
 	}
 
+
 	/**
+	 * 获取字典数据 【接口签名验证】
+	 * @param dictCode 字典code
+	 * @param dictCode 表名,文本字段,code字段  | 举例：sys_user,realname,id
+	 * @return
+	 */
+	@RequestMapping(value = "/getDictItems/{dictCode}", method = RequestMethod.GET)
+	public Result<List<DictModel>> getDictItems(@PathVariable String dictCode, @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
+		log.info(" dictCode : "+ dictCode);
+		Result<List<DictModel>> result = new Result<List<DictModel>>();
+		try {
+			List<DictModel> ls = sysDictService.getDictItems(dictCode);
+			if (ls == null) {
+				result.error500("字典Code格式不正确！");
+				return result;
+			}
+			result.setSuccess(true);
+			result.setResult(ls);
+			log.debug(result.toString());
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			result.error500("操作失败");
+			return result;
+		}
+		return result;
+	}
+
+	/**
+	 * 【接口签名验证】
 	 * 【JSearchSelectTag下拉搜索组件专用接口】
 	 * 大数据量的字典表 走异步加载  即前端输入内容过滤数据
 	 * @param dictCode 字典code格式：table,text,code
@@ -203,6 +205,7 @@ public class SysDictController {
 	}
 
 	/**
+	 * 【接口签名验证】
 	 * 【给表单设计器的表字典使用】下拉搜索模式，有值时动态拼接数据
 	 * @param dictCode
 	 * @param keyword 当前控件的值，可以逗号分割
@@ -243,7 +246,7 @@ public class SysDictController {
 	}
 
 	/**
-	 *
+	 * 【接口签名验证】
 	 * 根据字典code加载字典text 返回
 	 * @param dictCode 顺序：tableName,text,code
 	 * @param keys 要查询的key
@@ -280,6 +283,7 @@ public class SysDictController {
 	}
 
 	/**
+	 * 【接口签名验证】
 	 * 根据表名——显示字段-存储字段 pid 加载树形数据
 	 */
 	@SuppressWarnings("unchecked")
@@ -378,7 +382,7 @@ public class SysDictController {
 	 */
 	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-	@CacheEvict(value=CacheConstant.SYS_DICT_CACHE, allEntries=true)
+	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDict> delete(@RequestParam(name="id",required=true) String id) {
 		Result<SysDict> result = new Result<SysDict>();
 		boolean ok = sysDictService.removeById(id);
@@ -397,7 +401,7 @@ public class SysDictController {
 	 */
 	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
-	@CacheEvict(value= CacheConstant.SYS_DICT_CACHE, allEntries=true)
+	@CacheEvict(value= {CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDict> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<SysDict> result = new Result<SysDict>();
 		if(oConvertUtils.isEmpty(ids)) {
@@ -418,6 +422,7 @@ public class SysDictController {
 		Result<?> result = new Result<SysDict>();
 		//清空字典缓存
 		Set keys = redisTemplate.keys(CacheConstant.SYS_DICT_CACHE + "*");
+		Set keys7 = redisTemplate.keys(CacheConstant.SYS_ENABLE_DICT_CACHE + "*");
 		Set keys2 = redisTemplate.keys(CacheConstant.SYS_DICT_TABLE_CACHE + "*");
 		Set keys21 = redisTemplate.keys(CacheConstant.SYS_DICT_TABLE_BY_KEYS_CACHE + "*");
 		Set keys3 = redisTemplate.keys(CacheConstant.SYS_DEPARTS_CACHE + "*");
@@ -431,6 +436,7 @@ public class SysDictController {
 		redisTemplate.delete(keys4);
 		redisTemplate.delete(keys5);
 		redisTemplate.delete(keys6);
+		redisTemplate.delete(keys7);
 		return result;
 	}
 
@@ -562,7 +568,7 @@ public class SysDictController {
 	}
 
 	/**
-	 * 取回
+	 * 逻辑删除的字段，进行取回
 	 * @param id
 	 * @return
 	 */
