@@ -123,11 +123,6 @@
             customRender: (t, r, index) => index + 1
           },
           {
-            title: '数据源编码',
-            align: 'center',
-            dataIndex: 'code'
-          },
-          {
             title: '数据源名称',
             align: 'center',
             dataIndex: 'name'
@@ -148,11 +143,6 @@
             align: 'center',
             dataIndex: 'dbUrl',
             customRender: (t) => ellipsis(t)
-          },
-          {
-            title: '数据库名称',
-            align: 'center',
-            dataIndex: 'dbName'
           },
           {
             title: '用户名',

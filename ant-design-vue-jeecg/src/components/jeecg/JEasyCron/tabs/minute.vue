@@ -25,8 +25,8 @@
         <a-radio value="TYPE_SPECIFY" class="choice" :disabled="disabled">指定</a-radio>
         <div class="list">
           <a-checkbox-group v-model="valueList">
-            <template v-for="i in maxValue+1">
-              <a-checkbox class="list-check-item" :key="`key-${i-1}`" :value="i-1" :disabled="type!==TYPE_SPECIFY || disabled">{{i-1}}</a-checkbox>
+            <template v-for="i in specifyRange">
+              <a-checkbox class="list-check-item" :key="`key-${i}`" :value="i" :disabled="type!==TYPE_SPECIFY || disabled">{{i}}</a-checkbox>
             </template>
           </a-checkbox-group>
         </div>

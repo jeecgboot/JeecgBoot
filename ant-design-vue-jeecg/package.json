@@ -1,6 +1,6 @@
 {
   "name": "vue-antd-jeecg",
-  "version": "2.4.5",
+  "version": "2.4.6",
   "private": true,
   "scripts": {
     "pre": "cnpm install || yarn --registry https://registry.npm.taobao.org || npm install --registry https://registry.npm.taobao.org ",
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "ant-design-vue": "^1.7.2",
-    "@jeecg/antd-online-mini": "2.4.5-RC",
+    "@jeecg/antd-online-mini": "2.4.6-beta",
     "@antv/data-set": "^0.11.4",
     "viser-vue": "^2.4.8",
     "axios": "^0.18.0",
@@ -39,7 +39,7 @@
     "tinymce": "^5.3.2",
     "@toast-ui/editor": "^2.1.2",
     "vue-area-linkage": "^5.1.0",
-    "area-data": "^5.0.6",
+    "china-area-data": "^5.0.1",
     "dom-align": "1.12.0",
     "xe-utils": "2.4.8",
     "vxe-table": "2.9.13",

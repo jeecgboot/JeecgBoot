@@ -63,7 +63,7 @@
   export default {
     name: 'JSelectUserByDepModal',
     components: {},
-    props: ['modalWidth', 'multi', 'userIds'],
+    props: ['modalWidth', 'multi', 'userIds', 'store', 'text'],
     data() {
       return {
         queryParam: {
@@ -159,27 +159,27 @@
         if (this.userIds) {
           // 这里最后加一个 , 的原因是因为无论如何都要使用 in 查询，防止后台进行了模糊匹配，导致查询结果不准确
           let values = this.userIds.split(',') + ','
-          getUserList({
-            username: values,
-            pageNo: 1,
-            pageSize: values.length
-          }).then((res) => {
-            if (res.success) {
-              this.selectionRows = []
-              let selectedRowKeys = []
-              let realNames = []
-              res.result.records.forEach(user => {
-                realNames.push(user['realname'])
+          let param = {[this.store]: values}
+          getAction('/sys/user/getMultiUser', param).then((list)=>{
+            this.selectionRows = []
+            let selectedRowKeys = []
+            let textArray = []
+            if(list && list.length>0){
+              for(let user of list){
+                textArray.push(user[this.text])
                 selectedRowKeys.push(user['id'])
                 this.selectionRows.push(user)
-              })
-              this.selectedRowKeys = selectedRowKeys
-              this.$emit('initComp', realNames.join(','))
+              }
             }
+            this.selectedRowKeys = selectedRowKeys
+            this.$emit('initComp', textArray.join(','))
           })
+
         } else {
           // JSelectUserByDep组件bug issues/I16634
           this.$emit('initComp', '')
+          // 前端用户选择单选无法置空的问题 #2610
+          this.selectedRowKeys = []
         }
       },
       async loadData(arg) {
@@ -254,7 +254,7 @@
       handleSubmit() {
         let that = this;
         this.getSelectUserRows();
-        that.$emit('ok', that.selectUserRows, that.selectUserIds);
+        that.$emit('ok', that.selectUserRows);
         that.searchReset(0)
         that.close();
       },

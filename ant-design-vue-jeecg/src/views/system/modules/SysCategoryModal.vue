@@ -22,11 +22,11 @@
            :disabled="disabled">
           </j-tree-select>
         </a-form-model-item>
-          
+
         <a-form-model-item label="分类名称" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="name">
           <a-input v-model="model.name" placeholder="请输入分类名称"></a-input>
         </a-form-model-item>
-          
+
       </a-form-model>
     </a-spin>
   </a-modal>
@@ -36,10 +36,10 @@
 
   import { httpAction,getAction } from '@/api/manage'
   import JTreeSelect from '@/components/jeecg/JTreeSelect'
-  
+
   export default {
     name: "SysCategoryModal",
-    components: { 
+    components: {
       JTreeSelect
     },
     data () {
@@ -70,7 +70,7 @@
         expandedRowKeys:[],
         pidField:"pid",
         subExpandedKeys:[]
-     
+
       }
     },
     created () {
@@ -111,7 +111,8 @@
             httpAction(httpurl,this.model,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
-                that.submitSuccess(this.model)
+                // close的时候清空了表单的值 导致model为空 修改值在列表页没有变 此处需要复制一下model
+                that.submitSuccess({...this.model})
               }else{
                 that.$message.warning(res.message);
               }
@@ -122,7 +123,7 @@
           }else{
             return false;
           }
-         
+
         })
       },
       handleCancel () {

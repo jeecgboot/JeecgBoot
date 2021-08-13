@@ -49,11 +49,13 @@ export default class signMd5Utils {
       result = {};
 
     // 获取URL上最后带逗号的参数变量 sys/dict/getDictItems/sys_user,realname,username
+    //【这边条件没有encode】带条件参数例子：/sys/dict/getDictItems/sys_user,realname,id,username!='admin'%20order%20by%20create_time
     let lastpathVariable = url.substring(url.lastIndexOf('/') + 1);
     if(lastpathVariable.includes(",")){
       if(lastpathVariable.includes("?")){
         lastpathVariable = lastpathVariable.substring(0, lastpathVariable.indexOf("?"));
       }
+      //解决Sign 签名校验失败 #2728
       result["x-path-variable"] = decodeURI(lastpathVariable);
     }
     if (urlArray && urlArray[1]) {

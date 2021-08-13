@@ -70,7 +70,7 @@
   import {getFileAccessHttpUrl} from '@/api/manage';
 
   export default {
-    name: "SysOnlineList",
+    name: "SysUserOnlineList",
     mixins:[JeecgListMixin, mixinDevice],
     components: {},
     data () {

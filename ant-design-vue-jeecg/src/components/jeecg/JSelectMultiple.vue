@@ -1,7 +1,7 @@
 <template>
   <a-select :value="arrayValue" @change="onChange" mode="multiple" :placeholder="placeholder">
     <a-select-option
-      v-for="(item,index) in options"
+      v-for="(item,index) in selectOptions"
       :key="index"
       :getPopupContainer="getParentContainer"
       :value="item.value">
@@ -12,6 +12,8 @@
 
 <script>
   //option {label:,value:}
+  import { getAction } from '@api/manage'
+
   export default {
     name: 'JSelectMultiple',
     props: {
@@ -31,7 +33,8 @@
       },
       options:{
         type: Array,
-        required: true
+        default:()=>[],
+        required: false
       },
       triggerChange:{
         type: Boolean,
@@ -48,11 +51,21 @@
         default:'',
         required:false
       },
+      dictCode:{
+        type:String,
+        required:false
+      },
     },
     data(){
       return {
-        arrayValue:!this.value?[]:this.value.split(this.spliter)
+        arrayValue:!this.value?[]:this.value.split(this.spliter),
+        dictOptions: [],
       }
+    },
+    computed:{
+      selectOptions(){
+        return this.dictOptions.length > 0 ? this.dictOptions : this.options
+      },
     },
     watch:{
       value (val) {
@@ -61,6 +74,11 @@
         }else{
           this.arrayValue = this.value.split(this.spliter)
         }
+      }
+    },
+    mounted(){
+      if (this.dictCode) {
+        this.loadDictOptions()
       }
     },
     methods:{
@@ -77,7 +95,18 @@
         }else{
           return document.querySelector(this.popContainer)
         }
-      }
+      },
+      // 根据字典code查询字典项
+      loadDictOptions(){
+        getAction(`/sys/dict/getDictItems/${this.dictCode}`,{}).then(res=>{
+          if (res.success) {
+            this.dictOptions = res.result.map(item => ({value: item.value, label: item.text}))
+          } else {
+            console.error('getDictItems error: : ', res)
+            this.dictOptions = []
+          }
+        })
+      },
     },
 
   }

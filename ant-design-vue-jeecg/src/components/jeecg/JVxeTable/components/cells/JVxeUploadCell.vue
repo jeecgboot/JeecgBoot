@@ -14,7 +14,7 @@
           <a-tooltip v-else-if="file.status === 'done'" title="上传完成">
             <a-icon type="check-circle" style="color:#00DB00;"/>
           </a-tooltip>
-          <a-tooltip v-else title="上传失败">
+          <a-tooltip v-else :title="file.message||'上传失败'">
             <a-icon type="exclamation-circle" style="color:red;"/>
           </a-tooltip>
         </template>
@@ -118,8 +118,17 @@
           value['responseName'] = file.response[col.responseName]
         }
         if (file.status === 'done') {
-          value['path'] = file.response[col.responseName]
-          this.handleChangeCommon(value)
+          if (typeof file.response.success === 'boolean') {
+            if (file.response.success) {
+              value['path'] = file.response[col.responseName]
+            } else {
+              value['status'] = 'error'
+              value['message'] = file.response.message || '未知错误'
+            }
+          } else {
+            // 考虑到如果设置action上传路径为非jeecg-boot后台，可能不会返回 success 属性的情况，就默认为成功
+            value['path'] = file.response[col.responseName]
+          }
         } else if (file.status === 'error') {
           value['message'] = file.response.message || '未知错误'
         }

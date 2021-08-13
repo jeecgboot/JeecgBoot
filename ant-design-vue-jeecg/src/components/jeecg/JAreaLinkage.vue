@@ -29,7 +29,6 @@
 </template>
 
 <script>
-  import { pcaa } from 'area-data'
   import Area from '@/components/_util/Area'
 
   export default {
@@ -53,7 +52,7 @@
     },
     data() {
       return {
-        pcaa,
+        pcaa: this.$Jpcaa,
         innerValue: [],
         usedListeners: ['change'],
         enums: {
@@ -114,7 +113,7 @@
       /** 通过地区code获取子级 */
       loadDataByCode(value) {
         let options = []
-        let data = pcaa[value]
+        let data = this.pcaa[value]
         if (data) {
           for (let key in data) {
             if (data.hasOwnProperty(key)) {
@@ -139,7 +138,7 @@
       },
       initAreaData(){
         if(!this.areaData){
-          this.areaData = new Area();
+          this.areaData = new Area(this.$Jpcaa);
         }
       },
 

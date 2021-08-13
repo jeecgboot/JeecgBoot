@@ -6,6 +6,7 @@
     :confirmLoading="confirmLoading"
     @ok="handleSubmit"
     @cancel="handleCancel"
+    @update:fullscreen="isFullscreen"
     wrapClassName="j-depart-select-modal"
     switchFullscreen
     cancelText="关闭">
@@ -13,9 +14,9 @@
       <a-input-search style="margin-bottom: 1px" placeholder="请输入部门名称按回车进行搜索" @search="onSearch" />
       <a-tree
         checkable
-        class="my-dept-select-tree"
+        :class="treeScreenClass"
         :treeData="treeData"
-        :checkStrictly="true"
+        :checkStrictly="checkStrictly"
         @check="onCheck"
         @select="onSelect"
         @expand="onExpand"
@@ -32,8 +33,23 @@
           <span v-else>{{title}}</span>
         </template>
       </a-tree>
-
     </a-spin>
+    <!--底部父子关联操作和确认取消按钮-->
+    <template slot="footer" v-if="treeOpera && multi">
+      <div class="drawer-bootom-button">
+        <a-dropdown style="float: left" :trigger="['click']" placement="topCenter">
+          <a-menu slot="overlay">
+            <a-menu-item key="1" @click="switchCheckStrictly(1)">父子关联</a-menu-item>
+            <a-menu-item key="2" @click="switchCheckStrictly(2)">取消关联</a-menu-item>
+          </a-menu>
+          <a-button>
+            树操作 <a-icon type="up" />
+          </a-button>
+        </a-dropdown>
+        <a-button @click="handleCancel" type="primary" style="margin-right: 0.8rem">关闭</a-button>
+        <a-button @click="handleSubmit" type="primary" >确认</a-button>
+      </div>
+    </template>
   </j-modal>
 </template>
 
@@ -41,7 +57,7 @@
   import { queryDepartTreeList } from '@/api/api'
   export default {
     name: 'JSelectDepartModal',
-    props:['modalWidth','multi','rootOpened','departId'],
+    props:['modalWidth','multi','rootOpened','departId', 'store', 'text','treeOpera'],
     data(){
       return {
         visible:false,
@@ -52,7 +68,9 @@
         dataList:[],
         checkedKeys:[],
         checkedRows:[],
-        searchValue:""
+        searchValue:"",
+        checkStrictly: true,
+        fullscreen:false
       }
     },
     created(){
@@ -64,14 +82,17 @@
       },
       visible: {
         handler() {
-          if (this.departId) {
-            this.checkedKeys = this.departId.split(",");
-            // console.log('this.departId', this.departId)
-          } else {
-            this.checkedKeys = [];
-          }
+          this.initDepartComponent(true)
         }
       }
+    },
+    computed:{
+      treeScreenClass() {
+        return {
+          'my-dept-select-tree': true,
+          'fullscreen': this.fullscreen,
+        }
+      },
     },
     methods:{
       show(){
@@ -80,6 +101,7 @@
         this.checkedKeys=[]
       },
       loadDepart(){
+        // 这个方法是找到所有的部门信息
         queryDepartTreeList().then(res=>{
           if(res.success){
             let arr = [...res.result]
@@ -92,20 +114,23 @@
           }
         })
       },
-      initDepartComponent(){
-        let names = ''
+      initDepartComponent(flag){
+        let arr = []
+        //该方法两个地方用 1.visible改变事件重新设置选中项 2.组件编辑页面回显
+        let fieldName = flag==true?'key':this.text
         if(this.departId){
-          let currDepartId = this.departId
+          let arr2 = this.departId.split(',')
           for(let item of this.dataList){
-            if(currDepartId.indexOf(item.key)>=0){
-              names+=","+item.title
+            if(arr2.indexOf(item[this.store])>=0){
+              arr.push(item[fieldName])
             }
           }
-          if(names){
-            names = names.substring(1)
-          }
         }
-        this.$emit("initComp",names)
+        if(flag==true){
+          this.checkedKeys = [...arr]
+        }else{
+          this.$emit("initComp", arr.join(','))
+        }
       },
       reWriterWithSlot(arr){
         for(let item of arr){
@@ -129,8 +154,11 @@
             }
           }
           this.expandedKeys=[...keys]
+          //全部keys
+          //this.allTreeKeys = [...keys]
         }else{
           this.expandedKeys=[]
+          //this.allTreeKeys = []
         }
       },
       onCheck (checkedKeys,info) {
@@ -139,25 +167,32 @@
           this.checkedKeys = [...arr]
           this.checkedRows = (this.checkedKeys.length === 0) ? [] : [info.node.dataRef]
         }else{
-          this.checkedKeys = checkedKeys.checked
+          if(this.checkStrictly){
+            this.checkedKeys = checkedKeys.checked
+          }else{
+            this.checkedKeys = checkedKeys
+          }
           this.checkedRows = this.getCheckedRows(this.checkedKeys)
         }
       },
       onSelect(selectedKeys,info) {
-        let keys = []
-        keys.push(selectedKeys[0])
-        if(!this.checkedKeys || this.checkedKeys.length===0 || !this.multi){
-          this.checkedKeys = [...keys]
-          this.checkedRows=[info.node.dataRef]
-        }else{
-          let currKey = info.node.dataRef.key
-          if(this.checkedKeys.indexOf(currKey)>=0){
-            this.checkedKeys = this.checkedKeys.filter(item=> item !==currKey)
+        //取消关联的情况下才走onSelect的逻辑
+        if(this.checkStrictly){
+          let keys = []
+          keys.push(selectedKeys[0])
+          if(!this.checkedKeys || this.checkedKeys.length===0 || !this.multi){
+            this.checkedKeys = [...keys]
+            this.checkedRows=[info.node.dataRef]
           }else{
-            this.checkedKeys.push(...keys)
+            let currKey = info.node.dataRef.key
+            if(this.checkedKeys.indexOf(currKey)>=0){
+              this.checkedKeys = this.checkedKeys.filter(item=> item !==currKey)
+            }else{
+              this.checkedKeys.push(...keys)
+            }
           }
+          this.checkedRows = this.getCheckedRows(this.checkedKeys)
         }
-        this.checkedRows = this.getCheckedRows(this.checkedKeys)
       },
       onExpand (expandedKeys) {
         this.expandedKeys = expandedKeys
@@ -235,6 +270,16 @@
           }
         }
         return rows
+      },
+      switchCheckStrictly (v) {
+        if(v==1){
+          this.checkStrictly = false
+        }else if(v==2){
+          this.checkStrictly = true
+        }
+      },
+      isFullscreen(val){
+        this.fullscreen=val
       }
     }
   }
@@ -244,8 +289,22 @@
 <style lang="less" scoped>
   // 限制部门选择树高度，避免部门太多时点击确定不便
   .my-dept-select-tree{
-    height: 350px;
+    height:350px;
+    
+    &.fullscreen{
+      height: calc(100vh - 250px);
+    }
     overflow-y: scroll;
   }
-
+  .drawer-bootom-button {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid #e8e8e8;
+    padding: 10px 16px;
+    text-align: right;
+    left: 0;
+    background: #fff;
+    border-radius: 0 0 2px 2px;
+  }
 </style>

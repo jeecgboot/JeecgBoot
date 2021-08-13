@@ -291,7 +291,7 @@
         superQueryFieldList: [
           { type: 'input', value: 'username', text: '用户账号', },
           { type: 'input', value: 'realname', text: '用户姓名', },
-          { type: 'select', value: 'sex', text: '性别', dictCode: 'sex' },
+          { type: 'select', value: 'sex', dbType: 'int', text: '性别', dictCode: 'sex' },
         ],
         url: {
           syncUser: "/act/process/extActProcess/doSyncUser",

@@ -41,12 +41,12 @@
           label="数据源地址">
           <a-input placeholder="请输入数据源地址" v-decorator="['dbUrl', validatorRules.dbUrl]"/>
         </a-form-item>
-        <a-form-item
+       <!-- <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="数据库名称">
           <a-input placeholder="请输入数据库名称" v-decorator="['dbName', validatorRules.dbName]"/>
-        </a-form-item>
+        </a-form-item>-->
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -124,7 +124,7 @@
           dbUrl: { rules: [{ required: true, message: '请输入数据源地址!' }] },
           dbName: { rules: [{ required: true, message: '请输入数据库名称!' }] },
           dbUsername: { rules: [{ required: true, message: '请输入用户名!' }] },
-          dbPassword: { rules: [{ required: true, message: '请输入密码!' }] }
+          dbPassword: { rules: [{ required: false, message: '请输入密码!' }] }
         },
         url: {
           add: '/sys/dataSource/add',
@@ -142,7 +142,25 @@
           // marialDB 数据库
           '5': { dbDriver: 'org.mariadb.jdbc.Driver' },
           // postgresql 数据库
-          '6': { dbDriver: 'org.postgresql.Driver' }
+          '6': { dbDriver: 'org.postgresql.Driver' },
+          // 达梦 数据库
+          '7': { dbDriver: 'dm.jdbc.driver.DmDriver' },
+          // 人大金仓 数据库
+          '8': { dbDriver: 'com.kingbase8.Driver' },
+          // 神通 数据库
+          '9': { dbDriver: 'com.oscar.Driver' },
+          // SQLite 数据库
+          '10': { dbDriver: 'org.sqlite.JDBC' },
+          // DB2 数据库
+          '11': { dbDriver: 'com.ibm.db2.jcc.DB2Driver' },
+          // Hsqldb 数据库
+          '12': { dbDriver: 'org.hsqldb.jdbc.JDBCDriver' },
+          // Derby 数据库
+          '13': { dbDriver: 'org.apache.derby.jdbc.ClientDriver' },
+          // H2 数据库
+          '14': { dbDriver: 'org.h2.Driver' },
+          // 其他数据库
+          '15': { dbDriver: '' }
         },
         dbUrlMap: {
           // MySQL 数据库
@@ -153,10 +171,28 @@
           '2': { dbUrl: 'jdbc:oracle:thin:@127.0.0.1:1521:ORCL' },
           // SQLServer 数据库
           '3': { dbUrl: 'jdbc:sqlserver://127.0.0.1:1433;SelectMethod=cursor;DatabaseName=jeecgboot' },
-          // SQLServer 数据库
+          // Mariadb 数据库
           '5': { dbUrl: 'jdbc:mariadb://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useSSL=false' },
-          // SQLServer 数据库
-          '6': { dbUrl: 'jdbc:postgresql://127.0.0.1:5432/jeecg-boot' }
+          // Postgresql 数据库
+          '6': { dbUrl: 'jdbc:postgresql://127.0.0.1:5432/jeecg-boot' },
+          // 达梦 数据库
+          '7': { dbUrl: 'jdbc:dm://127.0.0.1:5236/?jeecg-boot&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8' },
+          // 人大金仓 数据库
+          '8': { dbUrl: 'jdbc:kingbase8://127.0.0.1:54321/jeecg-boot' },
+          // 神通 数据库
+          '9': { dbUrl: 'jdbc:oscar://192.168.1.125:2003/jeecg-boot' },
+          // SQLite 数据库
+          '10': { dbUrl: 'jdbc:sqlite://opt/test.db' },
+          // DB2 数据库
+          '11': { dbUrl: 'jdbc:db2://127.0.0.1:50000/jeecg-boot' },
+          // Hsqldb 数据库
+          '12': { dbUrl: 'jdbc:hsqldb:hsql://127.0.0.1/jeecg-boot' },
+          // Derby 数据库
+          '13': { dbUrl: 'jdbc:derby://127.0.0.1:1527/jeecg-boot' },
+          // H2 数据库
+          '14': { dbUrl: 'jdbc:h2:tcp://127.0.0.1:8082/jeecg-boot' },
+          // 其他数据库
+          '15': { dbUrl: '' }
         }
       }
     },

@@ -137,8 +137,12 @@
       param:{
         deep:true,
         handler(){
-          this.dynamicParamHandler()
-          this.loadData();
+          // update--begin--autor:liusq-----date:20210706------for：JPopup组件在modal中使用报错#2729------
+          if(this.visible){
+            this.dynamicParamHandler()
+            this.loadData();
+          }
+          // update--begin--autor:liusq-----date:20210706------for：JPopup组件在modal中使用报错#2729------
         },
       },
       sorter: {

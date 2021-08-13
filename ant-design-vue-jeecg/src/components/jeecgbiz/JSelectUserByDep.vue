@@ -1,19 +1,28 @@
 <template>
   <div>
     <a-input-search
-      v-model="userNames"
+      v-model="textVals"
       placeholder="请先选择用户"
       readOnly
       unselectable="on"
       @search="onSearchDepUser">
       <a-button slot="enterButton" :disabled="disabled">选择用户</a-button>
     </a-input-search>
-    <j-select-user-by-dep-modal ref="selectModal" :modal-width="modalWidth" :multi="multi" @ok="selectOK" :user-ids="value" @initComp="initComp"/>
+    <j-select-user-by-dep-modal
+      ref="selectModal"
+      :modal-width="modalWidth"
+      :multi="multi"
+      @ok="selectOK"
+      :user-ids="value"
+      :store="storeField"
+      :text="textField"
+      @initComp="initComp"/>
   </div>
 </template>
 
 <script>
   import JSelectUserByDepModal from './modal/JSelectUserByDepModal'
+  import { underLinetoHump } from '@/components/_util/StringUtil'
 
   export default {
     name: 'JSelectUserByDep',
@@ -42,20 +51,44 @@
         type: Boolean,
         default: false,
         required: false
+      },
+      // 存储字段 [key field]
+      store: {
+        type: String,
+        default: 'username',
+        required: false
+      },
+      // 显示字段 [label field]
+      text: {
+        type: String,
+        default: 'realname',
+        required: false
       }
     },
     data() {
       return {
-        userIds: "",
-        userNames: ""
+        storeVals: '', //[key values]
+        textVals: '' //[label values]
+      }
+    },
+    computed:{
+      storeField(){
+        let field = this.customReturnField
+        if(!field){
+          field = this.store;
+        }
+        return underLinetoHump(field)
+      },
+      textField(){
+        return underLinetoHump(this.text)
       }
     },
     mounted() {
-      this.userIds = this.value
+      this.storeVals = this.value
     },
     watch: {
       value(val) {
-        this.userIds = val
+        this.storeVals = val
       }
     },
     model: {
@@ -63,15 +96,15 @@
       event: 'change'
     },
     methods: {
-      initComp(userNames) {
-        this.userNames = userNames
+      initComp(textVals) {
+        this.textVals = textVals
       },
       //返回选中的用户信息
       backDeparInfo(){
         if(this.backUser===true){
-          if(this.userIds && this.userIds.length>0){
-            let arr1 = this.userIds.split(',')
-            let arr2 = this.userNames.split(',')
+          if(this.storeVals && this.storeVals.length>0){
+            let arr1 = this.storeVals.split(',')
+            let arr2 = this.textVals.split(',')
             let info = []
             for(let i=0;i<arr1.length;i++){
               info.push({
@@ -86,21 +119,22 @@
       onSearchDepUser() {
         this.$refs.selectModal.showModal()
       },
-      selectOK(rows, idstr) {
+      selectOK(rows) {
         console.log("当前选中用户", rows)
-        console.log("当前选中用户ID", idstr)
         if (!rows) {
-          this.userNames = ''
-          this.userIds = ''
+          this.storeVals = ''
+          this.textVals = ''
         } else {
-          let temp = ''
+          let temp1 = []
+          let temp2 = []
           for (let item of rows) {
-            temp += ',' + item.realname
+            temp1.push(item[this.storeField])
+            temp2.push(item[this.textField])
           }
-          this.userNames = temp.substring(1)
-          this.userIds = idstr
+          this.storeVals = temp1.join(',')
+          this.textVals = temp2.join(',')
         }
-        this.$emit("change", this.userIds)
+        this.$emit("change", this.storeVals)
       }
     }
   }

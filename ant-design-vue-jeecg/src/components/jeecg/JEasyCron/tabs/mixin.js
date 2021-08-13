@@ -89,6 +89,9 @@ export default {
           result.push('L')
           break
         case TYPE_SPECIFY:
+          if (this.valueList.length === 0) {
+            this.valueList.push(this.minValue)
+          }
           result.push(this.valueList.join(','))
           break
         default:
@@ -96,7 +99,15 @@ export default {
           break
       }
       return result.length > 0 ? result.join('') : this.DEFAULT_VALUE
-    }
+    },
+    // 指定值范围区间，介于最小值和最大值之间
+    specifyRange() {
+      let range = []
+      for (let i = this.minValue; i <= this.maxValue; i++) {
+        range.push(i)
+      }
+      return range
+    },
   },
   methods: {
     parseProp (value) {

@@ -158,7 +158,49 @@ export default {
     cronValue_c(newVal, oldVal) {
       this.calTriggerList()
       this.$emit('change', newVal)
-
+      this.assignInput()
+    },
+    minute() {
+      if (this.second === '*') {
+        this.second = '0'
+      }
+    },
+    hour() {
+      if (this.minute === '*') {
+        this.minute = '0'
+      }
+    },
+    day(day) {
+      if (day !== '?' && this.hour === '*') {
+        this.hour = '0'
+      }
+    },
+    week(week) {
+      if (week !== '?' && this.hour === '*') {
+        this.hour = '0'
+      }
+    },
+    month() {
+      if (this.day === '?' && this.week === '*') {
+        this.week = '1'
+      } else if (this.week === '?' && this.day === '*') {
+        this.day = '1'
+      }
+    },
+    year() {
+      if (this.month === '*') {
+        this.month = '1'
+      }
+    },
+  },
+  created() {
+    this.formatValue()
+    this.$nextTick(() => {
+      this.calTriggerListInner()
+    })
+  },
+  methods: {
+    assignInput() {
       Object.assign(this.inputValues, {
         second: this.second,
         minute: this.minute,
@@ -169,15 +211,7 @@ export default {
         year: this.year,
         cron: this.cronValue_c,
       })
-    }
-  },
-  created() {
-    this.formatValue()
-    this.$nextTick(() => {
-      this.calTriggerListInner()
-    })
-  },
-  methods: {
+    },
     formatValue() {
       if (!this.cronValue) return
       const values = this.cronValue.split(' ').filter(item => !!item)
@@ -190,6 +224,7 @@ export default {
       if (values.length > i) this.month = values[i++]
       if (values.length > i) this.week = values[i++]
       if (values.length > i) this.year = values[i]
+      this.assignInput()
     },
     calTriggerList: simpleDebounce(function () {
       this.calTriggerListInner()
