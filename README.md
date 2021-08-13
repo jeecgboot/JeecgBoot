@@ -7,12 +7,12 @@
 JEECG BOOT 低代码开发平台（前后端分离版本）
 ===============
 
-当前最新版本： 2.4.5（发布日期：2021-06-07）
+当前最新版本： 2.4.6（发布日期：2021-08-16）
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://www.jeecg.com)
-[![](https://img.shields.io/badge/version-2.4.5-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-2.4.6-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -44,13 +44,13 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 技术官网：  [http://www.jeecg.com](http://www.jeecg.com)
 
-- 开发文档：  [http://doc.jeecg.com](http://doc.jeecg.com)
-
-- 微服务启动：  [单体升级为微服务启动文档2.4+](http://doc.jeecg.com/2043906)
-
 - 在线演示 ： [http://boot.jeecg.com](http://boot.jeecg.com)
 
+- 开发文档：  [http://doc.jeecg.com](http://doc.jeecg.com)
+
 - 视频教程  ：[JeecgBoot入门视频](http://www.jeecg.com/doc/video)
+
+- 微服务启动：  [单体升级为微服务启动文档2.4+](http://doc.jeecg.com/2043906)
 
 - 常见问题：  [入门常见问题Q&A](http://jeecg.com/doc/qa)
 
@@ -139,7 +139,9 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 微服务框架： Spring Cloud Alibaba 2.2.3.RELEASE
 
-- 持久层框架：Mybatis-plus 3.4.1、minidao
+- 持久层框架：Mybatis-plus 3.4.3.1、Minidao 
+
+- 报表工具： jimureport 1.3.78
 
 - 安全框架：Apache Shiro 1.7.0，Jwt 3.11.0
 
