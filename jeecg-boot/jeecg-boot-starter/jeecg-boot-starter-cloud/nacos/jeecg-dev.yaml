@@ -80,8 +80,6 @@ spring:
 #minidao
 minidao :
   base-package: org.jeecg.modules.jmreport.*
-  #DB类型（mysql | postgresql | oracle | sqlserver| other）
-  db-type: mysql
 #jeecg专用配置
 jeecg :
   # 本地：local\Minio：minio\阿里云：alioss
