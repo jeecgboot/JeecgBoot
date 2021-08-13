@@ -22,24 +22,24 @@ spring:
             allowedOrigins: "*"
             allowedMethods: "*"
             allowedHeaders: "*"
-      #如果启用nacos或者数据库配置请删除一下配置
-      routes:
-        - id: jeecg-demo
-          uri: lb://jeecg-demo
-          predicates:
-            - Path=/mock/**,/test/**,/bigscreen/template1/**,/bigscreen/template2/**
-        - id: jeecg-system
-          uri: lb://jeecg-system
-          predicates:
-            - Path=/sys/**,/eoa/**,/v1/**,/joa/**,/online/**,/bigscreen/**,/jmreport/**,/desform/**,/act/**,/plug-in/**,/generic/**
-        - id: jeecg-system-websocket
-          uri: lb:ws://jeecg-system
-          predicates:
-            - Path=/websocket/**,/eoaSocket/**,/newsWebsocket/**
-        - id: jeecg-demo-websocket
-          uri: lb:ws://jeecg-demo
-          predicates:
-            - Path=/vxeSocket/**
+#      #如果启用nacos或者数据库配置请删除一下配置
+#      routes:
+#        - id: jeecg-demo
+#          uri: lb://jeecg-demo
+#          predicates:
+#            - Path=/mock/**,/test/**,/bigscreen/template1/**,/bigscreen/template2/**
+#        - id: jeecg-system
+#          uri: lb://jeecg-system
+#          predicates:
+#            - Path=/sys/**,/eoa/**,/v1/**,/joa/**,/online/**,/bigscreen/**,/jmreport/**,/desform/**,/act/**,/plug-in/**,/generic/**
+#        - id: jeecg-system-websocket
+#          uri: lb:ws://jeecg-system
+#          predicates:
+#            - Path=/websocket/**,/eoaSocket/**,/newsWebsocket/**
+#        - id: jeecg-demo-websocket
+#          uri: lb:ws://jeecg-demo
+#          predicates:
+#            - Path=/vxeSocket/**
       # 全局熔断降级配置
       default-filters:
         - name: Hystrix
