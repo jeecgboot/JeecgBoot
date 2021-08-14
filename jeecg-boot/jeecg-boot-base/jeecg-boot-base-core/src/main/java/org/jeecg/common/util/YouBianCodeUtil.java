@@ -26,7 +26,7 @@ public class YouBianCodeUtil {
 	 */
 	public static synchronized String getNextYouBianCode(String code) {
 		String newcode = "";
-		if (code == null || code =="") {
+		if (oConvertUtils.isEmpty(code)) {
 			String zimu = "A";
 			String num = getStrNum(1);
 			newcode = zimu + num;
