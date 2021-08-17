@@ -11,7 +11,7 @@ public interface BaseCommonMapper {
      * @param dto
      */
     //@SqlParser(filter=true)
-    @InterceptorIgnore
+    @InterceptorIgnore(illegalSql = "true", tenantLine = "true")
     void saveLog(@Param("dto")LogDTO dto);
 
 }
