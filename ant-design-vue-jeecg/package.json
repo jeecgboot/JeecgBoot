@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "ant-design-vue": "^1.7.2",
-    "@jeecg/antd-online-mini": "2.4.6-beta1",
+    "@jeecg/antd-online-mini": "2.4.6-beta2",
     "@antv/data-set": "^0.11.4",
     "viser-vue": "^2.4.8",
     "axios": "^0.18.0",
