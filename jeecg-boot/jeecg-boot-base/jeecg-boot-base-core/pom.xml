@@ -239,6 +239,11 @@
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
 		</dependency>
+		<!-- 解决okhttp引用了kotlin,应用启动有警告日志问题 -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-kotlin</artifactId>
+		</dependency>
 	</dependencies>
 
 </project>
