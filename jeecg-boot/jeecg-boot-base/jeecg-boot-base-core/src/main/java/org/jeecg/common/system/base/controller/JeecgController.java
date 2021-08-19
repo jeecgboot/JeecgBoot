@@ -54,20 +54,20 @@ public class JeecgController<T, S extends IService<T>> {
 
         // Step.2 获取导出数据
         List<T> pageList = service.list(queryWrapper);
-        List<T> exportList = null;
+        List<T> exportList ;
 
         // 过滤选中数据
-        String selections = request.getParameter("selections");
-        if (oConvertUtils.isNotEmpty(selections)) {
-            List<String> selectionList = Arrays.asList(selections.split(","));
-            exportList = pageList.stream().filter(item -> selectionList.contains(getId(item))).collect(Collectors.toList());
-        } else {
+        List<String> selectionList = getSelectionsList(request);
+        if (null == selectionList ||selectionList.isEmpty()) {
             exportList = pageList;
+        } else {
+            exportList = pageList.stream().filter(item -> selectionList.contains(getId(item))).collect(Collectors.toList());
         }
 
         // Step.3 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        mv.addObject(NormalExcelConstants.FILE_NAME, title); //此处设置的filename无效 ,前端会重更新设置一下
+        //此处设置的filename无效 ,前端会重更新设置一下
+        mv.addObject(NormalExcelConstants.FILE_NAME, title);
         mv.addObject(NormalExcelConstants.CLASS, clazz);
         //update-begin--Author:liusq  Date:20210126 for：图片导出报错，ImageBasePath未设置--------------------
         ExportParams  exportParams=new ExportParams(title + "报表", "导出人:" + sysUser.getRealname(), title);
@@ -101,29 +101,40 @@ public class JeecgController<T, S extends IService<T>> {
             Page<T> page = new Page<T>(i, pageNum);
             IPage<T> pageList = service.page(page, queryWrapper);
             List<T> records = pageList.getRecords();
-            List<T> exportList = null;
+            List<T> exportList ;
             // 过滤选中数据
-            String selections = request.getParameter("selections");
-            if (oConvertUtils.isNotEmpty(selections)) {
-                List<String> selectionList = Arrays.asList(selections.split(","));
-                exportList = records.stream().filter(item -> selectionList.contains(getId(item))).collect(Collectors.toList());
-            } else {
+            List<String> selectionList = getSelectionsList(request);
+            if (null == selectionList ||selectionList.isEmpty()) {
                 exportList = records;
+            } else {
+                exportList = records.stream().filter(item -> selectionList.contains(getId(item))).collect(Collectors.toList());
             }
             Map<String, Object> map = new HashMap<String, Object>();
             ExportParams  exportParams=new ExportParams(title + "报表", "导出人:" + sysUser.getRealname(), title+i,upLoadPath);
             exportParams.setType(ExcelType.XSSF);
-            //map.put("title",exportParams);//表格Title
-            map.put(NormalExcelConstants.PARAMS,exportParams);//表格Title
-            map.put(NormalExcelConstants.CLASS,clazz);//表格对应实体
-            map.put(NormalExcelConstants.DATA_LIST, exportList);//数据集合
+            //表格Title
+            //map.put("title",exportParams);
+            map.put(NormalExcelConstants.PARAMS,exportParams);
+            //表格对应实体
+            map.put(NormalExcelConstants.CLASS,clazz);
+            //数据集合
+            map.put(NormalExcelConstants.DATA_LIST, exportList);
             listMap.add(map);
         }
         // Step.4 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        mv.addObject(NormalExcelConstants.FILE_NAME, title); //此处设置的filename无效 ,前端会重更新设置一下
+        //此处设置的filename无效 ,前端会重更新设置一下
+        mv.addObject(NormalExcelConstants.FILE_NAME, title);
         mv.addObject(NormalExcelConstants.MAP_LIST, listMap);
         return mv;
+    }
+
+    private List<String> getSelectionsList(HttpServletRequest request){
+        String selections = request.getParameter("selections");
+        if (oConvertUtils.isEmpty(selections)) {
+            return null;
+        }
+        return Arrays.asList(selections.split(","));
     }
 
 
@@ -163,7 +174,8 @@ public class JeecgController<T, S extends IService<T>> {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
         for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-            MultipartFile file = entity.getValue();// 获取上传文件对象
+            // 获取上传文件对象
+            MultipartFile file = entity.getValue();
             ImportParams params = new ImportParams();
             params.setTitleRows(2);
             params.setHeadRows(1);

@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-@ServerEndpoint("/websocket/{userId}") //此注解相当于设置访问URL
+@ServerEndpoint("/websocket/{userId}")
 public class WebSocket {
 
     private Session session;
