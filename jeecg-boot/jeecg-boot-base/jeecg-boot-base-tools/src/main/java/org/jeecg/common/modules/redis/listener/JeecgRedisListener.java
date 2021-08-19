@@ -5,7 +5,7 @@ import org.jeecg.common.base.BaseMap;
 /**
  * 自定义消息监听
  */
-public interface JeecgRedisListerer {
+public interface JeecgRedisListener {
 
     void onMessage(BaseMap message);
 

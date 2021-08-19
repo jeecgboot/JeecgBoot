@@ -4,7 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.constant.CommonSendStatus;
-import org.jeecg.common.modules.redis.listener.JeecgRedisListerer;
+import org.jeecg.common.modules.redis.listener.JeecgRedisListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-public class SocketHandler implements JeecgRedisListerer {
+public class SocketHandler implements JeecgRedisListener {
 
     @Autowired
     private WebSocket webSocket;

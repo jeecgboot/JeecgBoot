@@ -17,9 +17,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Description: gateway路由管理
@@ -44,7 +42,7 @@ public class SysGatewayRouteServiceImpl extends ServiceImpl<SysGatewayRouteMappe
     @Override
     public void deleteById(String id) {
         this.removeById(id);
-        this.resreshRouter();
+        this.refreshRouter();
     }
 
     @Override
@@ -73,10 +71,10 @@ public class SysGatewayRouteServiceImpl extends ServiceImpl<SysGatewayRouteMappe
                 route.setStatus(json.getInteger("status"));
             }
             this.saveOrUpdate(route);
-            resreshRouter();
+            refreshRouter();
         } catch (Exception e) {
             log.error("路由配置解析失败", e);
-            resreshRouter();
+            refreshRouter();
             e.printStackTrace();
         }
     }
@@ -84,11 +82,11 @@ public class SysGatewayRouteServiceImpl extends ServiceImpl<SysGatewayRouteMappe
     /**
      * 更新redis路由缓存
      */
-    private void resreshRouter() {
+    private void refreshRouter() {
         //更新redis路由缓存
         addRoute2Redis(CacheConstant.GATEWAY_ROUTES);
         BaseMap params = new BaseMap();
-        params.put(GlobalConstants.HANDLER_NAME, "loderRouderHandler");
+        params.put(GlobalConstants.HANDLER_NAME, "loaderRouterHandler");
         //刷新网关
         redisTemplate.convertAndSend(GlobalConstants.REDIS_TOPIC_NAME, params);
     }

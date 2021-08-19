@@ -22,10 +22,10 @@ private static final Logger logger = LoggerFactory.getLogger(LogRecordAspect.cla
 
     // 定义切点Pointcut
     @Pointcut("execution(public * org.jeecg.modules.*.*.*Controller.*(..))")
-    public void excudeService() {
+    public void executeService() {
     }
 
-    @Around("excudeService()")
+    @Around("executeService()")
     public Object doAround(ProceedingJoinPoint pjp) throws Throwable {
         RequestAttributes ra = RequestContextHolder.getRequestAttributes();
         ServletRequestAttributes sra = (ServletRequestAttributes) ra;

@@ -8,7 +8,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.aspect.annotation.PermissionData;
-import org.jeecg.common.system.util.JeecgDataAutorUtils;
+import org.jeecg.common.system.util.JeecgDataAuthorUtils;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
@@ -58,10 +58,10 @@ public class PermissionDataAspect {
         List<SysPermissionDataRuleModel> dataRules = commonAPI.queryPermissionDataRule(component, requestPath, username);
         if(dataRules!=null && dataRules.size()>0) {
             //临时存储
-            JeecgDataAutorUtils.installDataSearchConditon(request, dataRules);
+            JeecgDataAuthorUtils.installDataSearchCondition(request, dataRules);
             //TODO 微服务情况下也得支持缓存机制
             SysUserCacheInfo userinfo = commonAPI.getCacheUser(username);
-            JeecgDataAutorUtils.installUserInfo(request, userinfo);
+            JeecgDataAuthorUtils.installUserInfo(request, userinfo);
         }
         return  point.proceed();
     }

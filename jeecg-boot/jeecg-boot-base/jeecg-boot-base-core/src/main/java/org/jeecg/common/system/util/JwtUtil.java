@@ -130,7 +130,7 @@ public class JwtUtil {
 	//TODO 急待改造 sckjkdsjsfjdk
 	public static String getUserSystemData(String key,SysUserCacheInfo user) {
 		if(user==null) {
-			user = JeecgDataAutorUtils.loadUserInfo();
+			user = JeecgDataAuthorUtils.loadUserInfo();
 		}
 		//#{sys_user_code}%
 		

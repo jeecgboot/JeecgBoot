@@ -2,7 +2,7 @@ package org.jeecg.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.base.BaseMap;
-import org.jeecg.common.modules.redis.listener.JeecgRedisListerer;
+import org.jeecg.common.modules.redis.listener.JeecgRedisListener;
 import org.jeecg.loader.DynamicRouteLoader;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,7 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Component
-public class LoderRouderHandler implements JeecgRedisListerer {
+public class LoaderRouterHandler implements JeecgRedisListener {
 
     @Resource
     private DynamicRouteLoader dynamicRouteLoader;

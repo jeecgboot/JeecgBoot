@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
-import org.jeecg.common.system.util.JeecgDataAutorUtils;
+import org.jeecg.common.system.util.JeecgDataAuthorUtils;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
 import org.jeecg.common.util.CommonUtils;
@@ -600,7 +600,7 @@ public class QueryGenerator {
 	 */
 	public static Map<String, SysPermissionDataRuleModel> getRuleMap() {
 		Map<String, SysPermissionDataRuleModel> ruleMap = new HashMap<String, SysPermissionDataRuleModel>();
-		List<SysPermissionDataRuleModel> list =JeecgDataAutorUtils.loadDataSearchConditon();
+		List<SysPermissionDataRuleModel> list = JeecgDataAuthorUtils.loadDataSearchCondition();
 		if(list != null&&list.size()>0){
 			if(list.get(0)==null){
 				return ruleMap;
@@ -623,7 +623,7 @@ public class QueryGenerator {
 	public static Map<String, SysPermissionDataRuleModel> getRuleMap(List<SysPermissionDataRuleModel> list) {
 		Map<String, SysPermissionDataRuleModel> ruleMap = new HashMap<String, SysPermissionDataRuleModel>();
 		if(list==null){
-			list =JeecgDataAutorUtils.loadDataSearchConditon();
+			list = JeecgDataAuthorUtils.loadDataSearchCondition();
 		}
 		if(list != null&&list.size()>0){
 			if(list.get(0)==null){
