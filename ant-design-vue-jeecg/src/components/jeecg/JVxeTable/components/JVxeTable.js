@@ -98,6 +98,8 @@ export default {
     // 是否一直显示组件，如果为false则只有点击的时候才出现组件
     // 注：该参数不能动态修改；如果行、列字段多的情况下，会根据机器性能造成不同程度的卡顿。
     alwaysEdit: PropTypes.bool.def(false),
+    // 联动配置，数组，详情配置见文档
+    linkageConfig: PropTypes.array.def(() => []),
   },
   data() {
     return {
@@ -151,7 +153,10 @@ export default {
       // 允许执行刷新特效的行ID
       reloadEffectRowKeysMap: {},
       //配置了但是没有授权的按钮和列 集合
-      excludeCode:[]
+      excludeCode:[],
+      // 联动下拉选项（用于隔离不同的下拉选项）
+      // 内部联动配置，map
+      _innerLinkageConfig: null,
     }
   },
   computed: {
@@ -176,6 +181,18 @@ export default {
           if (this.$scopedSlots.hasOwnProperty(column.slotName)) {
             renderOptions.slot = this.$scopedSlots[column.slotName]
             renderOptions.target = this
+          }
+        }
+        // 处理联动列，联动列只能作用于 select 组件
+        if (column.$type === JVXETypes.select && this._innerLinkageConfig != null) {
+          // 判断当前列是否是联动列
+          if (this._innerLinkageConfig.has(column.key)) {
+            renderOptions.linkage = {
+              config: this._innerLinkageConfig.get(column.key),
+              getLinkageOptionsSibling: this.getLinkageOptionsSibling,
+              getLinkageOptionsAsync: this.getLinkageOptionsAsync,
+              linkageSelectChange: this.linkageSelectChange,
+            }
           }
         }
         if (column.editRender) {
@@ -278,15 +295,21 @@ export default {
       immediate: true,
       async handler() {
         let vxe = await getRefPromise(this, 'vxe')
-        // 阻断vue监听大数据，提高性能
 
-        // 开启了排序就自动计算排序值
-        if (this.dragSort) {
-          this.dataSource.forEach((data, idx) => {
+        this.dataSource.forEach((data, idx) => {
+          // 开启了排序就自动计算排序值
+          if (this.dragSort) {
             this.$set(data, this.dragSortKey, idx + 1)
-          })
-        }
+          }
+          // 处理联动回显数据
+          if (this._innerLinkageConfig != null) {
+            for (let configItem of this._innerLinkageConfig.values()) {
+              this.autoSetLinkageOptionsByData(data, '', configItem, 0)
+            }
+          }
+        })
 
+        // 阻断vue监听大数据，提高性能
         vxe.loadData(this.dataSource)
 
         // TODO 解析disabledRows
@@ -469,7 +492,40 @@ export default {
         this._innerColumns = _innerColumns
         this._innerEditRules = _innerEditRules
       }
-    }
+    },
+    // watch linkageConfig
+    // 整理多级联动配置
+    linkageConfig: {
+      immediate: true,
+      handler() {
+        if (Array.isArray(this.linkageConfig) && this.linkageConfig.length > 0) {
+          // 获取联动的key顺序
+          let getLcKeys = (key, arr) => {
+            let col = this._innerColumns.find(col => col.key === key)
+            if (col) {
+              arr.push(col.key)
+              if (col.linkageKey) {
+                return getLcKeys(col.linkageKey, arr)
+              }
+            }
+            return arr
+          }
+          let configMap = new Map()
+          this.linkageConfig.forEach(lc => {
+            let keys = getLcKeys(lc.key, [])
+            // 多个key共享一个，引用地址
+            let configItem = {
+              ...lc, keys,
+              optionsMap: new Map()
+            }
+            keys.forEach(k => configMap.set(k, configItem))
+          })
+          this._innerLinkageConfig = configMap
+        } else {
+          this._innerLinkageConfig = null
+        }
+      }
+    },
   },
   created() {
   },
@@ -671,6 +727,19 @@ export default {
         // issues/2784
         // 先清空所有数据
         xTable.loadData([])
+
+        dataSource.forEach((data, idx) => {
+          // 开启了排序就自动计算排序值
+          if (this.dragSort) {
+            this.$set(data, this.dragSortKey, idx + 1)
+          }
+          // 处理联动回显数据
+          if (this._innerLinkageConfig != null) {
+            for (let configItem of this._innerLinkageConfig.values()) {
+              this.autoSetLinkageOptionsByData(data, '', configItem, 0)
+            }
+          }
+        })
         // 再新增
         return xTable.insertAt(dataSource)
       }
@@ -797,6 +866,7 @@ export default {
      * 添加一行或多行
      *
      * @param rows
+     * @param isOnlJs 是否是onlineJS增强触发的
      * @return
      */
     async addRows(rows = {}, isOnlJs) {
@@ -894,6 +964,89 @@ export default {
       //online增强参数兼容
       event.target = this
       this.$emit(name, event)
+    },
+
+    /** 【多级联动】获取同级联动下拉选项 */
+    getLinkageOptionsSibling(row, col, config, request) {
+      // 如果当前列不是顶级列
+      let key = ''
+      if (col.key !== config.key) {
+        // 就找出联动上级列
+        let idx = config.keys.findIndex(k => col.key === k)
+        let parentKey = config.keys[idx - 1]
+        key = row[parentKey]
+        // 如果联动上级列没有选择数据，就直接返回空数组
+        if (key === '' || key == null) {
+          return []
+        }
+      } else {
+        key = 'root'
+      }
+      let options = config.optionsMap.get(key)
+      if (!Array.isArray(options)) {
+        if (request) {
+          let parent = key === 'root' ? '' : key
+          return this.getLinkageOptionsAsync(config, parent)
+        } else {
+          options = []
+        }
+      }
+      return options
+    },
+    /** 【多级联动】获取联动下拉选项（异步） */
+    getLinkageOptionsAsync(config, parent) {
+      return new Promise(resolve => {
+        let key = parent ? parent : 'root'
+        let options
+        if (config.optionsMap.has(key)) {
+          options = config.optionsMap.get(key)
+          if (options instanceof Promise) {
+            options.then(opt => {
+              config.optionsMap.set(key, opt)
+              resolve(opt)
+            })
+          } else {
+            resolve(options)
+          }
+        } else if (typeof config.requestData === 'function') {
+          // 调用requestData方法，通过传入parent来获取子级
+          let promise = config.requestData(parent)
+          config.optionsMap.set(key, promise)
+          promise.then(opt => {
+            config.optionsMap.set(key, opt)
+            resolve(opt)
+          })
+        } else {
+          resolve([])
+        }
+      })
+    },
+    // 【多级联动】 用于回显数据，自动填充 optionsMap
+    autoSetLinkageOptionsByData(data, parent, config, level) {
+      if (level === 0) {
+        this.getLinkageOptionsAsync(config, '')
+      } else {
+        this.getLinkageOptionsAsync(config, parent)
+      }
+      if (config.keys.length - 1 > level) {
+        let value = data[config.keys[level]]
+        if (value) {
+          this.autoSetLinkageOptionsByData(data, value, config, level + 1)
+        }
+      }
+    },
+    // 【多级联动】联动组件change时，清空下级组件
+    linkageSelectChange(row, col, config, value) {
+      if (col.linkageKey) {
+        this.getLinkageOptionsAsync(config, value)
+        let idx = config.keys.findIndex(k => k === col.key)
+        let values = {}
+        for (let i = idx; i < config.keys.length; i++) {
+          values[config.keys[i]] = ''
+        }
+        // 清空后几列的数据
+        this.setValues([{rowKey: row.id, values}])
+      }
     },
 
     /** 加载数据字典并合并到 options */
@@ -1088,6 +1241,15 @@ export default {
           let createValue = getEnhancedMixins(col.$type || col.type, 'createValue')
           record[col.key] = createValue({row: record, column, $table: xTable})
         }
+        // update-begin--author:sunjianlei---date:20210819------for: 处理联动列，联动列只能作用于 select 组件
+        if (col.$type === JVXETypes.select && this._innerLinkageConfig != null) {
+          // 判断当前列是否是联动列
+          if (this._innerLinkageConfig.has(col.key)) {
+            let configItem = this._innerLinkageConfig.get(col.key)
+            this.getLinkageOptionsAsync(configItem, '')
+          }
+        }
+        // update-end--author:sunjianlei---date:20210819------for: 处理联动列，联动列只能作用于 select 组件
       })
       return record
     },

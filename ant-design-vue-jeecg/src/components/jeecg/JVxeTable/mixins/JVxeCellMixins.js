@@ -102,7 +102,13 @@ export default {
 
         // 判断是否启用翻译
         if (this.renderType === JVXERenderType.spaner && this.enhanced.translate.enabled) {
-          this.innerValue = this.enhanced.translate.handler.call(this, value)
+          let res = this.enhanced.translate.handler.call(this, value)
+          // 异步翻译，目前仅【多级联动】使用
+          if (res instanceof Promise) {
+            res.then(value => this.innerValue = value)
+          } else {
+            this.innerValue = res
+          }
         }
       },
     },

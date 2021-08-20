@@ -7,11 +7,16 @@
     v-bind="selectProps"
     style="width: 100%;"
     @blur="handleBlur"
-    @change="handleChangeCommon"
+    @change="handleChange"
     @search="handleSearchSelect"
   >
 
-    <template v-for="option of originColumn.options">
+    <div v-if="loading" slot="notFoundContent">
+      <a-icon type="loading"  />
+      <span>&nbsp;加载中…</span>
+    </div>
+
+    <template v-for="option of selectOptions">
       <a-select-option :key="option.value" :value="option.value" :disabled="option.disabled">
         <span>{{option.text || option.label || option.title|| option.value}}</span>
       </a-select-option>
@@ -23,10 +28,18 @@
 <script>
   import JVxeCellMixins, { dispatchEvent } from '@/components/jeecg/JVxeTable/mixins/JVxeCellMixins'
   import { JVXETypes } from '@comp/jeecg/JVxeTable/index'
+  import { filterDictText } from '@comp/dict/JDictSelectUtil'
 
   export default {
     name: 'JVxeSelectCell',
     mixins: [JVxeCellMixins],
+    data(){
+      return {
+        loading: false,
+        // 异步加载的options（用于多级联动）
+        asyncOptions: null,
+      }
+    },
     computed: {
       selectProps() {
         let props = {...this.cellProps}
@@ -36,6 +49,32 @@
           props['showSearch'] = true
         }
         return props
+      },
+      // 下拉选项
+      selectOptions() {
+        if (this.asyncOptions) {
+          return this.asyncOptions
+        }
+        let {linkage} = this.renderOptions
+        if (linkage) {
+          let {getLinkageOptionsSibling, config} = linkage
+          let res = getLinkageOptionsSibling(this.row, this.originColumn, config, true)
+          // 当返回Promise时，说明是多级联动
+          if (res instanceof Promise) {
+            this.loading = true
+            res.then(opt => {
+              this.asyncOptions = opt
+              this.loading = false
+            }).catch(e => {
+              console.error(e)
+              this.loading = false
+            })
+          } else {
+            this.asyncOptions = null
+            return res
+          }
+        }
+        return this.originColumn.options
       },
     },
     created() {
@@ -53,6 +92,16 @@
       }
     },
     methods: {
+
+      handleChange(value) {
+        debugger
+        // 处理下级联动
+        let linkage = this.renderOptions.linkage
+        if (linkage) {
+          linkage.linkageSelectChange(this.row, this.originColumn, linkage.config, value)
+        }
+        this.handleChangeCommon(value)
+      },
 
       /** 处理blur失去焦点事件 */
       handleBlur(value) {
@@ -120,7 +169,28 @@
           dispatchEvent.call(this, event, 'ant-select')
         },
       },
-      translate: {enabled: true},
+      translate: {
+        enabled: true,
+        async handler(value,) {
+          let options
+          let {linkage} = this.renderOptions
+          // 判断是否是多级联动，如果是就通过接口异步翻译
+          if (linkage) {
+            let {getLinkageOptionsSibling, config} = linkage
+            options = getLinkageOptionsSibling(this.row, this.originColumn, config, true)
+            if (options instanceof Promise) {
+              return new Promise(resolve => {
+                options.then(opt => {
+                  resolve(filterDictText(opt, value))
+                })
+              })
+            }
+          } else {
+            options = this.column.own.options
+          }
+          return filterDictText(options, value)
+        },
+      },
       getValue(value) {
         if (Array.isArray(value)) {
           return value.join(',')
