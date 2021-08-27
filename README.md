@@ -384,11 +384,11 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 - 拉取项目代码
 ```bash
 git clone https://github.com/zhangdaiscott/jeecg-boot.git
-cd  jeecg-boot/ant-design-jeecg-vue
+cd  jeecg-boot/ant-design-vue-jeecg
 ```
 
 1. 安装node.js
-2. 切换到ant-design-jeecg-vue文件夹下
+2. 切换到ant-design-vue-jeecg文件夹下
 ```
 # 安装yarn
 npm install -g yarn
@@ -489,9 +489,9 @@ yarn run lint
 
 - [Vue](https://cn.vuejs.org/v2/guide)
 
-- [路由/菜单说明](https://gitee.com/jeecg/jeecg-boot/tree/v1.1/ant-design-jeecg-vue/src/router/README.md)
+- [路由/菜单说明](https://gitee.com/jeecg/jeecg-boot/tree/v1.1/ant-design-vue-jeecg/src/router/README.md)
 
-- [ANTD 默认配置项](https://gitee.com/jeecg/jeecg-boot/blob/v1.1/ant-design-jeecg-vue/src/defaultSettings.js)
+- [ANTD 默认配置项](https://gitee.com/jeecg/jeecg-boot/blob/v1.1/ant-design-vue-jeecg/src/defaultSettings.js)
 
 - 其他待补充...
 
