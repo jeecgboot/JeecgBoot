@@ -538,7 +538,6 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         SysUser sysUser = new SysUser();
         BeanUtils.copyProperties(oldSysUser, sysUser);
         sysUser.setRealname(dtUser.getName());
-        sysUser.setPhone(dtUser.getMobile());
         sysUser.setTelephone(dtUser.getTelephone());
 
         // 因为唯一键约束的原因，如果原数据和旧数据相同，就不更新
