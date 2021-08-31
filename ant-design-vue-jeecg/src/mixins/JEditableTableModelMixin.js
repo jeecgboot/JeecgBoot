@@ -51,6 +51,7 @@ export const JEditableTableModelMixin = {
         this.tableReset();
         resolve();
       }).then(() => {
+        if (typeof this.addBefore === 'function') this.addBefore()
         // 默认新增空数据
         let rowNum = this.addDefaultRowNum
         if (typeof rowNum !== 'number') {
