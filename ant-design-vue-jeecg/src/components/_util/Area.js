@@ -1,3 +1,4 @@
+import Vue from 'vue'
 /**
  * 省市区
  */
@@ -7,6 +8,9 @@ export default class Area {
    * @param express
    */
   constructor(pcaa) {
+    if(!pcaa){
+      pcaa = Vue.prototype.$Jpcaa;
+    }
     let arr = []
     const province = pcaa['86']
     Object.keys(province).map(key=>{
