@@ -19,7 +19,7 @@
         <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
         <spring-cloud-alibaba.version>2.2.3.RELEASE</spring-cloud-alibaba.version>
 		<xxl-job-core.version>2.2.0</xxl-job-core.version>
-        <fastjson.version>1.2.76</fastjson.version>
+        <fastjson.version>1.2.78</fastjson.version>
 		<knife4j-spring-boot-starter.version>2.0.9</knife4j-spring-boot-starter.version>
 		<knife4j-spring-ui.version>2.0.9</knife4j-spring-ui.version>
 		<!-- 数据库驱动 -->
