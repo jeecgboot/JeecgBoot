@@ -8,6 +8,7 @@ import java.util.SortedMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.jeecg.common.config.mqtoken.UserTokenContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.PathMatcherUtil;
@@ -88,6 +89,10 @@ public class FeignConfig {
                         e.printStackTrace();
                     }
                 }
+            }else{
+                String  token = UserTokenContext.getToken();
+                log.debug("Feign request token: {}", token);
+                requestTemplate.header(CommonConstant.X_ACCESS_TOKEN, token);
             }
         };
     }
