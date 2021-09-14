@@ -47,14 +47,13 @@ public class DynamicRouteService implements ApplicationEventPublisherAware {
      * @param id
      * @return
      */
-    public synchronized Mono<ResponseEntity<Object>> delete(String id) {
-        return this.repository.delete(Mono.just(id)).then(Mono.defer(() -> {
-            return Mono.just(ResponseEntity.ok().build());
-        })).onErrorResume((t) -> {
-            return t instanceof NotFoundException;
-        }, (t) -> {
-            return Mono.just(ResponseEntity.notFound().build());
-        });
+    public synchronized void delete(String id) {
+        try {
+            repository.delete(Mono.just(id)).subscribe();
+            this.publisher.publishEvent(new RefreshRoutesEvent(this));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
