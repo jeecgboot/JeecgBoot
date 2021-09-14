@@ -128,7 +128,7 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
      * @return
      */
     private void loadRoutesByRedis() {
-        List<RouteDefinition> routes = Lists.newArrayList();
+        List<MyRouteDefinition> routes = Lists.newArrayList();
         configService = createConfigService();
         if (configService == null) {
             log.warn("initConfigService fail");
@@ -143,9 +143,14 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
                 e.printStackTrace();
             }
         }
-        for (RouteDefinition definition : routes) {
+        for (MyRouteDefinition definition : routes) {
             log.info("update route : {}", definition.toString());
-            dynamicRouteService.add(definition);
+            Integer status=definition.getStatus();
+            if(status.equals(0)){
+                dynamicRouteService.delete(definition.getId());
+            }else{
+                dynamicRouteService.add(definition);
+            }
         }
         this.publisher.publishEvent(new RefreshRoutesEvent(this));
     }
@@ -161,12 +166,13 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
      * @return
      */
 
-    public static List<RouteDefinition> getRoutesByJson(JSONArray array) throws URISyntaxException {
-        List<RouteDefinition> ls = new ArrayList<>();
+    public static List<MyRouteDefinition> getRoutesByJson(JSONArray array) throws URISyntaxException {
+        List<MyRouteDefinition> ls = new ArrayList<>();
         for (int i = 0; i < array.size(); i++) {
             JSONObject obj = array.getJSONObject(i);
-            RouteDefinition route = new RouteDefinition();
+            MyRouteDefinition route = new MyRouteDefinition();
             route.setId(obj.getString("routerId"));
+            route.setStatus(obj.getInteger("status"));
             Object uri = obj.get("uri");
             if (uri == null) {
                 route.setUri(new URI("lb://" + obj.getString("name")));
