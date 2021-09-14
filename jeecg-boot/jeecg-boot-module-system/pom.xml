@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>org.jeecgframework</groupId>
 			<artifactId>jeewx-api</artifactId>
-			<version>1.4.5</version>
+			<version>1.4.6</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>commons-beanutils</artifactId>
