@@ -2,15 +2,24 @@ package org.jeecg.boot.starter.rabbitmq.core;
 
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
+
 import org.jeecg.boot.starter.rabbitmq.listenter.MqListener;
+import org.jeecg.common.config.mqtoken.UserTokenContext;
 
 import java.io.IOException;
 
+/**
+ *
+ * @author zyf
+ */
 @Slf4j
 public class BaseRabbiMqHandler<T> {
 
+    private String token= UserTokenContext.getToken();
+
     public void onMessage(T t, Long deliveryTag, Channel channel, MqListener mqListener) {
         try {
+            UserTokenContext.setToken(token);
             mqListener.handler(t, channel);
             channel.basicAck(deliveryTag, false);
         } catch (Exception e) {
