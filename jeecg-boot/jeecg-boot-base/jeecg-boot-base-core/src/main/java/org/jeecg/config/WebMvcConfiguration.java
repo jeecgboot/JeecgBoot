@@ -1,23 +1,23 @@
 package org.jeecg.config;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 /**
  * Spring Boot 2.0 解决跨域问题
@@ -71,24 +71,20 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         return new CorsFilter(urlBasedCorsConfigurationSource);
     }
 
-
     /**
-     * 序列换成json时,将所有的long变成string
-     * js中long过长精度丢失
-     */
-    @Bean
-    @Primary
-    @ConditionalOnMissingBean(ObjectMapper.class)
-    public ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder) {
+    * 添加Long转json精度丢失的配置
+    * @Return: void
+    */
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        MappingJackson2HttpMessageConverter jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
         ObjectMapper objectMapper = new ObjectMapper();
         SimpleModule simpleModule = new SimpleModule();
-        //忽略在json字符串中存在，在java类中不存在字段，防止错误。
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true);
         simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
         simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
         objectMapper.registerModule(simpleModule);
-        return objectMapper;
+        jackson2HttpMessageConverter.setObjectMapper(objectMapper);
+        converters.add(jackson2HttpMessageConverter);
     }
 
     /**
