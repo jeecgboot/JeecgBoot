@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.enums.RoleIndexConfigEnum;
@@ -22,6 +23,7 @@ import org.jeecg.modules.system.model.TreeModel;
 import org.jeecg.modules.system.service.*;
 import org.jeecg.modules.system.util.PermissionDataUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -54,6 +56,12 @@ public class SysPermissionController {
 
 	@Autowired
 	private ISysUserService sysUserService;
+	/**
+	 * 系统安全模式（true开启，false关闭）
+	 */
+	@Value(value = "${jeecg.safeMode:false}")
+	private Boolean sysSafeMode;
+
 
 	/**
 	 * 加载数据节点
@@ -215,21 +223,18 @@ public class SysPermissionController {
 			//update-begin-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
 			if(!PermissionDataUtil.hasIndexPage(metaList)){
 				SysPermission indexMenu = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().eq(SysPermission::getName,"首页")).get(0);
-				//update-begin--Author:liusq  Date:20210624  for:自定义首页地址LOWCOD-1578
-				List<String> roles = sysUserService.getRole(loginUser.getUsername());
-				if(roles.size()>0){
-					for (String code:roles) {
-						String componentUrl = RoleIndexConfigEnum.getIndexByCode(code);
-						if(StringUtils.isNotBlank(componentUrl)){
-							indexMenu.setComponent(componentUrl);
-							break;
-						}
-					}
-				}
-				//update-end--Author:liusq  Date:20210624  for：自定义首页地址LOWCOD-1578
 				metaList.add(0,indexMenu);
 			}
 			//update-end-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
+
+			//update-begin--Author:liusq  Date:20210624  for:自定义首页地址LOWCOD-1578
+			List<String> roles = sysUserService.getRole(loginUser.getUsername());
+            String compUrl = RoleIndexConfigEnum.getIndexByRoles(roles);
+			if(StringUtils.isNotBlank(compUrl)){
+				List<SysPermission> menus = metaList.stream().filter(sysPermission -> "首页".equals(sysPermission.getName())).collect(Collectors.toList());
+				menus.get(0).setComponent(compUrl);
+			}
+			//update-end--Author:liusq  Date:20210624  for：自定义首页地址LOWCOD-1578
 			JSONObject json = new JSONObject();
 			JSONArray menujsonArray = new JSONArray();
 			this.getPermissionJsonArray(menujsonArray, metaList, null);
@@ -249,10 +254,11 @@ public class SysPermissionController {
 			json.put("auth", authjsonArray);
 			//全部权限配置集合（按钮权限，访问权限）
 			json.put("allAuth", allauthjsonArray);
+			json.put("sysSafeMode", sysSafeMode);
 			result.setResult(json);
 			result.success("查询成功");
 		} catch (Exception e) {
-			result.error500("查询失败:" + e.getMessage());  
+			result.error500("查询失败:" + e.getMessage());
 			log.error(e.getMessage(), e);
 		}
 		return result;
@@ -343,7 +349,7 @@ public class SysPermissionController {
 
 	/**
 	 * 获取全部的权限树
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/queryTreeList", method = RequestMethod.GET)
@@ -375,7 +381,7 @@ public class SysPermissionController {
 
 	/**
 	 * 异步加载数据节点
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/queryListAsync", method = RequestMethod.GET)
@@ -398,7 +404,7 @@ public class SysPermissionController {
 
 	/**
 	 * 查询角色授权
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/queryRolePermission", method = RequestMethod.GET)
@@ -416,7 +422,7 @@ public class SysPermissionController {
 
 	/**
 	 * 保存角色授权
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/saveRolePermission", method = RequestMethod.POST)
@@ -475,7 +481,7 @@ public class SysPermissionController {
 
 		}
 	}
-	
+
 	/**
 	  *  获取权限JSON数组
 	 * @param jsonArray

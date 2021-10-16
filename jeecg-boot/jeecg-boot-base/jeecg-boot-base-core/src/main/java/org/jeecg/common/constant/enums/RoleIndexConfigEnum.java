@@ -1,5 +1,7 @@
 package org.jeecg.common.constant.enums;
 
+import java.util.List;
+
 /**
  * 首页自定义
  * 通过角色编码与首页组件路径配置
@@ -59,6 +61,17 @@ public enum RoleIndexConfigEnum {
         for (RoleIndexConfigEnum e : RoleIndexConfigEnum.values()) {
             if (e.roleCode.equals(roleCode)) {
                 return e.componentUrl;
+            }
+        }
+        return null;
+    }
+
+    public static String getIndexByRoles(List<String> roles) {
+        for (String role : roles) {
+            for (RoleIndexConfigEnum e : RoleIndexConfigEnum.values()) {
+                if (e.roleCode.equals(role)) {
+                    return e.componentUrl;
+                }
             }
         }
         return null;
