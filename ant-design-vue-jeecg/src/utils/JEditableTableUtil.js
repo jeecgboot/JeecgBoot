@@ -8,6 +8,7 @@ const FormTypes = {
   select: 'select',
   date: 'date',
   datetime: 'datetime',
+  time: 'time',
   upload: 'upload',
   file: 'file',
   image: 'image',

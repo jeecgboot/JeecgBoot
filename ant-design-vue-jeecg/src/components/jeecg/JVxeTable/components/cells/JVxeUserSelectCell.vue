@@ -16,6 +16,8 @@
       :multi="multi"
       :user-ids="userIds"
       @ok="selectOK"
+      :store="storeField"
+      :text="textField"
       @initComp="initComp"/>
     <span style="display: inline-block;height:100%;padding-left:14px" v-if="userIds" >
       <span @click="openSelect" style="display: inline-block;vertical-align: middle">{{ userNames }}</span>
@@ -77,6 +79,30 @@
         }else{
           return true
         }
+      },
+      storeField(){
+        if(this.originColumn){
+          const str = this.originColumn.fieldExtendJson
+          if(str){
+            let json = JSON.parse(str)
+            if(json && json.store){
+              return json.store
+            }
+          }
+        }
+        return 'username'
+      },
+      textField(){
+        if(this.originColumn){
+          const str = this.originColumn.fieldExtendJson
+          if(str){
+            let json = JSON.parse(str)
+            if(json && json.text){
+              return json.text
+            }
+          }
+        }
+        return 'realname'
       }
     },
     watch: {
@@ -102,12 +128,8 @@
           this.userNames = ''
           this.userIds = ''
         } else {
-          let temp = ''
-          for (let item of rows) {
-            temp += ',' + item.realname
-          }
-          this.userNames = temp.substring(1)
-          this.userIds = idstr
+          this.userIds = rows.map(row => row[this.storeField]).join(',')
+          this.userNames = rows.map(row => row[this.textField]).join(',')
         }
         this.handleChangeCommon(this.userIds)
       },

@@ -1,5 +1,5 @@
 <template>
-  <a-select :value="arrayValue" @change="onChange" mode="multiple" :placeholder="placeholder">
+  <a-select :value="arrayValue" @change="onChange" mode="multiple" :placeholder="placeholder" allowClear>
     <a-select-option
       v-for="(item,index) in selectOptions"
       :key="index"

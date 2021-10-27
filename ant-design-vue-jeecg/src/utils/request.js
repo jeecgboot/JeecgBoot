@@ -75,7 +75,7 @@ const err = (error) => {
         Vue.prototype.$Jnotification.error({ message: '系统提示', description: '网络超时'})
         break
       case 401:
-        Vue.prototype.$Jnotification.error({ message: '系统提示', description:'未授权，请重新登录',duration: 4})
+        Vue.prototype.$Jnotification.error({ message: '系统提示', description:'很抱歉，登录已过期，请重新登录',duration: 4})
         if (token) {
           store.dispatch('Logout').then(() => {
             setTimeout(() => {

@@ -73,6 +73,16 @@ export default {
         props['disabled'] = true
       }
 
+      // update-begin-author:taoyan date:20211011 for: online表单，附表用户选择器{"multiSelect":false}不生效，单表可以生效 #3036
+      let jsonStr = col['fieldExtendJson']
+      if(jsonStr){
+        let fieldExtendJson = JSON.parse(jsonStr)
+        if(fieldExtendJson && fieldExtendJson['multiSelect']==false){
+          props['multi'] = false
+        }
+      }
+      // update-end-author:taoyan date:20211011 for: online表单，附表用户选择器{"multiSelect":false}不生效，单表可以生效 #3036
+
       return props
     },
   },

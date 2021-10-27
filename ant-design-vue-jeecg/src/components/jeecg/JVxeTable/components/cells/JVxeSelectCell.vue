@@ -94,7 +94,6 @@
     methods: {
 
       handleChange(value) {
-        debugger
         // 处理下级联动
         let linkage = this.renderOptions.linkage
         if (linkage) {

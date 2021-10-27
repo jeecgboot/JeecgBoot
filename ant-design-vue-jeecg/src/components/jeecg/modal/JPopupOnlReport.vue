@@ -74,6 +74,7 @@
   import {filterObj} from '@/utils/util'
   import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
   import { httpGroupRequest } from '@/api/GroupRequest.js'
+  import md5 from 'md5'
 
   const MODAL_WIDTH = 1200;
   export default {
@@ -390,9 +391,12 @@
            }
            //update-end---author:liusq     Date:20210203  for：pop选择器列主键问题 issues/I29P9Q------------
          })
-        if(res.length>50){
+        // update-begin---author:taoyan   Date:20211025 for：jpopup 表格key重复BUG /issues/3121
+        res = md5(res)
+        /*if(res.length>50){
           res = res.substring(0,50)
-        }
+        }*/
+        // update-end---author:taoyan   Date:20211025 for：jpopup 表格key重复BUG /issues/3121
         return res
       },
 

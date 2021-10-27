@@ -14,7 +14,9 @@ const user = {
     welcome: '',
     avatar: '',
     permissionList: [],
-    info: {}
+    info: {},
+    // 系统安全模式
+    sysSafeMode: null,
   },
 
   mutations: {
@@ -37,6 +39,13 @@ const user = {
     },
     SET_TENANT: (state, id) => {
       state.tenantid = id
+    },
+    SET_SYS_SAFE_MODE: (state, sysSafeMode) => {
+      if (typeof sysSafeMode === 'boolean') {
+        state.sysSafeMode = sysSafeMode
+      } else {
+        state.sysSafeMode = false
+      }
     },
   },
 
@@ -124,20 +133,22 @@ const user = {
           sessionStorage.setItem(USER_AUTH,JSON.stringify(authData));
           sessionStorage.setItem(SYS_BUTTON_AUTH,JSON.stringify(allAuthData));
           if (menuData && menuData.length > 0) {
-            //update--begin--autor:qinfeng-----date:20200109------for：JEECG-63 一级菜单的子菜单全部是隐藏路由，则一级菜单不显示------
-            menuData.forEach((item, index) => {
-              if (item["children"]) {
-                let hasChildrenMenu = item["children"].filter((i) => {
-                  return !i.hidden || i.hidden == false
-                })
-                if (hasChildrenMenu == null || hasChildrenMenu.length == 0) {
-                  item["hidden"] = true
-                }
-              }
-            })
-            //console.log(" menu show json ", menuData)
-            //update--end--autor:qinfeng-----date:20200109------for：JEECG-63 一级菜单的子菜单全部是隐藏路由，则一级菜单不显示------
+            // //update--begin--autor:qinfeng-----date:20200109------for：JEECG-63 一级菜单的子菜单全部是隐藏路由，则一级菜单不显示------
+            // menuData.forEach((item, index) => {
+            //   if (item["children"]) {
+            //     let hasChildrenMenu = item["children"].filter((i) => {
+            //       return !i.hidden || i.hidden == false
+            //     })
+            //     if (hasChildrenMenu == null || hasChildrenMenu.length == 0) {
+            //       item["hidden"] = true
+            //     }
+            //   }
+            // })
+            // //console.log(" menu show json ", menuData)
+            // //update--end--autor:qinfeng-----date:20200109------for：JEECG-63 一级菜单的子菜单全部是隐藏路由，则一级菜单不显示------
             commit('SET_PERMISSIONLIST', menuData)
+            // 设置系统安全模式
+            commit('SET_SYS_SAFE_MODE', response.result.sysSafeMode)
           } else {
             reject('getPermissionList: permissions must be a non-null array !')
           }

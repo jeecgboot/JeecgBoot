@@ -10,7 +10,7 @@ const onlUtil = {
     }
   },
   created(){
-    this.mixin_pca = new Area(this.$Jpcaa)
+    this.mixin_pca = new Area()
   },
   methods:{
     simpleDateFormat(millisecond, format){

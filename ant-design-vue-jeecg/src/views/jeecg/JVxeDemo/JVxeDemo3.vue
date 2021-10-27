@@ -14,6 +14,7 @@
 
 <script>
 import { JVXETypes } from '@/components/jeecg/JVxeTable'
+import { getAction } from '@api/manage'
 
 export default {
   name: 'JVxeDemo2',
@@ -23,7 +24,7 @@ export default {
       linkageConfig: [
         {requestData: this.requestData, key: 's1'},
         // 可配置多个联动
-        {requestData: this.loadData, key: 'level1',},
+        {requestData: this.loadMenu, key: 'menu1',},
       ],
       columns: [
         {
@@ -61,34 +62,34 @@ export default {
           placeholder: '请选择${title}',
         },
         {
-          title: '一级',
-          key: 'level1',
+          title: '一级菜单',
+          key: 'menu1',
           type: JVXETypes.select,
           width: '180px',
           placeholder: '请选择${title}',
           // 联动字段（即下一级的字段）
-          linkageKey: 'level2',
+          linkageKey: 'menu2',
         },
         {
-          title: '二级',
-          key: 'level2',
+          title: '二级菜单',
+          key: 'menu2',
           type: JVXETypes.select,
           width: '180px',
           placeholder: '请选择${title}',
           // 联动字段（即下一级的字段）
-          linkageKey: 'level3',
+          linkageKey: 'menu3',
         },
         {
-          title: '三级',
-          key: 'level3',
+          title: '三级菜单',
+          key: 'menu3',
           type: JVXETypes.select,
           width: '180px',
           placeholder: '请选择${title}',
         }
       ],
       dataSource: [
-        {sex: '1', s1: '110000', s2: '110100', s3: '110101', level1: '1', level2: '3', level3: '7'},
-        {sex: '2', s1: '130000', s2: '130300', s3: '130303', level1: '2', level2: '6', level3: '14'},
+        {sex: '1', s1: '110000', s2: '110100', s3: '110101'},
+        {sex: '2', s1: '130000', s2: '130300', s3: '130303'},
       ],
       // 模拟数据
       mockData: [
@@ -123,24 +124,6 @@ export default {
         {text: '山海关区', value: '130303', parent: '130300'},
         {text: '北戴河区', value: '130304', parent: '130300'},
       ],
-      mockData1: [
-        {id: '1', name: '图书馆', parentId: '0'},
-        {id: '2', name: '电影院', parentId: '0'},
-
-        {id: '3', name: '一楼', parentId: '1'},
-        {id: '4', name: '二楼', parentId: '1'},
-        {id: '5', name: '中影星美', parentId: '2'},
-        {id: '6', name: '万达国际', parentId: '2'},
-
-        {id: '7', name: '技术图书', parentId: '3'},
-        {id: '8', name: '财务图书', parentId: '3'},
-        {id: '9', name: '儿童图书', parentId: '4'},
-        {id: '10', name: '励志图书', parentId: '4'},
-        {id: '11', name: '1号厅', parentId: '5'},
-        {id: '12', name: '2号厅', parentId: '5'},
-        {id: '13', name: 'I-MAX厅', parentId: '6'},
-        {id: '14', name: '3D厅', parentId: '6'},
-      ],
     }
   },
   methods: {
@@ -156,23 +139,22 @@ export default {
       })
     },
 
-    // 模拟加载数据，模拟数据格式不同的情况下如何组装数据
-    async loadData(parent) {
-      return new Promise((resolve, reject) => {
-        let parentId = parent === '' ? '0' : parent
-        let data = this.mockData1.filter(i => i.parentId === parentId)
-        data = data.map(item => {
-          return {
-            // 必须包含以下两个字段
-            value: item.id,
-            text: item.name,
-          }
-        })
-        setTimeout(() => {
-          resolve(data)
-        }, 500)
-      })
+    async loadMenu(parent) {
+      let res
+      // 如果parent为空，则查询第一级菜单
+      if (parent === '') {
+        res = await getAction('/sys/permission/getSystemMenuList')
+      } else {
+        res = await getAction('/sys/permission/getSystemSubmenu', {parentId: parent})
+      }
+      if (res.success) {
+        // 返回的数据里必须包含 value 和 text 字段
+        return res.result.map(item => ({value: item.id, text: item.name}))
+      }
+      this.$message.warning('loadMenu失败：' + res.message)
+      return []
     },
+
   }
 }
 </script>

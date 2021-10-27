@@ -888,10 +888,10 @@
     cssnano-preset-default "^4.0.0"
     postcss "^7.0.0"
 
-"@jeecg/antd-online-mini@2.4.6-beta5":
-  version "2.4.6-beta5"
-  resolved "https://registry.npmjs.org/@jeecg/antd-online-mini/-/antd-online-mini-2.4.6-beta5.tgz#d019ddcd87838773407c3052c21ba45163bfa76b"
-  integrity sha512-js+WOJdvqE31GvVkAt1VLD0L50uHYhY6gE+g8XqJoUS/JD6q4eYyHOKsGj6tG0TlNbCiAFzZBHo6bFWGVI/miQ==
+"@jeecg/antd-online-mini@3.0.0-beta":
+  version "3.0.0-beta"
+  resolved "https://registry.npmjs.org/@jeecg/antd-online-mini/-/antd-online-mini-3.0.0-beta.tgz#bd7cbbd30c7c2cdee9d816ad996cd9a58378dc95"
+  integrity sha512-V2JwKeBy8WinDrIcGaZyr+FwmF63aItR8dEO570qVhw+Gfz+E9p+fE7SNmSDdbjNu4yiKfsavzdl2JvG4pwgXA==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -1659,9 +1659,9 @@ ansi-styles@^4.0.0, ansi-styles@^4.1.0:
     color-convert "^2.0.1"
 
 ant-design-vue@^1.7.2:
-  version "1.7.7"
-  resolved "https://registry.nlark.com/ant-design-vue/download/ant-design-vue-1.7.7.tgz#621cca28c89e2887ec391e5c129c34d463f3803e"
-  integrity sha1-YhzKKMieKIfsOR5cEpw01GPzgD4=
+  version "1.7.8"
+  resolved "https://registry.npmjs.org/ant-design-vue/-/ant-design-vue-1.7.8.tgz#1abbf86b68a4f5b1000bea0487b8031dc0001661"
+  integrity sha512-F1hmiS9vwbyfuFvlamdW5l9bHKqRlj9wHaGDIE41NZMWXyWy8qL0UFa/+I0Wl8gQWZCqODW5pN6Yfoyn85At3A==
   dependencies:
     "@ant-design/icons" "^2.1.1"
     "@ant-design/icons-vue" "^2.0.0"
@@ -2892,8 +2892,8 @@ cache-loader@^2.0.1:
 
 call-bind@^1.0.0:
   version "1.0.2"
-  resolved "https://registry.nlark.com/call-bind/download/call-bind-1.0.2.tgz#b1d4e89e688119c3c9a903ad30abb2f6a919be3c"
-  integrity sha1-sdTonmiBGcPJqQOtMKuy9qkZvjw=
+  resolved "https://registry.npmjs.org/call-bind/-/call-bind-1.0.2.tgz#b1d4e89e688119c3c9a903ad30abb2f6a919be3c"
+  integrity sha512-7O+FbCihrB5WGbFYesctwmTKae6rOiIzmz1icreWJ+0aA7LJfuqhEso2T9ncpcFtzMQtzXf2QGGueWJGTYsqrA==
   dependencies:
     function-bind "^1.1.1"
     get-intrinsic "^1.0.2"
@@ -3086,8 +3086,8 @@ check-types@^8.0.3:
 
 china-area-data@^5.0.1:
   version "5.0.1"
-  resolved "https://registry.npm.taobao.org/china-area-data/download/china-area-data-5.0.1.tgz#7943b83a0619f033bb5893da80cb46e52e44be66"
-  integrity sha1-eUO4OgYZ8DO7WJPagMtG5S5EvmY=
+  resolved "https://registry.npmjs.org/china-area-data/-/china-area-data-5.0.1.tgz#7943b83a0619f033bb5893da80cb46e52e44be66"
+  integrity sha512-BQDPpiv5Nn+018ekcJK2oSD9PAD+E1bvXB0wgabc//dFVS/KvRqCgg0QOEUt3vBkx9XzB5a9BmkJCEZDBxVjVw==
 
 chokidar@^2.1.2, chokidar@^2.1.8:
   version "2.1.8"
@@ -3670,8 +3670,8 @@ create-hmac@^1.1.0, create-hmac@^1.1.4, create-hmac@^1.1.7:
 
 cron-parser@^2.10.0:
   version "2.18.0"
-  resolved "https://registry.nlark.com/cron-parser/download/cron-parser-2.18.0.tgz#de1bb0ad528c815548371993f81a54e5a089edcf"
-  integrity sha1-3huwrVKMgVVINxmT+BpU5aCJ7c8=
+  resolved "https://registry.npmjs.org/cron-parser/-/cron-parser-2.18.0.tgz#de1bb0ad528c815548371993f81a54e5a089edcf"
+  integrity sha512-s4odpheTyydAbTBQepsqd2rNWGa2iV3cyo8g7zbI2QQYGLVsfbhmwukayS1XHppe02Oy1fg7mg6xoaraVJeEcg==
   dependencies:
     is-nan "^1.3.0"
     moment-timezone "^0.5.31"
@@ -5696,8 +5696,8 @@ get-caller-file@^2.0.1:
 
 get-intrinsic@^1.0.2:
   version "1.1.1"
-  resolved "https://registry.nlark.com/get-intrinsic/download/get-intrinsic-1.1.1.tgz#15f59f376f855c446963948f0d24cd3637b4abc6"
-  integrity sha1-FfWfN2+FXERpY5SPDSTNNje0q8Y=
+  resolved "https://registry.npmjs.org/get-intrinsic/-/get-intrinsic-1.1.1.tgz#15f59f376f855c446963948f0d24cd3637b4abc6"
+  integrity sha512-kWZrnVM42QCiEA2Ig1bG8zjoIMOgxWwYCEeNdwY6Tv/cOSeGpcoX4pXHfKUxNKVoArnrEr2e9srnAxxGIraS9Q==
   dependencies:
     function-bind "^1.1.1"
     has "^1.0.3"
@@ -6618,8 +6618,8 @@ is-mobile@^2.2.1:
 
 is-nan@^1.3.0:
   version "1.3.2"
-  resolved "https://registry.npm.taobao.org/is-nan/download/is-nan-1.3.2.tgz#043a54adea31748b55b6cd4e09aadafa69bd9e1d"
-  integrity sha1-BDpUreoxdItVts1OCara+mm9nh0=
+  resolved "https://registry.npmjs.org/is-nan/-/is-nan-1.3.2.tgz#043a54adea31748b55b6cd4e09aadafa69bd9e1d"
+  integrity sha512-E+zBKpQ2t6MEo1VsonYmluk9NxGrbzpeeLC2xIViuO2EjU2xsXsBPwTr3Ykv9l08UYEVEdWeRZNouaZqF6RN0w==
   dependencies:
     call-bind "^1.0.0"
     define-properties "^1.1.3"
@@ -7672,8 +7672,8 @@ mkdirp@^0.5.1, mkdirp@^0.5.3, mkdirp@~0.5.0, mkdirp@~0.5.1:
 
 moment-timezone@^0.5.31:
   version "0.5.33"
-  resolved "https://registry.nlark.com/moment-timezone/download/moment-timezone-0.5.33.tgz#b252fd6bb57f341c9b59a5ab61a8e51a73bbd22c"
-  integrity sha1-slL9a7V/NBybWaWrYajlGnO70iw=
+  resolved "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.33.tgz#b252fd6bb57f341c9b59a5ab61a8e51a73bbd22c"
+  integrity sha512-PTc2vcT8K9J5/9rDEPe5czSIKgLoGsH8UNpA4qZTVw0Vd/Uz19geE9abbIOQKaAQFcnQ3v5YEXrbSc5BpshH+w==
   dependencies:
     moment ">= 2.9.0"
 

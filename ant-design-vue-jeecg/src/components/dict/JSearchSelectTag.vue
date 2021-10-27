@@ -48,13 +48,17 @@
     props:{
       disabled: Boolean,
       value: [String, Number],
-      dict: String,
       dictOptions: Array,
       async: Boolean,
       placeholder:{
         type:String,
         default:"请选择",
         required:false
+      },
+      dict:{
+        type: String,
+        default: '',
+        required: false
       },
       popContainer:{
         type:String,
@@ -186,16 +190,20 @@
             }
           }
         }else{
-          //异步一开始也加载一点数据
-          this.loading=true
-          getAction(`/sys/dict/loadDict/${this.dict}`,{pageSize: this.pageSize, keyword:''}).then(res=>{
-            this.loading=false
-            if(res.success){
-              this.options = res.result
-            }else{
-              this.$message.warning(res.message)
-            }
-          })
+          if(!this.dict){
+            console.error('搜索组件未配置字典项')
+          }else{
+            //异步一开始也加载一点数据
+            this.loading=true
+            getAction(`/sys/dict/loadDict/${this.dict}`,{pageSize: this.pageSize, keyword:''}).then(res=>{
+              this.loading=false
+              if(res.success){
+                this.options = res.result
+              }else{
+                this.$message.warning(res.message)
+              }
+            })
+          }
         }
       },
       filterOption(input, option) {

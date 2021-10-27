@@ -7,7 +7,7 @@
         <a-icon type="close" @click="visible=false"/>
       </span>
     </div>
-    <a-input :value="inputContent" :disabled="disabled" @change="handleInputChange">
+    <a-input :value="inputContent" :disabled="disabled" @change="handleInputChange" :placeholder="placeholder">
       <a-icon slot="suffix" type="fullscreen" @click.stop="pop" />
     </a-input>
     <div slot="content">
@@ -53,6 +53,10 @@
         type: Boolean,
         default: false,
       },
+      placeholder:{
+        type:String,
+        required:false
+      }
 
     },
     data(){

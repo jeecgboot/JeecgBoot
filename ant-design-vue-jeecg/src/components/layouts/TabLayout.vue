@@ -219,9 +219,19 @@
             cacheRouterArray.splice(cacheRouterArray.findIndex(item => item === componentName), 1)
             Vue.ls.set(CACHE_INCLUDED_ROUTES, cacheRouterArray)
           }
+          this.emitPageClosed(removeRoute[0])
         }
         //update-end--Author:scott  Date:20201015 for：路由缓存问题，关闭了tab页时再打开就不刷新 #842
 
+      },
+      // 触发 page-closed （页面关闭）全局事件
+      emitPageClosed(closedRoute) {
+        this.$root.$emit('page-closed', {
+          closedRoute,
+          pageList: this.pageList,
+          linkList: this.linkList,
+          activePage: this.activePage
+        })
       },
       onContextmenu(e) {
         const pagekey = this.getPageKey(e.target)
