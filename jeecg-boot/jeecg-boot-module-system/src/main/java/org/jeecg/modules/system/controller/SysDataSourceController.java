@@ -128,7 +128,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
      */
     @AutoLog(value = "多数据源管理-编辑")
     @ApiOperation(value = "多数据源管理-编辑", notes = "多数据源管理-编辑")
-    @PutMapping(value = "/edit")
+    @RequestMapping(value = "/edit", method ={RequestMethod.PUT, RequestMethod.POST})
     public Result<?> edit(@RequestBody SysDataSource sysDataSource) {
         try {
             SysDataSource d = sysDataSourceService.getById(sysDataSource.getId());

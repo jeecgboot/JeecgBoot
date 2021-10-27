@@ -80,8 +80,12 @@ public class WebSocket {
         Session session = sessionPool.get(userId);
         if (session != null && session.isOpen()) {
             try {
-                log.info("【websocket消息】 单点消息:" + message);
-                session.getAsyncRemote().sendText(message);
+                //update-begin-author:taoyan date:20211012 for: websocket报错 https://gitee.com/jeecg/jeecg-boot/issues/I4C0MU
+                synchronized (session){
+                    log.info("【websocket消息】 单点消息:" + message);
+                    session.getBasicRemote().sendText(message);
+                }
+                //update-end-author:taoyan date:20211012 for: websocket报错 https://gitee.com/jeecg/jeecg-boot/issues/I4C0MU
             } catch (Exception e) {
                 e.printStackTrace();
             }

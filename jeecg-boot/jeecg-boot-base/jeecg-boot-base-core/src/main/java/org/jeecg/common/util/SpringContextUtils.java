@@ -1,6 +1,7 @@
 package org.jeecg.common.util;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.jeecg.common.constant.ServiceNameConstants;
 import org.springframework.beans.BeansException;
@@ -37,6 +38,12 @@ public class SpringContextUtils implements ApplicationContextAware {
 	 */
 	public static HttpServletRequest getHttpServletRequest() {
 		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+	}
+	/**
+	 * 获取HttpServletResponse
+	 */
+	public static HttpServletResponse getHttpServletResponse() {
+		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
 	}
 
 	/**

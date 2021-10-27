@@ -30,7 +30,7 @@ public class Result<T> implements Serializable {
 	 * 返回处理消息
 	 */
 	@ApiModelProperty(value = "返回处理消息")
-	private String message = "操作成功！";
+	private String message = "";
 
 	/**
 	 * 返回代码
@@ -51,7 +51,16 @@ public class Result<T> implements Serializable {
 	private long timestamp = System.currentTimeMillis();
 
 	public Result() {
-		
+	}
+
+    /**
+     * 兼容VUE3版token失效不跳转登录页面
+     * @param code
+     * @param message
+     */
+	public Result(Integer code,String message) {
+		this.code = code;
+		this.message = message;
 	}
 	
 	public Result<T> success(String message) {
@@ -66,7 +75,6 @@ public class Result<T> implements Serializable {
 		Result<Object> r = new Result<Object>();
 		r.setSuccess(true);
 		r.setCode(CommonConstant.SC_OK_200);
-		r.setMessage("成功");
 		return r;
 	}
 
@@ -92,7 +100,6 @@ public class Result<T> implements Serializable {
 		Result<T> r = new Result<T>();
 		r.setSuccess(true);
 		r.setCode(CommonConstant.SC_OK_200);
-		r.setMessage("成功");
 		return r;
 	}
 

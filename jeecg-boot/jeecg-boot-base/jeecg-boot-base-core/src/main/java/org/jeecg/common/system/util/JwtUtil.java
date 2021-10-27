@@ -5,13 +5,19 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.exception.JeecgBootException;
@@ -30,6 +36,28 @@ public class JwtUtil {
 
 	// Token过期时间30分钟（用户登录过期时间是此时间的两倍，以token在reids缓存时间为准）
 	public static final long EXPIRE_TIME = 30 * 60 * 1000;
+
+    /**
+     *
+     * @param response
+     * @param code
+     * @param errorMsg
+     */
+    public static void responseError(ServletResponse response, Integer code, String errorMsg) {
+		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+        Result jsonResult = new Result(code, errorMsg);
+        OutputStream os = null;
+        try {
+            os = httpServletResponse.getOutputStream();
+			httpServletResponse.setCharacterEncoding("UTF-8");
+			httpServletResponse.setStatus(401);
+            os.write(new ObjectMapper().writeValueAsString(jsonResult).getBytes("UTF-8"));
+            os.flush();
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 	/**
 	 * 校验token是否正确

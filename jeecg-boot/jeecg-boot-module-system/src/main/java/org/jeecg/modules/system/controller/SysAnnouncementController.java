@@ -140,7 +140,7 @@ public class SysAnnouncementController {
 	 * @param sysAnnouncement
 	 * @return
 	 */
-	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
+	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<SysAnnouncement> eidt(@RequestBody SysAnnouncement sysAnnouncement) {
 		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
 		SysAnnouncement sysAnnouncementEntity = sysAnnouncementService.getById(sysAnnouncement.getId());
@@ -314,7 +314,7 @@ public class SysAnnouncementController {
 	 * @return
 	 */
 	@RequestMapping(value = "/listByUser", method = RequestMethod.GET)
-	public Result<Map<String,Object>> listByUser() {
+	public Result<Map<String, Object>> listByUser(@RequestParam(required = false, defaultValue = "5") Integer pageSize) {
 		Result<Map<String,Object>> result = new Result<Map<String,Object>>();
 		LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
 		String userId = sysUser.getId();
@@ -347,9 +347,9 @@ public class SysAnnouncementController {
 			}
 		}
 		// 2.查询用户未读的系统消息
-		Page<SysAnnouncement> anntMsgList = new Page<SysAnnouncement>(0,5);
+		Page<SysAnnouncement> anntMsgList = new Page<SysAnnouncement>(0, pageSize);
 		anntMsgList = sysAnnouncementService.querySysCementPageByUserId(anntMsgList,userId,"1");//通知公告消息
-		Page<SysAnnouncement> sysMsgList = new Page<SysAnnouncement>(0,5);
+		Page<SysAnnouncement> sysMsgList = new Page<SysAnnouncement>(0, pageSize);
 		sysMsgList = sysAnnouncementService.querySysCementPageByUserId(sysMsgList,userId,"2");//系统消息
 		Map<String,Object> sysMsgMap = new HashMap<String, Object>();
 		sysMsgMap.put("sysMsgList", sysMsgList.getRecords());

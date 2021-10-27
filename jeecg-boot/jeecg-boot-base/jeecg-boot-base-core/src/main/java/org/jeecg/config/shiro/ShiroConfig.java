@@ -118,8 +118,12 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/jmreport/**", "anon");
         filterChainDefinitionMap.put("/**/*.js.map", "anon");
         filterChainDefinitionMap.put("/**/*.css.map", "anon");
-        //大屏模板例子
-        filterChainDefinitionMap.put("/test/bigScreen/**", "anon");
+
+        //测试示例
+        filterChainDefinitionMap.put("/test/bigScreen/**", "anon"); //大屏模板例子
+        //filterChainDefinitionMap.put("/test/jeecgDemo/rabbitMqClientTest/**", "anon"); //MQ测试
+        //filterChainDefinitionMap.put("/test/jeecgDemo/html", "anon"); //模板页面
+        //filterChainDefinitionMap.put("/test/jeecgDemo/redis/**", "anon"); //redis测试
 
         //websocket排除
         filterChainDefinitionMap.put("/websocket/**", "anon");//系统通知和公告

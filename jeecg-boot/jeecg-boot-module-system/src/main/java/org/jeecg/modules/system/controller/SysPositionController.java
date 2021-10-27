@@ -107,7 +107,7 @@ public class SysPositionController {
      */
     @AutoLog(value = "职务表-编辑")
     @ApiOperation(value = "职务表-编辑", notes = "职务表-编辑")
-    @PutMapping(value = "/edit")
+    @RequestMapping(value = "/edit", method ={RequestMethod.PUT, RequestMethod.POST})
     public Result<SysPosition> edit(@RequestBody SysPosition sysPosition) {
         Result<SysPosition> result = new Result<SysPosition>();
         SysPosition sysPositionEntity = sysPositionService.getById(sysPosition.getId());

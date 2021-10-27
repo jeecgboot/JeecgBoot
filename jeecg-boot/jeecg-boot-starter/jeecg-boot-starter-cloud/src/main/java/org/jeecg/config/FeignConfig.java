@@ -8,10 +8,10 @@ import java.util.SortedMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.jeecg.common.config.mqtoken.UserTokenContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.PathMatcherUtil;
+import org.jeecg.common.config.mqtoken.UserTokenContext;
 import org.jeecg.config.sign.interceptor.SignAuthConfiguration;
 import org.jeecg.config.sign.util.HttpUtils;
 import org.jeecg.config.sign.util.SignUtil;

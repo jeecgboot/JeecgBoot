@@ -89,7 +89,7 @@ public class QuartzJobController {
 	 * @return
 	 */
 	//@RequiresRoles("admin")
-	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
+	@RequestMapping(value = "/edit", method ={RequestMethod.PUT, RequestMethod.POST})
 	public Result<?> eidt(@RequestBody QuartzJob quartzJob) {
 		try {
 			quartzJobService.editAndScheduleJob(quartzJob);
@@ -228,8 +228,13 @@ public class QuartzJobController {
 			params.setHeadRows(1);
 			params.setNeedSave(true);
 			try {
-				List<Object> listQuartzJobs = ExcelImportUtil.importExcel(file.getInputStream(), QuartzJob.class, params);
+				List<QuartzJob> listQuartzJobs = ExcelImportUtil.importExcel(file.getInputStream(), QuartzJob.class, params);
+				//add-begin-author:taoyan date:20210909 for:导入定时任务，并不会被启动和调度，需要手动点击启动，才会加入调度任务中 #2986
+				for(QuartzJob job: listQuartzJobs){
+					job.setStatus(CommonConstant.STATUS_DISABLE);
+				}
 				List<String> list = ImportExcelUtil.importDateSave(listQuartzJobs, IQuartzJobService.class, errorMessage,CommonConstant.SQL_INDEX_UNIQ_JOB_CLASS_NAME);
+				//add-end-author:taoyan date:20210909 for:导入定时任务，并不会被启动和调度，需要手动点击启动，才会加入调度任务中 #2986
 				errorLines+=list.size();
 				successLines+=(listQuartzJobs.size()-errorLines);
 			} catch (Exception e) {

@@ -292,6 +292,7 @@ public interface CommonConstant {
     public final static String X_ACCESS_TOKEN = "X-Access-Token";
     public final static String X_SIGN = "X-Sign";
     public final static String X_TIMESTAMP = "X-TIMESTAMP";
+    public final static String TOKEN_IS_INVALID_MSG = "Token失效，请重新登录!";
 
     /**
      * 多租户 请求头

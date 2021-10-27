@@ -8,7 +8,7 @@
 		<result column="name" property="title" jdbcType="VARCHAR"/>
 		<result column="icon" property="icon" jdbcType="VARCHAR"/>
 		<result column="parent_id" property="parentId" jdbcType="VARCHAR"/>
-		<result column="leaf_flag" property="isLeaf" jdbcType="INTEGER"/>
+		<result column="is_leaf" property="isLeaf" jdbcType="INTEGER"/>
 	</resultMap>
 	
 	<!-- 通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
@@ -26,7 +26,7 @@
                    ,parent_id
                    ,name
                    ,icon
-                   ,leaf_flag
+                   ,is_leaf
 		   FROM   sys_permission
 		   WHERE 1=1
 		    <choose>

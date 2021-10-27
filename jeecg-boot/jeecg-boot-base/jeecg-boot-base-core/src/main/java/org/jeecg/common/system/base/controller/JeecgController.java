@@ -37,8 +37,9 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class JeecgController<T, S extends IService<T>> {
+    //issues/2933 JeecgController注入service时改用protected修饰，能避免重复引用service
     @Autowired
-    S service;
+    protected S service;
 
     @Value("${jeecg.path.upload}")
     private String upLoadPath;

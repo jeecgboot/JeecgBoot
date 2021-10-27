@@ -114,8 +114,12 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 	}
 
 	@Override
-	public Page<SysAnnouncement> querySysCementPageByUserId(Page<SysAnnouncement> page, String userId,String msgCategory) {
-		 return page.setRecords(sysAnnouncementMapper.querySysCementListByUserId(page, userId, msgCategory));
+	public Page<SysAnnouncement> querySysCementPageByUserId(Page<SysAnnouncement> page, String userId, String msgCategory) {
+		if (page.getSize() == -1) {
+			return page.setRecords(sysAnnouncementMapper.querySysCementListByUserId(null, userId, msgCategory));
+		} else {
+			return page.setRecords(sysAnnouncementMapper.querySysCementListByUserId(page, userId, msgCategory));
+		}
 	}
 
 }

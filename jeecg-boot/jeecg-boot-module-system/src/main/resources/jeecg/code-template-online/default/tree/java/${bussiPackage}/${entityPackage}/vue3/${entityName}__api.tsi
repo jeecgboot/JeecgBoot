@@ -1,0 +1,82 @@
+import {defHttp} from "/@/utils/http/axios";
+import {Modal} from 'ant-design-vue';
+
+enum Api {
+  list = '/${entityPackage}/${entityName?uncap_first}/rootList',
+  save='/${entityPackage}/${entityName?uncap_first}/add',
+  edit='/${entityPackage}/${entityName?uncap_first}/edit',
+  delete${entityName} = '/sys/${entityName?uncap_first}/delete',
+  deleteBatch = '/${entityPackage}/${entityName?uncap_first}/deleteBatch',
+  importExcel = '/${entityPackage}/${entityName?uncap_first}/importExcel',
+  exportXls = '/${entityPackage}/${entityName?uncap_first}/exportXls',
+  loadTreeData = '/${entityPackage}/${entityName?uncap_first}/loadTreeRoot',
+  getChildList = '/${entityPackage}/${entityName?uncap_first}/childList',
+  getChildListBatch = '/${entityPackage}/${entityName?uncap_first}/getChildListBatch',
+}
+/**
+ * 导出api
+ * @param params
+ */
+export const getExportUrl = Api.exportXls;
+/**
+ * 导入api
+ * @param params
+ */
+export const getImportUrl = Api.importExcel;
+/**
+ * 列表接口
+ * @param params
+ */
+export const list = (params) =>
+  defHttp.get({url: Api.list, params});
+/**
+ * 删除
+ */
+export const delete${entityName} = (params,handleSuccess) => {
+  return defHttp.delete({url: Api.delete${entityName}, params}, {joinParamsToUrl: true}).then(() => {
+    handleSuccess();
+  });
+}
+/**
+ * 批量删除
+ * @param params
+ */
+export const batchDelete${entityName} = (params, handleSuccess) => {
+  Modal.confirm({
+    title: '确认删除',
+    content: '是否删除选中数据',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: () => {
+      return defHttp.delete({url: Api.deleteBatch, data: params}, {joinParamsToUrl: true}).then(() => {
+        handleSuccess();
+      });
+    }
+  });
+}
+/**
+ * 保存或者更新
+ * @param params
+ */
+export const saveOrUpdateDict = (params, isUpdate) => {
+  let url = isUpdate ? Api.edit : Api.save;
+  return defHttp.post({url: url, params});
+}
+/**
+ * 查询全部树形节点数据
+ * @param params
+ */
+export const loadTreeData = (params) =>
+  defHttp.get({url: Api.loadTreeData,params});
+/**
+ * 查询子节点数据
+ * @param params
+ */
+export const getChildList = (params) =>
+  defHttp.get({url: Api.getChildList, params});
+/**
+ * 批量查询子节点数据
+ * @param params
+ */
+export const getChildListBatch = (params) =>
+  defHttp.get({url: Api.getChildListBatch, params},{isTransformResponse:false});

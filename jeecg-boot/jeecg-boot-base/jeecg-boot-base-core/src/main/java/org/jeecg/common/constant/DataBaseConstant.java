@@ -10,6 +10,8 @@ public interface DataBaseConstant {
 	public static final String DB_TYPE_POSTGRESQL = "POSTGRESQL";
 	public static final String DB_TYPE_SQLSERVER = "SQLSERVER";
 	public static final String DB_TYPE_MARIADB = "MARIADB";
+	public static final String DB_TYPE_DB2 = "DB2";
+	public static final String DB_TYPE_HSQL = "HSQL";
 
 //	// 数据库类型，对应 database_type 字典
 //	public static final String DB_TYPE_MYSQL_NUM = "1";

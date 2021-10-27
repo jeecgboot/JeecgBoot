@@ -34,6 +34,6 @@ public class JeecgGatewayApplication  implements CommandLineRunner {
      */
     @Override
     public void run(String... strings) {
-        dynamicRouteLoader.refresh();
+        dynamicRouteLoader.refresh(null);
     }
 }

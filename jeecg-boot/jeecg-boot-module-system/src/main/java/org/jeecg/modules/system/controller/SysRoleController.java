@@ -129,7 +129,7 @@ public class SysRoleController {
 	 * @return
 	 */
 	//@RequiresRoles({"admin"})
-	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
+	@RequestMapping(value = "/edit",method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<SysRole> edit(@RequestBody SysRole role) {
 		Result<SysRole> result = new Result<SysRole>();
 		SysRole sysrole = sysRoleService.getById(role.getId());

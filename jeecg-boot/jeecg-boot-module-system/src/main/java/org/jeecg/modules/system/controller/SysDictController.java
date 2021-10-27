@@ -359,7 +359,7 @@ public class SysDictController {
 	 * @return
 	 */
 	//@RequiresRoles({"admin"})
-	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
+	@RequestMapping(value = "/edit", method = { RequestMethod.PUT,RequestMethod.POST })
 	public Result<SysDict> edit(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
 		SysDict sysdict = sysDictService.getById(sysDict.getId());

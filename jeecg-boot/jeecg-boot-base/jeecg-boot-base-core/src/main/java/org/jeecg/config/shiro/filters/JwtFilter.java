@@ -1,9 +1,9 @@
 package org.jeecg.config.shiro.filters;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.TenantContext;
 import org.jeecg.config.shiro.JwtToken;
@@ -48,7 +48,9 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             executeLogin(request, response);
             return true;
         } catch (Exception e) {
-            throw new AuthenticationException("Token失效，请重新登录", e);
+            JwtUtil.responseError(response,401,CommonConstant.TOKEN_IS_INVALID_MSG);
+            return false;
+            //throw new AuthenticationException("Token失效，请重新登录", e);
         }
     }
 

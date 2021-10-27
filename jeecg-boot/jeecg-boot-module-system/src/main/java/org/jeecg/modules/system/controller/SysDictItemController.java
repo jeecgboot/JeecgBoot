@@ -93,7 +93,7 @@ public class SysDictItemController {
 	 * @return
 	 */
 	//@RequiresRoles({"admin"})
-	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
+	@RequestMapping(value = "/edit",  method = { RequestMethod.PUT,RequestMethod.POST })
 	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDictItem> edit(@RequestBody SysDictItem sysDictItem) {
 		Result<SysDictItem> result = new Result<SysDictItem>();

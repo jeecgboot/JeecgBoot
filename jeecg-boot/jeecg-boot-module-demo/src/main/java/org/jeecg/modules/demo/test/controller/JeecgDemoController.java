@@ -1,5 +1,6 @@
 package org.jeecg.modules.demo.test.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -282,4 +283,38 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
         return Result.OK(pageList);
     }
     /*----------------------------------------外部获取权限示例------------------------------------*/
+
+    /**
+     * online api增强 列表
+     * @param params
+     * @return
+     */
+    @PostMapping("/enhanceJavaListHttp")
+    public Result enhanceJavaListHttp(@RequestBody JSONObject params) {
+        log.info(" =========================================================== ");
+        log.info("params: " + params.toJSONString());
+        log.info("params.tableName: " + params.getString("tableName"));
+        log.info("params.json: " + params.getJSONObject("json").toJSONString());
+        JSONArray dataList = params.getJSONArray("dataList");
+        log.info("params.dataList: " + dataList.toJSONString());
+        log.info(" =========================================================== ");
+        return Result.OK(dataList);
+    }
+
+    /**
+     * online api增强 表单
+     * @param params
+     * @return
+     */
+    @PostMapping("/enhanceJavaFormHttp")
+    public Result enhanceJavaFormHttp(@RequestBody JSONObject params) {
+        log.info(" =========================================================== ");
+        log.info("params: " + params.toJSONString());
+        log.info("params.tableName: " + params.getString("tableName"));
+        log.info("params.json: " + params.getJSONObject("json").toJSONString());
+        log.info(" =========================================================== ");
+        return Result.OK("1");
+    }
+
+
 }
