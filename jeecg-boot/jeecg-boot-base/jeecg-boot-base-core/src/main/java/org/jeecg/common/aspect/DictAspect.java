@@ -25,6 +25,7 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -261,7 +262,10 @@ public class DictAspect {
                 for (DictModel dict : texts) {
                     String redisKey = String.format("sys:cache:dictTable::SimpleKey [%s,%s]", dictCode, dict.getValue());
                     try {
-                        redisTemplate.opsForValue().set(redisKey, dict.getText());
+                        // update-begin-author:taoyan date:20211012 for: 字典表翻译注解缓存未更新 issues/3061
+                        // 保留5分钟
+                        redisTemplate.opsForValue().set(redisKey, dict.getText(), 300, TimeUnit.SECONDS);
+                        // update-end-author:taoyan date:20211012 for: 字典表翻译注解缓存未更新 issues/3061
                     } catch (Exception e) {
                         log.warn(e.getMessage(), e);
                     }

@@ -1,8 +1,9 @@
 package org.jeecg.common.config.mqtoken;
 
+import java.io.IOException;
+
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 /**
  * 存放token到上下文供队列调用feign使用

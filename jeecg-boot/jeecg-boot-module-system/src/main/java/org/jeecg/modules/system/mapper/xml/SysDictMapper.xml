@@ -127,7 +127,7 @@
 		select ${text} as "title",
 			   ${code} as "key",
 			   <if test="hasChildField != null and hasChildField != ''">
-			   (case when ${hasChildField} = '1' then 0 else 1 end) as isLeaf,
+			   ${hasChildField} as "isLeaf",
 			   </if>
 			   ${pidField} as parentId
 			   from ${table}

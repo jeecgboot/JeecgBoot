@@ -97,7 +97,7 @@ public class SysDepartController {
 	 * @return
 	 */
 	@RequestMapping(value = "/queryTreeList", method = RequestMethod.GET)
-	public Result<List<SysDepartTreeModel>> queryTreeList() {
+	public Result<List<SysDepartTreeModel>> queryTreeList(@RequestParam(name = "ids", required = false) String ids) {
 		Result<List<SysDepartTreeModel>> result = new Result<>();
 		try {
 			// 从内存中读取
@@ -105,8 +105,13 @@ public class SysDepartController {
 //			if (CollectionUtils.isEmpty(list)) {
 //				list = sysDepartService.queryTreeList();
 //			}
-			List<SysDepartTreeModel> list = sysDepartService.queryTreeList();
-			result.setResult(list);
+			if(oConvertUtils.isNotEmpty(ids)){
+				List<SysDepartTreeModel> departList = sysDepartService.queryTreeList(ids);
+				result.setResult(departList);
+			}else{
+				List<SysDepartTreeModel> list = sysDepartService.queryTreeList();
+				result.setResult(list);
+			}
 			result.setSuccess(true);
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
@@ -116,14 +121,15 @@ public class SysDepartController {
 
 	/**
 	 * 异步查询部门list
-	 *
+	 * @param parentId 父节点 异步加载时传递
+	 * @param ids 前端回显是传递
 	 * @return
 	 */
 	@RequestMapping(value = "/queryDepartTreeSync", method = RequestMethod.GET)
-	public Result<List<SysDepartTreeModel>> queryDepartTreeSync(@RequestParam(name = "pid", required = false) String parentId) {
+	public Result<List<SysDepartTreeModel>> queryDepartTreeSync(@RequestParam(name = "pid", required = false) String parentId,@RequestParam(name = "ids", required = false) String ids) {
 		Result<List<SysDepartTreeModel>> result = new Result<>();
 		try {
-			List<SysDepartTreeModel> list = sysDepartService.queryTreeListByPid(parentId);
+			List<SysDepartTreeModel> list = sysDepartService.queryTreeListByPid(parentId,ids);
 			result.setResult(list);
 			result.setSuccess(true);
 		} catch (Exception e) {

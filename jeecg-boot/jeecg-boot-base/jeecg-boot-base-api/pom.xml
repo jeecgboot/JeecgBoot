@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-boot-base</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>2.4.6</version>
+        <version>3.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

@@ -117,6 +117,30 @@ public class LoginController {
         //update-end--Author:wangshuai  Date:20200714  for：登录日志没有记录人员
 		return result;
 	}
+
+
+	/**
+	 * 【vue3专用】获取用户信息
+	 */
+	@GetMapping("/user/getUserInfo")
+	public Result<JSONObject> getUserInfo(HttpServletRequest request){
+		Result<JSONObject> result = new Result<JSONObject>();
+		String  username = JwtUtil.getUserNameByToken(request);
+		if(oConvertUtils.isNotEmpty(username)) {
+			// 根据用户名查询用户信息
+			SysUser sysUser = sysUserService.getUserByName(username);
+			//用户登录信息
+			Result<JSONObject> resultObj=userInfo(sysUser, result);
+			JSONObject jsonObject=resultObj.getResult();
+			JSONObject obj=new JSONObject();
+			obj.put("userInfo",jsonObject.get("userInfo"));
+			obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
+			result.setResult(obj);
+			result.success("");
+		}
+		return result;
+
+	}
 	
 	/**
 	 * 退出登录

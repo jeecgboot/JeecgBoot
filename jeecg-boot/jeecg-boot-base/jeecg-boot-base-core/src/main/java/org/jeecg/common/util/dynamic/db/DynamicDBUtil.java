@@ -112,6 +112,16 @@ public class DynamicDBUtil {
     }
 
     /**
+     * 根据数据源获取NamedParameterJdbcTemplate
+     * @param dbKey
+     * @return
+     */
+    private static NamedParameterJdbcTemplate getNamedParameterJdbcTemplate(String dbKey) {
+        DruidDataSource dataSource = getDbSourceByDbKey(dbKey);
+        return new NamedParameterJdbcTemplate(dataSource);
+    }
+
+    /**
      * Executes the SQL statement in this <code>PreparedStatement</code> object,
      * which must be an SQL Data Manipulation Language (DML) statement, such as <code>INSERT</code>, <code>UPDATE</code> or
      * <code>DELETE</code>; or an SQL statement that returns nothing,
@@ -218,6 +228,31 @@ public class DynamicDBUtil {
         } else {
             list = jdbcTemplate.queryForList(sql, param);
         }
+        return list;
+    }
+
+    /**
+     * 查询数量
+     * @param dbKey
+     * @param sql
+     * @param param
+     * @return
+     */
+    public static Map<String, Object> queryCount(String dbKey, String sql, Map<String, Object> param){
+        NamedParameterJdbcTemplate npJdbcTemplate = getNamedParameterJdbcTemplate(dbKey);
+        return npJdbcTemplate.queryForMap(sql, param);
+    }
+
+    /**
+     * 查询列表数据
+     * @param dbKey
+     * @param sql
+     * @param param
+     * @return
+     */
+    public static List<Map<String, Object>> findListByNamedParam(final String dbKey, String sql, Map<String, Object> param) {
+        NamedParameterJdbcTemplate npJdbcTemplate = getNamedParameterJdbcTemplate(dbKey);
+        List<Map<String, Object>> list = npJdbcTemplate.queryForList(sql, param);
         return list;
     }
 

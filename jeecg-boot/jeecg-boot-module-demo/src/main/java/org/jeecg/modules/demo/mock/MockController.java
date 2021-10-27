@@ -1,5 +1,14 @@
 package org.jeecg.modules.demo.mock;
 
+import com.alibaba.fastjson.JSON;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.jeecg.common.api.vo.Result;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,27 +17,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.swing.filechooser.FileSystemView;
-
-import org.apache.commons.io.IOUtils;
-import org.jeecg.common.api.vo.Result;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
-import lombok.extern.slf4j.Slf4j;
-
 @RestController
 @RequestMapping("/mock/api")
 @Slf4j
 public class MockController {
 
 	private final String JSON_PATH = "classpath:org/jeecg/modules/demo/mock/json";
-	
+
 	/**
 	 * 通用json访问接口
 	 * 格式： http://localhost:8080/jeecg-boot/api/json/{filename}
@@ -40,17 +35,18 @@ public class MockController {
 		String jsonpath = "classpath:org/jeecg/modules/demo/mock/json/"+filename+".json";
 		return readJson(jsonpath);
 	}
-	
+
 	@GetMapping(value = "/asynTreeList")
-	public String asynTreeList(String id) {
-		return readJson(JSON_PATH + "/asyn_tree_list_" + id + ".json");
+	public Result asynTreeList(String id) {
+		String json = readJson(JSON_PATH + "/asyn_tree_list_" + id + ".json");
+		return Result.OK(JSON.parseArray(json));
 	}
-	
+
 	@GetMapping(value = "/user")
 	public String user() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/user.json");
 	}
-	
+
 	/**
 	 * 老的登录获取用户信息接口
 	 * @return
@@ -79,7 +75,7 @@ public class MockController {
 	public String permission_no_page() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/permission_no_page.json");
 	}
-	
+
 	/**
 	 * 省市县
 	 */
@@ -87,7 +83,7 @@ public class MockController {
 	public String area() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/area.json");
 	}
-	
+
 	/**
 	  * 测试报表数据
 	 */
@@ -128,7 +124,7 @@ public class MockController {
 	        File[] fs = File.listRoots();
 	        log.info("查询磁盘信息:"+fs.length+"个");
 	        List<Map<String,Object>> list = new ArrayList<>();
-	        
+
 	        for (int i = 0; i < fs.length; i++) {
 	        	if(fs[i].getTotalSpace()==0) {
 	        		continue;
@@ -148,7 +144,7 @@ public class MockController {
 		}
 		return res;
 	}
-	
+
 	//-------------------------------------------------------------------------------------------
 	/**
 	 * 工作台首页的数据
@@ -163,23 +159,23 @@ public class MockController {
 	public String activity() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/workplace_activity.json");
 	}
-	
+
 	@GetMapping(value = "/workplace/teams")
 	public String teams() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/workplace_teams.json");
 	}
-	
+
 	@GetMapping(value = "/workplace/radar")
 	public String radar() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/workplace_radar.json");
 	}
-	
+
 	@GetMapping(value = "/task/process")
 	public String taskProcess() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/task_process.json");
 	}
 	//-------------------------------------------------------------------------------------------
-	
+
 	//author:lvdandan-----date：20190315---for:添加数据日志json----
 	public String sysDataLogJson() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/sysdatalog.json");

@@ -131,6 +131,11 @@ public class SysPermission implements Serializable {
 	private boolean hidden;
 
 	/**
+	 * 是否隐藏Tab: 0否,1是（默认值0）
+	 */
+	private boolean hideTab;
+
+	/**
 	 * 创建时间
 	 */
 	private Date createTime;

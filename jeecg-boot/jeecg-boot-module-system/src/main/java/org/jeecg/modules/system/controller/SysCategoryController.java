@@ -111,7 +111,7 @@ public class SysCategoryController {
 	 * @param sysCategory
 	 * @return
 	 */
-	@PutMapping(value = "/edit")
+	@RequestMapping(value = "/edit", method = { RequestMethod.PUT,RequestMethod.POST })
 	public Result<SysCategory> edit(@RequestBody SysCategory sysCategory) {
 		Result<SysCategory> result = new Result<SysCategory>();
 		SysCategory sysCategoryEntity = sysCategoryService.getById(sysCategory.getId());

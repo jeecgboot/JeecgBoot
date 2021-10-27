@@ -28,10 +28,6 @@ import lombok.experimental.Accessors;
 @TableName("demo")
 public class JeecgDemo extends JeecgEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
-	/** 部门编码 */
-	@Excel(name="部门编码",width=25)
-	@ApiModelProperty(value = "部门编码")
-	private java.lang.String sysOrgCode;
 	/** 姓名 */
 	@Excel(name="姓名",width=25)
 	@ApiModelProperty(value = "姓名")
@@ -75,7 +71,10 @@ public class JeecgDemo extends JeecgEntity implements Serializable {
 	/** 个人简介 */
 	@ApiModelProperty(value = "个人简介")
 	private java.lang.String content;
-
 	@ApiModelProperty(value = "租户ID")
 	private java.lang.Integer tenantId;
+	/** 部门编码 */
+	@Excel(name="部门编码",width=25)
+	@ApiModelProperty(value = "部门编码")
+	private java.lang.String sysOrgCode;
 }

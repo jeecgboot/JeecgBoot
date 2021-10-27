@@ -255,6 +255,34 @@
               <#if col.readonly=='Y'>
               disabled:true,
               </#if>
+        <#elseif col.classType =='sel_depart'>
+              type: FormTypes.sel_depart,
+              <#if col.extendParams.multiSelect?default(true) == false>
+              multi: false,
+              </#if>
+              <#if col.extendParams.store?default("")?trim?length gt 1>
+              store: "${col.extendParams.store}",
+              </#if>
+              <#if col.extendParams.text?default("")?trim?length gt 1>
+              text: "${col.extendParams.text}",
+              </#if>
+              <#if col.readonly=='Y'>
+              disabled:true,
+              </#if>
+        <#elseif col.classType =='sel_user'>
+              type: FormTypes.sel_user,
+              <#if col.extendParams.multiSelect?default(true) == false>
+              multi: false,
+              </#if>
+              <#if col.extendParams.store?default("")?trim?length gt 1>
+              store: "${col.extendParams.store}",
+              </#if>
+              <#if col.extendParams.text?default("")?trim?length gt 1>
+              text: "${col.extendParams.text}",
+              </#if>
+              <#if col.readonly=='Y'>
+              disabled: true,
+              </#if>
       <#elseif col.classType =='image'>
               type: FormTypes.image,
               token:true,

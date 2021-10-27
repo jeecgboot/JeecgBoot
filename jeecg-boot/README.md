@@ -1,13 +1,13 @@
 Jeecg-Boot 低代码开发平台
 ===============
 
-当前最新版本： 2.4.6（发布日期：20210813）
+当前最新版本： 3.0（发布日期：2021-11-01）
 
 
 ## 后端技术架构
 - 基础框架：Spring Boot 2.3.5.RELEASE
 
-- 持久层框架：Mybatis-plus 3.4.3.1
+- 持久层框架：Mybatis-plus 3.4.1
 
 - 安全框架：Apache Shiro 1.7.0，Jwt 3.11.0
 
@@ -29,7 +29,7 @@ Jeecg-Boot 低代码开发平台
 
 - 依赖管理：Maven
 
-- 数据库：MySQL5.7+  &  Oracle 11g & SqlServer & postgresql
+- 数据库：MySQL5.7+  &  Oracle 11g & SqlServer & postgresql & 国产等更多数据库
 
 - 缓存：Redis
 
@@ -43,7 +43,7 @@ Jeecg-Boot 低代码开发平台
 
 - 常见问题：  [http://jeecg.com/doc/qa](http://jeecg.com/doc/qa)
 
-- QQ交流群 ：  ④774126647、③816531124、①284271917、②769925425
+- QQ交流群 ： ⑤860162132、④774126647(满)、③816531124(满)、②769925425(满)、①284271917(满)
 
 
 ## 专项文档

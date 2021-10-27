@@ -174,6 +174,8 @@ mybatis-plus:
 minidao :
   base-package: org.jeecg.modules.jmreport.*
 jeecg :
+  # 是否启用安全模式
+  safeMode: false
   # 签名密钥串(前后端要一致，正式发布请自行修改)
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
   # 本地：local\Minio：minio\阿里云：alioss

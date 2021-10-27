@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -43,7 +44,23 @@ public class SysTenantController {
 	public Result<IPage<SysTenant>> queryPageList(SysTenant sysTenant,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
 		Result<IPage<SysTenant>> result = new Result<IPage<SysTenant>>();
-		QueryWrapper<SysTenant> queryWrapper = QueryGenerator.initQueryWrapper(sysTenant, req.getParameterMap());
+        //---author:zhangyafei---date:20210916-----for: 租户管理添加日期范围查询---
+        Date beginDate=null;
+        Date endDate=null;
+        if(oConvertUtils.isNotEmpty(sysTenant)) {
+            beginDate=sysTenant.getBeginDate();
+            endDate=sysTenant.getEndDate();
+            sysTenant.setBeginDate(null);
+            sysTenant.setEndDate(null);
+        }
+        //---author:zhangyafei---date:20210916-----for: 租户管理添加日期范围查询---
+        QueryWrapper<SysTenant> queryWrapper = QueryGenerator.initQueryWrapper(sysTenant, req.getParameterMap());
+        //---author:zhangyafei---date:20210916-----for: 租户管理添加日期范围查询---
+        if(oConvertUtils.isNotEmpty(sysTenant)){
+            queryWrapper.ge(oConvertUtils.isNotEmpty(beginDate),"begin_date",beginDate);
+            queryWrapper.le(oConvertUtils.isNotEmpty(endDate),"end_date",endDate);
+        }
+        //---author:zhangyafei---date:20210916-----for: 租户管理添加日期范围查询---
 		Page<SysTenant> page = new Page<SysTenant>(pageNo, pageSize);
 		IPage<SysTenant> pageList = sysTenantService.page(page, queryWrapper);
 		result.setSuccess(true);
@@ -58,7 +75,7 @@ public class SysTenantController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Result<SysTenant> add(@RequestBody SysTenant sysTenant) {
-        Result<SysTenant> result = new Result<SysTenant>();
+        Result<SysTenant> result = new Result();
         if(sysTenantService.getById(sysTenant.getId())!=null){
             return result.error500("该编号已存在!");
         }
@@ -77,17 +94,16 @@ public class SysTenantController {
      * @param
      * @return
      */
-    @RequestMapping(value = "/edit", method = RequestMethod.PUT)
+    @RequestMapping(value = "/edit", method ={RequestMethod.PUT, RequestMethod.POST})
     public Result<SysTenant> edit(@RequestBody SysTenant tenant) {
-        Result<SysTenant> result = new Result<SysTenant>();
+        Result<SysTenant> result = new Result();
         SysTenant sysTenant = sysTenantService.getById(tenant.getId());
         if(sysTenant==null) {
-            result.error500("未找到对应实体");
-        }else {
-            boolean ok = sysTenantService.updateById(tenant);
-            if(ok) {
-                result.success("修改成功!");
-            }
+           return result.error500("未找到对应实体");
+        }
+        boolean ok = sysTenantService.updateById(tenant);
+        if(ok) {
+            result.success("修改成功!");
         }
         return result;
     }
@@ -97,7 +113,7 @@ public class SysTenantController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/delete", method ={RequestMethod.DELETE, RequestMethod.POST})
     public Result<?> delete(@RequestParam(name="id",required=true) String id) {
         sysTenantService.removeTenantById(id);
         return Result.ok("删除成功");

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-base</artifactId>
-		<version>2.4.6</version>
+		<version>3.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -114,7 +114,7 @@
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>hibernate-re</artifactId>
-			<version>2.4.6-beta1</version>
+			<version>3.0.0-beta</version>
 		</dependency>
 
 		<!-- 数据库驱动 -->

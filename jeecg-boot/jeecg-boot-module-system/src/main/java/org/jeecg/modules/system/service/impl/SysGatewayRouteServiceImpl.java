@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.GlobalConstants;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysGatewayRoute;
 import org.jeecg.modules.system.mapper.SysGatewayRouteMapper;
 import org.jeecg.modules.system.service.ISysGatewayRouteService;
@@ -17,7 +18,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: gateway路由管理
@@ -42,7 +45,7 @@ public class SysGatewayRouteServiceImpl extends ServiceImpl<SysGatewayRouteMappe
     @Override
     public void deleteById(String id) {
         this.removeById(id);
-        this.resreshRouter();
+        this.resreshRouter(id);
     }
 
     @Override
@@ -52,7 +55,14 @@ public class SysGatewayRouteServiceImpl extends ServiceImpl<SysGatewayRouteMappe
         try {
             json = json.getJSONObject("router");
             String id = json.getString("id");
-            SysGatewayRoute route = getById(id);
+            //update-begin-author:taoyan date:20211025 for: oracle路由网关新增小bug /issues/I4EV2J
+            SysGatewayRoute route;
+            if(oConvertUtils.isEmpty(id)){
+                route = new SysGatewayRoute();
+            }else{
+                route = getById(id);
+            }
+            //update-end-author:taoyan date:20211025 for: oracle路由网关新增小bug /issues/I4EV2J
             if (ObjectUtil.isEmpty(route)) {
                 route = new SysGatewayRoute();
             }
@@ -71,10 +81,10 @@ public class SysGatewayRouteServiceImpl extends ServiceImpl<SysGatewayRouteMappe
                 route.setStatus(json.getInteger("status"));
             }
             this.saveOrUpdate(route);
-            resreshRouter();
+            resreshRouter(null);
         } catch (Exception e) {
             log.error("路由配置解析失败", e);
-            resreshRouter();
+            resreshRouter(null);
             e.printStackTrace();
         }
     }
@@ -82,11 +92,12 @@ public class SysGatewayRouteServiceImpl extends ServiceImpl<SysGatewayRouteMappe
     /**
      * 更新redis路由缓存
      */
-    private void resreshRouter() {
+    private void resreshRouter(String id) {
         //更新redis路由缓存
         addRoute2Redis(CacheConstant.GATEWAY_ROUTES);
         BaseMap params = new BaseMap();
         params.put(GlobalConstants.HANDLER_NAME, "loderRouderHandler");
+        params.put("routerId", id);
         //刷新网关
         redisTemplate.convertAndSend(GlobalConstants.REDIS_TOPIC_NAME, params);
     }

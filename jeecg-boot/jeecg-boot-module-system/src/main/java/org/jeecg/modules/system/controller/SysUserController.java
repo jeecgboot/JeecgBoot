@@ -157,7 +157,7 @@ public class SysUserController {
 
     //@RequiresRoles({"admin"})
     //@RequiresPermissions("user:edit")
-	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
+	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<SysUser> edit(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
 		try {
@@ -172,6 +172,10 @@ public class SysUserController {
 				user.setPassword(sysUser.getPassword());
 				String roles = jsonObject.getString("selectedroles");
                 String departs = jsonObject.getString("selecteddeparts");
+                if(oConvertUtils.isEmpty(departs)){
+                    //vue3.0前端只传递了departIds
+                    departs=user.getDepartIds();
+                }
                 // 修改用户走一个service 保证事务
 				sysUserService.editUser(user, roles, departs);
 				result.success("修改成功!");

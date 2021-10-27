@@ -107,7 +107,7 @@ public class SysUserAgentController {
 	 * @param sysUserAgent
 	 * @return
 	 */
-	@PutMapping(value = "/edit")
+	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<SysUserAgent> edit(@RequestBody SysUserAgent sysUserAgent) {
 		Result<SysUserAgent> result = new Result<SysUserAgent>();
 		SysUserAgent sysUserAgentEntity = sysUserAgentService.getById(sysUserAgent.getId());

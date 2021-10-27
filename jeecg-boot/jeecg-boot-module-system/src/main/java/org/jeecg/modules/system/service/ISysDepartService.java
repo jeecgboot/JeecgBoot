@@ -29,6 +29,13 @@ public interface ISysDepartService extends IService<SysDepart>{
      */
     List<SysDepartTreeModel> queryTreeList();
 
+
+    /**
+     * 查询所有部门信息,并分节点进行显示
+     * @return
+     */
+    List<SysDepartTreeModel> queryTreeList(String ids);
+
     /**
      * 查询所有部门DepartId信息,并分节点进行显示
      * @return
@@ -112,7 +119,7 @@ public interface ISysDepartService extends IService<SysDepart>{
      * 获取我的部门下级所有部门
      * @return
      */
-    List<SysDepartTreeModel> queryTreeListByPid(String parentId);
+    List<SysDepartTreeModel> queryTreeListByPid(String parentId,String ids);
 
     /**
      * 获取某个部门的所有父级部门的ID
