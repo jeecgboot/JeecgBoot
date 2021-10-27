@@ -7,7 +7,7 @@ Jeecg-Boot 低代码开发平台
 ## 后端技术架构
 - 基础框架：Spring Boot 2.3.5.RELEASE
 
-- 持久层框架：Mybatis-plus 3.4.1
+- 持久层框架：Mybatis-plus 3.4.3.1
 
 - 安全框架：Apache Shiro 1.7.0，Jwt 3.11.0
 
