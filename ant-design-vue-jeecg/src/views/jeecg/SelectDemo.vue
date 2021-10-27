@@ -268,6 +268,7 @@
                 placeholder="请选择菜单"
                 dict="sys_permission,name,id"
                 pidField="parent_id"
+                hasChildField="is_leaf"
                 pidValue=""
               />
             </a-form-model-item>
@@ -283,6 +284,7 @@
                 placeholder="请选择菜单"
                 dict="sys_permission,name,id"
                 pidField="parent_id"
+                hasChildField="is_leaf"
                 pidValue=""
                 multiple
               />

@@ -22,6 +22,7 @@ export const JVXETypes = {
   select: 'select',
   date: 'date',
   datetime: 'datetime',
+  time: 'time',
   checkbox: 'checkbox',
   upload: 'upload',
   // 下拉搜索

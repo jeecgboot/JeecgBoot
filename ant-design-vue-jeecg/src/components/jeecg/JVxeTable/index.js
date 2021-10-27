@@ -6,6 +6,7 @@ import JVxeSlotCell from './components/cells/JVxeSlotCell'
 import JVxeNormalCell from './components/cells/JVxeNormalCell'
 import JVxeInputCell from './components/cells/JVxeInputCell'
 import JVxeDateCell from './components/cells/JVxeDateCell'
+import JVxeTimeCell from './components/cells/JVxeTimeCell'
 import JVxeSelectCell from './components/cells/JVxeSelectCell'
 import JVxeCheckboxCell from './components/cells/JVxeCheckboxCell'
 import JVxeUploadCell from './components/cells/JVxeUploadCell'
@@ -32,6 +33,7 @@ export const AllCells = {
   ...mapCell(JVXETypes.selectMultiple, JVxeSelectCell),  // 下拉多选
   ...mapCell(JVXETypes.date, JVxeDateCell),
   ...mapCell(JVXETypes.datetime, JVxeDateCell),
+  ...mapCell(JVXETypes.time, JVxeTimeCell),
   ...mapCell(JVXETypes.upload, JVxeUploadCell),
   ...mapCell(JVXETypes.textarea, JVxeTextareaCell),
 

@@ -379,7 +379,7 @@
           this.$message.warn("不能查询空条件")
         }
       },
-      emitCallback(event = {}) {
+      emitCallback(event = {}, loadStatus = true) {
         let { params = [], matchType = this.matchType } = event
         this.superQueryFlag = (params && params.length > 0)
         for (let param of params) {
@@ -388,7 +388,7 @@
           }
         }
         console.debug('---高级查询参数--->', { params, matchType })
-        this.$emit(this.callback, params, matchType)
+        this.$emit(this.callback, params, matchType, loadStatus)
       },
       handleCancel() {
         this.close()
@@ -428,9 +428,13 @@
       handleOpen() {
         this.show()
       },
+      handleOutReset(loadStaus=true) {
+        this.resetLine()
+        this.emitCallback({}, loadStaus)
+      },
       handleReset() {
         this.resetLine()
-        this.emitCallback()
+        this.emitCallback({}, true)
       },
       handleSave() {
         let queryParams = this.removeEmptyObject(this.queryParamsModel)

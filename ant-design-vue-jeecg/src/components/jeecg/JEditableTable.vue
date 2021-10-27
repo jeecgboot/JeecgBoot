@@ -241,7 +241,7 @@
                           :value="departCompValues[id]"
                           :placeholder="replaceProps(col, col.placeholder)"
                           :trigger-change="true"
-                          :multi="true"
+                          :multi="isMultipleSelect(col)"
                           @change="(v)=>handleChangeDepartCommon(v,id,row,col)"
                         />
                         <span
@@ -265,7 +265,7 @@
                           :value="userCompValues[id]"
                           :placeholder="replaceProps(col, col.placeholder)"
                           :trigger-change="true"
-                          :multi="true"
+                          :multi="isMultipleSelect(col)"
                           @change="(v)=>handleChangeUserCommon(v,id,row,col)"
                         />
                         <span
@@ -303,8 +303,33 @@
                         >{{ jdateValues[id] }}</span>
                       </a-tooltip>
                     </template>
+
+                    <!-- time -->
+                    <template v-else-if="col.type === formTypes.time">
+                      <a-tooltip v-bind="buildTooltipProps(row, col, id)">
+                        <j-time
+                          v-if="isEditRow(row, col)"
+                          :id="id"
+                          :key="i"
+                          v-bind="buildProps(row,col)"
+                          style="width: 100%;"
+                          :value="jdateValues[id]"
+                          :getCalendarContainer="getParentContainer"
+                          :placeholder="replaceProps(col, col.placeholder)"
+                          allowClear
+                          @change="(v)=>handleChangeJDateCommon(v,id,row,col)"
+                        />
+                        <span
+                          v-else
+                          class="j-td-span no-edit"
+                          :class="{disabled: buildProps(row,col).disabled}"
+                          @click="handleEditRow(row, col)"
+                        >{{ jdateValues[id] }}</span>
+                      </a-tooltip>
+                    </template>
+
                     <!-- input_pop -->
-                    <template v-else-if="col.type === formTypes.input_pop">
+                    <template v-else-if="col.type === formTypes.input_pop||col.type === 'textarea'">
                       <a-tooltip v-bind="buildTooltipProps(row, col, id)">
                         <j-input-pop
                           v-if="isEditRow(row, col)"
@@ -423,7 +448,7 @@
 
                     <!-- update-beign-author:taoyan date:0827 for：文件/图片逻辑新增 -->
                     <div v-else-if="col.type === formTypes.file" :key="i">
-                      <template v-if="uploadValues[id] != null" v-for="(file,fileKey) of [(uploadValues[id]||{})]">
+                      <template v-if="hasUploadValue(id)" v-for="(file,fileKey) of [(uploadValues[id]||{})]">
                         <div :key="fileKey" style="position: relative;">
                           <a-tooltip v-if="file.status==='uploading'" :title="`上传中(${Math.floor(file.percent)}%)`">
                             <a-icon type="loading" style="color:red;"/>
@@ -462,7 +487,7 @@
                         </div>
                       </template>
 
-                      <div :hidden="uploadValues[id] != null">
+                      <div :hidden="hasUploadValue(id)">
                         <a-tooltip v-bind="buildTooltipProps(row, col, id)">
                           <a-upload
                             name="file"
@@ -482,7 +507,7 @@
                     </div>
 
                     <div v-else-if="col.type === formTypes.image" :key="i">
-                      <template v-if="uploadValues[id] != null" v-for="(file,fileKey) of [(uploadValues[id]||{})]">
+                      <template v-if="hasUploadValue(id)" v-for="(file,fileKey) of [(uploadValues[id]||{})]">
                         <div :key="fileKey" style="position: relative;">
                           <template v-if="!uploadValues[id] || !(uploadValues[id]['url'] || uploadValues[id]['path'] || uploadValues[id]['message'])">
                             <a-icon type="loading"/>
@@ -520,7 +545,7 @@
                         </div>
                       </template>
 
-                      <div :hidden="uploadValues[id] != null">
+                      <div :hidden="hasUploadValue(id)">
                         <a-tooltip v-bind="buildTooltipProps(row, col, id)">
                           <a-upload
                             name="file"
@@ -1063,7 +1088,11 @@
 
     },
     methods: {
-
+      // 判断文件/图片是否存在
+      hasUploadValue(id){
+        let flag = this.uploadValues[id] != null && this.uploadValues[id].toString().length>0
+        return flag;
+      },
       getElement(id, noCaseId = false) {
         if (!this.el[id]) {
           this.el[id] = document.getElementById((noCaseId ? '' : this.caseId) + id)
@@ -1274,7 +1303,7 @@
                 selectValues[inputId] = undefined
               }
 
-            } else if (column.type === FormTypes.date || column.type === FormTypes.datetime) {
+            } else if (column.type === FormTypes.date || column.type === FormTypes.datetime || column.type === FormTypes.time) {
               jdateValues[inputId] = sourceValue
 
             } else if (column.type === FormTypes.slot) {
@@ -1286,7 +1315,7 @@
               departCompValues[inputId] = sourceValue
             } else if (column.type === FormTypes.sel_user) {
               userCompValues[inputId] = sourceValue
-            } else if (column.type === FormTypes.input_pop) {
+            } else if (column.type === FormTypes.input_pop || column.type === 'textarea') {
               jInputPopValues[inputId] = sourceValue
             } else if (column.type === FormTypes.radio) {
               radioValues[inputId] = sourceValue
@@ -1588,7 +1617,7 @@
                 value[column.key] = selected
               }
 
-            } else if (column.type === FormTypes.date || column.type === FormTypes.datetime) {
+            } else if (column.type === FormTypes.date || column.type === FormTypes.datetime || column.type === FormTypes.time) {
               value[column.key] = this.jdateValues[inputId]
 
             } else if (column.type === FormTypes.sel_depart) {
@@ -1597,7 +1626,7 @@
             } else if (column.type === FormTypes.sel_user) {
               value[column.key] = this.userCompValues[inputId]
 
-            } else if (column.type === FormTypes.input_pop) {
+            } else if (column.type === FormTypes.input_pop || column.type === 'textarea') {
               value[column.key] = this.jInputPopValues[inputId]
 
             } else if (column.type === FormTypes.upload) {
@@ -1793,13 +1822,13 @@
                       }
                       this.$set(this.checkboxValues, key, sourceValue)
                       edited = true
-                    } else if (column.type === FormTypes.date || column.type === FormTypes.datetime) {
+                    } else if (column.type === FormTypes.date || column.type === FormTypes.datetime || column.type === FormTypes.time) {
                       edited = this.setOneValue(this.jdateValues, modelKey, newValue)
                     } else if (column.type === FormTypes.sel_depart) {
                       edited = this.setOneValue(this.departCompValues, modelKey, newValue)
                     } else if (column.type === FormTypes.sel_user) {
                       edited = this.setOneValue(this.userCompValues, modelKey, newValue)
-                    } else if (column.type === FormTypes.input_pop) {
+                    } else if (column.type === FormTypes.input_pop || column.type === 'textarea') {
                       edited = this.setOneValue(this.jInputPopValues, modelKey, newValue)
                     } else if (column.type === FormTypes.slot) {
                       edited = this.setOneValue(this.slotValues, modelKey, newValue)
@@ -2143,6 +2172,29 @@
       clearSelection() {
         this.selectedRowIds = []
       },
+      // 获取当前选中的行
+      getSelection() {
+        return this.selectedRowIds.map(id => this.getCleanId(id))
+      },
+      // 设置当前选中的行
+      async setSelection(selectedRowIds) {
+        if (Array.isArray(selectedRowIds) && selectedRowIds.length > 0) {
+          // 兼容IE
+          await this.getElementPromise('tbody')
+          await this.$nextTick()
+          this.selectedRowIds = selectedRowIds.map(id => {
+            let temp = id
+            if (!this.hasCaseId(id)) {
+              temp = this.caseId + id
+            }
+            return temp
+          })
+        }
+      },
+      // 切换全选状态
+      toggleSelectionAll() {
+        this.handleChangeCheckedAll()
+      },
       /** 用于搜索下拉框中的内容 */
       handleSelectFilterOption(input, option, column) {
         if (column.allowSearch === true || column.allowInput === true) {
@@ -2350,11 +2402,7 @@
         this.validateOneInput(value, row, column, this.notPassedIds, true, 'change')
 
         // 触发valueChange 事件
-        if (showTime) {
-          this.elemValueChange(FormTypes.datetime, row, column, value)
-        } else {
-          this.elemValueChange(FormTypes.date, row, column, value)
-        }
+        this.elemValueChange(column.type, row, column, value)
       },
       //部门组件值改变
       handleChangeDepartCommon(value, id, row, column){
@@ -2736,6 +2784,11 @@
         if (col.type === FormTypes.select && (col.allowInput === true || col.allowSearch === true)) {
           props['showSearch'] = true
         }
+        if (col.type === FormTypes.sel_depart || col.type === FormTypes.sel_user) {
+          let { storeField, textField } = this.getStoreAndTextField(col)
+          props['store'] = storeField
+          props['text'] = textField
+        }
 
         // 判断是否是禁用的列
         props['disabled'] = (typeof col['disabled'] === 'boolean' ? col['disabled'] : props['disabled'])
@@ -2751,6 +2804,42 @@
         }
 
         return props
+      },
+
+      /**获取部门选择 、用户选择的存储字段、展示字段*/
+      getStoreAndTextField(col){
+        let storeField = '', textField = ''
+        if(col.type === FormTypes.sel_depart){
+          storeField = 'id'
+          textField = 'departName'
+        }else if(col.type === FormTypes.sel_user){
+          storeField = 'username'
+          textField = 'realname'
+        }
+        if(col.fieldExtendJson){
+          // online逻辑
+          let tempJson = JSON.parse(col.fieldExtendJson)
+          if(tempJson){
+            if(tempJson.store){
+              storeField = tempJson.store
+            }
+            if(tempJson.text){
+              textField = tempJson.text
+            }
+          }
+        }else{
+          // 实际开发逻辑
+          if(col.store){
+            storeField = col.store
+          }
+          if(col.text){
+            textField = col.text
+          }
+        }
+        return {
+          storeField,
+          textField
+        }
       },
 
       /** 辅助方法：防止过快点击，如果点击过快的话就返回 true */
@@ -2966,6 +3055,21 @@
         }else{
           return this.excludeCode.indexOf(code)<0
         }
+      },
+      // 判断用户、部门组件是否多选
+      isMultipleSelect(column){
+        let jsonStr = column.fieldExtendJson
+        if(jsonStr){
+          // online
+          let config = JSON.parse(jsonStr)
+          if(config && config['multiSelect']==false){
+            return false
+          }
+        }else if(column.multi==false){
+          // 实际开发
+          return false
+        }
+        return true;
       }
 
     },

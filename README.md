@@ -7,7 +7,7 @@
 JEECG BOOT 低代码开发平台（前后端分离版本）
 ===============
 
-当前最新版本： 2.4.6（发布日期：2021-08-16）
+当前最新版本： 3.0（发布日期：2021-11-01）
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
@@ -130,9 +130,23 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 依赖管理：Maven
 
-- 数据库：MySQL5.7+  &  Oracle 11g & Sqlserver2017
-
 - 缓存：Redis
+
+- 数据库脚本：MySQL5.7+  &  Oracle 11g & Sqlserver2017（默认只提供这三个库脚本，其他库需要自己转）
+
+|  数据库   |  支持   |
+| --- | --- |
+|   MySQL   |  √   |
+|  Oracle11g   |  √   |
+|  Sqlserver2017   |  √   |
+|   PostgreSQL   |  √   |
+|   DB2、Informix   |  √   |
+|   MariaDB   |  √   |
+|  SQLite、Hsqldb、Derby、H2   |  √   |
+|   达梦、人大金仓、神通   |  √   |
+|   华为高斯、虚谷、瀚高数据库   |  √   |
+|   阿里云PolarDB、PPAS、HerdDB   |  √   |
+|  Hive、HBase、CouchBase   |  √   |
 
 
 #### 后端

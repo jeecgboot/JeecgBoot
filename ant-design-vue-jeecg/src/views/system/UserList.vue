@@ -156,10 +156,6 @@
                 </a-popconfirm>
               </a-menu-item>
 
-              <a-menu-item>
-                <a href="javascript:;" @click="handleAgentSettings(record.username)">代理人</a>
-              </a-menu-item>
-
             </a-menu>
           </a-dropdown>
         </span>
@@ -377,10 +373,6 @@
       },
       handleChangePassword(username) {
         this.$refs.passwordmodal.show(username);
-      },
-      handleAgentSettings(username){
-        this.$refs.sysUserAgentModal.agentSettings(username);
-        this.$refs.sysUserAgentModal.title = "用户代理人设置";
       },
       passwordModalOk() {
         //TODO 密码修改完成 不需要刷新页面，可以把datasource中的数据更新一下

@@ -591,3 +591,39 @@ export function getReportPrintUrl(url, id, open) {
   }
   return url
 }
+
+/**
+ * JS实现AOP切面
+ *
+ * @param obj 包含函数的对象
+ * @param funcName 要切面的函数名
+ * @param callback 执行方法前的回调，用于切面，callback的返回值就是funcName最终的返回值
+ */
+export function aspectAroundFunction(obj, funcName, callback) {
+  if (typeof callback !== 'function' || !obj) {
+    console.warn('【aspectAroundFunction】obj或callback格式不正确')
+    return
+  }
+  // 保存原来的函数
+  let func = obj[funcName]
+  if (typeof func !== 'function') {
+    console.warn('【aspectAroundFunction】' + funcName + '不是一个方法')
+    return
+  }
+  // 赋值新方法
+  // 实现当外部调用 funcName 时，首先调用我定义的新方法
+  // 然后调用传入的callback方法，以决定是否执行 funcName，以及更改参数、返回值
+  obj[funcName] = function (...args) {
+    return callback({
+      args,
+      // 只有执行 proceed 才会真正执行给定的 funcName 方法
+      proceed() {
+        try {
+          return func.apply(obj, args)
+        } catch (e) {
+          console.error(e)
+        }
+      },
+    })
+  }
+}
