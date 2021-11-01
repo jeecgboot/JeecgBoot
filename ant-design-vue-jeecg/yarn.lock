@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@amap/amap-vue@^2.0.13":
+  version "2.0.13"
+  resolved "https://registry.nlark.com/@amap/amap-vue/download/@amap/amap-vue-2.0.13.tgz#9f774176c9ca53b262fbf1127bba78defa43ac60"
+  integrity sha1-n3dBdsnKU7Ji+/ESe7p43vpDrGA=
+
 "@ant-design/colors@^3.1.0":
   version "3.2.2"
   resolved "https://registry.npmjs.org/@ant-design/colors/-/colors-3.2.2.tgz#5ad43d619e911f3488ebac303d606e66a8423903"

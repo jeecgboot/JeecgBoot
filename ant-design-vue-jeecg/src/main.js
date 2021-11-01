@@ -49,6 +49,15 @@ import '@/components/jeecg/JVxeTable/install'
 import '@/components/JVxeCells/install'
 //表单验证
 import { rules } from '@/utils/rules'
+
+//高德地图
+import AmapVue from '@amap/amap-vue';
+AmapVue.config.version = '2.0'; // 默认2.0，这里可以不修改
+AmapVue.config.key = '08bd5161bdf4dc2f4f076f0b8c358205';
+
+Vue.use(AmapVue)
+
+
 Vue.prototype.rules = rules
 Vue.config.productionTip = false
 Vue.use(Storage, config.storageOptions)
