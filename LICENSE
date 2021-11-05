@@ -199,3 +199,8 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+   
+   开源协议补充
+	1. 允许基于本平台软件开展业务系统开发
+	2. 不得基于该平台软件的基础，修改包装成一个与JeecgBoot平台软件功能类似的产品进行发布、销售，或与JeecgBoot参与同类软件产品市场的竞争。
+	   违反此条款属于侵权行为，须赔偿侵权经济损失，同时立即停止著作权侵权行为。
