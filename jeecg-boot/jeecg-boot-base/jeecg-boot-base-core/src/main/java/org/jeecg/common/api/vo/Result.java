@@ -103,6 +103,14 @@ public class Result<T> implements Serializable {
 		return r;
 	}
 
+	public static<T> Result<T> OK(String msg) {
+		Result<T> r = new Result<T>();
+		r.setSuccess(true);
+		r.setCode(CommonConstant.SC_OK_200);
+		r.setMessage(msg);
+		return r;
+	}
+
 	public static<T> Result<T> OK(T data) {
 		Result<T> r = new Result<T>();
 		r.setSuccess(true);
