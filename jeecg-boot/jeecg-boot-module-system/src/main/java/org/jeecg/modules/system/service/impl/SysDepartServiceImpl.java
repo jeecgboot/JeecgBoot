@@ -288,6 +288,9 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	public List<String> getMySubDepIdsByDepId(String departIds) {
 		//根据部门id获取所负责部门
 		String[] codeArr = this.getMyDeptParentOrgCode(departIds);
+		if(codeArr==null || codeArr.length==0){
+			return null;
+		}
 		return this.baseMapper.getSubDepIdsByOrgCodes(codeArr);
 	}
 
