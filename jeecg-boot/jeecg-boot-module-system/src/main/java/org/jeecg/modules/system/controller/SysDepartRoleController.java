@@ -205,7 +205,10 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 		 List<SysDepartRole> roleList = sysDepartRoleService.list(new QueryWrapper<SysDepartRole>().eq("depart_id",departId));
 		 List<String> roleIds = roleList.stream().map(SysDepartRole::getId).collect(Collectors.toList());
 		 //根据角色id,用户id查询已授权角色
-		 List<SysDepartRoleUser> roleUserList = departRoleUserService.list(new QueryWrapper<SysDepartRoleUser>().eq("user_id",userId).in("drole_id",roleIds));
+		 List<SysDepartRoleUser> roleUserList = null;
+		 if(roleIds!=null && roleIds.size()>0){
+			 roleUserList = departRoleUserService.list(new QueryWrapper<SysDepartRoleUser>().eq("user_id",userId).in("drole_id",roleIds));
+		 }
 		 result.setSuccess(true);
 		 result.setResult(roleUserList);
 		 return result;
