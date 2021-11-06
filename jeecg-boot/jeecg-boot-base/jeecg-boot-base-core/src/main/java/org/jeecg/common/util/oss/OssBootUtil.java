@@ -154,7 +154,7 @@ public class OssBootUtil {
     */
     public static String getOriginalUrl(String url) {
         String originalDomain = "https://" + bucketName + "." + endPoint;
-        if(url.indexOf(staticDomain)!=-1){
+        if(oConvertUtils.isNotEmpty(staticDomain) && url.indexOf(staticDomain)!=-1){
             url = url.replace(staticDomain,originalDomain);
         }
         return url;
