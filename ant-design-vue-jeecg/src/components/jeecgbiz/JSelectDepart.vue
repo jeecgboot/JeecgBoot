@@ -117,7 +117,8 @@
       //返回选中的部门信息
       backDeparInfo(){
         if(this.backDepart===true){
-          if(this.departIds && this.departIds.length>0){
+          //LOWCOD-2147 【用户管理】选择部门和上级以后，负责部门没有数据可选 (陶炎改造自定义返回字段导致)
+          if(this.storeVals && this.storeVals.length>0){
             let arr1 = this.storeVals.split(',')
             let arr2 = this.textVals.split(',')
             let info = []
