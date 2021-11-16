@@ -126,9 +126,11 @@
 	<select id="queryTreeList" parameterType="Object" resultType="org.jeecg.modules.system.model.TreeSelectModel">
 		select ${text} as "title",
 			   ${code} as "key",
+				<!-- udapte-begin-author:taoyan date:20211115 for: 自定义树控件只显示父节点，子节点无法展开 (此处还原不可再改) /issues/I4HZAL -->
 			   <if test="hasChildField != null and hasChildField != ''">
-			   ${hasChildField} as "isLeaf",
+			   	(case when ${hasChildField} = '1' then 0 else 1 end) as isLeaf,
 			   </if>
+				<!-- udapte-end-author:taoyan date:20211115 for: 自定义树控件只显示父节点，子节点无法展开 (此处还原不可再改) /issues/I4HZAL -->
 			   ${pidField} as parentId
 			   from ${table}
 			   where
