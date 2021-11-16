@@ -41,7 +41,10 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**")
-                .addResourceLocations("file:" + upLoadPath + "//", "file:" + webAppPath + "//")
+                //update-begin-author:taoyan date:20211116 for: jeecg.path.webapp配置无效 #3126
+                .addResourceLocations("file:" + upLoadPath + "//")
+                .addResourceLocations("file:" + webAppPath + "//")
+                //update-end-author:taoyan date:20211116 for: jeecg.path.webapp配置无效 #3126
                 .addResourceLocations(staticLocations.split(","));
     }
 
@@ -72,9 +75,9 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     }
 
     /**
-    * 添加Long转json精度丢失的配置
-    * @Return: void
-    */
+     * 添加Long转json精度丢失的配置
+     * @Return: void
+     */
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         MappingJackson2HttpMessageConverter jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
