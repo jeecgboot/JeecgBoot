@@ -36,7 +36,7 @@
     "vuedraggable": "^2.20.0",
     "codemirror": "^5.46.0",
     "@tinymce/tinymce-vue": "2.1.0",
-    "tinymce": "5.3.2",
+    "tinymce": "5.4.1",
     "@toast-ui/editor": "^2.1.2",
     "vue-area-linkage": "^5.1.0",
     "china-area-data": "^5.0.1",
