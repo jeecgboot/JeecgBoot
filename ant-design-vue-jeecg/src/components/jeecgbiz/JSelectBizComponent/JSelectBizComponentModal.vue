@@ -62,8 +62,9 @@
   import { getAction } from '@/api/manage'
   import Ellipsis from '@/components/Ellipsis'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import { cloneObject, pushIfNotExist } from '@/utils/util'
+  import { pushIfNotExist } from '@/utils/util'
   import JSelectBizQueryItem from './JSelectBizQueryItem'
+  import {cloneDeep} from 'lodash'
 
   export default {
     name: 'JSelectBizComponentModal',
@@ -177,11 +178,24 @@
     computed: {
       // 表头
       innerColumns() {
-        let columns = cloneObject(this.columns)
+        let columns = cloneDeep(this.columns)
         columns.forEach(column => {
           // 给所有的列加上过长裁剪
           if (this.ellipsisLength !== -1) {
-            column.customRender = (text) => this.renderEllipsis(text)
+            // JSelectBizComponent columns 建议开放customRender等方法类配置
+            // https://github.com/jeecgboot/jeecg-boot/issues/3203
+            let myCustomRender = column.customRender
+            column.customRender = (text, record, index) => {
+              let value = text
+              if (typeof myCustomRender === 'function') {
+                // noinspection JSVoidFunctionReturnValueUsed
+                value = myCustomRender(text, record, index)
+              }
+              if (typeof value === 'string') {
+                return this.renderEllipsis(value)
+              }
+              return value
+            }
           }
         })
         return columns
@@ -192,7 +206,7 @@
         deep: true,
         immediate: true,
         handler(val) {
-          this.innerValue = cloneObject(val)
+          this.innerValue = cloneDeep(val)
           this.selectedRowKeys = []
           this.valueWatchHandler(val)
           this.queryOptionsByValue(val)
