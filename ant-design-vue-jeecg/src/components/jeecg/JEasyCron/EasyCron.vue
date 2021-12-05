@@ -144,8 +144,12 @@ export default {
       const v = this.cronValue_c
       if (this.hideYear || this.hideSecond) return v
       const vs = v.split(' ')
+      if (vs.length >= 6) {
+        // 转成 Quartz 的规则
+        vs[5] = this.convertWeekToQuartz(vs[5])
+      }
       return vs.slice(0, vs.length - 1).join(' ')
-    }
+    },
   },
   watch: {
     cronValue(newVal, oldVal) {
@@ -225,6 +229,37 @@ export default {
       if (values.length > i) this.week = values[i++]
       if (values.length > i) this.year = values[i]
       this.assignInput()
+    },
+    // Quartz 的规则：
+    // 1 = 周日，2 = 周一，3 = 周二，4 = 周三，5 = 周四，6 = 周五，7 = 周六
+    convertWeekToQuartz(week) {
+      let convert = (v) => {
+        if (v === '0') {
+          return '1'
+        }
+        if (v === '1') {
+          return '0'
+        }
+        return (Number.parseInt(v) - 1).toString()
+      }
+      // 匹配示例 1-7 or 1/7
+      let patten1 = /^([0-7])([-/])([0-7])$/
+      // 匹配示例 1,4,7
+      let patten2 = /^([0-7])(,[0-7])+$/
+      if (/^[0-7]$/.test(week)) {
+        return convert(week)
+      } else if (patten1.test(week)) {
+        return week.replace(patten1, ($0, before, separator, after) => {
+          if (separator === '/') {
+            return convert(before) + separator + after
+          } else {
+            return convert(before) + separator + convert(after)
+          }
+        })
+      } else if (patten2.test(week)) {
+        return week.split(',').map(v => convert(v)).join(',')
+      }
+      return week
     },
     calTriggerList: simpleDebounce(function () {
       this.calTriggerListInner()
