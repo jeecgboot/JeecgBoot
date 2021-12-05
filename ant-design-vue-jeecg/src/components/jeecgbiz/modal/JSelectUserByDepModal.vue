@@ -21,8 +21,8 @@
             :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
             :treeData="departTree"
             :expandAction="false"
-            :expandedKeys.sync="expandedKeys"
             @select="onDepSelect"
+            :load-data="onLoadDepartment"
           />
         </a-card>
       </a-col>
@@ -57,7 +57,7 @@
 
 <script>
   import { pushIfNotExist, filterObj } from '@/utils/util'
-  import {queryDepartTreeList, getUserList, queryUserByDepId} from '@/api/api'
+  import {queryDepartTreeList, getUserList, queryUserByDepId, queryDepartTreeSync} from '@/api/api'
   import { getAction } from '@/api/manage'
 
   export default {
@@ -297,14 +297,34 @@
         })
       },
       queryDepartTree() {
-        queryDepartTreeList().then((res) => {
+        //update-begin-author:taoyan date:20211202 for: 异步加载部门树 https://github.com/jeecgboot/jeecg-boot/issues/3196
+        this.expandedKeys = []
+        queryDepartTreeSync().then((res) => {
           if (res.success) {
-            this.departTree = res.result;
-            // 默认展开父节点
-            this.expandedKeys = this.departTree.map(item => item.id)
+            for (let i = 0; i < res.result.length; i++) {
+              let temp = res.result[i]
+              this.departTree.push(temp)
+            }
           }
         })
       },
+      onLoadDepartment(treeNode){
+        return new Promise(resolve => {
+          queryDepartTreeSync({pid:treeNode.dataRef.id}).then((res) =>  {
+            if (res.success) {
+              //判断chidlren是否为空，并修改isLeaf属性值
+              if(res.result.length == 0){
+                treeNode.dataRef['isLeaf']=true
+                return;
+              }else{
+                treeNode.dataRef['children']= res.result;
+              }
+            }
+          })
+          resolve();
+        });
+      },
+      //update-end-author:taoyan date:20211202 for: 异步加载部门树 https://github.com/jeecgboot/jeecg-boot/issues/3196
       modalFormOk() {
         this.loadData();
       }
