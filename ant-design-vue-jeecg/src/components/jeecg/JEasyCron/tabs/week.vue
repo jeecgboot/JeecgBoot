@@ -51,14 +51,14 @@ import mixin from './mixin'
 import { replaceWeekName, WEEK_MAP_EN } from './const.js'
 
 const WEEK_MAP = {
-  '周一': 1,
-  '周二': 2,
-  '周三': 3,
-  '周四': 4,
-  '周五': 5,
-  '周六': 6,
+  '周一': 2,
+  '周二': 3,
+  '周三': 4,
+  '周四': 5,
+  '周五': 6,
+  '周六': 7,
   // 按照国人习惯，将周日放到每周的最后一天
-  '周日': 7,
+  '周日': 1,
 }
 
 export default {
