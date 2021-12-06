@@ -299,6 +299,7 @@
       queryDepartTree() {
         //update-begin-author:taoyan date:20211202 for: 异步加载部门树 https://github.com/jeecgboot/jeecg-boot/issues/3196
         this.expandedKeys = []
+        this.departTree = []
         queryDepartTreeSync().then((res) => {
           if (res.success) {
             for (let i = 0; i < res.result.length; i++) {
