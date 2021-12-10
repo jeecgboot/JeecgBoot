@@ -145,8 +145,8 @@ export default {
       if (this.hideYear || this.hideSecond) return v
       const vs = v.split(' ')
       if (vs.length >= 6) {
-        // 转成 Quartz 的规则
-        vs[5] = this.convertWeekToQuartz(vs[5])
+        // 将 Quartz 星期 的规则转换为 CronParser 的规则
+        vs[5] = this.convertQuartzWeekToCParser(vs[5])
       }
       return vs.slice(0, vs.length - 1).join(' ')
     },
@@ -230,9 +230,10 @@ export default {
       if (values.length > i) this.year = values[i]
       this.assignInput()
     },
-    // Quartz 的规则：
-    // 1 = 周日，2 = 周一，3 = 周二，4 = 周三，5 = 周四，6 = 周五，7 = 周六
-    convertWeekToQuartz(week) {
+    // 将 Quartz 星期 的规则转换为 CronParser 的规则：
+    // Quartz 的规则：1 = 周日，2 = 周一，3 = 周二，4 = 周三，5 = 周四，6 = 周五，7 = 周六
+    // CronParser 的规则： 0 = 周日，1 = 周一，2 = 周二，3 = 周三，4 = 周四，5 = 周五，6 = 周六，7 = 周日
+    convertQuartzWeekToCParser(week) {
       let convert = (v) => {
         if (v === '0') {
           return '1'
