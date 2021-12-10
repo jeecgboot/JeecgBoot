@@ -147,6 +147,10 @@ export const JeecgListMixin = {
     },
     searchQuery() {
       this.loadData(1);
+      // 点击查询清空列表选中行
+      // https://gitee.com/jeecg/jeecg-boot/issues/I4KTU1
+      this.selectedRowKeys = []
+      this.selectionRows = []
     },
     superQuery() {
       this.$refs.superQueryModal.show();
