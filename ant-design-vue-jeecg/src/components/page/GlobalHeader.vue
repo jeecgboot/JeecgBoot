@@ -150,10 +150,10 @@
             this.topMenuStyle.headerIndexRight = {}
             this.topMenuStyle.headerIndexLeft = {}
           } else {
-            let rightWidth = '360px'
+            let rightWidth = '400px'
             this.topMenuStyle.topNavHeader = { 'min-width': '165px' }
             this.topMenuStyle.topSmenuStyle = { 'width': 'calc(100% - 165px)' }
-            this.topMenuStyle.headerIndexRight = { 'min-width': rightWidth }
+            this.topMenuStyle.headerIndexRight = { 'min-width': rightWidth, 'white-space': 'nowrap' }
             this.topMenuStyle.headerIndexLeft = { 'width': `calc(100% - ${rightWidth})` }
           }
         }
