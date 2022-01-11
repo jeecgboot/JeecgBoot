@@ -48,7 +48,8 @@
 		<dom4j.version>1.6.1</dom4j.version>
 		<qiniu-java-sdk.version>7.4.0</qiniu-java-sdk.version>
 		<!-- Log4j2惊爆0Day漏洞-->
-		<log4j2.version>2.15.0</log4j2.version>
+		<log4j2.version>2.17.0</log4j2.version>
+		<logback.version>1.2.9</logback.version>
 	</properties>
 
 	<modules>
