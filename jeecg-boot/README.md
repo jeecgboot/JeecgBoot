@@ -181,7 +181,8 @@ code: {
 
 # 4.先进JAVA项目jeecg-boot根路径 maven打包
     mvn clean package
- 
+    或者使用docker打包
+    docker run --rm --name my-maven-project -v  "$(pwd)":/usr/src/mymaven -v  /root/.m2/:/root/.m2/ -w /usr/src/mymaven maven:3.8-jdk-8 mvn clean package
 
 # 5.构建镜像__容器组（当你改变本地代码，也可重新构建镜像）
     docker-compose build
