@@ -116,6 +116,8 @@ Docker 镜像使用
    
 # 2.先进入打包前端项目
   yarn run build
+  或者使用docker打包
+  docker run -it --rm --name my-running-script -v "$PWD":/usr/src/app -w /usr/src/app node:8 yarn && yarn run buil
 
 # 3.构建镜像
   docker build -t nginx:jeecgboot .
