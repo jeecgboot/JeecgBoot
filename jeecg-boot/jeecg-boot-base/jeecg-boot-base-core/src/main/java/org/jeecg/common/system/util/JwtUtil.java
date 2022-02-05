@@ -51,9 +51,9 @@ public class JwtUtil {
         Result jsonResult = new Result(code, errorMsg);
         OutputStream os = null;
         try {
-						httpServletResponse.setCharacterEncoding("UTF-8");
-						httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-						httpServletResponse.setHeader(HttpHeaders.CONTENT_TYPE,"application/json;charset=utf-8");
+            httpServletResponse.setCharacterEncoding("UTF-8");
+            httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+            httpServletResponse.setHeader(HttpHeaders.CONTENT_TYPE,"application/json;charset=utf-8");
             os = httpServletResponse.getOutputStream();
             os.write(new ObjectMapper().writeValueAsString(jsonResult).getBytes("UTF-8"));
             os.flush();
