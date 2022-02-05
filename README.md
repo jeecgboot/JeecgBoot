@@ -17,6 +17,7 @@ JEECG BOOT 低代码开发平台（前后端分离版本）
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
+<h3 align="center">新年快乐！！！</h3>
 
 
 项目介绍：
