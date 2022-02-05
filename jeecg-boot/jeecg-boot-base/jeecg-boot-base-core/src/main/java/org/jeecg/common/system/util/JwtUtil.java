@@ -26,6 +26,9 @@ import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 /**
  * @Author Scott
@@ -48,9 +51,10 @@ public class JwtUtil {
         Result jsonResult = new Result(code, errorMsg);
         OutputStream os = null;
         try {
+            httpServletResponse.setCharacterEncoding("UTF-8");
+            httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+            httpServletResponse.setHeader(HttpHeaders.CONTENT_TYPE,"application/json;charset=utf-8");
             os = httpServletResponse.getOutputStream();
-			httpServletResponse.setCharacterEncoding("UTF-8");
-			httpServletResponse.setStatus(401);
             os.write(new ObjectMapper().writeValueAsString(jsonResult).getBytes("UTF-8"));
             os.flush();
             os.close();
