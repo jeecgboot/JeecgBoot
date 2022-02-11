@@ -63,8 +63,8 @@ spring:
             threadsInheritContextClassLoaderOfInitializingThread: true
   #json 时间戳统一转换
   jackson:
-    date-format:   yyyy-MM-dd HH:mm:ss
-    time-zone:   GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
   jpa:
     open-in-view: false
   activiti:
@@ -131,9 +131,9 @@ spring:
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://10.168.1.184:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: root
-          password: root
+          password: Jykj@6781
           driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
@@ -144,7 +144,7 @@ spring:
   #redis 配置
   redis:
     database: 0
-    host: 127.0.0.1
+    host: 10.168.1.184
     lettuce:
       pool:
         max-active: 8   #最大连接数据库连接数,设 -1 为没有限制
@@ -152,8 +152,31 @@ spring:
         max-wait: -1ms  #最大建立连接等待时间。如果超过此时间将接到异常。设为-1表示无限制。
         min-idle: 0     #最小等待连接中的数量,设 0 为没有限制
       shutdown-timeout: 100ms
-    password: ''
+    password: 'Jykj@1234'
     port: 6379
+  influx:
+    url: http://172.16.0.213:9999 # URL to connect to InfluxDB.
+    username: jiyitech # Username to use in the basic auth.
+    password: Jykj@1234 # Password to use in the basic auth.
+    token: XwKuXzP4BUCUrQ3pWxMtSFz9Bg5XT0Eig4bTLa67ZlKy98k6QF9HqYWbB9spntbnCvXxhAmqjNS9_NnhFfej3g== # Token to use for the authorization.
+    org: HNCH # Default destination organization for writes and queries.
+    bucket: device # Default destination bucket for writes.
+    measurement: currentValue
+    logLevel: NONE # The log level for logging the HTTP request and HTTP response. (Default: NONE)
+    readTimeout: 5s # Read timeout for OkHttpClient. (Default: 10s)
+    writeTimeout: 5s # Write timeout for OkHttpClient. (Default: 10s)
+    connectTimeout: 5s # Connection timeout for OkHttpClient. (Default: 10s)
+management.metrics.export.influx:
+  bucket: device # Specifies the destination bucket for writes
+  org: HNCH # Specifies the destination organization for writes.
+  token: XwKuXzP4BUCUrQ3pWxMtSFz9Bg5XT0Eig4bTLa67ZlKy98k6QF9HqYWbB9spntbnCvXxhAmqjNS9_NnhFfej3g== # Authenticate requests with this token.
+  uri: http://172.16.0.213:9999/api/v2 # The URI for the Influx backend. (Default: http://localhost:8086/api/v2)
+  compressed: true # Whether to enable GZIP compression of metrics batches published to Influx. (Default: true)
+  enabled: false # Whether exporting of metrics to this backend is enabled. (Default: true)
+  step: 1m # Step size (i.e. reporting frequency) to use. (Default: 1m)
+  connect-timeout: 1s # Connection timeout for requests to this backend. (Default: 1s)
+  read-timeout: 10s # Read timeout for requests to this backend. (Default: 10s)
+  batch-size: 10000 # Number of measurements per request to use for this backend. If more measurements are found, then multiple requests will be made. (Default: 10000)
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:org/jeecg/modules/**/xml/*Mapper.xml
@@ -171,18 +194,18 @@ mybatis-plus:
     # 返回类型为Map,显示null对应的字段
     call-setters-on-nulls: true
 #jeecg专用配置
-minidao :
+minidao:
   base-package: org.jeecg.modules.jmreport.*
   #DB类型（mysql | postgresql | oracle | sqlserver| other）
   db-type: mysql
-jeecg :
+jeecg:
   # 是否启用安全模式
   safeMode: false
   # 签名密钥串(前后端要一致，正式发布请自行修改)
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
   # 本地：local\Minio：minio\阿里云：alioss
   uploadType: minio
-  path :
+  path:
     #文件上传根目录 设置
     upload: /opt/upFiles
     #webapp文件路径
@@ -260,7 +283,7 @@ cas:
 #Mybatis输出sql日志
 logging:
   level:
-    org.jeecg.modules.system.mapper : info
+    org.jeecg.modules.system.mapper: info
 #swagger
 knife4j:
   #开启增强配置

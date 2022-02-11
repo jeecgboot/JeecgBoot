@@ -8,7 +8,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jeecg-boot-module-system</artifactId>
+    <artifactId>jeecg-boot-module-smartfuel</artifactId>
 
     <repositories>
         <repository>
@@ -34,6 +34,27 @@
             <groupId>org.jeecgframework.boot</groupId>
             <artifactId>jeecg-system-local-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.influxdb</groupId>
+            <artifactId>influxdb-client-java</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.influxdb</groupId>
+            <artifactId>influxdb-spring</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>logging-interceptor</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+
         <!-- jeewx api -->
         <dependency>
             <groupId>org.jeecgframework</groupId>
@@ -50,40 +71,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- 创建的新模块 -->
-        <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-module-smartfuel</artifactId>
-            <version>${jeecgboot.version}</version>
-        </dependency>
-
-        <!-- 积木报表 -->
-        <dependency>
-            <groupId>org.jeecgframework.jimureport</groupId>
-            <artifactId>jimureport-spring-boot-starter</artifactId>
-            <version>1.4.0</version>
-        </dependency>
-
-
-        <!-- DEMO 示例模块【微服务启动请注释掉】 -->
-        <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-module-demo</artifactId>
-            <version>3.0</version>
-        </dependency>
 
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <!--微服务模式下修改为true,跳过此打包插件，否则微服务模块无法引用-->
-                    <skip>false</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
