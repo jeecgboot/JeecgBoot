@@ -3,7 +3,7 @@
   "version": "3.0.0",
   "private": true,
   "scripts": {
-    "pre": "cnpm install || yarn --registry https://registry.npm.taobao.org || npm install --registry https://registry.npm.taobao.org ",
+    "pre": "cnpm install || yarn --registry https://registry.npmmirror.com || npm install --registry https://registry.npmmirror.com ",
     "serve": "vue-cli-service serve",
     "build:test": "vue-cli-service build --mode test",
     "build": "vue-cli-service build",
