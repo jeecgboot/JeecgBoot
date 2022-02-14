@@ -97,7 +97,10 @@
       "vue/html-closing-bracket-newline": 0,
       "vue/no-parsing-error": 0,
       "no-tabs": 0,
-      "indent": ["off", 2],
+      "indent": [
+        "off",
+        2
+      ],
       "no-console": 0,
       "space-before-function-paren": 0
     }
