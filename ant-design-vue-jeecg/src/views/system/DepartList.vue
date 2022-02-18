@@ -235,7 +235,7 @@
         validatorRules: {
           departName: [{required: true, message: '请输入机构/部门名称!'}],
           orgCode: [{required: true, message: '请输入机构编码!'}],
-          orgCategory:[{required: true, message: '请输入机构类型!'}],
+          orgCategory:[{required: true, message: '请选择机构类型!'}],
           mobile:[{validator: this.validateMobile}]
         },
         url: {
