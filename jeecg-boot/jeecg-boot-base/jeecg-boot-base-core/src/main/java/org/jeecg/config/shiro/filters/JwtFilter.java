@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.vo.TenantVo;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.TenantContext;
 import org.jeecg.config.shiro.JwtToken;
@@ -97,7 +98,9 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         }
         //update-begin-author:taoyan date:20200708 for:多租户用到
         String tenant_id = httpServletRequest.getHeader(CommonConstant.TENANT_ID);
-        TenantContext.setTenant(tenant_id);
+        //默认tenantIds与tenantId一致
+        TenantVo localTenant = new TenantVo(tenant_id,tenant_id);
+        TenantContext.setTenant(localTenant);
         //update-end-author:taoyan date:20200708 for:多租户用到
         return super.preHandle(request, response);
     }

@@ -13,6 +13,7 @@ import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.system.vo.TenantVo;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
@@ -134,15 +135,24 @@ public class ShiroRealm extends AuthorizingRealm {
         }
         //update-begin-author:taoyan date:20210609 for:校验用户的tenant_id和前端传过来的是否一致
         String userTenantIds = loginUser.getRelTenantIds();
+        TenantVo localTenant = TenantContext.getTenant();
         if(oConvertUtils.isNotEmpty(userTenantIds)){
-            String contextTenantId = TenantContext.getTenant();
+            String contextTenantId = TenantContext.getTenantId();
             if(oConvertUtils.isNotEmpty(contextTenantId) && !"0".equals(contextTenantId)){
                 if(String.join(",",userTenantIds).indexOf(contextTenantId)<0){
                     throw new AuthenticationException("用户租户信息变更,请重新登陆!");
                 }
             }
+            //设置tenantIds
+            if(localTenant!=null){
+                localTenant.setTenantIds(userTenantIds);
+            }
         }
         //update-end-author:taoyan date:20210609 for:校验用户的tenant_id和前端传过来的是否一致
+        //TODO 判断用户角色，指定角色设置可以查询所有
+        if(localTenant!=null){
+            localTenant.setQueryAll(false);
+        }
         return loginUser;
     }
 

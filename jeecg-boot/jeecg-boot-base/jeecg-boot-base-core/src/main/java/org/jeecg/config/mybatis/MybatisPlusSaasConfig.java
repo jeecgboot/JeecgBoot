@@ -3,6 +3,8 @@ package org.jeecg.config.mybatis;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.jsqlparser.expression.StringValue;
+import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import org.jeecg.common.util.oConvertUtils;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
@@ -52,6 +54,21 @@ public class MybatisPlusSaasConfig {
             public Expression getTenantId() {
                 String tenant_id = oConvertUtils.getString(TenantContext.getTenant(),"0");
                 return new LongValue(tenant_id);
+            }
+
+            @Override
+            public ExpressionList getTenantIds() {
+                ExpressionList expressionList = new ExpressionList();
+                String tenantIds = oConvertUtils.getString(TenantContext.getTenantIds(),"0");
+                for(String tenantId : tenantIds.split(",")){
+                    expressionList.addExpressions(new StringValue(tenantId));
+                }
+                return expressionList;
+            }
+
+            @Override
+            public boolean canQueryAll() {
+                return TenantContext.canQueryAll();
             }
 
             @Override
