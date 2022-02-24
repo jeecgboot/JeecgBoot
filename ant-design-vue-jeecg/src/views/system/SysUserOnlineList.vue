@@ -68,12 +68,14 @@
   import {filterDictTextByCache} from '@/components/dict/JDictSelectUtil'
 
   import {getFileAccessHttpUrl} from '@/api/manage';
+  import {ACCESS_TOKEN} from '@/store/mutation-types'
 
   export default {
     name: "SysUserOnlineList",
     mixins:[JeecgListMixin, mixinDevice],
     components: {},
     data () {
+      let currentToken = this.$ls.get(ACCESS_TOKEN)
       return {
         description: '在线用户管理页面',
         queryParam: {
@@ -84,7 +86,13 @@
           {
             title:'用户账号',
             align:"center",
-            dataIndex: 'username'
+            dataIndex: 'username',
+            customRender: (text,record) => {
+              if(record.token === currentToken) {
+                return text + '（我）'
+              }
+              return text
+            },
           },{
             title:'用户姓名',
             align:"center",

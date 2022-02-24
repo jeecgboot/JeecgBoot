@@ -23,6 +23,7 @@
 </template>
 
 <script>
+  import {getUserList} from '@/api/api'
   export default {
     name: "SysAnnouncementModal",
     components: {
@@ -59,6 +60,15 @@
     },
     methods: {
       detail (record) {
+        //update-begin---author:wangshuai ---date:20220107  for：将其它页面传递过来的用户名改成用户真实姓名
+        if(record.sender){
+          getUserList({"username":record.sender}).then((res) =>{
+            if(res.success && res.result.records.length>0){
+                record.sender = res.result.records[0].realname
+            }
+          })
+        }
+        //update-end---author:wangshuai ---date:20220107  for：将其它页面传递过来的用户名改成用户真实姓名
         this.visible = true;
         this.record = record;
       },

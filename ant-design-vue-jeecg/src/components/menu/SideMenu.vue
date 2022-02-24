@@ -149,7 +149,8 @@
 
 <!-- update_begin author:sunjianlei date:20190530 for: 选中首页的时候不显示背景颜色 -->
 <style lang="less">
-  .ant-menu.ant-menu-root {
+   // 选中首页的时候不显示背景颜色，只应用于左侧菜单
+  .sider .ant-menu.ant-menu-root {
     & > .ant-menu-item:first-child {
       background-color: transparent;
 

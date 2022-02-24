@@ -115,9 +115,9 @@
       <#return "{type:'${po.classType}',value:'${po.fieldName}',text:'${po.filedComment}'}">
   <#else>
       <#if po.classType=="sel_search" || po.classType=="list_multi">
-          <#return "{type:'${po.classType}',value:'${po.fieldName}',text:'${po.filedComment}',dictTable:'${superQuery_dictTable}', dictText:'${superQuery_dictText}', dictCode:'${po.dictField}'}">
+          <#return "{type:'${po.classType}',value:'${po.fieldName}',text:'${po.filedComment}',dictTable:\"${superQuery_dictTable}\", dictText:'${superQuery_dictText}', dictCode:'${po.dictField}'}">
       <#elseif po.dictTable?? && po.dictTable!="" && po.classType!="sel_tree" && po.classType!="cat_tree" && po.classType!="link_down">
-          <#return "{type:'${po.fieldDbType}',value:'${po.fieldName}',text:'${po.filedComment}',dictCode:'${po.dictTable},${po.dictText},${po.dictField}'}">
+          <#return "{type:'${po.fieldDbType}',value:'${po.fieldName}',text:'${po.filedComment}',dictCode:\"${po.dictTable},${po.dictText},${po.dictField}\"}">
       <#elseif po.dictField?? && po.classType!="sel_tree" && po.classType!="cat_tree" && po.classType!="link_down">
           <#return "{type:'${po.fieldDbType}',value:'${po.fieldName}',text:'${po.filedComment}',dictCode:'${po.dictField}'}">
       <#elseif po.fieldDbType=="Text">

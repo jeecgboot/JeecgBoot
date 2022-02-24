@@ -59,7 +59,7 @@ public class SysPermissionController {
 
 	/**
 	 * 加载数据节点
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -200,7 +200,7 @@ public class SysPermissionController {
 
 	/**
 	 * 查询用户拥有的菜单权限和按钮权限
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/getUserPermissionByToken", method = RequestMethod.GET)
@@ -261,32 +261,49 @@ public class SysPermissionController {
 	}
 
 	/**
-	 * 【vue3专用】查询用户拥有的按钮/表单访问权限
-	 * @return
+	 * 【vue3专用】获取
+	 * 1、查询用户拥有的按钮/表单访问权限
+	 * 2、所有权限 (菜单权限配置)
+	 * 3、系统安全模式 (开启则online报表的数据源必填)
 	 */
 	@RequestMapping(value = "/getPermCode", method = RequestMethod.GET)
 	public Result<?> getPermCode() {
-		Result<List<String>> result = new Result<List<String>>();
 		try {
-			//直接获取当前用户
+			// 直接获取当前用户
 			LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-			//获取当前用户的权限集合
+			if (oConvertUtils.isEmpty(loginUser)) {
+				return Result.error("请登录系统！");
+			}
+			// 获取当前用户的权限集合
 			List<SysPermission> metaList = sysPermissionService.queryByUser(loginUser.getUsername());
+            // 按钮权限（用户拥有的权限集合）
+            List<String> codeList = metaList.stream()
+                    .filter((permission) -> CommonConstant.MENU_TYPE_2.equals(permission.getMenuType()) && CommonConstant.STATUS_1.equals(permission.getStatus()))
+                    .collect(ArrayList::new, (list, permission) -> list.add(permission.getPerms()), ArrayList::addAll);
+            //
+			JSONArray authArray = new JSONArray();
+			this.getAuthJsonArray(authArray, metaList);
+			// 查询所有的权限
+			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<>();
+			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
+			query.eq(SysPermission::getMenuType, CommonConstant.MENU_TYPE_2);
+			List<SysPermission> allAuthList = sysPermissionService.list(query);
+			JSONArray allAuthArray = new JSONArray();
+			this.getAllAuthJsonArray(allAuthArray, allAuthList);
+			JSONObject result = new JSONObject();
+            // 所拥有的权限编码
+			result.put("codeList", codeList);
 			//按钮权限（用户拥有的权限集合）
-			List<String> authList = metaList.stream()
-					.filter((permission) -> permission.getMenuType().equals(CommonConstant.MENU_TYPE_2)
-                            && CommonConstant.STATUS_1.equals(permission.getStatus())
-                    )
-					.collect(() -> new ArrayList<String>(),
-							(list, permission) -> list.add(permission.getPerms()),
-							(list1, list2) -> list1.addAll(list2)
-					);
-			result.setResult(authList);
+			result.put("auth", authArray);
+			//全部权限配置集合（按钮权限，访问权限）
+			result.put("allAuth", allAuthArray);
+            // 系统安全模式
+			result.put("sysSafeMode", jeeccgBaseConfig.getSafeMode());
+            return Result.OK(result);
 		} catch (Exception e) {
-			result.error500("查询失败:" + e.getMessage());
 			log.error(e.getMessage(), e);
+            return Result.error("查询失败:" + e.getMessage());
 		}
-		return result;
 	}
 
 	/**
@@ -374,7 +391,7 @@ public class SysPermissionController {
 
 	/**
 	 * 获取全部的权限树
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/queryTreeList", method = RequestMethod.GET)
@@ -720,7 +737,7 @@ public class SysPermissionController {
 	/**
 	 * 判断是否外网URL 例如： http://localhost:8080/jeecg-boot/swagger-ui.html#/ 支持特殊格式： {{
 	 * window._CONFIG['domianURL'] }}/druid/ {{ JS代码片段 }}，前台解析会自动执行JS代码片段
-	 * 
+	 *
 	 * @return
 	 */
 	private boolean isWWWHttpUrl(String url) {
@@ -733,7 +750,7 @@ public class SysPermissionController {
 	/**
 	 * 通过URL生成路由name（去掉URL前缀斜杠，替换内容中的斜杠‘/’为-） 举例： URL = /isystem/role RouteName =
 	 * isystem-role
-	 * 
+	 *
 	 * @return
 	 */
 	private String urlToRouteName(String url) {
@@ -753,7 +770,7 @@ public class SysPermissionController {
 
 	/**
 	 * 根据菜单id来获取其对应的权限数据
-	 * 
+	 *
 	 * @param sysPermissionDataRule
 	 * @return
 	 */
@@ -768,7 +785,7 @@ public class SysPermissionController {
 
 	/**
 	 * 添加菜单权限数据
-	 * 
+	 *
 	 * @param sysPermissionDataRule
 	 * @return
 	 */
@@ -803,7 +820,7 @@ public class SysPermissionController {
 
 	/**
 	 * 删除菜单权限数据
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -823,7 +840,7 @@ public class SysPermissionController {
 
 	/**
 	 * 查询菜单权限数据
-	 * 
+	 *
 	 * @param sysPermissionDataRule
 	 * @return
 	 */

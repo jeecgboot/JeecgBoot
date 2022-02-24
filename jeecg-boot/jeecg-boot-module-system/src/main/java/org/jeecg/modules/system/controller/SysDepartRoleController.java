@@ -114,7 +114,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	 */
 	//@RequiresRoles({"admin"})
 	@ApiOperation(value="部门角色-编辑", notes="部门角色-编辑")
-	@PutMapping(value = "/edit")
+	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<?> edit(@RequestBody SysDepartRole sysDepartRole) {
 		sysDepartRoleService.updateById(sysDepartRole);
 		return Result.ok("编辑成功!");

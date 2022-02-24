@@ -24,10 +24,10 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     ISysUserService userService;
 
     @Override
-    public List<SysTenant> queryEffectiveTenant(Collection<String> idList) {
+    public List<SysTenant> queryEffectiveTenant(Collection<Integer> idList) {
         LambdaQueryWrapper<SysTenant> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(SysTenant::getId, idList);
-        queryWrapper.eq(SysTenant::getStatus, CommonConstant.STATUS_1);
+        queryWrapper.eq(SysTenant::getStatus, Integer.valueOf(CommonConstant.STATUS_1));
         //此处查询忽略时间条件
         return super.list(queryWrapper);
     }
@@ -50,7 +50,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         if (userCount > 0) {
             throw new JeecgBootException("该租户已被引用，无法删除！");
         }
-        return super.removeById(id);
+        return super.removeById(Integer.parseInt(id));
     }
 
 }

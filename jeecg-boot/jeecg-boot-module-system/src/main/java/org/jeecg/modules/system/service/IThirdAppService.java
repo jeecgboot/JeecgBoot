@@ -21,7 +21,7 @@ public interface IThirdAppService {
      *
      * @return 成功返回true
      */
-    boolean syncLocalDepartmentToThirdApp(String ids);
+    SyncInfoVo syncLocalDepartmentToThirdApp(String ids);
 
     /**
      * 将第三方App部门同步到本地<br>

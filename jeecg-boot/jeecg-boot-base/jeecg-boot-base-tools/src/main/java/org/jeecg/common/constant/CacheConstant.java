@@ -96,4 +96,8 @@ public interface CacheConstant {
 	 * online图表
 	 */
 	public static final String ONLINE_GRAPH = "sys:cache:online:graph";
+	/**
+	 * 拖拽页面信息缓存
+	 */
+	public static final String DRAG_PAGE_CACHE = "drag:cache:page";
 }

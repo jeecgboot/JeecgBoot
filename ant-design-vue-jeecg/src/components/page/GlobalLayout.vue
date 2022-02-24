@@ -220,7 +220,9 @@
           overflow-y: auto;
         }
         .ant-table-body {
-          min-width: 800px;
+          // update-begin---author:sunjianlei Date:20220104 for： 【JTC-480】移动端不支持左右拖动，需要注释掉此段代码 ------------
+          //min-width: 800px;
+          // update-end---author:sunjianlei Date:20220104 for： 【JTC-480】移动端不支持左右拖动，需要注释掉此段代码 ------------
         }
       }
       .sidemenu {

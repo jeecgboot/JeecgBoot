@@ -69,7 +69,12 @@
       :loading="loading"
       :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
       @change="handleTableChange">
-
+        <template slot="ruleClassText" slot-scope="text">
+          <j-ellipsis :value="text" :length="30"></j-ellipsis>
+        </template>
+        <template slot="ruleParamsText" slot-scope="text,record">
+          <j-ellipsis :value="text" :length="30"></j-ellipsis>
+        </template>
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
           <a-divider type="vertical"/>
@@ -131,12 +136,14 @@
           {
             title: '规则实现类',
             align: 'center',
-            dataIndex: 'ruleClass'
+            dataIndex: 'ruleClass',
+            scopedSlots: {customRender: "ruleClassText"}
           },
           {
             title: '规则参数',
             align: 'center',
-            dataIndex: 'ruleParams'
+            dataIndex: 'ruleParams',
+            scopedSlots: {customRender: "ruleParamsText"}
           },
           {
             title: '操作',

@@ -103,6 +103,8 @@
               <a-col :md="8" :xs="24" style="margin-bottom: 12px;">
                 <!-- 下拉搜索 -->
                 <j-search-select-tag v-if="item.type==='sel_search'" v-model="item.val" :dict="getDictInfo(item)" placeholder="请选择"/>
+                <!-- 下拉框 -->
+                <j-search-select-tag v-else-if="item.type==='list' && item.dictTable" v-model="item.val" :dict="getDictInfo(item)" placeholder="请选择"/>
                 <!-- 下拉多选 -->
                 <template v-else-if="item.type==='list_multi'">
                   <j-multi-select-tag v-if="item.options" v-model="item.val" :options="item.options" placeholder="请选择"/>
@@ -136,14 +138,14 @@
                   v-else-if="item.type === 'select-user' || item.type === 'sel_user'"
                   v-model="item.val"
                   :buttons="false"
-                  :multiple="false"
+                  :multiple="allowMultiple(item)"
                   placeholder="请选择用户"
                   :returnKeys="['id', item.customReturnField || 'username']"
                 />
                 <j-select-depart
                   v-else-if="item.type === 'select-depart' || item.type === 'sel_depart'"
                   v-model="item.val"
-                  :multi="false"
+                  :multi="allowMultiple(item)"
                   placeholder="请选择部门"
                   :customReturnField="item.customReturnField || 'id'"
                 />
@@ -331,7 +333,12 @@
                 let child = { ...item2 }
                 child.label = child.label || child.text
                 child.label = data.label + '-' + child.label
-                child.value = data.value + ',' + child.value
+                // update--begin--author:sunjianlei-----date:20220121------for：【JTC-1167】【表单设计器】高级查询，一对一字段查询不好使
+                // 是否仅包含字段名，不需要拼接子表表名
+                if (!data.onlyFieldName) {
+                  child.value = data.value + ',' + child.value
+                }
+                // update--end--author:sunjianlei-----date:20220121------for：【JTC-1167】【表单设计器】高级查询，一对一字段查询不好使
                 child.val = ''
                 return child
               })

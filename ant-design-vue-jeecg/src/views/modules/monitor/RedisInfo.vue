@@ -1,7 +1,7 @@
 <template>
   <a-skeleton active :loading="loading" :paragraph="{rows: 17}">
     <a-card>
-      <!-- Radis 信息实时监控 -->
+      <!-- Redis 信息实时监控 -->
       <a-row :gutter="8">
         <a-col :sm="24" :xl="12">
           <area-chart-ty v-bind="memory"/>
@@ -41,7 +41,7 @@
         millisec: 3000,
         // Key 实时数量
         key: {
-          title: 'Radis Key 实时数量（个）',
+          title: 'Redis Key 实时数量（个）',
           dataSource: [],
           y: '数量（个）',
           height: 340,
@@ -53,7 +53,7 @@
         },
         // 内存实时占用情况
         memory: {
-          title: 'Radis 内存实时占用情况（KB）',
+          title: 'Redis 内存实时占用情况（KB）',
           dataSource: [],
           y: '内存（KB）',
           min: 0,

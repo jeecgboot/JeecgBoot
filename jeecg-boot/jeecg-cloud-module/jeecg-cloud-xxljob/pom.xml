@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-cloud-module</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>3.0</version>
+        <version>3.1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

@@ -85,18 +85,31 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         return null;
     }
 
+    // update：2022-1-21，updateBy：sunjianlei; for 【JTC-704】【钉钉】部门同步成功，实际没成，后台提示ip白名单
     @Override
-    public boolean syncLocalDepartmentToThirdApp(String ids) {
+    public SyncInfoVo syncLocalDepartmentToThirdApp(String ids) {
+        SyncInfoVo syncInfo = new SyncInfoVo();
         String accessToken = this.getAccessToken();
         if (accessToken == null) {
-            return false;
+            syncInfo.addFailInfo("accessToken获取失败！");
+            return syncInfo;
         }
         // 获取【钉钉】所有的部门
-        List<Department> departments = JdtDepartmentAPI.listAll(accessToken);
+        List<Response<Department>> departments = JdtDepartmentAPI.listAllResponse(accessToken);
         // 删除钉钉有但本地没有的部门（以本地部门数据为主）（钉钉不能创建同名部门，只能先删除）
         List<SysDepart> sysDepartList = sysDepartService.list();
         for1:
-        for (Department department : departments) {
+        for (Response<Department> departmentRes : departments) {
+            // 判断部门是否查询成功
+            if (!departmentRes.isSuccess()) {
+                syncInfo.addFailInfo(departmentRes.getErrmsg());
+                // 88 是 ip 不在白名单的错误码，如果遇到此错误码，后面的操作都可以不用进行了，因为肯定都是失败的
+                if (new Integer(88).equals(departmentRes.getErrcode())) {
+                    return syncInfo;
+                }
+                continue;
+            }
+            Department department = departmentRes.getResult();
             for (SysDepart depart : sysDepartList) {
                 // id相同，代表已存在，不删除
                 String sourceIdentifier = department.getSource_identifier();
@@ -124,24 +137,34 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         Department parent = new Department();
         parent.setDept_id(1);
         // 递归同步部门
-        departments = JdtDepartmentAPI.listAll(accessToken);
-        this.syncDepartmentRecursion(sysDepartsTree, departments, parent, accessToken);
-        return true;
+        departments = JdtDepartmentAPI.listAllResponse(accessToken);
+        this.syncDepartmentRecursion(sysDepartsTree, departments, parent, accessToken, syncInfo);
+        return syncInfo;
     }
 
     // 递归同步部门到本地
-    public void syncDepartmentRecursion(List<SysDepartTreeModel> sysDepartsTree, List<Department> departments, Department parent, String accessToken) {
+    public void syncDepartmentRecursion(List<SysDepartTreeModel> sysDepartsTree, List<Response<Department>> departments, Department parent, String accessToken, SyncInfoVo syncInfo) {
         if (sysDepartsTree != null && sysDepartsTree.size() != 0) {
             for1:
             for (SysDepartTreeModel depart : sysDepartsTree) {
-                for (Department department : departments) {
+                for (Response<Department> departmentRes : departments) {
+                    // 判断部门是否查询成功
+                    if (!departmentRes.isSuccess()) {
+                        syncInfo.addFailInfo(departmentRes.getErrmsg());
+                        continue;
+                    }
+                    Department department = departmentRes.getResult();
                     // id相同，代表已存在，执行修改操作
                     String sourceIdentifier = department.getSource_identifier();
                     if (sourceIdentifier != null && sourceIdentifier.equals(depart.getId())) {
                         this.sysDepartToDtDepartment(depart, department, parent.getDept_id());
-                        JdtDepartmentAPI.update(department, accessToken);
-                        // 紧接着同步子级
-                        this.syncDepartmentRecursion(depart.getChildren(), departments, department, accessToken);
+                        Response<JSONObject> response = JdtDepartmentAPI.update(department, accessToken);
+                        if (response.isSuccess()) {
+                            // 紧接着同步子级
+                            this.syncDepartmentRecursion(depart.getChildren(), departments, department, accessToken, syncInfo);
+                        }
+                        // 收集错误信息
+                        this.syncDepartCollectErrInfo(response, depart, syncInfo);
                         // 跳出外部循环
                         continue for1;
                     }
@@ -154,10 +177,10 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
                     Department newParent = new Department();
                     newParent.setDept_id(response.getResult());
                     // 紧接着同步子级
-                    this.syncDepartmentRecursion(depart.getChildren(), departments, newParent, accessToken);
+                    this.syncDepartmentRecursion(depart.getChildren(), departments, newParent, accessToken, syncInfo);
                 }
                 // 收集错误信息
-//                this.syncUserCollectErrInfo(errCode, sysUser, errInfo);
+                this.syncDepartCollectErrInfo(response, depart, syncInfo);
             }
         }
     }
@@ -209,6 +232,11 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
                     SysDepart newSysDepart = this.dtDepartmentToSysDepart(departmentTree, null);
                     if (sysParentId != null) {
                         newSysDepart.setParentId(sysParentId);
+                        // 2 = 组织机构
+                        newSysDepart.setOrgCategory("2");
+                    } else {
+                        // 1 = 公司
+                        newSysDepart.setOrgCategory("1");
                     }
                     try {
                         sysDepartService.saveDepartData(newSysDepart, username);
@@ -246,6 +274,20 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         return false;
     }
 
+    /**
+     * 【同步部门】收集同步过程中的错误信息
+     */
+    private boolean syncDepartCollectErrInfo(Response<?> response, SysDepartTreeModel depart, SyncInfoVo syncInfo) {
+        if (!response.isSuccess()) {
+            String str = String.format("部门 %s(%s) 同步失败！错误码：%s——%s", depart.getDepartName(), depart.getOrgCode(), response.getErrcode(), response.getErrmsg());
+            syncInfo.addFailInfo(str);
+            return false;
+        } else {
+            String str = String.format("部门户 %s(%s) 同步成功！", depart.getDepartName(), depart.getOrgCode());
+            syncInfo.addSuccessInfo(str);
+            return true;
+        }
+    }
 
     @Override
     public SyncInfoVo syncLocalUserToThirdApp(String ids) {
@@ -279,7 +321,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
             /*
              * 判断是否同步过的逻辑：
              * 1. 查询 sys_third_account（第三方账号表）是否有数据，如果有代表已同步
-             * 2. 本地表里没有，就先用手机号判断，不通过再用username判断。
+             * 2. 本地表里没有，就先用手机号判断，不通过再用username(用户账号)判断。
              */
             SysThirdAccount sysThirdAccount = sysThirdAccountService.getOneBySysUserId(sysUser.getId(), THIRD_TYPE);
             if (sysThirdAccount != null && oConvertUtils.isNotEmpty(sysThirdAccount.getThirdUserId())) {
@@ -528,6 +570,12 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         // update-begin--Author:liusq Date:20210713 for：钉钉同步到本地的人员没有状态，导致同步之后无法登录 #I3ZC2L
         sysUser.setStatus(1);
         // update-end--Author:liusq Date:20210713 for：钉钉同步到本地的人员没有状态，导致同步之后无法登录 #I3ZC2L
+        // 设置工号，如果工号为空，则使用username
+        if (oConvertUtils.isEmpty(dtUser.getJob_number())) {
+            sysUser.setWorkNo(dtUser.getUserid());
+        } else {
+            sysUser.setWorkNo(dtUser.getJob_number());
+        }
         return this.dtUserToSysUser(dtUser, sysUser);
     }
 

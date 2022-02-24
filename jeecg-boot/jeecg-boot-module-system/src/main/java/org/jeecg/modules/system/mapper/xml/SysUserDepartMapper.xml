@@ -14,7 +14,9 @@
 		join sys_depart c on b.dep_id = c.id
 		where a.del_flag = 0 and c.org_code like '${orgCode}%'
 		<if test="realname!=null and realname!=''">
-			and a.realname like '%${realname}%'
+			<!-- update by sunjianlei 20220119【#3348】SQL injection exists in /sys/user/queryUserByDepId；  -->
+			<bind name="bindRealname" value="'%'+realname+'%'"/>
+			and a.realname like #{bindRealname}
 		</if>
 	</select>
 
@@ -23,12 +25,14 @@
 		select a.*, c.depart_name as org_code_txt from sys_user a
 		join sys_user_depart b on b.user_id = a.id
 		join sys_depart c on b.dep_id = c.id
-		where a.del_flag = 0 and c.org_code like '${orgCode}%'
+		where a.del_flag = 0 and a.status = 1 and c.org_code like '${orgCode}%'
 		<if test="username!=null and username!=''">
-			and a.username like '%${username}%'
+			<bind name="bindUsername" value="'%'+username+'%'"/>
+			and a.username like #{bindUsername}
 		</if>
 		<if test="realname!=null and realname!=''">
-			and a.realname like '%${realname}%'
+		    <bind name="bindRealname" value="'%'+realname+'%'"/>
+			and a.realname like #{bindRealname}
 		</if>
 	</select>
 </mapper>

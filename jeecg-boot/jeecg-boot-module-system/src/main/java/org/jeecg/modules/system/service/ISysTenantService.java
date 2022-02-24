@@ -14,7 +14,7 @@ public interface ISysTenantService extends IService<SysTenant> {
      * @param idList
      * @return
      */
-    List<SysTenant> queryEffectiveTenant(Collection<String> idList);
+    List<SysTenant> queryEffectiveTenant(Collection<Integer> idList);
 
     /**
      * 返回某个租户被多少个用户引用了

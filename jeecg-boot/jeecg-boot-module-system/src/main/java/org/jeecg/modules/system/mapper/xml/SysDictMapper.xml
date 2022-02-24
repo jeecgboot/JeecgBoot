@@ -134,19 +134,24 @@
 			   ${pidField} as parentId
 			   from ${table}
 			   where
-			   <choose>
-				   <when test="pid != null and pid != ''">
-					   ${pidField} = #{pid}
-				   </when>
-				   <otherwise>
-					   (${pidField} = '' OR ${pidField} IS NULL)
-				   </otherwise>
-			   </choose>
+			   <!-- udapte-begin-author:sunjianlei date:20220110 for: 【JTC-597】自定义树查询条件查不出数据 -->
+			   <if test="query == null">
+				   <choose>
+					   <when test="pid != null and pid != ''">
+						   ${pidField} = #{pid}
+					   </when>
+					   <otherwise>
+						   (${pidField} = '' OR ${pidField} IS NULL)
+					   </otherwise>
+				   </choose>
+			   </if>
 			   <if test="query!= null">
+			       1 = 1
 				   <foreach collection="query.entrySet()" item="value"  index="key" >
-				   	and ${key} = #{value}
+				   	and ${key} LIKE #{value}
 				   </foreach>
 			   </if>
+			   <!-- udapte-end-author:sunjianlei date:20220110 for: 【JTC-597】自定义树查询条件查不出数据 -->
 	</select>
 
 
@@ -175,6 +180,19 @@
 		select ${text} as "text", ${code} as "value" from ${table}
 		<if test="filterSql != null and filterSql != ''">
 			${filterSql}
+		</if>
+	</select>
+
+
+	<!-- 查询字典表的数据 支持设置过滤条件、设置存储值作为in查询条件 -->
+	<select id="queryTableDictByKeysAndFilterSql" parameterType="String" resultType="org.jeecg.common.system.vo.DictModel">
+		select ${text} as "text", ${code} as "value" from ${table} where ${code} IN (
+		<foreach item="key" collection="codeValues" separator=",">
+			#{key}
+		</foreach>
+		)
+		<if test="filterSql != null and filterSql != ''">
+			and ${filterSql}
 		</if>
 	</select>
 

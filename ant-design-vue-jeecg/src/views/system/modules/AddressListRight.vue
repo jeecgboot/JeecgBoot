@@ -94,7 +94,7 @@
             title: '手机',
             width: '15%',
             align: 'center',
-            dataIndex: 'telephone'
+            dataIndex: 'phone'
           },
           // {
           //   title: '手机号',

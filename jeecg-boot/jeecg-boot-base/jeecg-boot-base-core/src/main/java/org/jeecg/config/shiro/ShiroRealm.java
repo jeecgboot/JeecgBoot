@@ -137,9 +137,12 @@ public class ShiroRealm extends AuthorizingRealm {
         if(oConvertUtils.isNotEmpty(userTenantIds)){
             String contextTenantId = TenantContext.getTenant();
             if(oConvertUtils.isNotEmpty(contextTenantId) && !"0".equals(contextTenantId)){
-                if(String.join(",",userTenantIds).indexOf(contextTenantId)<0){
+                //update-begin-author:taoyan date:20211227 for: /issues/I4O14W 用户租户信息变更判断漏洞
+                String[] arr = userTenantIds.split(",");
+                if(!oConvertUtils.isIn(contextTenantId, arr)){
                     throw new AuthenticationException("用户租户信息变更,请重新登陆!");
                 }
+                //update-end-author:taoyan date:20211227 for: /issues/I4O14W 用户租户信息变更判断漏洞
             }
         }
         //update-end-author:taoyan date:20210609 for:校验用户的tenant_id和前端传过来的是否一致

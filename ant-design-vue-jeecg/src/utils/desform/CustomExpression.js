@@ -20,3 +20,11 @@ export function demoFieldDefVal_getAddress(arg) {
   }
   return `北京市 ${arg}`
 }
+
+/** 自定义JS函数示例 */
+export function sayHi(name) {
+  if (!name) {
+    name = '张三'
+  }
+  return `您好，我叫： ${name}`
+}

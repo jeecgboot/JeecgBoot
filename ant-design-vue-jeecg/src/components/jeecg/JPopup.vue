@@ -143,6 +143,10 @@
         }
       },
       handleEmpty() {
+        // 禁用时，不允许清空内容
+        if (this.disabled) {
+          return
+        }
         this.showText = ''
         let destFieldsArr = this.destFields.split(',')
         if (destFieldsArr.length === 0) {

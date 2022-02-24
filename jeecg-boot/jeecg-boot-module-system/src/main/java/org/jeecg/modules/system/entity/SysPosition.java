@@ -54,7 +54,6 @@ public class SysPosition {
     /**
      * 公司id
      */
-    @Excel(name = "公司id", width = 15)
     @ApiModelProperty(value = "公司id")
     private java.lang.String companyId;
     /**
@@ -84,7 +83,6 @@ public class SysPosition {
     /**
      * 组织机构编码
      */
-    @Excel(name = "组织机构编码", width = 15)
     @ApiModelProperty(value = "组织机构编码")
     private java.lang.String sysOrgCode;
 }

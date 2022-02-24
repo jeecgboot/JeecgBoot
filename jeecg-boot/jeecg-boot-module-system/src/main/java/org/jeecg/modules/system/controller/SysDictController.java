@@ -496,7 +496,7 @@ public class SysDictController {
 			try {
 				//导入Excel格式校验，看匹配的字段文本概率
 				Boolean t = ExcelImportCheckUtil.check(file.getInputStream(), SysDictPage.class, params);
-				if(!t){
+				if(t!=null && !t){
 					throw new RuntimeException("导入Excel校验失败 ！");
 				}
 				List<SysDictPage> list = ExcelImportUtil.importExcel(file.getInputStream(), SysDictPage.class, params);
@@ -511,11 +511,22 @@ public class SysDictController {
 						Integer integer = sysDictService.saveMain(po, list.get(i).getSysDictItemList());
 						if(integer>0){
 							successLines++;
-						}else{
+                        //update-begin---author:wangshuai ---date:20220211  for：[JTC-1168]如果字典项值为空，则字典项忽略导入------------
+						}else if(integer == -1){
+                            errorLines++;
+                            errorMessage.add("字典名称：" + po.getDictName() + "，对应字典列表的字典项值不能为空，忽略导入。");
+                        }else{
+                        //update-end---author:wangshuai ---date:20220211  for：[JTC-1168]如果字典项值为空，则字典项忽略导入------------
 							errorLines++;
 							int lineNumber = i + 1;
-							errorMessage.add("第 " + lineNumber + " 行：字典编码已经存在，忽略导入。");
-						}
+                            //update-begin---author:wangshuai ---date:20220209  for：[JTC-1168]字典编号不能为空------------
+                            if(oConvertUtils.isEmpty(po.getDictCode())){
+                                errorMessage.add("第 " + lineNumber + " 行：字典编码不能为空，忽略导入。");
+                            }else{
+                                errorMessage.add("第 " + lineNumber + " 行：字典编码已经存在，忽略导入。");
+                            }
+                            //update-end---author:wangshuai ---date:20220209  for：[JTC-1168]字典编号不能为空------------
+                        }
 					}  catch (Exception e) {
 						errorLines++;
 						int lineNumber = i + 1;

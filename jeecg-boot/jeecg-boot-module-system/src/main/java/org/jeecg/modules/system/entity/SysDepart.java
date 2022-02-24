@@ -45,7 +45,7 @@ public class SysDepart implements Serializable {
 	/**描述*/
 	@Excel(name="描述",width=15)
 	private String description;
-	/**机构类别 1公司，2组织机构，2岗位*/
+	/**机构类别 1=公司，2=组织机构，3=岗位*/
 	@Excel(name="机构类别",width=15,dicCode="org_category")
 	private String orgCategory;
 	/**机构类型*/

@@ -59,9 +59,10 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
     @ApiOperation(value = "获取Demo数据列表", notes = "获取所有Demo数据列表")
     @GetMapping(value = "/list")
     @PermissionData(pageComponent = "jeecg/JeecgDemoList")
-    public Result<?> list(JeecgDemo jeecgDemo, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+    public Result<IPage<JeecgDemo>> list(JeecgDemo jeecgDemo, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                           HttpServletRequest req) {
         QueryWrapper<JeecgDemo> queryWrapper = QueryGenerator.initQueryWrapper(jeecgDemo, req.getParameterMap());
+        queryWrapper.orderByDesc("create_time");
         Page<JeecgDemo> page = new Page<JeecgDemo>(pageNo, pageSize);
 
         IPage<JeecgDemo> pageList = jeecgDemoService.page(page, queryWrapper);
@@ -92,9 +93,9 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      * @param jeecgDemo
      * @return
      */
-    @PutMapping(value = "/edit")
-    @ApiOperation(value = "编辑DEMO", notes = "编辑DEMO")
     @AutoLog(value = "编辑DEMO", operateType = CommonConstant.OPERATE_TYPE_3)
+    @ApiOperation(value = "编辑DEMO", notes = "编辑DEMO")
+    @RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
     public Result<?> edit(@RequestBody JeecgDemo jeecgDemo) {
         jeecgDemoService.updateById(jeecgDemo);
         return Result.OK("更新成功！");
@@ -316,5 +317,9 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
         return Result.OK("1");
     }
 
+    @GetMapping(value = "/hello")
+    public String hello(HttpServletRequest req) {
+        return "hello world!";
+    }
 
 }

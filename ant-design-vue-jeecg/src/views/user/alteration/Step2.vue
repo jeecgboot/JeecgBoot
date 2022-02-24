@@ -2,18 +2,14 @@
   <div>
     <a-form-model ref="form" :model="model" :rules="validatorRules" class="password-retrieval-form" @keyup.enter.native="nextStep">
       <a-form-model-item label="手机" required prop="phone" :labelCol="{span: 5}" :wrapperCol="{span: 19}">
-        <a-row :gutter="16">
-          <a-col class="gutter-row" :span="20">
-            <a-input v-model="model.phone" type="text" autocomplete="false" placeholder="请输入手机号">
-              <a-icon slot="prefix" type="phone" :style="{ color: 'rgba(0,0,0,.25)'}"/>
-            </a-input>
-          </a-col>
-        </a-row>
+        <a-input v-model="model.phone" type="text" autocomplete="false" placeholder="请输入手机号">
+          <a-icon slot="prefix" type="phone" :style="{ color: 'rgba(0,0,0,.25)'}"/>
+        </a-input>
       </a-form-model-item>
       <a-form-model-item v-if="show" required prop="captcha" label="验证码" :labelCol="{span: 5}" :wrapperCol="{span: 19}">
         <a-row :gutter="16">
           <a-col class="gutter-row" :span="12">
-            <a-input v-model="model.captcha" type="text" placeholder="手机短信验证码">
+            <a-input @change="captchaChange" v-model="model.captcha" type="text" placeholder="手机短信验证码">
               <a-icon slot="prefix" type="code" :style="{ color: 'rgba(0,0,0,.25)'}"/>
             </a-input>
           </a-col>
@@ -158,6 +154,10 @@
           }else{
             callback()
           }
+      },
+      //手机号改变事件
+      captchaChange(val){
+        this.$refs['form'].validateField("captcha")
       }
     }
 

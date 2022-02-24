@@ -1,6 +1,6 @@
 {
   "name": "vue-antd-jeecg",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "private": true,
   "scripts": {
     "pre": "cnpm install || yarn --registry https://registry.npm.taobao.org || npm install --registry https://registry.npm.taobao.org ",
@@ -44,7 +44,8 @@
     "xe-utils": "2.4.8",
     "vxe-table": "2.9.13",
     "vxe-table-plugin-antd": "1.8.10",
-    "cron-parser": "^2.10.0"
+    "cron-parser": "^2.10.0",
+    "qiankun": "^2.5.1"
   },
   "devDependencies": {
     "@babel/polyfill": "^7.2.5",

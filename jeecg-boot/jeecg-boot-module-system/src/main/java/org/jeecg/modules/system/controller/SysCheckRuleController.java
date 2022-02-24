@@ -112,7 +112,7 @@ public class SysCheckRuleController extends JeecgController<SysCheckRule, ISysCh
      */
     @AutoLog(value = "编码校验规则-编辑")
     @ApiOperation(value = "编码校验规则-编辑", notes = "编码校验规则-编辑")
-    @PutMapping(value = "/edit")
+    @RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
     public Result edit(@RequestBody SysCheckRule sysCheckRule) {
         sysCheckRuleService.updateById(sysCheckRule);
         return Result.ok("编辑成功!");

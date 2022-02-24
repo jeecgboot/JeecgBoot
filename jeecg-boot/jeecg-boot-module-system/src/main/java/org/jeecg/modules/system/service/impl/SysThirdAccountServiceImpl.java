@@ -2,6 +2,7 @@ package org.jeecg.modules.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.PasswordUtil;
@@ -30,6 +31,7 @@ import java.util.List;
  * @Version: V1.0
  */
 @Service
+@Slf4j
 public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMapper, SysThirdAccount> implements ISysThirdAccountService {
     
     @Autowired
@@ -116,6 +118,7 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
     @Override
     public SysThirdAccount getOneBySysUserId(String sysUserId, String thirdType) {
         LambdaQueryWrapper<SysThirdAccount> queryWrapper = new LambdaQueryWrapper<>();
+        log.info("getSysUserId: {} ,getThirdType: {}",sysUserId,thirdType);
         queryWrapper.eq(SysThirdAccount::getSysUserId, sysUserId);
         queryWrapper.eq(SysThirdAccount::getThirdType, thirdType);
         return super.getOne(queryWrapper);

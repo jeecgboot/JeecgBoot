@@ -64,6 +64,7 @@
         :pagination="ipagination"
         :loading="loading"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :scroll="{x:true}"
         @change="handleTableChange">
 
         <!-- 字符串超长截取省略号显示-->
@@ -83,7 +84,7 @@
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
-              <a-menu-item><a @click="executeImmediately(record)">立即执行</a></a-menu-item>
+              <a-menu-item><a @click="executeImmediately(record)">执行一次</a></a-menu-item>
               <a-menu-item><a @click="handleEdit(record)">编辑</a></a-menu-item>
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">

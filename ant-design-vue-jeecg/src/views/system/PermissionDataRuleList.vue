@@ -47,6 +47,9 @@
           :dataSource="dataSource"
           :loading="loading"
           :rowClassName="getRowClassname">
+          <template slot="ruleValueText" slot-scope="text,record">
+            <j-ellipsis :value="text" :length="15"></j-ellipsis>
+          </template>
           <span slot="action" slot-scope="text, record">
             <a @click="handleEdit(record)">
               <a-icon type="edit"/>编辑
@@ -72,17 +75,21 @@
     {
       title: '规则名称',
       dataIndex: 'ruleName',
-      key: 'ruleName'
+      key: 'ruleName',
+      width:150,
     },
     {
       title: '规则字段',
       dataIndex: 'ruleColumn',
-      key: 'ruleColumn'
+      key: 'ruleColumn',
+      width:150,
     },
     {
       title: '规则值',
       dataIndex: 'ruleValue',
-      key: 'ruleValue'
+      key: 'ruleValue',
+      width:150,
+      scopedSlots: {customRender: "ruleValueText"}
     },
     {
       title: '操作',

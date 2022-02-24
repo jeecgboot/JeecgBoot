@@ -14,6 +14,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -281,5 +282,40 @@ public class CommonUtils {
         }
         return DB_TYPE;
 
+    }
+    /**
+     * 获取服务器地址
+     *
+     * @param request
+     * @return
+     */
+    public static String getBaseUrl(HttpServletRequest request) {
+        //1.【兼容】兼容微服务下的 base path-------
+        String x_gateway_base_path = request.getHeader("X_GATEWAY_BASE_PATH");
+        if(oConvertUtils.isNotEmpty(x_gateway_base_path)){
+            log.info("x_gateway_base_path = "+ x_gateway_base_path);
+            return  x_gateway_base_path;
+        }
+        //2.【兼容】SSL认证之后，request.getScheme()获取不到https的问题
+        // https://blog.csdn.net/weixin_34376986/article/details/89767950
+        String scheme = request.getHeader("X-Forwarded-Scheme");
+        if(oConvertUtils.isEmpty(scheme)){
+            scheme = request.getScheme();
+        }
+
+        //3.常规操作
+        String serverName = request.getServerName();
+        int serverPort = request.getServerPort();
+        String contextPath = request.getContextPath();
+
+        //返回 host domain
+        String baseDomainPath = null;
+        if(80 == serverPort){
+            baseDomainPath = scheme + "://" + serverName  + contextPath ;
+        }else{
+            baseDomainPath = scheme + "://" + serverName + ":" + serverPort + contextPath ;
+        }
+        log.info("-----Common getBaseUrl----- : " + baseDomainPath);
+        return baseDomainPath;
     }
 }

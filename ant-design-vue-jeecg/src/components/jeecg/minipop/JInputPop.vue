@@ -87,6 +87,10 @@
         this.$emit('change',this.inputContent)
       },
       pop(){
+        // disabled 不弹窗
+        if (this.disabled) {
+          return
+        }
         this.visible=true
         this.$nextTick(() => {
           this.$refs.textarea.focus()

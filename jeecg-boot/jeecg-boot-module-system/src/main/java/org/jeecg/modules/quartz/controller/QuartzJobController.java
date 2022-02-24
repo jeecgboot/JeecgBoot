@@ -6,10 +6,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
@@ -145,14 +147,14 @@ public class QuartzJobController {
 	 */
 	//@RequiresRoles("admin")
 	@GetMapping(value = "/pause")
-	@ApiOperation(value = "暂停定时任务")
+	@ApiOperation(value = "停止定时任务")
 	public Result<Object> pauseJob(@RequestParam(name = "id") String id) {
 		QuartzJob job = quartzJobService.getById(id);
 		if (job == null) {
 			return Result.error("定时任务不存在！");
 		}
 		quartzJobService.pause(job);
-		return Result.ok("暂停定时任务成功");
+		return Result.ok("停止定时任务成功");
 	}
 
 	/**
@@ -163,7 +165,7 @@ public class QuartzJobController {
 	 */
 	//@RequiresRoles("admin")
 	@GetMapping(value = "/resume")
-	@ApiOperation(value = "恢复定时任务")
+	@ApiOperation(value = "启动定时任务")
 	public Result<Object> resumeJob(@RequestParam(name = "id") String id) {
 		QuartzJob job = quartzJobService.getById(id);
 		if (job == null) {
@@ -171,7 +173,7 @@ public class QuartzJobController {
 		}
 		quartzJobService.resumeJob(job);
 		//scheduler.resumeJob(JobKey.jobKey(job.getJobClassName().trim()));
-		return Result.ok("恢复定时任务成功");
+		return Result.ok("启动定时任务成功");
 	}
 
 	/**
@@ -202,8 +204,12 @@ public class QuartzJobController {
 		// 导出文件名称
 		mv.addObject(NormalExcelConstants.FILE_NAME, "定时任务列表");
 		mv.addObject(NormalExcelConstants.CLASS, QuartzJob.class);
-		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("定时任务列表数据", "导出人:Jeecg", "导出信息"));
-		mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
+        //获取当前登录用户
+        //update-begin---author:wangshuai ---date:20211227  for：[JTC-116]导出人写死了------------
+        LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("定时任务列表数据", "导出人:"+user.getRealname(), "导出信息"));
+        //update-end---author:wangshuai ---date:20211227  for：[JTC-116]导出人写死了------------
+        mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
 		return mv;
 	}
 

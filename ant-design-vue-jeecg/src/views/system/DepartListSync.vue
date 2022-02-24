@@ -23,12 +23,13 @@
           </a-alert>
           <a-input-search @search="onSearch" style="width:100%;margin-top: 10px" placeholder="请输入部门名称"/>
           <!-- 树-->
-          <a-col :md="10" :sm="24">
-            <template>
+          <div>
+            <a-empty v-if="departTree.length===0" description="暂无部门" style="margin-top: 8px;"/>
+            <template v-else>
               <a-dropdown :trigger="[this.dropTrigger]" @visibleChange="dropStatus">
                <span style="user-select: none">
             <a-tree
-              v-if="loading"
+              v-if="treeLoading"
               checkable
               multiple
               @select="onSelect"
@@ -49,7 +50,7 @@
                 </a-menu>
               </a-dropdown>
             </template>
-          </a-col>
+          </div>
         </div>
       </a-card>
       <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
@@ -195,7 +196,7 @@
     data() {
       return {
         iExpandedKeys: [],
-        loading: true,
+        treeLoading: true,
         autoExpandParent: false,
         currFlowId: '',
         currFlowName: '',
@@ -271,8 +272,10 @@
         that.allIds = []
         
         that.iExpandedKeys = []
-        
-        that.loading = false
+        //update-begin---author:wangshuai ---date:20220105  for：[JTC-364]sqlserver 部门导入导入失败，部门树数据丢失------------
+        //部门树v-if用到了loading,和上传loading冲突了，换一个名称
+        that.treeLoading = false
+        //update-end---author:wangshuai ---date:20220105  for：[JTC-364]sqlserver 部门导入导入失败，部门树数据丢失------------
         queryDepartTreeSync().then((res) => {
           if (res.success) {
             this.allTreeKeys = [];
@@ -288,7 +291,8 @@
               }
             }
             that.$nextTick(()=>{
-              that.loading = true
+              //部门树v-if用到了loading,和上传loading冲突了，换一个名称
+              that.treeLoading = true
             })
           }
         })
@@ -320,7 +324,8 @@
         that.departTreeAll=that.departTree
       },
       refresh() {
-        this.loading = true
+        //部门树v-if用到了loading,和上传loading冲突了，换一个名称
+        this.treeLoading = true
         this.loadTree()
       },
       // 右键操作方法

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-parent</artifactId>
-		<version>3.0</version>
+		<version>3.1.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>org.jeecgframework</groupId>
 			<artifactId>jeewx-api</artifactId>
-			<version>1.4.6</version>
+			<version>1.4.7</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>commons-beanutils</artifactId>
@@ -54,7 +54,7 @@
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot-starter</artifactId>
-			<version>1.4.0</version>
+			<version>1.4.2</version>
 		</dependency>
 
 
@@ -62,7 +62,7 @@
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>jeecg-boot-module-demo</artifactId>
-			<version>3.0</version>
+			<version>3.1.0</version>
 		</dependency>
 
 	</dependencies>

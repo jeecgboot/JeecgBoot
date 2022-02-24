@@ -14,6 +14,7 @@ import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.CommonSendStatus;
 import org.jeecg.common.constant.WebsocketConst;
 import org.jeecg.common.system.api.ISysBaseAPI;
+import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.RedisUtil;
@@ -93,18 +94,21 @@ public class SysAnnouncementController {
 									  HttpServletRequest req) {
 		Result<IPage<SysAnnouncement>> result = new Result<IPage<SysAnnouncement>>();
 		sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
-		QueryWrapper<SysAnnouncement> queryWrapper = new QueryWrapper<SysAnnouncement>(sysAnnouncement);
+		QueryWrapper<SysAnnouncement> queryWrapper = QueryGenerator.initQueryWrapper(sysAnnouncement, req.getParameterMap());
 		Page<SysAnnouncement> page = new Page<SysAnnouncement>(pageNo,pageSize);
+
+		//update-begin-author:lvdandan date:20211229 for: sqlserver mssql-jdbc 8.2.2.jre8版本下系统公告列表查询报错 查询SQL中生成了两个create_time DESC；故注释此段代码
 		//排序逻辑 处理
-		String column = req.getParameter("column");
-		String order = req.getParameter("order");
-		if(oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
-			if("asc".equals(order)) {
-				queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));
-			}else {
-				queryWrapper.orderByDesc(oConvertUtils.camelToUnderline(column));
-			}
-		}
+//		String column = req.getParameter("column");
+//		String order = req.getParameter("order");
+//		if(oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
+//			if("asc".equals(order)) {
+//				queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));
+//			}else {
+//				queryWrapper.orderByDesc(oConvertUtils.camelToUnderline(column));
+//			}
+//		}
+		//update-end-author:lvdandan date:20211229 for: sqlserver mssql-jdbc 8.2.2.jre8版本下系统公告列表查询报错 查询SQL中生成了两个create_time DESC；故注释此段代码
 		IPage<SysAnnouncement> pageList = sysAnnouncementService.page(page, queryWrapper);
 		result.setSuccess(true);
 		result.setResult(pageList);
@@ -337,11 +341,13 @@ public class SysAnnouncementController {
 				query.eq(SysAnnouncementSend::getUserId,userId);
 				SysAnnouncementSend one = sysAnnouncementSendService.getOne(query);
 				if(null==one){
-				SysAnnouncementSend announcementSend = new SysAnnouncementSend();
-				announcementSend.setAnntId(announcements.get(i).getId());
-				announcementSend.setUserId(userId);
-				announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
-				sysAnnouncementSendService.save(announcementSend);
+					log.info("listByUser接口新增了SysAnnouncementSend：pageSize{}："+pageSize);
+					SysAnnouncementSend announcementSend = new SysAnnouncementSend();
+					announcementSend.setAnntId(announcements.get(i).getId());
+					announcementSend.setUserId(userId);
+					announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
+					sysAnnouncementSendService.save(announcementSend);
+					log.info("announcementSend.toString()",announcementSend.toString());
 				}
 				//update-end--Author:wangshuai  Date:20200803  for： 通知公告消息重复LOWCOD-759------------
 			}
@@ -373,7 +379,7 @@ public class SysAnnouncementController {
         LambdaQueryWrapper<SysAnnouncement> queryWrapper = new LambdaQueryWrapper<SysAnnouncement>(sysAnnouncement);
         //Step.2 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-		queryWrapper.eq(SysAnnouncement::getDelFlag,CommonConstant.DEL_FLAG_0);
+		queryWrapper.eq(SysAnnouncement::getDelFlag,CommonConstant.DEL_FLAG_0.toString());
         List<SysAnnouncement> pageList = sysAnnouncementService.list(queryWrapper);
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "系统通告列表");

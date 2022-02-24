@@ -146,7 +146,9 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				//通过自定义URL匹配规则 获取菜单（实现通过菜单配置数据权限规则，实际上针对获取数据接口进行数据规则控制）
 				String userMatchUrl = UrlMatchEnum.getMatchResultByUrl(requestPath);
 				LambdaQueryWrapper<SysPermission> queryQserMatch = new LambdaQueryWrapper<SysPermission>();
-				queryQserMatch.eq(SysPermission::getMenuType, 1);
+				// update-begin-author:taoyan date:20211027 for: online菜单如果配置成一级菜单 权限查询不到 取消menuType = 1
+				//queryQserMatch.eq(SysPermission::getMenuType, 1);
+				// update-end-author:taoyan date:20211027 for: online菜单如果配置成一级菜单 权限查询不到 取消menuType = 1
 				queryQserMatch.eq(SysPermission::getDelFlag, 0);
 				queryQserMatch.eq(SysPermission::getUrl, userMatchUrl);
 				if(oConvertUtils.isNotEmpty(userMatchUrl)){

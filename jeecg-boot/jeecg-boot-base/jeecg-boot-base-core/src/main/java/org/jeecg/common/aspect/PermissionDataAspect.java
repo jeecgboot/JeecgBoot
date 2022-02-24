@@ -8,6 +8,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.aspect.annotation.PermissionData;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.util.JeecgDataAutorUtils;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
@@ -15,6 +16,7 @@ import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +33,7 @@ import java.util.List;
 @Component
 @Slf4j
 public class PermissionDataAspect {
-
+    @Lazy
     @Autowired
     private CommonAPI commonAPI;
 
@@ -47,11 +49,21 @@ public class PermissionDataAspect {
         Method method = signature.getMethod();
         PermissionData pd = method.getAnnotation(PermissionData.class);
         String component = pd.pageComponent();
-
         String requestMethod = request.getMethod();
         String requestPath = request.getRequestURI().substring(request.getContextPath().length());
         requestPath = filterUrl(requestPath);
-        log.debug("拦截请求 >> "+requestPath+";请求类型 >> "+requestMethod);
+        //update-begin-author:taoyan date:20211027 for:JTC-132【online报表权限】online报表带参数的菜单配置数据权限无效
+        //先判断是否online报表请求
+        // TODO 参数顺序调整有隐患
+        if(requestPath.indexOf(UrlMatchEnum.CGREPORT_DATA.getMatch_url())>=0){
+            // 获取地址栏参数
+            String urlParamString = request.getParameter(CommonConstant.ONL_REP_URL_PARAM_STR);
+            if(oConvertUtils.isNotEmpty(urlParamString)){
+                requestPath+="?"+urlParamString;
+            }
+        }
+        //update-end-author:taoyan date:20211027 for:JTC-132【online报表权限】online报表带参数的菜单配置数据权限无效
+        log.info("拦截请求 >> {} ; 请求类型 >> {} . ", requestPath, requestMethod);
         String username = JwtUtil.getUserNameByToken(request);
         //查询数据权限信息
         //TODO 微服务情况下也得支持缓存机制
@@ -86,6 +98,7 @@ public class PermissionDataAspect {
      * @param request
      * @return
      */
+    @Deprecated
     private String getJgAuthRequsetPath(HttpServletRequest request) {
         String queryString = request.getQueryString();
         String requestPath = request.getRequestURI();
@@ -106,6 +119,7 @@ public class PermissionDataAspect {
         return filterUrl(requestPath);
     }
 
+    @Deprecated
     private boolean moHuContain(List<String> list,String key){
         for(String str : list){
             if(key.contains(str)){

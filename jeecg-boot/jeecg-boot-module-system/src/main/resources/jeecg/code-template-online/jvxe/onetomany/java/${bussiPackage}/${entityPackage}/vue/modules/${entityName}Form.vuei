@@ -28,13 +28,8 @@
 	<#elseif po.dictField?default("")?trim?length gt 1>
 		<#assign form_field_dictCode="${po.dictField}">
 	</#if>
-	<#if po.classType =='textarea'>
-          <a-col :span="24">
-            <a-form-model-item label="${po.filedComment}" :labelCol="labelCol2" :wrapperCol="wrapperCol2" prop="${autoStringSuffixForModel(po)}">
-	<#else>
           <a-col :span="${form_span}" >
             <a-form-model-item label="${po.filedComment}" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="${autoStringSuffixForModel(po)}">
-	</#if>
 	<#if po.classType =='date'>
               <j-date placeholder="请选择${po.filedComment}" v-model="model.${po.fieldName}" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
 	<#elseif po.classType =='datetime'>
@@ -140,7 +135,7 @@
 </#list>
     </a-tabs>
     <#if bpm_flag>
-    <a-row v-if="showFlowSubmitButton" style="text-align: center;width: 100%;margin-top: 16px;"><a-button @click="handleOk">提 交</a-button></a-row>
+    <a-row v-if="showFlowSubmitButton" style="text-align: center;width: 100%;margin-top: 16px;"><a-button icon="check" style="width: 126px" type="primary" @click="handleOk">提 交</a-button></a-row>
     </#if>
   </a-spin>
 </template>
@@ -174,19 +169,11 @@
       return {
         labelCol: {
           xs: { span: 24 },
-          sm: { span: 6 },
+          sm: { span: 5 },
         },
         wrapperCol: {
           xs: { span: 24 },
           sm: { span: 16 },
-        },
-        labelCol2: {
-          xs: { span: 24 },
-          sm: { span: 3 },
-        },
-        wrapperCol2: {
-          xs: { span: 24 },
-          sm: { span: 20 },
         },
         model:{
            <#include "/common/init/initValue.ftl">

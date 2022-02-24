@@ -11,11 +11,13 @@
     switchFullscreen
     cancelText="关闭">
     <a-spin tip="Loading..." :spinning="false">
-      <a-input-search style="margin-bottom: 1px" placeholder="请输入部门名称按回车进行搜索" @search="onSearch" />
+      <a-input-search v-model="searchValue" style="margin-bottom: 1px" placeholder="请输入部门名称按回车进行搜索" />
+      <a-empty v-if="filterTreeData.length===0"></a-empty>
       <a-tree
+        v-else
         checkable
         :class="treeScreenClass"
-        :treeData="treeData"
+        :treeData="filterTreeData"
         :checkStrictly="checkStrictly"
         @check="onCheck"
         @select="onSelect"
@@ -24,14 +26,6 @@
         :expandedKeys="expandedKeys"
         :checkedKeys="checkedKeys">
 
-        <template slot="title" slot-scope="{title}">
-          <span v-if="title.indexOf(searchValue) > -1">
-            {{title.substr(0, title.indexOf(searchValue))}}
-            <span style="color: #f50">{{searchValue}}</span>
-            {{title.substr(title.indexOf(searchValue) + searchValue.length)}}
-          </span>
-          <span v-else>{{title}}</span>
-        </template>
       </a-tree>
     </a-spin>
     <!--底部父子关联操作和确认取消按钮-->
@@ -92,6 +86,18 @@
           'my-dept-select-tree': true,
           'fullscreen': this.fullscreen,
         }
+      },
+      filterTreeData(){
+        if(!this.searchValue){
+          return this.treeData
+        }
+        let filter = []
+        this.dataList.forEach((item) => {
+          if (item.title.includes(this.searchValue)) {
+            filter.push(Object.assign({}, item, {children: null, isLeaf: true}))
+          }
+        })
+        return filter
       },
     },
     methods:{
@@ -228,22 +234,6 @@
           }
         }
         return parentKey
-      },
-      onSearch(value){
-        const expandedKeys = this.dataList.map((item) => {
-          if (item.title.indexOf(value) > -1) {
-            return this.getParentKey(item.key,this.treeData)
-          }
-          return null
-        }).filter((item, i, self) => item && self.indexOf(item) === i)
-
-        Object.assign(this, {
-          expandedKeys,
-          searchValue: value,
-          autoExpandParent: true,
-        })
-
-
       },
       // 根据 checkedKeys 获取 rows
       getCheckedRows(checkedKeys) {

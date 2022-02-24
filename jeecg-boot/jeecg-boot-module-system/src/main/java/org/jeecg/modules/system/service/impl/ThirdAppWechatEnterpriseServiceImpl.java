@@ -96,15 +96,18 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
     }
 
     @Override
-    public boolean syncLocalDepartmentToThirdApp(String ids) {
+    public SyncInfoVo syncLocalDepartmentToThirdApp(String ids) {
+        SyncInfoVo syncInfo = new SyncInfoVo();
         String accessToken = this.getAccessToken();
         if (accessToken == null) {
-            return false;
+            syncInfo.addFailInfo("accessToken获取失败！");
+            return syncInfo;
         }
         // 获取企业微信所有的部门
         List<Department> departments = JwDepartmentAPI.getAllDepartment(accessToken);
         if (departments == null) {
-            return false;
+            syncInfo.addFailInfo("获取企业微信所有部门失败！");
+            return syncInfo;
         }
         // 删除企业微信有但本地没有的部门（以本地部门数据为主）(以为企业微信不能创建同名部门，所以只能先删除）
         List<JwDepartmentTreeVo> departmentTreeList = JwDepartmentTreeVo.listToTree(departments);
@@ -117,7 +120,7 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
         // 递归同步部门
         departments = JwDepartmentAPI.getAllDepartment(accessToken);
         this.syncDepartmentRecursion(sysDepartsTree, departments, parent, accessToken);
-        return true;
+        return syncInfo;
     }
 
     // 递归删除部门以及子部门，由于企业微信不允许删除带有成员和子部门的部门，所以需要递归删除下子部门，然后把部门成员移动端根部门下
@@ -250,6 +253,11 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
                     SysDepart newSysDepart = this.qwDepartmentToSysDepart(departmentTree, null);
                     if (sysParentId != null) {
                         newSysDepart.setParentId(sysParentId);
+                        // 2 = 组织机构
+                        newSysDepart.setOrgCategory("2");
+                    } else {
+                        // 1 = 公司
+                        newSysDepart.setOrgCategory("1");
                     }
                     try {
                         sysDepartService.saveDepartData(newSysDepart, username);
@@ -604,6 +612,10 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
         BeanUtils.copyProperties(oldSysUser, sysUser);
         sysUser.setRealname(qwUser.getName());
         sysUser.setPost(qwUser.getPosition());
+        // 设置工号，由于企业微信没有工号的概念，所以只能用 userId 代替
+        if (oConvertUtils.isEmpty(sysUser.getWorkNo())) {
+            sysUser.setWorkNo(qwUser.getUserid());
+        }
         try {
             sysUser.setSex(Integer.parseInt(qwUser.getGender()));
         } catch (NumberFormatException ignored) {

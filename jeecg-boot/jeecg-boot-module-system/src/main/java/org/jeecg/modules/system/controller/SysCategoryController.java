@@ -9,9 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysCategory;
 import org.jeecg.modules.system.model.TreeSelectModel;
@@ -65,10 +67,16 @@ public class SysCategoryController {
 		Result<IPage<SysCategory>> result = new Result<IPage<SysCategory>>();
 		
 		//--author:os_chengtgen---date:20190804 -----for: 分类字典页面显示错误,issues:377--------start
-		//QueryWrapper<SysCategory> queryWrapper = QueryGenerator.initQueryWrapper(sysCategory, req.getParameterMap());
-		QueryWrapper<SysCategory> queryWrapper = new QueryWrapper<SysCategory>();
-		queryWrapper.eq("pid", sysCategory.getPid());
-		//--author:os_chengtgen---date:20190804 -----for: 分类字典页面显示错误,issues:377--------end
+		//--author:liusq---date:20211119 -----for: 【vue3】分类字典页面查询条件配置--------start
+		QueryWrapper<SysCategory> queryWrapper = QueryGenerator.initQueryWrapper(sysCategory, req.getParameterMap());
+		String name = sysCategory.getName();
+		String code = sysCategory.getCode();
+		//QueryWrapper<SysCategory> queryWrapper = new QueryWrapper<SysCategory>();
+		if(StringUtils.isBlank(name)&&StringUtils.isBlank(code)){
+			queryWrapper.eq("pid", sysCategory.getPid());
+		}
+		//--author:liusq---date:20211119 -----for: 分类字典页面查询条件配置--------end
+		//--author:os_chengtgen---date:20190804 -----for:【vue3】 分类字典页面显示错误,issues:377--------end
 
 		Page<SysCategory> page = new Page<SysCategory>(pageNo, pageSize);
 		IPage<SysCategory> pageList = sysCategoryService.page(page, queryWrapper);
@@ -215,10 +223,13 @@ public class SysCategoryController {
    * @return
    */
   @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
-  public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
+  public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) throws IOException{
       MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
       Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
-      for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+	  // 错误信息
+	  List<String> errorMessage = new ArrayList<>();
+	  int successLines = 0, errorLines = 0;
+	  for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
           MultipartFile file = entity.getValue();// 获取上传文件对象
           ImportParams params = new ImportParams();
           params.setTitleRows(2);
@@ -229,7 +240,8 @@ public class SysCategoryController {
 			 //按照编码长度排序
               Collections.sort(listSysCategorys);
 			  log.info("排序后的list====>",listSysCategorys);
-              for (SysCategory sysCategoryExcel : listSysCategorys) {
+              for (int i = 0; i < listSysCategorys.size(); i++) {
+				  SysCategory sysCategoryExcel = listSysCategorys.get(i);
 				  String code = sysCategoryExcel.getCode();
 				  if(code.length()>3){
 					  String pCode = sysCategoryExcel.getCode().substring(0,code.length()-3);
@@ -242,12 +254,25 @@ public class SysCategoryController {
 				  }else{
 					  sysCategoryExcel.setPid("0");
 				  }
-                  sysCategoryService.save(sysCategoryExcel);
+				  try {
+					  sysCategoryService.save(sysCategoryExcel);
+					  successLines++;
+				  } catch (Exception e) {
+					  errorLines++;
+					  String message = e.getMessage().toLowerCase();
+					  int lineNumber = i + 1;
+					  // 通过索引名判断出错信息
+					  if (message.contains(CommonConstant.SQL_INDEX_UNIQ_CATEGORY_CODE)) {
+						  errorMessage.add("第 " + lineNumber + " 行：分类编码已经存在，忽略导入。");
+					  }  else {
+						  errorMessage.add("第 " + lineNumber + " 行：未知错误，忽略导入");
+						  log.error(e.getMessage(), e);
+					  }
+				  }
               }
-              return Result.ok("文件导入成功！数据行数：" + listSysCategorys.size());
           } catch (Exception e) {
-              log.error(e.getMessage(), e);
-              return Result.error("文件导入失败："+e.getMessage());
+			  errorMessage.add("发生异常：" + e.getMessage());
+			  log.error(e.getMessage(), e);
           } finally {
               try {
                   file.getInputStream().close();
@@ -256,7 +281,7 @@ public class SysCategoryController {
               }
           }
       }
-      return Result.error("文件导入失败！");
+      return ImportExcelUtil.imporReturnRes(errorLines,successLines,errorMessage);
   }
   
   

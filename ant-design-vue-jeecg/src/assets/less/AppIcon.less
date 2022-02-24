@@ -1,0 +1,33 @@
+@active-color: #11da75;
+ul {
+  max-height: 700px;
+  overflow-y: auto;
+  padding-left: .5rem;
+  img {
+    width:64px;
+    height:64px;
+    padding: .2rem;
+    margin: .3rem;
+    cursor: pointer;
+    &.active, &:hover {
+      border: 1px solid @active-color;
+      border-radius: 2px;
+      color: #fff;
+      transition: all .3s;
+    }
+  }
+  li {
+    list-style: none;
+    float: left;
+    text-align: center;
+    cursor: pointer;
+    color: #555;
+    transition: color .3s ease-in-out,background-color .3s ease-in-out;
+    position: relative;
+    margin: 3px 0;
+    border-radius: 4px;
+    background-color: #fff;
+    overflow: hidden;
+    padding: 10px 0 0;
+  }
+}

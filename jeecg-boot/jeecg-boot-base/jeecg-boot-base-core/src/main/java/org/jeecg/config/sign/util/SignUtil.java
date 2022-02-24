@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.config.StaticConfig;
+import org.jeecg.config.JeeccgBaseConfig;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
@@ -46,8 +46,9 @@ public class SignUtil {
         params.remove("_t");
         String paramsJsonStr = JSONObject.toJSONString(params);
         log.info("Param paramsJsonStr : {}", paramsJsonStr);
-        StaticConfig staticConfig = SpringContextUtils.getBean(StaticConfig.class);
-        String signatureSecret = staticConfig.getSignatureSecret();
+        //设置签名秘钥
+        JeeccgBaseConfig jeeccgBaseConfig = SpringContextUtils.getBean(JeeccgBaseConfig.class);
+        String signatureSecret = jeeccgBaseConfig.getSignatureSecret();
         if(oConvertUtils.isEmpty(signatureSecret) || signatureSecret.contains("${")){
             throw new JeecgBootException("签名密钥 ${jeecg.signatureSecret} 缺少配置 ！！");
         }

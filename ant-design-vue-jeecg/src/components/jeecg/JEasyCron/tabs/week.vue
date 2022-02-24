@@ -1,5 +1,5 @@
 <template>
-  <div class="config-list">
+  <div class="config-list week">
     <a-radio-group v-model="type">
       <div class="item">
         <a-radio value="TYPE_NOT_SET" class="choice" :disabled="disableChoice">不设置</a-radio>
@@ -36,8 +36,8 @@
         <a-radio value="TYPE_SPECIFY" class="choice" :disabled="disableChoice">指定</a-radio>
         <div class="list">
           <a-checkbox-group v-model="valueList">
-            <template v-for="i in specifyRange">
-              <a-checkbox class="list-check-item" :key="`key-${i}`" :value="i" :disabled="type!==TYPE_SPECIFY || disabled">{{i}}</a-checkbox>
+            <template v-for="(v,k) in WEEK_MAP">
+              <a-checkbox class="list-check-item" :key="`key-${v}`" :value="v" :disabled="type!==TYPE_SPECIFY || disabled">{{k}}</a-checkbox>
             </template>
           </a-checkbox-group>
         </div>

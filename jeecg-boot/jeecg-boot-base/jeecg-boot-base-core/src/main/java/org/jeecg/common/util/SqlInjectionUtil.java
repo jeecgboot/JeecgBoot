@@ -17,7 +17,7 @@ public class SqlInjectionUtil {
 	 * （上线修改值 20200501，同步修改前端的盐值）
 	 */
 	private final static String TABLE_DICT_SIGN_SALT = "20200501";
-	private final static String xssStr = "'|and |exec |insert |select |delete |update |drop |count |chr |mid |master |truncate |char |declare |;|or |+";
+	private final static String xssStr = "and |exec |insert |select |delete |update |drop |count |chr |mid |master |truncate |char |declare |;|or |+|user()";
 
 	/*
 	* 针对表字典进行额外的sign签名校验（增加安全机制）

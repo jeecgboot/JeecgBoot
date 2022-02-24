@@ -1,70 +1,16 @@
 <template>
-  <a-card :visible="visible">
-    <a-form-model ref="form" :model="model">
-      <a-form-model-item
-        :labelCol="labelCol"
-        :wrapperCol="wrapperCol"
-        label="机构名称">
-        <a-input style="border:0;" placeholder="" v-model="model.departName"/>
-      </a-form-model-item>
-      <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门">
-        <a-tree-select
-          disabled
-          style="width:100%;border: 0;border: none;outline:none;"
-          :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
-          :treeData="treeData"
-          v-model="model.parentId"
-          placeholder="无">
-        </a-tree-select>
-      </a-form-model-item>
-      <a-form-model-item
-        :labelCol="labelCol"
-        :wrapperCol="wrapperCol"
-        label="机构编码">
-        <a-input style="border:0;" placeholder="" v-model="model.orgCode"/>
-      </a-form-model-item>
-      <a-form-model-item
-        :labelCol="labelCol"
-        :wrapperCol="wrapperCol"
-        label="机构类型">
-          <a-radio-group :disabled="true" v-model="model.orgCategory" read-only>
-            <a-radio value="1">
-              公司
-            </a-radio>
-            <a-radio value="2">
-              部门
-            </a-radio>
-            <a-radio value="3">
-              岗位
-            </a-radio>
-          </a-radio-group>
-      </a-form-model-item>
-      <a-form-model-item
-        :labelCol="labelCol"
-        :wrapperCol="wrapperCol"
-        label="排序">
-        <a-input-number style="border:0;" v-model="model.departOrder"/>
-      </a-form-model-item>
-      <a-form-model-item
-        :labelCol="labelCol"
-        :wrapperCol="wrapperCol"
-        label="手机号">
-        <a-input style="border:0;" placeholder="" v-model="model.mobile"/>
-      </a-form-model-item>
-      <a-form-model-item
-        :labelCol="labelCol"
-        :wrapperCol="wrapperCol"
-        label="地址">
-        <a-input style="border:0;" placeholder="" v-model="model.address"/>
-      </a-form-model-item>
-      <a-form-model-item
-        :labelCol="labelCol"
-        :wrapperCol="wrapperCol"
-        label="备注">
-        <a-textarea style="border:0;" placeholder="" v-model="model.memo"/>
-      </a-form-model-item>
-    </a-form-model>
-  </a-card>
+  <div :visible="visible">
+    <a-descriptions size="small" bordered :column="1">
+      <a-descriptions-item label="机构名称">{{model.departName}}</a-descriptions-item>
+      <a-descriptions-item label="上级部门"><span>{{model.parentId}}</span></a-descriptions-item>
+      <a-descriptions-item label="机构编码"><span>{{model.orgCode}}</span></a-descriptions-item>
+      <a-descriptions-item label="机构类型"><span>{{model.orgCategory}}</span></a-descriptions-item>
+      <a-descriptions-item label="排序"><span>{{model.departOrder}}</span></a-descriptions-item>
+      <a-descriptions-item label="手机号"><span>{{model.mobile}}</span></a-descriptions-item>
+      <a-descriptions-item label="地址"><span>{{model.address}}</span></a-descriptions-item>
+      <a-descriptions-item label="备注"><span>{{model.memo}}</span></a-descriptions-item>
+    </a-descriptions>
+  </div>
 </template>
 <script>
   import { queryIdTree } from '@/api/api'
@@ -107,18 +53,70 @@
       },
       open(record) {
         this.visible = true;
-        this.$nextTick(() => {
-          this.$refs.form.resetFields()
-          this.model = Object.assign({}, record)
-        })
-      },
+        //update-begin---author:wangshuai ---date:20220211  for：[JTC-174]部门管理界面参考vue3的改改------------
+        this.model = Object.assign({}, record)
+        this.model.parentId = this.findTree(this.treeData,record.parentId);
+        this.model.orgCategory = this.orgCategoryText(record.orgCategory)
+        //update-end---author:wangshuai ---date:20220211  for：[JTC-174]部门管理界面参考vue3的改改------------
+        },
       clearForm() {
-        this.$refs.form.resetFields();
         this.treeData = [];
       },
+      /**
+       * 通过父id查找部门名称
+       * @param treeList 树数组
+       * @param id 父id
+       * @return id对应的部门名称
+       */
+      findTree(treeList,id){
+        for (let i = 0; i < treeList.length; i++) {
+          let item = treeList[i];
+          //如果当前id和父id相同则返回部门名称
+          if (item.key == id) {
+            return item.title;
+          }
+          let children = item.children
+          //存在子部门进行递归查询
+          if(children){
+            let findResult = this.findTree(children, id);
+            //返回的数据不为空，结束递归，返回结果
+            if (findResult) {
+              return findResult
+            }
+          }
+        }
+      },
+      /**
+       * 将机构类型数值翻译成文本
+       * @param orgCategory 部门类别
+       * @return 部门类别对应的文本
+       */
+      orgCategoryText(orgCategory) {
+        if(orgCategory == 1){
+          return "公司";
+        }else if(orgCategory == 2){
+          return "部门";
+        }else{
+          return "岗位";
+        }
+      }
     }
   }
 </script>
-<style scoped>
-  @import '~@assets/less/common.less'
+<style scoped lang="less">
+  .ant-descriptions-view{
+    border: 1px solid #f0f0f0;
+  }
+  /deep/ .ant-descriptions-item-label{
+    width:180px
+  }
+  /deep/ .ant-descriptions-item-content span{
+    color:#000000d9;
+  }
+  /deep/ .ant-descriptions-bordered .ant-descriptions-row{
+    border-bottom: 1px solid #f0f0f0 !important;
+  }
+  /deep/ .ant-descriptions-bordered .ant-descriptions-item-label{
+    border-right:  1px solid #f0f0f0;
+  }
 </style>
