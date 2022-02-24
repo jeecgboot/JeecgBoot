@@ -97,7 +97,7 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 	 * @return
 	 */
 	@ApiOperation(value="部门权限表-编辑", notes="部门权限表-编辑")
-	@PutMapping(value = "/edit")
+	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<?> edit(@RequestBody SysDepartPermission sysDepartPermission) {
 		sysDepartPermissionService.updateById(sysDepartPermission);
 		return Result.ok("编辑成功!");

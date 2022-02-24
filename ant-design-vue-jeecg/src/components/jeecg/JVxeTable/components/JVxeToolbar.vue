@@ -10,6 +10,7 @@
         <a-popconfirm
           v-if="showRemove"
           :title="`确定要删除这 ${selectedRowIds.length} 项吗?`"
+          :disabled="disabled"
           @confirm="trigger('remove')"
         >
           <a-button icon="minus" :disabled="disabled">删除</a-button>

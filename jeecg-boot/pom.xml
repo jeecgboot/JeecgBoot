@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.0</version>
+  <version>3.1.0</version>
   <packaging>pom</packaging>
   
   	<parent>
@@ -13,7 +13,7 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.0</jeecgboot.version>
+		<jeecgboot.version>3.1.0</jeecgboot.version>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
@@ -42,12 +42,12 @@
 		<java-jwt.version>3.11.0</java-jwt.version>
 		<shiro-redis.version>3.1.0</shiro-redis.version>
 		<codegenerate.version>1.3.7</codegenerate.version>
-		<autopoi-web.version>1.3.6</autopoi-web.version>
+		<autopoi-web.version>1.3.9</autopoi-web.version>
 		<minio.version>8.0.3</minio.version>
 		<justauth-spring-boot-starter.version>1.3.4</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<qiniu-java-sdk.version>7.4.0</qiniu-java-sdk.version>
-		<!-- Log4j2惊爆0Day漏洞-->
+		<!-- Log4j2爆雷漏洞 -->
 		<log4j2.version>2.17.0</log4j2.version>
 		<logback.version>1.2.9</logback.version>
 	</properties>
@@ -366,6 +366,10 @@
                 <config.server-addr>127.0.0.1:8848</config.server-addr>
                 <!--Nacos配置中心命名空间,用于支持多环境.这里必须使用ID，不能使用名称,默认为空-->
                 <config.namespace></config.namespace>
+				<!--Nacos用户名-->
+				<config.username>nacos</config.username>
+				<!--Nacos密码-->
+				<config.password>nacos</config.password>
                 <!--Nacos配置分组名称-->
                 <config.group>DEFAULT_GROUP</config.group>
                 <!--Nacos服务发现地址-->
@@ -384,6 +388,10 @@
                 <config.server-addr>127.0.0.1:8848</config.server-addr>
                 <!--Nacos配置中心命名空间,用于支持多环境.这里必须使用ID，不能使用名称,默认为空-->
                 <config.namespace></config.namespace>
+				<!--Nacos用户名-->
+				<config.username>nacos</config.username>
+				<!--Nacos密码-->
+				<config.password>nacos</config.password>
                 <!--Nacos配置分组名称-->
                 <config.group>DEFAULT_GROUP</config.group>
                 <!--Nacos服务发现地址-->
@@ -402,6 +410,10 @@
                 <config.server-addr>127.0.0.1:8848</config.server-addr>
                 <!--Nacos配置中心命名空间,用于支持多环境.这里必须使用ID，不能使用名称,默认为空-->
                 <config.namespace></config.namespace>
+				<!--Nacos用户名-->
+				<config.username>nacos</config.username>
+				<!--Nacos密码-->
+				<config.password>nacos</config.password>
                 <!--Nacos配置分组名称-->
                 <config.group>DEFAULT_GROUP</config.group>
                 <!--Nacos服务发现地址-->

@@ -83,19 +83,19 @@ export function formatDate(value, fmt) {
 
 // 生成首页路由
 export function generateIndexRouter(data) {
-let indexRouter = [{
-          path: '/',
-          name: 'dashboard',
-          //component: () => import('@/components/layouts/BasicLayout'),
-          component: resolve => require(['@/components/layouts/TabLayout'], resolve),
-          meta: { title: '首页' },
-          redirect: '/dashboard/analysis',
-          children: [
-            ...generateChildRouters(data)
-          ]
-        },{
-          "path": "*", "redirect": "/404", "hidden": true
-        }]
+  let indexRouter = [{
+    path: '/',
+    name: 'dashboard',
+    //component: () => import('@/components/layouts/BasicLayout'),
+    component: resolve => require(['@/components/layouts/TabLayout'], resolve),
+    meta: { title: '首页' },
+    redirect: '/dashboard/analysis',
+    children: [
+      ...generateChildRouters(data)
+    ]
+  },{
+    "path": "*", "redirect": "/404", "hidden": true
+  }]
   return indexRouter;
 }
 
@@ -106,9 +106,9 @@ function  generateChildRouters (data) {
   for (let item of data) {
     let component = "";
     if(item.component.indexOf("layouts")>=0){
-       component = "components/"+item.component;
+      component = "components/"+item.component;
     }else{
-       component = "views/"+item.component;
+      component = "views/"+item.component;
     }
 
     // eslint-disable-next-line
@@ -206,7 +206,7 @@ export function randomNumber() {
   }
   if (arguments.length === 1) {
     let [length] = arguments
-  // 生成指定长度的随机数字，首位一定不是 0
+    // 生成指定长度的随机数字，首位一定不是 0
     let nums = [...Array(length).keys()].map((i) => (i > 0 ? random(0, 9) : random(1, 9)))
     return parseInt(nums.join(''))
   } else if (arguments.length >= 2) {

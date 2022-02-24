@@ -158,7 +158,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-编辑")
 	@ApiOperation(value="${tableVo.ftlDescription}-编辑", notes="${tableVo.ftlDescription}-编辑")
-	@PutMapping(value = "/edit")
+	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<?> edit(@RequestBody ${entityName} ${entityName?uncap_first}) {
 		${entityName?uncap_first}Service.update${entityName}(${entityName?uncap_first});
 		return Result.OK("编辑成功!");

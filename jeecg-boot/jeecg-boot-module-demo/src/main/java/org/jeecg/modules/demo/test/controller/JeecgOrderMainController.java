@@ -104,7 +104,7 @@ public class JeecgOrderMainController extends JeecgController<JeecgOrderMain, IJ
      * @param jeecgOrderMainPage
      * @return
      */
-    @PutMapping(value = "/edit")
+    @RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
     public Result<?> eidt(@RequestBody JeecgOrderMainPage jeecgOrderMainPage) {
         JeecgOrderMain jeecgOrderMain = new JeecgOrderMain();
         BeanUtils.copyProperties(jeecgOrderMainPage, jeecgOrderMain);

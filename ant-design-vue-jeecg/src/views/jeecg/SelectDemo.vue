@@ -254,7 +254,7 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-model-item label="树字典" prop="treeDict">
-              <j-tree-dict v-model="formData.treeDict" placeholder="请选择树字典" parentCode="A01" />
+              <j-tree-dict v-model="formData.treeDict" placeholder="请选择树字典" parentCode="B01" />
             </a-form-model-item>
           </a-col>
           <a-col :span="12">选中的值(v-model)：{{ formData.treeDict }}</a-col>
@@ -410,14 +410,11 @@
 
         <!-- 省市县级联 -->
         <a-row :gutter="24">
-          <a-col :span="12">
-            <a-form-model-item label="省市县级联" prop="areaLinkage2">
-              <j-area-linkage v-model="formData.areaLinkage2" type="select"/>
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="12">输入的值(v-model)：{{ formData.areaLinkage2 }}</a-col>
+          <a-form-model-item label="省市县级联" prop="areaLinkage2">
+            <j-area-linkage v-model="formData.areaLinkage2" type="select" style="float: left"/>
+            <span style="margin-left: 25px">输入的值(v-model)：{{ formData.areaLinkage2 }}</span>
+          </a-form-model-item>
         </a-row>
-
         <!-- 功能示例：关闭当前页面 -->
         <a-row :gutter="24">
           <a-col :span="12">

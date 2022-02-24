@@ -23,7 +23,7 @@
           :wrapperCol="wrapperCol"
           prop="roleCode"
           label="部门角色编码">
-          <a-input placeholder="请输入部门角色编码" v-model="model.roleCode"/>
+          <a-input placeholder="请输入部门角色编码" v-model="model.roleCode"  :read-only="roleCodeRead"/>
         </a-form-model-item>
         <a-form-model-item
           :labelCol="labelCol"
@@ -76,6 +76,7 @@
           add: "/sys/sysDepartRole/add",
           edit: "/sys/sysDepartRole/edit",
         },
+        roleCodeRead:false //编码时候可以编写
       }
     },
     created () {
@@ -87,6 +88,9 @@
       edit (record,departId) {
         this.departId = departId;
         this.model = Object.assign({}, record);
+        //update-begin---author:wangshuai ---date:20220104  for：[JTC-367]我的部门->部门角色 角色编码应该不可修改------------
+        this.roleCodeRead = !!this.model.roleCode
+        //update-end---author:wangshuai ---date:20220104  for：[JTC-367]我的部门->部门角色 角色编码应该不可修改------------
         this.visible = true;
       },
       close () {

@@ -37,7 +37,9 @@
         visible: false,
         bodyStyle:{
           padding: "0",
-          height:(window.innerHeight-150)+"px"
+          //update-begin---author:wangshuai ---date:20220104  for：[JTC-411]火狐 分屏 图片大时，与按钮重叠，样式不好------------
+          height:(window.innerHeight-140)+"px"
+          //update-begin---author:wangshuai ---date:20220104  for：[JTC-411]火狐 分屏 图片大时，与按钮重叠，样式不好------------
         },
         modalWidth:800,
       }

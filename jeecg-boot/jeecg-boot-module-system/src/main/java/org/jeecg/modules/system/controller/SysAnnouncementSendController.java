@@ -10,6 +10,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.WebsocketConst;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.message.websocket.WebSocket;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
@@ -69,6 +70,11 @@ public class SysAnnouncementSendController {
 		//排序逻辑 处理
 		String column = req.getParameter("column");
 		String order = req.getParameter("order");
+
+		//issues/3331 SQL injection vulnerability
+		SqlInjectionUtil.filterContent(column);
+		SqlInjectionUtil.filterContent(order);
+
 		if(oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
 			if("asc".equals(order)) {
 				queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));

@@ -129,7 +129,7 @@
     </div>
 </div>
 <div>
-    ${data.msgContent}
+    ${data.msgContent!''}
 </div>
 </body>
 </html>

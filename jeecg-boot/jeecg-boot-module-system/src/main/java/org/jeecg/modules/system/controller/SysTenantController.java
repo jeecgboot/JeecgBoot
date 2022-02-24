@@ -6,9 +6,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.service.ISysTenantService;
@@ -16,9 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 租户配置信息
@@ -132,11 +132,11 @@ public class SysTenantController {
         }else {
             String[] ls = ids.split(",");
             // 过滤掉已被引用的租户
-            List<String> idList = new ArrayList<>();
+            List<Integer> idList = new ArrayList<>();
             for (String id : ls) {
                 int userCount = sysTenantService.countUserLinkTenant(id);
                 if (userCount == 0) {
-                    idList.add(id);
+                    idList.add(Integer.parseInt(id));
                 }
             }
             if (idList.size() > 0) {
@@ -188,6 +188,34 @@ public class SysTenantController {
         List<SysTenant> ls = sysTenantService.list(query);
         result.setSuccess(true);
         result.setResult(ls);
+        return result;
+    }
+    /**
+     *  查询当前用户的所有有效租户 【当前用于vue3版本】
+     * @return
+     */
+    @RequestMapping(value = "/getCurrentUserTenant", method = RequestMethod.GET)
+    public Result<Map<String,Object>> getCurrentUserTenant() {
+        Result<Map<String,Object>> result = new Result<Map<String,Object>>();
+        try {
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            String tenantIds = sysUser.getRelTenantIds();
+            Map<String,Object> map = new HashMap<String,Object>();
+            if (oConvertUtils.isNotEmpty(tenantIds)) {
+                List<Integer> tenantIdList = new ArrayList<>();
+                for(String id: tenantIds.split(",")){
+                    tenantIdList.add(Integer.valueOf(id));
+                }
+                // 该方法仅查询有效的租户，如果返回0个就说明所有的租户均无效。
+                List<SysTenant> tenantList = sysTenantService.queryEffectiveTenant(tenantIdList);
+                map.put("list", tenantList);
+            }
+            result.setSuccess(true);
+            result.setResult(map);
+        }catch(Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("查询失败！");
+        }
         return result;
     }
 }

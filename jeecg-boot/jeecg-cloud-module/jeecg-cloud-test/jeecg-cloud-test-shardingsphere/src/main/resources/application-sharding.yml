@@ -1,0 +1,42 @@
+spring:
+  shardingsphere:
+    props:
+      sql-show: true
+    datasource:
+      ds0:
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/jeecg-boot?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+        username: root
+        type: com.alibaba.druid.pool.DruidDataSource
+        password: root
+      names: ds0
+    # 规则配置
+    rules:
+      sharding:
+        # 配置绑定表，每一行为一组
+        binding-tables: sys_log
+        # 分布式序列算法配置
+        key-generators:
+          snowflake:
+            type: SNOWFLAKE
+            props:
+              worker-id: 123
+        # 分片算法配置
+        sharding-algorithms:
+          table-classbased:
+            props:
+              strategy: standard
+              algorithmClassName: org.jeecg.modules.test.sharding.algorithm.StandardModTableShardAlgorithm
+            type: CLASS_BASED
+        tables:
+          # 逻辑表名称
+          sys_log:
+            #配置具体表的数据节点
+            actual-data-nodes: ds0.sys_log$->{0..1}
+            # 分表策略
+            table-strategy:
+              standard:
+                # 分片算法名称
+                sharding-algorithm-name: table-classbased
+                # 分片列名称
+                sharding-column: log_type

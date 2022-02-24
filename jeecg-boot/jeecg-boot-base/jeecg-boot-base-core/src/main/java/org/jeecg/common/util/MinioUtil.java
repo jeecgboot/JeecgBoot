@@ -1,6 +1,7 @@
 package org.jeecg.common.util;
 
 import io.minio.*;
+import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.util.filter.FileTypeFilter;
 import org.jeecg.common.util.filter.StrAttackFilter;
@@ -158,9 +159,11 @@ public class MinioUtil {
     public static String getObjectURL(String bucketName, String objectName, Integer expires) {
         initMinio(minioUrl, minioName,minioPass);
         try{
+            //update-begin---author:liusq  Date:20220121  for：获取文件外链报错提示method不能为空，导致文件下载和预览失败----
             GetPresignedObjectUrlArgs objectArgs = GetPresignedObjectUrlArgs.builder().object(objectName)
                     .bucket(bucketName)
-                    .expiry(expires).build();
+                    .expiry(expires).method(Method.GET).build();
+            //update-begin---author:liusq  Date:20220121  for：获取文件外链报错提示method不能为空，导致文件下载和预览失败----
             String url = minioClient.getPresignedObjectUrl(objectArgs);
             return URLDecoder.decode(url,"UTF-8");
         }catch (Exception e){

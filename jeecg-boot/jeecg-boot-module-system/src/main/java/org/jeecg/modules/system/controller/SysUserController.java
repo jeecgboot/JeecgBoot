@@ -108,12 +108,38 @@ public class SysUserController {
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
 		Result<IPage<SysUser>> result = new Result<IPage<SysUser>>();
 		QueryWrapper<SysUser> queryWrapper = QueryGenerator.initQueryWrapper(user, req.getParameterMap());
-    	//TODO 外部模拟登陆临时账号，列表不显示
+        
+        //update-begin-Author:wangshuai--Date:20211119--for:【vue3】通过部门id查询用户，通过code查询id
+        //部门ID
+        String departId = req.getParameter("departId");
+        if(oConvertUtils.isNotEmpty(departId)){
+            LambdaQueryWrapper<SysUserDepart> query = new LambdaQueryWrapper<>();
+            query.eq(SysUserDepart::getDepId,departId);
+            List<SysUserDepart> list = sysUserDepartService.list(query);
+            List<String> userIds = list.stream().map(SysUserDepart::getUserId).collect(Collectors.toList());
+            queryWrapper.in("id",userIds);
+        }
+        //用户ID
+        String code = req.getParameter("code");
+        if(oConvertUtils.isNotEmpty(code)){
+            queryWrapper.in("id",Arrays.asList(code.split(",")));
+            pageSize = code.split(",").length;
+        }
+        //update-end-Author:wangshuai--Date:20211119--for:【vue3】通过部门id查询用户，通过code查询id
+
+        //update-begin-author:taoyan--date:20220104--for: JTC-372 【用户冻结问题】 online授权、用户组件，选择用户都能看到被冻结的用户
+        String status = req.getParameter("status");
+        if(oConvertUtils.isNotEmpty(status)){
+            queryWrapper.eq("status", Integer.parseInt(status));
+        }
+        //update-end-author:taoyan--date:20220104--for: JTC-372 【用户冻结问题】 online授权、用户组件，选择用户都能看到被冻结的用户
+
+        //TODO 外部模拟登陆临时账号，列表不显示
         queryWrapper.ne("username","_reserve_user_external");
 		Page<SysUser> page = new Page<SysUser>(pageNo, pageSize);
 		IPage<SysUser> pageList = sysUserService.page(page, queryWrapper);
 
-		//批量查询用户的所属部门
+        //批量查询用户的所属部门
         //step.1 先拿到全部的 useids
         //step.2 通过 useids，一次性查询用户的所属部门名字
         List<String> userIds = pageList.getRecords().stream().map(SysUser::getId).collect(Collectors.toList());
@@ -492,6 +518,8 @@ public class SysUserController {
                             errorMessage.add("第 " + lineNumber + " 行：手机号已经存在，忽略导入。");
                         } else if (message.contains(CommonConstant.SQL_INDEX_UNIQ_SYS_USER_EMAIL)) {
                             errorMessage.add("第 " + lineNumber + " 行：电子邮件已经存在，忽略导入。");
+                        }  else if (message.contains(CommonConstant.SQL_INDEX_UNIQ_SYS_USER)) {
+                            errorMessage.add("第 " + lineNumber + " 行：违反表唯一性约束。");
                         } else {
                             errorMessage.add("第 " + lineNumber + " 行：未知错误，忽略导入");
                             log.error(e.getMessage(), e);
@@ -1187,7 +1215,7 @@ public class SysUserController {
      * @param jsonObject
      * @return
      */
-    @RequestMapping(value = "/appEdit", method = RequestMethod.PUT)
+    @RequestMapping(value = "/appEdit", method = {RequestMethod.PUT,RequestMethod.POST})
     public Result<SysUser> appEdit(HttpServletRequest request,@RequestBody JSONObject jsonObject) {
         Result<SysUser> result = new Result<SysUser>();
         try {
@@ -1305,7 +1333,9 @@ public class SysUserController {
      * @return
      */
     @GetMapping("/appQueryUser")
-    public Result<List<SysUser>> appQueryUser(@RequestParam(name = "keyword", required = false) String keyword) {
+    public Result<List<SysUser>> appQueryUser(@RequestParam(name = "keyword", required = false) String keyword,
+                                              @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                              @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
         Result<List<SysUser>> result = new Result<List<SysUser>>();
         LambdaQueryWrapper<SysUser> queryWrapper =new LambdaQueryWrapper<SysUser>();
         //TODO 外部模拟登陆临时账号，列表不显示
@@ -1313,18 +1343,19 @@ public class SysUserController {
         if(StringUtils.isNotBlank(keyword)){
             queryWrapper.and(i -> i.like(SysUser::getUsername, keyword).or().like(SysUser::getRealname, keyword));
         }
-        List<SysUser> list = sysUserService.list(queryWrapper);
+        Page<SysUser> page = new Page<>(pageNo, pageSize);
+        IPage<SysUser> pageList = this.sysUserService.page(page, queryWrapper);
         //批量查询用户的所属部门
         //step.1 先拿到全部的 useids
         //step.2 通过 useids，一次性查询用户的所属部门名字
-        List<String> userIds = list.stream().map(SysUser::getId).collect(Collectors.toList());
+        List<String> userIds = pageList.getRecords().stream().map(SysUser::getId).collect(Collectors.toList());
         if(userIds!=null && userIds.size()>0){
             Map<String,String>  useDepNames = sysUserService.getDepNamesByUserIds(userIds);
-            list.forEach(item->{
+            pageList.getRecords().forEach(item->{
                 item.setOrgCodeTxt(useDepNames.get(item.getId()));
             });
         }
-        result.setResult(list);
+        result.setResult(pageList.getRecords());
         return result;
     }
 
@@ -1374,6 +1405,9 @@ public class SysUserController {
     @GetMapping("/getMultiUser")
     public List<SysUser> getMultiUser(SysUser sysUser){
         QueryWrapper<SysUser> queryWrapper = QueryGenerator.initQueryWrapper(sysUser, null);
+        //update-begin---author:wangshuai ---date:20220104  for：[JTC-297]已冻结用户仍可设置为代理人------------
+        queryWrapper.eq("status",Integer.parseInt(CommonConstant.STATUS_1));
+        //update-end---author:wangshuai ---date:20220104  for：[JTC-297]已冻结用户仍可设置为代理人------------
         List<SysUser> ls = this.sysUserService.list(queryWrapper);
         for(SysUser user: ls){
             user.setPassword(null);

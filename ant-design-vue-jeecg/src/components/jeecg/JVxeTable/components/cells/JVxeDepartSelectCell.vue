@@ -22,7 +22,7 @@
         @initComp="initComp"/>
     <span style="display: inline-block;height:100%;padding-left:14px" v-if="departIds" >
       <span @click="openSelect" style="display: inline-block;vertical-align: middle">{{ departNames }}</span>
-      <a-icon style="margin-left:5px;vertical-align: middle" type="close-circle" @click="handleEmpty" title="清空"/>
+      <a-icon v-if="!componentDisabled" style="margin-left:5px;vertical-align: middle" type="close-circle" @click="handleEmpty" title="清空"/>
     </span>
   </div>
 </template>
@@ -98,6 +98,10 @@
     },
     methods: {
       openSelect(){
+        // disabled 不弹窗
+        if (this.componentDisabled) {
+          return
+        }
         this.$refs.innerDepartSelectModal.show()
       },
       handleEmpty(){

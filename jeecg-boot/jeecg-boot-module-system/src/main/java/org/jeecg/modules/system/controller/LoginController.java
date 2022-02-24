@@ -4,6 +4,7 @@ import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.exceptions.ClientException;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -58,8 +59,6 @@ public class LoginController {
 	@Resource
 	private BaseCommonService baseCommonService;
 
-	private static final String BASE_CHECK_CODES = "qwertyuiplkjhgfdsazxcvbnmQWERTYUPLKJHGFDSAZXCVBNM1234567890";
-
 	@ApiOperation("登录接口")
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel){
@@ -82,6 +81,7 @@ public class LoginController {
 		Object checkCode = redisUtil.get(realKey);
 		//当进入登录页时，有一定几率出现验证码错误 #1714
 		if(checkCode==null || !checkCode.toString().equals(lowerCaseCaptcha)) {
+            log.warn("验证码错误，key= {} , Ui checkCode= {}, Redis checkCode = {}", sysLoginModel.getCheckKey(), lowerCaseCaptcha, checkCode);
 			result.error500("验证码错误");
 			return result;
 		}
@@ -402,7 +402,10 @@ public class LoginController {
 		// update-begin--Author:sunjianlei Date:20210802 for：获取用户租户信息
 		String tenantIds = sysUser.getRelTenantIds();
 		if (oConvertUtils.isNotEmpty(tenantIds)) {
-			List<String> tenantIdList = Arrays.asList(tenantIds.split(","));
+			List<Integer> tenantIdList = new ArrayList<>();
+			for(String id: tenantIds.split(",")){
+				tenantIdList.add(Integer.valueOf(id));
+			}
 			// 该方法仅查询有效的租户，如果返回0个就说明所有的租户均无效。
 			List<SysTenant> tenantList = sysTenantService.queryEffectiveTenant(tenantIdList);
 			if (tenantList.size() == 0) {
@@ -450,10 +453,17 @@ public class LoginController {
 	public Result<String> randomImage(HttpServletResponse response,@PathVariable String key){
 		Result<String> res = new Result<String>();
 		try {
+			//生成验证码
+			final String BASE_CHECK_CODES = "qwertyuiplkjhgfdsazxcvbnmQWERTYUPLKJHGFDSAZXCVBNM1234567890";
 			String code = RandomUtil.randomString(BASE_CHECK_CODES,4);
+
+			//存到redis中
 			String lowerCaseCode = code.toLowerCase();
 			String realKey = MD5Util.MD5Encode(lowerCaseCode+key, "utf-8");
+            log.info("获取验证码，Redis checkCode = {}，key = {}", code, key);
 			redisUtil.set(realKey, lowerCaseCode, 60);
+
+			//返回前端
 			String base64 = RandImageUtil.generate(code);
 			res.setSuccess(true);
 			res.setResult(base64);
@@ -495,13 +505,16 @@ public class LoginController {
 		if(oConvertUtils.isEmpty(orgCode)) {
 			//如果当前用户无选择部门 查看部门关联信息
 			List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());
+			//update-begin-author:taoyan date:20220117 for: JTC-1068【app】新建用户，没有设置部门及角色，点击登录提示暂未归属部，一直在登录页面 使用手机号登录 可正常
 			if (departs == null || departs.size() == 0) {
-				result.error500("用户暂未归属部门,不可登录!");
-				return result;
+				/*result.error500("用户暂未归属部门,不可登录!");
+				return result;*/
+			}else{
+				orgCode = departs.get(0).getOrgCode();
+				sysUser.setOrgCode(orgCode);
+				this.sysUserService.updateUserDepart(username, orgCode);
 			}
-			orgCode = departs.get(0).getOrgCode();
-			sysUser.setOrgCode(orgCode);
-			this.sysUserService.updateUserDepart(username, orgCode);
+			//update-end-author:taoyan date:20220117 for: JTC-1068【app】新建用户，没有设置部门及角色，点击登录提示暂未归属部，一直在登录页面 使用手机号登录 可正常
 		}
 		JSONObject obj = new JSONObject();
 		//用户登录信息
@@ -541,6 +554,59 @@ public class LoginController {
 			return Result.error("验证码错误");
 		}
 		return Result.ok();
+	}
+	/**
+	 * 登录二维码
+	 */
+	@ApiOperation(value = "登录二维码", notes = "登录二维码")
+	@GetMapping("/getLoginQrcode")
+	public Result<?>  getLoginQrcode() {
+		String qrcodeId = CommonConstant.LOGIN_QRCODE_PRE+IdWorker.getIdStr();
+		//定义二维码参数
+		Map params = new HashMap(5);
+		params.put("qrcodeId", qrcodeId);
+		//存放二维码唯一标识30秒有效
+		redisUtil.set(CommonConstant.LOGIN_QRCODE + qrcodeId, qrcodeId, 30);
+		return Result.OK(params);
+	}
+	/**
+	 * 扫码二维码
+	 */
+	@ApiOperation(value = "扫码登录二维码", notes = "扫码登录二维码")
+	@PostMapping("/scanLoginQrcode")
+	public Result<?> scanLoginQrcode(@RequestParam String qrcodeId, @RequestParam String token) {
+		Object check = redisUtil.get(CommonConstant.LOGIN_QRCODE + qrcodeId);
+		if (oConvertUtils.isNotEmpty(check)) {
+			//存放token给前台读取
+			redisUtil.set(CommonConstant.LOGIN_QRCODE_TOKEN+qrcodeId, token, 60);
+		} else {
+			return Result.error("二维码已过期,请刷新后重试");
+		}
+		return Result.OK("扫码成功");
+	}
+
+
+	/**
+	 * 获取用户扫码后保存的token
+	 */
+	@ApiOperation(value = "获取用户扫码后保存的token", notes = "获取用户扫码后保存的token")
+	@GetMapping("/getQrcodeToken")
+	public Result getQrcodeToken(@RequestParam String qrcodeId) {
+		Object token = redisUtil.get(CommonConstant.LOGIN_QRCODE_TOKEN + qrcodeId);
+		Map result = new HashMap();
+		Object qrcodeIdExpire = redisUtil.get(CommonConstant.LOGIN_QRCODE + qrcodeId);
+		if (oConvertUtils.isEmpty(qrcodeIdExpire)) {
+			//二维码过期通知前台刷新
+			result.put("token", "-2");
+			return Result.OK(result);
+		}
+		if (oConvertUtils.isNotEmpty(token)) {
+			result.put("success", true);
+			result.put("token", token);
+		} else {
+			result.put("token", "-1");
+		}
+		return Result.OK(result);
 	}
 
 }

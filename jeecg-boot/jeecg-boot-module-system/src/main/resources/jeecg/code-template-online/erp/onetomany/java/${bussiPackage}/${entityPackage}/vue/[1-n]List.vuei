@@ -15,8 +15,6 @@
         @change="handleImportExcel">
           <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
-      <!-- 高级查询区域 -->
-      <j-super-query :fieldList="superFieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -192,12 +190,10 @@
          </#if>
          </#if>
          </#list>
-        },
-        superFieldList:[],
+        }
       }
     },
     created() {
-      this.getSuperFieldList();
     },
     computed: {
       importExcelUrl(){
@@ -209,15 +205,8 @@
         this.dataSource=[]
         this.selectedRowKeys=[]
         this.ipagination.current = 1
-      },
-      getSuperFieldList(){
-        <#include "/common/utils.ftl">
-        let fieldList=[];
-         <#list columns as po>
-        fieldList.push(${superQueryFieldList(po)})
-         </#list>
-        this.superFieldList = fieldList
       }
+
     }
   }
 </script>

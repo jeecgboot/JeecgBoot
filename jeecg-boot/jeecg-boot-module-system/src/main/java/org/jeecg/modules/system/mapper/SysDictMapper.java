@@ -193,4 +193,15 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 */
 	@Deprecated
 	List<DictModel> queryAllTableDictItems(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("filterSql") String filterSql);
+
+	/**
+	 * 查询字典表的数据
+	 * @param table 表名
+	 * @param text   显示字段名
+	 * @param code   存储字段名
+	 * @param filterSql 条件sql
+	 * @param codeValues 存储字段值 作为查询条件in
+	 * @return
+	 */
+	List<DictModel> queryTableDictByKeysAndFilterSql(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("filterSql") String filterSql,  @Param("codeValues") List<String> codeValues);
 }

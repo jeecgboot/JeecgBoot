@@ -180,8 +180,15 @@ public class JeecgController<T, S extends IService<T>> {
                 //update-end-author:taoyan date:20190528 for:批量插入数据
                 return Result.ok("文件导入成功！数据行数：" + list.size());
             } catch (Exception e) {
-                log.error(e.getMessage(), e);
-                return Result.error("文件导入失败:" + e.getMessage());
+                //update-begin-author:taoyan date:20211124 for: 导入数据重复增加提示
+                String msg = e.getMessage();
+                log.error(msg, e);
+                if(msg!=null && msg.indexOf("Duplicate entry")>=0){
+                    return Result.error("文件导入失败:有重复数据！");
+                }else{
+                    return Result.error("文件导入失败:" + e.getMessage());
+                }
+                //update-end-author:taoyan date:20211124 for: 导入数据重复增加提示
             } finally {
                 try {
                     file.getInputStream().close();

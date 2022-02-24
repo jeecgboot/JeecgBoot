@@ -1,0 +1,56 @@
+import {BasicColumn} from '/@/components/Table';
+import {FormSchema} from '/@/components/Table';
+import { rules} from '/@/utils/helper/validator';
+import { render } from '/@/utils/common/renderUtils';
+
+export const columns: BasicColumn[] = [
+ <#list columns as po>
+   <#if po.fieldName !='id'>
+   {
+    title: '${po.filedComment}',
+    dataIndex: '${po.fieldName}'
+   },
+   </#if>
+ </#list>
+];
+
+export const searchFormSchema: FormSchema[] = [
+<#list columns as po>
+<#if po.fieldName !='id' && po_index<= tableVo.searchFieldNum>
+ {
+    label: '${po.filedComment}',
+    field: '${po.fieldName}',
+     <#if po.fieldType =='date'>
+    component: 'DatePicker'
+     <#elseif po.fieldType =='datetime'>
+    component: 'TimePicker'
+     <#elseif "int,decimal,double,"?contains(po.fieldType)>
+    component: 'InputNumber'
+     <#else>
+    component: 'Input'
+    </#if>
+  },
+</#if>
+</#list>
+];
+
+export const formSchema: FormSchema[] = [
+<#list columns as po><#rt/>
+  {
+    label: '${po.filedComment}',
+    field: '${po.fieldName}',
+     <#if po.fieldType =='date'>
+    component: 'DatePicker'
+     <#elseif po.fieldType =='datetime'>
+    component: 'TimePicker'
+     <#elseif "int,decimal,double,"?contains(po.fieldType)>
+    component: 'InputNumber'
+     <#else>
+    component: 'Input'
+    </#if>
+    <#if po.fieldName =='id'><#rt/>
+    show:false
+    </#if>
+  },
+</#list>
+];

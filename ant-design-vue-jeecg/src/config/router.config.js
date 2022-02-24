@@ -356,7 +356,7 @@ export const constantRouterMap = [
       {
         // OAuth2 登录路由
         path: 'login',
-        name: 'login',
+        name: 'oauth2-app-login',
         component: () => import(/* webpackChunkName: "oauth2-app.login" */ '@/views/user/oauth2/OAuth2Login')
       },
     ]

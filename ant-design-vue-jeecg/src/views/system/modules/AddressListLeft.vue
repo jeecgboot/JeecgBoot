@@ -51,11 +51,18 @@
       },
 
       handleTreeSelect(selectedKeys, event) {
-        if (selectedKeys.length > 0 && this.selectedKeys[0] !== selectedKeys[0]) {
-          this.selectedKeys = [selectedKeys[0]]
-          let orgCode = event.node.dataRef.orgCode
-          this.emitInput(orgCode)
+        //update-begin---author:wangshuai ---date:20220107  for：[JTC-378]通讯录 选中某个部门查询部门人员，想再取消选中查全部，无法取消，只能重新刷新界面------------
+        if (selectedKeys.length > 0) {
+          if(this.selectedKeys[0] !== selectedKeys[0]){
+            this.selectedKeys = [selectedKeys[0]]
+            let orgCode = event.node.dataRef.orgCode
+            this.emitInput(orgCode)
+          }
+        }else{
+          this.selectedKeys = []
+          this.emitInput("")
         }
+        //update-end---author:wangshuai ---date:20220107  for：[JTC-378]通讯录 选中某个部门查询部门人员，想再取消选中查全部，无法取消，只能重新刷新界面------------
       },
 
       emitInput(orgCode) {

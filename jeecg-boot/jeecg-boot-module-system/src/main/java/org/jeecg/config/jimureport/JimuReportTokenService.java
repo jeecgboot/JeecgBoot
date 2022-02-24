@@ -1,6 +1,6 @@
 package org.jeecg.config.jimureport;
 
-import org.jeecg.common.constant.DataBaseConstant;
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
@@ -20,6 +20,9 @@ import java.util.Map;
  *  * 1.自定义获取登录token
  *  * 2.自定义获取登录用户
  */
+
+
+@Slf4j
 @Component
 public class JimuReportTokenService implements JmReportTokenServiceI {
     @Autowired
@@ -45,10 +48,16 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
 
     @Override
     public Map<String, Object> getUserInfo(String token) {
+        Map<String, Object> map = new HashMap<String, Object>();
         String username = JwtUtil.getUsername(token);
         //此处通过token只能拿到一个信息 用户账号  后面的就是根据账号获取其他信息 查询数据或是走redis 用户根据自身业务可自定义
-        SysUserCacheInfo userInfo = sysBaseAPI.getCacheUser(username);
-        Map<String, Object> map = new HashMap<String, Object>();
+        SysUserCacheInfo userInfo = null;
+        try {
+            userInfo = sysBaseAPI.getCacheUser(username);
+        } catch (Exception e) {
+            log.error("获取用户信息异常:"+ e.getMessage());
+            return map;
+        }
         //设置账号名
         map.put(SYS_USER_CODE, userInfo.getSysUserCode());
         //设置部门编码

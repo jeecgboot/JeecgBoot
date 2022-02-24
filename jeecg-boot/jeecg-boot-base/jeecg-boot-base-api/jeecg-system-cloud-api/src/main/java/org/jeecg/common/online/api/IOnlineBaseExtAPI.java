@@ -15,7 +15,8 @@ import java.util.Map;
  * 【Online】Feign API接口
  */
 @Component
-@FeignClient(contextId = "onlineBaseRemoteApi", value = ServiceNameConstants.SYSTEM_ONLINE, fallbackFactory = OnlineBaseExtAPIFallbackFactory.class)
+@FeignClient(contextId = "onlineBaseRemoteApi", value = ServiceNameConstants.SYSTEM_SERVICE, fallbackFactory = OnlineBaseExtAPIFallbackFactory.class)
+//@FeignClient(contextId = "onlineBaseRemoteApi", value = ServiceNameConstants.SYSTEM_ONLINE, fallbackFactory = OnlineBaseExtAPIFallbackFactory.class)
 public interface IOnlineBaseExtAPI {
 
     /**

@@ -7,17 +7,16 @@
 JEECG BOOT 低代码开发平台（前后端分离版本）
 ===============
 
-当前最新版本： 3.0（发布日期：2021-11-01）
+当前最新版本： 3.1.0（发布日期：2022-03-01）
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://www.jeecg.com)
 [![](https://img.shields.io/badge/Blog-官方博客-blue.svg)](https://jeecg.blog.csdn.net)
-[![](https://img.shields.io/badge/version-3.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-3.1.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
-<h3 align="center">新年快乐！！！</h3>
 
 
 项目介绍：
@@ -48,8 +47,6 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 在线演示 ： [http://boot.jeecg.com](http://boot.jeecg.com)
 
-- 在线演示(VUE3beta版)：[http://boot3.jeecg.com](http://boot3.jeecg.com)
-
 - 开发文档：  [http://doc.jeecg.com](http://doc.jeecg.com)
 
 - 视频教程  ：[JeecgBoot入门视频](http://www.jeecg.com/doc/video)
@@ -59,6 +56,8 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 - 常见问题：  [入门常见问题Q&A](http://jeecg.com/doc/qa)
 
 - 更新日志：  [版本日志](http://www.jeecg.com/doc/log)
+
+- VUE3版演示(未正式发布)：[http://boot3.jeecg.com](http://boot3.jeecg.com)
 
 
 

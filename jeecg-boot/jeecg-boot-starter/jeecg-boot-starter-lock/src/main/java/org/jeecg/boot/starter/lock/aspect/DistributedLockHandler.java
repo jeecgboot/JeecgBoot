@@ -94,9 +94,6 @@ public class DistributedLockHandler extends BaseAspect{
         Object[] args = joinPoint.getArgs();
 
         LockModel lockModel = jLock.lockModel();
-        if (!lockModel.equals(LockModel.MULTIPLE) && !lockModel.equals(LockModel.REDLOCK) && keys.length > 1) {
-            throw new RuntimeException("参数有多个,锁模式为->" + lockModel.name() + ".无法锁定");
-        }
         RLock rLock = null;
         String keyConstant = jLock.keyConstant();
         if (lockModel.equals(LockModel.AUTO)) {
@@ -105,6 +102,9 @@ public class DistributedLockHandler extends BaseAspect{
             } else {
                 lockModel = LockModel.REENTRANT;
             }
+        }
+        if (!lockModel.equals(LockModel.MULTIPLE) && !lockModel.equals(LockModel.REDLOCK) && keys.length > 1) {
+            throw new RuntimeException("参数有多个,锁模式为->" + lockModel.name() + ".无法锁定");
         }
         switch (lockModel) {
             case FAIR:

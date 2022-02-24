@@ -37,8 +37,8 @@ public interface IBpmBaseExtAPI {
      */
     @PostMapping(value = "/act/process/extActProcess/startMutilProcess")
     Result<String> startMutilProcess(@RequestParam("flowCode") String flowCode, @RequestParam("id") String id,
-        @RequestParam("formUrl") String formUrl, @RequestParam("formUrlMobile") String formUrlMobile,
-        @RequestParam("username") String username, @RequestParam("jsonData") String jsonData) throws Exception;
+                                     @RequestParam("formUrl") String formUrl, @RequestParam("formUrlMobile") String formUrlMobile,
+                                     @RequestParam("username") String username, @RequestParam("jsonData") String jsonData) throws Exception;
 
     /**
      * 24. 流程提交接口（自定义表单设计器）
@@ -60,8 +60,8 @@ public interface IBpmBaseExtAPI {
      */
     @PostMapping(value = "/act/process/extActProcess/startDesFormMutilProcess")
     Result<String> startDesFormMutilProcess(@RequestParam("flowCode") String flowCode, @RequestParam("id") String id,
-        @RequestParam("formUrl") String formUrl, @RequestParam("formUrlMobile") String formUrlMobile,
-        @RequestParam("username") String username, @RequestParam("jsonData") String jsonData) throws Exception;
+                                            @RequestParam("formUrl") String formUrl, @RequestParam("formUrlMobile") String formUrlMobile,
+                                            @RequestParam("username") String username, @RequestParam("jsonData") String jsonData) throws Exception;
 
     /**
      * 25. 保存流程草稿箱接口（自定义开发表单、online表单）
@@ -83,7 +83,7 @@ public interface IBpmBaseExtAPI {
      */
     @PostMapping(value = "/act/process/extActProcess/saveMutilProcessDraft")
     Result<String> saveMutilProcessDraft(@RequestParam("flowCode") String flowCode, @RequestParam("id") String id,
-        @RequestParam("formUrl") String formUrl, @RequestParam("formUrlMobile") String formUrlMobile,
-        @RequestParam("username") String username, @RequestParam("jsonData") String jsonData) throws Exception;
+                                         @RequestParam("formUrl") String formUrl, @RequestParam("formUrlMobile") String formUrlMobile,
+                                         @RequestParam("username") String username, @RequestParam("jsonData") String jsonData) throws Exception;
 
 }

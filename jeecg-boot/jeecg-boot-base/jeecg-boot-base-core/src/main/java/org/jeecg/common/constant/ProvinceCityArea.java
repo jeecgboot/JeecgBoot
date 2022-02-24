@@ -29,7 +29,7 @@ public class ProvinceCityArea {
 
     public String getCode(String text){
         this.initAreaList();
-        if(areaList!=null || areaList.size()>0){
+        if(areaList!=null && areaList.size()>0){
             for(int i=areaList.size()-1;i>=0;i--){
                 if(text.indexOf(areaList.get(i).getText())>=0){
                     return areaList.get(i).getId();
@@ -38,6 +38,73 @@ public class ProvinceCityArea {
         }
         return null;
     }
+
+    // update-begin-author:sunjianlei date:20220121 for:【JTC-704】数据导入错误 省市区组件，文件中为北京市，导入后，导为了山西省
+    /**
+     * 获取省市区code，精准匹配
+     * @param texts 文本数组，省，市，区
+     * @return 返回 省市区的code
+     */
+    public String[] getCode(String[] texts) {
+        if (texts == null || texts.length == 0) {
+            return null;
+        }
+        this.initAreaList();
+        if (areaList == null || areaList.size() == 0) {
+            return null;
+        }
+        String[] codes = new String[texts.length];
+        String code = null;
+        for (int i = 0; i < texts.length; i++) {
+            String text = texts[i];
+            Area area;
+            if (code == null) {
+                area = getAreaByText(text);
+            } else {
+                area = getAreaByPidAndText(code, text);
+            }
+            if (area != null) {
+                code = area.id;
+                codes[i] = code;
+            } else {
+                return null;
+            }
+        }
+        return codes;
+    }
+
+    /**
+     * 根据text获取area
+     * @param text
+     * @return
+     */
+    public Area getAreaByText(String text) {
+        for (Area area : areaList) {
+            if (text.equals(area.getText())) {
+                return area;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 通过pid获取 area 对象
+     * @param pCode 父级编码
+     * @param text
+     * @return
+     */
+    public Area getAreaByPidAndText(String pCode, String text) {
+        this.initAreaList();
+        if (this.areaList != null && this.areaList.size() > 0) {
+            for (Area area : this.areaList) {
+                if (area.getPid().equals(pCode) && area.getText().equals(text)) {
+                    return area;
+                }
+            }
+        }
+        return null;
+    }
+    // update-end-author:sunjianlei date:20220121 for:【JTC-704】数据导入错误 省市区组件，文件中为北京市，导入后，导为了山西省
 
     public void getAreaByCode(String code,List<String> ls){
         for(Area area: areaList){

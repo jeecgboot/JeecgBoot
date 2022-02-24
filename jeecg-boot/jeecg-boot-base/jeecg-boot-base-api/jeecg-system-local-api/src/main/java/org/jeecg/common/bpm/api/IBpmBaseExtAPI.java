@@ -25,7 +25,7 @@ public interface IBpmBaseExtAPI {
      * @return
      * @throws Exception
      */
-    Result<String> startMutilProcess(String flowCode, String id, String formUrl, String formUrlMobile,String username, String jsonData) throws Exception;
+    Result<String> startMutilProcess(String flowCode, String id, String formUrl, String formUrlMobile, String username, String jsonData) throws Exception;
 
     /**
      *  24. 流程提交接口（自定义表单设计器）
@@ -38,7 +38,7 @@ public interface IBpmBaseExtAPI {
      * @return
      * @throws Exception
      */
-    Result<String> startDesFormMutilProcess(String flowCode, String id, String formUrl, String formUrlMobile,String username,String jsonData) throws Exception;
+    Result<String> startDesFormMutilProcess(String flowCode, String id, String formUrl, String formUrlMobile, String username, String jsonData) throws Exception;
     /**
      * 25. 保存流程草稿箱接口（自定义开发表单、online表单）
      * @param flowCode 流程业务关联 例如：joa_leave_01
@@ -50,6 +50,6 @@ public interface IBpmBaseExtAPI {
      * @return
      * @throws Exception
      */
-    Result<String> saveMutilProcessDraft(String flowCode, String id, String formUrl, String formUrlMobile,String username,String jsonData) throws Exception;
+    Result<String> saveMutilProcessDraft(String flowCode, String id, String formUrl, String formUrlMobile, String username, String jsonData) throws Exception;
 
 }

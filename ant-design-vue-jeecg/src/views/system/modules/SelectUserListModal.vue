@@ -73,7 +73,7 @@
       :columns="columns"
       :dataSource="dataSource"
       :pagination="ipagination"
-      :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange,onSelect:onSelect}"
+      :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
       @change="handleTableChange"
     >
 <!--     update-end   author:kangxiaolin  date:20190921     for:系统发送通知 用户多选失败 #513 -->
@@ -219,22 +219,12 @@
         return str;
       },
       //--update-begin----author:kangxiaolin---date:20190921------for:系统发送通知 用户多选失败 #513----
-      onSelectChange (selectedRowKeys) {
+      onSelectChange (selectedRowKeys,selectionRows) {
         this.selectedRowKeys = selectedRowKeys;
+        //update-begin---author:wangshuai ---date:20211227  for：全选不好用------------
+        this.selectionRows = selectionRows;
+        //update-end---author:wangshuai ---date:20211227  for：全选不好用------------
       },
-      onSelect(record, selected){
-        if(selected == true ){
-          this.selectionRows.push(record);
-        }else {
-          this.selectionRows.forEach(function(item,index,arr){
-            if(item.id == record.id) {
-              arr.splice(index, 1);
-            }
-          })
-        }
-        //--update-end----author:kangxiaolin---date:20190921------for:系统发送通知 用户多选失败 #513----
-      },
-
       searchReset(){
         let that = this;
         Object.keys(that.queryParam).forEach(function(key){

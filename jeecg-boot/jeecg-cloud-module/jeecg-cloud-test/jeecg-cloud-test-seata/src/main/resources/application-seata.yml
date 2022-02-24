@@ -1,0 +1,38 @@
+seata:
+  enable-auto-data-source-proxy: false
+  service:
+    grouplist:
+      default: 127.0.0.1:8091
+    vgroup-mapping:
+      springboot-seata-group: default
+  # seata 事务组编号 用于TC集群名
+  tx-service-group: springboot-seata-group
+  transport:
+    heartbeat: false
+spring:
+  datasource:
+    dynamic:
+      seata: true    # 开启对 seata的支持
+      seata-mode: AT #支持XA及AT模式,默认AT
+      datasource:
+        # 设置 账号数据源配置
+        account:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://127.0.0.1:3306/jeecg-account?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useSSL=false
+          username: root
+          password: root
+          schema: classpath:sql/schema-account.sql
+        # 设置 订单数据源配置
+        order:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://127.0.0.1:3306/jeecg-order?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useSSL=false
+          username: root
+          password: root
+          schema: classpath:sql/schema-order.sql
+        # 设置商品 数据源配置
+        product:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://127.0.0.1:3306/jeecg-product?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useSSL=false
+          username: root
+          password: root
+          schema: classpath:sql/schema-product.sql

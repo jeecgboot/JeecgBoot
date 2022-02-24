@@ -7,7 +7,7 @@
     :closable="true"
     @close="handleCancel"
     :visible="visible"
-    style="height: 100%;overflow: auto;padding-bottom: 53px;">
+    style="height: 100%;">
 
     <template slot="title">
       <div style="width: 100%;">
@@ -30,7 +30,7 @@
           <a-form-model-item label="登录密码" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="password" >
             <a-input type="password" placeholder="请输入登录密码" v-model="model.password" />
           </a-form-model-item>
-  
+
           <a-form-model-item label="确认密码" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="confirmpassword" >
             <a-input type="password" @blur="handleConfirmBlur" placeholder="请重新输入登录密码" v-model="model.confirmpassword"/>
           </a-form-model-item>
@@ -44,6 +44,10 @@
           <a-input placeholder="请输入工号" v-model="model.workNo" />
         </a-form-model-item>
 
+        <a-form-model-item label="手机号码" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="phone">
+          <a-input placeholder="请输入手机号码" v-model="model.phone" />
+        </a-form-model-item>
+        
         <a-form-model-item label="职务" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <j-select-position placeholder="请选择职务" :multiple="false" v-model="model.post"/>
         </a-form-model-item>
@@ -99,7 +103,7 @@
             :format="dateFormat"
             :getCalendarContainer="node => node.parentNode"/>
         </a-form-model-item>
-     
+
         <a-form-model-item label="性别" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select  v-model="model.sex"  placeholder="请选择性别" :getPopupContainer= "(target) => target.parentNode">
             <a-select-option :value="1">男</a-select-option>
@@ -109,10 +113,6 @@
 
         <a-form-model-item label="邮箱" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="email">
           <a-input placeholder="请输入邮箱" v-model="model.email" />
-        </a-form-model-item>
-
-        <a-form-model-item label="手机号码" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="phone">
-          <a-input placeholder="请输入手机号码" v-model="model.phone" />
         </a-form-model-item>
 
         <a-form-model-item label="座机" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="telephone">
@@ -507,7 +507,7 @@
 
   .drawer-bootom-button {
     position: absolute;
-    bottom: -8px;
+    bottom: 0;
     width: 100%;
     border-top: 1px solid #e8e8e8;
     padding: 10px 16px;
@@ -516,4 +516,10 @@
     background: #fff;
     border-radius: 0 0 2px 2px;
   }
+
+  /*【JTC-502】 添加用户两个滚动条*/
+  /deep/ .ant-drawer-body {
+    padding-bottom: 53px;
+  }
+
 </style>

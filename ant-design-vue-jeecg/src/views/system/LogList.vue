@@ -59,10 +59,13 @@
       :loading="loading"
       @change="handleTableChange">
 
-      <div v-show="queryParam.logType==2" slot="expandedRowRender" slot-scope="record" style="margin: 0">
-        <div style="margin-bottom: 5px"><a-badge status="success" style="vertical-align: middle;"/><span style="vertical-align: middle;">请求方法:{{ record.method }}</span></div>
-        <div><a-badge status="processing" style="vertical-align: middle;"/><span style="vertical-align: middle;">请求参数:{{ record.requestParam }}</span></div>
-      </div>
+      <template v-if="queryParam.logType==='2'" #expandedRowRender="record">
+        <div style="margin: 0">
+          <div style="margin-bottom: 5px"><a-badge status="success" style="vertical-align: middle;"/><span style="vertical-align: middle;">请求方法:{{ record.method }}</span></div>
+          <div><a-badge status="processing" style="vertical-align: middle;"/><span style="vertical-align: middle;">请求参数:{{ record.requestParam }}</span></div>
+        </div>
+      </template>
+
       <!-- 字符串超长截取省略号显示-->
       <span slot="logContent" slot-scope="text, record">
           <j-ellipsis :value="text" :length="40"/>
@@ -187,6 +190,10 @@
           param['superQueryParams'] = encodeURI(this.superQueryParams)
           param['superQueryMatchType'] = this.superQueryMatchType
         }
+        //登录日志没有操作类型
+        if (this.tabKey === '1') {
+          param.operateType = ''
+        }
         return filterObj(param);
       },
 
@@ -213,7 +220,7 @@
 
         let that=this;
         that.queryParam.logType=key;
-        that.loadData();
+        that.loadData(1);
       },
       onDateChange: function (value, dateString) {
         console.log(dateString[0],dateString[1]);

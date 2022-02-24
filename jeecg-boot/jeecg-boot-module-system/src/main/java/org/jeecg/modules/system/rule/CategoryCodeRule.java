@@ -2,6 +2,7 @@ package org.jeecg.modules.system.rule;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.handler.IFillRuleHandler;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.YouBianCodeUtil;
@@ -16,12 +17,14 @@ import java.util.List;
  * @Date 2019/12/9 11:32
  * @Description: 分类字典编码生成规则
  */
+@Slf4j
 public class CategoryCodeRule implements IFillRuleHandler {
 
     public static final String ROOT_PID_VALUE = "0";
 
     @Override
     public Object execute(JSONObject params, JSONObject formData) {
+        log.info("系统自定义编码规则[category_code_rule]，params：{} ，formData： {}", params, formData);
 
         String categoryPid = ROOT_PID_VALUE;
         String categoryCode = null;

@@ -1,0 +1,69 @@
+<#--noinspection JSDuplicatedDeclaration-->
+<#list subTables as sub>
+#segment#${sub.entityName}SubTable.vue
+<template>
+  <div>
+  <#assign list_need_category=false>
+  <#assign list_need_pca=false>
+  <#assign bpm_flag=false>
+
+  <#-- 开始循环 -->
+  <#list columns as po>
+  <#if po.fieldDbName=='bpm_status'>
+    <#assign bpm_flag=true>
+  </#if>
+  <#if po.classType=='cat_tree' && po.dictText?default("")?trim?length == 0>
+  <#assign list_need_category=true>
+  </#if>
+  <#if po.classType=='pca'>
+  <#assign list_need_pca=true>
+  </#if>
+  </#list>
+  <#-- 结束循环 -->
+      <!--引用表格-->
+     <BasicTable bordered size="middle" :loading="loading" rowKey="id" :canResize="false" :columns="${sub.entityName?uncap_first}Columns" :dataSource="dataSource" :pagination="false">
+        <!--字段回显插槽-->
+        <template #htmlSlot="{text}">
+           <div v-html="text"></div>
+        </template>
+        <template #fileSlot="{text}">
+           <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+           <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
+        </template>
+      </BasicTable>
+    </div>
+</template>
+
+<script lang="ts" setup>
+  import {ref,watchEffect} from 'vue';
+  import {BasicTable} from '/@/components/Table';
+  import {${sub.entityName?uncap_first}Columns} from '../${entityName}.data';
+  import {${sub.entityName?uncap_first}List} from '../${entityName}.api';
+
+  const props = defineProps({
+    id: {
+       type: String,
+       default: '',
+     },
+  })
+
+  const loading = ref(false);
+  const dataSource = ref([]);
+
+  watchEffect(() => {
+      props.id && loadData(props.id);
+   });
+
+   function loadData(id) {
+         dataSource.value = []
+         loading.value = true
+          ${sub.entityName?uncap_first}List({id}).then((res) => {
+           if (res.success) {
+              dataSource.value = res.result.records
+           }
+         }).finally(() => {
+           loading.value = false
+         })
+    }
+</script>
+</#list>

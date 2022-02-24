@@ -63,6 +63,7 @@
             <a @click="handleOpen(record)">用户</a>
             <a-divider type="vertical"/>
 
+
             <a-dropdown>
               <a class="ant-dropdown-link">
                 更多 <a-icon type="down"/>
@@ -537,6 +538,7 @@
   }
 </script>
 <style scoped>
+@import '~@assets/less/common.less';
   /** Button按钮间距 */
   .ant-btn {
     margin-left: 8px

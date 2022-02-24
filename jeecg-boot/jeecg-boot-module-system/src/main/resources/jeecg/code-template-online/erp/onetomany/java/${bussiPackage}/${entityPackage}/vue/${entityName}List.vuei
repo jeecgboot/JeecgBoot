@@ -371,7 +371,7 @@
             this.$set(this.dictOptions, '${po.fieldName}', res.result)
           }
         })
-        <#elseif po.classType=='sel_search' || po.classType=='list_multi' || po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
+        <#elseif po.classType=='radio' || po.classType=='checkbox'>
         	<#assign list_field_dictCode="">
 	        <#if po.dictTable?default("")?trim?length gt 1>
 				<#assign list_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">

@@ -47,6 +47,15 @@ public class DuplicateCheckController {
 		//SQL注入校验（只限制非法串改数据库）
 		final String[] sqlInjCheck = {duplicateCheckVo.getTableName(),duplicateCheckVo.getFieldName()};
 		SqlInjectionUtil.filterContent(sqlInjCheck);
+		// update-begin-author:taoyan date:20211227 for: JTC-25 【online报表】oracle 操作问题 录入弹框啥都不填直接保存 ①编码不是应该提示必填么？②报错也应该是具体文字提示，不是后台错误日志
+		if(StringUtils.isEmpty(duplicateCheckVo.getFieldVal())){
+			Result rs = new Result();
+			rs.setCode(500);
+			rs.setSuccess(true);
+			rs.setMessage("数据为空,不作处理！");
+			return rs;
+		}
+		// update-end-author:taoyan date:20211227 for: JTC-25 【online报表】oracle 操作问题 录入弹框啥都不填直接保存 ①编码不是应该提示必填么？②报错也应该是具体文字提示，不是后台错误日志
 		if (StringUtils.isNotBlank(duplicateCheckVo.getDataId())) {
 			// [2].编辑页面校验
 			num = sysDictMapper.duplicateCheckCountSql(duplicateCheckVo);

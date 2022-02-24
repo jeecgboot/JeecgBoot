@@ -1,0 +1,66 @@
+<#include "/common/utils.ftl">
+<#list subTables as sub>
+#segment#${sub.entityName}Modal.vue
+<template>
+  <BasicModal v-bind="$attrs" @register="registerModal" :title="title" @ok="handleSubmit">
+      <BasicForm @register="registerForm"/>
+  </BasicModal>
+</template>
+
+<script lang="ts" setup>
+    import {ref, computed, unref,inject} from 'vue';
+    import {BasicModal, useModalInner} from '/@/components/Modal';
+    import {BasicForm, useForm} from '/@/components/Form/index';
+    import {${sub.entityName?uncap_first}FormSchema} from '../${entityName?uncap_first}.data';
+    import {${sub.entityName?uncap_first}SaveOrUpdate} from '../${entityName?uncap_first}.api';
+
+    //接收主表id
+    const mainId = inject('mainId');
+    // Emits声明
+    const emit = defineEmits(['register','success']);
+    const isUpdate = ref(true);
+    //表单配置
+    const [registerForm, {setProps,resetFields, setFieldsValue, validate}] = useForm({
+        labelWidth: 150,
+        schemas: ${sub.entityName?uncap_first}FormSchema,
+        showActionButtonGroup: false,
+    });
+    //表单赋值
+    const [registerModal, {setModalProps, closeModal}] = useModalInner(async (data) => {
+        //重置表单
+        await resetFields();
+        setModalProps({confirmLoading: false,showCancelBtn:!!data?.showFooter,showOkBtn:!!data?.showFooter});
+        isUpdate.value = !!data?.isUpdate;
+        if (unref(isUpdate)) {
+            //表单赋值
+            await setFieldsValue({
+                ...data.record,
+            });
+        }
+        // 隐藏底部时禁用整个表单
+       setProps({ disabled: !data?.showFooter })
+    });
+    //设置标题
+    const title = computed(() => (!unref(isUpdate) ? '新增' : '编辑'));
+    //表单提交事件
+    async function handleSubmit(v) {
+        try {
+            let values = await validate();
+            setModalProps({confirmLoading: true});
+            if (unref(mainId)) {
+             <#list sub.foreignKeys as key>
+                values['${key?uncap_first}'] = unref(mainId);
+             </#list>
+             }
+            //提交表单
+            await ${sub.entityName?uncap_first}SaveOrUpdate(values, isUpdate.value);
+            //关闭弹窗
+            closeModal();
+            //刷新列表
+            emit('success');
+        } finally {
+            setModalProps({confirmLoading: false});
+        }
+    }
+</script>
+</#list>

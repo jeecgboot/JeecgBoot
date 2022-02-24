@@ -183,10 +183,10 @@
           content: '真的要注销登录吗 ?',
           onOk() {
             return that.Logout({}).then(() => {
-              // update-begin author:wangshuai date:20200601 for: 退出登录跳转登录页面
-              that.$router.push({ path: '/user/login' });
+              // update-begin author:scott date:20211223 for:【JTC-198】退出登录体验不好
+              //that.$router.push({ path: '/user/login' });
               window.location.reload()
-              // update-end author:wangshuai date:20200601 for: 退出登录跳转登录页面
+              // update-end author:scott date:20211223 for:【JTC-198】退出登录体验不好
             }).catch(err => {
               that.$message.error({
                 title: '错误',
@@ -225,17 +225,13 @@
       // update_begin author:sunjianlei date:20191230 for: 解决外部链接打开失败的问题
       searchMethods(value) {
         let route = this.searchMenuOptions.filter(item => item.id === value)[0]
-        //update-begin-author:taoyan date:20210528 for: 【菜单问题】配置一个iframe地址的菜单，内部打开，在搜索菜单上打开却新开了一个窗口
-        if (route.meta.internalOrExternal === true) {
-          window.open(route.meta.url, '_blank')
-        } else {
-          if(route.component.includes('layouts/IframePageView')){
-            this.$router.push(route)
-          }else{
-            this.$router.push({ path: route.path })
-          }
+        //update-begin-author:sunjianlei date:20220111 for: 【JTC-702】【菜单搜索】菜单搜索里点击跳转的菜单，无法将Token信息传递过去
+        if(route.component.includes('layouts/IframePageView')){
+          this.$router.push(route)
+        }else{
+          this.$router.push({ path: route.path })
         }
-        //update-end-author:taoyan date:20210528 for: 【菜单问题】配置一个iframe地址的菜单，内部打开，在搜索菜单上打开却新开了一个窗口
+        //update-end-author:sunjianlei date:20220111 for: 【JTC-702】【菜单搜索】菜单搜索里点击跳转的菜单，无法将Token信息传递过去
         this.searchMenuVisible = false
       },
       // update_end author:sunjianlei date:20191230 for: 解决外部链接打开失败的问题

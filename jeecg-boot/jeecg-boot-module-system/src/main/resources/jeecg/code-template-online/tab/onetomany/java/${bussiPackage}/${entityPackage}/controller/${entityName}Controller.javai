@@ -110,7 +110,7 @@ public class ${entityName}Controller {
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-编辑")
 	@ApiOperation(value="${tableVo.ftlDescription}-编辑", notes="${tableVo.ftlDescription}-编辑")
-	@PutMapping(value = "/edit")
+	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<?> edit(@RequestBody ${entityName}Page ${entityName?uncap_first}Page) {
 		${entityName} ${entityName?uncap_first} = new ${entityName}();
 		BeanUtils.copyProperties(${entityName?uncap_first}Page, ${entityName?uncap_first});

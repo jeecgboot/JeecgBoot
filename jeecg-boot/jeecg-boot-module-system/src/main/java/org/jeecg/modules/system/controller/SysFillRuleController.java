@@ -93,7 +93,7 @@ public class SysFillRuleController extends JeecgController<SysFillRule, ISysFill
      */
     @AutoLog(value = "填值规则-编辑")
     @ApiOperation(value = "填值规则-编辑", notes = "填值规则-编辑")
-    @PutMapping(value = "/edit")
+    @RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
     public Result<?> edit(@RequestBody SysFillRule sysFillRule) {
         sysFillRuleService.updateById(sysFillRule);
         return Result.ok("编辑成功!");

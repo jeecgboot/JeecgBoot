@@ -38,7 +38,7 @@
           :wrapperCol="wrapperCol"
           prop="ruleValue"
           label="规则值">
-          <a-input placeholder="请输入规则值" v-model.trim="model.ruleValue"/>
+          <a-input placeholder="请输入规则值" v-model="model.ruleValue"/>
         </a-form-model-item>
 
         <a-form-model-item

@@ -10,8 +10,8 @@ public enum UrlMatchEnum {
     CGFORM_EXCEL_DATA("/online/cgform/api/exportXls/", "/online/cgformList/"),
     CGFORM_TREE_DATA("/online/cgform/api/getTreeData/", "/online/cgformList/"),
     CGREPORT_DATA("/online/cgreport/api/getColumnsAndData/", "/online/cgreport/"),
-    CGREPORT_EXCEL_DATA("/online/cgreport/api/exportXls/", "/online/cgreport/");
-
+    CGREPORT_EXCEL_DATA("/online/cgreport/api/exportXls/", "/online/cgreport/"),
+    CGREPORT_EXCEL_DATA2("/online/cgreport/api/exportManySheetXls/", "/online/cgreport/");
 
     UrlMatchEnum(String url, String match_url) {
         this.url = url;
@@ -47,8 +47,10 @@ public enum UrlMatchEnum {
         return null;
     }
 
-
-//    public static void main(String[] args) {
+    public String getMatch_url() {
+        return match_url;
+    }
+    //    public static void main(String[] args) {
 //        /**
 //         * 比如request真实请求URL: /online/cgform/api/getData/81fcf7d8922d45069b0d5ba983612d3a
 //         * 转换匹配路由URL后（对应配置的菜单路径）:/online/cgformList/81fcf7d8922d45069b0d5ba983612d3a

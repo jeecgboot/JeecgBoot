@@ -9,9 +9,9 @@ spring:
     nacos:
       config:
         # Nacos 认证用户
-        username: nacos
+        username: @config.username@
         # Nacos 认证密码
-        password: nacos
+        password: @config.password@
         # 命名空间 常用场景之一是不同环境的配置的区分隔离，例如开发测试环境和生产环境的资源（如配置、服务）隔离等
         namespace: @config.namespace@
         # 配置中心地址

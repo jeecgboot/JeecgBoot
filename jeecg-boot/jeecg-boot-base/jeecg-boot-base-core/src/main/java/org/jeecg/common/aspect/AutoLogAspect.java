@@ -88,7 +88,7 @@ public class AutoLogAspect {
 
 
         //设置操作类型
-        if (dto.getLogType() == CommonConstant.LOG_TYPE_2) {
+        if (CommonConstant.LOG_TYPE_2 == dto.getLogType()) {
             dto.setOperateType(getOperateType(methodName, syslog.operateType()));
         }
 

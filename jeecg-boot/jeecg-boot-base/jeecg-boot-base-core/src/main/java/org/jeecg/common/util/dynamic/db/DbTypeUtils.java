@@ -25,7 +25,7 @@ public class DbTypeUtils {
         dialectMap.put("postgresql", "org.hibernate.dialect.PostgreSQLDialect"); //1  --
         dialectMap.put("sqlserver2005", "org.hibernate.dialect.SQLServer2005Dialect");
         dialectMap.put("sqlserver", "org.hibernate.dialect.SQLServerDialect"); //1
-        dialectMap.put("dm", "org.hibernate.dialect.OracleDialect");//达梦数据库 [国产] 1--
+        dialectMap.put("dm", "org.hibernate.dialect.DmDialect");//达梦数据库 [国产] 1--
         dialectMap.put("xugu", "org.hibernate.dialect.HSQLDialect"); //虚谷数据库
         dialectMap.put("kingbasees", "org.hibernate.dialect.PostgreSQLDialect");  //人大金仓 [国产] 1
         dialectMap.put("phoenix", "org.hibernate.dialect.HSQLDialect"); // Phoenix HBase数据库

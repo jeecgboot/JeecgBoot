@@ -28,14 +28,23 @@
       </a-col>
       <a-col :md="18" :sm="24">
         <a-card :bordered="false">
-          用户账号:
-          <a-input-search
-            :style="{width:'150px',marginBottom:'15px'}"
-            placeholder="请输入账号"
-            v-model="queryParam.username"
-            @search="onSearch"
-          ></a-input-search>
-          <a-button @click="searchReset(1)" style="margin-left: 20px" icon="redo">重置</a-button>
+          <a-form-model>
+            <a-form-model-item label="用户账号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-row type="flex" :gutter="8">
+                <a-col :span="18">
+                  <a-input-search
+                      :style="{width:'100%'}"
+                      placeholder="请输入账号"
+                      v-model="queryParam.username"
+                      @search="onSearch"
+                  ></a-input-search>
+                </a-col>
+                <a-col :span="6">
+                  <a-button @click="searchReset(1)" icon="redo">重置</a-button>
+                </a-col>
+              </a-row>
+            </a-form-model-item>
+          </a-form-model>
           <!--用户列表-->
           <a-table
             ref="table"
@@ -133,6 +142,14 @@
         form: this.$form.createForm(this),
         loading: false,
         expandedKeys: [],
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 4 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 10 },
+        },
       }
     },
     computed: {

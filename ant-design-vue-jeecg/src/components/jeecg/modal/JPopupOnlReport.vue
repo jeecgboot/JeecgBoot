@@ -58,7 +58,7 @@
       :dataSource="table.dataSource"
       :pagination="table.pagination"
       :loading="table.loading"
-      :rowSelection="{fixed:true,selectedRowKeys: table.selectedRowKeys, onChange: handleChangeInTableSelect}"
+      :rowSelection="{type:rowSelectionType,fixed:true,selectedRowKeys: table.selectedRowKeys, onChange: handleChangeInTableSelect}"
       @change="handleChangeInTable"
       style="min-height: 300px"
       :scroll="tableScroll"
@@ -171,7 +171,11 @@
     computed:{
       showSearchFlag(){
         return this.queryInfo && this.queryInfo.length>0
-      }
+      },
+      // 行选择框类型，根据是否多选来控制显示为单选框还是多选框
+      rowSelectionType() {
+        return this.multi ? 'checkbox' : 'radio'
+      },
     },
     methods:{
       loadColumnsInfo(){
@@ -201,6 +205,12 @@
             }
             this.table.columns = [...currColumns]
             this.initQueryInfo()
+          } else {
+            this.$error({
+              title: '出错了',
+              content: (<p>Popup初始化失败，请检查你的配置或稍后重试！<br/>错误信息如下：{res.message}</p>),
+              onOk: () => this.close(),
+            })
           }
         })
       },
@@ -420,6 +430,11 @@
                   this.table.selectedRowKeys.splice(rowKey_index,1);
                   this.table.selectionRows.splice(rowKey_index,1);
                 }
+              }
+              // 判断是否允许多选，如果不允许多选，就只存储最后一个选中的行
+              if (!this.multi && this.table.selectedRowKeys.length > 1) {
+                this.table.selectionRows = [this.table.selectionRows.pop()]
+                this.table.selectedRowKeys = [this.table.selectedRowKeys.pop()]
               }
             }
           }

@@ -71,16 +71,16 @@ public class Result<T> implements Serializable {
 	}
 
 	@Deprecated
-	public static Result<Object> ok() {
-		Result<Object> r = new Result<Object>();
+	public static<T> Result<T> ok() {
+		Result<T> r = new Result<T>();
 		r.setSuccess(true);
 		r.setCode(CommonConstant.SC_OK_200);
 		return r;
 	}
 
 	@Deprecated
-	public static Result<Object> ok(String msg) {
-		Result<Object> r = new Result<Object>();
+	public static<T> Result<T> ok(String msg) {
+		Result<T> r = new Result<T>();
 		r.setSuccess(true);
 		r.setCode(CommonConstant.SC_OK_200);
 		r.setMessage(msg);
@@ -88,8 +88,8 @@ public class Result<T> implements Serializable {
 	}
 
 	@Deprecated
-	public static Result<Object> ok(Object data) {
-		Result<Object> r = new Result<Object>();
+	public static<T> Result<T> ok(T data) {
+		Result<T> r = new Result<T>();
 		r.setSuccess(true);
 		r.setCode(CommonConstant.SC_OK_200);
 		r.setResult(data);
@@ -103,6 +103,7 @@ public class Result<T> implements Serializable {
 		return r;
 	}
 
+	@Deprecated
 	public static<T> Result<T> OK(String msg) {
 		Result<T> r = new Result<T>();
 		r.setSuccess(true);
@@ -139,12 +140,12 @@ public class Result<T> implements Serializable {
 		return r;
 	}
 
-	public static Result<Object> error(String msg) {
+	public static<T> Result<T> error(String msg) {
 		return error(CommonConstant.SC_INTERNAL_SERVER_ERROR_500, msg);
 	}
 	
-	public static Result<Object> error(int code, String msg) {
-		Result<Object> r = new Result<Object>();
+	public static<T> Result<T> error(int code, String msg) {
+		Result<T> r = new Result<T>();
 		r.setCode(code);
 		r.setMessage(msg);
 		r.setSuccess(false);
@@ -157,10 +158,11 @@ public class Result<T> implements Serializable {
 		this.success = false;
 		return this;
 	}
+
 	/**
 	 * 无权限访问返回结果
 	 */
-	public static Result<Object> noauth(String msg) {
+	public static<T> Result<T> noauth(String msg) {
 		return error(CommonConstant.SC_JEECG_NO_AUTHZ, msg);
 	}
 

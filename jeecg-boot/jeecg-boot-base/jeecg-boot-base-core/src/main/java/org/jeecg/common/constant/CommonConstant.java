@@ -77,7 +77,13 @@ public interface CommonConstant {
     public static final String PREFIX_USER_TOKEN  = "prefix_user_token_";
     /** Token缓存时间：3600秒即一小时 */
     public static final int  TOKEN_EXPIRE_TIME  = 3600;
-    
+
+    /** 登录二维码 */
+    public static final String  LOGIN_QRCODE_PRE  = "QRCODELOGIN:";
+    public static final String  LOGIN_QRCODE  = "LQ:";
+    /** 登录二维码token */
+    public static final String  LOGIN_QRCODE_TOKEN  = "LQT:";
+
 
     /**
      *  0：一级菜单
@@ -91,7 +97,7 @@ public interface CommonConstant {
      *  2：按钮权限
      */
     public static final Integer MENU_TYPE_2  = 2;
-    
+
     /**通告对象类型（USER:指定用户，ALL:全体用户）*/
     public static final String MSG_TYPE_UESR  = "USER";
     public static final String MSG_TYPE_ALL  = "ALL";
@@ -229,6 +235,9 @@ public interface CommonConstant {
     public static final String SQL_INDEX_UNIQ_SYS_USER_WORK_NO = "uniq_sys_user_work_no";
     /** sys_user 表 phone 唯一键索引 */
     public static final String SQL_INDEX_UNIQ_SYS_USER_PHONE = "uniq_sys_user_phone";
+    /** 达梦数据库升提示。违反表[SYS_USER]唯一性约束 */
+    public static final String SQL_INDEX_UNIQ_SYS_USER = "唯一性约束";
+
     /** sys_user 表 email 唯一键索引 */
     public static final String SQL_INDEX_UNIQ_SYS_USER_EMAIL = "uniq_sys_user_email";
     /** sys_quartz_job 表 job_class_name 唯一键索引 */
@@ -239,6 +248,8 @@ public interface CommonConstant {
     public static final String SQL_INDEX_UNIQ_SYS_ROLE_CODE = "uniq_sys_role_role_code";
     /** sys_depart 表 code 唯一键索引 */
     public static final String SQL_INDEX_UNIQ_DEPART_ORG_CODE = "uniq_depart_org_code";
+    /** sys_category 表 code 唯一键索引 */
+    public static final String SQL_INDEX_UNIQ_CATEGORY_CODE = "idx_sc_code";
     /**
      * 在线聊天 是否为默认分组
      */
@@ -324,5 +335,8 @@ public interface CommonConstant {
     String ANNOUNCEMENT_SEND_STATUS_1 = "1";
     /** 系统通告消息状态：2=已撤销 */
     String ANNOUNCEMENT_SEND_STATUS_2 = "2";
+
+    /**ONLINE 报表权限用 从request中获取地址栏后的参数*/
+    String ONL_REP_URL_PARAM_STR="onlRepUrlParamStr";
 
 }
