@@ -5,6 +5,9 @@ ADD COLUMN `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建日期' AF
 ADD COLUMN `update_by` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '更新人登录名称' AFTER `create_time`,
 ADD COLUMN `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新日期' AFTER `update_by`;
 
+-- online 表单字段db类型，区分年月日和年月日时分秒
+UPDATE onl_cgform_field SET db_type = 'Datetime' where db_type = 'Date';
+
 -- 对象存储字段太短
 ALTER TABLE `oss_file`
 MODIFY COLUMN `url` varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '文件地址' AFTER `file_name`;
