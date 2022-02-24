@@ -136,7 +136,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      */
     @GetMapping(value = "/queryById")
     @ApiOperation(value = "通过ID查询DEMO", notes = "通过ID查询DEMO")
-    public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
+    public Result<JeecgDemo> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
         JeecgDemo jeecgDemo = jeecgDemoService.getById(id);
         return Result.OK(jeecgDemo);
     }
