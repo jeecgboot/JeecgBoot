@@ -30,11 +30,11 @@
             <artifactId>jeecg-boot-module-system</artifactId>
         </dependency>
 
-        <!--rabbitmq消息队列-->
+        <!--rabbitmq消息队列
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
             <artifactId>jeecg-boot-starter-rabbitmq</artifactId>
-        </dependency>
+        </dependency>-->
         <!--xxl-job定时任务-->
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
