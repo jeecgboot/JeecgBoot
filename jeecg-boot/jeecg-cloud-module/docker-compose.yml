@@ -1,59 +1,16 @@
 version: '2'
 services:
-  jeecg-boot-mysql:
-    build:
-      context: ../db
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_ROOT_HOST: '%'
-      TZ: Asia/Shanghai
-    restart: always
-    container_name: jeecg-boot-mysql
-    command:
-      --character-set-server=utf8mb4
-      --collation-server=utf8mb4_general_ci
-      --explicit_defaults_for_timestamp=true
-      --lower_case_table_names=1
-      --max_allowed_packet=128M
-      --default-authentication-plugin=caching_sha2_password
-    ports:
-      - 3306:3306
-
-  jeecg-boot-redis:
-    image: redis:5.0
-    ports:
-      - 6379:6379
-    restart: always
-    container_name: jeecg-boot-redis
-    hostname: jeecg-boot-redis
-
   jeecg-boot-nacos:
-    restart: on-failure
+    restart: always
     build:
       context: ./jeecg-cloud-nacos
     ports:
       - 8848:8848
-    depends_on:
-      - jeecg-boot-mysql
     container_name: jeecg-boot-nacos
     hostname: jeecg-boot-nacos
 
-  jeecg-boot-gateway:
-    restart: on-failure
-    build:
-      context: ./jeecg-cloud-gateway
-    ports:
-      - 9999:9999
-    depends_on:
-      - jeecg-boot-nacos
-      - jeecg-boot-redis
-    container_name: jeecg-boot-gateway
-    hostname: jeecg-boot-gateway
-
   jeecg-boot-system:
     depends_on:
-      - jeecg-boot-mysql
-      - jeecg-boot-redis
       - jeecg-boot-nacos
     build:
       context: ./jeecg-cloud-system-start
@@ -63,6 +20,18 @@ services:
     environment:
       - TZ=Asia/Shanghai
 
+  jeecg-boot-gateway:
+    restart: on-failure
+    build:
+      context: ./jeecg-cloud-gateway
+    ports:
+      - 9999:9999
+    depends_on:
+      - jeecg-boot-nacos
+      - jeecg-boot-system
+    container_name: jeecg-boot-gateway
+    hostname: jeecg-boot-gateway
+
 #  jeecg-boot-xxljob:
 #    build:
 #      context: ./jeecg-cloud-xxljob
@@ -70,13 +39,3 @@ services:
 #      - 9080:9080
 #    container_name: jeecg-boot-xxljob
 #    hostname: jeecg-boot-xxljob
-
-#  jeecg-boot-rabbitmq:
-#    #    image: rabbitmq:3-management
-#    image: rabbitmq:3
-#    ports:
-#      - 5672:5672
-#    #      - 15672:15672
-#    restart: always
-#    container_name: jeecg-boot-rabbitmq
-#    hostname: jeecg-boot-rabbitmq
