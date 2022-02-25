@@ -4,6 +4,7 @@ import io.lettuce.core.RedisConnectionException;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.jeecg.common.api.vo.Result;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.connection.PoolException;
@@ -26,7 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 @Slf4j
 public class JeecgBootExceptionHandler {
-
+	@Value("${spring.servlet.multipart.max-file-size}")
+	private String maxFileSize;
 	/**
 	 * 处理自定义异常
 	 */
@@ -100,7 +102,7 @@ public class JeecgBootExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public Result<?> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
     	log.error(e.getMessage(), e);
-        return Result.error("文件大小超出10MB限制, 请压缩或降低文件质量! ");
+        return Result.error(String.format("文件大小超出%s限制, 请压缩或降低文件质量! ", maxFileSize));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
