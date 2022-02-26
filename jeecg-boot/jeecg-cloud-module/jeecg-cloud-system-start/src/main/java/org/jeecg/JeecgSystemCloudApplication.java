@@ -22,7 +22,7 @@ import java.net.UnknownHostException;
 @SpringBootApplication
 @EnableFeignClients(basePackages = {"org.jeecg"})
 @EnableScheduling
-public class JeecgSystemCloudApplication extends SpringBootServletInitializer {
+public class JeecgSystemCloudApplication extends SpringBootServletInitializer{
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {

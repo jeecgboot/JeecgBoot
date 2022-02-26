@@ -3,9 +3,10 @@ spring:
     props:
       sql-show: true
     datasource:
+      #添加分库数据源
       ds0:
         driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/jeecg-boot?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+        url: jdbc:mysql://localhost:3300/jeecg-boot?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
         username: root
         type: com.alibaba.druid.pool.DruidDataSource
         password: root
@@ -26,7 +27,8 @@ spring:
           table-classbased:
             props:
               strategy: standard
-              algorithmClassName: org.jeecg.modules.test.sharding.algorithm.StandardModTableShardAlgorithm
+              # 自定义标准分配算法
+              algorithmClassName: org.jeecg.modules.demo.sharding.algorithm.StandardModTableShardAlgorithm
             type: CLASS_BASED
         tables:
           # 逻辑表名称
@@ -38,5 +40,5 @@ spring:
               standard:
                 # 分片算法名称
                 sharding-algorithm-name: table-classbased
-                # 分片列名称
+                # 分片列名称(对应数据库字段)
                 sharding-column: log_type
