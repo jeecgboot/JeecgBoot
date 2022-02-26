@@ -30,21 +30,32 @@
             <artifactId>jeecg-boot-module-system</artifactId>
         </dependency>
 
+        <!-- 测试模块依赖 -->
         <!--rabbitmq消息队列
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-rabbitmq</artifactId>
+            <artifactId>jeecg-cloud-test-rabbitmq</artifactId>
+            <version>3.1.0</version>
         </dependency>-->
-        <!--xxl-job定时任务-->
+        <!--XxlJob、分布式锁
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-job</artifactId>
-        </dependency>
-        <!-- 分布式锁依赖 -->
+            <artifactId>jeecg-cloud-test-more</artifactId>
+            <version>3.1.0</version>
+        </dependency>-->
+        <!-- 分布式事务
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-lock</artifactId>
-        </dependency>
+            <artifactId>jeecg-cloud-test-seata</artifactId>
+            <version>3.1.0</version>
+        </dependency>-->
+        <!-- 分库分表
+        <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>jeecg-cloud-test-shardingsphere</artifactId>
+            <version>3.1.0</version>
+        </dependency> -->
+        <!-- 测试模块依赖 -->
 
     </dependencies>
 
