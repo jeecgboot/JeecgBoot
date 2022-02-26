@@ -3,7 +3,9 @@ package org.jeecg.common.util;
 import cn.hutool.crypto.SecureUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.exception.JeecgBootException;
+
 import javax.servlet.http.HttpServletRequest;
+import java.util.regex.Pattern;
 
 /**
  * sql注入处理工具类
@@ -51,6 +53,9 @@ public class SqlInjectionUtil {
 		}
 		// 统一转为小写
 		value = value.toLowerCase();
+		//SQL注入检测存在绕过风险 https://gitee.com/jeecg/jeecg-boot/issues/I4NZGE
+		value = value.replaceAll("/\\*.*\\*/","");
+
 		String[] xssArr = xssStr.split("\\|");
 		for (int i = 0; i < xssArr.length; i++) {
 			if (value.indexOf(xssArr[i]) > -1) {
@@ -58,6 +63,9 @@ public class SqlInjectionUtil {
 				log.error("请注意，值可能存在SQL注入风险!---> {}", value);
 				throw new RuntimeException("请注意，值可能存在SQL注入风险!--->" + value);
 			}
+		}
+		if(Pattern.matches("show\\s+tables", value)){
+			throw new RuntimeException("请注意，值可能存在SQL注入风险!--->" + value);
 		}
 		return;
 	}
@@ -76,12 +84,18 @@ public class SqlInjectionUtil {
 			}
 			// 统一转为小写
 			value = value.toLowerCase();
+			//SQL注入检测存在绕过风险 https://gitee.com/jeecg/jeecg-boot/issues/I4NZGE
+			value = value.replaceAll("/\\*.*\\*/","");
+
 			for (int i = 0; i < xssArr.length; i++) {
 				if (value.indexOf(xssArr[i]) > -1) {
 					log.error("请注意，存在SQL注入关键词---> {}", xssArr[i]);
 					log.error("请注意，值可能存在SQL注入风险!---> {}", value);
 					throw new RuntimeException("请注意，值可能存在SQL注入风险!--->" + value);
 				}
+			}
+			if(Pattern.matches("show\\s+tables", value)){
+				throw new RuntimeException("请注意，值可能存在SQL注入风险!--->" + value);
 			}
 		}
 		return;
@@ -101,12 +115,18 @@ public class SqlInjectionUtil {
 		}
 		// 统一转为小写
 		value = value.toLowerCase();
+		//SQL注入检测存在绕过风险 https://gitee.com/jeecg/jeecg-boot/issues/I4NZGE
+		value = value.replaceAll("/\\*.*\\*/","");
+
 		for (int i = 0; i < xssArr.length; i++) {
 			if (value.indexOf(xssArr[i]) > -1 || value.startsWith(xssArr[i].trim())) {
 				log.error("请注意，存在SQL注入关键词---> {}", xssArr[i]);
 				log.error("请注意，值可能存在SQL注入风险!---> {}", value);
 				throw new RuntimeException("请注意，值可能存在SQL注入风险!--->" + value);
 			}
+		}
+		if(Pattern.matches("show\\s+tables", value)){
+			throw new RuntimeException("请注意，值可能存在SQL注入风险!--->" + value);
 		}
 		return;
 	}
@@ -126,12 +146,19 @@ public class SqlInjectionUtil {
 		}
 		// 统一转为小写
 		value = value.toLowerCase();
+		//SQL注入检测存在绕过风险 https://gitee.com/jeecg/jeecg-boot/issues/I4NZGE
+		value = value.replaceAll("/\\*.*\\*/","");
+
 		for (int i = 0; i < xssArr.length; i++) {
 			if (value.indexOf(xssArr[i]) > -1 || value.startsWith(xssArr[i].trim())) {
 				log.error("请注意，存在SQL注入关键词---> {}", xssArr[i]);
 				log.error("请注意，值可能存在SQL注入风险!---> {}", value);
 				throw new RuntimeException("请注意，值可能存在SQL注入风险!--->" + value);
 			}
+		}
+
+		if(Pattern.matches("show\\s+tables", value)){
+			throw new RuntimeException("请注意，值可能存在SQL注入风险!--->" + value);
 		}
 		return;
 	}
