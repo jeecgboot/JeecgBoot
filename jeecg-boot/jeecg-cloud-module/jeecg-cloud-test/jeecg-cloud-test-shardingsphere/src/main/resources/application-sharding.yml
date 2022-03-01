@@ -28,7 +28,7 @@ spring:
             props:
               strategy: standard
               # 自定义标准分配算法
-              algorithmClassName: org.jeecg.modules.demo.sharding.algorithm.StandardModTableShardAlgorithm
+              algorithmClassName: org.jeecg.modules.test.sharding.algorithm.StandardModTableShardAlgorithm
             type: CLASS_BASED
         tables:
           # 逻辑表名称
