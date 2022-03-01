@@ -76,7 +76,7 @@ public class CommonController {
         String bizPath = request.getParameter("biz");
 
         //LOWCOD-2580 sys/common/upload接口存在任意文件上传漏洞
-        if(bizPath.contains("../") || bizPath.contains("..\\")){
+        if (oConvertUtils.isNotEmpty(bizPath) && (bizPath.contains("../") || bizPath.contains("..\\"))) {
             throw new JeecgBootException("上传目录bizPath，格式非法！");
         }
 
