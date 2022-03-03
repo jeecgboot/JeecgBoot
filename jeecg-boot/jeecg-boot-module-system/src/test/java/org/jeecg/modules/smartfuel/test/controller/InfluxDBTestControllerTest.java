@@ -16,15 +16,19 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Arrays;
-import java.util.List;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = JeecgSystemApplication.class)
 class InfluxDBTestControllerTest {
 
+
+    /**
+     * 测试时如果结果数据量很大，需要把redisUtil类61行的读取时间设大一点
+     * 比如requestFactory.setReadTimeout(20000)，设置20s
+     * 不然输出结果读取会报错 Caused by: java.net.SocketTimeoutException: Read timed out
+     */
     @Autowired
     private RedisUtil redisUtil;
+
     /**
      * 测试地址：实际使用时替换成你自己的地址
      */
@@ -45,7 +49,9 @@ class InfluxDBTestControllerTest {
         // 请求方式是 GET 代表获取数据
         HttpMethod method = HttpMethod.GET;
         //各项请求参数
-        List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //不能直接用List<String> list，url拼接的时候会把[]中括号带上，导致一头一尾参数不对，可以直接用下面String
+        String list = "BF_IN[0], BF_IN[33], BF_IN[35], BF_IN[36]";
         String startTime = "2022-02-01T08:00:00";
         String endTime = "2022-03-01T08:00:00";
         String every = "10s";//间隔时间
@@ -67,7 +73,7 @@ class InfluxDBTestControllerTest {
         // 利用 RestUtil 请求该url
         ResponseEntity<JSONObject> result = RestUtil.request(url, method, headers, variables, null, JSONObject.class);
         if (result != null && result.getBody() != null) {
-            System.out.println("返回结果：" + result.getBody().toJSONString());
+            System.out.println("返回结果：" + result.getBody().toJSONString());//数据太多时，不会全部打印出来，控制台输出行数有限制，默认1024kb,可以自行设置
         } else {
             System.out.println("查询失败");
         }
@@ -84,7 +90,9 @@ class InfluxDBTestControllerTest {
         // 请求方式是 GET 代表获取数据
         HttpMethod method = HttpMethod.GET;
         //各项请求参数
-        List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //不能直接用List<String> list，url拼接的时候会把[]中括号带上，导致一头一尾参数不对，可以直接用下面String
+        String list = "BF_IN[0], BF_IN[33], BF_IN[35], BF_IN[36]";
         String startTime = "2022-01-01T08:00:00";
         String endTime = "2022-03-01T08:00:00";
         String number = "1";//数据源编号
@@ -120,7 +128,9 @@ class InfluxDBTestControllerTest {
         // 请求方式是 GET 代表获取数据
         HttpMethod method = HttpMethod.GET;
         //各项请求参数
-        List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //不能直接用List<String> list，url拼接的时候会把[]中括号带上，导致一头一尾参数不对，可以直接用下面String
+        String list = "BF_IN[0], BF_IN[33], BF_IN[35], BF_IN[36]";
         String startTime = "2022-02-01T08:00:00";
         String endTime = "2022-03-01T08:00:00";
         String every = "10s";//间隔时间
@@ -159,9 +169,11 @@ class InfluxDBTestControllerTest {
         // 请求方式是 GET 代表获取数据
         HttpMethod method = HttpMethod.GET;
         //各项请求参数
-        List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //不能直接用List<String> list，url拼接的时候会把[]中括号带上，导致一头一尾参数不对，可以直接用下面String
+        String list = "BF_IN[0], BF_IN[33], BF_IN[35], BF_IN[36]";
         String startTime = "2022-02-01T08:00:00";
-        String endTime = "2022-02-05T08:00:00";
+        String endTime = "2022-02-15T08:00:00";
         String every = "10s";//间隔时间
         String number = "1";//数据源编号
         //拼接请求参数
@@ -197,7 +209,9 @@ class InfluxDBTestControllerTest {
         // 请求方式是 GET 代表获取数据
         HttpMethod method = HttpMethod.GET;
         //各项请求参数
-        List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //不能直接用List<String> list，url拼接的时候会把[]中括号带上，导致一头一尾参数不对，可以直接用下面String
+        String list = "BF_IN[0], BF_IN[33], BF_IN[35], BF_IN[36]";
         String startTime = "2022-02-01T08:00:00";
         String endTime = "2022-02-10T08:00:00";
         String every = "10s";//间隔时间
@@ -236,7 +250,9 @@ class InfluxDBTestControllerTest {
         // 请求方式是 GET 代表获取数据
         HttpMethod method = HttpMethod.GET;
         //各项请求参数
-        List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //不能直接用List<String> list，url拼接的时候会把[]中括号带上，导致一头一尾参数不对，可以直接用下面String
+        String list = "BF_IN[0], BF_IN[33], BF_IN[35], BF_IN[36]";
         String startTime = "2022-02-01T08:00:00";
         String endTime = "2022-02-05T08:00:00";
         String every = "10s";//间隔时间
@@ -274,7 +290,9 @@ class InfluxDBTestControllerTest {
         // 请求方式是 GET 代表获取数据
         HttpMethod method = HttpMethod.GET;
         //各项请求参数
-        List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //不能直接用List<String> list，url拼接的时候会把[]中括号带上，导致一头一尾参数不对，可以直接用下面String
+        String list = "BF_IN[0], BF_IN[33], BF_IN[35], BF_IN[36]";
         String startTime = "2022-02-01T08:00:00";
         String endTime = "2022-02-05T08:00:00";
         String every = "10s";//间隔时间
@@ -313,7 +331,9 @@ class InfluxDBTestControllerTest {
         // 请求方式是 GET 代表获取数据
         HttpMethod method = HttpMethod.GET;
         //各项请求参数
-        List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //不能直接用List<String> list，url拼接的时候会把[]中括号带上，导致一头一尾参数不对，可以直接用下面String
+        String list = "BF_IN[0], BF_IN[33], BF_IN[35], BF_IN[36]";
         String startTime = "2022-02-01T08:00:00";
         String endTime = "2022-02-05T08:00:00";
         String intervalSeconds = "10s";//间隔时间
@@ -355,7 +375,9 @@ class InfluxDBTestControllerTest {
         // 请求方式是 GET 代表获取数据
         HttpMethod method = HttpMethod.GET;
         //各项请求参数
-        List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //不能直接用List<String> list，url拼接的时候会把[]中括号带上，导致一头一尾参数不对，可以直接用下面String
+        String list = "BF_IN[0], BF_IN[33], BF_IN[35], BF_IN[36]";
         String startTime = "2022-02-01T08:00:00";
         String endTime = "2022-02-05T08:00:00";
         String every = "10s";//间隔时间
@@ -400,16 +422,20 @@ class InfluxDBTestControllerTest {
         // 请求方式是 GET 代表获取数据
         HttpMethod method = HttpMethod.GET;
         //各项请求参数
-        List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //不能直接用List<String> list，url拼接的时候会把[]中括号带上，导致一头一尾参数不对，可以直接用下面String
+        String list = "BF_IN[0], BF_IN[33], BF_IN[35], BF_IN[36]";
         String startTime = "2022-02-01T08:00:00";
         String endTime = "2022-03-01T08:00:00";
         String number = "1";//数据源编号
+        String searchDay = "7";//数据源编号
         //拼接请求参数
         JSONObject variables = new JSONObject();
         variables.put("list", list);
         variables.put("startTime", startTime);
         variables.put("endTime", endTime);
         variables.put("number", number);
+        variables.put("searchDay", searchDay);
         //打印请求相关参数
         System.out.println("请求地址：" + url);
         System.out.println("请求方式：" + method);
@@ -436,9 +462,11 @@ class InfluxDBTestControllerTest {
         // 请求方式是 GET 代表获取数据
         HttpMethod method = HttpMethod.GET;
         //各项请求参数
-        List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //不能直接用List<String> list，url拼接的时候会把[]中括号带上，导致一头一尾参数不对，可以直接用下面String
+        String list = "BF_IN[0], BF_IN[33], BF_IN[35], BF_IN[36]";
         String startTime = "2022-02-01T08:00:00";
-        String endTime = "2022-02-05T08:00:00";
+        String endTime = "2022-02-19T08:00:00";
         String number = "1";//数据源编号
         //拼接请求参数
         JSONObject variables = new JSONObject();
@@ -472,7 +500,9 @@ class InfluxDBTestControllerTest {
         // 请求方式是 GET 代表获取数据
         HttpMethod method = HttpMethod.GET;
         //各项请求参数
-        List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //不能直接用List<String> list，url拼接的时候会把[]中括号带上，导致一头一尾参数不对，可以直接用下面String
+        String list = "BF_IN[0], BF_IN[33], BF_IN[35], BF_IN[36]";
         String startTime = "2022-02-01T08:00:00";
         String endTime = "2022-03-01T08:00:00";
         String number = "1";//数据源编号
@@ -509,7 +539,9 @@ class InfluxDBTestControllerTest {
         // 请求方式是 GET 代表获取数据
         HttpMethod method = HttpMethod.GET;
         //各项请求参数
-        List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //不能直接用List<String> list，url拼接的时候会把[]中括号带上，导致一头一尾参数不对，可以直接用下面String
+        String list = "BF_IN[0], BF_IN[33], BF_IN[35], BF_IN[36]";
         String startTime = "2022-02-01T08:00:00";
         String endTime = "2022-02-05T08:00:00";
         String number = "1";//数据源编号
@@ -545,9 +577,11 @@ class InfluxDBTestControllerTest {
         // 请求方式是 GET 代表获取数据
         HttpMethod method = HttpMethod.GET;
         //各项请求参数
-        List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //不能直接用List<String> list，url拼接的时候会把[]中括号带上，导致一头一尾参数不对，可以直接用下面String
+        String list = "BF_IN[0], BF_IN[33], BF_IN[35], BF_IN[36]";
         String startTime = "2022-02-01T08:00:00";
-        String endTime = "2022-02-01T13:00:00";
+        String endTime = "2022-03-01T13:00:00";
         String number = "1";//数据源编号
         //拼接请求参数
         JSONObject variables = new JSONObject();
@@ -581,7 +615,9 @@ class InfluxDBTestControllerTest {
         // 请求方式是 GET 代表获取数据
         HttpMethod method = HttpMethod.GET;
         //各项请求参数
-        List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //List<String> list = Arrays.asList("BF_IN[0]", "BF_IN[33]", "BF_IN[35]", "BF_IN[36]");
+        //不能直接用List<String> list，url拼接的时候会把[]中括号带上，导致一头一尾参数不对，可以直接用下面String
+        String list = "BF_IN[0], BF_IN[33], BF_IN[35], BF_IN[36]";
         String startTime = "2022-02-01T08:00:00";
         String endTime = "2022-02-11T08:00:00";
         String number = "1";//数据源编号
