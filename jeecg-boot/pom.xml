@@ -57,6 +57,7 @@
         <module>jeecg-boot-base</module>
         <module>jeecg-boot-module-demo</module>
         <module>jeecg-boot-module-system</module>
+		<module>jeecg-boot-module-smartfuel</module>
         <!--需要微服务，请打开
         <module>jeecg-boot-starter</module>
         <module>jeecg-cloud-module</module>-->
@@ -109,6 +110,11 @@
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
 			<version>${fastjson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
 		</dependency>
 	</dependencies>
 
