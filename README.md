@@ -57,8 +57,14 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 更新日志：  [版本日志](http://www.jeecg.com/doc/log)
 
-- VUE3版演示(未正式发布)：[http://boot3.jeecg.com](http://boot3.jeecg.com)
 
+
+Vue3版前端（Beta版）
+-----------------------------------
+
+- VUE3版演示：[http://boot3.jeecg.com](http://boot3.jeecg.com)
+- 源码下载：https://github.com/jeecgboot/jeecgboot-vue3
+- 开发文档：http://vue3.jeecg.com/2398845
 
 
 交流互动
@@ -184,8 +190,6 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 - [Viser-vue](https://viserjs.github.io/docs.html#/viser/guide/installation)  - antv/g2 封装实现
 - eslint，[@vue/cli 3.2.1](https://cli.vuejs.org/zh/guide)
 - vue-print-nb - 打印
-
-
 
 
 
