@@ -22,7 +22,7 @@ class InfluxDBTestControllerTest {
 
 
     /**
-     * 测试时如果结果数据量很大，需要把redisUtil类61行的读取时间设大一点
+     * 测试时如果结果数据量很大，需要把restUtil类61行的读取时间设大一点
      * 比如requestFactory.setReadTimeout(20000)，设置20s
      * 不然输出结果读取会报错 Caused by: java.net.SocketTimeoutException: Read timed out
      */
