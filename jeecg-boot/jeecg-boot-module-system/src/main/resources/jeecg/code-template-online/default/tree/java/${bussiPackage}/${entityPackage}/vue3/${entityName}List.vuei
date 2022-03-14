@@ -61,7 +61,7 @@
         },
         importConfig: {
           url: getImportUrl,
-          success：importSuccess
+          success: importSuccess
         },
     })
 
