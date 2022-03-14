@@ -59,7 +59,7 @@ public class ShiroConfig {
      * 2、当设置多个过滤器时，全部验证通过，才视为通过
      * 3、部分过滤器可指定参数，如perms，roles
      */
-    @Bean("shiroFilter")
+    @Bean("shiroFilterFactoryBean")
     public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
         CustomShiroFilterFactoryBean shiroFilterFactoryBean = new CustomShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
