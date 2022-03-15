@@ -166,7 +166,7 @@ Vue3版前端（Beta版）
 
 - 报表工具： jimureport 1.3.78
 
-- 安全框架：Apache Shiro 1.7.0，Jwt 3.11.0
+- 安全框架：Apache Shiro 1.8.0，Jwt 3.11.0
 
 - 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywalking
 
