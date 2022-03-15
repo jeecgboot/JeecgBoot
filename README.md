@@ -142,6 +142,45 @@ Vue3版前端（Beta版）
 
 - 数据库脚本：MySQL5.7+  &  Oracle 11g & Sqlserver2017（默认只提供这三个库脚本，其他库需要自己转）
 
+
+#### 后端
+
+- 基础框架：Spring Boot 2.3.5.RELEASE
+
+- 微服务框架： Spring Cloud Alibaba 2.2.3.RELEASE
+
+- 持久层框架：MybatisPlus 3.4.3.1 
+
+- 报表工具： JimuReport 1.4.32
+
+- 安全框架：Apache Shiro 1.8.0，Jwt 3.11.0
+
+- 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywalking
+
+- 数据库连接池：阿里巴巴Druid 1.1.22
+
+- 缓存框架：redis
+
+- 日志打印：logback
+
+- 其他：autopoi, fastjson，poi，Swagger-ui，quartz, lombok（简化代码）等。
+
+
+#### 前端
+ 
+- [Vue 2.6.10](https://cn.vuejs.org/),[Vuex](https://vuex.vuejs.org/zh/),[Vue Router](https://router.vuejs.org/zh/)
+- [Axios](https://github.com/axios/axios)
+- [ant-design-vue](https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn/)
+- [webpack](https://www.webpackjs.com/),[yarn](https://yarnpkg.com/zh-Hans/)
+- [vue-cropper](https://github.com/xyxiao001/vue-cropper) - 头像裁剪组件
+- [@antv/g2](https://antv.alipay.com/zh-cn/index.html) - Alipay AntV 数据可视化图表
+- [Viser-vue](https://viserjs.github.io/docs.html#/viser/guide/installation)  - antv/g2 封装实现
+- eslint，[@vue/cli 3.2.1](https://cli.vuejs.org/zh/guide)
+- vue-print-nb - 打印
+
+
+#### 支持库
+
 |  数据库   |  支持   |
 | --- | --- |
 |   MySQL   |  √   |
@@ -157,39 +196,48 @@ Vue3版前端（Beta版）
 |  Hive、HBase、CouchBase   |  √   |
 
 
-#### 后端
-- 基础框架：Spring Boot 2.3.5.RELEASE
-
-- 微服务框架： Spring Cloud Alibaba 2.2.3.RELEASE
-
-- 持久层框架：Mybatis-plus 3.4.3.1、Minidao 
-
-- 报表工具： jimureport 1.3.78
-
-- 安全框架：Apache Shiro 1.8.0，Jwt 3.11.0
-
-- 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywalking
-
-- 数据库连接池：阿里巴巴Druid 1.1.22
-
-- 缓存框架：redis
-
-- 日志打印：logback
-
-- 其他：fastjson，poi，Swagger-ui，quartz, lombok（简化代码）等。
+## 微服务解决方案
 
 
-#### 前端
- 
-- [Vue 2.6.10](https://cn.vuejs.org/),[Vuex](https://vuex.vuejs.org/zh/),[Vue Router](https://router.vuejs.org/zh/)
-- [Axios](https://github.com/axios/axios)
-- [ant-design-vue](https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn/)
-- [webpack](https://www.webpackjs.com/),[yarn](https://yarnpkg.com/zh-Hans/)
-- [vue-cropper](https://github.com/xyxiao001/vue-cropper) - 头像裁剪组件
-- [@antv/g2](https://antv.alipay.com/zh-cn/index.html) - Alipay AntV 数据可视化图表
-- [Viser-vue](https://viserjs.github.io/docs.html#/viser/guide/installation)  - antv/g2 封装实现
-- eslint，[@vue/cli 3.2.1](https://cli.vuejs.org/zh/guide)
-- vue-print-nb - 打印
+1、服务注册和发现 Nacos √
+
+2、统一配置中心 Nacos  √
+
+3、路由网关 gateway(三种加载方式) √
+
+4、分布式 http feign √
+
+5、熔断和降级 Sentinel √
+
+6、分布式文件 Minio、阿里OSS √ 
+
+7、统一权限控制 JWT + Shiro √
+
+8、服务监控 SpringBootAdmin√
+
+9、链路跟踪 Skywalking   [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1771670)
+
+10、消息中间件 RabbitMQ  √
+
+11、分布式任务 xxl-job  √ 
+
+12、分布式事务 Seata
+
+13、分布式日志 elk + kafka
+
+14、支持 docker-compose、k8s、jenkins
+
+15、CAS 单点登录   √
+
+16、路由限流   √
+
+   
+#### 微服务架构图
+![微服务架构图](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecgboot-weifuwu-cloud.png "在这里输入图片标题")
+
+### Jeecg Boot 产品功能蓝图
+![功能蓝图](https://jeecgos.oss-cn-beijing.aliyuncs.com/upload/test/Jeecg-Boot-lantu202005_1590912449914.jpg "在这里输入图片标题")
+
 
 
 
@@ -335,47 +383,6 @@ Vue3版前端（Beta版）
    
 ```
 
-## 微服务整体解决方案(2.4+版本)
-
-
-1、服务注册和发现 Nacos √
-
-2、统一配置中心 Nacos  √
-
-3、路由网关 gateway(三种加载方式) √
-
-4、分布式 http feign √
-
-5、熔断和降级 Sentinel √
-
-6、分布式文件 Minio、阿里OSS √ 
-
-7、统一权限控制 JWT + Shiro √
-
-8、服务监控 SpringBootAdmin√
-
-9、链路跟踪 Skywalking   [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1771670)
-
-10、消息中间件 RabbitMQ  √
-
-11、分布式任务 xxl-job  √ 
-
-12、分布式事务 Seata
-
-13、分布式日志 elk + kafka
-
-14、支持 docker-compose、k8s、jenkins
-
-15、CAS 单点登录   √
-
-16、路由限流   √
-
-   
-#### 微服务架构图
-![微服务架构图](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecgboot-weifuwu-cloud.png "在这里输入图片标题")
-
-### Jeecg Boot 产品功能蓝图
-![功能蓝图](https://jeecgos.oss-cn-beijing.aliyuncs.com/upload/test/Jeecg-Boot-lantu202005_1590912449914.jpg "在这里输入图片标题")
 
 
 后台开发环境和依赖
