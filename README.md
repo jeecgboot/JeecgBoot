@@ -49,9 +49,11 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 开发文档：  [http://doc.jeecg.com](http://doc.jeecg.com/2043874)
 
-- 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)  |   [常见问题 ](http://www.jeecg.com/doc/qa)  |   [入门视频](https://www.bilibili.com/video/BV1Y541147m1) |   [技术支持](http://jeecg.com/doc/help)
+- 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)  |   [常见问题 ](http://www.jeecg.com/doc/qa)  |   [入门视频](https://www.bilibili.com/video/BV1Y541147m1) |   [技术支持](http://jeecg.com/doc/help) |  [1分钟体验低代码](https://my.oschina.net/jeecg/blog/3083313)
 
 - 微服务开发：  [单体切换为微服务](http://doc.jeecg.com/2043906)
+
+- QQ交流群 ： ⑤860162132、683903138(VUE3版)、~~④774126647(满)、③816531124(满)、②769925425(满)、①284271917(满)~~
 
 Vue3版前端（Beta版）
 -----------------------------------
@@ -59,18 +61,6 @@ Vue3版前端（Beta版）
 - VUE3版演示：[http://boot3.jeecg.com](http://boot3.jeecg.com)
 - 源码下载：https://github.com/jeecgboot/jeecgboot-vue3
 - 开发文档：http://vue3.jeecg.com/2398845
-
-
-交流互动
------------------------------------
-
-- QQ交流群 ： ⑤860162132、④774126647(满)、③816531124(满)、②769925425(满)、①284271917(满)
-
-- 反馈问题：  [反馈问题，请按格式发Issues](https://github.com/zhangdaiscott/jeecg-boot/issues/new)
-
-- 参与开源：  [欢迎加入JEECG开源团队，共同进步！！](http://www.jeecg.com/doc/join)
-
-- Online一分钟：  [1分钟快速学习](https://my.oschina.net/jeecg/blog/3083313)
 
 
 为什么选择JEECG-BOOT?
