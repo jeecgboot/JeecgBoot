@@ -58,9 +58,10 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 Vue3版前端（Beta版）
 -----------------------------------
 
-- VUE3版演示：[http://boot3.jeecg.com](http://boot3.jeecg.com)
+> 采用Vue3.0、Vite、 Ant-Design-Vue、TypeScript 等新技术方案，包括二次封装组件、utils、hooks、动态菜单、权限校验、按钮级别权限控制等功能！ 是在 Vben-Admin 基础上研发的，适合于JeecgBoot的新版前端VUE3框架。
+
 - 源码下载：https://github.com/jeecgboot/jeecgboot-vue3
-- 开发文档：http://vue3.jeecg.com/2398845
+- 入门指南： [开发文档](http://vue3.jeecg.com/2398845)  |   [ VUE3版演示 ](http://boot3.jeecg.com)  |   [入门视频](https://www.bilibili.com/video/BV1V34y187Y9) 
 
 
 为什么选择JEECG-BOOT?
@@ -114,22 +115,22 @@ Vue3版前端（Beta版）
 -----------------------------------
 #### 开发环境
 
-- 语言：Java 8
+- 语言：Java 8+ (小于11)
 
-- IDE(JAVA)： IDEA / Eclipse安装lombok插件 
+- IDE(JAVA)： IDEA (必须安装lombok插件 )
 
-- IDE(前端)： WebStorm 或者 IDEA
+- IDE(前端)： IDEA 或者 WebStorm
 
 - 依赖管理：Maven
 
 - 缓存：Redis
 
-- 数据库脚本：MySQL5.7+  &  Oracle 11g & Sqlserver2017（默认只提供这三个库脚本，其他库需要自己转）
+- 数据库脚本：MySQL5.7+  &  Oracle 11g & Sqlserver2017（默认只提供三个库脚本，其他库需要自己转）
 
 
 #### 后端
 
-- 基础框架：Spring Boot 2.3.5.RELEASE、Jdk8+ (小于11)
+- 基础框架：Spring Boot 2.3.5.RELEASE
 
 - 微服务框架： Spring Cloud Alibaba 2.2.3.RELEASE
 
@@ -142,8 +143,6 @@ Vue3版前端（Beta版）
 - 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywalking
 
 - 数据库连接池：阿里巴巴Druid 1.1.22
-
-- 缓存框架：redis
 
 - 日志打印：logback
 
@@ -160,7 +159,7 @@ Vue3版前端（Beta版）
 - [@antv/g2](https://antv.alipay.com/zh-cn/index.html) - Alipay AntV 数据可视化图表
 - [Viser-vue](https://viserjs.github.io/docs.html#/viser/guide/installation)  - antv/g2 封装实现
 - eslint，[@vue/cli 3.2.1](https://cli.vuejs.org/zh/guide)
-- vue-print-nb - 打印
+- vue-print-nb-jeecg - 打印
 
 
 #### 支持库
