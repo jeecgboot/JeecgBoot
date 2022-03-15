@@ -47,17 +47,11 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 在线演示 ： [http://boot.jeecg.com](http://boot.jeecg.com)
 
-- 开发文档：  [http://doc.jeecg.com](http://doc.jeecg.com)
+- 开发文档：  [http://doc.jeecg.com](http://doc.jeecg.com/2043874)
 
-- 视频教程  ：[JeecgBoot入门视频](http://www.jeecg.com/doc/video)
+- 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)  |   [常见问题 ](http://www.jeecg.com/doc/qa)  |   [入门视频](https://www.bilibili.com/video/BV1Y541147m1) |   [技术支持](http://jeecg.com/doc/help)
 
-- 微服务启动：  [单体升级为微服务启动文档2.4+](http://doc.jeecg.com/2043906)
-
-- 常见问题：  [入门常见问题Q&A](http://jeecg.com/doc/qa)
-
-- 更新日志：  [版本日志](http://www.jeecg.com/doc/log)
-
-
+- 微服务开发：  [单体切换为微服务](http://doc.jeecg.com/2043906)
 
 Vue3版前端（Beta版）
 -----------------------------------
