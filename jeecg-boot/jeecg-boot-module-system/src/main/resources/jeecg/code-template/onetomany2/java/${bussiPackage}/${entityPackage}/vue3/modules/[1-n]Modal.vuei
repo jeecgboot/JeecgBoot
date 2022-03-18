@@ -10,8 +10,8 @@
     import {ref, computed, unref,inject} from 'vue';
     import {BasicModal, useModalInner} from '/@/components/Modal';
     import {BasicForm, useForm} from '/@/components/Form/index';
-    import {${subTab.entityName?uncap_first}FormSchema} from '../${entityName?uncap_first}.data';
-    import {${subTab.entityName?uncap_first}Save} from '../${entityName?uncap_first}.api';
+    import {${subTab.entityName?uncap_first}FormSchema} from '../${entityName}.data';
+    import {${subTab.entityName?uncap_first}Save} from '../${entityName}.api';
     // Emits声明
     const emit = defineEmits(['register','success']);
     //接收主表id

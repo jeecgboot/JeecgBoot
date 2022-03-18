@@ -8,8 +8,8 @@
     import {ref, computed, unref} from 'vue';
     import {BasicModal, useModalInner} from '/@/components/Modal';
     import {BasicForm, useForm} from '/@/components/Form/index';
-    import {formSchema} from '../${entityName?uncap_first}.data';
-    import {saveOrUpdate} from '../${entityName?uncap_first}.api';
+    import {formSchema} from '../${entityName}.data';
+    import {saveOrUpdate} from '../${entityName}.api';
     // Emits声明
     const emit = defineEmits(['register','success']);
     const isUpdate = ref(true);
@@ -44,7 +44,7 @@
             //关闭弹窗
             closeModal();
             //刷新列表
-            emit('success');
+            emit('success', {isUpdate: isUpdate.value, values});
         } finally {
             setModalProps({confirmLoading: false});
         }
