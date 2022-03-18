@@ -39,6 +39,8 @@ export const list = (params) =>
 
 /**
  * 删除单个
+ * @param params
+ * @param handleSuccess
  */
 export const deleteOne = (params,handleSuccess) => {
   return defHttp.delete({url: Api.deleteOne, params}, {joinParamsToUrl: true}).then(() => {
@@ -48,6 +50,7 @@ export const deleteOne = (params,handleSuccess) => {
 /**
  * 批量删除
  * @param params
+ * @param handleSuccess
  */
 export const batchDelete = (params, handleSuccess) => {
   Modal.confirm({
@@ -65,6 +68,7 @@ export const batchDelete = (params, handleSuccess) => {
 /**
  * 保存或者更新
  * @param params
+ * @param isUpdate 是否是更新数据
  */
 export const saveOrUpdate = (params, isUpdate) => {
   let url = isUpdate ? Api.edit : Api.save;

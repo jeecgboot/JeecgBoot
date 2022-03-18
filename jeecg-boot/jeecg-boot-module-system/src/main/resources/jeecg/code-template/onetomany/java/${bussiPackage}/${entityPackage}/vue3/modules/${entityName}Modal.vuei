@@ -27,10 +27,9 @@
     import {ref, computed, unref,reactive} from 'vue';
     import {BasicModal, useModalInner} from '/@/components/Modal';
     import {BasicForm, useForm} from '/@/components/Form/index';
-    import { JVxeTable } from '/@/components/jeecg/JVxeTable'
     import { useJvxeMethod } from '/@/hooks/system/useJvxeMethods.ts'
-    import {formSchema<#list subTables as sub>,${sub.entityName?uncap_first}Columns</#list>} from '../${entityName?uncap_first}.data';
-    import {saveOrUpdate<#list subTables as sub>,${sub.entityName?uncap_first}List</#list>} from '../${entityName?uncap_first}.api';
+    import {formSchema<#list subTables as sub>,${sub.entityName?uncap_first}Columns</#list>} from '../${entityName}.data';
+    import {saveOrUpdate<#list subTables as sub>,${sub.entityName?uncap_first}List</#list>} from '../${entityName}.api';
     import { VALIDATE_FAILED } from '/@/utils/common/vxeUtils'
     // Emits声明
     const emit = defineEmits(['register','success']);

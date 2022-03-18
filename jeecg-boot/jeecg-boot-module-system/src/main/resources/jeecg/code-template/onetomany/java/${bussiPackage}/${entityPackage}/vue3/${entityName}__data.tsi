@@ -42,7 +42,10 @@ export const searchFormSchema: FormSchema[] = [
 </#if>
 </#list>
 ];
+
 export const formSchema: FormSchema[] = [
+  // TODO 主键隐藏字段，目前写死为ID
+  {label: '', field: 'id', component: 'Input', show: false},
 <#list columns as po><#rt/>
   {
     label: '${po.filedComment}',

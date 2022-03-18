@@ -7,7 +7,7 @@
           <a-button type="primary" @click="handleAdd" preIcon="ant-design:plus-outlined"> 新增</a-button>
           <a-button  type="primary" preIcon="ant-design:export-outlined" @click="onExportXls"> 导出</a-button>
           <j-upload-button  type="primary" preIcon="ant-design:import-outlined" @click="onImportXls">导入</j-upload-button>
-          <a-dropdown v-if="checkedKeys.length > 0">
+          <a-dropdown v-if="selectedRowKeys.length > 0">
               <template #overlay>
                 <a-menu>
                   <a-menu-item key="1" @click="batchHandleDelete">
@@ -37,9 +37,8 @@
   import { useListPage } from '/@/hooks/system/useListPage'
   import {useModal} from '/@/components/Modal';
   import ${entityName}Modal from './modules/${entityName}Modal.vue'
-  import {columns, searchFormSchema} from './${entityName?uncap_first}.data';
-  import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName?uncap_first}.api';
-  const checkedKeys = ref<Array<string | number>>([]);
+  import {columns, searchFormSchema} from './${entityName}.data';
+  import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName}.api';
   //注册model
   const [registerModal, {openModal}] = useModal();
    //注册table数据
@@ -109,7 +108,7 @@
     * 批量删除事件
     */
   async function batchHandleDelete() {
-     await batchDelete({ids: checkedKeys.value}, reload);
+     await batchDelete({ids: selectedRowKeys.value}, reload);
    }
    /**
     * 成功回调
