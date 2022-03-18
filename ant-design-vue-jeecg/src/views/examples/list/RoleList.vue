@@ -32,6 +32,7 @@
       size="default"
       :columns="columns"
       :data="loadData"
+      :scroll="{}"
     >
       <div
         slot="expandedRowRender"

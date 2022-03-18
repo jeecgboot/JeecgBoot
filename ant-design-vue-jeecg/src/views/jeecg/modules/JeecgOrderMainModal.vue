@@ -251,8 +251,6 @@
       },
       delRowCustom (index) {
         console.log(index)
-        let all = this.orderMainModel
-        all['jeecgOrderCustomerList'].splice(index,1);
         this.orderMainModel.jeecgOrderCustomerList.splice(index,1);
         this.$forceUpdate();
       },
@@ -263,8 +261,6 @@
       },
       delRowTicket (index) {
         console.log(index)
-        let all = this.orderMainModel
-        all['jeecgOrderTicketList'].splice(index,1);
         this.orderMainModel.jeecgOrderTicketList.splice(index,1);
         this.$forceUpdate();
       },
