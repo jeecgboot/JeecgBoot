@@ -895,10 +895,10 @@
     cssnano-preset-default "^4.0.0"
     postcss "^7.0.0"
 
-"@jeecg/antd-online-mini@3.0.0-RC":
-  version "3.0.0-RC"
-  resolved "https://registry.npmjs.org/@jeecg/antd-online-mini/-/antd-online-mini-3.0.0-RC.tgz#8b220234d39bfcd9b8b1ce2c78ca1bd92b86da0b"
-  integrity sha512-oNYRPsnlKUPpJKJvQSaqgX6XenDPKwFLHcLYFdrmEYnSCGU46x1p/coqea9r8lI6s1Y2Az0+xAOdwOMPnu/AtQ==
+"@jeecg/antd-online-mini@3.1.0-beta":
+  version "3.1.0-beta"
+  resolved "https://registry.npmmirror.com/@jeecg/antd-online-mini/-/antd-online-mini-3.1.0-beta.tgz#cf3e254259503405a5e83ffa6775ac9fa02fe74c"
+  integrity sha512-pW0zWzExnxjlC3e7DzGYjQibLU22K/7N0kp1ddJrGgX33Ia/wq7ELOcwn6bLzITD89RcvX1JUW/om+IJ1PxOSw==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
