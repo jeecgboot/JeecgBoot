@@ -70,10 +70,10 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "${tableVo.ftlDescription}-分页列表查询")
+	//@AutoLog(value = "${tableVo.ftlDescription}-分页列表查询")
 	@ApiOperation(value="${tableVo.ftlDescription}-分页列表查询", notes="${tableVo.ftlDescription}-分页列表查询")
 	@GetMapping(value = "/list")
-	public Result<?> queryPageList(${entityName} ${entityName?uncap_first},
+	public Result<IPage<${entityName}>> queryPageList(${entityName} ${entityName?uncap_first},
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
@@ -91,7 +91,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
     @AutoLog(value = "${tableVo.ftlDescription}-添加")
     @ApiOperation(value="${tableVo.ftlDescription}-添加", notes="${tableVo.ftlDescription}-添加")
     @PostMapping(value = "/add")
-    public Result<?> add(@RequestBody ${entityName} ${entityName?uncap_first}) {
+    public Result<String> add(@RequestBody ${entityName} ${entityName?uncap_first}) {
         ${entityName?uncap_first}Service.save(${entityName?uncap_first});
         return Result.OK("添加成功！");
     }
@@ -104,7 +104,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
     @AutoLog(value = "${tableVo.ftlDescription}-编辑")
     @ApiOperation(value="${tableVo.ftlDescription}-编辑", notes="${tableVo.ftlDescription}-编辑")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
-    public Result<?> edit(@RequestBody ${entityName} ${entityName?uncap_first}) {
+    public Result<String> edit(@RequestBody ${entityName} ${entityName?uncap_first}) {
         ${entityName?uncap_first}Service.updateById(${entityName?uncap_first});
         return Result.OK("编辑成功!");
     }
@@ -117,7 +117,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
     @AutoLog(value = "${tableVo.ftlDescription}-通过id删除")
     @ApiOperation(value="${tableVo.ftlDescription}-通过id删除", notes="${tableVo.ftlDescription}-通过id删除")
     @DeleteMapping(value = "/delete")
-    public Result<?> delete(@RequestParam(name="id",required=true) String id) {
+    public Result<String> delete(@RequestParam(name="id",required=true) String id) {
         ${entityName?uncap_first}Service.delMain(id);
         return Result.OK("删除成功!");
     }
@@ -130,7 +130,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
     @AutoLog(value = "${tableVo.ftlDescription}-批量删除")
     @ApiOperation(value="${tableVo.ftlDescription}-批量删除", notes="${tableVo.ftlDescription}-批量删除")
     @DeleteMapping(value = "/deleteBatch")
-    public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
+    public Result<String> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
         this.${entityName?uncap_first}Service.delBatchMain(Arrays.asList(ids.split(",")));
         return Result.OK("批量删除成功!");
     }
@@ -161,10 +161,10 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	 * 通过主表ID查询
 	 * @return
 	 */
-	@AutoLog(value = "${sub.ftlDescription}-通过主表ID查询")
+	//@AutoLog(value = "${sub.ftlDescription}-通过主表ID查询")
 	@ApiOperation(value="${sub.ftlDescription}-通过主表ID查询", notes="${sub.ftlDescription}-通过主表ID查询")
 	@GetMapping(value = "/list${sub.entityName}ByMainId")
-    public Result<?> list${sub.entityName}ByMainId(${sub.entityName} ${sub.entityName?uncap_first},
+    public Result<IPage<${sub.entityName}>> list${sub.entityName}ByMainId(${sub.entityName} ${sub.entityName?uncap_first},
                                                     @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                                     @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                                     HttpServletRequest req) {
@@ -182,7 +182,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@AutoLog(value = "${sub.ftlDescription}-添加")
 	@ApiOperation(value="${sub.ftlDescription}-添加", notes="${sub.ftlDescription}-添加")
 	@PostMapping(value = "/add${sub.entityName}")
-	public Result<?> add${sub.entityName}(@RequestBody ${sub.entityName} ${sub.entityName?uncap_first}) {
+	public Result<String> add${sub.entityName}(@RequestBody ${sub.entityName} ${sub.entityName?uncap_first}) {
 		${sub.entityName?uncap_first}Service.save(${sub.entityName?uncap_first});
 		return Result.OK("添加成功！");
 	}
@@ -195,7 +195,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@AutoLog(value = "${sub.ftlDescription}-编辑")
 	@ApiOperation(value="${sub.ftlDescription}-编辑", notes="${sub.ftlDescription}-编辑")
 	@RequestMapping(value = "/edit${sub.entityName}", method = {RequestMethod.PUT,RequestMethod.POST})
-	public Result<?> edit${sub.entityName}(@RequestBody ${sub.entityName} ${sub.entityName?uncap_first}) {
+	public Result<String> edit${sub.entityName}(@RequestBody ${sub.entityName} ${sub.entityName?uncap_first}) {
 		${sub.entityName?uncap_first}Service.updateById(${sub.entityName?uncap_first});
 		return Result.OK("编辑成功!");
 	}
@@ -208,7 +208,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@AutoLog(value = "${sub.ftlDescription}-通过id删除")
 	@ApiOperation(value="${sub.ftlDescription}-通过id删除", notes="${sub.ftlDescription}-通过id删除")
 	@DeleteMapping(value = "/delete${sub.entityName}")
-	public Result<?> delete${sub.entityName}(@RequestParam(name="id",required=true) String id) {
+	public Result<String> delete${sub.entityName}(@RequestParam(name="id",required=true) String id) {
 		${sub.entityName?uncap_first}Service.removeById(id);
 		return Result.OK("删除成功!");
 	}
@@ -221,7 +221,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	@AutoLog(value = "${sub.ftlDescription}-批量删除")
 	@ApiOperation(value="${sub.ftlDescription}-批量删除", notes="${sub.ftlDescription}-批量删除")
 	@DeleteMapping(value = "/deleteBatch${sub.entityName}")
-	public Result<?> deleteBatch${sub.entityName}(@RequestParam(name="ids",required=true) String ids) {
+	public Result<String> deleteBatch${sub.entityName}(@RequestParam(name="ids",required=true) String ids) {
 	    this.${sub.entityName?uncap_first}Service.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.OK("批量删除成功!");
 	}

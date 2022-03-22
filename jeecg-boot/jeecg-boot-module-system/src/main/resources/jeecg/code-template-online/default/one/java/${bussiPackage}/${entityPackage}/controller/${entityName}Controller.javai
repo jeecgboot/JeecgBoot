@@ -149,7 +149,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	public Result<${entityName}> queryById(@RequestParam(name="id",required=true) String id) {
 		${entityName} ${entityName?uncap_first} = ${entityName?uncap_first}Service.getById(id);
 		if(${entityName?uncap_first}==null) {
-			return Result.error("未找到对应数据",null);
+			return Result.error("未找到对应数据");
 		}
 		return Result.OK(${entityName?uncap_first});
 	}
