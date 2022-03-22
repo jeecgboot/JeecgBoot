@@ -1,8 +1,13 @@
 package org.jeecg.modules.message.websocket;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArraySet;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.base.BaseMap;
+import org.jeecg.common.modules.redis.client.JeecgRedisClient;
+import org.jeecg.common.util.SpringContextHolder;
+import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.service.impl.SysUserServiceImpl;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.websocket.OnClose;
@@ -11,15 +16,9 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
-
-import org.jeecg.common.base.BaseMap;
-import org.jeecg.common.constant.WebsocketConst;
-import org.jeecg.common.modules.redis.client.JeecgRedisClient;
-import org.springframework.stereotype.Component;
-
-import com.alibaba.fastjson.JSONObject;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * @Author scott
@@ -28,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
+@Data
 @ServerEndpoint("/websocket/{userId}") //此注解相当于设置访问URL
 public class WebSocket {
 
@@ -40,22 +40,30 @@ public class WebSocket {
     @Resource
     private JeecgRedisClient jeecgRedisClient;
 
+    private SysUserServiceImpl sysUserService;
+
     /**
      * 缓存 webSocket连接到单机服务class中（整体方案支持集群）
      */
     private static CopyOnWriteArraySet<WebSocket> webSockets = new CopyOnWriteArraySet<>();
-    private static Map<String, Session> sessionPool = new HashMap<String, Session>();
-
+    private static Map<String, Session> sessionPool = new ConcurrentHashMap<>();
 
     @OnOpen
     public void onOpen(Session session, @PathParam(value = "userId") String userId) {
         try {
+            session.setMaxBinaryMessageBufferSize(1024*32);
+            session.setMaxTextMessageBufferSize(1024*32);
             this.session = session;
             this.userId = userId;
-            webSockets.add(this);
-            sessionPool.put(userId, session);
-            log.info("【websocket消息】有新的连接，总数为:" + webSockets.size());
+            sysUserService = SpringContextHolder.getBean(SysUserServiceImpl.class);
+            SysUser sysUser = sysUserService.getById(userId);
+            if (sysUser != null) {
+                webSockets.add(this);
+                sessionPool.put(userId, session);
+                log.info("【websocket消息】有新的连接，总数为:" + webSockets.size());
+            }
         } catch (Exception e) {
+            log.error(e.getMessage());
         }
     }
 
@@ -69,7 +77,6 @@ public class WebSocket {
         }
     }
 
-
     /**
      * 服务端推送消息
      *
@@ -81,7 +88,7 @@ public class WebSocket {
         if (session != null && session.isOpen()) {
             try {
                 //update-begin-author:taoyan date:20211012 for: websocket报错 https://gitee.com/jeecg/jeecg-boot/issues/I4C0MU
-                synchronized (session){
+                synchronized (session) {
                     log.info("【websocket消息】 单点消息:" + message);
                     session.getBasicRemote().sendText(message);
                 }
@@ -103,19 +110,15 @@ public class WebSocket {
         }
     }
 
-
     @OnMessage
     public void onMessage(String message) {
-        //todo 现在有个定时任务刷，应该去掉
+        /*下面原本的内容还有心跳，
+        但现在是通过定时任务 每t时间发送，前端2t时间没收到就主动断开即可
+        定时任务就在job里面，同时是没有启动的，要启动一下在界面的-系统监控-定时任务配置一下就好了。
+        * */
         log.debug("【websocket消息】收到客户端消息:" + message);
-        JSONObject obj = new JSONObject();
-        //业务类型
-        obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_CHECK);
-        //消息内容
-        obj.put(WebsocketConst.MSG_TXT, "心跳响应");
-        for (WebSocket webSocket : webSockets) {
-            webSocket.pushMessage(message);
-        }
+        //根据业务来，这里就简单的群发一下
+        pushMessage(message);
     }
 
     /**
@@ -155,5 +158,4 @@ public class WebSocket {
             sendMessage(userId, message);
         }
     }
-
 }
