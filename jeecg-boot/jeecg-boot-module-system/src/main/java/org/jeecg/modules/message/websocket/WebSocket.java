@@ -1,6 +1,5 @@
 package org.jeecg.modules.message.websocket;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.constant.CacheConstant;
@@ -12,10 +11,7 @@ import org.jeecg.modules.system.service.impl.SysUserServiceImpl;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.util.Map;
@@ -30,7 +26,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 @Component
 @Slf4j
-@Data
 @ServerEndpoint("/websocket/{userId}") //此注解相当于设置访问URL
 public class WebSocket {
 
@@ -73,11 +68,12 @@ public class WebSocket {
                 webSockets.add(this);
                 sessionPool.put(userId, session);
                 log.info("【websocket消息】有新的连接，总数为:" + webSockets.size());
-            }else{
-                log.info("【websocket消息】非法的连接，无法建立。");
+            } else {
+                CloseReason closeReason = new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "非法的连接！");
+                this.session.close(closeReason);
             }
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.info(e.getMessage());
         }
     }
 
@@ -88,6 +84,7 @@ public class WebSocket {
             sessionPool.remove(this.userId);
             log.info("【websocket消息】连接断开，总数为:" + webSockets.size());
         } catch (Exception e) {
+            log.info(e.getMessage());
         }
     }
 
@@ -130,7 +127,7 @@ public class WebSocket {
         但现在是通过定时任务 每t时间发送，前端2t时间没收到就主动断开即可
         定时任务就在job里面，同时是没有启动的，要启动一下在界面的-系统监控-定时任务配置一下就好了。
         * */
-        log.debug("【websocket消息】收到客户端消息:" + message);
+        log.info("【websocket消息】收到客户端消息:" + message);
         //根据业务来，这里就简单的群发一下
         pushMessage(message);
     }
