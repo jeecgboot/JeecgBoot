@@ -3,7 +3,9 @@ package org.jeecg.modules.message.websocket;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.base.BaseMap;
+import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.modules.redis.client.JeecgRedisClient;
+import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.SpringContextHolder;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.impl.SysUserServiceImpl;
@@ -17,6 +19,7 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -40,6 +43,8 @@ public class WebSocket {
     @Resource
     private JeecgRedisClient jeecgRedisClient;
 
+    private RedisUtil redisUtil;
+
     private SysUserServiceImpl sysUserService;
 
     /**
@@ -51,16 +56,25 @@ public class WebSocket {
     @OnOpen
     public void onOpen(Session session, @PathParam(value = "userId") String userId) {
         try {
-            session.setMaxBinaryMessageBufferSize(1024*32);
-            session.setMaxTextMessageBufferSize(1024*32);
+            sysUserService = SpringContextHolder.getBean(SysUserServiceImpl.class);
+            redisUtil = SpringContextHolder.getBean(RedisUtil.class);
             this.session = session;
             this.userId = userId;
-            sysUserService = SpringContextHolder.getBean(SysUserServiceImpl.class);
-            SysUser sysUser = sysUserService.getById(userId);
-            if (sysUser != null) {
+
+            //设置传输大小
+            session.setMaxBinaryMessageBufferSize(1024 * 32);
+            session.setMaxTextMessageBufferSize(1024 * 32);
+
+            //验证登录状态-从redis取
+            if (redisUtil.hasKey(CacheConstant.SYS_USERS_CACHE + "::" + Optional
+                    .ofNullable(sysUserService.getById(userId))
+                    .map(SysUser::getUsername)
+                    .orElse("null"))) {
                 webSockets.add(this);
                 sessionPool.put(userId, session);
                 log.info("【websocket消息】有新的连接，总数为:" + webSockets.size());
+            }else{
+                log.info("【websocket消息】非法的连接，无法建立。");
             }
         } catch (Exception e) {
             log.error(e.getMessage());
