@@ -73,10 +73,10 @@ public class ${entityName}Controller {
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "${tableVo.ftlDescription}-分页列表查询")
+	//@AutoLog(value = "${tableVo.ftlDescription}-分页列表查询")
 	@ApiOperation(value="${tableVo.ftlDescription}-分页列表查询", notes="${tableVo.ftlDescription}-分页列表查询")
 	@GetMapping(value = "/list")
-	public Result<?> queryPageList(${entityName} ${entityName?uncap_first},
+	public Result<IPage<${entityName}>> queryPageList(${entityName} ${entityName?uncap_first},
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
@@ -95,7 +95,7 @@ public class ${entityName}Controller {
 	@AutoLog(value = "${tableVo.ftlDescription}-添加")
 	@ApiOperation(value="${tableVo.ftlDescription}-添加", notes="${tableVo.ftlDescription}-添加")
 	@PostMapping(value = "/add")
-	public Result<?> add(@RequestBody ${entityName}Page ${entityName?uncap_first}Page) {
+	public Result<String> add(@RequestBody ${entityName}Page ${entityName?uncap_first}Page) {
 		${entityName} ${entityName?uncap_first} = new ${entityName}();
 		BeanUtils.copyProperties(${entityName?uncap_first}Page, ${entityName?uncap_first});
 		${entityName?uncap_first}Service.saveMain(${entityName?uncap_first}, <#list subTables as sub>${entityName?uncap_first}Page.get${sub.entityName}List()<#if sub_has_next>,</#if></#list>);
@@ -111,7 +111,7 @@ public class ${entityName}Controller {
 	@AutoLog(value = "${tableVo.ftlDescription}-编辑")
 	@ApiOperation(value="${tableVo.ftlDescription}-编辑", notes="${tableVo.ftlDescription}-编辑")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
-	public Result<?> edit(@RequestBody ${entityName}Page ${entityName?uncap_first}Page) {
+	public Result<String> edit(@RequestBody ${entityName}Page ${entityName?uncap_first}Page) {
 		${entityName} ${entityName?uncap_first} = new ${entityName}();
 		BeanUtils.copyProperties(${entityName?uncap_first}Page, ${entityName?uncap_first});
 		${entityName} ${entityName?uncap_first}Entity = ${entityName?uncap_first}Service.getById(${entityName?uncap_first}.getId());
@@ -131,7 +131,7 @@ public class ${entityName}Controller {
 	@AutoLog(value = "${tableVo.ftlDescription}-通过id删除")
 	@ApiOperation(value="${tableVo.ftlDescription}-通过id删除", notes="${tableVo.ftlDescription}-通过id删除")
 	@DeleteMapping(value = "/delete")
-	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
+	public Result<String> delete(@RequestParam(name="id",required=true) String id) {
 		${entityName?uncap_first}Service.delMain(id);
 		return Result.OK("删除成功!");
 	}
@@ -145,7 +145,7 @@ public class ${entityName}Controller {
 	@AutoLog(value = "${tableVo.ftlDescription}-批量删除")
 	@ApiOperation(value="${tableVo.ftlDescription}-批量删除", notes="${tableVo.ftlDescription}-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
-	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
+	public Result<String> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.${entityName?uncap_first}Service.delBatchMain(Arrays.asList(ids.split(",")));
 		return Result.OK("批量删除成功！");
 	}
@@ -156,10 +156,10 @@ public class ${entityName}Controller {
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "${tableVo.ftlDescription}-通过id查询")
+	//@AutoLog(value = "${tableVo.ftlDescription}-通过id查询")
 	@ApiOperation(value="${tableVo.ftlDescription}-通过id查询", notes="${tableVo.ftlDescription}-通过id查询")
 	@GetMapping(value = "/queryById")
-	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
+	public Result<${entityName}> queryById(@RequestParam(name="id",required=true) String id) {
 		${entityName} ${entityName?uncap_first} = ${entityName?uncap_first}Service.getById(id);
 		if(${entityName?uncap_first}==null) {
 			return Result.error("未找到对应数据");
@@ -175,10 +175,10 @@ public class ${entityName}Controller {
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "${sub.ftlDescription}通过主表ID查询")
+	//@AutoLog(value = "${sub.ftlDescription}通过主表ID查询")
 	@ApiOperation(value="${sub.ftlDescription}主表ID查询", notes="${sub.ftlDescription}-通主表ID查询")
 	@GetMapping(value = "/query${sub.entityName}ByMainId")
-	public Result<?> query${sub.entityName}ListByMainId(@RequestParam(name="id",required=true) String id) {
+	public Result<List<${sub.entityName}>> query${sub.entityName}ListByMainId(@RequestParam(name="id",required=true) String id) {
 		List<${sub.entityName}> ${sub.entityName?uncap_first}List = ${sub.entityName?uncap_first}Service.selectByMainId(id);
 		return Result.OK(${sub.entityName?uncap_first}List);
 	}
