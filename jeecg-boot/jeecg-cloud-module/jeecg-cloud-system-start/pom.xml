@@ -28,6 +28,13 @@
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
             <artifactId>jeecg-boot-module-system</artifactId>
+            <!-- 排除demo模块，demo模块采用微服务方式独立启动 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jeecgframework.boot</groupId>
+                    <artifactId>jeecg-boot-module-demo</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- 测试模块依赖 -->

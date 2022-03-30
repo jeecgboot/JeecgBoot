@@ -4,6 +4,7 @@
   <artifactId>jeecg-boot-parent</artifactId>
   <version>3.1.0</version>
   <packaging>pom</packaging>
+  <name>JEECG BOOT ${project.version}</name>
   
   	<parent>
 	    <groupId>org.springframework.boot</groupId>
@@ -14,6 +15,8 @@
 
 	<properties>
 		<jeecgboot.version>3.1.0</jeecgboot.version>
+		<!-- 微服务专用属性 -->
+		<skip.springboot.maven>false</skip.springboot.maven>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
@@ -56,9 +59,6 @@
         <module>jeecg-boot-base</module>
         <module>jeecg-boot-module-demo</module>
         <module>jeecg-boot-module-system</module>
-        <!--需要微服务，请打开
-        <module>jeecg-boot-starter</module>
-        <module>jeecg-cloud-module</module>-->
 	</modules>
 
 	<distributionManagement>
@@ -296,11 +296,7 @@
 
 	<build>
 		<plugins>
-			<!--<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			 指定JDK编译版本 -->
+			<!-- 指定JDK编译版本 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -420,5 +416,18 @@
                 <discovery.server-addr>jeecg-boot-nacos:8848</discovery.server-addr>
             </properties>
         </profile>
+		<!-- SpringCloud运行环境 -->
+		<profile>
+			<id>SpringCloud</id>
+			<properties>
+				<!--微服务模式下修改为true, system模块跳过打包插件，否则微服务无法引用-->
+				<skip.springboot.maven>true</skip.springboot.maven>
+			</properties>
+			<modules>
+				<!-- 微服务模块 -->
+				<module>jeecg-boot-starter</module>
+				<module>jeecg-cloud-module</module>
+			</modules>
+		</profile>
     </profiles>
 </project>
