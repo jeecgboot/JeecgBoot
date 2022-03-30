@@ -54,7 +54,7 @@
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot-starter</artifactId>
-			<version>1.4.32</version>
+			<version>1.4.4-beta</version>
 		</dependency>
 
 
@@ -73,8 +73,8 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<!--微服务模式下修改为true,跳过此打包插件，否则微服务模块无法引用-->
-					<skip>false</skip>
+					<!--微服务模式下修改为true,跳过SpringBoot启动打包插件，否则微服务模块无法引用-->
+					<skip>${skip.springboot.maven}</skip>
 				</configuration>
 			</plugin>
 		</plugins>

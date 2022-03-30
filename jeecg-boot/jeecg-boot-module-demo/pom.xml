@@ -16,14 +16,19 @@
             <groupId>org.jeecgframework.boot</groupId>
             <artifactId>jeecg-boot-base-core</artifactId>
         </dependency>
-        <!--引入微服务启动依赖 starter
-      <dependency>
-          <groupId>org.jeecgframework.boot</groupId>
-          <artifactId>jeecg-boot-starter-cloud</artifactId>
-      </dependency>
-        <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-job</artifactId>
-        </dependency>-->
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>SpringCloud</id>
+            <!-- 引入微服务启动 Starter依赖 -->
+            <dependencies>
+                <dependency>
+                    <groupId>org.jeecgframework.boot</groupId>
+                    <artifactId>jeecg-boot-starter-cloud</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
 </project>
