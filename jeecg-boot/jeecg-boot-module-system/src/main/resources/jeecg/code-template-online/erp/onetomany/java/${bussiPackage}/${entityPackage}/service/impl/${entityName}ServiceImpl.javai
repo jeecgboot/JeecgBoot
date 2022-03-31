@@ -34,7 +34,7 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
 	</#list>
 	
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void delMain(String id) {
 		<#list subTables as sub>
 		${sub.entityName?uncap_first}Mapper.deleteByMainId(id);
@@ -43,7 +43,7 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void delBatchMain(Collection<? extends Serializable> idList) {
 		for(Serializable id:idList) {
 			<#list subTables as sub>

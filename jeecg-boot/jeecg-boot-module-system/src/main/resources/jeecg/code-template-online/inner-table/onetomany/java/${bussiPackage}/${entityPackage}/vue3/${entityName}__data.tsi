@@ -205,7 +205,7 @@ export const formSchema: FormSchema[] = [
              fieldConfig:${po.dictField},
              multi:${po.extendParams.popupMulti?c},
          }
-     }
+     },
      <#elseif po.classType =='sel_depart'>
      component: 'JSelectDept',
      <#elseif po.classType =='switch'>
@@ -214,7 +214,7 @@ export const formSchema: FormSchema[] = [
          <#if po.dictField != 'is_open'>
          options:${po.dictField}
          </#if>
-     }
+     },
      <#elseif po.classType =='pca'>
     component: 'JAreaLinkage',
     <#elseif po.classType =='markdown'>
@@ -225,30 +225,30 @@ export const formSchema: FormSchema[] = [
     component: 'JSelectUserByDept',
     componentProps:{
         labelKey:'realname',
-     }
+     },
     <#elseif po.classType =='textarea'>
     component: 'InputTextArea',//TODO 注意string转换问题
     <#elseif po.classType=='list' || po.classType=='radio'>
     component: 'JDictSelectTag',
     componentProps:{
         dictCode:"${form_field_dictCode}"
-     }
+     },
     <#elseif po.classType=='list_multi' || po.classType=='checkbox'>
     component: 'JMultiSelectTag',//TODO  暂无该组件
     componentProps:{
         dictCode:"${form_field_dictCode}"
-     }
+     },
     <#elseif po.classType=='sel_search'>
     component: 'JSearchSelect',
     componentProps:{
        dict:"${form_field_dictCode}"
-    }
+    },
 <#elseif po.classType=='cat_tree'>
     <#assign form_cat_tree = true>
     component: 'JCategorySelect',
     componentProps:{
        pcode:"${po.dictField?default("")}", //TODO back和事件未添加，暂时有问题
-    }
+    },
     <#if po.dictText?default("")?trim?length gt 1>
     <#assign form_cat_back = "${po.dictText}">
     </#if>
@@ -260,14 +260,14 @@ export const formSchema: FormSchema[] = [
     <#if po.uploadnum??>
        maxCount:${po.uploadnum}
    </#if>
-     }
+     },
  <#elseif po.classType=='image'>
      component: 'JImageUpload',
      componentProps:{
      <#if po.uploadnum??>
         fileMax:${po.uploadnum}
     </#if>
-      }
+      },
   <#elseif po.classType=='umeditor'>
     component: 'JCodeEditor', //TODO String后缀暂未添加
   <#elseif po.classType == 'sel_tree'>
@@ -283,7 +283,7 @@ export const formSchema: FormSchema[] = [
         </#if>
         </#if>
         pidValue:"${po.dictField}",
-    }
+    },
    <#else>
     component: 'Input',
     </#if>
@@ -456,7 +456,7 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
              fieldConfig:${po.dictField},
              multi:${po.extendParams.popupMulti?c},
          }
-     }
+     },
      <#elseif po.classType =='sel_depart'>
      component: 'JSelectDept',
      <#elseif po.classType =='switch'>
@@ -465,7 +465,7 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
          <#if po.dictField != 'is_open'>
          options:${po.dictField}
          </#if>
-     }
+     },
      <#elseif po.classType =='pca'>
     component: 'JAreaLinkage',
     <#elseif po.classType =='markdown'>
@@ -476,30 +476,30 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
     component: 'JSelectUserByDept',
     componentProps:{
         labelKey:'realname',
-     }
+     },
     <#elseif po.classType =='textarea'>
     component: 'InputTextArea',//TODO 注意string转换问题
     <#elseif po.classType=='list' || po.classType=='radio'>
     component: 'JDictSelectTag',
     componentProps:{
         dictCode:"${form_field_dictCode}"
-     }
+     },
     <#elseif po.classType=='list_multi' || po.classType=='checkbox'>
     component: 'JMultiSelectTag',//TODO  暂无该组件
     componentProps:{
         dictCode:"${form_field_dictCode}"
-     }
+     },
     <#elseif po.classType=='sel_search'>
     component: 'JSearchSelect',
     componentProps:{
        dict:"${form_field_dictCode}"
-    }
+    },
 <#elseif po.classType=='cat_tree'>
     <#assign form_cat_tree = true>
     component: 'JCategorySelect',
     componentProps:{
        pcode:"${po.dictField?default("")}", //TODO back和事件未添加，暂时有问题
-    }
+    },
     <#if po.dictText?default("")?trim?length gt 1>
     <#assign form_cat_back = "${po.dictText}">
     </#if>
@@ -511,14 +511,14 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
     <#if po.uploadnum??>
        maxCount:${po.uploadnum}
    </#if>
-     }
+     },
  <#elseif po.classType=='image'>
      component: 'JImageUpload',
      componentProps:{
      <#if po.uploadnum??>
         fileMax:${po.uploadnum}
     </#if>
-      }
+      },
   <#elseif po.classType=='umeditor'>
     component: 'JCodeEditor', //TODO String后缀暂未添加
   <#elseif po.classType == 'sel_tree'>
@@ -534,7 +534,7 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
         </#if>
         </#if>
         pidValue:"${po.dictField}",
-    }
+    },
    <#else>
     component: 'Input',
     </#if>

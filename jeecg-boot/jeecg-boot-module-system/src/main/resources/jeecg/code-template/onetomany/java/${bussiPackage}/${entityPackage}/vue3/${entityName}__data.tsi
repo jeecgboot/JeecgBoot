@@ -59,12 +59,12 @@ export const formSchema: FormSchema[] = [
       valueFormat: 'YYYY-MM-DD hh:mm:ss',
     },
      <#elseif "int,decimal,double,"?contains(po.fieldType)>
-    component: 'InputNumber'
+    component: 'InputNumber',
      <#else>
-    component: 'Input'
+    component: 'Input',
     </#if>
     <#if po.fieldName =='id'><#rt/>
-    show:false
+    show:false,
     </#if>
   },
 </#list>
