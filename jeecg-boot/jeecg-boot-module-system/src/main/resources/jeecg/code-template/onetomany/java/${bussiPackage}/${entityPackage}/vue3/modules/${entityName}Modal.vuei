@@ -80,7 +80,7 @@
 
     async function reset(){
       await resetFields();
-      activeKey.value = ref('${subTables[0].entityName?uncap_first}');
+      activeKey.value = '${subTables[0].entityName?uncap_first}';
       <#list subTables as sub>
       ${sub.entityName?uncap_first}Table.dataSource = [];
       </#list>

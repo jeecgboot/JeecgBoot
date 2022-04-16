@@ -114,7 +114,7 @@
 
     async function reset(){
       await resetFields();
-      activeKey.value = ref('${tableVo.entityName?uncap_first}');
+      activeKey.value = '${tableVo.entityName?uncap_first}';
       <#list subTables as sub>
         <#if sub.foreignRelationType =='0'>
       ${sub.entityName?uncap_first}Table.dataSource = [];
