@@ -2,9 +2,16 @@ package org.jeecg.common.util;
 
 import java.security.MessageDigest;
 
-public class MD5Util {
+/**
+ * @Description: 加密工具
+ * @author: jeecg-boot
+ */
+public class Md5Util {
 
-	public static String byteArrayToHexString(byte b[]) {
+    private static final String[] HEXDIGITS = { "0", "1", "2", "3", "4", "5",
+            "6", "7", "8", "9", "a", "b", "c", "d", "e", "f" };
+
+	public static String byteArrayToHexString(byte[] b) {
 		StringBuffer resultSb = new StringBuffer();
 		for (int i = 0; i < b.length; i++){
 			resultSb.append(byteToHexString(b[i]));
@@ -19,10 +26,10 @@ public class MD5Util {
 		}
 		int d1 = n / 16;
 		int d2 = n % 16;
-		return hexDigits[d1] + hexDigits[d2];
+		return HEXDIGITS[d1] + HEXDIGITS[d2];
 	}
 
-	public static String MD5Encode(String origin, String charsetname) {
+	public static String md5Encode(String origin, String charsetname) {
 		String resultString = null;
 		try {
 			resultString = new String(origin);
@@ -36,8 +43,5 @@ public class MD5Util {
 		}
 		return resultString;
 	}
-
-	private static final String hexDigits[] = { "0", "1", "2", "3", "4", "5",
-			"6", "7", "8", "9", "a", "b", "c", "d", "e", "f" };
 
 }

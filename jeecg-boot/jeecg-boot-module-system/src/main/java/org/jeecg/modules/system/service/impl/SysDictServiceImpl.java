@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictModelMany;
 import org.jeecg.common.system.vo.DictQuery;
@@ -68,7 +70,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Override
 	public Map<String, List<DictModel>> queryDictItemsByCodeList(List<String> dictCodeList) {
 		List<DictModelMany> list = sysDictMapper.queryDictItemsByCodeList(dictCodeList);
-		Map<String, List<DictModel>> dictMap = new HashMap<>();
+		Map<String, List<DictModel>> dictMap = new HashMap(5);
 		for (DictModelMany dict : list) {
 			List<DictModel> dictItemList = dictMap.computeIfAbsent(dict.getDictCode(), i -> new ArrayList<>());
 			dict.setDictCode(null);
@@ -79,7 +81,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
 	@Override
 	public Map<String, List<DictModel>> queryAllDictItems() {
-		Map<String, List<DictModel>> res = new HashMap<String, List<DictModel>>();
+		Map<String, List<DictModel>> res = new HashMap(5);
 		List<SysDict> ls = sysDictMapper.selectList(null);
 		LambdaQueryWrapper<SysDictItem> queryWrapper = new LambdaQueryWrapper<SysDictItem>();
 		queryWrapper.eq(SysDictItem::getStatus, 1);
@@ -116,7 +118,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Override
 	public Map<String, List<DictModel>> queryManyDictByKeys(List<String> dictCodeList, List<String> keys) {
 		List<DictModelMany> list = sysDictMapper.queryManyDictByKeys(dictCodeList, keys);
-		Map<String, List<DictModel>> dictMap = new HashMap<>();
+		Map<String, List<DictModel>> dictMap = new HashMap(5);
 		for (DictModelMany dict : list) {
 			List<DictModel> dictItemList = dictMap.computeIfAbsent(dict.getDictCode(), i -> new ArrayList<>());
 			dictItemList.add(new DictModel(dict.getValue(), dict.getText()));
@@ -226,7 +228,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Integer saveMain(SysDict sysDict, List<SysDictItem> sysDictItemList) {
 		int insert=0;
     	try{
@@ -390,6 +392,11 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 				return null;
 			} else if (params.length == 4) {
 				condition = params[3];
+				// update-begin-author:taoyan date:20220314 for: online表单下拉搜索框表字典配置#{sys_org_code}报错 #3500
+				if(condition.indexOf("#{")>=0){
+					condition =  QueryGenerator.getSqlRuleValue(condition);
+				}
+				// update-end-author:taoyan date:20220314 for: online表单下拉搜索框表字典配置#{sys_org_code}报错 #3500
 			}
 			List<DictModel> ls;
 			if (pageSize != null) {

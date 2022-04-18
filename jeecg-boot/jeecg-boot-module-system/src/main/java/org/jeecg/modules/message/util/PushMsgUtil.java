@@ -21,6 +21,7 @@ import java.util.Map;
 
 /**
  * 消息生成工具
+ * @author: jeecg-boot
  */
 
 @Component

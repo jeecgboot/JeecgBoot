@@ -31,11 +31,15 @@ public class CategoryCodeRule implements IFillRuleHandler {
 
         if (formData != null && formData.size() > 0) {
             Object obj = formData.get("pid");
-            if (oConvertUtils.isNotEmpty(obj)) categoryPid = obj.toString();
+            if (oConvertUtils.isNotEmpty(obj)) {
+                categoryPid = obj.toString();
+            }
         } else {
             if (params != null) {
                 Object obj = params.get("pid");
-                if (oConvertUtils.isNotEmpty(obj)) categoryPid = obj.toString();
+                if (oConvertUtils.isNotEmpty(obj)) {
+                    categoryPid = obj.toString();
+                }
             }
         }
 

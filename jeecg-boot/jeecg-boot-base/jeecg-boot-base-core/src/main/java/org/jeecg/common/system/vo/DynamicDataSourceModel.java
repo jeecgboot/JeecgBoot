@@ -3,6 +3,10 @@ package org.jeecg.common.system.vo;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
+/**
+ * @Description: 数据源
+ * @author: jeecg-boot
+ */
 @Data
 public class DynamicDataSourceModel {
 

@@ -2,6 +2,7 @@ package org.jeecg.config.sign.util;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
@@ -19,7 +20,7 @@ import java.util.SortedMap;
  */
 @Slf4j
 public class SignUtil {
-    public static final String xPathVariable = "x-path-variable";
+    public static final String X_PATH_VARIABLE = "x-path-variable";
 
     /**
      * @param params
@@ -49,7 +50,8 @@ public class SignUtil {
         //设置签名秘钥
         JeeccgBaseConfig jeeccgBaseConfig = SpringContextUtils.getBean(JeeccgBaseConfig.class);
         String signatureSecret = jeeccgBaseConfig.getSignatureSecret();
-        if(oConvertUtils.isEmpty(signatureSecret) || signatureSecret.contains("${")){
+        String curlyBracket = SymbolConstant.DOLLAR + SymbolConstant.LEFT_CURLY_BRACKET;
+        if(oConvertUtils.isEmpty(signatureSecret) || signatureSecret.contains(curlyBracket)){
             throw new JeecgBootException("签名密钥 ${jeecg.signatureSecret} 缺少配置 ！！");
         }
         return DigestUtils.md5DigestAsHex((paramsJsonStr + signatureSecret).getBytes()).toUpperCase();

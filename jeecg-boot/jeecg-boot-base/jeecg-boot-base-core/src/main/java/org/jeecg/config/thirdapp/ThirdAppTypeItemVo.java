@@ -4,6 +4,7 @@ import lombok.Data;
 
 /**
  * 第三方App对接
+ * @author: jeecg-boot
  */
 @Data
 public class ThirdAppTypeItemVo {

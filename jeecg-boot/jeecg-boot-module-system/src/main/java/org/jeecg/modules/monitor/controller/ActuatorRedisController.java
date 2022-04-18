@@ -19,6 +19,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @Description: ActuatorRedisController
+ * @author: jeecg-boot
+ */
 @Slf4j
 @RestController
 @RequestMapping("/sys/actuator/redis")
@@ -100,7 +104,7 @@ public class ActuatorRedisController {
   	        	if(fs[i].getTotalSpace()==0) {
   	        		continue;
   	        	}
-  	        	Map<String,Object> map = new HashMap<>();
+  	        	Map<String,Object> map = new HashMap(5);
   	        	map.put("name", fsv.getSystemDisplayName(fs[i]));
   	        	map.put("max", fs[i].getTotalSpace());
   	        	map.put("rest", fs[i].getFreeSpace());

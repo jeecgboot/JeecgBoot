@@ -15,6 +15,11 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface QuartzJobMapper extends BaseMapper<QuartzJob> {
 
+    /**
+     * 根据jobClassName查询
+     * @param jobClassName 任务类名
+     * @return
+     */
 	public List<QuartzJob> findByJobClassName(@Param("jobClassName") String jobClassName);
 
 }

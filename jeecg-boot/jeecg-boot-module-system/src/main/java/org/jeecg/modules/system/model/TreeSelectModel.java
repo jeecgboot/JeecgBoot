@@ -5,6 +5,7 @@ import java.util.List;
 
 /**
   * 树形下拉框
+  * @author: jeecg-boot
  */
 public class TreeSelectModel implements Serializable {
 

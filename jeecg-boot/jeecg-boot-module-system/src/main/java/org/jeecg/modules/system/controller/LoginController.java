@@ -12,7 +12,6 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
@@ -23,6 +22,7 @@ import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysLoginModel;
 import org.jeecg.modules.system.service.*;
+import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.jeecg.modules.system.util.RandImageUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class LoginController {
 	@Autowired
 	private ISysUserService sysUserService;
 	@Autowired
-	private ISysBaseAPI sysBaseAPI;
+	private SysBaseApiImpl sysBaseApi;
 	@Autowired
 	private ISysLogService logService;
 	@Autowired
@@ -77,7 +77,7 @@ public class LoginController {
             return result;
         }
         String lowerCaseCaptcha = captcha.toLowerCase();
-		String realKey = MD5Util.MD5Encode(lowerCaseCaptcha+sysLoginModel.getCheckKey(), "utf-8");
+		String realKey = Md5Util.md5Encode(lowerCaseCaptcha+sysLoginModel.getCheckKey(), "utf-8");
 		Object checkCode = redisUtil.get(realKey);
 		//当进入登录页时，有一定几率出现验证码错误 #1714
 		if(checkCode==null || !checkCode.toString().equals(lowerCaseCaptcha)) {
@@ -129,11 +129,8 @@ public class LoginController {
 		if(oConvertUtils.isNotEmpty(username)) {
 			// 根据用户名查询用户信息
 			SysUser sysUser = sysUserService.getUserByName(username);
-			//用户登录信息
-			Result<JSONObject> resultObj=userInfo(sysUser, result);
-			JSONObject jsonObject=resultObj.getResult();
 			JSONObject obj=new JSONObject();
-			obj.put("userInfo",jsonObject.get("userInfo"));
+			obj.put("userInfo",sysUser);
 			obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
 			result.setResult(obj);
 			result.success("");
@@ -156,7 +153,7 @@ public class LoginController {
 	    	return Result.error("退出登录失败！");
 	    }
 	    String username = JwtUtil.getUsername(token);
-		LoginUser sysUser = sysBaseAPI.getUserByName(username);
+		LoginUser sysUser = sysBaseApi.getUserByName(username);
 	    if(sysUser!=null) {
 			//update-begin--Author:wangshuai  Date:20200714  for：登出日志没有记录人员
 			baseCommonService.addLog("用户名: "+sysUser.getRealname()+",退出成功！", CommonConstant.LOG_TYPE_1, null,sysUser);
@@ -436,7 +433,7 @@ public class LoginController {
 	@GetMapping(value = "/getEncryptedString")
 	public Result<Map<String,String>> getEncryptedString(){
 		Result<Map<String,String>> result = new Result<Map<String,String>>();
-		Map<String,String> map = new HashMap<String,String>();
+		Map<String,String> map = new HashMap(5);
 		map.put("key", EncryptedString.key);
 		map.put("iv",EncryptedString.iv);
 		result.setResult(map);
@@ -450,7 +447,7 @@ public class LoginController {
 	 */
 	@ApiOperation("获取验证码")
 	@GetMapping(value = "/randomImage/{key}")
-	public Result<String> randomImage(HttpServletResponse response,@PathVariable String key){
+	public Result<String> randomImage(HttpServletResponse response,@PathVariable("key") String key){
 		Result<String> res = new Result<String>();
 		try {
 			//生成验证码
@@ -459,7 +456,7 @@ public class LoginController {
 
 			//存到redis中
 			String lowerCaseCode = code.toLowerCase();
-			String realKey = MD5Util.MD5Encode(lowerCaseCode+key, "utf-8");
+			String realKey = Md5Util.md5Encode(lowerCaseCode+key, "utf-8");
             log.info("获取验证码，Redis checkCode = {}，key = {}", code, key);
 			redisUtil.set(realKey, lowerCaseCode, 60);
 
@@ -548,7 +545,7 @@ public class LoginController {
 			return Result.error("验证码无效");
 		}
 		String lowerCaseCaptcha = captcha.toLowerCase();
-		String realKey = MD5Util.MD5Encode(lowerCaseCaptcha+checkKey, "utf-8");
+		String realKey = Md5Util.md5Encode(lowerCaseCaptcha+checkKey, "utf-8");
 		Object checkCode = redisUtil.get(realKey);
 		if(checkCode==null || !checkCode.equals(lowerCaseCaptcha)) {
 			return Result.error("验证码错误");
@@ -593,7 +590,7 @@ public class LoginController {
 	@GetMapping("/getQrcodeToken")
 	public Result getQrcodeToken(@RequestParam String qrcodeId) {
 		Object token = redisUtil.get(CommonConstant.LOGIN_QRCODE_TOKEN + qrcodeId);
-		Map result = new HashMap();
+		Map result = new HashMap(5);
 		Object qrcodeIdExpire = redisUtil.get(CommonConstant.LOGIN_QRCODE + qrcodeId);
 		if (oConvertUtils.isEmpty(qrcodeIdExpire)) {
 			//二维码过期通知前台刷新

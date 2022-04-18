@@ -46,26 +46,6 @@ public class RedisConfig extends CachingConfigurerSupport {
 	@Resource
 	private LettuceConnectionFactory lettuceConnectionFactory;
 
-//	/**
-//	 * @description 自定义的缓存key的生成策略 若想使用这个key
-//	 *              只需要讲注解上keyGenerator的值设置为keyGenerator即可</br>
-//	 * @return 自定义策略生成的key
-//	 */
-//	@Override
-//	@Bean
-//	public KeyGenerator keyGenerator() {
-//		return new KeyGenerator() {
-//			@Override
-//			public Object generate(Object target, Method method, Object... params) {
-//				StringBuilder sb = new StringBuilder();
-//				sb.append(target.getClass().getName());
-//				sb.append(method.getDeclaringClass().getName());
-//				Arrays.stream(params).map(Object::toString).forEach(sb::append);
-//				return sb.toString();
-//			}
-//		};
-//	}
-
 	/**
 	 * RedisTemplate配置
 	 * @param lettuceConnectionFactory
@@ -113,7 +93,7 @@ public class RedisConfig extends CachingConfigurerSupport {
 		// 创建默认缓存配置对象
 		/* 默认配置，设置缓存有效期 1小时*/
 		//RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(1));
-		/* 自定义配置test:demo 的超时时间为 5分钟*/
+		// 自定义配置test:demo 的超时时间为 5分钟
 		RedisCacheManager cacheManager = RedisCacheManager.builder(writer).cacheDefaults(redisCacheConfiguration)
             .withInitialCacheConfigurations(singletonMap(CacheConstant.SYS_DICT_TABLE_CACHE,
                 RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10)).disableCachingNullValues()

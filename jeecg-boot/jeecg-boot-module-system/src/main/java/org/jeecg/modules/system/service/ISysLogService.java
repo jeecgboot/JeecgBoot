@@ -19,7 +19,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface ISysLogService extends IService<SysLog> {
 
 	/**
-	 * @功能：清空所有日志记录
+	 * 清空所有日志记录
 	 */
 	public void removeAll();
 	
@@ -33,14 +33,16 @@ public interface ISysLogService extends IService<SysLog> {
 	//update-begin--Author:zhangweijian  Date:20190428 for：传入开始时间，结束时间参数
 	/**
 	 * 获取系统今日访问次数
-	 *
+     * @param dayStart
+	 * @param dayEnd
 	 * @return Long
 	 */
 	Long findTodayVisitCount(Date dayStart, Date dayEnd);
 
 	/**
 	 * 获取系统今日访问 IP数
-	 *
+	 * @param dayStart 开始时间
+     * @param dayEnd 结束时间
 	 * @return Long
 	 */
 	Long findTodayIp(Date dayStart, Date dayEnd);

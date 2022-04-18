@@ -32,6 +32,7 @@ public class EmailJobAlarm implements JobAlarm {
      *
      * @param jobLog
      */
+    @Override
     public boolean doAlarm(XxlJobInfo info, XxlJobLog jobLog){
         boolean alarmResult = true;
 

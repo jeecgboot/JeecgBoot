@@ -20,27 +20,37 @@ public interface IJeecgOrderMainService extends IService<JeecgOrderMain> {
 
 	/**
 	 * 添加一对多
-	 * 
+	 * @param jeecgOrderMain 订单实体类
+     * @param jeecgOrderCustomerList 订单客户集合
+     * @param jeecgOrderTicketList 订单机票集合
 	 */
 	public void saveMain(JeecgOrderMain jeecgOrderMain,List<JeecgOrderCustomer> jeecgOrderCustomerList,List<JeecgOrderTicket> jeecgOrderTicketList) ;
 	
 	/**
 	 * 修改一对多
-	 * 
+     * @param jeecgOrderMain 订单实体类
+     * @param jeecgOrderCustomerList 订单客户集合
+     * @param jeecgOrderTicketList 订单机票集合
 	 */
 	public void updateMain(JeecgOrderMain jeecgOrderMain,List<JeecgOrderCustomer> jeecgOrderCustomerList,List<JeecgOrderTicket> jeecgOrderTicketList);
 	
 	/**
 	 * 删除一对多
-	 * @param jformOrderMain
+	 * @param id 订单id
 	 */
 	public void delMain (String id);
 	
 	/**
 	 * 批量删除一对多
-	 * @param jformOrderMain
+	 * @param idList 订单id集合
 	 */
 	public void delBatchMain (Collection<? extends Serializable> idList);
 
+    /**
+     * 修改一对多
+     * @param jeecgOrderMain 订单实体类
+     * @param jeecgOrderCustomerList 订单客户集合
+     * @param jeecgOrderTicketList 订单机票集合
+     */
 	public void updateCopyMain(JeecgOrderMain jeecgOrderMain, List<JeecgOrderCustomer> jeecgOrderCustomerList, List<JeecgOrderTicket> jeecgOrderTicketList);
 }

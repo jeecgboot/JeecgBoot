@@ -8,6 +8,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+/**
+ * @Description: 字典类
+ * @author: jeecg-boot
+ */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)

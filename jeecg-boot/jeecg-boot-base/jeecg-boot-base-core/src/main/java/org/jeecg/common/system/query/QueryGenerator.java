@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
+import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.system.util.JeecgDataAutorUtils;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
@@ -30,6 +31,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @Description: 查询生成器
+ * @author: jeecg-boot
+ */
 @Slf4j
 public class QueryGenerator {
 	public static final String SQL_RULES_COLUMN = "SQL_RULES_COLUMN";
@@ -63,14 +68,20 @@ public class QueryGenerator {
 
 	/**mysql 模糊查询之特殊字符下划线 （_、\）*/
 	public static final String LIKE_MYSQL_SPECIAL_STRS = "_,%";
-	
+
+	/**日期格式化yyyy-MM-dd*/
+	public static final String YYYY_MM_DD = "yyyy-MM-dd";
+
+	/**to_date*/
+	public static final String TO_DATE = "to_date";
+
 	/**时间格式化 */
-	private static final ThreadLocal<SimpleDateFormat> local = new ThreadLocal<SimpleDateFormat>();
+	private static final ThreadLocal<SimpleDateFormat> LOCAL = new ThreadLocal<SimpleDateFormat>();
 	private static SimpleDateFormat getTime(){
-		SimpleDateFormat time = local.get();
+		SimpleDateFormat time = LOCAL.get();
 		if(time == null){
 			time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			local.set(time);
+            LOCAL.set(time);
 		}
 		return time;
 	}
@@ -107,7 +118,7 @@ public class QueryGenerator {
 		*/
 		
 		//区间条件组装 模糊查询 高级查询组装 简单排序 权限查询
-		PropertyDescriptor origDescriptors[] = PropertyUtils.getPropertyDescriptors(searchObj);
+		PropertyDescriptor[] origDescriptors = PropertyUtils.getPropertyDescriptors(searchObj);
 		Map<String,SysPermissionDataRuleModel> ruleMap = getRuleMap();
 		
 		//权限规则自定义SQL表达式
@@ -120,7 +131,7 @@ public class QueryGenerator {
 		String name, type, column;
 		// update-begin--Author:taoyan  Date:20200923 for：issues/1671 如果字段加注解了@TableField(exist = false),不走DB查询-------
 		//定义实体字段和数据库字段名称的映射 高级查询中 只能获取实体字段 如果设置TableField注解 那么查询条件会出问题
-		Map<String,String> fieldColumnMap = new HashMap<String,String>();
+		Map<String,String> fieldColumnMap = new HashMap<>(5);
 		for (int i = 0; i < origDescriptors.length; i++) {
 			//aliasName = origDescriptors[i].getName();  mybatis  不存在实体属性 不用处理别名的情况
 			name = origDescriptors[i].getName();
@@ -217,7 +228,7 @@ public class QueryGenerator {
 		}
 	}
 	
-	//多字段排序 TODO 需要修改前端
+	/**多字段排序 TODO 需要修改前端*/
 	private static void doMultiFieldsOrder(QueryWrapper<?> queryWrapper,Map<String, String[]> parameterMap) {
 		String column=null,order=null;
 		if(parameterMap!=null&& parameterMap.containsKey(ORDER_COLUMN)) {
@@ -327,6 +338,7 @@ public class QueryGenerator {
 										case "boolean":
 											queryValue = Boolean.parseBoolean(valueStr);
 											break;
+                                        default:
 									}
 								} catch (Exception e) {
 									log.error("高级查询值转换失败：", e);
@@ -376,20 +388,27 @@ public class QueryGenerator {
 		//update-begin--Author:scott  Date:20190724 for：initQueryWrapper组装sql查询条件错误 #284-------------------
 		//TODO 此处规则，只适用于 le lt ge gt
 		// step 2 .>= =<
-		if (rule == null && val.length() >= 3) {
-			if(QUERY_SEPARATE_KEYWORD.equals(val.substring(2, 3))){
+        int length2 = 2;
+        int length3 = 3;
+		if (rule == null && val.length() >= length3) {
+			if(QUERY_SEPARATE_KEYWORD.equals(val.substring(length2, length3))){
 				rule = QueryRuleEnum.getByValue(val.substring(0, 2));
 			}
 		}
 		// step 1 .> <
-		if (rule == null && val.length() >= 2) {
-			if(QUERY_SEPARATE_KEYWORD.equals(val.substring(1, 2))){
+		if (rule == null && val.length() >= length2) {
+			if(QUERY_SEPARATE_KEYWORD.equals(val.substring(1, length2))){
 				rule = QueryRuleEnum.getByValue(val.substring(0, 1));
 			}
 		}
 		//update-end--Author:scott  Date:20190724 for：initQueryWrapper组装sql查询条件错误 #284---------------------
 
 		// step 3 like
+		//update-begin-author:taoyan for: /issues/3382 默认带*就走模糊，但是如果只有一个*，那么走等于查询
+		if(rule == null && val.equals(STAR)){
+			rule = QueryRuleEnum.EQ;
+		}
+		//update-end-author:taoyan for: /issues/3382  默认带*就走模糊，但是如果只有一个*，那么走等于查询
 		if (rule == null && val.contains(STAR)) {
 			if (val.startsWith(STAR) && val.endsWith(STAR)) {
 				rule = QueryRuleEnum.LIKE;
@@ -416,7 +435,7 @@ public class QueryGenerator {
 
 		//update-begin--Author:taoyan  Date:20201229 for：initQueryWrapper组装sql查询条件错误 #284---------------------
 		//特殊处理：Oracle的表达式to_date('xxx','yyyy-MM-dd')含有逗号，会被识别为in查询，转为等于查询
-		if(rule == QueryRuleEnum.IN && val.indexOf("yyyy-MM-dd")>=0 && val.indexOf("to_date")>=0){
+		if(rule == QueryRuleEnum.IN && val.indexOf(YYYY_MM_DD)>=0 && val.indexOf(TO_DATE)>=0){
 			rule = QueryRuleEnum.EQ;
 		}
 		//update-end--Author:taoyan  Date:20201229 for：initQueryWrapper组装sql查询条件错误 #284---------------------
@@ -439,6 +458,11 @@ public class QueryGenerator {
 			return value;
 		}
 		String val = (value + "").toString().trim();
+		//update-begin-author:taoyan date:20220302 for: 查询条件的值为等号（=）bug #3443
+		if(QueryRuleEnum.EQ.getValue().equals(val)){
+			return val;
+		}
+		//update-end-author:taoyan date:20220302 for: 查询条件的值为等号（=）bug #3443
 		if (rule == QueryRuleEnum.LIKE) {
 			value = val.substring(1, val.length() - 1);
 			//mysql 模糊查询之特殊字符下划线 （_、\）
@@ -538,7 +562,8 @@ public class QueryGenerator {
 	 */
 	private static Date getDateQueryByRule(String value,QueryRuleEnum rule) throws ParseException {
 		Date date = null;
-		if(value.length()==10) {
+		int length = 10;
+		if(value.length()==length) {
 			if(rule==QueryRuleEnum.GE) {
 				//比较大于
 				date = getTime().parse(value + " 00:00:00");
@@ -633,7 +658,7 @@ public class QueryGenerator {
 	 * @return
 	 */
 	public static Map<String, SysPermissionDataRuleModel> getRuleMap() {
-		Map<String, SysPermissionDataRuleModel> ruleMap = new HashMap<String, SysPermissionDataRuleModel>();
+		Map<String, SysPermissionDataRuleModel> ruleMap = new HashMap<>(5);
 		List<SysPermissionDataRuleModel> list =JeecgDataAutorUtils.loadDataSearchConditon();
 		if(list != null&&list.size()>0){
 			if(list.get(0)==null){
@@ -664,7 +689,8 @@ public class QueryGenerator {
 				addEasyQuery(queryWrapper, name, rule, converRuleValue(dataRule.getRuleValue()));
 			}else if (propertyType.equals(Date.class)) {
 				String dateStr =converRuleValue(dataRule.getRuleValue());
-				if(dateStr.length()==10){
+                int length = 10;
+				if(dateStr.length()==length){
 					addEasyQuery(queryWrapper, name, rule, DateUtils.str2Date(dateStr,DateUtils.date_sdf.get()));
 				}else{
 					addEasyQuery(queryWrapper, name, rule, DateUtils.str2Date(dateStr,DateUtils.datetimeFormat.get()));
@@ -836,15 +862,15 @@ public class QueryGenerator {
 	 */
 	private static String getFieldConditionValue(Object value,boolean isString, String dataBaseType) {
 		String str = value.toString().trim();
-		if(str.startsWith("!")) {
+		if(str.startsWith(SymbolConstant.EXCLAMATORY_MARK)) {
 			str = str.substring(1);
-		}else if(str.startsWith(">=")) {
+		}else if(str.startsWith(QueryRuleEnum.GE.getValue())) {
 			str = str.substring(2);
-		}else if(str.startsWith("<=")) {
+		}else if(str.startsWith(QueryRuleEnum.LE.getValue())) {
 			str = str.substring(2);
-		}else if(str.startsWith(">")) {
+		}else if(str.startsWith(QueryRuleEnum.GT.getValue())) {
 			str = str.substring(1);
-		}else if(str.startsWith("<")) {
+		}else if(str.startsWith(QueryRuleEnum.LT.getValue())) {
 			str = str.substring(1);
 		}else if(str.indexOf(QUERY_COMMA_ESCAPE)>0) {
 			str = str.replaceAll("\\+\\+", COMMA);
@@ -860,7 +886,7 @@ public class QueryGenerator {
 			}
 		}else {
 			// 如果不是字符串 有一种特殊情况 popup调用都走这个逻辑 参数传递的可能是“‘admin’”这种格式的
-			if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(dataBaseType) && str.endsWith("'") && str.startsWith("'")){
+			if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(dataBaseType) && str.endsWith(SymbolConstant.SINGLE_QUOTATION_MARK) && str.startsWith(SymbolConstant.SINGLE_QUOTATION_MARK)){
 				return " N"+str;
 			}
 			return value.toString();
@@ -891,34 +917,34 @@ public class QueryGenerator {
 	
 	private static String getLikeConditionValue(Object value) {
 		String str = value.toString().trim();
-		if(str.startsWith("*") && str.endsWith("*")) {
+		if(str.startsWith(SymbolConstant.ASTERISK) && str.endsWith(SymbolConstant.ASTERISK)) {
 			if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())){
 				return "N'%"+str.substring(1,str.length()-1)+"%'";
 			}else{
 				return "'%"+str.substring(1,str.length()-1)+"%'";
 			}
-		}else if(str.startsWith("*")) {
+		}else if(str.startsWith(SymbolConstant.ASTERISK)) {
 			if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())){
 				return "N'%"+str.substring(1)+"'";
 			}else{
 				return "'%"+str.substring(1)+"'";
 			}
-		}else if(str.endsWith("*")) {
+		}else if(str.endsWith(SymbolConstant.ASTERISK)) {
 			if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())){
 				return "N'"+str.substring(0,str.length()-1)+"%'";
 			}else{
 				return "'"+str.substring(0,str.length()-1)+"%'";
 			}
 		}else {
-			if(str.indexOf("%")>=0) {
+			if(str.indexOf(SymbolConstant.PERCENT_SIGN)>=0) {
 				if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())){
-					if(str.startsWith("'") && str.endsWith("'")){
+					if(str.startsWith(SymbolConstant.SINGLE_QUOTATION_MARK) && str.endsWith(SymbolConstant.SINGLE_QUOTATION_MARK)){
 						return "N"+str;
 					}else{
 						return "N"+"'"+str+"'";
 					}
 				}else{
-					if(str.startsWith("'") && str.endsWith("'")){
+					if(str.startsWith(SymbolConstant.SINGLE_QUOTATION_MARK) && str.endsWith(SymbolConstant.SINGLE_QUOTATION_MARK)){
 						return str;
 					}else{
 						return "'"+str+"'";
@@ -944,11 +970,11 @@ public class QueryGenerator {
 		StringBuffer sb = new StringBuffer();
 		//权限查询
 		Map<String,SysPermissionDataRuleModel> ruleMap = getRuleMap();
-		PropertyDescriptor origDescriptors[] = PropertyUtils.getPropertyDescriptors(clazz);
-		String sql_and = " and ";
+		PropertyDescriptor[] origDescriptors = PropertyUtils.getPropertyDescriptors(clazz);
+		String sqlAnd = " and ";
 		for (String c : ruleMap.keySet()) {
 			if(oConvertUtils.isNotEmpty(c) && c.startsWith(SQL_RULES_COLUMN)){
-				sb.append(sql_and+getSqlRuleValue(ruleMap.get(c).getRuleValue()));
+				sb.append(sqlAnd+getSqlRuleValue(ruleMap.get(c).getRuleValue()));
 			}
 		}
 		String name, column;
@@ -973,7 +999,7 @@ public class QueryGenerator {
 					value = NumberUtils.parseNumber(dataRule.getRuleValue(),propType);
 				}
 				String filedSql = getSingleSqlByRule(rule, oConvertUtils.camelToUnderline(column), value,isString);
-				sb.append(sql_and+filedSql);
+				sb.append(sqlAnd+filedSql);
 			}
 		}
 		log.info("query auth sql is:"+sb.toString());
@@ -989,7 +1015,7 @@ public class QueryGenerator {
 	public static void installAuthMplus(QueryWrapper<?> queryWrapper,Class<?> clazz) {
 		//权限查询
 		Map<String,SysPermissionDataRuleModel> ruleMap = getRuleMap();
-		PropertyDescriptor origDescriptors[] = PropertyUtils.getPropertyDescriptors(clazz);
+		PropertyDescriptor[] origDescriptors = PropertyUtils.getPropertyDescriptors(clazz);
 		for (String c : ruleMap.keySet()) {
 			if(oConvertUtils.isNotEmpty(c) && c.startsWith(SQL_RULES_COLUMN)){
 				queryWrapper.and(i ->i.apply(getSqlRuleValue(ruleMap.get(c).getRuleValue())));
@@ -1028,7 +1054,7 @@ public class QueryGenerator {
 		StringBuffer sb = new StringBuffer();
 		//权限查询
 		Map<String,SysPermissionDataRuleModel> ruleMap = getRuleMap();
-		String sql_and = " and ";
+		String sqlAnd = " and ";
 		for (String c : ruleMap.keySet()) {
 			SysPermissionDataRuleModel dataRule = ruleMap.get(c);
 			String ruleValue = dataRule.getRuleValue();
@@ -1036,7 +1062,7 @@ public class QueryGenerator {
 				continue;
 			}
 			if(oConvertUtils.isNotEmpty(c) && c.startsWith(SQL_RULES_COLUMN)){
-				sb.append(sql_and+getSqlRuleValue(ruleValue));
+				sb.append(sqlAnd+getSqlRuleValue(ruleValue));
 			}else{
 				boolean isString  = false;
 				ruleValue = ruleValue.trim();
@@ -1047,7 +1073,7 @@ public class QueryGenerator {
 				QueryRuleEnum rule = QueryRuleEnum.getByValue(dataRule.getRuleConditions());
 				String value = converRuleValue(ruleValue);
 				String filedSql = getSingleSqlByRule(rule, c, value,isString);
-				sb.append(sql_and+filedSql);
+				sb.append(sqlAnd+filedSql);
 			}
 		}
 		log.info("query auth sql is = "+sb.toString());
@@ -1136,8 +1162,8 @@ public class QueryGenerator {
 	 */
 	private static String specialStrConvert(String value) {
 		if (DataBaseConstant.DB_TYPE_MYSQL.equals(getDbType()) || DataBaseConstant.DB_TYPE_MARIADB.equals(getDbType())) {
-			String[] special_str = QueryGenerator.LIKE_MYSQL_SPECIAL_STRS.split(",");
-			for (String str : special_str) {
+			String[] specialStr = QueryGenerator.LIKE_MYSQL_SPECIAL_STRS.split(",");
+			for (String str : specialStr) {
 				if (value.indexOf(str) !=-1) {
 					value = value.replace(str, "\\" + str);
 				}

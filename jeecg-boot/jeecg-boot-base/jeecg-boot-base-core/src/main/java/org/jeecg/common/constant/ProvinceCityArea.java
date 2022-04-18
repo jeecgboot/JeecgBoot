@@ -13,6 +13,10 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.List;
 
+/**
+ * @Description: 省市区
+ * @author: jeecg-boot
+ */
 @Component("pca")
 public class ProvinceCityArea {
     List<Area> areaList;

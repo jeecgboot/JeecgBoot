@@ -14,9 +14,10 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.enums.ModuleType;
+import org.jeecg.common.constant.enums.OperateTypeEnum;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.IPUtils;
+import org.jeecg.common.util.IpUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
@@ -97,7 +98,7 @@ public class AutoLogAspect {
         //请求的参数
         dto.setRequestParam(getReqestParams(request,joinPoint));
         //设置IP地址
-        dto.setIp(IPUtils.getIpAddr(request));
+        dto.setIp(IpUtils.getIpAddr(request));
         //获取登录用户信息
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         if(sysUser!=null){
@@ -120,25 +121,9 @@ public class AutoLogAspect {
         if (operateType > 0) {
             return operateType;
         }
-        if (methodName.startsWith("list")) {
-            return CommonConstant.OPERATE_TYPE_1;
-        }
-        if (methodName.startsWith("add")) {
-            return CommonConstant.OPERATE_TYPE_2;
-        }
-        if (methodName.startsWith("edit")) {
-            return CommonConstant.OPERATE_TYPE_3;
-        }
-        if (methodName.startsWith("delete")) {
-            return CommonConstant.OPERATE_TYPE_4;
-        }
-        if (methodName.startsWith("import")) {
-            return CommonConstant.OPERATE_TYPE_5;
-        }
-        if (methodName.startsWith("export")) {
-            return CommonConstant.OPERATE_TYPE_6;
-        }
-        return CommonConstant.OPERATE_TYPE_1;
+        //update-begin---author:wangshuai ---date:20220331  for：阿里云代码扫描规范(不允许任何魔法值出现在代码中)------------
+        return OperateTypeEnum.getTypeByMethodName(methodName);
+        //update-end---author:wangshuai ---date:20220331  for：阿里云代码扫描规范(不允许任何魔法值出现在代码中)------------
     }
 
     /**
@@ -152,7 +137,7 @@ public class AutoLogAspect {
     private String getReqestParams(HttpServletRequest request, JoinPoint joinPoint) {
         String httpMethod = request.getMethod();
         String params = "";
-        if ("POST".equals(httpMethod) || "PUT".equals(httpMethod) || "PATCH".equals(httpMethod)) {
+        if (CommonConstant.HTTP_POST.equals(httpMethod) || CommonConstant.HTTP_PUT.equals(httpMethod) || CommonConstant.HTTP_PATCH.equals(httpMethod)) {
             Object[] paramsArray = joinPoint.getArgs();
             // java.lang.IllegalStateException: It is illegal to call this method if the current request is not in asynchronous mode (i.e. isAsyncStarted() returns false)
             //  https://my.oschina.net/mengzhang6/blog/2395893
@@ -169,7 +154,8 @@ public class AutoLogAspect {
             PropertyFilter profilter = new PropertyFilter() {
                 @Override
                 public boolean apply(Object o, String name, Object value) {
-                    if(value!=null && value.toString().length()>500){
+                    int length = 500;
+                    if(value!=null && value.toString().length()>length){
                         return false;
                     }
                     return true;

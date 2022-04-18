@@ -2,6 +2,7 @@ package org.jeecg.modules.message.websocket;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.annotation.Resource;
@@ -28,11 +29,14 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-@ServerEndpoint("/websocket/{userId}") //此注解相当于设置访问URL
+@ServerEndpoint("/websocket/{userId}")
 public class WebSocket {
 
     private Session session;
 
+    /**
+     * 用户ID
+     */
     private String userId;
 
     private static final String REDIS_TOPIC_NAME = "socketHandler";
@@ -44,12 +48,15 @@ public class WebSocket {
      * 缓存 webSocket连接到单机服务class中（整体方案支持集群）
      */
     private static CopyOnWriteArraySet<WebSocket> webSockets = new CopyOnWriteArraySet<>();
-    private static Map<String, Session> sessionPool = new HashMap<String, Session>();
-
+    /**
+     * 线程安全Map
+     */
+    private static ConcurrentHashMap<String, Session> sessionPool = new ConcurrentHashMap<>();
 
     @OnOpen
     public void onOpen(Session session, @PathParam(value = "userId") String userId) {
         try {
+            //TODO 通过header中获取token，进行check
             this.session = session;
             this.userId = userId;
             webSockets.add(this);
@@ -113,9 +120,11 @@ public class WebSocket {
         obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_CHECK);
         //消息内容
         obj.put(WebsocketConst.MSG_TXT, "心跳响应");
+        //update-begin-author:taoyan date:20220308 for: 消息通知长连接启动心跳机制，后端代码小bug #3473
         for (WebSocket webSocket : webSockets) {
-            webSocket.pushMessage(message);
+            webSocket.pushMessage(obj.toJSONString());
         }
+        //update-end-author:taoyan date:20220308 for: 消息通知长连接启动心跳机制，后端代码小bug #3473
     }
 
     /**

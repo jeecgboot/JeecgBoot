@@ -1,11 +1,12 @@
 package org.jeecg.modules.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
-import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.*;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,14 +17,15 @@ import java.util.Set;
 
 /**
  * 服务化 system模块 对外接口请求类
+ * @author: jeecg-boot
  */
+@Slf4j
 @RestController
 @RequestMapping("/sys/api")
 public class SystemAPIController {
 
     @Autowired
-    private ISysBaseAPI sysBaseAPI;
-
+    private SysBaseApiImpl sysBaseApi;
     @Autowired
     private ISysUserService sysUserService;
 
@@ -34,7 +36,7 @@ public class SystemAPIController {
      */
     @PostMapping("/sendSysAnnouncement")
     public void sendSysAnnouncement(@RequestBody MessageDTO message){
-        sysBaseAPI.sendSysAnnouncement(message);
+        sysBaseApi.sendSysAnnouncement(message);
     }
 
     /**
@@ -43,7 +45,7 @@ public class SystemAPIController {
      */
     @PostMapping("/sendBusAnnouncement")
     public void sendBusAnnouncement(@RequestBody BusMessageDTO message){
-        sysBaseAPI.sendBusAnnouncement(message);
+        sysBaseApi.sendBusAnnouncement(message);
     }
 
     /**
@@ -52,7 +54,7 @@ public class SystemAPIController {
      */
     @PostMapping("/sendTemplateAnnouncement")
     public void sendTemplateAnnouncement(@RequestBody TemplateMessageDTO message){
-        sysBaseAPI.sendTemplateAnnouncement(message);
+        sysBaseApi.sendTemplateAnnouncement(message);
     }
 
     /**
@@ -61,7 +63,7 @@ public class SystemAPIController {
      */
     @PostMapping("/sendBusTemplateAnnouncement")
     public void sendBusTemplateAnnouncement(@RequestBody BusTemplateMessageDTO message){
-        sysBaseAPI.sendBusTemplateAnnouncement(message);
+        sysBaseApi.sendBusTemplateAnnouncement(message);
     }
 
     /**
@@ -71,7 +73,7 @@ public class SystemAPIController {
      */
     @PostMapping("/parseTemplateByCode")
     public String parseTemplateByCode(@RequestBody TemplateDTO templateDTO){
-        return sysBaseAPI.parseTemplateByCode(templateDTO);
+        return sysBaseApi.parseTemplateByCode(templateDTO);
     }
 
     /**
@@ -79,7 +81,7 @@ public class SystemAPIController {
      */
     @GetMapping("/updateSysAnnounReadFlag")
     public void updateSysAnnounReadFlag(@RequestParam("busType") String busType, @RequestParam("busId")String busId){
-        sysBaseAPI.updateSysAnnounReadFlag(busType, busId);
+        sysBaseApi.updateSysAnnounReadFlag(busType, busId);
     }
 
     /**
@@ -89,7 +91,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getUserByName")
     public LoginUser getUserByName(@RequestParam("username") String username){
-        return sysBaseAPI.getUserByName(username);
+        return sysBaseApi.getUserByName(username);
     }
 
     /**
@@ -99,7 +101,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getUserById")
     LoginUser getUserById(@RequestParam("id") String id){
-        return sysBaseAPI.getUserById(id);
+        return sysBaseApi.getUserById(id);
     }
 
     /**
@@ -109,7 +111,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getRolesByUsername")
     List<String> getRolesByUsername(@RequestParam("username") String username){
-        return sysBaseAPI.getRolesByUsername(username);
+        return sysBaseApi.getRolesByUsername(username);
     }
 
     /**
@@ -119,7 +121,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getDepartIdsByUsername")
     List<String> getDepartIdsByUsername(@RequestParam("username") String username){
-        return sysBaseAPI.getDepartIdsByUsername(username);
+        return sysBaseApi.getDepartIdsByUsername(username);
     }
 
     /**
@@ -129,7 +131,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getDepartNamesByUsername")
     List<String> getDepartNamesByUsername(@RequestParam("username") String username){
-        return sysBaseAPI.getDepartNamesByUsername(username);
+        return sysBaseApi.getDepartNamesByUsername(username);
     }
 
 
@@ -140,7 +142,7 @@ public class SystemAPIController {
      */
     @GetMapping("/queryDictItemsByCode")
     List<DictModel> queryDictItemsByCode(@RequestParam("code") String code){
-        return sysBaseAPI.queryDictItemsByCode(code);
+        return sysBaseApi.queryDictItemsByCode(code);
     }
 
     /**
@@ -150,23 +152,31 @@ public class SystemAPIController {
      */
     @GetMapping("/queryEnableDictItemsByCode")
     List<DictModel> queryEnableDictItemsByCode(@RequestParam("code") String code){
-        return sysBaseAPI.queryEnableDictItemsByCode(code);
+        return sysBaseApi.queryEnableDictItemsByCode(code);
     }
 
 
     /** 查询所有的父级字典，按照create_time排序 */
     @GetMapping("/queryAllDict")
     List<DictModel> queryAllDict(){
-        return sysBaseAPI.queryAllDict();
+//        try{
+//            //睡10秒，gateway网关5秒超时，会触发熔断降级操作
+//            Thread.sleep(10000);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+
+        log.info("--我是jeecg-system服务节点，微服务接口queryAllDict被调用--");
+        return sysBaseApi.queryAllDict();
     }
 
     /**
      * 查询所有分类字典
      * @return
      */
-    @GetMapping("/queryAllDSysCategory")
-    List<SysCategoryModel> queryAllDSysCategory(){
-        return sysBaseAPI.queryAllDSysCategory();
+    @GetMapping("/queryAllSysCategory")
+    List<SysCategoryModel> queryAllSysCategory(){
+        return sysBaseApi.queryAllSysCategory();
     }
 
 
@@ -176,7 +186,7 @@ public class SystemAPIController {
      */
     @GetMapping("/queryAllDepartBackDictModel")
     List<DictModel> queryAllDepartBackDictModel(){
-        return sysBaseAPI.queryAllDepartBackDictModel();
+        return sysBaseApi.queryAllDepartBackDictModel();
     }
 
     /**
@@ -187,9 +197,9 @@ public class SystemAPIController {
     @GetMapping("/queryAllRole")
     public List<ComboModel> queryAllRole(@RequestParam(name = "roleIds",required = false)String[] roleIds){
         if(roleIds==null || roleIds.length==0){
-            return sysBaseAPI.queryAllRole();
+            return sysBaseApi.queryAllRole();
         }else{
-            return sysBaseAPI.queryAllRole(roleIds);
+            return sysBaseApi.queryAllRole(roleIds);
         }
     }
 
@@ -200,7 +210,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getRoleIdsByUsername")
     public List<String> getRoleIdsByUsername(@RequestParam("username")String username){
-        return sysBaseAPI.getRoleIdsByUsername(username);
+        return sysBaseApi.getRoleIdsByUsername(username);
     }
 
     /**
@@ -210,7 +220,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getDepartIdsByOrgCode")
     public String getDepartIdsByOrgCode(@RequestParam("orgCode")String orgCode){
-        return sysBaseAPI.getDepartIdsByOrgCode(orgCode);
+        return sysBaseApi.getDepartIdsByOrgCode(orgCode);
     }
 
     /**
@@ -219,7 +229,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getAllSysDepart")
     public List<SysDepartModel> getAllSysDepart(){
-        return sysBaseAPI.getAllSysDepart();
+        return sysBaseApi.getAllSysDepart();
     }
 
     /**
@@ -230,7 +240,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getDynamicDbSourceById")
     DynamicDataSourceModel getDynamicDbSourceById(@RequestParam("dbSourceId")String dbSourceId){
-        return sysBaseAPI.getDynamicDbSourceById(dbSourceId);
+        return sysBaseApi.getDynamicDbSourceById(dbSourceId);
     }
 
 
@@ -242,7 +252,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getDeptHeadByDepId")
     public List<String> getDeptHeadByDepId(@RequestParam("deptId") String deptId){
-        return sysBaseAPI.getDeptHeadByDepId(deptId);
+        return sysBaseApi.getDeptHeadByDepId(deptId);
     }
 
     /**
@@ -252,7 +262,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getParentDepartId")
     public DictModel getParentDepartId(@RequestParam("departId")String departId){
-        return sysBaseAPI.getParentDepartId(departId);
+        return sysBaseApi.getParentDepartId(departId);
     }
 
     /**
@@ -263,7 +273,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getDynamicDbSourceByCode")
     public DynamicDataSourceModel getDynamicDbSourceByCode(@RequestParam("dbSourceCode") String dbSourceCode){
-        return sysBaseAPI.getDynamicDbSourceByCode(dbSourceCode);
+        return sysBaseApi.getDynamicDbSourceByCode(dbSourceCode);
     }
 
     /**
@@ -273,7 +283,7 @@ public class SystemAPIController {
      */
     @GetMapping("/sendWebSocketMsg")
     public void sendWebSocketMsg(String[] userIds, String cmd){
-        sysBaseAPI.sendWebSocketMsg(userIds, cmd);
+        sysBaseApi.sendWebSocketMsg(userIds, cmd);
     }
 
 
@@ -284,7 +294,7 @@ public class SystemAPIController {
      */
     @GetMapping("/queryAllUserByIds")
     public List<LoginUser> queryAllUserByIds(@RequestParam("userIds") String[] userIds){
-        return sysBaseAPI.queryAllUserByIds(userIds);
+        return sysBaseApi.queryAllUserByIds(userIds);
     }
 
     /**
@@ -293,7 +303,7 @@ public class SystemAPIController {
      */
     @GetMapping("/queryAllUserBackCombo")
     public List<ComboModel> queryAllUserBackCombo(){
-        return sysBaseAPI.queryAllUserBackCombo();
+        return sysBaseApi.queryAllUserBackCombo();
     }
 
     /**
@@ -302,7 +312,7 @@ public class SystemAPIController {
      */
     @GetMapping("/queryAllUser")
     public JSONObject queryAllUser(@RequestParam(name="userIds",required=false)String userIds, @RequestParam(name="pageNo",required=false) Integer pageNo,@RequestParam(name="pageSize",required=false) int pageSize){
-        return sysBaseAPI.queryAllUser(userIds, pageNo, pageSize);
+        return sysBaseApi.queryAllUser(userIds, pageNo, pageSize);
     }
 
 
@@ -315,7 +325,7 @@ public class SystemAPIController {
      */
     @GetMapping("/meetingSignWebsocket")
     public void meetingSignWebsocket(@RequestParam("userId")String userId){
-        sysBaseAPI.meetingSignWebsocket(userId);
+        sysBaseApi.meetingSignWebsocket(userId);
     }
 
     /**
@@ -325,7 +335,7 @@ public class SystemAPIController {
      */
     @GetMapping("/queryUserByNames")
     public List<LoginUser> queryUserByNames(@RequestParam("userNames")String[] userNames){
-        return sysBaseAPI.queryUserByNames(userNames);
+        return sysBaseApi.queryUserByNames(userNames);
     }
 
     /**
@@ -335,7 +345,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getUserRoleSet")
     public Set<String> getUserRoleSet(@RequestParam("username")String username){
-        return sysBaseAPI.getUserRoleSet(username);
+        return sysBaseApi.getUserRoleSet(username);
     }
 
     /**
@@ -345,7 +355,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getUserPermissionSet")
     public Set<String> getUserPermissionSet(@RequestParam("username") String username){
-        return sysBaseAPI.getUserPermissionSet(username);
+        return sysBaseApi.getUserPermissionSet(username);
     }
 
     //-----
@@ -357,7 +367,7 @@ public class SystemAPIController {
      */
     @PostMapping("/hasOnlineAuth")
     public boolean hasOnlineAuth(@RequestBody OnlineAuthDTO onlineAuthDTO){
-        return sysBaseAPI.hasOnlineAuth(onlineAuthDTO);
+        return sysBaseApi.hasOnlineAuth(onlineAuthDTO);
     }
 
     /**
@@ -386,7 +396,7 @@ public class SystemAPIController {
      */
     @GetMapping("/selectAllById")
     public SysDepartModel selectAllById(@RequestParam("id") String id){
-        return sysBaseAPI.selectAllById(id);
+        return sysBaseApi.selectAllById(id);
     }
 
     /**
@@ -396,7 +406,7 @@ public class SystemAPIController {
      */
     @GetMapping("/queryDeptUsersByUserId")
     public List<String> queryDeptUsersByUserId(@RequestParam("userId") String userId){
-        return sysBaseAPI.queryDeptUsersByUserId(userId);
+        return sysBaseApi.queryDeptUsersByUserId(userId);
     }
 
 
@@ -406,7 +416,7 @@ public class SystemAPIController {
      */
     @GetMapping("/queryPermissionDataRule")
     public List<SysPermissionDataRuleModel> queryPermissionDataRule(@RequestParam("component") String component, @RequestParam("requestPath")String requestPath, @RequestParam("username") String username){
-        return sysBaseAPI.queryPermissionDataRule(component, requestPath, username);
+        return sysBaseApi.queryPermissionDataRule(component, requestPath, username);
     }
 
     /**
@@ -416,7 +426,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getCacheUser")
     public SysUserCacheInfo getCacheUser(@RequestParam("username") String username){
-        return sysBaseAPI.getCacheUser(username);
+        return sysBaseApi.getCacheUser(username);
     }
 
     /**
@@ -427,7 +437,7 @@ public class SystemAPIController {
      */
     @GetMapping("/translateDict")
     public String translateDict(@RequestParam("code") String code, @RequestParam("key") String key){
-        return sysBaseAPI.translateDict(code, key);
+        return sysBaseApi.translateDict(code, key);
     }
 
 
@@ -438,7 +448,7 @@ public class SystemAPIController {
      */
     @RequestMapping("/queryUsersByUsernames")
     List<JSONObject> queryUsersByUsernames(@RequestParam("usernames") String usernames){
-        return this.sysBaseAPI.queryUsersByUsernames(usernames);
+        return this.sysBaseApi.queryUsersByUsernames(usernames);
     }
 
     /**
@@ -448,7 +458,7 @@ public class SystemAPIController {
      */
     @RequestMapping("/queryUsersByIds")
     List<JSONObject> queryUsersByIds(@RequestParam("ids") String ids){
-        return this.sysBaseAPI.queryUsersByIds(ids);
+        return this.sysBaseApi.queryUsersByIds(ids);
     }
 
     /**
@@ -458,7 +468,7 @@ public class SystemAPIController {
      */
     @GetMapping("/queryDepartsByOrgcodes")
     List<JSONObject> queryDepartsByOrgcodes(@RequestParam("orgCodes") String orgCodes){
-        return this.sysBaseAPI.queryDepartsByOrgcodes(orgCodes);
+        return this.sysBaseApi.queryDepartsByOrgcodes(orgCodes);
     }
 
     /**
@@ -468,7 +478,7 @@ public class SystemAPIController {
      */
     @GetMapping("/queryDepartsByIds")
     List<JSONObject> queryDepartsByIds(@RequestParam("ids") String ids){
-        return this.sysBaseAPI.queryDepartsByIds(ids);
+        return this.sysBaseApi.queryDepartsByIds(ids);
     }
 
     /**
@@ -479,7 +489,7 @@ public class SystemAPIController {
      */
     @GetMapping("/sendEmailMsg")
     public void sendEmailMsg(@RequestParam("email")String email,@RequestParam("title")String title,@RequestParam("content")String content){
-         this.sysBaseAPI.sendEmailMsg(email,title,content);
+         this.sysBaseApi.sendEmailMsg(email,title,content);
     };
     /**
      * 41 获取公司下级部门和公司下所有用户信息
@@ -487,7 +497,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getDeptUserByOrgCode")
     List<Map> getDeptUserByOrgCode(@RequestParam("orgCode")String orgCode){
-       return this.sysBaseAPI.getDeptUserByOrgCode(orgCode);
+       return this.sysBaseApi.getDeptUserByOrgCode(orgCode);
     }
 
     /**
@@ -498,7 +508,7 @@ public class SystemAPIController {
      */
     @GetMapping("/loadCategoryDictItem")
     public List<String> loadCategoryDictItem(@RequestParam("ids") String ids) {
-        return sysBaseAPI.loadCategoryDictItem(ids);
+        return sysBaseApi.loadCategoryDictItem(ids);
     }
 
     /**
@@ -510,7 +520,7 @@ public class SystemAPIController {
      */
     @GetMapping("/loadDictItem")
     public List<String> loadDictItem(@RequestParam("dictCode") String dictCode, @RequestParam("keys") String keys) {
-        return sysBaseAPI.loadDictItem(dictCode, keys);
+        return sysBaseApi.loadDictItem(dictCode, keys);
     }
 
     /**
@@ -522,7 +532,7 @@ public class SystemAPIController {
      */
     @GetMapping("/getDictItems")
     public List<DictModel> getDictItems(@RequestParam("dictCode") String dictCode) {
-        return sysBaseAPI.getDictItems(dictCode);
+        return sysBaseApi.getDictItems(dictCode);
     }
 
     /**
@@ -533,7 +543,7 @@ public class SystemAPIController {
      */
     @RequestMapping("/getManyDictItems")
     public Map<String, List<DictModel>> getManyDictItems(@RequestParam("dictCodeList") List<String> dictCodeList) {
-        return sysBaseAPI.getManyDictItems(dictCodeList);
+        return sysBaseApi.getManyDictItems(dictCodeList);
     }
 
     /**
@@ -546,7 +556,7 @@ public class SystemAPIController {
      */
     @GetMapping("/loadDictItemByKeyword")
     public List<DictModel> loadDictItemByKeyword(@RequestParam("dictCode") String dictCode, @RequestParam("keyword") String keyword, @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        return sysBaseAPI.loadDictItemByKeyword(dictCode, keyword, pageSize);
+        return sysBaseApi.loadDictItemByKeyword(dictCode, keyword, pageSize);
     }
 
     /**
@@ -557,7 +567,7 @@ public class SystemAPIController {
      */
     @GetMapping("/translateManyDict")
     public Map<String, List<DictModel>> translateManyDict(@RequestParam("dictCodes") String dictCodes, @RequestParam("keys") String keys){
-        return this.sysBaseAPI.translateManyDict(dictCodes, keys);
+        return this.sysBaseApi.translateManyDict(dictCodes, keys);
     }
 
 
@@ -570,7 +580,7 @@ public class SystemAPIController {
      */
     @GetMapping("/queryTableDictItemsByCode")
     List<DictModel> queryTableDictItemsByCode(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code){
-        return sysBaseAPI.queryTableDictItemsByCode(table, text, code);
+        return sysBaseApi.queryTableDictItemsByCode(table, text, code);
     }
 
     /**
@@ -583,7 +593,7 @@ public class SystemAPIController {
      */
     @GetMapping("/queryFilterTableDictInfo")
     List<DictModel> queryFilterTableDictInfo(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("filterSql") String filterSql){
-        return sysBaseAPI.queryFilterTableDictInfo(table, text, code, filterSql);
+        return sysBaseApi.queryFilterTableDictInfo(table, text, code, filterSql);
     }
 
     /**
@@ -598,7 +608,7 @@ public class SystemAPIController {
     @Deprecated
     @GetMapping("/queryTableDictByKeys")
     public List<String> queryTableDictByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keyArray") String[] keyArray){
-        return sysBaseAPI.queryTableDictByKeys(table, text, code, keyArray);
+        return sysBaseApi.queryTableDictByKeys(table, text, code, keyArray);
     }
 
 
@@ -612,7 +622,7 @@ public class SystemAPIController {
      */
     @GetMapping("/translateDictFromTable")
     public String translateDictFromTable(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("key") String key){
-        return sysBaseAPI.translateDictFromTable(table, text, code, key);
+        return sysBaseApi.translateDictFromTable(table, text, code, key);
     }
 
 
@@ -628,7 +638,7 @@ public class SystemAPIController {
      */
     @GetMapping("/translateDictFromTableByKeys")
     public List<DictModel> translateDictFromTableByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keys") String keys) {
-        return this.sysBaseAPI.translateDictFromTableByKeys(table, text, code, keys);
+        return this.sysBaseApi.translateDictFromTableByKeys(table, text, code, keys);
     }
 
 }

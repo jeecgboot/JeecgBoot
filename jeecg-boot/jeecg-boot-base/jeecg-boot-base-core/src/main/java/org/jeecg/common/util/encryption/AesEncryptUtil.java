@@ -7,11 +7,15 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * AES 加密
+ * @Description: AES 加密
+ * @author: jeecg-boot
+ * @date: 2022/3/30 11:48
  */
 public class AesEncryptUtil {
 
-    //使用AES-128-CBC加密模式，key需要为16位,key和iv可以相同！
+    /**
+     * 使用AES-128-CBC加密模式 key和iv可以相同
+     */
     private static String KEY = EncryptedString.key;
     private static String IV = EncryptedString.iv;
 
@@ -26,7 +30,8 @@ public class AesEncryptUtil {
     public static String encrypt(String data, String key, String iv) throws Exception {
         try {
 
-            Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");//"算法/模式/补码方式"NoPadding PkcsPadding
+            //"算法/模式/补码方式"NoPadding PkcsPadding
+            Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
             int blockSize = cipher.getBlockSize();
 
             byte[] dataBytes = data.getBytes();

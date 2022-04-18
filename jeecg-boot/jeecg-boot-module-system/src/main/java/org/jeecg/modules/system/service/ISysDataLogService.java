@@ -4,6 +4,10 @@ import org.jeecg.modules.system.entity.SysDataLog;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 
+/**
+ * @Description: 数据日志service接口
+ * @author: jeecg-boot
+ */
 public interface ISysDataLogService extends IService<SysDataLog> {
 	
 	/**

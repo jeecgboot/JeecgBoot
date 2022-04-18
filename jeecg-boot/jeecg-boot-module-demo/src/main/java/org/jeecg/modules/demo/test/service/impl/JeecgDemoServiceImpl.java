@@ -36,7 +36,7 @@ public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo
 	 * 加上注解：@Transactional，声明的方法就是一个独立的事务（有异常DB操作全部回滚）
 	 */
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void testTran() {
 		JeecgDemo pp = new JeecgDemo();
 		pp.setAge(1111);
@@ -47,8 +47,8 @@ public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo
 		pp2.setAge(2222);
 		pp2.setName("测试事务  小白兔 2");
 		jeecgDemoMapper.insert(pp2);
-		
-		Integer.parseInt("hello");//自定义异常
+        //自定义异常
+		Integer.parseInt("hello");
 		
 		JeecgDemo pp3 = new JeecgDemo();
 		pp3.setAge(3333);

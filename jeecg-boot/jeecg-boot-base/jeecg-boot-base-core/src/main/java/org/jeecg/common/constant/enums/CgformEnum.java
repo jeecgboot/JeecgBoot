@@ -7,6 +7,7 @@ import java.util.Map;
 
 /**
  * online表单枚举 代码生成器用到
+ * @author: jeecg-boot
  */
 public enum CgformEnum {
 

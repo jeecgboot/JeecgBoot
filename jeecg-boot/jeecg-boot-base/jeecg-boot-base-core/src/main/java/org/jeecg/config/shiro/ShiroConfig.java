@@ -1,4 +1,3 @@
-
 package org.jeecg.config.shiro;
 
 import lombok.extern.slf4j.Slf4j;
@@ -143,6 +142,9 @@ public class ShiroConfig {
 
         //性能监控  TODO 存在安全漏洞泄露TOEKN（durid连接池也有）
         filterChainDefinitionMap.put("/actuator/**", "anon");
+
+        //测试模块排除
+        filterChainDefinitionMap.put("/test/seata/**", "anon");
 
         // 添加自己的过滤器并且取名为jwt
         Map<String, Filter> filterMap = new HashMap<String, Filter>(1);

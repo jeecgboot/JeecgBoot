@@ -18,8 +18,8 @@ public class UUIDGenerator {
 	 */
 
 	public static String generate() {
-		return new StringBuilder(32).append(format(getIP())).append(
-				format(getJVM())).append(format(getHiTime())).append(
+		return new StringBuilder(32).append(format(getIp())).append(
+				format(getJvm())).append(format(getHiTime())).append(
 				format(getLoTime())).append(format(getCount())).toString();
 		
 	}
@@ -53,7 +53,7 @@ public class UUIDGenerator {
 		return buf.toString();
 	}
 
-	private final static int getJVM() {
+	private final static int getJvm() {
 		return JVM;
 	}
 
@@ -69,7 +69,7 @@ public class UUIDGenerator {
 	/**
 	 * Unique in a local network
 	 */
-	private final static int getIP() {
+	private final static int getIp() {
 		return IP;
 	}
 
@@ -86,7 +86,8 @@ public class UUIDGenerator {
 
 	private final static int toInt(byte[] bytes) {
 		int result = 0;
-		for (int i = 0; i < 4; i++) {
+		int length = 4;
+		for (int i = 0; i < length; i++) {
 			result = (result << 8) - Byte.MIN_VALUE + (int) bytes[i];
 		}
 		return result;

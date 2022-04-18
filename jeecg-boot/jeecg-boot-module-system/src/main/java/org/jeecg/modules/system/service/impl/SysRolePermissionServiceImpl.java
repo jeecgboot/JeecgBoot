@@ -2,8 +2,7 @@ package org.jeecg.modules.system.service.impl;
 
 import java.util.*;
 
-import org.jeecg.common.constant.CacheConstant;
-import org.jeecg.common.util.IPUtils;
+import org.jeecg.common.util.IpUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysRolePermission;
@@ -14,7 +13,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +35,7 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 			//获取request
 			HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
 			//获取IP地址
-			ip = IPUtils.getIpAddr(request);
+			ip = IpUtils.getIpAddr(request);
 		} catch (Exception e) {
 			ip = "127.0.0.1";
 		}
@@ -63,7 +61,7 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 			//获取request
 			HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
 			//获取IP地址
-			ip = IPUtils.getIpAddr(request);
+			ip = IpUtils.getIpAddr(request);
 		} catch (Exception e) {
 			ip = "127.0.0.1";
 		}
@@ -105,7 +103,7 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 		
 		String[] mainArr = main.split(",");
 		String[] diffArr = diff.split(",");
-		Map<String, Integer> map = new HashMap<>();
+		Map<String, Integer> map = new HashMap(5);
 		for (String string : mainArr) {
 			map.put(string, 1);
 		}

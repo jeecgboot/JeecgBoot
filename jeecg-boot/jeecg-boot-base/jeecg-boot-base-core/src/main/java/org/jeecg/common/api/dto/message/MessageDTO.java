@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 /**
  * 普通消息
+ * @author: jeecg-boot
  */
 @Data
 public class MessageDTO implements Serializable {
@@ -26,7 +27,7 @@ public class MessageDTO implements Serializable {
     /**
      * 发送给所有人
      */
-    protected boolean toAll;
+    protected Boolean toAll;
 
     /**
      * 消息主题

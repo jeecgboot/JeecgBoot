@@ -23,17 +23,18 @@ import com.aliyuncs.profile.IClientProfile;
  *
  * 备注:Demo工程编码采用UTF-8
  * 国际短信发送请勿参照此DEMO
+ * @author: jeecg-boot
  */
 public class DySmsHelper {
 	
 	private final static Logger logger=LoggerFactory.getLogger(DySmsHelper.class);
 
-    //产品名称:云通信短信API产品,开发者无需替换
-    static final String product = "Dysmsapi";
-    //产品域名,开发者无需替换
-    static final String domain = "dysmsapi.aliyuncs.com";
+    /**产品名称:云通信短信API产品,开发者无需替换*/
+    static final String PRODUCT = "Dysmsapi";
+    /**产品域名,开发者无需替换*/
+    static final String DOMAIN = "dysmsapi.aliyuncs.com";
 
-    // TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)
+    /**TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)*/
     static  String accessKeyId;
     static  String accessKeySecret;
 
@@ -67,7 +68,7 @@ public class DySmsHelper {
         
         //初始化acsClient,暂不支持region化
         IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, accessKeySecret);
-        DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", product, domain);
+        DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", PRODUCT, DOMAIN);
         IAcsClient acsClient = new DefaultAcsClient(profile);
         
         //验证json参数
@@ -96,7 +97,8 @@ public class DySmsHelper {
         SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
         logger.info("短信接口返回的数据----------------");
         logger.info("{Code:" + sendSmsResponse.getCode()+",Message:" + sendSmsResponse.getMessage()+",RequestId:"+ sendSmsResponse.getRequestId()+",BizId:"+sendSmsResponse.getBizId()+"}");
-        if ("OK".equals(sendSmsResponse.getCode())) {
+        String ok = "OK";
+        if (ok.equals(sendSmsResponse.getCode())) {
             result = true;
         }
         return result;

@@ -17,6 +17,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @Description: MockController
+ * @author: jeecg-boot
+ */
 @RestController
 @RequestMapping("/mock/api")
 @Slf4j
@@ -72,7 +76,7 @@ public class MockController {
 	}
 
 	@GetMapping(value = "/permission/no-pager")
-	public String permission_no_page() {
+	public String permissionNoPage() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/permission_no_page.json");
 	}
 
@@ -129,7 +133,7 @@ public class MockController {
 	        	if(fs[i].getTotalSpace()==0) {
 	        		continue;
 	        	}
-	        	Map<String,Object> map = new HashMap<>();
+	        	Map<String,Object> map = new HashMap<>(5);
 	        	map.put("name", fsv.getSystemDisplayName(fs[i]));
 	        	map.put("max", fs[i].getTotalSpace());
 	        	map.put("rest", fs[i].getFreeSpace());
@@ -177,13 +181,19 @@ public class MockController {
 	//-------------------------------------------------------------------------------------------
 
 	//author:lvdandan-----date：20190315---for:添加数据日志json----
+    /**
+     * 数据日志
+     */
 	public String sysDataLogJson() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/sysdatalog.json");
 	}
 	//author:lvdandan-----date：20190315---for:添加数据日志json----
 
 	//--update-begin--author:wangshuai-----date：20201023---for:返回用户信息json数据----
-	@GetMapping(value = "/getUserInfo")
+    /**
+     * 用户信息
+     */
+    @GetMapping(value = "/getUserInfo")
 	public String getUserInfo(){
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/userinfo.json");
 	}

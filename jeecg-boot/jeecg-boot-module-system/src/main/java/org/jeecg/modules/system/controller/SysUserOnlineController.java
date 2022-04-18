@@ -7,13 +7,13 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.jeecg.modules.system.vo.SysUserOnlineVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,15 +39,12 @@ public class SysUserOnlineController {
 
     @Autowired
     private RedisUtil redisUtil;
-
     @Autowired
     public RedisTemplate redisTemplate;
-
     @Autowired
     public ISysUserService userService;
-
     @Autowired
-    private ISysBaseAPI sysBaseAPI;
+    private SysBaseApiImpl sysBaseApi;
 
     @Resource
     private BaseCommonService baseCommonService;
@@ -63,7 +60,7 @@ public class SysUserOnlineController {
                 SysUserOnlineVO online = new SysUserOnlineVO();
                 online.setToken(token);
                 //TODO 改成一次性查询
-                LoginUser loginUser = sysBaseAPI.getUserByName(JwtUtil.getUsername(token));
+                LoginUser loginUser = sysBaseApi.getUserByName(JwtUtil.getUsername(token));
                 if (loginUser != null) {
                     //update-begin---author:wangshuai ---date:20220104  for：[JTC-382]在线用户查询无效------------
                     //验证用户名是否与传过来的用户名相同
@@ -113,7 +110,7 @@ public class SysUserOnlineController {
             return Result.error("退出登录失败！");
         }
         String username = JwtUtil.getUsername(online.getToken());
-        LoginUser sysUser = sysBaseAPI.getUserByName(username);
+        LoginUser sysUser = sysBaseApi.getUserByName(username);
         if(sysUser!=null) {
             baseCommonService.addLog("强制: "+sysUser.getRealname()+"退出成功！", CommonConstant.LOG_TYPE_1, null,sysUser);
             log.info(" 强制  "+sysUser.getRealname()+"退出成功！ ");

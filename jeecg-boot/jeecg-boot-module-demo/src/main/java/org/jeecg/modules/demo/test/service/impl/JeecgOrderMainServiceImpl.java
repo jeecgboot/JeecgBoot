@@ -35,7 +35,7 @@ public class JeecgOrderMainServiceImpl extends ServiceImpl<JeecgOrderMainMapper,
     private JeecgOrderTicketMapper jeecgOrderTicketMapper;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveMain(JeecgOrderMain jeecgOrderMain, List<JeecgOrderCustomer> jeecgOrderCustomerList, List<JeecgOrderTicket> jeecgOrderTicketList) {
         jeecgOrderMainMapper.insert(jeecgOrderMain);
         if (jeecgOrderCustomerList != null) {
@@ -53,7 +53,7 @@ public class JeecgOrderMainServiceImpl extends ServiceImpl<JeecgOrderMainMapper,
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateMain(JeecgOrderMain jeecgOrderMain, List<JeecgOrderCustomer> jeecgOrderCustomerList, List<JeecgOrderTicket> jeecgOrderTicketList) {
         jeecgOrderMainMapper.updateById(jeecgOrderMain);
 
@@ -83,7 +83,7 @@ public class JeecgOrderMainServiceImpl extends ServiceImpl<JeecgOrderMainMapper,
      * @param jeecgOrderTicketList
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateCopyMain(JeecgOrderMain jeecgOrderMain, List<JeecgOrderCustomer> jeecgOrderCustomerList, List<JeecgOrderTicket> jeecgOrderTicketList) {
         jeecgOrderMainMapper.updateById(jeecgOrderMain);
 
@@ -142,7 +142,7 @@ public class JeecgOrderMainServiceImpl extends ServiceImpl<JeecgOrderMainMapper,
         }
     }
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void delMain(String id) {
 		jeecgOrderMainMapper.deleteById(id);
 		jeecgOrderTicketMapper.deleteTicketsByMainId(id);
@@ -150,7 +150,7 @@ public class JeecgOrderMainServiceImpl extends ServiceImpl<JeecgOrderMainMapper,
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void delBatchMain(Collection<? extends Serializable> idList) {
 		for(Serializable id:idList) {
 			jeecgOrderMainMapper.deleteById(id);

@@ -80,14 +80,16 @@ public interface ISysBaseAPI extends CommonAPI {
 
 
 
-    /** 11查询所有的父级字典，按照create_time排序 */
+    /** 11查询所有的父级字典，按照create_time排序
+     * @return List<DictModel> 字典集合
+     */
     public List<DictModel> queryAllDict();
 
     /**
      * 12查询所有分类字典
      * @return
      */
-    public List<SysCategoryModel> queryAllDSysCategory();
+    public List<SysCategoryModel> queryAllSysCategory();
 
 
     /**
@@ -132,6 +134,9 @@ public interface ISysBaseAPI extends CommonAPI {
 
     /**
      * 19分页查询用户 返回JSONObject
+     * @param userIds 多个用户id
+     * @param pageNo 当前页数
+     * @param pageSize 每页显示条数
      * @return
      */
     public JSONObject queryAllUser(String userIds, Integer pageNo, Integer pageSize);
@@ -144,7 +149,7 @@ public interface ISysBaseAPI extends CommonAPI {
 
     /**
      * 21获取所有角色 带参
-     * roleIds 默认选中角色
+     * @param roleIds 默认选中角色
      * @return
      */
     public List<ComboModel> queryAllRole(String[] roleIds );
@@ -192,7 +197,7 @@ public interface ISysBaseAPI extends CommonAPI {
 
     /**
      * 28根据id获取所有参与用户
-     * userIds
+     * @param userIds 多个用户id
      * @return
      */
     public List<LoginUser> queryAllUserByIds(String[] userIds);
@@ -207,7 +212,7 @@ public interface ISysBaseAPI extends CommonAPI {
 
     /**
      * 30根据name获取所有参与用户
-     * userNames
+     * @param userNames 多个用户账户
      * @return
      */
     List<LoginUser> queryUserByNames(String[] userNames);
@@ -236,6 +241,8 @@ public interface ISysBaseAPI extends CommonAPI {
 
     /**
      * 34通过部门id获取部门全部信息
+     * @param id 部门id
+     * @return SysDepartModel对象
      */
     SysDepartModel selectAllById(String id);
 
@@ -284,11 +291,14 @@ public interface ISysBaseAPI extends CommonAPI {
     /**
      * 41 获取公司下级部门和公司下所有用户信息
      * @param orgCode
+     * @return List<Map>
      */
     List<Map> getDeptUserByOrgCode(String orgCode);
 
     /**
      * 查询分类字典翻译
+     * @param ids 多个分类字典id
+     * @return List<String>
      */
     List<String> loadCategoryDictItem(String ids);
 
@@ -323,6 +333,7 @@ public interface ISysBaseAPI extends CommonAPI {
      *
      * @param dictCode 字典code格式：table,text,code
      * @param keyword 过滤关键字
+     * @param pageSize 分页条数
      * @return
      */
     List<DictModel> loadDictItemByKeyword(String dictCode, String keyword, Integer pageSize);

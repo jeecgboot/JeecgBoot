@@ -6,11 +6,6 @@ package org.jeecg.modules.test.constant;
 public interface CloudConstant {
 
     /**
-     * 微服务名【对应模块jeecg-boot-module-demo】
-     */
-    public final static String SERVER_NAME_JEECGDEMO = "jeecg-demo";
-
-    /**
      * MQ测试队列名字
      */
     public final static String MQ_JEECG_PLACE_ORDER = "jeecg_place_order";

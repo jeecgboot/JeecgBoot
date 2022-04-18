@@ -50,7 +50,7 @@ spring:
             instanceName: MyScheduler
             instanceId: AUTO
           jobStore:
-            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
             driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
             tablePrefix: QRTZ_
             isClustered: true
@@ -92,6 +92,9 @@ spring:
   # 设置静态文件路径，js,css等
   mvc:
     static-path-pattern: /**
+    #Spring Boot 2.6+后映射匹配的默认策略已从AntPathMatcher更改为PathPatternParser,需要手动指定为ant-path-matcher
+    pathmatch:
+      matching-strategy: ant_path_matcher
   resource:
     static-locations: classpath:/static/,classpath:/public/
   autoconfigure:
@@ -173,15 +176,13 @@ mybatis-plus:
 #jeecg专用配置
 minidao :
   base-package: org.jeecg.modules.jmreport.*
-  #DB类型（mysql | postgresql | oracle | sqlserver| other）
-  db-type: mysql
 jeecg :
   # 是否启用安全模式
   safeMode: false
   # 签名密钥串(前后端要一致，正式发布请自行修改)
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
   # 本地：local\Minio：minio\阿里云：alioss
-  uploadType: minio
+  uploadType: local
   path :
     #文件上传根目录 设置
     upload: /opt/upFiles
@@ -226,6 +227,13 @@ jeecg :
     is_verify_token: true
     #必须校验方法
     verify_methods: remove,delete,save,add,update
+    #自定义项目前缀
+    customPrePath:
+    pageSize:
+      - 10
+      - 20
+      - 30
+      - 40
   #Wps在线文档
   wps:
     domain: https://wwo.wps.cn/office/

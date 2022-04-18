@@ -6,7 +6,9 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 存放token到上下文供队列调用feign使用
+ * 存放临时令牌Token到线程上下文
+ *
+ * 供队列、定时任务 feign调用使用（解决无会话Token问题）
  * @author zyf
  */
 public class TransmitUserTokenFilter implements Filter {
@@ -30,10 +32,10 @@ public class TransmitUserTokenFilter implements Filter {
         String token = request.getHeader(X_ACCESS_TOKEN);
         if (token!=null) {
             try {
-                //将token放入上下文中
+                //将Token放入当前线程上下文中
                 UserTokenContext.setToken(token);
             } catch (Exception e) {
-
+                //e.printStackTrace();
             }
         }
     }

@@ -26,10 +26,13 @@ package org.jeecg.common.constant;
 public interface ServiceNameConstants {
 
 	/**
-	 * 系统管理 admin
+	 * 微服务名：系统管理模块
 	 */
-	String SYSTEM_SERVICE = "jeecg-system";
-	String SYSTEM_ONLINE = "jeecg-online";
+	String SERVICE_SYSTEM = "jeecg-system";
+	/**
+	 * 微服务名：Demo模块
+	 */
+	String SERVICE_DEMO = "jeecg-demo";
 
 	/**
 	 * gateway通过header传递根路径 basePath

@@ -2,10 +2,17 @@ package org.jeecg.common.util;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * @Description: 短信枚举类
+ * @author: jeecg-boot
+ */
 public enum DySmsEnum {
-	
+
+    /**登录短信模板编码*/
 	LOGIN_TEMPLATE_CODE("SMS_175435174","JEECG","code"),
+    /**忘记密码短信模板编码*/
 	FORGET_PASSWORD_TEMPLATE_CODE("SMS_175435174","JEECG","code"),
+    /**注册账号短信模板编码*/
 	REGISTER_TEMPLATE_CODE("SMS_175430166","JEECG","code"),
 	/**会议通知*/
 	MEET_NOTICE_TEMPLATE_CODE("SMS_201480469","H5活动之家","username,title,minute,time"),

@@ -6,16 +6,22 @@ package org.jeecg.common.aspect;
  * @Description: 请求URL与菜单路由URL转换规则（方便于采用菜单路由URL来配置数据权限规则）
  */
 public enum UrlMatchEnum {
+    /**求URL与菜单路由URL转换规则 /online/cgform/api/getData/ */
     CGFORM_DATA("/online/cgform/api/getData/", "/online/cgformList/"),
+    /**求URL与菜单路由URL转换规则 /online/cgform/api/exportXls/ */
     CGFORM_EXCEL_DATA("/online/cgform/api/exportXls/", "/online/cgformList/"),
+    /**求URL与菜单路由URL转换规则 /online/cgform/api/getTreeData/ */
     CGFORM_TREE_DATA("/online/cgform/api/getTreeData/", "/online/cgformList/"),
+    /**求URL与菜单路由URL转换规则 /online/cgreport/api/getColumnsAndData/ */
     CGREPORT_DATA("/online/cgreport/api/getColumnsAndData/", "/online/cgreport/"),
+    /**求URL与菜单路由URL转换规则 /online/cgreport/api/exportXls/ */
     CGREPORT_EXCEL_DATA("/online/cgreport/api/exportXls/", "/online/cgreport/"),
+    /**求URL与菜单路由URL转换规则 /online/cgreport/api/exportManySheetXls/ */
     CGREPORT_EXCEL_DATA2("/online/cgreport/api/exportManySheetXls/", "/online/cgreport/");
 
-    UrlMatchEnum(String url, String match_url) {
+    UrlMatchEnum(String url, String matchUrl) {
         this.url = url;
-        this.match_url = match_url;
+        this.matchUrl = matchUrl;
     }
 
     /**
@@ -25,7 +31,7 @@ public enum UrlMatchEnum {
     /**
      * 菜单路由 URL前缀 (对应菜单路径)
      */
-    private String match_url;
+    private String matchUrl;
 
     /**
      * 根据req url 获取到菜单配置路径（前端页面路由URL）
@@ -41,14 +47,14 @@ public enum UrlMatchEnum {
             //如果遍历获取的type和参数type一致
             if (url.indexOf(lr.url) != -1) {
                 //返回type对象的desc
-                return url.replace(lr.url, lr.match_url);
+                return url.replace(lr.url, lr.matchUrl);
             }
         }
         return null;
     }
 
-    public String getMatch_url() {
-        return match_url;
+    public String getMatchUrl() {
+        return matchUrl;
     }
     //    public static void main(String[] args) {
 //        /**

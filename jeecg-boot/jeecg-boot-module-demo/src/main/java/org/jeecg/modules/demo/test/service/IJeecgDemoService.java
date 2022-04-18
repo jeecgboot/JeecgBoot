@@ -12,9 +12,17 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  * @Version: V1.0
  */
 public interface IJeecgDemoService extends JeecgService<JeecgDemo> {
-	
+
+    /**
+     * 测试事务
+     */
 	public void testTran();
-	
+
+    /**
+     * 通过id过去demo数据，先读缓存，在读数据库
+     * @param id 数据库id
+     * @return demo对象
+     */
 	public JeecgDemo getByIdCacheable(String id);
 	
 	/**

@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.jeecg.common.constant.SymbolConstant;
 import org.springframework.util.StringUtils;
 
 /**
@@ -63,14 +64,20 @@ public class DateUtils extends PropertyEditorSupport {
         }
     };
 
-    // 以毫秒表示的时间
+    /**
+     * 以毫秒表示的时间
+     */
     private static final long DAY_IN_MILLIS = 24 * 3600 * 1000;
     private static final long HOUR_IN_MILLIS = 3600 * 1000;
     private static final long MINUTE_IN_MILLIS = 60 * 1000;
     private static final long SECOND_IN_MILLIS = 1000;
 
-    // 指定模式的时间格式
-    private static SimpleDateFormat getSDFormat(String pattern) {
+    /**
+     * 指定模式的时间格式
+     * @param pattern
+     * @return
+     */
+    private static SimpleDateFormat getSdFormat(String pattern) {
         return new SimpleDateFormat(pattern);
     }
 
@@ -169,15 +176,17 @@ public class DateUtils extends PropertyEditorSupport {
     /**
      * 日期转换为字符串
      *
-     * @param date_sdf 日期格式
+     * @param dateSdf 日期格式
      * @return 字符串
      */
-    public static String date2Str(SimpleDateFormat date_sdf) {
-        Date date = getDate();
-        if (null == date) {
-            return null;
+    public static String date2Str(SimpleDateFormat dateSdf) {
+        synchronized (dateSdf) {
+            Date date = getDate();
+            if (null == date) {
+                return null;
+            }
+            return dateSdf.format(date);
         }
-        return date_sdf.format(date);
     }
 
     /**
@@ -189,28 +198,30 @@ public class DateUtils extends PropertyEditorSupport {
      */
     public static String dateformat(String date, String format) {
         SimpleDateFormat sformat = new SimpleDateFormat(format);
-        Date _date = null;
+        Date nowDate = null;
         try {
-            _date = sformat.parse(date);
+            nowDate = sformat.parse(date);
         } catch (ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return sformat.format(_date);
+        return sformat.format(nowDate);
     }
 
     /**
      * 日期转换为字符串
      *
      * @param date     日期
-     * @param date_sdf 日期格式
+     * @param dateSdf 日期格式
      * @return 字符串
      */
-    public static String date2Str(Date date, SimpleDateFormat date_sdf) {
-        if (null == date) {
-            return null;
+    public static String date2Str(Date date, SimpleDateFormat dateSdf) {
+        synchronized (dateSdf) {
+            if (null == date) {
+                return null;
+            }
+            return dateSdf.format(date);
         }
-        return date_sdf.format(date);
     }
 
     /**
@@ -367,7 +378,9 @@ public class DateUtils extends PropertyEditorSupport {
      * 获取时间字符串
      */
     public static String getDataString(SimpleDateFormat formatstr) {
-        return formatstr.format(getCalendar().getTime());
+        synchronized (formatstr) {
+            return formatstr.format(getCalendar().getTime());
+        }
     }
 
     /**
@@ -407,7 +420,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 默认日期按指定格式显示
      */
     public static String formatDate(String pattern) {
-        return getSDFormat(pattern).format(getCalendar().getTime());
+        return getSdFormat(pattern).format(getCalendar().getTime());
     }
 
     /**
@@ -418,7 +431,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 指定日期按指定格式显示
      */
     public static String formatDate(Calendar cal, String pattern) {
-        return getSDFormat(pattern).format(cal.getTime());
+        return getSdFormat(pattern).format(cal.getTime());
     }
 
     /**
@@ -429,7 +442,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 指定日期按指定格式显示
      */
     public static String formatDate(Date date, String pattern) {
-        return getSDFormat(pattern).format(date);
+        return getSdFormat(pattern).format(date);
     }
 
     // ////////////////////////////////////////////////////////////////////////////
@@ -536,7 +549,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @throws ParseException
      */
     public static Date parseDate(String src, String pattern) throws ParseException {
-        return getSDFormat(pattern).parse(src);
+        return getSdFormat(pattern).parse(src);
 
     }
 
@@ -592,24 +605,29 @@ public class DateUtils extends PropertyEditorSupport {
     public static int dateDiff(char flag, Calendar calSrc, Calendar calDes) {
 
         long millisDiff = getMillis(calSrc) - getMillis(calDes);
+        char year = 'y';
+        char day = 'd';
+        char hour = 'h';
+        char minute = 'm';
+        char second = 's';
 
-        if (flag == 'y') {
+        if (flag == year) {
             return (calSrc.get(Calendar.YEAR) - calDes.get(Calendar.YEAR));
         }
 
-        if (flag == 'd') {
+        if (flag == day) {
             return (int) (millisDiff / DAY_IN_MILLIS);
         }
 
-        if (flag == 'h') {
+        if (flag == hour) {
             return (int) (millisDiff / HOUR_IN_MILLIS);
         }
 
-        if (flag == 'm') {
+        if (flag == minute) {
             return (int) (millisDiff / MINUTE_IN_MILLIS);
         }
 
-        if (flag == 's') {
+        if (flag == second) {
             return (int) (millisDiff / SECOND_IN_MILLIS);
         }
 
@@ -628,9 +646,11 @@ public class DateUtils extends PropertyEditorSupport {
     public void setAsText(String text) throws IllegalArgumentException {
         if (StringUtils.hasText(text)) {
             try {
-                if (text.indexOf(":") == -1 && text.length() == 10) {
+                int length10 = 10;
+                int length19 = 19;
+                if (text.indexOf(SymbolConstant.COLON) == -1 && text.length() == length10) {
                     setValue(DateUtils.date_sdf.get().parse(text));
-                } else if (text.indexOf(":") > 0 && text.length() == 19) {
+                } else if (text.indexOf(SymbolConstant.COLON) > 0 && text.length() == length19) {
                     setValue(DateUtils.datetimeFormat.get().parse(text));
                 } else {
                     throw new IllegalArgumentException("Could not parse date, date format is error ");

@@ -8,6 +8,7 @@ import org.springframework.web.client.RestTemplate;
 
 /**
 * 优雅的http请求方式RestTemplate
+* @author: jeecg-boot
 * @Return:
 */
 @Configuration
@@ -21,8 +22,10 @@ public class RestTemplateConfig {
     @Bean
     public ClientHttpRequestFactory simpleClientHttpRequestFactory() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setReadTimeout(5000);//ms
-        factory.setConnectTimeout(15000);//ms
+        //ms毫秒
+        factory.setReadTimeout(5000);
+        //ms毫秒
+        factory.setConnectTimeout(15000);
         return factory;
     }
 }

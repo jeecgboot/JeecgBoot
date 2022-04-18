@@ -241,10 +241,10 @@
           <div v-html="text"></div>
         </template>
 
-        <template slot="imgSlot" slot-scope="text">
+        <template slot="imgSlot" slot-scope="text,record">
           <div style="font-size: 12px;font-style: italic;">
             <span v-if="!text">无图片</span>
-            <img v-else :src="getImgView(text)" alt="" style="max-width:80px;height:25px;"/>
+            <img v-else :src="getImgView(text)" :preview="record.id" alt="" style="max-width:80px;height:25px;"/>
           </div>
         </template>
 

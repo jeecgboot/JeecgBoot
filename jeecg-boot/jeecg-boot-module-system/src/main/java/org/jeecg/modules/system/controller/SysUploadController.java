@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * minio文件上传示例
+ * @author: jeecg-boot
  */
 @Slf4j
 @RestController
@@ -45,8 +46,10 @@ public class SysUploadController {
             bizPath = "";
         }
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-        MultipartFile file = multipartRequest.getFile("file");// 获取上传文件对象
-        String orgName = file.getOriginalFilename();// 获取文件名
+        // 获取上传文件对象
+        MultipartFile file = multipartRequest.getFile("file");
+        // 获取文件名
+        String orgName = file.getOriginalFilename();
         orgName = CommonUtils.getFileName(orgName);
         String file_url =  MinioUtil.upload(file,bizPath);
         if(oConvertUtils.isEmpty(file_url)){

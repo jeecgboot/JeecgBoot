@@ -1,5 +1,9 @@
 package org.jeecg.common.exception;
 
+/**
+ * @Description: jeecg-boot自定义401异常
+ * @author: jeecg-boot
+ */
 public class JeecgBoot401Exception extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 

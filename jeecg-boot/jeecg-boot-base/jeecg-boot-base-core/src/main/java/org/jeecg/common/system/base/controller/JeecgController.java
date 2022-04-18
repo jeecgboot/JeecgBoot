@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class JeecgController<T, S extends IService<T>> {
-    //issues/2933 JeecgController注入service时改用protected修饰，能避免重复引用service
+    /**issues/2933 JeecgController注入service时改用protected修饰，能避免重复引用service*/
     @Autowired
     protected S service;
 
@@ -68,7 +68,8 @@ public class JeecgController<T, S extends IService<T>> {
 
         // Step.3 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        mv.addObject(NormalExcelConstants.FILE_NAME, title); //此处设置的filename无效 ,前端会重更新设置一下
+        //此处设置的filename无效 ,前端会重更新设置一下
+        mv.addObject(NormalExcelConstants.FILE_NAME, title);
         mv.addObject(NormalExcelConstants.CLASS, clazz);
         //update-begin--Author:liusq  Date:20210126 for：图片导出报错，ImageBasePath未设置--------------------
         ExportParams  exportParams=new ExportParams(title + "报表", "导出人:" + sysUser.getRealname(), title);
@@ -111,18 +112,22 @@ public class JeecgController<T, S extends IService<T>> {
             } else {
                 exportList = records;
             }
-            Map<String, Object> map = new HashMap<String, Object>();
+            Map<String, Object> map = new HashMap<>(5);
             ExportParams  exportParams=new ExportParams(title + "报表", "导出人:" + sysUser.getRealname(), title+i,upLoadPath);
             exportParams.setType(ExcelType.XSSF);
-            //map.put("title",exportParams);//表格Title
-            map.put(NormalExcelConstants.PARAMS,exportParams);//表格Title
-            map.put(NormalExcelConstants.CLASS,clazz);//表格对应实体
-            map.put(NormalExcelConstants.DATA_LIST, exportList);//数据集合
+            //map.put("title",exportParams);
+            //表格Title
+            map.put(NormalExcelConstants.PARAMS,exportParams);
+            //表格对应实体
+            map.put(NormalExcelConstants.CLASS,clazz);
+            //数据集合
+            map.put(NormalExcelConstants.DATA_LIST, exportList);
             listMap.add(map);
         }
         // Step.4 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        mv.addObject(NormalExcelConstants.FILE_NAME, title); //此处设置的filename无效 ,前端会重更新设置一下
+        //此处设置的filename无效 ,前端会重更新设置一下
+        mv.addObject(NormalExcelConstants.FILE_NAME, title);
         mv.addObject(NormalExcelConstants.MAP_LIST, listMap);
         return mv;
     }
@@ -164,7 +169,8 @@ public class JeecgController<T, S extends IService<T>> {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
         for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-            MultipartFile file = entity.getValue();// 获取上传文件对象
+            // 获取上传文件对象
+            MultipartFile file = entity.getValue();
             ImportParams params = new ImportParams();
             params.setTitleRows(2);
             params.setHeadRows(1);

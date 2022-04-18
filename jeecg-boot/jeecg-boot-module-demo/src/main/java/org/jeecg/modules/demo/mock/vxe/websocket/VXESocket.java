@@ -3,7 +3,7 @@ package org.jeecg.modules.demo.mock.vxe.websocket;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.jeecg.common.constant.VXESocketConst;
+import org.jeecg.common.constant.VxeSocketConst;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.OnClose;
@@ -18,11 +18,12 @@ import java.util.Map;
 
 /**
  * vxe WebSocket，用于实现实时无痕刷新的功能
+ * @author: jeecg-boot
  */
 @Slf4j
 @Component
 @ServerEndpoint("/vxeSocket/{userId}/{pageId}")
-public class VXESocket {
+public class VxeSocket {
 
     /**
      * 当前 session
@@ -46,18 +47,18 @@ public class VXESocket {
      * 因为一个用户可能打开多个页面，多个页面就会有多个连接；
      * key是userId，value是Map对象；子Map的key是pageId，value是VXESocket对象
      */
-    private static Map<String, Map<String, VXESocket>> userPool = new HashMap<>();
+    private static Map<String, Map<String, VxeSocket>> userPool = new HashMap<>();
     /**
      * 连接池，包含所有WebSocket连接；
      * key是socketId，value是VXESocket对象
      */
-    private static Map<String, VXESocket> socketPool = new HashMap<>();
+    private static Map<String, VxeSocket> socketPool = new HashMap<>();
 
     /**
      * 获取某个用户所有的页面
      */
-    public static Map<String, VXESocket> getUserPool(String userId) {
-        return userPool.computeIfAbsent(userId, k -> new HashMap<>());
+    public static Map<String, VxeSocket> getUserPool(String userId) {
+        return userPool.computeIfAbsent(userId, k -> new HashMap<>(5));
     }
 
     /**
@@ -80,8 +81,8 @@ public class VXESocket {
      */
     public static String packageMessage(String type, Object data) {
         JSONObject message = new JSONObject();
-        message.put(VXESocketConst.TYPE, type);
-        message.put(VXESocketConst.DATA, data);
+        message.put(VxeSocketConst.TYPE, type);
+        message.put(VxeSocketConst.DATA, data);
         return message.toJSONString();
     }
 
@@ -92,9 +93,9 @@ public class VXESocket {
      * @param message 消息内容
      */
     public static void sendMessageTo(String userId, String message) {
-        Collection<VXESocket> values = getUserPool(userId).values();
+        Collection<VxeSocket> values = getUserPool(userId).values();
         if (values.size() > 0) {
-            for (VXESocket socketItem : values) {
+            for (VxeSocket socketItem : values) {
                 socketItem.sendMessage(message);
             }
         } else {
@@ -109,7 +110,7 @@ public class VXESocket {
      * @param message 消息内容
      */
     public static void sendMessageTo(String userId, String pageId, String message) {
-        VXESocket socketItem = getUserPool(userId).get(pageId);
+        VxeSocket socketItem = getUserPool(userId).get(pageId);
         if (socketItem != null) {
             socketItem.sendMessage(message);
         } else {
@@ -125,7 +126,7 @@ public class VXESocket {
      */
     public static void sendMessageTo(String[] userIds, String message) {
         for (String userId : userIds) {
-            VXESocket.sendMessageTo(userId, message);
+            VxeSocket.sendMessageTo(userId, message);
         }
     }
 
@@ -135,7 +136,7 @@ public class VXESocket {
      * @param message 消息内容
      */
     public static void sendMessageToAll(String message) {
-        for (VXESocket socketItem : socketPool.values()) {
+        for (VxeSocket socketItem : socketPool.values()) {
             socketItem.sendMessage(message);
         }
     }
@@ -186,14 +187,14 @@ public class VXESocket {
             log.warn("【vxeSocket】收到不合法的消息:" + message);
             return;
         }
-        String type = json.getString(VXESocketConst.TYPE);
+        String type = json.getString(VxeSocketConst.TYPE);
         switch (type) {
             // 心跳检测
-            case VXESocketConst.TYPE_HB:
-                this.sendMessage(VXESocket.packageMessage(type, true));
+            case VxeSocketConst.TYPE_HB:
+                this.sendMessage(VxeSocket.packageMessage(type, true));
                 break;
             // 更新form数据
-            case VXESocketConst.TYPE_UVT:
+            case VxeSocketConst.TYPE_UVT:
                 this.handleUpdateForm(json);
                 break;
             default:
@@ -209,8 +210,8 @@ public class VXESocket {
      */
     private void handleUpdateForm(JSONObject json) {
         // 将事件转发给所有人
-        JSONObject data = json.getJSONObject(VXESocketConst.DATA);
-        VXESocket.sendMessageToAll(VXESocket.packageMessage(VXESocketConst.TYPE_UVT, data));
+        JSONObject data = json.getJSONObject(VxeSocketConst.DATA);
+        VxeSocket.sendMessageToAll(VxeSocket.packageMessage(VxeSocketConst.TYPE_UVT, data));
     }
 
 }

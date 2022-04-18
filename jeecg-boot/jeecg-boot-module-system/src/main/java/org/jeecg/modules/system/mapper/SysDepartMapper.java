@@ -21,6 +21,8 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	
 	/**
 	 * 根据用户ID查询部门集合
+     * @param userId 用户id
+     * @return List<SysDepart>
 	 */
 	public List<SysDepart> queryUserDeparts(@Param("userId") String userId);
 
@@ -32,9 +34,19 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 */
 	public List<SysDepart> queryDepartsByUsername(@Param("username") String username);
 
+    /**
+     * 通过部门编码获取部门id
+     * @param orgCode 部门编码
+     * @return String
+     */
 	@Select("select id from sys_depart where org_code=#{orgCode}")
 	public String queryDepartIdByOrgCode(@Param("orgCode") String orgCode);
 
+    /**
+     * 通过部门id 查询部门id,父id
+     * @param departId 部门id
+     * @return
+     */
 	@Select("select id,parent_id from sys_depart where id=#{departId}")
 	public SysDepart getParentDepartId(@Param("departId") String departId);
 
@@ -52,6 +64,11 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 */
 	List<String> getSubDepIdsByOrgCodes(@org.apache.ibatis.annotations.Param("orgCodes") String[] orgCodes);
 
+    /**
+     * 根据parent_id查询下级部门
+     * @param parentId 父id
+     * @return List<SysDepart>
+     */
     List<SysDepart> queryTreeListByPid(@Param("parentId") String parentId);
 	/**
 	 * 根据id下级部门数量

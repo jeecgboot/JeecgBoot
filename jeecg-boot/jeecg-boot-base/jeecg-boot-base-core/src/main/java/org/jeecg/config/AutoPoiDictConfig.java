@@ -32,7 +32,7 @@ public class AutoPoiDictConfig implements AutoPoiDictServiceI {
 
 	@Lazy
 	@Resource
-	private CommonAPI commonAPI;
+	private CommonAPI commonApi;
 
 	/**
 	 * 通过字典查询easypoi，所需字典文本
@@ -47,15 +47,17 @@ public class AutoPoiDictConfig implements AutoPoiDictServiceI {
 		List<DictModel> dictList = null;
 		// step.1 如果没有字典表则使用系统字典表
 		if (oConvertUtils.isEmpty(dicTable)) {
-			dictList = commonAPI.queryDictItemsByCode(dicCode);
+			dictList = commonApi.queryDictItemsByCode(dicCode);
 		} else {
 			try {
 				dicText = oConvertUtils.getString(dicText, dicCode);
-				dictList = commonAPI.queryTableDictItemsByCode(dicTable, dicText, dicCode);
+				dictList = commonApi.queryTableDictItemsByCode(dicTable, dicText, dicCode);
 			} catch (Exception e) {
 				log.error(e.getMessage(),e);
 			}
 		}
+
+
 		for (DictModel t : dictList) {
 			if(t!=null){
 				//update-begin---author:scott   Date:20211220  for：[issues/I4MBB3]@Excel dicText字段的值有下划线时，导入功能不能正确解析---

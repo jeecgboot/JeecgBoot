@@ -17,16 +17,25 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 
-
+/**
+ * RabbitMqClient发送消息
+ */
 @RestController
 @RequestMapping("/sys/test")
-@Api(tags = "【微服务】单元测试")
+@Api(tags = "【微服务】MQ单元测试")
 public class JeecgMqTestController {
 
     @Autowired
     private RabbitMqClient rabbitMqClient;
 
 
+    /**
+     * 测试方法：快速点击发送MQ消息
+     *  观察三个接受者如何分配处理消息：HelloReceiver1、HelloReceiver2、HelloReceiver3，会均衡分配
+     *
+     * @param req
+     * @return
+     */
     @GetMapping(value = "/rabbitmq")
     @ApiOperation(value = "测试rabbitmq", notes = "测试rabbitmq")
     public Result<?> rabbitMqClientTest(HttpServletRequest req) {

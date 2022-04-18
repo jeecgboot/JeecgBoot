@@ -15,6 +15,10 @@ import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure;
 import com.alibaba.druid.spring.boot.autoconfigure.properties.DruidStatProperties;
 import com.alibaba.druid.util.Utils;
 
+/**
+ * @Description: DruidConfig配置类
+ * @author: jeecg-boot
+ */
 @Configuration
 @AutoConfigureAfter(DruidDataSourceAutoConfigure.class)
 public class DruidConfig {
@@ -67,8 +71,8 @@ public class DruidConfig {
 
         private final String newJs;
 
-        public RemoveAdFilter(String newJS) {
-            this.newJs = newJS;
+        public RemoveAdFilter(String newJs) {
+            this.newJs = newJs;
         }
 
         @Override

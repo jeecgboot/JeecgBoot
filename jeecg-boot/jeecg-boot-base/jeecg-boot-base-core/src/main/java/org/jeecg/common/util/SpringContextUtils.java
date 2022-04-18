@@ -11,6 +11,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+/**
+ * @Description: spring上下文工具类
+ * @author: jeecg-boot
+ */
 @Component
 public class SpringContextUtils implements ApplicationContextAware {
 

@@ -27,14 +27,26 @@ import java.util.Map;
 public interface SysDictMapper extends BaseMapper<SysDict> {
 	
 	/**
-	  *  重复检查SQL
+	 * 重复检查SQL
+     * @param duplicateCheckVo
 	 * @return
 	 */
 	@Deprecated
 	public Long duplicateCheckCountSql(DuplicateCheckVo duplicateCheckVo);
+
+    /**
+     * 重复校验 sql语句
+     * @param duplicateCheckVo
+     * @return
+     */
 	@Deprecated
 	public Long duplicateCheckCountSqlNoDataId(DuplicateCheckVo duplicateCheckVo);
-	
+
+    /**
+     * 通过字典code获取字典数据
+     * @param code 字典code
+     * @return  List<DictModel>
+     */
 	public List<DictModel> queryDictItemsByCode(@Param("code") String code);
 
 	/**
@@ -53,16 +65,44 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 */
 	public List<DictModelMany> queryDictItemsByCodeList(@Param("dictCodeList") List<String> dictCodeList);
 
+    /**
+     * 通过查询指定table的 text code 获取字典
+     * @param table
+     * @param text
+     * @param code
+     * @return List<DictModel>
+     */
 	@Deprecated
 	public List<DictModel> queryTableDictItemsByCode(@Param("table") String table,@Param("text") String text,@Param("code") String code);
 
+    /**
+     * 通过查询指定table的 text code 获取字典（指定查询条件）
+     * @param table
+     * @param text
+     * @param code
+     * @param filterSql
+     * @return List<DictModel>
+     */
 	@Deprecated
 	public List<DictModel> queryTableDictItemsByCodeAndFilter(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("filterSql") String filterSql);
 
+    /**
+     * 通过查询指定table的 text code 获取字典
+     * @param table
+     * @param key
+     * @param value
+     * @return List<Map<String,String>>
+     */
 	@Deprecated
 	@Select("select ${key} as \"label\",${value} as \"value\" from ${table}")
 	public List<Map<String,String>> getDictByTableNgAlain(@Param("table") String table, @Param("key") String key, @Param("value") String value);
 
+    /**
+     * 通过字典code获取字典数据
+     * @param code
+     * @param key
+     * @return
+     */
 	public String queryDictTextByKey(@Param("code") String code,@Param("key") String key);
 
 	/**
@@ -73,6 +113,14 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 */
 	List<DictModelMany> queryManyDictByKeys(@Param("dictCodeList") List<String> dictCodeList, @Param("keys") List<String> keys);
 
+    /**
+     * 通过查询指定table的 text code key 获取字典值
+     * @param table
+     * @param text
+     * @param code
+     * @param key
+     * @return String
+     */
 	@Deprecated
 	public String queryTableDictTextByKey(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("key") String key);
 
@@ -88,6 +136,14 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	@Deprecated
 	List<DictModel> queryTableDictTextByKeys(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("keys") List<String> keys);
 
+    /**
+     * 通过查询指定table的 text code key 获取字典值，包含value
+     * @param table
+     * @param text
+     * @param code
+     * @param keyArray
+     * @return List<DictModel>
+     */
 	@Deprecated
 	public List<DictModel> queryTableDictByKeys(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("keyArray") String[] keyArray);
 
@@ -133,6 +189,8 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @param code
 	 * @param pid
 	 * @param hasChildField
+     * @param query
+     * @param pidField
 	 * @return
 	 */
 	@Deprecated

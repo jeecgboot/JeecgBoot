@@ -16,6 +16,10 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
+/**
+ * @Description: CASServiceUtil
+ * @author: jeecg-boot
+ */
 public class CASServiceUtil {
 	
 	public static void main(String[] args) {

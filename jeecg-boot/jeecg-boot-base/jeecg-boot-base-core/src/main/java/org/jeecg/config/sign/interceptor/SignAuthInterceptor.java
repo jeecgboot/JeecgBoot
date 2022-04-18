@@ -38,18 +38,25 @@ public class SignAuthInterceptor implements HandlerInterceptor {
         SortedMap<String, String> allParams = HttpUtils.getAllParams(requestWrapper);
         //对参数进行签名验证
         String headerSign = request.getHeader(CommonConstant.X_SIGN);
-        String timesTamp = request.getHeader(CommonConstant.X_TIMESTAMP);
+        String xTimestamp = request.getHeader(CommonConstant.X_TIMESTAMP);
+        //客户端时间
+        Long clientTimestamp = Long.parseLong(xTimestamp);
 
-        //1.校验时间有消息
-        try {
-            DateUtils.parseDate(timesTamp, "yyyyMMddHHmmss");
-        } catch (Exception e) {
-            throw new IllegalArgumentException("签名验证失败:X-TIMESTAMP格式必须为:yyyyMMddHHmmss");
-        }
-        Long clientTimestamp = Long.parseLong(timesTamp);
-        //判断时间戳 timestamp=201808091113
-        if ((DateUtils.getCurrentTimestamp() - clientTimestamp) > MAX_EXPIRE) {
-            throw new IllegalArgumentException("签名验证失败:X-TIMESTAMP已过期");
+        int length = 14;
+        int length1000 = 1000;
+        //1.校验签名时间（兼容X_TIMESTAMP的新老格式）
+        if (xTimestamp.length() == length) {
+            //a. X_TIMESTAMP格式是 yyyyMMddHHmmss (例子：20220308152143)
+            if ((DateUtils.getCurrentTimestamp() - clientTimestamp) > MAX_EXPIRE) {
+                log.error("签名验证失败:X-TIMESTAMP已过期，注意系统时间和服务器时间是否有误差！");
+                throw new IllegalArgumentException("签名验证失败:X-TIMESTAMP已过期");
+            }
+        } else {
+            //b. X_TIMESTAMP格式是 时间戳 (例子：1646552406000)
+            if ((System.currentTimeMillis() - clientTimestamp) > (MAX_EXPIRE * length1000)) {
+                log.error("签名验证失败:X-TIMESTAMP已过期，注意系统时间和服务器时间是否有误差！");
+                throw new IllegalArgumentException("签名验证失败:X-TIMESTAMP已过期");
+            }
         }
 
         //2.校验签名

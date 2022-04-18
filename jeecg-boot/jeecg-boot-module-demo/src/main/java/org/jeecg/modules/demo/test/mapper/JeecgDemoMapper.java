@@ -17,6 +17,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
  */
 public interface JeecgDemoMapper extends BaseMapper<JeecgDemo> {
 
+    /**
+     * 根据姓名查询demo列表数据
+     * @param name 姓名
+     * @return demo集合
+     */
 	public List<JeecgDemo> getDemoByName(@Param("name") String name);
 	
 	/**

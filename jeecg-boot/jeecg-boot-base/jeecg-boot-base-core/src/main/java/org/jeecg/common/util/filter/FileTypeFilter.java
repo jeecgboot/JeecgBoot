@@ -16,15 +16,15 @@ import java.util.regex.Pattern;
  */
 public class FileTypeFilter {
 
-    //文件后缀
+    /**文件后缀*/
     private static String[] forbidType = {"jsp","php"};
 
-    // 初始化文件头类型，不够的自行补充
-    final static HashMap<String, String> fileTypeMap = new HashMap<>();
+    /**初始化文件头类型，不够的自行补充*/
+    final static HashMap<String, String> FILE_TYPE_MAP = new HashMap<>();
 
     static {
-        fileTypeMap.put("3c25402070616765206c", "jsp");
-        fileTypeMap.put("3c3f7068700a0a2f2a2a0a202a205048", "php");
+        FILE_TYPE_MAP.put("3c25402070616765206c", "jsp");
+        FILE_TYPE_MAP.put("3c3f7068700a0a2f2a2a0a202a205048", "php");
        /* fileTypeMap.put("ffd8ffe000104a464946", "jpg");
         fileTypeMap.put("89504e470d0a1a0a0000", "png");
         fileTypeMap.put("47494638396126026f01", "gif");
@@ -120,13 +120,13 @@ public class FileTypeFilter {
             byte[] b = new byte[10];
             is.read(b, 0, b.length);
             String fileTypeHex = String.valueOf(bytesToHexString(b));
-            Iterator<String> keyIter = fileTypeMap.keySet().iterator();
+            Iterator<String> keyIter = FILE_TYPE_MAP.keySet().iterator();
             while (keyIter.hasNext()) {
                 String key = keyIter.next();
                 // 验证前5个字符比较
                 if (key.toLowerCase().startsWith(fileTypeHex.toLowerCase().substring(0, 5))
                         || fileTypeHex.toLowerCase().substring(0, 5).startsWith(key.toLowerCase())) {
-                    fileExtendName = fileTypeMap.get(key);
+                    fileExtendName = FILE_TYPE_MAP.get(key);
                     break;
                 }
             }

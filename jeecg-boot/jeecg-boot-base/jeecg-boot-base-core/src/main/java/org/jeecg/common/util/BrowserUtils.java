@@ -13,9 +13,13 @@ import javax.servlet.http.HttpServletRequest;
  * 
  */
 public class BrowserUtils {
-	
-	// 判断是否是IE
-	public static boolean isIE(HttpServletRequest request) {
+
+    /**
+     * 判断是否是IE
+     * @param request
+     * @return
+     */
+	public static boolean isIe(HttpServletRequest request) {
 		return (request.getHeader("USER-AGENT").toLowerCase().indexOf("msie") > 0 || request
 				.getHeader("USER-AGENT").toLowerCase().indexOf("rv:11.0") > 0) ? true
 				: false;
@@ -27,7 +31,7 @@ public class BrowserUtils {
 	 * @param request
 	 * @return
 	 */
-	public static Double getIEversion(HttpServletRequest request) {
+	public static Double getIeVersion(HttpServletRequest request) {
 		Double version = 0.0;
 		if (getBrowserType(request, IE11)) {
 			version = 11.0;
@@ -83,7 +87,7 @@ public class BrowserUtils {
 		if (getBrowserType(request, OPERA)) {
 			browserType = BrowserType.Opera;
 		}
-		if (getBrowserType(request, "Camino")) {
+		if (getBrowserType(request, CAMINO)) {
 			browserType = BrowserType.Camino;
 		}
 		return browserType;
@@ -110,6 +114,7 @@ public class BrowserUtils {
 	private final static String CHROME = "Chrome";
 	private final static String SAFARI = "Safari";
 	private final static String OTHER = "其它";
+	private final static String CAMINO = "Camino";
 
 	public static String checkBrowse(HttpServletRequest request) {
 		String userAgent = request.getHeader("USER-AGENT");
@@ -199,7 +204,8 @@ public class BrowserUtils {
     /** 判断请求是否来自移动端 */
     public static boolean isMobile(HttpServletRequest request) {
         String ua = request.getHeader("User-Agent").toLowerCase();
-        Pattern pattern = Pattern.compile("(phone|pad|pod|iphone|ipod|ios|ipad|android|mobile|blackberry|iemobile|mqqbrowser|juc|fennec|wosbrowser|browserng|webos|symbian|windows phone)");
+        String type = "(phone|pad|pod|iphone|ipod|ios|ipad|android|mobile|blackberry|iemobile|mqqbrowser|juc|fennec|wosbrowser|browserng|webos|symbian|windows phone)";
+        Pattern pattern = Pattern.compile(type);
         return pattern.matcher(ua).find();
     }
 

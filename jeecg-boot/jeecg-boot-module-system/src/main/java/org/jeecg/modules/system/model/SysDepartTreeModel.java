@@ -75,6 +75,11 @@ public class SysDepartTreeModel implements Serializable{
 
     private Date updateTime;
 
+    //update-begin---author:wangshuai ---date:20200308  for：[JTC-119]在部门管理菜单下设置部门负责人，新增字段部门负责人ids
+    /**部门负责人ids*/
+    private String directorUserIds;
+    //update-end---author:wangshuai ---date:20200308  for：[JTC-119]在部门管理菜单下设置部门负责人，新增字段部门负责人ids
+    
     private List<SysDepartTreeModel> children = new ArrayList<>();
 
 
@@ -107,6 +112,7 @@ public class SysDepartTreeModel implements Serializable{
         this.createTime = sysDepart.getCreateTime();
         this.updateBy = sysDepart.getUpdateBy();
         this.updateTime = sysDepart.getUpdateTime();
+        this.directorUserIds = sysDepart.getDirectorUserIds();
     }
 
     public boolean getIsLeaf() {
@@ -332,6 +338,14 @@ public class SysDepartTreeModel implements Serializable{
 
     public SysDepartTreeModel() { }
 
+    public String getDirectorUserIds() {
+        return directorUserIds;
+    }
+
+    public void setDirectorUserIds(String directorUserIds) {
+        this.directorUserIds = directorUserIds;
+    }
+
     /**
      * 重写equals方法
      */
@@ -365,6 +379,7 @@ public class SysDepartTreeModel implements Serializable{
                 Objects.equals(createTime, model.createTime) &&
                 Objects.equals(updateBy, model.updateBy) &&
                 Objects.equals(updateTime, model.updateTime) &&
+                Objects.equals(directorUserIds, model.directorUserIds) &&
                 Objects.equals(children, model.children);
     }
     
@@ -377,7 +392,7 @@ public class SysDepartTreeModel implements Serializable{
         return Objects.hash(id, parentId, departName, departNameEn, departNameAbbr,
         		departOrder, description, orgCategory, orgType, orgCode, mobile, fax, address, 
         		memo, status, delFlag, qywxIdentifier, createBy, createTime, updateBy, updateTime,
-        		children);
+        		children,directorUserIds);
     }
 
 }

@@ -4,13 +4,26 @@ import org.jeecg.common.util.oConvertUtils;
 
 /**
  * 发送消息类型枚举
+ * @author: jeecg-boot
  */
 public enum SendMsgTypeEnum {
 
-//推送方式：1短信 2邮件 3微信
+    /**
+     * 短信
+     */
 	SMS("1", "org.jeecg.modules.message.handle.impl.SmsSendMsgHandle"),
+    /**
+     * 邮件
+     */
 	EMAIL("2", "org.jeecg.modules.message.handle.impl.EmailSendMsgHandle"),
-	WX("3","org.jeecg.modules.message.handle.impl.WxSendMsgHandle");
+    /**
+     * 微信
+     */
+	WX("3","org.jeecg.modules.message.handle.impl.WxSendMsgHandle"),
+    /**
+     * 系统消息
+     */
+	SYSTEM_MESSAGE("4","org.jeecg.modules.message.handle.impl.SystemSendMsgHandle");
 
 	private String type;
 

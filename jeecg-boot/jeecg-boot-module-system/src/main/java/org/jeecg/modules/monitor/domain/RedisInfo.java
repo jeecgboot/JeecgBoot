@@ -3,9 +3,13 @@ package org.jeecg.modules.monitor.domain;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @Description: redis信息
+ * @author: jeecg-boot
+ */
 public class RedisInfo {
 
-	private static Map<String, String> map = new HashMap<>();
+	private static Map<String, String> map = new HashMap(5);
 
 	static {
 		map.put("redis_version", "Redis 服务器版本");

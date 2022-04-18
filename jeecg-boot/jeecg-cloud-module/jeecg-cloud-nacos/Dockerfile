@@ -10,6 +10,6 @@ WORKDIR /jeecg-cloud-nacos
 
 EXPOSE 8848
 
-ADD ./target/jeecg-cloud-nacos-3.1.0.jar ./
+ADD ./target/jeecg-cloud-nacos-3.2.0.jar ./
 
-CMD sleep 5;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-nacos-3.1.0.jar
+CMD sleep 5;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-nacos-3.2.0.jar

@@ -11,6 +11,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+/**
+ * @Description: OSS云存储实现类
+ * @author: jeecg-boot
+ */
 @Service("ossFileService")
 public class OSSFileServiceImpl extends ServiceImpl<OSSFileMapper, OSSFile> implements IOSSFileService {
 

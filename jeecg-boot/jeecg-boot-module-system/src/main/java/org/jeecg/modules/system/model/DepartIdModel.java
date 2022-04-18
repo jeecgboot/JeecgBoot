@@ -19,13 +19,19 @@ public class DepartIdModel implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    // 主键ID
+    /**
+     * 主键ID
+     */
     private String key;
 
-    // 主键ID
+    /**
+     * 主键ID
+     */
     private String value;
 
-    // 部门名称
+    /**
+     * 部门名称
+     */
     private String title;
     
     List<DepartIdModel> children = new ArrayList<>();

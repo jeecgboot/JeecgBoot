@@ -6,13 +6,13 @@ spring:
     datasource:
       ds0:
         driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/jeecg-boot?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+        url: jdbc:mysql://jeecg-boot-mysql:3306/jeecg-boot?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
         type: com.alibaba.druid.pool.DruidDataSource
         username: root
         password: root
       ds1:
         driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/jeecg-boot2?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+        url: jdbc:mysql://jeecg-boot-mysql:3306/jeecg-boot2?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
         type: com.alibaba.druid.pool.DruidDataSource
         username: root
         password: root

@@ -7,8 +7,11 @@ import org.jeecg.modules.test.feign.client.JeecgTestClient;
 
 
 /**
- *
- */
+* 接口fallback实现
+* 
+* @author: scott
+* @date: 2022/4/11 19:41
+*/
 public class JeecgTestFallback implements JeecgTestClient {
 
     @Setter
@@ -16,7 +19,7 @@ public class JeecgTestFallback implements JeecgTestClient {
 
 
     @Override
-    public Result<Object> getMessage(String name) {
-        return Result.OK("访问超时");
+    public String getMessage(String name) {
+        return "访问超时, 自定义FallbackFactory";
     }
 }

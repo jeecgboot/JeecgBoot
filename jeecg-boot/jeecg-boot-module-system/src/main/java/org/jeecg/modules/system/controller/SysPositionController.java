@@ -234,7 +234,8 @@ public class SysPositionController {
         List<String> errorMessage = new ArrayList<>();
         int successLines = 0, errorLines = 0;
         for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-            MultipartFile file = entity.getValue();// 获取上传文件对象
+            // 获取上传文件对象
+            MultipartFile file = entity.getValue();
             ImportParams params = new ImportParams();
             params.setTitleRows(2);
             params.setHeadRows(1);

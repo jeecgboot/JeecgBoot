@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -85,6 +86,10 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		query.eq(SysDepart::getDelFlag, CommonConstant.DEL_FLAG_0.toString());
 		query.orderByAsc(SysDepart::getDepartOrder);
 		List<SysDepart> list = this.list(query);
+        //update-begin---author:wangshuai ---date:20220307  for：[JTC-119]在部门管理菜单下设置部门负责人 创建用户的时候不需要处理
+		//设置用户id,让前台显示
+        this.setUserIdsByDepList(list);
+        //update-begin---author:wangshuai ---date:20220307  for：[JTC-119]在部门管理菜单下设置部门负责人 创建用户的时候不需要处理
 		// 调用wrapTreeDataToTreeList方法生成树状数据
 		List<SysDepartTreeModel> listResult = FindsDepartsChildrenUtil.wrapTreeDataToTreeList(list);
 		return listResult;
@@ -126,7 +131,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	 * saveDepartData 对应 add 保存用户在页面添加的新的部门对象数据
 	 */
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void saveDepartData(SysDepart sysDepart, String username) {
 		if (sysDepart != null && username != null) {
 			if (sysDepart.getParentId() == null) {
@@ -148,7 +153,13 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 			sysDepart.setCreateTime(new Date());
 			sysDepart.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
 			this.save(sysDepart);
-		}
+            //update-begin---author:wangshuai ---date:20220307  for：[JTC-119]在部门管理菜单下设置部门负责人 创建用户的时候不需要处理
+			//新增部门的时候新增负责部门
+            if(oConvertUtils.isNotEmpty(sysDepart.getDirectorUserIds())){
+			    this.addDepartByUserIds(sysDepart,sysDepart.getDirectorUserIds());
+            }
+            //update-end---author:wangshuai ---date:20220307  for：[JTC-119]在部门管理菜单下设置部门负责人 创建用户的时候不需要处理
+         }
 
 	}
 	
@@ -235,12 +246,16 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	 * updateDepartDataById 对应 edit 根据部门主键来更新对应的部门数据
 	 */
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public Boolean updateDepartDataById(SysDepart sysDepart, String username) {
 		if (sysDepart != null && username != null) {
 			sysDepart.setUpdateTime(new Date());
 			sysDepart.setUpdateBy(username);
 			this.updateById(sysDepart);
+            //update-begin---author:wangshuai ---date:20220307  for：[JTC-119]在部门管理菜单下设置部门负责人 创建用户的时候不需要处理
+			//修改部门管理的时候，修改负责部门
+            this.updateChargeDepart(sysDepart);
+            //update-begin---author:wangshuai ---date:20220307  for：[JTC-119]在部门管理菜单下设置部门负责人 创建用户的时候不需要处理
 			return true;
 		} else {
 			return false;
@@ -427,7 +442,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	 * @return
 	 */
 	private String getMyDeptParentNode(List<SysDepart> list){
-		Map<String,String> map = new HashMap<>();
+		Map<String,String> map = new HashMap(5);
 		//1.先将同一公司归类
 		for(SysDepart dept : list){
 			String code = dept.getOrgCode().substring(0,3);
@@ -509,6 +524,10 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		lqw.func(square);
 		lqw.orderByDesc(SysDepart::getDepartOrder);
 		List<SysDepart> list = list(lqw);
+        //update-begin---author:wangshuai ---date:20220316  for：[JTC-119]在部门管理菜单下设置部门负责人 创建用户的时候不需要处理
+        //设置用户id,让前台显示
+        this.setUserIdsByDepList(list);
+        //update-end---author:wangshuai ---date:20220316  for：[JTC-119]在部门管理菜单下设置部门负责人 创建用户的时候不需要处理
 		List<SysDepartTreeModel> records = new ArrayList<>();
 		for (int i = 0; i < list.size(); i++) {
 			SysDepart depart = list.get(i);
@@ -581,7 +600,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 
 	@Override
 	public SysDepart queryCompByOrgCode(String orgCode) {
-		int length = YouBianCodeUtil.zhanweiLength;
+		int length = YouBianCodeUtil.ZHANWEI_LENGTH;
 		String compyOrgCode = orgCode.substring(0,length);
 		return this.baseMapper.queryCompByOrgCode(compyOrgCode);
 	}
@@ -609,4 +628,131 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
             }
         }
     }
+    
+    //update-begin---author:wangshuai ---date:20200308  for：[JTC-119]在部门管理菜单下设置部门负责人，新增方法添加部门负责人、删除负责部门负责人、查询部门对应的负责人
+    /**
+     * 通过用户id设置负责部门
+     * @param sysDepart SysDepart部门对象
+     * @param userIds 多个负责用户id
+     */
+    public void addDepartByUserIds(SysDepart sysDepart, String userIds) {
+        //获取部门id,保存到用户
+        String departId = sysDepart.getId();
+        //循环用户id
+        String[] userIdArray = userIds.split(",");
+        for (String userId:userIdArray) {
+            //查询用户表增加负责部门
+            SysUser sysUser = sysUserMapper.selectById(userId);
+            //如果部门id不为空，那么就需要拼接
+            if(oConvertUtils.isNotEmpty(sysUser.getDepartIds())){
+                if(!sysUser.getDepartIds().contains(departId)) {
+                    sysUser.setDepartIds(sysUser.getDepartIds() + "," + departId);
+                }
+            }else{
+                sysUser.setDepartIds(departId);
+            }
+            //设置身份为上级
+            sysUser.setUserIdentity(CommonConstant.USER_IDENTITY_2);
+            //跟新用户表
+            sysUserMapper.updateById(sysUser);
+            //判断当前用户是否包含所属部门
+            List<SysUserDepart> userDepartList = userDepartMapper.getUserDepartByUid(userId);
+            boolean isExistDepId = userDepartList.stream().anyMatch(item -> departId.equals(item.getDepId()));
+            //如果不存在需要设置所属部门
+            if(!isExistDepId){
+                userDepartMapper.insert(new SysUserDepart(userId,departId));
+            }
+        }
+    }
+    
+    /**
+     * 修改用户负责部门
+     * @param sysDepart SysDepart对象
+     */
+    private void updateChargeDepart(SysDepart sysDepart) {
+        //新的用户id
+        String directorIds = sysDepart.getDirectorUserIds();
+        //旧的用户id（数据库中存在的）
+        String oldDirectorIds = sysDepart.getOldDirectorUserIds();
+        String departId = sysDepart.getId();
+        //如果用户id为空,那么用户的负责部门id应该去除
+        if(oConvertUtils.isEmpty(directorIds)){
+            this.deleteChargeDepId(departId,null);
+        }else if(oConvertUtils.isNotEmpty(directorIds) && oConvertUtils.isEmpty(oldDirectorIds)){
+            //如果用户id不为空但是用户原来负责部门的用户id为空
+            this.addDepartByUserIds(sysDepart,directorIds);
+        }else{
+            //都不为空，需要比较，进行添加或删除
+            //找到新的负责部门用户id与原来负责部门的用户id，进行删除
+            List<String> userIdList = Arrays.stream(oldDirectorIds.split(",")).filter(item -> !directorIds.contains(item)).collect(Collectors.toList());
+            for (String userId:userIdList){
+                this.deleteChargeDepId(departId,userId);
+            }
+            //找到原来负责部门的用户id与新的负责部门用户id，进行新增
+            String addUserIds = Arrays.stream(directorIds.split(",")).filter(item -> !oldDirectorIds.contains(item)).collect(Collectors.joining(","));
+            if(oConvertUtils.isNotEmpty(addUserIds)){
+                this.addDepartByUserIds(sysDepart,addUserIds); 
+            }
+        }
+    }
+
+    /**
+     * 删除用户负责部门
+     * @param departId 部门id
+     * @param userId 用户id
+     */
+    private void deleteChargeDepId(String departId,String userId){
+        //先查询负责部门的用户id,因为负责部门的id使用逗号拼接起来的
+        LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
+        query.like(SysUser::getDepartIds,departId);
+        //删除全部的情况下用户id不存在
+        if(oConvertUtils.isNotEmpty(userId)){
+            query.eq(SysUser::getId,userId); 
+        }
+        List<SysUser> userList = sysUserMapper.selectList(query);
+        for (SysUser sysUser:userList) {
+            //将不存在的部门id删除掉
+            String departIds = sysUser.getDepartIds();
+            List<String> list = new ArrayList<>(Arrays.asList(departIds.split(",")));
+            list.remove(departId);
+            //删除之后再将新的id用逗号拼接起来进行更新
+            String newDepartIds = String.join(",",list);
+            sysUser.setDepartIds(newDepartIds);
+            sysUserMapper.updateById(sysUser);
+        }
+    }
+
+    /**
+     * 通过部门集合为部门设置用户id，用于前台展示
+     * @param departList 部门集合
+     */
+    private void setUserIdsByDepList(List<SysDepart> departList) {
+        //查询负责部门不为空的情况
+        LambdaQueryWrapper<SysUser> query  = new LambdaQueryWrapper<>();
+        query.isNotNull(SysUser::getDepartIds);
+        List<SysUser> users = sysUserMapper.selectList(query);
+        Map<String,Object> map = new HashMap(5);
+        //先循环一遍找到不同的负责部门id
+        for (SysUser user:users) {
+            String departIds = user.getDepartIds();
+            String[] departIdArray = departIds.split(",");
+            for (String departId:departIdArray) {
+                //mao中包含部门key，负责用户直接拼接
+                if(map.containsKey(departId)){
+                    String userIds = map.get(departId) + "," + user.getId();
+                    map.put(departId,userIds);
+                }else{
+                    map.put(departId,user.getId());  
+                }
+            }
+        }
+        //循环部门集合找到部门id对应的负责用户
+        for (SysDepart sysDepart:departList) {
+            if(map.containsKey(sysDepart.getId())){
+                sysDepart.setDirectorUserIds(map.get(sysDepart.getId()).toString()); 
+            }
+        }
+    }
+    //update-end---author:wangshuai ---date:20200308  for：[JTC-119]在部门管理菜单下设置部门负责人，新增方法添加部门负责人、删除负责部门负责人、查询部门对应的负责人
+
 }

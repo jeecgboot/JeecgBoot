@@ -10,6 +10,7 @@ import org.jeecg.modules.system.entity.SysPermission;
 
 /**
   * 树形列表用到
+  * @author: jeecg-boot
  */
 public class TreeModel implements Serializable {
 	
@@ -102,7 +103,7 @@ public class TreeModel implements Serializable {
     	this.parentId = parentId;
     	this.ruleFlag=ruleFlag;
     	this.slotTitle =  slotTitle;
-    	Map<String,String> map = new HashMap<String,String>();
+    	Map<String,String> map = new HashMap(5);
     	map.put("title", "hasDatarule");
     	this.scopedSlots = map;
     	this.isLeaf = isLeaf;

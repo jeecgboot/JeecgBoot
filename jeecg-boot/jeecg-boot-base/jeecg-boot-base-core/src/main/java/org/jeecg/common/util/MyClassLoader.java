@@ -1,5 +1,7 @@
 package org.jeecg.common.util;
 
+import org.jeecg.common.constant.SymbolConstant;
+
 /**
  * @Author  张代浩
  */
@@ -15,7 +17,11 @@ public class MyClassLoader extends ClassLoader {
 		return myclass;
 	}
 
-	// 获得类的全名，包括包名
+    /**
+     * 获得类的全名，包括包名
+     * @param object
+     * @return
+     */
 	public static String getPackPath(Object object) {
 		// 检查用户传入的参数是否为空
 		if (object == null) {
@@ -40,23 +46,30 @@ public class MyClassLoader extends ClassLoader {
 		// 如果不是匿名包，将包名转化为路径
 		if (pack != null) {
 			String packName = pack.getName();
+			String javaSpot="java.";
+			String javaxSpot="javax.";
 			// 此处简单判定是否是Java基础类库，防止用户传入JDK内置的类库
-			if (packName.startsWith("java.") || packName.startsWith("javax.")) {
+			if (packName.startsWith(javaSpot) || packName.startsWith(javaxSpot)) {
 				throw new java.lang.IllegalArgumentException("不要传送系统类！");
 			}
 			// 在类的名称中，去掉包名的部分，获得类的文件名
 			clsName = clsName.substring(packName.length() + 1);
 			// 判定包名是否是简单包名，如果是，则直接将包名转换为路径，
-			if (packName.indexOf(".") < 0) {
+			if (packName.indexOf(SymbolConstant.SPOT) < 0) {
 				path = packName + "/";
-			} else {// 否则按照包名的组成部分，将包名转换为路径
+			} else {
+                // 否则按照包名的组成部分，将包名转换为路径
 				int start = 0, end = 0;
 				end = packName.indexOf(".");
+				StringBuilder pathBuilder = new StringBuilder();
 				while (end != -1) {
-					path = path + packName.substring(start, end) + "/";
+                    pathBuilder.append(packName, start, end).append("/");
 					start = end + 1;
 					end = packName.indexOf(".", start);
 				}
+				if(oConvertUtils.isNotEmpty(pathBuilder.toString())){
+                    path = pathBuilder.toString();
+                }
 				path = path + packName.substring(start) + "/";
 			}
 		}
@@ -73,7 +86,7 @@ public class MyClassLoader extends ClassLoader {
 		pos = realPath.indexOf(path + clsName);
 		realPath = realPath.substring(0, pos - 1);
 		// 如果类文件被打包到JAR等文件中时，去掉对应的JAR等打包文件名
-		if (realPath.endsWith("!")) {
+		if (realPath.endsWith(SymbolConstant.EXCLAMATORY_MARK)) {
 			realPath = realPath.substring(0, realPath.lastIndexOf("/"));
 		}
 		/*------------------------------------------------------------  

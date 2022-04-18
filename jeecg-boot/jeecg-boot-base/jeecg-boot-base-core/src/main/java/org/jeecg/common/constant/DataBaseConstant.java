@@ -1,16 +1,33 @@
 package org.jeecg.common.constant;
 /**
  * 数据库上下文常量
+ * @author: jeecg-boot
  */
 public interface DataBaseConstant {
 	//*********数据库类型****************************************
+
+    /**MYSQL数据库*/
 	public static final String DB_TYPE_MYSQL = "MYSQL";
+
+    /** ORACLE*/
 	public static final String DB_TYPE_ORACLE = "ORACLE";
-	public static final String DB_TYPE_DM = "DM";//达梦数据库
+
+    /**达梦数据库*/
+	public static final String DB_TYPE_DM = "DM";
+
+    /**postgreSQL达梦数据库*/
 	public static final String DB_TYPE_POSTGRESQL = "POSTGRESQL";
+
+    /**sqlserver数据库*/
 	public static final String DB_TYPE_SQLSERVER = "SQLSERVER";
+
+    /**mariadb 数据库*/
 	public static final String DB_TYPE_MARIADB = "MARIADB";
+
+    /**DB2 数据库*/
 	public static final String DB_TYPE_DB2 = "DB2";
+
+    /**HSQL 数据库*/
 	public static final String DB_TYPE_HSQL = "HSQL";
 
 //	// 数据库类型，对应 database_type 字典
@@ -131,4 +148,9 @@ public interface DataBaseConstant {
 	 * 租户ID 数据库字段名
 	 */
 	String TENANT_ID_TABLE = "tenant_id";
+
+    /**
+     * sql语句 where
+     */
+    String SQL_WHERE = "where";
 }

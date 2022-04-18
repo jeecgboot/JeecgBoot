@@ -4,10 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 多租户 tenant_id存储器
+ * @author: jeecg-boot
  */
 @Slf4j
 public class TenantContext {
-
     private static ThreadLocal<String> currentTenant = new ThreadLocal<>();
 
     public static void setTenant(String tenant) {

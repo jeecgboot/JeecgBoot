@@ -5,7 +5,10 @@ import org.springframework.web.util.HtmlUtils;
 
 /**
  * HTML 工具类
+ * @author: jeecg-boot
+ * @date: 2022/3/30 14:43
  */
+@SuppressWarnings("AlibabaClassNamingShouldBeCamel")
 public class HTMLUtils {
 
     /**

@@ -1,5 +1,9 @@
 package org.jeecg.common.constant;
 
+/**
+ * @Description: 通用常量
+ * @author: jeecg-boot
+ */
 public interface CommonConstant {
 
 	/**
@@ -75,8 +79,8 @@ public interface CommonConstant {
     public static String PREFIX_USER_SHIRO_CACHE  = "shiro:cache:org.jeecg.config.shiro.ShiroRealm.authorizationCache:";
     /** 登录用户Token令牌缓存KEY前缀 */
     public static final String PREFIX_USER_TOKEN  = "prefix_user_token_";
-    /** Token缓存时间：3600秒即一小时 */
-    public static final int  TOKEN_EXPIRE_TIME  = 3600;
+//    /** Token缓存时间：3600秒即一小时 */
+//    public static final int  TOKEN_EXPIRE_TIME  = 3600;
 
     /** 登录二维码 */
     public static final String  LOGIN_QRCODE_PRE  = "QRCODELOGIN:";
@@ -339,4 +343,34 @@ public interface CommonConstant {
     /**ONLINE 报表权限用 从request中获取地址栏后的参数*/
     String ONL_REP_URL_PARAM_STR="onlRepUrlParamStr";
 
+    /**POST请求*/
+    String HTTP_POST = "POST";
+
+    /**PUT请求*/
+    String HTTP_PUT = "PUT";
+
+    /**PATCH请求*/
+    String HTTP_PATCH = "PATCH";
+
+    /**未知的*/
+    String UNKNOWN = "unknown";
+
+    /**字符串http*/
+    String STR_HTTP = "http";
+
+    /**String 类型的空值*/
+    String STRING_NULL = "null";
+
+    /**java.util.Date 包*/
+    String JAVA_UTIL_DATE = "java.util.Date";
+
+    /**.do*/
+    String SPOT_DO = ".do";
+
+
+    /**前端vue版本标识*/
+    String VERSION="X-Version";
+
+    /**前端vue版本*/
+    String VERSION_VUE3="vue3";
 }

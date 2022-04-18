@@ -8,8 +8,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import javax.annotation.Resource;
 
 /**
- * redis客户端
- */
+* @Description: redis客户端
+* @author: scott
+* @date: 2020/01/01 16:01
+*/
 @Configuration
 public class JeecgRedisClient {
 

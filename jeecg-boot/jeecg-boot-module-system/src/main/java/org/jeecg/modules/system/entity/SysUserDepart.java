@@ -7,6 +7,11 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import lombok.Data;
+
+/**
+ * @Description: 用户部门
+ * @author: jeecg-boot
+ */
 @Data
 @TableName("sys_user_depart")
 public class SysUserDepart implements Serializable {

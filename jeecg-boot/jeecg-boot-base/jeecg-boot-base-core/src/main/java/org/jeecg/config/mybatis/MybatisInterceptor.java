@@ -46,9 +46,9 @@ public class MybatisInterceptor implements Interceptor {
 				try {
 					if ("createBy".equals(field.getName())) {
 						field.setAccessible(true);
-						Object local_createBy = field.get(parameter);
+						Object localCreateBy = field.get(parameter);
 						field.setAccessible(false);
-						if (local_createBy == null || local_createBy.equals("")) {
+						if (localCreateBy == null || "".equals(localCreateBy)) {
 							if (sysUser != null) {
 								// 登录人账号
 								field.setAccessible(true);
@@ -60,9 +60,9 @@ public class MybatisInterceptor implements Interceptor {
 					// 注入创建时间
 					if ("createTime".equals(field.getName())) {
 						field.setAccessible(true);
-						Object local_createDate = field.get(parameter);
+						Object localCreateDate = field.get(parameter);
 						field.setAccessible(false);
-						if (local_createDate == null || local_createDate.equals("")) {
+						if (localCreateDate == null || "".equals(localCreateDate)) {
 							field.setAccessible(true);
 							field.set(parameter, new Date());
 							field.setAccessible(false);
@@ -71,9 +71,9 @@ public class MybatisInterceptor implements Interceptor {
 					//注入部门编码
 					if ("sysOrgCode".equals(field.getName())) {
 						field.setAccessible(true);
-						Object local_sysOrgCode = field.get(parameter);
+						Object localSysOrgCode = field.get(parameter);
 						field.setAccessible(false);
-						if (local_sysOrgCode == null || local_sysOrgCode.equals("")) {
+						if (localSysOrgCode == null || "".equals(localSysOrgCode)) {
 							// 获取登录用户信息
 							if (sysUser != null) {
 								field.setAccessible(true);
@@ -92,8 +92,9 @@ public class MybatisInterceptor implements Interceptor {
 			if (parameter instanceof ParamMap) {
 				ParamMap<?> p = (ParamMap<?>) parameter;
 				//update-begin-author:scott date:20190729 for:批量更新报错issues/IZA3Q--
-				if (p.containsKey("et")) {
-					parameter = p.get("et");
+                String et = "et";
+				if (p.containsKey(et)) {
+					parameter = p.get(et);
 				} else {
 					parameter = p.get("param1");
 				}
@@ -146,6 +147,10 @@ public class MybatisInterceptor implements Interceptor {
 	}
 
 	//update-begin--Author:scott  Date:20191213 for：关于使用Quzrtz 开启线程任务， #465
+    /**
+     * 获取登录用户
+     * @return
+     */
 	private LoginUser getLoginUser() {
 		LoginUser sysUser = null;
 		try {

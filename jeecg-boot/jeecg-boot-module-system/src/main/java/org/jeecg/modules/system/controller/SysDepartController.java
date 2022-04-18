@@ -379,14 +379,15 @@ public class SysDepartController {
 		List<SysDepart> listSysDeparts = null;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
         for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-            MultipartFile file = entity.getValue();// 获取上传文件对象
+            // 获取上传文件对象
+            MultipartFile file = entity.getValue();
             ImportParams params = new ImportParams();
             params.setTitleRows(2);
             params.setHeadRows(1);
             params.setNeedSave(true);
             try {
             	// orgCode编码长度
-            	int codeLength = YouBianCodeUtil.zhanweiLength;
+            	int codeLength = YouBianCodeUtil.ZHANWEI_LENGTH;
                 listSysDeparts = ExcelImportUtil.importExcel(file.getInputStream(), SysDepart.class, params);
                 //按长度排序
                 Collections.sort(listSysDeparts, new Comparator<SysDepart>() {
@@ -476,7 +477,7 @@ public class SysDepartController {
 	public Result<Map<String,Object>> queryTreeByKeyWord(@RequestParam(name = "keyWord", required = false) String keyWord) {
 		Result<Map<String,Object>> result = new Result<>();
 		try {
-			Map<String,Object> map=new HashMap<String,Object>();
+			Map<String,Object> map=new HashMap(5);
 			List<SysDepartTreeModel> list = sysDepartService.queryTreeByKeyWord(keyWord);
 			//根据keyWord获取用户信息
 			LambdaQueryWrapper<SysUser> queryUser = new LambdaQueryWrapper<SysUser>();

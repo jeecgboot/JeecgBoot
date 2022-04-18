@@ -10,12 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.constant.VXESocketConst;
+import org.jeecg.common.constant.VxeSocketConst;
 import org.jeecg.common.system.query.MatchTypeEnum;
 import org.jeecg.common.system.query.QueryCondition;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.demo.mock.vxe.entity.MockEntity;
-import org.jeecg.modules.demo.mock.vxe.websocket.VXESocket;
+import org.jeecg.modules.demo.mock.vxe.websocket.VxeSocket;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +24,10 @@ import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.*;
 
+/**
+ * @Description: VxeMockController
+ * @author: jeecg-boot
+ */
 @RestController
 @RequestMapping("/mock/vxe")
 @Slf4j
@@ -59,8 +63,9 @@ public class VxeMockController {
      * @param tug_status
      * @return
      */
+    @Deprecated
     @GetMapping("/change2")
-    public Result mockChange2(@RequestParam("id") String id, @RequestParam("tug_status") String tug_status) {
+    public Result mockChange2(@RequestParam("id") String id,@RequestParam("tug_status") String tugStatus) {
         /* id 为 行的id（rowId），只要获取到rowId，那么只需要调用 VXESocket.sendMessageToAll() 即可 */
 
         // 封装行数据
@@ -68,8 +73,8 @@ public class VxeMockController {
         // 这个字段就是要更改的行数据ID
         rowData.put("id", id);
         // 这个字段就是要更改的列的key和具体的值
-        JSONObject tugStatus = JSON.parseObject(tug_status);
-        rowData.put("tug_status", tugStatus);
+        JSONObject status = JSON.parseObject(tugStatus);
+        rowData.put("tug_status", status);
         // 模拟更改数据
         this.mockChange(rowData);
 
@@ -108,9 +113,9 @@ public class VxeMockController {
         socketData.put("args", new Object[]{rowData, ""});
         // 封装消息字符串，这里的
         // type 必须是 VXESocketConst.TYPE_UVT
-        String message = VXESocket.packageMessage(VXESocketConst.TYPE_UVT, socketData);
+        String message = VxeSocket.packageMessage(VxeSocketConst.TYPE_UVT, socketData);
         // 调用 sendMessageToAll 发送给所有在线的用户
-        VXESocket.sendMessageToAll(message);
+        VxeSocket.sendMessageToAll(message);
     }
 
     /**
@@ -129,9 +134,9 @@ public class VxeMockController {
         socketData.put("args", new Object[]{status});
 
         // 封装消息字符串，这里的 type 必须是 VXESocketConst.TYPE_UVT
-        String message = VXESocket.packageMessage(VXESocketConst.TYPE_CSD, socketData);
+        String message = VxeSocket.packageMessage(VxeSocketConst.TYPE_CSD, socketData);
         // 调用 sendMessageToAll 发送给所有在线的用户
-        VXESocket.sendMessageToAll(message);
+        VxeSocket.sendMessageToAll(message);
 
         return Result.ok();
     }
@@ -260,7 +265,8 @@ public class VxeMockController {
 
         // 模拟JSON数据路径
         String path = "classpath:org/jeecg/modules/demo/mock/vxe/json/ddjh.json";
-        if ("8".equals(status)) {
+        String statusValue = "8";
+        if (statusValue.equals(status)) {
             path = "classpath:org/jeecg/modules/demo/mock/vxe/json/ddjh_s8.json";
         }
         // 读取JSON数据
@@ -273,7 +279,7 @@ public class VxeMockController {
         // 逐行查询子表数据，用于计算拖轮状态
         List<JSONObject> records = page.getRecords();
         for (JSONObject record : records) {
-            Map<String, Integer> tugStatusMap = new HashMap<>();
+            Map<String, Integer> tugStatusMap = new HashMap<>(5);
             String id = record.getString("id");
             // 查询出主表的拖轮
             String tugMain = record.getString("tug");
@@ -340,12 +346,12 @@ public class VxeMockController {
      */
     private IPage<JSONObject> queryDataPage(JSONArray dataList, String parentId, Integer pageNo, Integer pageSize) {
         // 根据父级id查询子级
-        JSONArray dataDB = dataList;
+        JSONArray dataDb = dataList;
         if (StringUtils.isNotBlank(parentId)) {
             JSONArray results = new JSONArray();
             List<String> parentIds = Arrays.asList(parentId.split(","));
-            this.queryByParentId(dataDB, parentIds, results);
-            dataDB = results;
+            this.queryByParentId(dataDb, parentIds, results);
+            dataDb = results;
         }
         // 模拟分页（实际中应用SQL自带的分页）
         List<JSONObject> records = new ArrayList<>();
@@ -353,23 +359,23 @@ public class VxeMockController {
         long beginIndex, endIndex;
         // 如果任意一个参数为null，则不分页
         if (pageNo == null || pageSize == null) {
-            page = new Page<>(0, dataDB.size());
+            page = new Page<>(0, dataDb.size());
             beginIndex = 0;
-            endIndex = dataDB.size();
+            endIndex = dataDb.size();
         } else {
             page = new Page<>(pageNo, pageSize);
             beginIndex = page.offset();
             endIndex = page.offset() + page.getSize();
         }
-        for (long i = beginIndex; (i < endIndex && i < dataDB.size()); i++) {
-            JSONObject data = dataDB.getJSONObject((int) i);
+        for (long i = beginIndex; (i < endIndex && i < dataDb.size()); i++) {
+            JSONObject data = dataDb.getJSONObject((int) i);
             data = JSON.parseObject(data.toJSONString());
             // 不返回 children
             data.remove("children");
             records.add(data);
         }
         page.setRecords(records);
-        page.setTotal(dataDB.size());
+        page.setTotal(dataDb.size());
         return page;
     }
 

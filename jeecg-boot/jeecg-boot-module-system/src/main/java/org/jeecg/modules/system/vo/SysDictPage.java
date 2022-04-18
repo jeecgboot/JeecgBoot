@@ -7,6 +7,10 @@ import org.jeecgframework.poi.excel.annotation.ExcelCollection;
 
 import java.util.List;
 
+/**
+ * @Description: 系统字典分页
+ * @author: jeecg-boot
+ */
 @Data
 public class SysDictPage {
 

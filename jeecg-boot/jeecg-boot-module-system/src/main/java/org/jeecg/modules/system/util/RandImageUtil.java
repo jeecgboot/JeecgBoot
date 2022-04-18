@@ -11,6 +11,7 @@ import java.util.Random;
 
 /**
  * 登录验证码工具类
+ * @author: jeecg-boot
  */
 public class RandImageUtil {
 
@@ -73,7 +74,8 @@ public class RandImageUtil {
         byte[] bytes = byteStream.toByteArray();
         //转换成base64串
         String base64 = Base64.getEncoder().encodeToString(bytes).trim();
-        base64 = base64.replaceAll("\n", "").replaceAll("\r", "");//删除 \r\n
+        //删除 \r\n
+        base64 = base64.replaceAll("\n", "").replaceAll("\r", "");
 
         //写到指定位置
         //ImageIO.write(bufferedImage, "png", new File(""));
@@ -87,7 +89,8 @@ public class RandImageUtil {
         // 获取图形上下文
         final Graphics2D graphics = (Graphics2D) image.getGraphics();
         // 设定背景颜色
-        graphics.setColor(Color.WHITE); // ---1
+        // ---1
+        graphics.setColor(Color.WHITE);
         graphics.fillRect(0, 0, width, height);
         // 设定边框颜色
 //		graphics.setColor(getRandColor(100, 200)); // ---2
@@ -96,9 +99,11 @@ public class RandImageUtil {
         final Random random = new Random();
         // 随机产生干扰线，使图象中的认证码不易被其它程序探测到
         for (int i = 0; i < count; i++) {
-            graphics.setColor(getRandColor(150, 200)); // ---3
+            // ---3
+            graphics.setColor(getRandColor(150, 200));
 
-            final int x = random.nextInt(width - lineWidth - 1) + 1; // 保证画在边框之内
+            // 保证画在边框之内
+            final int x = random.nextInt(width - lineWidth - 1) + 1;
             final int y = random.nextInt(height - lineWidth - 1) + 1;
             final int xl = random.nextInt(lineWidth);
             final int yl = random.nextInt(lineWidth);
