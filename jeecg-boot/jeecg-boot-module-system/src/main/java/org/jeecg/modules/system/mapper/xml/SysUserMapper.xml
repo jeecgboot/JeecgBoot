@@ -68,7 +68,13 @@
 		INNER JOIN sys_user_depart ON sys_user_depart.dep_id = sys_depart.id
 		INNER JOIN sys_user ON sys_user.id = sys_user_depart.user_id
 		WHERE
-		sys_user.del_flag = 0 AND sys_depart.org_code LIKE '${orgCode}%'
+		<if test="orgCode == null">
+			<bind name="bindOrgCode" value="'%'"/>
+		</if>
+		<if test="orgCode != null">
+			<bind name="bindOrgCode" value="orgCode+'%'"/>
+		</if>
+		sys_user.del_flag = 0 AND sys_depart.org_code LIKE #{bindOrgCode}
 
 		<if test="userParams != null">
 			<if test="userParams.realname != null and userParams.realname != ''">

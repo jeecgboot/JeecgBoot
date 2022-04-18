@@ -1,5 +1,9 @@
 package org.jeecg.common.exception;
 
+/**
+ * @Description: jeecg-boot自定义异常
+ * @author: jeecg-boot
+ */
 public class JeecgBootException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 

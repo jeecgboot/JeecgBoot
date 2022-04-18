@@ -19,6 +19,7 @@ import java.util.Map;
 
 /**
  * 第三方App对接
+ * @author: jeecg-boot
  */
 @Slf4j
 @RestController("thirdAppController")
@@ -38,7 +39,7 @@ public class ThirdAppController {
      */
     @GetMapping("/getEnabledType")
     public Result getEnabledType() {
-        Map<String, Boolean> enabledMap = new HashMap<>();
+        Map<String, Boolean> enabledMap = new HashMap(5);
         enabledMap.put("wechatEnterprise", thirdAppConfig.isWechatEnterpriseEnabled());
         enabledMap.put("dingtalk", thirdAppConfig.isDingtalkEnabled());
         return Result.OK(enabledMap);

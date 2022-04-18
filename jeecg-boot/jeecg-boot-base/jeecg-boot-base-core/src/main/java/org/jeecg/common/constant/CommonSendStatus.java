@@ -6,15 +6,26 @@ package org.jeecg.common.constant;
  *
  */
 public interface CommonSendStatus {
-	
-	public static final String UNPUBLISHED_STATUS_0 = "0";	//未发布
-	
-	public static final String PUBLISHED_STATUS_1 = "1";		//已发布
-	
-	public static final String REVOKE_STATUS_2 = "2";			//撤销
-	//app端推送会话标识后缀
-	public static final String  APP_SESSION_SUFFIX = "_app";	//app端推送会话标识后缀
 
+    /**
+     * 未发布
+     */
+    public static final String UNPUBLISHED_STATUS_0 = "0";
+
+    /**
+     * 已发布
+     */
+	public static final String PUBLISHED_STATUS_1 = "1";
+
+    /**
+     * 撤销
+     */
+	public static final String REVOKE_STATUS_2 = "2";
+
+    /**
+     * app端推送会话标识后缀
+     */
+	public static final String  APP_SESSION_SUFFIX = "_app";
 
 
 	/**流程催办——系统通知消息模板*/

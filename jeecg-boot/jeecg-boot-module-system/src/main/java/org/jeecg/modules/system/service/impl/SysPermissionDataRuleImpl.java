@@ -84,7 +84,7 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void savePermissionDataRule(SysPermissionDataRule sysPermissionDataRule) {
 		this.save(sysPermissionDataRule);
 		SysPermission permission = sysPermissionMapper.selectById(sysPermissionDataRule.getPermissionId());
@@ -95,12 +95,12 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void deletePermissionDataRule(String dataRuleId) {
 		SysPermissionDataRule dataRule = this.baseMapper.selectById(dataRuleId);
 		if(dataRule!=null) {
 			this.removeById(dataRuleId);
-			Integer count =  this.baseMapper.selectCount(new LambdaQueryWrapper<SysPermissionDataRule>().eq(SysPermissionDataRule::getPermissionId, dataRule.getPermissionId()));
+			Long count =  this.baseMapper.selectCount(new LambdaQueryWrapper<SysPermissionDataRule>().eq(SysPermissionDataRule::getPermissionId, dataRule.getPermissionId()));
 			//注:同一个事务中删除后再查询是会认为数据已被删除的 若事务回滚上述删除无效
 			if(count==null || count==0) {
 				SysPermission permission = sysPermissionMapper.selectById(dataRule.getPermissionId());

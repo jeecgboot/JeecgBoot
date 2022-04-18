@@ -4,7 +4,6 @@ import com.alibaba.druid.pool.DruidDataSource;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.system.vo.DynamicDataSourceModel;
-import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.SpringContextUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import java.util.HashMap;
@@ -13,6 +12,7 @@ import java.util.Map;
 
 /**
  * 数据源缓存池
+ * @author: jeecg-boot
  */
 public class DataSourceCachePool {
     /** 数据源连接池缓存【本地 class缓存 - 不支持分布式】 */
@@ -37,8 +37,8 @@ public class DataSourceCachePool {
         if (getRedisTemplate().hasKey(redisCacheKey)) {
             return (DynamicDataSourceModel) getRedisTemplate().opsForValue().get(redisCacheKey);
         }
-        CommonAPI commonAPI = SpringContextUtils.getBean(CommonAPI.class);
-        DynamicDataSourceModel dbSource = commonAPI.getDynamicDbSourceByCode(dbKey);
+        CommonAPI commonApi = SpringContextUtils.getBean(CommonAPI.class);
+        DynamicDataSourceModel dbSource = commonApi.getDynamicDbSourceByCode(dbKey);
         if (dbSource != null) {
             getRedisTemplate().opsForValue().set(redisCacheKey, dbSource);
         }

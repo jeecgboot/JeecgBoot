@@ -2,6 +2,10 @@ package org.jeecg.common.system.query;
 
 import java.io.Serializable;
 
+/**
+ * @Description: QueryCondition
+ * @author: jeecg-boot
+ */
 public class QueryCondition implements Serializable {
 
 	private static final long serialVersionUID = 4740166316629191651L;

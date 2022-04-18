@@ -2,8 +2,9 @@ package org.jeecg.common.constant;
 
 /**
  * VXESocket 常量
+ * @author: jeecg-boot
  */
-public class VXESocketConst {
+public class VxeSocketConst {
 
     /**
      * 消息类型

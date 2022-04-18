@@ -198,10 +198,17 @@ public class ThirdLoginController {
 		String token = JwtUtil.sign(user.getUsername(), user.getPassword());
 		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
 		// 设置超时时间
-		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME / 1000);
+		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 2 / 1000);
 		return token;
 	}
 
+	/**
+	 * 第三方登录回调接口
+	 * @param token
+	 * @param thirdType
+	 * @return
+	 * @throws Exception
+	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/getLoginUser/{token}/{thirdType}", method = RequestMethod.GET)
 	@ResponseBody
@@ -251,20 +258,21 @@ public class ThirdLoginController {
 		Result<String> result = new Result<String>();
 		String phone = jsonObject.getString("mobile");
 		String thirdUserUuid = jsonObject.getString("thirdUserUuid");
+		// 校验验证码
+		String captcha = jsonObject.getString("captcha");
+		Object captchaCache = redisUtil.get(phone);
+		if (oConvertUtils.isEmpty(captcha) || !captcha.equals(captchaCache)) {
+			result.setMessage("验证码错误");
+			result.setSuccess(false);
+			return result;
+		}
 		//校验用户有效性
 		SysUser sysUser = sysUserService.getUserByPhone(phone);
 		if(sysUser != null){
+			// 存在用户，直接绑定
 			sysThirdAccountService.updateThirdUserId(sysUser,thirdUserUuid);
 		}else{
 			// 不存在手机号，创建用户
-			String smscode = jsonObject.getString("captcha");
-			Object code = redisUtil.get(phone);
-			if (!smscode.equals(code)) {
-				result.setMessage("手机验证码错误");
-				result.setSuccess(false);
-				return result;
-			}
-			//创建用户
 			sysUser = sysThirdAccountService.createUser(phone,thirdUserUuid);
 		}
 		String token = saveToken(sysUser);

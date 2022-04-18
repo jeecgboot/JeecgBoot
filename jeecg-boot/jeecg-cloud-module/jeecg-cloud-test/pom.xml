@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-cloud-module</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>3.1.0</version>
+        <version>3.2.0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -20,9 +20,9 @@
     </dependencies>
 
     <modules>
-        <module>jeecg-cloud-test-seata</module>
         <module>jeecg-cloud-test-shardingsphere</module>
         <module>jeecg-cloud-test-more</module>
         <module>jeecg-cloud-test-rabbitmq</module>
+        <module>jeecg-cloud-test-seata</module>
     </modules>
 </project>

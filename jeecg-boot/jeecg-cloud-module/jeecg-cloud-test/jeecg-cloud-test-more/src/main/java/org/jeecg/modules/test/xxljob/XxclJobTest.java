@@ -22,9 +22,9 @@ public class XxclJobTest {
      * @return
      */
 
-    @XxlJob(value = "testJob")
+    @XxlJob(value = "xxclJobTest")
     public ReturnT<String> demoJobHandler(String params) {
-        log.info("我是demo服务里的定时任务testJob,我执行了...............................");
+        log.info("我是 jeecg-system 服务里的定时任务 xxclJobTest , 我执行了...............................");
         return ReturnT.SUCCESS;
     }
 

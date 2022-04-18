@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.toolkit.JdbcUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
+import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.util.filter.FileTypeFilter;
 import org.jeecg.common.util.oss.OssBootUtil;
 import org.jeecgframework.poi.util.PoiPublicUtil;
@@ -27,11 +28,23 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @Description: 通用工具
+ * @author: jeecg-boot
+ */
 @Slf4j
 public class CommonUtils {
 
-   //中文正则
+    /**
+     * 中文正则
+     */
     private static Pattern ZHONGWEN_PATTERN = Pattern.compile("[\u4e00-\u9fa5]");
+
+    /**
+     * 文件名 正则字符串
+     * 文件名支持的字符串：字母数字中文.-_()（） 除此之外的字符将被删除
+     */
+    private static String FILE_NAME_REGEX = "[^A-Za-z\\.\\(\\)\\-（）\\_0-9\\u4e00-\\u9fa5]";
 
     public static String uploadOnlineImage(byte[] data,String basePath,String bizPath,String uploadType){
         String dbPath = null;
@@ -84,10 +97,17 @@ public class CommonUtils {
                 .replace("#", "").replace("“", "").replace("”", "");
         //替换上传文件名字中的空格
         fileName=fileName.replaceAll("\\s","");
+        //update-beign-author:taoyan date:20220302 for: /issues/3381 online 在线表单 使用文件组件时，上传文件名中含%，下载异常
+        fileName = fileName.replaceAll(FILE_NAME_REGEX, "");
+        //update-end-author:taoyan date:20220302 for: /issues/3381 online 在线表单 使用文件组件时，上传文件名中含%，下载异常
         return fileName;
     }
 
-    // java 判断字符串里是否包含中文字符
+    /**
+     * java 判断字符串里是否包含中文字符
+     * @param str
+     * @return
+     */
     public static boolean ifContainChinese(String str) {
         if(str.getBytes().length == str.length()){
             return false;
@@ -127,11 +147,13 @@ public class CommonUtils {
             String fileName = null;
             File file = new File(uploadpath + File.separator + bizPath + File.separator );
             if (!file.exists()) {
-                file.mkdirs();// 创建文件根目录
+                // 创建文件根目录
+                file.mkdirs();
             }
-            String orgName = mf.getOriginalFilename();// 获取文件名
+            // 获取文件名
+            String orgName = mf.getOriginalFilename();
             orgName = CommonUtils.getFileName(orgName);
-            if(orgName.indexOf(".")!=-1){
+            if(orgName.indexOf(SymbolConstant.SPOT)!=-1){
                 fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.lastIndexOf("."));
             }else{
                 fileName = orgName+ "_" + System.currentTimeMillis();
@@ -145,7 +167,7 @@ public class CommonUtils {
             }else{
                 dbpath = fileName;
             }
-            if (dbpath.contains("\\")) {
+            if (dbpath.contains(SymbolConstant.DOUBLE_BACKSLASH)) {
                 dbpath = dbpath.replace("\\", "/");
             }
             return dbpath;
@@ -259,16 +281,17 @@ public class CommonUtils {
             Connection connection = dataSource.getConnection();
             try {
                 DatabaseMetaData md = connection.getMetaData();
-                String dbType = md.getDatabaseProductName().toLowerCase();
-                if(dbType.indexOf("mysql")>=0) {
+                String dbType = md.getDatabaseProductName().toUpperCase();
+                String sqlserver= "SQL SERVER";
+                if(dbType.indexOf(DataBaseConstant.DB_TYPE_MYSQL)>=0) {
                     DB_TYPE = DataBaseConstant.DB_TYPE_MYSQL;
-                }else if(dbType.indexOf("oracle")>=0 ||dbType.indexOf("dm")>=0) {
+                }else if(dbType.indexOf(DataBaseConstant.DB_TYPE_ORACLE)>=0 ||dbType.indexOf(DataBaseConstant.DB_TYPE_DM)>=0) {
                     DB_TYPE = DataBaseConstant.DB_TYPE_ORACLE;
-                }else if(dbType.indexOf("sqlserver")>=0||dbType.indexOf("sql server")>=0) {
+                }else if(dbType.indexOf(DataBaseConstant.DB_TYPE_SQLSERVER)>=0||dbType.indexOf(sqlserver)>=0) {
                     DB_TYPE = DataBaseConstant.DB_TYPE_SQLSERVER;
-                }else if(dbType.indexOf("postgresql")>=0) {
+                }else if(dbType.indexOf(DataBaseConstant.DB_TYPE_POSTGRESQL)>=0) {
                     DB_TYPE = DataBaseConstant.DB_TYPE_POSTGRESQL;
-                }else if(dbType.indexOf("mariadb")>=0) {
+                }else if(dbType.indexOf(DataBaseConstant.DB_TYPE_MARIADB)>=0) {
                     DB_TYPE = DataBaseConstant.DB_TYPE_MARIADB;
                 }else {
                     log.error("数据库类型:[" + dbType + "]不识别!");
@@ -291,10 +314,10 @@ public class CommonUtils {
      */
     public static String getBaseUrl(HttpServletRequest request) {
         //1.【兼容】兼容微服务下的 base path-------
-        String x_gateway_base_path = request.getHeader("X_GATEWAY_BASE_PATH");
-        if(oConvertUtils.isNotEmpty(x_gateway_base_path)){
-            log.info("x_gateway_base_path = "+ x_gateway_base_path);
-            return  x_gateway_base_path;
+        String xGatewayBasePath = request.getHeader("X_GATEWAY_BASE_PATH");
+        if(oConvertUtils.isNotEmpty(xGatewayBasePath)){
+            log.info("x_gateway_base_path = "+ xGatewayBasePath);
+            return  xGatewayBasePath;
         }
         //2.【兼容】SSL认证之后，request.getScheme()获取不到https的问题
         // https://blog.csdn.net/weixin_34376986/article/details/89767950
@@ -310,7 +333,8 @@ public class CommonUtils {
 
         //返回 host domain
         String baseDomainPath = null;
-        if(80 == serverPort){
+        int length = 80;
+        if(length == serverPort){
             baseDomainPath = scheme + "://" + serverName  + contextPath ;
         }else{
             baseDomainPath = scheme + "://" + serverName + ":" + serverPort + contextPath ;

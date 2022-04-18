@@ -23,18 +23,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Api(tags = "分库分表测试")
 @RestController
-@RequestMapping("/sharding/")
+@RequestMapping("/sharding")
 public class JeecgShardingDemoController extends JeecgController<ShardingSysLog, IShardingSysLogService> {
     @Autowired
     private IShardingSysLogService shardingSysLogService;
 
     /**
-     * 单库分表
+     * 单库分表 —— 添加
      * @return
      */
     @PostMapping(value = "/test1")
-    @AutoLog(value = "单库分表")
-    @ApiOperation(value = "单库分表", notes = "分库分表添加")
+    @ApiOperation(value = "单库分表插入", notes = "单库分表")
     public Result<?> add() {
         for (int i = 0; i < 10; i++) {
             ShardingSysLog shardingSysLog = new ShardingSysLog();
@@ -45,13 +44,23 @@ public class JeecgShardingDemoController extends JeecgController<ShardingSysLog,
         }
         return Result.OK();
     }
+
     /**
-     * 双库分表
+     * 单库分表 —— 查询
+     * @return
+     */
+    @PostMapping(value = "/list1")
+    @ApiOperation(value = "单库分表查询", notes = "单库分表")
+    public Result<?> list() {
+        return Result.OK(shardingSysLogService.list());
+    }
+
+    /**
+     * 双库分表 - 插入
      * @return
      */
     @PostMapping(value = "/test2")
-    @AutoLog(value = "双库分表")
-    @ApiOperation(value = "双库分表", notes = "双库分表")
+    @ApiOperation(value = "双库分表插入", notes = "双库分表")
     public Result<?> test2() {
         for (int i = 20; i <= 30; i++) {
             ShardingSysLog shardingSysLog = new ShardingSysLog();
@@ -61,6 +70,16 @@ public class JeecgShardingDemoController extends JeecgController<ShardingSysLog,
             shardingSysLogService.save(shardingSysLog);
         }
         return Result.OK();
+    }
+
+    /**
+     * 双库分表 - 查询
+     * @return
+     */
+    @PostMapping(value = "/list2")
+    @ApiOperation(value = "双库分表查询", notes = "双库分表")
+    public Result<?> list2() {
+        return Result.OK(shardingSysLogService.list());
     }
 
 }

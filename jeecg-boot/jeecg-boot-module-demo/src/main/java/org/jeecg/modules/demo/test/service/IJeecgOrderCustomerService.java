@@ -13,6 +13,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @Version: V1.0
  */
 public interface IJeecgOrderCustomerService extends IService<JeecgOrderCustomer> {
-	
+
+    /**
+     * 根据订单id获取订单客户数据
+     * @param mainId 订单id
+     * @return 订单顾客集合
+     */
 	public List<JeecgOrderCustomer> selectCustomersByMainId(String mainId);
 }

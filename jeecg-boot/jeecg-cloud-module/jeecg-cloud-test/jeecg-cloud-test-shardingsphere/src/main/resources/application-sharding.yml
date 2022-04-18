@@ -1,3 +1,4 @@
+#单库分表配置
 spring:
   shardingsphere:
     props:
@@ -6,10 +7,10 @@ spring:
       #添加分库数据源
       ds0:
         driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3300/jeecg-boot?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+        url: jdbc:mysql://jeecg-boot-mysql:3306/jeecg-boot?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
         username: root
-        type: com.alibaba.druid.pool.DruidDataSource
         password: root
+        type: com.alibaba.druid.pool.DruidDataSource
       names: ds0
     # 规则配置
     rules:

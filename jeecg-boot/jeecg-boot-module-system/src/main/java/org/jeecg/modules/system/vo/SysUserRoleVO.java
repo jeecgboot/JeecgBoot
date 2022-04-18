@@ -5,6 +5,10 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * @Description: 用户角色vo
+ * @author: jeecg-boot
+ */
 @Data
 public class SysUserRoleVO implements Serializable{
 	private static final long serialVersionUID = 1L;

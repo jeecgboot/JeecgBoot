@@ -1,15 +1,14 @@
 package org.jeecg.common.util;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
+
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * redis 工具类
@@ -21,8 +20,6 @@ public class RedisUtil {
 
 	@Autowired
 	private RedisTemplate<String, Object> redisTemplate;
-	@Autowired
-	private StringRedisTemplate stringRedisTemplate;
 
 	/**
 	 * 指定缓存失效时间
@@ -79,7 +76,8 @@ public class RedisUtil {
 			if (key.length == 1) {
 				redisTemplate.delete(key[0]);
 			} else {
-				redisTemplate.delete(CollectionUtils.arrayToList(key));
+				//springboot2.4后用法
+				redisTemplate.delete(Arrays.asList(key));
 			}
 		}
 	}
@@ -585,7 +583,8 @@ public class RedisUtil {
 		try {
 			return redisTemplate.execute((RedisCallback<Set<String>>) connection -> {
 				Set<String> binaryKeys = new HashSet<>();
-				Cursor<byte[]> cursor = connection.scan(new ScanOptions.ScanOptionsBuilder().match(realKey).count(Integer.MAX_VALUE).build());
+				//springboot2.4后用法
+				Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions().match(realKey).count(Integer.MAX_VALUE).build());
 				while (cursor.hasNext()) {
 					binaryKeys.add(new String(cursor.next()));
 				}

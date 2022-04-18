@@ -9,6 +9,8 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.system.query.QueryRuleEnum;
 import org.jeecg.common.system.util.JeecgDataAutorUtils;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
@@ -28,6 +30,7 @@ import java.util.List;
  *  当被请求的方法有注解PermissionData时,会在往当前request中写入数据权限信息
  * @Date 2019年4月10日
  * @Version: 1.0
+ * @author: jeecg-boot
  */
 @Aspect
 @Component
@@ -35,7 +38,7 @@ import java.util.List;
 public class PermissionDataAspect {
     @Lazy
     @Autowired
-    private CommonAPI commonAPI;
+    private CommonAPI commonApi;
 
     @Pointcut("@annotation(org.jeecg.common.aspect.annotation.PermissionData)")
     public void pointCut() {
@@ -55,7 +58,7 @@ public class PermissionDataAspect {
         //update-begin-author:taoyan date:20211027 for:JTC-132【online报表权限】online报表带参数的菜单配置数据权限无效
         //先判断是否online报表请求
         // TODO 参数顺序调整有隐患
-        if(requestPath.indexOf(UrlMatchEnum.CGREPORT_DATA.getMatch_url())>=0){
+        if(requestPath.indexOf(UrlMatchEnum.CGREPORT_DATA.getMatchUrl())>=0){
             // 获取地址栏参数
             String urlParamString = request.getParameter(CommonConstant.ONL_REP_URL_PARAM_STR);
             if(oConvertUtils.isNotEmpty(urlParamString)){
@@ -67,12 +70,12 @@ public class PermissionDataAspect {
         String username = JwtUtil.getUserNameByToken(request);
         //查询数据权限信息
         //TODO 微服务情况下也得支持缓存机制
-        List<SysPermissionDataRuleModel> dataRules = commonAPI.queryPermissionDataRule(component, requestPath, username);
+        List<SysPermissionDataRuleModel> dataRules = commonApi.queryPermissionDataRule(component, requestPath, username);
         if(dataRules!=null && dataRules.size()>0) {
             //临时存储
             JeecgDataAutorUtils.installDataSearchConditon(request, dataRules);
             //TODO 微服务情况下也得支持缓存机制
-            SysUserCacheInfo userinfo = commonAPI.getCacheUser(username);
+            SysUserCacheInfo userinfo = commonApi.getCacheUser(username);
             JeecgDataAutorUtils.installUserInfo(request, userinfo);
         }
         return  point.proceed();
@@ -83,7 +86,7 @@ public class PermissionDataAspect {
         if(oConvertUtils.isNotEmpty(requestPath)){
             url = requestPath.replace("\\", "/");
             url = url.replace("//", "/");
-            if(url.indexOf("//")>=0){
+            if(url.indexOf(SymbolConstant.DOUBLE_SLASH)>=0){
                 url = filterUrl(url);
             }
 			/*if(url.startsWith("/")){
@@ -105,17 +108,19 @@ public class PermissionDataAspect {
         if(oConvertUtils.isNotEmpty(queryString)){
             requestPath += "?" + queryString;
         }
-        if (requestPath.indexOf("&") > -1) {// 去掉其他参数(保留一个参数) 例如：loginController.do?login
+        // 去掉其他参数(保留一个参数) 例如：loginController.do?login
+        if (requestPath.indexOf(SymbolConstant.AND) > -1) {
             requestPath = requestPath.substring(0, requestPath.indexOf("&"));
         }
-        if(requestPath.indexOf("=")!=-1){
-            if(requestPath.indexOf(".do")!=-1){
+        if(requestPath.indexOf(QueryRuleEnum.EQ.getValue())!=-1){
+            if(requestPath.indexOf(CommonConstant.SPOT_DO)!=-1){
                 requestPath = requestPath.substring(0,requestPath.indexOf(".do")+3);
             }else{
                 requestPath = requestPath.substring(0,requestPath.indexOf("?"));
             }
         }
-        requestPath = requestPath.substring(request.getContextPath().length() + 1);// 去掉项目路径
+        // 去掉项目路径
+        requestPath = requestPath.substring(request.getContextPath().length() + 1);
         return filterUrl(requestPath);
     }
 

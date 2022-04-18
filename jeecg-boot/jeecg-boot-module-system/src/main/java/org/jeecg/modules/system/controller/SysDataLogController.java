@@ -22,6 +22,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @Description: 系统数据日志
+ * @author: jeecg-boot
+ */
 @RestController
 @RequestMapping("/sys/dataLog")
 @Slf4j

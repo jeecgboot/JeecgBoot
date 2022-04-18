@@ -2,6 +2,7 @@ package org.jeecg.common.util;
 
 /**
  * 系统公告自定义跳转方式
+ * @author: jeecg-boot
  */
 public enum SysAnnmentTypeEnum {
     /**

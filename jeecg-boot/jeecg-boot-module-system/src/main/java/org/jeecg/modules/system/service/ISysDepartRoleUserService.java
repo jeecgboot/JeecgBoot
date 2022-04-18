@@ -13,6 +13,12 @@ import java.util.List;
  */
 public interface ISysDepartRoleUserService extends IService<SysDepartRoleUser> {
 
+    /**
+     * 添加用户与部门关联
+     * @param userId 用户id
+     * @param newRoleId 新的角色id
+     * @param oldRoleId 旧的角色id
+     */
     void deptRoleUserAdd(String userId,String newRoleId,String oldRoleId);
 
     /**

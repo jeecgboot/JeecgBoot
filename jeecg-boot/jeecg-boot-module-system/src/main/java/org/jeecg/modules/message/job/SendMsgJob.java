@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 发送消息任务
+ * @author: jeecg-boot
  */
 
 @Slf4j
@@ -48,16 +49,24 @@ public class SendMsgJob implements Job {
 					sendMsgHandle = (ISendMsgHandle) Class.forName(SendMsgTypeEnum.SMS.getImplClass()).newInstance();
 				} else if (sysMessage.getEsType().equals(SendMsgTypeEnum.WX.getType())) {
 					sendMsgHandle = (ISendMsgHandle) Class.forName(SendMsgTypeEnum.WX.getImplClass()).newInstance();
+				} else if(sysMessage.getEsType().equals(SendMsgTypeEnum.SYSTEM_MESSAGE.getType())){
+                    //update-begin---author:wangshuai ---date:20220323  for：[issues/I4X698]根据模板发送系统消息，发送失败------------
+				    sendMsgHandle = (ISendMsgHandle) Class.forName(SendMsgTypeEnum.SYSTEM_MESSAGE.getImplClass()).newInstance();
+                    //update-end---author:wangshuai ---date:20220323  for：[issues/I4X698]根据模板发送系统消息，发送失败------------
 				}
 			} catch (Exception e) {
 				log.error(e.getMessage(),e);
 			}
 			Integer sendNum = sysMessage.getEsSendNum();
 			try {
-				sendMsgHandle.SendMsg(sysMessage.getEsReceiver(), sysMessage.getEsTitle(),
-						sysMessage.getEsContent().toString());
-				// 发送消息成功
-				sysMessage.setEsSendStatus(SendMsgStatusEnum.SUCCESS.getCode());
+                //update-begin---author:wangshuai ---date:20220323  for：[issues/I4X698]模板管理发送消息出现NullPointerException 錯誤------------
+                if(null != sendMsgHandle){
+                    sendMsgHandle.SendMsg(sysMessage.getEsReceiver(), sysMessage.getEsTitle(),
+                            sysMessage.getEsContent().toString());
+                    //发送消息成功
+                    sysMessage.setEsSendStatus(SendMsgStatusEnum.SUCCESS.getCode());
+                }
+                //update-end---author:wangshuai ---date:20220323  for：[issues/I4X698]模板管理发送消息出现NullPointerException 錯誤------------
 			} catch (Exception e) {
 				e.printStackTrace();
 				// 发送消息出现异常

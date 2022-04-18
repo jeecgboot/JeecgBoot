@@ -11,7 +11,6 @@ import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.RestUtil;
 import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -41,9 +40,6 @@ import java.net.URLDecoder;
 @RestController
 @RequestMapping("/sys/common")
 public class CommonController {
-
-    @Autowired
-    private ISysBaseAPI sysBaseAPI;
 
     @Value(value = "${jeecg.path.upload}")
     private String uploadpath;
@@ -81,7 +77,8 @@ public class CommonController {
         }
 
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-        MultipartFile file = multipartRequest.getFile("file");// 获取上传文件对象
+        // 获取上传文件对象
+        MultipartFile file = multipartRequest.getFile("file");
         if(oConvertUtils.isEmpty(bizPath)){
             if(CommonConstant.UPLOAD_TYPE_OSS.equals(uploadType)){
                 //未指定目录，则用阿里云默认目录 upload
@@ -135,9 +132,11 @@ public class CommonController {
             String fileName = null;
             File file = new File(ctxPath + File.separator + bizPath + File.separator );
             if (!file.exists()) {
-                file.mkdirs();// 创建文件根目录
+                // 创建文件根目录
+                file.mkdirs();
             }
-            String orgName = mf.getOriginalFilename();// 获取文件名
+            // 获取文件名
+            String orgName = mf.getOriginalFilename();
             orgName = CommonUtils.getFileName(orgName);
             if(orgName.indexOf(".")!=-1){
                 fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.lastIndexOf("."));
@@ -228,7 +227,8 @@ public class CommonController {
                 response.setStatus(404);
                 throw new RuntimeException("文件["+imgPath+"]不存在..");
             }
-            response.setContentType("application/force-download");// 设置强制下载不打开
+            // 设置强制下载不打开
+            response.setContentType("application/force-download");
             response.addHeader("Content-Disposition", "attachment;fileName=" + new String(file.getName().getBytes("UTF-8"),"iso-8859-1"));
             inputStream = new BufferedInputStream(new FileInputStream(filePath));
             outputStream = response.getOutputStream();

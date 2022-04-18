@@ -7,6 +7,10 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
+/**
+ * @Description: 文档管理
+ * @author: jeecg-boot
+ */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)

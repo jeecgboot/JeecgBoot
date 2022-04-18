@@ -6,7 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author Administrator
+ * @author: zyf
+ * @date: 20210715
  */
 @Configuration
 public class SentinelFilterContextConfig {

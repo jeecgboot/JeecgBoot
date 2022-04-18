@@ -23,7 +23,8 @@ public interface ISysDepartPermissionService extends IService<SysDepartPermissio
 
     /**
      * 根据部门id，菜单id获取数据规则
-     * @param permissionId
+     * @param permissionId 菜单id
+     * @param departId 部门id
      * @return
      */
     List<SysPermissionDataRule> getPermRuleListByDeptIdAndPermId(String departId,String permissionId);

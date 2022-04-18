@@ -28,7 +28,8 @@ public class RestUtil {
             // issues/2959
             // 微服务版集成企业微信单点登录
             // 因为微服务版没有端口号，导致 SpringContextUtils.getDomain() 方法获取的域名的端口号变成了:-1所以出问题了，只需要把这个-1给去掉就可以了。
-            if (domain.endsWith(":-1")) {
+            String port=":-1";
+            if (domain.endsWith(port)) {
                 domain = domain.substring(0, domain.length() - 3);
             }
         }

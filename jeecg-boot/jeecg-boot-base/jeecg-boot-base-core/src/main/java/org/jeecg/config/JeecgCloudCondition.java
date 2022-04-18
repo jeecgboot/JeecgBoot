@@ -7,6 +7,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * 微服务环境加载条件
+ * @author: jeecg-boot
  */
 public class JeecgCloudCondition implements Condition {
 

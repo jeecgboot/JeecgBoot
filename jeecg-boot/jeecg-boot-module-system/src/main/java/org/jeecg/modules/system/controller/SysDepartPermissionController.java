@@ -2,16 +2,20 @@ package org.jeecg.modules.system.controller;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.SysDepartPermission;
 import org.jeecg.modules.system.entity.SysDepartRolePermission;
 import org.jeecg.modules.system.entity.SysPermission;
@@ -56,6 +60,9 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 	 @Autowired
 	 private ISysDepartRolePermissionService sysDepartRolePermissionService;
 
+	 @Autowired
+     private BaseCommonService baseCommonService;
+	 
 	/**
 	 * 分页列表查询
 	 *
@@ -174,7 +181,7 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 		if(list==null || list.size()==0) {
 			return Result.error("未找到权限配置信息");
 		}else {
-			Map<String,Object> map = new HashMap<>();
+			Map<String,Object> map = new HashMap(5);
 			map.put("datarule", list);
 			LambdaQueryWrapper<SysDepartPermission> query = new LambdaQueryWrapper<SysDepartPermission>()
 				 .eq(SysDepartPermission::getPermissionId, permissionId)
@@ -253,7 +260,11 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 			 String lastPermissionIds = json.getString("lastpermissionIds");
 			 this.sysDepartRolePermissionService.saveDeptRolePermission(roleId, permissionIds, lastPermissionIds);
 			 result.success("保存成功！");
-			 log.info("======部门角色授权成功=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+             //update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]部门角色授权添加敏感日志------------
+             LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+             baseCommonService.addLog("修改部门角色ID:"+roleId+"的权限配置，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
+             //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]部门角色授权添加敏感日志------------
+             log.info("======部门角色授权成功=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
 		 } catch (Exception e) {
 			 result.error500("授权失败！");
 			 log.error(e.getMessage(), e);
@@ -282,9 +293,11 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 			 }
 			 List<TreeModel> treeList = new ArrayList<>();
 			 getTreeModelList(treeList, list, null);
-			 Map<String,Object> resMap = new HashMap<String,Object>();
-			 resMap.put("treeList", treeList); //全部树节点数据
-			 resMap.put("ids", ids);//全部树ids
+			 Map<String,Object> resMap = new HashMap(5);
+             //全部树节点数据
+			 resMap.put("treeList", treeList);
+             //全部树ids
+			 resMap.put("ids", ids);
 			 result.setResult(resMap);
 			 result.setSuccess(true);
 		 } catch (Exception e) {

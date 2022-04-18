@@ -13,6 +13,10 @@ import com.alibaba.fastjson.JSONObject;
 import javax.crypto.SecretKey;
 import java.security.KeyPair;
 
+/**
+ * @Description: SecurityTools
+ * @author: jeecg-boot
+ */
 public class SecurityTools {
     public static final String ALGORITHM = "AES/ECB/PKCS5Padding";
 

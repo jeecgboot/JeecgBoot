@@ -4,24 +4,22 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.dto.LogDTO;
-import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.modules.base.mapper.BaseCommonMapper;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
-import org.jeecg.common.system.vo.SysUserCacheInfo;
-import org.jeecg.common.util.IPUtils;
+import org.jeecg.common.util.IpUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.util.PathMatcher;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
+/**
+ * @Description: common实现类
+ * @author: jeecg-boot
+ */
 @Service
 @Slf4j
 public class BaseCommonServiceImpl implements BaseCommonService {
@@ -55,7 +53,7 @@ public class BaseCommonServiceImpl implements BaseCommonService {
             //获取request
             HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
             //设置IP地址
-            sysLog.setIp(IPUtils.getIpAddr(request));
+            sysLog.setIp(IpUtils.getIpAddr(request));
         } catch (Exception e) {
             sysLog.setIp("127.0.0.1");
         }

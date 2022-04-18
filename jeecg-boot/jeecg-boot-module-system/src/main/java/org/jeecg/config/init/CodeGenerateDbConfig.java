@@ -43,7 +43,7 @@ public class CodeGenerateDbConfig {
                 }
             }
             CodegenDatasourceConfig.initDbConfig(driverClassName,url, username, password);
-            log.info(" 代码生成器数据库连接，使用application.yml的DB配置 ###################");
+            log.info(" Init CodeGenerate Config [ Get Db Config From application.yml ] ");
         }
         return null;
     }

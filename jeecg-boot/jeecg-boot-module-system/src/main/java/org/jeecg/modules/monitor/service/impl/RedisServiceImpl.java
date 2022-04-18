@@ -54,11 +54,11 @@ public class RedisServiceImpl implements RedisService {
 	@Override
 	public Map<String, Object> getKeysSize() throws RedisConnectException {
 		Long dbSize = redisConnectionFactory.getConnection().dbSize();
-		Map<String, Object> map = new HashMap<>();
+		Map<String, Object> map = new HashMap(5);
 		map.put("create_time", System.currentTimeMillis());
 		map.put("dbSize", dbSize);
 
-		log.info("--getKeysSize--: " + map.toString());
+		log.debug("--getKeysSize--: " + map.toString());
 		return map;
 	}
 
@@ -69,12 +69,12 @@ public class RedisServiceImpl implements RedisService {
 		for (Map.Entry<Object, Object> entry : info.entrySet()) {
 			String key = oConvertUtils.getString(entry.getKey());
 			if ("used_memory".equals(key)) {
-				map = new HashMap<>();
+				map = new HashMap(5);
 				map.put("used_memory", entry.getValue());
 				map.put("create_time", System.currentTimeMillis());
 			}
 		}
-		log.info("--getMemoryInfo--: " + map.toString());
+		log.debug("--getMemoryInfo--: " + map.toString());
 		return map;
 	}
 
@@ -86,7 +86,7 @@ public class RedisServiceImpl implements RedisService {
      */
 	@Override
 	public Map<String, JSONArray> getMapForReport(String type)  throws RedisConnectException {
-		Map<String,JSONArray> mapJson=new HashMap<String, JSONArray> ();
+		Map<String,JSONArray> mapJson=new HashMap(5);
 		JSONArray json = new JSONArray();
 		if("3".equals(type)){
 			List<RedisInfo> redisInfo = getRedisInfo();

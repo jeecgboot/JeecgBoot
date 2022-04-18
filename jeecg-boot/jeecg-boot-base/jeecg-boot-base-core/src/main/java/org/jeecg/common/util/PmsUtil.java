@@ -10,6 +10,10 @@ import java.io.FileWriter;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @Description: PmsUtil
+ * @author: jeecg-boot
+ */
 @Slf4j
 @Component
 public class PmsUtil {
@@ -41,7 +45,7 @@ public class PmsUtil {
             for (String s : msg) {
                 //写数据
                 if (s.indexOf("_") > 0) {
-                    String arr[] = s.split("_");
+                    String[] arr = s.split("_");
                     bw.write("第" + arr[0] + "行:" + arr[1]);
                 } else {
                     bw.write(s);

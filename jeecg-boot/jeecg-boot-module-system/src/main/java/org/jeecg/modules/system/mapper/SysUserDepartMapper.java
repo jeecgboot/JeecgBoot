@@ -8,8 +8,17 @@ import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserDepart;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+/**
+ * @Description: 用户部门mapper接口
+ * @author: jeecg-boot
+ */
 public interface SysUserDepartMapper extends BaseMapper<SysUserDepart>{
-	
+
+    /**
+     * 通过用户id查询部门用户
+     * @param userId 用户id
+     * @return List<SysUserDepart>
+     */
 	List<SysUserDepart> getUserDepartByUid(@Param("userId") String userId);
 
 	/**

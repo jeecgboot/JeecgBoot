@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 通用api
+ * @author: jeecg-boot
+ */
 public interface CommonAPI {
 
     /**
@@ -67,6 +71,9 @@ public interface CommonAPI {
 
     /**
      * 8查询数据权限
+     * @param component 组件
+     * @param username 用户名
+     * @param requestPath 前段请求地址
      * @return
      */
     List<SysPermissionDataRuleModel> queryPermissionDataRule(String component, String requestPath, String username);

@@ -6,6 +6,10 @@ import org.jeecg.modules.system.entity.SysTenant;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * @Description: 租户service接口
+ * @author: jeecg-boot
+ */
 public interface ISysTenantService extends IService<SysTenant> {
 
     /**
@@ -22,7 +26,7 @@ public interface ISysTenantService extends IService<SysTenant> {
      * @param id
      * @return
      */
-    int countUserLinkTenant(String id);
+    Long countUserLinkTenant(String id);
 
     /**
      * 根据ID删除租户，会判断是否已被引用

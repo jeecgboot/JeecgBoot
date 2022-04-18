@@ -7,10 +7,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * 签名 拦截器配置
+ * @author: jeecg-boot
  */
 @Configuration
 public class SignAuthConfiguration implements WebMvcConfigurer {
-    public static String[] urlList = new String[] {"/sys/dict/getDictItems/*", "/sys/dict/loadDict/*",
+    public static String[] SIGN_URL_LIST = new String[]{"/sys/dict/getDictItems/*", "/sys/dict/loadDict/*",
             "/sys/dict/loadDictOrderByValue/*", "/sys/dict/loadDictItem/*", "/sys/dict/loadTreeData",
             "/sys/api/queryTableDictItemsByCode", "/sys/api/queryFilterTableDictInfo", "/sys/api/queryTableDictByKeys",
             "/sys/api/translateDictFromTable", "/sys/api/translateDictFromTableByKeys"};
@@ -21,6 +22,6 @@ public class SignAuthConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(signAuthInterceptor()).addPathPatterns(urlList);
+        registry.addInterceptor(signAuthInterceptor()).addPathPatterns(SIGN_URL_LIST);
     }
 }

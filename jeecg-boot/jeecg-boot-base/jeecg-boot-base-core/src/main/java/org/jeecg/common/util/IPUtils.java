@@ -3,6 +3,7 @@ package org.jeecg.common.util;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jeecg.common.constant.CommonConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,8 +14,8 @@ import org.slf4j.LoggerFactory;
  * @email jeecgos@163.com
  * @Date 2019年01月14日
  */
-public class IPUtils {
-	private static Logger logger = LoggerFactory.getLogger(IPUtils.class);
+public class IpUtils {
+	private static Logger logger = LoggerFactory.getLogger(IpUtils.class);
 
 	/**
 	 * 获取IP地址
@@ -26,19 +27,19 @@ public class IPUtils {
     	String ip = null;
         try {
             ip = request.getHeader("x-forwarded-for");
-            if (StringUtils.isEmpty(ip) || "unknown".equalsIgnoreCase(ip)) {
+            if (StringUtils.isEmpty(ip) || CommonConstant.UNKNOWN.equalsIgnoreCase(ip)) {
                 ip = request.getHeader("Proxy-Client-IP");
             }
-            if (StringUtils.isEmpty(ip) || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            if (StringUtils.isEmpty(ip) || ip.length() == 0 ||CommonConstant.UNKNOWN.equalsIgnoreCase(ip)) {
                 ip = request.getHeader("WL-Proxy-Client-IP");
             }
-            if (StringUtils.isEmpty(ip) || "unknown".equalsIgnoreCase(ip)) {
+            if (StringUtils.isEmpty(ip) || CommonConstant.UNKNOWN.equalsIgnoreCase(ip)) {
                 ip = request.getHeader("HTTP_CLIENT_IP");
             }
-            if (StringUtils.isEmpty(ip) || "unknown".equalsIgnoreCase(ip)) {
+            if (StringUtils.isEmpty(ip) || CommonConstant.UNKNOWN.equalsIgnoreCase(ip)) {
                 ip = request.getHeader("HTTP_X_FORWARDED_FOR");
             }
-            if (StringUtils.isEmpty(ip) || "unknown".equalsIgnoreCase(ip)) {
+            if (StringUtils.isEmpty(ip) || CommonConstant.UNKNOWN.equalsIgnoreCase(ip)) {
                 ip = request.getRemoteAddr();
             }
         } catch (Exception e) {

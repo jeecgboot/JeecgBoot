@@ -31,10 +31,10 @@ public class MybatisPlusSaasConfig {
     /**
      * 哪些表需要做多租户 表需要添加一个字段 tenant_id
      */
-    private static final List<String> tenantTable = new ArrayList<String>();
+    private static final List<String> TENANT_TABLE = new ArrayList<String>();
 
     static {
-        tenantTable.add("demo");
+        TENANT_TABLE.add("demo");
 
 //        //角色、菜单、部门
 //        tenantTable.add("sys_role");
@@ -50,8 +50,8 @@ public class MybatisPlusSaasConfig {
         interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(new TenantLineHandler() {
             @Override
             public Expression getTenantId() {
-                String tenant_id = oConvertUtils.getString(TenantContext.getTenant(),"0");
-                return new LongValue(tenant_id);
+                String tenantId = oConvertUtils.getString(TenantContext.getTenant(),"0");
+                return new LongValue(tenantId);
             }
 
             @Override
@@ -62,7 +62,7 @@ public class MybatisPlusSaasConfig {
             // 返回 true 表示不走租户逻辑
             @Override
             public boolean ignoreTable(String tableName) {
-                for(String temp: tenantTable){
+                for(String temp: TENANT_TABLE){
                     if(temp.equalsIgnoreCase(tableName)){
                         return false;
                     }

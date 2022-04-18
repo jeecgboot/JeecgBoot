@@ -2,6 +2,8 @@ package org.jeecg.common.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.SymbolConstant;
 import org.springframework.beans.BeanUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,14 +36,14 @@ public class oConvertUtils {
 		if ("".equals(object)) {
 			return (true);
 		}
-		if ("null".equals(object)) {
+		if (CommonConstant.STRING_NULL.equals(object)) {
 			return (true);
 		}
 		return (false);
 	}
 	
 	public static boolean isNotEmpty(Object object) {
-		if (object != null && !object.equals("") && !object.equals("null")) {
+		if (object != null && !"".equals(object) && !object.equals(CommonConstant.STRING_NULL)) {
 			return (true);
 		}
 		return (false);
@@ -52,7 +54,8 @@ public class oConvertUtils {
 		return temp;
 	}
 
-	public static String StrToUTF(String strIn, String sourceCode, String targetCode) {
+	@SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
+    public static String StrToUTF(String strIn, String sourceCode, String targetCode) {
 		strIn = "";
 		try {
 			strIn = new String(strIn.getBytes("ISO-8859-1"), "GBK");
@@ -66,7 +69,7 @@ public class oConvertUtils {
 
 	private static String code2code(String strIn, String sourceCode, String targetCode) {
 		String strOut = null;
-		if (strIn == null || (strIn.trim()).equals("")) {
+		if (strIn == null || "".equals(strIn.trim())) {
 			return strIn;
 		}
 		try {
@@ -279,13 +282,13 @@ public class oConvertUtils {
 	 */
 	public static String getIpAddrByRequest(HttpServletRequest request) {
 		String ip = request.getHeader("x-forwarded-for");
-		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+		if (ip == null || ip.length() == 0 || CommonConstant.UNKNOWN.equalsIgnoreCase(ip)) {
 			ip = request.getHeader("Proxy-Client-IP");
 		}
-		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+		if (ip == null || ip.length() == 0 || CommonConstant.UNKNOWN.equalsIgnoreCase(ip)) {
 			ip = request.getHeader("WL-Proxy-Client-IP");
 		}
-		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+		if (ip == null || ip.length() == 0 || CommonConstant.UNKNOWN.equalsIgnoreCase(ip)) {
 			ip = request.getRemoteAddr();
 		}
 		return ip;
@@ -296,23 +299,28 @@ public class oConvertUtils {
 	 * @throws SocketException
 	 */
 	public static String getRealIp() throws SocketException {
-		String localip = null;// 本地IP，如果没有配置外网IP则返回它
-		String netip = null;// 外网IP
+        // 本地IP，如果没有配置外网IP则返回它
+		String localip = null;
+        // 外网IP
+		String netip = null;
 
 		Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
 		InetAddress ip = null;
-		boolean finded = false;// 是否找到外网IP
+        // 是否找到外网IP
+		boolean finded = false;
 		while (netInterfaces.hasMoreElements() && !finded) {
 			NetworkInterface ni = netInterfaces.nextElement();
 			Enumeration<InetAddress> address = ni.getInetAddresses();
 			while (address.hasMoreElements()) {
 				ip = address.nextElement();
-				if (!ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && ip.getHostAddress().indexOf(":") == -1) {// 外网IP
+                // 外网IP
+				if (!ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && ip.getHostAddress().indexOf(":") == -1) {
 					netip = ip.getHostAddress();
 					finded = true;
 					break;
-				} else if (ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && ip.getHostAddress().indexOf(":") == -1) {// 内网IP
-					localip = ip.getHostAddress();
+				} else if (ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && ip.getHostAddress().indexOf(":") == -1) {
+                    // 内网IP
+				    localip = ip.getHostAddress();
 				}
 			}
 		}
@@ -333,7 +341,8 @@ public class oConvertUtils {
 	public static String replaceBlank(String str) {
 		String dest = "";
 		if (str != null) {
-			Pattern p = Pattern.compile("\\s*|\t|\r|\n");
+		    String reg = "\\s*|\t|\r|\n";
+			Pattern p = Pattern.compile(reg);
 			Matcher m = p.matcher(str);
 			dest = m.replaceAll("");
 		}
@@ -365,7 +374,7 @@ public class oConvertUtils {
 	 * 获取Map对象
 	 */
 	public static Map<Object, Object> getHashMap() {
-		return new HashMap<Object, Object>();
+		return new HashMap<>(5);
 	}
 
 	/**
@@ -374,7 +383,7 @@ public class oConvertUtils {
 	 * @param str
 	 * @return
 	 */
-	public static Map<Object, Object> SetToMap(Set<Object> setobj) {
+	public static Map<Object, Object> setToMap(Set<Object> setobj) {
 		Map<Object, Object> map = getHashMap();
 		for (Iterator iterator = setobj.iterator(); iterator.hasNext();) {
 			Map.Entry<Object, Object> entry = (Map.Entry<Object, Object>) iterator.next();
@@ -384,7 +393,7 @@ public class oConvertUtils {
 
 	}
 
-	public static boolean isInnerIP(String ipAddress) {
+	public static boolean isInnerIp(String ipAddress) {
 		boolean isInnerIp = false;
 		long ipNum = getIpNum(ipAddress);
 		/**
@@ -396,7 +405,8 @@ public class oConvertUtils {
 		long bEnd = getIpNum("172.31.255.255");
 		long cBegin = getIpNum("192.168.0.0");
 		long cEnd = getIpNum("192.168.255.255");
-		isInnerIp = isInner(ipNum, aBegin, aEnd) || isInner(ipNum, bBegin, bEnd) || isInner(ipNum, cBegin, cEnd) || ipAddress.equals("127.0.0.1");
+		String localIp = "127.0.0.1";
+		isInnerIp = isInner(ipNum, aBegin, aEnd) || isInner(ipNum, bBegin, bEnd) || isInner(ipNum, cBegin, cEnd) || localIp.equals(ipAddress);
 		return isInnerIp;
 	}
 
@@ -430,7 +440,7 @@ public class oConvertUtils {
 		if (name == null || name.isEmpty()) {
 			// 没必要转换
 			return "";
-		} else if (!name.contains("_")) {
+		} else if (!name.contains(SymbolConstant.UNDERLINE)) {
 			// 不含下划线，仅将首字母小写
 			//update-begin--Author:zhoujf  Date:20180503 for：TASK #2500 【代码生成器】代码生成器开发一通用模板生成功能
 			//update-begin--Author:zhoujf  Date:20180503 for：TASK #2500 【代码生成器】代码生成器开发一通用模板生成功能
@@ -438,7 +448,7 @@ public class oConvertUtils {
 			//update-end--Author:zhoujf  Date:20180503 for：TASK #2500 【代码生成器】代码生成器开发一通用模板生成功能
 		}
 		// 用下划线将原始字符串分割
-		String camels[] = name.split("_");
+		String[] camels = name.split("_");
 		for (String camel : camels) {
 			// 跳过原始字符串中开头、结尾的下换线或双重下划线
 			if (camel.isEmpty()) {
@@ -467,7 +477,7 @@ public class oConvertUtils {
 	 * @return 转换后的驼峰式命名的字符串
 	 */
 	public static String camelNames(String names) {
-		if(names==null||names.equals("")){
+		if(names==null||"".equals(names)){
 			return null;
 		}
 		StringBuffer sf = new StringBuffer();
@@ -496,12 +506,12 @@ public class oConvertUtils {
 		if (name == null || name.isEmpty()) {
 			// 没必要转换
 			return "";
-		} else if (!name.contains("_")) {
+		} else if (!name.contains(SymbolConstant.UNDERLINE)) {
 			// 不含下划线，仅将首字母小写
 			return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
 		}
 		// 用下划线将原始字符串分割
-		String camels[] = name.split("_");
+		String[] camels = name.split("_");
 		for (String camel : camels) {
 			// 跳过原始字符串中开头、结尾的下换线或双重下划线
 			if (camel.isEmpty()) {
@@ -521,11 +531,13 @@ public class oConvertUtils {
 	 * @return
 	 */
 	public static String camelToUnderline(String para){
-        if(para.length()<3){
+	    int length = 3;
+        if(para.length()<length){
         	return para.toLowerCase(); 
         }
         StringBuilder sb=new StringBuilder(para);
-        int temp=0;//定位
+        //定位
+        int temp=0;
         //从第三个字符开始 避免命名不规范 
         for(int i=2;i<para.length();i++){
             if(Character.isUpperCase(para.charAt(i))){
@@ -576,7 +588,7 @@ public class oConvertUtils {
 	public static List<Map<String, Object>> toLowerCasePageList(List<Map<String, Object>> list){
 		List<Map<String, Object>> select = new ArrayList<>();
 		for (Map<String, Object> row : list) {
-			 Map<String, Object> resultMap = new HashMap<>();
+			 Map<String, Object> resultMap = new HashMap<>(5);
 			 Set<String> keySet = row.keySet(); 
 			 for (String key : keySet) { 
 				 String newKey = key.toLowerCase(); 

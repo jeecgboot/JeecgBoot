@@ -50,7 +50,7 @@ spring:
             instanceName: MyScheduler
             instanceId: AUTO
           jobStore:
-            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
             driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
             tablePrefix: QRTZ_
             isClustered: true
@@ -92,6 +92,9 @@ spring:
   # 设置静态文件路径，js,css等
   mvc:
     static-path-pattern: /**
+    #Spring Boot 2.6+后映射匹配的默认策略已从AntPathMatcher更改为PathPatternParser,需要手动指定为ant-path-matcher
+    pathmatch:
+      matching-strategy: ant_path_matcher
   resource:
     static-locations: classpath:/static/,classpath:/public/
   autoconfigure:

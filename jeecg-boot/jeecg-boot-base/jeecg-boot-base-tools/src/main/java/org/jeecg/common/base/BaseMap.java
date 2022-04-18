@@ -13,8 +13,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * 自定义Map
- */
+* BaseMap
+* 
+* @author: scott
+* @date: 2020/01/01 16:17
+*/
 public class BaseMap extends HashMap<String, Object> {
 
     private static final long serialVersionUID = 1L;

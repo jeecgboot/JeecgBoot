@@ -1,7 +1,8 @@
 package org.jeecg.common.system.vo;
 
 /**
- * lvdandan 部门机构model
+ * 部门机构model
+ * @author: lvdandan
  */
 public class SysDepartModel {
     /**ID*/

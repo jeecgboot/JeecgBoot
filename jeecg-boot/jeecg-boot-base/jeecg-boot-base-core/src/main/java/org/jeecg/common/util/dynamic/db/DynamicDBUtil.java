@@ -274,7 +274,15 @@ public class DynamicDBUtil {
         return list;
     }
 
-    //此方法只能返回单列，不能返回实体类
+    /**
+     * 此方法只能返回单列，不能返回实体类
+     * @param dbKey 数据源的key
+     * @param sql sal
+     * @param clazz 类
+     * @param param 参数
+     * @param <T>
+     * @return
+     */
     public static <T> List<T> findList(final String dbKey, String sql, Class<T> clazz, Object... param) {
         List<T> list;
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dbKey);

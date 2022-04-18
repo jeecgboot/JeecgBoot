@@ -19,14 +19,23 @@ public interface ISysCategoryService extends IService<SysCategory> {
 	/**根节点父ID的值*/
 	public static final String ROOT_PID_VALUE = "0";
 
+    /**
+     * 添加分类字典
+     * @param sysCategory
+     */
 	void addSysCategory(SysCategory sysCategory);
-	
+
+    /**
+     * 修改分类字典
+     * @param sysCategory
+     */
 	void updateSysCategory(SysCategory sysCategory);
 	
 	/**
-	  * 根据父级编码加载分类字典的数据
+     * 根据父级编码加载分类字典的数据
 	 * @param pcode
 	 * @return
+     * @throws JeecgBootException
 	 */
 	public List<TreeSelectModel> queryListByCode(String pcode) throws JeecgBootException;
 	

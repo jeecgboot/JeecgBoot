@@ -42,7 +42,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -61,9 +60,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/sys/user")
 public class SysUserController {
-	@Autowired
-	private ISysBaseAPI sysBaseAPI;
-	
+
 	@Autowired
 	private ISysUserService sysUserService;
 
@@ -91,7 +88,7 @@ public class SysUserController {
     @Value("${jeecg.path.upload}")
     private String upLoadPath;
 
-    @Resource
+    @Autowired
     private BaseCommonService baseCommonService;
 
     /**
@@ -117,7 +114,13 @@ public class SysUserController {
             query.eq(SysUserDepart::getDepId,departId);
             List<SysUserDepart> list = sysUserDepartService.list(query);
             List<String> userIds = list.stream().map(SysUserDepart::getUserId).collect(Collectors.toList());
-            queryWrapper.in("id",userIds);
+            //update-begin---author:wangshuai ---date:20220322  for：[issues/I4XTYB]查询用户时，当部门id 下没有分配用户时接口报错------------
+            if(oConvertUtils.listIsNotEmpty(userIds)){
+                queryWrapper.in("id",userIds);
+            }else{
+                return Result.OK();
+            }
+            //update-end---author:wangshuai ---date:20220322  for：[issues/I4XTYB]查询用户时，当部门id 下没有分配用户时接口报错------------
         }
         //用户ID
         String code = req.getParameter("code");
@@ -173,6 +176,7 @@ public class SysUserController {
 			user.setDelFlag(CommonConstant.DEL_FLAG_0);
 			// 保存用户走一个service 保证事务
 			sysUserService.saveUser(user, selectedRoles, selectedDeparts);
+            baseCommonService.addLog("添加用户，username： " +user.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
 			result.success("添加成功！");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -188,7 +192,7 @@ public class SysUserController {
 		Result<SysUser> result = new Result<SysUser>();
 		try {
 			SysUser sysUser = sysUserService.getById(jsonObject.getString("id"));
-			baseCommonService.addLog("编辑用户，id： " +jsonObject.getString("id") ,CommonConstant.LOG_TYPE_2, 2);
+			baseCommonService.addLog("编辑用户，username： " +sysUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
 			if(sysUser==null) {
 				result.error500("未找到对应实体");
 			}else {
@@ -336,6 +340,10 @@ public class SysUserController {
             return Result.error("用户不存在！");
         }
         sysUser.setId(u.getId());
+        //update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]修改密码添加敏感日志------------
+        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        baseCommonService.addLog("修改用户 "+sysUser.getUsername()+" 的密码，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
+        //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]修改密码添加敏感日志------------
         return sysUserService.changePassword(sysUser);
     }
 
@@ -586,6 +594,10 @@ public class SysUserController {
 		if(user==null) {
 			return Result.error("用户不存在！");
 		}
+        //update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]修改密码添加敏感日志------------
+        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        baseCommonService.addLog("修改密码，username： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
+        //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]修改密码添加敏感日志------------
 		return sysUserService.resetPassword(username,oldpassword,password,confirmpassword);
 	}
 
@@ -882,7 +894,7 @@ public class SysUserController {
         try {
         	LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
             List<SysDepart> list = this.sysDepartService.queryUserDeparts(sysUser.getId());
-            Map<String,Object> map = new HashMap<String,Object>();
+            Map<String,Object> map = new HashMap(5);
             map.put("list", list);
             map.put("orgCode", sysUser.getOrgCode());
             result.setSuccess(true);
@@ -1030,7 +1042,7 @@ public class SysUserController {
 		LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
         query.eq(SysUser::getPhone,phone);
         SysUser user = sysUserService.getOne(query);
-        Map<String,String> map = new HashMap<>();
+        Map<String,String> map = new HashMap(5);
         map.put("smscode",smscode);
         map.put("username",user.getUsername());
         result.setResult(map);
@@ -1076,6 +1088,9 @@ public class SysUserController {
             String passwordEncode = PasswordUtil.encrypt(sysUser.getUsername(), password, salt);
             sysUser.setPassword(passwordEncode);
             this.sysUserService.updateById(sysUser);
+            //update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]密码重置添加敏感日志------------
+            baseCommonService.addLog("重置 "+username+" 的密码，操作人： " +sysUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
+            //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]密码重置添加敏感日志------------
             result.setSuccess(true);
             result.setMessage("密码重置完成！");
             return result;
@@ -1297,7 +1312,7 @@ public class SysUserController {
     @GetMapping("/queryChildrenByUsername")
     public Result queryChildrenByUsername(@RequestParam("userId") String userId) {
         //获取用户信息
-        Map<String,Object> map=new HashMap<String,Object>();
+        Map<String,Object> map=new HashMap(5);
         SysUser sysUser = sysUserService.getById(userId);
         String username = sysUser.getUsername();
         Integer identity = sysUser.getUserIdentity();

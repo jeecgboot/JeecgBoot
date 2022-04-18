@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-base</artifactId>
-		<version>3.1.0</version>
+		<version>3.2.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -63,6 +63,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
+		<!--springboot2.6+解决metrics端点不显示jvm信息的问题-->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
 
 		<!-- commons -->
 		<dependency>
@@ -114,7 +119,7 @@
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>hibernate-re</artifactId>
-			<version>3.1.0-beta2</version>
+			<version>3.2.0-beta</version>
 		</dependency>
 
 		<!-- 数据库驱动 -->
@@ -175,6 +180,11 @@
 				<exclusion>
 					<groupId>org.apache.shiro</groupId>
 					<artifactId>shiro-core</artifactId>
+				</exclusion>
+				<!-- [issues/3596] 解决启动报错：Cannot resolve com.sun:tools:1.8.0 -->
+				<exclusion>
+					<groupId>com.puppycrawl.tools</groupId>
+					<artifactId>checkstyle</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

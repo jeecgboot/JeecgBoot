@@ -20,6 +20,7 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
+import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
@@ -34,8 +35,9 @@ import org.jeecg.common.util.oConvertUtils;
  **/
 public class JwtUtil {
 
-	// Token过期时间2小时（用户登录过期时间是此时间的两倍，以token在reids缓存时间为准）
-	public static final long EXPIRE_TIME = 2 * 60 * 60 * 1000;
+	/**Token有效期为1小时（Token在reids中缓存时间为两倍）*/
+	public static final long EXPIRE_TIME = 60 * 60 * 1000;
+	static final String WELL_NUMBER = SymbolConstant.WELL_NUMBER + SymbolConstant.LEFT_CURLY_BRACKET;
 
     /**
      *
@@ -45,6 +47,8 @@ public class JwtUtil {
      */
     public static void responseError(ServletResponse response, Integer code, String errorMsg) {
 		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+		// issues/I4YH95浏览器显示乱码问题
+		httpServletResponse.setHeader("Content-type", "text/html;charset=UTF-8");
         Result jsonResult = new Result(code, errorMsg);
         OutputStream os = null;
         try {
@@ -133,11 +137,13 @@ public class JwtUtil {
 		//${myVar}%
 		//得到${} 后面的值
 		String moshi = "";
-		if(key.indexOf("}")!=-1){
+		String wellNumber = WELL_NUMBER;
+
+		if(key.indexOf(SymbolConstant.RIGHT_CURLY_BRACKET)!=-1){
 			 moshi = key.substring(key.indexOf("}")+1);
 		}
 		String returnValue = null;
-		if (key.contains("#{")) {
+		if (key.contains(wellNumber)) {
 			key = key.substring(2,key.indexOf("}"));
 		}
 		if (oConvertUtils.isNotEmpty(key)) {
@@ -165,12 +171,13 @@ public class JwtUtil {
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		
 		String moshi = "";
-		if(key.indexOf("}")!=-1){
+        String wellNumber = WELL_NUMBER;
+		if(key.indexOf(SymbolConstant.RIGHT_CURLY_BRACKET)!=-1){
 			 moshi = key.substring(key.indexOf("}")+1);
 		}
 		String returnValue = null;
 		//针对特殊标示处理#{sysOrgCode}，判断替换
-		if (key.contains("#{")) {
+		if (key.contains(wellNumber)) {
 			key = key.substring(2,key.indexOf("}"));
 		} else {
 			key = key;
@@ -228,7 +235,8 @@ public class JwtUtil {
 		//update-begin-author:taoyan date:20210330 for:多租户ID作为系统变量
 		else if (key.equals(DataBaseConstant.TENANT_ID) || key.toLowerCase().equals(DataBaseConstant.TENANT_ID_TABLE)){
 			returnValue = sysUser.getRelTenantIds();
-			if(oConvertUtils.isEmpty(returnValue) || (returnValue!=null && returnValue.indexOf(",")>0)){
+            boolean flag = returnValue != null && returnValue.indexOf(SymbolConstant.COMMA) > 0;
+            if(oConvertUtils.isEmpty(returnValue) || flag){
 				returnValue = SpringContextUtils.getHttpServletRequest().getHeader(CommonConstant.TENANT_ID);
 			}
 		}

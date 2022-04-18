@@ -38,11 +38,15 @@ public class OrgCodeRule implements IFillRuleHandler {
         String parentId = null;
         if (formData != null && formData.size() > 0) {
             Object obj = formData.get("parentId");
-            if (obj != null) parentId = obj.toString();
+            if (obj != null) {
+                parentId = obj.toString();
+            }
         } else {
             if (params != null) {
                 Object obj = params.get("parentId");
-                if (obj != null) parentId = obj.toString();
+                if (obj != null) {
+                    parentId = obj.toString();
+                }
             }
         }
 

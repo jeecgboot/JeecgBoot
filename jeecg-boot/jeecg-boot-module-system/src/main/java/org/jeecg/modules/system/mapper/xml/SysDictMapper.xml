@@ -160,7 +160,8 @@
 		select ${query.text} as "text",${query.code} as "value" from ${query.table}
 		where 1 = 1
 		<if test="query.keyword != null and query.keyword != ''">
-			and (${query.text} like '%${query.keyword}%' or ${query.code} like '%${query.keyword}%')
+			<bind name="bindKeyword" value="'%'+query.keyword+'%'"/>
+			and (${query.text} like #{bindKeyword} or ${query.code} like #{bindKeyword})
 		</if>
 		<if test="query.codeValue != null and query.codeValue != ''">
 			and ${query.code} = #{query.codeValue}

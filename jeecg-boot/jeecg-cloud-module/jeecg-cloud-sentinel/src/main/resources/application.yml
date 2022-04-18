@@ -1,0 +1,39 @@
+server:
+  port: 9000
+  servlet:
+    session:
+      cookie:
+        name: sentinel_dashboard_cookie
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+spring:
+  mvc:
+    #Spring Boot 2.6+\u540E\u6620\u5C04\u5339\u914D\u7684\u9ED8\u8BA4\u7B56\u7565\u5DF2\u4ECEAntPathMatcher\u66F4\u6539\u4E3APathPatternParser,\u9700\u8981\u624B\u52A8\u6307\u5B9A\u4E3Aant-path-matcher
+    pathmatch:
+      matching-strategy: ant-path-matcher
+#auth settings
+auth:
+  filter:
+    exclude-url-suffixes: htm,html,js,css,map,ico,ttf,woff,png
+    exclude-urls: /,/auth/login,/auth/logout,/registry/machine,/version
+  password: sentinel
+  username: sentinel
+logging:
+  level:
+    org:
+      springframework:
+        web: INFO
+  pattern:
+    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
+  file:
+    name: ${user.home}/logs/csp/sentinel-dashboard.log
+nacos:
+  server:
+    ip: @config.server-addr@
+    password: @config.password@
+    username: @config.username@
+sentinel:
+  dashboard:
+    version: 1.8.2

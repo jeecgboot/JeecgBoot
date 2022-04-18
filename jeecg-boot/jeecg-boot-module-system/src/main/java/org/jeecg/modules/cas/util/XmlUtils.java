@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 解析cas,ST验证后的xml
- *
+ * @author: jeecg-boot
  */
 @Slf4j
 public final class XmlUtils {
@@ -39,7 +39,7 @@ public final class XmlUtils {
      */
     public static Document newDocument(final String xml) {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        final Map<String, Boolean> features = new HashMap<String, Boolean>();
+        final Map<String, Boolean> features = new HashMap(5);
         features.put(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         features.put("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         for (final Map.Entry<String, Boolean> entry : features.entrySet()) {
@@ -94,13 +94,15 @@ public final class XmlUtils {
 
             private StringBuilder buffer = new StringBuilder();
 
+            @Override
             public void startElement(final String uri, final String localName, final String qName,
-                    final Attributes attributes) throws SAXException {
+                                     final Attributes attributes) throws SAXException {
                 if (localName.equals(element)) {
                     this.foundElement = true;
                 }
             }
 
+            @Override
             public void endElement(final String uri, final String localName, final String qName) throws SAXException {
                 if (localName.equals(element)) {
                     this.foundElement = false;
@@ -109,6 +111,7 @@ public final class XmlUtils {
                 }
             }
 
+            @Override
             public void characters(char[] ch, int start, int length) throws SAXException {
                 if (this.foundElement) {
                     this.buffer.append(ch, start, length);
@@ -145,19 +148,22 @@ public final class XmlUtils {
 
             private boolean foundElement = false;
 
+            @Override
             public void startElement(final String uri, final String localName, final String qName,
-                    final Attributes attributes) throws SAXException {
+                                     final Attributes attributes) throws SAXException {
                 if (localName.equals(element)) {
                     this.foundElement = true;
                 }
             }
 
+            @Override
             public void endElement(final String uri, final String localName, final String qName) throws SAXException {
                 if (localName.equals(element)) {
                     this.foundElement = false;
                 }
             }
 
+            @Override
             public void characters(char[] ch, int start, int length) throws SAXException {
                 if (this.foundElement) {
                     builder.append(ch, start, length);
@@ -208,7 +214,7 @@ public final class XmlUtils {
 
         @Override
         public void startDocument() throws SAXException {
-            this.attributes = new HashMap<String, Object>();
+            this.attributes = new HashMap(5);
         }
 
         @Override

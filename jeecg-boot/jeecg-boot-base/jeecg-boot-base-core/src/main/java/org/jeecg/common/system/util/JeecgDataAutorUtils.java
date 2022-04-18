@@ -32,7 +32,8 @@ public class JeecgDataAutorUtils {
 	 */
 	public static synchronized void installDataSearchConditon(HttpServletRequest request, List<SysPermissionDataRuleModel> dataRules) {
 		@SuppressWarnings("unchecked")
-		List<SysPermissionDataRuleModel> list = (List<SysPermissionDataRuleModel>)loadDataSearchConditon();// 1.先从request获取MENU_DATA_AUTHOR_RULES，如果存则获取到LIST
+        // 1.先从request获取MENU_DATA_AUTHOR_RULES，如果存则获取到LIST
+		List<SysPermissionDataRuleModel> list = (List<SysPermissionDataRuleModel>)loadDataSearchConditon();
 		if (list==null) {
 			// 2.如果不存在，则new一个list
 			list = new ArrayList<SysPermissionDataRuleModel>();
@@ -40,7 +41,8 @@ public class JeecgDataAutorUtils {
 		for (SysPermissionDataRuleModel tsDataRule : dataRules) {
 			list.add(tsDataRule);
 		}
-		request.setAttribute(MENU_DATA_AUTHOR_RULES, list); // 3.往list里面增量存指
+        // 3.往list里面增量存指
+		request.setAttribute(MENU_DATA_AUTHOR_RULES, list);
 	}
 
 	/**
@@ -59,7 +61,7 @@ public class JeecgDataAutorUtils {
 	 * 
 	 * @return
 	 */
-	public static synchronized String loadDataSearchConditonSQLString() {
+	public static synchronized String loadDataSearchConditonSqlString() {
 		return (String) SpringContextUtils.getHttpServletRequest().getAttribute(MENU_DATA_AUTHOR_RULE_SQL);
 	}
 
@@ -70,7 +72,7 @@ public class JeecgDataAutorUtils {
 	 * @param sql
 	 */
 	public static synchronized void installDataSearchConditon(HttpServletRequest request, String sql) {
-		String ruleSql = (String)loadDataSearchConditonSQLString();
+		String ruleSql = (String) loadDataSearchConditonSqlString();
 		if (!StringUtils.hasText(ruleSql)) {
 			request.setAttribute(MENU_DATA_AUTHOR_RULE_SQL,sql);
 		}

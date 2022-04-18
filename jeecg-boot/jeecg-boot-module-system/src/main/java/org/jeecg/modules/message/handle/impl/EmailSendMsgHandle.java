@@ -11,6 +11,10 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+/**
+ * @Description: 邮箱发送信息
+ * @author: jeecg-boot
+ */
 public class EmailSendMsgHandle implements ISendMsgHandle {
     static String emailFrom;
 

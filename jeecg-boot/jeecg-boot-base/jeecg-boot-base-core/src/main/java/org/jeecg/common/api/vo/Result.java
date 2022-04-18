@@ -58,7 +58,7 @@ public class Result<T> implements Serializable {
      * @param code
      * @param message
      */
-	public Result(Integer code,String message) {
+	public Result(Integer code, String message) {
 		this.code = code;
 		this.message = message;
 	}
@@ -70,7 +70,6 @@ public class Result<T> implements Serializable {
 		return this;
 	}
 
-	@Deprecated
 	public static<T> Result<T> ok() {
 		Result<T> r = new Result<T>();
 		r.setSuccess(true);
@@ -78,16 +77,16 @@ public class Result<T> implements Serializable {
 		return r;
 	}
 
-	@Deprecated
 	public static<T> Result<T> ok(String msg) {
 		Result<T> r = new Result<T>();
 		r.setSuccess(true);
 		r.setCode(CommonConstant.SC_OK_200);
+		//Result OK(String msg)方法会造成兼容性问题 issues/I4IP3D
+		r.setResult((T) msg);
 		r.setMessage(msg);
 		return r;
 	}
 
-	@Deprecated
 	public static<T> Result<T> ok(T data) {
 		Result<T> r = new Result<T>();
 		r.setSuccess(true);
@@ -103,7 +102,13 @@ public class Result<T> implements Serializable {
 		return r;
 	}
 
-	@Deprecated
+	/**
+	 * 此方法是为了兼容升级所创建
+	 *
+	 * @param msg
+	 * @param <T>
+	 * @return
+	 */
 	public static<T> Result<T> OK(String msg) {
 		Result<T> r = new Result<T>();
 		r.setSuccess(true);

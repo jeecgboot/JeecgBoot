@@ -2,6 +2,117 @@
 #segment#${sub.entityName}List.vue
 <template>
   <a-card :bordered="false" :class="'cust-erp-sub-tab'">
+    <!-- 查询区域 -->
+    <div class="table-page-search-wrapper">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
+        <a-row :gutter="24">
+          <#assign query_field_no=0>
+          <#assign query_flag=false>
+          <#assign list_need_dict=false>
+          <#assign list_need_category=false>
+          <#assign list_need_pca=false>
+          <#assign subMainFieldMap={}>
+          <#-- 开始循环 -->
+          <#list sub.colums as po>
+          <#if po.isQuery=='Y'>
+          <#assign query_flag=true>
+          <#if query_field_no==2>
+          <template v-if="toggleSearchStatus">
+            </#if>
+            <#assign query_field_dictCode="">
+            <#if po.dictTable?default("")?trim?length gt 1>
+              <#assign query_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+            <#elseif po.dictField?default("")?trim?length gt 1>
+              <#assign query_field_dictCode="${po.dictField}">
+            </#if>
+            <#if po.queryMode=='single'>
+              <#if query_field_no gt 1>  </#if><a-col :xl="6" :lg="7" :md="8" :sm="24">
+              <#if query_field_no gt 1>  </#if><a-form-item label="${po.filedComment}">
+              <#if po.classType=='sel_search'>
+                <#if query_field_no gt 1>  </#if><j-search-select-tag placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" dict="${po.dictTable},${po.dictText},${po.dictField}"/>
+              <#elseif po.classType=='sel_user'>
+                <#if query_field_no gt 1>  </#if><j-select-user-by-dep placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"/>
+              <#elseif po.classType=='sel_depart'>
+                <#if query_field_no gt 1>  </#if><j-select-depart placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"/>
+              <#elseif po.classType=='list_multi'>
+                <#if query_field_no gt 1>  </#if><j-multi-select-tag placeholder="请选择${po.filedComment}" dictCode="${query_field_dictCode?default("")}" v-model="queryParam.${po.fieldName}"/>
+              <#elseif po.classType=='cat_tree'>
+                <#if query_field_no gt 1>  </#if><j-category-select placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" pcode="${po.dictField?default("")}"/>
+              <#elseif po.classType=='date'>
+                <#if query_field_no gt 1>  </#if><j-date placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"></j-date>
+              <#elseif po.classType=='datetime'>
+                <#if query_field_no gt 1>  </#if><j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"></j-date>
+              <#elseif po.classType=='pca'>
+                <#if query_field_no gt 1>  </#if><j-area-linkage type="cascader" v-model="queryParam.${po.fieldName}" placeholder="请选择省市区"/>
+              <#elseif po.classType=='popup'>
+                <#if query_field_no gt 1>  </#if><j-popup placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" code="${po.dictTable}" org-fields="${po.dictField}" dest-fields="${po.dictText}" :field="getPopupField('${po.dictText}')" :multi="${po.extendParams.popupMulti?c}"/>
+              <#elseif po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
+              <#--  ---------------------------下拉或是单选 判断数据字典是表字典还是普通字典------------------------------- -->
+                <#if po.dictTable?default("")?trim?length gt 1>
+                  <#if query_field_no gt 1>  </#if><j-dict-select-tag placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" dictCode="${po.dictTable},${po.dictText},${po.dictField}"/>
+                <#elseif po.dictField?default("")?trim?length gt 1>
+                  <#if query_field_no gt 1>  </#if><j-dict-select-tag placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" dictCode="${po.dictField}"/>
+                <#else>
+                  <#if query_field_no gt 1>  </#if><a-input placeholder="请输入${po.filedComment}" v-model="queryParam.${po.fieldName}"></a-input>
+                </#if>
+              <#else>
+                <#if query_field_no gt 1>  </#if><a-input placeholder="请输入${po.filedComment}" v-model="queryParam.${po.fieldName}"></a-input>
+              </#if>
+              <#if query_field_no gt 1>  </#if></a-form-item>
+              <#if query_field_no gt 1>  </#if></a-col>
+            <#else>
+              <#if query_field_no gt 1>  </#if><a-col :xl="10" :lg="11" :md="12" :sm="24">
+              <#if query_field_no gt 1>  </#if><a-form-item label="${po.filedComment}">
+              <#if po.classType=='date'>
+                <#if query_field_no gt 1>  </#if><j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.${po.fieldName}_begin"></j-date>
+                <#if query_field_no gt 1>  </#if><span class="query-group-split-cust"></span>
+                <#if query_field_no gt 1>  </#if><j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.${po.fieldName}_end"></j-date>
+              <#elseif po.classType=='datetime'>
+                <#if query_field_no gt 1>  </#if><j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择开始时间" class="query-group-cust" v-model="queryParam.${po.fieldName}_begin"></j-date>
+                <#if query_field_no gt 1>  </#if><span class="query-group-split-cust"></span>
+                <#if query_field_no gt 1>  </#if><j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择结束时间" class="query-group-cust" v-model="queryParam.${po.fieldName}_end"></j-date>
+              <#else>
+                <#if query_field_no gt 1>  </#if><a-input placeholder="请输入最小值" class="query-group-cust" v-model="queryParam.${po.fieldName}_begin"></a-input>
+                <#if query_field_no gt 1>  </#if><span class="query-group-split-cust"></span>
+                <#if query_field_no gt 1>  </#if><a-input placeholder="请输入最大值" class="query-group-cust" v-model="queryParam.${po.fieldName}_end"></a-input>
+              </#if>
+              <#if query_field_no gt 1>  </#if></a-form-item>
+              <#if query_field_no gt 1>  </#if></a-col>
+            </#if>
+            <#assign query_field_no=query_field_no+1>
+            </#if>
+            <#if !list_need_dict && po.fieldShowType!='popup' && po.dictField?default("")?trim?length gt 1>
+              <#assign list_need_dict=true>
+            </#if>
+            <#if po.classType=='cat_tree' && po.dictText?default("")?trim?length == 0>
+              <#assign list_need_category=true>
+            </#if>
+            <#if po.classType=='pca'>
+              <#assign list_need_pca=true>
+            </#if>
+            </#list>
+            <#-- 结束循环 -->
+            <#t>
+            <#if query_field_no gt 2>
+          </template>
+          </#if>
+          <#if query_flag>
+            <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+            </a-col>
+          </#if>
+        </a-row>
+      </a-form>
+    </div>
+    <!-- 查询区域-END -->
+
     <!-- 操作按钮区域 -->
     <div class="table-operator" v-if="mainId">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
@@ -46,9 +157,9 @@
         <template slot="htmlSlot" slot-scope="text">
           <div v-html="text"></div>
         </template>
-        <template slot="imgSlot" slot-scope="text">
+        <template slot="imgSlot" slot-scope="text,record">
           <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
-          <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width:80px;font-size: 12px;font-style: italic;"/>
+          <img v-else :src="getImgView(text)" :preview="record.id" height="25px" alt="" style="max-width:80px;font-size: 12px;font-style: italic;"/>
         </template>
         <template slot="fileSlot" slot-scope="text">
           <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>

@@ -14,5 +14,11 @@ import java.util.List;
  * @since 2018-12-28
  */
 public interface ISysDictItemService extends IService<SysDictItem> {
+
+    /**
+     * 通过字典id查询字典项
+     * @param mainId 字典id
+     * @return
+     */
     public List<SysDictItem> selectItemsByMainId(String mainId);
 }

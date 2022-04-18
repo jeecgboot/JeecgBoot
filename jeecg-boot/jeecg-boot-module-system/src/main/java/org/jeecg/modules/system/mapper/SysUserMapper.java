@@ -32,6 +32,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 *  根据部门Id查询用户信息
 	 * @param page
 	 * @param departId
+     * @param username 用户登录账户
 	 * @return
 	 */
 	IPage<SysUser> getUserByDepId(Page page, @Param("departId") String departId, @Param("username") String username);
@@ -47,6 +48,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 *  根据部门Ids,查询部门下用户信息
 	 * @param page
 	 * @param departIds
+     * @param username 用户登录账户
 	 * @return
 	 */
 	IPage<SysUser> getUserByDepIds(Page page, @Param("departIds") List<String> departIds, @Param("username") String username);
@@ -54,7 +56,8 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	/**
 	 * 根据角色Id查询用户信息
 	 * @param page
-	 * @param
+	 * @param roleId 角色id
+     * @param username 用户登录账户
 	 * @return
 	 */
 	IPage<SysUser> getUserByRoleId(Page page, @Param("roleId") String roleId, @Param("username") String username);
@@ -62,7 +65,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	/**
 	 * 根据用户名设置部门ID
 	 * @param username
-	 * @param departId
+	 * @param orgCode
 	 */
 	void updateUserDepart(@Param("username") String username,@Param("orgCode") String orgCode);
 	
@@ -102,41 +105,55 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     Integer getUserByOrgCodeTotal(@Param("orgCode") String orgCode, @Param("userParams") SysUser userParams);
 
     /**
+     * 批量删除角色与用户关系
      * @Author scott
      * @Date 2019/12/13 16:10
-     * @Description: 批量删除角色与用户关系
+     * @param roleIdArray
      */
 	void deleteBathRoleUserRelation(@Param("roleIdArray") String[] roleIdArray);
 
     /**
+     * 批量删除角色与权限关系
      * @Author scott
      * @Date 2019/12/13 16:10
-     * @Description: 批量删除角色与权限关系
+     * @param roleIdArray
      */
 	void deleteBathRolePermissionRelation(@Param("roleIdArray") String[] roleIdArray);
 
 	/**
 	 * 查询被逻辑删除的用户
+     * @param wrapper
+     * @return List<SysUser>
 	 */
 	List<SysUser> selectLogicDeleted(@Param(Constants.WRAPPER) Wrapper<SysUser> wrapper);
 
 	/**
 	 * 还原被逻辑删除的用户
+     * @param userIds 用户id
+     * @param entity
+     * @return int
 	 */
 	int revertLogicDeleted(@Param("userIds") String userIds, @Param("entity") SysUser entity);
 
 	/**
 	 * 彻底删除被逻辑删除的用户
+     * @param userIds 多个用户id
+     * @return int
 	 */
 	int deleteLogicDeleted(@Param("userIds") String userIds);
 
-    /** 更新空字符串为null【此写法有sql注入风险，禁止随便用】 */
+    /**
+     * 更新空字符串为null【此写法有sql注入风险，禁止随便用】
+     * @param fieldName
+     * @return int
+     */
     @Deprecated
     int updateNullByEmptyString(@Param("fieldName") String fieldName);
     
 	/**
 	 *  根据部门Ids,查询部门下用户信息
 	 * @param departIds
+     * @param username 用户账户名称
 	 * @return
 	 */
 	List<SysUser> queryByDepIds(@Param("departIds")List<String> departIds,@Param("username") String username);

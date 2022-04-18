@@ -4,6 +4,10 @@ import java.util.List;
 
 import org.jeecg.common.util.DateUtils;
 
+/**
+ * @Description: 用户缓存信息
+ * @author: jeecg-boot
+ */
 public class SysUserCacheInfo {
 	
 	private String sysUserCode;

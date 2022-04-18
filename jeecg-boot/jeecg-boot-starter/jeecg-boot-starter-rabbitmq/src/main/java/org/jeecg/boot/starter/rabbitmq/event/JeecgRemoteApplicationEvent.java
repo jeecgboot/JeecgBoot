@@ -23,7 +23,7 @@ public class JeecgRemoteApplicationEvent extends RemoteApplicationEvent {
     }
 
     public JeecgRemoteApplicationEvent(EventObj source, String originService) {
-        super(source, originService, null);
+        super(source, originService, "");
         this.eventObj = source;
     }
 }

@@ -42,11 +42,13 @@ import java.util.stream.Collectors;
 public class DictAspect {
     @Lazy
     @Autowired
-    private CommonAPI commonAPI;
+    private CommonAPI commonApi;
     @Autowired
     public RedisTemplate redisTemplate;
 
-    // 定义切点Pointcut
+    /**
+     * 定义切点Pointcut
+     */
     @Pointcut("execution(public * org.jeecg.modules..*.*Controller.*(..)) || @annotation(org.jeecg.common.aspect.annotation.AutoDict)")
     public void excudeService() {
     }
@@ -94,7 +96,7 @@ public class DictAspect {
                 //step.1 筛选出加了 Dict 注解的字段列表
                 List<Field> dictFieldList = new ArrayList<>();
                 // 字典数据列表， key = 字典code，value=数据列表
-                Map<String, List<String>> dataListMap = new HashMap<>();
+                Map<String, List<String>> dataListMap = new HashMap<>(5);
 
                 for (Object record : ((IPage) ((Result) result).getResult()).getRecords()) {
                     ObjectMapper mapper = new ObjectMapper();
@@ -135,7 +137,7 @@ public class DictAspect {
                             this.listAddAllDeduplicate(dataList, Arrays.asList(value.split(",")));
                         }
                         //date类型默认转换string格式化日期
-                        if (field.getType().getName().equals("java.util.Date")&&field.getAnnotation(JsonFormat.class)==null&&item.get(field.getName())!=null){
+                        if (CommonConstant.JAVA_UTIL_DATE.equals(field.getType().getName())&&field.getAnnotation(JsonFormat.class)==null&&item.get(field.getName())!=null){
                             SimpleDateFormat aDate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             item.put(field.getName(), aDate.format(new Date((Long) item.get(field.getName()))));
                         }
@@ -204,7 +206,7 @@ public class DictAspect {
      */
     private Map<String, List<DictModel>> translateAllDict(Map<String, List<String>> dataListMap) {
         // 翻译后的字典文本，key=dictCode
-        Map<String, List<DictModel>> translText = new HashMap<>();
+        Map<String, List<DictModel>> translText = new HashMap<>(5);
         // 需要翻译的数据（有些可以从redis缓存中获取，就不走数据库查询）
         List<String> needTranslData = new ArrayList<>();
         //step.1 先通过redis中获取缓存字典数据
@@ -258,7 +260,7 @@ public class DictAspect {
                 String values = String.join(",", needTranslDataTable);
                 log.info("translateDictFromTableByKeys.dictCode:" + dictCode);
                 log.info("translateDictFromTableByKeys.values:" + values);
-                List<DictModel> texts = commonAPI.translateDictFromTableByKeys(table, text, code, values);
+                List<DictModel> texts = commonApi.translateDictFromTableByKeys(table, text, code, values);
                 log.info("translateDictFromTableByKeys.result:" + texts);
                 List<DictModel> list = translText.computeIfAbsent(dictCode, k -> new ArrayList<>());
                 list.addAll(texts);
@@ -287,7 +289,7 @@ public class DictAspect {
             String values = String.join(",", needTranslData);
             log.info("translateManyDict.dictCodes:" + dictCodes);
             log.info("translateManyDict.values:" + values);
-            Map<String, List<DictModel>> manyDict = commonAPI.translateManyDict(dictCodes, values);
+            Map<String, List<DictModel>> manyDict = commonApi.translateManyDict(dictCodes, values);
             log.info("translateManyDict.result:" + manyDict);
             for (String dictCode : manyDict.keySet()) {
                 List<DictModel> list = translText.computeIfAbsent(dictCode, k -> new ArrayList<>());
@@ -365,7 +367,7 @@ public class DictAspect {
                         log.warn(e.getMessage());
                     }
                 }else {
-                    tmpValue= commonAPI.translateDictFromTable(table,text,code,k.trim());
+                    tmpValue= commonApi.translateDictFromTable(table,text,code,k.trim());
                 }
             }else {
                 String keyString = String.format("sys:cache:dict::%s:%s",code,k.trim());
@@ -376,7 +378,7 @@ public class DictAspect {
                        log.warn(e.getMessage());
                     }
                 }else {
-                    tmpValue = commonAPI.translateDict(code, k.trim());
+                    tmpValue = commonApi.translateDict(code, k.trim());
                 }
             }
             //update-end--Author:scott -- Date:20210531 ----for： !56 优化微服务应用下存在表字段需要字典翻译时加载缓慢问题-----

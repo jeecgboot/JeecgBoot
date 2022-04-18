@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * online 拦截器权限判断
  * cloud api 用到的接口传输对象
+ * @author: jeecg-boot
  */
 @Data
 public class OnlineAuthDTO implements Serializable {

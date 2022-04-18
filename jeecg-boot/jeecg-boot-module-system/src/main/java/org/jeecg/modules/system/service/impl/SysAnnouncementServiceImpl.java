@@ -36,7 +36,7 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 	@Resource
 	private SysAnnouncementSendMapper sysAnnouncementSendMapper;
 	
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public void saveAnnouncement(SysAnnouncement sysAnnouncement) {
 		if(sysAnnouncement.getMsgType().equals(CommonConstant.MSG_TYPE_ALL)) {
@@ -63,7 +63,7 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 	/**
 	 * @功能：编辑消息信息
 	 */
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public boolean upDateAnnouncement(SysAnnouncement sysAnnouncement) {
 		// 1.更新系统信息表数据
@@ -98,7 +98,11 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 		return true;
 	}
 
-	// @功能：流程执行完成保存消息通知
+    /**
+     * 流程执行完成保存消息通知
+     * @param title 标题
+     * @param msgContent 信息内容
+     */
 	@Override
 	public void saveSysAnnouncement(String title, String msgContent) {
 		SysAnnouncement announcement = new SysAnnouncement();

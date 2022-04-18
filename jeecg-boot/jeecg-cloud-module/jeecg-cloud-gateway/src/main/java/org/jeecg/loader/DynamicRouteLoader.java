@@ -10,17 +10,19 @@ import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.config.GatewayRoutersConfiguration;
 import org.jeecg.config.RouterDataType;
+import org.jeecg.loader.repository.DynamicRouteService;
+import org.jeecg.loader.repository.MyInMemoryRouteDefinitionRepository;
+import org.jeecg.loader.vo.MyRouteDefinition;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.filter.FilterDefinition;
 import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
-import org.springframework.cloud.gateway.route.InMemoryRouteDefinitionRepository;
 import org.springframework.cloud.gateway.route.RouteDefinition;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
@@ -48,28 +50,26 @@ import java.util.concurrent.Executor;
 public class DynamicRouteLoader implements ApplicationEventPublisherAware {
 
 
+    private MyInMemoryRouteDefinitionRepository repository;
     private ApplicationEventPublisher publisher;
-
-    private InMemoryRouteDefinitionRepository repository;
-
     private DynamicRouteService dynamicRouteService;
-
     private ConfigService configService;
-
     private RedisUtil redisUtil;
 
 
-    public DynamicRouteLoader(InMemoryRouteDefinitionRepository repository, DynamicRouteService dynamicRouteService, RedisUtil redisUtil) {
+    public DynamicRouteLoader(MyInMemoryRouteDefinitionRepository repository, DynamicRouteService dynamicRouteService, RedisUtil redisUtil) {
 
         this.repository = repository;
         this.dynamicRouteService = dynamicRouteService;
         this.redisUtil = redisUtil;
     }
 
-    @PostConstruct
-    public void init() {
-       init(null);
-    }
+//    @PostConstruct
+//    public void init() {
+//       init(null);
+//    }
+
+
     public void init(BaseMap baseMap) {
         String dataType = GatewayRoutersConfiguration.DATA_TYPE;
         log.info("初始化路由，dataType："+ dataType);
@@ -138,7 +138,7 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
         }
         Object configInfo = redisUtil.get(CacheConstant.GATEWAY_ROUTES);
         if (ObjectUtil.isNotEmpty(configInfo)) {
-            log.info("获取网关当前配置:\r\n{}", configInfo);
+            log.debug("获取网关当前配置:\r\n{}", configInfo);
             JSONArray array = JSON.parseArray(configInfo.toString());
             try {
                 routes = getRoutesByJson(array);
@@ -147,7 +147,7 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
             }
         }
         for (MyRouteDefinition definition : routes) {
-            log.info("update route : {}", definition.toString());
+            log.debug("update route : {}", definition.toString());
             Integer status=definition.getStatus();
             if(status.equals(0)){
                 dynamicRouteService.delete(definition.getId());
@@ -156,9 +156,9 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
             }
         }
         if(ObjectUtils.isNotEmpty(baseMap)){
-            String routerId=baseMap.get("routerId");
-            if(ObjectUtils.isNotEmpty(routerId)) {
-                dynamicRouteService.delete(routerId);
+            String delRouterId = baseMap.get("delRouterId");
+            if (ObjectUtils.isNotEmpty(delRouterId)) {
+                dynamicRouteService.delete(delRouterId);
             }
         }
         this.publisher.publishEvent(new RefreshRoutesEvent(this));

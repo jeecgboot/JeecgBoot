@@ -2,14 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <artifactId>jeecg-cloud-module</artifactId>
-        <groupId>org.jeecgframework.boot</groupId>
-        <version>3.1.0</version>
-    </parent>
     <artifactId>jeecg-cloud-nacos</artifactId>
     <name>jeecg-cloud-nacos</name>
     <description>nacos启动模块</description>
+
+    <!-- Nacos2不支持springboot2.6.6  -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.3.5.RELEASE</version>
+        <relativePath/>
+    </parent>
 
     <repositories>
         <repository>
@@ -42,22 +45,22 @@
         <dependency>
             <groupId>org.jeecgframework.nacos</groupId>
             <artifactId>nacos-naming</artifactId>
-            <version>1.4.1</version>
+            <version>2.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.jeecgframework.nacos</groupId>
             <artifactId>nacos-istio</artifactId>
-            <version>1.4.1</version>
+            <version>2.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.jeecgframework.nacos</groupId>
             <artifactId>nacos-config</artifactId>
-            <version>1.4.1</version>
+            <version>2.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.jeecgframework.nacos</groupId>
             <artifactId>nacos-console</artifactId>
-            <version>1.4.1</version>
+            <version>2.0.4</version>
         </dependency>
     </dependencies>
 

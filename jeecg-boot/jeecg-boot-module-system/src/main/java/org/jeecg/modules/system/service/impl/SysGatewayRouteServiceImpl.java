@@ -92,12 +92,12 @@ public class SysGatewayRouteServiceImpl extends ServiceImpl<SysGatewayRouteMappe
     /**
      * 更新redis路由缓存
      */
-    private void resreshRouter(String id) {
+    private void resreshRouter(String delRouterId) {
         //更新redis路由缓存
         addRoute2Redis(CacheConstant.GATEWAY_ROUTES);
         BaseMap params = new BaseMap();
-        params.put(GlobalConstants.HANDLER_NAME, "loderRouderHandler");
-        params.put("routerId", id);
+        params.put(GlobalConstants.HANDLER_NAME, GlobalConstants.LODER_ROUDER_HANDLER);
+        params.put("delRouterId", delRouterId);
         //刷新网关
         redisTemplate.convertAndSend(GlobalConstants.REDIS_TOPIC_NAME, params);
     }

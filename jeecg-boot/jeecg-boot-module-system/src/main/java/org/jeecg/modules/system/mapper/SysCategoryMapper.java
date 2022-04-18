@@ -19,12 +19,18 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 public interface SysCategoryMapper extends BaseMapper<SysCategory> {
 	
 	/**
-	  *  根据父级ID查询树节点数据
+	 * 根据父级ID查询树节点数据
 	 * @param pid
+     * @param query
 	 * @return
 	 */
 	public List<TreeSelectModel> queryListByPid(@Param("pid")  String pid,@Param("query") Map<String, String> query);
 
+    /**
+     * 通过code查询分类字典表
+     * @param code
+     * @return
+     */
 	@Select("SELECT ID FROM sys_category WHERE CODE = #{code,jdbcType=VARCHAR}")
 	public String queryIdByCode(@Param("code")  String code);
 	

@@ -9,6 +9,10 @@ import org.jeecgframework.poi.excel.annotation.ExcelCollection;
 
 import lombok.Data;
 
+/**
+ * @Description: 一对多示例
+ * @author: jeecg-boot
+ */
 @Data
 public class JeecgOrderMainPage {
 	

@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.http.HttpMethod;
 
@@ -39,11 +40,11 @@ public class HttpUtils {
         SortedMap<String, String> result = new TreeMap<>();
         // 获取URL上最后带逗号的参数变量 sys/dict/getDictItems/sys_user,realname,username
         String pathVariable = request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/") + 1);
-        if (pathVariable.contains(",")) {
+        if (pathVariable.contains(SymbolConstant.COMMA)) {
             log.info(" pathVariable: {}",pathVariable);
             String deString = URLDecoder.decode(pathVariable, "UTF-8");
             log.info(" pathVariable decode: {}",deString);
-            result.put(SignUtil.xPathVariable, deString);
+            result.put(SignUtil.X_PATH_VARIABLE, deString);
         }
         // 获取URL上的参数
         Map<String, String> urlParams = getUrlParams(request);
@@ -77,11 +78,11 @@ public class HttpUtils {
         SortedMap<String, String> result = new TreeMap<>();
         // 获取URL上最后带逗号的参数变量 sys/dict/getDictItems/sys_user,realname,username
         String pathVariable = url.substring(url.lastIndexOf("/") + 1);
-        if (pathVariable.contains(",")) {
+        if (pathVariable.contains(SymbolConstant.COMMA)) {
             log.info(" pathVariable: {}",pathVariable);
             String deString = URLDecoder.decode(pathVariable, "UTF-8");
             log.info(" pathVariable decode: {}",deString);
-            result.put(SignUtil.xPathVariable, deString);
+            result.put(SignUtil.X_PATH_VARIABLE, deString);
         }
         // 获取URL上的参数
         Map<String, String> urlParams = getUrlParams(queryString);

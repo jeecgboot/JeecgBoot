@@ -12,9 +12,10 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.enums.RoleIndexConfigEnum;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.MD5Util;
+import org.jeecg.common.util.Md5Util;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.JeeccgBaseConfig;
+import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.model.SysPermissionTree;
 import org.jeecg.modules.system.model.TreeModel;
@@ -23,6 +24,7 @@ import org.jeecg.modules.system.util.PermissionDataUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,6 +58,12 @@ public class SysPermissionController {
 
 	@Autowired
 	private JeeccgBaseConfig jeeccgBaseConfig;
+
+	@Autowired
+    private BaseCommonService baseCommonService;
+
+	@Autowired
+	private ISysRoleIndexService sysRoleIndexService;
 
 	/**
 	 * 加载数据节点
@@ -156,7 +164,7 @@ public class SysPermissionController {
 			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
 			query.orderByAsc(SysPermission::getSortNo);
 			List<SysPermission> list = sysPermissionService.list(query);
-			Map<String, List<SysPermissionTree>> listMap = new HashMap<>();
+			Map<String, List<SysPermissionTree>> listMap = new HashMap(5);
 			for (SysPermission item : list) {
 				String pid = item.getParentId();
 				if (parentIdList.contains(pid)) {
@@ -204,7 +212,7 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequestMapping(value = "/getUserPermissionByToken", method = RequestMethod.GET)
-	public Result<?> getUserPermissionByToken() {
+	public Result<?> getUserPermissionByToken(HttpServletRequest request) {
 		Result<JSONObject> result = new Result<JSONObject>();
 		try {
 			//直接获取当前用户不适用前端token
@@ -411,8 +419,10 @@ public class SysPermissionController {
 			getTreeModelList(treeList, list, null);
 
 			Map<String, Object> resMap = new HashMap<String, Object>();
-			resMap.put("treeList", treeList); // 全部树节点数据
-			resMap.put("ids", ids);// 全部树ids
+            // 全部树节点数据
+			resMap.put("treeList", treeList);
+            // 全部树ids
+			resMap.put("ids", ids);
 			result.setResult(resMap);
 			result.setSuccess(true);
 		} catch (Exception e) {
@@ -477,6 +487,10 @@ public class SysPermissionController {
 			String permissionIds = json.getString("permissionIds");
 			String lastPermissionIds = json.getString("lastpermissionIds");
 			this.sysRolePermissionService.saveRolePermission(roleId, permissionIds, lastPermissionIds);
+			//update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]用户管理角色授权添加敏感日志------------
+            LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			baseCommonService.addLog("修改角色ID: "+roleId+" 的权限配置，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
+            //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]用户管理角色授权添加敏感日志------------
 			result.success("保存成功！");
 			log.info("======角色授权成功=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
 		} catch (Exception e) {
@@ -654,13 +668,15 @@ public class SysPermissionController {
 		} else if (permission.getMenuType().equals(CommonConstant.MENU_TYPE_0) || permission.getMenuType().equals(CommonConstant.MENU_TYPE_1)) {
 			json.put("id", permission.getId());
 			if (permission.isRoute()) {
-				json.put("route", "1");// 表示生成路由
+                //表示生成路由
+				json.put("route", "1");
 			} else {
-				json.put("route", "0");// 表示不生成路由
+                //表示不生成路由
+				json.put("route", "0");
 			}
 
 			if (isWWWHttpUrl(permission.getUrl())) {
-				json.put("path", MD5Util.MD5Encode(permission.getUrl(), "utf-8"));
+				json.put("path", Md5Util.md5Encode(permission.getUrl(), "utf-8"));
 			} else {
 				json.put("path", permission.getUrl());
 			}

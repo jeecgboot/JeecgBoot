@@ -21,6 +21,7 @@ CREATE TABLE `sys_log0` (
   KEY `index_operate_type` (`operate_type`) USING BTREE,
   KEY `index_createtime` (`create_time`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='系统日志表';
+
 CREATE TABLE `sys_log1` (
   `id` varchar(32) NOT NULL,
   `log_type` int(2) DEFAULT NULL COMMENT '日志类型（1登录日志，2操作日志）',

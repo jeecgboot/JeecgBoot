@@ -8,6 +8,7 @@ import java.io.Serializable;
 /**
  * 文件上传
  * cloud api 用到的接口传输对象
+ * @author: jeecg-boot
  */
 @Data
 public class FileUploadDTO implements Serializable {

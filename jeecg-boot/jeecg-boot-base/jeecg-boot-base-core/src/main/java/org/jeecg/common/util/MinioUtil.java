@@ -3,6 +3,7 @@ package org.jeecg.common.util;
 import io.minio.*;
 import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.util.filter.FileTypeFilter;
 import org.jeecg.common.util.filter.StrAttackFilter;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +13,7 @@ import java.net.URLDecoder;
 
 /**
  * minio文件上传工具类
+ * @author: jeecg-boot
  */
 @Slf4j
 public class MinioUtil {
@@ -52,7 +54,7 @@ public class MinioUtil {
      * @return
      */
     public static String upload(MultipartFile file, String bizPath, String customBucket) {
-        String file_url = "";
+        String fileUrl = "";
         //update-begin-author:wangshuai date:20201012 for: 过滤上传文件夹名特殊字符，防止攻击
         bizPath=StrAttackFilter.filter(bizPath);
         //update-end-author:wangshuai date:20201012 for: 过滤上传文件夹名特殊字符，防止攻击
@@ -87,7 +89,7 @@ public class MinioUtil {
                                  );
 
             // 使用putObject上传一个本地文件到存储桶中。
-            if(objectName.startsWith("/")){
+            if(objectName.startsWith(SymbolConstant.SINGLE_SLASH)){
                 objectName = objectName.substring(1);
             }
             PutObjectArgs objectArgs = PutObjectArgs.builder().object(objectName)
@@ -96,11 +98,11 @@ public class MinioUtil {
                     .stream(stream,stream.available(),-1).build();
             minioClient.putObject(objectArgs);
             stream.close();
-            file_url = minioUrl+newBucket+"/"+objectName;
+            fileUrl = minioUrl+newBucket+"/"+objectName;
         }catch (Exception e){
             log.error(e.getMessage(), e);
         }
-        return file_url;
+        return fileUrl;
     }
 
     /**
@@ -156,7 +158,7 @@ public class MinioUtil {
      * @param expires
      * @return
      */
-    public static String getObjectURL(String bucketName, String objectName, Integer expires) {
+    public static String getObjectUrl(String bucketName, String objectName, Integer expires) {
         initMinio(minioUrl, minioName,minioPass);
         try{
             //update-begin---author:liusq  Date:20220121  for：获取文件外链报错提示method不能为空，导致文件下载和预览失败----

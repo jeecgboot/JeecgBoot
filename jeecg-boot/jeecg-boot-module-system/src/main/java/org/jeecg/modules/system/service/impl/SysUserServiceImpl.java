@@ -9,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.system.api.ISysBaseAPI;
-import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.UUIDGenerator;
@@ -23,6 +21,7 @@ import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.vo.SysUserDepVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,8 +49,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	private SysUserRoleMapper sysUserRoleMapper;
 	@Autowired
 	private SysUserDepartMapper sysUserDepartMapper;
-	@Autowired
-	private ISysBaseAPI sysBaseAPI;
 	@Autowired
 	private SysDepartMapper sysDepartMapper;
 	@Autowired
@@ -125,7 +122,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	
 	
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void addUserWithRole(SysUser user, String roles) {
 		this.save(user);
 		if(oConvertUtils.isNotEmpty(roles)) {
@@ -139,7 +136,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 	@Override
 	@CacheEvict(value= {CacheConstant.SYS_USERS_CACHE}, allEntries=true)
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void editUserWithRole(SysUser user, String roles) {
 		this.updateById(user);
 		//先删后加
@@ -195,24 +192,32 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		return permissionSet;
 	}
 
+	/**
+	 * 升级SpringBoot2.6.6,不允许循环依赖
+	 * @author:qinfeng
+	 * @update: 2022-04-07
+	 * @param username
+	 * @return
+	 */
 	@Override
+	@Cacheable(cacheNames=CacheConstant.SYS_USERS_CACHE, key="#username")
 	public SysUserCacheInfo getCacheUser(String username) {
 		SysUserCacheInfo info = new SysUserCacheInfo();
 		info.setOneDepart(true);
-//		SysUser user = userMapper.getUserByName(username);
-//		info.setSysUserCode(user.getUsername());
-//		info.setSysUserName(user.getRealname());
-		
+		if(oConvertUtils.isEmpty(username)) {
+			return null;
+		}
 
-		LoginUser user = sysBaseAPI.getUserByName(username);
-		if(user!=null) {
-			info.setSysUserCode(user.getUsername());
-			info.setSysUserName(user.getRealname());
-			info.setSysOrgCode(user.getOrgCode());
+		//查询用户信息
+		SysUser sysUser = userMapper.getUserByName(username);
+		if(sysUser!=null) {
+			info.setSysUserCode(sysUser.getUsername());
+			info.setSysUserName(sysUser.getRealname());
+			info.setSysOrgCode(sysUser.getOrgCode());
 		}
 		
 		//多部门支持in查询
-		List<SysDepart> list = sysDepartMapper.queryUserDeparts(user.getId());
+		List<SysDepart> list = sysDepartMapper.queryUserDeparts(sysUser.getId());
 		List<String> sysMultiOrgCode = new ArrayList<String>();
 		if(list==null || list.size()==0) {
 			//当前用户无部门
@@ -230,7 +235,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		return info;
 	}
 
-	// 根据部门Id查询
+    /**
+     * 根据部门Id查询
+     * @param page
+     * @param departId 部门id
+     * @param username 用户账户名称
+     * @return
+     */
 	@Override
 	public IPage<SysUser> getUserByDepId(Page<SysUser> page, String departId,String username) {
 		return userMapper.getUserByDepId(page, departId,username);
@@ -245,7 +256,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	public Map<String, String> getDepNamesByUserIds(List<String> userIds) {
 		List<SysUserDepVo> list = this.baseMapper.getDepNamesByUserIds(userIds);
 
-		Map<String, String> res = new HashMap<String, String>();
+		Map<String, String> res = new HashMap(5);
 		list.forEach(item -> {
 					if (res.get(item.getUserId()) == null) {
 						res.put(item.getUserId(), item.getDepartName());
@@ -278,7 +289,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		return result;
 	}
 
-	// 根据角色Id查询
+    /**
+     * 根据角色Id查询
+     * @param page
+     * @param roleId 角色id
+     * @param username 用户账户名称
+     * @return
+     */
 	@Override
 	public IPage<SysUser> getUserByRoleId(Page<SysUser> page, String roleId, String username) {
 		return userMapper.getUserByRoleId(page,roleId,username);
@@ -304,7 +321,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void addUserWithDepart(SysUser user, String selectedParts) {
 //		this.save(user);  //保存角色的时候已经添加过一次了
 		if(oConvertUtils.isNotEmpty(selectedParts)) {
@@ -321,7 +338,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	@Transactional(rollbackFor = Exception.class)
 	@CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
 	public void editUserWithDepart(SysUser user, String departs) {
-		this.updateById(user);  //更新角色的时候已经更新了一次了，可以再跟新一次
+        //更新角色的时候已经更新了一次了，可以再跟新一次
+		this.updateById(user);
 		String[] arr = {};
 		if(oConvertUtils.isNotEmpty(departs)){
 			arr = departs.split(",");

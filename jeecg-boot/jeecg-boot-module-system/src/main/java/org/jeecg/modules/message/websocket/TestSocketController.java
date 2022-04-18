@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 
+/**
+ * @Description: TestSocketController
+ * @author: jeecg-boot
+ */
 @RestController
 @RequestMapping("/sys/socketTest")
 public class TestSocketController {

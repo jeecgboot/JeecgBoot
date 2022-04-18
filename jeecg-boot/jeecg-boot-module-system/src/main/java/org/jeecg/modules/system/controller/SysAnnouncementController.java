@@ -13,7 +13,6 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.CommonSendStatus;
 import org.jeecg.common.constant.WebsocketConst;
-import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
@@ -25,6 +24,7 @@ import org.jeecg.modules.system.entity.SysAnnouncement;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.system.service.ISysAnnouncementSendService;
 import org.jeecg.modules.system.service.ISysAnnouncementService;
+import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.jeecg.modules.system.service.impl.ThirdAppDingtalkServiceImpl;
 import org.jeecg.modules.system.service.impl.ThirdAppWechatEnterpriseServiceImpl;
 import org.jeecg.modules.system.util.XSSUtils;
@@ -74,7 +74,7 @@ public class SysAnnouncementController {
 	@Autowired
 	ThirdAppDingtalkServiceImpl dingtalkService;
 	@Autowired
-	private ISysBaseAPI sysBaseAPI;
+	private SysBaseApiImpl sysBaseApi;
 	@Autowired
 	@Lazy
 	private RedisUtil redisUtil;
@@ -129,7 +129,8 @@ public class SysAnnouncementController {
 			sysAnnouncement.setTitile(title);
 			// update-end-author:liusq date:20210804 for:标题处理xss攻击的问题
 			sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
-			sysAnnouncement.setSendStatus(CommonSendStatus.UNPUBLISHED_STATUS_0);//未发布
+            //未发布
+			sysAnnouncement.setSendStatus(CommonSendStatus.UNPUBLISHED_STATUS_0);
 			sysAnnouncementService.saveAnnouncement(sysAnnouncement);
 			result.success("添加成功！");
 		} catch (Exception e) {
@@ -239,7 +240,8 @@ public class SysAnnouncementController {
 		if(sysAnnouncement==null) {
 			result.error500("未找到对应实体");
 		}else {
-			sysAnnouncement.setSendStatus(CommonSendStatus.PUBLISHED_STATUS_1);//发布中
+            //发布中
+			sysAnnouncement.setSendStatus(CommonSendStatus.PUBLISHED_STATUS_1);
 			sysAnnouncement.setSendTime(new Date());
 			String currentUserName = JwtUtil.getUserNameByToken(request);
 			sysAnnouncement.setSender(currentUserName);
@@ -295,7 +297,8 @@ public class SysAnnouncementController {
 		if(sysAnnouncement==null) {
 			result.error500("未找到对应实体");
 		}else {
-			sysAnnouncement.setSendStatus(CommonSendStatus.REVOKE_STATUS_2);//撤销发布
+            //撤销发布
+			sysAnnouncement.setSendStatus(CommonSendStatus.REVOKE_STATUS_2);
 			sysAnnouncement.setCancelTime(new Date());
 			boolean ok = sysAnnouncementService.updateById(sysAnnouncement);
 			if(ok) {
@@ -324,10 +327,14 @@ public class SysAnnouncementController {
 		String userId = sysUser.getId();
 		// 1.将系统消息补充到用户通告阅读标记表中
 		LambdaQueryWrapper<SysAnnouncement> querySaWrapper = new LambdaQueryWrapper<SysAnnouncement>();
-		querySaWrapper.eq(SysAnnouncement::getMsgType,CommonConstant.MSG_TYPE_ALL); // 全部人员
-		querySaWrapper.eq(SysAnnouncement::getDelFlag,CommonConstant.DEL_FLAG_0.toString());  // 未删除
-		querySaWrapper.eq(SysAnnouncement::getSendStatus, CommonConstant.HAS_SEND); //已发布
-		querySaWrapper.ge(SysAnnouncement::getEndTime, sysUser.getCreateTime()); //新注册用户不看结束通知
+        //全部人员
+		querySaWrapper.eq(SysAnnouncement::getMsgType,CommonConstant.MSG_TYPE_ALL);
+        //未删除
+		querySaWrapper.eq(SysAnnouncement::getDelFlag,CommonConstant.DEL_FLAG_0.toString());
+        //已发布
+		querySaWrapper.eq(SysAnnouncement::getSendStatus, CommonConstant.HAS_SEND);
+        //新注册用户不看结束通知
+		querySaWrapper.ge(SysAnnouncement::getEndTime, sysUser.getCreateTime());
 		//update-begin--Author:liusq  Date:20210108 for：[JT-424] 【开源issue】bug处理--------------------
 		querySaWrapper.notInSql(SysAnnouncement::getId,"select annt_id from sys_announcement_send where user_id='"+userId+"'");
 		//update-begin--Author:liusq  Date:20210108  for： [JT-424] 【开源issue】bug处理--------------------
@@ -354,10 +361,12 @@ public class SysAnnouncementController {
 		}
 		// 2.查询用户未读的系统消息
 		Page<SysAnnouncement> anntMsgList = new Page<SysAnnouncement>(0, pageSize);
-		anntMsgList = sysAnnouncementService.querySysCementPageByUserId(anntMsgList,userId,"1");//通知公告消息
+        //通知公告消息
+		anntMsgList = sysAnnouncementService.querySysCementPageByUserId(anntMsgList,userId,"1");
 		Page<SysAnnouncement> sysMsgList = new Page<SysAnnouncement>(0, pageSize);
-		sysMsgList = sysAnnouncementService.querySysCementPageByUserId(sysMsgList,userId,"2");//系统消息
-		Map<String,Object> sysMsgMap = new HashMap<String, Object>();
+        //系统消息
+		sysMsgList = sysAnnouncementService.querySysCementPageByUserId(sysMsgList,userId,"2");
+		Map<String,Object> sysMsgMap = new HashMap(5);
 		sysMsgMap.put("sysMsgList", sysMsgList.getRecords());
 		sysMsgMap.put("sysMsgTotal", sysMsgList.getTotal());
 		sysMsgMap.put("anntMsgList", anntMsgList.getRecords());
@@ -402,7 +411,8 @@ public class SysAnnouncementController {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
         for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-            MultipartFile file = entity.getValue();// 获取上传文件对象
+            // 获取上传文件对象
+            MultipartFile file = entity.getValue();
             ImportParams params = new ImportParams();
             params.setTitleRows(2);
             params.setHeadRows(1);
@@ -481,7 +491,7 @@ public class SysAnnouncementController {
             boolean tokenOK = false;
             try {
                 // 验证Token有效性
-                tokenOK = TokenUtils.verifyToken(request, sysBaseAPI, redisUtil);
+                tokenOK = TokenUtils.verifyToken(request, sysBaseApi, redisUtil);
             } catch (Exception ignored) {
             }
             // 判断是否传递了Token，并且Token有效，如果传了就不做查看限制，直接返回

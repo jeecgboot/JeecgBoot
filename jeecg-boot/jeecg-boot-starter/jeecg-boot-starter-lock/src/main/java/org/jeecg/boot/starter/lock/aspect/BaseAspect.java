@@ -29,7 +29,7 @@ public class BaseAspect {
         List<String> keys = new ArrayList<>();
         if (!key.contains("#")) {
             String s = "redis:lock:" + key + keyConstant;
-            log.info("lockKey:" + s);
+            log.debug("lockKey:" + s);
             keys.add(s);
             return keys;
         }

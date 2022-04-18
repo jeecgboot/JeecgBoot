@@ -15,6 +15,10 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @Description: NgAlainServiceImpl 实现类
+ * @author: jeecg-boot
+ */
 @Service("ngAlainService")
 public class NgAlainServiceImpl implements NgAlainService {
     @Autowired

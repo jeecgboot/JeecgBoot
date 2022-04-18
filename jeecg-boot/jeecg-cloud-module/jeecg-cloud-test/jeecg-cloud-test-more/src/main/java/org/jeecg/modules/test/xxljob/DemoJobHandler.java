@@ -32,30 +32,28 @@ public class DemoJobHandler {
      * @param params
      * @return
      */
-
     @XxlJob(value = "demoJob")
     public ReturnT<String> demoJobHandler(String params) {
-        log.info("我是定时任务,我执行了...............................");
+        log.info("我是 jeecg-system 服务里的定时任务 demoJob，我执行了...............................");
         return ReturnT.SUCCESS;
     }
 
     /**
      * 2、分片广播任务
      */
-
     @XxlJob("shardingJobHandler")
     public ReturnT<String> shardingJobHandler(String param) throws Exception {
 
         // 分片参数
         ShardingUtil.ShardingVO shardingVO = ShardingUtil.getShardingVo();
-        XxlJobLogger.log("分片参数：当前分片序号 = {}, 总分片数 = {}", shardingVO.getIndex(), shardingVO.getTotal());
+        log.info("分片参数：当前分片序号 = {}, 总分片数 = {}", shardingVO.getIndex(), shardingVO.getTotal());
 
         // 业务逻辑
         for (int i = 0; i < shardingVO.getTotal(); i++) {
             if (i == shardingVO.getIndex()) {
-                XxlJobLogger.log("第 {} 片, 命中分片开始处理", i);
+                log.info("第 {} 片, 命中分片开始处理", i);
             } else {
-                XxlJobLogger.log("第 {} 片, 忽略", i);
+                log.info("第 {} 片, 忽略", i);
             }
         }
 
@@ -65,8 +63,9 @@ public class DemoJobHandler {
 
     /**
      * 3、命令行任务
+     *
+     * 输入参数：ipconfig /all
      */
-
     @XxlJob("commandJobHandler")
     public ReturnT<String> commandJobHandler(String param) throws Exception {
         String command = param;
@@ -82,14 +81,14 @@ public class DemoJobHandler {
             // command log
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                XxlJobLogger.log(line);
+                log.info(line);
             }
 
             // command exit
             process.waitFor();
             exitValue = process.exitValue();
         } catch (Exception e) {
-            XxlJobLogger.log(e);
+            log.info(e.getMessage(),e);
         } finally {
             if (bufferedReader != null) {
                 bufferedReader.close();
@@ -106,18 +105,18 @@ public class DemoJobHandler {
 
     /**
      * 4、跨平台Http任务
-     * 参数示例：
-     * "url: http://www.baidu.com\n" +
-     * "method: get\n" +
-     * "data: content\n";
+     *
+     * 输入参数：
+     * url: https://www.baidu.com
+     * method: get
+     * data: content
      */
-
     @XxlJob("httpJobHandler")
     public ReturnT<String> httpJobHandler(String param) throws Exception {
 
         // param parse
         if (param == null || param.trim().length() == 0) {
-            XxlJobLogger.log("param[" + param + "] invalid.");
+            log.info("param[" + param + "] invalid.");
             return ReturnT.FAIL;
         }
         String[] httpParams = param.split("\n");
@@ -138,11 +137,11 @@ public class DemoJobHandler {
 
         // param valid
         if (url == null || url.trim().length() == 0) {
-            XxlJobLogger.log("url[" + url + "] invalid.");
+            log.info("url[" + url + "] invalid.");
             return ReturnT.FAIL;
         }
         if (method == null || !Arrays.asList("GET", "POST").contains(method)) {
-            XxlJobLogger.log("method[" + method + "] invalid.");
+            log.info("method[" + method + "] invalid.");
             return ReturnT.FAIL;
         }
 
@@ -191,10 +190,10 @@ public class DemoJobHandler {
             }
             String responseMsg = result.toString();
 
-            XxlJobLogger.log(responseMsg);
+            log.info(responseMsg);
             return ReturnT.SUCCESS;
         } catch (Exception e) {
-            XxlJobLogger.log(e);
+            log.info(e.getMessage(),e);
             return ReturnT.FAIL;
         } finally {
             try {
@@ -205,7 +204,7 @@ public class DemoJobHandler {
                     connection.disconnect();
                 }
             } catch (Exception e2) {
-                XxlJobLogger.log(e2);
+                log.info(e2.getMessage(),e2);
             }
         }
 
@@ -215,10 +214,9 @@ public class DemoJobHandler {
     /**
      * 5、生命周期任务示例：任务初始化与销毁时，支持自定义相关逻辑；
      */
-
     @XxlJob(value = "demoJobHandler2", init = "init", destroy = "destroy")
     public ReturnT<String> demoJobHandler2(String param) throws Exception {
-        XxlJobLogger.log("XXL-JOB, Hello World.");
+        log.info("XXL-JOB, Hello World.");
         return ReturnT.SUCCESS;
     }
 

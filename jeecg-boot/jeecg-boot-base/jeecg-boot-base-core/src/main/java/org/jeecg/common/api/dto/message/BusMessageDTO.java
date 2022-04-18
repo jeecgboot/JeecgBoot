@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 /**
  * 带业务参数的消息
+ * @author: jeecg-boot
  */
 @Data
 public class BusMessageDTO extends MessageDTO implements Serializable {
