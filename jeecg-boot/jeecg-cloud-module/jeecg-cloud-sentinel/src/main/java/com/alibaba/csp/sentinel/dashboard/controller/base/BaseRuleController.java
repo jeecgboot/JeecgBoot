@@ -1,4 +1,4 @@
-package com.alibaba.csp.sentinel.dashboard.controller;
+package com.alibaba.csp.sentinel.dashboard.controller.base;
 
 import java.util.concurrent.TimeUnit;
 
