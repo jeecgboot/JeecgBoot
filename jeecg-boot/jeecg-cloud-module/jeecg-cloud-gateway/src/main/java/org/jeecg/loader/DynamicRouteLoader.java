@@ -1,5 +1,6 @@
 package org.jeecg.loader;
 
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -35,6 +36,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
@@ -55,7 +57,10 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
     private DynamicRouteService dynamicRouteService;
     private ConfigService configService;
     private RedisUtil redisUtil;
-
+    /**
+     * 需要拼接key的路由条件
+     */
+    private static String[] GEN_KEY_ROUTERS = new String[]{"Path", "Host", "Method", "After", "Before", "Between", "RemoteAddr"};
 
     public DynamicRouteLoader(MyInMemoryRouteDefinitionRepository repository, DynamicRouteService dynamicRouteService, RedisUtil redisUtil) {
 
@@ -195,11 +200,27 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
                 for (Object map : list) {
                     JSONObject json = (JSONObject) map;
                     PredicateDefinition predicateDefinition = new PredicateDefinition();
-                    predicateDefinition.setName(json.getString("name"));
-                    JSONArray jsonArray = json.getJSONArray("args");
-                    for (int j = 0; j < jsonArray.size(); j++) {
-                        predicateDefinition.addArg("_genkey" + j, jsonArray.get(j).toString());
+                    //update-begin-author:zyf date:20220419 for:【VUEN-762】路由条件添加异常问题,原因是部分路由条件参数需要设置固定key
+                    String name=json.getString("name");
+                    predicateDefinition.setName(name);
+                    //路由条件是否拼接Key
+                    if(ArrayUtil.contains(GEN_KEY_ROUTERS,name)) {
+                        JSONArray jsonArray = json.getJSONArray("args");
+                        for (int j = 0; j < jsonArray.size(); j++) {
+                            predicateDefinition.addArg("_genkey" + j, jsonArray.get(j).toString());
+                        }
+                    }else{
+                        JSONObject jsonObject = json.getJSONObject("args");
+                        if(ObjectUtil.isNotEmpty(jsonObject)){
+                            for (Map.Entry<String, Object> entry : jsonObject.entrySet()) {
+                                Object valueObj=entry.getValue();
+                                if(ObjectUtil.isNotEmpty(valueObj)) {
+                                    predicateDefinition.addArg(entry.getKey(), valueObj.toString());
+                                }
+                            }
+                        }
                     }
+                    //update-end-author:zyf date:20220419 for:【VUEN-762】路由条件添加异常问题,原因是部分路由条件参数需要设置固定key
                     predicateDefinitionList.add(predicateDefinition);
                 }
                 route.setPredicates(predicateDefinitionList);

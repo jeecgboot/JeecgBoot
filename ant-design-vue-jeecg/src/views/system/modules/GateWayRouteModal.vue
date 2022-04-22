@@ -28,14 +28,15 @@
           <a-divider>{{item.name}}
             <a-icon type="delete" size="22" @click="removePredicate(router,index)"/>
           </a-divider>
-          <div>
-            <template v-for="(tag, index) in item.args">
-              <a-input v-if="index==currentTagIndex" ref="input" type="text" size="small"
+          <!--当name在 genKeyRouter 时不需要指定key，后台自动拼key -->
+          <div v-if="genKeyRouter.includes(item.name)">
+            <template v-for="(tag, tagIndex) in item.args">
+              <a-input v-if="tagIndex==currentTagIndex&&index==currentNameIndex" ref="input" type="text" size="small"
                        :style="{ width: '190px' }"
                        :value="tag"
-                       @change="handleInputChange" @blur="handleInputEditConfirm(item,tag,index)"
-                       @keyup.enter="handleInputEditConfirm(item,tag,index)"/>
-              <a-tag v-else :key="tag" :closable="true" @close="() => removeTag(item,tag)" @click="editTag(tag,index)">
+                       @change="handleInputChange" @blur="handleInputEditConfirm(item,tag,tagIndex)"
+                       @keyup.enter="handleInputEditConfirm(item,tag,tagIndex)"/>
+              <a-tag v-else :key="tag" :closable="true" @close="() => removeTag(item,tag)" @click="editTag(tag,tagIndex,index)">
                 {{ tag }}
               </a-tag>
             </template>
@@ -49,11 +50,27 @@
               新建{{item.name}}
             </a-tag>
           </div>
+          <!--当name不在 genKeyRouter 时需要指定key-->
+          <div v-if="!genKeyRouter.includes(item.name)">
+            <template v-for="(value, key) in item.args">
+              <a-row>
+                <a-col :span="5" style="margin-top:2px">
+                  <span v-if="key=='header'" >Header名称</span>
+                  <span v-if="key=='regexp'">参数值</span>
+                  <span v-if="key=='param'">参数名</span>
+                  <span v-if="key=='name'">Cookie名称</span>
+                </a-col>
+                <a-col :span="18">
+                  <a-input :defaultValue="value" placeholder="参数值" style="width: 70%; margin-right: 8px;margin-top: 3px" @change="(e)=>valueChange(e,item.args,key)"/>
+                </a-col>
+              </a-row>
+            </template>
+          </div>
         </div>
         <p class="btn" style="padding-top: 10px">
           <a-dropdown>
-            <a-menu slot="overlay" @click="predicatesHandleMenuClick">
-              <a-menu-item :key="item" v-for="item in tagArray">{{item}}</a-menu-item>
+            <a-menu slot="overlay">
+              <a-menu-item :key="item.name" v-for="item in tagArray" @click="predicatesHandleMenuClick(item)">{{item.name}}</a-menu-item>
             </a-menu>
             <a-button type="dashed" style="margin-left: 8px;width:100%"> 添加路由条件
               <a-icon type="down"/>
@@ -113,8 +130,55 @@
         currentNameIndex: 0,
         currentTagIndex:-1,
         predicates: {},
-        filterArray: [{ key: 0, name: '熔断器' }, { key: 1, name: '限流过滤器' }],
-        tagArray: ['Path', 'Host', 'Cookie', 'Header', 'Method', 'Query', 'After', 'Before', 'Between', 'RemoteAddr'],
+        filterArray: [ { key: 1, name: '限流过滤器' }],
+        //gateway对应的规则key
+        tagArray: [
+          {
+            name:'Header',
+            args:{
+              header:'',
+              regexp:''
+            }
+          },
+          {
+            name:'Query',
+            args:{
+              param:'',
+              regexp:''
+            }
+          },
+          {
+            name:'Method',
+            args:[]
+          },
+          {
+            name:'Host',
+            args:[]
+          },
+          {
+            name:'Cookie',
+            args:{
+              name:'',
+              regexp:''
+            }
+          },
+          {
+            name:'After',
+            args:[]
+          },
+          {
+            name:'Before',
+            args:[]
+          },
+          {
+            name:'Between',
+            args:[]
+          },
+          {
+            name:'RemoteAddr',
+            args:[]
+          }
+        ],
         inputVisible: false,
         inputValue: '',
         url: {
@@ -124,7 +188,8 @@
         router: this.getRouter(),
         title: '路由编辑',
         visible: false,
-        loading: false
+        loading: false,
+        genKeyRouter:["Path","Host","Method","After","Before","Between","RemoteAddr"]
       }
     },
     methods: {
@@ -163,12 +228,22 @@
       //添加路由选项
       predicatesHandleMenuClick(e) {
         this.router.predicates.push({
-          args: [],
-          name: e.key
+          args: e.args,
+          name: e.name,
         })
       },
-      editTag(tag,index){
-        this.currentTagIndex=index
+      editTag(tag, tagIndex,index){
+        this.currentNameIndex = index;
+        this.currentTagIndex=tagIndex
+      },
+      /**
+       * 值修改事件
+       * @param e
+       * @param item
+       * @param key
+       */
+      valueChange(e,item,key){
+         item[key]=e.target.value
       },
       //显示输入框
       showInput(item, index) {
@@ -226,7 +301,7 @@
               value: 20
             }],
             name:"RequestRateLimiter",
-            title: this.filterArray[1].name
+            title: this.filterArray[0].name
           })
         }
       },
