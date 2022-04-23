@@ -172,9 +172,13 @@ export const formSchema: FormSchema[] = [
 <#assign form_cat_tree = false>
 <#assign form_cat_back = "">
 <#assign bpm_flag=false>
+<#assign id_exists = false>
 <#list columns as po><#rt/>
 <#if po.fieldDbName=='bpm_status'>
   <#assign bpm_flag=true>
+</#if>
+<#if po.fieldDbName == 'id'>
+	<#assign id_exists = true>
 </#if>
 <#if po.isShow =='Y'>
 <#assign form_field_dictCode="">
@@ -352,6 +356,15 @@ export const formSchema: FormSchema[] = [
   },
 </#if>
 </#list>
+<#if id_exists == false>
+	// TODO 主键隐藏字段，目前写死为ID
+	{
+	  label: '',
+	  field: 'id',
+	  component: 'Input',
+	  show: false
+	},
+</#if>
 ];
 //子表单数据
 <#list subTables as sub>

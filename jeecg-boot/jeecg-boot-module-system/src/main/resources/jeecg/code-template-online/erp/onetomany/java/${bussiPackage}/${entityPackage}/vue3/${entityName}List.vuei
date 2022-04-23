@@ -122,7 +122,8 @@
             url: getExportUrl,
         },
         importConfig: {
-            url: getImportUrl
+            url: getImportUrl,
+            success: handleSuccess
         },
     })
 
@@ -164,19 +165,19 @@
     * 删除事件
     */
   async function handleDelete(record) {
-     await deleteOne({id: record.id}, reload);
+     await deleteOne({id: record.id}, handleSuccess);
    }
    /**
     * 批量删除事件
     */
   async function batchHandleDelete() {
-     await batchDelete({ids: selectedRowKeys.value}, reload);
+     await batchDelete({ids: selectedRowKeys.value},handleSuccess);
    }
    /**
     * 成功回调
     */
   function handleSuccess() {
-      reload();
+      (selectedRowKeys.value = []) && reload();
    }
    /**
       * 操作栏
