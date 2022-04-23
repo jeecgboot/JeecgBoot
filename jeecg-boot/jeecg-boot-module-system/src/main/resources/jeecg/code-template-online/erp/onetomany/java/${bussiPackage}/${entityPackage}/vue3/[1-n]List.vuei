@@ -117,23 +117,21 @@
      * 删除事件
      */
     async function handleDelete(record) {
-        await ${sub.entityName?uncap_first}Delete({id: record.id}, reload);
+        await ${sub.entityName?uncap_first}Delete({id: record.id}, handleSuccess);
     }
 
     /**
      * 批量删除事件
      */
     async function batchHandleDelete() {
-        await ${sub.entityName?uncap_first}DeleteBatch({ids: selectedRowKeys.value}, () => {
-            reload()
-        })
+        await ${sub.entityName?uncap_first}DeleteBatch({ids: selectedRowKeys.value}, handleSuccess)
     }
 
     /**
      * 成功回调
      */
     function handleSuccess() {
-        reload();
+        (selectedRowKeys.value = []) && reload();
     }
 
     /**

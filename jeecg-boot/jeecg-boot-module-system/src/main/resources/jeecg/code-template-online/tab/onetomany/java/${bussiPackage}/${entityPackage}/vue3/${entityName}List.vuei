@@ -24,7 +24,7 @@
           <a-button type="primary" @click="handleAdd" preIcon="ant-design:plus-outlined"> 新增</a-button>
           <a-button  type="primary" preIcon="ant-design:export-outlined" @click="onExportXls"> 导出</a-button>
           <j-upload-button  type="primary" preIcon="ant-design:import-outlined" @click="onImportXls">导入</j-upload-button>
-          <a-dropdown v-if="checkedKeys.length > 0">
+          <a-dropdown v-if="selectedRowKeys.length > 0">
               <template #overlay>
                 <a-menu>
                   <a-menu-item key="1" @click="batchHandleDelete">
@@ -107,7 +107,8 @@
             url: getExportUrl,
         },
         importConfig: {
-            url: getImportUrl
+            url: getImportUrl,
+            success: handleSuccess
         },
     })
 
@@ -146,19 +147,19 @@
     * 删除事件
     */
   async function handleDelete(record) {
-     await deleteOne({id: record.id}, reload);
+     await deleteOne({id: record.id}, handleSuccess);
    }
    /**
     * 批量删除事件
     */
   async function batchHandleDelete() {
-     await batchDelete({ids: checkedKeys.value}, reload);
+     await batchDelete({ids: selectedRowKeys.value}, handleSuccess);
    }
    /**
     * 成功回调
     */
   function handleSuccess() {
-      reload();
+      (selectedRowKeys.value = []) && reload();
    }
    /**
       * 操作栏
