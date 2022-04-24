@@ -19,6 +19,8 @@ import io.swagger.annotations.ApiOperation;
 
 /**
  * RabbitMqClient发送消息
+ * @author: zyf
+ * @date: 2022/04/21
  */
 @RestController
 @RequestMapping("/sys/test")

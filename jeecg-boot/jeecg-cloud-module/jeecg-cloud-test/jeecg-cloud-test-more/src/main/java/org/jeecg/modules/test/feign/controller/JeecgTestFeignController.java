@@ -12,7 +12,11 @@ import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-
+/**
+ * 微服务单元测试
+ * @author: zyf
+ * @date: 2022/04/21
+ */
 @Slf4j
 @RestController
 @RequestMapping("/sys/test")

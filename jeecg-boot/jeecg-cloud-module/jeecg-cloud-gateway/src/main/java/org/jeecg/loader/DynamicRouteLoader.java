@@ -21,6 +21,8 @@ import org.jeecg.config.RouterDataType;
 import org.jeecg.loader.repository.DynamicRouteService;
 import org.jeecg.loader.repository.MyInMemoryRouteDefinitionRepository;
 import org.jeecg.loader.vo.MyRouteDefinition;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.filter.FilterDefinition;
 import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
@@ -49,6 +51,7 @@ import java.util.concurrent.Executor;
 @Slf4j
 @Component
 @DependsOn({"gatewayRoutersConfiguration"})
+@RefreshScope
 public class DynamicRouteLoader implements ApplicationEventPublisherAware {
 
 
@@ -57,6 +60,12 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
     private DynamicRouteService dynamicRouteService;
     private ConfigService configService;
     private RedisUtil redisUtil;
+
+    /**
+     * 路由配置方式：database(数据库)，yml(配置文件)，nacos
+     */
+    @Value("${jeecg.route.config.data-type:database}")
+    public  String dataType;
     /**
      * 需要拼接key的路由条件
      */
@@ -76,7 +85,6 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
 
 
     public void init(BaseMap baseMap) {
-        String dataType = GatewayRoutersConfiguration.DATA_TYPE;
         log.info("初始化路由，dataType："+ dataType);
         if (RouterDataType.nacos.toString().endsWith(dataType)) {
             loadRoutesByNacos();
@@ -92,7 +100,6 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
      * @return
      */
     public Mono<Void> refresh(BaseMap baseMap) {
-        String dataType = GatewayRoutersConfiguration.DATA_TYPE;
         if (!RouterDataType.yml.toString().endsWith(dataType)) {
             this.init(baseMap);
         }

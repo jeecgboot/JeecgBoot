@@ -14,6 +14,8 @@ import java.util.Map;
 
 /**
  * 分布式锁测试demo
+ * @author: zyf
+ * @date: 2022/04/21
  */
 @Slf4j
 @Component
@@ -50,10 +52,11 @@ public class DemoLockTest {
 
     /**
      * 测试分布式锁【编码方式】
+     * @Scheduled(cron = "0/5 * * * * ?")
      */
-    //@Scheduled(cron = "0/5 * * * * ?")
     public void execute2() throws InterruptedException {
-        if (redissonLock.tryLock(CloudConstant.REDISSON_DEMO_LOCK_KEY2, -1, 6000)) {
+        int expireSeconds=6000;
+        if (redissonLock.tryLock(CloudConstant.REDISSON_DEMO_LOCK_KEY2, -1, expireSeconds)) {
             log.info("执行任务execute2开始，休眠十秒");
             Thread.sleep(10000);
            log.info("=============业务逻辑2===================");

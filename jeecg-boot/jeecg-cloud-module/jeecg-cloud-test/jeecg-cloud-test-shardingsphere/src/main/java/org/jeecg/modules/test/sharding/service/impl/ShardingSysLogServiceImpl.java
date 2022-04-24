@@ -8,9 +8,9 @@ import org.jeecg.modules.test.sharding.service.IShardingSysLogService;
 import org.springframework.stereotype.Service;
 
 /**
- * <p>
  * 系统日志表 服务实现类
- * </p>
+ * @author: zyf
+ * @date: 2022/04/21
  */
 @Service
 @DS("sharding")

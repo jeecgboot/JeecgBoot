@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 消息处理器【发布订阅】
+ * @author: zyf
+ * @date: 2022/04/21
  */
 @Slf4j
 @Component(CloudConstant.MQ_DEMO_BUS_EVENT)
