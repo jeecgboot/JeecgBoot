@@ -36,7 +36,7 @@ public class SeataOrderServiceImpl implements SeataOrderService {
 
     @DS("order")
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @GlobalTransactional
     public void placeOrder(PlaceOrderRequest request) {
         log.info("=============ORDER START=================");

@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * 监控服务
+ * @author zyf
+ * @date: 2022/4/21 10:55
  */
 @SpringBootApplication
 @EnableAdminServer

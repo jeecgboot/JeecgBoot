@@ -35,7 +35,8 @@ public class JeecgShardingDemoController extends JeecgController<ShardingSysLog,
     @PostMapping(value = "/test1")
     @ApiOperation(value = "单库分表插入", notes = "单库分表")
     public Result<?> add() {
-        for (int i = 0; i < 10; i++) {
+        int size=10;
+        for (int i = 0; i < size; i++) {
             ShardingSysLog shardingSysLog = new ShardingSysLog();
             shardingSysLog.setLogContent("jeecg");
             shardingSysLog.setLogType(i);
@@ -62,7 +63,9 @@ public class JeecgShardingDemoController extends JeecgController<ShardingSysLog,
     @PostMapping(value = "/test2")
     @ApiOperation(value = "双库分表插入", notes = "双库分表")
     public Result<?> test2() {
-        for (int i = 20; i <= 30; i++) {
+        int start=20;
+        int size=30;
+        for (int i = start; i <= size; i++) {
             ShardingSysLog shardingSysLog = new ShardingSysLog();
             shardingSysLog.setLogContent("双库分表测试");
             shardingSysLog.setLogType(i);

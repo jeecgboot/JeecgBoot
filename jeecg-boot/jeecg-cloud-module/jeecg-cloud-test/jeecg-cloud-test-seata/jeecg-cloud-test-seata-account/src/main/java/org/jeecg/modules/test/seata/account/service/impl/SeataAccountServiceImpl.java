@@ -32,7 +32,7 @@ public class SeataAccountServiceImpl implements SeataAccountService {
      */
     @DS("account")
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRES_NEW,rollbackFor = Exception.class)
     public void reduceBalance(Long userId, BigDecimal amount) {
         log.info("=============ACCOUNT START=================");
         SeataAccount account = accountMapper.selectById(userId);

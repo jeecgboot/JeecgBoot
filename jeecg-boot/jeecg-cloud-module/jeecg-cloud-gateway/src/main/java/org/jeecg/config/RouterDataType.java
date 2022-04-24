@@ -2,6 +2,8 @@ package org.jeecg.config;
 
 /**
  * nocos配置方式枚举
+ * @author zyf
+ * @date: 2022/4/21 10:55
  */
 public enum RouterDataType {
     /**

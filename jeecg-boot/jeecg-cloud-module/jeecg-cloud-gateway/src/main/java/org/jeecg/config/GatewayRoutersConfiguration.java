@@ -2,6 +2,7 @@ package org.jeecg.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -19,11 +20,9 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
  */
 @Slf4j
 @Configuration
+@RefreshScope
 public class GatewayRoutersConfiguration {
-    /**
-     * 路由配置方式：database，yml，nacos
-     */
-    public static String DATA_TYPE;
+
     public static final long DEFAULT_TIMEOUT = 30000;
     public static String SERVER_ADDR;
     public static String NAMESPACE;
@@ -52,10 +51,6 @@ public class GatewayRoutersConfiguration {
         ROUTE_GROUP = routeGroup;
     }
 
-    @Value("${jeecg.route.config.data-type:#{null}}")
-    public void setDataType(String dataType) {
-        DATA_TYPE = dataType;
-    }
 
     @Value("${spring.cloud.nacos.config.username}")
     public void setUsername(String username) {

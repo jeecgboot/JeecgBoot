@@ -33,7 +33,7 @@ public class GatewaySentinelExceptionConfig {
             } else {
                 msg = "未知限流降级";
             }
-            HashMap<String, String> map = new HashMap();
+            HashMap<String, String> map = new HashMap(5);
             map.put("code", HttpStatus.TOO_MANY_REQUESTS.toString());
             map.put("message", msg);
             //自定义异常处理

@@ -20,6 +20,8 @@ import java.util.Arrays;
 
 /**
  * xxl-job定时任务测试
+ * @author: zyf
+ * @date: 2022/04/21
  */
 @Component
 @Slf4j
@@ -113,7 +115,8 @@ public class DemoJobHandler {
      */
     @XxlJob("httpJobHandler")
     public ReturnT<String> httpJobHandler(String param) throws Exception {
-
+        String[] methodArray=new String[]{"GET","POST"};
+        int okState=200;
         // param parse
         if (param == null || param.trim().length() == 0) {
             log.info("param[" + param + "] invalid.");
@@ -140,7 +143,7 @@ public class DemoJobHandler {
             log.info("url[" + url + "] invalid.");
             return ReturnT.FAIL;
         }
-        if (method == null || !Arrays.asList("GET", "POST").contains(method)) {
+        if (method == null || !Arrays.asList(methodArray).contains(method)) {
             log.info("method[" + method + "] invalid.");
             return ReturnT.FAIL;
         }
@@ -177,7 +180,7 @@ public class DemoJobHandler {
 
             // valid StatusCode
             int statusCode = connection.getResponseCode();
-            if (statusCode != 200) {
+            if (statusCode != okState) {
                 throw new RuntimeException("Http Request StatusCode(" + statusCode + ") Invalid.");
             }
 

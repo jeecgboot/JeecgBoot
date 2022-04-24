@@ -16,6 +16,8 @@ import org.springframework.messaging.handler.annotation.Header;
  *
  * RabbitMq接受者3【我是处理人3】
  * （@RabbitListener声明类方法上，一个类可以多监听多个队列）
+ * @author: zyf
+ * @date: 2022/04/21
  */
 @Slf4j
 @RabbitComponent(value = "helloReceiver3")

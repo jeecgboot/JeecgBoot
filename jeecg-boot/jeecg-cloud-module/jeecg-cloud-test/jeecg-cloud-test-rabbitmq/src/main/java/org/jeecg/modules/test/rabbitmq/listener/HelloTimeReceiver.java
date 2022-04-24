@@ -14,6 +14,11 @@ import com.rabbitmq.client.Channel;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * 定义接收者（可以定义N个接受者，消息会均匀的发送到N个接收者中）
+ * @author: zyf
+ * @date: 2022/04/21
+ */
 @Slf4j
 @RabbitListener(queues = CloudConstant.MQ_JEECG_PLACE_ORDER_TIME)
 @RabbitComponent(value = "helloTimeReceiver")

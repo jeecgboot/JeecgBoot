@@ -10,6 +10,7 @@ import java.math.BigDecimal;
  */
 public interface SeataAccountService {
     /**
+     * 扣减金额
      * @param userId 用户 ID
      * @param amount  扣减金额
      */
