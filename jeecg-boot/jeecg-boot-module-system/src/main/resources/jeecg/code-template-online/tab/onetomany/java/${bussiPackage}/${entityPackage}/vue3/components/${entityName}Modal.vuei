@@ -45,8 +45,8 @@
     import ${sub.entityName}Form from './${sub.entityName}Form.vue'
       </#if>
     </#list>
-    import {formSchema<#list subTables as sub><#if sub.foreignRelationType =='0'>,${sub.entityName?uncap_first}Columns</#if></#list>} from '../${entityName?uncap_first}.data';
-    import {saveOrUpdate<#list subTables as sub>,${sub.entityName?uncap_first}List</#list>} from '../${entityName?uncap_first}.api';
+    import {formSchema<#list subTables as sub><#if sub.foreignRelationType =='0'>,${sub.entityName?uncap_first}Columns</#if></#list>} from '../${entityName}.data';
+    import {saveOrUpdate<#list subTables as sub>,${sub.entityName?uncap_first}List</#list>} from '../${entityName}.api';
     import { VALIDATE_FAILED } from '/@/utils/common/vxeUtils'
     // Emits声明
     const emit = defineEmits(['register','success']);
