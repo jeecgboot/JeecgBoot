@@ -79,8 +79,8 @@
   <#list subTables as sub>
   import ${sub.entityName}SubTable from './subTables/${sub.entityName}SubTable.vue'
   </#list>
-  import {columns, searchFormSchema} from './${entityName?uncap_first}.data';
-  import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName?uncap_first}.api';
+  import {columns, searchFormSchema} from './${entityName}.data';
+  import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName}.api';
   <#if list_need_category>
   import { loadCategoryData } from '/@/api/common/api'
   import { getAuthCache, setAuthCache } from '/@/utils/auth';

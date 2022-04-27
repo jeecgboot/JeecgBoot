@@ -7,8 +7,8 @@
   import {ref, computed, unref} from 'vue';
   import {BasicModal, useModalInner} from '/src/components/Modal';
   import {BasicForm, useForm} from '/src/components/Form';
-  import {formSchema} from '../${entityName?uncap_first}.data';
-  import {loadTreeData, saveOrUpdateDict} from '../${entityName?uncap_first}.api';
+  import {formSchema} from '../${entityName}.data';
+  import {loadTreeData, saveOrUpdateDict} from '../${entityName}.api';
   // 获取emit
   const emit = defineEmits(['register', 'success']);
   const isUpdate = ref(true);

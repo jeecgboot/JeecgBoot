@@ -11,8 +11,8 @@
     import {ref, computed, unref,inject} from 'vue';
     import {BasicModal, useModalInner} from '/@/components/Modal';
     import {BasicForm, useForm} from '/@/components/Form/index';
-    import {${sub.entityName?uncap_first}FormSchema} from '../${entityName?uncap_first}.data';
-    import {${sub.entityName?uncap_first}SaveOrUpdate} from '../${entityName?uncap_first}.api';
+    import {${sub.entityName?uncap_first}FormSchema} from '../${entityName}.data';
+    import {${sub.entityName?uncap_first}SaveOrUpdate} from '../${entityName}.api';
 
     //接收主表id
     const mainId = inject('mainId');

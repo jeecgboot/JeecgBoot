@@ -62,8 +62,8 @@
   import { useListPage } from '/@/hooks/system/useListPage'
   import {useModal} from '/@/components/Modal';
   import ${entityName}Modal from './components/${entityName}Modal.vue'
-  import {columns, searchFormSchema} from './${entityName?uncap_first}.data';
-  import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName?uncap_first}.api';
+  import {columns, searchFormSchema} from './${entityName}.data';
+  import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName}.api';
   <#if list_need_category>
   import { loadCategoryData } from '/@/api/common/api'
   import { getAuthCache, setAuthCache } from '/@/utils/auth';
