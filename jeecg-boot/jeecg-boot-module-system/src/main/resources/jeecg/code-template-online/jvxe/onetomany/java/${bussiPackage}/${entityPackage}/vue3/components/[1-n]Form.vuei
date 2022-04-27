@@ -7,7 +7,7 @@
 <script lang="ts">
     import {defineComponent} from 'vue';
     import {BasicForm, useForm} from '/@/components/Form/index';
-    import {${sub.entityName?uncap_first}FormSchema} from '../${entityName?uncap_first}.data';
+    import {${sub.entityName?uncap_first}FormSchema} from '../${entityName}.data';
     import {defHttp} from '/@/utils/http/axios';
     import { VALIDATE_FAILED } from '/@/utils/common/vxeUtils'
 

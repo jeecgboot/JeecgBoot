@@ -41,8 +41,8 @@
   import {useModal} from '/@/components/Modal';
   import {isEmpty} from "/@/utils/is";
   import {useMessage} from '/@/hooks/web/useMessage';
-  import {${subTab.entityName?uncap_first}Columns} from './${entityName?uncap_first}.data';
-  import {${subTab.entityName?uncap_first}List, ${subTab.entityName?uncap_first}Delete, ${subTab.entityName?uncap_first}DeleteBatch} from './${entityName?uncap_first}.api';
+  import {${subTab.entityName?uncap_first}Columns} from './${entityName}.data';
+  import {${subTab.entityName?uncap_first}List, ${subTab.entityName?uncap_first}Delete, ${subTab.entityName?uncap_first}DeleteBatch} from './${entityName}.api';
  //提示弹窗
   const $message = useMessage()
   //接收主表id
