@@ -48,7 +48,7 @@
   import {useModal} from '/@/components/Modal';
   import ${sub.entityName}Modal from './components/${sub.entityName}Modal.vue'
   import {${sub.entityName?uncap_first}Columns} from './${entityName}.data';
-  import {${sub.entityName?uncap_first}List, ${sub.entityName?uncap_first}Delete, ${sub.entityName?uncap_first}DeleteBatch} from './${entityName}.api';
+  import {${sub.entityName?uncap_first}List, ${sub.entityName?uncap_first}Delete, ${sub.entityName?uncap_first}DeleteBatch, ${sub.entityName?uncap_first}ExportXlsUrl, ${sub.entityName?uncap_first}ImportUrl } from './${entityName}.api';
   import {isEmpty} from "/@/utils/is";
   import {useMessage} from '/@/hooks/web/useMessage';
 
@@ -60,7 +60,7 @@
     const [registerModal, {openModal}] = useModal();
     const searchInfo = {};
     // 列表页面公共参数、方法
-    const {prefixCls, tableContext} = useListPage({
+    const {prefixCls, tableContext, onImportXls, onExportXls} = useListPage({
         tableProps: {
             api: ${sub.entityName?uncap_first}List,
             columns: ${sub.entityName?uncap_first}Columns,
@@ -75,6 +75,13 @@
                 pageSizeOptions: ['5', '10', '20'],
             }
         },
+        exportConfig: {
+            name: '${sub.ftlDescription}',
+            url: ${sub.entityName?uncap_first}ExportXlsUrl
+        },
+        importConfig: {
+            url: getImportUrl()
+        }
     });
 
     //注册table数据
@@ -87,6 +94,14 @@
          reload();
       }
     );
+
+    /**
+     * 导入地址
+     */
+    function getImportUrl(){
+        return ${sub.entityName?uncap_first}ImportUrl+'/'+ unref(mainId)
+    }
+
 
     /**
      * 新增事件

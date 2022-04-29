@@ -15,7 +15,7 @@
       <a-form :form="form">
 <#list subTab.colums as po><#rt/>
 
-<#if po.fieldName !='id'><#rt/>
+<#if po.fieldName !='id' && po.filedComment !='外键'><#rt/>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
