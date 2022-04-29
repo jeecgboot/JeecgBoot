@@ -126,7 +126,6 @@
    </a-tabs>
 
  </a-spin>
-</j-modal>
 </template>
 
 <script>

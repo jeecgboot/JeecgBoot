@@ -84,7 +84,7 @@ export const ${sub.entityName?uncap_first}Columns: BasicColumn[] = [
       return !text?"":(text.length>10?text.substr(0,10):text)
     },
    <#else>
-    dataIndex: '${po.fieldName}'
+    dataIndex: '${po.fieldName}',
    </#if>
    },
    </#if>
@@ -92,24 +92,28 @@ export const ${sub.entityName?uncap_first}Columns: BasicColumn[] = [
 ];
 
 export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
+   // TODO 主键隐藏字段，目前写死为ID
+   {label: '', field: 'id', component: 'Input', show: false},
 <#-- 循环子表的列 开始 -->
 <#list sub.colums as po><#rt/>
+<#if po.filedComment !='外键' >
    {
        label: '${po.filedComment}',
        field: '${po.fieldName}',
         <#if po.fieldType =='date'>
-       component: 'DatePicker'
+       component: 'DatePicker',
         <#elseif po.fieldType =='datetime'>
-       component: 'TimePicker'
+       component: 'TimePicker',
         <#elseif "int,decimal,double,"?contains(po.fieldType)>
-       component: 'InputNumber'
+       component: 'InputNumber',
         <#else>
-       component: 'Input'
+       component: 'Input',
        </#if>
        <#if po.fieldName =='id'><#rt/>
-       show:false
+       show:false,
        </#if>
      },
+</#if>
 </#list>
 <#-- 循环子表的列 结束 -->
   ]

@@ -340,10 +340,12 @@
         selectedMainId:'',
         superFieldList:[],
         <#list subTables as sub>
+        <#if sub != null>
           <#list sub.foreignMainKeys as key>
             <#assign subMainFieldMap += {"${sub.entityName?uncap_first}MainId": "${dashedToCamel(key)}"}>
           </#list>
         ${sub.entityName?uncap_first}MainId: '',
+        </#if>
         </#list>
       }
     },
