@@ -135,7 +135,7 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
 	 */
 	private void updateOldParentNode(String pid) {
 		if(!I${entityName}Service.ROOT_PID_VALUE.equals(pid)) {
-			Integer count = baseMapper.selectCount(new QueryWrapper<${entityName}>().eq("${tableVo.extendParams.pidField}", pid));
+			Long count = baseMapper.selectCount(new QueryWrapper<${entityName}>().eq("${tableVo.extendParams.pidField}", pid));
 			if(count==null || count<=1) {
 				baseMapper.updateTreeNodeStatus(pid, I${entityName}Service.NOCHILD);
 			}

@@ -32,7 +32,7 @@ public class SeataProductServiceImpl implements SeataProductService {
      * 事务传播特性设置为 REQUIRES_NEW 开启新的事务
      */
     @DS("product")
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRES_NEW,rollbackFor = Exception.class)
     @Override
     public BigDecimal reduceStock(Long productId, Integer count) {
         log.info("=============PRODUCT START=================");

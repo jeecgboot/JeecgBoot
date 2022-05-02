@@ -1,5 +1,6 @@
 package org.jeecg.handler.swagger;
 
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.nacos.api.naming.NamingFactory;
 import com.alibaba.nacos.api.naming.NamingService;
@@ -21,6 +22,8 @@ import java.util.Set;
 
 /**
  * 聚合各个服务的swagger接口
+ * @author zyf
+ * @date: 2022/4/21 10:55
  */
 @Component
 @Slf4j
@@ -41,6 +44,11 @@ public class MySwaggerResourceProvider implements SwaggerResourcesProvider {
      */
     @Value("${spring.cloud.nacos.discovery.server-addr}")
     private String serverAddr;
+
+    /**
+     * Swagger中需要排除的服务
+     */
+    private String[] excludeServiceIds=new String[]{"jeecg-cloud-monitor"};
 
 
     /**
@@ -82,8 +90,8 @@ public class MySwaggerResourceProvider implements SwaggerResourcesProvider {
                 swaggerResource.setUrl(url);
                 swaggerResource.setSwaggerVersion("2.0");
                 swaggerResource.setName(instance);
-                //Swagger排除监控
-                if(instance.indexOf("jeecg-cloud-monitor")==-1){
+                //Swagger排除不展示的服务
+                if(!ArrayUtil.contains(excludeServiceIds,instance)){
                     resources.add(swaggerResource);
                 }
             }

@@ -79,8 +79,8 @@
   <#list subTables as sub>
   import ${sub.entityName}SubTable from './subTables/${sub.entityName}SubTable.vue'
   </#list>
-  import {columns, searchFormSchema} from './${entityName?uncap_first}.data';
-  import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName?uncap_first}.api';
+  import {columns, searchFormSchema} from './${entityName}.data';
+  import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName}.api';
   <#if list_need_category>
   import { loadCategoryData } from '/@/api/common/api'
   import { getAuthCache, setAuthCache } from '/@/utils/auth';
@@ -125,7 +125,8 @@
             url: getExportUrl,
         },
         importConfig: {
-            url: getImportUrl
+            url: getImportUrl,
+            success: handleSuccess
         },
     })
 
@@ -172,19 +173,19 @@
     * 删除事件
     */
   async function handleDelete(record) {
-     await deleteOne({id: record.id}, reload);
+     await deleteOne({id: record.id}, handleSuccess);
    }
    /**
     * 批量删除事件
     */
   async function batchHandleDelete() {
-     await batchDelete({ids: selectedRowKeys.value}, reload);
+     await batchDelete({ids: selectedRowKeys.value},handleSuccess);
    }
    /**
     * 成功回调
     */
   function handleSuccess() {
-      reload();
+      (selectedRowKeys.value = []) && reload();
    }
    /**
       * 操作栏

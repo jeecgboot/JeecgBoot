@@ -17,6 +17,8 @@ import org.springframework.messaging.handler.annotation.Header;
  *
  * RabbitMq接受者2
  * （@RabbitListener声明类上，一个类只能监听一个队列）
+ * @author: zyf
+ * @date: 2022/04/21
  */
 @Slf4j
 @RabbitListener(queues = CloudConstant.MQ_JEECG_PLACE_ORDER)

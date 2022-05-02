@@ -2,6 +2,8 @@ package org.jeecg.modules.test.constant;
 
 /**
  * 微服务单元测试常量定义
+ * @author: zyf
+ * @date: 2022/04/21
  */
 public interface CloudConstant {
 

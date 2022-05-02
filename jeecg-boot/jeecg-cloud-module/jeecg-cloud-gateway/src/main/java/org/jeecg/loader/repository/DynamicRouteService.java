@@ -59,7 +59,6 @@ public class DynamicRouteService implements ApplicationEventPublisherAware {
     public synchronized String update(RouteDefinition definition) {
         try {
             log.info("gateway update route {}", definition);
-            //delete(definition.getId());
         } catch (Exception e) {
             return "update fail,not find route  routeId: " + definition.getId();
         }

@@ -14,9 +14,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * <p>
  * 系统日志表
- * </p>
+ * @author: zyf
+ * @date: 2022/04/21
  */
 @Data
 @TableName("sys_log")

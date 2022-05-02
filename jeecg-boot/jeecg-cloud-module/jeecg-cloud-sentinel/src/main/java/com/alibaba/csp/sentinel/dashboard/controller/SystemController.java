@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 /**
  * 系统规则控制器
  *
@@ -31,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/system")
-public class SystemController extends BaseRuleController{
+public class SystemController extends BaseRuleController {
 
     private final Logger logger = LoggerFactory.getLogger(SystemController.class);
 

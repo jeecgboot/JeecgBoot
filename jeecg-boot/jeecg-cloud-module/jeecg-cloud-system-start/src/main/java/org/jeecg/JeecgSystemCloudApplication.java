@@ -22,6 +22,8 @@ import java.net.UnknownHostException;
 /**
  * 微服务启动类（采用此类启动项目为微服务模式）
  *  注意： 需要先在naocs里面创建配置文件，参考文档 http://doc.jeecg.com/2704725
+ * @author zyf
+ * @date: 2022/4/21 10:55
  */
 @Slf4j
 @SpringBootApplication

@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(value = "/authority")
-public class AuthorityRuleController extends BaseRuleController{
+public class AuthorityRuleController extends BaseRuleController {
 
     private final Logger logger = LoggerFactory.getLogger(AuthorityRuleController.class);
 

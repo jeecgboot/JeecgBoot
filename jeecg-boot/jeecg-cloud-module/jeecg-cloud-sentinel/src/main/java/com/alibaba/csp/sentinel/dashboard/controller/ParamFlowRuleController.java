@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-
 /**
  * 热点参数规则控制器
  *
@@ -35,7 +34,7 @@ import java.util.concurrent.ExecutionException;
  */
 @RestController
 @RequestMapping(value = "/paramFlow")
-public class ParamFlowRuleController extends BaseRuleController{
+public class ParamFlowRuleController extends BaseRuleController {
 
     private final Logger logger = LoggerFactory.getLogger(ParamFlowRuleController.class);
 

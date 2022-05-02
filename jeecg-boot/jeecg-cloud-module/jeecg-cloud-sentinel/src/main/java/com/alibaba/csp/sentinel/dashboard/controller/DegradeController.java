@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/degrade")
-public class DegradeController extends BaseRuleController{
+public class DegradeController extends BaseRuleController {
 
     private final Logger logger = LoggerFactory.getLogger(DegradeController.class);
 
