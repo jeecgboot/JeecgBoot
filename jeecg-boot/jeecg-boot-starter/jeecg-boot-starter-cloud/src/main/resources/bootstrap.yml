@@ -2,9 +2,9 @@ spring:
   #升级SpringBoot2.6.6,允许循环依赖
   main:
     allow-circular-references: true
-  profiles:
-    # 当前激活环境
-    active: '@profile.name@'
+  config:
+    activate:
+      on-profile:  '@profile.name@'
   cloud:
     #配置Bus id(远程推送事件)
     bus:
