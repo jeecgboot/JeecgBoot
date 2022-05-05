@@ -145,8 +145,8 @@ public class SysUserController {
 			user.setPassword(passwordEncode);
 			user.setStatus(1);
 			user.setDelFlag(CommonConstant.DEL_FLAG_0);
-			sysUserService.addUserWithRole(user, selectedRoles);
-            sysUserService.addUserWithDepart(user, selectedDeparts);
+			// 保存用户走一个service 保证事务
+			sysUserService.saveUser(user, selectedRoles, selectedDeparts);
 			result.success("添加成功！");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -172,9 +172,8 @@ public class SysUserController {
 				user.setPassword(sysUser.getPassword());
 				String roles = jsonObject.getString("selectedroles");
                 String departs = jsonObject.getString("selecteddeparts");
-				sysUserService.editUserWithRole(user, roles);
-                sysUserService.editUserWithDepart(user, departs);
-                sysUserService.updateNullPhoneEmail();
+                // 修改用户走一个service 保证事务
+				sysUserService.editUser(user, roles, departs);
 				result.success("修改成功!");
 			}
 		} catch (Exception e) {
@@ -279,6 +278,7 @@ public class SysUserController {
         result.setResult(true);
         try {
             //通过传入信息查询新的用户信息
+            sysUser.setPassword(null);
             SysUser user = sysUserService.getOne(new QueryWrapper<SysUser>(sysUser));
             if (user != null) {
                 result.setSuccess(false);
@@ -387,6 +387,23 @@ public class SysUserController {
             result.setSuccess(false);
             return result;
         }
+    }
+
+    /**
+     * 用户选择组件 专用  根据用户账号或部门分页查询
+     * @param departId
+     * @param username
+     * @return
+     */
+    @RequestMapping(value = "/queryUserComponentData", method = RequestMethod.GET)
+    public Result<IPage<SysUser>> queryUserComponentData(
+            @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+            @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+            @RequestParam(name = "departId", required = false) String departId,
+            @RequestParam(name="realname",required=false) String realname,
+            @RequestParam(name="username",required=false) String username) {
+        IPage<SysUser> pageList = sysUserDepartService.queryDepartUserPageList(departId, username, realname, pageSize, pageNo);
+        return Result.OK(pageList);
     }
 
     /**
@@ -522,13 +539,17 @@ public class SysUserController {
 	/**
 	 * 首页用户重置密码
 	 */
-	//@RequiresRoles({"admin"})
-	@RequestMapping(value = "/updatePassword", method = RequestMethod.PUT)
-	public Result<?> changPassword(@RequestBody JSONObject json) {
+    //@RequiresRoles({"admin"})
+    @RequestMapping(value = "/updatePassword", method = RequestMethod.PUT)
+	public Result<?> updatePassword(@RequestBody JSONObject json) {
 		String username = json.getString("username");
 		String oldpassword = json.getString("oldpassword");
 		String password = json.getString("password");
 		String confirmpassword = json.getString("confirmpassword");
+        LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+        if(!sysUser.getUsername().equals(username)){
+            return Result.error("只允许修改自己的密码！");
+        }
 		SysUser user = this.sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username));
 		if(user==null) {
 			return Result.error("用户不存在！");
@@ -921,42 +942,42 @@ public class SysUserController {
 		return result;
 	}
 
-	/**
-	 * 根据用户名或手机号查询用户信息
-	 * @param
-	 * @return
-	 */
-	@GetMapping("/querySysUser")
-	public Result<Map<String, Object>> querySysUser(SysUser sysUser) {
-		String phone = sysUser.getPhone();
-		String username = sysUser.getUsername();
-		Result<Map<String, Object>> result = new Result<Map<String, Object>>();
-		Map<String, Object> map = new HashMap<String, Object>();
-		if (oConvertUtils.isNotEmpty(phone)) {
-			SysUser user = sysUserService.getUserByPhone(phone);
-			if(user!=null) {
-				map.put("username",user.getUsername());
-				map.put("phone",user.getPhone());
-				result.setSuccess(true);
-				result.setResult(map);
-				return result;
-			}
-		}
-		if (oConvertUtils.isNotEmpty(username)) {
-			SysUser user = sysUserService.getUserByName(username);
-			if(user!=null) {
-				map.put("username",user.getUsername());
-				map.put("phone",user.getPhone());
-				result.setSuccess(true);
-				result.setResult(map);
-				return result;
-			}
-		}
-		result.setSuccess(false);
-		result.setMessage("验证失败");
-		return result;
-	}
-	
+//	/**
+//	 * 根据用户名或手机号查询用户信息
+//	 * @param
+//	 * @return
+//	 */
+//	@GetMapping("/querySysUser")
+//	public Result<Map<String, Object>> querySysUser(SysUser sysUser) {
+//		String phone = sysUser.getPhone();
+//		String username = sysUser.getUsername();
+//		Result<Map<String, Object>> result = new Result<Map<String, Object>>();
+//		Map<String, Object> map = new HashMap<String, Object>();
+//		if (oConvertUtils.isNotEmpty(phone)) {
+//			SysUser user = sysUserService.getUserByPhone(phone);
+//			if(user!=null) {
+//				map.put("username",user.getUsername());
+//				map.put("phone",user.getPhone());
+//				result.setSuccess(true);
+//				result.setResult(map);
+//				return result;
+//			}
+//		}
+//		if (oConvertUtils.isNotEmpty(username)) {
+//			SysUser user = sysUserService.getUserByName(username);
+//			if(user!=null) {
+//				map.put("username",user.getUsername());
+//				map.put("phone",user.getPhone());
+//				result.setSuccess(true);
+//				result.setResult(map);
+//				return result;
+//			}
+//		}
+//		result.setSuccess(false);
+//		result.setMessage("验证失败");
+//		return result;
+//	}
+
 	/**
 	 * 用户手机号验证
 	 */
@@ -1007,7 +1028,7 @@ public class SysUserController {
             result.setSuccess(false);
             return result;
         }
-        if(!smscode.equals(object)) {
+        if(!smscode.equals(object.toString())) {
         	result.setMessage("短信验证码不匹配！");
             result.setSuccess(false);
             return result;
@@ -1326,7 +1347,7 @@ public class SysUserController {
             result.setSuccess(false);
             return result;
         }
-        if(!smscode.equals(object)) {
+        if(!smscode.equals(object.toString())) {
             result.setMessage("短信验证码不匹配！");
             result.setSuccess(false);
             return result;
@@ -1339,4 +1360,22 @@ public class SysUserController {
         sysUserService.updateById(user);
         return Result.ok("手机号设置成功!");
     }
+
+
+    /**
+     * 根据对象里面的属性值作in查询 属性可能会变 用户组件用到
+     * @param sysUser
+     * @return
+     */
+    @GetMapping("/getMultiUser")
+    public List<SysUser> getMultiUser(SysUser sysUser){
+        QueryWrapper<SysUser> queryWrapper = QueryGenerator.initQueryWrapper(sysUser, null);
+        List<SysUser> ls = this.sysUserService.list(queryWrapper);
+        for(SysUser user: ls){
+            user.setPassword(null);
+            user.setSalt(null);
+        }
+        return ls;
+    }
+
 }

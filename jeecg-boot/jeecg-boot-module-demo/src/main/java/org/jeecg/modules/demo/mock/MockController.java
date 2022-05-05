@@ -107,7 +107,11 @@ public class MockController {
 	public String getCabinetCountInfo() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/getCntrNoCountInfo.json");
 	}
-	
+	@GetMapping(value = "/report/getTubiao")
+	public String getTubiao() {
+		return readJson("classpath:org/jeecg/modules/demo/mock/json/getTubiao.json");
+	}
+
 	/**
 	   * 实时磁盘监控
 	 * @param request

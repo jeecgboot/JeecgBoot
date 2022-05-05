@@ -55,7 +55,9 @@
     // 【组件增强】注释详见：JVxeCellMixins.js
     enhanced: {
       aopEvents: {
-        editActived: event => dispatchEvent(event, 'ant-calendar-picker', el => el.children[0].dispatchEvent(event.$event)),
+        editActived(event) {
+          dispatchEvent.call(this, event, 'ant-calendar-picker', el => el.children[0].dispatchEvent(event.$event))
+        },
       },
     }
   }

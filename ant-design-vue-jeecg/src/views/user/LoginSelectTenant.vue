@@ -10,8 +10,8 @@
       <a-button type="primary" @click="selectOk">确认</a-button>
     </template>
 
-    <a-form>
-      <a-form-item v-if="isMultiTenant" :labelCol="{span:4}" :wrapperCol="{span:20}" style="margin-bottom:10px" :validate-status="validate_status1">
+    <a-form-model>
+      <a-form-model-item v-if="isMultiTenant" :labelCol="{span:4}" :wrapperCol="{span:20}" style="margin-bottom:10px" :validate-status="validate_status1">
         <a-tooltip placement="topLeft" >
           <template slot="title">
             <span>您有多个租户，请选择登录租户</span>
@@ -25,10 +25,10 @@
             {{ d.name }}
           </a-select-option>
         </a-select>
-      </a-form-item>
+      </a-form-model-item>
 
 
-      <a-form-item v-if="isMultiDepart" :labelCol="{span:4}" :wrapperCol="{span:20}" style="margin-bottom:10px" :validate-status="validate_status2">
+      <a-form-model-item v-if="isMultiDepart" :labelCol="{span:4}" :wrapperCol="{span:20}" style="margin-bottom:10px" :validate-status="validate_status2">
         <a-tooltip placement="topLeft" >
           <template slot="title">
             <span>您有多个部门，请选择登录部门</span>
@@ -42,20 +42,19 @@
             {{ d.departName }}
           </a-select-option>
         </a-select>
-      </a-form-item>
+      </a-form-model-item>
 
-    </a-form>
+    </a-form-model>
   </a-modal>
 </template>
 
 <script>
 
-  import Vue from 'vue'
-  import { getAction,putAction } from '@/api/manage'
-  import { USER_INFO } from "@/store/mutation-types"
-  import store from './Login'
+import Vue from 'vue'
+import { putAction } from '@/api/manage'
+import { USER_INFO } from '@/store/mutation-types'
 
-  export default {
+export default {
     name: 'LoginSelectTenant',
     data(){
       return {
@@ -111,18 +110,19 @@
           this.isMultiDepart = false
         }
       },
-      bizTenant(ids){
-        if(!ids || ids.length==0){
-          this.isMultiTenant = false
-        } else if(ids.indexOf(',')<0){
-          this.tenant_id = ids;
-          this.isMultiTenant = false
-        }else{
-          this.visible = true
-          this.isMultiTenant = true
-          getAction('/sys/tenant/queryList', {ids: ids}).then(res=>{
-            this.tenantList = res.result
-          })
+      bizTenantList(loginResult) {
+        let tenantList = loginResult.tenantList
+        if (Array.isArray(tenantList)) {
+          if (tenantList.length === 0) {
+            this.isMultiTenant = false
+          } else if (tenantList.length === 1) {
+            this.tenant_id = tenantList[0].id
+            this.isMultiTenant = false
+          } else {
+            this.visible = true
+            this.isMultiTenant = true
+            this.tenantList = tenantList
+          }
         }
       },
       show(loginResult){
@@ -131,8 +131,7 @@
 
         let user = Vue.ls.get(USER_INFO)
         this.username = user.username
-        let ids = user.relTenantIds
-        this.bizTenant(ids);
+        this.bizTenantList(loginResult);
 
         if(this.visible===false){
           this.$store.dispatch('saveTenant', this.tenant_id);

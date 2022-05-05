@@ -99,7 +99,11 @@
             placeholder: '点击上传',
             token: true,
             responseName: 'message',
-            action: window._CONFIG['domianURL'] + '/sys/common/upload'
+            action: window._CONFIG['domianURL'] + '/sys/common/upload',
+            data: {
+              biz: 'temp',
+              // 更多扩展参数
+            },
           },
           {
             title: '字段类型',

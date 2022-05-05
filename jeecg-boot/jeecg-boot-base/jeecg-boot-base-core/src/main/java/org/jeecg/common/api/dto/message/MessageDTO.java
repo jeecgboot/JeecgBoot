@@ -24,6 +24,11 @@ public class MessageDTO implements Serializable {
     protected String toUser;
 
     /**
+     * 发送给所有人
+     */
+    protected boolean toAll;
+
+    /**
      * 消息主题
      */
     protected String title;

@@ -17,6 +17,7 @@ export const ENCRYPTED_STRING = 'ENCRYPTED_STRING'
 export const ENHANCE_PRE = 'enhance_'
 export const UI_CACHE_DB_DICT_DATA = 'UI_CACHE_DB_DICT_DATA'
 export const INDEX_MAIN_PAGE_PATH = '/dashboard/analysis'
+export const OAUTH2_LOGIN_PAGE_PATH = '/oauth2-app/login'
 export const TENANT_ID = 'TENANT_ID'
 export const ONL_AUTH_FIELDS = 'ONL_AUTH_FIELDS'
 //路由缓存问题，关闭了tab页时再打开就不刷新 #842

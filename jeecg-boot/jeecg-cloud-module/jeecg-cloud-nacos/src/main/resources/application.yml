@@ -1,0 +1,54 @@
+server:
+  servlet:
+    contextPath: /nacos
+  tomcat:
+    accesslog:
+      enabled: true
+      pattern: '%h %l %u %t "%r" %s %b %D %{User-Agent}i %{Request-Source}i'
+    basedir: ''
+spring:
+  datasource:
+    platform: mysql
+db:
+  num: 1
+  password:
+    '0': ${MYSQL-PWD:root}
+  url:
+    '0': jdbc:mysql://${MYSQL-HOST:jeecg-boot-mysql}:${MYSQL-PORT:3306}/${MYSQL-DB:nacos}?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+  user:
+    '0': ${MYSQL-USER:root}
+management:
+  metrics:
+    export:
+      elastic:
+        enabled: false
+      influx:
+        enabled: false
+nacos:
+  core:
+    auth:
+      caching:
+        enabled: true
+      default:
+        token:
+          expire:
+            seconds: 18000
+          secret:
+            key: SecretKey012345678901234567890123456789012345678901234567890123456789
+      enabled: false
+      system:
+        type: nacos
+  istio:
+    mcp:
+      server:
+        enabled: false
+  naming:
+    empty-service:
+      auto-clean: true
+      clean:
+        initial-delay-ms: 50000
+        period-time-ms: 30000
+  security:
+    ignore:
+      urls: /,/error,/**/*.css,/**/*.js,/**/*.html,/**/*.map,/**/*.svg,/**/*.png,/**/*.ico,/console-ui/public/**,/v1/auth/**,/v1/console/health/**,/actuator/**,/v1/console/server/**
+  standalone: true

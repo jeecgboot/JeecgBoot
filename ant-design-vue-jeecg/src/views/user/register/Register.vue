@@ -1,12 +1,10 @@
 <template>
   <div class="main user-layout-register">
     <h3><span>注册</span></h3>
-    <a-form ref="formRegister" :autoFormCreate="(form)=>{this.form = form}" id="formRegister">
-      <a-form-item
-        fieldDecoratorId="username"
-        :fieldDecoratorOptions="{rules: [{ required: false}, { validator: this.checkUsername }]}">
-        <a-input size="large" type="text" autocomplete="false" placeholder="请输入用户名"></a-input>
-      </a-form-item>
+    <a-form-model ref="form" :model="model" :rules="validatorRules">
+      <a-form-model-item prop="username">
+        <a-input v-model="model.username" size="large" type="text" autocomplete="false" placeholder="请输入用户名"/>
+      </a-form-model-item>
 
       <a-popover placement="rightTop" trigger="click" :visible="state.passwordLevelChecked">
         <template slot="content">
@@ -18,33 +16,30 @@
             </div>
           </div>
         </template>
-        <a-form-item
-          fieldDecoratorId="password"
-          :fieldDecoratorOptions="{rules: [{ required: false}, { validator: this.handlePasswordLevel }]}">
-          <a-input size="large" type="password" @click="handlePasswordInputClick" autocomplete="false" placeholder="至少8位密码，区分大小写"></a-input>
-        </a-form-item>
+        <a-form-model-item prop="password">
+          <a-input
+            v-model="model.password"
+            size="large"
+            type="password"
+            @click="handlePasswordInputClick"
+            autocomplete="false"
+            placeholder="至少8位密码，区分大小写">
+          </a-input>
+        </a-form-model-item>
       </a-popover>
 
-      <a-form-item
-        fieldDecoratorId="password2"
-        :fieldDecoratorOptions="{rules: [{ required: false}, { validator: this.handlePasswordCheck }]}">
+      <a-form-model-item prop="password2">
+        <a-input v-model="model.password2" size="large" type="password" autocomplete="false" placeholder="确认密码"></a-input>
+      </a-form-model-item>
 
-        <a-input size="large" type="password" autocomplete="false" placeholder="确认密码"></a-input>
-      </a-form-item>
-<!--      <a-form-item-->
-<!--        fieldDecoratorId="email">-->
-<!--        <a-input size="large" type="text" placeholder="邮箱"></a-input>-->
-<!--      </a-form-item>-->
-      <a-form-item
-        fieldDecoratorId="mobile"
-        :fieldDecoratorOptions="{rules: [{ required: false}, { validator: this.handlePhoneCheck }]}">
-        <a-input size="large" placeholder="11 位手机号"> 
+      <a-form-model-item prop="mobile">
+        <a-input v-model="model.mobile" size="large" placeholder="11 位手机号">
           <a-select slot="addonBefore" size="large" defaultValue="+86">
             <a-select-option value="+86">+86</a-select-option>
             <a-select-option value="+87">+87</a-select-option>
           </a-select>
         </a-input>
-      </a-form-item>
+      </a-form-model-item>
       <!--<a-input-group size="large" compact>
             <a-select style="width: 20%" size="large" defaultValue="+86">
               <a-select-option value="+86">+86</a-select-option>
@@ -55,13 +50,11 @@
 
       <a-row :gutter="16">
         <a-col class="gutter-row" :span="16">
-          <a-form-item
-            fieldDecoratorId="captcha"
-            :fieldDecoratorOptions="{rules: [{ required: false}, { validator: this.handleCaptchaCheck }]}">
-            <a-input size="large" type="text" placeholder="验证码">
+          <a-form-model-item prop="captcha">
+            <a-input v-model="model.captcha" size="large" type="text" placeholder="验证码">
               <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
             </a-input>
-          </a-form-item>
+          </a-form-model-item>
         </a-col>
         <a-col class="gutter-row" :span="8">
           <a-button
@@ -73,7 +66,7 @@
         </a-col>
       </a-row>
 
-      <a-form-item>
+      <a-form-model-item>
         <a-button
           size="large"
           type="primary"
@@ -84,9 +77,9 @@
           :disabled="registerBtn">注册
         </a-button>
         <router-link class="login" :to="{ name: 'login' }">使用已有账户登录</router-link>
-      </a-form-item>
+      </a-form-model-item>
 
-    </a-form>
+    </a-form-model>
   </div>
 </template>
 
@@ -120,8 +113,29 @@
     mixins: [mixinDevice],
     data() {
       return {
-        form: null,
-
+        model: {},
+        validatorRules: {
+          username: [
+            { required: false },
+            { validator: this.checkUsername }
+          ],
+          password: [
+            { required: false},
+            { validator: this.handlePasswordLevel }
+          ],
+          password2: [
+            { required: false },
+            { validator: this.handlePasswordCheck }
+          ],
+          mobile: [
+            { required: false },
+            { validator: this.handlePhoneCheck }
+          ],
+          captcha: [
+            { required: false },
+            { validator: this.handleCaptchaCheck }
+          ]
+        },
         state: {
           time: 60,
           smsSendBtn: false,
@@ -162,7 +176,7 @@
       }
     },
       handleEmailCheck(rule, value, callback) {
-        var params = {
+        let params = {
           email: value,
         };
         checkOnlyUser(params).then((res) => {
@@ -174,7 +188,6 @@
         })
       },
       handlePasswordLevel(rule, value, callback) {
-
         let level = 0
         let reg = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,./]).{8,}$/;
         if (!reg.test(value)) {
@@ -208,7 +221,7 @@
       },
 
       handlePasswordCheck(rule, value, callback) {
-        let password = this.form.getFieldValue('password')
+        let password = this.model['password']
         //console.log('value', value)
         if (value === undefined) {
           callback(new Error('请输入密码'))
@@ -252,9 +265,10 @@
       },
 
       handleSubmit() {
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            var register = {
+        this.$refs['form'].validate((success) => {
+          if (success==true) {
+            let values = this.model
+            let register = {
               username: values.username,
               password: values.password,
               phone: values.mobile,
@@ -274,7 +288,7 @@
       getCaptcha(e) {
         e.preventDefault()
         let that = this
-        this.form.validateFields(['mobile'], {force: true}, (err, values) => {
+        this.$refs['form'].validateField(['mobile'], (err) => {
             if (!err) {
               this.state.smsSendBtn = true;
               let interval = window.setInterval(() => {
@@ -284,9 +298,9 @@
                   window.clearInterval(interval);
                 }
               }, 1000);
-              const hide = this.$message.loading('验证码发送中..', 0);
+              const hide = this.$message.loading('验证码发送中..', 3);
               const params = {
-                mobile: values.mobile,
+                mobile: this.model.mobile,
                 smsmode: "1"
               };
               postAction("/sys/sms", params).then((res) => {

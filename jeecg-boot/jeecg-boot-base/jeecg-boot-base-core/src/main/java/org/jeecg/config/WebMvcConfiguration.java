@@ -72,7 +72,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     }
 
     /**
-    * 添加Long转json精度丢失是配置
+    * 添加Long转json精度丢失的配置
     * @Return: void
     */
     @Override

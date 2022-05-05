@@ -1,10 +1,11 @@
 package org.jeecg.boot.starter.rabbitmq.config;
 
 
+import java.util.UUID;
+
 import org.jeecg.boot.starter.rabbitmq.event.JeecgRemoteApplicationEvent;
-import org.jeecg.boot.starter.rabbitmq.exchange.DelayExchangeBuilder;
+import org.jeecg.common.config.mqtoken.TransmitUserTokenFilter;
 import org.springframework.amqp.core.AcknowledgeMode;
-import org.springframework.amqp.core.CustomExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
@@ -12,8 +13,6 @@ import org.springframework.amqp.support.ConsumerTagStrategy;
 import org.springframework.cloud.bus.jackson.RemoteApplicationEventScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.UUID;
 
 /**
  * 消息队列配置类
@@ -33,7 +32,14 @@ public class RabbitMqConfig {
         return rabbitAdmin;
     }
 
-
+    /**
+     * 注入获取token过滤器
+     * @return
+     */
+    @Bean
+    public TransmitUserTokenFilter transmitUserInfoFromHttpHeader(){
+        return new TransmitUserTokenFilter();
+    }
 
     @Bean
     public SimpleMessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory) {

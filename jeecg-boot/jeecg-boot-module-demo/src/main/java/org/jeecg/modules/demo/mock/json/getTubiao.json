@@ -1,0 +1,10 @@
+{"data":
+  [
+    {"day": "星期一", "step": 1234, "assess": "良"},
+    {"day": "星期二", "step": 1884, "assess": "优"},
+    {"day": "星期三", "step": 1671, "assess": "良+"},
+    {"day": "星期四", "step": 2197, "assess": "优+"},
+    {"day": "星期五", "step": 1342, "assess": "中"},
+    {"day": "星期六", "step": 545, "assess": "差"},
+    {"day": "星期日", "step": 244, "assess": "极差"}
+  ]}

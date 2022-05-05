@@ -10,11 +10,6 @@
               <a-input placeholder="请输入账号" v-model="queryParam.username"></a-input>
             </a-form-item>
           </a-col>
-          <!--<a-col :md="8" :sm="8">-->
-          <!--<a-form-item label="用户名称" :labelCol="{span: 5}" :wrapperCol="{span: 18, offset: 1}">-->
-          <!--<a-input placeholder="请输入名称查询" v-model="queryParam.realname"></a-input>-->
-          <!--</a-form-item>-->
-          <!--</a-col>-->
           <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
             <a-col :md="6" :sm="24">
              <a-button type="primary" @click="searchQuery" icon="search" style="margin-left: 18px">查询</a-button>
@@ -76,7 +71,7 @@
             </a>
             <a-menu slot="overlay">
                 <a-menu-item>
-                <a href="javascript:;" @click="handleDeptRole(record)">分配部门角色</a>
+                <a href="javascript:;" @click="handleDeptRole(record)">部门角色</a>
               </a-menu-item>
 
               <a-menu-item>
@@ -294,12 +289,9 @@
         } else {
           this.$refs.modalForm.departDisabled = true;
           //初始化负责部门
-          this.$refs.modalForm.userDepartModel.departIdList = [this.currentDeptId];  //传入一个部门id
-          this.$refs.modalForm.add();
-          //update-begin---author:liusq   Date:20210223  for：https://gitee.com/jeecg/jeecg-boot/issues/I2SDU1------------
-          this.$refs.modalForm.resultDepartOptions=[{key:this.currentDept.key,title:this.currentDept.title}]
-          //update-end---author:liusq   Date:20210223  for：https://gitee.com/jeecg/jeecg-boot/issues/I2SDU1------------
+          this.$refs.modalForm.nextDepartOptions=[{value:this.currentDept.key,label:this.currentDept.title}]
           this.$refs.modalForm.title = "新增";
+          this.$refs.modalForm.edit({activitiSync:'1',userIdentity:1,selecteddeparts:this.currentDeptId})
         }
       },
       selectOK(data) {

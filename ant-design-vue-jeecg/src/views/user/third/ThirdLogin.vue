@@ -37,10 +37,10 @@
         </a-button>
       </template>
       <div class="ant-modal-confirm-body-wrapper">
-        <a-form-item>
+        <a-form-model-item>
           <span>绑定手机号</span>
-        </a-form-item>
-        <a-form-item>
+        </a-form-model-item>
+        <a-form-model-item>
           <a-input
               size="large"
               type="text"
@@ -48,11 +48,11 @@
               v-model="thirdPhone">
             <a-icon slot="prefix" type="mobile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
           </a-input>
-        </a-form-item>
+        </a-form-model-item>
 
         <a-row :gutter="16">
           <a-col class="gutter-row" :span="16">
-            <a-form-item>
+            <a-form-model-item>
               <a-input
                   size="large"
                   type="text"
@@ -60,7 +60,7 @@
                   v-model="thirdCaptcha">
                 <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
               </a-input>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col class="gutter-row" :span="8">
             <a-button

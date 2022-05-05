@@ -10,20 +10,9 @@
         <template v-else-if="file['path']">
           <img class="j-editable-image" :src="imgSrc" alt="无图片" @click="handleMoreOperation"/>
         </template>
-        <template v-else>
-          <a-icon type="exclamation-circle" style="color: red;" @click="handleClickShowImageError"/>
-        </template>
-        <template slot="addonBefore" style="width: 30px">
-          <a-tooltip v-if="file.status==='uploading'" :title="`上传中(${Math.floor(file.percent)}%)`">
-            <a-icon type="loading"/>
-          </a-tooltip>
-          <a-tooltip v-else-if="file.status==='done'" title="上传完成">
-            <a-icon type="check-circle" style="color:#00DB00;"/>
-          </a-tooltip>
-          <a-tooltip v-else title="上传失败">
-            <a-icon type="exclamation-circle" style="color:red;"/>
-          </a-tooltip>
-        </template>
+        <a-tooltip v-else :title="file.message||'上传失败'" @click="handleClickShowImageError">
+          <a-icon type="exclamation-circle" style="color:red;"/>
+        </a-tooltip>
 
         <template style="width: 30px">
           <a-dropdown :trigger="['click']" placement="bottomRight" style="margin-left: 10px;">
@@ -196,8 +185,19 @@
           value['responseName'] = file.response[this.responseName]
         }
         if (file.status === 'done') {
-          value['path'] = file.response[this.responseName]
-          this.handleChangeCommon(value)
+          if (typeof file.response.success === 'boolean') {
+            if (file.response.success) {
+              value['path'] = file.response[this.responseName]
+              this.handleChangeCommon(value)
+            } else {
+              value['status'] = 'error'
+              value['message'] = file.response.message || '未知错误'
+            }
+          } else {
+            // 考虑到如果设置action上传路径为非jeecg-boot后台，可能不会返回 success 属性的情况，就默认为成功
+            value['path'] = file.response[this.responseName]
+            this.handleChangeCommon(value)
+          }
         } else if (file.status === 'error') {
           value['message'] = file.response.message || '未知错误'
         }

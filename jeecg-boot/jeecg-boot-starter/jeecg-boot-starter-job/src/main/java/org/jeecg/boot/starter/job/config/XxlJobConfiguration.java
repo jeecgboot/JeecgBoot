@@ -30,11 +30,14 @@ public class XxlJobConfiguration {
     @ConditionalOnClass()
     public XxlJobSpringExecutor xxlJobExecutor() {
         log.info(">>>>>>>>>>> xxl-job config init.");
+        //log.info(">>>> ip="+xxlJobProperties.getIp()+"，Port="+xxlJobProperties.getPort()+"，address="+xxlJobProperties.getAdminAddresses());
         XxlJobSpringExecutor xxlJobSpringExecutor = new XxlJobSpringExecutor();
         xxlJobSpringExecutor.setAdminAddresses(xxlJobProperties.getAdminAddresses());
         xxlJobSpringExecutor.setAppname(xxlJobProperties.getAppname());
+        //update-begin--Author:scott -- Date:20210305 -- for：system服务和demo服务有办法同时使用xxl-job吗 #2313---
         //xxlJobSpringExecutor.setIp(xxlJobProperties.getIp());
         //xxlJobSpringExecutor.setPort(xxlJobProperties.getPort());
+        //update-end--Author:scott -- Date:20210305 -- for：system服务和demo服务有办法同时使用xxl-job吗 #2313---
         xxlJobSpringExecutor.setAccessToken(xxlJobProperties.getAccessToken());
         xxlJobSpringExecutor.setLogPath(xxlJobProperties.getLogPath());
         xxlJobSpringExecutor.setLogRetentionDays(xxlJobProperties.getLogRetentionDays());

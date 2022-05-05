@@ -1,6 +1,5 @@
 package org.jeecg.modules.message.websocket;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -13,11 +12,9 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-import cn.hutool.core.util.ObjectUtil;
-import org.jeecg.boot.starter.redis.client.JeecgRedisClient;
-import org.jeecg.boot.starter.redis.listener.JeecgRedisListerer;
 import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.constant.WebsocketConst;
+import org.jeecg.common.modules.redis.client.JeecgRedisClient;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
@@ -43,6 +40,9 @@ public class WebSocket {
     @Resource
     private JeecgRedisClient jeecgRedisClient;
 
+    /**
+     * 缓存 webSocket连接到单机服务class中（整体方案支持集群）
+     */
     private static CopyOnWriteArraySet<WebSocket> webSockets = new CopyOnWriteArraySet<>();
     private static Map<String, Session> sessionPool = new HashMap<String, Session>();
 
@@ -105,8 +105,10 @@ public class WebSocket {
         //todo 现在有个定时任务刷，应该去掉
         log.debug("【websocket消息】收到客户端消息:" + message);
         JSONObject obj = new JSONObject();
-        obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_CHECK);//业务类型
-        obj.put(WebsocketConst.MSG_TXT, "心跳响应");//消息内容
+        //业务类型
+        obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_CHECK);
+        //消息内容
+        obj.put(WebsocketConst.MSG_TXT, "心跳响应");
         for (WebSocket webSocket : webSockets) {
             webSocket.pushMessage(message);
         }

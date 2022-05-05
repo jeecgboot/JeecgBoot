@@ -15,7 +15,15 @@
     <#return text>
   </#if>
 </#function>
-<#---->
+<#--下划线转驼峰-->
+<#function dashedToCamel(str)>
+    <#assign text=""/>
+    <#assign strlist = str?split("_")/>
+    <#list strlist as v>
+        <#assign text=text+v?cap_first/>
+    </#list>
+    <#return text?uncap_first>
+</#function>
 <#-- 驼峰转下划线 -->
 <#function camelToDashed(str, case='normal')>
   <#return camelToChar(str, "_", case)>
@@ -61,8 +69,6 @@
         <#return true>
       </#if>
     </#if>
-  <#elseif po.defaultVal??>
-    <#return true>
   </#if>
   <#return false>
 </#function>
@@ -82,6 +88,15 @@
   <#else>
     <#return "'${po.fieldName}'">
   </#if>
+</#function>
+
+<#-- ** 如果Blob就显示model方式 String * -->
+<#function autoStringSuffixForModel po>
+    <#if  po.fieldDbType=='Blob'>
+        <#return "${po.fieldName}String">
+    <#else>
+        <#return "${po.fieldName}">
+    </#if>
 </#function>
 
 <#-- ** 高级查询生成 * -->

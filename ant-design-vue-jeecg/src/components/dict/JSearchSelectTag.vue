@@ -65,7 +65,11 @@
         type: Number,
         default: 10,
         required: false
-      }
+      },
+      getPopupContainer: {
+        type:Function,
+        default: null
+      },
     },
     data(){
       this.loadData = debounce(this.loadData, 800);//消抖
@@ -226,7 +230,9 @@
         return this.options
       },
       getParentContainer(node){
-        if(!this.popContainer){
+        if(typeof this.getPopupContainer === 'function'){
+          return this.getPopupContainer(node)
+        } else if(!this.popContainer){
           return node.parentNode
         }else{
           return document.querySelector(this.popContainer)

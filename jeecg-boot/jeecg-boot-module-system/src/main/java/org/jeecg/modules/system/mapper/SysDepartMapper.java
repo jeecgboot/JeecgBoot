@@ -52,4 +52,25 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 */
 	List<String> getSubDepIdsByOrgCodes(@org.apache.ibatis.annotations.Param("orgCodes") String[] orgCodes);
 
+    List<SysDepart> queryTreeListByPid(@Param("parentId") String parentId);
+	/**
+	 * 根据id下级部门数量
+	 * @param parentId
+	 * @return
+	 */
+	@Select("SELECT count(*) FROM sys_depart where del_flag ='0' AND parent_id = #{parentId,jdbcType=VARCHAR}")
+    Integer queryCountByPid(@Param("parentId")String parentId);
+	/**
+	 * 根据OrgCod查询所属公司信息
+	 * @param orgCode
+	 * @return
+	 */
+	SysDepart queryCompByOrgCode(@Param("orgCode")String orgCode);
+	/**
+	 * 根据id下级部门
+	 * @param parentId
+	 * @return
+	 */
+	@Select("SELECT * FROM sys_depart where del_flag ='0' AND parent_id = #{parentId,jdbcType=VARCHAR}")
+	List<SysDepart> queryDeptByPid(@Param("parentId")String parentId);
 }

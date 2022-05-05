@@ -36,9 +36,10 @@
   import Contextmenu from '@/components/menu/Contextmenu'
   import { mixin, mixinDevice } from '@/utils/mixin.js'
   import { triggerWindowResizeEvent } from '@/utils/util'
-  const indexKey = '/dashboard/analysis'
   import Vue from 'vue'
-  import { CACHE_INCLUDED_ROUTES } from "@/store/mutation-types"
+  import { CACHE_INCLUDED_ROUTES } from '@/store/mutation-types'
+
+  const indexKey = '/dashboard/analysis'
 
   export default {
     name: 'TabLayout',
@@ -86,13 +87,6 @@
       // 复制一个route对象出来，不能影响原route
       let currentRoute = Object.assign({}, this.$route)
       currentRoute.meta = Object.assign({}, currentRoute.meta)
-      // update-begin-author:sunjianlei date:20191223 for: 修复刷新后菜单Tab名字显示异常
-      let storeKey = 'route:title:' + currentRoute.fullPath
-      let routeTitle = this.$ls.get(storeKey)
-      if (routeTitle) {
-        currentRoute.meta.title = routeTitle
-      }
-      // update-end-author:sunjianlei date:20191223 for: 修复刷新后菜单Tab名字显示异常
       this.pageList.push(currentRoute)
       this.linkList.push(currentRoute.fullPath)
       this.activePage = currentRoute.fullPath
@@ -171,7 +165,7 @@
 
       // update-begin-author:sunjianlei date:20200120 for: 动态更改页面标题
       changeTitle(title) {
-        let projectTitle = "Jeecg-Boot 企业级快速开发平台"
+        let projectTitle = "Jeecg-Boot 企业级低代码平台"
         // 首页特殊处理
         if (this.$route.path === indexKey) {
           document.title = projectTitle

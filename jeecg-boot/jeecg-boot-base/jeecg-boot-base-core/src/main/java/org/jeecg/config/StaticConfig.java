@@ -20,6 +20,12 @@ public class StaticConfig {
     @Value(value = "${spring.mail.username}")
     private String emailFrom;
 
+    /**
+     * 签名密钥串
+     */
+    @Value(value = "${jeecg.signatureSecret}")
+    private String signatureSecret;
+
 
     /*@Bean
     public void initStatic() {

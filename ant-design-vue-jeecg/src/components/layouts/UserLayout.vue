@@ -9,7 +9,7 @@
           </a>
         </div>
         <div class="desc">
-          Jeecg Boot 是中国最具影响力的 企业级 快速开发平台
+          Jeecg Boot 是中国最具影响力的 企业级 低代码平台
         </div>
       </div>
 

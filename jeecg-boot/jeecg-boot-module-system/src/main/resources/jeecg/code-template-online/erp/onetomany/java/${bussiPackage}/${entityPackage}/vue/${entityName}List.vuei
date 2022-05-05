@@ -42,7 +42,7 @@
             <#elseif po.classType=='pca'>
               <#if query_field_no gt 1>  </#if><j-area-linkage type="cascader" v-model="queryParam.${po.fieldName}" placeholder="请选择省市区"/>
             <#elseif po.classType=='popup'>
-              <#if query_field_no gt 1>  </#if><j-popup placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" code="${po.dictTable}" org-fields="${po.dictField}" dest-fields="${po.dictText}" :field="getPopupField('${po.dictText}')"/>
+              <#if query_field_no gt 1>  </#if><j-popup placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" code="${po.dictTable}" org-fields="${po.dictField}" dest-fields="${po.dictText}" :field="getPopupField('${po.dictText}')" :multi="${po.extendParams.popupMulti?c}"/>
 			<#elseif po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
 			<#--  ---------------------------下拉或是单选 判断数据字典是表字典还是普通字典------------------------------- -->
 			<#if po.dictTable?default("")?trim?length gt 1>
@@ -83,6 +83,9 @@
 </#if>
 <#if po.classType=='cat_tree' && po.dictText?default("")?trim?length == 0>
 <#assign list_need_category=true>
+</#if>
+<#if po.classType=='pca'>
+<#assign list_need_pca=true>
 </#if>
 </#list>
 <#-- 结束循环 -->
@@ -260,11 +263,11 @@
             <#elseif po.classType=='image'>
             dataIndex: '${po.fieldName}',
             scopedSlots: {customRender: 'imgSlot'}
-			<#elseif po.classType=='sel_search' || po.classType=='list_multi' || po.classType=='list' || po.classType=='radio' || po.classType=='checkbox' ||  po.classType=='sel_depart'>
+			<#elseif po.classType=='sel_tree' || po.classType=='sel_search' || po.classType=='list_multi' || po.classType=='list' || po.classType=='radio' || po.classType=='checkbox' ||  po.classType=='sel_depart'>
             dataIndex: '${po.fieldName}_dictText',
             <#elseif po.classType=='switch'>
             dataIndex: '${po.fieldName}',
-            <#if po.dictField?default("")?trim?length gt 1>
+            <#if po.dictField != 'is_open'>
             customRender: (text) => (!text ? "" : (text == ${po.dictField}[0] ? "是" : "否"))
             <#else>
             customRender: (text) => (!text ? "" : (text == "Y" ? "是" : "否"))

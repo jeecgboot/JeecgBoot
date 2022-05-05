@@ -1,6 +1,6 @@
 package org.jeecg;
 
-import cn.hutool.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 import org.jeecg.common.util.security.SecurityTools;
 import org.jeecg.common.util.security.entity.*;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class SecurityToolsTest {
         // signData为签名数据
         // data为aes加密数据
         // asekey为ras加密过的aeskey
-        System.out.println(new JSONObject(sign).toStringPretty());
+        System.out.println(JSONObject.toJSON(sign));
 
         // 验签解密部分
         SecurityReq req = new SecurityReq();
@@ -44,6 +44,6 @@ public class SecurityToolsTest {
         SecurityResp securityResp = SecurityTools.valid(req);
         //解密报文data为解密报文
         //sucess 为验签成功失败标志 true代码验签成功，false代表失败
-        System.out.println(new JSONObject(securityResp).toStringPretty());
+        System.out.println(JSONObject.toJSON(securityResp));
     }
 }

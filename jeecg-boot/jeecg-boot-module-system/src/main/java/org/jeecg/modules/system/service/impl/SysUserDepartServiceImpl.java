@@ -1,11 +1,15 @@
 package org.jeecg.modules.system.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
@@ -100,34 +104,58 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 	 */
 	@Override
 	public List<SysUser> queryUserByDepCode(String depCode,String realname) {
-		LambdaQueryWrapper<SysDepart> queryByDepCode = new LambdaQueryWrapper<SysDepart>();
-		queryByDepCode.likeRight(SysDepart::getOrgCode,depCode);
-		List<SysDepart> sysDepartList = sysDepartService.list(queryByDepCode);
-		List<String> depIds = sysDepartList.stream().map(SysDepart::getId).collect(Collectors.toList());
-
-		LambdaQueryWrapper<SysUserDepart> queryUDep = new LambdaQueryWrapper<SysUserDepart>();
-		queryUDep.in(SysUserDepart::getDepId, depIds);
-		List<String> userIdList = new ArrayList<>();
-		List<SysUserDepart> uDepList = this.list(queryUDep);
-		if(uDepList != null && uDepList.size() > 0) {
-			for(SysUserDepart uDep : uDepList) {
-				userIdList.add(uDep.getUserId());
-			}
-			LambdaQueryWrapper<SysUser> queryUser = new LambdaQueryWrapper<SysUser>();
-			queryUser.in(SysUser::getId,userIdList);
-			if(oConvertUtils.isNotEmpty(realname)){
-				queryUser.like(SysUser::getRealname,realname.trim());
-			}
-			List<SysUser> userList = (List<SysUser>) sysUserService.list(queryUser);
-			//update-begin-author:taoyan date:201905047 for:接口调用查询返回结果不能返回密码相关信息
-			for (SysUser sysUser : userList) {
-				sysUser.setSalt("");
-				sysUser.setPassword("");
-			}
-			//update-end-author:taoyan date:201905047 for:接口调用查询返回结果不能返回密码相关信息
-			return userList;
+		//update-begin-author:taoyan date:20210422 for: 根据部门选择用户接口代码优化
+		if(oConvertUtils.isNotEmpty(realname)){
+			realname = realname.trim();
 		}
-		return new ArrayList<SysUser>();
+		List<SysUser> userList = this.baseMapper.queryDepartUserList(depCode, realname);
+		Map<String, SysUser> map = new HashMap<String, SysUser>();
+		for (SysUser sysUser : userList) {
+			// 返回的用户数据去掉密码信息
+			sysUser.setSalt("");
+			sysUser.setPassword("");
+			map.put(sysUser.getId(), sysUser);
+		}
+		return new ArrayList<SysUser>(map.values());
+		//update-end-author:taoyan date:20210422 for: 根据部门选择用户接口代码优化
+
 	}
-	
+
+	@Override
+	public IPage<SysUser> queryDepartUserPageList(String departId, String username, String realname, int pageSize, int pageNo) {
+		IPage<SysUser> pageList = null;
+		// 部门ID不存在 直接查询用户表即可
+		Page<SysUser> page = new Page<SysUser>(pageNo, pageSize);
+		if(oConvertUtils.isEmpty(departId)){
+			LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
+			if(oConvertUtils.isNotEmpty(username)){
+				query.like(SysUser::getUsername, username);
+			}
+			pageList = sysUserService.page(page, query);
+		}else{
+			// 有部门ID 需要走自定义sql
+			SysDepart sysDepart = sysDepartService.getById(departId);
+			pageList = this.baseMapper.queryDepartUserPageList(page, sysDepart.getOrgCode(), username, realname);
+		}
+		List<SysUser> userList = pageList.getRecords();
+		if(userList!=null && userList.size()>0){
+			List<String> userIds = userList.stream().map(SysUser::getId).collect(Collectors.toList());
+			Map<String, SysUser> map = new HashMap<String, SysUser>();
+			if(userIds!=null && userIds.size()>0){
+				// 查部门名称
+				Map<String,String>  useDepNames = sysUserService.getDepNamesByUserIds(userIds);
+				userList.forEach(item->{
+					//TODO 临时借用这个字段用于页面展示
+					item.setOrgCodeTxt(useDepNames.get(item.getId()));
+					item.setSalt("");
+					item.setPassword("");
+					// 去重
+					map.put(item.getId(), item);
+				});
+			}
+			pageList.setRecords(new ArrayList<SysUser>(map.values()));
+		}
+		return pageList;
+	}
+
 }

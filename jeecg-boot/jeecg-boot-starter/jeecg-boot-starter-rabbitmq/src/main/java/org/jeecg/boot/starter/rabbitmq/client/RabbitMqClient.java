@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * 消息队列客户端
@@ -91,11 +92,16 @@ public class RabbitMqClient {
         rabbitAdmin.declareExchange(directExchange);
         if (ObjectUtil.isNotEmpty(queues)) {
             for (String queueName : queues) {
-                Queue queue = new Queue(queueName);
-                addQueue(queue);
-                Binding binding = BindingBuilder.bind(queue).to(directExchange).with(queueName);
-                rabbitAdmin.declareBinding(binding);
-                log.info("队列创建成功:" + queueName);
+                Properties result = rabbitAdmin.getQueueProperties(queueName);
+                if (ObjectUtil.isEmpty(result)) {
+                    Queue queue = new Queue(queueName);
+                    addQueue(queue);
+                    Binding binding = BindingBuilder.bind(queue).to(directExchange).with(queueName);
+                    rabbitAdmin.declareBinding(binding);
+                    log.info("创建队列:" + queueName);
+                }else{
+                    log.info("已有队列:" + queueName);
+                }
             }
         }
     }

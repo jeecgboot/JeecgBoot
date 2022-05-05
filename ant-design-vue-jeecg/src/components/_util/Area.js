@@ -1,5 +1,4 @@
-import { pcaa } from 'area-data'
-
+import Vue from 'vue'
 /**
  * 省市区
  */
@@ -8,18 +7,23 @@ export default class Area {
    * 构造器
    * @param express
    */
-  constructor() {
+  constructor(pcaa) {
+    if(!pcaa){
+      pcaa = Vue.prototype.$Jpcaa;
+    }
     let arr = []
     const province = pcaa['86']
     Object.keys(province).map(key=>{
-      arr.push({id:key, text:province[key], pid:'86'});
+      arr.push({id:key, text:province[key], pid:'86', index:1});
       const city = pcaa[key];
       Object.keys(city).map(key2=>{
-        arr.push({id:key2, text:city[key2], pid:key});
+        arr.push({id:key2, text:city[key2], pid:key, index:2});
         const qu = pcaa[key2];
-        Object.keys(qu).map(key3=>{
-          arr.push({id:key3, text:qu[key3], pid:key2});
-        })
+        if(qu){
+          Object.keys(qu).map(key3=>{
+            arr.push({id:key3, text:qu[key3], pid:key2, index:3});
+          })
+        }
       })
     })
     this.all = arr;
@@ -45,33 +49,35 @@ export default class Area {
       return ''
     }
     let arr = []
-    this.getAreaBycode(code,arr);
+    this.getAreaBycode(code, arr, 3);
     return arr.join('/')
   }
 
   getRealCode(code){
     let arr = []
-    this.getPcode(code, arr)
+    this.getPcode(code, arr, 3)
     return arr;
   }
 
-  getPcode(id, arr){
+  getPcode(id, arr, index){
     for(let item of this.all){
-      if(item.id === id){
+      if(item.id === id && item.index == index){
         arr.unshift(id)
         if(item.pid != '86'){
-          this.getPcode(item.pid,arr)
+          this.getPcode(item.pid, arr, --index)
         }
       }
     }
   }
 
-  getAreaBycode(code,arr){
-    //console.log("this.all.length",this.all)
+  getAreaBycode(code, arr, index){
     for(let item of this.all){
-      if(item.id === code){
+      if(item.id === code && item.index == index){
         arr.unshift(item.text);
-        this.getAreaBycode(item.pid,arr)
+        if(item.pid != '86'){
+          this.getAreaBycode(item.pid, arr, --index)
+        }
+
       }
     }
   }

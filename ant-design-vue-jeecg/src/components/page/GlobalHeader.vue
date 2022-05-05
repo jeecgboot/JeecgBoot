@@ -17,7 +17,7 @@
         :type="collapsed ? 'menu-unfold' : 'menu-fold'"
         @click="toggle"/>
 
-      <span v-if="device === 'desktop'">欢迎进入 Jeecg-Boot 企业级快速开发平台</span>
+      <span v-if="device === 'desktop'">欢迎进入 Jeecg-Boot 企业级低代码平台</span>
       <span v-else>Jeecg-Boot</span>
 
       <user-menu :theme="theme"/>
@@ -31,7 +31,9 @@
             <s-menu
               mode="horizontal"
               :menu="menus"
-              :theme="theme"></s-menu>
+              :theme="theme"
+              @updateMenuTitle="handleUpdateMenuTitle"
+            ></s-menu>
           </div>
           <a-icon
             v-else
@@ -50,7 +52,6 @@
   import UserMenu from '../tools/UserMenu'
   import SMenu from '../menu/'
   import Logo from '../tools/Logo'
-
   import { mixin } from '@/utils/mixin.js'
 
   export default {
@@ -156,8 +157,15 @@
             this.topMenuStyle.headerIndexLeft = { 'width': `calc(100% - ${rightWidth})` }
           }
         }
-      }
+      },
       //update-begin--author:sunjianlei---date:20190508------for: 顶部导航栏过长时显示更多按钮-----
+
+      // update-begin-author:sunjianlei date:20210508 for: 修复动态功能测试菜单、带参数菜单标题错误、展开错误的问题
+      handleUpdateMenuTitle(value) {
+        this.$emit('updateMenuTitle', value)
+      },
+      // update-end-author:sunjianlei date:20210508 for: 修复动态功能测试菜单、带参数菜单标题错误、展开错误的问题
+
     }
   }
 </script>

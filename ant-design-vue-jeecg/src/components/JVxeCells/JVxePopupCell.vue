@@ -6,7 +6,7 @@
 </template>
 
 <script>
-  import JVxeCellMixins, { vModel, dispatchEvent } from '@/components/jeecg/JVxeTable/mixins/JVxeCellMixins'
+  import JVxeCellMixins, { dispatchEvent, vModel } from '@/components/jeecg/JVxeTable/mixins/JVxeCellMixins'
 
   export default {
     name: 'JVxePopupCell',
@@ -22,6 +22,8 @@
           orgFields: col.orgFields,
           destFields: col.destFields,
           groupId: caseId,
+          param: col.param,
+          sorter: col.sorter,
         }
       },
     },
@@ -48,7 +50,9 @@
     // 【组件增强】注释详见：JVxeCellMixins.js
     enhanced: {
       aopEvents: {
-        editActived: event => dispatchEvent(event, 'ant-input'),
+        editActived(event) {
+          dispatchEvent.call(this, event, 'ant-input')
+        },
       },
     },
   }

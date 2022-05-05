@@ -3,6 +3,7 @@ package org.jeecg.config;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.handler.HystrixFallbackHandler;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -36,6 +37,10 @@ public class GatewayRoutersConfiguration {
 
     public static String ROUTE_GROUP;
 
+    public static String USERNAME;
+
+    public static String PASSWORD;
+
     /**
      * 路由配置文件数据获取方式yml,nacos,database
      */
@@ -62,8 +67,15 @@ public class GatewayRoutersConfiguration {
     }
 
     @Value("${jeecg.route.config.data-type}")
-    public void setDataType(String dataType) {
-        DATA_TYPE = dataType;
+    public void setDataType(String dataType) { DATA_TYPE = dataType; }
+
+    @Value("${spring.cloud.nacos.config.username}")
+    public void setUsername(String username) {
+        USERNAME = username;
+    }
+    @Value("${spring.cloud.nacos.config.password}")
+    public void setPassword(String password) {
+        PASSWORD = password;
     }
 
 
@@ -78,6 +90,11 @@ public class GatewayRoutersConfiguration {
 
     }
 
+    /**
+     * 映射接口文档默认地址（通过9999端口直接访问）
+     * @param indexHtml
+     * @return
+     */
     @Bean
     public RouterFunction<ServerResponse> indexRouter(@Value("classpath:/META-INF/resources/doc.html") final org.springframework.core.io.Resource indexHtml) {
         return route(GET("/"), request -> ok().contentType(MediaType.TEXT_HTML).syncBody(indexHtml));

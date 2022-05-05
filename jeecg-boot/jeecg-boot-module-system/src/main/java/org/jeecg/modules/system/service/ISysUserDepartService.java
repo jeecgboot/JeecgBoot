@@ -3,6 +3,7 @@ package org.jeecg.modules.system.service;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserDepart;
 import org.jeecg.modules.system.model.DepartIdModel;
@@ -37,5 +38,16 @@ public interface ISysUserDepartService extends IService<SysUserDepart> {
   	/**
 	 * 根据部门code，查询当前部门和下级部门的用户信息
 	 */
-	public List<SysUser> queryUserByDepCode(String depCode,String realname);
+	List<SysUser> queryUserByDepCode(String depCode,String realname);
+
+	/**
+	 * 用户组件数据查询
+	 * @param departId
+	 * @param username
+	 * @param pageSize
+	 * @param pageNo
+	 * @return
+	 */
+	IPage<SysUser> queryDepartUserPageList(String departId, String username, String realname, int pageSize, int pageNo);
+
 }

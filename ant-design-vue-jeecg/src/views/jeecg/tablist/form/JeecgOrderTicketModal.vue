@@ -10,58 +10,56 @@
     cancelText="关闭">
 
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+      <a-form-model ref="form" :model="model" :rules="validatorRules">
 
-        <a-form-item
+        <a-form-model-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="航班号"
+          prop="ticketCode"
           hasFeedback>
-          <a-input
-            placeholder="请输入航班号"
-            :readOnly="disableSubmit"
-            v-decorator="['ticketCode', {rules:[{ required: true,message: '请输入航班号!'}]}]"/>
-        </a-form-item>
-        <a-form-item
+          <a-input placeholder="请输入航班号" :readOnly="disableSubmit" v-model="model.ticketCode"></a-input>
+        </a-form-model-item>
+        <a-form-model-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="航班时间"
+          prop="tickectDate"
           hasFeedback>
-          <j-date :trigger-change="true"  v-decorator="['tickectDate',{rules:[{ required: true,message: '请输入航班号!'}]}]"></j-date>
-        </a-form-item>
-        <a-form-item
+          <j-date v-model="model.tickectDate"></j-date>
+        </a-form-model-item>
+        <a-form-model-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="订单号码"
           v-model="this.orderId"
           :hidden="hiding"
           hasFeedback>
-          <a-input v-decorator="[ 'orderId', {}]" disabled="disabled"/>
-        </a-form-item>
-        <a-form-item
+          <a-input v-model="model.orderId" disabled="disabled"/>
+        </a-form-model-item>
+        <a-form-model-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="创建人"
           :hidden="hiding"
           hasFeedback>
-          <a-input v-decorator="[ 'createBy', {}]" :readOnly="disableSubmit"/>
-        </a-form-item>
-        <a-form-item
+          <a-input v-model="model.createBy" :readOnly="disableSubmit"/>
+        </a-form-model-item>
+        <a-form-model-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="创建时间"
           :hidden="hiding"
           hasFeedback>
-          <a-input v-decorator="[ 'createTime', {}]" :readOnly="disableSubmit"/>
-        </a-form-item>
-      </a-form>
+          <a-input v-model="model.createTime" :readOnly="disableSubmit"/>
+        </a-form-model-item>
+      </a-form-model>
     </a-spin>
   </a-modal>
 </template>
 
 <script>
   import {httpAction} from '@/api/manage'
-  import pick from 'lodash.pick'
   import moment from 'moment'
   import JDate from '@/components/jeecg/JDate'
 
@@ -89,8 +87,10 @@
         orderId: '',
         hiding: false,
         confirmLoading: false,
-        form: this.$form.createForm(this),
-        validatorRules: {},
+        validatorRules: {
+          ticketCode:[{required : true, message: '请输入航班号!'}],
+          tickectDate:[{required : true, message: '请输入航班时间!'}]
+        },
         url: {
           add: '/test/order/addTicket',
           edit: '/test/order/editTicket'
@@ -121,23 +121,19 @@
           this.hiding = true;
           this.disableSubmit = false;
         }
-        this.form.resetFields();
-        this.orderId = record.orderId;
         this.model = Object.assign({}, record);
         this.visible = true;
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'ticketCode', 'tickectDate', 'orderId', 'createBy', 'createTime', 'updateBy', 'updateTime'))
-        })
       },
       close() {
         this.$emit('close');
         this.visible = false;
+        this.$refs.form.resetFields();
       },
       handleOk() {
         const that = this;
         // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
+        this.$refs.form.validate(valid => {
+          if (valid) {
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
@@ -148,9 +144,8 @@
               httpurl += this.url.edit;
               method = 'put';
             }
-            let formData = Object.assign(this.model, values);
-            formData.mainId = this.orderId;
-            httpAction(httpurl, formData, method).then((res) => {
+            this.model.mainId = this.model.orderId;
+            httpAction(httpurl, this.model, method).then((res) => {
               if (res.success) {
                 that.$message.success(res.message);
                 that.$emit('ok')
@@ -161,6 +156,8 @@
               that.confirmLoading = false;
               that.close();
             })
+          }else{
+            return false;
           }
         })
       },

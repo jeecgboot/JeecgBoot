@@ -1,7 +1,6 @@
 <template>
   <a-modal
     :title="title"
-
     :width="900"
     :visible="visible"
     :confirmLoading="confirmLoading"
@@ -11,59 +10,63 @@
     cancelText="关闭">
 
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+      <a-form-model ref="form" :model="model" :rules="validatorRules">
         <a-row style="width: 100%;">
           <a-col :span="24/2">
-            <a-form-item
+            <a-form-model-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
+              prop="titile"
               label="标题">
-              <a-input placeholder="请输入标题" v-decorator="['titile', validatorRules.title]" :readOnly="disableSubmit"/>
-            </a-form-item>
+              <a-input placeholder="请输入标题" v-model="model.titile" :readOnly="disableSubmit"/>
+            </a-form-model-item>
           </a-col>
           <a-col :span="24/2">
-            <a-form-item
+            <a-form-model-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
+              prop="msgCategory"
               label="消息类型">
               <a-select
-                v-decorator="[ 'msgCategory', validatorRules.msgCategory]"
+                v-model="model.msgCategory"
                 placeholder="请选择消息类型"
                 :disabled="disableSubmit"
                 :getPopupContainer = "(target) => target.parentNode">
                 <a-select-option value="1">通知公告</a-select-option>
                 <a-select-option value="2">系统消息</a-select-option>
               </a-select>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
         </a-row>
         <a-row style="width: 100%;">
           <a-col :span="24/2">
-            <a-form-item
+            <a-form-model-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
+              prop="startTime"
               label="开始时间:">
-              <j-date style="width: 100%" :getCalendarContainer="node => node.parentNode" v-decorator="[ 'startTime', validatorRules.startTime]" placeholder="请选择开始时间" showTime dateFormat="YYYY-MM-DD HH:mm:ss" ></j-date>
-            </a-form-item>
+              <j-date style="width: 100%" :getCalendarContainer="node => node.parentNode" v-model="model.startTime"  placeholder="请选择开始时间" showTime dateFormat="YYYY-MM-DD HH:mm:ss" ></j-date>
+            </a-form-model-item>
           </a-col>
           <a-col :span="24/2">
-            <a-form-item
+            <a-form-model-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
+              prop="endTime"
               label="结束时间"
               class="endTime">
-              <j-date style="width: 100%" :getCalendarContainer="node => node.parentNode" v-decorator="[ 'endTime', validatorRules.endTime]" placeholder="请选择结束时间" showTime dateFormat="YYYY-MM-DD HH:mm:ss"></j-date>
-            </a-form-item>
+              <j-date style="width: 100%" :getCalendarContainer="node => node.parentNode" v-model="model.endTime" placeholder="请选择结束时间" showTime dateFormat="YYYY-MM-DD HH:mm:ss"></j-date>
+            </a-form-model-item>
           </a-col>
         </a-row>
         <a-row style="width: 100%;">
           <a-col :span="24/2">
-            <a-form-item
+            <a-form-model-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="优先级">
               <a-select
-                v-decorator="[ 'priority', {}]"
+                v-model="model.priority"
                 placeholder="请选择优先级"
                 :disabled="disableSubmit"
                 :getPopupContainer = "(target) => target.parentNode">
@@ -71,15 +74,16 @@
                 <a-select-option value="M">中</a-select-option>
                 <a-select-option value="H">高</a-select-option>
               </a-select>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :span="24/2">
-            <a-form-item
+            <a-form-model-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
+              prop="msgType"
               label="通告类型">
               <a-select
-                v-decorator="[ 'msgType', validatorRules.msgType]"
+                v-model="model.msgType"
                 placeholder="请选择通告类型"
                 :disabled="disableSubmit"
                 @change="chooseMsgType"
@@ -87,20 +91,21 @@
                 <a-select-option value="USER">指定用户</a-select-option>
                 <a-select-option value="ALL">全体用户</a-select-option>
               </a-select>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
         </a-row>
         <a-row style="width: 100%;">
           <a-col :span="24/2">
-            <a-form-item
+            <a-form-model-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
+              prop="msgAbstract"
               label="摘要">
-              <a-textarea placeholder="请输入摘要" v-decorator="['msgAbstract',validatorRules.msgAbstract]" />
-            </a-form-item>
+              <a-textarea placeholder="请输入摘要"  v-model="model.msgAbstract" />
+            </a-form-model-item>
           </a-col>
           <a-col :span="24/2">
-            <a-form-item
+            <a-form-model-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="指定用户"
@@ -114,21 +119,21 @@
                 @change="handleChange"
               >
               </a-select>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
         </a-row>
         <a-row style="width: 100%;">
           <a-col :span="24">
-            <a-form-item
+            <a-form-model-item
               :labelCol="labelColX1"
               :wrapperCol="wrapperColX1"
               label="内容"
               class="j-field-content">
-              <j-editor v-decorator="[ 'msgContent', {} ]" triggerChange></j-editor>
-            </a-form-item>
+              <j-editor v-model="model.msgContent"></j-editor>
+            </a-form-model-item>
           </a-col>
         </a-row>
-      </a-form>
+      </a-form-model>
     </a-spin>
     <select-user-list-modal ref="UserListModal" @choseUser="choseUser"></select-user-list-modal>
   </a-modal>
@@ -169,14 +174,13 @@
           sm: { span: 21 },
         },
         confirmLoading: false,
-        form: this.$form.createForm(this),
         validatorRules:{
-          title:{rules: [{ required: true, message: '请输入标题!' }]},
-          msgCategory:{rules: [{ required: true, message: '请选择消息类型!' }]},
-          msgType:{rules: [{ required: true, message: '请选择通告对象类型!' }]},
-          endTime:{rules:[{ required: true, message: '请选择结束时间!'} ,{validator: this.endTimeValidate}]},
-          startTime:{rules:[{required: true, message: '请选择开始时间!'},{validator: this.startTimeValidate}]},
-          msgAbstract:{rules: [{ required: true, message: '请输入摘要!' }]},
+          titile: [{ required: true, message: '请输入标题!' }],
+          msgCategory: [{ required: true, message: '请选择消息类型!' }],
+          msgType:[{ required: true, message: '请选择通告对象类型!' }],
+          endTime:[{ required: true, message: '请选择结束时间!'} ,{validator: this.endTimeValidate}],
+          startTime:[{required: true, message: '请选择开始时间!'},{validator: this.startTimeValidate}],
+          msgAbstract: [{ required: true, message: '请输入摘要!' }],
         },
         url: {
           queryByIds: "/sys/user/queryByIds",
@@ -198,7 +202,6 @@
         this.edit({});
       },
       edit (record) {
-        this.form.resetFields();
         this.model = {}
         this.disable = false;
         this.visible = true;
@@ -226,14 +229,12 @@
             }
           });
         }
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'endTime','startTime','titile','msgContent','priority','msgCategory','msgType','sendStatus','msgAbstract'))
-        });
       },
       close () {
         this.$emit('close');
         this.selectedUser = [];
         this.visible = false;
+        this.$refs.form.resetFields();
       },
       handleOk () {
         const that = this;
@@ -243,8 +244,8 @@
             return;
           }
         // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
+        this.$refs.form.validate(valid => {
+          if (valid) {
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
@@ -255,12 +256,10 @@
               httpurl+=this.url.edit;
                method = 'put';
             }
-            let formData = Object.assign(this.model, values);
             if(this.userType){
-              formData.userIds =  this.userIds;
+              this.model.userIds =  this.userIds;
             }
-            console.log(formData)
-            httpAction(httpurl,formData,method).then((res)=>{
+            httpAction(httpurl,this.model,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');
@@ -272,15 +271,16 @@
               that.confirmLoading = false;
               that.close();
             })
-
-
-
+            
+          }else{
+            return false;
           }
         })
       },
       handleCancel () {
         this.visible = false;
         this.$emit('close');
+        this.$refs.form.resetFields();
         this.resetUser();
       },
       resetUser (){
@@ -317,7 +317,7 @@
         }
       },
       startTimeValidate(rule,value,callback){
-        let endTime = this.form.getFieldValue("endTime")
+        let endTime = this.model.endTime
         if(!value || !endTime){
           callback()
         }else if(moment(value).isBefore(endTime)){
@@ -327,7 +327,7 @@
         }
       },
       endTimeValidate(rule,value,callback){
-        let startTime = this.form.getFieldValue("startTime")
+        let startTime = this.model.startTime;
         if(!value || !startTime){
           callback()
         }else if(moment(startTime).isBefore(value)){

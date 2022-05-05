@@ -14,9 +14,9 @@ import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.service.ISysTenantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -99,7 +99,7 @@ public class SysTenantController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-        sysTenantService.removeById(id);
+        sysTenantService.removeTenantById(id);
         return Result.ok("删除成功");
     }
 
@@ -114,9 +114,25 @@ public class SysTenantController {
         if(oConvertUtils.isEmpty(ids)) {
             result.error500("未选中租户！");
         }else {
-            List<String> ls = Arrays.asList(ids.split(","));
-            sysTenantService.removeByIds(ls);
-            result.success("删除成功!");
+            String[] ls = ids.split(",");
+            // 过滤掉已被引用的租户
+            List<String> idList = new ArrayList<>();
+            for (String id : ls) {
+                int userCount = sysTenantService.countUserLinkTenant(id);
+                if (userCount == 0) {
+                    idList.add(id);
+                }
+            }
+            if (idList.size() > 0) {
+                sysTenantService.removeByIds(idList);
+                if (ls.length == idList.size()) {
+                    result.success("删除成功！");
+                } else {
+                    result.success("部分删除成功！（被引用的租户无法删除）");
+                }
+            }else  {
+                result.error500("选择的租户都已被引用，无法删除！");
+            }
         }
         return result;
     }

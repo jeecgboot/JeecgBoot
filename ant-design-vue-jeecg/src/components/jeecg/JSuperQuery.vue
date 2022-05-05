@@ -412,8 +412,9 @@
         this.queryParamsModel.splice(index, 1)
       },
       handleSelected(node, item) {
-        let { type, options, dictCode, dictTable, dictText, customReturnField, popup } = node.dataRef
+        let { type, dbType, options, dictCode, dictTable, dictText, customReturnField, popup } = node.dataRef
         item['type'] = type
+        item['dbType'] = dbType
         item['options'] = options
         item['dictCode'] = dictCode
         item['dictTable'] = dictTable

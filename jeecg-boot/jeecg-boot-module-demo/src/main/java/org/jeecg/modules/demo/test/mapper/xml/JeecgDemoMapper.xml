@@ -23,12 +23,12 @@
 
 	<!-- 查询用户已授权字段 -->
 	<select id="queryUserAuth" resultType="java.lang.String">
-        select perms from sys_user_role sur,
+        select DISTINCT perms from sys_user_role sur,
         sys_role_permission srp,
         sys_permission sp
         where sur.role_id = srp.role_id
         and sp.id = srp.permission_id
-        and user_id = #{userId}
+        and sur.user_id = #{userId}
         and sp.perms like concat(concat('%',#{permsPrefix}),'%')
     </select>
 </mapper>

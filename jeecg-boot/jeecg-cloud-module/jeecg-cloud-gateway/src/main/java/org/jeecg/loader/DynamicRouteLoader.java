@@ -11,7 +11,8 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.jeecg.boot.starter.redis.client.JeecgRedisClient;
+import org.jeecg.common.constant.CacheConstant;
+import org.jeecg.common.util.RedisUtil;
 import org.jeecg.config.GatewayRoutersConfiguration;
 import org.jeecg.config.RouterDataType;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
@@ -53,14 +54,14 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
 
     private ConfigService configService;
 
-    private JeecgRedisClient redisClient;
+    private RedisUtil redisUtil;
 
 
-    public DynamicRouteLoader(InMemoryRouteDefinitionRepository repository, DynamicRouteService dynamicRouteService, JeecgRedisClient redisClient) {
+    public DynamicRouteLoader(InMemoryRouteDefinitionRepository repository, DynamicRouteService dynamicRouteService, RedisUtil redisUtil) {
 
         this.repository = repository;
         this.dynamicRouteService = dynamicRouteService;
-        this.redisClient = redisClient;
+        this.redisUtil = redisUtil;
     }
 
     @PostConstruct
@@ -127,24 +128,29 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
      * @return
      */
     private void loadRoutesByRedis() {
-        List<RouteDefinition> routes = Lists.newArrayList();
+        List<MyRouteDefinition> routes = Lists.newArrayList();
         configService = createConfigService();
         if (configService == null) {
             log.warn("initConfigService fail");
         }
-        String configInfo = redisClient.get("gateway_routes");
-        if (StringUtils.isNotBlank(configInfo)) {
+        Object configInfo = redisUtil.get(CacheConstant.GATEWAY_ROUTES);
+        if (ObjectUtil.isNotEmpty(configInfo)) {
             log.info("获取网关当前配置:\r\n{}", configInfo);
-            JSONArray array = JSON.parseArray(configInfo);
+            JSONArray array = JSON.parseArray(configInfo.toString());
             try {
                 routes = getRoutesByJson(array);
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
         }
-        for (RouteDefinition definition : routes) {
+        for (MyRouteDefinition definition : routes) {
             log.info("update route : {}", definition.toString());
-            dynamicRouteService.add(definition);
+            Integer status=definition.getStatus();
+            if(status.equals(0)){
+                dynamicRouteService.delete(definition.getId());
+            }else{
+                dynamicRouteService.add(definition);
+            }
         }
         this.publisher.publishEvent(new RefreshRoutesEvent(this));
     }
@@ -160,12 +166,13 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
      * @return
      */
 
-    public static List<RouteDefinition> getRoutesByJson(JSONArray array) throws URISyntaxException {
-        List<RouteDefinition> ls = new ArrayList<>();
+    public static List<MyRouteDefinition> getRoutesByJson(JSONArray array) throws URISyntaxException {
+        List<MyRouteDefinition> ls = new ArrayList<>();
         for (int i = 0; i < array.size(); i++) {
             JSONObject obj = array.getJSONObject(i);
-            RouteDefinition route = new RouteDefinition();
+            MyRouteDefinition route = new MyRouteDefinition();
             route.setId(obj.getString("routerId"));
+            route.setStatus(obj.getInteger("status"));
             Object uri = obj.get("uri");
             if (uri == null) {
                 route.setUri(new URI("lb://" + obj.getString("name")));
@@ -298,6 +305,8 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
             Properties properties = new Properties();
             properties.setProperty("serverAddr", GatewayRoutersConfiguration.SERVER_ADDR);
             properties.setProperty("namespace", GatewayRoutersConfiguration.NAMESPACE);
+            properties.setProperty("username",GatewayRoutersConfiguration.USERNAME);
+            properties.setProperty("password",GatewayRoutersConfiguration.PASSWORD);
             return configService = NacosFactory.createConfigService(properties);
         } catch (Exception e) {
             log.error("创建ConfigService异常", e);

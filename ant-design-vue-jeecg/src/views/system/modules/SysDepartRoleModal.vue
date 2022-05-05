@@ -9,35 +9,37 @@
     cancelText="关闭">
     
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+      <a-form-model  ref="form" :model="model" :rules="validatorRules">
       
-        <a-form-item
+        <a-form-model-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
+          prop="roleName"
           label="部门角色名称">
-          <a-input placeholder="请输入部门角色名称" v-decorator="['roleName', validatorRules.roleName]" />
-        </a-form-item>
-        <a-form-item
+          <a-input placeholder="请输入部门角色名称" v-model="model.roleName"/>
+        </a-form-model-item>
+        <a-form-model-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
+          prop="roleCode"
           label="部门角色编码">
-          <a-input placeholder="请输入部门角色编码" v-decorator="['roleCode', validatorRules.roleCode]" />
-        </a-form-item>
-        <a-form-item
+          <a-input placeholder="请输入部门角色编码" v-model="model.roleCode"/>
+        </a-form-model-item>
+        <a-form-model-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
+          prop="description"
           label="描述">
-          <a-input placeholder="请输入描述" v-decorator="['description', validatorRules.description]" />
-        </a-form-item>
+          <a-input placeholder="请输入描述" v-model="model.description"/>
+        </a-form-model-item>
 		
-      </a-form>
+      </a-form-model>
     </a-spin>
   </a-modal>
 </template>
 
 <script>
   import { httpAction } from '@/api/manage'
-  import pick from 'lodash.pick'
   import {duplicateCheck } from '@/api/api'
 
   export default {
@@ -55,25 +57,20 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
-
         confirmLoading: false,
-        form: this.$form.createForm(this),
         validatorRules:{
-          roleName:{
-            rules: [
+          roleName:[
               { required: true, message: '请输入部门角色名称!' },
               { min: 2, max: 30, message: '长度在 2 到 30 个字符', trigger: 'blur' }
-            ]},
-          roleCode:{
-            rules: [
+            ],
+          roleCode: [
               { required: true, message: '请输入部门角色编码!'},
               { min: 0, max: 64, message: '长度不超过 64 个字符', trigger: 'blur' },
               { validator: this.validateRoleCode}
-            ]},
-          description:{
-            rules: [
+            ],
+          description: [
               { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
-            ]}
+            ]
         },
         url: {
           add: "/sys/sysDepartRole/add",
@@ -89,22 +86,19 @@
       },
       edit (record,departId) {
         this.departId = departId;
-        this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'roleName','roleCode','description'))
-        });
       },
       close () {
         this.$emit('close');
         this.visible = false;
+        this.$refs.form.resetFields()
       },
       handleOk () {
         const that = this;
         // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
+        this.$refs.form.validate(valid => {
+          if (valid) {
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
@@ -115,9 +109,8 @@
               httpurl+=this.url.edit;
                method = 'put';
             }
-            let formData = Object.assign(this.model, values);
-            formData.departId = this.departId;
-            httpAction(httpurl,formData,method).then((res)=>{
+            this.model.departId = this.departId;
+            httpAction(httpurl,this.model,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');
@@ -128,6 +121,8 @@
               that.confirmLoading = false;
               that.close();
             })
+          }else{
+            return false;
           }
         })
       },
