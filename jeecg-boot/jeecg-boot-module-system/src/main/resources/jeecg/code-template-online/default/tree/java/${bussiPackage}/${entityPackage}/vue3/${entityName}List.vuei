@@ -1,3 +1,13 @@
+<#assign pidFieldName = "">
+<#assign hasChildrenField = "">
+<#list originalColumns as po>
+  <#if po.fieldDbName == tableVo.extendParams.pidField>
+    <#assign pidFieldName = po.fieldName>
+  </#if>
+  <#if po.fieldDbName == tableVo.extendParams.hasChildren>
+    <#assign hasChildrenField = po.fieldName>
+  </#if>
+</#list>
 <template>
   <div class="p-4">
     <!--引用表格-->
@@ -35,8 +45,8 @@
 <script lang="ts" name="${entityPackage}-${entityName?uncap_first}" setup>
   //ts语法
   import {ref, computed, unref, toRaw, nextTick} from 'vue';
-  import {BasicTable, useTable, TableAction} from '/src/components/Table';
-  import {useModal} from '/src/components/Modal';
+  import {BasicTable, TableAction} from '/@/components/Table';
+  import {useModal} from '/@/components/Modal';
   import { useListPage } from '/@/hooks/system/useListPage'
   import ${entityName}Modal from './components/${entityName}Modal.vue';
   import {columns} from './${entityName}.data';
@@ -48,12 +58,13 @@
    //注册table数据
   const { prefixCls,tableContext,onExportXls,onImportXls } = useListPage({
     tableProps:{
+         api: list,
          title: '${tableVo.ftlDescription}',
          columns,
          canResize:false,
          actionColumn: {
-             width: 120,
-          },
+           width: 240,
+         },
     },
      exportConfig: {
           name:"${tableVo.ftlDescription}",
@@ -134,7 +145,7 @@
       //编辑回调
       updateTableDataRecord(values.id, values);
     } else {
-        if(!values['pid']){
+        if(!values['${pidFieldName}']){
             //新增根节点
             reload();
         }else{
@@ -164,7 +175,7 @@
               let records = res.result.records
               const listMap = new Map();
               for (let item of records) {
-                  let pid = item['pid'];
+                  let pid = item['${pidFieldName}'];
                   if (unref(expandedRowKeys).includes(pid)) {
                       let mapList = listMap.get(pid);
                       if (mapList == null) {
@@ -212,7 +223,7 @@
     if (expanded) {
        expandedRowKeys.value.push(record.id)
       if (record.children.length > 0 && !!record.children[0].isLoading) {
-        let result = await getChildList({pid: record.id});
+        let result = await getChildList({${pidFieldName}: record.id});
         result=result.records?result.records:result;
         if (result && result.length > 0) {
           record.children = getDataByResult(result);
@@ -234,7 +245,7 @@
   async function expandTreeNode(key) {
     let record = findTableDataRecord(key)
     expandedRowKeys.value.push(key);
-      let result = await getChildList({pid: key});
+      let result = await getChildList({${pidFieldName}: key});
       if (result && result.length > 0) {
           record.children = getDataByResult(result);
       } else {
@@ -261,7 +272,7 @@
       },
       {
         label: '添加下级',
-        onClick: handleAddSub.bind(null, {pid: record.id}),
+        onClick: handleAddSub.bind(null, {${pidFieldName}: record.id}),
       }
     ]
   }

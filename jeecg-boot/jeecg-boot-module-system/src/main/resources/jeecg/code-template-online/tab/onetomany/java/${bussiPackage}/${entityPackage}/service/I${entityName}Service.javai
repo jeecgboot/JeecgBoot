@@ -19,23 +19,35 @@ public interface I${entityName}Service extends IService<${entityName}> {
 
 	/**
 	 * 添加一对多
-	 * 
+	 *
+	 * @param ${entityName?uncap_first}
+	 <#list subTables as sub>
+	 * @param ${sub.entityName?uncap_first}List
+	 </#list>
 	 */
 	public void saveMain(${entityName} ${entityName?uncap_first},<#list subTables as sub>List<${sub.entityName}> ${sub.entityName?uncap_first}List<#if sub_has_next>,</#if></#list>) ;
 	
 	/**
 	 * 修改一对多
-	 * 
+	 *
+	 * @param ${entityName?uncap_first}
+	 <#list subTables as sub>
+	 * @param ${sub.entityName?uncap_first}List
+	 </#list>
 	 */
 	public void updateMain(${entityName} ${entityName?uncap_first},<#list subTables as sub>List<${sub.entityName}> ${sub.entityName?uncap_first}List<#if sub_has_next>,</#if></#list>);
 	
 	/**
 	 * 删除一对多
+	 *
+	 * @param id
 	 */
 	public void delMain (String id);
 	
 	/**
 	 * 批量删除一对多
+	 *
+	 * @param idList
 	 */
 	public void delBatchMain (Collection<? extends Serializable> idList);
 	

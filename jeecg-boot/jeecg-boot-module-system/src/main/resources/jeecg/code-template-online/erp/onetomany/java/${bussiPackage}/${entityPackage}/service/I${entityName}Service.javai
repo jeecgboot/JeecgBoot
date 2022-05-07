@@ -20,11 +20,15 @@ public interface I${entityName}Service extends IService<${entityName}> {
 
 	/**
 	 * 删除一对多
+	 *
+	 * @param id
 	 */
 	public void delMain (String id);
 	
 	/**
 	 * 批量删除一对多
+	 *
+	 * @param idList
 	 */
 	public void delBatchMain (Collection<? extends Serializable> idList);
 

@@ -48,7 +48,7 @@ public class ${subTab.entityName} implements Serializable {
 	<#if po.fieldName == primaryKeyField>
 	@TableId(type = IdType.ASSIGN_ID)
 	<#else>
-		<#if po.fieldDbType =='Date'>
+		<#if po.fieldDbType =='Date' || po.fieldDbType =='Datetime'>
 			<#if po.classType=='date'>
     <#if !excel_ignore_arr?seq_contains("${po.fieldName}")>
 	@Excel(name = "${po.filedComment}", width = 15, format = "yyyy-MM-dd")

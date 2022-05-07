@@ -4,17 +4,18 @@
   <!-- 子表单区域 -->
     <a-tabs v-model:activeKey="activeKey" @change="handleChangeTabs">
 <#list subTables as sub><#rt/>
+  <#assign refKey = sub.entityName?uncap_first/>
   <#if sub.foreignRelationType =='1'>
-      <a-tab-pane tab="${sub.ftlDescription}" :key="refKeys[${sub_index}]" :forceRender="true">
+      <a-tab-pane tab="${sub.ftlDescription}" key="${refKey}" :forceRender="true">
         <${sub.entityName}Form ref="${sub.entityName?uncap_first}Form"></${sub.entityName}Form>
       </a-tab-pane>
 
   <#else>
-      <a-tab-pane tab="${sub.ftlDescription}" :key="refKeys[${sub_index}]" :forceRender="true">
+      <a-tab-pane tab="${sub.ftlDescription}" key="${refKey}" :forceRender="true">
         <JVxeTable
           keep-source
           resizable
-          :ref="refKeys[${sub_index}]"
+          ref="${refKey}"
           :loading="${sub.entityName?uncap_first}Table.loading"
           :columns="${sub.entityName?uncap_first}Table.columns"
           :dataSource="${sub.entityName?uncap_first}Table.dataSource"

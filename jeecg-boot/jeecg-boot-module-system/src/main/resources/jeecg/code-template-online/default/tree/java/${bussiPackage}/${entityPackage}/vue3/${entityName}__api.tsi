@@ -5,7 +5,7 @@ enum Api {
   list = '/${entityPackage}/${entityName?uncap_first}/rootList',
   save='/${entityPackage}/${entityName?uncap_first}/add',
   edit='/${entityPackage}/${entityName?uncap_first}/edit',
-  delete${entityName} = '/sys/${entityName?uncap_first}/delete',
+  delete${entityName} = '/${entityPackage}/${entityName?uncap_first}/delete',
   deleteBatch = '/${entityPackage}/${entityName?uncap_first}/deleteBatch',
   importExcel = '/${entityPackage}/${entityName?uncap_first}/importExcel',
   exportXls = '/${entityPackage}/${entityName?uncap_first}/exportXls',
@@ -13,6 +13,7 @@ enum Api {
   getChildList = '/${entityPackage}/${entityName?uncap_first}/childList',
   getChildListBatch = '/${entityPackage}/${entityName?uncap_first}/getChildListBatch',
 }
+
 /**
  * 导出api
  * @param params
