@@ -1,3 +1,13 @@
+<#assign pidFieldName = "">
+<#assign hasChildrenField = "">
+<#list originalColumns as po>
+  <#if po.fieldDbName == tableVo.extendParams.pidField>
+    <#assign pidFieldName = po.fieldName>
+  </#if>
+  <#if po.fieldDbName == tableVo.extendParams.hasChildren>
+    <#assign hasChildrenField = po.fieldName>
+  </#if>
+</#list>
 <template>
   <BasicModal v-bind="$attrs" @register="registerModal" :title="getTitle" @ok="handleSubmit">
     <BasicForm @register="registerForm"/>
@@ -5,8 +15,8 @@
 </template>
 <script lang="ts" setup>
   import {ref, computed, unref} from 'vue';
-  import {BasicModal, useModalInner} from '/src/components/Modal';
-  import {BasicForm, useForm} from '/src/components/Form';
+  import {BasicModal, useModalInner} from '/@/components/Modal';
+  import {BasicForm, useForm} from '/@/components/Form';
   import {formSchema} from '../${entityName}.data';
   import {loadTreeData, saveOrUpdateDict} from '../${entityName}.api';
   // 获取emit
@@ -42,13 +52,9 @@
     }
     //父级节点树信息
     treeData.value = await loadTreeData({'async': false,'pcode':''});
-    updateSchema({
-      field: 'pid',
-      componentProps: {treeData},
-    });
   });
   //设置标题
-  const getTitle = computed(() => (!unref(isUpdate) ? '新增字典' : '编辑字典'));
+  const getTitle = computed(() => (!unref(isUpdate) ? '新增' : '编辑'));
 
   /**
    * 根据pid获取展开的节点
@@ -77,7 +83,7 @@
       //关闭弹窗
       closeModal();
       //展开的节点信息
-      await getExpandKeysByPid(values['pid'],unref(treeData))
+      await getExpandKeysByPid(values['${pidFieldName}'],unref(treeData))
       //刷新列表(isUpdate:是否编辑;values:表单信息;expandedArr:展开的节点信息)
       emit('success', {isUpdate: unref(isUpdate), values:{...values},expandedArr: unref(expandedRowKeys).reverse()});
     } finally {

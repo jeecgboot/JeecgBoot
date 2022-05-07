@@ -8,7 +8,11 @@ export const columns: BasicColumn[] = [
    <#if po.isShowList =='Y' && po.fieldName !='id'>
    {
     title: '${po.filedComment}',
-    align:"center",
+    <#if po.fieldDbName == tableVo.extendParams.textField>
+    align: 'left',
+    <#else>
+    align: 'center',
+    </#if>
     <#if po.sort=='Y'>
     sorter: true,
    </#if>
@@ -277,13 +281,15 @@ export const formSchema: FormSchema[] = [
     component: 'JTreeSelect',
     componentProps:{
         <#if po.dictText??>
-        <#if po.dictText?split(',')[2]?? && po.dictText?split(',')[0]??>
+          <#if po.dictText?split(',')[2]?? && po.dictText?split(',')[0]??>
         dict:"${po.dictTable},${po.dictText?split(',')[2]},${po.dictText?split(',')[0]}",
-        <#elseif po.dictText?split(',')[1]??>
+          </#if>
+          <#if po.dictText?split(',')[1]??>
         pidField:"${po.dictText?split(',')[1]}",
-        <#elseif po.dictText?split(',')[3]??>
+          </#if>
+          <#if po.dictText?split(',')[3]??>
         hasChildField:"${po.dictText?split(',')[3]}",
-        </#if>
+          </#if>
         </#if>
         pidValue:"${po.dictField}",
     },

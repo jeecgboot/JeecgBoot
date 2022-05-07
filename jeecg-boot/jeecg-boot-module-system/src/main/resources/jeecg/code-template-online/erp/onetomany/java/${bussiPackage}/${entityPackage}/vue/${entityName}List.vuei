@@ -193,7 +193,7 @@
     <#assign sub_seq=1>
     <#list subTables as sub>
       <a-tab-pane tab="${sub.ftlDescription}" key="${sub_seq}" <#if sub_seq gt 1>forceRender</#if>>
-        <${sub.entityName}List :mainId="${sub.entityName?uncap_first}MainId" />
+        <${sub.entityName}List :mainId="selectedMainId" />
       </a-tab-pane>
     <#assign sub_seq=sub_seq+1>
     </#list>
@@ -340,7 +340,7 @@
         selectedMainId:'',
         superFieldList:[],
         <#list subTables as sub>
-        <#if sub != null>
+        <#if sub?? && (sub.foreignMainKeys)??>
           <#list sub.foreignMainKeys as key>
             <#assign subMainFieldMap += {"${sub.entityName?uncap_first}MainId": "${dashedToCamel(key)}"}>
           </#list>

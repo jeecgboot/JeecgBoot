@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.system.vo.SelectTreeModel;
 import ${bussiPackage}.${entityPackage}.entity.${entityName};
 import ${bussiPackage}.${entityPackage}.service.I${entityName}Service;
 
@@ -55,7 +56,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class ${entityName}Controller extends JeecgController<${entityName}, I${entityName}Service>{
 	@Autowired
 	private I${entityName}Service ${entityName?uncap_first}Service;
-	
+
 	/**
 	 * 分页列表查询
 	 *
@@ -93,6 +94,67 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
             return Result.OK(pageList);
         }
 	}
+
+	 /**
+	  * 【vue3专用】加载节点的子数据
+	  *
+	  * @param pid
+	  * @return
+	  */
+	 @RequestMapping(value = "/loadTreeChildren", method = RequestMethod.GET)
+	 public Result<List<SelectTreeModel>> loadTreeChildren(@RequestParam(name = "pid") String pid) {
+		 Result<List<SelectTreeModel>> result = new Result<>();
+		 try {
+			 List<SelectTreeModel> ls = ${entityName?uncap_first}Service.queryListByPid(pid);
+			 result.setResult(ls);
+			 result.setSuccess(true);
+		 } catch (Exception e) {
+			 e.printStackTrace();
+			 result.setMessage(e.getMessage());
+			 result.setSuccess(false);
+		 }
+		 return result;
+	 }
+
+	 /**
+	  * 【vue3专用】加载一级节点/如果是同步 则所有数据
+	  *
+	  * @param async
+	  * @param pcode
+	  * @return
+	  */
+	 @RequestMapping(value = "/loadTreeRoot", method = RequestMethod.GET)
+	 public Result<List<SelectTreeModel>> loadTreeRoot(@RequestParam(name = "async") Boolean async, @RequestParam(name = "pcode") String pcode) {
+		 Result<List<SelectTreeModel>> result = new Result<>();
+		 try {
+			 List<SelectTreeModel> ls = ${entityName?uncap_first}Service.queryListByCode(pcode);
+			 if (!async) {
+				 loadAllChildren(ls);
+			 }
+			 result.setResult(ls);
+			 result.setSuccess(true);
+		 } catch (Exception e) {
+			 e.printStackTrace();
+			 result.setMessage(e.getMessage());
+			 result.setSuccess(false);
+		 }
+		 return result;
+	 }
+
+	 /**
+	  * 【vue3专用】递归求子节点 同步加载用到
+	  *
+	  * @param ls
+	  */
+	 private void loadAllChildren(List<SelectTreeModel> ls) {
+		 for (SelectTreeModel tsm : ls) {
+			 List<SelectTreeModel> temp = ${entityName?uncap_first}Service.queryListByPid(tsm.getKey());
+			 if (temp != null && temp.size() > 0) {
+				 tsm.setChildren(temp);
+				 loadAllChildren(temp);
+			 }
+		 }
+	 }
 
 	 /**
       * 获取子数据
