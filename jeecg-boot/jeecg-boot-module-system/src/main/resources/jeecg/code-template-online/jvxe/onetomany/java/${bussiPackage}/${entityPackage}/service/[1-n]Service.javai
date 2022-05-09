@@ -14,6 +14,12 @@ import java.util.List;
  */
 public interface I${subTab.entityName}Service extends IService<${subTab.entityName}> {
 
+	/**
+	 * 通过主表id查询子表数据
+	 *
+	 * @param mainId 主表id
+	 * @return List<${subTab.entityName}>
+	 */
 	public List<${subTab.entityName}> selectByMainId(String mainId);
 }
 </#list>
