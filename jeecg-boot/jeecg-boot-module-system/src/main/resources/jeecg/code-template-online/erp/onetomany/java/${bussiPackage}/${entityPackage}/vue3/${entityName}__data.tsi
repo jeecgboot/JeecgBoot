@@ -30,7 +30,7 @@ export const columns: BasicColumn[] = [
     slots: { customRender: 'fileSlot' },
    <#elseif po.classType=='image'>
     dataIndex: '${po.fieldName}',
-    customRender:render.renderAvatar,
+    customRender:render.renderImage,
    <#elseif po.classType=='switch'>
     dataIndex: '${po.fieldName}',
 <#assign switch_extend_arr=['Y','N']>
@@ -393,7 +393,7 @@ export const ${sub.entityName?uncap_first}Columns: BasicColumn[] = [
     slots: { customRender: 'fileSlot' },
    <#elseif po.classType=='image'>
     dataIndex: '${po.fieldName}',
-    customRender:render.renderAvatar,
+    customRender:render.renderImage,
    <#elseif po.classType=='switch'>
     dataIndex: '${po.fieldName}',
 <#assign switch_extend_arr=['Y','N']>
