@@ -15,8 +15,6 @@ enum Api {
   ${sub.entityName?uncap_first}Edit='/${entityPackage}/${entityName?uncap_first}/edit${sub.entityName}',
   ${sub.entityName?uncap_first}Delete = '/${entityPackage}/${entityName?uncap_first}/delete${sub.entityName}',
   ${sub.entityName?uncap_first}DeleteBatch = '/${entityPackage}/${entityName?uncap_first}/deleteBatch${sub.entityName}',
-  ${sub.entityName?uncap_first}ExportXlsUrl = '/${entityPackage}/${entityName?uncap_first}/export${sub.entityName}',
-  ${sub.entityName?uncap_first}ImportUrl = '/${entityPackage}/${entityName?uncap_first}/import${sub.entityName}',
 </#list>
 }
 /**
@@ -110,4 +108,13 @@ export const  ${sub.entityName?uncap_first}SaveOrUpdate = (params, isUpdate) => 
   let url = isUpdate ? Api.${sub.entityName?uncap_first}Edit : Api.${sub.entityName?uncap_first}Save;
   return defHttp.post({url: url, params});
 }
+/**
+ * 导入
+ */
+export const ${sub.entityName?uncap_first}ImportUrl = '/${entityPackage}/${entityName?uncap_first}/import${sub.entityName}'
+
+/**
+ * 导出
+ */
+export const ${sub.entityName?uncap_first}ExportXlsUrl = '/${entityPackage}/${entityName?uncap_first}/export${sub.entityName}'
 </#list>

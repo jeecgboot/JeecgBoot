@@ -34,7 +34,7 @@ export const columns: BasicColumn[] = [
     slots: { customRender: 'fileSlot' },
    <#elseif po.classType=='image'>
     dataIndex: '${po.fieldName}',
-    customRender:render.renderAvatar,
+    customRender:render.renderImage,
    <#elseif po.classType=='switch'>
     dataIndex: '${po.fieldName}',
 <#assign switch_extend_arr=['Y','N']>
@@ -193,7 +193,15 @@ export const formSchema: FormSchema[] = [
   {
     label: '${po.filedComment}',
     field: '${po.fieldName}',
-    <#if po.classType =='date'>
+    <#if po.fieldDbName == tableVo.extendParams.pidField>
+    component: 'JTreeSelect',
+    componentProps: {
+      dict: "${tableVo.tableName},${tableVo.extendParams.textField},id",
+      pidField: "${tableVo.extendParams.pidField}",
+      pidValue: "0",
+      hasChildField: "${tableVo.extendParams.hasChildren}",
+    },
+    <#elseif po.classType =='date'>
     component: 'DatePicker',
      <#elseif po.fieldType =='datetime'>
     component: 'DatePicker',

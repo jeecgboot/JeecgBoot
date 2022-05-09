@@ -77,10 +77,17 @@
         },
         exportConfig: {
             name: '${sub.ftlDescription}',
-            url: ${sub.entityName?uncap_first}ExportXlsUrl
+            url: ${sub.entityName?uncap_first}ExportXlsUrl,
+            params: {
+                <#list sub.foreignKeys as key>
+                '${key?uncap_first}': mainId
+                </#list>
+            }
         },
         importConfig: {
-            url: getImportUrl()
+            url: ()=>{
+                return ${sub.entityName?uncap_first}ImportUrl + '/' + unref(mainId)
+            }
         }
     });
 
@@ -94,14 +101,6 @@
          reload();
       }
     );
-
-    /**
-     * 导入地址
-     */
-    function getImportUrl(){
-        return ${sub.entityName?uncap_first}ImportUrl+'/'+ unref(mainId)
-    }
-
 
     /**
      * 新增事件

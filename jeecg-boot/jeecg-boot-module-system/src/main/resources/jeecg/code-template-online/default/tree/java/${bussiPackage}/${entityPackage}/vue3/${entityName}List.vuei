@@ -9,7 +9,7 @@
   </#if>
 </#list>
 <template>
-  <div class="p-4">
+  <div>
     <!--引用表格-->
     <BasicTable @register="registerTable" :rowSelection="rowSelection" :expandedRowKeys="expandedRowKeys" @expand="handleExpand" @fetch-success="onFetchSuccess">
       <!--插槽:table标题-->
