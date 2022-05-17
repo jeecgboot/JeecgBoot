@@ -296,7 +296,7 @@ public class OssBootUtil {
             //update-end---author:liusq  Date:20220120  for：替换objectName前缀，防止key不一致导致获取不到文件----
             if(ossClient.doesObjectExist(bucketName,objectName)){
                 URL url = ossClient.generatePresignedUrl(bucketName,objectName,expires);
-                return URLDecoder.decode(url.toString(),"UTF-8");
+                return url.toString();
             }
         }catch (Exception e){
             log.info("文件路径获取失败" + e.getMessage());
