@@ -14,16 +14,16 @@ server:
     mime-types: application/javascript,application/json,application/xml,text/html,text/xml,text/plain,text/css,image/*
 
 management:
- endpoints:
-  web:
-   exposure:
-    include: metrics,httptrace
+  endpoints:
+    web:
+      exposure:
+        include: metrics,httptrace
 
 spring:
   servlet:
-     multipart:
-        max-file-size: 10MB
-        max-request-size: 10MB
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   mail:
     host: smtp.163.com
     username: jeecgos@163.com
@@ -79,8 +79,8 @@ spring:
     static-path-pattern: /**
   resource:
     static-locations: classpath:/static/,classpath:/public/
-#  autoconfigure:
-#    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+  #  autoconfigure:
+  #    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
@@ -132,14 +132,14 @@ mybatis-plus:
     # 返回类型为Map,显示null对应的字段
     call-setters-on-nulls: true
 #jeecg专用配置
-jeecg :
+jeecg:
   # 是否启用安全模式
   safeMode: false
   # 签名密钥串(前后端要一致，正式发布请自行修改)
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
   # 本地：local\Minio：minio\阿里云：alioss
   uploadType: alioss
-  path :
+  path:
     #文件上传根目录 设置
     upload: D://opt//upFiles
     #webapp文件路径
@@ -197,7 +197,7 @@ jeecg :
     port: 30007
     logPath: logs/jeecg/job/jobhandler/
     logRetentionDays: 30
-   #自定义路由配置 yml nacos database
+    #自定义路由配置 yml nacos database
   route:
     config:
       data-id: jeecg-gateway-router
@@ -215,7 +215,7 @@ cas:
 #Mybatis输出sql日志
 logging:
   level:
-    org.jeecg.modules.system.mapper : info
+    org.jeecg.modules.system.mapper: info
 #enable swagger
 swagger:
   enable: true

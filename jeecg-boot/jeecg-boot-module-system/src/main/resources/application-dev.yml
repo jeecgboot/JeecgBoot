@@ -174,16 +174,16 @@ mybatis-plus:
     # 返回类型为Map,显示null对应的字段
     call-setters-on-nulls: true
 #jeecg专用配置
-minidao :
+minidao:
   base-package: org.jeecg.modules.jmreport.*
-jeecg :
+jeecg:
   # 是否启用安全模式
   safeMode: false
   # 签名密钥串(前后端要一致，正式发布请自行修改)
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
   # 本地：local\Minio：minio\阿里云：alioss
   uploadType: local
-  path :
+  path:
     #文件上传根目录 设置
     upload: /opt/upFiles
     #webapp文件路径
@@ -268,7 +268,7 @@ cas:
 #Mybatis输出sql日志
 logging:
   level:
-    org.jeecg.modules.system.mapper : info
+    org.jeecg.modules.system.mapper: info
 #swagger
 knife4j:
   #开启增强配置

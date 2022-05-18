@@ -61,10 +61,28 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<!--微服务模式下修改为true,跳过SpringBoot启动打包插件，否则微服务模块无法引用-->
+					<!--SpringCloud运行环境 ,值改为true跳过SpringBoot启动打包插件 -->
 					<skip>${skip.springboot.maven}</skip>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<!-- SpringCloud运行环境 -->
+		<profile>
+			<id>SpringCloud</id>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<excludes>
+							<exclude>application.yml</exclude>
+							<exclude>application-*.yml</exclude>
+						</excludes>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+	</profiles>
 </project>
