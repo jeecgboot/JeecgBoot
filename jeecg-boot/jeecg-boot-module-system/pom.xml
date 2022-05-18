@@ -76,10 +76,20 @@
 				<resources>
 					<resource>
 						<directory>src/main/resources</directory>
+						<filtering>true</filtering>
+						<!-- SpringCloud运行环境的配置，排除system模块jar里的yaml -->
 						<excludes>
 							<exclude>application.yml</exclude>
 							<exclude>application-*.yml</exclude>
 						</excludes>
+					</resource>
+					<resource>
+						<directory>src/main/java</directory>
+						<includes>
+							<include>**/*.xml</include>
+							<include>**/*.json</include>
+							<include>**/*.ftl</include>
+						</includes>
 					</resource>
 				</resources>
 			</build>
