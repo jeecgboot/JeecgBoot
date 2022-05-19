@@ -203,7 +203,22 @@
 				<artifactId>jeecg-boot-starter-shardingsphere</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
-
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-core</artifactId>
+				<version>5.6.7.Final</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-collections</groupId>
+						<artifactId>commons-collections</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.jeecgframework.boot</groupId>
+				<artifactId>hibernate-re</artifactId>
+				<version>3.2.0-beta</version>
+			</dependency>
 
 			<!-- 七牛云SDK -->
 			<dependency>

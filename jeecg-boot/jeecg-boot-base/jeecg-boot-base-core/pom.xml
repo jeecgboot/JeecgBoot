@@ -106,21 +106,6 @@
 			<artifactId>dynamic-datasource-spring-boot-starter</artifactId>
 			<version>${dynamic-datasource-spring-boot-starter.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-collections</groupId>
-					<artifactId>commons-collections</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.jeecgframework.boot</groupId>
-			<artifactId>hibernate-re</artifactId>
-			<version>3.2.0-beta</version>
-		</dependency>
 
 		<!-- 数据库驱动 -->
 		<!--mysql-->
