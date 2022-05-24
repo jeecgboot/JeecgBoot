@@ -53,6 +53,12 @@
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot-starter</artifactId>
 			<version>1.5.0-beta</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>fastjson</artifactId>
+					<groupId>com.alibaba</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- DEMO 示例模块 -->
