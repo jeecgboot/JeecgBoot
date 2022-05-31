@@ -20,7 +20,7 @@
 
 		<!-- 微服务属性 -->
 		<skip.springboot.maven>false</skip.springboot.maven>
-        <spring-cloud.version>2021.0.0</spring-cloud.version>
+        <spring-cloud.version>2021.0.3</spring-cloud.version>
         <spring-cloud-alibaba.version>2021.1</spring-cloud-alibaba.version>
 		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
 
@@ -333,6 +333,18 @@
 					<exclusion>
 						<artifactId>commons-lang</artifactId>
 						<groupId>commons-lang</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<!-- 积木报表 -->
+			<dependency>
+				<groupId>org.jeecgframework.jimureport</groupId>
+				<artifactId>jimureport-spring-boot-starter</artifactId>
+				<version>1.5.0</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>fastjson</artifactId>
+						<groupId>com.alibaba</groupId>
 					</exclusion>
 				</exclusions>
 			</dependency>

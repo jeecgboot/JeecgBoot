@@ -12,6 +12,10 @@
     <description>jeecg-boot-starter-分布式锁</description>
     <dependencies>
         <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>jeecg-boot-base-tools</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
         </dependency>

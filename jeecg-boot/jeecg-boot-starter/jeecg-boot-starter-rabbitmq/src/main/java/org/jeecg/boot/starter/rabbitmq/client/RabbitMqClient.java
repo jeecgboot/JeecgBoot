@@ -221,16 +221,6 @@ public class RabbitMqClient {
         rabbitAdmin.declareBinding(binding);
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         log.debug("发送时间：" + sf.format(new Date()));
-        messageListenerContainer.setQueueNames(queueName);
-/*        messageListenerContainer.setMessageListener(new MqListener<Message>() {
-            @Override
-            public void onMessage(Message message, Channel channel) {
-                MqListener messageListener = SpringContextHolder.getHandler(queueName + "Listener", MqListener.class);
-                if (ObjectUtil.isNotEmpty(messageListener)) {
-                    messageListener.onMessage(message, channel);
-                }
-            }
-        });*/
         rabbitTemplate.convertAndSend(DelayExchangeBuilder.DEFAULT_DELAY_EXCHANGE, queueName, params, message -> {
             if (expiration != null && expiration > 0) {
                 message.getMessageProperties().setHeader("x-delay", expiration);

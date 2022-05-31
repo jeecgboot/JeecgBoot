@@ -38,6 +38,15 @@ public class JeecgBootExceptionHandler {
 	}
 
 	/**
+	 * 处理自定义微服务异常
+	 */
+	@ExceptionHandler(JeecgCloudException.class)
+	public Result<?> handleJeecgCloudException(JeecgCloudException e){
+		log.error(e.getMessage(), e);
+		return Result.error(e.getMessage());
+	}
+
+	/**
 	 * 处理自定义异常
 	 */
 	@ExceptionHandler(JeecgBoot401Exception.class)
