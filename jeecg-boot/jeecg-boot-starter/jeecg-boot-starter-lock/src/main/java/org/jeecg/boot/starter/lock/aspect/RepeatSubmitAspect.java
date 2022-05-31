@@ -11,6 +11,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.jeecg.boot.starter.lock.annotation.JRepeat;
 import org.jeecg.boot.starter.lock.client.RedissonLockClient;
+import org.jeecg.common.exception.JeecgCloudException;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.stereotype.Component;
 
@@ -63,7 +64,7 @@ public class RepeatSubmitAspect extends BaseAspect{
                     return joinPoint.proceed();
                 } else {
                     // 未获取到锁
-                    throw new Exception("请勿重复提交");
+                    throw new JeecgCloudException("请勿重复提交");
                 }
             } finally {
                 // 如果锁还存在，在方法执行完成后，释放锁

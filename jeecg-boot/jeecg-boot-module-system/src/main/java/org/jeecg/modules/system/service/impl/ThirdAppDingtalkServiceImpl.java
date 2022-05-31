@@ -44,8 +44,9 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -370,7 +371,8 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
             }
 
             // api 接口执行成功，并且 sys_third_account 表匹配失败，就向 sys_third_account 里插入一条数据
-            if (apiSuccess && (sysThirdAccount == null || oConvertUtils.isEmpty(sysThirdAccount.getThirdUserId()))) {
+            boolean flag = (sysThirdAccount == null || oConvertUtils.isEmpty(sysThirdAccount.getThirdUserId()));
+            if (apiSuccess && flag) {
                 if (sysThirdAccount == null) {
                     sysThirdAccount = new SysThirdAccount();
                     sysThirdAccount.setSysUserId(sysUser.getId());
@@ -402,8 +404,14 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         List<Department> allDepartment = JdtDepartmentAPI.listAll(accessToken);
         // 根据钉钉部门查询所有钉钉用户，用于反向同步到本地
         List<User> ddUserList = this.getDtAllUserByDepartment(allDepartment, accessToken);
+        // 记录已经同步过的用户id，当有多个部门的情况时，只同步一次
+        Set<String> syncedUserIdSet = new HashSet<>();
 
         for (User dtUserInfo : ddUserList) {
+            if (syncedUserIdSet.contains(dtUserInfo.getUserid())) {
+                continue;
+            }
+            syncedUserIdSet.add(dtUserInfo.getUserid());
             SysThirdAccount sysThirdAccount = sysThirdAccountService.getOneByThirdUserId(dtUserInfo.getUserid(), THIRD_TYPE);
             List<SysUser> collect = sysUsersList.stream().filter(user -> (dtUserInfo.getMobile().equals(user.getPhone()) || dtUserInfo.getUserid().equals(user.getUsername()))
                                                                  ).collect(Collectors.toList());
@@ -581,12 +589,6 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         // update-begin--Author:liusq Date:20210713 for：钉钉同步到本地的人员没有状态，导致同步之后无法登录 #I3ZC2L
         sysUser.setStatus(1);
         // update-end--Author:liusq Date:20210713 for：钉钉同步到本地的人员没有状态，导致同步之后无法登录 #I3ZC2L
-        // 设置工号，如果工号为空，则使用username
-        if (oConvertUtils.isEmpty(dtUser.getJob_number())) {
-            sysUser.setWorkNo(dtUser.getUserid());
-        } else {
-            sysUser.setWorkNo(dtUser.getJob_number());
-        }
         return this.dtUserToSysUser(dtUser, sysUser);
     }
 
@@ -611,7 +613,12 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         } else {
             sysUser.setPhone(null);
         }
-        sysUser.setWorkNo(null);
+        // 设置工号，如果工号为空，则使用username
+        if (oConvertUtils.isEmpty(dtUser.getJob_number())) {
+            sysUser.setWorkNo(dtUser.getUserid());
+        } else {
+            sysUser.setWorkNo(dtUser.getJob_number());
+        }
         // --- 钉钉没有逻辑删除功能
         // sysUser.getDelFlag()
         // --- 钉钉没有冻结、启用禁用功能
@@ -763,8 +770,8 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         return JdtMessageAPI.sendTextMessage(textMessage, accessToken);
     }
 
-    public boolean recallMessage(String msg_task_id) {
-        Response<JSONObject> response = this.recallMessageResponse(msg_task_id);
+    public boolean recallMessage(String msgTaskId) {
+        Response<JSONObject> response = this.recallMessageResponse(msgTaskId);
         if (response == null) {
             return false;
         }
@@ -774,16 +781,16 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
     /**
      * 撤回消息
      *
-     * @param msg_task_id
+     * @param msgTaskId
      * @return
      */
-    public Response<JSONObject> recallMessageResponse(String msg_task_id) {
+    public Response<JSONObject> recallMessageResponse(String msgTaskId) {
         String accessToken = this.getAccessToken();
         if (accessToken == null) {
             return null;
         }
         int agentId = thirdAppConfig.getDingtalk().getAgentIdInt();
-        return JdtMessageAPI.recallMessage(agentId, msg_task_id, getAccessToken());
+        return JdtMessageAPI.recallMessage(agentId, msgTaskId, getAccessToken());
     }
 
     /**

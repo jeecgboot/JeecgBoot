@@ -17,7 +17,7 @@ import java.net.UnknownHostException;
 /**
 * 单体启动类（采用此类启动为单体模式）
 * 特别提醒:
-* 1.需要集成mogodb请删除 exclude={MongoAutoConfiguration.class}
+* 1.需要集成mongodb请删除 exclude={MongoAutoConfiguration.class}
 * 2.切换微服务 勾选profile的SpringCloud，这个类就无法启动，启动会报错
 */
 @Slf4j

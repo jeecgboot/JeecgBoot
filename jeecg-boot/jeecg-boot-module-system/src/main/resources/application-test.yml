@@ -41,6 +41,8 @@ spring:
     initialize-schema: embedded
     #定时任务启动开关，true-开  false-关
     auto-startup: true
+    #延迟1秒启动定时任务
+    startup-delay: 1s
     #启动时更新己存在的Job
     overwrite-existing-jobs: true
     properties:
@@ -54,8 +56,8 @@ spring:
             driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
             tablePrefix: QRTZ_
             isClustered: true
-            misfireThreshold: 60000
-            clusterCheckinInterval: 10000
+            misfireThreshold: 12000
+            clusterCheckinInterval: 15000
           threadPool:
             class: org.quartz.simpl.SimpleThreadPool
             threadCount: 10

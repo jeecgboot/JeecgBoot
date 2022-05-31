@@ -134,6 +134,10 @@
         //gateway对应的规则key
         tagArray: [
           {
+            name:'Path',
+            args:[]
+          },
+          {
             name:'Header',
             args:{
               header:'',
