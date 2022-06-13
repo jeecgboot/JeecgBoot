@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -46,6 +44,11 @@ public class DictAspect {
     @Autowired
     public RedisTemplate redisTemplate;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private static final String JAVA_UTIL_DATE = "java.util.Date";
+
     /**
      * 定义切点Pointcut
      */
@@ -60,7 +63,7 @@ public class DictAspect {
         long time2=System.currentTimeMillis();
         log.debug("获取JSON数据 耗时："+(time2-time1)+"ms");
         long start=System.currentTimeMillis();
-        this.parseDictText(result);
+        result=this.parseDictText(result);
         long end=System.currentTimeMillis();
         log.debug("注入字典到JSON数据  耗时"+(end-start)+"ms");
         return result;
@@ -88,7 +91,7 @@ public class DictAspect {
      *             目前vue是这么进行字典渲染到table上的多了就很麻烦了 这个直接在服务端渲染完成前端可以直接用
      * @param result
      */
-    private void parseDictText(Object result) {
+    private Object parseDictText(Object result) {
         if (result instanceof Result) {
             if (((Result) result).getResult() instanceof IPage) {
                 List<JSONObject> items = new ArrayList<>();
@@ -97,13 +100,23 @@ public class DictAspect {
                 List<Field> dictFieldList = new ArrayList<>();
                 // 字典数据列表， key = 字典code，value=数据列表
                 Map<String, List<String>> dataListMap = new HashMap<>(5);
+                //取出结果集
+                List<Object> records=((IPage) ((Result) result).getResult()).getRecords();
+                //update-begin--Author:zyf -- Date:20220606 ----for：【VUEN-1230】 判断是否含有字典注解,没有注解返回-----
+                Boolean hasDict= checkHasDict(records);
+                if(!hasDict){
+                    return result;
+                }
 
-                for (Object record : ((IPage) ((Result) result).getResult()).getRecords()) {
-                    ObjectMapper mapper = new ObjectMapper();
+                log.info(" __ 进入字典翻译切面 DictAspect —— " );
+                //update-end--Author:zyf -- Date:20220606 ----for：【VUEN-1230】 判断是否含有字典注解,没有注解返回-----
+                for (Object record : records) {
                     String json="{}";
                     try {
+                        //update-begin--Author:zyf -- Date:20220531 ----for：【issues/#3629】 DictAspect Jackson序列化报错-----
                         //解决@JsonFormat注解解析不了的问题详见SysAnnouncement类的@JsonFormat
-                         json = mapper.writeValueAsString(record);
+                         json = objectMapper.writeValueAsString(record);
+                        //update-end--Author:zyf -- Date:20220531 ----for：【issues/#3629】 DictAspect Jackson序列化报错-----
                     } catch (JsonProcessingException e) {
                         log.error("json解析失败"+e.getMessage(),e);
                     }
@@ -137,10 +150,12 @@ public class DictAspect {
                             this.listAddAllDeduplicate(dataList, Arrays.asList(value.split(",")));
                         }
                         //date类型默认转换string格式化日期
-                        if (CommonConstant.JAVA_UTIL_DATE.equals(field.getType().getName())&&field.getAnnotation(JsonFormat.class)==null&&item.get(field.getName())!=null){
-                            SimpleDateFormat aDate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                            item.put(field.getName(), aDate.format(new Date((Long) item.get(field.getName()))));
-                        }
+                        //update-begin--Author:zyf -- Date:20220531 ----for：【issues/#3629】 DictAspect Jackson序列化报错-----
+                        //if (JAVA_UTIL_DATE.equals(field.getType().getName())&&field.getAnnotation(JsonFormat.class)==null&&item.get(field.getName())!=null){
+                            //SimpleDateFormat aDate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            // item.put(field.getName(), aDate.format(new Date((Long) item.get(field.getName()))));
+                        //}
+                        //update-end--Author:zyf -- Date:20220531 ----for：【issues/#3629】 DictAspect Jackson序列化报错-----
                     }
                     items.add(item);
                 }
@@ -186,6 +201,7 @@ public class DictAspect {
             }
 
         }
+        return result;
     }
 
     /**
@@ -392,6 +408,22 @@ public class DictAspect {
 
         }
         return textValue.toString();
+    }
+
+    /**
+     * 检测返回结果集中是否包含Dict注解
+     * @param records
+     * @return
+     */
+    private Boolean checkHasDict(List<Object> records){
+        if(oConvertUtils.isNotEmpty(records) && records.size()>0){
+            for (Field field : oConvertUtils.getAllFields(records.get(0))) {
+                if (oConvertUtils.isNotEmpty(field.getAnnotation(Dict.class))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }
