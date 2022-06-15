@@ -37,9 +37,9 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 
 | 项目名                | 说明                     | 传送门                                                                                                                                 |
 |--------------------|------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| `jeecg-boot`    | JAVA后台（支持微服务）        | [Github](https://github.com/jeecgboot/jeecg-boot) &nbsp;&nbsp;&nbsp;     [Gitee](https://gitee.com/jeecg/jeecg-boot)  |
+| `jeecg-boot`    | JAVA后台（支持微服务）        | [Github](https://github.com/jeecgboot/jeecg-boot) &nbsp;&nbsp;    [Gitee](https://gitee.com/jeecg/jeecg-boot)  |
 | `ant-design-vue-jeecg`  |Vue2版前端代码（默认与主项目一起）       |        |
-| `jeecgboot-vue3` | Vue3版前端代码 | [Github](https://gitee.com/jeecg/jeecgboot-vue3)   &nbsp;&nbsp;&nbsp;  [Gitee](https://github.com/jeecgboot/jeecgboot-vue3) |
+| `jeecgboot-vue3` | Vue3版前端代码 | [Github](https://github.com/jeecgboot/jeecgboot-vue3)   &nbsp;&nbsp;  [Gitee](https://gitee.com/jeecg/jeecgboot-vue3) |
 
 
 适用项目
