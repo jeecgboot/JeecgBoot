@@ -153,6 +153,8 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 #### 前端
  
+ > 此处是Vue2的技术栈介绍，[Vue3版技术栈看这里](https://github.com/jeecgboot/jeecgboot-vue3)
+
 - [Vue 2.6.10](https://cn.vuejs.org/),[Vuex](https://vuex.vuejs.org/zh/),[Vue Router](https://router.vuejs.org/zh/)
 - [Axios](https://github.com/axios/axios)
 - [ant-design-vue](https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn/)
