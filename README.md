@@ -220,7 +220,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
    
 #### 微服务架构图
-![微服务架构图](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecgboot-weifuwu-cloud.png "在这里输入图片标题")
+![微服务架构图](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecgboot_springcloud2022.png "在这里输入图片标题")
 
 ### Jeecg Boot 产品功能蓝图
 ![功能蓝图](https://jeecgos.oss-cn-beijing.aliyuncs.com/upload/test/Jeecg-Boot-lantu202005_1590912449914.jpg "在这里输入图片标题")
