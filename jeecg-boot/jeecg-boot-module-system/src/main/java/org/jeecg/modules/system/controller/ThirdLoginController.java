@@ -332,6 +332,8 @@ public class ThirdLoginController {
 			builder.append("&scope=openid");
 			// 跟随authCode原样返回。
 			builder.append("&state=").append(state);
+			// 值为consent时，会进入授权确认页。
+			builder.append("&prompt=consent");
 			url = builder.toString();
 		} else {
 			return "不支持的source";
@@ -379,7 +381,7 @@ public class ThirdLoginController {
         try {
             String token = saveToken(loginUser);
 			state += "/oauth2-app/login?oauth2LoginToken=" + URLEncoder.encode(token, "UTF-8");
-			state += "&thirdType=" + "wechat_enterprise";
+			state += "&thirdType=" + source;
 			log.info("OAuth2登录重定向地址: " + state);
             try {
                 response.sendRedirect(state);
