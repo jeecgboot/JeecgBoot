@@ -56,9 +56,9 @@
             @input="popupCallback"
             <#if po.readonly=='Y'>disabled</#if>/>
 	<#elseif po.classType =='sel_depart'>
-          <j-select-depart v-model="model.${po.fieldName}"  <#if po.readonly=='Y'>disabled</#if>/>
+          <j-select-depart v-model="model.${po.fieldName}" :multi="${po.extendParams.multi?default('true')}"<#if po.extendParams.store?default("")?trim?length gt 0> store="${po.extendParams.store}"</#if><#if po.extendParams.text?default("")?trim?length gt 0> text="${po.extendParams.text}"</#if> <#if po.readonly=='Y'>disabled</#if> />
 	<#elseif po.classType =='sel_user'>
-          <j-select-user-by-dep v-model="model.${po.fieldName}"  <#if po.readonly=='Y'>disabled</#if>/>
+          <j-select-user-by-dep v-model="model.${po.fieldName}" :multi="${po.extendParams.multi?default('true')}"<#if po.extendParams.store?default("")?trim?length gt 0> store="${po.extendParams.store}"</#if><#if po.extendParams.text?default("")?trim?length gt 0> text="${po.extendParams.text}"</#if> <#if po.readonly=='Y'>disabled</#if>/>
 	<#elseif po.classType =='textarea'>
           <a-textarea v-model="model.${autoStringSuffixForModel(po)}" rows="4" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
 	<#elseif po.classType=='list' || po.classType=='radio'>

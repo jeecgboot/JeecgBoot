@@ -196,17 +196,14 @@ public class ${entityName}Controller {
       QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, request.getParameterMap());
       LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
-      //Step.2 获取导出数据
-      List<${entityName}> queryList = ${entityName?uncap_first}Service.list(queryWrapper);
-      // 过滤选中数据
-      String selections = request.getParameter("selections");
-      List<${entityName}> ${entityName?uncap_first}List = new ArrayList<${entityName}>();
-      if(oConvertUtils.isEmpty(selections)) {
-          ${entityName?uncap_first}List = queryList;
-      }else {
-          List<String> selectionList = Arrays.asList(selections.split(","));
-          ${entityName?uncap_first}List = queryList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
-      }
+      //配置选中数据查询条件
+       String selections = request.getParameter("selections");
+       if(oConvertUtils.isNotEmpty(selections)) {
+            List<String> selectionList = Arrays.asList(selections.split(","));
+            queryWrapper.in("id",selectionList);
+       }
+       //Step.2 获取导出数据
+       List<${entityName}> ${entityName?uncap_first}List = ${entityName?uncap_first}Service.list(queryWrapper);
 
       // Step.3 组装pageList
       List<${entityName}Page> pageList = new ArrayList<${entityName}Page>();

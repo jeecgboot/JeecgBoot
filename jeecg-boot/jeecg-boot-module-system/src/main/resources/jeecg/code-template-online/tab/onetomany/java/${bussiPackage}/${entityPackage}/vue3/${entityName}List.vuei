@@ -46,6 +46,10 @@
       <template #htmlSlot="{text}">
          <div v-html="text"></div>
       </template>
+      <!--省市区字段回显插槽-->
+      <template #pcaSlot="{text}">
+         {{ getAreaTextByCode(text) }}
+      </template>
       <template #fileSlot="{text}">
          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
          <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
@@ -64,6 +68,10 @@
   import ${entityName}Modal from './components/${entityName}Modal.vue'
   import {columns, searchFormSchema} from './${entityName}.data';
   import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName}.api';
+  import {downloadFile} from '/@/utils/common/renderUtils';
+<#if list_need_pca>
+  import { getAreaTextByCode } from '/@/components/Form/src/utils/Area';
+</#if>
   <#if list_need_category>
   import { loadCategoryData } from '/@/api/common/api'
   import { getAuthCache, setAuthCache } from '/@/utils/auth';
@@ -84,6 +92,17 @@
                 schemas: searchFormSchema,
                 autoSubmitOnEnter:true,
                 showAdvancedButton:true,
+                fieldMapToNumber: [
+                   <#list columns as po>
+                   <#if po.isQuery=='Y'>
+                   <#if po.queryMode!='single'>
+                   <#if po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+                   ['${po.fieldName}', ['${po.fieldName}_begin', '${po.fieldName}_end']],
+                   </#if>
+                   </#if>
+                   </#if>
+                   </#list>
+                ],
                 fieldMapToTime: [
                 <#list columns as po>
                 <#if po.isQuery=='Y'>
@@ -98,9 +117,10 @@
                 </#list>
                 ],
             },
-            actionColumn: {
+           actionColumn: {
                width: 120,
-            },
+               fixed:'right'
+           },
         },
         exportConfig: {
             name:"${tableVo.ftlDescription}",

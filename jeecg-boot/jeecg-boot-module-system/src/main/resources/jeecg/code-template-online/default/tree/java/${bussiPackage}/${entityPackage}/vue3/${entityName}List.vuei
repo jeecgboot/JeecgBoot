@@ -8,6 +8,13 @@
     <#assign hasChildrenField = po.fieldName>
   </#if>
 </#list>
+<#assign list_need_pca=false>
+<#-- 开始循环 -->
+<#list columns as po>
+<#if po.classType=='pca'>
+<#assign list_need_pca=true>
+</#if>
+</#list>
 <template>
   <div>
     <!--引用表格-->
@@ -34,8 +41,20 @@
       </template>
       <!--操作栏-->
       <template #action="{ record }">
-        <TableAction :actions="getTableAction(record)"/>
+        <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)"/>
       </template>
+       <!--字段回显插槽-->
+    <template #htmlSlot="{text}">
+       <div v-html="text"></div>
+    </template>
+    <!--省市区字段回显插槽-->
+    <template #pcaSlot="{text}">
+       {{ getAreaTextByCode(text) }}
+    </template>
+    <template #fileSlot="{text}">
+       <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+       <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
+    </template>
     </BasicTable>
     <!--字典弹窗-->
     <${entityName}Modal @register="registerModal" @success="handleSuccess"/>
@@ -49,9 +68,12 @@
   import {useModal} from '/@/components/Modal';
   import { useListPage } from '/@/hooks/system/useListPage'
   import ${entityName}Modal from './components/${entityName}Modal.vue';
-  import {columns} from './${entityName}.data';
+  import {columns,searchFormSchema} from './${entityName}.data';
+  import { downloadFile } from '/@/utils/common/renderUtils';
   import {list, delete${entityName}, batchDelete${entityName}, getExportUrl,getImportUrl, getChildList,getChildListBatch} from './${entityName}.api';
-
+  <#if list_need_pca>
+  import { getAreaTextByCode } from '/@/components/Form/src/utils/Area';
+  </#if>
   const expandedRowKeys = ref([]);
   //字典model
   const [registerModal, {openModal}] = useModal();
@@ -62,6 +84,36 @@
          title: '${tableVo.ftlDescription}',
          columns,
          canResize:false,
+         formConfig: {
+           labelWidth: 120,
+           schemas: searchFormSchema,
+           autoSubmitOnEnter:true,
+           showAdvancedButton:true,
+           fieldMapToNumber: [
+           <#list columns as po>
+           <#if po.isQuery=='Y'>
+           <#if po.queryMode!='single'>
+           <#if po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+              ['${po.fieldName}', ['${po.fieldName}_begin', '${po.fieldName}_end']],
+           </#if>
+           </#if>
+           </#if>
+           </#list>
+           ],
+           fieldMapToTime: [
+           <#list columns as po>
+           <#if po.isQuery=='Y'>
+           <#if po.queryMode!='single'>
+           <#if po.classType=='date'>
+              ['${po.fieldName}', ['${po.fieldName}_begin', '${po.fieldName}_end'], 'YYYY-MM-DD'],
+           <#elseif po.classType=='datetime'>
+              ['${po.fieldName}', ['${po.fieldName}_begin', '${po.fieldName}_end'], 'YYYY-MM-DD HH:mm:ss'],
+           </#if>
+           </#if>
+           </#if>
+           </#list>
+           ],
+         },
          actionColumn: {
            width: 240,
          },
@@ -120,13 +172,13 @@
    */
   async function batchHandleDelete() {
     const ids = selectedRowKeys.value.filter(item => !item.includes('loading'))
-    await batchDelete${entityName}({ids: ids}, importSuccess);
+    await batchDelete${entityName}({id: ids}, importSuccess);
   }
   /**
    * 导入
    */
    function importSuccess() {
-    reload() && (expandedRowKeys.value = []);
+    (selectedRowKeys.value = []) && reload();
   }
   /**
    * 添加下级
@@ -140,12 +192,16 @@
   /**
    * 成功回调
    */
-  async function handleSuccess({isUpdate, values, expandedArr}) {
+  async function handleSuccess({isUpdate, values, expandedArr, changeParent}) {
     if (isUpdate) {
-      //编辑回调
-      updateTableDataRecord(values.id, values);
+      if (changeParent) {
+        reload();
+      } else {
+        // 编辑回调
+        updateTableDataRecord(values.id, values);
+      }
     } else {
-        if(!values['${pidFieldName}']){
+        if(!values['id'] || !values['${pidFieldName}']){
             //新增根节点
             reload();
         }else{
@@ -264,18 +320,28 @@
         onClick: handleEdit.bind(null, record),
       },
       {
-        label: '删除',
-        popConfirm: {
-          title: '确定删除吗?',
-          confirm: handleDelete.bind(null, record),
-        },
-      },
-      {
         label: '添加下级',
         onClick: handleAddSub.bind(null, {${pidFieldName}: record.id}),
       }
     ]
   }
+   /**
+    * 下拉操作栏
+    */
+   function getDropDownAction(record){
+        return [
+             {
+               label: '详情',
+               onClick: handleDetail.bind(null, record),
+             }, {
+               label: '删除',
+               popConfirm: {
+                 title: '确定删除吗?',
+                 confirm: handleDelete.bind(null, record),
+               }
+             }
+        ]
+   }
 </script>
 
 <style scoped>

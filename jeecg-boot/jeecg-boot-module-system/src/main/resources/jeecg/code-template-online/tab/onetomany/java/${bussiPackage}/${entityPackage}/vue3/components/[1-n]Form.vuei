@@ -1,3 +1,4 @@
+<#include "/common/utils.ftl">
 <#list subTables as sub>
 <#if sub.foreignRelationType=='1'>
 #segment#${sub.entityName}Form.vue
@@ -15,11 +16,18 @@
         name:"${sub.entityName}Form",
         components: {BasicForm},
         emits:['register'],
-        setup(_,{emit}) {
-            const [registerForm, {resetFields, setFieldsValue,getFieldsValue,validate}] = useForm({
+        props:{
+            disabled: {
+                type: Boolean,
+                default: false
+            }
+        },
+        setup(props,{emit}) {
+            const [registerForm, {setProps, resetFields, setFieldsValue,getFieldsValue,validate}] = useForm({
                 labelWidth: 150,
                 schemas: ${sub.entityName?uncap_first}FormSchema,
                 showActionButtonGroup: false,
+                baseColProps: {span: ${getFormSpan(tableVo.fieldRowNum?default(1))}}
             });
             /**
             *初始化加载数据
@@ -30,12 +38,19 @@
                        res.success && setFieldsValue({...res.result[0]});
                     })
                 }
+                setProps({disabled: props.disabled})
             }
            /**
             *获取表单数据
             */
             function getFormData(){
-               return [getFieldsValue()];
+               let formData = getFieldsValue();
+               Object.keys(formData).map(k=>{
+                   if(formData[k] instanceof Array){
+                       formData[k] = formData[k].join(',')
+                   }
+               });
+               return [formData];
             }
             /**
             *表单校验

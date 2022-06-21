@@ -193,7 +193,7 @@
     <#assign sub_seq=1>
     <#list subTables as sub>
       <a-tab-pane tab="${sub.ftlDescription}" key="${sub_seq}" <#if sub_seq gt 1>forceRender</#if>>
-        <${sub.entityName}List :mainId="selectedMainId" />
+        <${sub.entityName}List :mainId="${sub.entityName?uncap_first}MainId" />
       </a-tab-pane>
     <#assign sub_seq=sub_seq+1>
     </#list>

@@ -103,7 +103,11 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
         <#if po.fieldType =='date'>
        component: 'DatePicker',
         <#elseif po.fieldType =='datetime'>
-       component: 'TimePicker',
+       component: 'DatePicker',
+       componentProps: {
+         showTime: true,
+         valueFormat: 'YYYY-MM-DD hh:mm:ss',
+       },
         <#elseif "int,decimal,double,"?contains(po.fieldType)>
        component: 'InputNumber',
         <#else>

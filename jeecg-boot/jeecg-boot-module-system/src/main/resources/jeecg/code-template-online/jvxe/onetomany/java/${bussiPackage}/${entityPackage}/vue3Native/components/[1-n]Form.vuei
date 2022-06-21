@@ -1,0 +1,149 @@
+<#include "/common/utils.ftl">
+<#list subTables as sub>
+<#if sub.foreignRelationType=='1'>
+#segment#${sub.entityName}Form.vue
+<#include "/common/utils.ftl">
+<#assign need_category = false>
+<#assign bpm_flag=false>
+<#assign need_pca = false>
+<#assign need_search = false>
+<#assign need_dept_user = false>
+<#assign need_switch = false>
+<#assign need_dept = false>
+<#assign need_multi = false>
+<#assign need_popup = false>
+<#assign need_select_tag = false>
+<#assign need_select_tree = false>
+<#assign need_time = false>
+<#assign need_markdown = false>
+<#assign need_upload = false>
+<#assign need_image_upload = false>
+<#assign need_editor = false>
+<#assign need_checkbox = false>
+<#assign form_span = 24>
+<#if tableVo.fieldRowNum==2>
+  <#assign form_span = 12>
+<#elseif tableVo.fieldRowNum==3>
+  <#assign form_span = 8>
+<#elseif tableVo.fieldRowNum==4>
+  <#assign form_span = 6>
+</#if>
+  <#assign hasOnlyValidate = false>
+<template>
+  <a-spin :spinning="loading">
+    <a-form v-bind="formItemLayout">
+      <a-row>
+        <#list sub.colums as po>
+          <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
+            <#assign hasOnlyValidate = true>
+          </#if>
+          <#if po.fieldDbName=='bpm_status'>
+            <#assign bpm_flag=true>
+          </#if>
+          <#include "/common/form/native/vue3NativeForm.ftl">
+        </#list>
+      </a-row>
+    </a-form>
+  </a-spin>
+</template>
+
+<script lang="ts">
+  import { defineComponent, ref, reactive, toRaw } from 'vue';
+  import { query${sub.entityName}ListByMainId } from '../${entityName}.api';
+<#include "/common/form/native/vue3NativeImport.ftl">
+<#if hasOnlyValidate == true>
+  import { duplicateValidate } from '/@/utils/helper/validator'
+</#if>
+  import { useMessage } from '/@/hooks/web/useMessage';
+  import { Form } from 'ant-design-vue';
+  const useForm = Form.useForm;
+
+  export default defineComponent({
+    name: '${sub.entityName}Form',
+    components:{
+    <#include "/common/form/native/vue3NativeComponents.ftl">
+    },
+    props:{
+      disabled:{
+        type: Boolean,
+        default: false
+      }
+    },
+    setup(){
+      const { createMessage } = useMessage();
+      const isForm = true;
+      const loading = ref(false);
+      const formData = reactive<Record<string, any>>({
+    <#list sub.colums as po>
+    <#if po.isShow == 'Y'>
+        ${po.fieldName}: '',
+    </#if>
+    </#list>
+      });
+      //表单验证
+      const validatorRules = reactive({
+    <#list sub.colums as po>
+    <#if po.isShow == 'Y' && poHasCheck(po)>
+        ${po.fieldName}: [<#include "/common/validatorRulesTemplate/native/vue3CoreNative.ftl">],
+    </#if>
+    </#list>
+      })
+      const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, {immediate: true});
+      const formItemLayout = {
+        labelCol: { xs: { span: 24 }, sm: { span: 5 } },
+        wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
+      };
+
+      async function initFormData(mainId) {
+        resetFields();
+        if(mainId){
+          let list = await query${sub.entityName}ListByMainId(mainId);
+          if(list && list.length>0){
+            let temp = list[0];
+            Object.keys(temp).map(k=>{
+              formData[k] = temp[k];
+            })
+          }
+        }
+      }
+
+      async function getFormData() {
+        await validate();
+        let subFormData = toRaw(formData);
+        if(Object.keys(subFormData).length>0){
+          return subFormData
+        }
+        return false;
+      }
+
+      function setFieldsValue(values) {
+        if(values){
+          Object.keys(values).map(k=>{
+            formData[k] = values[k];
+          });
+        }
+      }
+
+    <#list sub.colums as po>
+    <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
+      async function ${po.fieldName}Duplicatevalidate(_r, value) {
+        return duplicateValidate('${sub.tableName}', '${po.fieldDbName}', value, formData.id || '')
+      }
+    </#if>
+    </#list>
+
+      return {
+        loading,
+        formData,
+        formItemLayout,
+        initFormData,
+        getFormData,
+        setFieldsValue,
+        isForm,
+        validateInfos
+      }
+    }
+  });
+</script>
+</#if>
+</#list>

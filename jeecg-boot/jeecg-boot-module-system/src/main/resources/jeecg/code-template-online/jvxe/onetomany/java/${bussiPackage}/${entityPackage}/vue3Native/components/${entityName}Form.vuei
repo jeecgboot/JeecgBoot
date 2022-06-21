@@ -1,0 +1,264 @@
+<#include "/common/utils.ftl">
+<#assign need_category = false>
+<#assign bpm_flag=false>
+<#assign need_pca = false>
+<#assign need_search = false>
+<#assign need_dept_user = false>
+<#assign need_switch = false>
+<#assign need_dept = false>
+<#assign need_multi = false>
+<#assign need_popup = false>
+<#assign need_select_tag = false>
+<#assign need_select_tree = false>
+<#assign need_time = false>
+<#assign need_markdown = false>
+<#assign need_upload = false>
+<#assign need_image_upload = false>
+<#assign need_editor = false>
+<#assign need_checkbox = false>
+<#assign form_span = 24>
+<#if tableVo.fieldRowNum==2>
+    <#assign form_span = 12>
+<#elseif tableVo.fieldRowNum==3>
+    <#assign form_span = 8>
+<#elseif tableVo.fieldRowNum==4>
+    <#assign form_span = 6>
+</#if>
+<#assign hasOne2manyTable = false>
+<#assign subTabActiveKey = ''>
+<#assign subMainFieldMap={}>
+<#assign subTableColumnsKey=[]>
+<#assign hasOnlyValidate = false>
+<template>
+  <a-spin :spinning="loading">
+    <a-form v-bind="formItemLayout">
+      <a-row>
+			<#list columns as po>
+        <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
+          <#assign hasOnlyValidate = true>
+        </#if>
+				<#if po.fieldDbName=='bpm_status'>
+				    <#assign bpm_flag=true>
+				</#if>
+<#include "/common/form/native/vue3NativeForm.ftl">
+      </#list>
+      </a-row>
+    </a-form>
+
+		<!-- 子表单区域 -->
+    <a-tabs v-model:activeKey="activeKey">
+<#list subTables as sub><#rt/>
+      <a-tab-pane tab="${sub.ftlDescription}" key="${sub.entityName?uncap_first}" :forceRender="true">
+			  <#if sub.foreignRelationType =='1'>
+        <${Format.humpToShortbar(sub.entityName)}-form ref="${sub.entityName?uncap_first}FormRef" :disabled="formDisabled"></${Format.humpToShortbar(sub.entityName)}-form>
+			  <#else>
+        <j-vxe-table
+          :keep-source="true"
+          ref="${sub.entityName?uncap_first}TableRef"
+          :loading="${sub.entityName?uncap_first}Table.loading"
+          :columns="${sub.entityName?uncap_first}Table.columns"
+          :dataSource="${sub.entityName?uncap_first}Table.dataSource"
+          :maxHeight="300"
+          :disabled="formDisabled"
+          :rowNumber="true"
+          :rowSelection="true"
+          :toolbar="true"/>
+			  </#if>
+      </a-tab-pane>
+</#list>
+    </a-tabs>
+  </a-spin>
+</template>
+
+<script lang="ts">
+  import { defineComponent, ref, reactive, computed, toRaw } from 'vue';
+  import { useValidateAntFormAndTable } from '/@/hooks/system/useJvxeMethods';
+  import { <#list subTables as sub><#if sub.foreignRelationType =='0'>query${sub.entityName}ListByMainId, </#if></#list>queryDataById, saveOrUpdate } from '../${entityName}.api';
+  <#list subTables as sub>
+  <#if sub.foreignRelationType =='1'>
+  import ${sub.entityName}Form from './${sub.entityName}Form.vue'
+	<#else>
+  <#assign hasOne2manyTable = true>
+  <#assign subTableColumnsKey += ['${sub.entityName?uncap_first}Columns']>
+  </#if>
+	<#if sub?? && (sub.foreignMainKeys)??>
+    <#list sub.foreignMainKeys as key>
+      <#assign subMainFieldMap += {"${sub.entityName}": "${dashedToCamel(key)}"}>
+    </#list>
+  </#if>
+  </#list>
+  <#if hasOne2manyTable == true>
+  import { JVxeTable } from '/@/components/jeecg/JVxeTable';
+  import {<#list subTableColumnsKey as columnsKey><#if columnsKey_index gt 0>, </#if>${columnsKey}</#list>} from '../${entityName}.data';
+  </#if>
+  <#include "/common/form/native/vue3NativeImport.ftl">
+  <#if hasOnlyValidate == true>
+  import { duplicateValidate } from '/@/utils/helper/validator'
+  </#if>
+  import { Form } from 'ant-design-vue';
+  const useForm = Form.useForm;
+
+  export default defineComponent({
+    name: "${entityName}Form",
+    components:{
+			<#include "/common/form/native/vue3NativeComponents.ftl">
+			<#if hasOne2manyTable == true>
+      JVxeTable,
+			</#if>
+<#list subTables as sub>
+	<#if sub.foreignRelationType =='1'>
+      ${sub.entityName}Form,
+	</#if>
+</#list>
+    },
+    props:{
+      disabled:{
+        type: Boolean,
+        default: false
+      }
+    },
+    emits:['success'],
+    setup(props, {emit}) {
+      const loading = ref(false);
+      <#list subTables as sub>
+      <#if sub_index == 0>
+      <#assign subTabActiveKey = '${sub.entityName?uncap_first}'>
+      </#if>
+      <#if sub.foreignRelationType =='1'>
+      const ${sub.entityName?uncap_first}FormRef = ref();
+      <#else>
+      const ${sub.entityName?uncap_first}TableRef = ref();
+      const ${sub.entityName?uncap_first}Table = reactive<Record<string, any>>({
+        loading: false,
+        columns: ${sub.entityName?uncap_first}Columns,
+        dataSource: []
+      });
+      </#if>
+      </#list>
+      const activeKey = ref('${subTabActiveKey}');
+      const formData = reactive<Record<string, any>>({
+      <#list columns as po>
+      <#if po.isShow == 'Y'>
+        ${po.fieldName}: '',
+      </#if>
+      </#list>
+      });
+
+      //表单验证
+      const validatorRules = reactive({
+      <#list columns as po>
+      <#if po.isShow == 'Y' && poHasCheck(po)>
+        ${po.fieldName}: [<#include "/common/validatorRulesTemplate/native/vue3CoreNative.ftl">],
+      </#if>
+      </#list>
+      });
+      const {resetFields, validate, validateInfos} = useForm(formData, validatorRules, {immediate: true});
+      const dbData = {};
+      const formItemLayout = {
+        labelCol: {xs: {span: 24}, sm: {span: 5}},
+        wrapperCol: {xs: {span: 24}, sm: {span: 16}},
+      };
+
+      const formDisabled = computed(() => {
+        return props.disabled;
+      });
+
+      function add() {
+        resetFields();
+        <#list subTables as sub>
+        <#if sub.foreignRelationType =='1'>
+        ${sub.entityName?uncap_first}FormRef.value.initFormData();
+        <#else>
+        ${sub.entityName?uncap_first}Table.dataSource = [];
+        </#if>
+        </#list>
+      }
+
+      async function edit(row) {
+        //主表数据
+        await queryMainData(row.id);
+        //子表数据
+        <#list subTables as sub>
+        <#if sub.foreignRelationType =='1'>
+        await ${sub.entityName?uncap_first}FormRef.value.initFormData(row['${subMainFieldMap[sub.entityName]}']);
+        <#else>
+        const ${sub.entityName?uncap_first}DataList = await query${sub.entityName}ListByMainId(row['${subMainFieldMap[sub.entityName]}']);
+        ${sub.entityName?uncap_first}Table.dataSource = [...${sub.entityName?uncap_first}DataList];
+        </#if>
+        </#list>
+      }
+
+      async function queryMainData(id) {
+        const row = await queryDataById(id);
+        Object.keys(row).map(k => {
+          formData[k] = row[k];
+        });
+      }
+
+      const {getSubFormAndTableData, transformData} = useValidateAntFormAndTable(activeKey, {
+        <#list subTables as sub>
+        <#if sub.foreignRelationType =='1'>
+        '${sub.entityName?uncap_first}': ${sub.entityName?uncap_first}FormRef,
+        <#else>
+        '${sub.entityName?uncap_first}': ${sub.entityName?uncap_first}TableRef,
+        </#if>
+        </#list>
+      });
+
+      async function getFormData() {
+        await validate();
+        return transformData(toRaw(formData))
+      }
+
+      async function submitForm() {
+        const mainData = await getFormData();
+        const subData = await getSubFormAndTableData();
+        const values = Object.assign({}, dbData, mainData, subData);
+        console.log('表单提交数据', values)
+        const isUpdate = values.id ? true : false
+        await saveOrUpdate(values, isUpdate);
+        //关闭弹窗
+        emit('success');
+      }
+      
+      function setFieldsValue(values) {
+        if(values){
+          Object.keys(values).map(k=>{
+            formData[k] = values[k];
+          });
+        }
+      }
+
+      <#list columns as po>
+      <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
+      async function ${po.fieldName}Duplicatevalidate(_r, value) {
+        return duplicateValidate('${tableName}', '${po.fieldDbName}', value, formData.id || '')
+      }
+      </#if>
+      </#list>
+
+      return {
+        <#list subTables as sub>
+        <#if sub.foreignRelationType =='1'>
+        ${sub.entityName?uncap_first}FormRef,
+        <#else>
+        ${sub.entityName?uncap_first}TableRef,
+        ${sub.entityName?uncap_first}Table,
+        </#if>
+        </#list>
+        validatorRules,
+        validateInfos,
+        activeKey,
+        loading,
+        formData,
+        setFieldsValue,
+        formItemLayout,
+        formDisabled,
+        getFormData,
+        submitForm,
+        add,
+        edit
+      }
+    }
+  });
+</script>

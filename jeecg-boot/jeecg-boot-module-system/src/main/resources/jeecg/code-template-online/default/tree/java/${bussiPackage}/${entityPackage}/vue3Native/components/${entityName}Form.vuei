@@ -1,0 +1,235 @@
+<#include "/common/utils.ftl">
+<template>
+  <a-spin :spinning="confirmLoading">
+    <a-form ref="formRef" class="antd-modal-form" :labelCol="labelCol" :wrapperCol="wrapperCol">
+      <a-row>
+<#assign need_category = false>
+<#assign bpm_flag=false>
+<#assign need_pca = false>
+<#assign need_search = false>
+<#assign need_dept_user = false>
+<#assign need_switch = false>
+<#assign need_dept = false>
+<#assign need_multi = false>
+<#assign need_popup = false>
+<#assign need_select_tag = false>
+<#assign need_select_tree = false>
+<#assign need_time = false>
+<#assign need_markdown = false>
+<#assign need_upload = false>
+<#assign need_image_upload = false>
+<#assign need_editor = false>
+<#assign need_checkbox = false>
+<#assign pidFieldName = "">
+<#assign hasOnlyValidate = false>
+<#assign form_span = 24>
+<#if tableVo.fieldRowNum==2>
+<#assign form_span = 12>
+<#elseif tableVo.fieldRowNum==3>
+<#assign form_span = 8>
+<#elseif tableVo.fieldRowNum==4>
+<#assign form_span = 6>
+</#if>
+<#list columns as po>
+<#if po.fieldDbName=='bpm_status'>
+  <#assign bpm_flag=true>
+</#if>
+<#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
+  <#assign hasOnlyValidate = true>
+</#if>
+			<#if po.fieldDbName == tableVo.extendParams.pidField>
+						<#assign pidFieldName = po.fieldName>
+        <a-col :span="${form_span}">
+          <a-form-item label="父级节点" v-bind="validateInfos.${autoStringSuffixForModel(po)}">
+            <j-tree-select
+              placeholder="请选择${po.filedComment}"
+              v-model:value="formData.${po.fieldName}"
+              dict="${tableVo.tableName},${tableVo.extendParams.textField},id"
+              pidField="${tableVo.extendParams.pidField}"
+              pidValue="0"
+              hasChildField="${tableVo.extendParams.hasChildren}"
+              <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if>>
+            </j-tree-select>
+          </a-form-item>
+        </a-col>
+      </#if>    
+  <#include "/common/form/native/vue3NativeForm.ftl">
+</#list>
+      </a-row>
+    </a-form>
+  </a-spin>
+</template>
+
+<script lang="ts" setup>
+  import { ref, reactive, defineExpose, nextTick, unref, defineProps, computed } from 'vue';
+  import { defHttp } from '/@/utils/http/axios';
+  import { useMessage } from '/@/hooks/web/useMessage';
+  import moment from 'moment';
+  <#include "/common/form/native/vue3NativeImport.ftl">
+  import { getValueType } from '/@/utils';
+  import { validateDuplicateValue } from '/@/utils/helper/validator';
+  import {loadTreeData, saveOrUpdateDict} from '../${entityName}.api';
+  import { Form } from 'ant-design-vue';
+  <#if hasOnlyValidate == true>
+  import { duplicateValidate } from '/@/utils/helper/validator'
+  </#if>
+  
+  const useForm = Form.useForm;
+  const formRef = ref();
+  const isUpdate = ref(true);
+  const expandedRowKeys = ref([]);
+  const treeData = ref([]);
+  const pidField = ref<string>('pid');
+  const emit = defineEmits(['register', 'ok']);
+  let model: Nullable<Recordable> = null;
+  const formData = reactive<Record<string, any>>({
+<#list columns as po>
+ <#if po.isShow == 'Y'>
+  <#if po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+    ${po.fieldName}: undefined,
+  <#elseif po.fieldDbType=='Blob'>
+    ${po.fieldName}String: '',
+  <#else>
+    ${po.fieldName}: '',   
+  </#if>
+ </#if>
+</#list>
+  });
+  const { createMessage } = useMessage();
+  const labelCol = ref<any>({ xs: { span: 24 }, sm: { span: 5 } });
+  const wrapperCol = ref<any>({ xs: { span: 24 }, sm: { span: 16 } });
+  const confirmLoading = ref<boolean>(false);
+  //表单验证
+  const validatorRules = {
+  <#include "/common/validatorRulesTemplate/native/vue3MainNative.ftl">
+  };
+  const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: true });
+  const props = defineProps({
+    disabled: { type: Boolean, default: false },
+  });
+  
+  /**
+   * 新增
+   */
+  function add(obj = {}) {
+    edit(obj);
+  }
+
+  /**
+   * 编辑
+   */
+  function edit(record) {
+    nextTick(async () => {
+      resetFields();
+      expandedRowKeys.value = [];
+      treeData.value = await loadTreeData({ async: false, pcode: '' });
+      //赋值
+      Object.assign(formData, record);
+    });
+  }
+
+  /**
+   * 根据pid获取展开的节点
+   * @param pid
+   * @param arr
+   */
+  function getExpandKeysByPid(pid, arr) {
+    if (pid && arr && arr.length > 0) {
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i].key == pid && unref(expandedRowKeys).indexOf(pid) < 0) {
+          expandedRowKeys.value.push(arr[i].key);
+          getExpandKeysByPid(arr[i]['parentId'], unref(treeData));
+        } else {
+          getExpandKeysByPid(pid, arr[i].children);
+        }
+      }
+    }
+  }
+
+  /**
+   * 提交数据
+   */
+  async function submitForm() {
+    // 触发表单验证
+    await validate();
+    confirmLoading.value = true;
+    const isUpdate = ref<boolean>(false);
+    //时间格式化
+    if (formData.id) {
+      isUpdate.value = true;
+    }
+    //循环数据
+    for (let data in formData) {
+      //如果该数据是数组并且是字符串类型
+      if (formData[data] instanceof Array) {
+        let valueType = getValueType(formRef.value.getProps, data);
+        //如果是字符串类型的需要变成以逗号分割的字符串
+        if (valueType === 'string') {
+          formData[data] = formData[data].join(',');
+        }
+      }
+    }
+    await saveOrUpdateDict(formData, isUpdate.value)
+      .then(async (res) => {
+        if (res.success) {
+          await getExpandKeysByPid(formData['${pidFieldName}'], unref(treeData));
+          emit('ok', {
+            isUpdate: unref(isUpdate),
+            values: { ...formData },
+            expandedArr: unref(expandedRowKeys).reverse(),
+            // 是否更改了父级节点
+            changeParent: model != null && model['${pidFieldName}'] != formData['${pidFieldName}'],
+          });
+          createMessage.success(res.message);
+        } else {
+          createMessage.warning(res.message);
+        }
+      })
+      .finally(() => {
+        confirmLoading.value = false;
+      });
+  }
+
+	<#if need_popup>
+  /**
+   *  popup组件值改变事件
+   */
+  function setFieldsValue(map) {
+    Object.keys(map).map((key) => {
+      formData[key] = map[key];
+    });
+  }
+	</#if>
+
+	<#if need_category || need_select_tree>
+  /**
+   * 值改变事件触发
+   * @param key
+   * @param value
+   */
+  function handleFormChange(key, value) {
+    formData[key] = value;
+  }
+  </#if>
+
+  <#list columns as po>
+  <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
+  async function ${po.fieldName}Duplicatevalidate(_r, value) {
+    return duplicateValidate('${tableName}', '${po.fieldDbName}', value, formData.id || '')
+  }
+  </#if>
+  </#list>
+  defineExpose({
+    add,
+    edit,
+    submitForm,
+  });
+</script>
+
+<style lang="less" scoped>
+  .antd-modal-form {
+    height: 500px !important;
+    overflow-y: auto;
+    padding: 24px 24px 24px 24px;
+  }
+</style>

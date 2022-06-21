@@ -1,0 +1,185 @@
+<#include "/common/utils.ftl">
+<template>
+  <a-spin :spinning="confirmLoading">
+    <a-form ref="formRef" class="antd-modal-form" :labelCol="labelCol" :wrapperCol="wrapperCol">
+      <a-row>
+<#assign need_category = false>
+<#assign bpm_flag=false>
+<#assign need_pca = false>
+<#assign need_search = false>
+<#assign need_dept_user = false>
+<#assign need_switch = false>
+<#assign need_dept = false>
+<#assign need_multi = false>
+<#assign need_popup = false>
+<#assign need_select_tag = false>
+<#assign need_select_tree = false>
+<#assign need_time = false>
+<#assign need_markdown = false>
+<#assign need_upload = false>
+<#assign need_image_upload = false>
+<#assign need_editor = false>
+<#assign need_checkbox = false>
+<#assign hasOnlyValidate = false> 
+<#assign form_span = 24>
+<#if tableVo.fieldRowNum==2>
+<#assign form_span = 12>
+<#elseif tableVo.fieldRowNum==3>
+<#assign form_span = 8>
+<#elseif tableVo.fieldRowNum==4>
+<#assign form_span = 6>
+</#if>
+<#list columns as po>
+<#if po.fieldDbName=='bpm_status'>
+  <#assign bpm_flag=true>
+</#if>        
+<#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
+      <#assign hasOnlyValidate = true>
+</#if>
+  <#include "/common/form/native/vue3NativeForm.ftl">
+</#list>
+      </a-row>
+    </a-form>
+  </a-spin>
+</template>
+
+<script lang="ts" setup>
+  import { ref, reactive, defineExpose, nextTick, defineProps, computed } from 'vue';
+  import { defHttp } from '/@/utils/http/axios';
+  import { useMessage } from '/@/hooks/web/useMessage';
+  import moment from 'moment';
+  <#include "/common/form/native/vue3NativeImport.ftl">
+  import { getValueType } from '/@/utils';
+  import { saveOrUpdate } from '../${entityName}.api';
+  import { Form } from 'ant-design-vue';
+  <#if hasOnlyValidate == true>
+  import { duplicateValidate } from '/@/utils/helper/validator'
+  </#if>
+  
+  const props = defineProps({
+    disabled: { type: Boolean, default: false },
+  });
+  const formRef = ref();
+  const useForm = Form.useForm;
+  const emit = defineEmits(['register', 'ok']);
+  const formData = reactive<Record<string, any>>({
+<#list columns as po>
+ <#if po.isShow == 'Y'>
+  <#if po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+    ${po.fieldName}: undefined,
+  <#elseif po.fieldDbType=='Blob'>
+    ${po.fieldName}String: '',
+  <#else>
+    ${po.fieldName}: '',   
+  </#if>
+ </#if>
+</#list>
+  });
+  const { createMessage } = useMessage();
+  const labelCol = ref<any>({ xs: { span: 24 }, sm: { span: 5 } });
+  const wrapperCol = ref<any>({ xs: { span: 24 }, sm: { span: 16 } });
+  const confirmLoading = ref<boolean>(false);
+  //表单验证
+  const validatorRules = {
+  <#include "/common/validatorRulesTemplate/native/vue3MainNative.ftl">
+  };
+  const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: true });
+  
+  /**
+   * 新增
+   */
+  function add() {
+    edit({});
+  }
+
+  /**
+   * 编辑
+   */
+  function edit(record) {
+    nextTick(() => {
+      resetFields();
+      //赋值
+      Object.assign(formData, record);
+    });
+  }
+
+  /**
+   * 提交数据
+   */
+  async function submitForm() {
+    // 触发表单验证
+    await validate();
+    confirmLoading.value = true;
+    const isUpdate = ref<boolean>(false);
+    //时间格式化
+    let model = formData;
+    if (model.id) {
+      isUpdate.value = true;
+    }
+    //循环数据
+    for (let data in model) {
+      //如果该数据是数组并且是字符串类型
+      if (model[data] instanceof Array) {
+        let valueType = getValueType(formRef.value.getProps, data);
+        //如果是字符串类型的需要变成以逗号分割的字符串
+        if (valueType === 'string') {
+          model[data] = model[data].join(',');
+        }
+      }
+    }
+    await saveOrUpdate(model, isUpdate.value)
+      .then((res) => {
+        if (res.success) {
+          createMessage.success(res.message);
+          emit('ok');
+        } else {
+          createMessage.warning(res.message);
+        }
+      })
+      .finally(() => {
+        confirmLoading.value = false;
+      });
+  }
+
+	<#if need_popup>
+  /**
+   *  popup组件值改变事件
+   */
+  function setFieldsValue(map) {
+    Object.keys(map).map((key) => {
+      formData[key] = map[key];
+    });
+  }
+	</#if>
+
+	<#if need_category || need_select_tree>
+  /**
+   * 值改变事件触发
+   * @param key
+   * @param value
+   */
+  function handleFormChange(key, value) {
+    formData[key] = value;
+  }
+  </#if>
+ <#list columns as po>
+  <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
+  async function ${po.fieldName}Duplicatevalidate(_r, value) {
+    return duplicateValidate('${tableName}', '${po.fieldDbName}', value, formData.id || '')
+  }
+  </#if>
+  </#list>
+  defineExpose({
+    add,
+    edit,
+    submitForm,
+  });
+</script>
+
+<style lang="less" scoped>
+  .antd-modal-form {
+    height: 500px !important;
+    overflow-y: auto;
+    padding: 24px 24px 24px 24px;
+  }
+</style>

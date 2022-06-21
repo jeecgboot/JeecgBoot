@@ -51,6 +51,7 @@
   import {${sub.entityName?uncap_first}List, ${sub.entityName?uncap_first}Delete, ${sub.entityName?uncap_first}DeleteBatch, ${sub.entityName?uncap_first}ExportXlsUrl, ${sub.entityName?uncap_first}ImportUrl } from './${entityName}.api';
   import {isEmpty} from "/@/utils/is";
   import {useMessage} from '/@/hooks/web/useMessage';
+  import {downloadFile} from '/@/utils/common/renderUtils';
 
     //接收主表id
     const mainId = inject('mainId') || '';
