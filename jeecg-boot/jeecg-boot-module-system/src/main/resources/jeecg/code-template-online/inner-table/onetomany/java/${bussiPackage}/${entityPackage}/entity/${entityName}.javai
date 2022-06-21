@@ -1,3 +1,4 @@
+<#include "/common/utils.ftl">
 package ${bussiPackage}.${entityPackage}.entity;
 
 import java.io.Serializable;
@@ -31,9 +32,9 @@ public class ${entityName} implements Serializable {
     <#-- 生成字典Code -->
     <#assign list_field_dictCode="">
     <#if po.classType='sel_user'>
-      <#assign list_field_dictCode=', dictTable = "sys_user", dicText = "realname", dicCode = "username"'>
+      <#assign list_field_dictCode=', dictTable = "sys_user", dicText = "${camelToDashed(po.extendParams.text?default(\"realname\")?trim)}", dicCode = "${camelToDashed(po.extendParams.store?default(\"username\")?trim)}"'>
     <#elseif po.classType='sel_depart'>
-      <#assign list_field_dictCode=', dictTable = "sys_depart", dicText = "depart_name", dicCode = "id"'>
+      <#assign list_field_dictCode=', dictTable = "sys_depart", dicText = "${camelToDashed(po.extendParams.text?default(\"depart_name\")?trim)}", dicCode = "${camelToDashed(po.extendParams.store?default(\"id\")?trim)}"'>
     <#elseif po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox'>
       <#if po.dictTable?default("")?trim?length gt 1>
         <#assign list_field_dictCode=', dictTable = "${po.dictTable}", dicText = "${po.dictText}", dicCode = "${po.dictField}"'>

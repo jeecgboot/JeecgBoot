@@ -1,3 +1,4 @@
+<#include "/common/utils.ftl">
 import {BasicColumn} from '/@/components/Table';
 import {FormSchema} from '/@/components/Table';
 import { rules} from '/@/utils/helper/validator';
@@ -25,7 +26,7 @@ export const columns: BasicColumn[] = [
     slots: { customRender: 'htmlSlot' },
     <#elseif po.classType=='pca'>
     dataIndex: '${po.fieldName}',
-    slots: { customRender: 'pcaSlot' },//TODO 未翻译
+    slots: { customRender: 'pcaSlot' },
    <#elseif po.classType=='file'>
     dataIndex: '${po.fieldName}',
     slots: { customRender: 'fileSlot' },
@@ -57,7 +58,7 @@ export const columns: BasicColumn[] = [
        return  render.renderCategoryTree(text,'${po.dictField?default("")}')
    },
    <#else>
-    customRender: (text, record) => (text ? record['${po.dictText}'] : '')
+    customRender: ({text, record}) => (text ? record['${po.dictText}'] : '')
    </#if>
    <#else>
     dataIndex: '${po.fieldName}'
@@ -84,7 +85,7 @@ export const searchFormSchema: FormSchema[] = [
 <#if po.queryMode=='single'>
 	{
       label: "${po.filedComment}",
-      field: "${po.fieldName}",
+      field: ${autoStringSuffix(po)},
 <#if po.classType=='sel_search'>
       component: 'JSearchSelect',
       componentProps:{
@@ -95,16 +96,22 @@ export const searchFormSchema: FormSchema[] = [
 <#elseif po.classType=='switch'>
       component: 'JSwitch',
       componentProps:{
+           query:true,
            <#if po.dictField != 'is_open'>
-           options:"${po.dictField}"
+           options:${po.dictField}
            </#if>
        },
  <#elseif po.classType=='sel_depart'>
       component: 'JSelectDept',
  <#elseif po.classType=='list_multi'>
-      component: 'JMultiSelectTag',//暂无该组件
-      componentProps:{
-          dictCode:"query_field_dictCode?default("")"
+      component: 'JSelectMultiple',
+       componentProps:{
+      <#if po.dictTable?default("")?trim?length gt 1>
+         dictCode:"${po.dictTable},${po.dictText},${po.dictField}",
+      <#elseif po.dictField?default("")?trim?length gt 1>
+         dictCode:"${po.dictField}",
+      </#if>
+         triggerChange: true
       },
  <#elseif po.classType=='cat_tree'>
       component: 'JCategorySelect',
@@ -121,16 +128,7 @@ export const searchFormSchema: FormSchema[] = [
 <#elseif po.classType=='pca'>
       component: 'JAreaLinkage',
 <#elseif po.classType=='popup'>
-      component: 'JPopup',
-      componentProps: ({ formActionType }) => {
-         const {setFieldsValue} = formActionType;
-         return{
-             setFieldsValue:setFieldsValue,
-             code:"${po.dictTable}",
-             fieldConfig:"${po.dictField}",
-             multi:${po.extendParams.popupMulti?c},
-         }
-     },
+    <#include "/common/form/vue3popup.ftl">
 <#elseif po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
 <#--  ---------------------------下拉或是单选 判断数据字典是表字典还是普通字典------------------------------- -->
       component: 'JDictSelectTag',
@@ -157,6 +155,8 @@ export const searchFormSchema: FormSchema[] = [
       componentProps: {
           showTime:true
       },
+<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+      component: 'JRangeNumber',
 <#else>
       component: 'Input', //TODO 范围查询
 </#if>
@@ -189,28 +189,23 @@ export const formSchema: FormSchema[] = [
 	</#if>
   {
     label: '${po.filedComment}',
-    field: '${po.fieldName}',
+    field: ${autoStringSuffix(po)},
     <#if po.classType =='date'>
     component: 'DatePicker',
-     <#elseif po.fieldType =='datetime'>
+     <#elseif po.classType =='datetime'>
     component: 'DatePicker',
     componentProps: {
-       showTime:true
+       showTime:true,
+       valueFormat: 'YYYY-MM-DD HH:mm:ss'
      },
-     <#elseif po.fieldType =='time'>
+     <#elseif po.classType =='time'>
     component: 'TimePicker',
+    componentProps: {
+      valueFormat: 'HH:mm:ss'
+    },
     <#elseif po.classType =='popup'>
-    component: 'JPopup',
-    componentProps: ({ formActionType }) => {
-         const {setFieldsValue} = formActionType;
-         return{
-             setFieldsValue:setFieldsValue,
-             code:"${po.dictTable}",
-             fieldConfig:${po.dictField},
-             multi:${po.extendParams.popupMulti?c},
-         }
-     },
-     <#elseif po.classType =='sel_depart'>
+    <#include "/common/form/vue3popup.ftl">
+    <#elseif po.classType =='sel_depart'>
      component: 'JSelectDept',
      <#elseif po.classType =='switch'>
      component: 'JSwitch',
@@ -231,14 +226,14 @@ export const formSchema: FormSchema[] = [
         labelKey:'realname',
      },
     <#elseif po.classType =='textarea'>
-    component: 'InputTextArea',//TODO 注意string转换问题
+    component: 'InputTextArea',
     <#elseif po.classType=='list' || po.classType=='radio'>
     component: 'JDictSelectTag',
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
     <#elseif po.classType=='list_multi' || po.classType=='checkbox'>
-    component: 'JMultiSelectTag',//TODO  暂无该组件
+    component: 'JSelectMultiple',
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
@@ -273,7 +268,7 @@ export const formSchema: FormSchema[] = [
     </#if>
       },
   <#elseif po.classType=='umeditor'>
-    component: 'JCodeEditor', //TODO String后缀暂未添加
+    component: 'JEditor',
   <#elseif po.classType == 'sel_tree'>
     component: 'JTreeSelect',
     componentProps:{
@@ -305,16 +300,16 @@ export const formSchema: FormSchema[] = [
            </#if>
        <#-- 唯一校验 -->
            <#if fieldValidType == 'only'>
-                 {...rules.duplicateCheckRule(<#if sub?default("")?trim?length gt 1>'${sub.tableName}'<#else>'${tableName}'</#if>, '${po.fieldDbName}',model,schema,true)[0]},
+                 {...rules.duplicateCheckRule(<#if sub?default("")?trim?length gt 1>'${sub.tableName}'<#else>'${tableName}'</#if>, '${po.fieldDbName}',model,schema)[0]},
            <#-- 6到16位数字 -->
            <#elseif fieldValidType == 'n6-16'>
                  { pattern: /^\d{6,16}$/, message: '请输入6到16位数字!'},
            <#-- 6到16位任意字符 -->
            <#elseif fieldValidType == '*6-16'>
                  { pattern: /^.{6,16}$/, message: '请输入6到16位任意字符!'},
-           <#-- 6到18位字符串 -->
+           <#-- 6到18位字母 -->
            <#elseif fieldValidType == 's6-18'>
-                 { pattern: /^.{6,18}$/, message: '请输入6到18位任意字符!'},
+                 { pattern:/^[a-z|A-Z]{6,18}$/, message: '请输入6到18位字母!'},
            <#-- 网址 -->
            <#elseif fieldValidType == 'url'>
                  { pattern: /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/, message: '请输入正确的网址!'},
@@ -390,7 +385,7 @@ export const ${sub.entityName?uncap_first}Columns: BasicColumn[] = [
     slots: { customRender: 'htmlSlot' },
     <#elseif po.classType=='pca'>
     dataIndex: '${po.fieldName}',
-    slots: { customRender: 'pcaSlot' },//TODO 未翻译
+    slots: { customRender: 'pcaSlot' },
    <#elseif po.classType=='file'>
     dataIndex: '${po.fieldName}',
     slots: { customRender: 'fileSlot' },
@@ -422,7 +417,7 @@ export const ${sub.entityName?uncap_first}Columns: BasicColumn[] = [
        return  render.renderCategoryTree(text,'${po.dictField?default("")}')
    },
    <#else>
-    customRender: (text, record) => (text ? record['${po.dictText}'] : '')
+    customRender: ({text, record}) => (text ? record['${po.dictText}'] : '')
    </#if>
    <#else>
     dataIndex: '${po.fieldName}'
@@ -436,9 +431,13 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
 <#assign form_cat_tree = false>
 <#assign form_cat_back = "">
 <#assign bpm_flag=false>
+<#assign sub_id_exists=false>
 <#list sub.colums as po><#rt/>
 <#if po.fieldDbName=='bpm_status'>
   <#assign bpm_flag=true>
+</#if>
+<#if po.fieldDbName=='id'>
+  <#assign sub_id_exists=true>
 </#if>
 <#if po.isShow =='Y'>
 <#assign form_field_dictCode="">
@@ -449,27 +448,22 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
 	</#if>
   {
     label: '${po.filedComment}',
-    field: '${po.fieldName}',
+    field: ${autoStringSuffix(po)},
     <#if po.classType =='date'>
     component: 'DatePicker',
-     <#elseif po.fieldType =='datetime'>
+     <#elseif po.classType =='datetime'>
     component: 'DatePicker',
     componentProps: {
-       showTime:true
+       showTime:true,
+       valueFormat: 'YYYY-MM-DD HH:mm:ss'
      },
-     <#elseif po.fieldType =='time'>
+     <#elseif po.classType =='time'>
     component: 'TimePicker',
+    componentProps: {
+      valueFormat: 'HH:mm:ss'
+    },
     <#elseif po.classType =='popup'>
-    component: 'JPopup',
-    componentProps: ({ formActionType }) => {
-         const {setFieldsValue} = formActionType;
-         return{
-             setFieldsValue:setFieldsValue,
-             code:"${po.dictTable}",
-             fieldConfig:${po.dictField},
-             multi:${po.extendParams.popupMulti?c},
-         }
-     },
+    <#include "/common/form/vue3popup.ftl">
      <#elseif po.classType =='sel_depart'>
      component: 'JSelectDept',
      <#elseif po.classType =='switch'>
@@ -491,14 +485,14 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
         labelKey:'realname',
      },
     <#elseif po.classType =='textarea'>
-    component: 'InputTextArea',//TODO 注意string转换问题
+    component: 'InputTextArea',
     <#elseif po.classType=='list' || po.classType=='radio'>
     component: 'JDictSelectTag',
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
     <#elseif po.classType=='list_multi' || po.classType=='checkbox'>
-    component: 'JMultiSelectTag',//TODO  暂无该组件
+    component: 'JSelectMultiple',
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
@@ -533,7 +527,7 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
     </#if>
       },
   <#elseif po.classType=='umeditor'>
-    component: 'JCodeEditor', //TODO String后缀暂未添加
+    component: 'JEditor',
   <#elseif po.classType == 'sel_tree'>
     component: 'JTreeSelect',
     componentProps:{
@@ -565,16 +559,16 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
            </#if>
        <#-- 唯一校验 -->
            <#if fieldValidType == 'only'>
-                 {...rules.duplicateCheckRule(<#if sub?default("")?trim?length gt 1>'${sub.tableName}'<#else>'${tableName}'</#if>, '${po.fieldDbName}',model,schema,true)[0]},
+                 {...rules.duplicateCheckRule(<#if sub?default("")?trim?length gt 1>'${sub.tableName}'<#else>'${tableName}'</#if>, '${po.fieldDbName}',model,schema)[0]},
            <#-- 6到16位数字 -->
            <#elseif fieldValidType == 'n6-16'>
                  { pattern: /^\d{6,16}$/, message: '请输入6到16位数字!'},
            <#-- 6到16位任意字符 -->
            <#elseif fieldValidType == '*6-16'>
                  { pattern: /^.{6,16}$/, message: '请输入6到16位任意字符!'},
-           <#-- 6到18位字符串 -->
+           <#-- 6到18位字母 -->
            <#elseif fieldValidType == 's6-18'>
-                 { pattern: /^.{6,18}$/, message: '请输入6到18位任意字符!'},
+                 { pattern: /^[a-z|A-Z]{6,18}$/, message: '请输入6到18位字母!'},
            <#-- 网址 -->
            <#elseif fieldValidType == 'url'>
                  { pattern: /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/, message: '请输入正确的网址!'},
@@ -616,6 +610,14 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
   },
 </#if>
 </#list>
+<#if sub_id_exists == false>
+	{
+	  label: '',
+	  field: 'id',
+	  component: 'Input',
+	  show: false
+	},
+</#if>
 ];
 </#if>
 </#list>
@@ -642,12 +644,20 @@ export const ${sub.entityName?uncap_first}JVxeColumns: JVxeColumn[] = [
       <#if col.readonly=='Y'>
       disabled:true,
       </#if>
+<#elseif col.classType =='time'>
+      type: JVxeTypes.time,
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
 <#elseif col.classType =='textarea'>
       type: JVxeTypes.textarea,
        <#if col.readonly=='Y'>
       disabled:true,
        </#if>
-<#elseif "int,decimal,double,"?contains(col.classType)>
+<#-- update-begin-author:taoyan date:20220523 for: VUEN-1084 【vue3】online表单测试发现的新问题 20、一对多列字段类型生成的不对，数字或者金额类型 -->
+<#-- elseif "int,decimal,double,"?contains(col.classType) -->
+<#elseif col.fieldDbType=='int' || col.fieldDbType=='double' || col.fieldDbType=='BigDecimal'>
+<#-- update-end-author:taoyan date:20220523 for: VUEN-1084 【vue3】online表单测试发现的新问题 20、一对多列字段类型生成的不对，数字或者金额类型 -->
       type: JVxeTypes.inputNumber,
       <#if col.readonly=='Y'>
       disabled:true,
@@ -684,6 +694,16 @@ export const ${sub.entityName?uncap_first}JVxeColumns: JVxeColumn[] = [
       <#if col.readonly=='Y'>
       disabled:true,
       </#if>
+<#elseif col.classType =='sel_depart'>
+      type: JVxeTypes.departSelect,
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
+<#elseif col.classType =='sel_user'>
+      type: JVxeTypes.userSelect,
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
 <#elseif col.classType =='image'>
       type: JVxeTypes.image,
       token:true,
@@ -707,9 +727,9 @@ export const ${sub.entityName?uncap_first}JVxeColumns: JVxeColumn[] = [
 <#elseif col.classType =='switch'>
       type: JVxeTypes.checkbox,
        <#if col.dictField == 'is_open'>
-        customValue: ['Y', 'N'],
+      customValue: ['Y', 'N'],
         <#else>
-        customValue: ${col.dictField},
+      customValue: ${col.dictField},
         </#if>
       <#if col.readonly=='Y'>
       disabled:true,
@@ -720,18 +740,11 @@ export const ${sub.entityName?uncap_first}JVxeColumns: JVxeColumn[] = [
 <#else>
     <#assign popupBackFields = "${col.dictText}">
 </#if>
-      type: JVxeTypes.popup,
-      popupCode:"${col.dictTable}",
-      field:"${col.dictField}",
-      orgFields:"${col.dictField}",
-      destFields:"${Format.underlineToHump(col.dictText)}",
-      <#if col.readonly=='Y'>
-      disabled:true,
-      </#if>
+    <#include "/common/form/vue3Jvxepopup.ftl">
 <#else>
-       type: JVxeTypes.input,
+      type: JVxeTypes.input,
        <#if col.readonly=='Y'>
-       disabled:true,
+      disabled:true,
        </#if>
 </#if>
 <#if col.classType =='list_multi' || col.classType =='checkbox'>
@@ -754,18 +767,7 @@ export const ${sub.entityName?uncap_first}JVxeColumns: JVxeColumn[] = [
       defaultValue:'',
 </#if>
 <#-- 子表的校验 -->
-<#assign subFieldValidType = col.fieldValidType!''>
-<#-- 非空校验 -->
-<#if col.nullable == 'N' || subFieldValidType == '*'>
-      validateRules: [{ required: true, message: '${'$'}{title}不能为空' }],
-<#-- 其他情况下，只要有值就被认为是正则校验 -->
-<#elseif subFieldValidType?length gt 0>
-<#assign subMessage = '格式不正确'>
-<#if subFieldValidType == 'only' >
-  <#assign subMessage = '不能重复'>
-</#if>
-      validateRules: [{ pattern: "${subFieldValidType}", message: "${'$'}{title}${subMessage}" }],
-</#if>
+ <#include "/common/validatorRulesTemplate/sub-vue3.ftl">
     },
 </#if>
 </#if>

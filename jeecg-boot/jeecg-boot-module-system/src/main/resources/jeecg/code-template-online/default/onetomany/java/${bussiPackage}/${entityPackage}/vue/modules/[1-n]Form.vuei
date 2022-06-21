@@ -44,7 +44,7 @@
                 :multi="${po.extendParams.popupMulti?c}"
                 @input="popupCallback"/>
     <#elseif po.classType =='sel_depart'>
-              <j-select-depart v-model="model.${po.fieldName}" multi/>
+              <j-select-depart v-model="model.${po.fieldName}" :multi="${po.extendParams.multi?default('true')}"<#if po.extendParams.store?default("")?trim?length gt 0> store="${po.extendParams.store}"</#if><#if po.extendParams.text?default("")?trim?length gt 0> text="${po.extendParams.text}"</#if> <#if po.readonly=='Y'>disabled</#if> />
 <#elseif po.classType =='switch'>
               <j-switch v-model="model.${po.fieldName}" <#if po.dictField!= 'is_open'>:options="${po.dictField}"</#if>></j-switch>
 	<#elseif po.classType =='pca'>
@@ -54,7 +54,7 @@
     <#elseif po.classType =='password'>
 	          <a-input-password v-model="model.${po.fieldName}" placeholder="请输入${po.filedComment}"/>
 	<#elseif po.classType =='sel_user'>
-              <j-select-user-by-dep v-model="model.${po.fieldName}"/>
+              <j-select-user-by-dep v-model="model.${po.fieldName}" :multi="${po.extendParams.multi?default('true')}"<#if po.extendParams.store?default("")?trim?length gt 0> store="${po.extendParams.store}"</#if><#if po.extendParams.text?default("")?trim?length gt 0> text="${po.extendParams.text}"</#if> <#if po.readonly=='Y'>disabled</#if>/>
 	<#elseif po.classType =='textarea'>
               <a-textarea v-model="model.${autoStringSuffixForModel(po)}"  rows="4" placeholder="请输入${po.filedComment}"/>
 	<#elseif po.classType=='list' || po.classType=='radio'>

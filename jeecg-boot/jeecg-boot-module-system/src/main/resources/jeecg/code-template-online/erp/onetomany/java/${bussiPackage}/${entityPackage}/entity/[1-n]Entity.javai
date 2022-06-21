@@ -1,3 +1,4 @@
+<#include "/common/utils.ftl">
 <#list subTables as subTab>
 #segment#${subTab.entityName}.java
 package ${bussiPackage}.${entityPackage}.entity;
@@ -65,7 +66,8 @@ public class ${subTab.entityName} implements Serializable {
     @Dict(dicCode = "id",dicText = "name",dictTable = "sys_category")
 </#if>
 <#if po.classType =='sel_depart'>
-    @Dict(dicCode = "id",dicText = "depart_name",dictTable = "sys_depart")
+    <#assign list_field_dictCode='dicCode = "${camelToDashed(po.extendParams.store?default(\"id\")?trim)}", dicText = "${camelToDashed(po.extendParams.text?default(\"depart_name\")?trim)}", dictTable = "sys_depart"'>
+    @Dict(${list_field_dictCode})
 </#if>
 	<#-- 大字段转换 -->
     <#include "/common/blob.ftl">

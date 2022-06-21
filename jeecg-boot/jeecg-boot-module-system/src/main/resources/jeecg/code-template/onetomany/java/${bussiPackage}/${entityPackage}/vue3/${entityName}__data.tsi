@@ -78,11 +78,11 @@ export const ${sub.entityName?uncap_first}Columns: JVxeColumn[] = [
     {
       title: '${col.filedComment}',
        key: '${col.fieldName}',
-<#if col.classType =='date'>
+<#if col.fieldType =='date'>
       type: JVxeTypes.date,
-<#elseif col.classType =='datetime'>
+<#elseif col.fieldType =='datetime'>
       type: JVxeTypes.datetime,
-<#elseif "int,decimal,double,"?contains(col.classType)>
+<#elseif "int,decimal,double,"?contains(col.fieldType)>
       type: JVxeTypes.inputNumber,
 <#else>
       type: JVxeTypes.input,

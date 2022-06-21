@@ -1,3 +1,4 @@
+<#include "/common/utils.ftl">
 import {BasicColumn} from '/@/components/Table';
 import {FormSchema} from '/@/components/Table';
 import { rules} from '/@/utils/helper/validator';
@@ -28,7 +29,7 @@ export const columns: BasicColumn[] = [
     slots: { customRender: 'htmlSlot' },
     <#elseif po.classType=='pca'>
     dataIndex: '${po.fieldName}',
-    slots: { customRender: 'pcaSlot' },//TODO 未翻译
+    slots: { customRender: 'pcaSlot' },
    <#elseif po.classType=='file'>
     dataIndex: '${po.fieldName}',
     slots: { customRender: 'fileSlot' },
@@ -60,7 +61,7 @@ export const columns: BasicColumn[] = [
        return  render.renderCategoryTree(text,'${po.dictField?default("")}')
    },
    <#else>
-    customRender: (text, record) => (text ? record['${po.dictText}'] : '')
+    customRender: ({text, record}) => (text ? record['${po.dictText}'] : '')
    </#if>
    <#else>
     dataIndex: '${po.fieldName}'
@@ -105,9 +106,14 @@ export const searchFormSchema: FormSchema[] = [
  <#elseif po.classType=='sel_depart'>
       component: 'JSelectDept',
  <#elseif po.classType=='list_multi'>
-      component: 'JMultiSelectTag',//暂无该组件
-      componentProps:{
-          dictCode:"query_field_dictCode?default("")"
+      component: 'JSelectMultiple',
+       componentProps:{
+      <#if po.dictTable?default("")?trim?length gt 1>
+         dictCode:"${po.dictTable},${po.dictText},${po.dictField}",
+      <#elseif po.dictField?default("")?trim?length gt 1>
+         dictCode:"${po.dictField}",
+      </#if>
+         triggerChange: true
       },
  <#elseif po.classType=='cat_tree'>
       component: 'JCategorySelect',
@@ -124,15 +130,22 @@ export const searchFormSchema: FormSchema[] = [
 <#elseif po.classType=='pca'>
       component: 'JAreaLinkage',
 <#elseif po.classType=='popup'>
-      component: 'JPopup',
-      componentProps: ({ formActionType }) => {
-         const {setFieldsValue} = formActionType;
-         return{
-             setFieldsValue:setFieldsValue,
-             code:"${po.dictTable}",
-             fieldConfig:"${po.dictField}",
-             multi:${po.extendParams.popupMulti?c},
-         }
+    <#include "/common/form/vue3popup.ftl">
+<#elseif po.classType == 'sel_tree'>
+      component: 'JTreeSelect',
+      componentProps:{
+         <#if po.dictText??>
+           <#if po.dictText?split(',')[2]?? && po.dictText?split(',')[0]??>
+         dict:"${po.dictTable},${po.dictText?split(',')[2]},${po.dictText?split(',')[0]}",
+           </#if>
+           <#if po.dictText?split(',')[1]??>
+         pidField:"${po.dictText?split(',')[1]}",
+           </#if>
+           <#if po.dictText?split(',')[3]??>
+         hasChildField:"${po.dictText?split(',')[3]}",
+           </#if>
+           </#if>
+         pidValue:"${po.dictField}",
      },
 <#elseif po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
 <#--  ---------------------------下拉或是单选 判断数据字典是表字典还是普通字典------------------------------- -->
@@ -160,6 +173,13 @@ export const searchFormSchema: FormSchema[] = [
       componentProps: {
           showTime:true
       },
+<#elseif po.classType == 'time'>
+      component: 'TimePicker',
+      componentProps:{
+        valueFormat: 'HH:mm:ss',
+      },
+<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+      component: 'JRangeNumber',
 <#else>
       component: 'Input', //TODO 范围查询
 </#if>
@@ -192,7 +212,7 @@ export const formSchema: FormSchema[] = [
 	</#if>
   {
     label: '${po.filedComment}',
-    field: '${po.fieldName}',
+    field: ${autoStringSuffix(po)},
     <#if po.fieldDbName == tableVo.extendParams.pidField>
     component: 'JTreeSelect',
     componentProps: {
@@ -203,24 +223,19 @@ export const formSchema: FormSchema[] = [
     },
     <#elseif po.classType =='date'>
     component: 'DatePicker',
-     <#elseif po.fieldType =='datetime'>
+     <#elseif po.classType =='datetime'>
     component: 'DatePicker',
     componentProps: {
-       showTime:true
+       showTime:true,
+       valueFormat: 'YYYY-MM-DD hh:mm:ss'
      },
-     <#elseif po.fieldType =='time'>
+    <#elseif po.classType =='time'>
     component: 'TimePicker',
+    componentProps:{
+      valueFormat: 'HH:mm:ss',
+    },
     <#elseif po.classType =='popup'>
-    component: 'JPopup',
-    componentProps: ({ formActionType }) => {
-         const {setFieldsValue} = formActionType;
-         return{
-             setFieldsValue:setFieldsValue,
-             code:"${po.dictTable}",
-             fieldConfig:${po.dictField},
-             multi:${po.extendParams.popupMulti?c},
-         }
-     },
+    <#include "/common/form/vue3popup.ftl">
      <#elseif po.classType =='sel_depart'>
      component: 'JSelectDept',
      <#elseif po.classType =='switch'>
@@ -242,14 +257,14 @@ export const formSchema: FormSchema[] = [
         labelKey:'realname',
      },
     <#elseif po.classType =='textarea'>
-    component: 'InputTextArea',//TODO 注意string转换问题
+    component: 'InputTextArea',
     <#elseif po.classType=='list' || po.classType=='radio'>
     component: 'JDictSelectTag',
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
     <#elseif po.classType=='list_multi' || po.classType=='checkbox'>
-    component: 'JMultiSelectTag',//TODO  暂无该组件
+    component: 'JSelectMultiple',
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
@@ -284,7 +299,7 @@ export const formSchema: FormSchema[] = [
     </#if>
       },
   <#elseif po.classType=='umeditor'>
-    component: 'JCodeEditor', //TODO String后缀暂未添加
+    component: 'JEditor',
   <#elseif po.classType == 'sel_tree'>
     component: 'JTreeSelect',
     componentProps:{
@@ -318,16 +333,16 @@ export const formSchema: FormSchema[] = [
            </#if>
        <#-- 唯一校验 -->
            <#if fieldValidType == 'only'>
-                 {...rules.duplicateCheckRule(<#if sub?default("")?trim?length gt 1>'${sub.tableName}'<#else>'${tableName}'</#if>, '${po.fieldDbName}',model,schema,true)[0]},
+                 {...rules.duplicateCheckRule(<#if sub?default("")?trim?length gt 1>'${sub.tableName}'<#else>'${tableName}'</#if>, '${po.fieldDbName}',model,schema)[0]},
            <#-- 6到16位数字 -->
            <#elseif fieldValidType == 'n6-16'>
                  { pattern: /^\d{6,16}$/, message: '请输入6到16位数字!'},
            <#-- 6到16位任意字符 -->
            <#elseif fieldValidType == '*6-16'>
                  { pattern: /^.{6,16}$/, message: '请输入6到16位任意字符!'},
-           <#-- 6到18位字符串 -->
+           <#-- 6到18位字母 -->
            <#elseif fieldValidType == 's6-18'>
-                 { pattern: /^.{6,18}$/, message: '请输入6到18位任意字符!'},
+                 { pattern:/^[a-z|A-Z]{6,18}$/, message: '请输入6到18位字母!'},
            <#-- 网址 -->
            <#elseif fieldValidType == 'url'>
                  { pattern: /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/, message: '请输入正确的网址!'},
