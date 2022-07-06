@@ -90,15 +90,15 @@ QueryWrapper<?> queryWrapper = QueryGenerator.initQueryWrapper(?, req.getParamet
 
 
 #### 二、AutoPoi(EXCEL工具类-EasyPOI衍变升级重构版本）
- 
+
   [在线文档](https://github.com/zhangdaiscott/autopoi)
-  
+
 
 
 #### 三、代码生成器
 
 > 功能说明：   一键生成的代码（包括：controller、service、dao、mapper、entity、vue）
- 
+
  - 模板位置： src/main/resources/jeecg/code-template
  - 技术文档： http://doc.jeecg.com/2043916
 
@@ -110,12 +110,12 @@ QueryWrapper<?> queryWrapper = QueryGenerator.initQueryWrapper(?, req.getParamet
 ![输入图片说明](https://static.oschina.net/uploads/img/201904/19191836_eGkQ.png "在这里输入图片标题")
 
 1.引入排重接口,代码如下:  
- 
+
 ```
 import { duplicateCheck } from '@/api/api'
-  ```
+```
 2.找到编码必填校验规则的前端代码,代码如下:  
-  
+
 ```
 <a-input placeholder="请输入编码" v-decorator="['code', validatorRules.code ]"/>
 
@@ -125,15 +125,15 @@ code: {
               {validator: this.validateCode}
             ]
           },
-  ```
+```
 3.找到rules里validator对应的方法在哪里,然后使用第一步中引入的排重校验接口.  
   以用户online表单编码为示例,其中四个必传的参数有:  
     
 ```
   {tableName:表名,fieldName:字段名,fieldVal:字段值,dataId:表的主键},
-  ```
+```
  具体使用代码如下:  
- 
+
 ```
     validateCode(rule, value, callback){
         let pattern = /^[a-z|A-Z][a-z|A-Z|\d|_|-]{0,}$/;
@@ -161,35 +161,64 @@ code: {
 ## docker镜像用法
   文档： http://doc.jeecg.com/2043889
 
- ``` 
+### 本地
+
+ ``` shell
 注意： 如果本地安装了mysql和redis,启动容器前先停掉本地服务，不然会端口冲突。
        net stop redis
        net stop mysql
- 
- # 1.配置host
-
-    # jeecgboot
-    127.0.0.1   jeecg-boot-redis
-    127.0.0.1   jeecg-boot-mysql
-    127.0.0.1   jeecg-boot-system
 	
-# 2.修改项目配置文件 application.yml
+# 1.修改项目配置文件 application.yml
     active: dev
 	
-# 3.修改application-dev.yml文件的数据库和redis链接
-	修改数据库连接和redis连接，将连接改成host方式
+# 2.修改application-dev.yml文件的数据库和redis链接
+	本地：localhost
+	docker: container_name
 
-# 4.先进JAVA项目jeecg-boot根路径 maven打包
+# 3.先进JAVA项目jeecg-boot根路径 maven打包
     mvn clean package
- 
 
-# 5.构建镜像__容器组（当你改变本地代码，也可重新构建镜像）
-    docker-compose build
+# 4.vue前端目录先执行build
+	cd ../ant-design-vue-jeecg
+	yarn build
 
+# 4.构建镜像__容器组（当你改变本地代码，也可重新构建镜像）
+    docker compose build
 
-# 6.启动镜像__容器组（也可取代运行中的镜像）
-    docker-compose up -d
+# 5.启动镜像__容器组（也可取代运行中的镜像）
+    docker compose up -d
 
-# 7.访问后台项目（注意要开启swagger）
+# 6.访问后台项目（注意要开启swagger）
     http://localhost:8080/jeecg-boot/doc.html
-``` 
+ ```
+
+### 远程
+
+```shell
+# 1. 本地执行docker compose build 后生成的镜像上传
+	docker images
+
+# 2. 登录Docker仓库
+	docker login
+	
+# 3. 上传镜像到docker仓库
+	# 仓库私服： xxx (替换成你自己的仓库地址)
+	docker tag jeecg-boot-mysql:latest xxx/jeecg-boot-mysql:dev
+	docker tag jeecg-boot-system:latest xxx/jeecg-boot-system:dev
+	docker tag jeecg-boot-vue:latest xxx/jeecg-boot-vue:dev
+
+	docker push xxx/jeecg-boot-mysql:dev
+	docker push xxx/jeecg-boot-system:dev
+	docker push xxx/jeecg-boot-vue:dev
+
+# 4. 将此yml文件上传服务器，执行启动命令
+docker network create internal-network
+docker-compose -f ./docker-compose-server.yml up -d
+```
+
+> 启动完成之后等待`jeecg-boot-mysql`容器执行完脚本即可访问（3~5分钟），
+>
+> `jeecg-boot-system`容器数据库连接报错先不用管，,等待`jeecg-boot-mysql`启动完成即可，如图
+
+![image-20220706165838203](https://cdn.jonty.top/img/image-20220706165838203.png)
+
