@@ -25,7 +25,6 @@ services:
     ports:
       - 6379:6379
     restart: always
-    hostname: jeecg-boot-redis
     container_name: jeecg-boot-redis
 
   jeecg-boot-system:
@@ -40,3 +39,14 @@ services:
     hostname: jeecg-boot-system
     ports:
       - 8080:8080
+
+  jeecg-boot-vue:
+    build:
+      context: ../ant-design-vue-jeecg
+    restart: always
+    container_name: jeecg-boot-vue
+    hostname: jeecg-boot-vue
+    depends_on:
+      -  jeecg-boot-system
+    ports:
+      - 80:80
