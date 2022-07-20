@@ -40,6 +40,8 @@ public class PermissionDataAspect {
     @Autowired
     private CommonAPI commonApi;
 
+    private static final String SPOT_DO = ".do";
+
     @Pointcut("@annotation(org.jeecg.common.aspect.annotation.PermissionData)")
     public void pointCut() {
 
@@ -113,7 +115,7 @@ public class PermissionDataAspect {
             requestPath = requestPath.substring(0, requestPath.indexOf("&"));
         }
         if(requestPath.indexOf(QueryRuleEnum.EQ.getValue())!=-1){
-            if(requestPath.indexOf(CommonConstant.SPOT_DO)!=-1){
+            if(requestPath.indexOf(SPOT_DO)!=-1){
                 requestPath = requestPath.substring(0,requestPath.indexOf(".do")+3);
             }else{
                 requestPath = requestPath.substring(0,requestPath.indexOf("?"));

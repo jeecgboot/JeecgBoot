@@ -1,5 +1,6 @@
 <#assign pidFieldName = "">
 <#assign hasChildrenField = "">
+<#assign bpm_flag=false>
 <#list originalColumns as po>
   <#if po.fieldDbName == tableVo.extendParams.pidField>
     <#assign pidFieldName = po.fieldName>
@@ -11,6 +12,9 @@
 <#assign list_need_pca=false>
 <#-- 开始循环 -->
 <#list columns as po>
+  <#if po.fieldDbName=='bpm_status'>
+    <#assign bpm_flag=true>
+  </#if>
 <#if po.classType=='pca'>
 <#assign list_need_pca=true>
 </#if>
@@ -74,6 +78,9 @@
   <#if list_need_pca>
   import { getAreaTextByCode } from '/@/components/Form/src/utils/Area';
   </#if>
+  <#if bpm_flag==true>
+  import { startProcess } from '/@/api/common/api';
+  </#if>
   const expandedRowKeys = ref([]);
   //字典model
   const [registerModal, {openModal}] = useModal();
@@ -116,6 +123,7 @@
          },
          actionColumn: {
            width: 240,
+           fixed:'right'
          },
     },
      exportConfig: {
@@ -329,19 +337,61 @@
     * 下拉操作栏
     */
    function getDropDownAction(record){
-        return [
-             {
-               label: '详情',
-               onClick: handleDetail.bind(null, record),
-             }, {
-               label: '删除',
-               popConfirm: {
-                 title: '确定删除吗?',
-                 confirm: handleDelete.bind(null, record),
-               }
-             }
-        ]
+     <#if bpm_flag==true>
+     let dropDownAction = [
+       {
+         label: '详情',
+         onClick: handleDetail.bind(null, record),
+       }, {
+         label: '删除',
+         popConfirm: {
+           title: '是否确认删除',
+           confirm: handleDelete.bind(null, record)
+         }
+       }
+     ];
+     if(record.bpmStatus == '1'){
+       dropDownAction.push({
+         label: '发起流程',
+         popConfirm: {
+           title: '确认提交流程吗？',
+           confirm: handleProcess.bind(null, record),
+         }
+       })
+     }
+     return dropDownAction;
+     <#else>
+     return [
+       {
+         label: '详情',
+         onClick: handleDetail.bind(null, record),
+       }, {
+         label: '删除',
+         popConfirm: {
+           title: '确定删除吗?',
+           confirm: handleDelete.bind(null, record),
+         }
+       }
+     ]
+     </#if>
    }
+
+  <#if bpm_flag==true>
+  /**
+   * 提交流程
+   */
+  async function handleProcess(record) {
+    let params = {
+      flowCode: 'dev_${tableName}_001',
+      id: record.id,
+      formUrl: '${entityPackage}/modules/${entityName}Form',
+      formUrlMobile: ''
+    }
+    await startProcess(params);
+    await reload();
+  }
+  </#if>
+
 </script>
 
 <style scoped>

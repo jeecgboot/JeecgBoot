@@ -1,5 +1,8 @@
 import store from '@/store/'
 import { randomUUID } from '@/utils/util'
+import Vue from 'vue'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
+
 // vxe socket
 const vs = {
   // 页面唯一 id，用于标识同一用户，不同页面的websocket
@@ -52,7 +55,10 @@ const vs = {
       const domain = window._CONFIG['domianURL'].replace('https://', 'wss://').replace('http://', 'ws://')
       const url = `${domain}/vxeSocket/${userId}/${this.pageId}`
 
-      this.ws = new WebSocket(url)
+      //update-begin-author:taoyan date:2022-4-22 for:  v2.4.6 的 websocket 服务端，存在性能和安全问题。 #3278
+      let token = Vue.ls.get(ACCESS_TOKEN)
+      this.ws = new WebSocket(url, [token])
+      //update-end-author:taoyan date:2022-4-22 for:  v2.4.6 的 websocket 服务端，存在性能和安全问题。 #3278
       this.ws.onopen = this.on.open.bind(this)
       this.ws.onerror = this.on.error.bind(this)
       this.ws.onmessage = this.on.message.bind(this)

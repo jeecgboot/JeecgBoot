@@ -279,6 +279,15 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
+    public void sendTemplateMessage(MessageDTO message) {
+    }
+
+    @Override
+    public String getTemplateContent(String code) {
+        return null;
+    }
+
+    @Override
     public void sendEmailMsg(String email,String title,String content) {
 
     }

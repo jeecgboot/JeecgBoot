@@ -214,7 +214,7 @@ public class RestUtil {
             }
         }
         // 拼接 url 参数
-        if (variables != null) {
+        if (variables != null && !variables.isEmpty()) {
             url += ("?" + asUrlVariables(variables));
         }
         // 发送请求

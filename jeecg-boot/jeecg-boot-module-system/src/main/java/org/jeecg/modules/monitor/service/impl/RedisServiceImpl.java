@@ -12,6 +12,7 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.monitor.domain.RedisInfo;
 import org.jeecg.modules.monitor.exception.RedisConnectException;
@@ -33,6 +34,11 @@ public class RedisServiceImpl implements RedisService {
 
 	@Resource
 	private RedisConnectionFactory redisConnectionFactory;
+
+    /**
+     * redis信息
+     */
+    private static final String REDIS_MESSAGE = "3";
 
 	/**
 	 * Redis详细信息
@@ -88,7 +94,7 @@ public class RedisServiceImpl implements RedisService {
 	public Map<String, JSONArray> getMapForReport(String type)  throws RedisConnectException {
 		Map<String,JSONArray> mapJson=new HashMap(5);
 		JSONArray json = new JSONArray();
-		if("3".equals(type)){
+		if(REDIS_MESSAGE.equals(type)){
 			List<RedisInfo> redisInfo = getRedisInfo();
 			for(RedisInfo info:redisInfo){
 				Map<String, Object> map= Maps.newHashMap();
@@ -101,7 +107,8 @@ public class RedisServiceImpl implements RedisService {
 			mapJson.put("data",json);
 			return mapJson;
 		}
-		for(int i = 0; i < 5; i++){
+		int length = 5;
+		for(int i = 0; i < length; i++){
 			JSONObject jo = new JSONObject();
 			Map<String, Object> map;
 			if("1".equals(type)){
@@ -109,11 +116,11 @@ public class RedisServiceImpl implements RedisService {
 				jo.put("value",map.get("dbSize"));
 			}else{
 				map = getMemoryInfo();
-				Integer used_memory = Integer.valueOf(map.get("used_memory").toString());
-				jo.put("value",used_memory/1000);
+				Integer usedMemory = Integer.valueOf(map.get("used_memory").toString());
+				jo.put("value",usedMemory/1000);
 			}
-			String create_time = DateUtil.formatTime(DateUtil.date((Long) map.get("create_time")-(4-i)*1000));
-			jo.put("name",create_time);
+			String createTime = DateUtil.formatTime(DateUtil.date((Long) map.get("create_time")-(4-i)*1000));
+			jo.put("name",createTime);
 			json.add(jo);
 		}
 		mapJson.put("data",json);

@@ -7,8 +7,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.DataBaseConstant;
+import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.util.ResourceUtil;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictModelMany;
 import org.jeecg.common.system.vo.DictQuery;
@@ -25,10 +28,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -97,6 +97,10 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			}).collect(Collectors.toList());
 			res.put(d.getDictCode(), dictModelList);
 		}
+		//update-begin-author:taoyan date:2022-7-8 for: 系统字典数据应该包括自定义的java类-枚举
+		Map<String, List<DictModel>> enumRes = ResourceUtil.getEnumDictData();
+		res.putAll(enumRes);
+		//update-end-author:taoyan date:2022-7-8 for: 系统字典数据应该包括自定义的java类-枚举
 		log.debug("-------登录加载系统字典-----" + res.toString());
 		return res;
 	}
@@ -123,6 +127,10 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			List<DictModel> dictItemList = dictMap.computeIfAbsent(dict.getDictCode(), i -> new ArrayList<>());
 			dictItemList.add(new DictModel(dict.getValue(), dict.getText()));
 		}
+		//update-begin-author:taoyan date:2022-7-8 for: 系统字典数据应该包括自定义的java类-枚举
+		Map<String, List<DictModel>> enumRes = ResourceUtil.queryManyDictByKeys(dictCodeList, keys);
+		dictMap.putAll(enumRes);
+		//update-end-author:taoyan date:2022-7-8 for: 系统字典数据应该包括自定义的java类-枚举
 		return dictMap;
 	}
 
@@ -167,7 +175,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	public List<DictModel> queryTableDictTextByKeys(String table, String text, String code, List<String> keys) {
 		//update-begin-author:taoyan date:20220113 for: @dict注解支持 dicttable 设置where条件
 		String filterSql = null;
-		if(table.toLowerCase().indexOf("where")>0){
+		if(table.toLowerCase().indexOf(DataBaseConstant.SQL_WHERE)>0){
 			String[] arr = table.split(" (?i)where ");
 			table = arr[0];
 			filterSql = arr[1];
@@ -200,7 +208,16 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			return null;
 		}
 		String[] keyArray = keys.split(",");
-		List<DictModel> dicts = sysDictMapper.queryTableDictByKeys(table, text, code, keyArray);
+
+		//update-begin-author:taoyan date:2022-4-24 for: 下拉搜索组件，表单编辑页面回显下拉搜索的文本的时候，因为表名后配置了条件，导致sql执行失败，
+		String filterSql = null;
+		if(table.toLowerCase().indexOf("where")!=-1){
+			String[] arr = table.split(" (?i)where ");
+			table = arr[0];
+			filterSql = arr[1];
+		}
+		List<DictModel> dicts = sysDictMapper.queryTableDictByKeysAndFilterSql(table, text, code, filterSql, Arrays.asList(keyArray));
+		//update-end-author:taoyan date:2022-4-24 for: 下拉搜索组件，表单编辑页面回显下拉搜索的文本的时候，因为表名后配置了条件，导致sql执行失败，
 		List<String> texts = new ArrayList<>(dicts.size());
 
 		// update-begin--author:sunjianlei--date:20210514--for：新增delNotExist参数，设为false不删除数据库里不存在的key ----
@@ -261,15 +278,19 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		return baseMapper.queryAllUserBackDictModel();
 	}
 	
-	@Override
-	public List<DictModel> queryTableDictItems(String table, String text, String code, String keyword) {
-		return baseMapper.queryTableDictItems(table, text, code, "%"+keyword+"%");
-	}
+//	@Override
+//	public List<DictModel> queryTableDictItems(String table, String text, String code, String keyword) {
+//		return baseMapper.queryTableDictItems(table, text, code, "%"+keyword+"%");
+//	}
 
 	@Override
 	public List<DictModel> queryLittleTableDictItems(String table, String text, String code, String condition, String keyword, int pageSize) {
     	Page<DictModel> page = new Page<DictModel>(1, pageSize);
 		page.setSearchCount(false);
+
+		//【issues/3713】字典接口存在SQL注入风险
+		SqlInjectionUtil.specialFilterContentForDictSql(code);
+
 		String filterSql = getFilterSql(table, text, code, condition, keyword);
 		IPage<DictModel> pageList = baseMapper.queryTableDictWithFilter(page, table, text, code, filterSql);
 		return pageList.getRecords();
@@ -284,15 +305,15 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	 * @return
 	 */
 	private String getFilterSql(String table, String text, String code, String condition, String keyword){
-		String keywordSql = null, filterSql = "", sql_where = " where ";
+		String keywordSql = null, filterSql = "", sqlWhere = " where ";
 		// update-begin-author:sunjianlei date:20220112 for: 【JTC-631】判断如果 table 携带了 where 条件，那么就使用 and 查询，防止报错
-		if (table.toLowerCase().contains(" where ")) {
-			sql_where = " and ";
+        if (table.toLowerCase().contains(sqlWhere)) {
+            sqlWhere = " and ";
 		}
 		// update-end-author:sunjianlei date:20220112 for: 【JTC-631】判断如果 table 携带了 where 条件，那么就使用 and 查询，防止报错
 		if(oConvertUtils.isNotEmpty(keyword)){
 			// 判断是否是多选
-			if (keyword.contains(",")) {
+			if (keyword.contains(SymbolConstant.COMMA)) {
                 //update-begin--author:scott--date:20220105--for：JTC-529【表单设计器】 编辑页面报错，in参数采用双引号导致 ----
 				String inKeywords = "'" + String.join("','", keyword.split(",")) + "'";
                 //update-end--author:scott--date:20220105--for：JTC-529【表单设计器】 编辑页面报错，in参数采用双引号导致----
@@ -302,11 +323,11 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			}
 		}
 		if(oConvertUtils.isNotEmpty(condition) && oConvertUtils.isNotEmpty(keywordSql)){
-			filterSql+= sql_where + condition + " and " + keywordSql;
+			filterSql+= sqlWhere + condition + " and " + keywordSql;
 		}else if(oConvertUtils.isNotEmpty(condition)){
-			filterSql+= sql_where + condition;
+			filterSql+= sqlWhere + condition;
 		}else if(oConvertUtils.isNotEmpty(keywordSql)){
-			filterSql+= sql_where + keywordSql;
+			filterSql+= sqlWhere + keywordSql;
 		}
 		return filterSql;
 	}
@@ -319,13 +340,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
 	@Override
 	public List<TreeSelectModel> queryTreeList(Map<String, String> query,String table, String text, String code, String pidField,String pid,String hasChildField) {
-		List<TreeSelectModel> result = baseMapper.queryTreeList(query, table, text, code, pidField, pid, hasChildField);
-		// udapte-begin-author:sunjianlei date:20220110 for: 【JTC-597】如果 query 有值，就不允许展开子节点
-		if (query != null) {
-			result.forEach(r -> r.setLeaf(true));
-		}
-		return result;
-		// udapte-end-author:sunjianlei date:20220110 for: 【JTC-597】如果 query 有值，就不允许展开子节点
+		return baseMapper.queryTreeList(query, table, text, code, pidField, pid, hasChildField);
 	}
 
 	@Override
@@ -354,7 +369,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Override
 	public List<DictModel> getDictItems(String dictCode) {
 		List<DictModel> ls;
-		if (dictCode.contains(",")) {
+		if (dictCode.contains(SymbolConstant.COMMA)) {
 			//关联表字典（举例：sys_user,realname,id）
 			String[] params = dictCode.split(",");
 			if (params.length < 3) {
@@ -362,11 +377,16 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 				return null;
 			}
 			//SQL注入校验（只限制非法串改数据库）
-			final String[] sqlInjCheck = {params[0], params[1], params[2]};
+			//update-begin-author:taoyan date:2022-7-4 for: issues/I5BNY9 指定带过滤条件的字典table在生成代码后失效
+			// 表名后也有可能带条件and语句 不能走filterContent方法
+			SqlInjectionUtil.specialFilterContentForDictSql(params[0]);
+			final String[] sqlInjCheck = {params[1], params[2]};
+			//update-end-author:taoyan date:2022-7-4 for: issues/I5BNY9 指定带过滤条件的字典table在生成代码后失效
+			//【issues/3713】字典接口存在SQL注入风险
 			SqlInjectionUtil.filterContent(sqlInjCheck);
 			if (params.length == 4) {
 				// SQL注入校验（查询条件SQL 特殊check，此方法仅供此处使用）
-				SqlInjectionUtil.specialFilterContent(params[3]);
+				SqlInjectionUtil.specialFilterContentForDictSql(params[3]);
 				ls = this.queryTableDictItemsByCodeAndFilter(params[0], params[1], params[2], params[3]);
 			} else if (params.length == 3) {
 				ls = this.queryTableDictItemsByCode(params[0], params[1], params[2]);
@@ -383,7 +403,10 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
 	@Override
 	public List<DictModel> loadDict(String dictCode, String keyword, Integer pageSize) {
-		if (dictCode.contains(",")) {
+		//【issues/3713】字典接口存在SQL注入风险
+		SqlInjectionUtil.specialFilterContentForDictSql(dictCode);
+
+		if (dictCode.contains(SymbolConstant.COMMA)) {
 			//update-begin-author:taoyan date:20210329 for: 下拉搜索不支持表名后加查询条件
 			String[] params = dictCode.split(",");
 			String condition = null;
@@ -393,10 +416,15 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			} else if (params.length == 4) {
 				condition = params[3];
 				// update-begin-author:taoyan date:20220314 for: online表单下拉搜索框表字典配置#{sys_org_code}报错 #3500
-				if(condition.indexOf("#{")>=0){
+				if(condition.indexOf(SymbolConstant.SYS_VAR_PREFIX)>=0){
 					condition =  QueryGenerator.getSqlRuleValue(condition);
 				}
 				// update-end-author:taoyan date:20220314 for: online表单下拉搜索框表字典配置#{sys_org_code}报错 #3500
+			}
+
+			// 字典Code格式不正确 [表名为空]
+			if(oConvertUtils.isEmpty(params[0])){
+				return null;
 			}
 			List<DictModel> ls;
 			if (pageSize != null) {

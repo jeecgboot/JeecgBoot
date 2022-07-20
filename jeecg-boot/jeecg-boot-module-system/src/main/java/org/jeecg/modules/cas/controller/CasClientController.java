@@ -5,21 +5,17 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import cn.hutool.crypto.SecureUtil;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.util.JwtUtil;
-import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.RedisUtil;
-import org.jeecg.modules.cas.util.CASServiceUtil;
+import org.jeecg.modules.cas.util.CasServiceUtil;
 import org.jeecg.modules.cas.util.XmlUtils;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -65,7 +61,7 @@ public class CasClientController {
 		log.info("Rest api login.");
 		try {
 			String validateUrl = prefixUrl+"/p3/serviceValidate";
-			String res = CASServiceUtil.getSTValidate(validateUrl, ticket, service);
+			String res = CasServiceUtil.getStValidate(validateUrl, ticket, service);
 			log.info("res."+res);
 			final String error = XmlUtils.getTextForElement(res, "authenticationFailure");
 			if(StringUtils.isNotEmpty(error)) {

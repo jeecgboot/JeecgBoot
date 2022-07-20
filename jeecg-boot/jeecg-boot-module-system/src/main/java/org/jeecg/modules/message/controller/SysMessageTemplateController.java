@@ -6,9 +6,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jeecg.common.api.dto.message.MessageDTO;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.message.entity.MsgParams;
 import org.jeecg.modules.message.entity.SysMessageTemplate;
 import org.jeecg.modules.message.service.ISysMessageTemplateService;
@@ -45,6 +48,9 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	private ISysMessageTemplateService sysMessageTemplateService;
 	@Autowired
 	private PushMsgUtil pushMsgUtil;
+
+	@Autowired
+	private ISysBaseAPI sysBaseApi;
 
 	/**
 	 * 分页列表查询
@@ -152,19 +158,23 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	@PostMapping(value = "/sendMsg")
 	public Result<SysMessageTemplate> sendMessage(@RequestBody MsgParams msgParams) {
 		Result<SysMessageTemplate> result = new Result<SysMessageTemplate>();
-		Map<String, String> map = null;
 		try {
-			map = (Map<String, String>) JSON.parse(msgParams.getTestData());
+			MessageDTO md = new MessageDTO();
+			md.setToAll(false);
+			md.setTitle("消息发送测试");
+			md.setTemplateCode(msgParams.getTemplateCode());
+			md.setToUser(msgParams.getReceiver());
+			md.setType(msgParams.getMsgType());
+			String testData = msgParams.getTestData();
+			if(oConvertUtils.isNotEmpty(testData)){
+				Map<String, Object> data = JSON.parseObject(testData, Map.class);
+				md.setData(data);
+			}
+			sysBaseApi.sendTemplateMessage(md);
+			return result.success("消息发送成功！");
 		} catch (Exception e) {
-			result.error500("解析Json出错！");
-			return result;
+			log.error("发送消息出错", e.getMessage());
+			return result.error500("发送消息出错！");
 		}
-		boolean is_sendSuccess = pushMsgUtil.sendMessage(msgParams.getMsgType(), msgParams.getTemplateCode(), map, msgParams.getReceiver());
-		if (is_sendSuccess) {
-			result.success("发送消息任务添加成功！");
-		} else {
-			result.error500("发送消息任务添加失败！");
-		}
-		return result;
 	}
 }

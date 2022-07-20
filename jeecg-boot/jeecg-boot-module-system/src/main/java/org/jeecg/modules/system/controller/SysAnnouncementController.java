@@ -27,7 +27,7 @@ import org.jeecg.modules.system.service.ISysAnnouncementService;
 import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.jeecg.modules.system.service.impl.ThirdAppDingtalkServiceImpl;
 import org.jeecg.modules.system.service.impl.ThirdAppWechatEnterpriseServiceImpl;
-import org.jeecg.modules.system.util.XSSUtils;
+import org.jeecg.modules.system.util.XssUtils;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -125,7 +125,7 @@ public class SysAnnouncementController {
 		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
 		try {
 			// update-begin-author:liusq date:20210804 for:标题处理xss攻击的问题
-			String title = XSSUtils.striptXSS(sysAnnouncement.getTitile());
+			String title = XssUtils.scriptXss(sysAnnouncement.getTitile());
 			sysAnnouncement.setTitile(title);
 			// update-end-author:liusq date:20210804 for:标题处理xss攻击的问题
 			sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
@@ -153,7 +153,7 @@ public class SysAnnouncementController {
 			result.error500("未找到对应实体");
 		}else {
 			// update-begin-author:liusq date:20210804 for:标题处理xss攻击的问题
-			String title = XSSUtils.striptXSS(sysAnnouncement.getTitile());
+			String title = XssUtils.scriptXss(sysAnnouncement.getTitile());
 			sysAnnouncement.setTitile(title);
 			// update-end-author:liusq date:20210804 for:标题处理xss攻击的问题
 			boolean ok = sysAnnouncementService.upDateAnnouncement(sysAnnouncement);
@@ -488,15 +488,15 @@ public class SysAnnouncementController {
     public ModelAndView showContent(ModelAndView modelAndView, @PathVariable("id") String id, HttpServletRequest request) {
         SysAnnouncement announcement = sysAnnouncementService.getById(id);
         if (announcement != null) {
-            boolean tokenOK = false;
+            boolean tokenOk = false;
             try {
                 // 验证Token有效性
-                tokenOK = TokenUtils.verifyToken(request, sysBaseApi, redisUtil);
+                tokenOk = TokenUtils.verifyToken(request, sysBaseApi, redisUtil);
             } catch (Exception ignored) {
             }
             // 判断是否传递了Token，并且Token有效，如果传了就不做查看限制，直接返回
             // 如果Token无效，就做查看限制：只能查看已发布的
-            if (tokenOK || ANNOUNCEMENT_SEND_STATUS_1.equals(announcement.getSendStatus())) {
+            if (tokenOk || ANNOUNCEMENT_SEND_STATUS_1.equals(announcement.getSendStatus())) {
                 modelAndView.addObject("data", announcement);
                 modelAndView.setViewName("announcement/showContent");
                 return modelAndView;

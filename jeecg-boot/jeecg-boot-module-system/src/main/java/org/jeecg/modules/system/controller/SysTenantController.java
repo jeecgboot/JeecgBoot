@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.PermissionData;
+import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
@@ -204,7 +205,7 @@ public class SysTenantController {
             Map<String,Object> map = new HashMap(5);
             if (oConvertUtils.isNotEmpty(tenantIds)) {
                 List<Integer> tenantIdList = new ArrayList<>();
-                for(String id: tenantIds.split(",")){
+                for(String id: tenantIds.split(SymbolConstant.COMMA)){
                     tenantIdList.add(Integer.valueOf(id));
                 }
                 // 该方法仅查询有效的租户，如果返回0个就说明所有的租户均无效。

@@ -20,13 +20,14 @@ public enum CgformEnum {
      */
     MANY(2, "many", "/jeecg/code-template-online", "default.onetomany", "经典风格"),
     /**
-     * 多表
-     */
-    ERP(2, "erp", "/jeecg/code-template-online", "erp.onetomany", "ERP风格"),
-    /**
      * 多表（jvxe风格）
      *  */
     JVXE_TABLE(2, "jvxe", "/jeecg/code-template-online", "jvxe.onetomany", "JVXE风格"),
+
+    /**
+     * 多表
+     */
+    ERP(2, "erp", "/jeecg/code-template-online", "erp.onetomany", "ERP风格"),
     /**
      * 多表（内嵌子表风格）
      */

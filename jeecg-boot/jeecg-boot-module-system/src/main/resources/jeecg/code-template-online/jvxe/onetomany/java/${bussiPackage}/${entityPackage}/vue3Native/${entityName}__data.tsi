@@ -122,7 +122,8 @@ export const searchFormSchema: FormSchema[] = [
 <#elseif po.classType=='datetime'>
       component: 'DatePicker',
       componentProps: {
-         showTime:true
+         showTime:true,
+         valueFormat: 'YYYY-MM-DD HH:mm:ss'
        },
 <#elseif po.classType=='pca'>
       component: 'JAreaLinkage',
@@ -320,7 +321,7 @@ export const formSchema: FormSchema[] = [
                  { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号码!'},
            <#-- 邮政编码 -->
            <#elseif fieldValidType == 'p'>
-                 { pattern: /^[1-9]\d{5}$/, message: '请输入正确的邮政编码!'},
+                 { pattern: /^[0-9]\d{5}$/, message: '请输入正确的邮政编码!'},
            <#-- 字母 -->
            <#elseif fieldValidType == 's'>
                  { pattern: /^[A-Z|a-z]+$/, message: '请输入字母!'},
@@ -516,7 +517,7 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
                  { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号码!'},
            <#-- 邮政编码 -->
            <#elseif fieldValidType == 'p'>
-                 { pattern: /^[1-9]\d{5}$/, message: '请输入正确的邮政编码!'},
+                 { pattern: /^[0-9]\d{5}$/, message: '请输入正确的邮政编码!'},
            <#-- 字母 -->
            <#elseif fieldValidType == 's'>
                  { pattern: /^[A-Z|a-z]+$/, message: '请输入字母!'},

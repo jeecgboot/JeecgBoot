@@ -145,4 +145,13 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         return () -> meterRegistryPostProcessor.postProcessAfterInitialization(prometheusMeterRegistry, "");
     }
 
+//    /**
+//     * 注册拦截器【拦截器拦截参数，自动切换数据源——后期实现多租户切换数据源功能】
+//     * @param registry
+//     */
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//        registry.addInterceptor(new DynamicDatasourceInterceptor()).addPathPatterns("/test/dynamic/**");
+//    }
+
 }

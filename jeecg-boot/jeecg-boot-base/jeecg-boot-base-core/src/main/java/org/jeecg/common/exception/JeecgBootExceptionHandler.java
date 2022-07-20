@@ -123,7 +123,8 @@ public class JeecgBootExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public Result<?> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
     	log.error(e.getMessage(), e);
-        return Result.error("字段太长,超出数据库字段的长度");
+    	//【issues/3624】数据库执行异常handleDataIntegrityViolationException提示有误 #3624
+        return Result.error("执行数据库异常,违反了完整性例如：违反惟一约束、违反非空限制、字段内容超出长度等");
     }
 
     @ExceptionHandler(PoolException.class)

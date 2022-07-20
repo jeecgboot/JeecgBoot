@@ -2,6 +2,8 @@ package org.jeecg.modules.ngalain.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.ngalain.service.NgAlainService;
 import org.jeecg.modules.system.entity.SysPermission;
@@ -123,12 +125,13 @@ public class NgAlainServiceImpl implements NgAlainService {
     private JSONObject getPermissionJsonObject(SysPermission permission) {
         JSONObject json = new JSONObject();
         //类型(0：一级菜单 1：子菜单  2：按钮)
-        if(permission.getMenuType()==2) {
+        if(CommonConstant.MENU_TYPE_2.equals(permission.getMenuType())) {
             json.put("action", permission.getPerms());
             json.put("describe", permission.getName());
-        }else if(permission.getMenuType()==0||permission.getMenuType()==1) {
+        }else if(CommonConstant.MENU_TYPE_0.equals(permission.getMenuType()) || CommonConstant.MENU_TYPE_1.equals(permission.getMenuType())) {
             json.put("id", permission.getId());
-            if(permission.getUrl()!=null&&(permission.getUrl().startsWith("http://")||permission.getUrl().startsWith("https://"))) {
+            boolean flag = permission.getUrl()!=null&&(permission.getUrl().startsWith(CommonConstant.HTTP_PROTOCOL)||permission.getUrl().startsWith(CommonConstant.HTTPS_PROTOCOL));
+            if(flag) {
                 String url= new String(Base64.getUrlEncoder().encode(permission.getUrl().getBytes()));
                 json.put("path", "/sys/link/" +url.replaceAll("=",""));
             }else {
@@ -156,7 +159,7 @@ public class NgAlainServiceImpl implements NgAlainService {
             }else {
                 meta.put("icon", oConvertUtils.getString(permission.getIcon(), ""));
             }
-            if(permission.getUrl()!=null&&(permission.getUrl().startsWith("http://")||permission.getUrl().startsWith("https://"))) {
+            if(flag) {
                 meta.put("url", permission.getUrl());
             }
             json.put("meta", meta);
@@ -172,7 +175,7 @@ public class NgAlainServiceImpl implements NgAlainService {
      */
     private String urlToRouteName(String url) {
         if(oConvertUtils.isNotEmpty(url)) {
-            if(url.startsWith("/")) {
+            if(url.startsWith(SymbolConstant.SINGLE_SLASH)) {
                 url = url.substring(1);
             }
             url = url.replace("/", "-");

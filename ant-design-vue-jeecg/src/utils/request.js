@@ -113,6 +113,11 @@ service.interceptors.request.use(config => {
   const $route = router.currentRoute
   if ($route && $route.name && $route.name.startsWith('low-app') && $route.params.appId) {
     config.headers['X-Low-App-ID'] = $route.params.appId
+    // lowApp自定义筛选条件
+    if ($route.params.lowAppFilter) {
+      config.params = {...config.params, ...$route.params.lowAppFilter}
+      delete $route.params.lowAppFilter
+    }
   }
   // update-end--author:sunjianlei---date:20200723---for 如果当前在low-app环境，并且携带了appId，就向Header里传递appId
 

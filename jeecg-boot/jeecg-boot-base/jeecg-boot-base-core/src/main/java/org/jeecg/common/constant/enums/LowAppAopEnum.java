@@ -15,6 +15,8 @@ public enum LowAppAopEnum {
      * 删除方法（包含单个和批量删除）
      */
     DELETE,
+    /** 复制表单操作 */
+    COPY,
 
     /**
      * Online表单专用：数据库表转Online表单

@@ -133,6 +133,10 @@
           value['message'] = file.response.message || '未知错误'
         }
         this.innerFile = value
+        // issues/I5FTO6 JVxeTypes.upload 文件上传的时候，触发不了事件
+        if (value.path) {
+          this.handleChangeCommon(fileGetValue(value));
+        }
       },
 
       // handleClickPreviewFile(id) {

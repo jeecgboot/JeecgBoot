@@ -52,6 +52,11 @@ public class SysPermissionTree implements Serializable {
 	private String component;
 
 	/**
+	 * 组件名字
+	 */
+	private String componentName;
+
+	/**
 	 * 跳转网页链接
 	 */
 	private String url;
@@ -141,6 +146,7 @@ public class SysPermissionTree implements Serializable {
 		this.perms = permission.getPerms();
 		this.permsType = permission.getPermsType();
 		this.component = permission.getComponent();
+		this.componentName = permission.getComponentName();
 		this.createBy = permission.getCreateBy();
 		this.createTime = permission.getCreateTime();
 		this.delFlag = permission.getDelFlag();
@@ -264,6 +270,14 @@ public class SysPermissionTree implements Serializable {
 
 	public void setComponent(String component) {
 		this.component = component;
+	}
+
+	public String getComponentName() {
+		return componentName;
+	}
+
+	public void setComponentName(String componentName) {
+		this.componentName = componentName;
 	}
 
 	public String getUrl() {

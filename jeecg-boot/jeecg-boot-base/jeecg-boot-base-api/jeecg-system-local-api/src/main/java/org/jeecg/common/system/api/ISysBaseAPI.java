@@ -338,4 +338,17 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     List<DictModel> loadDictItemByKeyword(String dictCode, String keyword, Integer pageSize);
 
+    /**
+     * 发送模板消息
+     * @param message
+     */
+    void sendTemplateMessage(MessageDTO message);
+
+    /**
+     * 根据模板编码获取模板内容
+     * @param templateCode
+     * @return
+     */
+    String getTemplateContent(String templateCode);
+
 }

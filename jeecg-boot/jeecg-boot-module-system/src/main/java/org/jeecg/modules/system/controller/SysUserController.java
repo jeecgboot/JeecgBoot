@@ -18,6 +18,7 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -159,7 +160,7 @@ public class SysUserController {
 	}
 
     //@RequiresRoles({"admin"})
-    //@RequiresPermissions("user:add")
+    //Permissions("system:user:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysUser> add(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -174,6 +175,8 @@ public class SysUserController {
 			user.setPassword(passwordEncode);
 			user.setStatus(1);
 			user.setDelFlag(CommonConstant.DEL_FLAG_0);
+			//用户表字段org_code不能在这里设置他的值
+            user.setOrgCode(null);
 			// 保存用户走一个service 保证事务
 			sysUserService.saveUser(user, selectedRoles, selectedDeparts);
             baseCommonService.addLog("添加用户，username： " +user.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
@@ -186,7 +189,7 @@ public class SysUserController {
 	}
 
     //@RequiresRoles({"admin"})
-    //@RequiresPermissions("user:edit")
+    //Permissions("system:user:edit")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<SysUser> edit(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -206,6 +209,8 @@ public class SysUserController {
                     //vue3.0前端只传递了departIds
                     departs=user.getDepartIds();
                 }
+                //用户表字段org_code不能在这里设置他的值
+                user.setOrgCode(null);
                 // 修改用户走一个service 保证事务
 				sysUserService.editUser(user, roles, departs);
 				result.success("修改成功!");
@@ -439,8 +444,13 @@ public class SysUserController {
             @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
             @RequestParam(name = "departId", required = false) String departId,
             @RequestParam(name="realname",required=false) String realname,
-            @RequestParam(name="username",required=false) String username) {
-        IPage<SysUser> pageList = sysUserDepartService.queryDepartUserPageList(departId, username, realname, pageSize, pageNo);
+            @RequestParam(name="username",required=false) String username,
+            @RequestParam(name="id",required = false) String id) {
+        //update-begin-author:taoyan date:2022-7-14 for: VUEN-1702【禁止问题】sql注入漏洞
+        String[] arr = new String[]{departId, realname, username, id};
+        SqlInjectionUtil.filterContent(arr, SymbolConstant.SINGLE_QUOTATION_MARK);
+        //update-end-author:taoyan date:2022-7-14 for: VUEN-1702【禁止问题】sql注入漏洞
+        IPage<SysUser> pageList = sysUserDepartService.queryDepartUserPageList(departId, username, realname, pageSize, pageNo,id);
         return Result.OK(pageList);
     }
 
@@ -450,6 +460,8 @@ public class SysUserController {
      * @param request
      * @param sysUser
      */
+    //@RequiresRoles({"admin"})
+    //@RequiresPermissions("system:user:export")
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(SysUser sysUser,HttpServletRequest request) {
         // Step.1 组装查询条件
@@ -483,7 +495,7 @@ public class SysUserController {
      * @return
      */
     //@RequiresRoles({"admin"})
-    //@RequiresPermissions("user:import")
+    //Permissions("system:user:import")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response)throws IOException {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -1267,6 +1279,15 @@ public class SysUserController {
                     sysUser.setPhone(phone);
                 }
                 if(StringUtils.isNotBlank(email)){
+                    //update-begin---author:wangshuai ---date:20220708  for：[VUEN-1528]积木官网邮箱重复，应该提示准确------------
+                    LambdaQueryWrapper<SysUser> emailQuery = new LambdaQueryWrapper<>();
+                    emailQuery.eq(SysUser::getEmail,email);
+                    long count = sysUserService.count(emailQuery);
+                    if (!email.equals(sysUser.getEmail()) && count!=0) {
+                        result.error500("保存失败，邮箱已存在!");
+                        return result;
+                    }
+                    //update-end---author:wangshuai ---date:20220708  for：[VUEN-1528]积木官网邮箱重复，应该提示准确--------------
                     sysUser.setEmail(email);
                 }
                 if(null != birthday){
@@ -1277,7 +1298,7 @@ public class SysUserController {
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            result.error500("操作失败!");
+            result.error500("保存失败!");
         }
         return result;
     }

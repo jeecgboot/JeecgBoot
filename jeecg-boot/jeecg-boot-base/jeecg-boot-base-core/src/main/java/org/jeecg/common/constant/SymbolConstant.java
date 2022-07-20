@@ -86,4 +86,34 @@ public class SymbolConstant {
      * 符号：和 &
      */
     public static final String AND = "&";
+
+    /**
+     * 符号：../
+     */
+    public static final String SPOT_SINGLE_SLASH = "../";
+
+    /**
+     * 符号：..\\
+     */
+    public static final String SPOT_DOUBLE_BACKSLASH = "..\\";
+
+    /**
+     * 系统变量前缀 #{
+     */
+    public static final String SYS_VAR_PREFIX = "#{";
+
+    /**
+     * 符号 {{
+     */
+    public static final String DOUBLE_LEFT_CURLY_BRACKET = "{{";
+
+    /**
+     * 符号：[
+     */
+    public static final String SQUARE_BRACKETS_LEFT = "[";
+    /**
+     * 符号：]
+     */
+    public static final String SQUARE_BRACKETS_RIGHT = "]";
+
 }

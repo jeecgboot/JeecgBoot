@@ -28,7 +28,7 @@
  { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号码!'}<#rt>,
 <#-- 邮政编码 -->
 <#elseif fieldValidType == 'p'>
- { pattern: /^[1-9]\d{5}$/, message: '请输入正确的邮政编码!'}<#rt>,
+ { pattern: /^[0-9]\d{5}$/, message: '请输入正确的邮政编码!'}<#rt>,
 <#-- 字母 -->
 <#elseif fieldValidType == 's'>
  { pattern: /^[A-Z|a-z]+$/, message: '请输入字母!'}<#rt>,

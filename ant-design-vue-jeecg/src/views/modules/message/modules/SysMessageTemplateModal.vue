@@ -50,6 +50,17 @@
             </a-form-item>
           </a-col>
         </a-row>
+        <a-row class="form-row" :gutter="24" >
+          <a-col :span="24" pull="2">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="是否应用"
+              style="margin-left: -15px">
+              <j-switch v-decorator="['useStatus', validatorRules.useStatus]" :options="['1', '0']"></j-switch>
+            </a-form-item>
+          </a-col>
+        </a-row>
         <a-row class="form-row" :gutter="24">
           <a-col :span="24" pull="4">
             <a-form-item
@@ -85,11 +96,13 @@
   import pick from 'lodash.pick'
   import { duplicateCheck } from '@/api/api'
   import JEditor from '@/components/jeecg/JEditor'
+  import JSwitch from '@/components/jeecg/JSwitch'
 
   export default {
     name: "SysMessageTemplateModal",
     components:{
-      JEditor
+      JEditor,
+      JSwitch
     },
     data() {
       return {
@@ -111,6 +124,7 @@
         templateCode: {rules: [{required: true, message: '请输入模板CODE!' },{validator: this.validateTemplateCode}]},
         templateName: {rules: [{required: true, message: '请输入模板标题!'}]},
         templateContent: {rules: []},
+        useStatus:{rules: []},
         templateType: {rules: [{required: true, message: '请输入模板类型!'}]},
         },
         url: {
@@ -140,9 +154,9 @@
         this.visible = true;
         this.$nextTick(() => {
           if(this.useEditor){
-            this.form.setFieldsValue(pick(this.model, 'templateCode', 'templateName', 'templateTestJson', 'templateType'))
+            this.form.setFieldsValue(pick(this.model, 'useStatus', 'templateCode', 'templateName', 'templateTestJson', 'templateType'))
           }else{
-            this.form.setFieldsValue(pick(this.model, 'templateCode', 'templateContent', 'templateName', 'templateTestJson', 'templateType'))
+            this.form.setFieldsValue(pick(this.model, 'useStatus', 'templateCode', 'templateContent', 'templateName', 'templateTestJson', 'templateType'))
           }
         });
       },

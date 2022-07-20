@@ -1,5 +1,7 @@
 import {defHttp} from '/@/utils/http/axios';
-import {Modal} from 'ant-design-vue';
+import { useMessage } from "/@/hooks/web/useMessage";
+
+const { createConfirm } = useMessage();
 
 enum Api {
   list = '/${entityPackage}/${entityName?uncap_first}/list',
@@ -50,7 +52,8 @@ export const deleteOne = (params,handleSuccess) => {
  * @param params
  */
 export const batchDelete = (params, handleSuccess) => {
-  Modal.confirm({
+  createConfirm({
+    iconType: 'warning',
     title: '确认删除',
     content: '是否删除选中数据',
     okText: '确认',

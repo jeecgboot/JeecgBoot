@@ -158,16 +158,16 @@ public interface ISysDictService extends IService<SysDict> {
 	 */
 	public List<DictModel> queryAllUserBackDictModel();
 
-	/**
-	 * 通过关键字查询字典表
-	 * @param table
-	 * @param text
-	 * @param code
-	 * @param keyword
-	 * @return
-	 */
-	@Deprecated
-	public List<DictModel> queryTableDictItems(String table, String text, String code,String keyword);
+//	/**
+//	 * 通过关键字查询字典表
+//	 * @param table
+//	 * @param text
+//	 * @param code
+//	 * @param keyword
+//	 * @return
+//	 */
+//	@Deprecated
+//	public List<DictModel> queryTableDictItems(String table, String text, String code,String keyword);
 
 	/**
 	 * 查询字典表数据 只查询前10条
@@ -179,6 +179,7 @@ public interface ISysDictService extends IService<SysDict> {
      * @param pageSize 每页条数
 	 * @return
 	 */
+	@Deprecated
 	public List<DictModel> queryLittleTableDictItems(String table, String text, String code, String condition, String keyword, int pageSize);
 
 	/**
@@ -190,6 +191,7 @@ public interface ISysDictService extends IService<SysDict> {
 	 * @param keyword
 	 * @return
 	 */
+	@Deprecated
 	public List<DictModel> queryAllTableDictItems(String table, String text, String code, String condition, String keyword);
 	/**
 	  * 根据表名、显示字段名、存储字段名 查询树

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.constant.WebsocketConst;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.SqlInjectionUtil;
@@ -76,7 +77,7 @@ public class SysAnnouncementSendController {
 		SqlInjectionUtil.filterContent(order);
 
 		if(oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
-			if("asc".equals(order)) {
+			if(DataBaseConstant.SQL_ASC.equals(order)) {
 				queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));
 			}else {
 				queryWrapper.orderByDesc(oConvertUtils.camelToUnderline(column));

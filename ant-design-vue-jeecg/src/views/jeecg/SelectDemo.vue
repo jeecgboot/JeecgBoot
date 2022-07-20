@@ -538,6 +538,7 @@
         superQuery: {
           fieldList: [
             { type: 'input', value: 'name', text: '姓名', },
+            { type: 'switch', value: 'switch', text: '开关', },
             { type: 'select', value: 'sex', text: '性别', dictCode: 'sex' },
             { type: 'number', value: 'age', text: '年龄', },
             {

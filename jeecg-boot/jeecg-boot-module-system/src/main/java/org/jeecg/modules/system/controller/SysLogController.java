@@ -6,6 +6,7 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysLog;
@@ -38,7 +39,12 @@ public class SysLogController {
 	
 	@Autowired
 	private ISysLogService sysLogService;
-	
+
+    /**
+     * 全部清除
+     */
+	private static final String ALL_ClEAR = "allclear";
+
 	/**
 	 * @功能：查询日志记录
 	 * @param syslog
@@ -103,7 +109,7 @@ public class SysLogController {
 		if(ids==null || "".equals(ids.trim())) {
 			result.error500("参数不识别！");
 		}else {
-			if("allclear".equals(ids)) {
+			if(ALL_ClEAR.equals(ids)) {
 				this.sysLogService.removeAll();
 				result.success("清除成功!");
 			}

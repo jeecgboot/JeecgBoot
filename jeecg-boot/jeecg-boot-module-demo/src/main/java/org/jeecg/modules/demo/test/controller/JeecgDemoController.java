@@ -1,5 +1,6 @@
 package org.jeecg.modules.demo.test.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -17,6 +18,7 @@ import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.RedisUtil;
+import org.jeecg.common.util.UUIDGenerator;
 import org.jeecg.modules.demo.test.entity.JeecgDemo;
 import org.jeecg.modules.demo.test.service.IJeecgDemoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -325,4 +327,133 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
         return "hello world!";
     }
 
+    // =====Vue3 Native  原生页面示例===============================================================================================
+    @GetMapping(value = "/oneNative/list")
+    public Result oneNativeList(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize){
+        Object oneNative = redisUtil.get("one-native");
+        JSONArray data = new JSONArray();
+        if(null != oneNative){
+            JSONObject nativeObject = (JSONObject) oneNative;
+            data = nativeObject.getJSONArray("data");
+        }
+        IPage<JSONObject> objectPage = queryDataPage(data, pageNo, pageSize);
+        return Result.OK(objectPage);
+    }
+    
+    @PostMapping("/oneNative/add")
+    public Result<String> oneNativeAdd(@RequestBody JSONObject jsonObject){
+        Object oneNative = redisUtil.get("one-native");
+        JSONObject nativeObject = new JSONObject();
+        JSONArray data = new JSONArray();
+        if(null != oneNative){
+            nativeObject = (JSONObject) oneNative;
+            data = nativeObject.getJSONArray("data");
+        }
+        jsonObject.put("id", UUIDGenerator.generate());
+        data.add(jsonObject);
+        nativeObject.put("data",data);
+        redisUtil.set("one-native",nativeObject);
+        return Result.OK("添加成功");
+    }
+    
+    @PutMapping("/oneNative/edit")
+    public Result<String> oneNativeEdit(@RequestBody JSONObject jsonObject){
+        JSONObject oneNative = (JSONObject)redisUtil.get("one-native");
+        JSONArray data = oneNative.getJSONArray("data");
+        data = getNativeById(data,jsonObject);
+        oneNative.put("data", data);
+        redisUtil.set("one-native", oneNative);
+        return Result.OK("修改成功");
+    }
+
+    @DeleteMapping("/oneNative/delete")
+    public Result<String> oneNativeDelete(@RequestParam(name = "ids") String ids){
+        Object oneNative = redisUtil.get("one-native");
+        if(null != oneNative){
+            JSONObject nativeObject = (JSONObject) oneNative;
+            JSONArray data = nativeObject.getJSONArray("data");
+            data = deleteNativeById(data,ids);
+            nativeObject.put("data",data);
+            redisUtil.set("one-native",nativeObject);
+        }
+        return Result.OK("删除成功");
+    }
+    
+    /**
+     * 获取redis对应id的数据
+     * @param data
+     * @param jsonObject
+     * @return
+     */
+    public JSONArray getNativeById(JSONArray data,JSONObject jsonObject){
+        String dbId = "id";
+        String id = jsonObject.getString(dbId);
+        for (int i = 0; i < data.size(); i++) {
+            if(id.equals(data.getJSONObject(i).getString(dbId))){
+                data.set(i,jsonObject);
+                break;
+            }
+        }
+        return data;
+    }
+
+    /**
+     * 删除redis中包含的id数据
+     * @param data
+     * @param ids
+     * @return
+     */
+    public JSONArray deleteNativeById(JSONArray data,String ids){
+        String dbId = "id";
+        for (int i = 0; i < data.size(); i++) {
+            //如果id包含直接清除data中的数据
+            if(ids.contains(data.getJSONObject(i).getString(dbId))){
+                data.fluentRemove(i);
+            }
+            //判断data的长度是否还剩1位
+            if(data.size() == 1 && ids.contains(data.getJSONObject(0).getString(dbId))){
+                data.fluentRemove(0);
+            }
+        }
+        return data;
+    }
+
+    /**
+     * 模拟查询数据，可以根据父ID查询，可以分页
+     *
+     * @param dataList 数据列表
+     * @param pageNo   页码
+     * @param pageSize 页大小
+     * @return
+     */
+    private IPage<JSONObject> queryDataPage(JSONArray dataList, Integer pageNo, Integer pageSize) {
+        // 根据父级id查询子级
+        JSONArray dataDb = dataList;
+        // 模拟分页（实际中应用SQL自带的分页）
+        List<JSONObject> records = new ArrayList<>();
+        IPage<JSONObject> page;
+        long beginIndex, endIndex;
+        // 如果任意一个参数为null，则不分页
+        if (pageNo == null || pageSize == null) {
+            page = new Page<>(0, dataDb.size());
+            beginIndex = 0;
+            endIndex = dataDb.size();
+        } else {
+            page = new Page<>(pageNo, pageSize);
+            beginIndex = page.offset();
+            endIndex = page.offset() + page.getSize();
+        }
+        for (long i = beginIndex; (i < endIndex && i < dataDb.size()); i++) {
+            JSONObject data = dataDb.getJSONObject((int) i);
+            data = JSON.parseObject(data.toJSONString());
+            // 不返回 children
+            data.remove("children");
+            records.add(data);
+        }
+        page.setRecords(records);
+        page.setTotal(dataDb.size());
+        return page;
+    }
+    // =====Vue3 Native  原生页面示例===============================================================================================
+    
 }

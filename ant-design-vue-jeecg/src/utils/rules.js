@@ -1,10 +1,17 @@
 const validateMobile = (rule, value, callback) => {
   let reg = /^1(3|4|5|7|8)\d{9}$/
-  if (!reg.test(value)) {
-    callback('请输入正确手机号')
-  } else {
+  //update-beign-author:taoyan date:20220316 for: VUEN-329【bug】为什么不是失去焦点的时候，触发手机号校验
+  if(!value && value!=='0'){
     callback()
+  }else{
+    if (!reg.test(value)) {
+      callback('请输入正确手机号')
+    } else {
+      callback()
+    }
   }
+  //update-end-author:taoyan date:20220316 for: VUEN-329【bug】为什么不是失去焦点的时候，触发手机号校验
+  
 }
 const validateEn = (rule, value, callback) => {
   let reg = /^[_a-zA-Z0-9]+$/
@@ -24,6 +31,7 @@ export const rules = {
     message: '请输入手机号',
     trigger: 'blur'
   }, { validator: validateMobile, trigger: 'blur' }],
+  mobile2: [{ validator: validateMobile, trigger: 'blur' }],
   userName: [{
     required: true, message: '请输入用户名', trigger: 'blur'
   }, { validator: validateEn }],

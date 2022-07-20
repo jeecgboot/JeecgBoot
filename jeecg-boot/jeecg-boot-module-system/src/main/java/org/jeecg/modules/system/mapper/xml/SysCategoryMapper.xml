@@ -11,9 +11,25 @@
 			   from sys_category
 			where pid = #{pid}
 			<if test="query!= null">
-				<foreach collection="query.entrySet()" item="value"  index="key" >
-					and ${key} = #{value}
-				</foreach>
+				<if test="query.code !=null and query.code != ''">
+					and code = #{query.code}
+				</if>
+
+				<if test="query.name !=null and query.name != ''">
+					and name = #{query.name}
+				</if>
+
+				<if test="query.id !=null and query.id != ''">
+					and id = #{query.id}
+				</if>
+
+				<if test="query.createBy !=null and query.createBy != ''">
+					and create_by = #{query.createBy}
+				</if>
+
+				<if test="query.sysOrgCode !=null and query.sysOrgCode != ''">
+					and sys_org_code = #{query.sysOrgCode}
+				</if>
 			</if>
 	</select>
 

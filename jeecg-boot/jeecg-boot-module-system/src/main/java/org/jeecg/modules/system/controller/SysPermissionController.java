@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.controller;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -10,11 +11,12 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.constant.enums.RoleIndexConfigEnum;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.Md5Util;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.config.JeeccgBaseConfig;
+import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.model.SysPermissionTree;
@@ -57,13 +59,18 @@ public class SysPermissionController {
 	private ISysUserService sysUserService;
 
 	@Autowired
-	private JeeccgBaseConfig jeeccgBaseConfig;
+	private JeecgBaseConfig jeecgBaseConfig;
 
 	@Autowired
     private BaseCommonService baseCommonService;
 
 	@Autowired
 	private ISysRoleIndexService sysRoleIndexService;
+
+    /**
+     * 子菜单
+     */
+	private static final String CHILDREN = "children";
 
 	/**
 	 * 加载数据节点
@@ -212,6 +219,7 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequestMapping(value = "/getUserPermissionByToken", method = RequestMethod.GET)
+	//@DynamicTable(value = DynamicTableConstant.SYS_ROLE_INDEX)
 	public Result<?> getUserPermissionByToken(HttpServletRequest request) {
 		Result<JSONObject> result = new Result<JSONObject>();
 		try {
@@ -229,14 +237,29 @@ public class SysPermissionController {
 			}
 			//update-end-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
 
-			//update-begin--Author:liusq  Date:20210624  for:自定义首页地址LOWCOD-1578
-			List<String> roles = sysUserService.getRole(loginUser.getUsername());
-            String compUrl = RoleIndexConfigEnum.getIndexByRoles(roles);
-			if(StringUtils.isNotBlank(compUrl)){
+			//update-begin--Author:zyf Date:20220425  for:自定义首页地址 LOWCOD-1578
+			String version = request.getHeader(CommonConstant.VERSION);
+			//update-begin---author:liusq ---date:2022-06-29  for：接口返回值修改，同步修改这里的判断逻辑-----------
+			SysRoleIndex roleIndex= sysUserService.getDynamicIndexByUserRole(loginUser.getUsername(),version);
+			//update-end---author:liusq ---date:2022-06-29  for：接口返回值修改，同步修改这里的判断逻辑-----------
+			//update-end--Author:zyf  Date:20220425  for：自定义首页地址 LOWCOD-1578
+
+			if(roleIndex!=null){
 				List<SysPermission> menus = metaList.stream().filter(sysPermission -> "首页".equals(sysPermission.getName())).collect(Collectors.toList());
-				menus.get(0).setComponent(compUrl);
+				//update-begin---author:liusq ---date:2022-06-29  for：设置自定义首页地址和组件----------
+				String component = roleIndex.getComponent();
+				String routeUrl = roleIndex.getUrl();
+				boolean route = roleIndex.isRoute();
+				if(oConvertUtils.isNotEmpty(routeUrl)){
+					menus.get(0).setComponent(component);
+					menus.get(0).setRoute(route);
+					menus.get(0).setUrl(routeUrl);
+				}else{
+					menus.get(0).setComponent(component);
+				}
+				//update-end---author:liusq ---date:2022-06-29  for：设置自定义首页地址和组件-----------
 			}
-			//update-end--Author:liusq  Date:20210624  for：自定义首页地址LOWCOD-1578
+			
 			JSONObject json = new JSONObject();
 			JSONArray menujsonArray = new JSONArray();
 			this.getPermissionJsonArray(menujsonArray, metaList, null);
@@ -259,7 +282,7 @@ public class SysPermissionController {
 			json.put("auth", authjsonArray);
 			//全部权限配置集合（按钮权限，访问权限）
 			json.put("allAuth", allauthjsonArray);
-			json.put("sysSafeMode", jeeccgBaseConfig.getSafeMode());
+			json.put("sysSafeMode", jeecgBaseConfig.getSafeMode());
 			result.setResult(json);
 		} catch (Exception e) {
 			result.error500("查询失败:" + e.getMessage());  
@@ -306,7 +329,7 @@ public class SysPermissionController {
 			//全部权限配置集合（按钮权限，访问权限）
 			result.put("allAuth", allAuthArray);
             // 系统安全模式
-			result.put("sysSafeMode", jeeccgBaseConfig.getSafeMode());
+			result.put("sysSafeMode", jeecgBaseConfig.getSafeMode());
             return Result.OK(result);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -418,7 +441,7 @@ public class SysPermissionController {
 			List<TreeModel> treeList = new ArrayList<>();
 			getTreeModelList(treeList, list, null);
 
-			Map<String, Object> resMap = new HashMap<String, Object>();
+			Map<String, Object> resMap = new HashMap<String, Object>(5);
             // 全部树节点数据
 			resMap.put("treeList", treeList);
             // 全部树ids
@@ -464,7 +487,7 @@ public class SysPermissionController {
 		Result<List<String>> result = new Result<>();
 		try {
 			List<SysRolePermission> list = sysRolePermissionService.list(new QueryWrapper<SysRolePermission>().lambda().eq(SysRolePermission::getRoleId, roleId));
-			result.setResult(list.stream().map(SysRolePermission -> String.valueOf(SysRolePermission.getPermissionId())).collect(Collectors.toList()));
+			result.setResult(list.stream().map(sysRolePermission -> String.valueOf(sysRolePermission.getPermissionId())).collect(Collectors.toList()));
 			result.setSuccess(true);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -546,8 +569,8 @@ public class SysPermissionController {
 		jsonArray = jsonArray.stream().map(obj -> {
 			JSONObject returnObj = new JSONObject();
 			JSONObject jsonObj = (JSONObject)obj;
-			if(jsonObj.containsKey("children")){
-				JSONArray childrens = jsonObj.getJSONArray("children");
+			if(jsonObj.containsKey(CHILDREN)){
+				JSONArray childrens = jsonObj.getJSONArray(CHILDREN);
                 childrens = childrens.stream().filter(arrObj -> !"true".equals(((JSONObject) arrObj).getString("hidden"))).collect(Collectors.toCollection(JSONArray::new));
                 if(childrens==null || childrens.size()==0){
                     jsonObj.put("hidden",true);
@@ -675,7 +698,7 @@ public class SysPermissionController {
 				json.put("route", "0");
 			}
 
-			if (isWWWHttpUrl(permission.getUrl())) {
+			if (isWwwHttpUrl(permission.getUrl())) {
 				json.put("path", Md5Util.md5Encode(permission.getUrl(), "utf-8"));
 			} else {
 				json.put("path", permission.getUrl());
@@ -736,7 +759,7 @@ public class SysPermissionController {
 					meta.put("icon", permission.getIcon());
 				}
 			}
-			if (isWWWHttpUrl(permission.getUrl())) {
+			if (isWwwHttpUrl(permission.getUrl())) {
 				meta.put("url", permission.getUrl());
 			}
 			// update-begin--Author:sunjianlei  Date:20210918 for：新增适配vue3项目的隐藏tab功能
@@ -756,8 +779,9 @@ public class SysPermissionController {
 	 *
 	 * @return
 	 */
-	private boolean isWWWHttpUrl(String url) {
-		if (url != null && (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("{{"))) {
+	private boolean isWwwHttpUrl(String url) {
+        boolean flag = url != null && (url.startsWith(CommonConstant.HTTP_PROTOCOL) || url.startsWith(CommonConstant.HTTPS_PROTOCOL) || url.startsWith(SymbolConstant.DOUBLE_LEFT_CURLY_BRACKET));
+        if (flag) {
 			return true;
 		}
 		return false;
@@ -771,7 +795,7 @@ public class SysPermissionController {
 	 */
 	private String urlToRouteName(String url) {
 		if (oConvertUtils.isNotEmpty(url)) {
-			if (url.startsWith("/")) {
+			if (url.startsWith(SymbolConstant.SINGLE_SLASH)) {
 				url = url.substring(1);
 			}
 			url = url.replace("/", "-");
@@ -883,7 +907,7 @@ public class SysPermissionController {
 		Result<List<String>> result = new Result<>();
 		try {
 			List<SysDepartPermission> list = sysDepartPermissionService.list(new QueryWrapper<SysDepartPermission>().lambda().eq(SysDepartPermission::getDepartId, departId));
-			result.setResult(list.stream().map(SysDepartPermission -> String.valueOf(SysDepartPermission.getPermissionId())).collect(Collectors.toList()));
+			result.setResult(list.stream().map(sysDepartPermission -> String.valueOf(sysDepartPermission.getPermissionId())).collect(Collectors.toList()));
 			result.setSuccess(true);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -914,4 +938,5 @@ public class SysPermissionController {
 		}
 		return result;
 	}
+
 }

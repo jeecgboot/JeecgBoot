@@ -11,7 +11,7 @@ import org.jeecg.modules.message.handle.ISendMsgHandle;
 public class SmsSendMsgHandle implements ISendMsgHandle {
 
 	@Override
-	public void SendMsg(String es_receiver, String es_title, String es_content) {
+	public void sendMsg(String esReceiver, String esTitle, String esContent) {
 		// TODO Auto-generated method stub
 		log.info("发短信");
 	}

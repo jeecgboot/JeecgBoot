@@ -81,7 +81,8 @@
   import ShowAnnouncement from './ShowAnnouncement'
   import store from '@/store/'
   import DynamicNotice from './DynamicNotice'
-
+  import Vue from 'vue'
+  import { ACCESS_TOKEN } from '@/store/mutation-types'
 
   export default {
     name: "HeaderNotice",
@@ -107,6 +108,8 @@
         stopTimer:false,
         websock: null,
         lockReconnect:false,
+        //websocket错误连接次数
+        wsConnectErrorTime:1,
         heartCheck:null,
         formData:{},
         openPath:''
@@ -201,7 +204,10 @@
         var userId = store.getters.userInfo.id;
         var url = window._CONFIG['domianURL'].replace("https://","wss://").replace("http://","ws://")+"/websocket/"+userId;
         //console.log(url);
-        this.websock = new WebSocket(url);
+        //update-begin-author:taoyan date:2022-4-22 for:  v2.4.6 的 websocket 服务端，存在性能和安全问题。 #3278
+        let token = Vue.ls.get(ACCESS_TOKEN)
+        this.websock = new WebSocket(url, [token]);
+        //update-end-author:taoyan date:2022-4-22 for:  v2.4.6 的 websocket 服务端，存在性能和安全问题。 #3278
         this.websock.onopen = this.websocketOnopen;
         this.websock.onerror = this.websocketOnerror;
         this.websock.onmessage = this.websocketOnmessage;
@@ -213,12 +219,21 @@
         //this.heartCheck.reset().start();
       },
       websocketOnerror: function (e) {
-        console.log("WebSocket连接发生错误");
+        console.log("WebSocket连接发生错误，第%s次",this.wsConnectErrorTime);
+
+        this.wsConnectErrorTime = this.wsConnectErrorTime + 1;
+        if(this.wsConnectErrorTime>5){
+          console.log("WebSocket连接错误超过5次，就不再重新连了！");
+          this.lockReconnect = true
+          return;
+        }
+
         this.reconnect();
       },
       websocketOnmessage: function (e) {
         console.log("-----接收消息-------",e.data);
         var data = eval("(" + e.data + ")"); //解析对象
+        this.voiceBroadcast(data.msgTxt)
         if(data.cmd == "topic"){
             //系统通知
           this.loadData();
@@ -243,7 +258,13 @@
           console.log("send failed (" + err.code + ")");
         }
       },
-
+      //语音播报系统通知
+      voiceBroadcast(text){
+        var url = "http://tts.baidu.com/text2audio?lan=zh&ie=UTF-8&text=" + encodeURI(text);        // baidu文字转语音
+        var voiceContent = new Audio(url);
+        voiceContent.src = url;
+        voiceContent.play();
+      },
       openNotification (data) {
         var text = data.msgTxt;
         const key = `open${Date.now()}`;
@@ -275,7 +296,7 @@
           console.info("尝试重连...");
           that.initWebSocket();
           that.lockReconnect = false;
-        }, 5000);
+        }, 20000);
       },
       heartCheckFun(){
         var that = this;

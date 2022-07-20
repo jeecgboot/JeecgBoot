@@ -23,7 +23,9 @@ export const WebsocketMixin = {
         this.socketUrl = this.socketUrl + '/'
       }
       var url = window._CONFIG['domianURL'].replace("https://","wss://").replace("http://","ws://") + this.socketUrl + userId + "/" + token;
-      this.websock = new WebSocket(url);
+      //update-begin-author:taoyan date:2022-4-22 for:  v2.4.6 的 websocket 服务端，存在性能和安全问题。 #3278
+      this.websock = new WebSocket(url, [token]);
+      //update-end-author:taoyan date:2022-4-22 for:  v2.4.6 的 websocket 服务端，存在性能和安全问题。 #3278
       this.websock.onopen = this.websocketOnopen;
       this.websock.onerror = this.websocketOnerror;
       this.websock.onmessage = this.websocketOnmessage;

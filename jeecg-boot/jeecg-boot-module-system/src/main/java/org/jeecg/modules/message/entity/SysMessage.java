@@ -50,9 +50,11 @@ public class SysMessage extends JeecgEntity {
 	/**消息标题*/
 	@Excel(name = "消息标题", width = 15)
 	private java.lang.String esTitle;
-	/**推送方式：1短信 2邮件 3微信*/
-	@Excel(name = "推送方式：1短信 2邮件 3微信", width = 15)
-	@Dict(dicCode = "msgType")
+	/**
+	 * 推送方式：参考枚举类MessageTypeEnum
+	 */
+	@Excel(name = "推送方式", width = 15)
+	@Dict(dicCode = "messageType")
 	private java.lang.String esType;
 	/**备注*/
 	@Excel(name = "备注", width = 15)

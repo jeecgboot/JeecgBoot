@@ -1,21 +1,19 @@
 package org.jeecg.modules.message.job;
 
-import java.util.List;
-
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.api.dto.message.MessageDTO;
+import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.message.entity.SysMessage;
-import org.jeecg.modules.message.handle.ISendMsgHandle;
 import org.jeecg.modules.message.handle.enums.SendMsgStatusEnum;
-import org.jeecg.modules.message.handle.enums.SendMsgTypeEnum;
 import org.jeecg.modules.message.service.ISysMessageService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
 /**
  * 发送消息任务
@@ -27,6 +25,9 @@ public class SendMsgJob implements Job {
 
 	@Autowired
 	private ISysMessageService sysMessageService;
+
+	@Autowired
+	private ISysBaseAPI sysBaseAPI;
 
 	@Override
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -41,32 +42,19 @@ public class SendMsgJob implements Job {
 		System.out.println(sysMessages);
 		// 2.根据不同的类型走不通的发送实现类
 		for (SysMessage sysMessage : sysMessages) {
-			ISendMsgHandle sendMsgHandle = null;
-			try {
-				if (sysMessage.getEsType().equals(SendMsgTypeEnum.EMAIL.getType())) {
-					sendMsgHandle = (ISendMsgHandle) Class.forName(SendMsgTypeEnum.EMAIL.getImplClass()).newInstance();
-				} else if (sysMessage.getEsType().equals(SendMsgTypeEnum.SMS.getType())) {
-					sendMsgHandle = (ISendMsgHandle) Class.forName(SendMsgTypeEnum.SMS.getImplClass()).newInstance();
-				} else if (sysMessage.getEsType().equals(SendMsgTypeEnum.WX.getType())) {
-					sendMsgHandle = (ISendMsgHandle) Class.forName(SendMsgTypeEnum.WX.getImplClass()).newInstance();
-				} else if(sysMessage.getEsType().equals(SendMsgTypeEnum.SYSTEM_MESSAGE.getType())){
-                    //update-begin---author:wangshuai ---date:20220323  for：[issues/I4X698]根据模板发送系统消息，发送失败------------
-				    sendMsgHandle = (ISendMsgHandle) Class.forName(SendMsgTypeEnum.SYSTEM_MESSAGE.getImplClass()).newInstance();
-                    //update-end---author:wangshuai ---date:20220323  for：[issues/I4X698]根据模板发送系统消息，发送失败------------
-				}
-			} catch (Exception e) {
-				log.error(e.getMessage(),e);
-			}
+			//update-begin-author:taoyan date:2022-7-8 for: 模板消息发送测试调用方法修改
 			Integer sendNum = sysMessage.getEsSendNum();
 			try {
-                //update-begin---author:wangshuai ---date:20220323  for：[issues/I4X698]模板管理发送消息出现NullPointerException 錯誤------------
-                if(null != sendMsgHandle){
-                    sendMsgHandle.SendMsg(sysMessage.getEsReceiver(), sysMessage.getEsTitle(),
-                            sysMessage.getEsContent().toString());
-                    //发送消息成功
-                    sysMessage.setEsSendStatus(SendMsgStatusEnum.SUCCESS.getCode());
-                }
-                //update-end---author:wangshuai ---date:20220323  for：[issues/I4X698]模板管理发送消息出现NullPointerException 錯誤------------
+				MessageDTO md = new MessageDTO();
+				md.setTitle(sysMessage.getEsTitle());
+				md.setContent(sysMessage.getEsContent());
+				md.setToUser(sysMessage.getEsReceiver());
+				md.setType(sysMessage.getEsType());
+				md.setToAll(false);
+				sysBaseAPI.sendTemplateMessage(md);
+				//发送消息成功
+				sysMessage.setEsSendStatus(SendMsgStatusEnum.SUCCESS.getCode());
+				//update-end-author:taoyan date:2022-7-8 for: 模板消息发送测试调用方法修改
 			} catch (Exception e) {
 				e.printStackTrace();
 				// 发送消息出现异常

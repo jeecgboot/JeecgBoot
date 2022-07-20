@@ -97,7 +97,7 @@ public enum SentinelErrorInfoEnum {
             return null;
         }
 
-        String exceptionClass=throwable.getClass().getSimpleName();
+        String exceptionClass = throwable.getClass().getSimpleName();
         for (SentinelErrorInfoEnum e : SentinelErrorInfoEnum.values()) {
             if (exceptionClass.equals(e.name())) {
                 return e;

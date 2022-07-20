@@ -16,7 +16,9 @@ export default api
 export function postAction(url,parameter) {
   let sign = signMd5Utils.getSign(url, parameter);
   //将签名和时间戳，添加在请求接口 Header
-  let signHeader = {"X-Sign": sign,"X-TIMESTAMP": signMd5Utils.getDateTimeToString()};
+  // update-begin--author:taoyan---date:20220421--for: VUEN-410【签名改造】 X-TIMESTAMP牵扯
+  let signHeader = {"X-Sign": sign,"X-TIMESTAMP": signMd5Utils.getTimestamp()};
+  // update-end--author:taoyan---date:20220421--for: VUEN-410【签名改造】 X-TIMESTAMP牵扯
 
   return axios({
     url: url,
@@ -30,7 +32,9 @@ export function postAction(url,parameter) {
 export function httpAction(url,parameter,method) {
   let sign = signMd5Utils.getSign(url, parameter);
   //将签名和时间戳，添加在请求接口 Header
-  let signHeader = {"X-Sign": sign,"X-TIMESTAMP": signMd5Utils.getDateTimeToString()};
+  // update-begin--author:taoyan---date:20220421--for: VUEN-410【签名改造】 X-TIMESTAMP牵扯
+  let signHeader = {"X-Sign": sign,"X-TIMESTAMP": signMd5Utils.getTimestamp()};
+  // update-end--author:taoyan---date:20220421--for: VUEN-410【签名改造】 X-TIMESTAMP牵扯
 
   return axios({
     url: url,
@@ -53,7 +57,9 @@ export function putAction(url,parameter) {
 export function getAction(url,parameter) {
   let sign = signMd5Utils.getSign(url, parameter);
   //将签名和时间戳，添加在请求接口 Header
-  let signHeader = {"X-Sign": sign,"X-TIMESTAMP": signMd5Utils.getDateTimeToString()};
+  // update-begin--author:taoyan---date:20220421--for: VUEN-410【签名改造】 X-TIMESTAMP牵扯
+  let signHeader = {"X-Sign": sign,"X-TIMESTAMP": signMd5Utils.getTimestamp()};
+  // update-end--author:taoyan---date:20220421--for: VUEN-410【签名改造】 X-TIMESTAMP牵扯
 
   return axios({
     url: url,
@@ -120,13 +126,23 @@ export function saveService(parameter) {
  * @param parameter
  * @returns {*}
  */
-export function downFile(url,parameter){
-  return axios({
-    url: url,
-    params: parameter,
-    method:'get' ,
-    responseType: 'blob'
-  })
+export function downFile(url,parameter, method='get'){
+  if(method=='get'){
+    return axios({
+      url: url,
+      params: parameter,
+      method: method ,
+      responseType: 'blob'
+    })
+  }else{
+    return axios({
+      url: url,
+      method: method,
+      data: parameter,
+      responseType: 'blob'
+    })
+  }
+
 }
 
 /**

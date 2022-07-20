@@ -10,8 +10,8 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "ant-design-vue": "^1.7.2",
     "@jeecg/antd-online-mini": "3.1.0-beta",
+    "ant-design-vue": "^1.7.2",
     "@antv/data-set": "^0.11.4",
     "viser-vue": "^2.4.8",
     "axios": "^0.18.0",
@@ -29,7 +29,7 @@
     "vue-ls": "^3.2.0",
     "vue-router": "^3.0.1",
     "vuex": "^3.1.0",
-    "vue-print-nb-jeecg": "^1.0.9",
+    "vue-print-nb-jeecg": "^1.0.11",
     "clipboard": "^2.0.4",
     "vue-photo-preview": "^1.1.3",
     "vue-splitpane": "^1.0.4",
@@ -45,7 +45,8 @@
     "vxe-table": "2.9.13",
     "vxe-table-plugin-antd": "1.8.10",
     "cron-parser": "^2.10.0",
-    "qiankun": "^2.5.1"
+    "qiankun": "^2.5.1",
+    "xss": "^1.0.13"
   },
   "devDependencies": {
     "@babel/polyfill": "^7.2.5",

@@ -137,6 +137,7 @@
       </#list>
       const activeKey = ref('${subTabActiveKey}');
       const formData = reactive<Record<string, any>>({
+        id: '',
       <#list columns as po>
       <#if po.isShow == 'Y'>
         ${po.fieldName}: '',
@@ -229,6 +230,15 @@
         }
       }
 
+      /**
+       * 值改变事件触发-树控件回调
+       * @param key
+       * @param value
+       */
+      function handleFormChange(key, value) {
+        formData[key] = value;
+      }
+
       <#list columns as po>
       <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
       async function ${po.fieldName}Duplicatevalidate(_r, value) {
@@ -252,6 +262,7 @@
         loading,
         formData,
         setFieldsValue,
+        handleFormChange,
         formItemLayout,
         formDisabled,
         getFormData,

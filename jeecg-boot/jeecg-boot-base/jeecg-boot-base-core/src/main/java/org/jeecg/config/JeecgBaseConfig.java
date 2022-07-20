@@ -1,5 +1,7 @@
 package org.jeecg.config;
 
+import org.jeecg.config.vo.DomainUrl;
+import org.jeecg.config.vo.Path;
 import org.jeecg.config.vo.Shiro;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -9,9 +11,15 @@ import org.springframework.stereotype.Component;
  * 加载项目配置
  * @author: jeecg-boot
  */
-@Component("jeeccgBaseConfig")
+@Component("jeecgBaseConfig")
 @ConfigurationProperties(prefix = "jeecg")
-public class JeeccgBaseConfig {
+public class JeecgBaseConfig {
+    /**
+     * 签名密钥串(字典等敏感接口)
+     * @TODO 降低使用成本加的默认值,实际以 yml配置 为准
+     */
+    private String signatureSecret = "dd05f1c54d63749eda95f9fa6d49v442a";
+
     /**
      * 是否启用安全模式
      */
@@ -21,10 +29,16 @@ public class JeeccgBaseConfig {
      */
     private Shiro shiro;
     /**
-     * 签名密钥串(字典等敏感接口)
-     * @TODO 降低使用成本加的默认值,实际以 yml配置 为准
+     * 上传文件配置
      */
-    private String signatureSecret = "dd05f1c54d63749eda95f9fa6d49v442a";
+    private Path path;
+
+    /**
+     * 前端页面访问地址
+     * pc: http://localhost:3100
+     * app: http://localhost:8051
+     */
+    private DomainUrl domainUrl;
 
     public Boolean getSafeMode() {
         return safeMode;
@@ -48,5 +62,21 @@ public class JeeccgBaseConfig {
 
     public void setShiro(Shiro shiro) {
         this.shiro = shiro;
+    }
+
+    public Path getPath() {
+        return path;
+    }
+
+    public void setPath(Path path) {
+        this.path = path;
+    }
+
+    public DomainUrl getDomainUrl() {
+        return domainUrl;
+    }
+
+    public void setDomainUrl(DomainUrl domainUrl) {
+        this.domainUrl = domainUrl;
     }
 }

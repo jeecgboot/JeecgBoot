@@ -40,6 +40,17 @@ public class SysRoleIndex {
 	@Excel(name = "路由地址", width = 15)
     @ApiModelProperty(value = "路由地址")
 	private java.lang.String url;
+	/**路由地址*/
+	@Excel(name = "路由地址", width = 15)
+    @ApiModelProperty(value = "组件")
+	private java.lang.String component;
+	/**
+	 * 是否路由菜单: 0:不是  1:是（默认值1）
+	 */
+	@Excel(name = "是否路由菜单", width = 15)
+	@ApiModelProperty(value = "是否路由菜单")
+	@TableField(value="is_route")
+	private boolean route;
 	/**优先级*/
 	@Excel(name = "优先级", width = 15)
     @ApiModelProperty(value = "优先级")
@@ -72,4 +83,12 @@ public class SysRoleIndex {
 	@Excel(name = "所属部门", width = 15)
     @ApiModelProperty(value = "所属部门")
 	private java.lang.String sysOrgCode;
+
+
+	public SysRoleIndex() {
+
+	}
+	public SysRoleIndex(String componentUrl){
+		this.component = componentUrl;
+	}
 }

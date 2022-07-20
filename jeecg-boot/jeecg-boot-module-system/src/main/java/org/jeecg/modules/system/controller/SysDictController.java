@@ -12,6 +12,7 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictQuery;
@@ -277,8 +278,8 @@ public class SysDictController {
 		}
 		//update-end-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
 		try {
-			if(dictCode.indexOf(",")!=-1) {
-				String[] params = dictCode.split(",");
+			if(dictCode.indexOf(SymbolConstant.COMMA)!=-1) {
+				String[] params = dictCode.split(SymbolConstant.COMMA);
 				if(params.length!=3) {
 					result.error500("字典Code格式不正确！");
 					return result;

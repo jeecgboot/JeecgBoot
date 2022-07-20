@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.security;
 
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.common.util.security.AbstractQueryBlackListHandler;
@@ -32,8 +33,9 @@ public class DictQueryBlackListHandler extends AbstractQueryBlackListHandler {
             QueryTable table = new QueryTable(tableName, "");
             // 无论什么场景 第二、三个元素一定是表的字段，直接add
             table.addField(arr[1].trim());
-            if (oConvertUtils.isNotEmpty(arr[2].trim())) {
-                table.addField(arr[2].trim());
+            String filed = arr[2].trim();
+            if (oConvertUtils.isNotEmpty(filed)) {
+                table.addField(filed);
             }
             List<QueryTable> list = new ArrayList<>();
             list.add(table);

@@ -123,7 +123,8 @@ export const searchFormSchema: FormSchema[] = [
 <#elseif po.classType=='datetime'>
       component: 'DatePicker',
       componentProps: {
-         showTime:true
+         showTime:true,
+         valueFormat: 'YYYY-MM-DD HH:mm:ss'
        },
 <#elseif po.classType=='pca'>
       component: 'JAreaLinkage',
@@ -190,6 +191,15 @@ export const formSchema: FormSchema[] = [
   {
     label: '${po.filedComment}',
     field: ${autoStringSuffix(po)},
+<#-- update-begin-author:taoyan date:2022-6-24 for: VUEN-1190【代码生成】默认值未生成 -->
+  <#if po.defaultVal??>
+    <#if po.fieldDbType=="BigDecimal" || po.fieldDbType=="double" || po.fieldDbType=="int">
+    defaultValue: ${po.defaultVal},
+    <#else>
+    defaultValue: "${po.defaultVal}",
+    </#if>
+  </#if>
+<#-- update-end-author:taoyan date:2022-6-24 for: VUEN-1190【代码生成】默认值未生成 -->
     <#if po.classType =='date'>
     component: 'DatePicker',
      <#elseif po.classType =='datetime'>
@@ -318,7 +328,7 @@ export const formSchema: FormSchema[] = [
                  { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号码!'},
            <#-- 邮政编码 -->
            <#elseif fieldValidType == 'p'>
-                 { pattern: /^[1-9]\d{5}$/, message: '请输入正确的邮政编码!'},
+                 { pattern: /^[0-9]\d{5}$/, message: '请输入正确的邮政编码!'},
            <#-- 字母 -->
            <#elseif fieldValidType == 's'>
                  { pattern: /^[A-Z|a-z]+$/, message: '请输入字母!'},
@@ -383,6 +393,15 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
   {
     label: '${po.filedComment}',
     field: ${autoStringSuffix(po)},
+<#-- update-begin-author:taoyan date:2022-6-24 for: VUEN-1190【代码生成】默认值未生成 -->
+  <#if po.defaultVal??>
+    <#if po.fieldDbType=="BigDecimal" || po.fieldDbType=="double" || po.fieldDbType=="int">
+    defaultValue: ${po.defaultVal},
+    <#else>
+    defaultValue: "${po.defaultVal}",
+    </#if>
+  </#if>
+<#-- update-end-author:taoyan date:2022-6-24 for: VUEN-1190【代码生成】默认值未生成 -->
     <#if po.classType =='date'>
     component: 'DatePicker',
      <#elseif po.classType =='datetime'>
@@ -511,7 +530,7 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
                  { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号码!'},
            <#-- 邮政编码 -->
            <#elseif fieldValidType == 'p'>
-                 { pattern: /^[1-9]\d{5}$/, message: '请输入正确的邮政编码!'},
+                 { pattern: /^[0-9]\d{5}$/, message: '请输入正确的邮政编码!'},
            <#-- 字母 -->
            <#elseif fieldValidType == 's'>
                  { pattern: /^[A-Z|a-z]+$/, message: '请输入字母!'},

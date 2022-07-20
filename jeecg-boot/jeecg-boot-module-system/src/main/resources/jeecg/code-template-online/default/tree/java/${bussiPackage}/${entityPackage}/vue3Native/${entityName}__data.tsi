@@ -351,13 +351,13 @@ export const formSchema: FormSchema[] = [
               { pattern: /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/, message: '请输入正确的网址!' },
            <#-- 电子邮件 -->
            <#elseif fieldValidType == 'e'>
-              { pattern: /^([\w]+\.*)([\w]+)@[\w]+\.\w{3}(\.\w{2}|)$/, message: '请输入正确的电子邮件! },
+              { pattern: /^([\w]+\.*)([\w]+)@[\w]+\.\w{3}(\.\w{2}|)$/, message: '请输入正确的电子邮件!' },
            <#-- 手机号码 -->
            <#elseif fieldValidType == 'm'>
               { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号码!' },
            <#-- 邮政编码 -->
            <#elseif fieldValidType == 'p'>
-              { pattern: /^[1-9]\d{5}$/, message: '请输入正确的邮政编码!' },
+              { pattern: /^[0-9]\d{5}$/, message: '请输入正确的邮政编码!' },
            <#-- 字母 -->
            <#elseif fieldValidType == 's'>
               { pattern: /^[A-Z|a-z]+$/, message: '请输入字母!' },

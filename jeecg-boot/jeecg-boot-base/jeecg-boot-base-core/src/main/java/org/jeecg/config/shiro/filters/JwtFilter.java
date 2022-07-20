@@ -107,4 +107,18 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
 
         return super.preHandle(request, response);
     }
+
+    /**
+     * JwtFilter中ThreadLocal需要及时清除 #3634
+     *
+     * @param request
+     * @param response
+     * @param exception
+     * @throws Exception
+     */
+    @Override
+    public void afterCompletion(ServletRequest request, ServletResponse response, Exception exception) throws Exception {
+        //log.info("------清空线程中多租户的ID={}------",TenantContext.getTenant());
+        TenantContext.clear();
+    }
 }

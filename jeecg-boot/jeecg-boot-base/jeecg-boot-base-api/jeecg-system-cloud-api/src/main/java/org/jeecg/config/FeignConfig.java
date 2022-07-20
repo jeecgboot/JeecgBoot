@@ -101,7 +101,7 @@
 //                    log.info(" Feign request params sign: {}",sign);
 //                    log.info("============================ [end] fegin api url ============================");
 //                    requestTemplate.header(CommonConstant.X_SIGN, sign);
-//                    requestTemplate.header(CommonConstant.X_TIMESTAMP, DateUtils.getCurrentTimestamp().toString());
+//                    requestTemplate.header(CommonConstant.X_TIMESTAMP, String.valueOf(System.currentTimeMillis()));
 //                } catch (IOException e) {
 //                    e.printStackTrace();
 //                }
@@ -146,7 +146,7 @@
 //        return new SpringEncoder(feignHttpMessageConverter());
 //    }
 //
-//    @Bean
+//    @Bean("apiFeignDecoder")
 //    public Decoder feignDecoder() {
 //        return new SpringDecoder(feignHttpMessageConverter());
 //    }

@@ -16,6 +16,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.util.JeecgDataAutorUtils;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
@@ -191,8 +192,8 @@ public class QueryGenerator {
 				log.error(e.getMessage(), e);
 			}
 		}
-		// 排序逻辑 处理 
-		doMultiFieldsOrder(queryWrapper, parameterMap);
+		// 排序逻辑 处理
+		doMultiFieldsOrder(queryWrapper, parameterMap, fieldColumnMap.keySet());
 				
 		//高级查询
 		doSuperQuery(queryWrapper, parameterMap, fieldColumnMap);
@@ -228,8 +229,7 @@ public class QueryGenerator {
 		}
 	}
 	
-	/**多字段排序 TODO 需要修改前端*/
-	private static void doMultiFieldsOrder(QueryWrapper<?> queryWrapper,Map<String, String[]> parameterMap) {
+	private static void doMultiFieldsOrder(QueryWrapper<?> queryWrapper,Map<String, String[]> parameterMap, Set<String> allFields) {
 		String column=null,order=null;
 		if(parameterMap!=null&& parameterMap.containsKey(ORDER_COLUMN)) {
 			column = parameterMap.get(ORDER_COLUMN)[0];
@@ -243,6 +243,15 @@ public class QueryGenerator {
 			if(column.endsWith(CommonConstant.DICT_TEXT_SUFFIX)) {
 				column = column.substring(0, column.lastIndexOf(CommonConstant.DICT_TEXT_SUFFIX));
 			}
+
+			//update-begin-author:taoyan date:2022-5-16 for: issues/3676 获取系统用户列表时，使用SQL注入生效
+			//判断column是不是当前实体的
+			log.info("当前字段有："+ allFields);
+			if (!allColumnExist(column, allFields)) {
+				throw new JeecgBootException("请注意，将要排序的列字段不存在：" + column);
+			}
+			//update-end-author:taoyan date:2022-5-16 for: issues/3676 获取系统用户列表时，使用SQL注入生效
+
 			//SQL注入check
 			SqlInjectionUtil.filterContent(column);
 
@@ -264,6 +273,28 @@ public class QueryGenerator {
 			//update-end--Author:scott  Date:20210531 for：36 多条件排序无效问题修正-------
 		}
 	}
+
+	//update-begin-author:taoyan date:2022-5-23 for: issues/3676 获取系统用户列表时，使用SQL注入生效
+	/**
+	 * 多字段排序 判断所传字段是否存在
+	 * @return
+	 */
+	private static boolean allColumnExist(String columnStr, Set<String> allFields){
+		boolean exist = true;
+		if(columnStr.indexOf(COMMA)>=0){
+			String[] arr = columnStr.split(COMMA);
+			for(String column: arr){
+				if(!allFields.contains(column)){
+					exist = false;
+					break;
+				}
+			}
+		}else{
+			exist = allFields.contains(columnStr);
+		}
+		return exist;
+	}
+	//update-end-author:taoyan date:2022-5-23 for: issues/3676 获取系统用户列表时，使用SQL注入生效
 	
 	/**
 	 * 高级查询
@@ -825,13 +856,13 @@ public class QueryGenerator {
 			res = field + " in "+getInConditionValue(value, isString);
 			break;
 		case LIKE:
-			res = field + " like "+getLikeConditionValue(value);
+			res = field + " like "+getLikeConditionValue(value, QueryRuleEnum.LIKE);
 			break;
 		case LEFT_LIKE:
-			res = field + " like "+getLikeConditionValue(value);
+			res = field + " like "+getLikeConditionValue(value, QueryRuleEnum.LEFT_LIKE);
 			break;
 		case RIGHT_LIKE:
-			res = field + " like "+getLikeConditionValue(value);
+			res = field + " like "+getLikeConditionValue(value, QueryRuleEnum.RIGHT_LIKE);
 			break;
 		default:
 			res = field+" = "+getFieldConditionValue(value, isString, dataBaseType);
@@ -914,8 +945,15 @@ public class QueryGenerator {
 		}
 		//update-end-author:taoyan date:20210628 for: 查询条件如果输入,导致sql报错
 	}
-	
-	private static String getLikeConditionValue(Object value) {
+
+	/**
+	 * 先根据值判断 走左模糊还是右模糊
+	 * 最后如果值不带任何标识(*或者%)，则再根据ruleEnum判断
+	 * @param value
+	 * @param ruleEnum
+	 * @return
+	 */
+	private static String getLikeConditionValue(Object value, QueryRuleEnum ruleEnum) {
 		String str = value.toString().trim();
 		if(str.startsWith(SymbolConstant.ASTERISK) && str.endsWith(SymbolConstant.ASTERISK)) {
 			if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())){
@@ -951,11 +989,30 @@ public class QueryGenerator {
 					}
 				}
 			}else {
-				if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())){
-					return "N'%"+str+"%'";
-				}else{
-					return "'%"+str+"%'";
+
+				//update-begin-author:taoyan date:2022-6-30 for: issues/3810 数据权限规则问题
+				// 走到这里说明 value不带有任何模糊查询的标识(*或者%)
+				if (ruleEnum == QueryRuleEnum.LEFT_LIKE) {
+					if (DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())) {
+						return "N'%" + str + "'";
+					} else {
+						return "'%" + str + "'";
+					}
+				} else if (ruleEnum == QueryRuleEnum.RIGHT_LIKE) {
+					if (DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())) {
+						return "N'" + str + "%'";
+					} else {
+						return "'" + str + "%'";
+					}
+				} else {
+					if (DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())) {
+						return "N'%" + str + "%'";
+					} else {
+						return "'%" + str + "%'";
+					}
 				}
+				//update-end-author:taoyan date:2022-6-30 for: issues/3810 数据权限规则问题
+
 			}
 		}
 	}

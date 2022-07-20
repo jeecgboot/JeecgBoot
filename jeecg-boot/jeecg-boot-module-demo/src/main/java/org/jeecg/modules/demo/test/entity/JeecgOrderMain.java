@@ -47,4 +47,6 @@ public class JeecgOrderMain implements Serializable {
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private java.util.Date updateTime;
+
+	private String bpmStatus;
 }

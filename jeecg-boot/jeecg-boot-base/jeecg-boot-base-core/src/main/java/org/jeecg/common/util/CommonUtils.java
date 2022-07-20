@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.toolkit.JdbcUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
+import org.jeecg.common.constant.ServiceNameConstants;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.util.filter.FileTypeFilter;
 import org.jeecg.common.util.oss.OssBootUtil;
@@ -314,14 +315,14 @@ public class CommonUtils {
      */
     public static String getBaseUrl(HttpServletRequest request) {
         //1.【兼容】兼容微服务下的 base path-------
-        String xGatewayBasePath = request.getHeader("X_GATEWAY_BASE_PATH");
+        String xGatewayBasePath = request.getHeader(ServiceNameConstants.X_GATEWAY_BASE_PATH);
         if(oConvertUtils.isNotEmpty(xGatewayBasePath)){
             log.info("x_gateway_base_path = "+ xGatewayBasePath);
             return  xGatewayBasePath;
         }
         //2.【兼容】SSL认证之后，request.getScheme()获取不到https的问题
         // https://blog.csdn.net/weixin_34376986/article/details/89767950
-        String scheme = request.getHeader("X-Forwarded-Scheme");
+        String scheme = request.getHeader(CommonConstant.X_FORWARDED_SCHEME);
         if(oConvertUtils.isEmpty(scheme)){
             scheme = request.getScheme();
         }

@@ -71,6 +71,12 @@
         let className = target.className || ''
         className = typeof className === 'string' ? className : className.toString()
 
+        // 获取 td 父级
+        let td = getParentNodeByTagName(target, 'td');
+        // 点击的是拖拽排序列，不做处理
+        if (td && td.querySelector('.j-vxe-ds-icons')) {
+          return
+        }
         // 点击的是expand，不做处理
         if (className.includes('vxe-table--expand-btn')) {
           return

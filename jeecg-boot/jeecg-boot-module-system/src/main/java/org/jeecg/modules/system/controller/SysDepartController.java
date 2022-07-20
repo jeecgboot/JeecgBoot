@@ -123,13 +123,14 @@ public class SysDepartController {
 	 * 异步查询部门list
 	 * @param parentId 父节点 异步加载时传递
 	 * @param ids 前端回显是传递
+	 * @param primaryKey 主键字段（id或者orgCode）
 	 * @return
 	 */
 	@RequestMapping(value = "/queryDepartTreeSync", method = RequestMethod.GET)
-	public Result<List<SysDepartTreeModel>> queryDepartTreeSync(@RequestParam(name = "pid", required = false) String parentId,@RequestParam(name = "ids", required = false) String ids) {
+	public Result<List<SysDepartTreeModel>> queryDepartTreeSync(@RequestParam(name = "pid", required = false) String parentId,@RequestParam(name = "ids", required = false) String ids, @RequestParam(name = "primaryKey", required = false) String primaryKey) {
 		Result<List<SysDepartTreeModel>> result = new Result<>();
 		try {
-			List<SysDepartTreeModel> list = sysDepartService.queryTreeListByPid(parentId,ids);
+			List<SysDepartTreeModel> list = sysDepartService.queryTreeListByPid(parentId,ids, primaryKey);
 			result.setResult(list);
 			result.setSuccess(true);
 		} catch (Exception e) {
@@ -460,7 +461,7 @@ public class SysDepartController {
 		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
 		query.orderByAsc(SysDepart::getOrgCode);
 		if(oConvertUtils.isNotEmpty(id)){
-			String arr[] = id.split(",");
+			String[] arr = id.split(",");
 			query.in(SysDepart::getId,arr);
 		}
 		List<SysDepart> ls = this.sysDepartService.list(query);

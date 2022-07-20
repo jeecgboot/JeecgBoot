@@ -246,7 +246,7 @@ public class ThirdAppController {
         // 第三方app的类型
         String app = params.getString("app");
         // 消息id
-        String msg_task_id = params.getString("msg_task_id");
+        String msgTaskId = params.getString("msg_task_id");
 
         if (ThirdAppConfig.WECHAT_ENTERPRISE.equals(app)) {
             if (thirdAppConfig.isWechatEnterpriseEnabled()) {
@@ -255,7 +255,7 @@ public class ThirdAppController {
             return Result.error("企业微信已被禁用");
         } else if (ThirdAppConfig.DINGTALK.equals(app)) {
             if (thirdAppConfig.isDingtalkEnabled()) {
-                Response<JSONObject> response = dingtalkService.recallMessageResponse(msg_task_id);
+                Response<JSONObject> response = dingtalkService.recallMessageResponse(msgTaskId);
                 if (response.isSuccess()) {
                     return Result.OK("撤回成功", response);
                 } else {

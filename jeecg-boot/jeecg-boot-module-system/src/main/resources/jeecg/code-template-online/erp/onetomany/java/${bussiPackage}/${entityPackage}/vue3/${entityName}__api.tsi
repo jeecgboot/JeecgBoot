@@ -1,5 +1,7 @@
 import {defHttp} from '/@/utils/http/axios';
-import {Modal} from 'ant-design-vue';
+import { useMessage } from "/@/hooks/web/useMessage";
+
+const { createConfirm } = useMessage();
 
 enum Api {
   list = '/${entityPackage}/${entityName?uncap_first}/list',
@@ -47,7 +49,8 @@ export const deleteOne = (params,handleSuccess) => {
  * @param params
  */
 export const batchDelete = (params, handleSuccess) => {
-  Modal.confirm({
+  createConfirm({
+    iconType: 'warning',
     title: '确认删除',
     content: '是否删除选中数据',
     okText: '确认',
@@ -68,12 +71,21 @@ export const saveOrUpdate = (params, isUpdate) => {
   return defHttp.post({url: url, params});
 }
 <#list subTables as sub><#rt/>
+  <#assign myForeignKeys=''>
+  <#list sub.foreignKeys as key>
+    <#assign myForeignKeys='${key?uncap_first}'>
+  </#list>
 /**
  * 列表接口
  * @param params
  */
-export const ${sub.entityName?uncap_first}List = (params) =>
-  defHttp.get({url: Api.${sub.entityName?uncap_first}List, params});
+export const ${sub.entityName?uncap_first}List = (params) => {
+  if(params['${myForeignKeys}']){
+    return defHttp.get({url: Api.${sub.entityName?uncap_first}List, params});
+  }
+  return Promise.resolve({});
+}
+
 
 /**
  * 删除单个
@@ -88,7 +100,8 @@ export const ${sub.entityName?uncap_first}Delete = (params,handleSuccess) => {
  * @param params
  */
 export const ${sub.entityName?uncap_first}DeleteBatch = (params, handleSuccess) => {
-  Modal.confirm({
+  createConfirm({
+    iconType: 'warning',
     title: '确认删除',
     content: '是否删除选中数据',
     okText: '确认',

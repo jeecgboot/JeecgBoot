@@ -16,12 +16,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.util.RedisUtil;
-import org.jeecg.config.GatewayRoutersConfiguration;
+import org.jeecg.config.GatewayRoutersConfig;
 import org.jeecg.config.RouterDataType;
 import org.jeecg.loader.repository.DynamicRouteService;
 import org.jeecg.loader.repository.MyInMemoryRouteDefinitionRepository;
 import org.jeecg.loader.vo.MyRouteDefinition;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.filter.FilterDefinition;
@@ -33,7 +33,6 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.PostConstruct;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -50,22 +49,20 @@ import java.util.concurrent.Executor;
  */
 @Slf4j
 @Component
-@DependsOn({"gatewayRoutersConfiguration"})
 @RefreshScope
+@DependsOn({"gatewayRoutersConfig"})
 public class DynamicRouteLoader implements ApplicationEventPublisherAware {
 
-
+    public static final long DEFAULT_TIMEOUT = 30000;
+    @Autowired
+    private GatewayRoutersConfig gatewayRoutersConfig;
     private MyInMemoryRouteDefinitionRepository repository;
     private ApplicationEventPublisher publisher;
     private DynamicRouteService dynamicRouteService;
     private ConfigService configService;
     private RedisUtil redisUtil;
 
-    /**
-     * 路由配置方式：database(数据库)，yml(配置文件)，nacos
-     */
-    @Value("${jeecg.route.config.data-type:database}")
-    public  String dataType;
+
     /**
      * 需要拼接key的路由条件
      */
@@ -85,12 +82,12 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
 
 
     public void init(BaseMap baseMap) {
-        log.info("初始化路由，dataType："+ dataType);
-        if (RouterDataType.nacos.toString().endsWith(dataType)) {
+        log.info("初始化路由模式，dataType："+ gatewayRoutersConfig.getDataType());
+        if (RouterDataType.nacos.toString().endsWith(gatewayRoutersConfig.getDataType())) {
             loadRoutesByNacos();
         }
         //从数据库加载路由
-        if (RouterDataType.database.toString().endsWith(dataType)) {
+        if (RouterDataType.database.toString().endsWith(gatewayRoutersConfig.getDataType())) {
             loadRoutesByRedis(baseMap);
         }
     }
@@ -100,7 +97,8 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
      * @return
      */
     public Mono<Void> refresh(BaseMap baseMap) {
-        if (!RouterDataType.yml.toString().endsWith(dataType)) {
+        log.info("初始化路由模式，dataType："+ gatewayRoutersConfig.getDataType());
+        if (!RouterDataType.yml.toString().endsWith(gatewayRoutersConfig.getDataType())) {
             this.init(baseMap);
         }
         return Mono.empty();
@@ -119,7 +117,7 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
             log.warn("initConfigService fail");
         }
         try {
-            String configInfo = configService.getConfig(GatewayRoutersConfiguration.DATA_ID, GatewayRoutersConfiguration.ROUTE_GROUP, GatewayRoutersConfiguration.DEFAULT_TIMEOUT);
+            String configInfo = configService.getConfig(gatewayRoutersConfig.getDataId(), gatewayRoutersConfig.getRouteGroup(), DEFAULT_TIMEOUT);
             if (StringUtils.isNotBlank(configInfo)) {
                 log.info("获取网关当前配置:\r\n{}", configInfo);
                 routes = JSON.parseArray(configInfo, RouteDefinition.class);
@@ -133,7 +131,7 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
             dynamicRouteService.add(definition);
         }
         this.publisher.publishEvent(new RefreshRoutesEvent(this));
-        dynamicRouteByNacosListener(GatewayRoutersConfiguration.DATA_ID, GatewayRoutersConfiguration.ROUTE_GROUP);
+        dynamicRouteByNacosListener(gatewayRoutersConfig.getDataId(), gatewayRoutersConfig.getRouteGroup());
     }
 
 
@@ -340,10 +338,10 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
     private ConfigService createConfigService() {
         try {
             Properties properties = new Properties();
-            properties.setProperty("serverAddr", GatewayRoutersConfiguration.SERVER_ADDR);
-            properties.setProperty("namespace", GatewayRoutersConfiguration.NAMESPACE);
-            properties.setProperty("username",GatewayRoutersConfiguration.USERNAME);
-            properties.setProperty("password",GatewayRoutersConfiguration.PASSWORD);
+            properties.setProperty("serverAddr", gatewayRoutersConfig.getServerAddr());
+            properties.setProperty("namespace", gatewayRoutersConfig.getNamespace());
+            properties.setProperty("username", gatewayRoutersConfig.getUsername());
+            properties.setProperty("password", gatewayRoutersConfig.getPassword());
             return configService = NacosFactory.createConfigService(properties);
         } catch (Exception e) {
             log.error("创建ConfigService异常", e);

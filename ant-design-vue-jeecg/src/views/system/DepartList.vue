@@ -110,10 +110,13 @@
                   </a-radio-group>
                 </template>
               </a-form-model-item>
+              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="部门负责人">
+                <j-select-multi-user v-model="model.directorUserIds" valueKey="id"></j-select-multi-user>
+              </a-form-model-item>
               <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="排序">
                 <a-input-number v-model="model.departOrder" />
               </a-form-model-item>
-              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="手机号">
+              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="手机号" prop="mobile">
                 <a-input placeholder="请输入手机号" v-model="model.mobile" />
               </a-form-model-item>
               <a-form-model-item  :labelCol="labelCol" :wrapperCol="wrapperCol"  label="地址">
@@ -149,6 +152,7 @@
   import {httpAction, deleteAction} from '@/api/manage'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import DepartAuthModal from './modules/DepartAuthModal'
+  import Vue from 'vue'
   // 表头
   const columns = [
     {
@@ -236,7 +240,7 @@
           departName: [{required: true, message: '请输入机构/部门名称!'}],
           orgCode: [{required: true, message: '请输入机构编码!'}],
           orgCategory:[{required: true, message: '请输入机构类型!'}],
-          mobile:[{validator: this.validateMobile}]
+          mobile: Vue.prototype.rules.mobile2
         },
         url: {
           delete: '/sys/sysDepart/delete',
@@ -246,6 +250,7 @@
           importExcelUrl: "sys/sysDepart/importExcel",
         },
         orgCategoryDisabled:false,
+        oldDirectorUserIds:""
       }
     },
     computed: {
@@ -394,7 +399,13 @@
         this.model.parentId = record.parentId
         this.setValuesToForm(record)
         this.$refs.departAuth.show(record.id);
+        this.oldDirectorUserIds = record.directorUserIds
 
+        //update-beign-author:taoyan date:20220316 for: VUEN-329【bug】为什么不是失去焦点的时候，触发手机号校验
+        this.$nextTick(()=>{
+          this.$refs.form.validateField('mobile')
+        })
+        //update-end-author:taoyan date:20220316 for: VUEN-329【bug】为什么不是失去焦点的时候，触发手机号校验
       },
       // 触发onSelect事件时,为部门树右侧的form表单赋值
       setValuesToForm(record) {
@@ -431,6 +442,10 @@
               return
             }
 
+            //update-begin---author:wangshuai ---date:20200308  for：[JTC-119]在部门管理菜单下设置部门负责人
+            this.currSelected.oldDirectorUserIds = this.oldDirectorUserIds
+            //update-end---author:wangshuai ---date:20200308  for：[JTC-119]在部门管理菜单下设置部门负责人
+            
             httpAction(this.url.edit, this.currSelected, 'put').then((res) => {
               if (res.success) {
                 this.$message.success('保存成功!')

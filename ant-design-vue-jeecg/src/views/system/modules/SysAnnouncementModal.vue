@@ -99,7 +99,7 @@
           edit: "/sys/annountCement/edit",
         },
         userType:false,
-        userIds:[],
+        userIds:"",
         selectedUser:[],
         disabled:false,
         msgContent:"",
@@ -191,16 +191,19 @@
       },
       resetUser (){
         this.userType =  false;
-        this.userIds = [];
+        //update-begin---author:wangshuai ---date:20220318  for：[issues/I4X63V]vue有些页面报错，但是在线演示的却没有-----
+        this.userIds ="";
+        //update-end---author:wangshuai ---date:20220318  for：[issues/I4X63V]vue有些页面报错，但是在线演示的却没有-----
         this.disabled = false;
-        this.$refs.UserListModal.edit(null,null);
       },
       chooseMsgType(e) {
         if("USER" == e.target.value) {
           this.userType = true;
         } else {
           this.userType = false;
-          this.userIds = [];
+          //update-begin---author:wangshuai ---date:20220318  for：[issues/I4X63V]vue有些页面报错，但是在线演示的却没有-----
+          this.userIds = "";
+          //update-end---author:wangshuai ---date:20220318  for：[issues/I4X63V]vue有些页面报错，但是在线演示的却没有-----
         }
       },
       startTimeValidate(rule,value,callback){

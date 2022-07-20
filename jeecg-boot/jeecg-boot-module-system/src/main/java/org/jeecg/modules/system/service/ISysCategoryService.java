@@ -20,6 +20,11 @@ public interface ISysCategoryService extends IService<SysCategory> {
 	public static final String ROOT_PID_VALUE = "0";
 
     /**
+     * 存在子节点
+     */
+    public static final String HAS_CHILD = "1";
+
+    /**
      * 添加分类字典
      * @param sysCategory
      */

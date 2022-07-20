@@ -44,13 +44,13 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 	 */
 	@Override
 	public List<DepartIdModel> queryDepartIdsOfUser(String userId) {
-		LambdaQueryWrapper<SysUserDepart> queryUDep = new LambdaQueryWrapper<SysUserDepart>();
+		LambdaQueryWrapper<SysUserDepart> queryUserDep = new LambdaQueryWrapper<SysUserDepart>();
 		LambdaQueryWrapper<SysDepart> queryDep = new LambdaQueryWrapper<SysDepart>();
 		try {
-			queryUDep.eq(SysUserDepart::getUserId, userId);
+            queryUserDep.eq(SysUserDepart::getUserId, userId);
 			List<String> depIdList = new ArrayList<>();
 			List<DepartIdModel> depIdModelList = new ArrayList<>();
-			List<SysUserDepart> userDepList = this.list(queryUDep);
+			List<SysUserDepart> userDepList = this.list(queryUserDep);
 			if(userDepList != null && userDepList.size() > 0) {
 			for(SysUserDepart userDepart : userDepList) {
 					depIdList.add(userDepart.getDepId());
@@ -78,10 +78,10 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 	 */
 	@Override
 	public List<SysUser> queryUserByDepId(String depId) {
-		LambdaQueryWrapper<SysUserDepart> queryUDep = new LambdaQueryWrapper<SysUserDepart>();
-		queryUDep.eq(SysUserDepart::getDepId, depId);
+		LambdaQueryWrapper<SysUserDepart> queryUserDep = new LambdaQueryWrapper<SysUserDepart>();
+		queryUserDep.eq(SysUserDepart::getDepId, depId);
 		List<String> userIdList = new ArrayList<>();
-		List<SysUserDepart> uDepList = this.list(queryUDep);
+		List<SysUserDepart> uDepList = this.list(queryUserDep);
 		if(uDepList != null && uDepList.size() > 0) {
 			for(SysUserDepart uDep : uDepList) {
 				userIdList.add(uDep.getUserId());
@@ -121,7 +121,7 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 	}
 
 	@Override
-	public IPage<SysUser> queryDepartUserPageList(String departId, String username, String realname, int pageSize, int pageNo) {
+	public IPage<SysUser> queryDepartUserPageList(String departId, String username, String realname, int pageSize, int pageNo,String id) {
 		IPage<SysUser> pageList = null;
 		// 部门ID不存在 直接查询用户表即可
 		Page<SysUser> page = new Page<SysUser>(pageNo, pageSize);
@@ -133,6 +133,11 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 			if(oConvertUtils.isNotEmpty(username)){
 				query.like(SysUser::getUsername, username);
 			}
+            //update-begin---author:wangshuai ---date:20220608  for：[VUEN-1238]邮箱回复时，发送到显示的为用户id------------
+            if(oConvertUtils.isNotEmpty(id)){
+                query.eq(SysUser::getId, id);
+            }
+            //update-end---author:wangshuai ---date:20220608  for：[VUEN-1238]邮箱回复时，发送到显示的为用户id------------
 			pageList = sysUserMapper.selectPage(page, query);
 		}else{
 			// 有部门ID 需要走自定义sql
