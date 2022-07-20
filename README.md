@@ -130,13 +130,13 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - IDE(JAVA)： IDEA (必须安装lombok插件 )
 
-- IDE(前端)： IDEA 或者 WebStorm
+- IDE(前端)： Vscode、WebStorm、IDEA
 
 - 依赖管理：Maven
 
 - 缓存：Redis
 
-- 数据库脚本：MySQL5.7+  &  Oracle 11g & Sqlserver2017（默认只提供三个库脚本，其他库需要自己转）
+- 数据库脚本：MySQL5.7+  &  Oracle 11g & Sqlserver2017（其他数据库，[需要自己转](https://my.oschina.net/jeecg/blog/4905722)）
 
 
 #### 后端
