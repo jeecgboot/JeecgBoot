@@ -332,7 +332,10 @@ public class ThirdLoginController {
 			builder.append("&scope=openid");
 			// 跟随authCode原样返回。
 			builder.append("&state=").append(state);
-			url = builder.toString();
+            //update-begin---author:wangshuai ---date:20220613  for：[issues/I5BOUF]oauth2 钉钉无法登录------------
+            builder.append("&prompt=").append("consent");
+            //update-end---author:wangshuai ---date:20220613  for：[issues/I5BOUF]oauth2 钉钉无法登录--------------
+            url = builder.toString();
 		} else {
 			return "不支持的source";
 		}
@@ -377,9 +380,28 @@ public class ThirdLoginController {
             return "不支持的source";
         }
         try {
-            String token = saveToken(loginUser);
+
+			//update-begin-author:taoyan date:2022-6-30 for: 工作流发送消息 点击消息链接跳转办理页面
+			String redirect = "";
+			if (state.indexOf("?") > 0) {
+				String[] arr = state.split("\\?");
+				state = arr[0];
+				if(arr.length>1){
+					redirect = arr[1];
+				}
+			}
+
+			String token = saveToken(loginUser);
 			state += "/oauth2-app/login?oauth2LoginToken=" + URLEncoder.encode(token, "UTF-8");
-			state += "&thirdType=" + "wechat_enterprise";
+			//update-begin---author:wangshuai ---date:20220613  for：[issues/I5BOUF]oauth2 钉钉无法登录------------
+			state += "&thirdType=" + source;
+			//state += "&thirdType=" + "wechat_enterprise";
+			if (redirect != null && redirect.length() > 0) {
+				state += "&" + redirect;
+			}
+			//update-end-author:taoyan date:2022-6-30 for: 工作流发送消息 点击消息链接跳转办理页面
+
+            //update-end---author:wangshuai ---date:20220613  for：[issues/I5BOUF]oauth2 钉钉无法登录------------
 			log.info("OAuth2登录重定向地址: " + state);
             try {
                 response.sendRedirect(state);

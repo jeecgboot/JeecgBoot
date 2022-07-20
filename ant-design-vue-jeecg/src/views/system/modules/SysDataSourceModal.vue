@@ -79,7 +79,7 @@
 
 <script>
   import pick from 'lodash.pick'
-  import { httpAction, postAction } from '@/api/manage'
+  import { httpAction, postAction,getAction } from '@/api/manage'
   import { validateDuplicateValue } from '@/utils/util'
 
   export default {
@@ -129,6 +129,7 @@
         url: {
           add: '/sys/dataSource/add',
           edit: '/sys/dataSource/edit',
+          queryById: '/sys/dataSource/queryById',
         },
         dbDriverMap: {
           // MySQL 数据库
@@ -202,9 +203,17 @@
       add() {
         this.edit({})
       },
-      edit(record) {
+      async edit(record) {
         this.form.resetFields()
         this.model = Object.assign({}, record)
+        //update-begin-author:liusq---date:20220705--for: 编辑时，查询获取解密后的密码 ---
+        if(record.id){
+          let res = await getAction(this.url.queryById, {id:record.id});
+          if (res.success) {
+            this.model = Object.assign({}, {...res.result})
+          }
+        }
+       //update-end-author:liusq---date:20220705--for: 编辑时，查询获取解密后的密码 ---
         this.visible = true
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model, 'code', 'name', 'remark', 'dbType', 'dbDriver', 'dbUrl', 'dbName', 'dbUsername', 'dbPassword'))

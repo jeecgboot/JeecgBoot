@@ -104,23 +104,35 @@ export default class signMd5Utils {
     return paramStr;
   };
 
-  static getDateTimeToString() {
-    const date_ = new Date()
-    const year = date_.getFullYear()
-    let month = date_.getMonth() + 1
-    let day = date_.getDate()
-    if (month < 10) month = '0' + month
-    if (day < 10) day = '0' + day
-    let hours = date_.getHours()
-    let mins = date_.getMinutes()
-    let secs = date_.getSeconds()
-    const msecs = date_.getMilliseconds()
-    if (hours < 10) hours = '0' + hours
-    if (mins < 10) mins = '0' + mins
-    if (secs < 10) secs = '0' + secs
-    if (msecs < 10) secs = '0' + msecs
-    return year + '' + month + '' + day + '' + hours + '' + mins + '' + secs
+  /**
+   * 接口签名用 生成header中的时间戳
+   * @returns {number}
+   */
+  static getTimestamp(){
+    return new Date().getTime()
   }
+
+  // /**
+  //  * 获取客户端时间（签名参数 X_TIMESTAMP）
+  //  * @returns {string}
+  //  */
+  // static getDateTimeToString() {
+  //   const date_ = new Date()
+  //   const year = date_.getFullYear()
+  //   let month = date_.getMonth() + 1
+  //   let day = date_.getDate()
+  //   if (month < 10) month = '0' + month
+  //   if (day < 10) day = '0' + day
+  //   let hours = date_.getHours()
+  //   let mins = date_.getMinutes()
+  //   let secs = date_.getSeconds()
+  //   const msecs = date_.getMilliseconds()
+  //   if (hours < 10) hours = '0' + hours
+  //   if (mins < 10) mins = '0' + mins
+  //   if (secs < 10) secs = '0' + secs
+  //   if (msecs < 10) secs = '0' + msecs
+  //   return year + '' + month + '' + day + '' + hours + '' + mins + '' + secs
+  // }
     // true:数值型的，false：非数值型
   static myIsNaN(value) {
     return typeof value === 'number' && !isNaN(value);

@@ -14,6 +14,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import org.jeecg.common.constant.CommonConstant;
 import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -29,6 +30,11 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class XmlUtils {
+
+    /**
+     * attributes
+     */
+    private static final String ATTRIBUTES = "attributes";
 
     /**
      * Creates a new namespace-aware DOM document object by parsing the given XML.
@@ -218,9 +224,9 @@ public final class XmlUtils {
         }
 
         @Override
-        public void startElement(final String namespaceURI, final String localName, final String qName,
-                final Attributes attributes) throws SAXException {
-            if ("attributes".equals(localName)) {
+        public void startElement(final String nameSpaceUri, final String localName, final String qName,
+                                 final Attributes attributes) throws SAXException {
+            if (ATTRIBUTES.equals(localName)) {
                 this.foundAttributes = true;
             } else if (this.foundAttributes) {
                 this.value = new StringBuilder();
@@ -236,9 +242,9 @@ public final class XmlUtils {
         }
 
         @Override
-        public void endElement(final String namespaceURI, final String localName, final String qName)
+        public void endElement(final String nameSpaceUri, final String localName, final String qName)
                 throws SAXException {
-            if ("attributes".equals(localName)) {
+            if (ATTRIBUTES.equals(localName)) {
                 this.foundAttributes = false;
                 this.currentAttribute = null;
             } else if (this.foundAttributes) {

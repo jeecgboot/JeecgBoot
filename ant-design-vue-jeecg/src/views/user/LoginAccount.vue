@@ -43,8 +43,8 @@
         currdatetime: '',
         loginType: 0,
         model:{
-          username: '',
-          password: '',
+          username: 'admin',
+          password: '123456',
           inputCode: ''
         },
         validatorRules:{
@@ -136,6 +136,11 @@
             this.Login(loginParams).then((res) => {
               this.$emit('success', res.result)
             }).catch((err) => {
+              //update-begin-author: taoyan date:20220425 for: 登录页面，当输入验证码错误时，验证码图片要刷新一下，而不是保持旧的验证码图片不变 #41
+              if(err && err.code===412){
+                this.handleChangeCheckCode();
+              }
+              //update-end-author: taoyan date:20220425 for: 登录页面，当输入验证码错误时，验证码图片要刷新一下，而不是保持旧的验证码图片不变 #41
               this.$emit('fail', err)
             });
           }else{

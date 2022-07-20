@@ -53,6 +53,9 @@
             </a-radio-group>
        </template>
         </a-form-model-item>
+        <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="部门负责人">
+          <j-select-multi-user v-model="model.directorUserIds" valueKey="id"></j-select-multi-user>
+        </a-form-model-item>
         <a-form-model-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"

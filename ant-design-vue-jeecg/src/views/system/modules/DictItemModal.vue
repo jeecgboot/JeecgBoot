@@ -164,7 +164,7 @@
           param.id = this.model.id
         }
         if(value){
-          let reg=new RegExp("[`_~!@#$^&*()=|{}'.<>《》/?！￥（）—【】‘；：”“。，、？]")
+          let reg=new RegExp("[`~!@#$^&*()=|{}'.<>《》/?！￥（）—【】‘；：”“。，、？]")
           if(reg.test(value)){
             callback("数据值不能包含特殊字符！")
           }else{

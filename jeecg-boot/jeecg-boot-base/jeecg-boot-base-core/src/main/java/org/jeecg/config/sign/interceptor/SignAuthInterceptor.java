@@ -32,7 +32,7 @@ public class SignAuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        log.info("request URI = " + request.getRequestURI());
+        log.info("Sign Interceptor request URI = " + request.getRequestURI());
         HttpServletRequest requestWrapper = new BodyReaderHttpServletRequestWrapper(request);
         //获取全部参数(包括URL和body上的)
         SortedMap<String, String> allParams = HttpUtils.getAllParams(requestWrapper);

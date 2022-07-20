@@ -28,9 +28,9 @@ public interface CacheConstant {
     public static final String SYS_DATA_PERMISSIONS_CACHE = "sys:cache:permission:datarules";
 
 	/**
-	 * 缓存用户信息
+	 * 缓存用户信息【加密】
 	 */
-	public static final String SYS_USERS_CACHE = "sys:cache:user";
+	public static final String SYS_USERS_CACHE = "sys:cache:encrypt:user";
 
 	/**
 	 * 全部部门信息缓存

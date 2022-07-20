@@ -127,9 +127,10 @@ public interface ISysDepartService extends IService<SysDepart>{
      * 获取我的部门下级所有部门
      * @param parentId 父id
      * @param ids 多个部门id
+     * @param primaryKey 主键字段（id或者orgCode）
      * @return
      */
-    List<SysDepartTreeModel> queryTreeListByPid(String parentId,String ids);
+    List<SysDepartTreeModel> queryTreeListByPid(String parentId,String ids, String primaryKey);
 
     /**
      * 获取某个部门的所有父级部门的ID

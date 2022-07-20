@@ -2,6 +2,7 @@ package org.jeecg.modules.system.entity;
 
 import java.util.Date;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -182,4 +183,10 @@ public class SysUser implements Serializable {
 
     /**设备id uniapp推送用*/
     private String clientId;
+
+    /**
+     * 登录首页地址
+     */
+    @TableField(exist = false)
+    private String homePath;
 }

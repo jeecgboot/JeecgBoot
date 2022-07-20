@@ -763,6 +763,8 @@ export default {
         console.warn(`JVxeTable.setValues：必须传递数组`)
         return
       }
+      // 是否更新了数据
+      let updated = false
       values.forEach((item, idx) => {
         let {rowKey, values: record} = item
         let {row} = this.getIfRowById(rowKey)
@@ -775,6 +777,7 @@ export default {
             let oldValue = row[colKey]
             let newValue = record[colKey]
             if (newValue !== oldValue) {
+              updated = true
               this.$set(row, colKey, newValue)
               // 触发 valueChange 事件
               this.trigger('valueChange', {
@@ -791,6 +794,14 @@ export default {
           }
         })
       })
+      // 【issues/3828】数据更新后，重新计算统计列 
+      if (updated && this.statistics.has) {
+        this.$nextTick(async () => {
+          let {xTable} = this.$refs.vxe.$refs;
+          await xTable.updateCache(true);
+          await xTable.updateData();
+        });
+      }
     },
 
     /** 获取所有的数据，包括values、deleteIds */
@@ -1406,7 +1417,7 @@ const fooPatterns = [
   {title: '字母', value: 's', pattern: /^[A-Z|a-z]+$/},
   {title: '数字', value: 'n', pattern: /^-?\d+(\.?\d+|\d?)$/},
   {title: '整数', value: 'z', pattern: /^-?\d+$/},
-  {title: '金额', value: 'money', pattern: /^(([1-9][0-9]*)|([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2}))$/},
+  {title: '金额', value: 'money', pattern: /^(([1-9][0-9]*)|([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,5}))$/},
 ]
 
 /** 旧版handler转为新版Validator */

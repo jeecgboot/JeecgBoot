@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.2.0</version>
+  <version>3.3.0</version>
   <packaging>pom</packaging>
   <name>JEECG BOOT ${project.version}</name>
 
@@ -14,13 +14,13 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.2.0</jeecgboot.version>
+		<jeecgboot.version>3.3.0</jeecgboot.version>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- 微服务属性 -->
 		<skip.springboot.maven>false</skip.springboot.maven>
-        <spring-cloud.version>2021.0.3</spring-cloud.version>
+		<spring-cloud.version>2021.0.3</spring-cloud.version>
         <spring-cloud-alibaba.version>2021.1</spring-cloud-alibaba.version>
 		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
 
@@ -41,8 +41,11 @@
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.1</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>3.2.0</dynamic-datasource-spring-boot-starter.version>
-		<minidao.version>1.9.0</minidao.version>
 		<druid.version>1.1.22</druid.version>
+		<minidao.version>1.9.0</minidao.version>
+
+		<!-- 积木报表-->
+		<jimureport-spring-boot-starter.version>1.5.2</jimureport-spring-boot-starter.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.11.2</aliyun.oss.version>
@@ -51,7 +54,7 @@
 		<java-jwt.version>3.11.0</java-jwt.version>
 		<shiro-redis.version>3.1.0</shiro-redis.version>
 		<codegenerate.version>1.3.9</codegenerate.version>
-		<autopoi-web.version>1.4.0</autopoi-web.version>
+		<autopoi-web.version>1.4.2</autopoi-web.version>
 		<minio.version>8.0.3</minio.version>
 		<justauth-spring-boot-starter.version>1.3.4</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
@@ -336,15 +339,15 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			<!-- 积木报表 -->
+			<!-- 积木报表-->
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-spring-boot-starter</artifactId>
-				<version>1.5.0</version>
+				<version>${jimureport-spring-boot-starter.version}</version>
 				<exclusions>
 					<exclusion>
-						<artifactId>fastjson</artifactId>
-						<groupId>com.alibaba</groupId>
+						<artifactId>autopoi-web</artifactId>
+						<groupId>org.jeecgframework</groupId>
 					</exclusion>
 				</exclusions>
 			</dependency>

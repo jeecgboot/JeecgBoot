@@ -31,8 +31,6 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
 
 	@Resource
 	private SysLogMapper sysLogMapper;
-	@Autowired
-	private SysBaseApiImpl sysBaseAPI;
 	
 	/**
 	 * @功能：清空所有日志记录

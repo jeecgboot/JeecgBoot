@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
+import org.jeecg.modules.system.entity.SysRoleIndex;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,12 +89,22 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @return
 	 */
 	public List<String> getRole(String username);
+
+	/**
+	 * 获取根据登录用户的角色获取动态首页
+	 *
+	 * @param username
+	 * @param version 前端UI版本
+	 * @return
+	 */
+	public SysRoleIndex getDynamicIndexByUserRole(String username,String version);
 	
 	/**
 	  * 查询用户信息包括 部门信息
 	 * @param username
 	 * @return
 	 */
+	@Deprecated
 	public SysUserCacheInfo getCacheUser(String username);
 
 	/**
@@ -175,6 +187,7 @@ public interface ISysUserService extends IService<SysUser> {
 	/**
 	 * 根据手机号获取用户名和密码
      * @param phone 手机号
+     * @return SysUser
 	 */
 	public SysUser getUserByPhone(String phone);
 
@@ -279,5 +292,13 @@ public interface ISysUserService extends IService<SysUser> {
      * @return List<String>
      */
 	List<String> userIdToUsername(Collection<String> userIdList);
+
+
+	/**
+	 * 获取用户信息 字段信息是加密后的 【加密用户信息】
+	 * @param username
+	 * @return
+	 */
+	LoginUser getEncodeUserInfo(String username);
 
 }

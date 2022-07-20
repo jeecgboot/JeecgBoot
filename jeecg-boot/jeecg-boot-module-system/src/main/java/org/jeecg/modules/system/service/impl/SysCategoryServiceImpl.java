@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.FillRuleConstant;
+import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.FillRuleUtil;
 import org.jeecg.common.util.oConvertUtils;
@@ -43,8 +45,8 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 			if(!ISysCategoryService.ROOT_PID_VALUE.equals(categoryPid)){
 				SysCategory parent = baseMapper.selectById(categoryPid);
 				parentCode = parent.getCode();
-				if(parent!=null && !"1".equals(parent.getHasChild())){
-					parent.setHasChild("1");
+				if(parent!=null && !ISysCategoryService.HAS_CHILD.equals(parent.getHasChild())){
+					parent.setHasChild(ISysCategoryService.HAS_CHILD);
 					baseMapper.updateById(parent);
 				}
 			}
@@ -66,8 +68,8 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 		}else{
 			//如果当前节点父ID不为空 则设置父节点的hasChild 为1
 			SysCategory parent = baseMapper.selectById(sysCategory.getPid());
-			if(parent!=null && !"1".equals(parent.getHasChild())){
-				parent.setHasChild("1");
+			if(parent!=null && !ISysCategoryService.HAS_CHILD.equals(parent.getHasChild())){
+				parent.setHasChild(ISysCategoryService.HAS_CHILD);
 				baseMapper.updateById(parent);
 			}
 		}
@@ -170,14 +172,15 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 				queryWrapper.eq(SysCategory::getPid,metaPid);
 				queryWrapper.notIn(SysCategory::getId,Arrays.asList(idArr));
 				List<SysCategory> dataList = this.baseMapper.selectList(queryWrapper);
-				if((dataList == null || dataList.size()==0) && !Arrays.asList(idArr).contains(metaPid)
-						&& !sb.toString().contains(metaPid)){
+                boolean flag = (dataList == null || dataList.size()==0) && !Arrays.asList(idArr).contains(metaPid)
+                        && !sb.toString().contains(metaPid);
+                if(flag){
 					//如果当前节点原本有子节点 现在木有了，更新状态
 					sb.append(metaPid).append(",");
 				}
 			}
 		}
-		if(sb.toString().endsWith(",")){
+		if(sb.toString().endsWith(SymbolConstant.COMMA)){
 			sb = sb.deleteCharAt(sb.length() - 1);
 		}
 		return sb.toString();

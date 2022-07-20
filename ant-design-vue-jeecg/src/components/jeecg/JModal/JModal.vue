@@ -8,7 +8,7 @@
     v-on="$listeners"
     @ok="handleOk"
     @cancel="handleCancel"
-    destroyOnClose
+    :destroyOnClose="destroyOnClose"
   >
 
     <slot></slot>
@@ -49,13 +49,17 @@
 
 import { getClass, getStyle } from '@/utils/props-util'
 import { triggerWindowResizeEvent } from '@/utils/util'
+import ModalDragMixins from './ModalDragMixins'
 
 export default {
     name: 'JModal',
+    mixins: [ModalDragMixins],
     props: {
       title: String,
       // 可使用 .sync 修饰符
       visible: Boolean,
+      // 是否开启拖拽
+      draggable: Boolean,
       // 是否全屏弹窗，当全屏时无论如何都会禁止 body 滚动。可使用 .sync 修饰符
       fullscreen: {
         type: Boolean,
@@ -68,6 +72,11 @@ export default {
       },
       // 点击确定按钮的时候是否关闭弹窗
       okClose: {
+        type: Boolean,
+        default: true
+      },
+      // 关闭时销毁弹窗内容
+      destroyOnClose: {
         type: Boolean,
         default: true
       },
@@ -162,6 +171,16 @@ export default {
       toggleFullscreen() {
         this.innerFullscreen = !this.innerFullscreen
         triggerWindowResizeEvent()
+        // 全屏的时候禁止拖动
+        if (this.innerFullscreen) {
+          // 还原弹窗的位置为0,0
+          this.setModalPosition(0, 0, false)
+          this.dragSettings.headerEl.style.cursor = null
+        } else {
+          // 取消全屏的时候，将弹窗移动到上次记录的位置
+          this.resetModalPosition()
+          this.dragSettings.headerEl.style.cursor = 'move'
+        }
       },
 
     }

@@ -237,7 +237,7 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 		 Result<List<String>> result = new Result<>();
 		 try {
 			 List<SysDepartRolePermission> list = sysDepartRolePermissionService.list(new QueryWrapper<SysDepartRolePermission>().lambda().eq(SysDepartRolePermission::getRoleId, roleId));
-			 result.setResult(list.stream().map(SysDepartRolePermission -> String.valueOf(SysDepartRolePermission.getPermissionId())).collect(Collectors.toList()));
+			 result.setResult(list.stream().map(sysDepartRolePermission -> String.valueOf(sysDepartRolePermission.getPermissionId())).collect(Collectors.toList()));
 			 result.setSuccess(true);
 		 } catch (Exception e) {
 			 log.error(e.getMessage(), e);

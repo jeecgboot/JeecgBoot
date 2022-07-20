@@ -64,6 +64,7 @@
   const emit = defineEmits(['register', 'ok']);
   const formData = reactive<Record<string, any>>({
 <#list columns as po>
+    id: '',
  <#if po.isShow == 'Y'>
   <#if po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
     ${po.fieldName}: undefined,

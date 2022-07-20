@@ -29,6 +29,7 @@
     @cancel="handleCancel"
     :mask="false"
     :fullscreen="izMobile"
+    draggable
     class="j-super-query-modal"
     style="top:5%;max-height: 95%;"
   >
@@ -163,8 +164,10 @@
                 <a-time-picker v-else-if="item.type==='time'" :value="item.val ? moment(item.val,'HH:mm:ss') : null" format="HH:mm:ss" style="width: 100%" @change="(time,value)=>item.val=value"/>
                 <a-input-number v-else-if=" item.type=='int'||item.type=='number' " style="width: 100%" placeholder="请输入数值" v-model="item.val"/>
                 <a-select v-else-if="item.type=='switch'" placeholder="请选择" v-model="item.val">
-                  <a-select-option value="Y">是</a-select-option>
-                  <a-select-option value="N">否</a-select-option>
+                  <!-- update-begin-author:taoyan for: VUEN-242【online表单 高级查询】开关组件设置扩展参数为[0,1] 时，高级查询选择后查询仍然是Y/N -->
+                  <a-select-option :value="item.extendOption[0]">是</a-select-option>
+                  <a-select-option :value="item.extendOption[1]">否</a-select-option>
+                  <!-- update-end-author:taoyan for: VUEN-242【online表单 高级查询】开关组件设置扩展参数为[0,1] 时，高级查询选择后查询仍然是Y/N -->
                 </a-select>
                 <a-input v-else v-model="item.val" placeholder="请输入值"/>
               </a-col>
@@ -426,9 +429,16 @@
         item['dictCode'] = dictCode
         item['dictTable'] = dictTable
         item['dictText'] = dictText
+        //update-begin-author:taoyan for: VUEN-242【online表单 高级查询】开关组件设置扩展参数为[0,1] 时，高级查询选择后查询仍然是Y/N
+        item['extendOption'] = node.dataRef.extendOption || ['Y', 'N']
+        //update-begin-author:taoyan for: VUEN-242【online表单 高级查询】开关组件设置扩展参数为[0,1] 时，高级查询选择后查询仍然是Y/N
         item['customReturnField'] = customReturnField
         if (popup) {
           item['popup'] = popup
+        }
+        // 格式化字符串，一般用于高级查询的日期格式处理
+        if (node.dataRef.formatStr) {
+          item['formatStr'] = node.dataRef.formatStr
         }
         this.$set(item, 'val', undefined)
       },

@@ -49,7 +49,8 @@
 
   .jeecg-form-container-disabled .ant-upload-select{display:none}
   .jeecg-form-container-disabled .ant-upload-list{cursor:grabbing}
-  .jeecg-form-container-disabled fieldset[disabled] .ant-upload-list{
+  .jeecg-form-container-disabled fieldset[disabled] .ant-upload-list,
+  .jeecg-form-container-disabled fieldset[disabled] iframe{
     -ms-pointer-events: auto !important;
     pointer-events: auto !important;
   }

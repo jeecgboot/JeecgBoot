@@ -14,6 +14,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.ImportExcelUtil;
+import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysCategory;
 import org.jeecg.modules.system.model.TreeSelectModel;
@@ -47,7 +48,12 @@ import java.util.stream.Collectors;
 public class SysCategoryController {
 	@Autowired
 	private ISysCategoryService sysCategoryService;
-	
+
+     /**
+      * 分类编码0
+      */
+     private static final String CATEGORY_ROOT_CODE = "0";
+
 	/**
 	  * 分页列表查询
 	 * @param sysCategory
@@ -294,7 +300,12 @@ public class SysCategoryController {
  	public Result<SysCategory> loadOne(@RequestParam(name="field") String field,@RequestParam(name="val") String val) {
  		Result<SysCategory> result = new Result<SysCategory>();
  		try {
- 			
+			//update-begin-author:taoyan date:2022-5-6 for: issues/3663 sql注入问题
+			boolean isClassField = SqlInjectionUtil.isClassField(field, SysCategory.class);
+			if (!isClassField) {
+				return Result.error("字段无效，请检查!");
+			}
+			//update-end-author:taoyan date:2022-5-6 for: issues/3663 sql注入问题
  			QueryWrapper<SysCategory> query = new QueryWrapper<SysCategory>();
  			query.eq(field, val);
  			List<SysCategory> ls = this.sysCategoryService.list(query);
@@ -463,7 +474,7 @@ public class SysCategoryController {
 	 public Result<List<DictModel>> loadAllData(@RequestParam(name="code",required = true) String code) {
 		 Result<List<DictModel>> result = new Result<List<DictModel>>();
 		 LambdaQueryWrapper<SysCategory> query = new LambdaQueryWrapper<SysCategory>();
-		 if(oConvertUtils.isNotEmpty(code) && !"0".equals(code)){
+		 if(oConvertUtils.isNotEmpty(code) && !CATEGORY_ROOT_CODE.equals(code)){
 			 query.likeRight(SysCategory::getCode,code);
 		 }
 		 List<SysCategory> list = this.sysCategoryService.list(query);

@@ -6,7 +6,7 @@ import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.config.JeeccgBaseConfig;
+import org.jeecg.config.JeecgBaseConfig;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
@@ -48,8 +48,8 @@ public class SignUtil {
         String paramsJsonStr = JSONObject.toJSONString(params);
         log.info("Param paramsJsonStr : {}", paramsJsonStr);
         //设置签名秘钥
-        JeeccgBaseConfig jeeccgBaseConfig = SpringContextUtils.getBean(JeeccgBaseConfig.class);
-        String signatureSecret = jeeccgBaseConfig.getSignatureSecret();
+        JeecgBaseConfig jeecgBaseConfig = SpringContextUtils.getBean(JeecgBaseConfig.class);
+        String signatureSecret = jeecgBaseConfig.getSignatureSecret();
         String curlyBracket = SymbolConstant.DOLLAR + SymbolConstant.LEFT_CURLY_BRACKET;
         if(oConvertUtils.isEmpty(signatureSecret) || signatureSecret.contains(curlyBracket)){
             throw new JeecgBootException("签名密钥 ${jeecg.signatureSecret} 缺少配置 ！！");

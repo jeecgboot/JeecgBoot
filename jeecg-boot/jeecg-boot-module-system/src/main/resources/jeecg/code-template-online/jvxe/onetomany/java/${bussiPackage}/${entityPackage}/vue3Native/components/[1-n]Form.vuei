@@ -74,6 +74,7 @@
       const isForm = true;
       const loading = ref(false);
       const formData = reactive<Record<string, any>>({
+        id: '',
     <#list sub.colums as po>
     <#if po.isShow == 'Y'>
         ${po.fieldName}: '',
@@ -124,6 +125,15 @@
         }
       }
 
+      /**
+       * 值改变事件触发-树控件回调
+       * @param key
+       * @param value
+       */
+      function handleFormChange(key, value) {
+        formData[key] = value;
+      }
+
     <#list sub.colums as po>
     <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
       async function ${po.fieldName}Duplicatevalidate(_r, value) {
@@ -139,6 +149,7 @@
         initFormData,
         getFormData,
         setFieldsValue,
+        handleFormChange,
         isForm,
         validateInfos
       }

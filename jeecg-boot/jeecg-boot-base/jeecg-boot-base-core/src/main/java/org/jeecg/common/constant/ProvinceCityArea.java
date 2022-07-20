@@ -35,9 +35,13 @@ public class ProvinceCityArea {
         this.initAreaList();
         if(areaList!=null && areaList.size()>0){
             for(int i=areaList.size()-1;i>=0;i--){
-                if(text.indexOf(areaList.get(i).getText())>=0){
+                //update-begin-author:taoyan date:2022-5-24 for:VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
+                String areaText = areaList.get(i).getText();
+                String cityText = areaList.get(i).getAheadText();
+                if(text.indexOf(areaText)>=0 && (cityText!=null && text.indexOf(cityText)>=0)){
                     return areaList.get(i).getId();
                 }
+                //update-end-author:taoyan date:2022-5-24 for:VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
             }
         }
         return null;
@@ -145,6 +149,9 @@ public class ProvinceCityArea {
                             for(String areaKey:areaJson.keySet()){
                                 //System.out.println("········"+areaKey);
                                 Area area = new Area(areaKey,areaJson.getString(areaKey),cityKey);
+                                //update-begin-author:taoyan date:2022-5-24 for:VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
+                                area.setAheadText(cityJson.getString(cityKey));
+                                //update-end-author:taoyan date:2022-5-24 for:VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
                                 this.areaList.add(area);
                             }
                         }
@@ -180,6 +187,8 @@ public class ProvinceCityArea {
         String id;
         String text;
         String pid;
+        // 用于存储上级文本数据，区的上级文本 是市的数据
+        String aheadText;
 
         public Area(String id,String text,String pid){
             this.id = id;
@@ -197,6 +206,13 @@ public class ProvinceCityArea {
 
         public String getPid() {
             return pid;
+        }
+
+        public String getAheadText() {
+            return aheadText;
+        }
+        public void setAheadText(String aheadText) {
+            this.aheadText = aheadText;
         }
     }
 }

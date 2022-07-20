@@ -67,15 +67,20 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
     private SysAnnouncementSendMapper sysAnnouncementSendMapper;
 
     /**
+     * errcode
+     */
+    private static final String ERR_CODE = "errcode";
+
+    /**
      * 第三方APP类型，当前固定为 wechat_enterprise
      */
     public final String THIRD_TYPE = ThirdAppConfig.WECHAT_ENTERPRISE.toLowerCase();
 
     @Override
     public String getAccessToken() {
-        String CORP_ID = thirdAppConfig.getWechatEnterprise().getClientId();
-        String SECRET = thirdAppConfig.getWechatEnterprise().getClientSecret();
-        AccessToken accessToken = JwAccessTokenAPI.getAccessToken(CORP_ID, SECRET);
+        String corpId = thirdAppConfig.getWechatEnterprise().getClientId();
+        String secret = thirdAppConfig.getWechatEnterprise().getClientSecret();
+        AccessToken accessToken = JwAccessTokenAPI.getAccessToken(corpId, secret);
         if (accessToken != null) {
             return accessToken.getAccesstoken();
         }
@@ -85,14 +90,14 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
 
     /** 获取APPToken，新版企业微信的秘钥是分开的 */
     public String getAppAccessToken() {
-        String CORP_ID = thirdAppConfig.getWechatEnterprise().getClientId();
-        String SECRET = thirdAppConfig.getWechatEnterprise().getAgentAppSecret();
+        String corpId = thirdAppConfig.getWechatEnterprise().getClientId();
+        String secret = thirdAppConfig.getWechatEnterprise().getAgentAppSecret();
         // 如果没有配置APP秘钥，就说明是老企业，可以通用秘钥
-        if (oConvertUtils.isEmpty(SECRET)) {
-            SECRET = thirdAppConfig.getWechatEnterprise().getClientSecret();
+        if (oConvertUtils.isEmpty(secret)) {
+            secret = thirdAppConfig.getWechatEnterprise().getClientSecret();
         }
 
-        AccessToken accessToken = JwAccessTokenAPI.getAccessToken(CORP_ID, SECRET);
+        AccessToken accessToken = JwAccessTokenAPI.getAccessToken(corpId, secret);
         if (accessToken != null) {
             return accessToken.getAccesstoken();
         }
@@ -464,6 +469,7 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
                 case 60104:
                     msg = "手机号码已存在";
                     break;
+                default:
             }
             String str = String.format("用户 %s(%s) 同步失败！错误码：%s——%s", sysUser.getUsername(), sysUser.getRealname(), errCode, msg);
             syncInfo.addFailInfo(str);
@@ -567,7 +573,7 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
         // 企业微信规则：1表示启用成员，0表示禁用成员
         // JEECG规则：1正常，2冻结
         if (sysUser.getStatus() != null) {
-            if (sysUser.getStatus() == 1 || sysUser.getStatus() == 2) {
+            if (CommonConstant.USER_UNFREEZE.equals(sysUser.getStatus()) || CommonConstant.USER_FREEZE.equals(sysUser.getStatus())) {
                 user.setEnable(sysUser.getStatus() == 1 ? 1 : 0);
             } else {
                 user.setEnable(1);
@@ -837,7 +843,7 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
         JSONObject response = JwUserAPI.getUserInfoByCode(code, accessToken);
         if (response != null) {
             log.info("response: " + response.toJSONString());
-            if (response.getIntValue("errcode") == 0) {
+            if (response.getIntValue(ERR_CODE) == 0) {
                 return response.getString("UserId");
             }
         }

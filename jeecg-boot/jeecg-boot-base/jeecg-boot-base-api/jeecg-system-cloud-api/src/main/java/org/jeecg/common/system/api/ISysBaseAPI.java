@@ -536,4 +536,17 @@ public interface ISysBaseAPI extends CommonAPI {
     @GetMapping("/sys/api/translateDictFromTableByKeys")
     List<DictModel> translateDictFromTableByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keys") String keys);
 
+    /**
+     * 发送模板消息
+     */
+    @PostMapping("/sys/api/sendTemplateMessage")
+    void sendTemplateMessage(@RequestBody MessageDTO message);
+
+    /**
+     * 获取模板内容
+     * @param code
+     * @return
+     */
+    @GetMapping("/sys/api/getTemplateContent")
+    String getTemplateContent(@RequestParam("code") String code);
 }

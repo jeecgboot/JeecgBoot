@@ -55,6 +55,11 @@
           ruleClass: [{ required: true, message: '规则实现类不能为空' }],
           ruleParams: [{
             validator: (rule, value, callback) => {
+              //update-begin---author:wangshuai ---date:20220509  for：[VUEN-907]规则参数不是必填，如果为空不检验即可------------
+              if (!value) {
+                callback()
+              }
+              //update-end---author:wangshuai ---date:20220509  for：[VUEN-907]规则参数不是必填，如果为空不检验即可--------------
 
               try {
                 let json = JSON.parse(value)

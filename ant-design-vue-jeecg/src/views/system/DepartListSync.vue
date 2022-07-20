@@ -105,6 +105,9 @@
                   </a-radio-group>
                 </template>
               </a-form-model-item>
+              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="部门负责人">
+                <j-select-multi-user v-model="model.directorUserIds" valueKey="id"></j-select-multi-user>
+              </a-form-model-item>
               <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol"  label="排序"  prop="departOrder">
                 <a-input-number v-model="model.departOrder"/>
               </a-form-model-item>
@@ -146,6 +149,7 @@
   import DepartAuthModal from './modules/DepartAuthModal'
   import { cloneObject } from '@/utils/util'
   import JThirdAppButton from '@comp/jeecgbiz/thirdApp/JThirdAppButton'
+  import Vue from 'vue'
   // 表头
   const columns = [
     {
@@ -239,7 +243,7 @@
           departName: [{required: true, message: '请输入机构/部门名称!'}],
           orgCode: [{required: true, message: '请输入机构编码!'}],
           orgCategory: [{required: true, message: '请输入机构类型!'}],
-          mobile: [{validator: this.validateMobile}]
+          mobile: Vue.prototype.rules.mobile2
         },
         url: {
           delete: '/sys/sysDepart/delete',
@@ -249,6 +253,7 @@
           importExcelUrl: "sys/sysDepart/importExcel",
         },
         orgCategoryDisabled:false,
+        oldDirectorUserIds:"" //旧的负责人id
       }
     },
     computed: {
@@ -435,7 +440,15 @@
         this.model.parentId = record.parentId
         this.setValuesToForm(record)
         this.$refs.departAuth.show(record.id);
+        //update-begin---author:wangshuai ---date:20220316  for：[JTC-119]在部门管理菜单下设置部门负责人
+        this.oldDirectorUserIds = record.directorUserIds
+        //update-end---author:wangshuai ---date:20220316  for：[JTC-119]在部门管理菜单下设置部门负责人
 
+        //update-beign-author:taoyan date:20220316 for: VUEN-329【bug】为什么不是失去焦点的时候，触发手机号校验
+        this.$nextTick(()=>{
+          this.$refs.form.validateField('mobile')
+        })
+        //update-end-author:taoyan date:20220316 for: VUEN-329【bug】为什么不是失去焦点的时候，触发手机号校验
       },
       // 触发onSelect事件时,为部门树右侧的form表单赋值
       setValuesToForm(record) {
@@ -478,6 +491,9 @@
 
             let formData = Object.assign(this.currSelected, this.model)
             console.log('Received values of form: ', formData)
+            //update-begin---author:wangshuai ---date:20220316  for：[JTC-119]在部门管理菜单下设置部门负责人
+            formData.oldDirectorUserIds = this.oldDirectorUserIds
+            //update-end---author:wangshuai ---date:20220316  for：[JTC-119]在部门管理菜单下设置部门负责人
             httpAction(this.url.edit, formData, 'put').then((res) => {
               if (res.success) {
                 this.$message.success('保存成功!')
@@ -598,16 +614,6 @@
         }
       },
       // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
-
-      // 验证手机号
-      validateMobile(rule,value,callback){
-        if (!value || new RegExp(/^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$/).test(value)){
-          callback();
-        }else{
-          callback("您的手机号码格式不正确!");
-        }
-
-      },
       onSyncFinally({isToLocal}) {
         // 同步到本地时刷新下数据
         if (isToLocal) {

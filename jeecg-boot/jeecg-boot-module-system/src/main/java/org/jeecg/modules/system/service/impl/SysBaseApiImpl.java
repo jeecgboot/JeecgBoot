@@ -1,4 +1,5 @@
 package org.jeecg.modules.system.service.impl;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -14,19 +15,22 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.aspect.UrlMatchEnum;
-import org.jeecg.common.constant.CacheConstant;
-import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.constant.DataBaseConstant;
-import org.jeecg.common.constant.WebsocketConst;
+import org.jeecg.common.constant.*;
+import org.jeecg.common.constant.enums.MessageTypeEnum;
+import org.jeecg.common.desensitization.util.SensitiveInfoUtil;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.*;
 import org.jeecg.common.util.SysAnnmentTypeEnum;
 import org.jeecg.common.util.YouBianCodeUtil;
+import org.jeecg.common.util.dynamic.db.FreemarkerParseFactory;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.message.entity.SysMessageTemplate;
+import org.jeecg.modules.message.handle.impl.DdSendMsgHandle;
 import org.jeecg.modules.message.handle.impl.EmailSendMsgHandle;
+import org.jeecg.modules.message.handle.impl.QywxSendMsgHandle;
+import org.jeecg.modules.message.handle.impl.SystemSendMsgHandle;
 import org.jeecg.modules.message.service.ISysMessageTemplateService;
 import org.jeecg.modules.message.websocket.WebSocket;
 import org.jeecg.modules.system.entity.*;
@@ -58,10 +62,9 @@ import java.util.*;
 public class SysBaseApiImpl implements ISysBaseAPI {
 	/** 当前系统数据库类型 */
 	private static String DB_TYPE = "";
+
 	@Autowired
 	private ISysMessageTemplateService sysMessageTemplateService;
-	@Resource
-	private SysLogMapper sysLogMapper;
 	@Resource
 	private SysUserMapper userMapper;
 	@Resource
@@ -82,7 +85,6 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	private SysDepartMapper departMapper;
 	@Resource
 	private SysCategoryMapper categoryMapper;
-
 	@Autowired
 	private ISysDataSourceService dataSourceService;
 	@Autowired
@@ -91,28 +93,33 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	private SysPermissionMapper sysPermissionMapper;
 	@Autowired
 	private ISysPermissionDataRuleService sysPermissionDataRuleService;
-
 	@Autowired
 	private ThirdAppWechatEnterpriseServiceImpl wechatEnterpriseService;
 	@Autowired
 	private ThirdAppDingtalkServiceImpl dingtalkService;
-
 	@Autowired
 	ISysCategoryService sysCategoryService;
+	@Autowired
+	private ISysUserService sysUserService;
 
 	@Override
-	@Cacheable(cacheNames=CacheConstant.SYS_USERS_CACHE, key="#username")
+	//@SensitiveDecode
 	public LoginUser getUserByName(String username) {
-		if(oConvertUtils.isEmpty(username)) {
+		//update-begin-author:taoyan date:2022-6-6 for: VUEN-1276 【v3流程图】测试bug 1、通过我发起的流程或者流程实例，查看历史，流程图预览问题
+		if (oConvertUtils.isEmpty(username)) {
 			return null;
 		}
-		LoginUser loginUser = new LoginUser();
-		SysUser sysUser = userMapper.getUserByName(username);
-		if(sysUser==null) {
-			return null;
+		//update-end-author:taoyan date:2022-6-6 for: VUEN-1276 【v3流程图】测试bug 1、通过我发起的流程或者流程实例，查看历史，流程图预览问题
+		LoginUser user = sysUserService.getEncodeUserInfo(username);
+
+		//相同类中方法间调用时脱敏解密 Aop会失效，获取用户信息太重要，此处采用原生解密方法，不采用@SensitiveDecodeAble注解方式
+		try {
+			SensitiveInfoUtil.handlerObject(user, false);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
 		}
-		BeanUtils.copyProperties(sysUser, loginUser);
-		return loginUser;
+
+		return user;
 	}
 
 	@Override
@@ -204,6 +211,14 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		SysUserCacheInfo info = new SysUserCacheInfo();
 		info.setOneDepart(true);
 		LoginUser user = this.getUserByName(username);
+
+//		try {
+//			//相同类中方法间调用时脱敏@SensitiveDecodeAble解密 Aop失效处理
+//			SensitiveInfoUtil.handlerObject(user, false);
+//		} catch (IllegalAccessException e) {
+//			e.printStackTrace();
+//		}
+
 		if(user!=null) {
 			info.setSysUserCode(user.getUsername());
 			info.setSysUserName(user.getRealname());
@@ -290,7 +305,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	@Override
 	public List<DictModel> queryTableDictItemsByCode(String table, String text, String code) {
 		//update-begin-author:taoyan date:20200820 for:【Online+系统】字典表加权限控制机制逻辑，想法不错 LOWCOD-799
-		if(table.indexOf("#{")>=0){
+		if(table.indexOf(SymbolConstant.SYS_VAR_PREFIX)>=0){
 			table = QueryGenerator.getSqlRuleValue(table);
 		}
 		//update-end-author:taoyan date:20200820 for:【Online+系统】字典表加权限控制机制逻辑，想法不错 LOWCOD-799
@@ -528,15 +543,15 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			try {
 				DatabaseMetaData md = connection.getMetaData();
 				String dbType = md.getDatabaseProductName().toLowerCase();
-				if(dbType.indexOf("mysql")>=0) {
+				if(dbType.indexOf(DataBaseConstant.DB_TYPE_MYSQL.toLowerCase())>=0) {
 					DB_TYPE = DataBaseConstant.DB_TYPE_MYSQL;
-				}else if(dbType.indexOf("oracle")>=0) {
+				}else if(dbType.indexOf(DataBaseConstant.DB_TYPE_ORACLE.toLowerCase())>=0) {
 					DB_TYPE = DataBaseConstant.DB_TYPE_ORACLE;
-				}else if(dbType.indexOf("sqlserver")>=0||dbType.indexOf("sql server")>=0) {
+				}else if(dbType.indexOf(DataBaseConstant.DB_TYPE_SQLSERVER.toLowerCase())>=0||dbType.indexOf(DataBaseConstant.DB_TYPE_SQL_SERVER_BLANK)>=0) {
 					DB_TYPE = DataBaseConstant.DB_TYPE_SQLSERVER;
-				}else if(dbType.indexOf("postgresql")>=0) {
+				}else if(dbType.indexOf(DataBaseConstant.DB_TYPE_POSTGRESQL.toLowerCase())>=0) {
 					DB_TYPE = DataBaseConstant.DB_TYPE_POSTGRESQL;
-				}else if(dbType.indexOf("mariadb")>=0) {
+				}else if(dbType.indexOf(DataBaseConstant.DB_TYPE_MARIADB.toLowerCase())>=0) {
 					DB_TYPE = DataBaseConstant.DB_TYPE_MARIADB;
 				}else {
 					log.error("数据库类型:[" + dbType + "]不识别!");
@@ -777,6 +792,8 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		if(userDepartList != null){
 			//查找所属公司
 			String orgCodes = "";
+			StringBuilder orgCodesBuilder = new StringBuilder();
+            orgCodesBuilder.append(orgCodes);
 			for(SysUserDepart userDepart : userDepartList){
 				//查询所属公司编码
 				SysDepart depart = sysDepartService.getById(userDepart.getDepId());
@@ -785,10 +802,11 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				if(depart != null && depart.getOrgCode() != null){
 					compyOrgCode = depart.getOrgCode().substring(0,length);
 					if(orgCodes.indexOf(compyOrgCode) == -1){
-						orgCodes = orgCodes + "," + compyOrgCode;
+                        orgCodesBuilder.append(SymbolConstant.COMMA).append(compyOrgCode);
 					}
 				}
 			}
+            orgCodes = orgCodesBuilder.toString();
 			if(oConvertUtils.isNotEmpty(orgCodes)){
 				orgCodes = orgCodes.substring(1);
 				List<String> listIds = departMapper.getSubDepIdsByOrgCodes(orgCodes.split(","));
@@ -1037,7 +1055,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	@Override
 	public void sendEmailMsg(String email, String title, String content) {
 			EmailSendMsgHandle emailHandle=new EmailSendMsgHandle();
-			emailHandle.SendMsg(email, title, content);
+			emailHandle.sendMsg(email, title, content);
 	}
 
 	/**
@@ -1153,5 +1171,55 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys) {
 		return sysDictService.queryTableDictTextByKeys(table, text, code, Arrays.asList(keys.split(",")));
 	}
+
+	//-------------------------------------流程节点发送模板消息-----------------------------------------------
+	@Autowired
+	private QywxSendMsgHandle qywxSendMsgHandle;
+
+	@Autowired
+	private SystemSendMsgHandle systemSendMsgHandle;
+
+	@Autowired
+	private EmailSendMsgHandle emailSendMsgHandle;
+
+	@Autowired
+	private DdSendMsgHandle ddSendMsgHandle;
+
+	@Override
+	public void sendTemplateMessage(MessageDTO message) {
+		String messageType = message.getType();
+		//update-begin-author:taoyan date:2022-7-9 for: 将模板解析代码移至消息发送, 而不是调用的地方
+		String templateCode = message.getTemplateCode();
+		if(oConvertUtils.isNotEmpty(templateCode)){
+			String content = getTemplateContent(templateCode);
+			if(oConvertUtils.isNotEmpty(content) && null!=message.getData()){
+				content = FreemarkerParseFactory.parseTemplateContent(content, message.getData());
+			}
+			message.setContent(content);
+		}
+		if(oConvertUtils.isEmpty(message.getContent())){
+			throw new JeecgBootException("发送消息失败,消息内容为空！");
+		}
+		//update-end-author:taoyan date:2022-7-9 for: 将模板解析代码移至消息发送, 而不是调用的地方
+		if(MessageTypeEnum.XT.getType().equals(messageType)){
+			systemSendMsgHandle.sendMessage(message);
+		}else if(MessageTypeEnum.YJ.getType().equals(messageType)){
+			emailSendMsgHandle.sendMessage(message);
+		}else if(MessageTypeEnum.DD.getType().equals(messageType)){
+			ddSendMsgHandle.sendMessage(message);
+		}else if(MessageTypeEnum.QYWX.getType().equals(messageType)){
+			qywxSendMsgHandle.sendMessage(message);
+		}
+	}
+
+	@Override
+	public String getTemplateContent(String code) {
+		List<SysMessageTemplate> list = sysMessageTemplateService.selectByCode(code);
+		if(list==null || list.size()==0){
+			return null;
+		}
+		return list.get(0).getTemplateContent();
+	}
+	//-------------------------------------流程节点发送模板消息-----------------------------------------------
 
 }

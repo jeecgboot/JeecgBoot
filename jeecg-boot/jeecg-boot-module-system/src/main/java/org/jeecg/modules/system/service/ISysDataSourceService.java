@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.system.entity.SysDataSource;
 
 /**
@@ -11,4 +12,25 @@ import org.jeecg.modules.system.entity.SysDataSource;
  */
 public interface ISysDataSourceService extends IService<SysDataSource> {
 
+    /**
+     * 添加数据源
+     * @param sysDataSource
+     * @return
+     */
+    Result saveDataSource(SysDataSource sysDataSource);
+
+    /**
+     * 修改数据源
+     * @param sysDataSource
+     * @return
+     */
+    Result editDataSource(SysDataSource sysDataSource);
+
+
+    /**
+     * 删除数据源
+     * @param id
+     * @return
+     */
+    Result deleteDataSource(String id);
 }

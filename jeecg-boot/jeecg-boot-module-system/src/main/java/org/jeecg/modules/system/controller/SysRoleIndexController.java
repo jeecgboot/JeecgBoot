@@ -68,7 +68,8 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
     @AutoLog(value = "角色首页配置-添加")
     @ApiOperation(value = "角色首页配置-添加", notes = "角色首页配置-添加")
     @PostMapping(value = "/add")
-    public Result<?> add(@RequestBody SysRoleIndex sysRoleIndex) {
+    //@DynamicTable(value = DynamicTableConstant.SYS_ROLE_INDEX)
+    public Result<?> add(@RequestBody SysRoleIndex sysRoleIndex,HttpServletRequest request) {
         sysRoleIndexService.save(sysRoleIndex);
         return Result.OK("添加成功！");
     }
@@ -82,7 +83,8 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
     @AutoLog(value = "角色首页配置-编辑")
     @ApiOperation(value = "角色首页配置-编辑", notes = "角色首页配置-编辑")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})
-    public Result<?> edit(@RequestBody SysRoleIndex sysRoleIndex) {
+    //@DynamicTable(value = DynamicTableConstant.SYS_ROLE_INDEX)
+    public Result<?> edit(@RequestBody SysRoleIndex sysRoleIndex,HttpServletRequest request) {
         sysRoleIndexService.updateById(sysRoleIndex);
         return Result.OK("编辑成功!");
     }
@@ -161,7 +163,8 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
     @AutoLog(value = "角色首页配置-通过code查询")
     @ApiOperation(value = "角色首页配置-通过code查询", notes = "角色首页配置-通过code查询")
     @GetMapping(value = "/queryByCode")
-    public Result<?> queryByCode(@RequestParam(name = "roleCode", required = true) String roleCode) {
+    //@DynamicTable(value = DynamicTableConstant.SYS_ROLE_INDEX)
+    public Result<?> queryByCode(@RequestParam(name = "roleCode", required = true) String roleCode,HttpServletRequest request) {
         SysRoleIndex sysRoleIndex = sysRoleIndexService.getOne(new LambdaQueryWrapper<SysRoleIndex>().eq(SysRoleIndex::getRoleCode, roleCode));
         return Result.OK(sysRoleIndex);
     }

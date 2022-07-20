@@ -34,14 +34,15 @@
           label="消息类型">
           <j-dict-select-tag
             v-model="msgType"
+            type="radio"
             placeholder="请选择消息类型"
-            dictCode="msgType"/>
+            dictCode="messageType"/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="消息接收方">
-          <a-input placeholder="请输入消息接收方" v-model="receiver"/>
+          <j-select-user-by-dep placeholder="请选择消息接收方" v-model="receiver"></j-select-user-by-dep>
         </a-form-item>
       </a-form>
     </a-spin>
@@ -50,9 +51,13 @@
 
 <script>
   import {httpAction} from '@/api/manage'
-
+  import JSelectUserByDep from '@/components/jeecgbiz/JSelectUserByDep'
+  
   export default {
     name: "SysMessageTestModal",
+    components:{
+      JSelectUserByDep
+    },
     data() {
       return {
         title: "操作",
@@ -74,7 +79,7 @@
         templateName: "",
         templateContent: "",
         receiver: "",
-        msgType: "",
+        msgType: "system",
         testData: "",
         sendParams: {}
       }
@@ -89,7 +94,7 @@
       },
       close() {
         this.receiver = "";
-        this.msgType = "";
+        this.msgType = "system";
         this.sendParams = {};
         this.visible = false;
       },

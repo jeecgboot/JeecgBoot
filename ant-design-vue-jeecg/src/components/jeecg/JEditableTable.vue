@@ -387,7 +387,7 @@
                                 <a-menu-item v-if="col.allowDownload!==false" @click="handleClickDownloadFile(id)">
                                   <span><a-icon type="download"/>&nbsp;下载</span>
                                 </a-menu-item>
-                                <a-menu-item v-if="col.allowRemove!==false" @click="handleClickDelFile(id)">
+                                <a-menu-item v-if="col.allowRemove!==false" @click="handleClickDelFile(id, row, col)">
                                   <span><a-icon type="delete"/>&nbsp;删除</span>
                                 </a-menu-item>
                               </a-menu>
@@ -475,7 +475,7 @@
                                 <a-menu-item v-if="col.allowDownload!==false" @click="handleClickDownFileByUrl(id)">
                                   <span><a-icon type="download"/>&nbsp;下载</span>
                                 </a-menu-item>
-                                <a-menu-item @click="handleClickDelFile(id)">
+                                <a-menu-item @click="handleClickDelFile(id, row, col)">
                                   <span><a-icon type="delete"/>&nbsp;删除</span>
                                 </a-menu-item>
                                 <a-menu-item @click="handleMoreOperation(id,col,col)">
@@ -532,7 +532,7 @@
                                 <a-menu-item v-if="col.allowDownload!==false" @click="handleClickDownFileByUrl(id)">
                                   <span><a-icon type="download"/>&nbsp;下载</span>
                                 </a-menu-item>
-                                <a-menu-item @click="handleClickDelFile(id)">
+                                <a-menu-item @click="handleClickDelFile(id, row, col)">
                                   <span><a-icon type="delete"/>&nbsp;删除</span>
                                 </a-menu-item>
                                 <a-menu-item @click="handleMoreOperation(id,'img',col)">
@@ -1865,6 +1865,8 @@
         })
         // 强制更新formValues
         this.forceUpdateFormValues()
+        // 【issues/3828】重新计算统计列
+        this.recalcAllStatisticsColumns()
       },
       /**
        * 设置单个组件的值
@@ -2590,8 +2592,9 @@
         return id;
       },
 
-      handleClickDelFile(id) {
+      handleClickDelFile(id, row, col) {
         this.uploadValues[id] = null
+        this.elemValueChange(col.type, row, col, null);
       },
       handleClickDownloadFile(id) {
         let { path } = this.uploadValues[id] || {}
@@ -3074,7 +3077,11 @@
           return false
         }
         return true;
-      }
+      },
+      // 根据id获取dataSource中的一行数据
+      getOriginData(id){
+        return this.dataSource.filter(item=>item.id == id);
+      },
 
     },
     beforeDestroy() {

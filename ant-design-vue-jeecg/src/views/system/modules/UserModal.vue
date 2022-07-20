@@ -1,13 +1,13 @@
 <template>
   <a-drawer
-    :title="title"
-    :maskClosable="true"
-    :width="drawerWidth"
-    placement="right"
-    :closable="true"
-    @close="handleCancel"
-    :visible="visible"
-    style="height: 100%;">
+          :title="title"
+          :maskClosable="true"
+          :width="drawerWidth"
+          placement="right"
+          :closable="true"
+          @close="handleCancel"
+          :visible="visible"
+          style="height: 100%;">
 
     <template slot="title">
       <div style="width: 100%;">
@@ -47,17 +47,17 @@
         <a-form-model-item label="手机号码" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="phone">
           <a-input placeholder="请输入手机号码" v-model="model.phone" />
         </a-form-model-item>
-        
+
         <a-form-model-item label="职务" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <j-select-position placeholder="请选择职务" :multiple="false" v-model="model.post"/>
         </a-form-model-item>
 
         <a-form-model-item label="角色分配" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!roleDisabled" >
           <j-multi-select-tag
-            :disabled="disableSubmit"
-            v-model="model.selectedroles"
-            :options="rolesOptions"
-            placeholder="请选择角色">
+                  :disabled="disableSubmit"
+                  v-model="model.selectedroles"
+                  :options="rolesOptions"
+                  placeholder="请选择角色">
           </j-multi-select-tag>
         </a-form-model-item>
 
@@ -69,10 +69,10 @@
         <!--租户分配-->
         <a-form-model-item label="租户分配" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!departDisabled">
           <j-multi-select-tag
-            :disabled="disableSubmit"
-            v-model="model.relTenantIds"
-            :options="tenantsOptions"
-            placeholder="请选择租户">
+                  :disabled="disableSubmit"
+                  v-model="model.relTenantIds"
+                  :options="tenantsOptions"
+                  placeholder="请选择租户">
           </j-multi-select-tag>
         </a-form-model-item>
 
@@ -82,12 +82,12 @@
             <a-radio :value="2">上级</a-radio>
           </a-radio-group>
         </a-form-model-item>
-        <a-form-model-item label="负责部门" :labelCol="labelCol" :wrapperCol="wrapperCol"  v-if="departIdShow==true">
+        <a-form-model-item label="负责部门" :labelCol="labelCol" :wrapperCol="wrapperCol"  v-show="departIdShow==true">
           <j-multi-select-tag
-            :disabled="disableSubmit"
-            v-model="model.departIds"
-            :options="nextDepartOptions"
-            placeholder="请选择负责部门">
+                  :disabled="disableSubmit"
+                  v-model="model.departIds"
+                  :options="nextDepartOptions"
+                  placeholder="请选择负责部门">
           </j-multi-select-tag>
         </a-form-model-item>
 
@@ -97,11 +97,11 @@
 
         <a-form-model-item label="生日" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-date-picker
-            style="width: 100%"
-            placeholder="请选择生日"
-            v-model="model.birthday"
-            :format="dateFormat"
-            :getCalendarContainer="node => node.parentNode"/>
+                  style="width: 100%"
+                  placeholder="请选择生日"
+                  v-model="model.birthday"
+                  :format="dateFormat"
+                  :getCalendarContainer="node => node.parentNode"/>
         </a-form-model-item>
 
         <a-form-model-item label="性别" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -162,17 +162,17 @@
         dateFormat:"YYYY-MM-DD",
         validatorRules:{
           username:[{required: true, message: '请输入用户账号!'},
-                    {validator: this.validateUsername,}],
+            {validator: this.validateUsername,}],
           password: [{required: true,pattern:/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,./]).{8,}$/,message: '密码由8位数字、大小写字母和特殊符号组成!'},
-                     {validator: this.validateToNextPassword,trigger: 'change'}],
+            {validator: this.validateToNextPassword,trigger: 'change'}],
           confirmpassword: [{required: true, message: '请重新输入登录密码!',},
-                            { validator: this.compareToFirstPassword,}],
+            { validator: this.compareToFirstPassword,}],
           realname:[{ required: true, message: '请输入用户名称!' }],
           phone: [{required: true, message: '请输入手机号!'}, {validator: this.validatePhone}],
           email: [{validator: this.validateEmail}],
           roles:{},
           workNo:[ { required: true, message: '请输入工号' },
-                  { validator: this.validateWorkNo }],
+            { validator: this.validateWorkNo }],
           telephone: [{ pattern: /^0\d{2,3}-[1-9]\d{6,7}$/, message: '请输入正确的座机号码' },]
         },
         departIdShow:false,
@@ -441,11 +441,11 @@
         };
         duplicateCheck(params).then((res) => {
           if (res.success) {
-          callback()
-        } else {
-          callback("用户名已存在!")
-        }
-      })
+            callback()
+          } else {
+            callback("用户名已存在!")
+          }
+        })
       },
       validateWorkNo(rule, value, callback){
         var params = {
@@ -476,9 +476,9 @@
       },
       identityChange(e){
         if(e.target.value===1){
-            this.departIdShow=false;
+          this.departIdShow=false;
         }else{
-            this.departIdShow=true;
+          this.departIdShow=true;
         }
       }
     }

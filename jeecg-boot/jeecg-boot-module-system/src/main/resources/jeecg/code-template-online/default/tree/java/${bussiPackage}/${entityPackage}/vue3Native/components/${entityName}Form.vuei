@@ -39,6 +39,7 @@
 </#if>
 			<#if po.fieldDbName == tableVo.extendParams.pidField>
 						<#assign pidFieldName = po.fieldName>
+						<#assign need_select_tree = true>
         <a-col :span="${form_span}">
           <a-form-item label="父级节点" v-bind="validateInfos.${autoStringSuffixForModel(po)}">
             <j-tree-select
@@ -67,7 +68,6 @@
   import moment from 'moment';
   <#include "/common/form/native/vue3NativeImport.ftl">
   import { getValueType } from '/@/utils';
-  import { validateDuplicateValue } from '/@/utils/helper/validator';
   import {loadTreeData, saveOrUpdateDict} from '../${entityName}.api';
   import { Form } from 'ant-design-vue';
   <#if hasOnlyValidate == true>
@@ -84,6 +84,7 @@
   let model: Nullable<Recordable> = null;
   const formData = reactive<Record<string, any>>({
 <#list columns as po>
+    id: '',
  <#if po.isShow == 'Y'>
   <#if po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
     ${po.fieldName}: undefined,
@@ -125,6 +126,7 @@
       treeData.value = await loadTreeData({ async: false, pcode: '' });
       //赋值
       Object.assign(formData, record);
+      model = record
     });
   }
 

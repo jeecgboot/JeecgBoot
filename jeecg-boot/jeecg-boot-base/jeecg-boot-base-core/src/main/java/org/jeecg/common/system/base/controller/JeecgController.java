@@ -53,18 +53,14 @@ public class JeecgController<T, S extends IService<T>> {
         QueryWrapper<T> queryWrapper = QueryGenerator.initQueryWrapper(object, request.getParameterMap());
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
-        // Step.2 获取导出数据
-        List<T> pageList = service.list(queryWrapper);
-        List<T> exportList = null;
-
         // 过滤选中数据
         String selections = request.getParameter("selections");
         if (oConvertUtils.isNotEmpty(selections)) {
             List<String> selectionList = Arrays.asList(selections.split(","));
-            exportList = pageList.stream().filter(item -> selectionList.contains(getId(item))).collect(Collectors.toList());
-        } else {
-            exportList = pageList;
+            queryWrapper.in("id",selectionList);
         }
+        // Step.2 获取导出数据
+        List<T> exportList = service.list(queryWrapper);
 
         // Step.3 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
@@ -97,21 +93,20 @@ public class JeecgController<T, S extends IService<T>> {
         // Step.2 计算分页sheet数据
         double total = service.count();
         int count = (int)Math.ceil(total/pageNum);
-        // Step.3 多sheet处理
+        //update-begin-author:liusq---date:20220629--for: 多sheet导出根据选择导出写法调整 ---
+        // Step.3  过滤选中数据
+        String selections = request.getParameter("selections");
+        if (oConvertUtils.isNotEmpty(selections)) {
+            List<String> selectionList = Arrays.asList(selections.split(","));
+            queryWrapper.in("id",selectionList);
+        }
+        //update-end-author:liusq---date:20220629--for: 多sheet导出根据选择导出写法调整 ---
+        // Step.4 多sheet处理
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         for (int i = 1; i <=count ; i++) {
             Page<T> page = new Page<T>(i, pageNum);
             IPage<T> pageList = service.page(page, queryWrapper);
-            List<T> records = pageList.getRecords();
-            List<T> exportList = null;
-            // 过滤选中数据
-            String selections = request.getParameter("selections");
-            if (oConvertUtils.isNotEmpty(selections)) {
-                List<String> selectionList = Arrays.asList(selections.split(","));
-                exportList = records.stream().filter(item -> selectionList.contains(getId(item))).collect(Collectors.toList());
-            } else {
-                exportList = records;
-            }
+            List<T> exportList = pageList.getRecords();
             Map<String, Object> map = new HashMap<>(5);
             ExportParams  exportParams=new ExportParams(title + "报表", "导出人:" + sysUser.getRealname(), title+i,upLoadPath);
             exportParams.setType(ExcelType.XSSF);

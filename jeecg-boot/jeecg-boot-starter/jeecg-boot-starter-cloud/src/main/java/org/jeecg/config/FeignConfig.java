@@ -12,6 +12,7 @@ import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.PathMatcherUtil;
 import org.jeecg.common.config.mqtoken.UserTokenContext;
+import org.jeecg.config.mybatis.TenantContext;
 import org.jeecg.config.sign.interceptor.SignAuthConfiguration;
 import org.jeecg.config.sign.util.HttpUtils;
 import org.jeecg.config.sign.util.SignUtil;
@@ -73,10 +74,27 @@ public class FeignConfig {
                 }
                 log.info("Feign Login Request token: {}", token);
                 requestTemplate.header(CommonConstant.X_ACCESS_TOKEN, token);
+
+                //update-begin-author:taoyan date:2022-6-23 for: issues/I5AO20 多租户微服务之间调用找不到tenant-id（自定义页面）
+                // 将tenantId信息放入header中
+                String tenantId = request.getHeader(CommonConstant.TENANT_ID);
+                if(tenantId==null || "".equals(tenantId)){
+                    tenantId = request.getParameter(CommonConstant.TENANT_ID);
+                }
+                log.info("Feign Login Request tenantId: {}", tenantId);
+                requestTemplate.header(CommonConstant.TENANT_ID, tenantId);
+                //update-end-author:taoyan date:2022-6-23 for: issues/I5AO20 多租户微服务之间调用找不到tenant-id（自定义页面）
+
             }else{
                 String token = UserTokenContext.getToken();
                 log.info("Feign no Login token: {}", token);
                 requestTemplate.header(CommonConstant.X_ACCESS_TOKEN, token);
+
+                //update-begin-author:taoyan date:2022-6-23 for: issues/I5AO20 多租户微服务之间调用找不到tenant-id（自定义页面）
+                String tenantId = TenantContext.getTenant();
+                log.info("Feign no Login tenantId: {}", tenantId);
+                requestTemplate.header(CommonConstant.TENANT_ID, tenantId);
+                //update-end-author:taoyan date:2022-6-23 for: issues/I5AO20 多租户微服务之间调用找不到tenant-id（自定义页面）
             }
 
             //================================================================================================================
@@ -99,7 +117,9 @@ public class FeignConfig {
                     log.info(" Feign request params sign: {}",sign);
                     log.info("============================ [end] fegin starter url ============================");
                     requestTemplate.header(CommonConstant.X_SIGN, sign);
-                    requestTemplate.header(CommonConstant.X_TIMESTAMP, DateUtils.getCurrentTimestamp().toString());
+                    //update-begin--author:taoyan---date:20220421--for: VUEN-410【签名改造】 X-TIMESTAMP牵扯
+                    requestTemplate.header(CommonConstant.X_TIMESTAMP, String.valueOf(System.currentTimeMillis()));
+                    //update-end--author:taoyan---date:20220421--for: VUEN-410【签名改造】 X-TIMESTAMP牵扯
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -141,7 +161,7 @@ public class FeignConfig {
         return new SpringEncoder(feignHttpMessageConverter());
     }
 
-    @Bean("starterFeignDecoder")
+    @Bean
     public Decoder feignDecoder() {
         return new SpringDecoder(feignHttpMessageConverter());
     }

@@ -24,7 +24,7 @@
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="模板类型">
-                <a-input placeholder="请输入模板类型" v-model="queryParam.templateType"></a-input>
+                <j-dict-select-tag placeholder="请选择模板类型" v-model="queryParam.templateType" dictCode="msgType"></j-dict-select-tag>
               </a-form-item>
             </a-col>
           </template>
@@ -51,7 +51,7 @@
                 @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
+<!--      <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel">
             <a-icon type="delete"/>
@@ -61,7 +61,7 @@
         <a-button style="margin-left: 8px"> 批量操作
           <a-icon type="down"/>
         </a-button>
-      </a-dropdown>
+      </a-dropdown>-->
     </div>
 
     <!-- table区域-begin -->
@@ -91,14 +91,21 @@
 
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+          <a @click="handleMyEdit(record)">编辑</a>
 
           <a-divider type="vertical"/>
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
             <a-menu slot="overlay">
               <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                  <a @click="handleUse(record)">应用</a>
+              </a-menu-item>
+               <a-menu-item>
+                  <a @click="handleNotUse(record)">停用</a>
+              </a-menu-item>
+           
+              <a-menu-item>
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
@@ -125,14 +132,19 @@
   import SysMessageTestModal from './modules/SysMessageTestModal'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import JEllipsis from "@/components/jeecg/JEllipsis";
-
+  import {httpAction} from '@/api/manage'
+  import { deleteAction } from '@/api/manage'
+  import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
+  
+  
   export default {
     name: "SysMessageTemplateList",
     mixins: [JeecgListMixin],
     components: {
       JEllipsis,
       SysMessageTemplateModal,
-      SysMessageTestModal
+      SysMessageTestModal,
+      JDictSelectTag
     },
     data() {
       return {
@@ -171,16 +183,22 @@
             dataIndex: 'templateType',
             customRender: function (text) {
               if(text=='1') {
-                return "短信";
+                return "文本";
               }
               if(text=='2') {
-                return "邮件";
+                return "富文本";
               }
-              if(text=='3') {
-                return "微信";
-              }
-              if(text=='4') {
-                return "系统";
+            }
+          },
+          {
+            title: '是否应用',
+            align: "center",
+            dataIndex: 'useStatus',
+            customRender: function (text) {
+              if(text=='1') {
+                return "是";
+              }else{
+                return '否'
               }
             }
           },
@@ -209,8 +227,60 @@
       handleTest(record){
         this.$refs.testModal.open(record);
         this.$refs.testModal.title = "发送测试";
-      }
+      },
+      //update-begin-author:taoyan date:2022-7-8 for: 修改应用状态
+      updateUseStatus(record, useStatus){
+        let formData = {
+          id: record.id, useStatus: useStatus
+        }
+        httpAction("/sys/message/sysMessageTemplate/edit", formData, 'put').then((res) => {
+          if (res.success) {
+            this.$message.success(res.message);
+          } else {
+            this.$message.warning(res.message);
+          }
+        }).finally(() => {
+          this.loadData()
+        })
+      },
+      handleUse(record){
+        this.updateUseStatus(record, '1')
+      },
+      handleNotUse(record){
+        this.updateUseStatus(record, '0')
+      },
+      handleMyEdit(record){
+        if(record.useStatus == '1'){
+          this.$message.warning('此模板已被应用，禁止编辑!');
+        }else{
+          this.handleEdit(record);
+        }
+      },
+      //update-end-author:taoyan date:2022-7-8 for: 修改应用状态
 
+      handleDelete: function (record) {
+        if(!this.url.delete){
+          this.$message.error("请设置url.delete属性!")
+          return
+        }
+        if(record.useStatus=='1'){
+          this.$message.error("该模板已被应用禁止删除!")
+          return
+        }
+        let id = record.id;
+        var that = this;
+        deleteAction(that.url.delete, {id: id}).then((res) => {
+          if (res.success) {
+            //重新计算分页问题
+            that.reCalculatePage(1)
+            that.$message.success(res.message);
+            that.loadData();
+          } else {
+            that.$message.warning(res.message);
+          }
+        });
+      },
+      
     }
   }
 </script>

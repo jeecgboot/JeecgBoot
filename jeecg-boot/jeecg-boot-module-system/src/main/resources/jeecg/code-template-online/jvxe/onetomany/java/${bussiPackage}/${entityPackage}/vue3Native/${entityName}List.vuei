@@ -18,6 +18,7 @@
     <#assign need_image_upload = false>
     <#assign need_editor = false>
     <#assign need_checkbox = false>
+    <#assign query_flag = false>
     <!--查询区域-->
     <div class="jeecg-basic-table-form-container">
       <a-form @keyup.enter.native="reload" :model="queryParam" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -26,6 +27,9 @@
           <#list columns as po>
             <#if po.fieldDbName=='bpm_status'>
               <#assign bpm_flag=true>
+            </#if>
+            <#if po.isQuery=='Y'>
+              <#assign query_flag=true>
             </#if>
             <#if po.classType=='cat_tree' && po.dictText?default("")?trim?length == 0>
               <#assign need_category=true>

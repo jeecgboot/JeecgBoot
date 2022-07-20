@@ -55,7 +55,7 @@
           <template v-if="toggleSearchStatus">
     </#if>
           <#-- update-begin-author:taoyan date:20220303 for: /issues/3420 内嵌风格，datetime控件样式异常 -->
-          <#if po.queryModel=='group' && po.classType=='datetime'>
+          <#if po.queryMode?default("")?trim=='group' && po.classType=='datetime'>
           ${indent}<a-col :xl="10" :lg="12" :md="12" :sm="24">
           <#else>
           ${indent}<a-col :xl="6" :lg="7" :md="8" :sm="24">

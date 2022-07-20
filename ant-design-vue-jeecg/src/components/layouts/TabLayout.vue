@@ -70,7 +70,9 @@
     /* update_begin author:wuxianquan date:20190828 for: 关闭当前tab页，供子页面调用 ->望菜单能配置外链，直接弹出新页面而不是嵌入iframe #428 */
     provide(){
       return{
-        closeCurrent:this.closeCurrent
+        closeCurrent:this.closeCurrent,
+        changeTitle: this.changeTitle,
+        changeTabTitle: this.changeTabTitle,
       }
     },
     /* update_end author:wuxianquan date:20190828 for: 关闭当前tab页，供子页面调用->望菜单能配置外链，直接弹出新页面而不是嵌入iframe #428 */
@@ -176,6 +178,10 @@
       // update-end-author:sunjianlei date:20191223 for: 修复从单页模式切换回多页模式后首页不居第一位的 BUG
 
       // update-begin-author:sunjianlei date:20200120 for: 动态更改页面标题
+      /**
+       * 修改当前页面的窗口标题
+       * @param title 要修改的新标题
+       */
       changeTitle(title) {
         let projectTitle = "Jeecg-Boot 企业级低代码平台"
         // 首页特殊处理
@@ -183,6 +189,19 @@
           document.title = projectTitle
         } else {
           document.title = title + ' · ' + projectTitle
+        }
+      },
+      /**
+       * 修改tab标签的标题
+       * @param title 要修改的新标题
+       * @param fullPath 要修改的路由全路径，如果不填就是修改当前路由
+       */
+      changeTabTitle(title, fullPath = '') {
+        if (title) {
+          let currentRoute = this.pageList.find((r) => r.fullPath === (fullPath ? fullPath : this.$route.fullPath))
+          if (currentRoute != null) {
+            currentRoute.meta = {...currentRoute.meta, title}
+          }
         }
       },
       // update-end-author:sunjianlei date:20200120 for: 动态更改页面标题

@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.enums.RoleIndexConfigEnum;
+import org.jeecg.common.desensitization.annotation.SensitiveEncode;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.UUIDGenerator;
@@ -19,6 +22,7 @@ import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.vo.SysUserDepVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -65,6 +69,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	ThirdAppWechatEnterpriseServiceImpl wechatEnterpriseService;
 	@Autowired
 	ThirdAppDingtalkServiceImpl dingtalkService;
+	@Autowired
+	SysRoleIndexMapper sysRoleIndexMapper;
 
     @Override
     @CacheEvict(value = {CacheConstant.SYS_USERS_CACHE}, allEntries = true)
@@ -155,7 +161,40 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	public List<String> getRole(String username) {
 		return sysUserRoleMapper.getRoleByUserName(username);
 	}
-	
+
+	/**
+	 * 获取动态首页路由配置
+	 * @param username
+	 * @param version
+	 * @return
+	 */
+	@Override
+	public SysRoleIndex getDynamicIndexByUserRole(String username,String version) {
+		List<String> roles = sysUserRoleMapper.getRoleByUserName(username);
+		String componentUrl = RoleIndexConfigEnum.getIndexByRoles(roles);
+		SysRoleIndex roleIndex = new SysRoleIndex(componentUrl);
+		//只有 X-Version=v3 的时候，才读取sys_role_index表获取角色首页配置
+		if (oConvertUtils.isNotEmpty(version) && roles!=null && roles.size()>0) {
+			LambdaQueryWrapper<SysRoleIndex> routeIndexQuery = new LambdaQueryWrapper();
+			//用户所有角色
+			routeIndexQuery.in(SysRoleIndex::getRoleCode, roles);
+			//角色首页状态0：未开启  1：开启
+			routeIndexQuery.eq(SysRoleIndex::getStatus, CommonConstant.STATUS_1);
+			//优先级正序排序
+			routeIndexQuery.orderByAsc(SysRoleIndex::getPriority);
+			List<SysRoleIndex> list = sysRoleIndexMapper.selectList(routeIndexQuery);
+			if (null != list && list.size() > 0) {
+				roleIndex = list.get(0);
+			}
+		}
+		
+		//如果componentUrl为空，则返回空
+		if(oConvertUtils.isEmpty(roleIndex.getComponent())){
+			return null;
+		}
+		return roleIndex;
+	}
+
 	/**
 	 * 通过用户名获取用户角色集合
 	 * @param username 用户名
@@ -200,7 +239,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	 * @return
 	 */
 	@Override
-	@Cacheable(cacheNames=CacheConstant.SYS_USERS_CACHE, key="#username")
 	public SysUserCacheInfo getCacheUser(String username) {
 		SysUserCacheInfo info = new SysUserCacheInfo();
 		info.setOneDepart(true);
@@ -558,4 +596,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		return userList.stream().map(SysUser::getUsername).collect(Collectors.toList());
 	}
 
+	@Override
+	@Cacheable(cacheNames=CacheConstant.SYS_USERS_CACHE, key="#username")
+	@SensitiveEncode
+	public LoginUser getEncodeUserInfo(String username){
+		if(oConvertUtils.isEmpty(username)) {
+			return null;
+		}
+		LoginUser loginUser = new LoginUser();
+		SysUser sysUser = userMapper.getUserByName(username);
+		if(sysUser==null) {
+			return null;
+		}
+		BeanUtils.copyProperties(sysUser, loginUser);
+		return loginUser;
+	}
 }

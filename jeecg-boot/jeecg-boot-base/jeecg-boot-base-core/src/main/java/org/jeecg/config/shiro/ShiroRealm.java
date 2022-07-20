@@ -69,13 +69,13 @@ public class ShiroRealm extends AuthorizingRealm {
 
         // 设置用户拥有的角色集合，比如“admin,test”
         Set<String> roleSet = commonApi.queryUserRoles(username);
-        System.out.println(roleSet.toString());
+        //System.out.println(roleSet.toString());
         info.setRoles(roleSet);
 
         // 设置用户拥有的权限集合，比如“sys:role:add,sys:user:add”
         Set<String> permissionSet = commonApi.queryUserAuths(username);
         info.addStringPermissions(permissionSet);
-        System.out.println(permissionSet);
+        //System.out.println(permissionSet);
         log.info("===============Shiro权限认证成功==============");
         return info;
     }
@@ -123,7 +123,7 @@ public class ShiroRealm extends AuthorizingRealm {
 
         // 查询用户信息
         log.debug("———校验token是否有效————checkUserTokenIsEffect——————— "+ token);
-        LoginUser loginUser = TokenUtils.getLoginUser(username,commonApi,redisUtil);
+        LoginUser loginUser = TokenUtils.getLoginUser(username, commonApi, redisUtil);
         //LoginUser loginUser = commonApi.getUserByName(username);
         if (loginUser == null) {
             throw new AuthenticationException("用户不存在!");

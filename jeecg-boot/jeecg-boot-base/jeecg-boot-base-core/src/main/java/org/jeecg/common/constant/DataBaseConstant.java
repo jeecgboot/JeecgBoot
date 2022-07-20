@@ -153,4 +153,14 @@ public interface DataBaseConstant {
      * sql语句 where
      */
     String SQL_WHERE = "where";
+
+    /**
+     * sql语句 asc
+     */
+    String SQL_ASC = "asc";
+
+    /**
+     * sqlserver数据库,中间有空格
+     */
+    String DB_TYPE_SQL_SERVER_BLANK = "sql server";
 }

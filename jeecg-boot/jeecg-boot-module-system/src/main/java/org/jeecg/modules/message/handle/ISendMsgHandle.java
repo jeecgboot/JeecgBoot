@@ -1,5 +1,7 @@
 package org.jeecg.modules.message.handle;
 
+import org.jeecg.common.api.dto.message.MessageDTO;
+
 /**
  * @Description: 发送信息接口
  * @author: jeecg-boot
@@ -8,9 +10,17 @@ public interface ISendMsgHandle {
 
     /**
      * 发送信息
-     * @param es_receiver 发送人
-     * @param es_title 标题
-     * @param es_content 内容
+     * @param esReceiver 发送人
+     * @param esTitle 标题
+     * @param esContent 内容
      */
-	void SendMsg(String es_receiver, String es_title, String es_content);
+	void sendMsg(String esReceiver, String esTitle, String esContent);
+
+    /**
+     * 发送信息
+     * @param messageDTO
+     */
+	default void sendMessage(MessageDTO messageDTO){
+
+    }
 }

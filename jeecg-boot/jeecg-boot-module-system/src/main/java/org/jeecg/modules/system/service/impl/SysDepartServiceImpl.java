@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.FillRuleConstant;
+import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.util.FillRuleUtil;
 import org.jeecg.common.util.YouBianCodeUtil;
 import org.jeecg.common.util.oConvertUtils;
@@ -469,14 +470,14 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	 */
 	private String getMinLengthNode(String[] str){
 		int min =str[0].length();
-		String orgCode = str[0];
+		StringBuilder orgCodeBuilder = new StringBuilder(str[0]);
 		for(int i =1;i<str.length;i++){
 			if(str[i].length()<=min){
 				min = str[i].length();
-				orgCode = orgCode+","+str[i];
+                orgCodeBuilder.append(SymbolConstant.COMMA).append(str[i]);
 			}
 		}
-		return orgCode;
+		return orgCodeBuilder.toString();
 	}
     /**
      * 获取部门树信息根据关键字
@@ -504,13 +505,18 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	 * 根据parentId查询部门树
 	 * @param parentId
 	 * @param ids 前端回显传递
+	 * @param primaryKey 主键字段（id或者orgCode）
 	 * @return
 	 */
 	@Override
-	public List<SysDepartTreeModel> queryTreeListByPid(String parentId,String ids) {
+	public List<SysDepartTreeModel> queryTreeListByPid(String parentId,String ids, String primaryKey) {
 		Consumer<LambdaQueryWrapper<SysDepart>> square = i -> {
 			if (oConvertUtils.isNotEmpty(ids)) {
-				i.in(SysDepart::getId, ids.split(","));
+				if (CommonConstant.DEPART_KEY_ORG_CODE.equals(primaryKey)) {
+					i.in(SysDepart::getOrgCode, ids.split(SymbolConstant.COMMA));
+				} else {
+					i.in(SysDepart::getId, ids.split(SymbolConstant.COMMA));
+				}
 			} else {
 				if(oConvertUtils.isEmpty(parentId)){
 					i.and(q->q.isNull(true,SysDepart::getParentId).or().eq(true,SysDepart::getParentId,""));
@@ -519,10 +525,12 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 				}
 			}
 		};
-		LambdaQueryWrapper<SysDepart> lqw=new LambdaQueryWrapper();
+		LambdaQueryWrapper<SysDepart> lqw=new LambdaQueryWrapper<>();
 		lqw.eq(true,SysDepart::getDelFlag,CommonConstant.DEL_FLAG_0.toString());
 		lqw.func(square);
-		lqw.orderByDesc(SysDepart::getDepartOrder);
+        //update-begin---author:wangshuai ---date:20220527  for：[VUEN-1143]排序不对，vue3和2应该都有问题，应该按照升序排------------
+		lqw.orderByAsc(SysDepart::getDepartOrder);
+        //update-end---author:wangshuai ---date:20220527  for：[VUEN-1143]排序不对，vue3和2应该都有问题，应该按照升序排--------------
 		List<SysDepart> list = list(lqw);
         //update-begin---author:wangshuai ---date:20220316  for：[JTC-119]在部门管理菜单下设置部门负责人 创建用户的时候不需要处理
         //设置用户id,让前台显示
@@ -549,7 +557,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	@Override
 	public JSONObject queryAllParentIdByDepartId(String departId) {
 		JSONObject result = new JSONObject();
-		for (String id : departId.split(",")) {
+		for (String id : departId.split(SymbolConstant.COMMA)) {
 			JSONObject all = this.queryAllParentId("id", id);
 			result.put(id, all);
 		}
@@ -559,7 +567,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	@Override
 	public JSONObject queryAllParentIdByOrgCode(String orgCode) {
 		JSONObject result = new JSONObject();
-		for (String code : orgCode.split(",")) {
+		for (String code : orgCode.split(SymbolConstant.COMMA)) {
 			JSONObject all = this.queryAllParentId("org_code", code);
 			result.put(code, all);
 		}

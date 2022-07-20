@@ -54,7 +54,7 @@ public class JwtUtil {
         try {
             os = httpServletResponse.getOutputStream();
 			httpServletResponse.setCharacterEncoding("UTF-8");
-			httpServletResponse.setStatus(401);
+			httpServletResponse.setStatus(code);
             os.write(new ObjectMapper().writeValueAsString(jsonResult).getBytes("UTF-8"));
             os.flush();
             os.close();

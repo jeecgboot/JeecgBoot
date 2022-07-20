@@ -68,6 +68,9 @@
           branding: false,
           menubar: false,
           toolbar_drawer: false,
+          //update-begin-author:taoyan date:2022-5-6 for: issues/I4BCC3 富文本编辑器在服务器图片上传是相对路径
+          convert_urls: false,
+          //update-end-author:taoyan date:2022-5-6 for: issues/I4BCC3 富文本编辑器在服务器图片上传是相对路径
           images_upload_handler: (blobInfo, success) => {
             let formData = new FormData()
             formData.append('file', blobInfo.blob(), blobInfo.filename());

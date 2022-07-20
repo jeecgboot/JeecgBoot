@@ -168,7 +168,7 @@ public abstract class AbstractQueryBlackListHandler {
 
     public String getError(){
         // TODO
-        return "sql黑名单校验不通过,请联系管理员!";
+        return "系统设置了安全规则，敏感表和敏感字段禁止查询，联系管理员授权!";
     }
 
 }

@@ -206,7 +206,7 @@ export function randomNumber() {
   }
   if (arguments.length === 1) {
     let [length] = arguments
-    // 生成指定长度的随机数字，首位一定不是 0
+  // 生成指定长度的随机数字，首位一定不是 0
     let nums = [...Array(length).keys()].map((i) => (i > 0 ? random(0, 9) : random(1, 9)))
     return parseInt(nums.join(''))
   } else if (arguments.length >= 2) {
@@ -626,4 +626,64 @@ export function aspectAroundFunction(obj, funcName, callback) {
       },
     })
   }
+}
+
+/**
+ * 休眠
+ * @param ms 毫秒
+ * @return {Promise<unknown>}
+ */
+export function sleep(ms) {
+  return new Promise(function (resolve) {
+    return setTimeout(resolve, ms);
+  });
+}
+
+/**
+ * 获取指定的 $refs 对象
+ * 有时候可能会遇到组件未挂载到页面中的情况，导致无法获取 $refs 中的某个对象
+ * 这个方法可以等待挂载完成之后再返回 $refs 的对象，避免报错
+ *
+ * 用法示例：let modalRef = getRefPromise(this, 'modal')
+ * @param vm vue实例
+ * @param name 要获取的ref名称
+ * @param noComment $el 标签不能是注释
+ **/
+export function getRefPromise(vm, name, noComment = true) {
+  return new Promise((resolve) => {
+    (function next() {
+      let ref = vm.$refs[name]
+      if (ref && (noComment && ref.$el.tagName)) {
+        resolve(ref)
+      } else {
+        setTimeout(() => {
+          if (noComment) {
+            vm.$forceUpdate()
+          }
+          next()
+        }, 10)
+      }
+    })()
+  })
+}
+
+/**
+ * 导出文件xlsx的mime-type
+ * xls:	application/vnd.ms-excel
+ * @type {string}
+ */
+export const EXPORT_MIME_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+/**
+ * 导出excel文件后缀
+ * @type {string}
+ */
+export const EXPORT_FILE_SUFFIX = ".xlsx";
+
+/**
+ * 字符串是否为null或null字符串
+ * @param str
+ * @return {boolean}
+ */
+export function stringIsNull(str) {
+  return str == null || str === 'null' || str === 'undefined';
 }

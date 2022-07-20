@@ -44,5 +44,7 @@ public class JeecgOrderMainPage {
 	private List<JeecgOrderCustomer> jeecgOrderCustomerList;
 	@ExcelCollection(name="机票")
 	private List<JeecgOrderTicket> jeecgOrderTicketList;
+
+	private String bpmStatus;
 	
 }

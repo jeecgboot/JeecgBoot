@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.desensitization.util.SensitiveInfoUtil;
 import org.jeecg.common.exception.JeecgBoot401Exception;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
@@ -106,9 +107,16 @@ public class TokenUtils {
     public static LoginUser getLoginUser(String username, CommonAPI commonApi, RedisUtil redisUtil) {
         LoginUser loginUser = null;
         String loginUserKey = CacheConstant.SYS_USERS_CACHE + "::" + username;
-        if(redisUtil.hasKey(loginUserKey)){
-            loginUser = (LoginUser) redisUtil.get(loginUserKey);
-        }else{
+        //【重要】此处通过redis原生获取缓存用户，是为了解决微服务下system服务挂了，其他服务互调不通问题---
+        if (redisUtil.hasKey(loginUserKey)) {
+            try {
+                loginUser = (LoginUser) redisUtil.get(loginUserKey);
+                //解密用户
+                SensitiveInfoUtil.handlerObject(loginUser, false);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } else {
             // 查询用户信息
             loginUser = commonApi.getUserByName(username);
         }

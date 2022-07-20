@@ -281,6 +281,10 @@
         this.$refs.modalForm.title = "编辑";
         this.$refs.modalForm.departDisabled = true;
         this.$refs.modalForm.disableSubmit = false;
+        //update-begin---author:wangshuai ---date:20220315  for：[issues/3472]给新建用户赋予角色的逻辑漏洞------------
+        //部门中角色信息隐藏掉
+        this.$refs.modalForm.roleDisabled = true
+        //update-end---author:wangshuai ---date:20220315  for：[issues/3472]给新建用户赋予角色的逻辑漏洞------------
         this.$refs.modalForm.edit(record);
       },
       handleAdd: function () {
@@ -288,6 +292,10 @@
           this.$message.error("请选择一个部门!")
         } else {
           this.$refs.modalForm.departDisabled = true;
+          //update-begin---author:wangshuai ---date:20220315  for：[issues/3472]给新建用户赋予角色的逻辑漏洞------------
+          //部门中角色信息隐藏掉
+          this.$refs.modalForm.roleDisabled = true
+          //update-end---author:wangshuai ---date:20220315  for：[issues/3472]给新建用户赋予角色的逻辑漏洞------------
           //初始化负责部门
           this.$refs.modalForm.nextDepartOptions=[{value:this.currentDept.key,label:this.currentDept.title}]
           this.$refs.modalForm.title = "新增";

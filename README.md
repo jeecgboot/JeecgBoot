@@ -7,19 +7,19 @@
 JEECG BOOT 低代码开发平台（前后端分离版本）
 ===============
 
-当前最新版本： 3.2.0（发布日期：2022-04-25）
+当前最新版本： 3.3.0（发布日期：2022-07-25）
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://www.jeecg.com)
-[![](https://img.shields.io/badge/Blog-官方博客-blue.svg)](https://jeecg.blog.csdn.net)
-[![](https://img.shields.io/badge/version-3.2.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/Blog-官方博客-blue.svg)](https://my.oschina.net/jeecg)
+[![](https://img.shields.io/badge/version-3.3.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
 
 
-项目介绍：
+项目介绍
 -----------------------------------
 
 <h3 align="center">Java Low Code Platform for Enterprise web applications</h3>
@@ -34,12 +34,21 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 `JEECG业务流程:` 采用工作流来实现、扩展出任务接口，供开发编写业务逻辑，表单提供多种解决方案： 表单设计器、online配置表单、编码表单。同时实现了流程与表单的分离设计（松耦合）、并支持任务节点灵活配置，既保证了公司流程的保密性，又减少了开发人员的工作量。
 
 
+项目源码
+-----------------------------------
+| 仓库 |前端源码Vue3版 | 前端源码Vue2版 | 后端源码 |
+|-|-|-|-|
+| Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)  | [ant-design-vue-jeecg](https://github.com/jeecgboot/jeecg-boot/tree/master/ant-design-vue-jeecg) | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) |
+| 码云 | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)  | [ant-design-vue-jeecg](https://gitee.com/jeecg/jeecg-boot/tree/master/ant-design-vue-jeecg)  | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
 
-| 项目名                | 说明                     | 传送门                                                                                                                                 |
-|--------------------|------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| `jeecg-boot`    | JAVA后台（支持微服务）        | [Github](https://github.com/jeecgboot/jeecg-boot) &nbsp;&nbsp;    [Gitee](https://gitee.com/jeecg/jeecg-boot)  |
-| `ant-design-vue-jeecg`  |Vue2版前端代码（默认与主项目一起）       |        |
-| `jeecgboot-vue3` | Vue3版前端代码 | [Github](https://github.com/jeecgboot/jeecgboot-vue3)   &nbsp;&nbsp;  [Gitee](https://gitee.com/jeecg/jeecgboot-vue3) |
+
+##### 项目说明
+
+| 项目名                | 说明                     | 
+|--------------------|------------------------|
+| `jeecg-boot`    | SpringBoot后台源码（支持微服务）        |
+| `ant-design-vue-jeecg`  |Vue2版前端源码（与主项目一起）       |
+| `jeecgboot-vue3` | Vue3版前端源码 |
 
 
 适用项目
@@ -62,8 +71,8 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 - 微服务开发：  [单体切换为微服务](http://doc.jeecg.com/2704725)
 
 - QQ交流群 ： ⑥730954414、VUE3群683903138、⑤860162132(满)、④774126647(满)、③816531124(满)、②769925425(满)、①284271917(满)
-
 > ` 提醒：【QQ群是自助服务群，建议给帮助您解决问题的同学发送指定红包，表示感谢！】 `
+
 
 
 为什么选择JEECG-BOOT?
@@ -340,16 +349,16 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 │  ├─Online在线表单 - 功能已开放
 │  ├─Online代码生成器 - 功能已开放
 │  ├─Online在线报表 - 功能已开放
-│  ├─Online在线图表(商业功能)
-│  ├─Online图表模板配置(商业功能)
-│  ├─Online布局设计(商业功能)
+│  ├─Online在线图表(未开源)
+│  ├─Online图表模板配置(未开源)
+│  ├─Online布局设计(未开源)
 │  ├─多数据源管理 - 功能已开放
 ├─积木报表设计器(低代码)
 │  ├─打印设计器
 │  ├─数据报表设计
 │  ├─图形报表设计（支持echart）
-│  ├─大屏设计器(商业功能)
-│─流程模块功能 (商业功能)
+│  ├─大屏设计器(未开源)
+│─流程模块功能 (未开源)
 │  ├─流程设计器
 │  ├─表单设计器
    ├─大屏设计器
@@ -364,7 +373,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 │  └─我的抄送
 │  └─流程委派、抄送、跳转
 │  └─。。。
-│─OA办公组件 (商业功能)
+│─OA办公组件 (未开源)
 │  ├─更多功能
 │  └─。。。
 └─其他模块
