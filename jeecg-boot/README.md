@@ -46,7 +46,7 @@ Jeecg-Boot 低代码开发平台
 - QQ交流群 ： ⑤860162132、④774126647(满)、③816531124(满)、②769925425(满)、①284271917(满)
 
 
-## Docker镜像用法
+## Docker镜像启动后台
 
 
 文档： http://doc.jeecg.com/2043889
@@ -56,9 +56,8 @@ Jeecg-Boot 低代码开发平台
        net stop redis
        net stop mysql
  
- # 1.配置host
+# 1.配置host
 
-    # jeecgboot
     127.0.0.1   jeecg-boot-redis
     127.0.0.1   jeecg-boot-mysql
     127.0.0.1   jeecg-boot-system
@@ -66,14 +65,11 @@ Jeecg-Boot 低代码开发平台
 # 2.修改application-dev.yml文件的数据库和redis链接
     修改数据库连接和redis连接，将连接改成host方式
 
-
-# 3.进jeecg-boot根路径 maven打包
+# 3.进jeecg-boot根目录，执行maven命令
     mvn clean package
- 
 
 # 4.启动镜像组
     docker-compose up -d
-
 
 # 5.访问后台项目（等待2分钟左右后）
     http://localhost:8080/jeecg-boot/doc.html
