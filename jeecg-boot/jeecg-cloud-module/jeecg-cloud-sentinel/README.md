@@ -1,6 +1,4 @@
-访问地址
-http://localhost:8087
-
+访问地址: http://localhost:9000
 账号密码：sentinel/sentinel
 
 
