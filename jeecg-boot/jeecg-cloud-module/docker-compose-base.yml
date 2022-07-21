@@ -17,7 +17,7 @@ services:
       --max_allowed_packet=128M
       --default-authentication-plugin=caching_sha2_password
     ports:
-      - 3305:3306
+      - 3306:3306
 
   jeecg-boot-redis:
     image: redis:5.0
