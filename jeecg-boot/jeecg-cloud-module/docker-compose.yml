@@ -43,6 +43,20 @@ services:
     container_name: jeecg-boot-gateway
     hostname: jeecg-boot-gateway
 
+  jeecg-boot-sentinel:
+    restart: on-failure
+    build:
+      context: ./jeecg-cloud-sentinel
+    ports:
+      - 9000:9000
+    depends_on:
+      - jeecg-boot-nacos
+      - jeecg-boot-demo
+      - jeecg-boot-system
+      - jeecg-boot-gateway
+    container_name: jeecg-boot-sentinel
+    hostname: jeecg-boot-sentinel
+
 #  jeecg-boot-xxljob:
 #    build:
 #      context: ./jeecg-cloud-xxljob
