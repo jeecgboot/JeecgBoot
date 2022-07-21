@@ -79,8 +79,9 @@ Jeecg-Boot 低代码开发平台
 ``` 
 
 其他： 重新构建镜像组（当你改变本地代码，也可重新构建镜像）
-    docker-compose build
-
+```
+   docker-compose build
+```
 
 
 ## 专项文档
