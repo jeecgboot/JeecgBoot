@@ -49,15 +49,18 @@ Jeecg-Boot 低代码开发平台
 ## Docker镜像启动后台
 
 
-文档： http://doc.jeecg.com/2043889
+- Docker镜像单体启动 ：  http://doc.jeecg.com/2043889
+- Docker镜像微服务启动： http://doc.jeecg.com/2656147
 
+
+下面是单体启动步骤：
  ``` 
+
 注意： 如果本地安装了mysql和redis,启动容器前先停掉本地服务，不然会端口冲突。
        net stop redis
        net stop mysql
  
 # 1.配置host
-
     127.0.0.1   jeecg-boot-redis
     127.0.0.1   jeecg-boot-mysql
     127.0.0.1   jeecg-boot-system
