@@ -106,30 +106,28 @@ yarn run lint
 > @vue/cli 升级后，eslint 规则更新了。由于影响到全部 .vue 文件，需要逐个验证。既暂时关闭部分原本不验证的规则，后期维护时，在逐步修正这些 rules
 
 
-Docker 镜像使用
+Docker镜像启动
 ----
 
  ``` 
-# 1.修改前端项目的后台域名
-    .env.development
-    域名改成： http://jeecg-boot-system:8080/jeecg-boot
-   
-# 2.先进入打包前端项目
-  yarn run build
-
-# 3.构建镜像
-  docker build -t nginx:jeecgboot .
-
-# 4.启动镜像
-  docker run --name jeecg-boot-nginx -p 80:80 -d nginx:jeecgboot
-
-# 5.配置host
-
-    # jeecgboot
+# 1.配置host
     127.0.0.1   jeecg-boot-redis
     127.0.0.1   jeecg-boot-mysql
     127.0.0.1   jeecg-boot-system
-  
+
+# 2.修改前端项目的后台域名
+    .env.development
+    域名改成： http://jeecg-boot-system:8080/jeecg-boot
+   
+# 3.进入项目根目录，执行打包命令
+  yarn run build
+
+# 4.构建镜像
+  docker build -t jeecgboot-ui2 .
+
+# 5.启动镜像
+  docker run --name jeecgboot-ui-vue2 -p 80:80 -d jeecgboot-ui2
+
 # 6.访问前台项目
-  http://localhost:80
+  http://localhost
 ``` 
