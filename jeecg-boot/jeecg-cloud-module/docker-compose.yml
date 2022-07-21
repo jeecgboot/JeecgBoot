@@ -20,6 +20,17 @@ services:
     environment:
       - TZ=Asia/Shanghai
 
+  jeecg-boot-demo:
+    depends_on:
+      - jeecg-boot-nacos
+    build:
+      context: ../jeecg-boot-module-demo
+    container_name: jeecg-boot-demo
+    hostname: jeecg-boot-demo
+    restart: on-failure
+    environment:
+      - TZ=Asia/Shanghai
+
   jeecg-boot-gateway:
     restart: on-failure
     build:
