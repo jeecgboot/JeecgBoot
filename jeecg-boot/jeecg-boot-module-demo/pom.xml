@@ -21,7 +21,16 @@
     <profiles>
         <profile>
             <id>SpringCloud</id>
-            <!-- 引入微服务启动 Starter依赖 -->
+            <!-- 引入springboot独立启动-->
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+            <!-- 引入微服务Starter依赖 -->
             <dependencies>
                 <dependency>
                     <groupId>org.jeecgframework.boot</groupId>
