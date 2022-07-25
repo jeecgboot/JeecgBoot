@@ -20,3 +20,13 @@ ADD COLUMN `use_status` varchar(1) NULL COMMENT '是否使用中 1是0否' AFTER
 
 ALTER TABLE `sys_sms`
 MODIFY COLUMN `es_type` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '发送方式：参考枚举MessageTypeEnum' AFTER `es_title`;
+
+
+ALTER TABLE  jimu_report_data_source
+ADD COLUMN tenant_id varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '多租户标识' AFTER connect_times;
+
+ALTER TABLE jimu_dict
+ADD COLUMN tenant_id varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '多租户标识' AFTER type;
+
+ALTER TABLE jimu_report
+ADD COLUMN tenant_id varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '多租户标识' AFTER js_str;
