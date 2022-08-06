@@ -6,8 +6,8 @@ server:
 spring:
   datasource:
     url: jdbc:mysql://jeecg-boot-mysql:3306/xxl_job?Unicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    username: root
-    password: root
+    username: ${MYSQL-USER:root}
+    password: ${MYSQL-PWD:root}
     driver-class-name: com.mysql.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
     hikari:

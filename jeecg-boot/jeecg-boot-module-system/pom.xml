@@ -4,30 +4,11 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-parent</artifactId>
-		<version>3.3.0</version>
+		<version>3.4.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>jeecg-boot-module-system</artifactId>
-
-	<repositories>
-		<repository>
-			<id>aliyun</id>
-			<name>aliyun Repository</name>
-			<url>https://maven.aliyun.com/repository/public</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>jeecg</id>
-			<name>jeecg Repository</name>
-			<url>https://maven.jeecg.org/nexus/content/repositories/jeecg</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -74,32 +55,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<profiles>
-		<!-- SpringCloud运行环境 -->
-		<profile>
-			<id>SpringCloud</id>
-			<build>
-				<resources>
-					<resource>
-						<directory>src/main/resources</directory>
-						<filtering>true</filtering>
-						<!-- SpringCloud运行环境的配置，排除system模块jar里的yaml -->
-						<excludes>
-							<exclude>application.yml</exclude>
-							<exclude>application-*.yml</exclude>
-						</excludes>
-					</resource>
-					<resource>
-						<directory>src/main/java</directory>
-						<includes>
-							<include>**/*.xml</include>
-							<include>**/*.json</include>
-							<include>**/*.ftl</include>
-						</includes>
-					</resource>
-				</resources>
-			</build>
-		</profile>
-	</profiles>
 </project>

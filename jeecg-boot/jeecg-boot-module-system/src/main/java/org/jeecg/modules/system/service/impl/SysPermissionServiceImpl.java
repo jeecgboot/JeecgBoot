@@ -60,6 +60,12 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 		return sysPermissionMapper.queryListByParentId(parentId);
 	}
 
+	@Override
+	public void switchVue3Menu() {
+		sysPermissionMapper.backupVue2Menu();
+		sysPermissionMapper.changeVue3Menu();
+	}
+	
 	/**
 	  * 真实删除
 	 */

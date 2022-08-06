@@ -25,6 +25,14 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
 	 * @return
 	 */
 	public List<TreeModel> queryListByParentId(@Param("parentId") String parentId);
+
+	/**
+	 * 切换vue3菜单
+	 */
+	@Update("alter table sys_permission rename to sys_permission_v2")
+	public void backupVue2Menu();
+	@Update("alter table sys_permission_v3 rename to sys_permission")
+	public void changeVue3Menu();
 	
 	/**
 	 * 根据用户查询用户权限

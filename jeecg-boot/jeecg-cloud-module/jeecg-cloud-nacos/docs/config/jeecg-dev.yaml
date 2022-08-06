@@ -1,0 +1,146 @@
+spring:
+  datasource:
+    druid:
+      stat-view-servlet:
+        enabled: true
+        loginUsername: admin
+        loginPassword: 123456
+        allow:
+      web-stat-filter:
+        enabled: true
+    dynamic:
+      druid:
+        initial-size: 5
+        min-idle: 5
+        maxActive: 20
+        maxWait: 60000
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: SELECT 1 FROM DUAL
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        poolPreparedStatements: true
+        maxPoolPreparedStatementPerConnectionSize: 20
+        filters: stat,wall,slf4j
+        connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+      datasource:
+        master:
+          url: jdbc:mysql://jeecg-boot-mysql:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          username: root
+          password: root
+          driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    database: 0
+    host: jeecg-boot-redis
+    password:
+    port: 6379
+  rabbitmq:
+    host: jeecg-boot-rabbitmq
+    username: guest
+    password: guest
+    port: 5672
+    publisher-confirms: true
+    publisher-returns: true
+    virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: manual
+        concurrency: 1
+        max-concurrency: 1
+        retry:
+          enabled: true
+minidao:
+  base-package: org.jeecg.modules.jmreport.*,org.jeecg.modules.drag.*
+jeecg:
+  signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
+  signUrls: /sys/dict/getDictItems/*,/sys/dict/loadDict/*,/sys/dict/loadDictOrderByValue/*,/sys/dict/loadDictItem/*,/sys/dict/loadTreeData,/sys/api/queryTableDictItemsByCode,/sys/api/queryFilterTableDictInfo,/sys/api/queryTableDictByKeys,/sys/api/translateDictFromTable,/sys/api/translateDictFromTableByKeys
+  uploadType: local
+  domainUrl:
+    pc: http://localhost:3100
+    app: http://localhost:8051
+  path:
+    upload: /opt/upFiles
+    webapp: /opt/webapp
+  shiro:
+    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**
+  oss:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    accessKey: ??
+    secretKey: ??
+    bucketName: jeecgdev
+    staticDomain: ??
+  elasticsearch:
+    cluster-name: jeecg-ES
+    cluster-nodes: jeecg-boot-es:9200
+    check-enabled: false
+  file-view-domain: 127.0.0.1:8012
+  minio:
+    minio_url: http://minio.jeecg.com
+    minio_name: ??
+    minio_pass: ??
+    bucketName: otatest
+  jmreport:
+    mode: dev
+    is_verify_token: false
+    verify_methods: remove,delete,save,add,update
+  wps:
+    domain: https://wwo.wps.cn/office/
+    appid: ??
+    appsecret: ??
+  xxljob:
+    enabled: false
+    adminAddresses: http://jeecg-boot-xxljob:9080/xxl-job-admin
+    appname: ${spring.application.name}
+    accessToken: ''
+    logPath: logs/jeecg/job/jobhandler/
+    logRetentionDays: 30
+  redisson:
+    address: jeecg-boot-redis:6379
+    password:
+    type: STANDALONE
+    enabled: true
+logging:
+  level:
+    org.jeecg.modules.system.mapper : info
+cas:
+  prefixUrl: http://localhost:8888/cas
+knife4j:
+  production: false
+  basic:
+    enable: false
+    username: jeecg
+    password: jeecg1314
+justauth:
+  enabled: true
+  type:
+    GITHUB:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/thirdLogin/github/callback
+    WECHAT_ENTERPRISE:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/thirdLogin/wechat_enterprise/callback
+      agent-id: ??
+    DINGTALK:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/thirdLogin/dingtalk/callback
+  cache:
+    type: default
+    prefix: 'demo::'
+    timeout: 1h
+third-app:
+  enabled: false
+  type:
+    WECHAT_ENTERPRISE:
+      enabled: false
+      client-id: ??
+      client-secret: ??
+      agent-id: ??
+    DINGTALK:
+      enabled: false
+      client-id: ??
+      client-secret: ??
+      agent-id: ??

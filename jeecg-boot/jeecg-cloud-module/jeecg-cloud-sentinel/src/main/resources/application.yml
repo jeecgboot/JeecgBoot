@@ -32,8 +32,6 @@ logging:
 nacos:
   server:
     ip: @config.server-addr@
-    password: @config.password@
-    username: @config.username@
 sentinel:
   dashboard:
     version: 1.8.2

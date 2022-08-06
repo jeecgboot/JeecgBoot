@@ -5,30 +5,11 @@
     <parent>
         <artifactId>jeecg-cloud-module</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>3.3.0</version>
+        <version>3.4.0</version>
     </parent>
     <artifactId>jeecg-cloud-sentinel</artifactId>
     <name>jeecg-cloud-sentinel</name>
     <description>sentinel启动模块</description>
-
-    <repositories>
-        <repository>
-            <id>aliyun</id>
-            <name>aliyun Repository</name>
-            <url>https://maven.aliyun.com/repository/public</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>jeecg</id>
-            <name>jeecg Repository</name>
-            <url>https://maven.jeecg.org/nexus/content/repositories/jeecg</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>

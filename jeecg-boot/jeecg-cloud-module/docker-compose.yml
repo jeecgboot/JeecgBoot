@@ -13,8 +13,8 @@ services:
     depends_on:
       - jeecg-boot-nacos
     build:
-      context: ./jeecg-cloud-system-start
-    container_name: jeecg-boot-system
+      context: ./jeecg-system-cloud-start
+    container_name: jeecg-system-start
     hostname: jeecg-boot-system
     restart: on-failure
     environment:
@@ -24,8 +24,8 @@ services:
     depends_on:
       - jeecg-boot-nacos
     build:
-      context: ../jeecg-boot-module-demo
-    container_name: jeecg-boot-demo
+      context: ./jeecg-demo-cloud-start
+    container_name: jeecg-demo-start
     hostname: jeecg-boot-demo
     restart: on-failure
     environment:

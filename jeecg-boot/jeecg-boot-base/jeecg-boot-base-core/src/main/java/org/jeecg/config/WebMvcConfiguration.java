@@ -45,11 +45,9 @@ import java.util.List;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    @Value("${jeecg.path.upload}")
-    private String upLoadPath;
-    @Value("${jeecg.path.webapp}")
-    private String webAppPath;
-    @Value("${spring.resource.static-locations}")
+    @Autowired
+    JeecgBaseConfig jeecgBaseConfig;
+    @Value("${spring.resource.static-locations:}")
     private String staticLocations;
 
     @Autowired(required = false)
@@ -62,8 +60,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**")
                 //update-begin-author:taoyan date:20211116 for: jeecg.path.webapp配置无效 #3126
-                .addResourceLocations("file:" + upLoadPath + "//")
-                .addResourceLocations("file:" + webAppPath + "//")
+                .addResourceLocations("file:" + jeecgBaseConfig.getPath().getUpload() + "//")
+                .addResourceLocations("file:" + jeecgBaseConfig.getPath().getWebapp() + "//")
                 //update-end-author:taoyan date:20211116 for: jeecg.path.webapp配置无效 #3126
                 .addResourceLocations(staticLocations.split(","));
     }

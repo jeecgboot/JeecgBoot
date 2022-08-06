@@ -24,6 +24,7 @@ import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.*;
 import com.alibaba.csp.sentinel.dashboard.rule.nacos.entity.AuthorityRuleCorrectEntity;
 import com.alibaba.csp.sentinel.dashboard.rule.nacos.entity.ParamFlowRuleCorrectEntity;
 import com.alibaba.nacos.api.PropertyKeyConst;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -150,8 +151,12 @@ public class SentinelConfig {
     public ConfigService nacosConfigService() throws Exception {
         Properties properties=new Properties();
         properties.put(PropertyKeyConst.SERVER_ADDR,nacosConfigProperties.getServerAddr());
-        properties.put(PropertyKeyConst.USERNAME,nacosConfigProperties.getUsername());
-        properties.put(PropertyKeyConst.PASSWORD,nacosConfigProperties.getPassword());
+        if(StringUtils.isNotBlank(nacosConfigProperties.getUsername())){
+            properties.put(PropertyKeyConst.USERNAME,nacosConfigProperties.getUsername());
+        }
+        if(StringUtils.isNotBlank(nacosConfigProperties.getPassword())){
+            properties.put(PropertyKeyConst.PASSWORD,nacosConfigProperties.getPassword());
+        }
         return ConfigFactory.createConfigService(properties);
     }
 }

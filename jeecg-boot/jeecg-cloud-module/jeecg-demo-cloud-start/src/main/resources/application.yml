@@ -1,0 +1,16 @@
+server:
+  port: 7002
+  
+spring:
+  application:
+    name: jeecg-demo
+  cloud:
+    nacos:
+      config:
+        server-addr: @config.server-addr@
+      discovery:
+        server-addr: ${spring.cloud.nacos.config.server-addr}
+  config:
+    import:
+      - optional:nacos:jeecg.yaml
+      - optional:nacos:jeecg-@profile.name@.yaml

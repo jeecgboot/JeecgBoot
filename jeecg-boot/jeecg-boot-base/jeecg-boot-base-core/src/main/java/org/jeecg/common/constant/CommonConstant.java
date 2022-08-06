@@ -304,16 +304,21 @@ public interface CommonConstant {
     String WPS_TYPE_2="2";
 
 
+    /**===============================================================================================*/
+    /**
+     * ::非常重要::
+     * 注意：这四个常量值如果修改，需要与 jeecg-boot-starter/jeecg-boot-common/org.jeecg.config.FeignConfig 类中的值保持一致。
+     */
     String X_ACCESS_TOKEN = "X-Access-Token";
     String X_SIGN = "X-Sign";
     String X_TIMESTAMP = "X-TIMESTAMP";
+    /** 租户 请求头*/
+    String TENANT_ID = "tenant-id";
+    /**===============================================================================================*/
+
     String TOKEN_IS_INVALID_MSG = "Token失效，请重新登录!";
     String X_FORWARDED_SCHEME = "X-Forwarded-Scheme";
 
-    /**
-     * 多租户 请求头
-     */
-    String TENANT_ID = "tenant-id";
 
     /**
      * 微服务读取配置文件属性 服务地址

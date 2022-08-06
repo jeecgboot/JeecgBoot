@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.3.0</version>
+  <version>3.4.0</version>
   <packaging>pom</packaging>
   <name>JEECG BOOT ${project.version}</name>
 
@@ -14,14 +14,14 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.3.0</jeecgboot.version>
+		<jeecgboot.version>3.4.0</jeecgboot.version>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<!-- 微服务属性 -->
+		<!-- 微服务 -->
 		<skip.springboot.maven>false</skip.springboot.maven>
 		<spring-cloud.version>2021.0.3</spring-cloud.version>
-        <spring-cloud-alibaba.version>2021.1</spring-cloud-alibaba.version>
+        <spring-cloud-alibaba.version>2021.0.1.0</spring-cloud-alibaba.version>
 		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
 
 		<xxl-job-core.version>2.2.0</xxl-job-core.version>
@@ -70,18 +70,6 @@
         <module>jeecg-boot-module-system</module>
 	</modules>
 
-	<distributionManagement>
-	  	<repository>
-            <id>jeecg</id>
-            <name>jeecg Repository</name>
-            <url>http://maven.jeecg.com:8090/nexus/content/repositories/jeecg</url>
-        </repository>
-        <snapshotRepository>
-	        <id>jeecg-snapshots</id>
-            <name>jeecg Snapshot Repository</name>
-            <url>http://maven.jeecg.com:8090/nexus/content/repositories/snapshots/</url>
-	    </snapshotRepository>
-	</distributionManagement>
 	<repositories>
 		<repository>
             <id>aliyun</id>
@@ -99,6 +87,17 @@
 				<enabled>false</enabled>
 			</snapshots>
         </repository>
+		<repository>
+			<id>jeecg-snapshots</id>
+			<name>jeecg-snapshots Repository</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -154,7 +153,7 @@
 			<!-- jeecg tools -->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-base-tools</artifactId>
+				<artifactId>jeecg-boot-common</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!-- jeecg core -->
@@ -241,39 +240,7 @@
 				<artifactId>dom4j</artifactId>
 				<version>${dom4j.version}</version>
 			</dependency>
-			<!-- redisson -->
-			<dependency>
-				<groupId>org.redisson</groupId>
-				<artifactId>redisson</artifactId>
-				<version>${redisson.version}</version>
-			</dependency>
-
-			<!-- guava工具类 -->
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>${guava.version}</version>
-			</dependency>
-
-			<!-- hutool工具类-->
-			<dependency>
-				<groupId>cn.hutool</groupId>
-				<artifactId>hutool-core</artifactId>
-				<version>${hutool.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>cn.hutool</groupId>
-				<artifactId>hutool-crypto</artifactId>
-				<version>${hutool.version}</version>
-			</dependency>
-
-			<!-- commons-beanutils -->
-			<dependency>
-				<groupId>commons-beanutils</groupId>
-				<artifactId>commons-beanutils</artifactId>
-				<version>${commons-beanutils.version}</version>
-			</dependency>
-
+			<!-- fileupload -->
 			<dependency>
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
@@ -307,7 +274,7 @@
 				<artifactId>okhttp</artifactId>
 				<version>4.4.1</version>
 			</dependency>
-
+			<!--minio-->
 			<dependency>
 				<groupId>io.minio</groupId>
 				<artifactId>minio</artifactId>
@@ -405,6 +372,20 @@
 			</resource>
 		</resources>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>jeecg</id>
+			<name>jeecg Repository</name>
+			<url>http://maven.jeecg.com:8090/nexus/content/repositories/jeecg</url>
+		</repository>
+		<snapshotRepository>
+			<id>jeecg-snapshots</id>
+			<name>jeecg Snapshot Repository</name>
+			<url>http://maven.jeecg.com:8090/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+	
     <!-- 环境 -->
     <profiles>
         <!-- 开发 -->
@@ -417,20 +398,8 @@
             <properties>
                 <!--当前环境-->
                 <profile.name>dev</profile.name>
-                <!--配置文件前缀-->
-                <prefix.name>jeecg</prefix.name>
-                <!--Nacos配置中心地址-->
+				<!--Nacos服务地址-->
                 <config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
-                <!--Nacos配置中心命名空间,用于支持多环境.这里必须使用ID，不能使用名称,默认为空-->
-                <config.namespace></config.namespace>
-				<!--Nacos用户名-->
-				<config.username>nacos</config.username>
-				<!--Nacos密码-->
-				<config.password>nacos</config.password>
-                <!--Nacos配置分组名称-->
-                <config.group>DEFAULT_GROUP</config.group>
-                <!--Nacos服务发现地址-->
-                <discovery.server-addr>jeecg-boot-nacos:8848</discovery.server-addr>
             </properties>
         </profile>
         <!-- 测试 -->
@@ -439,42 +408,18 @@
             <properties>
                 <!--当前环境-->
                 <profile.name>test</profile.name>
-                <!--配置文件前缀-->
-                <prefix.name>jeecg</prefix.name>
-                <!--Nacos配置中心地址-->
+				<!--Nacos服务地址-->
                 <config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
-                <!--Nacos配置中心命名空间,用于支持多环境.这里必须使用ID，不能使用名称,默认为空-->
-                <config.namespace></config.namespace>
-				<!--Nacos用户名-->
-				<config.username>nacos</config.username>
-				<!--Nacos密码-->
-				<config.password>nacos</config.password>
-                <!--Nacos配置分组名称-->
-                <config.group>DEFAULT_GROUP</config.group>
-                <!--Nacos服务发现地址-->
-                <discovery.server-addr>jeecg-boot-nacos:8848</discovery.server-addr>
             </properties>
         </profile>
         <!-- 生产 -->
         <profile>
             <id>prod</id>
             <properties>
-                <!--当前环境,生产环境为空-->
+                <!--当前环境-->
                 <profile.name>prod</profile.name>
-                <!--配置文件前缀-->
-                <prefix.name>jeecg</prefix.name>
-                <!--Nacos配置中心地址-->
+				<!--Nacos服务地址-->
                 <config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
-                <!--Nacos配置中心命名空间,用于支持多环境.这里必须使用ID，不能使用名称,默认为空-->
-                <config.namespace></config.namespace>
-				<!--Nacos用户名-->
-				<config.username>nacos</config.username>
-				<!--Nacos密码-->
-				<config.password>nacos</config.password>
-                <!--Nacos配置分组名称-->
-                <config.group>DEFAULT_GROUP</config.group>
-                <!--Nacos服务发现地址-->
-                <discovery.server-addr>jeecg-boot-nacos:8848</discovery.server-addr>
             </properties>
         </profile>
 		<!-- SpringCloud运行环境 -->
@@ -485,8 +430,7 @@
 				<skip.springboot.maven>true</skip.springboot.maven>
 			</properties>
 			<modules>
-				<!-- 微服务模块 -->
-				<module>jeecg-boot-starter</module>
+				<!-- 微服务模块-->
 				<module>jeecg-cloud-module</module>
 			</modules>
 		</profile>
