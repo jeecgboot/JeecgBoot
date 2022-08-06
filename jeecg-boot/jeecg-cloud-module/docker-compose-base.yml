@@ -27,12 +27,14 @@ services:
     container_name: jeecg-boot-redis
     hostname: jeecg-boot-redis
 
-#  jeecg-boot-rabbitmq:
-#    #    image: rabbitmq:3-management
-#    image: rabbitmq:3
-#    ports:
-#      - 5672:5672
-#    #      - 15672:15672
-#    restart: always
-#    container_name: jeecg-boot-rabbitmq
-#    hostname: jeecg-boot-rabbitmq
+  jeecg-boot-rabbitmq:
+    image: rabbitmq:3.7.7-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    restart: always
+    container_name: jeecg-boot-rabbitmq
+    hostname: jeecg-boot-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest

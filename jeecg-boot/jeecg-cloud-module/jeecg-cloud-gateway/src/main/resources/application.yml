@@ -1,13 +1,32 @@
 server:
   port: 9999
+
 spring:
   application:
     name: jeecg-gateway
   main:
-    #循环依赖默认情况下已经被禁止了
     allow-circular-references: true
-    allow-bean-definition-overriding: true
+  config:
+    import:
+      - optional:nacos:${spring.application.name}-@profile.name@.yaml
   cloud:
+    nacos:
+      config:
+        server-addr: @config.server-addr@
+      discovery:
+        server-addr: ${spring.cloud.nacos.config.server-addr}
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowCredentials: true
+            #springboot2.4后需用allowedOriginPatterns
+            allowedOriginPatterns: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
     #Sentinel配置
     sentinel:
       transport:
@@ -80,35 +99,3 @@ spring:
             groupId: SENTINEL_GROUP
             rule-type: gw-api-group
             data-type: json
-    gateway:
-      discovery:
-        locator:
-          enabled: true
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowCredentials: true
-            #springboot2.4后需用allowedOriginPatterns
-            allowedOriginPatterns: "*"
-            allowedMethods: "*"
-            allowedHeaders: "*"
-#      httpclient:
-#        connect-timeout: 1000
-#        response-timeout: 5s
-#      # Nacos的yml方式路由配置(默认注释掉，采用数据库加载)
-#        - id: jeecg-demo
-#          uri: lb://jeecg-demo
-#          predicates:
-#            - Path=/mock/**,/test/**,/bigscreen/template1/**,/bigscreen/template2/**
-#        - id: jeecg-system
-#          uri: lb://jeecg-system
-#          predicates:
-#            - Path=/sys/**,/eoa/**,/v1/**,/joa/**,/online/**,/bigscreen/**,/jmreport/**,/desform/**,/act/**,/plug-in/**,/generic/**
-#        - id: jeecg-system-websocket
-#          uri: lb:ws://jeecg-system
-#          predicates:
-#            - Path=/websocket/**,/eoaSocket/**,/newsWebsocket/**
-#        - id: jeecg-demo-websocket
-#          uri: lb:ws://jeecg-demo
-#          predicates:
-#            - Path=/vxeSocket/**

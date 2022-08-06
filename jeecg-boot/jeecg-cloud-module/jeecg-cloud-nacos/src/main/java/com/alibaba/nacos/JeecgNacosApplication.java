@@ -19,14 +19,9 @@ import javax.servlet.http.HttpServletResponse;
 @EnableScheduling
 public class JeecgNacosApplication {
 
-    /**
-     * 是否单机模式启动
-     */
+    /** 是否单机模式启动 */
     private static String standalone = "true";
-
-    /**
-     * 是否开启鉴权
-     */
+    /** 是否开启鉴权 */
     private static String enabled = "false";
 
     public static void main(String[] args) {

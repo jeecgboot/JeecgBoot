@@ -19,6 +19,10 @@ public class JeecgBaseConfig {
      * @TODO 降低使用成本加的默认值,实际以 yml配置 为准
      */
     private String signatureSecret = "dd05f1c54d63749eda95f9fa6d49v442a";
+    /**
+     * 需要加强校验的接口清单
+     */
+    private String signUrls;
 
     /**
      * 是否启用安全模式
@@ -78,5 +82,13 @@ public class JeecgBaseConfig {
 
     public void setDomainUrl(DomainUrl domainUrl) {
         this.domainUrl = domainUrl;
+    }
+
+    public String getSignUrls() {
+        return signUrls;
+    }
+
+    public void setSignUrls(String signUrls) {
+        this.signUrls = signUrls;
     }
 }

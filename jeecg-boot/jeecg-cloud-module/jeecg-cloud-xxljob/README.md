@@ -1,6 +1,6 @@
-- 初始化数据库(mysql)
+- 初始化脚本(mysql)
 
-  jeecg-cloud-xxljob\doc\db\tables_xxl_job.sql
+  db\tables_xxl_job.sql
   
 - 修改数据库连接
 

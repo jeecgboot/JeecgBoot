@@ -48,6 +48,8 @@ public class LoginController {
 	@Autowired
 	private ISysUserService sysUserService;
 	@Autowired
+	private ISysPermissionService sysPermissionService;
+	@Autowired
 	private SysBaseApiImpl sysBaseApi;
 	@Autowired
 	private ISysLogService logService;
@@ -490,6 +492,17 @@ public class LoginController {
 			res.error500("获取验证码出错"+e.getMessage());
 			e.printStackTrace();
 		}
+		return res;
+	}
+
+
+	/**
+	 * 切换菜单表为vue3的表
+	 */
+	@GetMapping(value = "/switchVue3Menu")
+	public Result<String> switchVue3Menu(HttpServletResponse response) {
+		Result<String> res = new Result<String>();
+		sysPermissionService.switchVue3Menu();
 		return res;
 	}
 	

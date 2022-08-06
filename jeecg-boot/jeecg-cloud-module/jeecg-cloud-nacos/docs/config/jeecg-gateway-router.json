@@ -1,0 +1,52 @@
+[{
+  "id": "jeecg-system",
+  "order": 0,
+  "predicates": [{
+    "name": "Path",
+    "args": {
+      "_genkey_0": "/sys/**",
+      "_genkey_1": "/jmreport/**",
+      "_genkey_3": "/online/**",
+      "_genkey_4": "/generic/**"
+    }
+  }],
+  "filters": [],
+  "uri": "lb://jeecg-system"
+}, {
+  "id": "jeecg-demo",
+  "order": 1,
+  "predicates": [{
+    "name": "Path",
+    "args": {
+      "_genkey_0": "/mock/**",
+      "_genkey_1": "/test/**",
+      "_genkey_2": "/bigscreen/template1/**",
+      "_genkey_3": "/bigscreen/template2/**"
+    }
+  }],
+  "filters": [],
+  "uri": "lb://jeecg-demo"
+}, {
+  "id": "jeecg-system-websocket",
+  "order": 2,
+  "predicates": [{
+    "name": "Path",
+    "args": {
+      "_genkey_0": "/websocket/**",
+      "_genkey_1": "/newsWebsocket/**"
+    }
+  }],
+  "filters": [],
+  "uri": "lb:ws://jeecg-system"
+}, {
+  "id": "jeecg-demo-websocket",
+  "order": 3,
+  "predicates": [{
+    "name": "Path",
+    "args": {
+      "_genkey_0": "/vxeSocket/**"
+    }
+  }],
+  "filters": [],
+  "uri": "lb:ws://jeecg-demo"
+}]

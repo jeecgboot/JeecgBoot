@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>jeecg-cloud-module</artifactId>
+        <groupId>org.jeecgframework.boot</groupId>
+        <version>3.4.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>jeecg-system-cloud-start</artifactId>
+    <description>System微服务启动</description>
+
+    <dependencies>
+        <!-- 引入jeecg-boot-starter-cloud依赖 -->
+        <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>jeecg-boot-starter-cloud</artifactId>
+            <!-- 3.2版本号后，可选择是否排除jeecg-system-cloud-api，不排除会优先通过fegin调用接口
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jeecgframework.boot</groupId>
+                    <artifactId>jeecg-system-cloud-api</artifactId>
+                </exclusion>
+            </exclusions>-->
+        </dependency>
+        <!-- jeecg-boot-module-system依赖 -->
+        <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>jeecg-boot-module-system</artifactId>
+            <!-- 排除demo模块，demo模块采用微服务独立启动 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jeecgframework.boot</groupId>
+                    <artifactId>jeecg-boot-module-demo</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- feign 熔断限流、分布式锁、xxljob示例 
+        <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>jeecg-cloud-test-more</artifactId>
+            <version>${jeecgboot.version}</version>
+        </dependency>-->
+        <!-- rabbitmq例子
+        <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>jeecg-cloud-test-rabbitmq</artifactId>
+            <version>${jeecgboot.version}</version>
+        </dependency>-->
+        <!-- 分布式事务例子
+       <dependency>
+           <groupId>org.jeecgframework.boot</groupId>
+           <artifactId>jeecg-cloud-test-seata</artifactId>
+           <version>${jeecgboot.version}</version>
+       </dependency>-->
+        <!-- 分库分表例子
+       <dependency>
+           <groupId>org.jeecgframework.boot</groupId>
+           <artifactId>jeecg-cloud-test-shardingsphere</artifactId>
+           <version>${jeecgboot.version}</version>
+       </dependency>-->
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

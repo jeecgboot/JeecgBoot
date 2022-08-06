@@ -18,7 +18,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2018-12-21
  */
 public interface ISysPermissionService extends IService<SysPermission> {
-
+	/**
+	 * 切换vue3菜单
+	 */
+	public void switchVue3Menu();
+	
     /**
      * 通过父id查询菜单
      * @param parentId 父id

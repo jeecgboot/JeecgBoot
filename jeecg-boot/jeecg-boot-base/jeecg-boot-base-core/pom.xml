@@ -4,37 +4,17 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-base</artifactId>
-		<version>3.3.0</version>
+		<version>3.4.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>jeecg-boot-base-core</artifactId>
 
-	<repositories>
-		<repository>
-			<id>aliyun</id>
-			<name>aliyun Repository</name>
-			<url>https://maven.aliyun.com/repository/public</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>jeecg</id>
-			<name>jeecg Repository</name>
-			<url>https://maven.jeecg.org/nexus/content/repositories/jeecg</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
-
 	<dependencies>
 		<!--jeecg-tools-->
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
-			<artifactId>jeecg-boot-base-tools</artifactId>
+			<artifactId>jeecg-boot-common</artifactId>
 		</dependency>
 		<!--集成springmvc框架并实现自动配置 -->
 		<dependency>

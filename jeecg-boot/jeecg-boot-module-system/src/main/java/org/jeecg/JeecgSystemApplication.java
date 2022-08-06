@@ -15,14 +15,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
-* 单体启动类（采用此类启动为单体模式）
-* 特别提醒:
-* 1.需要集成mongodb请删除 exclude={MongoAutoConfiguration.class}
-* 2.切换微服务 勾选profile的SpringCloud，这个类就无法启动，启动会报错
+* 单体启动类
+* 报错提醒: 未集成mongo报错，可以打开启动类上面的注释 exclude={MongoAutoConfiguration.class}
 */
 @Slf4j
 @SpringBootApplication
-@EnableAutoConfiguration(exclude={MongoAutoConfiguration.class})
+//@EnableAutoConfiguration(exclude={MongoAutoConfiguration.class})
 public class JeecgSystemApplication extends SpringBootServletInitializer {
 
     @Override

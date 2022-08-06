@@ -28,7 +28,7 @@ public class GatewayRoutersConfig {
         this.serverAddr = serverAddr;
     }
 
-    @Value("${spring.cloud.nacos.discovery.namespace}")
+    @Value("${spring.cloud.nacos.discovery.namespace:#{null}}")
     public void setNamespace(String namespace) {
         this.namespace = namespace;
     }
@@ -48,12 +48,12 @@ public class GatewayRoutersConfig {
         this.dataType = dataType;
     }
 
-    @Value("${spring.cloud.nacos.config.username}")
+    @Value("${spring.cloud.nacos.config.username:#{null}}")
     public void setUsername(String username) {
         this.username = username;
     }
 
-    @Value("${spring.cloud.nacos.config.password}")
+    @Value("${spring.cloud.nacos.config.password:#{null}}")
     public void setPassword(String password) {
         this.password = password;
     }
