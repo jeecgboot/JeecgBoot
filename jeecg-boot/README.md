@@ -50,7 +50,7 @@ Jeecg-Boot 低代码开发平台
 
 
 - Docker镜像单体启动 ：  http://doc.jeecg.com/2043889
-- Docker镜像微服务启动： http://doc.jeecg.com/2656147
+- Docker镜像微服务启动： http://doc.jeecg.com/3040737
 
 
 下面是单体启动步骤：

@@ -18,7 +18,7 @@ JEECG BOOT 低代码开发平台（前后端分离版本）
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://www.jeecg.com)
 [![](https://img.shields.io/badge/Blog-官方博客-blue.svg)](https://my.oschina.net/jeecg)
-[![](https://img.shields.io/badge/version-3.3.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-3.4.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -73,7 +73,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)  |  [视频教程](https://space.bilibili.com/454617261/channel/series) |   [常见问题 ](http://www.jeecg.com/doc/qa)  |   [技术支持](http://jeecg.com/doc/help) |  [1分钟体验低代码](https://my.oschina.net/jeecg/blog/3083313)
 
-- 微服务开发：  [单体切换为微服务](http://doc.jeecg.com/2704725)
+- 微服务开发：  [单体升级为微服务](http://doc.jeecg.com/3040735)
 
 - QQ交流群 ： ⑥730954414、VUE3群683903138、⑤860162132(满)、④774126647(满)、③816531124(满)、②769925425(满)、①284271917(满)
 > ` 提醒：【QQ群是自助服务群，建议给帮助您解决问题的同学发送指定红包，表示感谢！】 `
@@ -82,8 +82,8 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 Docker启动项目
 -----------------------------------
 - [Docker镜像单体启动项目](http://doc.jeecg.com/2043889)
-- [Docker镜像微服务启动项目](http://doc.jeecg.com/2656147)
-- [jeecgboot-vue3Docker启动](http://vue3.jeecg.com/3028878)
+- [Docker镜像微服务启动项目](http://doc.jeecg.com/3040737)
+- [jeecgboot-vue3 Docker启动](http://vue3.jeecg.com/3028878)
 
 为什么选择JEECG-BOOT?
 -----------------------------------
@@ -153,11 +153,11 @@ Docker启动项目
 
 - 基础框架：Spring Boot 2.6.6
 
-- 微服务框架： Spring Cloud Alibaba 2021.1
+- 微服务框架： Spring Cloud Alibaba 2021.0.1.0
 
 - 持久层框架：MybatisPlus 3.5.1
 
-- 报表工具： JimuReport 1.5.0-beta
+- 报表工具： JimuReport 1.5.2
 
 - 安全框架：Apache Shiro 1.8.0，Jwt 3.11.0
 
