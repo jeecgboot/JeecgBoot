@@ -1,0 +1,59 @@
+spring:
+  shardingsphere:
+    datasource:
+      names: ds0,ds1
+      ds0:
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://jeecg-boot-mysql:3306/jeecg-boot?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+        type: com.alibaba.druid.pool.DruidDataSource
+        username: root
+        password: root
+      ds1:
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://jeecg-boot-mysql:3306/jeecg-boot2?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+        type: com.alibaba.druid.pool.DruidDataSource
+        username: root
+        password: root
+    props:
+      sql-show: true
+    rules:
+      replica-query:
+        load-balancers:
+          round-robin:
+            type: ROUND_ROBIN
+            props:
+              default: 0
+        data-sources:
+          prds:
+            primary-data-source-name: ds0
+            replica-data-source-names: ds1
+            load-balancer-name: round_robin
+      sharding:
+        binding-tables:
+          - sys_log
+        key-generators:
+          snowflake:
+            type: SNOWFLAKE
+            props:
+              worker-id: 123
+        sharding-algorithms:
+          table-classbased:
+            props:
+              strategy: standard
+              algorithmClassName: org.jeecg.modules.test.sharding.algorithm.StandardModTableShardAlgorithm
+            type: CLASS_BASED
+          database-inline:
+            type: INLINE
+            props:
+              algorithm-expression: ds$->{operate_type % 2}
+        tables:
+          sys_log:
+            actual-data-nodes: ds$->{0..1}.sys_log$->{0..1}
+            database-strategy:
+              standard:
+                sharding-column: operate_type
+                sharding-algorithm-name: database-inline
+            table-strategy:
+              standard:
+                sharding-algorithm-name: table-classbased
+                sharding-column: log_type

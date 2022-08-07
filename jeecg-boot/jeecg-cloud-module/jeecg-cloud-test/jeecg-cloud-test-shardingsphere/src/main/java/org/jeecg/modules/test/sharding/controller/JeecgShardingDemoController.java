@@ -35,7 +35,8 @@ public class JeecgShardingDemoController extends JeecgController<ShardingSysLog,
     @PostMapping(value = "/test1")
     @ApiOperation(value = "单库分表插入", notes = "单库分表")
     public Result<?> add() {
-        int size=10;
+        log.info("---------------------------------单库分表插入--------------------------------");
+        int size = 10;
         for (int i = 0; i < size; i++) {
             ShardingSysLog shardingSysLog = new ShardingSysLog();
             shardingSysLog.setLogContent("jeecg");
@@ -43,7 +44,7 @@ public class JeecgShardingDemoController extends JeecgController<ShardingSysLog,
             shardingSysLog.setOperateType(i);
             shardingSysLogService.save(shardingSysLog);
         }
-        return Result.OK();
+        return Result.OK("单库分表插入10条数据完成！");
     }
 
     /**
@@ -57,30 +58,30 @@ public class JeecgShardingDemoController extends JeecgController<ShardingSysLog,
     }
 
     /**
-     * 双库分表 - 插入
+     * 分库分表 - 插入
      * @return
      */
     @PostMapping(value = "/test2")
-    @ApiOperation(value = "双库分表插入", notes = "双库分表")
+    @ApiOperation(value = "分库分表插入", notes = "分库分表")
     public Result<?> test2() {
         int start=20;
-        int size=30;
+        int size=50;
         for (int i = start; i <= size; i++) {
             ShardingSysLog shardingSysLog = new ShardingSysLog();
-            shardingSysLog.setLogContent("双库分表测试");
-            shardingSysLog.setLogType(i);
+            shardingSysLog.setLogContent("分库分表测试");
+            shardingSysLog.setLogType(0);
             shardingSysLog.setOperateType(i);
             shardingSysLogService.save(shardingSysLog);
         }
-        return Result.OK();
+        return Result.OK("分库分表插入10条数据完成！");
     }
 
     /**
-     * 双库分表 - 查询
+     * 分库分表 - 查询
      * @return
      */
     @PostMapping(value = "/list2")
-    @ApiOperation(value = "双库分表查询", notes = "双库分表")
+    @ApiOperation(value = "分库分表查询", notes = "分库分表")
     public Result<?> list2() {
         return Result.OK(shardingSysLogService.list());
     }

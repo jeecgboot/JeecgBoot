@@ -400,27 +400,18 @@ public class LoginController {
 	 * @return
 	 */
 	private Result<JSONObject> userInfo(SysUser sysUser, Result<JSONObject> result) {
-		String syspassword = sysUser.getPassword();
 		String username = sysUser.getUsername();
+		String syspassword = sysUser.getPassword();
 		// 获取用户部门信息
-		JSONObject obj = new JSONObject();
-		List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());
-		obj.put("departs", departs);
-		if (departs == null || departs.size() == 0) {
-			obj.put("multi_depart", 0);
-		} else if (departs.size() == 1) {
-			sysUserService.updateUserDepart(username, departs.get(0).getOrgCode());
-			obj.put("multi_depart", 1);
-		} else {
-			//查询当前是否有登录部门
-			// update-begin--Author:wangshuai Date:20200805 for：如果用戶为选择部门，数据库为存在上一次登录部门，则取一条存进去
-			SysUser sysUserById = sysUserService.getById(sysUser.getId());
-			if(oConvertUtils.isEmpty(sysUserById.getOrgCode())){
-				sysUserService.updateUserDepart(username, departs.get(0).getOrgCode());
-			}
-			// update-end--Author:wangshuai Date:20200805 for：如果用戶为选择部门，数据库为存在上一次登录部门，则取一条存进去
-			obj.put("multi_depart", 2);
-		}
+		JSONObject obj = new JSONObject(new LinkedHashMap<>());
+		
+		// 生成token
+		String token = JwtUtil.sign(username, syspassword);
+		// 设置token缓存有效时间
+		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
+		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 2 / 1000);
+		obj.put("token", token);
+
 		// update-begin--Author:sunjianlei Date:20210802 for：获取用户租户信息
 		String tenantIds = sysUser.getRelTenantIds();
 		if (oConvertUtils.isNotEmpty(tenantIds)) {
@@ -438,13 +429,26 @@ public class LoginController {
 			}
 		}
 		// update-end--Author:sunjianlei Date:20210802 for：获取用户租户信息
-		// 生成token
-		String token = JwtUtil.sign(username, syspassword);
-		// 设置token缓存有效时间
-		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
-		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 2 / 1000);
-		obj.put("token", token);
+		
 		obj.put("userInfo", sysUser);
+		
+		List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());
+		obj.put("departs", departs);
+		if (departs == null || departs.size() == 0) {
+			obj.put("multi_depart", 0);
+		} else if (departs.size() == 1) {
+			sysUserService.updateUserDepart(username, departs.get(0).getOrgCode());
+			obj.put("multi_depart", 1);
+		} else {
+			//查询当前是否有登录部门
+			// update-begin--Author:wangshuai Date:20200805 for：如果用戶为选择部门，数据库为存在上一次登录部门，则取一条存进去
+			SysUser sysUserById = sysUserService.getById(sysUser.getId());
+			if(oConvertUtils.isEmpty(sysUserById.getOrgCode())){
+				sysUserService.updateUserDepart(username, departs.get(0).getOrgCode());
+			}
+			// update-end--Author:wangshuai Date:20200805 for：如果用戶为选择部门，数据库为存在上一次登录部门，则取一条存进去
+			obj.put("multi_depart", 2);
+		}
 		obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
 		result.setResult(obj);
 		result.success("登录成功");
@@ -588,9 +592,9 @@ public class LoginController {
 		return Result.ok();
 	}
 	/**
-	 * 登录二维码
+	 * 获取登录二维码
 	 */
-	@ApiOperation(value = "登录二维码", notes = "登录二维码")
+	@ApiOperation(value = "获取登录二维码", notes = "获取登录二维码")
 	@GetMapping("/getLoginQrcode")
 	public Result<?>  getLoginQrcode() {
 		String qrcodeId = CommonConstant.LOGIN_QRCODE_PRE+IdWorker.getIdStr();
@@ -621,7 +625,7 @@ public class LoginController {
 	/**
 	 * 获取用户扫码后保存的token
 	 */
-	@ApiOperation(value = "获取用户扫码后保存的token", notes = "获取用户扫码后保存的token")
+	@ApiOperation(value = "获取用户扫码后Token", notes = "获取用户扫码后Token")
 	@GetMapping("/getQrcodeToken")
 	public Result getQrcodeToken(@RequestParam String qrcodeId) {
 		Object token = redisUtil.get(CommonConstant.LOGIN_QRCODE_TOKEN + qrcodeId);
