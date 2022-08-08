@@ -21,8 +21,8 @@
         <module>jeecg-cloud-sentinel</module>
         <module>jeecg-cloud-monitor</module>
         <module>jeecg-cloud-xxljob</module>
-        <!-- 微服务测试示例
-        <module>jeecg-cloud-test</module>-->
+        <!-- 微服务测试示例-->
+        <module>jeecg-cloud-test</module>
     </modules>
 
 
