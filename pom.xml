@@ -65,9 +65,9 @@
 	</properties>
 
 	<modules>
-        <module>jeecg-boot-base</module>
-        <module>jeecg-boot-module-demo</module>
-        <module>jeecg-boot-module-system</module>
+        <module>jeecg-boot-base-core</module>
+        <module>jeecg-module-demo</module>
+        <module>jeecg-module-system</module>
 	</modules>
 
 	<repositories>
@@ -146,7 +146,7 @@
 			<!-- system 模块-->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-module-system</artifactId>
+				<artifactId>jeecg-system-biz</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 
@@ -431,7 +431,7 @@
 			</properties>
 			<modules>
 				<!-- 微服务模块-->
-				<module>jeecg-cloud-module</module>
+				<module>jeecg-server-cloud</module>
 			</modules>
 		</profile>
     </profiles>

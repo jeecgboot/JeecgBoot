@@ -1,0 +1,239 @@
+server:
+  port: 8080
+  tomcat:
+    max-swallow-size: -1
+  error:
+    include-exception: true
+    include-stacktrace: ALWAYS
+    include-message: ALWAYS
+  servlet:
+    context-path: /jeecg-boot
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types: application/javascript,application/json,application/xml,text/html,text/xml,text/plain,text/css,image/*
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: metrics,httptrace
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  mail:
+    host: smtp.163.com
+    username: jeecgos@163.com
+    password: ??
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+  ## quartz定时任务,采用数据库方式
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: never
+    auto-startup: true
+    #启动时更新己存在的Job
+    overwrite-existing-jobs: true
+  #json 时间戳统一转换
+  jackson:
+    date-format:   yyyy-MM-dd HH:mm:ss
+    time-zone:   GMT+8
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.Oracle8iDialect
+  aop:
+    proxy-target-class: true
+  #配置freemarker
+  freemarker:
+    # 设置模板后缀名
+    suffix: .ftl
+    # 设置文档类型
+    content-type: text/html
+    # 设置页面编码格式
+    charset: UTF-8
+    # 设置页面缓存
+    cache: false
+    prefer-file-system-access: false
+    # 设置ftl文件路径
+    template-loader-path:
+      - classpath:/templates
+  # 设置静态文件路径，js,css等
+  mvc:
+    static-path-pattern: /**
+  resource:
+    static-locations: classpath:/static/,classpath:/public/
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      # 初始连接数
+      initialSize: 5
+      # 最小连接池数量
+      minIdle: 5
+      # 最大连接池数量
+      maxActive: 10
+      stat-view-servlet:
+        enabled: true
+        loginUsername: admin
+        loginPassword: 123456
+        allow:
+      web-stat-filter:
+        enabled: true
+      driverClassName: dm.jdbc.driver.DmDriver
+      url: jdbc:dm://127.0.0.1:5236/?JEECG&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8
+      username: ??
+      password: ??
+      validationQuery: SELECT 1 FROM DUAL
+  #redis 配置
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password: ''
+#mybatis plus 设置
+mybatis-plus:
+  mapper-locations: classpath*:org/jeecg/modules/**/xml/*Mapper.xml
+  global-config:
+    # 关闭MP3.0自带的banner
+    banner: false
+    db-config:
+      #主键类型  0:"数据库ID自增",1:"该类型为未设置主键类型", 2:"用户输入ID",3:"全局唯一ID (数字类型唯一ID)", 4:"全局唯一ID UUID",5:"字符串全局唯一ID (idWorker 的字符串表示)";
+      id-type: ASSIGN_ID
+      # 默认数据库表下划线命名
+      table-underline: true
+  configuration:
+    # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 返回类型为Map,显示null对应的字段
+    call-setters-on-nulls: true
+#jeecg专用配置
+jeecg:
+  # 是否启用安全模式
+  safeMode: false
+  # 签名密钥串(前后端要一致，正式发布请自行修改)
+  signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
+  # 本地：local\Minio：minio\阿里云：alioss
+  uploadType: alioss
+  path:
+    #文件上传根目录 设置
+    upload: D://opt//upFiles
+    #webapp文件路径
+    webapp: D://opt//webapp
+  shiro:
+    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**
+  #阿里云oss存储配置
+  oss:
+    accessKey: ??
+    secretKey: ??
+    endpoint: oss-cn-beijing.aliyuncs.com
+    bucketName: ??
+  # ElasticSearch 6设置
+  elasticsearch:
+    cluster-name: jeecg-ES
+    cluster-nodes: 127.0.0.1:9200
+    check-enabled: false
+  # 在线预览文件服务器地址配置
+  file-view-domain: 127.0.0.1:8012
+  # minio文件上传
+  minio:
+    minio_url: http://minio.jeecg.com
+    minio_name: ??
+    minio_pass: ??
+    bucketName: otatest
+  #大屏报表参数设置
+  jmreport:
+    mode: dev
+    #是否需要校验token
+    is_verify_token: false
+    #必须校验方法
+    verify_methods: remove,delete,save,add,update
+  #xxl-job配置
+  xxljob:
+    enabled: false
+    adminAddresses: http://127.0.0.1:9080/xxl-job-admin
+    appname: ${spring.application.name}
+    accessToken: ''
+    address: 127.0.0.1:30007
+    ip: 127.0.0.1
+    port: 30007
+    logPath: logs/jeecg/job/jobhandler/
+    logRetentionDays: 30
+  #分布式锁配置
+  redisson:
+    address: 127.0.0.1:6379
+    password:
+    type: STANDALONE
+    enabled: true
+#cas单点登录
+cas:
+  prefixUrl: http://cas.example.org:8443/cas
+#Mybatis输出sql日志
+logging:
+  level:
+    org.jeecg.modules.system.mapper: info
+#enable swagger
+swagger:
+  enable: true
+  production: false
+  basic:
+    enable: false
+    username: jeecg
+    password: jeecg1314
+#第三方登录
+justauth:
+  enabled: true
+  type:
+    GITHUB:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/github/callback
+    WECHAT_ENTERPRISE:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_enterprise/callback
+      agent-id: 1000002
+    DINGTALK:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/dingtalk/callback
+    WECHAT_OPEN:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_open/callback
+  cache:
+    type: default
+    prefix: 'demo::'
+    timeout: 1h
+#第三方APP对接
+third-app:
+  enabled: true
+  type:
+    #企业微信
+    WECHAT_ENTERPRISE:
+      enabled: true
+      #CORP_ID
+      client-id: ??
+      #SECRET
+      client-secret: ??-ij8
+      #自建应用id
+      agent-id: 1000004
+      #自建应用秘钥（新版企微需要配置）
+      agent-app-secret: ??
+    #钉钉
+    DINGTALK:
+      enabled: false
+      # appKey
+      client-id: ??
+      # appSecret
+      client-secret: ??
+      agent-id: ??
