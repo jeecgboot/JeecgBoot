@@ -200,19 +200,9 @@ Docker启动项目
 
 
 #### 前端
- 
- > 此处是Vue2的技术栈介绍，[Vue3版技术栈看这里](https://github.com/jeecgboot/jeecgboot-vue3)
 
-- [Vue 2.6.10](https://cn.vuejs.org/),[Vuex](https://vuex.vuejs.org/zh/),[Vue Router](https://router.vuejs.org/zh/)
-- [Axios](https://github.com/axios/axios)
-- [ant-design-vue](https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn/)
-- [webpack](https://www.webpackjs.com/),[yarn](https://yarnpkg.com/zh-Hans/)
-- [vue-cropper](https://github.com/xyxiao001/vue-cropper) - 头像裁剪组件
-- [@antv/g2](https://antv.alipay.com/zh-cn/index.html) - Alipay AntV 数据可视化图表
-- [Viser-vue](https://viserjs.github.io/docs.html#/viser/guide/installation)  - antv/g2 封装实现
-- eslint，[@vue/cli 3.2.1](https://cli.vuejs.org/zh/guide)
-- vue-print-nb-jeecg - 打印
-
+- Vue2版本：Vue2.6+@vue/cli+AntDesignVue+Viser-vue+Vuex等  [详细查看](https://github.com/jeecgboot/ant-design-vue-jeecg)
+- Vue3版本：Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts等新方案 [详细查看](https://github.com/jeecgboot/jeecgboot-vue3)
 
 #### 支持库
 
