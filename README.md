@@ -41,10 +41,10 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 
 项目源码
 -----------------------------------
-| 仓库 |前端源码Vue3版 | 前端源码Vue2版 | 后端源码 |
+| 仓库 |前端 Vue3版 | 前端 Vue2版 | 后端源码 |
 |-|-|-|-|
-| Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)  | [ant-design-vue-jeecg](https://github.com/jeecgboot/jeecg-boot/tree/master/ant-design-vue-jeecg) | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) |
-| 码云 | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)  | [ant-design-vue-jeecg](https://gitee.com/jeecg/jeecg-boot/tree/master/ant-design-vue-jeecg)  | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
+| Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)  | [ant-design-vue-jeecg](https://github.com/jeecgboot/ant-design-vue-jeecg) | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) |
+| 码云 | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)  | [ant-design-vue-jeecg](https://gitee.com/jeecg/ant-design-vue-jeecg)  | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
 
 
 ##### 项目说明
@@ -52,8 +52,8 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 | 项目名                | 说明                     | 
 |--------------------|------------------------|
 | `jeecg-boot`    | SpringBoot后台源码（支持微服务）        |
-| `ant-design-vue-jeecg`  |Vue2版前端源码（与主项目一起）       |
-| `jeecgboot-vue3` | Vue3版前端源码 |
+| `ant-design-vue-jeecg`  |Vue2版前端源码     |
+| `jeecgboot-vue3` | Vue3+Ts版前端源码 |
 | `jeecg-boot-starter` | stater依赖项目单独维护，[源码地址](https://gitee.com/jeecg/jeecg-boot-starter) |
 
 
