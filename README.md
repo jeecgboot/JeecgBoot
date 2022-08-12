@@ -7,18 +7,13 @@
 JEECG BOOT 低代码开发平台（前后端分离版本）
 ===============
 
-当前最新版本： 3.4.0（发布日期：2022-08-06） 
-
-
-> **重大升级说明**
->  - 升级[Spring Cloud Alibaba 2021.0.1.0](https://github.com/alibaba/spring-cloud-alibaba/blob/2021.x/spring-cloud-alibaba-docs/src/main/asciidoc-zh/sca-upgrade-guide.adoc)，使用 spring.config.import 方式引入nacos配置
->  - 拆分jeecg-boot-starter出来，使用独立项目维护 [jeecg-boot-starter项目新地址](https://gitee.com/jeecg/jeecg-boot-starter)
+当前最新版本： 3.4.1（发布日期：2022-08-12） 
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://www.jeecg.com)
 [![](https://img.shields.io/badge/Blog-官方博客-blue.svg)](https://my.oschina.net/jeecg)
-[![](https://img.shields.io/badge/version-3.4.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-3.4.1-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -54,7 +49,7 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 | `jeecg-boot`    | SpringBoot后台源码（支持微服务）        |
 | `ant-design-vue-jeecg`  |Vue2版前端源码     |
 | `jeecgboot-vue3` | Vue3+Ts版前端源码 |
-| `jeecg-boot-starter` | stater依赖项目单独维护，[源码地址](https://gitee.com/jeecg/jeecg-boot-starter) |
+| `jeecg-boot-starter` | stater依赖项目单独维护 [下载地址](https://gitee.com/jeecg/jeecg-boot-starter) |
 
 
 适用项目
@@ -80,11 +75,6 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 > ` 提醒：【QQ群是自助服务群，建议给帮助您解决问题的同学发送指定红包，表示感谢！】 `
 
 
-Docker启动项目
------------------------------------
-- [Docker镜像单体启动项目](http://doc.jeecg.com/2043889)
-- [Docker镜像微服务启动项目](http://doc.jeecg.com/3040737)
-- [jeecgboot-vue3 Docker启动](http://vue3.jeecg.com/3028878)
 
 
 后台目录结构
@@ -114,6 +104,13 @@ Docker启动项目
            ├─jeecg-cloud-test-seata          -- 微服务测试示例（seata分布式事务）
            ├─jeecg-cloud-test-shardingsphere    -- 微服务测试示例（分库分表）
 ```
+
+Docker启动项目
+-----------------------------------
+- [Docker镜像启动单体后台](http://doc.jeecg.com/2043889)
+- [Docker镜像启动微服务后台](http://doc.jeecg.com/3043472)
+- [Docker启动Vue3前端](http://vue3.jeecg.com/3028878)
+- [Docker启动Vue2前端](http://doc.jeecg.com/3043612)
 
 
 
