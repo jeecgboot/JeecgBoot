@@ -69,7 +69,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)  |  [视频教程](https://space.bilibili.com/454617261/channel/series) |   [常见问题 ](http://www.jeecg.com/doc/qa)  |   [技术支持](http://jeecg.com/doc/help) |  [1分钟体验低代码](https://my.oschina.net/jeecg/blog/3083313)
 
-- 微服务开发：  [单体升级为微服务](http://doc.jeecg.com/3040735)
+- 微服务开发：  [单体升级为微服务](http://doc.jeecg.com/3043471)
 
 - QQ交流群 ： ⑥730954414、VUE3群683903138、⑤860162132(满)、④774126647(满)、③816531124(满)、②769925425(满)、①284271917(满)
 > ` 提醒：【QQ群是自助服务群，建议给帮助您解决问题的同学发送指定红包，表示感谢！】 `
@@ -201,8 +201,8 @@ Docker启动项目
 
 #### 前端
 
-- Vue2版本：Vue2.6+@vue/cli+AntDesignVue+Viser-vue+Vuex等  [详细查看](https://github.com/jeecgboot/ant-design-vue-jeecg)
-- Vue3版本：Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts等新方案 [详细查看](https://github.com/jeecgboot/jeecgboot-vue3)
+- Vue2版本：`Vue2.6+@vue/cli+AntDesignVue+Viser-vue+Vuex等`  [详细查看](https://github.com/jeecgboot/ant-design-vue-jeecg)
+- Vue3版本：`Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts等新方案` [详细查看](https://github.com/jeecgboot/jeecgboot-vue3)
 
 #### 支持库
 
@@ -236,7 +236,7 @@ Docker启动项目
 
 8、服务监控 SpringBootAdmin√
 
-9、链路跟踪 Skywalking   [参考文档](https://www.kancloud.cn/zhangdaiscott/jeecgcloud/1771670)
+9、链路跟踪 Skywalking   [参考文档](http://doc.jeecg.com/2350293)
 
 10、消息中间件 RabbitMQ  √
 
