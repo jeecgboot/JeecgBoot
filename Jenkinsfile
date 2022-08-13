@@ -8,7 +8,7 @@ pipeline {
       }
     }
 
-    stage('') {
+    stage('print') {
       steps {
         echo 'hello world'
       }
