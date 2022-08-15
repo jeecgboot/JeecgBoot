@@ -121,6 +121,8 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
             if (StringUtils.isNotBlank(configInfo)) {
                 log.info("获取网关当前配置:\r\n{}", configInfo);
                 routes = JSON.parseArray(configInfo, RouteDefinition.class);
+            }else{
+                log.warn("ERROR: 从Nacos获取网关配置为空，请确认Nacos配置是否正确！");
             }
         } catch (NacosException e) {
             log.error("初始化网关路由时发生错误", e);
@@ -148,16 +150,19 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
         }
         Object configInfo = redisUtil.get(CacheConstant.GATEWAY_ROUTES);
         if (ObjectUtil.isNotEmpty(configInfo)) {
-            log.debug("获取网关当前配置:\r\n{}", configInfo);
+            log.info("获取网关当前配置:\r\n{}", configInfo);
             JSONArray array = JSON.parseArray(configInfo.toString());
             try {
                 routes = getRoutesByJson(array);
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
+        }else{
+            log.warn("ERROR: 从Redis获取网关配置为空，请确认system服务是否启动成功！");
         }
+        
         for (MyRouteDefinition definition : routes) {
-            log.debug("update route : {}", definition.toString());
+            log.info("update route : {}", definition.toString());
             Integer status=definition.getStatus();
             if(status.equals(0)){
                 dynamicRouteService.delete(definition.getId());
