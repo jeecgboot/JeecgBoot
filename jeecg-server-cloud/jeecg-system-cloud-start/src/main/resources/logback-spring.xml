@@ -17,7 +17,7 @@
 	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 			<!--日志文件输出的文件名 -->
-			<FileNamePattern>${LOG_HOME}/jeecgboot-%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+			<FileNamePattern>${LOG_HOME}/jeecg-system-%d{yyyy-MM-dd}.%i.log</FileNamePattern>
 			<!--日志文件保留天数 -->
 			<MaxHistory>30</MaxHistory>
 			<maxFileSize>10MB</maxFileSize>
@@ -47,7 +47,7 @@
 	<appender name="FILE_HTML" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 			<!--日志文件输出的文件名 -->
-			<FileNamePattern>${LOG_HOME}/jeecgboot-%d{yyyy-MM-dd}.%i.html</FileNamePattern>
+			<FileNamePattern>${LOG_HOME}/jeecg-system-%d{yyyy-MM-dd}.%i.html</FileNamePattern>
 			<!--日志文件保留天数 -->
 			<MaxHistory>30</MaxHistory>
 			<MaxFileSize>10MB</MaxFileSize>
