@@ -425,10 +425,6 @@
 		<!-- SpringCloud运行环境 -->
 		<profile>
 			<id>SpringCloud</id>
-			<properties>
-				<!--微服务模式下修改为true, system模块跳过打包插件，否则微服务无法引用-->
-				<skip.springboot.maven>true</skip.springboot.maven>
-			</properties>
 			<modules>
 				<!-- 微服务模块-->
 				<module>jeecg-server-cloud</module>
