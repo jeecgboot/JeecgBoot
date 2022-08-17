@@ -34,25 +34,7 @@
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot-starter</artifactId>
 		</dependency>
-		<!-- DEMO 示例模块 -->
-		<dependency>
-			<groupId>org.jeecgframework.boot</groupId>
-			<artifactId>jeecg-module-demo</artifactId>
-			<version>${jeecgboot.version}</version>
-		</dependency>
 
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<!--SpringCloud运行环境 ,值改为true跳过SpringBoot启动打包插件 -->
-					<skip>${skip.springboot.maven}</skip>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	
 </project>

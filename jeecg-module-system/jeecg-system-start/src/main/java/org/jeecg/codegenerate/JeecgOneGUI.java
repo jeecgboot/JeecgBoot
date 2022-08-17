@@ -1,4 +1,4 @@
-package org.jeecg;
+package org.jeecg.codegenerate;
 
 import org.jeecgframework.codegenerate.window.CodeWindow;
 
