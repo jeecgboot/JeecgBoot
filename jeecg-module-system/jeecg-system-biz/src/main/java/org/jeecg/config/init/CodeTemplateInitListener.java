@@ -26,7 +26,7 @@ public class CodeTemplateInitListener implements ApplicationListener<Application
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         try {
-            log.info(" --- 检测启动环境： 如果是JAR模式，则初始化生成器模板到config目录中 --- ");
+            log.info(" Init Code Generate Template [ 检测如果是JAR启动环境，Copy模板到config目录 ] ");
             this.initJarConfigCodeGeneratorTemplate();
         } catch (Exception e) {
             e.printStackTrace();
