@@ -30,7 +30,7 @@ services:
 
   jeecg-boot-system:
     build:
-      context: ./jeecg-module-system/jeecg-system-biz
+      context: ./jeecg-module-system/jeecg-system-start
     restart: on-failure
     depends_on:
       - jeecg-boot-mysql
