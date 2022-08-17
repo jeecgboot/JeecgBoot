@@ -85,8 +85,9 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 │  ├─jeecg-boot-base-core（共通模块： 工具类、config、权限、查询过滤器、注解等）
 │  ├─jeecg-module-demo    示例代码
 │  ├─jeecg-module-system  System系统管理目录
-│  │  ├─jeecg-system-biz   System系统管理权限等功能，作为单体启动项目(8080)
-│  │  ├─jeecg-system-api   System系统管理模块对外api
+│  │  ├─jeecg-system-biz    System系统管理权限等功能
+│  │  ├─jeecg-system-start  System单体启动项目(8080）
+│  │  ├─jeecg-system-api    System系统管理模块对外api
 │  │  │  ├─jeecg-system-cloud-api   System模块对外提供的微服务接口
 │  │  │  ├─jeecg-system-local-api   System模块对外提供的单体接口
 │  ├─jeecg-server-cloud           --微服务模块
