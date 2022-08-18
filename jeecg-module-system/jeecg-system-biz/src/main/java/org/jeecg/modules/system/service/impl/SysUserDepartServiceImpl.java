@@ -57,7 +57,8 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 				}
 			queryDep.in(SysDepart::getId, depIdList);
 			List<SysDepart> depList = sysDepartService.list(queryDep);
-			if(depList != null || depList.size() > 0) {
+			//[jeecg-boot/issues/3906] 逻辑判断有问题
+			if(depList != null && depList.size() > 0) {
 				for(SysDepart depart : depList) {
 					depIdModelList.add(new DepartIdModel().convertByUserDepart(depart));
 				}
