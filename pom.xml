@@ -28,7 +28,7 @@
 		<knife4j-spring-boot-starter.version>3.0.3</knife4j-spring-boot-starter.version>
 		<knife4j-spring-ui.version>2.0.9</knife4j-spring-ui.version>
 		<!-- 数据库驱动 -->
-		<postgresql.version>42.2.6</postgresql.version>
+		<postgresql.version>42.2.25</postgresql.version>
 		<ojdbc6.version>11.2.0.3</ojdbc6.version>
 		<sqljdbc4.version>4.0</sqljdbc4.version>
 		<mysql-connector-java.version>8.0.27</mysql-connector-java.version>
@@ -218,7 +218,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.2.1-beta</version>
+				<version>3.2.2</version>
 			</dependency>
 
 			<!-- 七牛云SDK -->
