@@ -4,9 +4,9 @@
         <#if col.fieldName != 'id'>
             <#assign subFieldValidType = col.fieldValidType!''>
         <#-- 非空校验 -->
-            <#if col.nullable == 'N' || fieldValidType == '*'>
+            <#if col.nullable == 'N' || subFieldValidType == '*'>
           { required: true, message: '${'$'}{title}不能为空' },
-            <#elseif fieldValidType!=''>
+            <#elseif subFieldValidType!=''>
           { required: false},
             </#if>
         <#-- 其他情况下，只要有值就被认为是正则校验 -->
