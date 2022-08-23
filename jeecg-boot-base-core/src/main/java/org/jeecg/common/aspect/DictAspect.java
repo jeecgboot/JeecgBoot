@@ -7,9 +7,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.api.vo.Result;
@@ -34,7 +31,7 @@ import java.util.stream.Collectors;
  * @Date: 2019-3-17 21:50
  * @Version: 1.0
  */
-@Aspect
+// @Aspect
 @Component
 @Slf4j
 public class DictAspect {
@@ -56,18 +53,18 @@ public class DictAspect {
     public void excudeService() {
     }
 
-    @Around("excudeService()")
-    public Object doAround(ProceedingJoinPoint pjp) throws Throwable {
-    	long time1=System.currentTimeMillis();	
-        Object result = pjp.proceed();
-        long time2=System.currentTimeMillis();
-        log.debug("获取JSON数据 耗时："+(time2-time1)+"ms");
-        long start=System.currentTimeMillis();
-        result=this.parseDictText(result);
-        long end=System.currentTimeMillis();
-        log.debug("注入字典到JSON数据  耗时"+(end-start)+"ms");
-        return result;
-    }
+    // @Around("excudeService()")
+    // public Object doAround(ProceedingJoinPoint pjp) throws Throwable {
+    // 	long time1=System.currentTimeMillis();
+    //     Object result = pjp.proceed();
+    //     long time2=System.currentTimeMillis();
+    //     log.debug("获取JSON数据 耗时："+(time2-time1)+"ms");
+    //     long start=System.currentTimeMillis();
+    //     result=this.parseDictText(result);
+    //     long end=System.currentTimeMillis();
+    //     log.debug("注入字典到JSON数据  耗时"+(end-start)+"ms");
+    //     return result;
+    // }
 
     /**
      * 本方法针对返回对象为Result 的IPage的分页列表数据进行动态字典注入
@@ -220,7 +217,7 @@ public class DictAspect {
      * @param dataListMap
      * @return
      */
-    private Map<String, List<DictModel>> translateAllDict(Map<String, List<String>> dataListMap) {
+    public Map<String, List<DictModel>> translateAllDict(Map<String, List<String>> dataListMap) {
         // 翻译后的字典文本，key=dictCode
         Map<String, List<DictModel>> translText = new HashMap<>(5);
         // 需要翻译的数据（有些可以从redis缓存中获取，就不走数据库查询）
@@ -333,7 +330,7 @@ public class DictAspect {
      * @param values
      * @return
      */
-    private String translDictText(List<DictModel> dictModels, String values) {
+    public String translDictText(List<DictModel> dictModels, String values) {
         List<String> result = new ArrayList<>();
 
         // 允许多个逗号分隔，允许传数组对象
