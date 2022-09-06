@@ -1,0 +1,510 @@
+<#-- noinspection JSDuplicatedDeclaration,RequiredAttributes,NpmUsedModulesInstalled -->
+<#-- ** 引入全局工具方法 ** -->
+<#--<#include "/common/utils.ftl">-->
+<#include "../../../../../../common/utils.ftl">
+<#-- ** 定义全局使用的变量 ** -->
+<#-- 是否有查询条件 -->
+<#assign query_flag=false>
+<#-- 是否有下拉查询条件 -->
+<#assign query_field_select=false>
+<#-- 是否有日期查询条件 -->
+<#assign query_field_date=false>
+<#-- 是否有字典 -->
+<#assign list_need_dict=false>
+<#-- 是否有分类字典 -->
+<#assign list_need_category=false>
+<#-- 是否有省市区 -->
+<#assign list_need_pca=false>
+<#-- 是否有用户选择 -->
+<#assign query_sel_user=false>
+<#-- 是否有部门选择 -->
+<#assign query_sel_dep=false>
+<#-- 是否有下拉多选框 -->
+<#assign query_sel_multi=false>
+<#-- 是否有下拉搜索框 -->
+<#assign query_sel_search=false>
+<#-- 是否有省市区组件 -->
+<#assign query_field_pca=false>
+<#-- 是否有分类字典树 -->
+<#assign query_sel_cat=false>
+<template>
+  <a-card class="j-inner-table-wrapper" :bordered="false">
+
+    <!-- 查询区域 begin -->
+    <div class="table-page-search-wrapper">
+      <a-form layout="inline">
+        <a-row :gutter="24">
+<#-- 查询区域 开始循环 -->
+<#assign query_field_index=0>
+<#list columns as po>
+  <#if po.isQuery=='Y'>
+  	<#assign query_field_dictCode="">
+    <#if po.dictTable?default("")?trim?length gt 1>
+      <#assign query_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+    <#elseif po.dictField?default("")?trim?length gt 1>
+      <#assign query_field_dictCode="${po.dictField}">
+    </#if>
+    <#assign query_flag=true>
+    <#-- 定义组件可能会需要的属性 -->
+    <#assign attr_showTime="show-time date-format=\"YYYY-MM-DD HH:mm:ss\"">
+    <#assign indent="">
+    <#-- 将index>=2的查询条件隐藏起来 -->
+    <#if query_field_index==2>
+      <#-- 由于多了一层标签，所以需要多一层缩进 -->
+      <#assign indent="  ">
+          <template v-if="toggleSearchStatus">
+    </#if>
+          <#-- update-begin-author:taoyan date:20220303 for: /issues/3420 内嵌风格，datetime控件样式异常 -->
+          <#if po.queryMode?default("")?trim=='group' && po.classType=='datetime'>
+          ${indent}<a-col :xl="10" :lg="12" :md="12" :sm="24">
+          <#else>
+          ${indent}<a-col :xl="6" :lg="7" :md="8" :sm="24">
+          </#if>
+          <#-- update-end-author:taoyan date:20220303 for: /issues/3420 内嵌风格，datetime控件样式异常 -->
+            ${indent}<a-form-item label="${po.filedComment}">
+    <#-- 普通查询 -->
+    <#if po.queryMode=='single'>
+      <#-- 日期组件 -->
+      <#if po.classType=='date'>
+        <#assign query_field_date=true>
+              ${indent}<j-date ${getVModel(po)} ${getPlaceholder(po,"请选择")}/>
+      <#-- 日期时间组件 -->
+      <#elseif po.classType=='datetime'>
+        <#assign query_field_date=true>
+              ${indent}<j-date ${getVModel(po)} ${getPlaceholder(po,"请选择")} ${attr_showTime}/>
+      <#-- 下拉组件 -->
+      <#elseif po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
+        <#assign query_field_select=true>
+        <#-- 下拉或是单选，判断数据字典是表字典还是普通字典 -->
+        <#if (po.dictTable!"")?trim?length gt 1>
+          ${indent}<j-dict-select-tag ${getVModel(po)} ${getPlaceholder(po,"请选择")} dictCode="${po.dictTable},${po.dictText},${po.dictField}"/>
+        <#elseif (po.dictField!"")?trim?length gt 1>
+          ${indent}<j-dict-select-tag ${getVModel(po)} ${getPlaceholder(po,"请选择")} dictCode="${po.dictField}"/>
+        <#else>
+          ${indent}<a-input ${getVModel(po)} ${getPlaceholder(po,"请输入")}/>
+        </#if>
+      <#-- 用户选择组件 -->
+      <#elseif po.classType=='sel_user'>
+      <#assign query_sel_user=true>
+             ${indent}<j-select-user-by-dep placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"/>
+      <#-- 部门选择组件 -->
+      <#elseif po.classType=='sel_depart'>
+      <#assign query_sel_dep=true>
+             ${indent}<j-select-depart placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"/>
+      <#elseif po.classType=='list_multi'>
+      <#-- 下拉多选框组件 -->
+      <#assign query_sel_multi=true>
+             ${indent}<j-multi-select-tag placeholder="请选择${po.filedComment}" dictCode="${query_field_dictCode?default("")}" v-model="queryParam.${po.fieldName}"/>
+      <#-- popup组件 -->
+      <#elseif po.classType=='popup'>
+             ${indent}<j-popup placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" code="${po.dictTable}" org-fields="${po.dictField}" dest-fields="${po.dictText}" :field="getPopupField('${po.dictText}')" :multi="${po.extendParams.popupMulti?c}"/>
+      <#-- 下拉搜索框 -->
+     <#elseif po.classType=='sel_search'>
+     <#assign query_sel_search=true>
+             ${indent}<j-search-select-tag placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" dict="${po.dictTable},${po.dictText},${po.dictField}"/>
+     <#elseif po.classType=='pca'>
+     <#assign query_field_pca=true>
+             ${indent}<j-area-linkage type="cascader" v-model="queryParam.${po.fieldName}" placeholder="请选择省市区"/>
+     <#elseif po.classType=='cat_tree'>
+     <#assign query_sel_cat=true>
+             ${indent}<j-category-select placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" pcode="${po.dictField?default("")}"/>
+      <#-- 其他都归为输入框组件 -->
+      <#else>
+             ${indent}<a-input ${getVModel(po)} ${getPlaceholder(po,"请输入")}/>
+      </#if>
+    <#-- 范围查询 -->
+    <#else>
+      <#-- 范围日期组件 -->
+      <#if po.classType=='date'>
+        <#assign query_field_date=true>
+          ${indent}<j-date class="query-group-cust" ${getVModel(po, "_begin")} ${getPlaceholder(po, "请选择开始日期",false)}/>
+          ${indent}<span class="query-group-split-cust"></span>
+          ${indent}<j-date class="query-group-cust" ${getVModel(po, "_end")} ${getPlaceholder(po, "请选择结束日期",false)}/>
+      <#-- 范围日期时间组件 -->
+      <#elseif po.classType=='datetime'>
+        <#assign query_field_date=true>
+          ${indent}<j-date class="query-group-cust" ${getVModel(po, "_begin")} ${getPlaceholder(po, "请选择开始时间",false)} ${attr_showTime}/>
+          ${indent}<span class="query-group-split-cust"></span>
+          ${indent}<j-date class="query-group-cust" ${getVModel(po, "_end")} ${getPlaceholder(po, "请选择结束时间",false)} ${attr_showTime}/>
+      <#-- 其他都归为范围输入框组件 -->
+      <#else>
+          ${indent}<a-input class="query-group-cust" ${getVModel(po, "_begin")} ${getPlaceholder(po, "请输入最开始值",false)}/>
+          ${indent}<span class="query-group-split-cust"></span>
+          ${indent}<a-input class="query-group-cust" ${getVModel(po, "_end")} ${getPlaceholder(po, "请输入最结束值",false)}/>
+      </#if>
+    </#if>
+            ${indent}</a-form-item>
+          ${indent}</a-col>
+    <#assign query_field_index=query_field_index+1>
+  </#if>
+  <#-- 判断是否需要字典 -->
+  <#if !list_need_dict && po.fieldShowType != 'popup' && (po.dictField!"")?trim?length gt 1>
+    <#assign list_need_dict=true>
+  </#if>
+  <#-- 判断是否需要分类字典 -->
+  <#if po.classType == 'cat_tree' && (po.dictText!"")?trim?length == 0>
+    <#assign list_need_category=true>
+  </#if>
+   <#-- 判断是否需要省市区 -->
+  <#if po.classType=='pca'>
+  <#assign list_need_pca=true>
+  </#if>
+</#list>
+<#-- 查询区域-结束循环 -->
+<#if query_field_index gt 2>
+          </template>
+</#if>
+<#if query_flag>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <span class="table-page-search-submitButtons table-operator">
+              <a-button type="primary" icon="search" @click="searchQuery">查询</a-button>
+              <a-button type="primary" icon="reload" @click="searchReset">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                <span>{{ toggleSearchStatus ? '收起' : '展开' }}</span>
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
+</#if>
+        </a-row>
+      </a-form>
+    </div>
+    <!-- 查询区域 end -->
+
+    <!-- 操作按钮区域 begin -->
+    <div class="table-operator">
+      <a-button type="primary" icon="plus" @click="handleAdd">新增</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('${tableVo.ftlDescription}')">导出</a-button>
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
+        <a-button type="primary" icon="import">导入</a-button>
+      </a-upload>
+      <!-- 高级查询区域 -->
+      <j-super-query :fieldList="superFieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
+      <a-dropdown v-if="selectedRowKeys.length > 0">
+        <a-menu slot="overlay">
+          <a-menu-item key="1" @click="batchDel">
+            <a-icon type="delete"/>
+            <span>删除</span>
+          </a-menu-item>
+        </a-menu>
+        <a-button>
+          <span>批量操作</span>
+          <a-icon type="down"/>
+        </a-button>
+      </a-dropdown>
+    </div>
+    <!-- 操作按钮区域 end -->
+
+    <!-- table区域 begin -->
+    <div>
+
+      <a-alert type="info" showIcon style="margin-bottom: 16px;">
+        <template slot="message">
+          <span>已选择</span>
+          <a style="font-weight: 600;padding: 0 4px;">{{ selectedRowKeys.length }}</a>
+          <span>项</span>
+          <a style="margin-left: 24px" @click="onClearSelected">清空</a>
+        </template>
+      </a-alert>
+
+      <a-table
+        ref="table"
+        size="middle"
+        bordered
+        rowKey="id"
+        class="j-table-force-nowrap"
+        :scroll="{x:true}"
+        :loading="loading"
+        :columns="columns"
+        :dataSource="dataSource"
+        :pagination="ipagination"
+        :expandedRowKeys="expandedRowKeys"
+        :rowSelection="{selectedRowKeys, onChange: onSelectChange}"
+        @expand="handleExpand"
+        @change="handleTableChange"
+      >
+
+        <!-- 内嵌table区域 begin -->
+        <template slot="expandedRowRender" slot-scope="record">
+          <a-tabs tabPosition="top">
+<#list subTables as sub>
+            <a-tab-pane tab="${sub.ftlDescription}" key="${sub.entityName?uncap_first}" forceRender>
+  <#assign subTableCompName=camelToHorizontal("${sub.entityName?uncap_first}", "lower")/>
+              <${subTableCompName}-sub-table :record="record"/>
+            </a-tab-pane>
+</#list>
+          </a-tabs>
+        </template>
+        <!-- 内嵌table区域 end -->
+
+        <template slot="htmlSlot" slot-scope="text">
+          <div v-html="text"></div>
+        </template>
+
+        <template slot="imgSlot" slot-scope="text,record">
+          <div style="font-size: 12px;font-style: italic;">
+            <span v-if="!text">无图片</span>
+            <img v-else :src="getImgView(text)" :preview="record.id" alt="" style="max-width:80px;height:25px;"/>
+          </div>
+        </template>
+
+        <#if list_need_pca>
+        <template slot="pcaSlot" slot-scope="text">
+          <div>{{ getPcaText(text) }}</div>
+        </template>
+        </#if>
+
+        <template slot="fileSlot" slot-scope="text">
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+          <a-button
+            v-else
+            ghost
+            type="primary"
+            icon="download"
+            size="small"
+            @click="downloadFile(text)"
+          >
+            <span>下载</span>
+          </a-button>
+        </template>
+
+        <template slot="action" slot-scope="text, record">
+          <a @click="handleEdit(record)">编辑</a>
+          <a-divider type="vertical"/>
+          <a-dropdown>
+            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
+            <a-menu slot="overlay">
+              <a-menu-item>
+                <a-popconfirm title="确定删除吗?" @confirm="handleDelete(record.id)">
+                  <a>删除</a>
+                </a-popconfirm>
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown>
+
+        </template>
+
+      </a-table>
+    </div>
+    <!-- table区域 end -->
+
+    <!-- 表单区域 -->
+<#assign modalForm=camelToHorizontal("${entityName?uncap_first}", "lower")/>
+    <${modalForm}-modal ref="modalForm" @ok="modalFormOk"/>
+
+  </a-card>
+</template>
+
+<script>
+
+  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import ${entityName}Modal from './modules/${entityName}Modal'
+<#list subTables as sub>
+  import ${sub.entityName}SubTable from './subTables/${sub.entityName}SubTable'
+</#list>
+<#if query_field_select>
+  import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
+</#if>
+<#if query_field_date>
+  import JDate from '@/components/jeecg/JDate.vue'
+</#if>
+<#if list_need_dict>
+  import {filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+</#if>
+<#if list_need_category>
+  import { loadCategoryData } from '@/api/api'
+</#if>
+<#if query_sel_user>
+  import JSelectUserByDep from '@/components/jeecgbiz/JSelectUserByDep'
+</#if>
+<#if query_sel_dep>
+  import JSelectDepart from '@/components/jeecgbiz/JSelectDepart'
+</#if>
+<#if query_sel_multi>
+  import JMultiSelectTag from '@/components/dict/JMultiSelectTag'
+</#if>
+<#if query_sel_search>
+  import JSearchSelectTag from '@/components/dict/JSearchSelectTag'
+</#if>
+<#if query_field_pca>
+  import JAreaLinkage from '@comp/jeecg/JAreaLinkage'
+</#if>
+<#if query_sel_cat>
+  import JCategorySelect from '@comp/jeecg/JCategorySelect'
+</#if>
+ <#if list_need_pca>
+  import Area from '@/components/_util/Area'
+  </#if>
+  import '@/assets/less/TableExpand.less'
+
+  export default {
+    name: '${entityName}List',
+    mixins: [JeecgListMixin],
+    components: {
+      ${entityName}Modal,
+<#list subTables as sub>
+      ${sub.entityName}SubTable,
+</#list>
+<#if query_field_date>
+      JDate,
+</#if>
+<#if query_field_select>
+      JDictSelectTag,
+</#if>
+<#if query_sel_user>
+      JSelectUserByDep,
+</#if>
+<#if query_sel_dep>
+      JSelectDepart,
+</#if>
+<#if query_sel_multi>
+      JMultiSelectTag,
+</#if>
+<#if query_sel_search>
+      JSearchSelectTag,
+</#if>
+<#if query_field_pca>
+      JAreaLinkage,
+</#if>
+<#if query_sel_cat>
+      JCategorySelect,
+</#if>
+    },
+    data() {
+      return {
+        description: '${tableVo.ftlDescription}列表管理页面',
+        // 表头
+        columns: [
+          {
+            title: '#',
+            key: 'rowIndex',
+            width: 60,
+            align: 'center',
+            customRender: (t, r, index) => parseInt(index) + 1
+          },
+<#-- begin 遍历表头 -->
+<#list columns as po>
+  <#if po.isShowList == 'Y'>
+          {
+            title: '${po.filedComment}',
+            align: 'center',
+            <#if po.sort=='Y'>
+            sorter: true,
+            </#if>
+    <#if po.classType == 'date'>
+            dataIndex: '${po.fieldName}',
+    <#elseif po.fieldDbType=='Blob'>
+           dataIndex: '${po.fieldName}String'
+    <#elseif po.classType=='umeditor'>
+            dataIndex: '${po.fieldName}',
+            scopedSlots: {customRender: 'htmlSlot'}
+    <#elseif po.classType=='pca'>
+            dataIndex: '${po.fieldName}',
+            scopedSlots: {customRender: 'pcaSlot'}
+    <#elseif po.classType=='file'>
+            dataIndex: '${po.fieldName}',
+            scopedSlots: {customRender: 'fileSlot'}
+    <#elseif po.classType=='image'>
+            dataIndex: '${po.fieldName}',
+            scopedSlots: {customRender: 'imgSlot'}
+    <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
+            dataIndex: '${po.fieldName}_dictText'
+    <#elseif po.classType=='cat_tree'>
+      <#if list_need_category>
+            dataIndex: '${po.fieldName}',
+            customRender: (text) => (text ? filterMultiDictText(this.dictOptions['${po.fieldName}'], text) : '')
+      <#else>
+            dataIndex: '${po.fieldName}',
+            customRender: (text, record) => (text ? record['${dashedToCamel(po.dictText)}'] : '')
+      </#if>
+    <#elseif po.classType=='switch'>
+            dataIndex: '${po.fieldName}',
+            <#if po.dictField != 'is_open'>
+            customRender: (text) => (!text ? "" : (text == ${po.dictField}[0] ? "是" : "否"))
+            <#else>
+            customRender: (text) => (!text ? "" : (text == "Y" ? "是" : "否"))
+            </#if>
+    <#else>
+            dataIndex: '${po.fieldName}',
+    </#if>
+          },
+  </#if>
+</#list>
+<#-- end 遍历表头 -->
+          {
+            title: '操作',
+            dataIndex: 'action',
+            align: 'center',
+            width:147,
+            scopedSlots: { customRender: 'action' },
+          },
+        ],
+        // 字典选项
+        dictOptions: {},
+        // 展开的行test
+        expandedRowKeys: [],
+<#assign urlPrefix="/${entityPackage}/${entityName?uncap_first}">
+        url: {
+          list: '${urlPrefix}/list',
+          delete: '${urlPrefix}/delete',
+          deleteBatch: '${urlPrefix}/deleteBatch',
+          exportXlsUrl: '${urlPrefix}/exportXls',
+          importExcelUrl: '${urlPrefix}/importExcel',
+        },
+        <#if list_need_pca>
+        pcaData:'',
+        </#if>
+        superFieldList:[],
+      }
+    },
+    created() {
+      <#if list_need_pca>
+      this.pcaData = new Area()
+      </#if>
+      this.getSuperFieldList();
+    },
+    computed: {
+      importExcelUrl() {
+        return window._CONFIG['domianURL'] + this.url.importExcelUrl
+      }
+    },
+    methods: {
+     <#if list_need_pca>
+      getPcaText(code){
+        return this.pcaData.getText(code);
+      },
+     </#if>
+      initDictConfig() {
+<#list columns as po>
+  <#if (po.isQuery=='Y' || po.isShowList=='Y') && po.classType!='popup'>
+    <#if po.classType=='cat_tree' && list_need_category==true>
+        loadCategoryData({ code: "${po.dictField?default('')}" }).then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, '${po.fieldName}', res.result)
+          }
+        })
+    </#if>
+  </#if>
+</#list>
+      },
+
+      handleExpand(expanded, record) {
+        this.expandedRowKeys = []
+        if (expanded === true) {
+          this.expandedRowKeys.push(record.id)
+        }
+      },
+      getSuperFieldList(){
+        <#include "/common/utils.ftl">
+        let fieldList=[];
+         <#list columns as po>
+        fieldList.push(${superQueryFieldList(po)})
+         </#list>
+        this.superFieldList = fieldList
+      }
+    }
+  }
+</script>
+<style lang="less" scoped>
+  @import '~@assets/less/common.less';
+</style>

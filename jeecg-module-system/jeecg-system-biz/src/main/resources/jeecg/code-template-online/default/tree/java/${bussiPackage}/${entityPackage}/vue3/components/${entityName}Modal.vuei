@@ -1,0 +1,118 @@
+<#include "/common/utils.ftl">
+<#assign pidFieldName = "">
+<#assign hasChildrenField = "">
+<#list originalColumns as po>
+  <#if po.fieldDbName == tableVo.extendParams.pidField>
+    <#assign pidFieldName = po.fieldName>
+  </#if>
+  <#if po.fieldDbName == tableVo.extendParams.hasChildren>
+    <#assign hasChildrenField = po.fieldName>
+  </#if>
+</#list>
+<template>
+  <BasicModal v-bind="$attrs" @register="registerModal" destroyOnClose :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" :title="getTitle" @ok="handleSubmit">
+    <BasicForm @register="registerForm"/>
+  </BasicModal>
+</template>
+<script lang="ts" setup>
+  import {ref, computed, unref} from 'vue';
+  import {BasicModal, useModalInner} from '/@/components/Modal';
+  import {BasicForm, useForm} from '/@/components/Form';
+  import {formSchema} from '../${entityName}.data';
+  import {loadTreeData, saveOrUpdateDict} from '../${entityName}.api';
+  // 获取emit
+  const emit = defineEmits(['register', 'success']);
+  const isUpdate = ref(true);
+  const expandedRowKeys = ref([]);
+  const treeData = ref([]);
+  // 当前编辑的数据
+  let model:Nullable<Recordable> = null;
+  //表单配置
+  const [registerForm, {setProps,resetFields, setFieldsValue, validate, updateSchema}] = useForm({
+    schemas: formSchema,
+    showActionButtonGroup: false,
+    baseColProps: {span: ${getFormSpan(tableVo.fieldRowNum?default(1))}},
+    labelCol: {
+      xs: { span: 24 },
+      sm: { span: 4 },
+    },
+    wrapperCol: {
+      xs: { span: 24 },
+      sm: { span: 18 },
+    },
+  });
+  //表单赋值
+  const [registerModal, {setModalProps, closeModal}] = useModalInner(async (data) => {
+    //重置表单
+    await resetFields();
+    expandedRowKeys.value = [];
+    setModalProps({confirmLoading: false, minHeight: 80 ,showOkBtn: !!!data?.hideFooter});
+    isUpdate.value = !!data?.isUpdate;
+    if (data?.record) {
+      model = data.record;
+      //表单赋值
+      await setFieldsValue({
+        ...data.record,
+      });
+    } else {
+      model = null;
+    }
+    //父级节点树信息
+    treeData.value = await loadTreeData({'async': false,'pcode':''});
+    // 隐藏底部时禁用整个表单
+    setProps({ disabled: !!data?.hideFooter })
+  });
+  //设置标题
+  const getTitle = computed(() => (!unref(isUpdate) ? '新增' : '编辑'));
+
+  /**
+   * 根据pid获取展开的节点
+   * @param pid
+   * @param arr
+   */
+  function getExpandKeysByPid(pid,arr){
+    if(pid && arr && arr.length>0){
+      for(let i=0;i<arr.length;i++){
+        if(arr[i].key==pid && unref(expandedRowKeys).indexOf(pid)<0){
+          expandedRowKeys.value.push(arr[i].key);
+          getExpandKeysByPid(arr[i]['parentId'],unref(treeData))
+        }else{
+          getExpandKeysByPid(pid,arr[i].children)
+        }
+      }
+    }
+  }
+  //表单提交事件
+  async function handleSubmit() {
+    try {
+      let values = await validate();
+      setModalProps({confirmLoading: true});
+      //提交表单
+      await saveOrUpdateDict(values, isUpdate.value);
+      //关闭弹窗
+      closeModal();
+      //展开的节点信息
+      await getExpandKeysByPid(values['${pidFieldName}'],unref(treeData))
+      //刷新列表(isUpdate:是否编辑;values:表单信息;expandedArr:展开的节点信息)
+      emit('success', {
+        isUpdate: unref(isUpdate),
+        values: {...values},
+        expandedArr: unref(expandedRowKeys).reverse(),
+        // 是否更改了父级节点
+        changeParent: model != null && (model['${pidFieldName}'] != values['${pidFieldName}']),
+      });
+    } finally {
+      setModalProps({confirmLoading: false});
+    }
+  }
+</script>
+<style lang="less" scoped>
+	/** 时间和数字输入框样式 */
+    :deep(.ant-input-number){
+		width: 100%
+	}
+
+	:deep(.ant-calendar-picker){
+		width: 100%
+	}
+</style>

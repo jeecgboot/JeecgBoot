@@ -1,0 +1,147 @@
+<#list subTables as subTab>
+#segment#${subTab.entityName}List.vue
+<template>
+  <div>
+     <!--table区域-begin-->
+    <BasicTable @register="registerTable" :rowSelection="rowSelection">
+      <!--插槽:table标题-->
+       <template #tableTitle>
+           <a-button type="primary" @click="handleAdd" preIcon="ant-design:plus-outlined"> 新增</a-button>
+           <a-dropdown v-if="selectedRowKeys.length > 0">
+               <template #overlay>
+                 <a-menu>
+                   <a-menu-item key="1" @click="batchHandleDelete">
+                     <Icon icon="ant-design:delete-outlined"></Icon>
+                     删除
+                   </a-menu-item>
+                 </a-menu>
+               </template>
+               <a-button>批量操作
+                 <Icon icon="mdi:chevron-down"></Icon>
+               </a-button>
+         </a-dropdown>
+       </template>
+        <!--操作栏-->
+       <template #action="{ record }">
+         <TableAction :actions="getTableAction(record)"/>
+       </template>
+     </BasicTable>
+    <!-- table区域-end -->
+
+    <!-- 表单区域 -->
+    <${subTab.entityName}Modal @register="registerModal" @success="handleSuccess"/>
+  </div>
+</template>
+
+<script lang="ts" setup>
+  import {ref, computed, unref, watch, inject} from 'vue';
+  import ${subTab.entityName}Modal from './modules/${subTab.entityName}Modal.vue'
+  import {BasicTable, useTable, TableAction} from '/@/components/Table';
+  import { useListPage } from '/@/hooks/system/useListPage'
+  import {useModal} from '/@/components/Modal';
+  import {isEmpty} from "/@/utils/is";
+  import {useMessage} from '/@/hooks/web/useMessage';
+  import {${subTab.entityName?uncap_first}Columns} from './${entityName}.data';
+  import {${subTab.entityName?uncap_first}List, ${subTab.entityName?uncap_first}Delete, ${subTab.entityName?uncap_first}DeleteBatch} from './${entityName}.api';
+ //提示弹窗
+  const $message = useMessage()
+  //接收主表id
+  const mainId = inject('mainId') || '';
+  //查询参数
+  const searchInfo = ref({});
+  //注册model
+  const [registerModal, {openModal}] = useModal();
+ // 列表页面公共参数、方法
+  const {prefixCls, tableContext} = useListPage({
+        tableProps: {
+            api: ${subTab.entityName?uncap_first}List,
+            columns: ${subTab.entityName?uncap_first}Columns,
+            canResize: false,
+            useSearchForm: false,
+            searchInfo,
+            actionColumn: {
+                width: 180,
+            }
+        },
+    });
+
+    //注册table数据
+    const [registerTable, {reload}, {rowSelection, selectedRowKeys}] = tableContext;
+
+    watch(mainId, () => {
+            searchInfo.value['${subTab.foreignKeys[0]?uncap_first}'] = unref(mainId);
+            reload();
+        }
+    );
+
+    /**
+     * 新增事件
+     */
+    function handleAdd() {
+        if (isEmpty(unref(mainId))) {
+            $message.createMessage.warning('请选择一个主表信息')
+            return;
+        }
+        openModal(true, {
+            isUpdate: false,
+            showFooter: true,
+        });
+    }
+
+    /**
+     * 编辑事件
+     */
+    async function handleEdit(record: Recordable) {
+        openModal(true, {
+            record,
+            isUpdate: true,
+            showFooter: true,
+        });
+    }
+
+    /**
+     * 删除事件
+     */
+    async function handleDelete(record) {
+        await ${subTab.entityName?uncap_first}Delete({id: record.id}, reload);
+    }
+
+    /**
+     * 批量删除事件
+     */
+    async function batchHandleDelete() {
+        await ${subTab.entityName?uncap_first}DeleteBatch({ids: selectedRowKeys.value}, () => {
+            selectedRowKeys.value = []
+            reload()
+        })
+    }
+
+    /**
+     * 成功回调
+     */
+    function handleSuccess() {
+        reload();
+    }
+
+    /**
+     * 操作栏
+     */
+    function getTableAction(record) {
+        return [
+            {
+                label: '编辑',
+                onClick: handleEdit.bind(null, record),
+            }, {
+                label: '删除',
+                popConfirm: {
+                    title: '是否确认删除',
+                    confirm: handleDelete.bind(null, record),
+                },
+            }
+        ]
+    }
+</script>
+<style scoped>
+
+</style>
+</#list>

@@ -1,0 +1,196 @@
+<#include "/common/utils.ftl">
+<#list subTables as sub>
+<#if sub.foreignRelationType=='1'>
+#segment#${sub.entityName}Form.vue
+<template>
+  <j-form-container :disabled="disabled">
+      <a-form-model ref="form" :model="model" :rules="validatorRules" slot="detail">
+        <a-row>
+<#assign form_popup = false>
+<#assign form_cat_tree = false>
+<#assign form_cat_back = "">
+<#assign form_span = 24>
+<#if tableVo.fieldRowNum == 2>
+  <#assign form_span = 12>
+<#elseif tableVo.fieldRowNum==3>
+  <#assign form_span = 8>
+<#elseif tableVo.fieldRowNum==4>
+  <#assign form_span = 6>
+</#if>
+<#list sub.colums as po>
+<#if po.isShow =='Y' && po.fieldName != 'id'>
+<#assign form_field_dictCode="">
+	<#if po.dictTable?default("")?trim?length gt 1 && po.dictText?default("")?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
+		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+	<#elseif po.dictField?default("")?trim?length gt 1>
+		<#assign form_field_dictCode="${po.dictField}">
+	</#if>
+          <a-col :span="${form_span}">
+            <a-form-model-item label="${po.filedComment}" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="${autoStringSuffixForModel(po)}">
+	<#if po.classType =='date'>
+              <j-date placeholder="请选择${po.filedComment}" v-model="model.${po.fieldName}"  style="width: 100%"/>
+	<#elseif po.classType =='datetime'>
+              <j-date placeholder="请选择${po.filedComment}" v-model="model.${po.fieldName}"  :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" style="width: 100%"/>
+	<#elseif po.classType =='time'>
+              <j-time placeholder="请选择${po.filedComment}" v-model="model.${po.fieldName}"  style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType =='popup'>
+	    <#assign form_popup=true>
+              <j-popup
+                v-model="model.${po.fieldName}"
+                field="${po.fieldName}"
+                org-fields="${po.dictField}"
+                dest-fields="${Format.underlineToHump(po.dictText)}"
+                code="${po.dictTable}"
+                :multi="${po.extendParams.popupMulti?c}"
+                @input="popupCallback"/>
+    <#elseif po.classType =='sel_depart'>
+              <j-select-depart v-model="model.${po.fieldName}" :multi="${po.extendParams.multi?default('true')}"<#if po.extendParams.store?default("")?trim?length gt 0> store="${po.extendParams.store}"</#if><#if po.extendParams.text?default("")?trim?length gt 0> text="${po.extendParams.text}"</#if> <#if po.readonly=='Y'>disabled</#if> />
+<#elseif po.classType =='switch'>
+              <j-switch v-model="model.${po.fieldName}" <#if po.dictField!= 'is_open'>:options="${po.dictField}"</#if>></j-switch>
+	<#elseif po.classType =='pca'>
+		      <j-area-linkage type="cascader" v-model="model.${po.fieldName}" placeholder="请输入省市区"/>
+	<#elseif po.classType =='markdown'>
+	          <j-markdown-editor v-model="model.${autoStringSuffixForModel(po)}" id="${po.fieldName}"></j-markdown-editor>
+    <#elseif po.classType =='password'>
+	          <a-input-password v-model="model.${po.fieldName}" placeholder="请输入${po.filedComment}"/>
+	<#elseif po.classType =='sel_user'>
+              <j-select-user-by-dep v-model="model.${po.fieldName}" :multi="${po.extendParams.multi?default('true')}"<#if po.extendParams.store?default("")?trim?length gt 0> store="${po.extendParams.store}"</#if><#if po.extendParams.text?default("")?trim?length gt 0> text="${po.extendParams.text}"</#if> <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType =='textarea'>
+              <a-textarea v-model="model.${autoStringSuffixForModel(po)}" rows="4" placeholder="请输入${po.filedComment}"/>
+	<#elseif po.classType=='list' || po.classType=='radio'>
+              <j-dict-select-tag type="${po.classType}" v-model="model.${po.fieldName}"  dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}"/>
+	<#elseif po.classType=='list_multi' || po.classType=='checkbox'>
+              <j-multi-select-tag type="${po.classType}" v-model="model.${po.fieldName}"  dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}"/>
+	<#elseif po.classType=='sel_search'>
+              <j-search-select-tag v-model="model.${po.fieldName}" dict="${form_field_dictCode}" />
+    <#elseif po.classType=='cat_tree'>
+    	<#assign form_cat_tree = true>
+              <j-category-select v-model="model.${po.fieldName}" pcode="${po.dictField?default("")}" placeholder="请选择${po.filedComment}" <#if po.dictText?default("")?trim?length gt 1>back="${dashedToCamel(po.dictText)}" @change="handleCategoryChange"</#if>/>
+    	<#if po.dictText?default("")?trim?length gt 1>
+    	<#assign form_cat_back = "${po.dictText}">
+    	</#if>
+	<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+              <a-input-number v-model="model.${po.fieldName}" placeholder="请输入${po.filedComment}" style="width: 100%"/>
+	<#elseif po.classType=='file'>
+              <j-upload v-model="model.${po.fieldName}" ></j-upload>
+	<#elseif po.classType=='image'>
+              <j-image-upload isMultiple v-model="model.${po.fieldName}"></j-image-upload>
+	<#elseif po.classType=='umeditor'>
+              <j-editor v-model="model.${autoStringSuffixForModel(po)}"/>
+	<#else>
+              <a-input v-model="model.${autoStringSuffixForModel(po)}" placeholder="请输入${po.filedComment}"></a-input>
+    </#if>
+            </a-form-model-item>
+          </a-col>
+</#if>
+</#list>
+        </a-row>
+      </a-form-model>
+  </j-form-container>
+</template>
+<script>
+  import { getAction } from '@/api/manage'
+  import { validateDuplicateValue } from '@/utils/util'
+  import JFormContainer from '@/components/jeecg/JFormContainer'
+ import { VALIDATE_FAILED } from '@/components/jeecg/JVxeTable/utils/vxeUtils.js'
+  export default {
+    name: '${sub.entityName}Form',
+    components: {
+      JFormContainer
+    },
+    props:{
+      disabled: {
+        type: Boolean,
+        default: false,
+        required: false
+      }
+    },
+    data () {
+      return {
+        model:{
+         <#include "/common/init/initValueSub.ftl">
+        },
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 5 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
+        <#include "/common/validatorRulesTemplate/sub.ftl">
+        confirmLoading: false,
+      }
+    },
+    created () {
+    //备份model原始值
+      this.modelDefault = JSON.parse(JSON.stringify(this.model));
+    },
+    methods:{
+      initFormData(url,id){
+        this.clearFormData()
+        if(!id){
+          this.edit(this.modelDefault)
+        }else{
+          getAction(url,{id:id}).then(res=>{
+            if(res.success){
+              let records = res.result
+              if(records && records.length>0){
+                this.edit(records[0])
+              }
+            }
+          })
+        }
+      },
+      edit(record){
+        this.model = Object.assign({}, record)
+      },
+      getFormData(){
+        let formdata_arr = []
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            let isNullObj = true
+            Object.keys(this.model).forEach(key=>{
+              if(this.model[key]){
+                isNullObj = false
+              }
+            })
+            if(!isNullObj){
+              formdata_arr.push(this.model)
+            }
+          }else{
+            this.$emit("validateError","${sub.ftlDescription}表单校验未通过");
+          }
+        })
+        return formdata_arr;
+      },
+       validate(index){
+        return new Promise((resolve, reject) => {
+          // 验证主表表单
+         this.$refs.form.validate(valid => {
+            !valid ? reject({ error: VALIDATE_FAILED ,index}) : resolve()
+          })
+        }).then(values => {
+          return Promise.resolve()
+        }).catch(error => {
+          return Promise.reject(error)
+        })
+
+      },
+      <#if form_popup>
+      popupCallback(value,row){
+       this.model = Object.assign(this.model, row);
+      },
+      </#if>
+      clearFormData(){
+        this.$refs.form.clearValidate()
+      },
+      <#if form_cat_tree>
+      handleCategoryChange(value,backObj){
+      }
+      </#if>
+    }
+  }
+</script>
+</#if>
+</#list>

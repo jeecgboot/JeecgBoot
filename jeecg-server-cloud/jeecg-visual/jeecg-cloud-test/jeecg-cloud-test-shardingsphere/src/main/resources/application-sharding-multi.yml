@@ -1,0 +1,72 @@
+# 双库分表配置
+spring:
+  shardingsphere:
+    props:
+      sql-show: true
+    datasource:
+      ds0:
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://jeecg-boot-mysql:3306/jeecg-boot?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+        type: com.alibaba.druid.pool.DruidDataSource
+        username: root
+        password: root
+      ds1:
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://jeecg-boot-mysql:3306/jeecg-boot2?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+        type: com.alibaba.druid.pool.DruidDataSource
+        username: root
+        password: root
+      names: ds0,ds1
+    # 规则配置
+    rules:
+      replica-query:
+        # 负载均衡算法
+        load-balancers:
+          round-robin:
+            type: ROUND_ROBIN
+            props:
+              default: 0
+        data-sources:
+          prds:
+            primary-data-source-name: ds0
+            replica-data-source-names: ds1
+            load-balancer-name: round_robin
+      sharding:
+        # 配置绑定表，每一行为一组,绑定表会提高查询效率
+        binding-tables:
+          - sys_log
+        # 分布式序列算法配置
+        key-generators:
+          snowflake:
+            type: SNOWFLAKE
+            props:
+              worker-id: 123
+        # 分片算法配置
+        sharding-algorithms:
+          table-classbased:
+            props:
+              strategy: standard
+              algorithmClassName: org.jeecg.modules.test.sharding.algorithm.StandardModTableShardAlgorithm
+            type: CLASS_BASED
+          # 通过operate_type取模的方式确定数据落在哪个库
+          database-inline:
+            type: INLINE
+            props:
+              algorithm-expression: ds$->{operate_type % 2}
+        tables:
+          # 逻辑表名称
+          sys_log:
+            #配置具体表的数据节点
+            actual-data-nodes: ds$->{0..1}.sys_log$->{0..1}
+            # 分库策略
+            database-strategy:
+              standard:
+                sharding-column: operate_type
+                sharding-algorithm-name: database-inline
+            # 分表策略
+            table-strategy:
+              standard:
+                # 分片算法名称
+                sharding-algorithm-name: table-classbased
+                # 分片列名称
+                sharding-column: log_type

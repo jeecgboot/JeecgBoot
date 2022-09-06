@@ -1,0 +1,13 @@
+jeecg:
+  route:
+    config:
+      #type:database nacos yml
+      data-type: database
+      group: DEFAULT_GROUP
+      data-id: jeecg-gateway-router
+spring:
+  redis:
+    database: 0
+    host: jeecg-boot-redis
+    port: 6379
+    password:

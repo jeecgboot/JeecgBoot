@@ -1,0 +1,34 @@
+<#list subTables as subTab>
+#segment#${subTab.entityName}Mapper.java
+package ${bussiPackage}.${entityPackage}.mapper;
+
+import java.util.List;
+import ${bussiPackage}.${entityPackage}.entity.${subTab.entityName};
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+/**
+ * @Description: ${subTab.ftlDescription}
+ * @Author: jeecg-boot
+ * @Date:   ${.now?string["yyyy-MM-dd"]}
+ * @Version: V1.0
+ */
+public interface ${subTab.entityName}Mapper extends BaseMapper<${subTab.entityName}> {
+
+	/**
+	 * 通过主表id删除子表数据
+	 *
+	 * @param mainId 主表id
+	 * @return boolean
+	 */
+	public boolean deleteByMainId(@Param("mainId") String mainId);
+
+  /**
+   * 通过主表id查询子表数据
+   *
+   * @param mainId 主表id
+   * @return List<${subTab.entityName}>
+   */
+	public List<${subTab.entityName}> selectByMainId(@Param("mainId") String mainId);
+}
+</#list>

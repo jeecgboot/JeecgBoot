@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysUserDepartMapper">
+    <select id="getUserDepartByUid" parameterType="String" resultType="org.jeecg.modules.system.entity.SysUserDepart">
+		SELECT *
+		FROM sys_user_depart
+		WHERE user_id = #{userId, jdbcType=VARCHAR}
+    </select>
+
+	<!-- 查询指定部门下的用户 并且支持用户账号模糊查询 -->
+	<select id="queryDepartUserList" resultType="org.jeecg.modules.system.entity.SysUser">
+		select a.* from sys_user a
+		join sys_user_depart b on b.user_id = a.id
+		join sys_depart c on b.dep_id = c.id
+		<bind name="bindOrgCode" value="orgCode+'%'"/>
+		where a.del_flag = 0 and c.org_code like #{bindOrgCode}
+		<if test="realname!=null and realname!=''">
+			<!-- update by sunjianlei 20220119【#3348】SQL injection exists in /sys/user/queryUserByDepId；  -->
+			<bind name="bindRealname" value="'%'+realname+'%'"/>
+			and a.realname like #{bindRealname}
+		</if>
+	</select>
+
+	<!-- 根据部门查询部门用户 分页 -->
+	<select id="queryDepartUserPageList" resultType="org.jeecg.modules.system.entity.SysUser">
+		select a.*, c.depart_name as org_code_txt from sys_user a
+		join sys_user_depart b on b.user_id = a.id
+		join sys_depart c on b.dep_id = c.id
+		<bind name="bindOrgCode" value="orgCode+'%'"/>
+		where a.del_flag = 0 and a.status = 1 and c.org_code like #{bindOrgCode}
+		<if test="username!=null and username!=''">
+			<bind name="bindUsername" value="'%'+username+'%'"/>
+			and a.username like #{bindUsername}
+		</if>
+		<if test="realname!=null and realname!=''">
+		    <bind name="bindRealname" value="'%'+realname+'%'"/>
+			and a.realname like #{bindRealname}
+		</if>
+	</select>
+</mapper>

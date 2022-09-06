@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysDictMapper">
+
+	<!-- 通过字典code获取字典数据 -->
+	<select id="queryDictItemsByCode" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		   select s.item_value as "value",s.item_text as "text" from sys_dict_item s
+		   where dict_id = (select id from sys_dict where dict_code = #{code})
+		   order by s.sort_order asc
+	</select>
+
+	<!-- 通过字典code获取有效的字典数据项 -->
+	<select id="queryEnableDictItemsByCode" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		   select s.item_value as "value",s.item_text as "text" from sys_dict_item s
+		   where dict_id = (select id from sys_dict where dict_code = #{code})
+		   and s.status = 1
+		   order by s.sort_order asc
+	</select>
+
+	<!-- 通过多个字典code获取字典数据 -->
+	<select id="queryDictItemsByCodeList" parameterType="String" resultType="org.jeecg.common.system.vo.DictModelMany">
+		SELECT
+			dict.dict_code,
+			item.item_text AS "text",
+			item.item_value AS "value"
+		FROM
+			sys_dict_item item
+		INNER JOIN sys_dict dict ON dict.id = item.dict_id
+		WHERE dict.dict_code IN (
+			<foreach item="dictCode" collection="dictCodeList" separator=",">
+				#{dictCode}
+			</foreach>
+		)
+		ORDER BY item.sort_order ASC
+	</select>
+
+	<!-- 通过字典code获取字典数据 -->
+	<select id="queryDictTextByKey" parameterType="String"  resultType="String">
+		   select s.item_text from sys_dict_item s 
+		   where s.dict_id = (select id from sys_dict where dict_code = #{code})
+		   and s.item_value = #{key}
+	</select>
+
+	<!-- 通过字典code获取字典数据，可批量查询 -->
+	<select id="queryManyDictByKeys" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModelMany">
+		SELECT
+			dict.dict_code,
+			item.item_text AS "text",
+			item.item_value AS "value"
+		FROM
+			sys_dict_item item
+		INNER JOIN sys_dict dict ON dict.id = item.dict_id
+		WHERE dict.dict_code IN (
+			<foreach item="dictCode" collection="dictCodeList" separator=",">
+				#{dictCode}
+			</foreach>
+		)
+		AND item.item_value IN (
+			<foreach item="key" collection="keys" separator=",">
+				#{key}
+			</foreach>
+		)
+	</select>
+
+	<!--通过查询指定table的 text code 获取字典-->
+	<select id="queryTableDictItemsByCode" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		   select ${text} as "text",${code} as "value" from ${table}
+	</select>
+	
+	<!--通过查询指定table的 text code 获取字典（指定查询条件）-->
+	<select id="queryTableDictItemsByCodeAndFilter" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		   select ${text} as "text",${code} as "value" from ${table}
+		<if test="filterSql != null and filterSql != ''">
+			where ${filterSql}
+		</if>
+	</select>
+	
+	<!--通过查询指定table的 text code key 获取字典值-->
+	<select id="queryTableDictTextByKey" parameterType="String" resultType="String">
+		   select ${text} as "text" from ${table} where ${code}= #{key}
+	</select>
+
+	<!--通过查询指定table的 text code key 获取字典值，可批量查询
+	<select id="queryTableDictTextByKeys" parameterType="String" resultType="org.jeecg.common.system.vo.DictModel">
+		select ${text} as "text", ${code} as "value" from ${table} where ${code} IN (
+			<foreach item="key" collection="keys" separator=",">
+				#{key}
+			</foreach>
+		)
+	</select>-->
+
+	<!--通过查询指定table的 text code key 获取字典值，包含value
+	<select id="queryTableDictByKeys" parameterType="String" resultType="org.jeecg.common.system.vo.DictModel">
+		select ${text} as "text", ${code} as "value" from ${table} where ${code} in
+		<foreach item="key" collection="keyArray" open="(" separator="," close=")">
+			#{key}
+		</foreach>
+	</select>-->
+
+	<!-- 重复校验 sql语句 -->
+	<select id="duplicateCheckCountSql" resultType="Long" parameterType="org.jeecg.modules.system.model.DuplicateCheckVo">
+		SELECT COUNT(*) FROM ${tableName} WHERE ${fieldName} = #{fieldVal} and id &lt;&gt; #{dataId}
+	</select>
+	
+	<!-- 重复校验 sql语句 -->
+	<select id="duplicateCheckCountSqlNoDataId" resultType="Long" parameterType="org.jeecg.modules.system.model.DuplicateCheckVo">
+		SELECT COUNT(*) FROM ${tableName} WHERE ${fieldName} = #{fieldVal}
+	</select>
+		
+	<!-- 查询部门信息 作为字典数据 -->
+	<select id="queryAllDepartBackDictModel" resultType="org.jeecg.common.system.vo.DictModel">
+		select id as "value",depart_name as "text" from sys_depart where del_flag = '0'
+	</select>
+	
+		<!-- 查询用户信息 作为字典数据 -->
+	<select id="queryAllUserBackDictModel" resultType="org.jeecg.common.system.vo.DictModel">
+		select username as "value",realname as "text" from sys_user where del_flag = '0'
+	</select>
+	
+	<!--通过查询指定table的 text code 获取字典数据，且支持关键字查询
+	<select id="queryTableDictItems" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		select ${text} as "text",${code} as "value" from ${table} where ${text} like #{keyword}
+	</select> -->
+	
+	<!-- 根据表名、显示字段名、存储字段名、父ID查询树 -->
+	<select id="queryTreeList" parameterType="Object" resultType="org.jeecg.modules.system.model.TreeSelectModel">
+		select ${text} as "title",
+			   ${code} as "key",
+				<!-- udapte-begin-author:taoyan date:20211115 for: 自定义树控件只显示父节点，子节点无法展开 (此处还原不可再改) /issues/I4HZAL -->
+			   <if test="hasChildField != null and hasChildField != ''">
+			   	(case when ${hasChildField} = '1' then 0 else 1 end) as isLeaf,
+			   </if>
+				<!-- udapte-end-author:taoyan date:20211115 for: 自定义树控件只显示父节点，子节点无法展开 (此处还原不可再改) /issues/I4HZAL -->
+			   ${pidField} as parentId
+			   from ${table}
+			   where
+			   <!-- udapte-begin-author:sunjianlei date:20220110 for: 【JTC-597】自定义树查询条件查不出数据 -->
+			   <if test="query == null">
+				   <choose>
+					   <when test="pid != null and pid != ''">
+						   ${pidField} = #{pid}
+					   </when>
+					   <otherwise>
+						   (${pidField} = '' OR ${pidField} IS NULL)
+					   </otherwise>
+				   </choose>
+			   </if>
+			   <if test="query!= null">
+			       1 = 1
+				   <foreach collection="query.entrySet()" item="value"  index="key" >
+				   	and ${key} LIKE #{value}
+				   </foreach>
+					 <!-- udapte-end-author:sunjianlei date:20220615 for: 【issues/3709】自定义树查询条件没有处理父ID，没有树状结构了 -->
+					 <choose>
+						 <when test="pid != null and pid != ''">
+							 and ${pidField} = #{pid}
+						 </when>
+						 <otherwise>
+							 and (${pidField} = '' OR ${pidField} IS NULL)
+						 </otherwise>
+					 </choose>
+			   	 <!-- udapte-end-author:sunjianlei date:20220615 for: 【issues/3709】自定义树查询条件没有处理父ID，没有树状结构了 -->
+			   </if>
+			   <!-- udapte-end-author:sunjianlei date:20220110 for: 【JTC-597】自定义树查询条件查不出数据 -->
+	</select>
+
+
+	<!-- 分页查询字典表数据 -->
+	<select id="queryDictTablePageList" parameterType="Object" resultType="org.jeecg.common.system.vo.DictModel">
+		select ${query.text} as "text",${query.code} as "value" from ${query.table}
+		where 1 = 1
+		<if test="query.keyword != null and query.keyword != ''">
+			<bind name="bindKeyword" value="'%'+query.keyword+'%'"/>
+			and (${query.text} like #{bindKeyword} or ${query.code} like #{bindKeyword})
+		</if>
+		<if test="query.codeValue != null and query.codeValue != ''">
+			and ${query.code} = #{query.codeValue}
+		</if>
+	</select>
+
+	<!--通过查询指定table的 text code 获取字典数据，且支持关键字和自定义查询条件查询 分页-->
+	<select id="queryTableDictWithFilter" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		select ${text} as "text", ${code} as "value" from ${table}
+		<if test="filterSql != null and filterSql != ''">
+			${filterSql}
+		</if>
+	</select>
+
+	<!--通过查询指定table的 text code 获取字典数据，且支持关键字和自定义查询条件查询 获取所有 -->
+	<select id="queryAllTableDictItems" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		select ${text} as "text", ${code} as "value" from ${table}
+		<if test="filterSql != null and filterSql != ''">
+			${filterSql}
+		</if>
+	</select>
+
+
+	<!-- 查询字典表的数据 支持设置过滤条件、设置存储值作为in查询条件 -->
+	<select id="queryTableDictByKeysAndFilterSql" parameterType="String" resultType="org.jeecg.common.system.vo.DictModel">
+		select ${text} as "text", ${code} as "value" from ${table} where ${code} IN (
+		<foreach item="key" collection="codeValues" separator=",">
+			#{key}
+		</foreach>
+		)
+		<if test="filterSql != null and filterSql != ''">
+			and ${filterSql}
+		</if>
+	</select>
+
+
+
+</mapper>

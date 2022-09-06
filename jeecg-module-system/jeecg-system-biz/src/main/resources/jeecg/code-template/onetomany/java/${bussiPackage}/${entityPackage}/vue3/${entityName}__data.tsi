@@ -1,0 +1,102 @@
+import {BasicColumn} from '/@/components/Table';
+import {FormSchema} from '/@/components/Table';
+import { rules} from '/@/utils/helper/validator';
+import { render } from '/@/utils/common/renderUtils';
+import {JVxeTypes,JVxeColumn} from '/@/components/jeecg/JVxeTable/types'
+//列表数据
+export const columns: BasicColumn[] = [
+ <#list columns as po>
+   <#if po.fieldName !='id'>
+   {
+    title: '${po.filedComment}',
+    align:"center",
+    <#if po.classType=='date'>
+    dataIndex: '${po.fieldName}',
+    customRender:({text}) =>{
+      return !text?"":(text.length>10?text.substr(0,10):text)
+    },
+   <#else>
+    dataIndex: '${po.fieldName}'
+   </#if>
+   },
+   </#if>
+ </#list>
+];
+//查询数据
+export const searchFormSchema: FormSchema[] = [
+<#list columns as po>
+<#if po.fieldName !='id' && po_index<= tableVo.searchFieldNum>
+ {
+    label: '${po.filedComment}',
+    field: '${po.fieldName}',
+     <#if po.fieldType =='date'>
+    component: 'DatePicker'
+     <#elseif po.fieldType =='datetime'>
+    component: 'TimePicker'
+     <#elseif "int,decimal,double,"?contains(po.fieldType)>
+    component: 'InputNumber'
+     <#else>
+    component: 'Input'
+    </#if>
+  },
+</#if>
+</#list>
+];
+
+export const formSchema: FormSchema[] = [
+  // TODO 主键隐藏字段，目前写死为ID
+  {label: '', field: 'id', component: 'Input', show: false},
+<#list columns as po><#rt/>
+  {
+    label: '${po.filedComment}',
+    field: '${po.fieldName}',
+     <#if po.fieldType =='date'>
+    component: 'DatePicker'
+     <#elseif po.fieldType =='datetime'>
+    component: 'DatePicker',
+    componentProps: {
+      showTime: true,
+      valueFormat: 'YYYY-MM-DD hh:mm:ss',
+    },
+     <#elseif "int,decimal,double,"?contains(po.fieldType)>
+    component: 'InputNumber',
+     <#else>
+    component: 'Input',
+    </#if>
+    <#if po.fieldName =='id'><#rt/>
+    show:false,
+    </#if>
+  },
+</#list>
+];
+//子表表格配置
+<#list subTables as sub>
+export const ${sub.entityName?uncap_first}Columns: JVxeColumn[] = [
+<#-- 循环子表的列 开始 -->
+<#list sub.colums as col><#rt/>
+<#if col.filedComment !='外键' >
+    {
+      title: '${col.filedComment}',
+       key: '${col.fieldName}',
+<#if col.fieldType =='date'>
+      type: JVxeTypes.date,
+<#elseif col.fieldType =='datetime'>
+      type: JVxeTypes.datetime,
+<#elseif "int,decimal,double,"?contains(col.fieldType)>
+      type: JVxeTypes.inputNumber,
+<#else>
+      type: JVxeTypes.input,
+</#if>
+      width:"200px",
+      placeholder: '请输入${'$'}{title}',
+      defaultValue: '',
+<#-- 子表的校验 -->
+<#if col.nullable =='N'>
+      validateRules: [{ required: true, message: '${'$'}{title}不能为空' }],
+</#if>
+    },
+</#if>
+</#list>
+<#-- 循环子表的列 结束 -->
+  ]
+</#list>

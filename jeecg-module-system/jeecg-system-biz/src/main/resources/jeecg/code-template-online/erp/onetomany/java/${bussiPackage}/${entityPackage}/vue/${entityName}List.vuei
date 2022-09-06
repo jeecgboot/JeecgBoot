@@ -1,0 +1,457 @@
+<#include "/common/utils.ftl">
+<template>
+  <a-card :bordered="false">
+    <!-- 查询区域 -->
+    <div class="table-page-search-wrapper">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
+        <a-row :gutter="24">
+<#assign query_field_no=0>
+<#assign query_flag=false>
+<#assign list_need_dict=false>
+<#assign list_need_category=false>
+<#assign list_need_pca=false>
+<#assign subMainFieldMap={}>
+<#-- 开始循环 -->
+<#list columns as po>
+<#if po.isQuery=='Y'>
+<#assign query_flag=true>
+	<#if query_field_no==2>
+          <template v-if="toggleSearchStatus">
+	</#if>
+	<#assign query_field_dictCode="">
+	<#if po.dictTable?default("")?trim?length gt 1>
+	    <#assign query_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+    <#elseif po.dictField?default("")?trim?length gt 1>
+        <#assign query_field_dictCode="${po.dictField}">
+    </#if>
+	<#if po.queryMode=='single'>
+          <#if query_field_no gt 1>  </#if><a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <#if query_field_no gt 1>  </#if><a-form-item label="${po.filedComment}">
+            <#if po.classType=='sel_search'>
+              <#if query_field_no gt 1>  </#if><j-search-select-tag placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" dict="${po.dictTable},${po.dictText},${po.dictField}"/>
+            <#elseif po.classType=='sel_user'>
+              <#if query_field_no gt 1>  </#if><j-select-user-by-dep placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"/>
+            <#elseif po.classType=='sel_depart'>
+              <#if query_field_no gt 1>  </#if><j-select-depart placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"/>
+            <#elseif po.classType=='list_multi'>
+              <#if query_field_no gt 1>  </#if><j-multi-select-tag placeholder="请选择${po.filedComment}" dictCode="${query_field_dictCode?default("")}" v-model="queryParam.${po.fieldName}"/>
+            <#elseif po.classType=='cat_tree'>
+              <#if query_field_no gt 1>  </#if><j-category-select placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" pcode="${po.dictField?default("")}"/>
+			<#elseif po.classType=='date'>
+              <#if query_field_no gt 1>  </#if><j-date placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"></j-date>
+			<#elseif po.classType=='datetime'>
+              <#if query_field_no gt 1>  </#if><j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}"></j-date>
+            <#elseif po.classType=='pca'>
+              <#if query_field_no gt 1>  </#if><j-area-linkage type="cascader" v-model="queryParam.${po.fieldName}" placeholder="请选择省市区"/>
+            <#elseif po.classType=='popup'>
+              <#if query_field_no gt 1>  </#if><j-popup placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" code="${po.dictTable}" org-fields="${po.dictField}" dest-fields="${po.dictText}" :field="getPopupField('${po.dictText}')" :multi="${po.extendParams.popupMulti?c}"/>
+			<#elseif po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
+			<#--  ---------------------------下拉或是单选 判断数据字典是表字典还是普通字典------------------------------- -->
+			<#if po.dictTable?default("")?trim?length gt 1>
+              <#if query_field_no gt 1>  </#if><j-dict-select-tag placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" dictCode="${po.dictTable},${po.dictText},${po.dictField}"/>
+			<#elseif po.dictField?default("")?trim?length gt 1>
+              <#if query_field_no gt 1>  </#if><j-dict-select-tag placeholder="请选择${po.filedComment}" v-model="queryParam.${po.fieldName}" dictCode="${po.dictField}"/>
+			<#else>
+              <#if query_field_no gt 1>  </#if><a-input placeholder="请输入${po.filedComment}" v-model="queryParam.${po.fieldName}"></a-input>
+			</#if>
+			<#else>
+              <#if query_field_no gt 1>  </#if><a-input placeholder="请输入${po.filedComment}" v-model="queryParam.${po.fieldName}"></a-input>
+			</#if>
+            <#if query_field_no gt 1>  </#if></a-form-item>
+          <#if query_field_no gt 1>  </#if></a-col>
+	<#else>
+          <#if query_field_no gt 1>  </#if><a-col :xl="10" :lg="11" :md="12" :sm="24">
+            <#if query_field_no gt 1>  </#if><a-form-item label="${po.filedComment}">
+			<#if po.classType=='date'>
+              <#if query_field_no gt 1>  </#if><j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.${po.fieldName}_begin"></j-date>
+              <#if query_field_no gt 1>  </#if><span class="query-group-split-cust"></span>
+              <#if query_field_no gt 1>  </#if><j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.${po.fieldName}_end"></j-date>
+			<#elseif po.classType=='datetime'>
+              <#if query_field_no gt 1>  </#if><j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择开始时间" class="query-group-cust" v-model="queryParam.${po.fieldName}_begin"></j-date>
+              <#if query_field_no gt 1>  </#if><span class="query-group-split-cust"></span>
+              <#if query_field_no gt 1>  </#if><j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择结束时间" class="query-group-cust" v-model="queryParam.${po.fieldName}_end"></j-date>
+			<#else>
+              <#if query_field_no gt 1>  </#if><a-input placeholder="请输入最小值" class="query-group-cust" v-model="queryParam.${po.fieldName}_begin"></a-input>
+              <#if query_field_no gt 1>  </#if><span class="query-group-split-cust"></span>
+              <#if query_field_no gt 1>  </#if><a-input placeholder="请输入最大值" class="query-group-cust" v-model="queryParam.${po.fieldName}_end"></a-input>
+			</#if>
+            <#if query_field_no gt 1>  </#if></a-form-item>
+          <#if query_field_no gt 1>  </#if></a-col>
+	</#if>
+<#assign query_field_no=query_field_no+1>
+</#if>
+<#if !list_need_dict && po.fieldShowType!='popup' && po.dictField?default("")?trim?length gt 1>
+<#assign list_need_dict=true>
+</#if>
+<#if po.classType=='cat_tree' && po.dictText?default("")?trim?length == 0>
+<#assign list_need_category=true>
+</#if>
+<#if po.classType=='pca'>
+<#assign list_need_pca=true>
+</#if>
+</#list>
+<#-- 结束循环 -->
+<#t>
+<#if query_field_no gt 2>
+          </template>
+</#if>
+<#if query_flag>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
+</#if>
+        </a-row>
+      </a-form>
+    </div>
+    <!-- 查询区域-END -->
+    
+    <!-- 操作按钮区域 -->
+    <div class="table-operator">
+      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('${tableVo.ftlDescription}')">导出</a-button>
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
+        <a-button type="primary" icon="import">导入</a-button>
+      </a-upload>
+      <!-- 高级查询区域 -->
+      <j-super-query :fieldList="superFieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
+    </div>
+
+    <!-- table区域-begin -->
+    <div>
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
+        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
+      </div>
+
+      <a-table
+        ref="table"
+        size="middle"
+        bordered
+        rowKey="id"
+        class="j-table-force-nowrap"
+        :scroll="{x:true}"
+        :columns="columns"
+        :dataSource="dataSource"
+        :pagination="ipagination"
+        :loading="loading"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange, type:'radio'}"
+        :customRow="clickThenSelect"
+        @change="handleTableChange">
+
+        <template slot="htmlSlot" slot-scope="text">
+          <div v-html="text"></div>
+        </template>
+        <template slot="imgSlot" slot-scope="text,record">
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
+          <img v-else :src="getImgView(text)" :preview="record.id" height="25px" alt="" style="max-width:80px;font-size: 12px;font-style: italic;"/>
+        </template>
+        <template slot="fileSlot" slot-scope="text">
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+          <a-button
+            v-else
+            :ghost="true"
+            type="primary"
+            icon="download"
+            size="small"
+            @click="downloadFile(text)">
+            下载
+          </a-button>
+        </template>
+        <#if list_need_pca>
+        <template slot="pcaSlot" slot-scope="text">
+          <div>{{ getPcaText(text) }}</div>
+        </template>
+        </#if>
+
+        <span slot="action" slot-scope="text, record">
+          <a @click="handleEdit(record)">编辑</a>
+
+          <a-divider type="vertical" />
+          <a-dropdown>
+            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
+            <a-menu slot="overlay">
+              <a-menu-item>
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                  <a>删除</a>
+                </a-popconfirm>
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown>
+        </span>
+
+      </a-table>
+    </div>
+
+    <a-tabs defaultActiveKey="1">
+    <#assign sub_seq=1>
+    <#list subTables as sub>
+      <a-tab-pane tab="${sub.ftlDescription}" key="${sub_seq}" <#if sub_seq gt 1>forceRender</#if>>
+        <${sub.entityName}List :mainId="${sub.entityName?uncap_first}MainId" />
+      </a-tab-pane>
+    <#assign sub_seq=sub_seq+1>
+    </#list>
+    </a-tabs>
+
+    <${entityName?uncap_first}-modal ref="modalForm" @ok="modalFormOk"></${entityName?uncap_first}-modal>
+  </a-card>
+</template>
+
+<script>
+
+  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import ${entityName}Modal from './modules/${entityName}Modal'
+  import { getAction } from '@/api/manage'
+  <#list subTables as sub>
+  import ${sub.entityName}List from './${sub.entityName}List'
+  </#list>
+  <#if list_need_category>
+  import { loadCategoryData } from '@/api/api'
+  </#if>
+  <#if list_need_dict>
+  import {initDictOptions,filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  </#if>
+  <#if list_need_pca>
+  import Area from '@/components/_util/Area'
+  </#if>
+  import '@/assets/less/TableExpand.less'
+
+  export default {
+    name: "${entityName}List",
+    mixins:[JeecgListMixin],
+    components: {
+      <#list subTables as sub>
+      ${sub.entityName}List,
+      </#list>
+      ${entityName}Modal
+    },
+    data () {
+      return {
+        description: '${tableVo.ftlDescription}管理页面',
+        // 表头
+        columns: [
+    <#assign showColNum=0>
+	<#list columns as po>
+	<#if po.isShowList =='Y'>
+	<#assign showColNum=showColNum+1>
+          {
+            title:'${po.filedComment}',
+            align:"center",
+            <#if po.sort=='Y'>
+            sorter: true,
+            </#if>
+            <#if po.classType=='date'>
+            dataIndex: '${po.fieldName}',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
+            <#elseif po.fieldDbType=='Blob'>
+            dataIndex: '${po.fieldName}String'
+            <#elseif po.classType=='umeditor'>
+            dataIndex: '${po.fieldName}',
+            scopedSlots: {customRender: 'htmlSlot'}
+            <#elseif po.classType=='pca'>
+            dataIndex: '${po.fieldName}',
+            scopedSlots: {customRender: 'pcaSlot'}
+            <#elseif po.classType=='file'>
+            dataIndex: '${po.fieldName}',
+            scopedSlots: {customRender: 'fileSlot'}
+            <#elseif po.classType=='image'>
+            dataIndex: '${po.fieldName}',
+            scopedSlots: {customRender: 'imgSlot'}
+			<#elseif po.classType=='sel_tree' || po.classType=='sel_search' || po.classType=='list_multi' || po.classType=='list' || po.classType=='radio' || po.classType=='checkbox' ||  po.classType=='sel_depart'>
+            dataIndex: '${po.fieldName}_dictText',
+            <#elseif po.classType=='switch'>
+            dataIndex: '${po.fieldName}',
+            <#if po.dictField != 'is_open'>
+            customRender: (text) => (!text ? "" : (text == ${po.dictField}[0] ? "是" : "否"))
+            <#else>
+            customRender: (text) => (!text ? "" : (text == "Y" ? "是" : "否"))
+            </#if>
+            <#elseif po.classType=='cat_tree'>
+            <#if list_need_category>
+            dataIndex: '${po.fieldName}',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['${po.fieldName}'], text+"")
+              }
+            }
+            <#else>
+            dataIndex: '${po.fieldName}',
+            customRender:(text,record)=>{
+              if(!text){
+                return ''
+              }else{
+                return record['${po.dictText}']
+              }
+            }
+            </#if>
+			<#else>
+            dataIndex: '${po.fieldName}'
+			</#if>
+          },
+     </#if>
+     </#list>
+          {
+            title: '操作',
+            dataIndex: 'action',
+            align:"center",
+            fixed:"right",
+            width:147,
+            scopedSlots: { customRender: 'action' },
+          }
+        ],
+        url: {
+          list: "/${entityPackage}/${entityName?uncap_first}/list",
+          delete: "/${entityPackage}/${entityName?uncap_first}/delete",
+          deleteBatch: "/${entityPackage}/${entityName?uncap_first}/deleteBatch",
+          exportXlsUrl: "/${entityPackage}/${entityName?uncap_first}/exportXls",
+          importExcelUrl: "${entityPackage}/${entityName?uncap_first}/importExcel",
+        },
+        dictOptions:{
+         <#list columns as po>
+         <#if (po.isQuery=='Y' || po.isShowList=='Y')>
+         <#if  po.classType='sel_depart' || po.classType=='list_multi' || po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
+         ${po.fieldName}:[],
+         </#if>
+         </#if>
+         </#list>
+        },
+        /* 分页参数 */
+        ipagination:{
+          current: 1,
+          pageSize: 5,
+          pageSizeOptions: ['5', '10', '50'],
+          showTotal: (total, range) => {
+            return range[0] + "-" + range[1] + " 共" + total + "条"
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0
+        },
+        selectedMainId:'',
+        superFieldList:[],
+        <#list subTables as sub>
+        <#if sub?? && (sub.foreignMainKeys)??>
+          <#list sub.foreignMainKeys as key>
+            <#assign subMainFieldMap += {"${sub.entityName?uncap_first}MainId": "${dashedToCamel(key)}"}>
+          </#list>
+        ${sub.entityName?uncap_first}MainId: '',
+        </#if>
+        </#list>
+      }
+    },
+    created() {
+      <#if list_need_pca>
+      this.pcaData = new Area()
+      </#if>
+      this.getSuperFieldList();
+    },
+    computed: {
+      importExcelUrl: function(){
+        <#noparse>return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;</#noparse>
+      }
+    },
+    methods: {
+      <#if list_need_pca>
+      getPcaText(code){
+        return this.pcaData.getText(code);
+      },
+      </#if>
+      initDictConfig(){
+      <#list columns as po>
+      <#if (po.isQuery=='Y' || po.isShowList=='Y') && po.classType!='popup'>
+        <#if po.classType='sel_depart'>
+        initDictOptions('sys_depart,depart_name,id').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, '${po.fieldName}', res.result)
+          }
+        })
+        <#elseif po.classType=='cat_tree' && list_need_category==true>
+        loadCategoryData({code:"${po.dictField}"}).then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, '${po.fieldName}', res.result)
+          }
+        })
+        <#elseif po.classType=='radio' || po.classType=='checkbox'>
+        	<#assign list_field_dictCode="">
+	        <#if po.dictTable?default("")?trim?length gt 1>
+				<#assign list_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+		    <#elseif po.dictField?default("")?trim?length gt 1>
+				<#assign list_field_dictCode="${po.dictField}">
+		    </#if>
+        initDictOptions('${list_field_dictCode}').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, '${po.fieldName}', res.result)
+          }
+        })
+        </#if>
+      </#if>  
+      </#list>
+      },
+      clickThenSelect(record) {
+        return {
+          on: {
+            click: () => {
+              this.onSelectChange(record.id.split(","), [record]);
+            }
+          }
+        }
+      },
+      onClearSelected() {
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
+        this.selectedMainId=''
+      },
+      onSelectChange(selectedRowKeys, selectionRows) {
+        this.selectedMainId=selectedRowKeys[0]
+        this.selectedRowKeys = selectedRowKeys;
+        this.selectionRows = selectionRows;
+        <#list subMainFieldMap as key,value>
+        this.${key} = selectionRows[0]['${value}']
+        </#list>
+      },
+      loadData(arg) {
+        if(!this.url.list){
+          this.$message.error("请设置url.list属性!")
+          return
+        }
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        this.onClearSelected()
+        var params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
+          }
+          if(res.code===510){
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
+      },
+      getSuperFieldList(){
+        let fieldList=[];
+         <#list columns as po>
+        fieldList.push(${superQueryFieldList(po)})
+         </#list>
+        this.superFieldList = fieldList
+      }
+    }
+  }
+</script>
+<style scoped>
+  @import '~@assets/less/common.less'
+</style>

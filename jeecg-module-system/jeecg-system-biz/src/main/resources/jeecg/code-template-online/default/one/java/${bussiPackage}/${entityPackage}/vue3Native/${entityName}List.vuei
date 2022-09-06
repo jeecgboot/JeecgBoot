@@ -1,0 +1,348 @@
+<template>
+  <div>
+<#assign query_field_no=0>  
+<#assign need_category = false>
+<#assign need_pca = false>
+<#assign need_search = false>
+<#assign need_dept_user = false>
+<#assign need_switch = false>
+<#assign need_dept = false>
+<#assign need_multi = false>
+<#assign need_popup = false>
+<#assign need_select_tag = false>
+<#assign need_select_tree = false>
+<#assign need_time = false>
+<#assign bpm_flag=false>
+<#assign need_markdown = false>
+<#assign need_upload = false>
+<#assign need_image_upload = false>
+<#assign need_editor = false>
+<#assign need_checkbox = false>
+<#assign query_flag = false>
+    <!--查询区域-->
+    <div class="jeecg-basic-table-form-container">
+      <a-form @keyup.enter.native="searchQuery" :model="queryParam" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-row :gutter="24">
+<#-- 开始循环 -->
+<#list columns as po>
+<#if po.fieldDbName=='bpm_status'>
+  <#assign bpm_flag=true>
+</#if>
+<#if po.classType=='cat_tree' && po.dictText?default("")?trim?length == 0>
+<#assign need_category=true>
+</#if>
+<#if po.classType=='pca'>
+<#assign need_pca=true>
+</#if>
+<#if po.classType=='sel_search'>
+<#assign need_search = true>
+</#if>
+<#if po.classType=='sel_user'>
+<#assign need_dept_user = true>
+</#if>
+<#if po.classType=='sel_depart'>
+<#assign need_dept = true>
+</#if>
+<#if po.classType=='switch'>
+<#assign need_switch = true>
+</#if>
+<#if po.classType=='list_multi'>
+<#assign need_multi = true>
+</#if>
+<#if po.classType=='popup'>
+<#assign need_popup = true>
+</#if>
+<#if po.classType=='sel_tree'>
+<#assign need_select_tree = true>
+</#if>
+<#if po.classType=='time'>
+<#assign need_time = true>
+</#if>
+  <#include "/common/form/native/vue3NativeSearch.ftl">
+</#list>
+<#if query_field_no gt 2>
+          </template>
+</#if>
+<#if query_flag>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
+              <a-col :lg="6">
+                <a-button type="primary" preIcon="ant-design:search-outlined" @click="searchQuery">查询</a-button>
+                <a-button type="primary" preIcon="ant-design:reload-outlined" @click="searchReset" style="margin-left: 8px">重置</a-button>
+                <a @click="toggleSearchStatus = !toggleSearchStatus" style="margin-left: 8px">
+                  {{ toggleSearchStatus ? '收起' : '展开' }}
+                  <Icon :icon="toggleSearchStatus ? 'ant-design:up-outlined' : 'ant-design:down-outlined'" />
+                </a>
+              </a-col>
+            </span>
+          </a-col>
+</#if>
+        </a-row>
+      </a-form>
+    </div>
+<#-- 结束循环 -->
+    <!--引用表格-->
+    <BasicTable @register="registerTable" :rowSelection="rowSelection">
+      <!--插槽:table标题-->
+      <template #tableTitle>
+        <a-button type="primary" @click="handleAdd" preIcon="ant-design:plus-outlined"> 新增</a-button>
+        <a-button  type="primary" preIcon="ant-design:export-outlined" @click="onExportXls"> 导出</a-button>
+        <j-upload-button  type="primary" preIcon="ant-design:import-outlined" @click="onImportXls">导入</j-upload-button>
+        <a-dropdown v-if="selectedRowKeys.length > 0">
+          <template #overlay>
+            <a-menu>
+              <a-menu-item key="1" @click="batchHandleDelete">
+                <Icon icon="ant-design:delete-outlined"></Icon>
+                删除
+              </a-menu-item>
+            </a-menu>
+          </template>
+          <a-button>批量操作
+            <Icon icon="mdi:chevron-down"></Icon>
+          </a-button>
+        </a-dropdown>
+      </template>
+      <!--操作栏-->
+      <template #action="{ record }">
+        <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)"/>
+      </template>
+      <!--字段回显插槽-->
+      <template #htmlSlot="{text}">
+        <div v-html="text"></div>
+      </template>
+      <!--省市区字段回显插槽-->
+      <template #pcaSlot="{text}">
+        {{ getAreaTextByCode(text) }}
+      </template>
+      <template #fileSlot="{text}">
+        <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+        <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
+      </template>
+    </BasicTable>
+    <!-- 表单区域 -->
+    <${entityName}Modal ref="registerModal" @success="handleSuccess"></${entityName}Modal>
+  </div>
+</template>
+
+<script lang="ts" name="${entityPackage}-${entityName?uncap_first}" setup>
+  import { ref, reactive } from 'vue';
+  import { BasicTable, useTable, TableAction } from '/@/components/Table';
+  import { useListPage } from '/@/hooks/system/useListPage';
+  import { columns } from './${entityName}.data';
+  import { list, deleteOne, batchDelete, getImportUrl, getExportUrl } from './${entityName}.api';
+  import { downloadFile } from '/@/utils/common/renderUtils';
+  import ${entityName}Modal from './components/${entityName}Modal.vue'
+  <#include "/common/form/native/vue3NativeImport.ftl">
+<#if need_category>
+  import { loadCategoryData } from '/@/api/common/api';
+  import { getAuthCache, setAuthCache } from '/@/utils/auth';
+  import { DB_DICT_DATA_KEY } from '/@/enums/cacheEnum';
+</#if>
+<#if need_pca>
+  import { getAreaTextByCode } from '/@/components/Form/src/utils/Area';
+</#if>
+
+  const queryParam = ref<any>({});
+  const toggleSearchStatus = ref<boolean>(false);
+  const registerModal = ref();
+  //注册table数据
+  const { prefixCls, tableContext, onExportXls, onImportXls } = useListPage({
+    tableProps: {
+      title: '${tableVo.ftlDescription}',
+      api: list,
+      columns,
+      canResize:false,
+      useSearchForm: false,
+      actionColumn: {
+        width: 120,
+        fixed: 'right',
+      },
+      beforeFetch: (params) => {
+        return Object.assign(params, queryParam.value);
+      },
+    },
+    exportConfig: {
+      name: "${tableVo.ftlDescription}",
+      url: getExportUrl,
+    },
+	  importConfig: {
+	    url: getImportUrl,
+	    success: handleSuccess
+	  },
+  });
+  const [registerTable, { reload, collapseAll, updateTableDataRecord, findTableDataRecord, getDataSource }, { rowSelection, selectedRowKeys }] = tableContext;
+  const labelCol = reactive({
+    xs: { span: 24 },
+    sm: { span: 7 },
+  });
+  const wrapperCol = reactive({
+    xs: { span: 24 },
+    sm: { span: 16 },
+  });
+
+  /**
+   * 新增事件
+   */
+  function handleAdd() {
+    registerModal.value.disableSubmit = false;
+    registerModal.value.add();
+  }
+  
+  /**
+   * 编辑事件
+   */
+  function handleEdit(record: Recordable) {
+    registerModal.value.disableSubmit = false;
+    registerModal.value.edit(record);
+  }
+   
+  /**
+   * 详情
+   */
+  function handleDetail(record: Recordable) {
+    registerModal.value.disableSubmit = true;
+    registerModal.value.edit(record);
+  }
+   
+  /**
+   * 删除事件
+   */
+  async function handleDelete(record) {
+    await deleteOne({ id: record.id }, handleSuccess);
+  }
+   
+  /**
+   * 批量删除事件
+   */
+  async function batchHandleDelete() {
+    await batchDelete({ ids: selectedRowKeys.value }, handleSuccess);
+  }
+   
+  /**
+   * 成功回调
+   */
+  function handleSuccess() {
+    (selectedRowKeys.value = []) && reload();
+  }
+   
+  /**
+   * 操作栏
+   */
+  function getTableAction(record) {
+    return [
+      {
+        label: '编辑',
+        onClick: handleEdit.bind(null, record),
+      },
+    ];
+  }
+   
+  /**
+   * 下拉操作栏
+   */
+  function getDropDownAction(record) {
+    return [
+      {
+        label: '详情',
+        onClick: handleDetail.bind(null, record),
+      },
+      {
+        label: '删除',
+        popConfirm: {
+          title: '是否确认删除',
+          confirm: handleDelete.bind(null, record),
+        },
+      },
+    ];
+  }
+
+  /**
+   * 查询
+   */
+  function searchQuery() {
+    reload();
+  }
+  
+  /**
+   * 重置
+   */
+  function searchReset() {
+    queryParam.value = {};
+    selectedRowKeys.value = [];
+    //刷新数据
+    reload();
+  }
+  
+  <#if need_popup>
+  /**
+   *  popup组件值改变事件
+   */
+  function setFieldsValue(map) {
+    Object.keys(map).map((key) => {
+      queryParam.value[key] = map[key];
+    });
+  }
+  </#if>
+
+  <#if need_pca>
+  /**
+   * 省市区点击事件
+   * @param key
+   * @param value
+   */
+  function handleAreaChange(key, value) {
+    queryParam.value[key] = value.join(',');
+  }
+  </#if>
+
+  <#if need_category>
+  /**
+   * form点击事件
+   * @param value
+   */
+  function handleFormChange(key, value) {
+    queryParam.value[key] = value;
+  }
+  
+  /**
+   * 初始化字典配置
+   */
+  function initDictConfig() {
+  <#list columns as po>
+  <#if (po.isQuery=='Y' || po.isShowList=='Y') && po.classType!='popup'>
+    <#if po.classType=='cat_tree' && need_category==true>
+    loadCategoryData({code:'${po.dictField?default("")}'}).then((res) => {
+      if (res) {
+        let allDictDate = getAuthCache(DB_DICT_DATA_KEY);
+        if(!allDictDate['${po.dictField?default("")}']){
+          Object.assign(allDictDate,{'${po.dictField?default("")}':res})
+        }
+        setAuthCache(DB_DICT_DATA_KEY,allDictDate)
+      }
+    });
+     </#if>
+   </#if>
+   </#list>
+  }
+  initDictConfig();
+    </#if>
+</script>
+
+<style lang="less" scoped>
+  .jeecg-basic-table-form-container {
+    .table-page-search-submitButtons {
+      display: block;
+      margin-bottom: 24px;
+      white-space: nowrap;
+    }
+    .query-group-cust{
+      width: calc(50% - 15px);
+      min-width: 100px !important;
+    }
+    .query-group-split-cust{
+      width: 30px;
+      display: inline-block;
+      text-align: center
+    }
+  }
+</style>

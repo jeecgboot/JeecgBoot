@@ -1,0 +1,117 @@
+import {defHttp} from '/@/utils/http/axios';
+import {Modal} from 'ant-design-vue';
+
+enum Api {
+  list = '/${entityPackage}/${entityName?uncap_first}/list',
+  save='/${entityPackage}/${entityName?uncap_first}/add',
+  edit='/${entityPackage}/${entityName?uncap_first}/edit',
+  deleteOne = '/${entityPackage}/${entityName?uncap_first}/delete',
+  deleteBatch = '/${entityPackage}/${entityName?uncap_first}/deleteBatch',
+  importExcel = '/${entityPackage}/${entityName?uncap_first}/importExcel',
+  exportXls = '/${entityPackage}/${entityName?uncap_first}/exportXls',
+<#list subTables as sub><#rt/>
+  ${sub.entityName?uncap_first}List = '/${entityPackage}/${entityName?uncap_first}/list${sub.entityName}ByMainId',
+  ${sub.entityName?uncap_first}Save='/${entityPackage}/${entityName?uncap_first}/add${sub.entityName}',
+  ${sub.entityName?uncap_first}Edit='/${entityPackage}/${entityName?uncap_first}/edit${sub.entityName}',
+  ${sub.entityName?uncap_first}Delete = '/${entityPackage}/${entityName?uncap_first}/delete${sub.entityName}',
+  ${sub.entityName?uncap_first}DeleteBatch = '/${entityPackage}/${entityName?uncap_first}/deleteBatch${sub.entityName}',
+</#list>
+}
+/**
+ * 导出api
+ * @param params
+ */
+export const getExportUrl = Api.exportXls;
+
+/**
+ * 导入api
+ */
+export const getImportUrl = Api.importExcel;
+
+/**
+ * 列表接口
+ * @param params
+ */
+export const list = (params) =>
+  defHttp.get({url: Api.list, params});
+
+/**
+ * 删除单个
+ * @param params
+ * @param handleSuccess
+ */
+export const deleteOne = (params,handleSuccess) => {
+  return defHttp.delete({url: Api.deleteOne, params}, {joinParamsToUrl: true}).then(() => {
+    handleSuccess();
+  });
+}
+/**
+ * 批量删除
+ * @param params
+ * @param handleSuccess
+ */
+export const batchDelete = (params, handleSuccess) => {
+  Modal.confirm({
+    title: '确认删除',
+    content: '是否删除选中数据',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: () => {
+      return defHttp.delete({url: Api.deleteBatch, data: params}, {joinParamsToUrl: true}).then(() => {
+        handleSuccess();
+      });
+    }
+  });
+}
+/**
+ * 保存或者更新
+ * @param params
+ * @param isUpdate 是否是更新数据
+ */
+export const saveOrUpdate = (params, isUpdate) => {
+  let url = isUpdate ? Api.edit : Api.save;
+  return defHttp.post({url: url, params});
+}
+
+<#list subTables as sub><#rt/>
+/**
+ * 列表接口
+ * @param params
+ */
+export const ${sub.entityName?uncap_first}List = (params) =>
+  defHttp.get({url: Api.${sub.entityName?uncap_first}List, params});
+
+/**
+ * 删除单个
+ */
+export const ${sub.entityName?uncap_first}Delete = (params,handleSuccess) => {
+  return defHttp.delete({url: Api.${sub.entityName?uncap_first}Delete, params}, {joinParamsToUrl: true}).then(() => {
+    handleSuccess();
+  });
+}
+/**
+ * 批量删除
+ * @param params
+ */
+export const  ${sub.entityName?uncap_first}DeleteBatch = (params, handleSuccess) => {
+  Modal.confirm({
+    title: '确认删除',
+    content: '是否删除选中数据',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: () => {
+      return defHttp.delete({url: Api. ${sub.entityName?uncap_first}DeleteBatch, data: params}, {joinParamsToUrl: true}).then(() => {
+        handleSuccess();
+      });
+    }
+  });
+}
+/**
+ * 保存或者更新
+ * @param params
+ */
+export const ${sub.entityName?uncap_first}Save = (params, isUpdate) => {
+  let url = isUpdate ? Api.${sub.entityName?uncap_first}Edit : Api.${sub.entityName?uncap_first}Save;
+  return defHttp.post({url: url, params});
+}
+</#list>

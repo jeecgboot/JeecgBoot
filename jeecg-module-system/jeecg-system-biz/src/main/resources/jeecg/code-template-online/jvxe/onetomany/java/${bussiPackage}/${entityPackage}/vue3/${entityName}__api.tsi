@@ -1,0 +1,75 @@
+import {defHttp} from '/@/utils/http/axios';
+import { useMessage } from "/@/hooks/web/useMessage";
+
+const { createConfirm } = useMessage();
+
+enum Api {
+  list = '/${entityPackage}/${entityName?uncap_first}/list',
+  save='/${entityPackage}/${entityName?uncap_first}/add',
+  edit='/${entityPackage}/${entityName?uncap_first}/edit',
+  deleteOne = '/${entityPackage}/${entityName?uncap_first}/delete',
+  deleteBatch = '/${entityPackage}/${entityName?uncap_first}/deleteBatch',
+  importExcel = '/${entityPackage}/${entityName?uncap_first}/importExcel',
+  exportXls = '/${entityPackage}/${entityName?uncap_first}/exportXls',
+<#list subTables as sub><#rt/>
+  ${sub.entityName?uncap_first}List = '/${entityPackage}/${entityName?uncap_first}/query${sub.entityName}ByMainId',
+</#list>
+}
+/**
+ * 导出api
+ * @param params
+ */
+export const getExportUrl = Api.exportXls;
+
+/**
+ * 导入api
+ */
+export const getImportUrl = Api.importExcel;
+<#list subTables as sub><#rt/>
+/**
+ * 查询子表数据
+ * @param params
+ */
+export const ${sub.entityName?uncap_first}List = Api.${sub.entityName?uncap_first}List;
+</#list>
+/**
+ * 列表接口
+ * @param params
+ */
+export const list = (params) =>
+  defHttp.get({url: Api.list, params});
+
+/**
+ * 删除单个
+ */
+export const deleteOne = (params,handleSuccess) => {
+  return defHttp.delete({url: Api.deleteOne, params}, {joinParamsToUrl: true}).then(() => {
+    handleSuccess();
+  });
+}
+/**
+ * 批量删除
+ * @param params
+ */
+export const batchDelete = (params, handleSuccess) => {
+  createConfirm({
+    iconType: 'warning',
+    title: '确认删除',
+    content: '是否删除选中数据',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: () => {
+      return defHttp.delete({url: Api.deleteBatch, data: params}, {joinParamsToUrl: true}).then(() => {
+        handleSuccess();
+      });
+    }
+  });
+}
+/**
+ * 保存或者更新
+ * @param params
+ */
+export const saveOrUpdate = (params, isUpdate) => {
+  let url = isUpdate ? Api.edit : Api.save;
+  return defHttp.post({url: url, params});
+}

@@ -1,0 +1,41 @@
+<#assign hasChildrenField = "">
+<#assign pidFieldName = "">
+<#assign textFieldName = "">
+<#list originalColumns as po>
+  <#if po.fieldDbName == tableVo.extendParams.hasChildren>
+    <#assign hasChildrenField = po.fieldName>
+  </#if>
+  <#-- begin 【vue3专用】 -->
+  <#if po.fieldDbName == tableVo.extendParams.pidField>
+    <#assign pidFieldName = po.fieldName>
+  </#if>
+  <#if po.fieldDbName == tableVo.extendParams.textField>
+    <#assign textFieldName = po.fieldName>
+  </#if>
+  <#-- end 【vue3专用】 -->
+</#list>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${bussiPackage}.${entityPackage}.mapper.${entityName}Mapper">
+
+	<update id="updateTreeNodeStatus" parameterType="java.lang.String">
+		update ${tableName} set ${Format.humpToUnderline(hasChildrenField)} = ${r'#'}{status} where id = ${r'#'}{id}
+	</update>
+
+  	<!-- 【vue3专用】 -->
+	<select id="queryListByPid" parameterType="java.lang.Object" resultType="org.jeecg.common.system.vo.SelectTreeModel">
+		select
+		  id as "key",
+		  ${textFieldName} as "title",
+		  (case when ${Format.humpToUnderline(hasChildrenField)} = '1' then 0 else 1 end) as isLeaf,
+		  ${pidFieldName} as parentId
+		from ${tableName}
+		where ${pidFieldName} = ${r'#'}{pid}
+		<if test="query != null">
+			<foreach collection="query.entrySet()" item="value" index="key">
+				and ${r'$'}{key} = ${r'#'}{value}
+			</foreach>
+		</if>
+	</select>
+
+</mapper>

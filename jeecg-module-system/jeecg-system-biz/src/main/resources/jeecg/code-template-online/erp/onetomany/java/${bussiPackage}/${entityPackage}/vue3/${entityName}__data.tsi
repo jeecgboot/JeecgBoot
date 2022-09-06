@@ -1,0 +1,632 @@
+<#include "/common/utils.ftl">
+import {BasicColumn} from '/@/components/Table';
+import {FormSchema} from '/@/components/Table';
+import { rules} from '/@/utils/helper/validator';
+import { render } from '/@/utils/common/renderUtils';
+//列表数据
+export const columns: BasicColumn[] = [
+ <#list columns as po>
+   <#if po.isShowList =='Y' && po.fieldName !='id'>
+   {
+    title: '${po.filedComment}',
+    align:"center",
+    <#if po.sort=='Y'>
+    sorter: true,
+   </#if>
+    <#if po.classType=='date'>
+    dataIndex: '${po.fieldName}',
+    customRender:({text}) =>{
+      return !text?"":(text.length>10?text.substr(0,10):text)
+    },
+    <#elseif po.fieldDbType=='Blob'>
+    dataIndex: '${po.fieldName}String'
+    <#elseif po.classType=='umeditor'>
+    dataIndex: '${po.fieldName}',
+    slots: { customRender: 'htmlSlot' },
+    <#elseif po.classType=='pca'>
+    dataIndex: '${po.fieldName}',
+    slots: { customRender: 'pcaSlot' },
+   <#elseif po.classType=='file'>
+    dataIndex: '${po.fieldName}',
+    slots: { customRender: 'fileSlot' },
+   <#elseif po.classType=='image'>
+    dataIndex: '${po.fieldName}',
+    customRender:render.renderImage,
+   <#elseif po.classType=='switch'>
+    dataIndex: '${po.fieldName}',
+<#assign switch_extend_arr=['Y','N']>
+<#if po.dictField?default("")?contains("[")>
+<#assign switch_extend_arr=po.dictField?eval>
+</#if>
+<#list switch_extend_arr as a>
+<#if a_index == 0>
+<#assign switch_extend_arr1=a>
+<#else>
+<#assign switch_extend_arr2=a>
+</#if>
+</#list>
+    customRender:({text}) => {
+       return  render.renderSwitch(text, [{text:'是',value:'${switch_extend_arr1}'},{text:'否',value:'${switch_extend_arr2}'}])
+     },
+   <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
+    dataIndex: '${po.fieldName}_dictText'
+   <#elseif po.classType=='cat_tree'>
+    dataIndex: '${po.fieldName}',
+    <#if po.dictText?default("")?trim?length == 0>
+    customRender:({text}) => {
+       return  render.renderCategoryTree(text,'${po.dictField?default("")}')
+   },
+   <#else>
+    customRender: (text, record) => (text ? record['${po.dictText}'] : '')
+   </#if>
+   <#else>
+    dataIndex: '${po.fieldName}'
+   </#if>
+   },
+   </#if>
+ </#list>
+];
+//查询数据
+export const searchFormSchema: FormSchema[] = [
+<#-- 开始循环 -->
+<#list columns as po>
+<#if po.isQuery=='Y'>
+<#assign query_flag=true>
+	<#assign query_field_dictCode="">
+	<#if po.dictTable?default("")?trim?length gt 1>
+	    <#assign query_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+    <#elseif po.dictField?default("")?trim?length gt 1>
+        <#assign query_field_dictCode="${po.dictField}">
+    </#if>
+<#if po.queryMode=='single'>
+	{
+      label: "${po.filedComment}",
+      field: "${po.fieldName}",
+<#if po.classType=='sel_search'>
+      component: 'JSearchSelect',
+      componentProps:{
+         dict:"${po.dictTable},${po.dictText},${po.dictField}"
+      },
+<#elseif po.classType=='sel_user'>
+      component: 'JSelectUserByDept',
+<#elseif po.classType=='switch'>
+      component: 'JSwitch',
+      componentProps:{
+           query:true,
+           <#if po.dictField != 'is_open'>
+           options:${po.dictField}
+           </#if>
+       },
+ <#elseif po.classType=='sel_depart'>
+      component: 'JSelectDept',
+ <#elseif po.classType=='list_multi'>
+      component: 'JSelectMultiple',
+      componentProps:{
+     <#if po.dictTable?default("")?trim?length gt 1>
+        dictCode:"${po.dictTable},${po.dictText},${po.dictField}",
+     <#elseif po.dictField?default("")?trim?length gt 1>
+        dictCode:"${po.dictField}",
+     </#if>
+        triggerChange: true
+     },
+ <#elseif po.classType=='cat_tree'>
+      component: 'JCategorySelect',
+      componentProps:{
+          pcode:"${po.dictField?default("")}",//back和事件未添加，暂时有问题
+      },
+<#elseif po.classType=='date'>
+      component: 'DatePicker',
+<#elseif po.classType=='datetime'>
+      component: 'DatePicker',
+      componentProps: {
+         showTime:true,
+         valueFormat: 'YYYY-MM-DD HH:mm:ss'
+       },
+<#elseif po.classType=='pca'>
+      component: 'JAreaLinkage',
+<#elseif po.classType=='popup'>
+    <#include "/common/form/vue3popup.ftl">
+<#elseif po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
+<#--  ---------------------------下拉或是单选 判断数据字典是表字典还是普通字典------------------------------- -->
+      component: 'JDictSelectTag',
+      componentProps:{
+       <#if po.dictTable?default("")?trim?length gt 1>
+          dictCode:"${po.dictTable},${po.dictText},${po.dictField}"
+       <#elseif po.dictField?default("")?trim?length gt 1>
+          dictCode:"${po.dictField}"
+        </#if>
+      },
+<#else>
+      component: 'Input',
+</#if>
+      colProps: {span: 6},
+ 	},
+<#else>
+     {
+      label: "${po.filedComment}",
+      field: "${po.fieldName}",
+<#if po.classType=='date'>
+      component: 'RangePicker',
+<#elseif po.classType=='datetime'>
+      component: 'RangePicker',
+      componentProps: {
+          showTime:true
+      },
+<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+      component: 'JRangeNumber',
+<#else>
+      component: 'Input', //TODO 范围查询
+</#if>
+      colProps: {span: 6},
+	},
+</#if>
+</#if>
+</#list>
+<#-- 结束循环 -->
+];
+
+//表单数据
+export const formSchema: FormSchema[] = [
+<#assign form_cat_tree = false>
+<#assign form_cat_back = "">
+<#assign bpm_flag=false>
+<#assign id_exists = false>
+<#list columns as po><#rt/>
+<#if po.fieldDbName=='bpm_status'>
+  <#assign bpm_flag=true>
+</#if>
+<#if po.fieldDbName == 'id'>
+	<#assign id_exists = true>
+</#if>
+<#if po.isShow =='Y'>
+<#assign form_field_dictCode="">
+	<#if po.dictTable?default("")?trim?length gt 1 && po.dictText?default("")?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
+		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+	<#elseif po.dictField?default("")?trim?length gt 1>
+		<#assign form_field_dictCode="${po.dictField}">
+	</#if>
+  {
+    label: '${po.filedComment}',
+    field: ${autoStringSuffix(po)},
+<#-- update-begin-author:taoyan date:2022-6-24 for: VUEN-1190【代码生成】默认值未生成 -->
+  <#if po.defaultVal??>
+    <#if po.fieldDbType=="BigDecimal" || po.fieldDbType=="double" || po.fieldDbType=="int">
+    defaultValue: ${po.defaultVal},
+    <#else>
+    defaultValue: "${po.defaultVal}",
+    </#if>
+  </#if>
+<#-- update-end-author:taoyan date:2022-6-24 for: VUEN-1190【代码生成】默认值未生成 -->
+    <#if po.classType =='date'>
+    component: 'DatePicker',
+     <#elseif po.classType =='datetime'>
+    component: 'DatePicker',
+    componentProps: {
+       showTime:true,
+       valueFormat: 'YYYY-MM-DD HH:mm:ss'
+     },
+     <#elseif po.classType =='time'>
+    component: 'TimePicker',
+    componentProps: {
+      valueFormat: 'HH:mm:ss'
+    },
+    <#elseif po.classType =='popup'>
+    <#include "/common/form/vue3popup.ftl">
+     <#elseif po.classType =='sel_depart'>
+     component: 'JSelectDept',
+     <#elseif po.classType =='switch'>
+     component: 'JSwitch',
+     componentProps:{
+         <#if po.dictField != 'is_open'>
+         options:${po.dictField}
+         </#if>
+     },
+     <#elseif po.classType =='pca'>
+    component: 'JAreaLinkage',
+    <#elseif po.classType =='markdown'>
+    component: 'JMarkdownEditor',//注意string转换问题
+     <#elseif po.classType =='password'>
+    component: 'InputPassword',
+     <#elseif po.classType =='sel_user'>
+    component: 'JSelectUserByDept',
+    componentProps:{
+        labelKey:'realname',
+     },
+    <#elseif po.classType =='textarea'>
+    component: 'InputTextArea',//TODO 注意string转换问题
+    <#elseif po.classType=='list' || po.classType=='radio'>
+    component: 'JDictSelectTag',
+    componentProps:{
+        dictCode:"${form_field_dictCode}"
+     },
+    <#elseif po.classType=='list_multi' || po.classType=='checkbox'>
+    component: 'JSelectMultiple',
+    componentProps:{
+        dictCode:"${form_field_dictCode}"
+     },
+    <#elseif po.classType=='sel_search'>
+    component: 'JSearchSelect',
+    componentProps:{
+       dict:"${form_field_dictCode}"
+    },
+<#elseif po.classType=='cat_tree'>
+    <#assign form_cat_tree = true>
+    component: 'JCategorySelect',
+    componentProps:{
+       pcode:"${po.dictField?default("")}", //TODO back和事件未添加，暂时有问题
+    },
+    <#if po.dictText?default("")?trim?length gt 1>
+    <#assign form_cat_back = "${po.dictText}">
+    </#if>
+    <#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+    component: 'InputNumber',
+    <#elseif po.classType=='file'>
+    component: 'JUpload',
+    componentProps:{
+    <#if po.uploadnum??>
+       maxCount:${po.uploadnum}
+   </#if>
+     },
+ <#elseif po.classType=='image'>
+     component: 'JImageUpload',
+     componentProps:{
+     <#if po.uploadnum??>
+        fileMax:${po.uploadnum}
+    </#if>
+      },
+  <#elseif po.classType=='umeditor'>
+    component: 'JEditor',
+  <#elseif po.classType == 'sel_tree'>
+    component: 'JTreeSelect',
+    componentProps:{
+        <#if po.dictText??>
+        <#if po.dictText?split(',')[2]?? && po.dictText?split(',')[0]??>
+        dict:"${po.dictTable},${po.dictText?split(',')[2]},${po.dictText?split(',')[0]}",
+        <#elseif po.dictText?split(',')[1]??>
+        pidField:"${po.dictText?split(',')[1]}",
+        <#elseif po.dictText?split(',')[3]??>
+        hasChildField:"${po.dictText?split(',')[3]}",
+        </#if>
+        </#if>
+        pidValue:"${po.dictField}",
+    },
+   <#else>
+    component: 'Input',
+    </#if>
+     <#include "/common/utils.ftl">
+    <#if po.isShow == 'Y' && poHasCheck(po)>
+    dynamicRules: ({model,schema}) => {
+    <#if po.fieldName != 'id'>
+    <#assign fieldValidType = po.fieldValidType!''>
+          return [
+            <#-- 非空校验 -->
+           <#if po.nullable == 'N' || fieldValidType == '*'>
+                 { required: true, message: '请输入${po.filedComment}!'},
+           <#elseif fieldValidType!=''>
+                 { required: false},
+           </#if>
+       <#-- 唯一校验 -->
+           <#if fieldValidType == 'only'>
+                 {...rules.duplicateCheckRule(<#if sub?default("")?trim?length gt 1>'${sub.tableName}'<#else>'${tableName}'</#if>, '${po.fieldDbName}',model,schema)[0]},
+           <#-- 6到16位数字 -->
+           <#elseif fieldValidType == 'n6-16'>
+                 { pattern: /^\d{6,16}$/, message: '请输入6到16位数字!'},
+           <#-- 6到16位任意字符 -->
+           <#elseif fieldValidType == '*6-16'>
+                 { pattern: /^.{6,16}$/, message: '请输入6到16位任意字符!'},
+           <#-- 6到18位字母 -->
+           <#elseif fieldValidType == 's6-18'>
+                 { pattern:/^[a-z|A-Z]{6,18}$/, message: '请输入6到18位字母!'},
+           <#-- 网址 -->
+           <#elseif fieldValidType == 'url'>
+                 { pattern: /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/, message: '请输入正确的网址!'},
+           <#-- 电子邮件 -->
+           <#elseif fieldValidType == 'e'>
+                 { pattern: /^([\w]+\.*)([\w]+)@[\w]+\.\w{3}(\.\w{2}|)$/, message: '请输入正确的电子邮件!'},
+           <#-- 手机号码 -->
+           <#elseif fieldValidType == 'm'>
+                 { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号码!'},
+           <#-- 邮政编码 -->
+           <#elseif fieldValidType == 'p'>
+                 { pattern: /^[0-9]\d{5}$/, message: '请输入正确的邮政编码!'},
+           <#-- 字母 -->
+           <#elseif fieldValidType == 's'>
+                 { pattern: /^[A-Z|a-z]+$/, message: '请输入字母!'},
+           <#-- 数字 -->
+           <#elseif fieldValidType == 'n'>
+                 { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
+           <#-- 整数 -->
+           <#elseif fieldValidType == 'z'>
+                 { pattern: /^-?\d+$/, message: '请输入整数!'},
+           <#-- 金额 -->
+           <#elseif fieldValidType == 'money'>
+                 { pattern: /^(([1-9][0-9]*)|([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2}))$/, message: '请输入正确的金额!'},
+           <#-- 正则校验 -->
+           <#elseif fieldValidType != '' && fieldValidType != '*'>
+                 { pattern: '${fieldValidType}', message: '不符合校验规则!'},
+           <#-- 无校验 -->
+           <#else>
+               <#t>
+           </#if>
+          ];
+     </#if>
+     },
+    </#if>
+    <#if po.readonly=='Y'>
+    dynamicDisabled:true,
+    </#if>
+  },
+</#if>
+</#list>
+<#if id_exists == false>
+	// TODO 主键隐藏字段，目前写死为ID
+	{
+	  label: '',
+	  field: 'id',
+	  component: 'Input',
+	  show: false
+	},
+</#if>
+];
+
+<#list subTables as sub>
+//子表列表数据
+export const ${sub.entityName?uncap_first}Columns: BasicColumn[] = [
+ <#list sub.originalColumns as po>
+   <#if po.isShowList =='Y' && po.fieldName !='id'>
+   {
+    title: '${po.filedComment}',
+    align:"center",
+    <#if po.sort=='Y'>
+    sorter: true,
+   </#if>
+    <#if po.classType=='date'>
+    dataIndex: '${po.fieldName}',
+    customRender:({text}) =>{
+      return !text?"":(text.length>10?text.substr(0,10):text)
+    },
+    <#elseif po.fieldDbType=='Blob'>
+    dataIndex: '${po.fieldName}String'
+    <#elseif po.classType=='umeditor'>
+    dataIndex: '${po.fieldName}',
+    slots: { customRender: 'htmlSlot' },
+    <#elseif po.classType=='pca'>
+    dataIndex: '${po.fieldName}',
+    slots: { customRender: 'pcaSlot' },
+   <#elseif po.classType=='file'>
+    dataIndex: '${po.fieldName}',
+    slots: { customRender: 'fileSlot' },
+   <#elseif po.classType=='image'>
+    dataIndex: '${po.fieldName}',
+    customRender:render.renderImage,
+   <#elseif po.classType=='switch'>
+    dataIndex: '${po.fieldName}',
+<#assign switch_extend_arr=['Y','N']>
+<#if po.dictField?default("")?contains("[")>
+<#assign switch_extend_arr=po.dictField?eval>
+</#if>
+<#list switch_extend_arr as a>
+<#if a_index == 0>
+<#assign switch_extend_arr1=a>
+<#else>
+<#assign switch_extend_arr2=a>
+</#if>
+</#list>
+    customRender:({text}) => {
+       return  render.renderSwitch(text, [{text:'是',value:'${switch_extend_arr1}'},{text:'否',value:'${switch_extend_arr2}'}])
+     },
+   <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
+    dataIndex: '${po.fieldName}_dictText'
+   <#elseif po.classType=='cat_tree'>
+    dataIndex: '${po.fieldName}',
+    <#if po.dictText?default("")?trim?length == 0>
+    customRender:({text}) => {
+       return  render.renderCategoryTree(text,'${po.dictField?default("")}')
+   },
+   <#else>
+    customRender: ({text, record}) => (text ? record['${po.dictText}'] : '')
+   </#if>
+   <#else>
+    dataIndex: '${po.fieldName}'
+   </#if>
+   },
+   </#if>
+ </#list>
+];
+//子表表单数据
+export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
+<#assign form_cat_tree = false>
+<#assign form_cat_back = "">
+<#assign bpm_flag=false>
+<#list sub.originalColumns as po><#rt/>
+<#if po.fieldName == 'id'>
+  // TODO 子表隐藏字段，目前写死为ID
+  {
+    label: '',
+    field: 'id',
+    component: 'Input',
+    show: false
+  },
+</#if>
+<#if po.isShow =='Y'>
+<#assign form_field_dictCode="">
+	<#if po.dictTable?default("")?trim?length gt 1 && po.dictText?default("")?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
+		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+	<#elseif po.dictField?default("")?trim?length gt 1>
+		<#assign form_field_dictCode="${po.dictField}">
+	</#if>
+  {
+    label: '${po.filedComment}',
+    field: ${autoStringSuffix(po)},
+<#-- update-begin-author:taoyan date:2022-6-24 for: VUEN-1190【代码生成】默认值未生成 -->
+  <#if po.defaultVal??>
+    <#if po.fieldDbType=="BigDecimal" || po.fieldDbType=="double" || po.fieldDbType=="int">
+    defaultValue: ${po.defaultVal},
+    <#else>
+    defaultValue: "${po.defaultVal}",
+    </#if>
+  </#if>
+<#-- update-end-author:taoyan date:2022-6-24 for: VUEN-1190【代码生成】默认值未生成 -->
+    <#if po.classType =='date'>
+    component: 'DatePicker',
+     <#elseif po.classType =='datetime'>
+    component: 'DatePicker',
+    componentProps: {
+       showTime:true,
+       valueFormat: 'YYYY-MM-DD HH:mm:ss'
+     },
+     <#elseif po.classType =='time'>
+    component: 'TimePicker',
+    componentProps: {
+      valueFormat: 'HH:mm:ss'
+    },
+    <#elseif po.classType =='popup'>
+    <#include "/common/form/vue3popup.ftl">
+     <#elseif po.classType =='sel_depart'>
+     component: 'JSelectDept',
+     <#elseif po.classType =='switch'>
+     component: 'JSwitch',
+     componentProps:{
+         <#if po.dictField != 'is_open'>
+         options:${po.dictField}
+         </#if>
+     },
+     <#elseif po.classType =='pca'>
+    component: 'JAreaLinkage',
+    <#elseif po.classType =='markdown'>
+    component: 'JMarkdownEditor',//注意string转换问题
+     <#elseif po.classType =='password'>
+    component: 'InputPassword',
+     <#elseif po.classType =='sel_user'>
+    component: 'JSelectUserByDept',
+    componentProps:{
+        labelKey:'realname',
+     },
+    <#elseif po.classType =='textarea'>
+    component: 'InputTextArea',
+    <#elseif po.classType=='list' || po.classType=='radio'>
+    component: 'JDictSelectTag',
+    componentProps:{
+        dictCode:"${form_field_dictCode}"
+     },
+    <#elseif po.classType=='list_multi' || po.classType=='checkbox'>
+    component: 'JSelectMultiple',
+    componentProps:{
+        dictCode:"${form_field_dictCode}"
+     },
+    <#elseif po.classType=='sel_search'>
+    component: 'JSearchSelect',
+    componentProps:{
+       dict:"${form_field_dictCode}"
+    },
+<#elseif po.classType=='cat_tree'>
+    <#assign form_cat_tree = true>
+    component: 'JCategorySelect',
+    componentProps:{
+       pcode:"${po.dictField?default("")}", //TODO back和事件未添加，暂时有问题
+    },
+    <#if po.dictText?default("")?trim?length gt 1>
+    <#assign form_cat_back = "${po.dictText}">
+    </#if>
+    <#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+    component: 'InputNumber',
+    <#elseif po.classType=='file'>
+    component: 'JUpload',
+    componentProps:{
+    <#if po.uploadnum??>
+       maxCount:${po.uploadnum}
+   </#if>
+     },
+ <#elseif po.classType=='image'>
+     component: 'JImageUpload',
+     componentProps:{
+     <#if po.uploadnum??>
+        fileMax:${po.uploadnum}
+    </#if>
+      },
+  <#elseif po.classType=='umeditor'>
+    component: 'JEditor',
+  <#elseif po.classType == 'sel_tree'>
+    component: 'JTreeSelect',
+    componentProps:{
+        <#if po.dictText??>
+        <#if po.dictText?split(',')[2]?? && po.dictText?split(',')[0]??>
+        dict:"${po.dictTable},${po.dictText?split(',')[2]},${po.dictText?split(',')[0]}",
+        <#elseif po.dictText?split(',')[1]??>
+        pidField:"${po.dictText?split(',')[1]}",
+        <#elseif po.dictText?split(',')[3]??>
+        hasChildField:"${po.dictText?split(',')[3]}",
+        </#if>
+        </#if>
+        pidValue:"${po.dictField}",
+    },
+   <#else>
+    component: 'Input',
+    </#if>
+     <#include "/common/utils.ftl">
+    <#if po.isShow == 'Y' && poHasCheck(po)>
+    dynamicRules: ({model,schema}) => {
+    <#if po.fieldName != 'id'>
+    <#assign fieldValidType = po.fieldValidType!''>
+          return [
+            <#-- 非空校验 -->
+           <#if po.nullable == 'N' || fieldValidType == '*'>
+                 { required: true, message: '请输入${po.filedComment}!'},
+           <#elseif fieldValidType!=''>
+                 { required: false},
+           </#if>
+       <#-- 唯一校验 -->
+           <#if fieldValidType == 'only'>
+                 {...rules.duplicateCheckRule(<#if sub?default("")?trim?length gt 1>'${sub.tableName}'<#else>'${tableName}'</#if>, '${po.fieldDbName}',model,schema)[0]},
+           <#-- 6到16位数字 -->
+           <#elseif fieldValidType == 'n6-16'>
+                 { pattern: /^\d{6,16}$/, message: '请输入6到16位数字!'},
+           <#-- 6到16位任意字符 -->
+           <#elseif fieldValidType == '*6-16'>
+                 { pattern: /^.{6,16}$/, message: '请输入6到16位任意字符!'},
+           <#-- 6到18位字母 -->
+           <#elseif fieldValidType == 's6-18'>
+                 { pattern: /^[a-z|A-Z]{6,18}$/, message: '请输入6到18位字母!'},
+           <#-- 网址 -->
+           <#elseif fieldValidType == 'url'>
+                 { pattern: /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/, message: '请输入正确的网址!'},
+           <#-- 电子邮件 -->
+           <#elseif fieldValidType == 'e'>
+                 { pattern: /^([\w]+\.*)([\w]+)@[\w]+\.\w{3}(\.\w{2}|)$/, message: '请输入正确的电子邮件!'},
+           <#-- 手机号码 -->
+           <#elseif fieldValidType == 'm'>
+                 { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号码!'},
+           <#-- 邮政编码 -->
+           <#elseif fieldValidType == 'p'>
+                 { pattern: /^[0-9]\d{5}$/, message: '请输入正确的邮政编码!'},
+           <#-- 字母 -->
+           <#elseif fieldValidType == 's'>
+                 { pattern: /^[A-Z|a-z]+$/, message: '请输入字母!'},
+           <#-- 数字 -->
+           <#elseif fieldValidType == 'n'>
+                 { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
+           <#-- 整数 -->
+           <#elseif fieldValidType == 'z'>
+                 { pattern: /^-?\d+$/, message: '请输入整数!'},
+           <#-- 金额 -->
+           <#elseif fieldValidType == 'money'>
+                 { pattern: /^(([1-9][0-9]*)|([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2}))$/, message: '请输入正确的金额!'},
+           <#-- 正则校验 -->
+           <#elseif fieldValidType != '' && fieldValidType != '*'>
+                 { pattern: '${fieldValidType}', message: '不符合校验规则!'},
+           <#-- 无校验 -->
+           <#else>
+               <#t>
+           </#if>
+          ];
+     </#if>
+     },
+    </#if>
+    <#if po.readonly=='Y'>
+    dynamicDisabled:true,
+    </#if>
+  },
+</#if>
+</#list>
+];
+</#list>

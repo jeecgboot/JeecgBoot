@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysCategoryMapper">
+
+	<select id="queryListByPid" parameterType="Object" resultType="org.jeecg.modules.system.model.TreeSelectModel">
+		select code,
+			   name as "title",
+			   id as "key",
+			   (case when has_child = '1' then 0 else 1 end) as isLeaf,
+			   pid as parentId
+			   from sys_category
+			where pid = #{pid}
+			<if test="query!= null">
+				<if test="query.code !=null and query.code != ''">
+					and code = #{query.code}
+				</if>
+
+				<if test="query.name !=null and query.name != ''">
+					and name = #{query.name}
+				</if>
+
+				<if test="query.id !=null and query.id != ''">
+					and id = #{query.id}
+				</if>
+
+				<if test="query.createBy !=null and query.createBy != ''">
+					and create_by = #{query.createBy}
+				</if>
+
+				<if test="query.sysOrgCode !=null and query.sysOrgCode != ''">
+					and sys_org_code = #{query.sysOrgCode}
+				</if>
+			</if>
+	</select>
+
+
+</mapper>

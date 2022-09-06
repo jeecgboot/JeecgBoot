@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysPermissionMapper">
+
+
+	<resultMap id="TreeModel" type="org.jeecg.modules.system.model.TreeModel" >
+		<result column="id" property="key" jdbcType="VARCHAR"/>
+		<result column="name" property="title" jdbcType="VARCHAR"/>
+		<result column="icon" property="icon" jdbcType="VARCHAR"/>
+		<result column="parent_id" property="parentId" jdbcType="VARCHAR"/>
+		<result column="is_leaf" property="isLeaf" jdbcType="INTEGER"/>
+	</resultMap>
+	
+	<!-- 通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap id="SysPermission" type="org.jeecg.modules.system.entity.SysPermission">
+	   <!-- result属性映射非匹配字段 -->
+	    <result column="is_route" property="route"/>
+	    <result column="keep_alive" property="keepAlive"/>
+	    <result column="is_leaf" property="leaf"/>
+	</resultMap>
+	
+	
+	<select id="queryListByParentId" parameterType="Object"  resultMap="TreeModel">
+		   SELECT   
+                   id
+                   ,parent_id
+                   ,name
+                   ,icon
+                   ,is_leaf
+		   FROM   sys_permission
+		   WHERE 1=1
+		    <choose>
+		   		<when test="parentId != null and parentId != ''">
+		   			AND parent_id =  #{parentId,jdbcType=VARCHAR}
+		   		</when>
+		   		<otherwise>
+		   			AND parent_id is null
+		   		</otherwise>
+		    </choose>
+	</select>
+	
+	<!-- 获取登录用户拥有的权限 -->
+	<select id="queryByUser" parameterType="Object"  resultMap="SysPermission">
+		   SELECT * FROM (
+			   SELECT p.*
+			   FROM  sys_permission p
+			   WHERE (exists(
+						select a.id from sys_role_permission a
+						join sys_role b on a.role_id = b.id
+						join sys_user_role c on c.role_id = b.id
+						join sys_user d on d.id = c.user_id
+						where p.id = a.permission_id AND d.username = #{username,jdbcType=VARCHAR}
+					)
+					or (p.url like '%:code' and p.url like '/online%' and p.hidden = 1)
+					or p.url = '/online')
+			   and p.del_flag = 0
+			<!--update begin Author:lvdandan  Date:20200213 for：加入部门权限 -->
+			   UNION
+			   SELECT p.*
+			   FROM  sys_permission p
+			   WHERE exists(
+					select a.id from sys_depart_role_permission a
+					join sys_depart_role b on a.role_id = b.id
+					join sys_depart_role_user c on c.drole_id = b.id
+					join sys_user d on d.id = c.user_id
+					where p.id = a.permission_id AND d.username = #{username,jdbcType=VARCHAR}
+			   )
+			   and p.del_flag = 0
+			<!--update end Author:lvdandan  Date:20200213 for：加入部门权限 -->
+		   ) h order by h.sort_no ASC
+	</select>
+
+
+	<!-- 根据用户账号查询菜单权限 -->
+	<select id="queryCountByUsername" parameterType="Object" resultType="int">
+		select sum(cnt) from (
+		  select count(*) as cnt
+			from sys_role_permission a
+			join sys_permission b on a.permission_id = b.id
+			join sys_role c on a.role_id = c.id
+			join sys_user_role d on d.role_id = c.id
+			join sys_user e on d.user_id = e.id
+			where e.username = #{username}
+			<if test="permission.id !=null and permission.id != ''">
+				and b.id =  #{permission.id}
+			</if>
+			<if test="permission.url !=null and permission.url != ''">
+				and b.url =  #{permission.url}
+			</if>
+		union all
+		  select count(*) as cnt
+			from sys_permission z
+		    join sys_depart_role_permission y on z.id = y.permission_id
+			join sys_depart_role x on y.role_id = x.id
+			join sys_depart_role_user w on w.drole_id = x.id
+			join sys_user v on w.user_id = v.id
+			where v.username = #{username}
+			<if test="permission.id !=null and permission.id != ''">
+				and z.id =  #{permission.id}
+			</if>
+			<if test="permission.url !=null and permission.url != ''">
+				and z.url =  #{permission.url}
+			</if>
+		) temp
+	</select>
+	
+
+</mapper>

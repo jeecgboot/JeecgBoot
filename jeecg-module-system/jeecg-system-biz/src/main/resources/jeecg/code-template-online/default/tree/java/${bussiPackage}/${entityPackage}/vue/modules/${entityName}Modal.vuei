@@ -1,0 +1,246 @@
+<#include "/common/utils.ftl">
+<template>
+  <j-modal
+    :title="title"
+    :width="width"
+    :visible="visible"
+    :confirmLoading="confirmLoading"
+    switchFullscreen
+    @ok="handleOk"
+    @cancel="handleCancel"
+    cancelText="关闭">
+    <a-spin :spinning="confirmLoading">
+      <a-form-model ref="form" :model="model" :rules="validatorRules">
+<#assign pidFieldName = "">
+<#assign form_popup = false>
+<#assign form_cat_tree = false>
+<#assign form_cat_back = "">
+<#list columns as po>
+<#if po.isShow =='Y'>
+<#assign form_field_dictCode="">
+	<#if po.dictTable?default("")?trim?length gt 1 && po.dictText?default("")?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
+		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+	<#elseif po.dictField?default("")?trim?length gt 1>
+		<#assign form_field_dictCode="${po.dictField}">
+	</#if>
+        <a-form-model-item label="${po.filedComment}" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="${autoStringSuffixForModel(po)}">
+	<#if po.fieldDbName == tableVo.extendParams.pidField>
+		<#assign pidFieldName = po.fieldName>
+          <j-tree-select
+            ref="treeSelect"
+            placeholder="请选择${po.filedComment}"
+            v-model="model.${po.fieldName}"
+            dict="${tableVo.tableName},${tableVo.extendParams.textField},id"
+            pidField="${tableVo.extendParams.pidField}"
+            pidValue="0"
+            hasChildField="${tableVo.extendParams.hasChildren}"
+            <#if po.readonly=='Y'>disabled</#if>>
+          </j-tree-select>
+	<#elseif po.classType =='date'>
+          <j-date placeholder="请选择${po.filedComment}" v-model="model.${po.fieldName}" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType =='datetime'>
+          <j-date placeholder="请选择${po.filedComment}" v-model="model.${po.fieldName}" :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType =='time'>
+          <j-time placeholder="请选择${po.filedComment}" v-model="model.${po.fieldName}" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType =='switch'>
+          <j-switch v-model="model.${po.fieldName}" <#if po.dictField != 'is_open'>:options="${po.dictField}"</#if>></j-switch>
+	<#elseif po.classType =='popup'>
+	     <#assign form_popup=true>
+          <j-popup
+            v-model="model.${po.fieldName}"
+            field="${po.fieldName}"
+            org-fields="${po.dictField}"
+            dest-fields="${Format.underlineToHump(po.dictText)}"
+            code="${po.dictTable}"
+            :multi="${po.extendParams.popupMulti?c}"
+            @input="popupCallback"
+            <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType =='sel_depart'>
+          <j-select-depart v-model="model.${po.fieldName}" :multi="${po.extendParams.multi?default('true')}"<#if po.extendParams.store?default("")?trim?length gt 0> store="${po.extendParams.store}"</#if><#if po.extendParams.text?default("")?trim?length gt 0> text="${po.extendParams.text}"</#if> <#if po.readonly=='Y'>disabled</#if> />
+	<#elseif po.classType =='sel_user'>
+          <j-select-user-by-dep v-model="model.${po.fieldName}" :multi="${po.extendParams.multi?default('true')}"<#if po.extendParams.store?default("")?trim?length gt 0> store="${po.extendParams.store}"</#if><#if po.extendParams.text?default("")?trim?length gt 0> text="${po.extendParams.text}"</#if> <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType =='textarea'>
+          <a-textarea v-model="model.${autoStringSuffixForModel(po)}" rows="4" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType=='list' || po.classType=='radio'>
+          <j-dict-select-tag type="${po.classType}" v-model="model.${po.fieldName}"  dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType=='list_multi' || po.classType=='checkbox'>
+          <j-multi-select-tag type="${po.classType}" v-model="model.${po.fieldName}"  dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+          <a-input-number v-model="model.${po.fieldName}" placeholder="请输入${po.filedComment}" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
+	<#elseif po.classType=='file'>
+          <j-upload v-model="model.${po.fieldName}"  <#if po.readonly=='Y'>disabled</#if> <#if po.uploadnum??>:number=${po.uploadnum}</#if>></j-upload>
+	<#elseif po.classType=='image'>
+          <j-image-upload isMultiple <#if po.uploadnum??>:number=${po.uploadnum}</#if> v-model="model.${po.fieldName}" <#if po.readonly=='Y'>disabled</#if>></j-image-upload>
+  <#elseif po.classType=='sel_search'>
+          <j-search-select-tag v-model="model.${po.fieldName}" dict="${form_field_dictCode}" <#if po.readonly=='Y'>disabled</#if> />
+	<#elseif po.classType=='cat_tree'>
+      <#assign form_cat_tree = true>
+          <j-category-select v-model="model.${po.fieldName}" pcode="${po.dictField?default("")}" placeholder="请选择${po.filedComment}" <#if po.dictText?default("")?trim?length gt 1>back="${dashedToCamel(po.dictText)}" @change="handleCategoryChange"</#if> <#if po.readonly=='Y'>disabled</#if>/>
+      <#if po.dictText?default("")?trim?length gt 1>
+      <#assign form_cat_back = "${po.dictText}">
+      </#if>
+  <#elseif po.classType =='pca'>
+          <j-area-linkage type="cascader" v-model="model.${po.fieldName}" placeholder="请输入省市区" <#if po.readonly=='Y'>disabled</#if> />
+	<#elseif po.classType=='umeditor'>
+          <j-editor v-model="model.${autoStringSuffixForModel(po)}" <#if po.readonly=='Y'>disabled</#if>/>
+  <#elseif po.classType =='markdown'>
+          <j-markdown-editor v-model="model.${autoStringSuffixForModel(po)}" id="${po.fieldName}"></j-markdown-editor>
+	<#elseif po.classType == 'sel_tree'>
+	          <j-tree-select
+              ref="treeSelect"
+              placeholder="请选择${po.filedComment}"
+              v-model="model.${po.fieldName}"
+              <#if po.dictText??>
+              <#if po.dictText?split(',')[2]?? && po.dictText?split(',')[0]??>
+              dict="${po.dictTable},${po.dictText?split(',')[2]},${po.dictText?split(',')[0]}"
+              <#elseif po.dictText?split(',')[1]??>
+              pidField="${po.dictText?split(',')[1]}"
+              <#elseif po.dictText?split(',')[3]??>
+              hasChildField="${po.dictText?split(',')[3]}"
+              </#if>
+              </#if>
+              pidValue="${po.dictField}"
+              <#if po.readonly=='Y'>disabled</#if>>
+            </j-tree-select>
+	<#else>
+          <a-input v-model="model.${po.fieldName}" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>></a-input>
+    </#if>
+        </a-form-model-item>
+</#if>
+</#list>    
+        
+      </a-form-model>
+    </a-spin>
+  </j-modal>
+</template>
+
+<script>
+
+  import { httpAction } from '@/api/manage'
+  import { validateDuplicateValue } from '@/utils/util'
+  export default {
+    name: "${entityName}Modal",
+    components: { 
+    },
+    data () {
+      return {
+        title:"操作",
+        width:800,
+        visible: false,
+        model:{
+           <#include "/common/init/initValue.ftl">
+         },
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 5 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
+
+        confirmLoading: false,
+        <#include "/common/validatorRulesTemplate/main.ftl">
+        url: {
+          add: "/${entityPackage}/${entityName?uncap_first}/add",
+          edit: "/${entityPackage}/${entityName?uncap_first}/edit",
+        },
+        expandedRowKeys:[],
+        pidField:"${pidFieldName}"
+     
+      }
+    },
+    created () {
+       //备份model原始值
+       this.modelDefault = JSON.parse(JSON.stringify(this.model));
+    },
+    methods: {
+      add (obj) {
+        this.modelDefault.${pidFieldName}=''
+        this.edit(Object.assign(this.modelDefault , obj));
+      },
+      edit (record) {
+        this.model = Object.assign({}, record);
+        this.visible = true;
+      },
+      close () {
+        this.$emit('close');
+        this.visible = false;
+        this.$refs.form.clearValidate()
+      },
+      handleOk () {
+        const that = this;
+        // 触发表单验证
+       this.$refs.form.validate(valid => {
+          if (valid) {
+            that.confirmLoading = true;
+            let httpurl = '';
+            let method = '';
+            if(!this.model.id){
+              httpurl+=this.url.add;
+              method = 'post';
+            }else{
+              httpurl+=this.url.edit;
+               method = 'put';
+            }
+             if(this.model.id && this.model.id === this.model[this.pidField]){
+              that.$message.warning("父级节点不能选择自己");
+              that.confirmLoading = false;
+              return;
+            }
+            httpAction(httpurl,this.model,method).then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                this.$emit('ok');
+              }else{
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
+          }else{
+             return false
+          }
+        })
+      },
+      handleCancel () {
+        this.close()
+      },
+      <#if form_popup>
+      popupCallback(value,row){
+         this.model = Object.assign(this.model, row);
+      },
+      </#if>
+      <#if form_cat_tree>
+      handleCategoryChange(value,backObj){
+        this.model = Object.assign(this.model, backObj);
+       },
+      </#if>
+      submitSuccess(formData,flag){
+        if(!formData.id){
+          let treeData = this.$refs.treeSelect.getCurrTreeData()
+          this.expandedRowKeys=[]
+          this.getExpandKeysByPid(formData[this.pidField],treeData,treeData)
+          this.$emit('ok',formData,this.expandedRowKeys.reverse());
+        }else{
+          this.$emit('ok',formData,flag);
+        }
+      },
+      getExpandKeysByPid(pid,arr,all){
+        if(pid && arr && arr.length>0){
+          for(let i=0;i<arr.length;i++){
+            if(arr[i].key==pid){
+              this.expandedRowKeys.push(arr[i].key)
+              this.getExpandKeysByPid(arr[i]['parentId'],all,all)
+            }else{
+              this.getExpandKeysByPid(pid,arr[i].children,all)
+            }
+          }
+        }
+      }
+      
+      
+    }
+  }
+</script>

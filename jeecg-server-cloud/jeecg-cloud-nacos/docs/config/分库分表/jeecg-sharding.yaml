@@ -1,0 +1,33 @@
+spring:
+  shardingsphere:
+    datasource:
+      names: ds0
+      ds0:
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://jeecg-boot-mysql:3306/jeecg-boot?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+        username: root
+        password: root
+        type: com.alibaba.druid.pool.DruidDataSource
+    props:
+      sql-show: true
+    rules:
+      sharding:
+        binding-tables: sys_log
+        key-generators:
+          snowflake:
+            type: SNOWFLAKE
+            props:
+              worker-id: 123
+        sharding-algorithms:
+          table-classbased:
+            props:
+              strategy: standard
+              algorithmClassName: org.jeecg.modules.test.sharding.algorithm.StandardModTableShardAlgorithm
+            type: CLASS_BASED
+        tables:
+          sys_log:
+            actual-data-nodes: ds0.sys_log$->{0..1}
+            table-strategy:
+              standard:
+                sharding-algorithm-name: table-classbased
+                sharding-column: log_type

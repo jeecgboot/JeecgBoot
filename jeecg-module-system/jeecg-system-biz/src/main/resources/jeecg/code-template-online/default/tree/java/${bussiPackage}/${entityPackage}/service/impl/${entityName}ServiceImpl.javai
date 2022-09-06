@@ -1,0 +1,229 @@
+package ${bussiPackage}.${entityPackage}.service.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.system.vo.SelectTreeModel;
+import ${bussiPackage}.${entityPackage}.entity.${entityName};
+import ${bussiPackage}.${entityPackage}.mapper.${entityName}Mapper;
+import ${bussiPackage}.${entityPackage}.service.I${entityName}Service;
+import org.springframework.stereotype.Service;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+<#assign pidFieldName = "">
+<#assign hasChildrenField = "">
+<#list originalColumns as po>
+<#if po.fieldDbName == tableVo.extendParams.pidField>
+<#assign pidFieldName = po.fieldName>
+</#if>
+<#if po.fieldDbName == tableVo.extendParams.hasChildren>
+<#assign hasChildrenField = po.fieldName>
+</#if>
+</#list>
+
+/**
+ * @Description: ${tableVo.ftlDescription}
+ * @Author: jeecg-boot
+ * @Date:   ${.now?string["yyyy-MM-dd"]}
+ * @Version: V1.0
+ */
+@Service
+public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, ${entityName}> implements I${entityName}Service {
+
+	@Override
+	public void add${entityName}(${entityName} ${entityName?uncap_first}) {
+	   //新增时设置hasChild为0
+	    ${entityName?uncap_first}.set${hasChildrenField?cap_first}(I${entityName}Service.NOCHILD);
+		if(oConvertUtils.isEmpty(${entityName?uncap_first}.get${pidFieldName?cap_first}())){
+			${entityName?uncap_first}.set${pidFieldName?cap_first}(I${entityName}Service.ROOT_PID_VALUE);
+		}else{
+			//如果当前节点父ID不为空 则设置父节点的hasChildren 为1
+			${entityName} parent = baseMapper.selectById(${entityName?uncap_first}.get${pidFieldName?cap_first}());
+			if(parent!=null && !"1".equals(parent.get${hasChildrenField?cap_first}())){
+				parent.set${hasChildrenField?cap_first}("1");
+				baseMapper.updateById(parent);
+			}
+		}
+		baseMapper.insert(${entityName?uncap_first});
+	}
+	
+	@Override
+	public void update${entityName}(${entityName} ${entityName?uncap_first}) {
+		${entityName} entity = this.getById(${entityName?uncap_first}.getId());
+		if(entity==null) {
+			throw new JeecgBootException("未找到对应实体");
+		}
+		String old_pid = entity.get${pidFieldName?cap_first}();
+		String new_pid = ${entityName?uncap_first}.get${pidFieldName?cap_first}();
+		if(!old_pid.equals(new_pid)) {
+			updateOldParentNode(old_pid);
+			if(oConvertUtils.isEmpty(new_pid)){
+				${entityName?uncap_first}.set${pidFieldName?cap_first}(I${entityName}Service.ROOT_PID_VALUE);
+			}
+			if(!I${entityName}Service.ROOT_PID_VALUE.equals(${entityName?uncap_first}.get${pidFieldName?cap_first}())) {
+				baseMapper.updateTreeNodeStatus(${entityName?uncap_first}.get${pidFieldName?cap_first}(), I${entityName}Service.HASCHILD);
+			}
+		}
+		baseMapper.updateById(${entityName?uncap_first});
+	}
+	
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void delete${entityName}(String id) throws JeecgBootException {
+		//查询选中节点下所有子节点一并删除
+        id = this.queryTreeChildIds(id);
+        if(id.indexOf(",")>0) {
+            StringBuffer sb = new StringBuffer();
+            String[] idArr = id.split(",");
+            for (String idVal : idArr) {
+                if(idVal != null){
+                    ${entityName} ${entityName?uncap_first} = this.getById(idVal);
+                    String pidVal = ${entityName?uncap_first}.get${pidFieldName?cap_first}();
+                    //查询此节点上一级是否还有其他子节点
+                    List<${entityName}> dataList = baseMapper.selectList(new QueryWrapper<${entityName}>().eq("${tableVo.extendParams.pidField}", pidVal).notIn("id",Arrays.asList(idArr)));
+                    boolean flag = (dataList == null || dataList.size() == 0) && !Arrays.asList(idArr).contains(pidVal) && !sb.toString().contains(pidVal);
+                    if(flag){
+                        //如果当前节点原本有子节点 现在木有了，更新状态
+                        sb.append(pidVal).append(",");
+                    }
+                }
+            }
+            //批量删除节点
+            baseMapper.deleteBatchIds(Arrays.asList(idArr));
+            //修改已无子节点的标识
+            String[] pidArr = sb.toString().split(",");
+            for(String pid : pidArr){
+                this.updateOldParentNode(pid);
+            }
+        }else{
+            ${entityName} ${entityName?uncap_first} = this.getById(id);
+            if(${entityName?uncap_first}==null) {
+                throw new JeecgBootException("未找到对应实体");
+            }
+            updateOldParentNode(${entityName?uncap_first}.get${pidFieldName?cap_first}());
+            baseMapper.deleteById(id);
+        }
+	}
+	
+	@Override
+    public List<${entityName}> queryTreeListNoPage(QueryWrapper<${entityName}> queryWrapper) {
+        List<${entityName}> dataList = baseMapper.selectList(queryWrapper);
+        List<${entityName}> mapList = new ArrayList<>();
+        for(${entityName} data : dataList){
+            String pidVal = data.get${pidFieldName?cap_first}();
+            //递归查询子节点的根节点
+            if(pidVal != null && !I${entityName}Service.NOCHILD.equals(pidVal)){
+                ${entityName} rootVal = this.getTreeRoot(pidVal);
+                if(rootVal != null && !mapList.contains(rootVal)){
+                    mapList.add(rootVal);
+                }
+            }else{
+                if(!mapList.contains(data)){
+                    mapList.add(data);
+                }
+            }
+        }
+        return mapList;
+    }
+
+    @Override
+    public List<SelectTreeModel> queryListByCode(String parentCode) {
+        String pid = ROOT_PID_VALUE;
+        if (oConvertUtils.isNotEmpty(parentCode)) {
+            LambdaQueryWrapper<${entityName}> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(${entityName}::get${pidFieldName?cap_first}, parentCode);
+            List<${entityName}> list = baseMapper.selectList(queryWrapper);
+            if (list == null || list.size() == 0) {
+                throw new JeecgBootException("该编码【" + parentCode + "】不存在，请核实!");
+            }
+            if (list.size() > 1) {
+                throw new JeecgBootException("该编码【" + parentCode + "】存在多个，请核实!");
+            }
+            pid = list.get(0).getId();
+        }
+        return baseMapper.queryListByPid(pid, null);
+    }
+
+    @Override
+    public List<SelectTreeModel> queryListByPid(String pid) {
+        if (oConvertUtils.isEmpty(pid)) {
+            pid = ROOT_PID_VALUE;
+        }
+        return baseMapper.queryListByPid(pid, null);
+    }
+
+	/**
+	 * 根据所传pid查询旧的父级节点的子节点并修改相应状态值
+	 * @param pid
+	 */
+	private void updateOldParentNode(String pid) {
+		if(!I${entityName}Service.ROOT_PID_VALUE.equals(pid)) {
+			Long count = baseMapper.selectCount(new QueryWrapper<${entityName}>().eq("${tableVo.extendParams.pidField}", pid));
+			if(count==null || count<=1) {
+				baseMapper.updateTreeNodeStatus(pid, I${entityName}Service.NOCHILD);
+			}
+		}
+	}
+
+	/**
+     * 递归查询节点的根节点
+     * @param pidVal
+     * @return
+     */
+    private ${entityName} getTreeRoot(String pidVal){
+        ${entityName} data =  baseMapper.selectById(pidVal);
+        if(data != null && !I${entityName}Service.ROOT_PID_VALUE.equals(data.get${pidFieldName?cap_first}())){
+            return this.getTreeRoot(data.get${pidFieldName?cap_first}());
+        }else{
+            return data;
+        }
+    }
+
+    /**
+     * 根据id查询所有子节点id
+     * @param ids
+     * @return
+     */
+    private String queryTreeChildIds(String ids) {
+        //获取id数组
+        String[] idArr = ids.split(",");
+        StringBuffer sb = new StringBuffer();
+        for (String pidVal : idArr) {
+            if(pidVal != null){
+                if(!sb.toString().contains(pidVal)){
+                    if(sb.toString().length() > 0){
+                        sb.append(",");
+                    }
+                    sb.append(pidVal);
+                    this.getTreeChildIds(pidVal,sb);
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 递归查询所有子节点
+     * @param pidVal
+     * @param sb
+     * @return
+     */
+    private StringBuffer getTreeChildIds(String pidVal,StringBuffer sb){
+        List<${entityName}> dataList = baseMapper.selectList(new QueryWrapper<${entityName}>().eq("${tableVo.extendParams.pidField}", pidVal));
+        if(dataList != null && dataList.size()>0){
+            for(${entityName} tree : dataList) {
+                if(!sb.toString().contains(tree.getId())){
+                    sb.append(",").append(tree.getId());
+                }
+                this.getTreeChildIds(tree.getId(),sb);
+            }
+        }
+        return sb;
+    }
+
+}
