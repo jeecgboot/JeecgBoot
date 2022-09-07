@@ -4,7 +4,7 @@
 
 
 
-JEECG BOOT 低代码开发平台（前后端分离版本）
+JEECG BOOT 低代码开发平台
 ===============
 
 当前最新版本： 3.4.1（发布日期：2022-08-12） 
@@ -119,7 +119,7 @@ Docker启动项目
 
 
 
-为什么选择JEECG-BOOT?
+为什么选择JeecgBoot?
 -----------------------------------
 * 1.采用最新主流前后分离框架（Springboot+Mybatis+antd），容易上手; 代码生成器依赖性低,灵活的扩展能力，可快速实现二次开发;
 * 2.支持微服务SpringCloud Alibaba(Nacos、Gateway、Sentinel、Skywalking)，提供切换机制支持单体和微服务自由切换
