@@ -1,4 +1,3 @@
-package org.jeecg;
 
 import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.constant.GlobalConstants;
