@@ -144,8 +144,8 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/vxeSocket/**", "anon");//JVxeTable无痕刷新示例
 
 
-        //性能监控  TODO 存在安全漏洞泄露TOEKN（durid连接池也有）
-        filterChainDefinitionMap.put("/actuator/**", "anon");
+        //性能监控，放开排除会存在安全漏洞泄露TOEKN（durid连接池也有）
+        //filterChainDefinitionMap.put("/actuator/**", "anon");
 
         //测试模块排除
         filterChainDefinitionMap.put("/test/seata/**", "anon");
