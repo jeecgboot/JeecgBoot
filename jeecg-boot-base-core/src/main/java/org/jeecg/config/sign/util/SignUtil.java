@@ -10,6 +10,7 @@ import org.jeecg.config.JeecgBaseConfig;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.util.SortedMap;
 
 /**
@@ -54,6 +55,12 @@ public class SignUtil {
         if(oConvertUtils.isEmpty(signatureSecret) || signatureSecret.contains(curlyBracket)){
             throw new JeecgBootException("签名密钥 ${jeecg.signatureSecret} 缺少配置 ！！");
         }
-        return DigestUtils.md5DigestAsHex((paramsJsonStr + signatureSecret).getBytes()).toUpperCase();
+        try {
+            //【issues/I484RW】2.4.6部署后，下拉搜索框提示“sign签名检验失败”
+            return DigestUtils.md5DigestAsHex((paramsJsonStr + signatureSecret).getBytes("UTF-8")).toUpperCase();
+        } catch (UnsupportedEncodingException e) {
+            log.error(e.getMessage(),e);
+            return null;
+        }
     }
 }

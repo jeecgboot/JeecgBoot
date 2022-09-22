@@ -56,16 +56,16 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 	private SysDepartRolePermissionMapper sysDepartRolePermissionMapper;
 
 	@Override
-	public List<TreeModel> queryListByParentId(String parentId) {
-		return sysPermissionMapper.queryListByParentId(parentId);
-	}
-
-	@Override
 	public void switchVue3Menu() {
 		sysPermissionMapper.backupVue2Menu();
 		sysPermissionMapper.changeVue3Menu();
 	}
-	
+
+	@Override
+	public List<TreeModel> queryListByParentId(String parentId) {
+		return sysPermissionMapper.queryListByParentId(parentId);
+	}
+
 	/**
 	  * 真实删除
 	 */
@@ -270,6 +270,11 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 		}else{
 			return false;
 		}
+	}
+
+	@Override
+	public List<SysPermission> queryDepartPermissionList(String departId) {
+		return sysPermissionMapper.queryDepartPermissionList(departId);
 	}
 
 }

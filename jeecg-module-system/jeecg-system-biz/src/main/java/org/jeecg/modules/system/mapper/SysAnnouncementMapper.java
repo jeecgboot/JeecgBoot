@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.mapper;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -25,4 +26,14 @@ public interface SysAnnouncementMapper extends BaseMapper<SysAnnouncement> {
      */
 	List<SysAnnouncement> querySysCementListByUserId(Page<SysAnnouncement> page, @Param("userId")String userId,@Param("msgCategory")String msgCategory);
 
+    /**
+     * 分页查询消息列表
+     * @param page
+     * @param userId
+     * @param fromUser
+     * @param beginDate
+     * @param endDate
+     * @return
+     */
+	List<SysAnnouncement> queryMessageList(Page<SysAnnouncement> page, @Param("userId")String userId, @Param("fromUser")String fromUser, @Param("starFlag")String starFlag, @Param("beginDate")Date beginDate, @Param("endDate")Date endDate);
 }

@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -16,9 +17,11 @@ import org.jeecg.common.constant.WebsocketConst;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.message.enums.RangeDateEnum;
 import org.jeecg.modules.message.websocket.WebSocket;
 import org.jeecg.modules.system.entity.SysAnnouncement;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
@@ -45,10 +48,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.jeecg.common.constant.CommonConstant.ANNOUNCEMENT_SEND_STATUS_1;
 
@@ -70,9 +71,9 @@ public class SysAnnouncementController {
 	@Resource
     private WebSocket webSocket;
 	@Autowired
-	ThirdAppWechatEnterpriseServiceImpl wechatEnterpriseService;
+    ThirdAppWechatEnterpriseServiceImpl wechatEnterpriseService;
 	@Autowired
-	ThirdAppDingtalkServiceImpl dingtalkService;
+    ThirdAppDingtalkServiceImpl dingtalkService;
 	@Autowired
 	private SysBaseApiImpl sysBaseApi;
 	@Autowired
@@ -505,5 +506,48 @@ public class SysAnnouncementController {
         modelAndView.setStatus(HttpStatus.NOT_FOUND);
         return modelAndView;
     }
+
+	/**
+	 * 【vue3用】 消息列表查询
+	 * @param fromUser
+	 * @param beginDate
+	 * @param endDate
+	 * @param pageNo
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping(value = "/vue3List", method = RequestMethod.GET)
+	public Result<List<SysAnnouncement>> vue3List(@RequestParam(name="fromUser", required = false) String fromUser,
+												  @RequestParam(name="starFlag", required = false) String starFlag,
+                                                  @RequestParam(name="rangeDateKey", required = false) String rangeDateKey,
+                                                  @RequestParam(name="beginDate", required = false) String beginDate, @RequestParam(name="endDate", required = false) String endDate,
+                                                  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo, @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
+		// 后台获取开始时间/结束时间
+		Date bd=null, ed=null;
+		if(RangeDateEnum.ZDY.getKey().equals(rangeDateKey)){
+			if(oConvertUtils.isNotEmpty(beginDate)){
+				bd = DateUtils.parseDatetime(beginDate);
+			}
+			if(oConvertUtils.isNotEmpty(endDate)){
+				ed = DateUtils.parseDatetime(endDate);
+			}
+		}else{
+			Date[] arr = RangeDateEnum.getRangeArray(rangeDateKey);
+			if(arr!=null){
+				bd = arr[0];
+				ed = arr[1];
+			}
+		}
+		List<SysAnnouncement> ls = this.sysAnnouncementService.querySysMessageList(pageSize, pageNo, fromUser, starFlag, bd, ed);
+		//查询出来的消息全部设置为已读
+		if(ls!=null && ls.size()>0){
+			String readed = "1";
+			List<String> annoceIdList = ls.stream().filter(item->!readed.equals(item.getReadFlag())).map(item->item.getId()).collect(Collectors.toList());
+			if(annoceIdList!=null && annoceIdList.size()>0){
+				sysAnnouncementService.updateReaded(annoceIdList);
+			}
+		}
+		return Result.ok(ls);
+	}
 
 }

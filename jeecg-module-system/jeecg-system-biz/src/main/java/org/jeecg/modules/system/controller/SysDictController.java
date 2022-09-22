@@ -304,6 +304,8 @@ public class SysDictController {
 	/**
 	 * 【接口签名验证】
 	 * 根据表名——显示字段-存储字段 pid 加载树形数据
+	 * @param hasChildField 是否叶子节点字段
+	 * @param converIsLeafVal 是否需要系统转换 是否叶子节点的值 (0标识不转换、1标准系统自动转换)
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/loadTreeData", method = RequestMethod.GET)
@@ -312,6 +314,7 @@ public class SysDictController {
 												  @RequestParam(name="text") String text,
 												  @RequestParam(name="code") String code,
 												  @RequestParam(name="hasChildField") String hasChildField,
+												  @RequestParam(name="converIsLeafVal",defaultValue ="1") int converIsLeafVal,
 												  @RequestParam(name="condition") String condition,
 												  @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
 		Result<List<TreeSelectModel>> result = new Result<List<TreeSelectModel>>();
@@ -322,7 +325,7 @@ public class SysDictController {
 		// SQL注入漏洞 sign签名校验(表名,label字段,val字段,条件)
 		String dictCode = tbname+","+text+","+code+","+condition;
         SqlInjectionUtil.filterContent(dictCode);
-		List<TreeSelectModel> ls = sysDictService.queryTreeList(query,tbname, text, code, pidField, pid,hasChildField);
+		List<TreeSelectModel> ls = sysDictService.queryTreeList(query,tbname, text, code, pidField, pid,hasChildField,converIsLeafVal);
 		result.setSuccess(true);
 		result.setResult(ls);
 		return result;

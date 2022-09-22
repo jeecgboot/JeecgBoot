@@ -25,6 +25,7 @@
 
 		<xxl-job-core.version>2.2.0</xxl-job-core.version>
         <fastjson.version>1.2.83</fastjson.version>
+		<pegdown.version>1.6.0</pegdown.version>
 		<knife4j-spring-boot-starter.version>3.0.3</knife4j-spring-boot-starter.version>
 		<knife4j-spring-ui.version>2.0.9</knife4j-spring-ui.version>
 		<!-- 数据库驱动 -->
@@ -33,9 +34,6 @@
 		<sqljdbc4.version>4.0</sqljdbc4.version>
 		<mysql-connector-java.version>8.0.27</mysql-connector-java.version>
 		<hutool.version>5.3.8</hutool.version>
-		<redisson.version>3.16.1</redisson.version>
-		<commons-beanutils.version>1.9.4</commons-beanutils.version>
-		<guava.version>29.0-jre</guava.version>
 
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.1</mybatis-plus.version>
@@ -44,7 +42,7 @@
 		<minidao.version>1.9.0</minidao.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.5.2</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.5.3</jimureport-spring-boot-starter.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.11.2</aliyun.oss.version>
@@ -120,6 +118,12 @@
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
 			<version>${fastjson.version}</version>
+		</dependency>
+		<!-- markdown -->
+		<dependency>
+			<groupId>org.pegdown</groupId>
+			<artifactId>pegdown</artifactId>
+			<version>${pegdown.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -293,7 +297,7 @@
 			<dependency>
 				<groupId>org.jeecgframework</groupId>
 				<artifactId>jeewx-api</artifactId>
-				<version>1.4.8</version>
+				<version>1.4.9</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>commons-beanutils</artifactId>

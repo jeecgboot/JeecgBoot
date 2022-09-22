@@ -108,4 +108,9 @@ public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo
 		return exportFieldsList != null && exportFieldsList.size()>0 ? String.join(",", exportFieldsList) : "";
 	}
 
+	@Override
+	public List<String> getCreateByList() {
+		return jeecgDemoMapper.getCreateByList();
+	}
+
 }

@@ -30,7 +30,7 @@ public interface ServiceNameConstants {
 	 */
 	String SERVICE_SYSTEM = "jeecg-system";
 	/**
-	 * 微服务名：Demo模块
+	 * 微服务名： demo模块
 	 */
 	String SERVICE_DEMO = "jeecg-demo";
 

@@ -127,10 +127,14 @@ public class CommonUtils {
      */
     public static String upload(MultipartFile file, String bizPath, String uploadType) {
         String url = "";
-        if(CommonConstant.UPLOAD_TYPE_MINIO.equals(uploadType)){
-            url = MinioUtil.upload(file,bizPath);
-        }else{
-            url = OssBootUtil.upload(file,bizPath);
+        try {
+            if (CommonConstant.UPLOAD_TYPE_MINIO.equals(uploadType)) {
+                url = MinioUtil.upload(file, bizPath);
+            } else {
+                url = OssBootUtil.upload(file, bizPath);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
         return url;
     }
@@ -186,10 +190,14 @@ public class CommonUtils {
      */
     public static String upload(MultipartFile file, String bizPath, String uploadType, String customBucket) {
         String url = "";
-        if(CommonConstant.UPLOAD_TYPE_MINIO.equals(uploadType)){
-            url = MinioUtil.upload(file,bizPath,customBucket);
-        }else{
-            url = OssBootUtil.upload(file,bizPath,customBucket);
+        try {
+            if (CommonConstant.UPLOAD_TYPE_MINIO.equals(uploadType)) {
+                url = MinioUtil.upload(file, bizPath, customBucket);
+            } else {
+                url = OssBootUtil.upload(file, bizPath, customBucket);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
         }
         return url;
     }
@@ -340,7 +348,7 @@ public class CommonUtils {
         }else{
             baseDomainPath = scheme + "://" + serverName + ":" + serverPort + contextPath ;
         }
-        log.info("-----Common getBaseUrl----- : " + baseDomainPath);
+        log.debug("-----Common getBaseUrl----- : " + baseDomainPath);
         return baseDomainPath;
     }
 }

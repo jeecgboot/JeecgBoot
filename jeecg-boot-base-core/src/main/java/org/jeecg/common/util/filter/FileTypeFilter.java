@@ -98,7 +98,7 @@ public class FileTypeFilter {
         String suffix = getFileType(file);
         for (String type : forbidType) {
             if (type.contains(suffix)) {
-                throw new Exception("上传失败，文件类型异常：" + suffix);
+                throw new Exception("上传失败，非法文件类型：" + suffix);
             }
         }
     }

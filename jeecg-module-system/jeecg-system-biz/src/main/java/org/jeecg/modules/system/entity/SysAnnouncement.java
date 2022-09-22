@@ -146,5 +146,20 @@ public class SysAnnouncement implements Serializable {
     /**
      * 钉钉task_id，用于撤回消息
      */
-    private java.lang.String dtTaskId;
+    private String dtTaskId;
+
+    /**
+     * 阅读状态 1表示已经阅读
+     */
+    private transient String readFlag;
+
+    /**
+     * 标星状态 1表示标星
+     */
+    private transient String starFlag;
+
+    /**
+     * 发送记录ID
+     */
+    private transient String sendId;
 }

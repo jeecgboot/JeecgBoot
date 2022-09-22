@@ -66,7 +66,7 @@ public class ShiroConfig {
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
 
         //支持yml方式，配置拦截排除
-        if(jeecgBaseConfig.getShiro()!=null){
+        if(jeecgBaseConfig!=null && jeecgBaseConfig.getShiro()!=null){
             String shiroExcludeUrls = jeecgBaseConfig.getShiro().getExcludeUrls();
             if(oConvertUtils.isNotEmpty(shiroExcludeUrls)){
                 String[] permissionUrl = shiroExcludeUrls.split(",");
@@ -109,6 +109,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/**/*.pdf", "anon");
         filterChainDefinitionMap.put("/**/*.jpg", "anon");
         filterChainDefinitionMap.put("/**/*.png", "anon");
+        filterChainDefinitionMap.put("/**/*.gif", "anon");
         filterChainDefinitionMap.put("/**/*.ico", "anon");
 
         // update-begin--Author:sunjianlei Date:20190813 for：排除字体格式的后缀

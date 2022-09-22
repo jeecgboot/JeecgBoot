@@ -11,8 +11,6 @@ import org.slf4j.LoggerFactory;
  * IP地址
  * 
  * @Author scott
- *
- * update: 【类名改了大小写】 date: 2022-04-18
  * @email jeecgos@163.com
  * @Date 2019年01月14日
  */

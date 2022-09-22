@@ -53,11 +53,16 @@ public class MinioUtil {
      * @param file
      * @return
      */
-    public static String upload(MultipartFile file, String bizPath, String customBucket) {
+    public static String upload(MultipartFile file, String bizPath, String customBucket) throws Exception {
         String fileUrl = "";
         //update-begin-author:wangshuai date:20201012 for: 过滤上传文件夹名特殊字符，防止攻击
-        bizPath=StrAttackFilter.filter(bizPath);
+        bizPath = StrAttackFilter.filter(bizPath);
         //update-end-author:wangshuai date:20201012 for: 过滤上传文件夹名特殊字符，防止攻击
+
+        //update-begin-author:liusq date:20210809 for: 过滤上传文件类型
+        FileTypeFilter.fileTypeFilter(file);
+        //update-end-author:liusq date:20210809 for: 过滤上传文件类型
+
         String newBucket = bucketName;
         if(oConvertUtils.isNotEmpty(customBucket)){
             newBucket = customBucket;
@@ -72,9 +77,6 @@ public class MinioUtil {
                 minioClient.makeBucket(MakeBucketArgs.builder().bucket(newBucket).build());
                 log.info("create a new bucket.");
             }
-            //update-begin-author:liusq date:20210809 for: 过滤上传文件类型
-            FileTypeFilter.fileTypeFilter(file);
-            //update-end-author:liusq date:20210809 for: 过滤上传文件类型
             InputStream stream = file.getInputStream();
             // 获取文件名
             String orgName = file.getOriginalFilename();
@@ -111,8 +113,8 @@ public class MinioUtil {
      * @param bizPath
      * @return
      */
-    public static String upload(MultipartFile file, String bizPath) {
-        return  upload(file,bizPath,null);
+    public static String upload(MultipartFile file, String bizPath) throws Exception {
+        return upload(file,bizPath,null);
     }
 
     /**

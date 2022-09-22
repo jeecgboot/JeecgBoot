@@ -12,6 +12,7 @@ import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.aspect.UrlMatchEnum;
@@ -22,6 +23,7 @@ import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.*;
+import org.jeecg.common.util.HTMLUtils;
 import org.jeecg.common.util.SysAnnmentTypeEnum;
 import org.jeecg.common.util.YouBianCodeUtil;
 import org.jeecg.common.util.dynamic.db.FreemarkerParseFactory;
@@ -101,6 +103,10 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	ISysCategoryService sysCategoryService;
 	@Autowired
 	private ISysUserService sysUserService;
+	@Autowired
+	private ISysDataLogService sysDataLogService;
+	@Autowired
+	private ISysFilesService sysFilesService;
 
 	@Override
 	//@SensitiveDecode
@@ -1191,10 +1197,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		//update-begin-author:taoyan date:2022-7-9 for: 将模板解析代码移至消息发送, 而不是调用的地方
 		String templateCode = message.getTemplateCode();
 		if(oConvertUtils.isNotEmpty(templateCode)){
-			String content = getTemplateContent(templateCode);
+			SysMessageTemplate templateEntity = getTemplateEntity(templateCode);
+			boolean isMarkdown = CommonConstant.MSG_TEMPLATE_TYPE_MD.equals(templateEntity.getTemplateType());
+			String content = templateEntity.getTemplateContent();
 			if(oConvertUtils.isNotEmpty(content) && null!=message.getData()){
-				content = FreemarkerParseFactory.parseTemplateContent(content, message.getData());
+				content = FreemarkerParseFactory.parseTemplateContent(content, message.getData(), isMarkdown);
 			}
+			message.setIsMarkdown(isMarkdown);
 			message.setContent(content);
 		}
 		if(oConvertUtils.isEmpty(message.getContent())){
@@ -1202,8 +1211,16 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		}
 		//update-end-author:taoyan date:2022-7-9 for: 将模板解析代码移至消息发送, 而不是调用的地方
 		if(MessageTypeEnum.XT.getType().equals(messageType)){
+			if (message.isMarkdown()) {
+				// 系统消息要解析Markdown
+				message.setContent(HTMLUtils.parseMarkdown(message.getContent()));
+			}
 			systemSendMsgHandle.sendMessage(message);
 		}else if(MessageTypeEnum.YJ.getType().equals(messageType)){
+			if (message.isMarkdown()) {
+				// 邮件消息要解析Markdown
+				message.setContent(HTMLUtils.parseMarkdown(message.getContent()));
+			}
 			emailSendMsgHandle.sendMessage(message);
 		}else if(MessageTypeEnum.DD.getType().equals(messageType)){
 			ddSendMsgHandle.sendMessage(message);
@@ -1220,6 +1237,64 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		}
 		return list.get(0).getTemplateContent();
 	}
+
+	/**
+	 * 获取模板内容，解析markdown
+	 *
+	 * @param code
+	 * @return
+	 */
+	public SysMessageTemplate getTemplateEntity(String code) {
+		List<SysMessageTemplate> list = sysMessageTemplateService.selectByCode(code);
+		if (list == null || list.size() == 0) {
+			return null;
+		}
+		return list.get(0);
+	}
+
 	//-------------------------------------流程节点发送模板消息-----------------------------------------------
 
+	@Override
+	public void saveDataLog(DataLogDTO dataLogDto) {
+		SysDataLog entity = new SysDataLog();
+		entity.setDataTable(dataLogDto.getTableName());
+		entity.setDataId(dataLogDto.getDataId());
+		entity.setDataContent(dataLogDto.getContent());
+		entity.setType(dataLogDto.getType());
+		entity.setDataVersion("1");
+		sysDataLogService.save(entity);
+	}
+
+    @Override
+    public void addSysFiles(SysFilesModel sysFilesModel) {
+        SysFiles sysFiles = new SysFiles();
+        BeanUtils.copyProperties(sysFilesModel,sysFiles);
+        String defaultValue = "0";
+        sysFiles.setIzStar(defaultValue);
+        sysFiles.setIzFolder(defaultValue);
+        sysFiles.setIzRootFolder(defaultValue);
+        sysFiles.setDelFlag(defaultValue);
+        sysFilesService.save(sysFiles);
+    }
+
+    @Override
+    public String getFileUrl(String fileId) {
+        SysFiles sysFiles = sysFilesService.getById(fileId);
+        return sysFiles.getUrl();
+    }
+
+    @Override
+    public void updateAvatar(LoginUser loginUser) {
+        SysUser sysUser = new SysUser();
+        BeanUtils.copyProperties(loginUser, sysUser);
+        sysUserService.updateById(sysUser);
+    }
+
+	@Override
+	public void sendAppChatSocket(String userId) {
+		JSONObject obj = new JSONObject();
+		obj.put(WebsocketConst.MSG_CMD, WebsocketConst.MSG_CHAT);
+		obj.put(WebsocketConst.MSG_USER_ID, userId);
+		webSocket.sendMessage(userId, obj.toJSONString());
+	}
 }

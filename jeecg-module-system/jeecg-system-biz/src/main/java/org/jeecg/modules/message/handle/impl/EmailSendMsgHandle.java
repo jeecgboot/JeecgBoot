@@ -76,12 +76,15 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
         List<SysUser> list = sysUserMapper.selectList(query);
         String content = messageDTO.getContent();
         String title = messageDTO.getTitle();
+        String realNameExp = "{REALNAME}";
         for(SysUser user: list){
             String email = user.getEmail();
             if(email==null || "".equals(email)){
                 continue;
             }
-
+            if(content.indexOf(realNameExp)>0){
+                content = content.replace(realNameExp, user.getRealname());
+            }
             if(content.indexOf(CommonConstant.LOGIN_TOKEN)>0){
                 String token = getToken(user);
                 try {

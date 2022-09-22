@@ -126,7 +126,7 @@ public class SysAnnouncementSendController {
 			boolean ok = sysAnnouncementSendService.updateById(sysAnnouncementSend);
 			//TODO 返回false说明什么？
 			if(ok) {
-				result.success("修改成功!");
+				result.success("操作成功!");
 			}
 		}
 		
@@ -253,4 +253,16 @@ public class SysAnnouncementSendController {
 		result.setMessage("全部已读");
 		return result;
 	}
+
+
+	 /**
+	  * 根据消息发送记录ID获取消息内容
+	  * @param sendId
+	  * @return
+	  */
+	 @GetMapping(value = "/getOne")
+	 public Result<AnnouncementSendModel> getOne(@RequestParam(name="sendId",required=true) String sendId) {
+		 AnnouncementSendModel model = sysAnnouncementSendService.getOne(sendId);
+		 return Result.ok(model);
+	 }
 }

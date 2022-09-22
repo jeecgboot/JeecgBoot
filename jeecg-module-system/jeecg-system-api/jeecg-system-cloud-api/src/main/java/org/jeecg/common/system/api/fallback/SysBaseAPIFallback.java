@@ -3,6 +3,7 @@ package org.jeecg.common.system.api.fallback;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.system.api.ISysBaseAPI;
@@ -288,6 +289,11 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
+    public void saveDataLog(DataLogDTO dataLogDto) {
+
+    }
+
+    @Override
     public void sendEmailMsg(String email,String title,String content) {
 
     }
@@ -325,5 +331,24 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     @Override
     public List<DictModel> loadDictItemByKeyword(String dictCode, String keyword, Integer pageSize) {
         return null;
+    }
+
+
+    @Override
+    public void addSysFiles(SysFilesModel sysFilesModel) {
+
+    }
+
+    @Override
+    public String getFileUrl(String fileId) {
+        return null;
+    }
+
+    @Override
+    public void updateAvatar(LoginUser loginUser) { }
+
+    @Override
+    public void sendAppChatSocket(String userId) {
+        
     }
 }

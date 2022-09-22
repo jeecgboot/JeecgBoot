@@ -72,4 +72,12 @@ public class SysDataLog implements Serializable {
      * 版本号
      */
     private String dataVersion;
+
+
+    //update-begin-author:taoyan date:2022-7-26 for: 用于表单评论记录日志 区分数据
+    /**
+     * 类型
+     */
+    private String type;
+    //update-end-author:taoyan date:2022-7-26 for: 用于表单评论记录日志 区分数据
 }

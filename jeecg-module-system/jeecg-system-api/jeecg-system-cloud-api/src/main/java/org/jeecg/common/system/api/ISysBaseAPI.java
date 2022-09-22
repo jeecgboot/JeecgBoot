@@ -2,6 +2,7 @@ package org.jeecg.common.system.api;
 
 import com.alibaba.fastjson.JSONObject;
 import org.jeecg.common.api.CommonAPI;
+import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.constant.ServiceNameConstants;
@@ -549,4 +550,36 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     @GetMapping("/sys/api/getTemplateContent")
     String getTemplateContent(@RequestParam("code") String code);
+
+    /**
+     * 新增数据日志
+     * @param dataLogDto
+     */
+    @PostMapping("/sys/api/saveDataLog")
+    void saveDataLog(DataLogDTO dataLogDto);
+
+    /**
+     * 添加文件到知识库
+     * @param sysFilesModel
+     */
+    @PostMapping("/sys/api/addSysFiles")
+    void addSysFiles(SysFilesModel sysFilesModel);
+
+    /**
+     * 通过文件路径获取文件id
+     * @param fileId
+     */
+    @GetMapping("/sys/api/getFileUrl")
+    String getFileUrl(@RequestParam(name="fileId") String fileId);
+
+    /**
+     * 更新头像
+     * @param loginUser
+     * @return
+     */
+    @PutMapping("/updateAvatar")
+    void updateAvatar(@RequestBody LoginUser loginUser);
+
+    @GetMapping("/sendAppChatSocket")
+    void sendAppChatSocket(@RequestParam(name="userId") String userId);
 }

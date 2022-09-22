@@ -2,8 +2,6 @@ package org.jeecg.common.constant;
 
 /**
  * VXESocket 常量
- *
- * update: 【类名改了大小写】 date: 2022-04-18
  * @author: jeecg-boot
  */
 public class VxeSocketConst {

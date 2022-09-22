@@ -205,7 +205,7 @@ public interface ISysDictService extends IService<SysDict> {
 	 * @return
 	 */
 	@Deprecated
-	List<TreeSelectModel> queryTreeList(Map<String, String> query,String table, String text, String code, String pidField,String pid,String hasChildField);
+	List<TreeSelectModel> queryTreeList(Map<String, String> query,String table, String text, String code, String pidField,String pid,String hasChildField,int converIsLeafVal);
 
 	/**
 	 * 真实删除

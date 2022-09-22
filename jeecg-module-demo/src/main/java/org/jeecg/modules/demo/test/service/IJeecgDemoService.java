@@ -5,6 +5,8 @@ import org.jeecg.modules.demo.test.entity.JeecgDemo;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
+import java.util.List;
+
 /**
  * @Description: jeecg 测试demo
  * @Author: jeecg-boot
@@ -38,4 +40,10 @@ public interface IJeecgDemoService extends JeecgService<JeecgDemo> {
 	 * @return
 	 */
 	String getExportFields();
+
+	/**
+	 * 获取创建人
+	 * @return
+	 */
+	List<String> getCreateByList();
 }

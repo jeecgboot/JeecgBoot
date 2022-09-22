@@ -29,6 +29,11 @@ public class WebsocketConst {
     public static final String MSG_USER_ID = "userId";
 
     /**
+     * 消息json key:chat
+     */
+    public static final String MSG_CHAT = "chat";
+
+    /**
      * 消息类型 heartcheck
      */
     public static final String CMD_CHECK = "heartcheck";

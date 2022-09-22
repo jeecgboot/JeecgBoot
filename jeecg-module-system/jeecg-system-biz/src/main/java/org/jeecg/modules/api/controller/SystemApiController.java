@@ -2,6 +2,7 @@ package org.jeecg.modules.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.system.vo.*;
@@ -660,4 +661,40 @@ public class SystemApiController {
         return this.sysBaseApi.getTemplateContent(code);
     }
 
+    /**
+     * 保存数据日志
+     * @param dataLogDto
+     */
+    @PostMapping("/saveDataLog")
+    public void saveDataLog(@RequestBody DataLogDTO dataLogDto){
+        this.sysBaseApi.saveDataLog(dataLogDto);
+    }
+
+    @PostMapping("/addSysFiles")
+    public void addSysFiles(@RequestBody SysFilesModel sysFilesModel){this.sysBaseApi.addSysFiles(sysFilesModel);}
+
+    @GetMapping("/getFileUrl")
+    public String getFileUrl(@RequestParam(name="fileId") String fileId){
+        return this.sysBaseApi.getFileUrl(fileId);
+    }
+
+    /**
+     * 更新头像
+     * @param loginUser
+     * @return
+     */
+    @PutMapping("/updateAvatar")
+    public void updateAvatar(@RequestBody LoginUser loginUser){
+        this.sysBaseApi.updateAvatar(loginUser);
+    }
+
+    /**
+     * 向app端 websocket推送聊天刷新消息
+     * @param userId
+     * @return
+     */
+    @GetMapping("/sendAppChatSocket")
+    public void sendAppChatSocket(@RequestParam(name="userId") String userId){
+        this.sysBaseApi.sendAppChatSocket(userId);
+    }
 }

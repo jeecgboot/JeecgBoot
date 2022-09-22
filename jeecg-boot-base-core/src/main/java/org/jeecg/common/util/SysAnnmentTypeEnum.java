@@ -10,7 +10,7 @@ public enum SysAnnmentTypeEnum {
      */
     EMAIL("email", "component", "modules/eoa/email/modals/EoaEmailInForm"),
     /**
-     * 工作流跳转链接我的办公
+     * 流程跳转到我的任务
      */
     BPM("bpm", "url", "/bpm/task/MyTaskList");
 

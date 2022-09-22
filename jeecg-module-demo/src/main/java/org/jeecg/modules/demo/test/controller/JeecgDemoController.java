@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -455,5 +457,15 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
         return page;
     }
     // =====Vue3 Native  原生页面示例===============================================================================================
-    
+
+
+    /**
+     * 获取创建人
+     * @return
+     */
+    @GetMapping(value = "/groupList")
+    public Result<?> groupList() {
+        return Result.ok(jeecgDemoService.getCreateByList());
+    }
+
 }

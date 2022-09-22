@@ -32,4 +32,16 @@ public interface SysAnnouncementSendMapper extends BaseMapper<SysAnnouncementSen
 	 */
 	public List<AnnouncementSendModel> getMyAnnouncementSendList(Page<AnnouncementSendModel> page,@Param("announcementSendModel") AnnouncementSendModel announcementSendModel);
 
+	/**
+	 * 获取一条记录
+	 * @param sendId
+	 * @return
+	 */
+	AnnouncementSendModel getOne(@Param("sendId") String sendId);
+
+
+	/**
+	 * 修改为已读消息
+	 */
+	void updateReaded(@Param("userId") String userId, @Param("annoceIdList") List<String> annoceIdList);
 }

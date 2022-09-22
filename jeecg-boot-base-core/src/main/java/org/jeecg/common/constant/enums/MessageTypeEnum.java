@@ -13,9 +13,13 @@ import java.util.List;
 @EnumDict("messageType")
 public enum MessageTypeEnum {
 
+    /** 系统消息 */
     XT("system",  "系统消息"),
+    /** 邮件消息 */
     YJ("email",  "邮件消息"),
+    /** 钉钉消息 */
     DD("dingtalk", "钉钉消息"),
+    /** 企业微信 */
     QYWX("wechat_enterprise", "企业微信");
 
     MessageTypeEnum(String type, String note){
@@ -65,4 +69,20 @@ public enum MessageTypeEnum {
         }
         return list;
     }
+
+    /**
+     * 根据type获取枚举
+     *
+     * @param type
+     * @return
+     */
+    public static MessageTypeEnum valueOfType(String type) {
+        for (MessageTypeEnum e : MessageTypeEnum.values()) {
+            if (e.getType().equals(type)) {
+                return e;
+            }
+        }
+        return null;
+    }
+
 }

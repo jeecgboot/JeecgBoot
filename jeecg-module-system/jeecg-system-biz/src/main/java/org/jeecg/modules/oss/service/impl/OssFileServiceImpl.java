@@ -19,7 +19,7 @@ import java.io.IOException;
 public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, OssFile> implements IOssFileService {
 
 	@Override
-	public void upload(MultipartFile multipartFile) throws IOException {
+	public void upload(MultipartFile multipartFile) throws Exception {
 		String fileName = multipartFile.getOriginalFilename();
 		fileName = CommonUtils.getFileName(fileName);
 		OssFile ossFile = new OssFile();

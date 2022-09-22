@@ -671,4 +671,17 @@ public class DateUtils extends PropertyEditorSupport {
         return calendar.get(Calendar.YEAR);
     }
 
+    /**
+     * 将字符串转成时间
+     * @param str
+     * @return
+     */
+    public static Date parseDatetime(String str){
+        try {
+            return datetimeFormat.get().parse(str);
+        }catch (Exception e){
+        }
+        return null;
+    }
+
 }

@@ -108,7 +108,7 @@ public class DictAspect {
                     return result;
                 }
 
-                log.info(" __ 进入字典翻译切面 DictAspect —— " );
+                log.debug(" __ 进入字典翻译切面 DictAspect —— " );
                 //update-end--Author:zyf -- Date:20220606 ----for：【VUEN-1230】 判断是否含有字典注解,没有注解返回-----
                 for (Object record : records) {
                     String json="{}";
@@ -274,10 +274,10 @@ public class DictAspect {
                 String[] arr = dictCode.split(",");
                 String table = arr[0], text = arr[1], code = arr[2];
                 String values = String.join(",", needTranslDataTable);
-                log.info("translateDictFromTableByKeys.dictCode:" + dictCode);
-                log.info("translateDictFromTableByKeys.values:" + values);
+                log.debug("translateDictFromTableByKeys.dictCode:" + dictCode);
+                log.debug("translateDictFromTableByKeys.values:" + values);
                 List<DictModel> texts = commonApi.translateDictFromTableByKeys(table, text, code, values);
-                log.info("translateDictFromTableByKeys.result:" + texts);
+                log.debug("translateDictFromTableByKeys.result:" + texts);
                 List<DictModel> list = translText.computeIfAbsent(dictCode, k -> new ArrayList<>());
                 list.addAll(texts);
 
@@ -303,10 +303,10 @@ public class DictAspect {
             List<String> filterDictCodes = dictCodeList.stream().filter(key -> !key.contains(",")).collect(Collectors.toList());
             String dictCodes = String.join(",", filterDictCodes);
             String values = String.join(",", needTranslData);
-            log.info("translateManyDict.dictCodes:" + dictCodes);
-            log.info("translateManyDict.values:" + values);
+            log.debug("translateManyDict.dictCodes:" + dictCodes);
+            log.debug("translateManyDict.values:" + values);
             Map<String, List<DictModel>> manyDict = commonApi.translateManyDict(dictCodes, values);
-            log.info("translateManyDict.result:" + manyDict);
+            log.debug("translateManyDict.result:" + manyDict);
             for (String dictCode : manyDict.keySet()) {
                 List<DictModel> list = translText.computeIfAbsent(dictCode, k -> new ArrayList<>());
                 List<DictModel> newList = manyDict.get(dictCode);
@@ -374,7 +374,7 @@ public class DictAspect {
             }
             //update-begin--Author:scott -- Date:20210531 ----for： !56 优化微服务应用下存在表字段需要字典翻译时加载缓慢问题-----
             if (!StringUtils.isEmpty(table)){
-                log.info("--DictAspect------dicTable="+ table+" ,dicText= "+text+" ,dicCode="+code);
+                log.debug("--DictAspect------dicTable="+ table+" ,dicText= "+text+" ,dicCode="+code);
                 String keyString = String.format("sys:cache:dictTable::SimpleKey [%s,%s,%s,%s]",table,text,code,k.trim());
                     if (redisTemplate.hasKey(keyString)){
                     try {

@@ -53,11 +53,11 @@ public class SysThirdAccount {
 	@Excel(name = "真实姓名", width = 15)
 	@ApiModelProperty(value = "真实姓名")
 	private java.lang.String realname;
-	/**真实姓名*/
-	@Excel(name = "真实姓名", width = 15)
-	@ApiModelProperty(value = "真实姓名")
+	/**第三方用户uuid*/
+	@Excel(name = "第三方用户uuid", width = 15)
+	@ApiModelProperty(value = "第三方用户uuid")
 	private java.lang.String thirdUserUuid;
-	/**真实姓名*/
+	/**第三方用户账号*/
 	@Excel(name = "第三方用户账号", width = 15)
 	@ApiModelProperty(value = "第三方用户账号")
 	private java.lang.String thirdUserId;
