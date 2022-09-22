@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysCommentMapper">
+
+    <resultMap id="commentResult" type="org.jeecg.modules.system.vo.SysCommentVO">
+        <id property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="tableName" column="table_name" jdbcType="VARCHAR"/>
+        <result property="tableDataId" column="table_data_id" jdbcType="VARCHAR"/>
+        <result property="fromUserId" column="from_user_id" jdbcType="VARCHAR"/>
+        <result property="commentContent" column="comment_content" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="toUserId" column="to_user_id" jdbcType="VARCHAR"/>
+        <result property="commentId" column="comment_id" jdbcType="VARCHAR"/>
+        <!-- 8+6 -->
+        <collection property="fileList" ofType="org.jeecg.modules.system.vo.SysCommentFileVo" javaType="java.util.List">
+            <result property="sysFormFileId" column="sys_form_file_id" jdbcType="VARCHAR"/>
+            <result property="fileId" column="file_id" jdbcType="VARCHAR"/>
+            <result property="name" column="file_name" jdbcType="VARCHAR"/>
+            <result property="fileSize" column="file_size" jdbcType="VARCHAR"/>
+            <result property="url" column="url" jdbcType="VARCHAR"/>
+            <result property="type" column="file_type" jdbcType="VARCHAR"/>
+            <result property="storeType" column="store_type" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
+    <!-- 根据表名和数据id查询表单评论信息及文件 -->
+    <select id="queryCommentList" resultMap="commentResult">
+	   select
+            a.id,
+            a.table_name,
+            a.table_data_id,
+            a.from_user_id,
+            a.comment_content,
+            a.create_time,
+            a.to_user_id,
+            a.comment_id,
+            b.id as sys_form_file_id,
+            c.id as file_id,
+            c.file_name,
+            c.file_size,
+            c.url,
+            c.file_type,
+            c.store_type
+         from sys_comment a
+         left join sys_form_file b on b.table_name = 'sys_comment' and b.table_data_id = a.id
+         left join sys_files c on b.file_id = c.id and c.del_flag = '0'
+	   where a.table_name = #{tableName, jdbcType=VARCHAR}
+	   and a.table_data_id = #{formDataId, jdbcType=VARCHAR}
+	   order by a.create_time asc
+	</select>
+
+    <!-- 根据表名和数据id查询表单文件 -->
+    <select id="queryFormFileList" resultType="org.jeecg.modules.system.vo.SysCommentFileVo">
+	   select
+            b.id as sys_form_file_id,
+            c.id as file_id,
+            c.file_name as name,
+            c.file_size,
+            c.url,
+            c.file_type as type,
+            c.store_type
+         from sys_comment a
+         join sys_form_file b on b.table_name = 'sys_comment' and b.table_data_id = a.id
+         join sys_files c on b.file_id = c.id
+	   where c.del_flag = '0'
+	   and a.table_name = #{tableName, jdbcType=VARCHAR}
+	   and a.table_data_id = #{formDataId, jdbcType=VARCHAR}
+	   order by a.create_time asc
+	</select>
+
+    <!-- 根据用户名获取用户信息 -->
+    <select id="queryUserAvatarList" resultType="org.jeecg.modules.system.vo.UserAvatar">
+	   select id,  avatar, realname from sys_user
+        WHERE id IN 
+        <foreach item="id" collection="idSet"  open="(" separator="or" close=")">
+            #{id}
+        </foreach>
+	</select>
+
+</mapper>
