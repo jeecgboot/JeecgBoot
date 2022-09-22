@@ -283,11 +283,7 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 		 //全部权限ids
 		 List<String> ids = new ArrayList<>();
 		 try {
-			 LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
-			 query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
-			 query.orderByAsc(SysPermission::getSortNo);
-			 query.inSql(SysPermission::getId,"select permission_id  from sys_depart_permission where depart_id='"+departId+"'");
-			 List<SysPermission> list = sysPermissionService.list(query);
+			 List<SysPermission> list = sysPermissionService.queryDepartPermissionList(departId);
 			 for(SysPermission sysPer : list) {
 				 ids.add(sysPer.getId());
 			 }

@@ -16,9 +16,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.dynamic.db.DataSourceCachePool;
+import org.jeecg.common.util.security.JdbcSecurityUtil;
 import org.jeecg.modules.system.entity.SysDataSource;
 import org.jeecg.modules.system.service.ISysDataSourceService;
 import org.jeecg.modules.system.util.SecurityUtil;
@@ -46,6 +48,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
 
     @Autowired
     private ISysDataSourceService sysDataSourceService;
+
 
     /**
      * 分页列表查询
@@ -97,6 +100,14 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
     @ApiOperation(value = "多数据源管理-添加", notes = "多数据源管理-添加")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody SysDataSource sysDataSource) {
+        //update-begin-author:taoyan date:2022-8-10 for: jdbc连接地址漏洞问题
+        try {
+            JdbcSecurityUtil.validate(sysDataSource.getDbUrl());
+        }catch (JeecgBootException e){
+            log.error(e.toString());
+            return Result.error("操作失败：" + e.getMessage());
+        }
+        //update-end-author:taoyan date:2022-8-10 for: jdbc连接地址漏洞问题
         return sysDataSourceService.saveDataSource(sysDataSource);
     }
 
@@ -110,6 +121,14 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
     @ApiOperation(value = "多数据源管理-编辑", notes = "多数据源管理-编辑")
     @RequestMapping(value = "/edit", method ={RequestMethod.PUT, RequestMethod.POST})
     public Result<?> edit(@RequestBody SysDataSource sysDataSource) {
+        //update-begin-author:taoyan date:2022-8-10 for: jdbc连接地址漏洞问题
+        try {
+            JdbcSecurityUtil.validate(sysDataSource.getDbUrl());
+        } catch (JeecgBootException e) {
+            log.error(e.toString());
+            return Result.error("操作失败：" + e.getMessage());
+        }
+        //update-end-author:taoyan date:2022-8-10 for: jdbc连接地址漏洞问题
         return sysDataSourceService.editDataSource(sysDataSource);
     }
 
