@@ -260,7 +260,10 @@ public class ThirdLoginController {
 		String thirdUserUuid = jsonObject.getString("thirdUserUuid");
 		// 校验验证码
 		String captcha = jsonObject.getString("captcha");
-		Object captchaCache = redisUtil.get(phone);
+		//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+		String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+phone;
+		Object captchaCache = redisUtil.get(redisKey);
+		//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 		if (oConvertUtils.isEmpty(captcha) || !captcha.equals(captchaCache)) {
 			result.setMessage("验证码错误");
 			result.setSuccess(false);
@@ -361,8 +364,7 @@ public class ThirdLoginController {
 			// 钉钉返回的code
 			@RequestParam(value = "authCode", required = false) String authCode,
 			@RequestParam("state") String state,
-			HttpServletResponse response
-	) {
+			HttpServletResponse response) {
         SysUser loginUser;
         if (ThirdAppConfig.WECHAT_ENTERPRISE.equalsIgnoreCase(source)) {
             log.info("【企业微信】OAuth2登录进入callback：code=" + code + ", state=" + state);
