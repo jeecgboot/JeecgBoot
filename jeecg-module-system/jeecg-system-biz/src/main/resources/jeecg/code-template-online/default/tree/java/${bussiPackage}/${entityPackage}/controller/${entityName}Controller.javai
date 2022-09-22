@@ -206,6 +206,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-添加")
 	@ApiOperation(value="${tableVo.ftlDescription}-添加", notes="${tableVo.ftlDescription}-添加")
+    //@RequiresPermissions("${bussiPackage}:${tableName}:add")
 	@PostMapping(value = "/add")
 	public Result<String> add(@RequestBody ${entityName} ${entityName?uncap_first}) {
 		${entityName?uncap_first}Service.add${entityName}(${entityName?uncap_first});
@@ -220,6 +221,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-编辑")
 	@ApiOperation(value="${tableVo.ftlDescription}-编辑", notes="${tableVo.ftlDescription}-编辑")
+    //@RequiresPermissions("${bussiPackage}:${tableName}:edit")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<String> edit(@RequestBody ${entityName} ${entityName?uncap_first}) {
 		${entityName?uncap_first}Service.update${entityName}(${entityName?uncap_first});
@@ -234,6 +236,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-通过id删除")
 	@ApiOperation(value="${tableVo.ftlDescription}-通过id删除", notes="${tableVo.ftlDescription}-通过id删除")
+    //@RequiresPermissions("${bussiPackage}:${tableName}:delete")
 	@DeleteMapping(value = "/delete")
 	public Result<String> delete(@RequestParam(name="id",required=true) String id) {
 		${entityName?uncap_first}Service.delete${entityName}(id);
@@ -248,6 +251,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-批量删除")
 	@ApiOperation(value="${tableVo.ftlDescription}-批量删除", notes="${tableVo.ftlDescription}-批量删除")
+    //@RequiresPermissions("${bussiPackage}:${tableName}:deleteBatch")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<String> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.${entityName?uncap_first}Service.removeByIds(Arrays.asList(ids.split(",")));
@@ -277,6 +281,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
     * @param request
     * @param ${entityName?uncap_first}
     */
+    //@RequiresPermissions("${bussiPackage}:${tableName}:exportXls")
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, ${entityName} ${entityName?uncap_first}) {
 		return super.exportXls(request, ${entityName?uncap_first}, ${entityName}.class, "${tableVo.ftlDescription}");
@@ -289,6 +294,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
     * @param response
     * @return
     */
+    //@RequiresPermissions("${bussiPackage}:${tableName}:importExcel")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
 		return super.importExcel(request, response, ${entityName}.class);
