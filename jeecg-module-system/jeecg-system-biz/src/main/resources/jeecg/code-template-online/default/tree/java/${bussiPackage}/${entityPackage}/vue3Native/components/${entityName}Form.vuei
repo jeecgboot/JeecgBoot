@@ -83,8 +83,8 @@
   const emit = defineEmits(['register', 'ok']);
   let model: Nullable<Recordable> = null;
   const formData = reactive<Record<string, any>>({
-<#list columns as po>
     id: '',
+<#list columns as po>
  <#if po.isShow == 'Y'>
   <#if po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
     ${po.fieldName}: undefined,
