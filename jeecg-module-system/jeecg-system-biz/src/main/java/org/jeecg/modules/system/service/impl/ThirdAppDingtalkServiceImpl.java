@@ -12,6 +12,7 @@ import com.jeecg.dingtalk.api.department.JdtDepartmentAPI;
 import com.jeecg.dingtalk.api.department.vo.Department;
 import com.jeecg.dingtalk.api.message.JdtMessageAPI;
 import com.jeecg.dingtalk.api.message.vo.ActionCardMessage;
+import com.jeecg.dingtalk.api.message.vo.MarkdownMessage;
 import com.jeecg.dingtalk.api.message.vo.Message;
 import com.jeecg.dingtalk.api.message.vo.TextMessage;
 import com.jeecg.dingtalk.api.oauth2.JdtOauth2API;
@@ -739,11 +740,47 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
      */
     @Override
     public boolean sendMessage(MessageDTO message, boolean verifyConfig) {
-        Response<String> response = this.sendMessageResponse(message, verifyConfig);
+        Response<String> response;
+        if (message.isMarkdown()) {
+            response = this.sendMarkdownResponse(message, verifyConfig);
+        } else {
+            response = this.sendMessageResponse(message, verifyConfig);
+        }
         if (response != null) {
             return response.isSuccess();
         }
         return false;
+    }
+
+    /**
+     * 发送Markdown消息
+     * @param message
+     * @param verifyConfig
+     * @return
+     */
+    public Response<String> sendMarkdownResponse(MessageDTO message, boolean verifyConfig) {
+        if (verifyConfig && !thirdAppConfig.isDingtalkEnabled()) {
+            return null;
+        }
+        String accessToken = this.getAccessToken();
+        if (accessToken == null) {
+            return null;
+        }
+        // 封装钉钉消息
+        String title = message.getTitle();
+        String content = message.getContent();
+        int agentId = thirdAppConfig.getDingtalk().getAgentIdInt();
+        Message<MarkdownMessage> mdMessage = new Message<>(agentId, new MarkdownMessage(title, content));
+        if (message.getToAll()) {
+            mdMessage.setTo_all_user(true);
+        } else {
+            String[] toUsers = message.getToUser().split(",");
+            // 通过第三方账号表查询出第三方userId
+            List<SysThirdAccount> thirdAccountList = sysThirdAccountService.listThirdUserIdByUsername(toUsers, THIRD_TYPE);
+            List<String> dtUserIds = thirdAccountList.stream().map(SysThirdAccount::getThirdUserId).collect(Collectors.toList());
+            mdMessage.setUserid_list(dtUserIds);
+        }
+        return JdtMessageAPI.sendMarkdownMessage(mdMessage, accessToken);
     }
 
     public Response<String> sendMessageResponse(MessageDTO message, boolean verifyConfig) {

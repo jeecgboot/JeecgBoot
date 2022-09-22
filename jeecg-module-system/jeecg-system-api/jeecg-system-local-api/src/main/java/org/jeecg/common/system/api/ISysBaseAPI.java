@@ -2,6 +2,7 @@ package org.jeecg.common.system.api;
 
 import com.alibaba.fastjson.JSONObject;
 import org.jeecg.common.api.CommonAPI;
+import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.system.vo.*;
@@ -50,6 +51,21 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     String parseTemplateByCode(TemplateDTO templateDTO);
 
+    //update-begin---author:taoyan ---date:20220705  for：支持自定义推送类型，邮件、钉钉、企业微信、系统消息-----------
+    /**
+     * 发送模板消息【新，支持自定义推送类型】
+     * @param message
+     */
+    void sendTemplateMessage(MessageDTO message);
+
+    /**
+     * 根据模板编码获取模板内容【新，支持自定义推送类型】
+     * @param templateCode
+     * @return
+     */
+    String getTemplateContent(String templateCode);
+    //update-begin---author:taoyan ---date:20220705  for：支持自定义推送类型，邮件、钉钉、企业微信、系统消息-----------
+    
     /**
      * 6根据用户id查询用户信息
      * @param id
@@ -339,16 +355,32 @@ public interface ISysBaseAPI extends CommonAPI {
     List<DictModel> loadDictItemByKeyword(String dictCode, String keyword, Integer pageSize);
 
     /**
-     * 发送模板消息
-     * @param message
+     * 新增数据日志
+     * @param dataLogDto
      */
-    void sendTemplateMessage(MessageDTO message);
+    void saveDataLog(DataLogDTO dataLogDto);
 
     /**
-     * 根据模板编码获取模板内容
-     * @param templateCode
-     * @return
+     * 添加文件到知识库
+     * @param sysFilesModel
      */
-    String getTemplateContent(String templateCode);
+    void addSysFiles(SysFilesModel sysFilesModel);
 
+    /**
+     * 通过文件路径获取文件id
+     * @param fileId
+     */
+    String getFileUrl(String fileId);
+
+    /**
+     * 更新头像
+     * @param loginUser
+     */
+    void updateAvatar(LoginUser loginUser);
+
+    /**
+     * 向app端 websocket推送聊天刷新消息
+     * @param userId
+     */
+    void sendAppChatSocket(String userId);
 }

@@ -9,10 +9,7 @@ import com.jeecg.qywx.api.department.JwDepartmentAPI;
 import com.jeecg.qywx.api.department.vo.DepartMsgResponse;
 import com.jeecg.qywx.api.department.vo.Department;
 import com.jeecg.qywx.api.message.JwMessageAPI;
-import com.jeecg.qywx.api.message.vo.Text;
-import com.jeecg.qywx.api.message.vo.TextCard;
-import com.jeecg.qywx.api.message.vo.TextCardEntity;
-import com.jeecg.qywx.api.message.vo.TextEntity;
+import com.jeecg.qywx.api.message.vo.*;
 import com.jeecg.qywx.api.user.JwUserAPI;
 import com.jeecg.qywx.api.user.vo.User;
 import lombok.extern.slf4j.Slf4j;
@@ -747,7 +744,12 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
 
     @Override
     public boolean sendMessage(MessageDTO message, boolean verifyConfig) {
-        JSONObject response = this.sendMessageResponse(message, verifyConfig);
+        JSONObject response;
+        if (message.isMarkdown()) {
+            response = this.sendMarkdownResponse(message, verifyConfig);
+        } else {
+            response = this.sendMessageResponse(message, verifyConfig);
+        }
         if (response != null) {
             return response.getIntValue("errcode") == 0;
         }
@@ -770,6 +772,23 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
         text.setText(entity);
         text.setAgentid(thirdAppConfig.getWechatEnterprise().getAgentIdInt());
         return JwMessageAPI.sendTextMessage(text, accessToken);
+    }
+
+    public JSONObject sendMarkdownResponse(MessageDTO message, boolean verifyConfig) {
+        if (verifyConfig && !thirdAppConfig.isWechatEnterpriseEnabled()) {
+            return null;
+        }
+        String accessToken = this.getAppAccessToken();
+        if (accessToken == null) {
+            return null;
+        }
+        Markdown markdown = new Markdown();
+        markdown.setTouser(this.getTouser(message.getToUser(), message.getToAll()));
+        MarkdownEntity entity = new MarkdownEntity();
+        entity.setContent(message.getContent());
+        markdown.setMarkdown(entity);
+        markdown.setAgentid(thirdAppConfig.getWechatEnterprise().getAgentIdInt());
+        return JwMessageAPI.sendMarkdownMessage(markdown, accessToken);
     }
 
     /**

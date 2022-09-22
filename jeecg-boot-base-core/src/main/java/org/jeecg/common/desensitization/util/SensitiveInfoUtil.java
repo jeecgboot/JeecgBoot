@@ -135,7 +135,7 @@ public class SensitiveInfoUtil {
         try {
             result = AesEncryptUtil.desEncrypt(data);
         } catch (Exception exception) {
-            log.warn("数据解密错误，原数据:"+data);
+            log.debug("数据解密错误，原数据:"+data);
         }
         //解决debug模式下，加解密失效导致中文被解密变成空的问题
         if(oConvertUtils.isEmpty(result) && oConvertUtils.isNotEmpty(data)){

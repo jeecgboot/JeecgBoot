@@ -2,6 +2,7 @@ package org.jeecg.common.util.dynamic.db;
 
 import freemarker.cache.StringTemplateLoader;
 import freemarker.core.ParseException;
+import freemarker.core.TemplateClassResolver;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +54,11 @@ public class FreemarkerParseFactory {
         SQL_CONFIG.setNumberFormat("0.#####################");
         //classic_compatible设置，解决报空指针错误
         SQL_CONFIG.setClassicCompatible(true);
+
+        //update-begin-author:taoyan date:2022-8-10 for: freemarker模板注入问题 禁止解析ObjectConstructor，Execute和freemarker.template.utility.JythonRuntime。
+        //https://ackcent.com/in-depth-freemarker-template-injection/
+        SQL_CONFIG.setNewBuiltinClassResolver(TemplateClassResolver.SAFER_RESOLVER);
+        //update-end-author:taoyan date:2022-8-10 for: freemarker模板注入问题 禁止解析ObjectConstructor，Execute和freemarker.template.utility.JythonRuntime。
     }
 
     /**
@@ -115,8 +121,10 @@ public class FreemarkerParseFactory {
      * @param paras      参数
      * @return String 模板解析后内容
      */
-    public static String parseTemplateContent(String tplContent,
-                                              Map<String, Object> paras) {
+    public static String parseTemplateContent(String tplContent,Map<String, Object> paras) {
+        return parseTemplateContent(tplContent, paras, false);
+    }
+    public static String parseTemplateContent(String tplContent, Map<String, Object> paras, boolean keepSpace) {
         try {
             String sqlUnderline="sql_";
             StringWriter swriter = new StringWriter();
@@ -129,7 +137,7 @@ public class FreemarkerParseFactory {
             }
             paras.put(MINI_DAO_FORMAT, new SimpleFormat());
             mytpl.process(paras, swriter);
-            String sql = getSqlText(swriter.toString());
+            String sql = getSqlText(swriter.toString(), keepSpace);
             paras.remove(MINI_DAO_FORMAT);
             return sql;
         } catch (Exception e) {
@@ -145,10 +153,16 @@ public class FreemarkerParseFactory {
      * 除去无效字段，去掉注释 不然批量处理可能报错 去除无效的等于
      */
     private static String getSqlText(String sql) {
+        return getSqlText(sql, false);
+    }
+
+    private static String getSqlText(String sql, boolean keepSpace) {
         // 将注释替换成""
         sql = NOTES_PATTERN.matcher(sql).replaceAll("");
-        sql = sql.replaceAll("\\n", " ").replaceAll("\\t", " ")
-                .replaceAll("\\s{1,}", " ").trim();
+        if (!keepSpace) {
+            sql = sql.replaceAll("\\n", " ").replaceAll("\\t", " ")
+                    .replaceAll("\\s{1,}", " ").trim();
+        }
         // 去掉 最后是 where这样的问题
         //where空格 "where "
         String whereSpace = DataBaseConstant.SQL_WHERE+" ";

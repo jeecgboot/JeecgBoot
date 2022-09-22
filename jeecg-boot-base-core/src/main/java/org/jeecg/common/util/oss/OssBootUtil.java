@@ -96,7 +96,11 @@ public class OssBootUtil {
      * @param fileDir 文件保存目录
      * @return oss 中的相对文件路径
      */
-    public static String upload(MultipartFile file, String fileDir,String customBucket) {
+    public static String upload(MultipartFile file, String fileDir,String customBucket) throws Exception {
+        //update-begin-author:liusq date:20210809 for: 过滤上传文件类型
+        FileTypeFilter.fileTypeFilter(file);
+        //update-end-author:liusq date:20210809 for: 过滤上传文件类型
+
         String filePath = null;
         initOss(endPoint, accessKeyId, accessKeySecret);
         StringBuilder fileUrl = new StringBuilder();
@@ -114,9 +118,6 @@ public class OssBootUtil {
             if("" == orgName){
               orgName=file.getName();
             }
-            //update-begin-author:liusq date:20210809 for: 过滤上传文件类型
-            FileTypeFilter.fileTypeFilter(file);
-            //update-end-author:liusq date:20210809 for: 过滤上传文件类型
             orgName = CommonUtils.getFileName(orgName);
             String fileName = orgName.indexOf(".")==-1
                               ?orgName + "_" + System.currentTimeMillis()
@@ -169,7 +170,7 @@ public class OssBootUtil {
      * @param fileDir
      * @return
      */
-    public static String upload(MultipartFile file, String fileDir) {
+    public static String upload(MultipartFile file, String fileDir) throws Exception {
         return upload(file, fileDir,null);
     }
 
@@ -235,6 +236,8 @@ public class OssBootUtil {
         } else {
             bucketUrl = "https://" + newBucket + "." + endPoint + SymbolConstant.SINGLE_SLASH;
         }
+        //TODO 暂时不允许删除云存储的文件
+        //initOss(endPoint, accessKeyId, accessKeySecret);
         url = url.replace(bucketUrl,"");
         ossClient.deleteObject(newBucket, url);
     }

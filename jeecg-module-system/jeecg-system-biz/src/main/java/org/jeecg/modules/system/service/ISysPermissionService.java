@@ -18,9 +18,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2018-12-21
  */
 public interface ISysPermissionService extends IService<SysPermission> {
-	/**
-	 * 切换vue3菜单
-	 */
+    /**
+     * 切换vue3菜单
+     */
 	public void switchVue3Menu();
 	
     /**
@@ -93,4 +93,11 @@ public interface ISysPermissionService extends IService<SysPermission> {
 	 * @return
 	 */
 	public boolean hasPermission(String username, String url);
+
+	/**
+	 * 查询部门权限数据
+	 * @param departId
+	 * @return
+	 */
+	List<SysPermission> queryDepartPermissionList(String departId);
 }

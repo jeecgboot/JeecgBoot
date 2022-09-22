@@ -23,7 +23,11 @@ public class JeecgBaseConfig {
      * 需要加强校验的接口清单
      */
     private String signUrls;
-
+    /**
+     * 上传模式  
+     * 本地：local\Minio：minio\阿里云：alioss
+     */
+    private String uploadType;
     /**
      * 是否启用安全模式
      */
@@ -43,6 +47,11 @@ public class JeecgBaseConfig {
      * app: http://localhost:8051
      */
     private DomainUrl domainUrl;
+
+    /**
+     * 文件预览
+     */
+    private String fileViewDomain;
 
     public Boolean getSafeMode() {
         return safeMode;
@@ -83,12 +92,20 @@ public class JeecgBaseConfig {
     public void setDomainUrl(DomainUrl domainUrl) {
         this.domainUrl = domainUrl;
     }
-
     public String getSignUrls() {
         return signUrls;
     }
 
     public void setSignUrls(String signUrls) {
         this.signUrls = signUrls;
+    }
+
+
+    public String getFileViewDomain() {
+        return fileViewDomain;
+    }
+
+    public void setFileViewDomain(String fileViewDomain) {
+        this.fileViewDomain = fileViewDomain;
     }
 }

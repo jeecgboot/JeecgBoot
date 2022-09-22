@@ -280,4 +280,5 @@ public class QuartzJobController {
 		}
 		return Result.ok("执行成功!");
 	}
+
 }

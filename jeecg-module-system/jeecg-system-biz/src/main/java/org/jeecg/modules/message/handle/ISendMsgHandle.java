@@ -10,7 +10,7 @@ public interface ISendMsgHandle {
 
     /**
      * 发送信息
-     * @param esReceiver 发送人
+     * @param esReceiver 接受人
      * @param esTitle 标题
      * @param esContent 内容
      */

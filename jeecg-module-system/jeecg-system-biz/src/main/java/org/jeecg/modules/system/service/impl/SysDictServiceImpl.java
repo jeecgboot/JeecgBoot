@@ -311,17 +311,33 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
             sqlWhere = " and ";
 		}
 		// update-end-author:sunjianlei date:20220112 for: 【JTC-631】判断如果 table 携带了 where 条件，那么就使用 and 查询，防止报错
-		if(oConvertUtils.isNotEmpty(keyword)){
-			// 判断是否是多选
-			if (keyword.contains(SymbolConstant.COMMA)) {
-                //update-begin--author:scott--date:20220105--for：JTC-529【表单设计器】 编辑页面报错，in参数采用双引号导致 ----
-				String inKeywords = "'" + String.join("','", keyword.split(",")) + "'";
-                //update-end--author:scott--date:20220105--for：JTC-529【表单设计器】 编辑页面报错，in参数采用双引号导致----
-				keywordSql = "(" + text + " in (" + inKeywords + ") or " + code + " in (" + inKeywords + "))";
-			} else {
-				keywordSql = "("+text + " like '%"+keyword+"%' or "+ code + " like '%"+keyword+"%')";
+
+		//update-begin-author:taoyan date:2022-8-15 for: 下拉搜索组件 支持传入排序信息 查询排序
+		String orderField = "", orderType = "";
+		if (oConvertUtils.isNotEmpty(keyword)) {
+			// 关键字里面如果写入了 排序信息 xxxxx[orderby:create_time,desc]
+			String orderKey = "[orderby";
+			if (keyword.indexOf(orderKey) >= 0 && keyword.endsWith("]")) {
+				String orderInfo = keyword.substring(keyword.indexOf(orderKey) + orderKey.length() + 1, keyword.length() - 1);
+				keyword = keyword.substring(0, keyword.indexOf(orderKey));
+				String[] orderInfoArray = orderInfo.split(SymbolConstant.COMMA);
+				orderField = orderInfoArray[0];
+				orderType = orderInfoArray[1];
+			}
+
+			if (oConvertUtils.isNotEmpty(keyword)) {
+				// 判断是否是多选
+				if (keyword.contains(SymbolConstant.COMMA)) {
+					//update-begin--author:scott--date:20220105--for：JTC-529【表单设计器】 编辑页面报错，in参数采用双引号导致 ----
+					String inKeywords = "'" + String.join("','", keyword.split(",")) + "'";
+					//update-end--author:scott--date:20220105--for：JTC-529【表单设计器】 编辑页面报错，in参数采用双引号导致----
+					keywordSql = "(" + text + " in (" + inKeywords + ") or " + code + " in (" + inKeywords + "))";
+				} else {
+					keywordSql = "("+text + " like '%"+keyword+"%' or "+ code + " like '%"+keyword+"%')";
+				}
 			}
 		}
+		//update-end-author:taoyan date:2022-8-15 for: 下拉搜索组件 支持传入排序信息 查询排序
 		if(oConvertUtils.isNotEmpty(condition) && oConvertUtils.isNotEmpty(keywordSql)){
 			filterSql+= sqlWhere + condition + " and " + keywordSql;
 		}else if(oConvertUtils.isNotEmpty(condition)){
@@ -329,6 +345,12 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		}else if(oConvertUtils.isNotEmpty(keywordSql)){
 			filterSql+= sqlWhere + keywordSql;
 		}
+		//update-begin-author:taoyan date:2022-8-15 for: 下拉搜索组件 支持传入排序信息 查询排序
+		// 增加排序逻辑
+		if (oConvertUtils.isNotEmpty(orderField)) {
+			filterSql += " order by " + orderField + " " + orderType;
+		}
+		//update-end-author:taoyan date:2022-8-15 for: 下拉搜索组件 支持传入排序信息 查询排序
 		return filterSql;
 	}
 	@Override
@@ -339,8 +361,8 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	}
 
 	@Override
-	public List<TreeSelectModel> queryTreeList(Map<String, String> query,String table, String text, String code, String pidField,String pid,String hasChildField) {
-		return baseMapper.queryTreeList(query, table, text, code, pidField, pid, hasChildField);
+	public List<TreeSelectModel> queryTreeList(Map<String, String> query,String table, String text, String code, String pidField,String pid,String hasChildField,int converIsLeafVal) {
+		return baseMapper.queryTreeList(query, table, text, code, pidField, pid, hasChildField,converIsLeafVal);
 	}
 
 	@Override
@@ -398,6 +420,14 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			//字典表
 			ls = this.queryDictItemsByCode(dictCode);
 		}
+		//update-begin-author:taoyan date:2022-8-30 for: 字典获取可以获取枚举类的数据
+		if (ls == null || ls.size() == 0) {
+			Map<String, List<DictModel>> map = ResourceUtil.getEnumDictData();
+			if (map.containsKey(dictCode)) {
+				return map.get(dictCode);
+			}
+		}
+		//update-end-author:taoyan date:2022-8-30 for: 字典获取可以获取枚举类的数据
 		return ls;
 	}
 

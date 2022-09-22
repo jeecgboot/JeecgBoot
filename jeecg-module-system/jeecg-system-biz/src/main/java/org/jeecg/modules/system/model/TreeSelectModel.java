@@ -14,7 +14,9 @@ public class TreeSelectModel implements Serializable {
 	private String key;
 	
 	private String title;
-	
+	/**
+	 * 是否叶子节点
+	 */
 	private boolean isLeaf;
 	
 	private String icon;

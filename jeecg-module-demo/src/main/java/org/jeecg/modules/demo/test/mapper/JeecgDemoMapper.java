@@ -47,4 +47,11 @@ public interface JeecgDemoMapper extends BaseMapper<JeecgDemo> {
 	 */
 	public List<String> queryUserAuth(@Param("userId")String userId,@Param("permsPrefix")String permsPrefix);
 
+
+	/**
+	 * 获取创建人
+	 * @return
+	 */
+	List<String> getCreateByList();
+
 }

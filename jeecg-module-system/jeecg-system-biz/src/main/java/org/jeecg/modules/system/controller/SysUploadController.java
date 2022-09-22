@@ -33,7 +33,7 @@ public class SysUploadController {
      * @param request
      */
     @PostMapping(value = "/uploadMinio")
-    public Result<?> uploadMinio(HttpServletRequest request) {
+    public Result<?> uploadMinio(HttpServletRequest request) throws Exception {
         Result<?> result = new Result<>();
         String bizPath = request.getParameter("biz");
 

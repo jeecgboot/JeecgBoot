@@ -25,6 +25,10 @@
 		<result column="bus_id" property="busId" jdbcType="VARCHAR"/>
 		<result column="open_type" property="openType" jdbcType="VARCHAR"/>
 		<result column="open_page" property="openPage" jdbcType="VARCHAR"/>
+
+		<result column="read_flag" property="readFlag" jdbcType="VARCHAR"/>
+		<result column="star_flag" property="starFlag" jdbcType="VARCHAR"/>
+		<result column="send_id" property="sendId" jdbcType="VARCHAR"/>
 	</resultMap>
 	
 	
@@ -37,4 +41,31 @@
 	   order by create_time DESC
 	</select>
 
+
+	<!-- 查询消息记录 -->
+	<select id="queryMessageList" resultMap="SysAnnouncement">
+	   select a.*, 
+	   		b.read_flag, 
+	   		b.star_flag,
+	   		b.id as send_id
+	   from sys_announcement a
+	   join sys_announcement_send b on b.annt_id = a.id
+	   where a.send_status = '1' and a.del_flag = '0' and b.user_id = #{userId}
+		<if test="fromUser!=null and fromUser!=''">
+			and a.sender = #{fromUser}
+		</if>
+	
+		<if test="beginDate!=null">
+			and a.create_time &gt;= #{beginDate}
+		</if>
+		<if test="endDate!=null">
+			and a.create_time &lt;= #{endDate}
+		</if>
+
+		<if test="starFlag!=null and starFlag!=''">
+			and b.star_flag = #{starFlag}
+		</if>
+	   order by b.read_flag ASC,a.create_time DESC
+	</select>
+	
 </mapper>

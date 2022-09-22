@@ -1,6 +1,7 @@
 package org.jeecg.common.util;
 
 import org.apache.commons.lang3.StringUtils;
+import org.pegdown.PegDownProcessor;
 import org.springframework.web.util.HtmlUtils;
 
 /**
@@ -27,6 +28,16 @@ public class HTMLUtils {
             return content.trim();
         }
         return "";
+    }
+
+    /**
+     * 将Markdown解析成Html
+     * @param markdownContent
+     * @return
+     */
+    public static String parseMarkdown(String markdownContent) {
+        PegDownProcessor pdp = new PegDownProcessor();
+        return pdp.markdownToHtml(markdownContent);
     }
 
 }

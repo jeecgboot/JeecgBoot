@@ -36,4 +36,9 @@ public class SysAnnouncementSendServiceImpl extends ServiceImpl<SysAnnouncementS
 		 return page.setRecords(sysAnnouncementSendMapper.getMyAnnouncementSendList(page, announcementSendModel));
 	}
 
+	@Override
+	public AnnouncementSendModel getOne(String sendId) {
+		return sysAnnouncementSendMapper.getOne(sendId);
+	}
+
 }

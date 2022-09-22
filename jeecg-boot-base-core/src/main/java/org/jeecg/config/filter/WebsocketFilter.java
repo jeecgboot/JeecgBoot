@@ -5,6 +5,7 @@ import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.TokenUtils;
+import org.jeecg.common.util.oConvertUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -36,12 +37,13 @@ public class WebsocketFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest)servletRequest;
         String token = request.getHeader(TOKEN_KEY);
 
-        log.info("websocket连接 Token安全校验，Path = {}，token:{}", request.getRequestURI(), token);
+        log.debug("Websocket连接 Token安全校验，Path = {}，token:{}", request.getRequestURI(), token);
 
         try {
             TokenUtils.verifyToken(token, commonApi, redisUtil);
         } catch (Exception exception) {
-            log.error("websocket连接校验失败，{}，token:{}", exception.getMessage(), token);
+            //log.error("Websocket连接 Token安全校验失败，IP:{}, Token:{}, Path = {}，异常：{}", oConvertUtils.getIpAddrByRequest(request), token, request.getRequestURI(), exception.getMessage());
+            log.debug("Websocket连接 Token安全校验失败，IP:{}, Token:{}, Path = {}，异常：{}", oConvertUtils.getIpAddrByRequest(request), token, request.getRequestURI(), exception.getMessage());
             return;
         }
         HttpServletResponse response = (HttpServletResponse)servletResponse;

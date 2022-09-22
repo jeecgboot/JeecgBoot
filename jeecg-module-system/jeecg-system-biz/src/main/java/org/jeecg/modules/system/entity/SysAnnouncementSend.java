@@ -45,4 +45,9 @@ public class SysAnnouncementSend implements Serializable {
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private java.util.Date updateTime;
+
+	/**
+	 * 是否标星 当值为1是标星消息
+	 */
+	private String starFlag;
 }

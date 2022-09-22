@@ -146,11 +146,6 @@
 					<groupId>org.apache.shiro</groupId>
 					<artifactId>shiro-core</artifactId>
 				</exclusion>
-				<!-- [issues/3596] 解决启动报错：Cannot resolve com.sun:tools:1.8.0 -->
-				<exclusion>
-					<groupId>com.puppycrawl.tools</groupId>
-					<artifactId>checkstyle</artifactId>
-				</exclusion>
 			</exclusions>
 		</dependency>
 
@@ -186,11 +181,6 @@
 		<dependency>
 			<groupId>io.minio</groupId>
 			<artifactId>minio</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>${guava.version}</version>
 		</dependency>
 
 		<!-- 阿里云短信 -->

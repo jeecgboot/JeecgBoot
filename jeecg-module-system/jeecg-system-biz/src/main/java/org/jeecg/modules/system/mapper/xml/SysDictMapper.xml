@@ -128,7 +128,14 @@
 			   ${code} as "key",
 				<!-- udapte-begin-author:taoyan date:20211115 for: 自定义树控件只显示父节点，子节点无法展开 (此处还原不可再改) /issues/I4HZAL -->
 			   <if test="hasChildField != null and hasChildField != ''">
-			   	(case when ${hasChildField} = '1' then 0 else 1 end) as isLeaf,
+				   <choose>
+					   <when test="converIsLeafVal!=null and converIsLeafVal==1">
+						   (case when ${hasChildField} = '1' then 0 else 1 end) as isLeaf,
+					   </when>
+					   <otherwise>
+						   ${hasChildField} as isLeaf,
+					   </otherwise>
+				   </choose>
 			   </if>
 				<!-- udapte-end-author:taoyan date:20211115 for: 自定义树控件只显示父节点，子节点无法展开 (此处还原不可再改) /issues/I4HZAL -->
 			   ${pidField} as parentId

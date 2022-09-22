@@ -2,7 +2,6 @@ package org.jeecg.config.sign.interceptor;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.util.PathMatcherUtil;
-import org.jeecg.common.util.SpringContextHolder;
 import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.config.filter.RequestBodyReserveFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -12,8 +11,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * 签名 拦截器配置

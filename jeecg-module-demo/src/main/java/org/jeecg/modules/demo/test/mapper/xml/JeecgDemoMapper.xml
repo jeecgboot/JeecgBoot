@@ -31,4 +31,10 @@
         and sur.user_id = #{userId}
         and sp.perms like concat(concat('%',#{permsPrefix}),'%')
     </select>
+
+    <!--  获取创建人 -->
+    <select id="getCreateByList" resultType="java.lang.String">
+        select create_by from demo group by create_by
+    </select>
+    
 </mapper>

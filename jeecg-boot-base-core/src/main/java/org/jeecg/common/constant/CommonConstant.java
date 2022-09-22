@@ -261,7 +261,7 @@ public interface CommonConstant {
     /**
      * 在线聊天 图片文件保存路径
      */
-    String IM_UPLOAD_CUSTOM_PATH = "imfile";
+    String IM_UPLOAD_CUSTOM_PATH = "biz/user_imgs";
     /**
      * 在线聊天 用户状态
      */
@@ -406,4 +406,23 @@ public interface CommonConstant {
      * 模板消息中 跳转地址的对应的key
      */
     String MSG_HREF_URL = "url";
+
+    /**
+     * sys_data_log表的类型 用于区别评论区域的日志数据
+     */
+    String DATA_LOG_TYPE_COMMENT = "comment";
+
+    /**
+     * sys_data_log表的类型 老的数据比较 类型都设置为json
+     */
+    String DATA_LOG_TYPE_JSON = "json";
+
+    /** 消息模板：markdown */
+    String MSG_TEMPLATE_TYPE_MD = "5";
+
+    /**
+     * 短信验证码redis-key的前缀
+     */
+    String PHONE_REDIS_KEY_PRE = "phone_msg";
+
 }

@@ -31,4 +31,11 @@ public interface ISysAnnouncementSendService extends IService<SysAnnouncementSen
 	 */
 	public Page<AnnouncementSendModel> getMyAnnouncementSendPage(Page<AnnouncementSendModel> page,AnnouncementSendModel announcementSendModel);
 
+	/**
+	 * 根据消息发送记录ID获取消息内容
+	 * @return
+	 */
+	AnnouncementSendModel getOne(String sendId);
+	
+
 }

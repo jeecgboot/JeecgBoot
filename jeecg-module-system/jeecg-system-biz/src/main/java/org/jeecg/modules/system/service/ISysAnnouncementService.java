@@ -1,9 +1,11 @@
 package org.jeecg.modules.system.service;
 
-import org.jeecg.modules.system.entity.SysAnnouncement;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.system.entity.SysAnnouncement;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * @Description: 系统通告表
@@ -40,7 +42,24 @@ public interface ISysAnnouncementService extends IService<SysAnnouncement> {
      * @param msgCategory 消息类型
      * @return Page<SysAnnouncement>
      */
-	public Page<SysAnnouncement> querySysCementPageByUserId(Page<SysAnnouncement> page,String userId,String msgCategory);
+	public Page<SysAnnouncement> querySysCementPageByUserId(Page<SysAnnouncement> page, String userId, String msgCategory);
+
+
+    /**
+     *  补全当前登录用户的消息阅读记录 
+     */
+	void completeAnnouncementSendInfo();
+
+
+    /**
+     * 分页查询当前登录用户的消息， 并且标记哪些是未读消息
+     */
+    List<SysAnnouncement> querySysMessageList(int pageSize, int pageNo, String fromUser, String starFlag, Date beginDate, Date endDate);
+
+    /**
+     * 修改为已读消息
+     */
+    void updateReaded(List<String> annoceIdList);
 
 
 }

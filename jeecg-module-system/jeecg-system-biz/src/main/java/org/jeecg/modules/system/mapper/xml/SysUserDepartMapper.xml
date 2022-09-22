@@ -27,7 +27,7 @@
 		join sys_user_depart b on b.user_id = a.id
 		join sys_depart c on b.dep_id = c.id
 		<bind name="bindOrgCode" value="orgCode+'%'"/>
-		where a.del_flag = 0 and a.status = 1 and c.org_code like #{bindOrgCode}
+		where a.del_flag = 0 and a.status = 1 and c.org_code like #{bindOrgCode} and a.username!='_reserve_user_external'
 		<if test="username!=null and username!=''">
 			<bind name="bindUsername" value="'%'+username+'%'"/>
 			and a.username like #{bindUsername}
@@ -37,4 +37,21 @@
 			and a.realname like #{bindRealname}
 		</if>
 	</select>
+
+    <!--获取用户信息（聊天专用）-->
+    <select id="getUserInformation" resultType="org.jeecg.modules.system.entity.SysUser">
+        select DISTINCT a.* from sys_user a
+        left join sys_user_depart b on b.user_id = a.id
+        left join sys_depart c on b.dep_id = c.id
+        <bind name="bindOrgCode" value="orgCode+'%'"/>
+        where
+          a.del_flag = 0 and a.status = 1
+          and c.org_code like #{bindOrgCode}
+          and a.username!='_reserve_user_external'
+          and a.id !=#{userId}
+        <if test="keyword!=null and keyword!=''">
+            <bind name="bindKeyword" value="'%'+keyword+'%'"/>
+            and (a.username like #{bindKeyword} or a.realname like #{bindKeyword})
+        </if>
+    </select>
 </mapper>

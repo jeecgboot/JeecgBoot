@@ -1,7 +1,8 @@
-package org.jeecg.modules.message.websocket;
+package org.jeecg.modules.message.controller;
 
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.WebsocketConst;
+import org.jeecg.modules.message.websocket.WebSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
@@ -57,7 +59,7 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 				}
 			queryDep.in(SysDepart::getId, depIdList);
 			List<SysDepart> depList = sysDepartService.list(queryDep);
-			//[jeecg-boot/issues/3906] 逻辑判断有问题
+			//jeecg-boot/issues/3906
 			if(depList != null && depList.size() > 0) {
 				for(SysDepart depart : depList) {
 					depIdModelList.add(new DepartIdModel().convertByUserDepart(depart));
@@ -139,7 +141,10 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
                 query.eq(SysUser::getId, id);
             }
             //update-end---author:wangshuai ---date:20220608  for：[VUEN-1238]邮箱回复时，发送到显示的为用户id------------
-			pageList = sysUserMapper.selectPage(page, query);
+            //update-begin---author:wangshuai ---date:20220902  for：[VUEN-2121]临时用户不能直接显示------------
+            query.ne(SysUser::getUsername,"_reserve_user_external");
+            //update-end---author:wangshuai ---date:20220902  for：[VUEN-2121]临时用户不能直接显示------------
+            pageList = sysUserMapper.selectPage(page, query);
 		}else{
 			// 有部门ID 需要走自定义sql
 			SysDepart sysDepart = sysDepartService.getById(departId);
@@ -165,6 +170,31 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 		}
 		return pageList;
 	}
+
+    @Override
+    public IPage<SysUser> getUserInformation(String departId, String keyword, Integer pageSize, Integer pageNo) {
+        IPage<SysUser> pageList = null;
+        // 部门ID不存在 直接查询用户表即可
+        Page<SysUser> page = new Page<>(pageNo, pageSize);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if(oConvertUtils.isEmpty(departId)){
+            LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
+            query.eq(SysUser::getStatus,Integer.parseInt(CommonConstant.STATUS_1));
+            query.ne(SysUser::getUsername,"_reserve_user_external");
+            //排除自己
+            query.ne(SysUser::getId,sysUser.getId());
+            //这个语法可以将or用括号包起来，避免数据查不到
+            query.and((wrapper) -> wrapper.like(SysUser::getUsername, keyword).or().like(SysUser::getRealname,keyword));
+            pageList = sysUserMapper.selectPage(page, query);
+        }else{
+            // 有部门ID 需要走自定义sql
+            SysDepart sysDepart = sysDepartService.getById(departId);
+            //update-begin---author:wangshuai ---date:20220908  for：部门排除自己------------
+            pageList = this.baseMapper.getUserInformation(page, sysDepart.getOrgCode(), keyword,sysUser.getId());
+            //update-end---author:wangshuai ---date:20220908  for：部门排除自己--------------
+        }
+        return pageList;
+    }
 
 	/**
 	 * 升级SpringBoot2.6.6,不允许循环依赖

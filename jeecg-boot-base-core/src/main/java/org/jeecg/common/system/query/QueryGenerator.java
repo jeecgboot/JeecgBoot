@@ -246,7 +246,7 @@ public class QueryGenerator {
 
 			//update-begin-author:taoyan date:2022-5-16 for: issues/3676 获取系统用户列表时，使用SQL注入生效
 			//判断column是不是当前实体的
-			log.info("当前字段有："+ allFields);
+			log.debug("当前字段有："+ allFields);
 			if (!allColumnExist(column, allFields)) {
 				throw new JeecgBootException("请注意，将要排序的列字段不存在：" + column);
 			}
