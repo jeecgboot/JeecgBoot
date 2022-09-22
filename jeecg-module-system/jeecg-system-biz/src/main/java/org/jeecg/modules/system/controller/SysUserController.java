@@ -933,7 +933,12 @@ public class SysUserController {
 		Result<JSONObject> result = new Result<JSONObject>();
 		String phone = jsonObject.getString("phone");
 		String smscode = jsonObject.getString("smscode");
-		Object code = redisUtil.get(phone);
+
+        //update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+		String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+phone;
+		Object code = redisUtil.get(redisKey);
+        //update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+
 		String username = jsonObject.getString("username");
 		//未设置用户名，则用手机号作为用户名
 		if(oConvertUtils.isEmpty(username)){
@@ -1042,14 +1047,18 @@ public class SysUserController {
 		Result<Map<String,String>> result = new Result<Map<String,String>>();
 		String phone = jsonObject.getString("phone");
 		String smscode = jsonObject.getString("smscode");
-		Object code = redisUtil.get(phone);
+        //update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+        String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+phone;
+		Object code = redisUtil.get(redisKey);
 		if (!smscode.equals(code)) {
 			result.setMessage("手机验证码错误");
 			result.setSuccess(false);
 			return result;
 		}
 		//设置有效时间
-		redisUtil.set(phone, smscode,600);
+		redisUtil.set(redisKey, smscode,600);
+        //update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+
 		//新增查询用户名
 		LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
         query.eq(SysUser::getPhone,phone);
@@ -1078,7 +1087,10 @@ public class SysUserController {
         }
 
         SysUser sysUser=new SysUser();
-        Object object= redisUtil.get(phone);
+        //update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+        String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+phone;
+        Object object= redisUtil.get(redisKey);
+        //update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
         if(null==object) {
         	result.setMessage("短信验证码失效！");
             result.setSuccess(false);
@@ -1396,7 +1408,7 @@ public class SysUserController {
     }
 
     /**
-     * 根据用户名修改手机号
+     * 根据用户名修改手机号[该方法未使用]
      * @param json
      * @return
      */
@@ -1412,7 +1424,10 @@ public class SysUserController {
             result.setSuccess(false);
             return result;
         }
-        Object object= redisUtil.get(phone);
+        //update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+        String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+phone;
+        Object object= redisUtil.get(redisKey);
+        //update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
         if(null==object) {
             result.setMessage("短信验证码失效！");
             result.setSuccess(false);

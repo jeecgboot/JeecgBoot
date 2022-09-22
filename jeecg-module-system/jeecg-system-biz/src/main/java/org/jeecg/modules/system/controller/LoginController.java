@@ -17,6 +17,7 @@ import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
 import org.jeecg.common.util.encryption.EncryptedString;
+import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysRoleIndex;
@@ -64,6 +65,9 @@ public class LoginController {
 	@Resource
 	private BaseCommonService baseCommonService;
 
+	@Autowired
+	private JeecgBaseConfig jeecgBaseConfig;
+
 	private final String BASE_CHECK_CODES = "qwertyuiplkjhgfdsazxcvbnmQWERTYUPLKJHGFDSAZXCVBNM1234567890";
 
 	@ApiOperation("登录接口")
@@ -84,7 +88,11 @@ public class LoginController {
             return result;
         }
         String lowerCaseCaptcha = captcha.toLowerCase();
-		String realKey = Md5Util.md5Encode(lowerCaseCaptcha+sysLoginModel.getCheckKey(), "utf-8");
+        //update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+		// 加入密钥作为混淆，避免简单的拼接，被外部利用，用户自定义该密钥即可
+        String origin = lowerCaseCaptcha+sysLoginModel.getCheckKey()+jeecgBaseConfig.getSignatureSecret();
+		String realKey = Md5Util.md5Encode(origin, "utf-8");
+		//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 		Object checkCode = redisUtil.get(realKey);
 		//当进入登录页时，有一定几率出现验证码错误 #1714
 		if(checkCode==null || !checkCode.toString().equals(lowerCaseCaptcha)) {
@@ -290,7 +298,12 @@ public class LoginController {
 			result.setSuccess(false);
 			return result;
 		}
-		Object object = redisUtil.get(mobile);
+		
+		//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+		String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+mobile;
+		Object object = redisUtil.get(redisKey);
+		//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+		
 		if (object != null) {
 			result.setMessage("验证码10分钟内，仍然有效！");
 			result.setSuccess(false);
@@ -342,8 +355,12 @@ public class LoginController {
 				result.setSuccess(false);
 				return result;
 			}
+			
+			//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 			//验证码10分钟内有效
-			redisUtil.set(mobile, captcha, 600);
+			redisUtil.set(redisKey, captcha, 600);
+			//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+			
 			//update-begin--Author:scott  Date:20190812 for：issues#391
 			//result.setResult(captcha);
 			//update-end--Author:scott  Date:20190812 for：issues#391
@@ -378,7 +395,12 @@ public class LoginController {
 		}
 		
 		String smscode = jsonObject.getString("captcha");
-		Object code = redisUtil.get(phone);
+
+		//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+		String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+phone;
+		Object code = redisUtil.get(redisKey);
+		//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+
 		if (!smscode.equals(code)) {
 			result.setMessage("手机验证码错误");
 			return result;
@@ -404,7 +426,7 @@ public class LoginController {
 		String syspassword = sysUser.getPassword();
 		// 获取用户部门信息
 		JSONObject obj = new JSONObject(new LinkedHashMap<>());
-		
+
 		// 生成token
 		String token = JwtUtil.sign(username, syspassword);
 		// 设置token缓存有效时间
@@ -429,9 +451,9 @@ public class LoginController {
 			}
 		}
 		// update-end--Author:sunjianlei Date:20210802 for：获取用户租户信息
-		
+
 		obj.put("userInfo", sysUser);
-		
+
 		List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());
 		obj.put("departs", departs);
 		if (departs == null || departs.size() == 0) {
@@ -481,24 +503,28 @@ public class LoginController {
 		try {
 			//生成验证码
 			String code = RandomUtil.randomString(BASE_CHECK_CODES,4);
-
 			//存到redis中
 			String lowerCaseCode = code.toLowerCase();
-			String realKey = Md5Util.md5Encode(lowerCaseCode+key, "utf-8");
-            log.info("获取验证码，Redis checkCode = {}，key = {}", code, key);
+			
+			//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+			// 加入密钥作为混淆，避免简单的拼接，被外部利用，用户自定义该密钥即可
+			String origin = lowerCaseCode+key+jeecgBaseConfig.getSignatureSecret();
+			String realKey = Md5Util.md5Encode(origin, "utf-8");
+			//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+            
 			redisUtil.set(realKey, lowerCaseCode, 60);
-
+			log.info("获取验证码，Redis key = {}，checkCode = {}", realKey, code);
 			//返回前端
 			String base64 = RandImageUtil.generate(code);
 			res.setSuccess(true);
 			res.setResult(base64);
 		} catch (Exception e) {
-			res.error500("获取验证码出错"+e.getMessage());
-			e.printStackTrace();
+			log.error(e.getMessage(), e);
+			res.error500("获取验证码失败,请检查redis配置!");
+			return res;
 		}
 		return res;
 	}
-
 
 	/**
 	 * 切换菜单表为vue3的表
@@ -592,9 +618,9 @@ public class LoginController {
 		return Result.ok();
 	}
 	/**
-	 * 获取登录二维码
+	 * 登录二维码
 	 */
-	@ApiOperation(value = "获取登录二维码", notes = "获取登录二维码")
+	@ApiOperation(value = "登录二维码", notes = "登录二维码")
 	@GetMapping("/getLoginQrcode")
 	public Result<?>  getLoginQrcode() {
 		String qrcodeId = CommonConstant.LOGIN_QRCODE_PRE+IdWorker.getIdStr();
@@ -625,7 +651,7 @@ public class LoginController {
 	/**
 	 * 获取用户扫码后保存的token
 	 */
-	@ApiOperation(value = "获取用户扫码后Token", notes = "获取用户扫码后Token")
+	@ApiOperation(value = "获取用户扫码后保存的token", notes = "获取用户扫码后保存的token")
 	@GetMapping("/getQrcodeToken")
 	public Result getQrcodeToken(@RequestParam String qrcodeId) {
 		Object token = redisUtil.get(CommonConstant.LOGIN_QRCODE_TOKEN + qrcodeId);
