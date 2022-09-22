@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jeecg-system-cloud-start</artifactId>
-    <description>System微服务启动</description>
+    <description>System项目微服务启动</description>
 
     <dependencies>
         <!-- 引入jeecg-boot-starter-cloud依赖 -->

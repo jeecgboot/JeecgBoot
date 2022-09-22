@@ -29,6 +29,7 @@
             <artifactId>jeecg-boot-starter-job</artifactId>
         </dependency>
 
+        <!-- 引入demo模块 -->
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
             <artifactId>jeecg-module-demo</artifactId>

@@ -65,7 +65,7 @@ public class JeecgShardingDemoController extends JeecgController<ShardingSysLog,
     @ApiOperation(value = "分库分表插入", notes = "分库分表")
     public Result<?> test2() {
         int start=20;
-        int size=50;
+        int size=30;
         for (int i = start; i <= size; i++) {
             ShardingSysLog shardingSysLog = new ShardingSysLog();
             shardingSysLog.setLogContent("分库分表测试");

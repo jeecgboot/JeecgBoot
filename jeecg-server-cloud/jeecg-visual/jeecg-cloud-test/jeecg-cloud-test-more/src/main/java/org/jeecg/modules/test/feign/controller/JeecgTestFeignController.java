@@ -4,7 +4,7 @@ package org.jeecg.modules.test.feign.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.modules.test.feign.client.*;
+import org.jeecg.modules.test.feign.client.JeecgTestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;

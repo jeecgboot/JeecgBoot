@@ -23,16 +23,11 @@ public class GatewayRoutersConfig {
     public String username;
     public String password;
 
-    @Value("${spring.cloud.nacos.discovery.server-addr}")
-    public void setServerAddr(String serverAddr) {
-        this.serverAddr = serverAddr;
+    @Value("${jeecg.route.config.data-type:#{null}}")
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
-
-    @Value("${spring.cloud.nacos.discovery.namespace:#{null}}")
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
-
+    
     @Value("${jeecg.route.config.data-id:#{null}}")
     public void setRouteDataId(String dataId) {
         this.dataId = dataId + ".json";
@@ -43,9 +38,14 @@ public class GatewayRoutersConfig {
         this.routeGroup = routeGroup;
     }
 
-    @Value("${jeecg.route.config.data-type:#{null}}")
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
+    @Value("${spring.cloud.nacos.discovery.server-addr}")
+    public void setServerAddr(String serverAddr) {
+        this.serverAddr = serverAddr;
+    }
+
+    @Value("${spring.cloud.nacos.discovery.namespace:#{null}}")
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     @Value("${spring.cloud.nacos.config.username:#{null}}")

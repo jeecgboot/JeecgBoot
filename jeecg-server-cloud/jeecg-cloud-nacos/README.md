@@ -9,3 +9,8 @@
 - 3、如何不用此模块，使用自己的naocs，请创建下面目录中的配置文件
      目录：jeecg-cloud-nacos/docs/config
      配置文件： YAML
+
+
+# 常见问题
+- UnsupportedOperationException: Cannot determine JNI library name for ARCH='x86' OS='windows 10'
+  解决方案：http://t.zoukankan.com/mindzone-p-15808190.html
