@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.4.0</version>
+  <version>3.4.2</version>
   <packaging>pom</packaging>
   <name>JEECG BOOT ${project.version}</name>
 
@@ -14,7 +14,7 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.4.0</jeecgboot.version>
+		<jeecgboot.version>3.4.2</jeecgboot.version>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
