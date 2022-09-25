@@ -24,7 +24,7 @@
         },
         setup(props,{emit}) {
             const [registerForm, {setProps, resetFields, setFieldsValue,getFieldsValue,validate}] = useForm({
-                labelWidth: 150,
+                //labelWidth: 150,
                 schemas: ${sub.entityName?uncap_first}FormSchema,
                 showActionButtonGroup: false,
                 baseColProps: {span: ${getFormSpan(tableVo.fieldRowNum?default(1))}}
