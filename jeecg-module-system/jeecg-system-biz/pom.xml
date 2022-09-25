@@ -34,7 +34,11 @@
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot-starter</artifactId>
 		</dependency>
-
+		<!-- 积木报表 mongo redis 支持包 
+		<dependency>
+			<groupId>org.jeecgframework.jimureport</groupId>
+			<artifactId>jimureport-nosql-starter</artifactId>
+		</dependency>-->
 	</dependencies>
 	
 </project>
