@@ -20,7 +20,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.Date;
 import java.util.UUID;
 
@@ -299,10 +298,13 @@ public class OssBootUtil {
             //update-end---author:liusq  Date:20220120  for：替换objectName前缀，防止key不一致导致获取不到文件----
             if(ossClient.doesObjectExist(bucketName,objectName)){
                 URL url = ossClient.generatePresignedUrl(bucketName,objectName,expires);
-                return URLDecoder.decode(url.toString(),"UTF-8");
+                //log.info("原始url : {}", url.toString());
+                //log.info("decode url : {}", URLDecoder.decode(url.toString(), "UTF-8"));
+                //【issues/4023】问题 oss外链经过转编码后，部分无效，大概在三分一；无需转编码直接返回即可 #4023
+                return url.toString();
             }
         }catch (Exception e){
-            log.info("文件路径获取失败" + e.getMessage());
+            log.info("文件路径获取失败" + e.getMessage()); 
         }
         return null;
     }
