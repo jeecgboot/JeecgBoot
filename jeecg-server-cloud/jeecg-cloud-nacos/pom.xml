@@ -34,6 +34,10 @@
         </repository>
     </repositories>
 
+    <properties>
+        <log4j2.version>2.17.0</log4j2.version>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
