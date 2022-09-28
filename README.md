@@ -54,7 +54,10 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 
 
 ##### Star走势图
-![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/star20220907.png)
+
+[![Star History Chart](https://api.star-history.com/svg?repos=jeecgboot/jeecg-boot&type=Date)](https://star-history.com/#jeecgboot/jeecg-boot)
+
+
 
 适用项目
 -----------------------------------
