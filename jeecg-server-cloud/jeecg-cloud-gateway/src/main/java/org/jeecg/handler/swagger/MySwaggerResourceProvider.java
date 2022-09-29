@@ -15,10 +15,7 @@ import org.springframework.stereotype.Component;
 import springfox.documentation.swagger.web.SwaggerResource;
 import springfox.documentation.swagger.web.SwaggerResourcesProvider;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 聚合各个服务的swagger接口
@@ -44,7 +41,12 @@ public class MySwaggerResourceProvider implements SwaggerResourcesProvider {
      */
     @Value("${spring.cloud.nacos.discovery.server-addr}")
     private String serverAddr;
-
+    /**
+     * nacos namespace
+     */
+    @Value("${spring.cloud.nacos.discovery.namespace}")
+    private String namespace;
+    
     /**
      * Swagger中需要排除的服务
      */
@@ -107,7 +109,12 @@ public class MySwaggerResourceProvider implements SwaggerResourcesProvider {
     private Boolean checkRoute(String routeId) {
         Boolean hasRoute = false;
         try {
-            NamingService naming = NamingFactory.createNamingService(serverAddr);
+            //修复使用带命名空间启动网关swagger看不到接口文档的问题
+            Properties properties=new Properties();
+            properties.setProperty("serverAddr",serverAddr);
+            properties.setProperty("namespace",namespace);
+            NamingService naming = NamingFactory.createNamingService(properties);
+            
             List<Instance> list = naming.selectInstances(routeId, true);
             if (ObjectUtil.isNotEmpty(list)) {
                 hasRoute = true;
