@@ -119,10 +119,10 @@ public class oConvertUtils {
 	}
 
 	public static Integer[] getInts(String[] s) {
-		Integer[] integer = new Integer[s.length];
 		if (s == null) {
 			return null;
 		}
+		Integer[] integer = new Integer[s.length];
 		for (int i = 0; i < s.length; i++) {
 			integer[i] = Integer.parseInt(s[i]);
 		}
