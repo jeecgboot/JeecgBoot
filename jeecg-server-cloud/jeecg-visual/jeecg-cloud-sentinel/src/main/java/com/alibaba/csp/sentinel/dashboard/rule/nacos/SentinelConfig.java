@@ -157,6 +157,9 @@ public class SentinelConfig {
         if(StringUtils.isNotBlank(nacosConfigProperties.getPassword())){
             properties.put(PropertyKeyConst.PASSWORD,nacosConfigProperties.getPassword());
         }
+        if(StringUtils.isNotBlank(nacosConfigProperties.getNamespace())){
+            properties.put(PropertyKeyConst.NAMESPACE,nacosConfigProperties.getNamespace());
+        }
         return ConfigFactory.createConfigService(properties);
     }
 }
