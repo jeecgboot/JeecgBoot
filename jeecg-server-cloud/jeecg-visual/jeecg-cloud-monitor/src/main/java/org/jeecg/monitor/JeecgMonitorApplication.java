@@ -13,6 +13,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @EnableAdminServer
 public class JeecgMonitorApplication {
     public static void main(String[] args) {
-        SpringApplication.run(JeecgMonitorApplication.class);
+        SpringApplication.run(JeecgMonitorApplication.class, args);
     }
 }
