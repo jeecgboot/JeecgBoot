@@ -44,7 +44,7 @@ public class MySwaggerResourceProvider implements SwaggerResourcesProvider {
     /**
      * nacos namespace
      */
-    @Value("${spring.cloud.nacos.discovery.namespace}")
+    @Value("${spring.cloud.nacos.discovery.namespace:#{null}}")
     private String namespace;
     
     /**
@@ -112,7 +112,9 @@ public class MySwaggerResourceProvider implements SwaggerResourcesProvider {
             //修复使用带命名空间启动网关swagger看不到接口文档的问题
             Properties properties=new Properties();
             properties.setProperty("serverAddr",serverAddr);
-            properties.setProperty("namespace",namespace);
+            if(namespace!=null && !"".equals(namespace)){
+                properties.setProperty("namespace",namespace);
+            }
             NamingService naming = NamingFactory.createNamingService(properties);
             
             List<Instance> list = naming.selectInstances(routeId, true);
