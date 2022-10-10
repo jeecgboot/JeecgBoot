@@ -193,7 +193,7 @@ public class QueryGenerator {
 			}
 		}
 		// 排序逻辑 处理
-		doMultiFieldsOrder(queryWrapper, parameterMap, fieldColumnMap.keySet());
+		doMultiFieldsOrder(queryWrapper, parameterMap, fieldColumnMap);
 				
 		//高级查询
 		doSuperQuery(queryWrapper, parameterMap, fieldColumnMap);
@@ -229,7 +229,8 @@ public class QueryGenerator {
 		}
 	}
 	
-	private static void doMultiFieldsOrder(QueryWrapper<?> queryWrapper,Map<String, String[]> parameterMap, Set<String> allFields) {
+	private static void doMultiFieldsOrder(QueryWrapper<?> queryWrapper,Map<String, String[]> parameterMap, Map<String,String> fieldColumnMap) {
+		Set<String> allFields = fieldColumnMap.keySet();
 		String column=null,order=null;
 		if(parameterMap!=null&& parameterMap.containsKey(ORDER_COLUMN)) {
 			column = parameterMap.get(ORDER_COLUMN)[0];
@@ -251,6 +252,19 @@ public class QueryGenerator {
 				throw new JeecgBootException("请注意，将要排序的列字段不存在：" + column);
 			}
 			//update-end-author:taoyan date:2022-5-16 for: issues/3676 获取系统用户列表时，使用SQL注入生效
+
+			//update-begin-author:scott date:2022-10-10 for:【jeecg-boot/issues/I5FJU6】doMultiFieldsOrder() 多字段排序方法存在问题
+			//多字段排序方法没有读取 MybatisPlus 注解 @TableField 里 value 的值
+			if (column.contains(",")) {
+				List<String> columnList = Arrays.asList(column.split(","));
+				String columnStrNew = columnList.stream().map(c -> fieldColumnMap.get(c)).collect(Collectors.joining(","));
+				if (oConvertUtils.isNotEmpty(columnStrNew)) {
+					column = columnStrNew;
+				}
+			}else{
+				column = fieldColumnMap.get(column);
+			}
+			//update-end-author:scott date:2022-10-10 for:【jeecg-boot/issues/I5FJU6】doMultiFieldsOrder() 多字段排序方法存在问题
 
 			//SQL注入check
 			SqlInjectionUtil.filterContent(column);
