@@ -10,7 +10,7 @@ WORKDIR /jeecg-cloud-xxljob
 
 EXPOSE 9080
 
-ADD ./target/jeecg-cloud-xxljob-3.4.2.jar ./
+ADD ./target/jeecg-cloud-xxljob-3.4.3.jar ./
 
-CMD java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-xxljob-3.4.2.jar
+CMD java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-xxljob-3.4.3.jar
 

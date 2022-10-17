@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-visual</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>3.4.2</version>
+        <version>3.4.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jeecg-cloud-monitor</artifactId>

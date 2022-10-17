@@ -11,6 +11,6 @@ WORKDIR /jeecg-boot
 EXPOSE 8080
 
 #ADD ./src/main/resources/jeecg ./config/jeecg
-ADD ./target/jeecg-system-start-3.4.2.jar ./
+ADD ./target/jeecg-system-start-3.4.3.jar ./
 
-CMD sleep 60;java -Djava.security.egd=file:/dev/./urandom -jar jeecg-system-start-3.4.2.jar
+CMD sleep 60;java -Djava.security.egd=file:/dev/./urandom -jar jeecg-system-start-3.4.3.jar
