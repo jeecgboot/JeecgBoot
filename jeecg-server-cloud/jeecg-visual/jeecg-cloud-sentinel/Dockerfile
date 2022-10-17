@@ -10,6 +10,6 @@ WORKDIR /jeecg-cloud-sentinel
 
 EXPOSE 8848
 
-ADD ./target/jeecg-cloud-sentinel-3.4.2.jar ./
+ADD ./target/jeecg-cloud-sentinel-3.4.3.jar ./
 
-CMD sleep 5;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-sentinel-3.4.2.jar
+CMD sleep 5;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-sentinel-3.4.3.jar

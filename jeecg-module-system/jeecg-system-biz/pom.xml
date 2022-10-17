@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-module-system</artifactId>
-		<version>3.4.2</version>
+		<version>3.4.3</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
