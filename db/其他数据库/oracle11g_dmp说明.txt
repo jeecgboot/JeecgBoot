@@ -1,0 +1,5 @@
+oracle导出编码：  export NLS_LANG=AMERICAN_AMERICA.ZHS16GBK
+
+导出用户：  jeecgboot
+
+导入命令：  imp scott/tiger@orcl file=jeecgboot-oracle11g.dmp
