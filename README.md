@@ -51,6 +51,7 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 | `jeecgboot-vue3` | Vue3+Ts版前端源码 |
 | `jeecg-uniapp` | [APP端开发框架(一份代码多终端适配，同时支持APP、小程序、H5) ](https://gitee.com/jeecg/jeecg-uniapp) |
 | `jeecg-boot-starter` | [stater依赖项目单独维护](https://gitee.com/jeecg/jeecg-boot-starter) |
+| `更多开源插件` | [更多源码下载](http://jeecg.com/download) |
 
 
 
@@ -71,9 +72,9 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 技术官网：  [http://www.jeecg.com](http://www.jeecg.com)
 
-- 在线演示 ： [Vue2版本](http://boot.jeecg.com) |  [Vue3版本](http://boot3.jeecg.com)
+- 在线演示 ： [Vue3版本](http://boot3.jeecg.com) | [Vue2版本](http://boot.jeecg.com) 
 
-- 开发文档：  [主项目文档](http://doc.jeecg.com) | [Vue3文档](http://vue3.jeecg.com)
+- 开发文档：  [Vue3文档](http://vue3.jeecg.com) | [主项目文档](http://doc.jeecg.com) 
 
 - 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)  |  [视频教程](https://space.bilibili.com/454617261/channel/series) |   [常见问题 ](http://www.jeecg.com/doc/qa)  |   [技术支持](http://jeecg.com/doc/help) |  [1分钟体验低代码](https://my.oschina.net/jeecg/blog/3083313)
 
