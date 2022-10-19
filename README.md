@@ -47,8 +47,8 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 | 项目名                | 说明                     | 
 |--------------------|------------------------|
 | `jeecg-boot`    | SpringBoot后台源码（支持微服务）        |
-| `ant-design-vue-jeecg`  |Vue2版前端源码     |
 | `jeecgboot-vue3` | Vue3+Ts版前端源码 |
+| `ant-design-vue-jeecg`  |Vue2版前端源码     |
 | `jeecg-uniapp` | [APP端开发框架(一份代码多终端适配，同时支持APP、小程序、H5) ](https://gitee.com/jeecg/jeecg-uniapp) |
 | `jeecg-boot-starter` | [stater依赖项目单独维护](https://gitee.com/jeecg/jeecg-boot-starter) |
 | `更多开源插件` | [更多源码下载](http://jeecg.com/download) |
