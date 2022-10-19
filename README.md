@@ -55,6 +55,7 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 
 
 
+
 ##### Star走势图
 
 [![Star History Chart](https://api.star-history.com/svg?repos=jeecgboot/jeecg-boot&type=Date)](https://star-history.com/#jeecgboot/jeecg-boot)
@@ -65,6 +66,13 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 -----------------------------------
 Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，尤其适合SAAS项目、企业信息管理系统（MIS）、内部办公系统（OA）、企业资源计划系统（ERP）、客户关系管理系统（CRM）等，其半智能手工Merge的开发方式，可以显著提高开发效率70%以上，极大降低开发成本。
 
+
+技术支持
+-----------------------------------
+
+使用中遇到问题或者BUG可以在 [Github上提Issues](https://github.com/jeecgboot/jeecg-boot/issues/new)
+
+官方支持： http://jeecg.com/doc/help
 
 
 技术文档
