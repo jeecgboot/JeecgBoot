@@ -2,7 +2,7 @@
 <template>
   <BasicModal ref="modalRef" destroyOnClose wrapClassName="j-cgform-tab-modal" v-bind="$attrs" @register="registerModal" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" @ok="handleSubmit">
   <!-- 子表单区域 -->
-    <a-tabs v-model:activeKey="activeKey" @change="handleChangeTabs">
+    <a-tabs v-model:activeKey="activeKey" animated @change="handleChangeTabs">
      <!--主表区域 -->
      <a-tab-pane tab="${tableVo.ftlDescription}" :key="refKeys[0]" :forceRender="true" :style="tabsStyle">
        <BasicForm @register="registerForm" ref="formRef"/>
