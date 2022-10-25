@@ -56,11 +56,6 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 
 
 
-##### Star走势图
-
-[![Star History Chart](https://api.star-history.com/svg?repos=jeecgboot/jeecg-boot&type=Date)](https://star-history.com/#jeecgboot/jeecg-boot)
-
-
 
 适用项目
 -----------------------------------
@@ -99,6 +94,13 @@ Docker启动项目
 
 - QQ交流群 ： ⑥730954414、VUE3群683903138、⑤860162132(满)、④774126647(满)、③816531124(满)、②769925425(满)、①284271917(满)
 > ` 提醒：【QQ群是自助服务群，建议给帮助您解决问题的同学发送指定红包，表示感谢！】 `
+
+
+
+
+##### Star走势图
+
+[![Star History Chart](https://api.star-history.com/svg?repos=jeecgboot/jeecg-boot&type=Date)](https://star-history.com/#jeecgboot/jeecg-boot)
 
 
 
