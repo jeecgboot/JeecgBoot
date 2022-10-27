@@ -14,32 +14,33 @@ public enum CgformEnum {
     /**
      * 单表
      */
-    ONE(1, "one", "/jeecg/code-template-online", "default.one", "经典风格"),
-    /**
-     * 多表
-     */
-    MANY(2, "many", "/jeecg/code-template-online", "default.onetomany", "经典风格"),
-    /**
-     * 多表（jvxe风格）
-     *  */
-    JVXE_TABLE(2, "jvxe", "/jeecg/code-template-online", "jvxe.onetomany", "JVXE风格"),
+    ONE(1, "one", "/jeecg/code-template-online", "default.one", "经典风格", new String[]{"vue3","vue","vue3Native"}),
 
     /**
      * 多表
      */
-    ERP(2, "erp", "/jeecg/code-template-online", "erp.onetomany", "ERP风格"),
+    MANY(2, "many", "/jeecg/code-template-online", "default.onetomany", "经典风格" ,new String[]{"vue"}),
+    /**
+     * 多表（jvxe风格）
+     *  */
+    JVXE_TABLE(2, "jvxe", "/jeecg/code-template-online", "jvxe.onetomany", "JVXE风格" ,new String[]{"vue3","vue","vue3Native"}),
+
+    /**
+     * 多表 (erp风格)
+     */
+    ERP(2, "erp", "/jeecg/code-template-online", "erp.onetomany", "ERP风格" ,new String[]{"vue3","vue"}),
     /**
      * 多表（内嵌子表风格）
      */
-    INNER_TABLE(2, "innerTable", "/jeecg/code-template-online", "inner-table.onetomany", "内嵌子表风格"),
+    INNER_TABLE(2, "innerTable", "/jeecg/code-template-online", "inner-table.onetomany", "内嵌子表风格" ,new String[]{"vue3","vue"}),
     /**
      * 多表（tab风格）
      *  */
-    TAB(2, "tab", "/jeecg/code-template-online", "tab.onetomany", "Tab风格"),
+    TAB(2, "tab", "/jeecg/code-template-online", "tab.onetomany", "Tab风格" ,new String[]{"vue3","vue"}),
     /**
      * 树形列表
      */
-    TREE(3, "tree", "/jeecg/code-template-online", "default.tree", "树形列表");
+    TREE(3, "tree", "/jeecg/code-template-online", "default.tree", "树形列表" ,new String[]{"vue3","vue","vue3Native"});
 
     /**
      * 类型 1/单表 2/一对多 3/树
@@ -61,6 +62,10 @@ public enum CgformEnum {
      * 模板风格名称
      */
     String note;
+    /**
+     * 支持代码风格 vue3:vue3包装代码 vue3Native:vue3原生代码 vue:vue2代码
+     */
+    String[] vueStyle;
 
     /**
      * 构造器
@@ -70,13 +75,15 @@ public enum CgformEnum {
      * @param templatePath  模板路径
      * @param stylePath  模板子路径
      * @param note
+     * @param vueStyle 支持代码风格
      */
-    CgformEnum(int type, String code, String templatePath, String stylePath, String note) {
+    CgformEnum(int type, String code, String templatePath, String stylePath, String note, String[] vueStyle) {
         this.type = type;
         this.code = code;
         this.templatePath = templatePath;
         this.stylePath = stylePath;
         this.note = note;
+        this.vueStyle = vueStyle;
     }
 
     /**
@@ -112,6 +119,14 @@ public enum CgformEnum {
 
     public void setStylePath(String stylePath) {
         this.stylePath = stylePath;
+    }
+
+    public String[] getVueStyle() {
+        return vueStyle;
+    }
+
+    public void setVueStyle(String[] vueStyle) {
+        this.vueStyle = vueStyle;
     }
 
     /**
