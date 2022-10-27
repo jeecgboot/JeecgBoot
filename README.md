@@ -34,6 +34,14 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 `JEECG业务流程:` 采用工作流来实现、扩展出任务接口，供开发编写业务逻辑，表单提供多种解决方案： 表单设计器、online配置表单、编码表单。同时实现了流程与表单的分离设计（松耦合）、并支持任务节点灵活配置，既保证了公司流程的保密性，又减少了开发人员的工作量。
 
 
+技术支持
+-----------------------------------
+
+关闭gitee的issue通道，使用中遇到问题或者BUG可以在 [Github上提Issues](https://github.com/jeecgboot/jeecg-boot/issues/new)
+
+官方支持： http://jeecg.com/doc/help
+
+
 项目源码
 -----------------------------------
 | 仓库 | 后端源码 |前端 Vue3版 | 前端 Vue2版  |
@@ -71,12 +79,7 @@ Docker启动项目
 - [Docker启动微服务后台](http://doc.jeecg.com/3043472)
 - [Docker启动Vue2前端](http://doc.jeecg.com/3043612)
 
-技术支持
------------------------------------
 
-使用中遇到问题或者BUG可以在 [Github上提Issues](https://github.com/jeecgboot/jeecg-boot/issues/new)
-
-官方支持： http://jeecg.com/doc/help
 
 
 技术文档
