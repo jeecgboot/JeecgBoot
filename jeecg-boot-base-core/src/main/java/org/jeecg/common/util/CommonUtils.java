@@ -275,7 +275,7 @@ public class CommonUtils {
         ds.setDriverClassName(db.getDriverClassName());
         ds.setUrl(db.getUrl());
         ds.setUsername(db.getUsername());
-        ds.setPassword(db.getPassword());
+        ds.setPassword(SecurityUtil.jiami(db.getPassword()));
         return ds.getConnection();
     }
 
