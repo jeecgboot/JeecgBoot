@@ -20,4 +20,9 @@ public class JeecgBoot401Exception extends RuntimeException {
 	{
 		super(message,cause);
 	}
+	
+	public JeecgBootException(String message,Throwable cause)
+	{
+		super(message,cause);
+	}
 }
