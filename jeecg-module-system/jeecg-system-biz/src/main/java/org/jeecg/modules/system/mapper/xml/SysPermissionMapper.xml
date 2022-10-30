@@ -52,6 +52,7 @@
 						where p.id = a.permission_id AND d.username = #{username,jdbcType=VARCHAR}
 					)
 					or (p.url like '%:code' and p.url like '/online%' and p.hidden = 1)
+					or (p.url like '%:id' and p.url like '/online%' and p.hidden = 1)
 					or p.url = '/online')
 			   and p.del_flag = 0
 			<!--update begin Author:lvdandan  Date:20200213 for：加入部门权限 -->
