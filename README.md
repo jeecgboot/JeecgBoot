@@ -42,24 +42,23 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 官方支持： http://jeecg.com/doc/help
 
 
-项目源码
+源码下载
 -----------------------------------
-| 仓库 | 后端源码 |前端 Vue3版 | 前端 Vue2版  |
-|-|-|-|-|
-| Github | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)  | [ant-design-vue-jeecg](https://github.com/jeecgboot/ant-design-vue-jeecg)  |
-| 码云  | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)  | [ant-design-vue-jeecg](https://gitee.com/jeecg/ant-design-vue-jeecg)  |
-
+- 后台源码 ：https://github.com/jeecgboot/jeecg-boot
+- 前端源码(Vue3版)：https://github.com/jeecgboot/jeecgboot-vue3
+- 前端源码(Vue2版)：https://github.com/jeecgboot/ant-design-vue-jeecg
+- APP配套框架：https://github.com/jeecgboot/jeecg-uniapp
 
 ##### 项目说明
 
 | 项目名                | 说明                     | 
 |--------------------|------------------------|
 | `jeecg-boot`    | SpringBoot后台源码（支持微服务）        |
-| `jeecgboot-vue3` | Vue3+Ts版前端源码 |
-| `ant-design-vue-jeecg`  |Vue2版前端源码     |
-| `jeecg-uniapp` | [APP端开发框架(一份代码多终端适配，同时支持APP、小程序、H5) ](https://gitee.com/jeecg/jeecg-uniapp) |
+| `jeecgboot-vue3` | Vue3+TS 新版前端源码 |
+| `ant-design-vue-jeecg`  |Vue2版 前端源码     |
+| `jeecg-uniapp` | [APP开发框架(一份代码多终端适配，同时支持APP、小程序、H5) ](https://github.com/jeecgboot/jeecg-uniapp) |
 | `jeecg-boot-starter` | [stater依赖项目单独维护](https://gitee.com/jeecg/jeecg-boot-starter) |
-| `更多开源插件` | [更多源码下载](http://jeecg.com/download) |
+| `更多开源插件` | [更多源码下载](https://github.com/jeecgboot) |
 
 
 
