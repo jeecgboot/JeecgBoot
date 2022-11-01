@@ -202,7 +202,7 @@ Technical Architecture:
 
 - Cache: Redis
 
-- database scripts: MySQL5.7 + & Oracle 11 g & Sqlserver2017 (other databases, [the need to turn] (https://my.oschina.net/jeecg/blog/4905722))
+- Database: MySQL5.7 + & Oracle 11 g & Sqlserver2017  [More Databases](https://my.oschina.net/jeecg/blog/4905722)
 
 
 #### backend
