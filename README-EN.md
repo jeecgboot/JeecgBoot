@@ -11,8 +11,8 @@ The Latest Version： 3.4.3-GA（Release date：2022-10-31）
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
-[![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://www.jeecg.com)
-[![](https://img.shields.io/badge/Blog-官方博客-blue.svg)](https://jeecg.blog.csdn.net)
+[![](https://img.shields.io/badge/Author-GuojuSoftWare-orange.svg)](http://www.jeecg.com)
+[![](https://img.shields.io/badge/Blog-blog-blue.svg)](https://jeecg.blog.csdn.net)
 [![](https://img.shields.io/badge/version-3.4.3-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
@@ -142,47 +142,47 @@ project structure
 
 Why JeecgBoot?
 -----------------------------------
-* 1. Adopt the latest mainstream front and back separation framework (Springboot+Mybatis+antd), easy to use; Code generator has low dependency, flexible expansion ability, and can quickly realize secondary development;
-* 2. Support microservices SpringCloud Alibaba(Nacos, Gateway, Sentinel, Skywalking), and provide switching mechanism to support free switching between single and microservices
-* 3. High development efficiency, using code generator, single table, tree list, one-to-many, one-to-one and other data models, add, delete, change and search function one-key generation, menu configuration directly use;
-* 4. Code generator provides powerful template mechanism, support custom template, currently provide four sets of style template (single table two sets, tree model one set, one to many three sets)
-* 5. Code generator is very intelligent, online business modeling, online configuration, WYSIWYG support 23 kinds of controls, a key to generate front and back end code, greatly improve the development efficiency, no longer worry about repeated work.
-* 6. Low code ability: Online online form (without coding, through online configuration of the form, to achieve the addition, deletion, change and check of the form, support single table, tree, one-to-many, one-to-one model, to achieve everyone can code)
-* 7. Low code ability: Online online report (without coding, through online configuration, to achieve data report, can quickly extract data, reduce development pressure, to achieve everyone can code)
-* 8. Low code ability: Online online chart (without coding, through online configuration, to achieve graphs, bar graphs, data reports, etc., support custom layout, to achieve everyone can code)
-* 9. Complete encapsulation of user, role, menu, organization, data dictionary, online scheduled tasks and other basic functions, support access authorization, button permission, data permission and other functions
-* 10. Commonly used common package, various tools (scheduled task, SMS interface, email sending,Excel import and export, etc.), basically meeting 80% of project requirements
-* 11. Easy Excel import and export, support single table export and one-to-many table mode export, generated code with import and export function
-* 12. Integrated simple report tools, image report and data export is very convenient, can be extremely convenient to generate graphical reports, pdf, excel, word and other reports;
-* 13. Before and after the separation technology, the page UI style is exquisite, for the commonly used components to do the encapsulation: time, row table control, interception display control, report component, editor and so on
-* 14. Query filter: query function automatically generated, the background dynamic spell SQL additional query conditions; Supports multiple matching modes (full matching, fuzzy query, included query, and unmatched query).
-* 15. Data permission (fine data permission control, control to row level, list level, form field level, realize different people see different data, different people operate different fields on the same page
-* 16. Page verification automatically generated (must be input, digital verification, amount verification, time and space, etc.);
-* 17. Support SAAS service model and provide SaaS multi-tenant architecture solution.
-* 18. Distributed file service, integration of minio, Ali OSS and other excellent third parties, to provide convenient file upload and management, but also support local storage.
-* 19. Mainstream database compatibility, a set of code is fully compatible with Mysql, Postgresql, Oracle, Sqlserver, MariaDB, dream and other mainstream databases.
-* 20. Integrate workflow activiti and realize only the configuration of flow direction in the page, which can greatly simplify the development of bpm workflow; Using bpm's process designer to draw the flow direction, a workflow is basically complete with a small amount of java code;
-* 21. Low code ability: online process design, using open source Activiti process engine, to achieve online drawing process, custom form, form attachment, business flow
-* 22. Multi-data source: its simple way of use, online configuration of data source configuration, convenient to grab data from other data;
-* 23. Provide single sign-on CAS integration solution, and complete docking code has been provided in the project
-* 24. Low code ability: form designer, support user custom form layout, support single table, one to many forms, support select, radio, checkbox, textarea, date, popup, list, macro and other controls
-* 25. Professional interface docking mechanism, unified using restful interface, integrated swagger-ui online interface documentation, Jwt token security verification, convenient client docking
-* 26. Interface security mechanism, can be refined control interface authorization, very simple to realize different clients only see their own data control
-* 27. Advanced combination query function, online configuration support primary and sub-table associated query, can save the query history
-* 28. Provide a variety of system monitoring, real-time tracking system running conditions (monitoring Redis, Tomcat, jvm, server information, request tracking, SQL monitoring)
-* 29. Message center (support SMS, email, wechat push, etc.)
-* 30. Integrate Websocket message notification mechanism
-* 31. Excellent mobile adaptive effect, providing APP release scheme:
-* 32. Support multiple languages and provide internationalization solutions;
-* 33. Data change record log, can record each change of data content, through the version comparison function to view historical changes
-* 34. The platform UI is powerful and mobile adaptation is implemented
-* 35. Platform home page style, provide a variety of combination mode, support custom style
-* 36. Provide easy to use print plug-in, support Google, Firefox, IE11+ and other browsers
-* 37. Rich sample code, provide a lot of learning case reference
-* 38. Using maven module development method
-* 39. Support dynamic menu routing
-* 40. RBAC (Role-Based Access Control) is used for permission control.
-* 41. Provide new row edit table JVXETable, easily meet a variety of complex ERP layout, with higher performance, more flexible extension, more powerful functions
+* Adopt the latest mainstream front and back separation framework (Springboot+Mybatis+antd), easy to use; Code generator has low dependency, flexible expansion ability, and can quickly realize secondary development;
+* Support microservices SpringCloud Alibaba(Nacos, Gateway, Sentinel, Skywalking), and provide switching mechanism to support free switching between single and microservices
+* High development efficiency, using code generator, single table, tree list, one-to-many, one-to-one and other data models, add, delete, change and search function one-key generation, menu configuration directly use;
+* Code generator provides powerful template mechanism, support custom template, currently provide four sets of style template (single table two sets, tree model one set, one to many three sets)
+* Code generator is very intelligent, online business modeling, online configuration, WYSIWYG support 23 kinds of controls, a key to generate front and back end code, greatly improve the development efficiency, no longer worry about repeated work.
+* Low code ability: Online online form (without coding, through online configuration of the form, to achieve the addition, deletion, change and check of the form, support single table, tree, one-to-many, one-to-one model, to achieve everyone can code)
+* Low code ability: Online online report (without coding, through online configuration, to achieve data report, can quickly extract data, reduce development pressure, to achieve everyone can code)
+* Low code ability: Online online chart (without coding, through online configuration, to achieve graphs, bar graphs, data reports, etc., support custom layout, to achieve everyone can code)
+* Complete encapsulation of user, role, menu, organization, data dictionary, online scheduled tasks and other basic functions, support access authorization, button permission, data permission and other functions
+* Commonly used common package, various tools (scheduled task, SMS interface, email sending,Excel import and export, etc.), basically meeting 80% of project requirements
+* Easy Excel import and export, support single table export and one-to-many table mode export, generated code with import and export function
+* Integrated simple report tools, image report and data export is very convenient, can be extremely convenient to generate graphical reports, pdf, excel, word and other reports;
+* Before and after the separation technology, the page UI style is exquisite, for the commonly used components to do the encapsulation: time, row table control, interception display control, report component, editor and so on
+* Query filter: query function automatically generated, the background dynamic spell SQL additional query conditions; Supports multiple matching modes (full matching, fuzzy query, included query, and unmatched query).
+* Data permission (fine data permission control, control to row level, list level, form field level, realize different people see different data, different people operate different fields on the same page
+* Page verification automatically generated (must be input, digital verification, amount verification, time and space, etc.);
+* Support SAAS service model and provide SaaS multi-tenant architecture solution.
+* Distributed file service, integration of minio, Ali OSS and other excellent third parties, to provide convenient file upload and management, but also support local storage.
+* Mainstream database compatibility, a set of code is fully compatible with Mysql, Postgresql, Oracle, Sqlserver, MariaDB, dream and other mainstream databases.
+* Integrate workflow activiti and realize only the configuration of flow direction in the page, which can greatly simplify the development of bpm workflow; Using bpm's process designer to draw the flow direction, a workflow is basically complete with a small amount of java code;
+* Low code ability: online process design, using open source Activiti process engine, to achieve online drawing process, custom form, form attachment, business flow
+* Multi-data source: its simple way of use, online configuration of data source configuration, convenient to grab data from other data;
+* Provide single sign-on CAS integration solution, and complete docking code has been provided in the project
+* Low code ability: form designer, support user custom form layout, support single table, one to many forms, support select, radio, checkbox, textarea, date, popup, list, macro and other controls
+* Professional interface docking mechanism, unified using restful interface, integrated swagger-ui online interface documentation, Jwt token security verification, convenient client docking
+* Interface security mechanism, can be refined control interface authorization, very simple to realize different clients only see their own data control
+* Advanced combination query function, online configuration support primary and sub-table associated query, can save the query history
+* Provide a variety of system monitoring, real-time tracking system running conditions (monitoring Redis, Tomcat, jvm, server information, request tracking, SQL monitoring)
+* Message center (support SMS, email, wechat push, etc.)
+* Integrate Websocket message notification mechanism
+* Excellent mobile adaptive effect, providing APP release scheme:
+* Support multiple languages and provide internationalization solutions;
+* Data change record log, can record each change of data content, through the version comparison function to view historical changes
+* The platform UI is powerful and mobile adaptation is implemented
+* Platform home page style, provide a variety of combination mode, support custom style
+* Provide easy to use print plug-in, support Google, Firefox, IE11+ and other browsers
+* Rich sample code, provide a lot of learning case reference
+* Using maven module development method
+* Support dynamic menu routing
+* RBAC (Role-Based Access Control) is used for permission control.
+* Provide new row edit table JVXETable, easily meet a variety of complex ERP layout, with higher performance, more flexible extension, more powerful functions
 
  
  
@@ -255,7 +255,7 @@ Technical Architecture:
 
 4. Distributed http feign √
 
-5, fuse degrade current limiting Sentinel √
+5. fuse degrade current limiting Sentinel √
 
 6. Distributed files Minio and Alioss √
 
@@ -263,7 +263,7 @@ Technical Architecture:
 
 8. Service monitoring SpringBootAdmin√
 
-9, link tracking Skywalking  [reference document](http://doc.jeecg.com/2350293)
+9. link tracking Skywalking  [reference document](http://doc.jeecg.com/2350293)
 
 10. Messaging middleware RabbitMQ √
 
