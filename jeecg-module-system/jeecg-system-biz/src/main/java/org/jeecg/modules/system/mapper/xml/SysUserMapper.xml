@@ -92,6 +92,8 @@
 			sys_user.id AS id,
 			sys_user.realname AS realname,
 			sys_user.avatar AS avatar,
+			sys_user.sex AS sex,
+			sys_user.birthday AS birthday,
 			sys_user.work_no AS workNo,
 			sys_user.post AS post,
 			sys_user.telephone AS telephone,
@@ -141,12 +143,18 @@
 			update_time = #{entity.updateTime}
 		WHERE
 			del_flag = 1
-			AND id IN (${userIds})
+			AND id IN
+			<foreach collection="userIds" item="userId" open="(" close=")" separator="," >
+				#{userId}
+			</foreach>
 	</update>
 
 	<!-- 彻底删除被逻辑删除的用户 -->
 	<delete id="deleteLogicDeleted">
-		DELETE FROM sys_user WHERE del_flag = 1 AND id IN (${userIds})
+		DELETE FROM sys_user WHERE del_flag = 1 AND id IN
+		<foreach collection="userIds" item="userId" open="(" close=")" separator="," >
+			#{userId}
+		</foreach>
 	</delete>
 
     <!-- 更新空字符串为null -->

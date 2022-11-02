@@ -1,12 +1,12 @@
 package org.jeecg.modules.system.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.system.entity.SysUser;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.jeecg.modules.system.vo.SysUserDepVo;
 
@@ -133,14 +133,14 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @param entity
      * @return int
 	 */
-	int revertLogicDeleted(@Param("userIds") String userIds, @Param("entity") SysUser entity);
+	int revertLogicDeleted(@Param("userIds") List<String> userIds, @Param("entity") SysUser entity);
 
 	/**
 	 * 彻底删除被逻辑删除的用户
      * @param userIds 多个用户id
      * @return int
 	 */
-	int deleteLogicDeleted(@Param("userIds") String userIds);
+	int deleteLogicDeleted(@Param("userIds") List<String> userIds);
 
     /**
      * 更新空字符串为null【此写法有sql注入风险，禁止随便用】

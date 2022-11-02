@@ -459,16 +459,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	@Override
 	@CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
 	public boolean revertLogicDeleted(List<String> userIds, SysUser updateEntity) {
-		String ids = String.format("'%s'", String.join("','", userIds));
-		return userMapper.revertLogicDeleted(ids, updateEntity) > 0;
+		return userMapper.revertLogicDeleted(userIds, updateEntity) > 0;
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public boolean removeLogicDeleted(List<String> userIds) {
-		String ids = String.format("'%s'", String.join("','", userIds));
 		// 1. 删除用户
-		int line = userMapper.deleteLogicDeleted(ids);
+		int line = userMapper.deleteLogicDeleted(userIds);
 		// 2. 删除用户部门关系
 		line += sysUserDepartMapper.delete(new LambdaQueryWrapper<SysUserDepart>().in(SysUserDepart::getUserId, userIds));
 		//3. 删除用户角色关系
