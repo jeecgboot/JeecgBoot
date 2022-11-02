@@ -10,6 +10,7 @@ import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.RestUtil;
 import org.jeecg.common.util.TokenUtils;
+import org.jeecg.common.util.filter.FileTypeFilter;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLDecoder;
+
 /**
  * <p>
  * 用户表 前端控制器
@@ -66,7 +68,7 @@ public class CommonController {
      * @return
      */
     @PostMapping(value = "/upload")
-    public Result<?> upload(HttpServletRequest request, HttpServletResponse response) {
+    public Result<?> upload(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Result<?> result = new Result<>();
         String savePath = "";
         String bizPath = request.getParameter("biz");
@@ -93,6 +95,9 @@ public class CommonController {
             }
         }
         if(CommonConstant.UPLOAD_TYPE_LOCAL.equals(uploadType)){
+            //update-begin-author:liusq date:20221102 for: 过滤上传文件类型
+            FileTypeFilter.fileTypeFilter(file);
+            //update-end-author:liusq date:20221102 for: 过滤上传文件类型
             //update-begin-author:lvdandan date:20200928 for:修改JEditor编辑器本地上传
             savePath = this.uploadLocal(file,bizPath);
             //update-begin-author:lvdandan date:20200928 for:修改JEditor编辑器本地上传
