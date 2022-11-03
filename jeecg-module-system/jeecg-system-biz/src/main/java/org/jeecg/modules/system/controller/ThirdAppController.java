@@ -72,15 +72,17 @@ public class ThirdAppController {
      */
     @GetMapping("/sync/wechatEnterprise/user/toLocal")
     public Result syncWechatEnterpriseUserToLocal(@RequestParam(value = "ids", required = false) String ids) {
-        if (thirdAppConfig.isWechatEnterpriseEnabled()) {
-            SyncInfoVo syncInfo = wechatEnterpriseService.syncThirdAppUserToLocal();
-            if (syncInfo.getFailInfo().size() == 0) {
-                return Result.OK("同步成功", syncInfo);
-            } else {
-                return Result.error("同步失败", syncInfo);
-            }
-        }
-        return Result.error("企业微信同步功能已禁用");
+        return Result.error("由于企业微信接口调整，同步到本地功能已失效");
+
+//        if (thirdAppConfig.isWechatEnterpriseEnabled()) {
+//            SyncInfoVo syncInfo = wechatEnterpriseService.syncThirdAppUserToLocal();
+//            if (syncInfo.getFailInfo().size() == 0) {
+//                return Result.OK("同步成功", syncInfo);
+//            } else {
+//                return Result.error("同步失败", syncInfo);
+//            }
+//        }
+//        return Result.error("企业微信同步功能已禁用");
     }
 
     /**
