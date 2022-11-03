@@ -297,7 +297,7 @@
 			<dependency>
 				<groupId>org.jeecgframework</groupId>
 				<artifactId>jeewx-api</artifactId>
-				<version>1.4.9</version>
+				<version>1.5.0</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>commons-beanutils</artifactId>

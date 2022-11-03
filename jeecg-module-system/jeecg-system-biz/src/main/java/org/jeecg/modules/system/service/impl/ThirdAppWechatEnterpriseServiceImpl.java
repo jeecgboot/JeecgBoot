@@ -21,6 +21,7 @@ import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.RestUtil;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.config.thirdapp.ThirdAppConfig;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.SysAnnouncementSendMapper;
@@ -50,6 +51,8 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
 
     @Autowired
     ThirdAppConfig thirdAppConfig;
+    @Autowired
+    JeecgBaseConfig jeecgBaseConfig;
     @Autowired
     private ISysDepartService sysDepartService;
     @Autowired
@@ -302,7 +305,10 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
             return syncInfo;
         }
         // 获取企业微信所有的用户
-        List<User> qwUsers = JwUserAPI.getDetailUsersByDepartid("1", null, null, accessToken);
+//        List<User> qwUsers = JwUserAPI.getDetailUsersByDepartid("1", null, null, accessToken);
+        // 获取企业微信所有的用户（只能获取userid）
+        List<User> qwUsers = JwUserAPI.getUserIdList(accessToken);
+
         if (qwUsers == null) {
             syncInfo.addFailInfo("企业微信用户列表查询失败！");
             return syncInfo;
@@ -336,15 +342,16 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
             for (User qwUserTemp : qwUsers) {
                 if (sysThirdAccount == null || oConvertUtils.isEmpty(sysThirdAccount.getThirdUserId()) || !sysThirdAccount.getThirdUserId().equals(qwUserTemp.getUserid())) {
                     // sys_third_account 表匹配失败，尝试用手机号匹配
-                    String phone = sysUser.getPhone();
-                    if (!(oConvertUtils.isEmpty(phone) || phone.equals(qwUserTemp.getMobile()))) {
+                    // 新版企业微信调整了API，现在只能通过userid来判断是否同步过了
+//                    String phone = sysUser.getPhone();
+//                    if (!(oConvertUtils.isEmpty(phone) || phone.equals(qwUserTemp.getMobile()))) {
                         // 手机号匹配失败，再尝试用username匹配
                         String username = sysUser.getUsername();
                         if (!(oConvertUtils.isEmpty(username) || username.equals(qwUserTemp.getUserid()))) {
                             // username 匹配失败，直接跳到下一次循环继续
                             continue;
                         }
-                    }
+//                    }
                 }
                 // 循环到此说明用户匹配成功，进行更新操作
                 qwUser = this.sysUserToQwUser(sysUser, qwUserTemp);
@@ -834,7 +841,18 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
         TextCardEntity entity = new TextCardEntity();
         entity.setTitle(announcement.getTitile());
         entity.setDescription(oConvertUtils.getString(announcement.getMsgAbstract(),"空"));
-        entity.setUrl(RestUtil.getBaseUrl() + "/sys/annountCement/show/" + announcement.getId());
+        String baseUrl = null;
+        
+        //优先通过请求获取basepath，获取不到读取 jeecg.domainUrl.pc
+        try {
+            baseUrl = RestUtil.getBaseUrl();
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+            baseUrl =  jeecgBaseConfig.getDomainUrl().getPc();
+            //e.printStackTrace();
+        }
+       
+        entity.setUrl(baseUrl + "/sys/annountCement/show/" + announcement.getId());
         textCard.setTextcard(entity);
         return JwMessageAPI.sendTextCardMessage(textCard, accessToken);
     }
