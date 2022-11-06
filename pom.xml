@@ -50,7 +50,7 @@
 		<shiro.version>1.9.1</shiro.version>
 		<java-jwt.version>3.11.0</java-jwt.version>
 		<shiro-redis.version>3.1.0</shiro-redis.version>
-		<codegenerate.version>1.4.2</codegenerate.version>
+		<codegenerate.version>1.4.3</codegenerate.version>
 		<autopoi-web.version>1.4.2</autopoi-web.version>
 		<minio.version>8.0.3</minio.version>
 		<justauth-spring-boot-starter.version>1.3.4</justauth-spring-boot-starter.version>
