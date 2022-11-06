@@ -157,10 +157,16 @@
 		</foreach>
 	</delete>
 
-    <!-- 更新空字符串为null -->
-    <update id="updateNullByEmptyString">
-        UPDATE sys_user SET ${fieldName} = NULL WHERE ${fieldName} = ''
-    </update>
+	<!-- 更新空字符串为null -->
+	<update id="updateNullByEmptyString">
+		UPDATE sys_user
+		<if test="fieldName == 'email'">
+			SET email = NULL WHERE email = ''
+		</if>
+		<if test="fieldName == 'phone'">
+			SET phone = NULL WHERE phone = ''
+		</if>
+	</update>
 
 	<!-- 通过多个部门IDS，查询部门下的用户信息 -->
 	<select id="queryByDepIds" resultType="org.jeecg.modules.system.entity.SysUser">
