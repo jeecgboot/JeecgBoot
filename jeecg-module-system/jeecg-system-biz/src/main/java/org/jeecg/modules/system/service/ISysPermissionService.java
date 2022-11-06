@@ -1,13 +1,11 @@
 package org.jeecg.modules.system.service;
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
+import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.model.TreeModel;
 
-import com.baomidou.mybatisplus.extension.service.IService;
+import java.util.List;
 
 /**
  * <p>
@@ -100,4 +98,13 @@ public interface ISysPermissionService extends IService<SysPermission> {
 	 * @return
 	 */
 	List<SysPermission> queryDepartPermissionList(String departId);
+
+	/**
+	 * 检测地址是否存在(聚合路由的情况下允许使用子菜单路径作为父菜单的路由地址)
+	 * @param id
+	 * @param url
+	 * @param alwaysShow 是否是聚合路由
+	 * @return
+	 */
+	 boolean checkPermDuplication(String id, String url,Boolean alwaysShow);
 }
