@@ -10,7 +10,6 @@ import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.util.ResourceUtil;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictModelMany;
@@ -180,6 +179,9 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			table = arr[0];
 			filterSql = arr[1];
 		}
+		String[] tableAndFields = new String[]{table, text, code};
+		SqlInjectionUtil.filterContent(tableAndFields);
+		SqlInjectionUtil.specialFilterContentForDictSql(filterSql);
 		return sysDictMapper.queryTableDictByKeysAndFilterSql(table, text, code, filterSql, keys);
 		//update-end-author:taoyan date:20220113 for: @dict注解支持 dicttable 设置where条件
 	}
@@ -216,6 +218,9 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			table = arr[0];
 			filterSql = arr[1];
 		}
+		String[] tableAndFields = new String[]{table, text, code};
+		SqlInjectionUtil.filterContent(tableAndFields);
+		SqlInjectionUtil.specialFilterContentForDictSql(filterSql);
 		List<DictModel> dicts = sysDictMapper.queryTableDictByKeysAndFilterSql(table, text, code, filterSql, Arrays.asList(keyArray));
 		//update-end-author:taoyan date:2022-4-24 for: 下拉搜索组件，表单编辑页面回显下拉搜索的文本的时候，因为表名后配置了条件，导致sql执行失败，
 		List<String> texts = new ArrayList<>(dicts.size());

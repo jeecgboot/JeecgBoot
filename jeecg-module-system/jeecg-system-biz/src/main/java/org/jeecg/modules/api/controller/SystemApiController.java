@@ -5,7 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.*;
+import org.jeecg.common.util.SqlInjectionUtil;
+import org.jeecg.modules.system.security.DictQueryBlackListHandler;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,9 @@ public class SystemApiController {
     private SysBaseApiImpl sysBaseApi;
     @Autowired
     private ISysUserService sysUserService;
+
+    @Autowired
+    private DictQueryBlackListHandler dictQueryBlackListHandler;
 
 
     /**
@@ -521,6 +527,10 @@ public class SystemApiController {
      */
     @GetMapping("/loadDictItem")
     public List<String> loadDictItem(@RequestParam("dictCode") String dictCode, @RequestParam("keys") String keys) {
+        if(!dictQueryBlackListHandler.isPass(dictCode)){
+            log.error(dictQueryBlackListHandler.getError());
+            return null;
+        }
         return sysBaseApi.loadDictItem(dictCode, keys);
     }
 
@@ -533,6 +543,10 @@ public class SystemApiController {
      */
     @GetMapping("/getDictItems")
     public List<DictModel> getDictItems(@RequestParam("dictCode") String dictCode) {
+        if(!dictQueryBlackListHandler.isPass(dictCode)){
+            log.error(dictQueryBlackListHandler.getError());
+            return null;
+        }
         return sysBaseApi.getDictItems(dictCode);
     }
 
@@ -557,6 +571,10 @@ public class SystemApiController {
      */
     @GetMapping("/loadDictItemByKeyword")
     public List<DictModel> loadDictItemByKeyword(@RequestParam("dictCode") String dictCode, @RequestParam("keyword") String keyword, @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        if(!dictQueryBlackListHandler.isPass(dictCode)){
+            log.error(dictQueryBlackListHandler.getError());
+            return null;
+        }
         return sysBaseApi.loadDictItemByKeyword(dictCode, keyword, pageSize);
     }
 
@@ -581,6 +599,11 @@ public class SystemApiController {
      */
     @GetMapping("/queryTableDictItemsByCode")
     List<DictModel> queryTableDictItemsByCode(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code){
+        String str = table+","+text+","+code;
+        if(!dictQueryBlackListHandler.isPass(str)){
+            log.error(dictQueryBlackListHandler.getError());
+            return null;
+        }
         return sysBaseApi.queryTableDictItemsByCode(table, text, code);
     }
 
@@ -594,6 +617,14 @@ public class SystemApiController {
      */
     @GetMapping("/queryFilterTableDictInfo")
     List<DictModel> queryFilterTableDictInfo(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("filterSql") String filterSql){
+        String str = table+","+text+","+code;
+        if(!dictQueryBlackListHandler.isPass(str)){
+            log.error(dictQueryBlackListHandler.getError());
+            return null;
+        }
+        String[] arr = new String[]{table, text, code};
+        SqlInjectionUtil.filterContent(arr);
+        SqlInjectionUtil.specialFilterContentForDictSql(filterSql);
         return sysBaseApi.queryFilterTableDictInfo(table, text, code, filterSql);
     }
 
@@ -609,6 +640,11 @@ public class SystemApiController {
     @Deprecated
     @GetMapping("/queryTableDictByKeys")
     public List<String> queryTableDictByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keyArray") String[] keyArray){
+        String str = table+","+text+","+code;
+        if(!dictQueryBlackListHandler.isPass(str)){
+            log.error(dictQueryBlackListHandler.getError());
+            return null;
+        }
         return sysBaseApi.queryTableDictByKeys(table, text, code, keyArray);
     }
 
@@ -623,6 +659,13 @@ public class SystemApiController {
      */
     @GetMapping("/translateDictFromTable")
     public String translateDictFromTable(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("key") String key){
+        String str = table+","+text+","+code;
+        if(!dictQueryBlackListHandler.isPass(str)){
+            log.error(dictQueryBlackListHandler.getError());
+            return null;
+        }
+        String[] arr = new String[]{table, text, code, key};
+        SqlInjectionUtil.filterContent(arr);
         return sysBaseApi.translateDictFromTable(table, text, code, key);
     }
 
@@ -639,6 +682,11 @@ public class SystemApiController {
      */
     @GetMapping("/translateDictFromTableByKeys")
     public List<DictModel> translateDictFromTableByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keys") String keys) {
+        String str = table+","+text+","+code;
+        if(!dictQueryBlackListHandler.isPass(str)){
+            log.error(dictQueryBlackListHandler.getError());
+            return null;
+        }
         return this.sysBaseApi.translateDictFromTableByKeys(table, text, code, keys);
     }
 
@@ -697,4 +745,23 @@ public class SystemApiController {
     public void sendAppChatSocket(@RequestParam(name="userId") String userId){
         this.sysBaseApi.sendAppChatSocket(userId);
     }
+
+
+    /**
+     * VUEN-2584【issue】平台sql注入漏洞几个问题
+     * 部分特殊函数 可以将查询结果混夹在错误信息中，导致数据库的信息暴露
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(java.sql.SQLException.class)
+    public Result<?> handleSQLException(Exception e){
+        String msg = e.getMessage();
+        String extractvalue = "extractvalue";
+        String updatexml = "updatexml";
+        if(msg!=null && (msg.toLowerCase().indexOf(extractvalue)>=0 || msg.toLowerCase().indexOf(updatexml)>=0)){
+            return Result.error("校验失败，sql解析异常！");
+        }
+        return Result.error("校验失败，sql解析异常！" + msg);
+    }
+    
 }
