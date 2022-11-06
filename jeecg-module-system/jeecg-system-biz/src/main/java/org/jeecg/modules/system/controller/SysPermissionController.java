@@ -1,18 +1,16 @@
 package org.jeecg.modules.system.controller;
 
-import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
-import org.jeecg.common.constant.enums.RoleIndexConfigEnum;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.Md5Util;
 import org.jeecg.common.util.oConvertUtils;
@@ -394,6 +392,28 @@ public class SysPermissionController {
 	}
 
 	/**
+	 * 检测菜单路径是否存在
+	 * @param id
+	 * @param url
+	 * @return
+	 */
+	@RequestMapping(value = "/checkPermDuplication", method = RequestMethod.GET)
+	public Result<String> checkPermDuplication(@RequestParam(name = "id", required = false) String id, @RequestParam(name = "url") String url, @RequestParam(name = "alwaysShow") Boolean alwaysShow) {
+		Result<String> result = new Result<>();
+		try {
+			boolean check=sysPermissionService.checkPermDuplication(id,url,alwaysShow);
+			if(check){
+				return Result.ok("该值可用！");
+			}
+			return Result.error("该值不可用，系统中已存在！");
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			result.error500("操作失败");
+		}
+		return result;
+	}
+
+	/**
 	  * 删除菜单
 	 * @param id
 	 * @return
@@ -425,13 +445,21 @@ public class SysPermissionController {
             String[] arr = ids.split(",");
 			for (String id : arr) {
 				if (oConvertUtils.isNotEmpty(id)) {
-					sysPermissionService.deletePermission(id);
+					try {
+						sysPermissionService.deletePermission(id);
+					} catch (JeecgBootException e) {
+						if(e.getMessage()!=null && e.getMessage().contains("未找到菜单信息")){
+							log.warn(e.getMessage());
+						}else{
+							throw e;
+						}
+					}
 				}
 			}
 			result.success("删除成功!");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			result.error500("删除成功!");
+			result.error500("删除失败!");
 		}
 		return result;
 	}

@@ -1,12 +1,8 @@
 package org.jeecg.modules.system.service.impl;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.exception.JeecgBootException;
@@ -25,9 +21,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import javax.annotation.Resource;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -275,6 +273,13 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 	@Override
 	public List<SysPermission> queryDepartPermissionList(String departId) {
 		return sysPermissionMapper.queryDepartPermissionList(departId);
+	}
+
+	@Override
+	public boolean checkPermDuplication(String id, String url,Boolean alwaysShow) {
+		QueryWrapper<SysPermission> qw=new QueryWrapper();
+		qw.lambda().eq(true, SysPermission::getUrl,url).ne(oConvertUtils.isNotEmpty(id), SysPermission::getId,id).eq(true, SysPermission::isAlwaysShow,alwaysShow);
+		return count(qw)==0;
 	}
 
 }
