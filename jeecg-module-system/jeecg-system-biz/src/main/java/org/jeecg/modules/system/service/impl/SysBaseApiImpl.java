@@ -23,11 +23,8 @@ import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.*;
-import org.jeecg.common.util.HTMLUtils;
-import org.jeecg.common.util.SysAnnmentTypeEnum;
-import org.jeecg.common.util.YouBianCodeUtil;
+import org.jeecg.common.util.*;
 import org.jeecg.common.util.dynamic.db.FreemarkerParseFactory;
-import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.message.entity.SysMessageTemplate;
 import org.jeecg.modules.message.handle.impl.DdSendMsgHandle;
 import org.jeecg.modules.message.handle.impl.EmailSendMsgHandle;
@@ -315,6 +312,9 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			table = QueryGenerator.getSqlRuleValue(table);
 		}
 		//update-end-author:taoyan date:20200820 for:【Online+系统】字典表加权限控制机制逻辑，想法不错 LOWCOD-799
+		String[] arr = new String[]{text, code};
+		SqlInjectionUtil.filterContent(arr);
+		SqlInjectionUtil.specialFilterContentForDictSql(table);
 		return sysDictService.queryTableDictItemsByCode(table, text, code);
 	}
 
