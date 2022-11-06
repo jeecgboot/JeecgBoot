@@ -309,7 +309,7 @@ public class SysDictController {
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/loadTreeData", method = RequestMethod.GET)
-	public Result<List<TreeSelectModel>> loadTreeData(@RequestParam(name="pid") String pid,@RequestParam(name="pidField") String pidField,
+	public Result<List<TreeSelectModel>> loadTreeData(@RequestParam(name="pid",required = false) String pid,@RequestParam(name="pidField") String pidField,
 												  @RequestParam(name="tableName") String tbname,
 												  @RequestParam(name="text") String text,
 												  @RequestParam(name="code") String code,
@@ -347,7 +347,12 @@ public class SysDictController {
 		Result<List<DictModel>> res = new Result<List<DictModel>>();
 		// SQL注入漏洞 sign签名校验
 		String dictCode = query.getTable()+","+query.getText()+","+query.getCode();
-        SqlInjectionUtil.filterContent(dictCode);
+		SqlInjectionUtil.filterContent(dictCode);
+		//update-begin-author:taoyan date:2022-11-4 for: issues/4128 sql injection
+		if(!dictQueryBlackListHandler.isPass(dictCode)){
+			return res.error500(dictQueryBlackListHandler.getError());
+		}
+		//update-end-author:taoyan date:2022-11-4 for: issues/4128 sql injection
 		List<DictModel> ls = this.sysDictService.queryDictTablePageList(query,pageSize,pageNo);
 		res.setResult(ls);
 		res.setSuccess(true);
@@ -615,6 +620,23 @@ public class SysDictController {
 			e.printStackTrace();
 			return Result.error("操作失败!");
 		}
+	}
+
+	/**
+	 * VUEN-2584【issue】平台sql注入漏洞几个问题
+	 * 部分特殊函数 可以将查询结果混夹在错误信息中，导致数据库的信息暴露
+	 * @param e
+	 * @return
+	 */
+	@ExceptionHandler(java.sql.SQLException.class)
+	public Result<?> handleSQLException(Exception e){
+		String msg = e.getMessage();
+		String extractvalue = "extractvalue";
+		String updatexml = "updatexml";
+		if(msg!=null && (msg.toLowerCase().indexOf(extractvalue)>=0 || msg.toLowerCase().indexOf(updatexml)>=0)){
+			return Result.error("校验失败，sql解析异常！");
+		}
+		return Result.error("校验失败，sql解析异常！" + msg);
 	}
 
 }
