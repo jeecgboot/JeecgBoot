@@ -1,7 +1,7 @@
 <#include "/common/utils.ftl">
 <template>
   <BasicModal v-bind="$attrs" @register="registerModal" :title="title" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" @ok="handleSubmit">
-    <${Format.humpToShortbar(entityName)}-form ref="formComponent" :disabled="formDisabled" @success="submitSuccess"></${Format.humpToShortbar(entityName)}-form>
+    <${Format.humpToShortbar(entityName)}-form ref="formComponent" :formDisabled="formDisabled" :formBpm="false" @success="submitSuccess"></${Format.humpToShortbar(entityName)}-form>
   </BasicModal>
 </template>
 

@@ -50,7 +50,7 @@
 <#list subTables as sub><#rt/>
       <a-tab-pane tab="${sub.ftlDescription}" key="${sub.entityName?uncap_first}" :forceRender="true">
 			  <#if sub.foreignRelationType =='1'>
-        <${Format.humpToShortbar(sub.entityName)}-form ref="${sub.entityName?uncap_first}FormRef" :disabled="formDisabled"></${Format.humpToShortbar(sub.entityName)}-form>
+        <${Format.humpToShortbar(sub.entityName)}-form ref="${sub.entityName?uncap_first}FormRef" :disabled="disabled"></${Format.humpToShortbar(sub.entityName)}-form>
 			  <#else>
         <j-vxe-table
           :keep-source="true"
@@ -59,7 +59,7 @@
           :columns="${sub.entityName?uncap_first}Table.columns"
           :dataSource="${sub.entityName?uncap_first}Table.dataSource"
           :maxHeight="300"
-          :disabled="formDisabled"
+          :disabled="disabled"
           :rowNumber="true"
           :rowSelection="true"
           :toolbar="true"/>
@@ -67,11 +67,17 @@
       </a-tab-pane>
 </#list>
     </a-tabs>
+    <#if bpm_flag>
+    <div v-if="showFlowSubmitButton" :span="24" style="width: 100%;text-align: center;margin-top: 10px">
+      <a-button preIcon="ant-design:check-outlined" style="width: 126px" type="primary" @click="submitForm">提 交</a-button>
+    </div>
+    </#if>
   </a-spin>
 </template>
 
 <script lang="ts">
-  import { defineComponent, ref, reactive, computed, toRaw } from 'vue';
+  import { defineComponent, ref, reactive, computed, toRaw, onMounted } from 'vue';
+  import { defHttp } from '/@/utils/http/axios';
   import { useValidateAntFormAndTable } from '/@/hooks/system/useJvxeMethods';
   import { <#list subTables as sub><#if sub.foreignRelationType =='0'>query${sub.entityName}ListByMainId, </#if></#list>queryDataById, saveOrUpdate } from '../${entityName}.api';
   <#list subTables as sub>
@@ -112,10 +118,12 @@
 </#list>
     },
     props:{
-      disabled:{
+      formDisabled:{
         type: Boolean,
         default: false
-      }
+      },
+      formData: { type: Object, default: ()=>{} },
+      formBpm: { type: Boolean, default: true }
     },
     emits:['success'],
     setup(props, {emit}) {
@@ -160,9 +168,54 @@
         wrapperCol: {xs: {span: 24}, sm: {span: 16}},
       };
 
-      const formDisabled = computed(() => {
-        return props.disabled;
+      // 表单禁用
+      const disabled = computed(()=>{
+        if(props.formBpm === true){
+          if(props.formData.disabled === false){
+            return false;
+          }else{
+            return true;
+          }
+        }
+        return props.formDisabled;
       });
+
+      <#if bpm_flag>
+      onMounted(()=>{
+        initFormData();
+      });
+      //渲染流程表单数据
+      const queryByIdUrl = '/${entityPackage}/${entityName?uncap_first}/queryById';
+      async function initFormData(){
+        if(props.formBpm === true){
+          let params = {id: props.formData.dataId};
+          const row = await defHttp.get({url: queryByIdUrl, params});
+          //设置表单的值
+          Object.keys(row).map(k => {
+            formData[k] = row[k];
+          });
+          //子表数据
+          <#list subTables as sub>
+          <#if sub.foreignRelationType =='1'>
+          await ${sub.entityName?uncap_first}FormRef.value.initFormData(row['${subMainFieldMap[sub.entityName]}']);
+          <#else>
+          const ${sub.entityName?uncap_first}DataList = await query${sub.entityName}ListByMainId(row['${subMainFieldMap[sub.entityName]}']);
+          ${sub.entityName?uncap_first}Table.dataSource = [...${sub.entityName?uncap_first}DataList];
+          </#if>
+          </#list>
+        }
+      }
+      // 是否显示提交按钮
+      const showFlowSubmitButton = computed(()=>{
+        if(props.formBpm === true){
+          if(props.formData.disabled === false){
+            return true
+          }
+        }
+        return false
+      });
+      </#if>
+      
 
       function add() {
         resetFields();
@@ -264,7 +317,10 @@
         setFieldsValue,
         handleFormChange,
         formItemLayout,
-        formDisabled,
+        disabled,
+        <#if bpm_flag>
+        showFlowSubmitButton,
+        </#if>
         getFormData,
         submitForm,
         add,

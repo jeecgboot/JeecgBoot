@@ -1,6 +1,6 @@
 <template>
   <a-modal :title="title" :width="width" :visible="visible" @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">
-    <${entityName}Form ref="registerForm" @ok="submitCallback" :disabled="disableSubmit"></${entityName}Form>
+    <${entityName}Form ref="registerForm" @ok="submitCallback" :formDisabled="disableSubmit" :formBpm="false"></${entityName}Form>
   </a-modal>
 </template>
 

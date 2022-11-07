@@ -4,7 +4,7 @@
 <#assign id = '${.now?string["yyyyMMddhhmmSSsss"]}0'>
 
 INSERT INTO sys_permission(id, parent_id, name, url, component, component_name, redirect, menu_type, perms, perms_type, sort_no, always_show, icon, is_route, is_leaf, keep_alive, hidden, hide_tab, description, status, del_flag, rule_flag, create_by, create_time, update_by, update_time, internal_or_external) 
-VALUES ('${id}', NULL, '${tableVo.ftlDescription}', '/${entityPackage}/${entityName?uncap_first}List', '${entityPackage}/${entityName}List', NULL, NULL, 0, NULL, '1', 1.00, 0, NULL, 1, 1, 0, 0, 0, NULL, '1', 0, 0, 'admin', '${.now?string["yyyy-MM-dd HH:mm:ss"]}', NULL, NULL, 0);
+VALUES ('${id}', NULL, '${tableVo.ftlDescription}', '/${entityPackage}/${entityName?uncap_first}List', '${entityPackage}/${entityName}List', NULL, NULL, 0, NULL, '1', 0.00, 0, NULL, 1, 1, 0, 0, 0, NULL, '1', 0, 0, 'admin', '${.now?string["yyyy-MM-dd HH:mm:ss"]}', NULL, NULL, 0);
 
 -- 权限控制sql
 -- 新增

@@ -350,7 +350,7 @@
          }
        }
      ];
-     if(record.bpmStatus == '1'){
+     if(record.bpmStatus == '1' || !record.bpmStatus){
        dropDownAction.push({
          label: '发起流程',
          popConfirm: {
@@ -384,7 +384,7 @@
     let params = {
       flowCode: 'dev_${tableName}_001',
       id: record.id,
-      formUrl: '${entityPackage}/modules/${entityName}Form',
+      formUrl: '${entityPackage}/components/${entityName}Form',
       formUrlMobile: ''
     }
     await startProcess(params);

@@ -229,7 +229,7 @@
         }
       }
     ];
-    if(record.bpmStatus == '1'){
+    if(record.bpmStatus == '1' || !record.bpmStatus){
       dropDownAction.push({
         label: '发起流程',
         popConfirm: {
