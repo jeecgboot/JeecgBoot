@@ -3,7 +3,7 @@
   <BasicModal v-bind="$attrs" @register="registerModal" destroyOnClose :title="title" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" @ok="handleSubmit">
       <BasicForm @register="registerForm" ref="formRef"/>
   <!-- 子表单区域 -->
-    <a-tabs v-model:activeKey="activeKey" @change="handleChangeTabs">
+    <a-tabs v-model:activeKey="activeKey" animated @change="handleChangeTabs">
 <#list subTables as sub><#rt/>
   <#assign refKey = sub.entityName?uncap_first/>
   <#if sub.foreignRelationType =='1'>
