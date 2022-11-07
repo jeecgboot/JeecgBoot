@@ -150,6 +150,9 @@
 <#if need_pca>
   import { getAreaTextByCode } from '/@/components/Form/src/utils/Area';
 </#if>
+  <#if bpm_flag==true>
+  import { startProcess } from '/@/api/common/api';
+  </#if>
 
   const expandedRowKeys = ref([]);
   const queryParam = ref<any>({});
@@ -381,12 +384,14 @@
       }
     ];
   }
-   
+
+
   /**
    * 下拉操作栏
    */
-  function getDropDownAction(record) {
-    return [
+  function getDropDownAction(record){
+    <#if bpm_flag==true>
+    let dropDownAction = [
       {
         label: '详情',
         onClick: handleDetail.bind(null, record),
@@ -394,7 +399,7 @@
       {
         label: '添加下级',
         onClick: handleAddSub.bind(null, { pid: record.id }),
-      },      
+      },
       {
         label: '删除',
         popConfirm: {
@@ -403,7 +408,53 @@
         },
       },
     ];
+    if(record.bpmStatus == '1' || !record.bpmStatus){
+      dropDownAction.push({
+        label: '发起流程',
+        popConfirm: {
+          title: '确认提交流程吗？',
+          confirm: handleProcess.bind(null, record),
+        }
+      })
+    }
+    return dropDownAction;
+    <#else>
+    return [
+      {
+        label: '详情',
+        onClick: handleDetail.bind(null, record),
+      },
+      {
+        label: '添加下级',
+        onClick: handleAddSub.bind(null, { pid: record.id }),
+      },
+      {
+        label: '删除',
+        popConfirm: {
+          title: '确定删除吗?',
+          confirm: handleDelete.bind(null, record),
+        },
+      },
+    ];
+    </#if>
   }
+
+  <#if bpm_flag==true>
+  /**
+   * 提交流程
+   */
+  async function handleProcess(record) {
+    let params = {
+      flowCode: 'dev_${tableName}_001',
+      id: record.id,
+      formUrl: '${entityPackage}/components/${entityName}Form',
+      formUrlMobile: ''
+    }
+    await startProcess(params);
+    await reload();
+  }
+  </#if>
+
 
   /**
    * 查询
