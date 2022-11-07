@@ -238,7 +238,15 @@ public class QueryGenerator {
 		if(parameterMap!=null&& parameterMap.containsKey(ORDER_TYPE)) {
 			order = parameterMap.get(ORDER_TYPE)[0];
 		}
-        log.debug("排序规则>>列:" + column + ",排序方式:" + order);
+        log.info("排序规则>>列:" + column + ",排序方式:" + order);
+
+		//update-begin-author:scott date:2022-11-07 for:避免用户自定义表无默认字段{创建时间}，导致排序报错
+		//TODO 避免用户自定义表无默认字段创建时间，导致排序报错
+		if(DataBaseConstant.CREATE_TIME.equals(column) && !fieldColumnMap.containsKey(DataBaseConstant.CREATE_TIME)){
+			column = "id";
+		}
+		//update-end-author:scott date:2022-11-07 for:避免用户自定义表无默认字段{创建时间}，导致排序报错
+		
 		if (oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
 			//字典字段，去掉字典翻译文本后缀
 			if(column.endsWith(CommonConstant.DICT_TEXT_SUFFIX)) {
