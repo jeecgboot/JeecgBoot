@@ -1,25 +1,20 @@
 package org.jeecg.modules.system.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.CommonUtils;
-import org.jeecg.common.util.RestUtil;
-import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.filter.FileTypeFilter;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.HandlerMapping;
@@ -28,7 +23,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URLDecoder;
 
 /**
  * <p>
@@ -347,55 +341,6 @@ public class CommonController {
         String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         String bestMatchPattern = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
         return new AntPathMatcher().extractPathWithinPattern(bestMatchPattern, path);
-    }
-
-    /**
-     * 中转HTTP请求，解决跨域问题
-     *
-     * @param url 必填：请求地址
-     * @return
-     */
-    @RequestMapping("/transitRESTful")
-    public Result transitRestful(@RequestParam("url") String url, HttpServletRequest request) {
-        try {
-            ServletServerHttpRequest httpRequest = new ServletServerHttpRequest(request);
-            // 中转请求method、body
-            HttpMethod method = httpRequest.getMethod();
-            JSONObject params;
-            try {
-                params = JSON.parseObject(JSON.toJSONString(httpRequest.getBody()));
-            } catch (Exception e) {
-                params = new JSONObject();
-            }
-            // 中转请求问号参数
-            JSONObject variables = JSON.parseObject(JSON.toJSONString(request.getParameterMap()));
-            variables.remove("url");
-            // 在 headers 里传递Token
-            String token = TokenUtils.getTokenByRequest(request);
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("X-Access-Token", token);
-            // 发送请求
-            String httpUrl = URLDecoder.decode(url, "UTF-8");
-            ResponseEntity<String> response = RestUtil.request(httpUrl, method, headers , variables, params, String.class);
-            // 封装返回结果
-            Result<Object> result = new Result<>();
-            int statusCode = response.getStatusCodeValue();
-            result.setCode(statusCode);
-            result.setSuccess(statusCode == 200);
-            String responseBody = response.getBody();
-            try {
-                // 尝试将返回结果转为JSON
-                Object json = JSON.parse(responseBody);
-                result.setResult(json);
-            } catch (Exception e) {
-                // 转成JSON失败，直接返回原始数据
-                result.setResult(responseBody);
-            }
-            return result;
-        } catch (Exception e) {
-            log.debug("中转HTTP请求失败", e);
-            return Result.error(e.getMessage());
-        }
     }
 
 }
