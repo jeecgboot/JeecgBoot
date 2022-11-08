@@ -43,7 +43,7 @@
                 <#if query_field_no gt 1>  </#if>code="${po.dictTable}"
                 <#if query_field_no gt 1>  </#if>:fieldConfig="[
                 <#list sourceFields as fieldName>
-                  <#if query_field_no gt 1>  </#if>{ source: '${fieldName}', target: '${targetFields[fieldName_index]}' },
+                  <#if query_field_no gt 1>  </#if>{ source: '${fieldName}', target: '${dashedToCamel(targetFields[fieldName_index])}' },
                 </#list>
                 <#if query_field_no gt 1>  </#if>]"
                 <#if query_field_no gt 1>  </#if>:multi="${po.extendParams.popupMulti?c}"

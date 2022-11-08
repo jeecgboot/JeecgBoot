@@ -4,7 +4,7 @@
       popupCode:"${col.dictTable}",
       fieldConfig: [
     <#list sourceFields as fieldName>
-        { source: '${fieldName}', target: '${targetFields[fieldName_index]}' },
+        { source: '${fieldName}', target: '${dashedToCamel(targetFields[fieldName_index])}' },
     </#list>
       ],
     <#if col.readonly=='Y'>
