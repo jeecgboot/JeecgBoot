@@ -8,7 +8,7 @@
             code:"${po.dictTable}",
             fieldConfig: [
                 <#list sourceFields as fieldName>
-                { source: '${fieldName}', target: '${targetFields[fieldName_index]}' },
+                { source: '${fieldName}', target: '${dashedToCamel(targetFields[fieldName_index])}' },
                 </#list>
             ],
             multi:${po.extendParams.popupMulti?c}
