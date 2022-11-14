@@ -47,7 +47,7 @@
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.11.2</aliyun.oss.version>
 		<!-- shiro -->
-		<shiro.version>1.9.1</shiro.version>
+		<shiro.version>1.10.0</shiro.version>
 		<java-jwt.version>3.11.0</java-jwt.version>
 		<shiro-redis.version>3.1.0</shiro-redis.version>
 		<codegenerate.version>1.4.3</codegenerate.version>
