@@ -64,11 +64,33 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 	@Override
 	@Transactional(rollbackFor = JeecgBootException.class)
 	public boolean resumeJob(QuartzJob quartzJob) {
-		schedulerDelete(quartzJob.getId());
-		schedulerAdd(quartzJob.getId(), quartzJob.getJobClassName().trim(), quartzJob.getCronExpression().trim(), quartzJob.getParameter());
 		quartzJob.setStatus(CommonConstant.STATUS_NORMAL);
-		return this.updateById(quartzJob);
+		boolean update = this.updateById(quartzJob);
+		if (!update){
+			return false;
+		}
+		if (checkExists(quartzJob)) {
+			try {
+				scheduler.resumeJob(JobKey.jobKey(quartzJob.getId()));
+			} catch (SchedulerException e) {
+				throw new JeecgBootException(e.getMessage(), e);
+			}
+		}else {
+			schedulerAdd(quartzJob.getId(), quartzJob.getJobClassName().trim(), quartzJob.getCronExpression().trim(), quartzJob.getParameter());
+		}
+		return true;
 	}
+
+	private boolean checkExists(QuartzJob quartzJob) {
+		try {
+			return scheduler.checkExists(JobKey.jobKey(quartzJob.getId()));
+		} catch (SchedulerException e) {
+			log.warn(e.getMessage(), e);
+			return false;
+		}
+	}
+
+
 
 	/**
 	 * 编辑&启停定时任务
@@ -77,13 +99,19 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 	@Override
 	@Transactional(rollbackFor = JeecgBootException.class)
 	public boolean editAndScheduleJob(QuartzJob quartzJob) throws SchedulerException {
+		boolean update = this.updateById(quartzJob);
+		if (!update) {
+			return false;
+		}
 		if (CommonConstant.STATUS_NORMAL.equals(quartzJob.getStatus())) {
-			schedulerDelete(quartzJob.getId());
-			schedulerAdd(quartzJob.getId(), quartzJob.getJobClassName().trim(), quartzJob.getCronExpression().trim(), quartzJob.getParameter());
+			// 防止重复添加Job
+			if(schedulerDelete(quartzJob.getId())) {
+				schedulerAdd(quartzJob.getId(), quartzJob.getJobClassName().trim(), quartzJob.getCronExpression().trim(), quartzJob.getParameter());
+			}
 		}else{
 			scheduler.pauseJob(JobKey.jobKey(quartzJob.getId()));
 		}
-		return this.updateById(quartzJob);
+		return true;
 	}
 
 	/**
@@ -92,9 +120,15 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 	@Override
 	@Transactional(rollbackFor = JeecgBootException.class)
 	public boolean deleteAndStopJob(QuartzJob job) {
-		schedulerDelete(job.getId());
 		boolean ok = this.removeById(job.getId());
-		return ok;
+		if (!ok){
+			return false;
+		}
+		boolean schedulerDel = schedulerDelete(job.getId());
+		if (!schedulerDel) {
+			throw new JeecgBootException("schedulerDelete failed");
+		}
+		return true;
 	}
 
 	@Override
@@ -164,11 +198,9 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 	 * 
 	 * @param id
 	 */
-	private void schedulerDelete(String id) {
+	private boolean schedulerDelete(String id) {
 		try {
-			scheduler.pauseTrigger(TriggerKey.triggerKey(id));
-			scheduler.unscheduleJob(TriggerKey.triggerKey(id));
-			scheduler.deleteJob(JobKey.jobKey(id));
+			return scheduler.deleteJob(JobKey.jobKey(id));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			throw new JeecgBootException("删除定时任务失败");

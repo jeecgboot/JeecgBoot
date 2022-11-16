@@ -17,7 +17,7 @@ import org.quartz.*;
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 @Slf4j
-public class AsyncJob implements Job {
+public class SyncJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
