@@ -128,7 +128,10 @@
           maxHeight = null
         }
       }
-      return {height, minHeight, maxHeight}
+      <#-- update-begin-author:taoyan date:2022-11-14 for:VUEN-2674 【代码生成】对接流程表单 附加单据显示问题 5.多tab生成代码后，新增 没有滚动条，只能填写部分字段 -->
+      let overflow = 'auto';
+      return {height, minHeight, maxHeight, overflow};
+      <#-- update-end-author:taoyan date:2022-11-14 for:VUEN-2674 【代码生成】对接流程表单 附加单据显示问题 5.多tab生成代码后，新增 没有滚动条，只能填写部分字段 -->
     })
 
     async function reset(){

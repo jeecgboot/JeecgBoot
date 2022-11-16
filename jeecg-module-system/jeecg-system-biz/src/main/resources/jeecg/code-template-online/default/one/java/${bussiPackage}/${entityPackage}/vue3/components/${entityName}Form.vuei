@@ -1,6 +1,6 @@
 <#include "/common/utils.ftl">
 <template>
-    <div style="height: 400px">
+    <div style="min-height: 400px">
         <BasicForm @register="registerForm"></BasicForm>
         <div style="width: 100%;text-align: center" v-if="!formDisabled">
             <a-button @click="submitForm" pre-icon="ant-design:check" type="primary">提 交</a-button>
