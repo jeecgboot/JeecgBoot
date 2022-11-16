@@ -1,3 +1,4 @@
+<#include "/common/utils.ftl">
 <#assign pidFieldName = "">
 <#assign hasChildrenField = "">
 <#assign bpm_flag=false>

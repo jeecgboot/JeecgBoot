@@ -28,5 +28,8 @@
     }
 <#else>
     @ApiModelProperty(value = "${po.filedComment}")
+  <#if po.fieldDbName == 'del_flag'>
+    @TableLogic
+  </#if>
     private ${po.fieldType} ${po.fieldName};
 </#if>
