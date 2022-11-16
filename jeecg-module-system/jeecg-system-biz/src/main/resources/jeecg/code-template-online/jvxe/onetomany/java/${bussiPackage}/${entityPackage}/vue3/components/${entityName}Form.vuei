@@ -17,6 +17,7 @@
               keep-source
               resizable
               ref="${refKey}"
+              v-if="${sub.entityName?uncap_first}Table.show"
               :loading="${sub.entityName?uncap_first}Table.loading"
               :columns="${sub.entityName?uncap_first}Table.columns"
               :dataSource="${sub.entityName?uncap_first}Table.dataSource"
@@ -102,7 +103,8 @@
       const ${sub.entityName?uncap_first}Table = reactive({
         loading: false,
         dataSource: [],
-        columns:${sub.entityName?uncap_first}Columns
+        columns:${sub.entityName?uncap_first}Columns,
+        show: false
       })
       </#if>
       </#list>
@@ -161,7 +163,9 @@
         await setFieldsValue({...data});
         <#list subTables as sub>
         <#if sub.foreignRelationType =='0'>
-        requestSubTableData(${sub.entityName?uncap_first}List, {id: data.id}, ${sub.entityName?uncap_first}Table, ()=>{});
+        requestSubTableData(${sub.entityName?uncap_first}List, {id: data.id}, ${sub.entityName?uncap_first}Table, ()=>{
+          ${sub.entityName?uncap_first}Table.show = true;
+        });
         </#if>
         <#if sub.foreignRelationType =='1'>
         ${sub.entityName?uncap_first}Form.value.initFormData(${sub.entityName?uncap_first}List, data.id);

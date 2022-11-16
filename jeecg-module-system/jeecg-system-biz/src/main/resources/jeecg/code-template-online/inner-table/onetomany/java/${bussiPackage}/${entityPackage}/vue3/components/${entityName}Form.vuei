@@ -14,6 +14,7 @@
   <#else>
       <a-tab-pane tab="${sub.ftlDescription}" key="${refKey}" :forceRender="true">
         <JVxeTable
+          v-if="${sub.entityName?uncap_first}Table.show"      
           keep-source
           resizable
           ref="${refKey}"
@@ -72,7 +73,8 @@
     const ${sub.entityName?uncap_first}Table = reactive({
           loading: false,
           dataSource: [],
-          columns:${sub.entityName?uncap_first}JVxeColumns
+          columns:${sub.entityName?uncap_first}JVxeColumns,
+          show: false
     })
     </#if>
    </#list>
@@ -128,7 +130,9 @@
         </#list>
         <#list subTables as sub><#rt/>
         <#if sub.foreignRelationType =='0'>
-        requestSubTableData(query${sub.entityName}, {id: data.id}, ${sub.entityName?uncap_first}Table)
+        requestSubTableData(query${sub.entityName}, {id: data.id}, ${sub.entityName?uncap_first}Table, ()=>{
+          ${sub.entityName?uncap_first}Table.show = true;
+        });
         </#if>
         </#list>
         // 隐藏底部时禁用整个表单
