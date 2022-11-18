@@ -149,12 +149,10 @@
     const tabsStyle = computed(() => {
       let height: Nullable<string> = null
       let minHeight = '100px'
-      let maxHeight: Nullable<string> = '500px'
       // 弹窗wrapper
-      
       <#-- update-begin-author:taoyan date:2022-11-14 for:VUEN-2674 【代码生成】对接流程表单 附加单据显示问题 5.多tab生成代码后，新增 没有滚动条，只能填写部分字段 --> 
       let overflow = 'auto';
-      return {height, minHeight, maxHeight, overflow};
+      return {height, minHeight, overflow};
       <#-- update-end-author:taoyan date:2022-11-14 for:VUEN-2674 【代码生成】对接流程表单 附加单据显示问题 5.多tab生成代码后，新增 没有滚动条，只能填写部分字段 -->
     })
 
