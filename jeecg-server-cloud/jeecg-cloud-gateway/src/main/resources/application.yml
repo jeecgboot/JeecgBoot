@@ -42,7 +42,7 @@ spring:
         flow:  # 指定数据源名称
           # 指定nacos数据源
           nacos:
-            server-addr: @spring.cloud.nacos.config.server-addr@
+            server-addr: ${spring.cloud.nacos.config.server-addr}
             # 指定配置文件
             dataId: ${spring.application.name}-flow-rules
             # 指定分组
@@ -54,7 +54,7 @@ spring:
         #降级规则
         degrade:
           nacos:
-            server-addr: @spring.cloud.nacos.config.server-addr@
+            server-addr: ${spring.cloud.nacos.config.server-addr}
             dataId: ${spring.application.name}-degrade-rules
             groupId: SENTINEL_GROUP
             rule-type: degrade
@@ -62,7 +62,7 @@ spring:
         #系统规则
         system:
           nacos:
-            server-addr: @spring.cloud.nacos.config.server-addr@
+            server-addr: ${spring.cloud.nacos.config.server-addr}
             dataId: ${spring.application.name}-system-rules
             groupId: SENTINEL_GROUP
             rule-type: system
@@ -70,7 +70,7 @@ spring:
         #授权规则
         authority:
           nacos:
-            server-addr: @spring.cloud.nacos.config.server-addr@
+            server-addr: ${spring.cloud.nacos.config.server-addr}
             dataId: ${spring.application.name}-authority-rules
             groupId: SENTINEL_GROUP
             rule-type: authority
@@ -78,7 +78,7 @@ spring:
         #热点参数
         param-flow:
           nacos:
-            server-addr: @spring.cloud.nacos.config.server-addr@
+            server-addr: ${spring.cloud.nacos.config.server-addr}
             dataId: ${spring.application.name}-param-rules
             groupId: SENTINEL_GROUP
             rule-type: param-flow
@@ -86,7 +86,7 @@ spring:
         #网关流控规则
         gw-flow:
           nacos:
-            server-addr: @spring.cloud.nacos.config.server-addr@
+            server-addr: ${spring.cloud.nacos.config.server-addr}
             dataId: ${spring.application.name}-flow-rules
             groupId: SENTINEL_GROUP
             rule-type: gw-flow
@@ -94,7 +94,7 @@ spring:
         #API流控规则
         gw-api-group:
           nacos:
-            server-addr: @spring.cloud.nacos.config.server-addr@
+            server-addr: ${spring.cloud.nacos.config.server-addr}
             dataId: ${spring.application.name}-api-rules
             groupId: SENTINEL_GROUP
             rule-type: gw-api-group
