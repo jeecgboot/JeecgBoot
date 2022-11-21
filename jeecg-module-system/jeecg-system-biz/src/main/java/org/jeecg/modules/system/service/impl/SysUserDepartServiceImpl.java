@@ -46,8 +46,8 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 	 */
 	@Override
 	public List<DepartIdModel> queryDepartIdsOfUser(String userId) {
-		LambdaQueryWrapper<SysUserDepart> queryUserDep = new LambdaQueryWrapper<SysUserDepart>();
-		LambdaQueryWrapper<SysDepart> queryDep = new LambdaQueryWrapper<SysDepart>();
+		LambdaQueryWrapper<SysUserDepart> queryUserDep = new LambdaQueryWrapper<>();
+		LambdaQueryWrapper<SysDepart> queryDep = new LambdaQueryWrapper<>();
 		try {
             queryUserDep.eq(SysUserDepart::getUserId, userId);
 			List<String> depIdList = new ArrayList<>();
@@ -81,7 +81,7 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 	 */
 	@Override
 	public List<SysUser> queryUserByDepId(String depId) {
-		LambdaQueryWrapper<SysUserDepart> queryUserDep = new LambdaQueryWrapper<SysUserDepart>();
+		LambdaQueryWrapper<SysUserDepart> queryUserDep = new LambdaQueryWrapper<>();
 		queryUserDep.eq(SysUserDepart::getDepId, depId);
 		List<String> userIdList = new ArrayList<>();
 		List<SysUserDepart> uDepList = this.list(queryUserDep);
@@ -89,7 +89,7 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 			for(SysUserDepart uDep : uDepList) {
 				userIdList.add(uDep.getUserId());
 			}
-			List<SysUser> userList = (List<SysUser>) sysUserMapper.selectBatchIds(userIdList);
+			List<SysUser> userList = sysUserMapper.selectBatchIds(userIdList);
 			//update-begin-author:taoyan date:201905047 for:接口调用查询返回结果不能返回密码相关信息
 			for (SysUser sysUser : userList) {
 				sysUser.setSalt("");
@@ -98,7 +98,7 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 			//update-end-author:taoyan date:201905047 for:接口调用查询返回结果不能返回密码相关信息
 			return userList;
 		}
-		return new ArrayList<SysUser>();
+		return new ArrayList<>();
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 			sysUser.setPassword("");
 			map.put(sysUser.getId(), sysUser);
 		}
-		return new ArrayList<SysUser>(map.values());
+		return new ArrayList<>(map.values());
 		//update-end-author:taoyan date:20210422 for: 根据部门选择用户接口代码优化
 
 	}
@@ -127,7 +127,7 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 	public IPage<SysUser> queryDepartUserPageList(String departId, String username, String realname, int pageSize, int pageNo,String id) {
 		IPage<SysUser> pageList = null;
 		// 部门ID不存在 直接查询用户表即可
-		Page<SysUser> page = new Page<SysUser>(pageNo, pageSize);
+		Page<SysUser> page = new Page<>(pageNo, pageSize);
 		if(oConvertUtils.isEmpty(departId)){
 			LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
             //update-begin---author:wangshuai ---date:20220104  for：[JTC-297]已冻结用户仍可设置为代理人------------
@@ -166,7 +166,7 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 					map.put(item.getId(), item);
 				});
 			}
-			pageList.setRecords(new ArrayList<SysUser>(map.values()));
+			pageList.setRecords(new ArrayList<>(map.values()));
 		}
 		return pageList;
 	}
@@ -205,13 +205,7 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 		List<SysUserDepVo> list = sysUserMapper.getDepNamesByUserIds(userIds);
 
 		Map<String, String> res = new HashMap(5);
-		list.forEach(item -> {
-					if (res.get(item.getUserId()) == null) {
-						res.put(item.getUserId(), item.getDepartName());
-					} else {
-						res.put(item.getUserId(), res.get(item.getUserId()) + "," + item.getDepartName());
-					}
-				}
+		list.forEach(item -> res.merge(item.getUserId(), item.getDepartName(), (a, b) -> a + "," + b)
 		);
 		return res;
 	}

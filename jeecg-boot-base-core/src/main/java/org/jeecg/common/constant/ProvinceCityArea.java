@@ -2,15 +2,11 @@ package org.jeecg.common.constant;
 
 import com.alibaba.fastjson.JSONObject;
 import org.jeecg.common.util.oConvertUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.List;
 
 /**
@@ -24,7 +20,7 @@ public class ProvinceCityArea {
     public String getText(String code){
         this.initAreaList();
         if(this.areaList!=null || this.areaList.size()>0){
-            List<String> ls = new ArrayList<String>();
+            List<String> ls = new ArrayList<>();
             getAreaByCode(code,ls);
             return String.join("/",ls);
         }
@@ -38,7 +34,7 @@ public class ProvinceCityArea {
                 //update-begin-author:taoyan date:2022-5-24 for:VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
                 String areaText = areaList.get(i).getText();
                 String cityText = areaList.get(i).getAheadText();
-                if(text.indexOf(areaText)>=0 && (cityText!=null && text.indexOf(cityText)>=0)){
+                if(text.contains(areaText) && (cityText!=null && text.contains(cityText))){
                     return areaList.get(i).getId();
                 }
                 //update-end-author:taoyan date:2022-5-24 for:VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
@@ -127,7 +123,7 @@ public class ProvinceCityArea {
     private void initAreaList(){
         //System.out.println("=====================");
         if(this.areaList==null || this.areaList.size()==0){
-            this.areaList = new ArrayList<Area>();
+            this.areaList = new ArrayList<>();
             try {
                 String jsonData = oConvertUtils.readStatic("classpath:static/pca.json");
                 JSONObject baseJson = JSONObject.parseObject(jsonData);
@@ -135,20 +131,20 @@ public class ProvinceCityArea {
                 JSONObject provinceJson = baseJson.getJSONObject("86");
                 for(String provinceKey: provinceJson.keySet()){
                     //System.out.println("===="+provinceKey);
-                    Area province = new Area(provinceKey,provinceJson.getString(provinceKey),"86");
+                    Area province = new Area(provinceKey, provinceJson.getString(provinceKey), "86");
                     this.areaList.add(province);
                     //第二层 市
                     JSONObject cityJson = baseJson.getJSONObject(provinceKey);
                     for(String cityKey:cityJson.keySet()){
                         //System.out.println("-----"+cityKey);
-                        Area city = new Area(cityKey,cityJson.getString(cityKey),provinceKey);
+                        Area city = new Area(cityKey, cityJson.getString(cityKey), provinceKey);
                         this.areaList.add(city);
                         //第三层 区
                         JSONObject areaJson =  baseJson.getJSONObject(cityKey);
                         if(areaJson!=null){
                             for(String areaKey:areaJson.keySet()){
                                 //System.out.println("········"+areaKey);
-                                Area area = new Area(areaKey,areaJson.getString(areaKey),cityKey);
+                                Area area = new Area(areaKey, areaJson.getString(areaKey), cityKey);
                                 //update-begin-author:taoyan date:2022-5-24 for:VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
                                 area.setAheadText(cityJson.getString(cityKey));
                                 //update-end-author:taoyan date:2022-5-24 for:VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
@@ -173,7 +169,7 @@ public class ProvinceCityArea {
             while (scanner.hasNextLine()) {
                 buffer.append(scanner.nextLine());
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         } finally {
             if (scanner != null) {
@@ -183,7 +179,7 @@ public class ProvinceCityArea {
         return buffer.toString();
     }
 
-    class Area{
+    static class Area{
         String id;
         String text;
         String pid;

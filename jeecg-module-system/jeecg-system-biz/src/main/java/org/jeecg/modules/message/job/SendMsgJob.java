@@ -30,12 +30,12 @@ public class SendMsgJob implements Job {
 	private ISysBaseAPI sysBaseAPI;
 
 	@Override
-	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+	public void execute(JobExecutionContext jobExecutionContext) {
 
 		log.info(String.format(" Jeecg-Boot 发送消息任务 SendMsgJob !  时间:" + DateUtils.getTimestamp()));
 
 		// 1.读取消息中心数据，只查询未发送的和发送失败不超过次数的
-		QueryWrapper<SysMessage> queryWrapper = new QueryWrapper<SysMessage>();
+		QueryWrapper<SysMessage> queryWrapper = new QueryWrapper<>();
 		queryWrapper.eq("es_send_status", SendMsgStatusEnum.WAIT.getCode())
 				.or(i -> i.eq("es_send_status", SendMsgStatusEnum.FAIL.getCode()).lt("es_send_num", 6));
 		List<SysMessage> sysMessages = sysMessageService.list(queryWrapper);

@@ -10,11 +10,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.service.ISysDictItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,10 +57,10 @@ public class SysDictItemController {
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysDictItem>> queryPageList(SysDictItem sysDictItem,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
-		Result<IPage<SysDictItem>> result = new Result<IPage<SysDictItem>>();
+		Result<IPage<SysDictItem>> result = new Result<>();
 		QueryWrapper<SysDictItem> queryWrapper = QueryGenerator.initQueryWrapper(sysDictItem, req.getParameterMap());
 		queryWrapper.orderByAsc("sort_order");
-		Page<SysDictItem> page = new Page<SysDictItem>(pageNo, pageSize);
+		Page<SysDictItem> page = new Page<>(pageNo, pageSize);
 		IPage<SysDictItem> pageList = sysDictItemService.page(page, queryWrapper);
 		result.setSuccess(true);
 		result.setResult(pageList);
@@ -77,7 +75,7 @@ public class SysDictItemController {
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	@CacheEvict(value= {CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDictItem> add(@RequestBody SysDictItem sysDictItem) {
-		Result<SysDictItem> result = new Result<SysDictItem>();
+		Result<SysDictItem> result = new Result<>();
 		try {
 			sysDictItem.setCreateTime(new Date());
 			sysDictItemService.save(sysDictItem);
@@ -98,7 +96,7 @@ public class SysDictItemController {
 	@RequestMapping(value = "/edit",  method = { RequestMethod.PUT,RequestMethod.POST })
 	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDictItem> edit(@RequestBody SysDictItem sysDictItem) {
-		Result<SysDictItem> result = new Result<SysDictItem>();
+		Result<SysDictItem> result = new Result<>();
 		SysDictItem sysdict = sysDictItemService.getById(sysDictItem.getId());
 		if(sysdict==null) {
 			result.error500("未找到对应实体");
@@ -122,7 +120,7 @@ public class SysDictItemController {
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDictItem> delete(@RequestParam(name="id",required=true) String id) {
-		Result<SysDictItem> result = new Result<SysDictItem>();
+		Result<SysDictItem> result = new Result<>();
 		SysDictItem joinSystem = sysDictItemService.getById(id);
 		if(joinSystem==null) {
 			result.error500("未找到对应实体");
@@ -144,7 +142,7 @@ public class SysDictItemController {
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDictItem> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		Result<SysDictItem> result = new Result<SysDictItem>();
+		Result<SysDictItem> result = new Result<>();
 		if(ids==null || "".equals(ids.trim())) {
 			result.error500("参数不识别！");
 		}else {
@@ -163,8 +161,8 @@ public class SysDictItemController {
 	@RequestMapping(value = "/dictItemCheck", method = RequestMethod.GET)
 	@ApiOperation("字典重复校验接口")
 	public Result<Object> doDictItemCheck(SysDictItem sysDictItem, HttpServletRequest request) {
-		Long num = Long.valueOf(0);
-		LambdaQueryWrapper<SysDictItem> queryWrapper = new LambdaQueryWrapper<SysDictItem>();
+		Long num = 0L;
+		LambdaQueryWrapper<SysDictItem> queryWrapper = new LambdaQueryWrapper<>();
 		queryWrapper.eq(SysDictItem::getItemValue,sysDictItem.getItemValue());
 		queryWrapper.eq(SysDictItem::getDictId,sysDictItem.getDictId());
 		if (StringUtils.isNotBlank(sysDictItem.getId())) {

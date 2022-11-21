@@ -310,7 +310,7 @@ if (typeof PDFJS === 'undefined') {
         if (attribute.name.substring(0, 5) !== 'data-') {
           continue;
         }
-        var key = attribute.name.substring(5).replace(/\-([a-z])/g,
+        var key = attribute.name.substring(5).replace(/-([a-z])/g,
           function(all, ch) {
             return ch.toUpperCase();
           });
@@ -466,7 +466,7 @@ if (typeof PDFJS === 'undefined') {
   // Make sure that we only match webkit-based Android browsers,
   // since Firefox/Fennec works as expected.
   // Support: Android<3.0
-  var regex = /Android\s[0-2][^\d]/;
+  var regex = /Android\s[0-2]\D/;
   var isOldAndroid = regex.test(navigator.userAgent);
 
   // Range requests are broken in Chrome 39 and 40, https://crbug.com/442318
@@ -512,7 +512,7 @@ if (typeof PDFJS === 'undefined') {
       // Android < 4.4 lacks the set function.
       // Android >= 4.4 will contain Chrome in the user agent,
       // thus pass the Chrome check above and not reach this block.
-      polyfill = /Android\s[0-4][^\d]/g.test(navigator.userAgent);
+      polyfill = /Android\s[0-4]\D/g.test(navigator.userAgent);
     } else if (navigator.userAgent.indexOf('Safari') >= 0) {
       versionMatch = navigator.userAgent.
         match(/Version\/([0-9]+)\.([0-9]+)\.([0-9]+) Safari\//);

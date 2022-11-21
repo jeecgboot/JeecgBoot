@@ -3,8 +3,6 @@ package org.jeecg.modules.system.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Select;
 import org.jeecg.modules.system.entity.SysDepart;
-import org.jeecg.modules.system.model.SysDepartTreeModel;
-import org.jeecg.modules.system.model.TreeModel;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -24,7 +22,7 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
      * @param userId 用户id
      * @return List<SysDepart>
 	 */
-	public List<SysDepart> queryUserDeparts(@Param("userId") String userId);
+    List<SysDepart> queryUserDeparts(@Param("userId") String userId);
 
 	/**
 	 * 根据用户名查询部门
@@ -32,7 +30,7 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 * @param username
 	 * @return
 	 */
-	public List<SysDepart> queryDepartsByUsername(@Param("username") String username);
+    List<SysDepart> queryDepartsByUsername(@Param("username") String username);
 
     /**
      * 通过部门编码获取部门id
@@ -40,7 +38,7 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
      * @return String
      */
 	@Select("select id from sys_depart where org_code=#{orgCode}")
-	public String queryDepartIdByOrgCode(@Param("orgCode") String orgCode);
+    String queryDepartIdByOrgCode(@Param("orgCode") String orgCode);
 
     /**
      * 通过部门id 查询部门id,父id
@@ -48,7 +46,7 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
      * @return
      */
 	@Select("select id,parent_id from sys_depart where id=#{departId}")
-	public SysDepart getParentDepartId(@Param("departId") String departId);
+    SysDepart getParentDepartId(@Param("departId") String departId);
 
 	/**
 	 *  根据部门Id查询,当前和下级所有部门IDS

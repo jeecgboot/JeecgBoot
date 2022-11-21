@@ -82,7 +82,7 @@ public class MybatisInterceptor implements Interceptor {
 							}
 						}
 					}
-				} catch (Exception e) {
+				} catch (Exception ignored) {
 				}
 			}
 		}

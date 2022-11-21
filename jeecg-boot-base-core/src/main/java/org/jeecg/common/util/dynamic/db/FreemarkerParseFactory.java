@@ -48,7 +48,7 @@ public class FreemarkerParseFactory {
 
     static {
         TPL_CONFIG.setClassForTemplateLoading(
-                new FreemarkerParseFactory().getClass(), "/");
+                FreemarkerParseFactory.class, "/");
         TPL_CONFIG.setNumberFormat("0.#####################");
         SQL_CONFIG.setTemplateLoader(stringTemplateLoader);
         SQL_CONFIG.setNumberFormat("0.#####################");
@@ -78,7 +78,7 @@ public class FreemarkerParseFactory {
                 log.error(e.getMessage(), e.fillInStackTrace());
                 throw new Exception(e);
             }
-            log.debug("----isExistTemplate----" + e.toString());
+            log.debug("----isExistTemplate----" + e);
             //update-end--Author:scott  Date:20180320 for：解决问题 - 错误提示sql文件不存在，实际问题是sql freemarker用法错误------
             return false;
         }
@@ -108,9 +108,7 @@ public class FreemarkerParseFactory {
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             log.error("发送一次的模板key:{ " + tplName + " }");
-            //System.err.println(e.getMessage());
-            //System.err.println("模板名:{ "+ tplName +" }");
-            throw new RuntimeException("解析SQL模板异常");
+          throw new RuntimeException("解析SQL模板异常");
         }
     }
 
@@ -143,9 +141,7 @@ public class FreemarkerParseFactory {
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             log.error("发送一次的模板key:{ " + tplContent + " }");
-            //System.err.println(e.getMessage());
-            //System.err.println("模板内容:{ "+ tplContent +" }");
-            throw new RuntimeException("解析SQL模板异常");
+          throw new RuntimeException("解析SQL模板异常");
         }
     }
 
@@ -161,7 +157,7 @@ public class FreemarkerParseFactory {
         sql = NOTES_PATTERN.matcher(sql).replaceAll("");
         if (!keepSpace) {
             sql = sql.replaceAll("\\n", " ").replaceAll("\\t", " ")
-                    .replaceAll("\\s{1,}", " ").trim();
+                    .replaceAll("\\s+", " ").trim();
         }
         // 去掉 最后是 where这样的问题
         //where空格 "where "
@@ -179,13 +175,13 @@ public class FreemarkerParseFactory {
         int index = 0;
         while ((index = StringUtils.indexOfIgnoreCase(sql, whereAnd, index)) != -1) {
             sql = sql.substring(0, index + 5)
-                    + sql.substring(index + 9, sql.length());
+                    + sql.substring(index + 9);
         }
         // 去掉 , where 这样的问题
         index = 0;
         while ((index = StringUtils.indexOfIgnoreCase(sql, commaWhere, index)) != -1) {
             sql = sql.substring(0, index)
-                    + sql.substring(index + 1, sql.length());
+                    + sql.substring(index + 1);
         }
         // 去掉 最后是 ,这样的问题
         if (sql.endsWith(SymbolConstant.COMMA) || sql.endsWith(commaSpace)) {

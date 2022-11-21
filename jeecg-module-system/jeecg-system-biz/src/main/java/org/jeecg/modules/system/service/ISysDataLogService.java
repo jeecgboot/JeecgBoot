@@ -16,6 +16,6 @@ public interface ISysDataLogService extends IService<SysDataLog> {
 	 * @param dataId
 	 * @param dataContent
 	 */
-	public void addDataLog(String tableName, String dataId, String dataContent);
+    void addDataLog(String tableName, String dataId, String dataContent);
 
 }

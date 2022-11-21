@@ -54,7 +54,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                    HttpServletRequest req) {
         QueryWrapper<SysRoleIndex> queryWrapper = QueryGenerator.initQueryWrapper(sysRoleIndex, req.getParameterMap());
-        Page<SysRoleIndex> page = new Page<SysRoleIndex>(pageNo, pageSize);
+        Page<SysRoleIndex> page = new Page<>(pageNo, pageSize);
         IPage<SysRoleIndex> pageList = sysRoleIndexService.page(page, queryWrapper);
         return Result.OK(pageList);
     }

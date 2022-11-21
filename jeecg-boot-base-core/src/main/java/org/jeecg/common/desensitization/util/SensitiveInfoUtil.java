@@ -96,8 +96,6 @@ public class SensitiveInfoUtil {
                 }
             }
         }
-        //long endTime=System.currentTimeMillis();
-        //log.info((isEncode ? "加密操作，" : "解密操作，") + "当前程序耗时：" + (endTime - startTime) + "ms");
         return obj;
     }
 
@@ -112,8 +110,7 @@ public class SensitiveInfoUtil {
         if(list.size()>0){
             Object first = list.get(0);
             if(first.getClass().equals(entity)){
-                for(int i=0; i<list.size(); i++){
-                    Object temp = list.get(i);
+                for (Object temp : list) {
                     try {
                         handlerObject(temp, isEncode);
                     } catch (IllegalAccessException e) {

@@ -32,7 +32,7 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @return
 	 */
 	@Deprecated
-	public Long duplicateCheckCountSql(DuplicateCheckVo duplicateCheckVo);
+    Long duplicateCheckCountSql(DuplicateCheckVo duplicateCheckVo);
 
     /**
      * 重复校验 sql语句
@@ -40,14 +40,14 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
      * @return
      */
 	@Deprecated
-	public Long duplicateCheckCountSqlNoDataId(DuplicateCheckVo duplicateCheckVo);
+    Long duplicateCheckCountSqlNoDataId(DuplicateCheckVo duplicateCheckVo);
 
     /**
      * 通过字典code获取字典数据
      * @param code 字典code
      * @return  List<DictModel>
      */
-	public List<DictModel> queryDictItemsByCode(@Param("code") String code);
+    List<DictModel> queryDictItemsByCode(@Param("code") String code);
 
 	/**
 	 * 查询有效的数据字典项
@@ -63,7 +63,7 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @param dictCodeList
 	 * @return
 	 */
-	public List<DictModelMany> queryDictItemsByCodeList(@Param("dictCodeList") List<String> dictCodeList);
+    List<DictModelMany> queryDictItemsByCodeList(@Param("dictCodeList") List<String> dictCodeList);
 
     /**
      * 通过查询指定table的 text code 获取字典
@@ -73,7 +73,7 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
      * @return List<DictModel>
      */
 	@Deprecated
-	public List<DictModel> queryTableDictItemsByCode(@Param("table") String table,@Param("text") String text,@Param("code") String code);
+    List<DictModel> queryTableDictItemsByCode(@Param("table") String table, @Param("text") String text, @Param("code") String code);
 
     /**
      * 通过查询指定table的 text code 获取字典（指定查询条件）
@@ -84,7 +84,7 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
      * @return List<DictModel>
      */
 	@Deprecated
-	public List<DictModel> queryTableDictItemsByCodeAndFilter(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("filterSql") String filterSql);
+    List<DictModel> queryTableDictItemsByCodeAndFilter(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("filterSql") String filterSql);
 
     /**
      * 通过查询指定table的 text code 获取字典
@@ -95,7 +95,7 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
      */
 	@Deprecated
 	@Select("select ${key} as \"label\",${value} as \"value\" from ${table}")
-	public List<Map<String,String>> getDictByTableNgAlain(@Param("table") String table, @Param("key") String key, @Param("value") String value);
+    List<Map<String,String>> getDictByTableNgAlain(@Param("table") String table, @Param("key") String key, @Param("value") String value);
 
     /**
      * 通过字典code获取字典数据
@@ -103,7 +103,7 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
      * @param key
      * @return
      */
-	public String queryDictTextByKey(@Param("code") String code,@Param("key") String key);
+    String queryDictTextByKey(@Param("code") String code,@Param("key") String key);
 
 	/**
 	 * 可通过多个字典code查询翻译文本
@@ -122,7 +122,7 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
      * @return String
      */
 	@Deprecated
-	public String queryTableDictTextByKey(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("key") String key);
+    String queryTableDictTextByKey(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("key") String key);
 
 //	/**
 //	 * 通过查询指定table的 text code key 获取字典值，可批量查询
@@ -151,38 +151,16 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * 查询所有部门 作为字典信息 id -->value,departName -->text
 	 * @return
 	 */
-	public List<DictModel> queryAllDepartBackDictModel();
+    List<DictModel> queryAllDepartBackDictModel();
 	
 	/**
 	 * 查询所有用户  作为字典信息 username -->value,realname -->text
 	 * @return
 	 */
-	public List<DictModel> queryAllUserBackDictModel();
-	
-//	/**
-//	 * 通过关键字查询出字典表
-//	 * @param table
-//	 * @param text
-//	 * @param code
-//	 * @param keyword
-//	 * @return
-//	 */
-//	@Deprecated
-//	public List<DictModel> queryTableDictItems(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("keyword") String keyword);
+    List<DictModel> queryAllUserBackDictModel();
 
 
-//	/**
-//	 * 通过关键字查询出字典表
-//	 * @param page
-//	 * @param table
-//	 * @param text
-//	 * @param code
-//	 * @param keyword
-//	 * @return
-//	 */
-//	//IPage<DictModel> queryTableDictItems(Page<DictModel> page, @Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("keyword") String keyword);
-
-	/**
+  /**
 	  * 根据表名、显示字段名、存储字段名 查询树
 	 * @param table
 	 * @param text
@@ -201,14 +179,14 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @param id
 	 */
 	@Select("delete from sys_dict where id = #{id}")
-	public void deleteOneById(@Param("id") String id);
+    void deleteOneById(@Param("id") String id);
 
 	/**
 	 * 查询被逻辑删除的数据
 	 * @return
 	 */
 	@Select("select * from sys_dict where del_flag = 1")
-	public List<SysDict> queryDeleteList();
+    List<SysDict> queryDeleteList();
 
 	/**
 	 * 修改状态值
@@ -216,7 +194,7 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @param id
 	 */
 	@Update("update sys_dict set del_flag = #{flag,jdbcType=INTEGER} where id = #{id,jdbcType=VARCHAR}")
-	public void updateDictDelFlag(@Param("flag") int delFlag, @Param("id") String id);
+    void updateDictDelFlag(@Param("flag") int delFlag, @Param("id") String id);
 
 
 	/**
@@ -226,7 +204,7 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @return
 	 */
 	@Deprecated
-	public Page<DictModel> queryDictTablePageList(Page page, @Param("query") DictQuery query);
+    Page<DictModel> queryDictTablePageList(Page page, @Param("query") DictQuery query);
 
 
 	/**

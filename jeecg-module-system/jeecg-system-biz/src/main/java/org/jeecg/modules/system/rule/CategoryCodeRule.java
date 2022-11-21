@@ -59,7 +59,7 @@ public class CategoryCodeRule implements IFillRuleHandler {
                 categoryCode = YouBianCodeUtil.getNextYouBianCode(null);
             } else {
                 //情况2
-                SysCategory parent = (SysCategory) baseMapper.selectById(categoryPid);
+                SysCategory parent = baseMapper.selectById(categoryPid);
                 categoryCode = YouBianCodeUtil.getSubYouBianCode(parent.getCode(), null);
             }
         } else {

@@ -105,13 +105,12 @@ public class SystemSendMsgHandle implements ISendMsgHandle {
         announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
         sysAnnouncementMapper.insert(announcement);
         // 2.插入用户通告阅读标记表记录
-        String userId = toUser;
-        String[] userIds = userId.split(",");
+      String[] userIds = toUser.split(",");
         String anntId = announcement.getId();
-        for(int i=0;i<userIds.length;i++) {
-            if(oConvertUtils.isNotEmpty(userIds[i])) {
-                SysUser sysUser = userMapper.getUserByName(userIds[i]);
-                if(sysUser==null) {
+        for (String id : userIds) {
+            if (oConvertUtils.isNotEmpty(id)) {
+                SysUser sysUser = userMapper.getUserByName(id);
+                if (sysUser == null) {
                     continue;
                 }
                 SysAnnouncementSend announcementSend = new SysAnnouncementSend();

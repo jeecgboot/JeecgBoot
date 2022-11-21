@@ -17,6 +17,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -50,15 +51,14 @@ public class oConvertUtils {
 	}
 
 	public static String decode(String strIn, String sourceCode, String targetCode) {
-		String temp = code2code(strIn, sourceCode, targetCode);
-		return temp;
+    return code2code(strIn, sourceCode, targetCode);
 	}
 
 	@SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
     public static String StrToUTF(String strIn, String sourceCode, String targetCode) {
 		strIn = "";
 		try {
-			strIn = new String(strIn.getBytes("ISO-8859-1"), "GBK");
+			strIn = new String(strIn.getBytes(StandardCharsets.ISO_8859_1), "GBK");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -74,9 +74,9 @@ public class oConvertUtils {
 		}
 		try {
 			byte[] b = strIn.getBytes(sourceCode);
-			for (int i = 0; i < b.length; i++) {
-				System.out.print(b[i] + "  ");
-			}
+      for (byte value : b) {
+        System.out.print(value + "  ");
+      }
 			strOut = new String(b, targetCode);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -148,15 +148,7 @@ public class oConvertUtils {
 		return s;
 	}
 
-	/*public static Short getShort(String s) {
-		if (StringUtil.isNotEmpty(s)) {
-			return (Short.parseShort(s));
-		} else {
-			return null;
-		}
-	}*/
-
-	public static int getInt(Object object, int defval) {
+  public static int getInt(Object object, int defval) {
 		if (isEmpty(object)) {
 			return (defval);
 		}
@@ -190,7 +182,7 @@ public class oConvertUtils {
 		Integer[] result = new Integer[len];
 		try {
 			for (int i = 0; i < len; i++) {
-				result[i] = new Integer(object[i].trim());
+				result[i] = Integer.valueOf(object[i].trim());
 			}
 			return result;
 		} catch (NumberFormatException e) {
@@ -207,11 +199,8 @@ public class oConvertUtils {
 	 * @param s
 	 * @return
 	 */
-	/*public static String escapeJava(Object s) {
-		return StringEscapeUtils.escapeJava(getString(s));
-	}*/
-	
-	public static String getString(Object object) {
+
+  public static String getString(Object object) {
 		if (isEmpty(object)) {
 			return "";
 		}
@@ -241,12 +230,12 @@ public class oConvertUtils {
 	}
 
 	public static long stringToLong(String str) {
-		Long test = new Long(0);
+		long test = 0L;
 		try {
-			test = Long.valueOf(str);
-		} catch (Exception e) {
+			test = Long.parseLong(str);
+		} catch (Exception ignored) {
 		}
-		return test.longValue();
+		return test;
 	}
 
 	/**
@@ -271,7 +260,7 @@ public class oConvertUtils {
 	 *            要判断的类。
 	 * @return true 表示为基本数据类型。
 	 */
-	private static boolean isBaseDataType(Class clazz) throws Exception {
+	private static boolean isBaseDataType(Class clazz) {
 		return (clazz.equals(String.class) || clazz.equals(Integer.class) || clazz.equals(Byte.class) || clazz.equals(Long.class) || clazz.equals(Double.class) || clazz.equals(Float.class) || clazz.equals(Character.class) || clazz.equals(Short.class) || clazz.equals(BigDecimal.class) || clazz.equals(BigInteger.class) || clazz.equals(Boolean.class) || clazz.equals(Date.class) || clazz.isPrimitive());
 	}
 
@@ -314,11 +303,11 @@ public class oConvertUtils {
 			while (address.hasMoreElements()) {
 				ip = address.nextElement();
                 // 外网IP
-				if (!ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && ip.getHostAddress().indexOf(":") == -1) {
+				if (!ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && !ip.getHostAddress().contains(":")) {
 					netip = ip.getHostAddress();
 					finded = true;
 					break;
-				} else if (ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && ip.getHostAddress().indexOf(":") == -1) {
+				} else if (ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && !ip.getHostAddress().contains(":")) {
                     // 内网IP
 				    localip = ip.getHostAddress();
 				}
@@ -361,12 +350,11 @@ public class oConvertUtils {
 		if (source == null || source.length == 0) {
 			return false;
 		}
-		for (int i = 0; i < source.length; i++) {
-			String aSource = source[i];
-			if (aSource.equals(substring)) {
-				return true;
-			}
-		}
+    for (String aSource : source) {
+      if (aSource.equals(substring)) {
+        return true;
+      }
+    }
 		return false;
 	}
 
@@ -385,10 +373,10 @@ public class oConvertUtils {
 	 */
 	public static Map<Object, Object> setToMap(Set<Object> setobj) {
 		Map<Object, Object> map = getHashMap();
-		for (Iterator iterator = setobj.iterator(); iterator.hasNext();) {
-			Map.Entry<Object, Object> entry = (Map.Entry<Object, Object>) iterator.next();
-			map.put(entry.getKey().toString(), entry.getValue() == null ? "" : entry.getValue().toString().trim());
-		}
+    for (Object o : setobj) {
+      Map.Entry<Object, Object> entry = (Map.Entry<Object, Object>) o;
+      map.put(entry.getKey().toString(), entry.getValue() == null ? "" : entry.getValue().toString().trim());
+    }
 		return map;
 
 	}
@@ -417,8 +405,7 @@ public class oConvertUtils {
 		long c = Integer.parseInt(ip[2]);
 		long d = Integer.parseInt(ip[3]);
 
-		long ipNum = a * 256 * 256 * 256 + b * 256 * 256 + c * 256 + d;
-		return ipNum;
+    return a * 256 * 256 * 256 + b * 256 * 256 + c * 256 + d;
 	}
 
 	private static boolean isInner(long userIp, long begin, long end) {
@@ -480,11 +467,11 @@ public class oConvertUtils {
 		if(names==null||"".equals(names)){
 			return null;
 		}
-		StringBuffer sf = new StringBuffer();
+		StringBuilder sf = new StringBuilder();
 		String[] fs = names.split(",");
 		for (String field : fs) {
 			field = camelName(field);
-			sf.append(field + ",");
+			sf.append(field).append(",");
 		}
 		String result = sf.toString();
 		return result.substring(0, result.length() - 1);
@@ -554,7 +541,7 @@ public class oConvertUtils {
 	 */
 	public static String randomGen(int place) {
 		String base = "qwertyuioplkjhgfdsazxcvbnmQAZWSXEDCRFVTGBYHNUJMIKLOP0123456789";
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		Random rd = new Random();
 		for(int i=0;i<place;i++) {
 			sb.append(base.charAt(rd.nextInt(base.length())));
@@ -621,7 +608,7 @@ public class oConvertUtils {
 
 	public static<F,T> T entityToModel(F entity, Class<T> modelClass) {
 		log.debug("entityToModel : Entity属性的值赋值到Model");
-		Object model = null;
+		T model = null;
 		if (entity == null || modelClass ==null) {
 			return null;
 		}
@@ -634,7 +621,7 @@ public class oConvertUtils {
 			log.error("entityToModel : 安全权限异常", e);
 		}
 		BeanUtils.copyProperties(entity, model);
-		return (T)model;
+		return model;
 	}
 
 	/**
@@ -671,7 +658,7 @@ public class oConvertUtils {
 		try {
 			//换个写法，解决springboot读取jar包中文件的问题
 			InputStream stream = oConvertUtils.class.getClassLoader().getResourceAsStream(url.replace("classpath:", ""));
-			json = IOUtils.toString(stream,"UTF-8");
+			json = IOUtils.toString(stream, StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			log.error(e.getMessage(),e);
 		}

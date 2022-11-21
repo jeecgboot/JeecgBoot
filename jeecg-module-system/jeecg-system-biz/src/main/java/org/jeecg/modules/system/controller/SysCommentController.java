@@ -152,7 +152,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
                                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                                    HttpServletRequest req) {
         QueryWrapper<SysComment> queryWrapper = QueryGenerator.initQueryWrapper(sysComment, req.getParameterMap());
-        Page<SysComment> page = new Page<SysComment>(pageNo, pageSize);
+        Page<SysComment> page = new Page<>(pageNo, pageSize);
         IPage<SysComment> pageList = sysCommentService.page(page, queryWrapper);
         return Result.OK(pageList);
     }

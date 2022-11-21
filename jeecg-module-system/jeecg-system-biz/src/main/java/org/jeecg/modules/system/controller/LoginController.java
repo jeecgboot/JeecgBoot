@@ -73,7 +73,7 @@ public class LoginController {
 	@ApiOperation("登录接口")
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel){
-		Result<JSONObject> result = new Result<JSONObject>();
+		Result<JSONObject> result = new Result<>();
 		String username = sysLoginModel.getUsername();
 		String password = sysLoginModel.getPassword();
 		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
@@ -141,7 +141,7 @@ public class LoginController {
 	 */
 	@GetMapping("/user/getUserInfo")
 	public Result<JSONObject> getUserInfo(HttpServletRequest request){
-		Result<JSONObject> result = new Result<JSONObject>();
+		Result<JSONObject> result = new Result<>();
 		String  username = JwtUtil.getUserNameByToken(request);
 		if(oConvertUtils.isNotEmpty(username)) {
 			// 根据用户名查询用户信息
@@ -211,7 +211,7 @@ public class LoginController {
 	 */
 	@GetMapping("loginfo")
 	public Result<JSONObject> loginfo() {
-		Result<JSONObject> result = new Result<JSONObject>();
+		Result<JSONObject> result = new Result<>();
 		JSONObject obj = new JSONObject();
 		//update-begin--Author:zhangweijian  Date:20190428 for：传入开始时间，结束时间参数
 		// 获取一天的开始和结束时间
@@ -242,7 +242,7 @@ public class LoginController {
 	 */
 	@GetMapping("visitInfo")
 	public Result<List<Map<String,Object>>> visitInfo() {
-		Result<List<Map<String,Object>>> result = new Result<List<Map<String,Object>>>();
+		Result<List<Map<String,Object>>> result = new Result<>();
 		Calendar calendar = new GregorianCalendar();
 		calendar.set(Calendar.HOUR_OF_DAY,0);
         calendar.set(Calendar.MINUTE,0);
@@ -265,7 +265,7 @@ public class LoginController {
 	 */
 	@RequestMapping(value = "/selectDepart", method = RequestMethod.PUT)
 	public Result<JSONObject> selectDepart(@RequestBody SysUser user) {
-		Result<JSONObject> result = new Result<JSONObject>();
+		Result<JSONObject> result = new Result<>();
 		String username = user.getUsername();
 		if(oConvertUtils.isEmpty(username)) {
 			LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
@@ -288,7 +288,7 @@ public class LoginController {
 	 */
 	@PostMapping(value = "/sms")
 	public Result<String> sms(@RequestBody JSONObject jsonObject) {
-		Result<String> result = new Result<String>();
+		Result<String> result = new Result<>();
 		String mobile = jsonObject.get("mobile").toString();
 		//手机号模式 登录模式: "2"  注册模式: "1"
 		String smsmode=jsonObject.get("smsmode").toString();
@@ -384,7 +384,7 @@ public class LoginController {
 	@ApiOperation("手机号登录接口")
 	@PostMapping("/phoneLogin")
 	public Result<JSONObject> phoneLogin(@RequestBody JSONObject jsonObject) {
-		Result<JSONObject> result = new Result<JSONObject>();
+		Result<JSONObject> result = new Result<>();
 		String phone = jsonObject.getString("mobile");
 		
 		//校验用户有效性
@@ -483,7 +483,7 @@ public class LoginController {
 	 */
 	@GetMapping(value = "/getEncryptedString")
 	public Result<Map<String,String>> getEncryptedString(){
-		Result<Map<String,String>> result = new Result<Map<String,String>>();
+		Result<Map<String,String>> result = new Result<>();
 		Map<String,String> map = new HashMap(5);
 		map.put("key", EncryptedString.key);
 		map.put("iv",EncryptedString.iv);
@@ -499,7 +499,7 @@ public class LoginController {
 	@ApiOperation("获取验证码")
 	@GetMapping(value = "/randomImage/{key}")
 	public Result<String> randomImage(HttpServletResponse response,@PathVariable("key") String key){
-		Result<String> res = new Result<String>();
+		Result<String> res = new Result<>();
 		try {
 			//生成验证码
 			String code = RandomUtil.randomString(BASE_CHECK_CODES,4);
@@ -531,7 +531,7 @@ public class LoginController {
 	 */
 	@GetMapping(value = "/switchVue3Menu")
 	public Result<String> switchVue3Menu(HttpServletResponse response) {
-		Result<String> res = new Result<String>();
+		Result<String> res = new Result<>();
 		sysPermissionService.switchVue3Menu();
 		return res;
 	}
@@ -540,11 +540,10 @@ public class LoginController {
 	 * app登录
 	 * @param sysLoginModel
 	 * @return
-	 * @throws Exception
-	 */
+     */
 	@RequestMapping(value = "/mLogin", method = RequestMethod.POST)
-	public Result<JSONObject> mLogin(@RequestBody SysLoginModel sysLoginModel) throws Exception {
-		Result<JSONObject> result = new Result<JSONObject>();
+	public Result<JSONObject> mLogin(@RequestBody SysLoginModel sysLoginModel) {
+		Result<JSONObject> result = new Result<>();
 		String username = sysLoginModel.getUsername();
 		String password = sysLoginModel.getPassword();
 		
@@ -569,9 +568,7 @@ public class LoginController {
 			List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());
 			//update-begin-author:taoyan date:20220117 for: JTC-1068【app】新建用户，没有设置部门及角色，点击登录提示暂未归属部，一直在登录页面 使用手机号登录 可正常
 			if (departs == null || departs.size() == 0) {
-				/*result.error500("用户暂未归属部门,不可登录!");
-				return result;*/
-			}else{
+      }else{
 				orgCode = departs.get(0).getOrgCode();
 				sysUser.setOrgCode(orgCode);
 				this.sysUserService.updateUserDepart(username, orgCode);

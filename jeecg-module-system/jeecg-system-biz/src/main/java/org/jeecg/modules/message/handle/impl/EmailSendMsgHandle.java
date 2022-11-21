@@ -72,7 +72,7 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
     @Override
     public void sendMessage(MessageDTO messageDTO) {
         String[] arr = messageDTO.getToUser().split(",");
-        LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<SysUser>().in(SysUser::getUsername, arr);
+        LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<SysUser>().in(SysUser::getUsername, (Object) arr);
         List<SysUser> list = sysUserMapper.selectList(query);
         String content = messageDTO.getContent();
         String title = messageDTO.getTitle();
@@ -108,7 +108,7 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
         String token = JwtUtil.sign(user.getUsername(), user.getPassword());
         redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
         // 设置超时时间 1个小时
-        redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 1 / 1000);
+        redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME / 1000);
         return token;
     }
 }

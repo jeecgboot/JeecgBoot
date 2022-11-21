@@ -16,5 +16,5 @@ public interface ISysDepartRolePermissionService extends IService<SysDepartRoleP
      * @param permissionIds
      * @param lastPermissionIds
      */
-    public void saveDeptRolePermission(String roleId,String permissionIds,String lastPermissionIds);
+    void saveDeptRolePermission(String roleId,String permissionIds,String lastPermissionIds);
 }

@@ -63,7 +63,7 @@ public class QueryCondition implements Serializable {
 
 	@Override
 	public String toString(){
-		StringBuffer sb =new StringBuffer();
+		StringBuilder sb =new StringBuilder();
 		if(field == null || "".equals(field)){
 			return "";
 		}

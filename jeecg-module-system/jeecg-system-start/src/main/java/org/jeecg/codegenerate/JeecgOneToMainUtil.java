@@ -32,7 +32,7 @@ public class JeecgOneToMainUtil {
 		mainTable.setFtlDescription("GUI订单管理");
 		
 		//第二步：设置子表集合配置
-		List<SubTableVo> subTables = new ArrayList<SubTableVo>();
+		List<SubTableVo> subTables = new ArrayList<>();
 		//[1].子表一
 		SubTableVo po = new SubTableVo();
         //表名

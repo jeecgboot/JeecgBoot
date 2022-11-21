@@ -45,7 +45,7 @@ public class SysTenantController {
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysTenant>> queryPageList(SysTenant sysTenant,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
-		Result<IPage<SysTenant>> result = new Result<IPage<SysTenant>>();
+		Result<IPage<SysTenant>> result = new Result<>();
         //---author:zhangyafei---date:20210916-----for: 租户管理添加日期范围查询---
         Date beginDate=null;
         Date endDate=null;
@@ -63,7 +63,7 @@ public class SysTenantController {
             queryWrapper.le(oConvertUtils.isNotEmpty(endDate),"end_date",endDate);
         }
         //---author:zhangyafei---date:20210916-----for: 租户管理添加日期范围查询---
-		Page<SysTenant> page = new Page<SysTenant>(pageNo, pageSize);
+		Page<SysTenant> page = new Page<>(pageNo, pageSize);
 		IPage<SysTenant> pageList = sysTenantService.page(page, queryWrapper);
 		result.setSuccess(true);
 		result.setResult(pageList);
@@ -162,7 +162,7 @@ public class SysTenantController {
      */
     @RequestMapping(value = "/queryById", method = RequestMethod.GET)
     public Result<SysTenant> queryById(@RequestParam(name="id",required=true) String id) {
-        Result<SysTenant> result = new Result<SysTenant>();
+        Result<SysTenant> result = new Result<>();
         SysTenant sysTenant = sysTenantService.getById(id);
         if(sysTenant==null) {
             result.error500("未找到对应实体");
@@ -180,11 +180,11 @@ public class SysTenantController {
      */
     @RequestMapping(value = "/queryList", method = RequestMethod.GET)
     public Result<List<SysTenant>> queryList(@RequestParam(name="ids",required=false) String ids) {
-        Result<List<SysTenant>> result = new Result<List<SysTenant>>();
+        Result<List<SysTenant>> result = new Result<>();
         LambdaQueryWrapper<SysTenant> query = new LambdaQueryWrapper<>();
         query.eq(SysTenant::getStatus, 1);
         if(oConvertUtils.isNotEmpty(ids)){
-            query.in(SysTenant::getId, ids.split(","));
+            query.in(SysTenant::getId, (Object) ids.split(","));
         }
         //此处查询忽略时间条件
         List<SysTenant> ls = sysTenantService.list(query);
@@ -198,7 +198,7 @@ public class SysTenantController {
      */
     @RequestMapping(value = "/getCurrentUserTenant", method = RequestMethod.GET)
     public Result<Map<String,Object>> getCurrentUserTenant() {
-        Result<Map<String,Object>> result = new Result<Map<String,Object>>();
+        Result<Map<String,Object>> result = new Result<>();
         try {
             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             String tenantIds = sysUser.getRelTenantIds();

@@ -51,7 +51,7 @@ public class SysFilesController extends JeecgController<SysFiles, ISysFilesServi
                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                    HttpServletRequest req) {
         QueryWrapper<SysFiles> queryWrapper = QueryGenerator.initQueryWrapper(sysFiles, req.getParameterMap());
-        Page<SysFiles> page = new Page<SysFiles>(pageNo, pageSize);
+        Page<SysFiles> page = new Page<>(pageNo, pageSize);
         IPage<SysFiles> pageList = sysFilesService.page(page, queryWrapper);
         return Result.OK(pageList);
     }

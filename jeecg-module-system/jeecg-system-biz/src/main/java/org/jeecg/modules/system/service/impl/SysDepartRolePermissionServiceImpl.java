@@ -36,7 +36,7 @@ public class SysDepartRolePermissionServiceImpl extends ServiceImpl<SysDepartRol
         }
         List<String> add = getDiff(lastPermissionIds,permissionIds);
         if(add!=null && add.size()>0) {
-            List<SysDepartRolePermission> list = new ArrayList<SysDepartRolePermission>();
+            List<SysDepartRolePermission> list = new ArrayList<>();
             for (String p : add) {
                 if(oConvertUtils.isNotEmpty(p)) {
                     SysDepartRolePermission rolepms = new SysDepartRolePermission(roleId, p);
@@ -76,7 +76,7 @@ public class SysDepartRolePermissionServiceImpl extends ServiceImpl<SysDepartRol
         for (String string : mainArr) {
             map.put(string, 1);
         }
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for (String key : diffArr) {
             if(oConvertUtils.isNotEmpty(key) && !map.containsKey(key)) {
                 res.add(key);

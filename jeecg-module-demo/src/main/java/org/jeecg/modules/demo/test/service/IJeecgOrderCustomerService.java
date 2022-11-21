@@ -19,5 +19,5 @@ public interface IJeecgOrderCustomerService extends IService<JeecgOrderCustomer>
      * @param mainId 订单id
      * @return 订单顾客集合
      */
-	public List<JeecgOrderCustomer> selectCustomersByMainId(String mainId);
+    List<JeecgOrderCustomer> selectCustomersByMainId(String mainId);
 }

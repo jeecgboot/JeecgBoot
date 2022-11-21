@@ -22,7 +22,7 @@ public interface SysAnnouncementSendMapper extends BaseMapper<SysAnnouncementSen
      * @param userId 用户id
      * @return
      */
-	public List<String> queryByUserId(@Param("userId") String userId);
+    List<String> queryByUserId(@Param("userId") String userId);
 
 	/**
 	 * 获取我的消息
@@ -30,7 +30,7 @@ public interface SysAnnouncementSendMapper extends BaseMapper<SysAnnouncementSen
 	 * @param page
 	 * @return
 	 */
-	public List<AnnouncementSendModel> getMyAnnouncementSendList(Page<AnnouncementSendModel> page,@Param("announcementSendModel") AnnouncementSendModel announcementSendModel);
+    List<AnnouncementSendModel> getMyAnnouncementSendList(Page<AnnouncementSendModel> page,@Param("announcementSendModel") AnnouncementSendModel announcementSendModel);
 
 	/**
 	 * 获取一条记录

@@ -94,7 +94,7 @@ public class TreeModel implements Serializable {
 		this.isLeaf = permission.isLeaf();
 		this.label = permission.getName();
 		if(!permission.isLeaf()) {
-			this.children = new ArrayList<TreeModel>();
+			this.children = new ArrayList<>();
 		}
 	}
 	 
@@ -109,7 +109,7 @@ public class TreeModel implements Serializable {
     	this.isLeaf = isLeaf;
     	this.value = key;
     	if(!isLeaf) {
-    		this.children = new ArrayList<TreeModel>();
+    		this.children = new ArrayList<>();
     	}
     }
 	 

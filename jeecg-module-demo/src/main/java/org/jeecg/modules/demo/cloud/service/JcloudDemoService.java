@@ -1,7 +1,5 @@
 package org.jeecg.modules.demo.cloud.service;
 
-import org.jeecg.common.api.vo.Result;
-
 /**
  * @Description: JcloudDemoService接口
  * @author: jeecg-boot

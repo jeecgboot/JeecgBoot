@@ -6,7 +6,6 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysLog;
@@ -56,9 +55,9 @@ public class SysLogController {
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysLog>> queryPageList(SysLog syslog,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
-		Result<IPage<SysLog>> result = new Result<IPage<SysLog>>();
+		Result<IPage<SysLog>> result = new Result<>();
 		QueryWrapper<SysLog> queryWrapper = QueryGenerator.initQueryWrapper(syslog, req.getParameterMap());
-		Page<SysLog> page = new Page<SysLog>(pageNo, pageSize);
+		Page<SysLog> page = new Page<>(pageNo, pageSize);
 		//日志关键词
 		String keyWord = req.getParameter("keyWord");
 		if(oConvertUtils.isNotEmpty(keyWord)) {
@@ -85,7 +84,7 @@ public class SysLogController {
 	 */
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<SysLog> delete(@RequestParam(name="id",required=true) String id) {
-		Result<SysLog> result = new Result<SysLog>();
+		Result<SysLog> result = new Result<>();
 		SysLog sysLog = sysLogService.getById(id);
 		if(sysLog==null) {
 			result.error500("未找到对应实体");
@@ -105,7 +104,7 @@ public class SysLogController {
 	 */
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysRole> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		Result<SysRole> result = new Result<SysRole>();
+		Result<SysRole> result = new Result<>();
 		if(ids==null || "".equals(ids.trim())) {
 			result.error500("参数不识别！");
 		}else {

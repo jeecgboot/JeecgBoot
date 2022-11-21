@@ -41,10 +41,10 @@
   CodeMirror.defineMode("python", function(conf, parserConf) {
     var ERRORCLASS = "error";
 
-    var delimiters = parserConf.delimiters || parserConf.singleDelimiters || /^[\(\)\[\]\{\}@,:`=;\.\\]/;
+    var delimiters = parserConf.delimiters || parserConf.singleDelimiters || /^[()\[\]{}@,:`=;.\\]/;
     //               (Backwards-compatiblity with old, cumbersome config system)
     var operators = [parserConf.singleOperators, parserConf.doubleOperators, parserConf.doubleDelimiters, parserConf.tripleDelimiters,
-                     parserConf.operators || /^([-+*/%\/&|^]=?|[<>=]+|\/\/=?|\*\*=?|!=|[~!@])/]
+                     parserConf.operators || /^([-+*/%&|^]=?|[<>=]+|\/\/=?|\*\*=?|!=|[~!@])/]
     for (var i = 0; i < operators.length; i++) if (!operators[i]) operators.splice(i--, 1)
 
     var hangingIndent = parserConf.hangingIndent || conf.indentUnit;
@@ -105,10 +105,10 @@
       if (stream.match(/^#.*/)) return "comment";
 
       // Handle Number Literals
-      if (stream.match(/^[0-9\.]/, false)) {
+      if (stream.match(/^[0-9.]/, false)) {
         var floatLiteral = false;
         // Floats
-        if (stream.match(/^[\d_]*\.\d+(e[\+\-]?\d+)?/i)) { floatLiteral = true; }
+        if (stream.match(/^[\d_]*\.\d+(e[+\-]?\d+)?/i)) { floatLiteral = true; }
         if (stream.match(/^[\d_]+\.\d*/)) { floatLiteral = true; }
         if (stream.match(/^\.\d+/)) { floatLiteral = true; }
         if (floatLiteral) {
@@ -125,7 +125,7 @@
         // Octal
         if (stream.match(/^0o[0-7_]+/i)) intLiteral = true;
         // Decimal
-        if (stream.match(/^[1-9][\d_]*(e[\+\-]?[\d_]+)?/)) {
+        if (stream.match(/^[1-9][\d_]*(e[+\-]?[\d_]+)?/)) {
           // Decimal literals may be "imaginary"
           stream.eat(/J/i);
           // TODO - Can you have imaginary longs?
@@ -209,7 +209,7 @@
 
       function tokenString(stream, state) {
         while (!stream.eol()) {
-          stream.eatWhile(/[^'"\{\}\\]/);
+          stream.eatWhile(/[^'"{}\\]/);
           if (stream.eat("\\")) {
             stream.next();
             if (singleline && stream.eol())
@@ -292,7 +292,7 @@
     }
 
     function pushBracketScope(stream, state, type) {
-      var align = stream.match(/^([\s\[\{\(]|#.*)*$/, false) ? null : stream.column() + 1
+      var align = stream.match(/^([\s\[{(]|#.*)*$/, false) ? null : stream.column() + 1
       state.scopes.push({offset: state.indent + hangingIndent,
                          type: type,
                          align: align})
@@ -387,7 +387,7 @@
           return scope.offset - (closing ? hangingIndent : 0)
       },
 
-      electricInput: /^\s*[\}\]\)]$/,
+      electricInput: /^\s*[}\])]$/,
       closeBrackets: {triples: "'\""},
       lineComment: "#",
       fold: "indent"

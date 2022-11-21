@@ -33,10 +33,9 @@ public class ResourceCheckFilter extends AccessControlFilter {
      * @param servletResponse
      * @param o               表示写在拦截器中括号里面的字符串 mappedValue 就是 [urls] 配置中拦截器参数部分
      * @return
-     * @throws Exception
      */
     @Override
-    protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse servletResponse, Object o) throws Exception {
+    protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse servletResponse, Object o) {
         Subject subject = getSubject(servletRequest, servletResponse);
         String url = getPathWithinApplication(servletRequest);
         log.info("当前用户正在访问的 url => " + url);

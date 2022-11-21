@@ -7,7 +7,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
@@ -33,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -66,7 +64,7 @@ public class QuartzJobController {
 	public Result<?> queryPageList(QuartzJob quartzJob, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
 		QueryWrapper<QuartzJob> queryWrapper = QueryGenerator.initQueryWrapper(quartzJob, req.getParameterMap());
-		Page<QuartzJob> page = new Page<QuartzJob>(pageNo, pageSize);
+		Page<QuartzJob> page = new Page<>(pageNo, pageSize);
 		IPage<QuartzJob> pageList = quartzJobService.page(page, queryWrapper);
         return Result.ok(pageList);
 
@@ -133,7 +131,7 @@ public class QuartzJobController {
 		if (ids == null || "".equals(ids.trim())) {
 			return Result.error("参数不识别！");
 		}
-		for (String id : Arrays.asList(ids.split(SymbolConstant.COMMA))) {
+		for (String id : ids.split(SymbolConstant.COMMA)) {
 			QuartzJob job = quartzJobService.getById(id);
 			quartzJobService.deleteAndStopJob(job);
 		}

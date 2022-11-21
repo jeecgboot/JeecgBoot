@@ -41,7 +41,7 @@ public class WebSocket {
         try {
             sessionPool.put(userId, session);
             log.info("【系统 WebSocket】有新的连接，总数为:" + sessionPool.size());
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 

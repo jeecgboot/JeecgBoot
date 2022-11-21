@@ -25,9 +25,8 @@ public class AesEncryptUtil {
      * @param key 加密key
      * @param iv 加密iv
      * @return 加密的结果
-     * @throws Exception
      */
-    public static String encrypt(String data, String key, String iv) throws Exception {
+    public static String encrypt(String data, String key, String iv) {
         try {
 
             //"算法/模式/补码方式"NoPadding PkcsPadding
@@ -102,23 +101,5 @@ public class AesEncryptUtil {
         return desEncrypt(data, KEY, IV);
     }
 
-
-
-//    /**
-//     * 测试
-//     */
-//    public static void main(String args[]) throws Exception {
-//        String test1 = "sa";
-//        String test =new String(test1.getBytes(),"UTF-8");
-//        String data = null;
-//        String key =  KEY;
-//        String iv = IV;
-//        // /g2wzfqvMOeazgtsUVbq1kmJawROa6mcRAzwG1/GeJ4=
-//        data = encrypt(test, key, iv);
-//        System.out.println("数据："+test);
-//        System.out.println("加密："+data);
-//        String jiemi =desEncrypt(data, key, iv).trim();
-//        System.out.println("解密："+jiemi);
-//    }
 
 }

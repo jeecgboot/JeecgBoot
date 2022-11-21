@@ -1,10 +1,8 @@
 package org.jeecg.modules.system.controller;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,12 +11,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.util.PmsUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.entity.SysPermissionDataRule;
@@ -29,13 +24,11 @@ import org.jeecg.modules.system.service.ISysPermissionDataRuleService;
 import org.jeecg.modules.system.service.ISysPermissionService;
 import org.jeecg.modules.system.service.ISysRolePermissionService;
 import org.jeecg.modules.system.service.ISysRoleService;
-import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -94,9 +87,9 @@ public class SysRoleController {
 									  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									  HttpServletRequest req) {
-		Result<IPage<SysRole>> result = new Result<IPage<SysRole>>();
+		Result<IPage<SysRole>> result = new Result<>();
 		QueryWrapper<SysRole> queryWrapper = QueryGenerator.initQueryWrapper(role, req.getParameterMap());
-		Page<SysRole> page = new Page<SysRole>(pageNo, pageSize);
+		Page<SysRole> page = new Page<>(pageNo, pageSize);
 		IPage<SysRole> pageList = sysRoleService.page(page, queryWrapper);
 		result.setSuccess(true);
 		result.setResult(pageList);
@@ -111,7 +104,7 @@ public class SysRoleController {
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	//@RequiresRoles({"admin"})
 	public Result<SysRole> add(@RequestBody SysRole role) {
-		Result<SysRole> result = new Result<SysRole>();
+		Result<SysRole> result = new Result<>();
 		try {
 			role.setCreateTime(new Date());
 			sysRoleService.save(role);
@@ -131,7 +124,7 @@ public class SysRoleController {
 	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/edit",method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<SysRole> edit(@RequestBody SysRole role) {
-		Result<SysRole> result = new Result<SysRole>();
+		Result<SysRole> result = new Result<>();
 		SysRole sysrole = sysRoleService.getById(role.getId());
 		if(sysrole==null) {
 			result.error500("未找到对应实体");
@@ -167,7 +160,7 @@ public class SysRoleController {
 	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysRole> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		Result<SysRole> result = new Result<SysRole>();
+		Result<SysRole> result = new Result<>();
 		if(oConvertUtils.isEmpty(ids)) {
 			result.error500("未选中角色！");
 		}else {
@@ -184,7 +177,7 @@ public class SysRoleController {
 	 */
 	@RequestMapping(value = "/queryById", method = RequestMethod.GET)
 	public Result<SysRole> queryById(@RequestParam(name="id",required=true) String id) {
-		Result<SysRole> result = new Result<SysRole>();
+		Result<SysRole> result = new Result<>();
 		SysRole sysrole = sysRoleService.getById(id);
 		if(sysrole==null) {
 			result.error500("未找到对应实体");
@@ -199,7 +192,7 @@ public class SysRoleController {
 	public Result<List<SysRole>> queryall() {
 		Result<List<SysRole>> result = new Result<>();
 		List<SysRole> list = sysRoleService.list();
-		if(list==null||list.size()<=0) {
+		if(list==null|| list.size() == 0) {
 			result.error500("未找到角色信息");
 		}else {
 			result.setResult(list);
@@ -368,7 +361,7 @@ public class SysRoleController {
 		//全部权限ids
 		List<String> ids = new ArrayList<>();
 		try {
-			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
+			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<>();
 			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
 			query.orderByAsc(SysPermission::getSortNo);
 			List<SysPermission> list = sysPermissionService.list(query);

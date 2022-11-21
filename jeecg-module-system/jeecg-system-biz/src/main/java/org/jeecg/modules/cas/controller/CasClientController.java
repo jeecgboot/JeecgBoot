@@ -56,8 +56,8 @@ public class CasClientController {
 	public Object validateLogin(@RequestParam(name="ticket") String ticket,
 								@RequestParam(name="service") String service,
 								HttpServletRequest request,
-								HttpServletResponse response) throws Exception {
-		Result<JSONObject> result = new Result<JSONObject>();
+								HttpServletResponse response) {
+		Result<JSONObject> result = new Result<>();
 		log.info("Rest api login.");
 		try {
 			String validateUrl = prefixUrl+"/p3/serviceValidate";

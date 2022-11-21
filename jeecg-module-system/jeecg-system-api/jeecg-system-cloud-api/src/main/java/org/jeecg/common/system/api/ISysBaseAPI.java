@@ -115,7 +115,7 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     @Override
     @GetMapping("/sys/api/queryEnableDictItemsByCode")
-    public List<DictModel> queryEnableDictItemsByCode(@RequestParam("code") String code);
+    List<DictModel> queryEnableDictItemsByCode(@RequestParam("code") String code);
 
     /** 11查询所有的父级字典，按照create_time排序
      * @return List<DictModel> 字典值集合
@@ -154,7 +154,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param busId 业务id
      */
     @GetMapping("/sys/api/updateSysAnnounReadFlag")
-    public void updateSysAnnounReadFlag(@RequestParam("busType") String busType, @RequestParam("busId")String busId);
+    void updateSysAnnounReadFlag(@RequestParam("busType") String busType, @RequestParam("busId")String busId);
 
     /**
      * 16查询表字典 支持过滤数据
@@ -177,14 +177,14 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     @Deprecated
     @GetMapping("/sys/api/queryTableDictByKeys")
-    public List<String> queryTableDictByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keyArray") String[] keyArray);
+    List<String> queryTableDictByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keyArray") String[] keyArray);
 
     /**
      * 18查询所有用户 返回ComboModel
      * @return
      */
     @GetMapping("/sys/api/queryAllUserBackCombo")
-    public List<ComboModel> queryAllUserBackCombo();
+    List<ComboModel> queryAllUserBackCombo();
 
     /**
      * 19分页查询用户 返回JSONObject
@@ -194,7 +194,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryAllUser")
-    public JSONObject queryAllUser(@RequestParam(name="userIds",required=false)String userIds, @RequestParam(name="pageNo",required=false) Integer pageNo,@RequestParam(name="pageSize",required=false) int pageSize);
+    JSONObject queryAllUser(@RequestParam(name="userIds",required=false)String userIds, @RequestParam(name="pageNo",required=false) Integer pageNo, @RequestParam(name="pageSize",required=false) int pageSize);
 
 
     /**
@@ -203,7 +203,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryAllRole")
-    public List<ComboModel> queryAllRole(@RequestParam(name = "roleIds",required = false)String[] roleIds);
+    List<ComboModel> queryAllRole(@RequestParam(name = "roleIds",required = false)String[] roleIds);
 
     /**
      * 21通过用户账号查询角色Id集合
@@ -211,7 +211,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/getRoleIdsByUsername")
-    public List<String> getRoleIdsByUsername(@RequestParam("username")String username);
+    List<String> getRoleIdsByUsername(@RequestParam("username")String username);
 
     /**
      * 22通过部门编号查询部门id
@@ -219,14 +219,14 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/getDepartIdsByOrgCode")
-    public String getDepartIdsByOrgCode(@RequestParam("orgCode")String orgCode);
+    String getDepartIdsByOrgCode(@RequestParam("orgCode")String orgCode);
 
     /**
      * 23查询所有部门
      * @return
      */
     @GetMapping("/sys/api/getAllSysDepart")
-    public List<SysDepartModel> getAllSysDepart();
+    List<SysDepartModel> getAllSysDepart();
 
     /**
      * 24查找父级部门
@@ -242,7 +242,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/getDeptHeadByDepId")
-    public List<String> getDeptHeadByDepId(@RequestParam("deptId") String deptId);
+    List<String> getDeptHeadByDepId(@RequestParam("deptId") String deptId);
 
     /**
      * 26给指定用户发消息
@@ -250,7 +250,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param cmd
      */
     @GetMapping("/sys/api/sendWebSocketMsg")
-    public void sendWebSocketMsg(@RequestParam("userIds")String[] userIds, @RequestParam("cmd") String cmd);
+    void sendWebSocketMsg(@RequestParam("userIds")String[] userIds, @RequestParam("cmd") String cmd);
 
     /**
      * 27根据id获取所有参与用户
@@ -258,7 +258,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryAllUserByIds")
-    public List<LoginUser> queryAllUserByIds(@RequestParam("userIds") String[] userIds);
+    List<LoginUser> queryAllUserByIds(@RequestParam("userIds") String[] userIds);
 
     /**
      * 28将会议签到信息推动到预览

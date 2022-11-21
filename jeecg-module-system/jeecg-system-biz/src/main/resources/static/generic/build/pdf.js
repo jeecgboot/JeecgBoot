@@ -6733,7 +6733,7 @@ var AnnotationUtils = (function AnnotationUtilsClosure() {
       content.setAttribute('hidden', true);
     } else {
       var e = document.createElement('span');
-      var lines = item.content.split(/(?:\r\n?|\n)/);
+      var lines = item.content.split(/\r\n?|\n/);
       for (i = 0, ii = lines.length; i < ii; ++i) {
         var line = lines[i];
         e.appendChild(document.createTextNode(line));

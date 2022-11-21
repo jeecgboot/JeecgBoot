@@ -51,14 +51,14 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 			String[] userIds = userId.substring(0, (userId.length()-1)).split(",");
 			String anntId = sysAnnouncement.getId();
 			Date refDate = new Date();
-			for(int i=0;i<userIds.length;i++) {
-				SysAnnouncementSend announcementSend = new SysAnnouncementSend();
-				announcementSend.setAnntId(anntId);
-				announcementSend.setUserId(userIds[i]);
-				announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
-				announcementSend.setReadTime(refDate);
-				sysAnnouncementSendMapper.insert(announcementSend);
-			}
+      for (String id : userIds) {
+        SysAnnouncementSend announcementSend = new SysAnnouncementSend();
+        announcementSend.setAnntId(anntId);
+        announcementSend.setUserId(id);
+        announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
+        announcementSend.setReadTime(refDate);
+        sysAnnouncementSendMapper.insert(announcementSend);
+      }
 		}
 	}
 	
@@ -76,23 +76,23 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 			String[] userIds = userId.substring(0, (userId.length()-1)).split(",");
 			String anntId = sysAnnouncement.getId();
 			Date refDate = new Date();
-			for(int i=0;i<userIds.length;i++) {
-				LambdaQueryWrapper<SysAnnouncementSend> queryWrapper = new LambdaQueryWrapper<SysAnnouncementSend>();
-				queryWrapper.eq(SysAnnouncementSend::getAnntId, anntId);
-				queryWrapper.eq(SysAnnouncementSend::getUserId, userIds[i]);
-				List<SysAnnouncementSend> announcementSends=sysAnnouncementSendMapper.selectList(queryWrapper);
-				if(announcementSends.size()<=0) {
-					SysAnnouncementSend announcementSend = new SysAnnouncementSend();
-					announcementSend.setAnntId(anntId);
-					announcementSend.setUserId(userIds[i]);
-					announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
-					announcementSend.setReadTime(refDate);
-					sysAnnouncementSendMapper.insert(announcementSend);
-				}
-			}
+      for (String id : userIds) {
+        LambdaQueryWrapper<SysAnnouncementSend> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysAnnouncementSend::getAnntId, anntId);
+        queryWrapper.eq(SysAnnouncementSend::getUserId, id);
+        List<SysAnnouncementSend> announcementSends = sysAnnouncementSendMapper.selectList(queryWrapper);
+        if (announcementSends.size() == 0) {
+          SysAnnouncementSend announcementSend = new SysAnnouncementSend();
+          announcementSend.setAnntId(anntId);
+          announcementSend.setUserId(id);
+          announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
+          announcementSend.setReadTime(refDate);
+          sysAnnouncementSendMapper.insert(announcementSend);
+        }
+      }
 			// 3. 删除多余通知用户数据
 			Collection<String> delUserIds = Arrays.asList(userIds);
-			LambdaQueryWrapper<SysAnnouncementSend> queryWrapper = new LambdaQueryWrapper<SysAnnouncementSend>();
+			LambdaQueryWrapper<SysAnnouncementSend> queryWrapper = new LambdaQueryWrapper<>();
 			queryWrapper.notIn(SysAnnouncementSend::getUserId, delUserIds);
 			queryWrapper.eq(SysAnnouncementSend::getAnntId, anntId);
 			sysAnnouncementSendMapper.delete(queryWrapper);
@@ -133,7 +133,7 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		String userId = sysUser.getId();
 		// 1.将系统消息补充到用户通告阅读标记表中
-		LambdaQueryWrapper<SysAnnouncement> querySaWrapper = new LambdaQueryWrapper<SysAnnouncement>();
+		LambdaQueryWrapper<SysAnnouncement> querySaWrapper = new LambdaQueryWrapper<>();
 		//全部人员
 		querySaWrapper.eq(SysAnnouncement::getMsgType, CommonConstant.MSG_TYPE_ALL);
 		//未删除
@@ -147,23 +147,23 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 		//update-begin--Author:liusq  Date:20210108  for： [JT-424] 【开源issue】bug处理--------------------
 		List<SysAnnouncement> announcements = this.list(querySaWrapper);
 		if(announcements.size()>0) {
-			for(int i=0;i<announcements.size();i++) {
-				//update-begin--Author:wangshuai  Date:20200803  for： 通知公告消息重复LOWCOD-759--------------------
-				//因为websocket没有判断是否存在这个用户，要是判断会出现问题，故在此判断逻辑
-				LambdaQueryWrapper<SysAnnouncementSend> query = new LambdaQueryWrapper<>();
-				query.eq(SysAnnouncementSend::getAnntId,announcements.get(i).getId());
-				query.eq(SysAnnouncementSend::getUserId,userId);
-				SysAnnouncementSend one = sysAnnouncementSendMapper.selectOne(query);
-				if(null==one){
-					SysAnnouncementSend announcementSend = new SysAnnouncementSend();
-					announcementSend.setAnntId(announcements.get(i).getId());
-					announcementSend.setUserId(userId);
-					announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
-					sysAnnouncementSendMapper.insert(announcementSend);
-					log.info("announcementSend.toString()",announcementSend.toString());
-				}
-				//update-end--Author:wangshuai  Date:20200803  for： 通知公告消息重复LOWCOD-759------------
-			}
+      for (SysAnnouncement announcement : announcements) {
+        //update-begin--Author:wangshuai  Date:20200803  for： 通知公告消息重复LOWCOD-759--------------------
+        //因为websocket没有判断是否存在这个用户，要是判断会出现问题，故在此判断逻辑
+        LambdaQueryWrapper<SysAnnouncementSend> query = new LambdaQueryWrapper<>();
+        query.eq(SysAnnouncementSend::getAnntId, announcement.getId());
+        query.eq(SysAnnouncementSend::getUserId, userId);
+        SysAnnouncementSend one = sysAnnouncementSendMapper.selectOne(query);
+        if (null == one) {
+          SysAnnouncementSend announcementSend = new SysAnnouncementSend();
+          announcementSend.setAnntId(announcement.getId());
+          announcementSend.setUserId(userId);
+          announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
+          sysAnnouncementSendMapper.insert(announcementSend);
+          log.info("announcementSend.toString()", announcementSend);
+        }
+        //update-end--Author:wangshuai  Date:20200803  for： 通知公告消息重复LOWCOD-759------------
+      }
 		}
 		
 	}
@@ -173,10 +173,9 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 		//1. 补全send表的数据
 		completeAnnouncementSendInfo();
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		Page<SysAnnouncement> page = new Page<SysAnnouncement>(pageNo,pageSize);
+		Page<SysAnnouncement> page = new Page<>(pageNo, pageSize);
 		// 2. 查询消息数据
-		List<SysAnnouncement> list = baseMapper.queryMessageList(page, sysUser.getId(), fromUser, starFlag, beginDate, endDate);
-		return list;
+        return baseMapper.queryMessageList(page, sysUser.getId(), fromUser, starFlag, beginDate, endDate);
 	}
 
 	@Override

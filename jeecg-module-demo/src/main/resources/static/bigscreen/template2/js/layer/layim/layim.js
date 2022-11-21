@@ -42,7 +42,7 @@ var config = {
 
     chating: {},
     hosts: (function(){
-        var dk = location.href.match(/\:\d+/);
+        var dk = location.href.match(/:\d+/);
         dk = dk ? dk[0] : '';
         return 'http://' + document.domain + dk + '/';
     })(),

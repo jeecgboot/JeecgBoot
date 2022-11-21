@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -402,7 +403,7 @@ public class VxeMockController {
         try {
             InputStream stream = getClass().getClassLoader().getResourceAsStream(path.replace("classpath:", ""));
             if (stream != null) {
-                String json = IOUtils.toString(stream, "UTF-8");
+                String json = IOUtils.toString(stream, StandardCharsets.UTF_8);
                 return JSON.parseArray(json);
             }
         } catch (IOException e) {

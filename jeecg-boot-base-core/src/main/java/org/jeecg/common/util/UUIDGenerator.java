@@ -18,9 +18,9 @@ public class UUIDGenerator {
 	 */
 
 	public static String generate() {
-		return new StringBuilder(32).append(format(getIp())).append(
-				format(getJvm())).append(format(getHiTime())).append(
-				format(getLoTime())).append(format(getCount())).toString();
+		return format(getIp()) +
+                format(getJvm()) + format(getHiTime()) +
+                format(getLoTime()) + format(getCount());
 		
 	}
 

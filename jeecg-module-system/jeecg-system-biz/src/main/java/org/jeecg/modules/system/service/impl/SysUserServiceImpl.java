@@ -219,11 +219,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		Set<String> permissionSet = new HashSet<>();
 		List<SysPermission> permissionList = sysPermissionMapper.queryByUser(username);
 		for (SysPermission po : permissionList) {
-//			// TODO URL规则有问题？
-//			if (oConvertUtils.isNotEmpty(po.getUrl())) {
-//				permissionSet.add(po.getUrl());
-//			}
-			if (oConvertUtils.isNotEmpty(po.getPerms())) {
+      if (oConvertUtils.isNotEmpty(po.getPerms())) {
 				permissionSet.add(po.getPerms());
 			}
 		}
@@ -256,7 +252,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		
 		//多部门支持in查询
 		List<SysDepart> list = sysDepartMapper.queryUserDeparts(sysUser.getId());
-		List<String> sysMultiOrgCode = new ArrayList<String>();
+		List<String> sysMultiOrgCode = new ArrayList<>();
 		if(list==null || list.size()==0) {
 			//当前用户无部门
 			//sysMultiOrgCode.add("0");
@@ -295,28 +291,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		List<SysUserDepVo> list = this.baseMapper.getDepNamesByUserIds(userIds);
 
 		Map<String, String> res = new HashMap(5);
-		list.forEach(item -> {
-					if (res.get(item.getUserId()) == null) {
-						res.put(item.getUserId(), item.getDepartName());
-					} else {
-						res.put(item.getUserId(), res.get(item.getUserId()) + "," + item.getDepartName());
-					}
-				}
+		list.forEach(item -> res.merge(item.getUserId(), item.getDepartName(), (a, b) -> a + "," + b)
 		);
 		return res;
 	}
 
 	//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245【漏洞】发现新漏洞待处理20220906 ----sql注入  方法没有使用，注掉
-/*	@Override
-	public IPage<SysUser> getUserByDepartIdAndQueryWrapper(Page<SysUser> page, String departId, QueryWrapper<SysUser> queryWrapper) {
-		LambdaQueryWrapper<SysUser> lambdaQueryWrapper = queryWrapper.lambda();
-
-		lambdaQueryWrapper.eq(SysUser::getDelFlag, CommonConstant.DEL_FLAG_0);
-        lambdaQueryWrapper.inSql(SysUser::getId, "SELECT user_id FROM sys_user_depart WHERE dep_id = '" + departId + "'");
-
-        return userMapper.selectPage(page, lambdaQueryWrapper);
-	}*/
-	//update-end-author:taoyan date:2022-9-13 for: VUEN-2245【漏洞】发现新漏洞待处理20220906 ----sql注入 方法没有使用，注掉
+//update-end-author:taoyan date:2022-9-13 for: VUEN-2245【漏洞】发现新漏洞待处理20220906 ----sql注入 方法没有使用，注掉
 
 	@Override
 	public IPage<SysUserSysDepartModel> queryUserByOrgCode(String orgCode, SysUser userParams, IPage page) {
@@ -418,7 +399,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	 */
 	@Override
 	public Result<?> checkUserIsEffective(SysUser sysUser) {
-		Result<?> result = new Result<Object>();
+		Result<?> result = new Result<>();
 		//情况1：根据用户信息查询，该用户不存在
 		if (sysUser == null) {
 			result.error500("该用户不存在，请注册");

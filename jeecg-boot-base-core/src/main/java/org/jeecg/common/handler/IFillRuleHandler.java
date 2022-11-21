@@ -16,7 +16,7 @@ public interface IFillRuleHandler {
      * @param formData  动态表单参数
      * @return
      */
-    public Object execute(JSONObject params, JSONObject formData);
+    Object execute(JSONObject params, JSONObject formData);
 
 }
 

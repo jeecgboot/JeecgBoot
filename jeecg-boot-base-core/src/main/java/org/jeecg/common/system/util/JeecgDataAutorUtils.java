@@ -33,14 +33,12 @@ public class JeecgDataAutorUtils {
 	public static synchronized void installDataSearchConditon(HttpServletRequest request, List<SysPermissionDataRuleModel> dataRules) {
 		@SuppressWarnings("unchecked")
         // 1.先从request获取MENU_DATA_AUTHOR_RULES，如果存则获取到LIST
-		List<SysPermissionDataRuleModel> list = (List<SysPermissionDataRuleModel>)loadDataSearchConditon();
+		List<SysPermissionDataRuleModel> list = loadDataSearchConditon();
 		if (list==null) {
 			// 2.如果不存在，则new一个list
-			list = new ArrayList<SysPermissionDataRuleModel>();
+			list = new ArrayList<>();
 		}
-		for (SysPermissionDataRuleModel tsDataRule : dataRules) {
-			list.add(tsDataRule);
-		}
+        list.addAll(dataRules);
         // 3.往list里面增量存指
 		request.setAttribute(MENU_DATA_AUTHOR_RULES, list);
 	}
@@ -72,7 +70,7 @@ public class JeecgDataAutorUtils {
 	 * @param sql
 	 */
 	public static synchronized void installDataSearchConditon(HttpServletRequest request, String sql) {
-		String ruleSql = (String) loadDataSearchConditonSqlString();
+		String ruleSql = loadDataSearchConditonSqlString();
 		if (!StringUtils.hasText(ruleSql)) {
 			request.setAttribute(MENU_DATA_AUTHOR_RULE_SQL,sql);
 		}

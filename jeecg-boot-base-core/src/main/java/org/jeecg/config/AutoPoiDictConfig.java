@@ -43,7 +43,7 @@ public class AutoPoiDictConfig implements AutoPoiDictServiceI {
 	 */
 	@Override
 	public String[] queryDict(String dicTable, String dicCode, String dicText) {
-		List<String> dictReplaces = new ArrayList<String>();
+		List<String> dictReplaces = new ArrayList<>();
 		List<DictModel> dictList = null;
 		// step.1 如果没有字典表则使用系统字典表
 		if (oConvertUtils.isEmpty(dicTable)) {
@@ -71,8 +71,8 @@ public class AutoPoiDictConfig implements AutoPoiDictServiceI {
 			}
 		}
 		if (dictReplaces != null && dictReplaces.size() != 0) {
-			log.info("---AutoPoi--Get_DB_Dict------"+ dictReplaces.toString());
-			return dictReplaces.toArray(new String[dictReplaces.size()]);
+			log.info("---AutoPoi--Get_DB_Dict------"+ dictReplaces);
+			return dictReplaces.toArray(new String[0]);
 		}
 		return null;
 	}

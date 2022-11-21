@@ -26,7 +26,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 * @param username
 	 * @return
 	 */
-	public SysUser getUserByName(@Param("username") String username);
+    SysUser getUserByName(@Param("username") String username);
 
 	/**
 	 *  根据部门Id查询用户信息
@@ -74,7 +74,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 * @param phone
 	 * @return
 	 */
-	public SysUser getUserByPhone(@Param("phone") String phone);
+    SysUser getUserByPhone(@Param("phone") String phone);
 	
 	
 	/**
@@ -82,7 +82,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 * @param email
 	 * @return
 	 */
-	public SysUser getUserByEmail(@Param("email")String email);
+    SysUser getUserByEmail(@Param("email")String email);
 
 	/**
 	 * 根据 orgCode 查询用户，包括子部门下的用户

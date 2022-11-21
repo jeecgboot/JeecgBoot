@@ -136,7 +136,7 @@ public class AutoLogAspect {
      */
     private String getReqestParams(HttpServletRequest request, JoinPoint joinPoint) {
         String httpMethod = request.getMethod();
-        String params = "";
+        StringBuilder params = new StringBuilder();
         if (CommonConstant.HTTP_POST.equals(httpMethod) || CommonConstant.HTTP_PUT.equals(httpMethod) || CommonConstant.HTTP_PATCH.equals(httpMethod)) {
             Object[] paramsArray = joinPoint.getArgs();
             // java.lang.IllegalStateException: It is illegal to call this method if the current request is not in asynchronous mode (i.e. isAsyncStarted() returns false)
@@ -151,17 +151,14 @@ public class AutoLogAspect {
                 arguments[i] = paramsArray[i];
             }
             //update-begin-author:taoyan date:20200724 for:日志数据太长的直接过滤掉
-            PropertyFilter profilter = new PropertyFilter() {
-                @Override
-                public boolean apply(Object o, String name, Object value) {
-                    int length = 500;
-                    if(value!=null && value.toString().length()>length){
-                        return false;
-                    }
-                    return true;
+            PropertyFilter profilter = (o, name, value) -> {
+                int length = 500;
+                if(value!=null && value.toString().length()>length){
+                    return false;
                 }
+                return true;
             };
-            params = JSONObject.toJSONString(arguments, profilter);
+            params = new StringBuilder(JSONObject.toJSONString(arguments, profilter));
             //update-end-author:taoyan date:20200724 for:日志数据太长的直接过滤掉
         } else {
             MethodSignature signature = (MethodSignature) joinPoint.getSignature();
@@ -173,11 +170,11 @@ public class AutoLogAspect {
             String[] paramNames = u.getParameterNames(method);
             if (args != null && paramNames != null) {
                 for (int i = 0; i < args.length; i++) {
-                    params += "  " + paramNames[i] + ": " + args[i];
+                    params.append("  ").append(paramNames[i]).append(": ").append(args[i]);
                 }
             }
         }
-        return params;
+        return params.toString();
     }
 
     /**
@@ -187,7 +184,7 @@ public class AutoLogAspect {
      * @return
      */
     private String getOnlineLogContent(Object obj, String content){
-        if (Result.class.isInstance(obj)){
+        if (obj instanceof Result){
             Result res = (Result)obj;
             String msg = res.getMessage();
             String tableName = res.getOnlTable();
@@ -204,53 +201,4 @@ public class AutoLogAspect {
     }
 
 
-    /*    private void saveSysLog(ProceedingJoinPoint joinPoint, long time, Object obj) {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Method method = signature.getMethod();
-
-        SysLog sysLog = new SysLog();
-        AutoLog syslog = method.getAnnotation(AutoLog.class);
-        if(syslog != null){
-            //update-begin-author:taoyan date:
-            String content = syslog.value();
-            if(syslog.module()== ModuleType.ONLINE){
-                content = getOnlineLogContent(obj, content);
-            }
-            //注解上的描述,操作日志内容
-            sysLog.setLogContent(content);
-            sysLog.setLogType(syslog.logType());
-        }
-
-        //请求的方法名
-        String className = joinPoint.getTarget().getClass().getName();
-        String methodName = signature.getName();
-        sysLog.setMethod(className + "." + methodName + "()");
-
-
-        //设置操作类型
-        if (sysLog.getLogType() == CommonConstant.LOG_TYPE_2) {
-            sysLog.setOperateType(getOperateType(methodName, syslog.operateType()));
-        }
-
-        //获取request
-        HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
-        //请求的参数
-        sysLog.setRequestParam(getReqestParams(request,joinPoint));
-
-        //设置IP地址
-        sysLog.setIp(IPUtils.getIpAddr(request));
-
-        //获取登录用户信息
-        LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
-        if(sysUser!=null){
-            sysLog.setUserid(sysUser.getUsername());
-            sysLog.setUsername(sysUser.getRealname());
-
-        }
-        //耗时
-        sysLog.setCostTime(time);
-        sysLog.setCreateTime(new Date());
-        //保存系统日志
-        sysLogService.save(sysLog);
-    }*/
 }

@@ -1,8 +1,6 @@
 package org.jeecg.modules.system.controller;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +12,6 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysUserAgent;
 import org.jeecg.modules.system.service.ISysUserAgentService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -27,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -37,7 +33,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -75,9 +70,9 @@ public class SysUserAgentController {
 									  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									  HttpServletRequest req) {
-		Result<IPage<SysUserAgent>> result = new Result<IPage<SysUserAgent>>();
+		Result<IPage<SysUserAgent>> result = new Result<>();
 		QueryWrapper<SysUserAgent> queryWrapper = QueryGenerator.initQueryWrapper(sysUserAgent, req.getParameterMap());
-		Page<SysUserAgent> page = new Page<SysUserAgent>(pageNo, pageSize);
+		Page<SysUserAgent> page = new Page<>(pageNo, pageSize);
 		IPage<SysUserAgent> pageList = sysUserAgentService.page(page, queryWrapper);
 		result.setSuccess(true);
 		result.setResult(pageList);
@@ -91,7 +86,7 @@ public class SysUserAgentController {
 	 */
 	@PostMapping(value = "/add")
 	public Result<SysUserAgent> add(@RequestBody SysUserAgent sysUserAgent) {
-		Result<SysUserAgent> result = new Result<SysUserAgent>();
+		Result<SysUserAgent> result = new Result<>();
 		try {
 			sysUserAgentService.save(sysUserAgent);
 			result.success("代理人设置成功！");
@@ -109,7 +104,7 @@ public class SysUserAgentController {
 	 */
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<SysUserAgent> edit(@RequestBody SysUserAgent sysUserAgent) {
-		Result<SysUserAgent> result = new Result<SysUserAgent>();
+		Result<SysUserAgent> result = new Result<>();
 		SysUserAgent sysUserAgentEntity = sysUserAgentService.getById(sysUserAgent.getId());
 		if(sysUserAgentEntity==null) {
 			result.error500("未找到对应实体");
@@ -131,7 +126,7 @@ public class SysUserAgentController {
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<SysUserAgent> delete(@RequestParam(name="id",required=true) String id) {
-		Result<SysUserAgent> result = new Result<SysUserAgent>();
+		Result<SysUserAgent> result = new Result<>();
 		SysUserAgent sysUserAgent = sysUserAgentService.getById(id);
 		if(sysUserAgent==null) {
 			result.error500("未找到对应实体");
@@ -152,7 +147,7 @@ public class SysUserAgentController {
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<SysUserAgent> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		Result<SysUserAgent> result = new Result<SysUserAgent>();
+		Result<SysUserAgent> result = new Result<>();
 		if(ids==null || "".equals(ids.trim())) {
 			result.error500("参数不识别！");
 		}else {
@@ -169,7 +164,7 @@ public class SysUserAgentController {
 	 */
 	@GetMapping(value = "/queryById")
 	public Result<SysUserAgent> queryById(@RequestParam(name="id",required=true) String id) {
-		Result<SysUserAgent> result = new Result<SysUserAgent>();
+		Result<SysUserAgent> result = new Result<>();
 		SysUserAgent sysUserAgent = sysUserAgentService.getById(id);
 		if(sysUserAgent==null) {
 			result.error500("未找到对应实体");
@@ -187,8 +182,8 @@ public class SysUserAgentController {
 	 */
 	@GetMapping(value = "/queryByUserName")
 	public Result<SysUserAgent> queryByUserName(@RequestParam(name="userName",required=true) String userName) {
-		Result<SysUserAgent> result = new Result<SysUserAgent>();
-		LambdaQueryWrapper<SysUserAgent> queryWrapper = new LambdaQueryWrapper<SysUserAgent>();
+		Result<SysUserAgent> result = new Result<>();
+		LambdaQueryWrapper<SysUserAgent> queryWrapper = new LambdaQueryWrapper<>();
 		queryWrapper.eq(SysUserAgent::getUserName, userName);
 		SysUserAgent sysUserAgent = sysUserAgentService.getOne(queryWrapper);
 		if(sysUserAgent==null) {

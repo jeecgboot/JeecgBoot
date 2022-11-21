@@ -11,7 +11,7 @@ public enum SendMsgStatusEnum {
 
 	private String code;
 
-	private SendMsgStatusEnum(String code) {
+	SendMsgStatusEnum(String code) {
 		this.code = code;
 	}
 

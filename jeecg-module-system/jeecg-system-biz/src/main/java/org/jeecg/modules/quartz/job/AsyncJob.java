@@ -20,7 +20,7 @@ import org.quartz.*;
 public class AsyncJob implements Job {
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobExecutionContext) {
         log.info(" --- 同步任务调度开始 --- ");
         try {
             //此处模拟任务执行时间 5秒  任务表达式配置为每秒执行一次：0/1 * * * * ? *

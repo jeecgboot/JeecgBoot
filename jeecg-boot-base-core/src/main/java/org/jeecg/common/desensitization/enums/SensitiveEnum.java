@@ -49,7 +49,7 @@ public enum SensitiveEnum {
     /**
      * 公司开户银行联号
      */
-    CNAPS_CODE;
+    CNAPS_CODE
 
 
 }

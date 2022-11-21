@@ -151,10 +151,10 @@ public enum CgformEnum {
      * @return
      */
     public static List<Map<String, Object>> getJspModelList(int type) {
-        List<Map<String, Object>> ls = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> ls = new ArrayList<>();
         for (CgformEnum e : CgformEnum.values()) {
             if (e.type == type) {
-                Map<String, Object> map = new HashMap<String, Object>();
+                Map<String, Object> map = new HashMap<>();
                 map.put("code", e.code);
                 map.put("note", e.note);
                 ls.add(map);

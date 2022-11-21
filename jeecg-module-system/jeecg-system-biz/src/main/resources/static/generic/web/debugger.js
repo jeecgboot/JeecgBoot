@@ -118,7 +118,7 @@ var FontInspector = (function FontInspectorClosure() {
       name.textContent = fontName;
       var download = document.createElement('a');
       if (url) {
-        url = /url\(['"]?([^\)"']+)/.exec(url);
+        url = /url\(['"]?([^)"']+)/.exec(url);
         download.href = url[1];
       } else if (fontObj.data) {
         url = URL.createObjectURL(new Blob([fontObj.data], {

@@ -14,5 +14,5 @@ public enum ModuleType {
     /**
      * online
      */
-    ONLINE;
+    ONLINE
 }

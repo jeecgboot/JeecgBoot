@@ -71,14 +71,14 @@ public class Result<T> implements Serializable {
 	}
 
 	public static<T> Result<T> ok() {
-		Result<T> r = new Result<T>();
+		Result<T> r = new Result<>();
 		r.setSuccess(true);
 		r.setCode(CommonConstant.SC_OK_200);
 		return r;
 	}
 
 	public static<T> Result<T> ok(String msg) {
-		Result<T> r = new Result<T>();
+		Result<T> r = new Result<>();
 		r.setSuccess(true);
 		r.setCode(CommonConstant.SC_OK_200);
 		//Result OK(String msg)方法会造成兼容性问题 issues/I4IP3D
@@ -88,7 +88,7 @@ public class Result<T> implements Serializable {
 	}
 
 	public static<T> Result<T> ok(T data) {
-		Result<T> r = new Result<T>();
+		Result<T> r = new Result<>();
 		r.setSuccess(true);
 		r.setCode(CommonConstant.SC_OK_200);
 		r.setResult(data);
@@ -96,7 +96,7 @@ public class Result<T> implements Serializable {
 	}
 
 	public static<T> Result<T> OK() {
-		Result<T> r = new Result<T>();
+		Result<T> r = new Result<>();
 		r.setSuccess(true);
 		r.setCode(CommonConstant.SC_OK_200);
 		return r;
@@ -110,7 +110,7 @@ public class Result<T> implements Serializable {
 	 * @return
 	 */
 	public static<T> Result<T> OK(String msg) {
-		Result<T> r = new Result<T>();
+		Result<T> r = new Result<>();
 		r.setSuccess(true);
 		r.setCode(CommonConstant.SC_OK_200);
 		r.setMessage(msg);
@@ -120,7 +120,7 @@ public class Result<T> implements Serializable {
 	}
 
 	public static<T> Result<T> OK(T data) {
-		Result<T> r = new Result<T>();
+		Result<T> r = new Result<>();
 		r.setSuccess(true);
 		r.setCode(CommonConstant.SC_OK_200);
 		r.setResult(data);
@@ -128,7 +128,7 @@ public class Result<T> implements Serializable {
 	}
 
 	public static<T> Result<T> OK(String msg, T data) {
-		Result<T> r = new Result<T>();
+		Result<T> r = new Result<>();
 		r.setSuccess(true);
 		r.setCode(CommonConstant.SC_OK_200);
 		r.setMessage(msg);
@@ -137,7 +137,7 @@ public class Result<T> implements Serializable {
 	}
 
 	public static<T> Result<T> error(String msg, T data) {
-		Result<T> r = new Result<T>();
+		Result<T> r = new Result<>();
 		r.setSuccess(false);
 		r.setCode(CommonConstant.SC_INTERNAL_SERVER_ERROR_500);
 		r.setMessage(msg);
@@ -150,7 +150,7 @@ public class Result<T> implements Serializable {
 	}
 	
 	public static<T> Result<T> error(int code, String msg) {
-		Result<T> r = new Result<T>();
+		Result<T> r = new Result<>();
 		r.setCode(code);
 		r.setMessage(msg);
 		r.setSuccess(false);

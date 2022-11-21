@@ -128,13 +128,13 @@ public class HttpUtils {
      * @date 15:04 20210621
      * @param body
      */
-    public static Map<String, String> getAllRequestParam(final byte[] body) throws IOException {
+    public static Map<String, String> getAllRequestParam(final byte[] body) {
         if(body==null){
             return null;
         }
         String wholeStr = new String(body);
         // 转化成json对象
-        return JSONObject.parseObject(wholeStr.toString(), Map.class);
+        return JSONObject.parseObject(wholeStr, Map.class);
     }
 
     /**

@@ -60,7 +60,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
      *
      */
     @Override
-    protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
+    protected boolean executeLogin(ServletRequest request, ServletResponse response) {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String token = httpServletRequest.getHeader(CommonConstant.X_ACCESS_TOKEN);
         // update-begin--Author:lvdandan Date:20210105 for：JT-355 OA聊天添加token验证，获取token参数
@@ -114,10 +114,9 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
      * @param request
      * @param response
      * @param exception
-     * @throws Exception
      */
     @Override
-    public void afterCompletion(ServletRequest request, ServletResponse response, Exception exception) throws Exception {
+    public void afterCompletion(ServletRequest request, ServletResponse response, Exception exception) {
         //log.info("------清空线程中多租户的ID={}------",TenantContext.getTenant());
         TenantContext.clear();
     }

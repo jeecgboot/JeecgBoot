@@ -11,7 +11,6 @@ import org.jeecg.modules.system.mapper.SysDictMapper;
 import org.jeecg.modules.system.service.ISysPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Base64;
 import java.util.List;
@@ -32,7 +31,7 @@ public class NgAlainServiceImpl implements NgAlainService {
         return getJeecgMenu(id);
     }
     @Override
-    public JSONArray getJeecgMenu(String id) throws Exception {
+    public JSONArray getJeecgMenu(String id) {
         List<SysPermission> metaList = sysPermissionService.queryByUser(id);
         JSONArray jsonArray = new JSONArray();
         getPermissionJsonArray(jsonArray, metaList, null);

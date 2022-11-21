@@ -20,6 +20,6 @@ public interface QuartzJobMapper extends BaseMapper<QuartzJob> {
      * @param jobClassName 任务类名
      * @return
      */
-	public List<QuartzJob> findByJobClassName(@Param("jobClassName") String jobClassName);
+    List<QuartzJob> findByJobClassName(@Param("jobClassName") String jobClassName);
 
 }

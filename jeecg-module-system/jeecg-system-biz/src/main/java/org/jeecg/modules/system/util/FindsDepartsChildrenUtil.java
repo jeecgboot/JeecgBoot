@@ -1,12 +1,9 @@
 package org.jeecg.modules.system.util;
 
-import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +32,11 @@ public class FindsDepartsChildrenUtil {
     public static List<SysDepartTreeModel> wrapTreeDataToTreeList(List<SysDepart> recordList) {
         // 在该方法每请求一次,都要对全局list集合进行一次清理
         //idList.clear();
-    	List<DepartIdModel> idList = new ArrayList<DepartIdModel>();
+    	List<DepartIdModel> idList = new ArrayList<>();
         List<SysDepartTreeModel> records = new ArrayList<>();
-        for (int i = 0; i < recordList.size(); i++) {
-            SysDepart depart = recordList.get(i);
-            records.add(new SysDepartTreeModel(depart));
-        }
+      for (SysDepart depart : recordList) {
+        records.add(new SysDepartTreeModel(depart));
+      }
         List<SysDepartTreeModel> tree = findChildren(records, idList);
         setEmptyChildrenAsNull(tree);
         return tree;
@@ -54,12 +50,11 @@ public class FindsDepartsChildrenUtil {
     public static List<DepartIdModel> wrapTreeDataToDepartIdTreeList(List<SysDepart> recordList) {
         // 在该方法每请求一次,都要对全局list集合进行一次清理
         //idList.clear();
-        List<DepartIdModel> idList = new ArrayList<DepartIdModel>();
+        List<DepartIdModel> idList = new ArrayList<>();
         List<SysDepartTreeModel> records = new ArrayList<>();
-        for (int i = 0; i < recordList.size(); i++) {
-            SysDepart depart = recordList.get(i);
-            records.add(new SysDepartTreeModel(depart));
-        }
+      for (SysDepart depart : recordList) {
+        records.add(new SysDepartTreeModel(depart));
+      }
         findChildren(records, idList);
         return idList;
     }
@@ -72,14 +67,13 @@ public class FindsDepartsChildrenUtil {
                                                          List<DepartIdModel> departIdList) {
 
         List<SysDepartTreeModel> treeList = new ArrayList<>();
-        for (int i = 0; i < recordList.size(); i++) {
-            SysDepartTreeModel branch = recordList.get(i);
-            if (oConvertUtils.isEmpty(branch.getParentId())) {
-                treeList.add(branch);
-                DepartIdModel departIdModel = new DepartIdModel().convert(branch);
-                departIdList.add(departIdModel);
-            }
+      for (SysDepartTreeModel branch : recordList) {
+        if (oConvertUtils.isEmpty(branch.getParentId())) {
+          treeList.add(branch);
+          DepartIdModel departIdModel = new DepartIdModel().convert(branch);
+          departIdList.add(departIdModel);
         }
+      }
         getGrandChildren(treeList,recordList,departIdList);
         
         //idList = departIdList;
@@ -95,14 +89,13 @@ public class FindsDepartsChildrenUtil {
         for (int i = 0; i < treeList.size(); i++) {
             SysDepartTreeModel model = treeList.get(i);
             DepartIdModel idModel = idList.get(i);
-            for (int i1 = 0; i1 < recordList.size(); i1++) {
-                SysDepartTreeModel m = recordList.get(i1);
-                if (m.getParentId()!=null && m.getParentId().equals(model.getId())) {
-                    model.getChildren().add(m);
-                    DepartIdModel dim = new DepartIdModel().convert(m);
-                    idModel.getChildren().add(dim);
-                }
+          for (SysDepartTreeModel m : recordList) {
+            if (m.getParentId() != null && m.getParentId().equals(model.getId())) {
+              model.getChildren().add(m);
+              DepartIdModel dim = new DepartIdModel().convert(m);
+              idModel.getChildren().add(dim);
             }
+          }
             getGrandChildren(treeList.get(i).getChildren(), recordList, idList.get(i).getChildren());
         }
 
@@ -115,16 +108,15 @@ public class FindsDepartsChildrenUtil {
      */
     private static void setEmptyChildrenAsNull(List<SysDepartTreeModel> treeList) {
 
-        for (int i = 0; i < treeList.size(); i++) {
-            SysDepartTreeModel model = treeList.get(i);
-            if (model.getChildren().size() == 0) {
-                model.setChildren(null);
-                model.setIsLeaf(true);
-            }else{
-                setEmptyChildrenAsNull(model.getChildren());
-                model.setIsLeaf(false);
-            }
+      for (SysDepartTreeModel model : treeList) {
+        if (model.getChildren().size() == 0) {
+          model.setChildren(null);
+          model.setIsLeaf(true);
+        } else {
+          setEmptyChildrenAsNull(model.getChildren());
+          model.setIsLeaf(false);
         }
+      }
         // sysDepartTreeList = treeList;
     }
 }

@@ -82,7 +82,7 @@ public class SysDepartRoleUserServiceImpl extends ServiceImpl<SysDepartRoleUserM
         for (String string : mainArr) {
             map.put(string, 1);
         }
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for (String key : diffArr) {
             if(oConvertUtils.isNotEmpty(key) && !map.containsKey(key)) {
                 res.add(key);

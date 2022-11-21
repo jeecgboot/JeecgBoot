@@ -71,7 +71,7 @@ public class SysCheckRuleServiceImpl extends ServiceImpl<SysCheckRuleMapper, Sys
                         int num = Integer.parseInt(digits);
                         int endIndex = beginIndex + num;
                         // 如果结束下标大于给定的值的长度，则取到最后一位
-                        endIndex = endIndex > value.length() ? value.length() : endIndex;
+                        endIndex = Math.min(endIndex, value.length());
                         // 如果开始下标大于结束下标，则说明用户还尚未输入到该位置，直接赋空值
                         if (beginIndex > endIndex) {
                             checkValue = "";

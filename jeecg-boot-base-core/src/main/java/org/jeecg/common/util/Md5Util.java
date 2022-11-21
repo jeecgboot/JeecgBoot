@@ -12,10 +12,10 @@ public class Md5Util {
             "6", "7", "8", "9", "a", "b", "c", "d", "e", "f" };
 
 	public static String byteArrayToHexString(byte[] b) {
-		StringBuffer resultSb = new StringBuffer();
-		for (int i = 0; i < b.length; i++){
-			resultSb.append(byteToHexString(b[i]));
-		}
+		StringBuilder resultSb = new StringBuilder();
+    for (byte value : b) {
+      resultSb.append(byteToHexString(value));
+    }
 		return resultSb.toString();
 	}
 
@@ -32,14 +32,14 @@ public class Md5Util {
 	public static String md5Encode(String origin, String charsetname) {
 		String resultString = null;
 		try {
-			resultString = new String(origin);
+			resultString = origin;
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			if (charsetname == null || "".equals(charsetname)) {
 				resultString = byteArrayToHexString(md.digest(resultString.getBytes()));
 			} else {
 				resultString = byteArrayToHexString(md.digest(resultString.getBytes(charsetname)));
 			}
-		} catch (Exception exception) {
+		} catch (Exception ignored) {
 		}
 		return resultString;
 	}

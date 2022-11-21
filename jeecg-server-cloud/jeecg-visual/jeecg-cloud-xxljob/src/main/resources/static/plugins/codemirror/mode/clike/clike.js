@@ -61,11 +61,11 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
       indentStatements = parserConfig.indentStatements !== false,
       indentSwitch = parserConfig.indentSwitch !== false,
       namespaceSeparator = parserConfig.namespaceSeparator,
-      isPunctuationChar = parserConfig.isPunctuationChar || /[\[\]{}\(\),;\:\.]/,
-      numberStart = parserConfig.numberStart || /[\d\.]/,
+      isPunctuationChar = parserConfig.isPunctuationChar || /[\[\]{}(),;:.]/,
+      numberStart = parserConfig.numberStart || /[\d.]/,
       number = parserConfig.number || /^(?:0x[a-f\d]+|0b[01]+|(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?)(u|ll?|l|f)?/i,
       isOperatorChar = parserConfig.isOperatorChar || /[+\-*&%=<>!?|\/]/,
-      isIdentifierChar = parserConfig.isIdentifierChar || /[\w\$_\xa1-\uffff]/,
+      isIdentifierChar = parserConfig.isIdentifierChar || /[\w$_\xa1-\uffff]/,
       // An optional function that takes a {string} token and returns true if it
       // should be treated as a builtin.
       isReservedIdentifier = parserConfig.isReservedIdentifier || false;
@@ -245,7 +245,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
         (!closing && switchBlock && !/^(?:case|default)\b/.test(textAfter) ? indentUnit : 0);
     },
 
-    electricInput: indentSwitch ? /^\s*(?:case .*?:|default:|\{\}?|\})$/ : /^\s*[{}]$/,
+    electricInput: indentSwitch ? /^\s*(?:case .*?:|default:|\{}?|})$/ : /^\s*[{}]$/,
     blockCommentStart: "/*",
     blockCommentEnd: "*/",
     blockCommentContinue: " * ",
@@ -301,7 +301,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
       if (ch == "\\" && stream.match(/^.$/)) {
         next = cppHook
         break
-      } else if (ch == "/" && stream.match(/^\/[\/\*]/, false)) {
+      } else if (ch == "/" && stream.match(/^\/[\/*]/, false)) {
         break
       }
       stream.next()
@@ -324,7 +324,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
   }
 
   function cpp14Literal(stream) {
-    stream.eatWhile(/[\w\.']/);
+    stream.eatWhile(/[\w.']/);
     return "number";
   }
 
@@ -431,7 +431,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
     typeFirstDefinitions: true,
     atoms: words("true false NULL"),
     dontIndentStatements: /^template$/,
-    isIdentifierChar: /[\w\$_~\xa1-\uffff]/,
+    isIdentifierChar: /[\w$_~\xa1-\uffff]/,
     isReservedIdentifier: cIsReservedIdentifier,
     hooks: {
       "#": cppHook,
@@ -481,7 +481,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
         // Don't match the @interface keyword.
         if (stream.match('interface', false)) return false;
 
-        stream.eatWhile(/[\w\$_]/);
+        stream.eatWhile(/[\w$_]/);
         return "meta";
       }
     },
@@ -511,7 +511,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
           state.tokenize = tokenAtString;
           return tokenAtString(stream, state);
         }
-        stream.eatWhile(/[\w\$_]/);
+        stream.eatWhile(/[\w$_]/);
         return "meta";
       }
     }
@@ -584,7 +584,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
     isOperatorChar: /[+\-*&%=<>!?|\/#:@]/,
     hooks: {
       "@": function(stream) {
-        stream.eatWhile(/[\w\$_]/);
+        stream.eatWhile(/[\w$_]/);
         return "meta";
       },
       '"': function(stream, state) {
@@ -593,7 +593,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
         return state.tokenize(stream, state);
       },
       "'": function(stream) {
-        stream.eatWhile(/[\w\$_\xa1-\uffff]/);
+        stream.eatWhile(/[\w$_\xa1-\uffff]/);
         return "atom";
       },
       "=": function(stream, state) {
@@ -664,7 +664,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
     atoms: words("true false null this"),
     hooks: {
       "@": function(stream) {
-        stream.eatWhile(/[\w\$_]/);
+        stream.eatWhile(/[\w$_]/);
         return "meta";
       },
       '"': function(stream, state) {
@@ -835,7 +835,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
     defKeywords: words("class dynamic function interface module object package value"),
     builtin: words("abstract actual aliased annotation by default deprecated doc final formal late license" +
                    " native optional sealed see serializable shared suppressWarnings tagged throws variable"),
-    isPunctuationChar: /[\[\]{}\(\),;\:\.`]/,
+    isPunctuationChar: /[\[\]{}(),;:.`]/,
     isOperatorChar: /[+\-*&%=<>!?|^~:\/]/,
     numberStart: /[\d#$]/,
     number: /^(?:#[\da-fA-F_]+|\$[01_]+|[\d_]+[kMGTPmunpf]?|[\d_]+\.[\d_]+(?:[eE][-+]?\d+|[kMGTPmunpf]|)|)/i,
@@ -846,7 +846,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
     styleDefs: false,
     hooks: {
       "@": function(stream) {
-        stream.eatWhile(/[\w\$_]/);
+        stream.eatWhile(/[\w$_]/);
         return "meta";
       },
       '"': function(stream, state) {
@@ -860,7 +860,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
           return state.tokenize(stream, state);
         },
       "'": function(stream) {
-        stream.eatWhile(/[\w\$_\xa1-\uffff]/);
+        stream.eatWhile(/[\w$_\xa1-\uffff]/);
         return "atom";
       },
       token: function(_stream, state, style) {

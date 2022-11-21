@@ -1,7 +1,5 @@
 package org.jeecg.config.vo;
 
-import javax.print.DocFlavor;
-
 /**
  *
  * @author: scott

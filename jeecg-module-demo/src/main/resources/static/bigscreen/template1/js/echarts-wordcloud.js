@@ -2169,7 +2169,7 @@ var retrieve3 = _util.retrieve3;
 var textWidthCache = {};
 var textWidthCacheCounter = 0;
 var TEXT_CACHE_MAX = 5000;
-var STYLE_REG = /\{([a-zA-Z0-9_]+)\|([^}]*)\}/g;
+var STYLE_REG = /\{([a-zA-Z0-9_]+)\|([^}]*)}/g;
 var DEFAULT_FONT = '12px sans-serif'; // Avoid assign to an exported variable, for transforming to cjs.
 
 var methods = {};
@@ -4070,7 +4070,7 @@ function isRadianAroundZero(val) {
   return val > -RADIAN_EPSILON && val < RADIAN_EPSILON;
 }
 
-var TIME_REG = /^(?:(\d{4})(?:[-\/](\d{1,2})(?:[-\/](\d{1,2})(?:[T ](\d{1,2})(?::(\d\d)(?::(\d\d)(?:[.,](\d+))?)?)?(Z|[\+\-]\d\d:?\d\d)?)?)?)?)?$/; // jshint ignore:line
+var TIME_REG = /^(?:(\d{4})(?:[-\/](\d{1,2})(?:[-\/](\d{1,2})(?:[T ](\d{1,2})(?::(\d\d)(?::(\d\d)(?:[.,](\d+))?)?)?(Z|[+\-]\d\d:?\d\d)?)?)?)?)?$/; // jshint ignore:line
 
 /**
  * @param {string|Date|number} value These values can be accepted:
@@ -10382,7 +10382,7 @@ function createPathProxyFromString(data) {
   } // command string
 
 
-  var cs = data.replace(/-/g, ' -').replace(/  /g, ' ').replace(/ /g, ',').replace(/,,/g, ',');
+  var cs = data.replace(/-/g, ' -').replace(/ {2}/g, ' ').replace(/ /g, ',').replace(/,,/g, ',');
   var n; // create pipes so that we can split the data
 
   for (n = 0; n < cc.length; n++) {

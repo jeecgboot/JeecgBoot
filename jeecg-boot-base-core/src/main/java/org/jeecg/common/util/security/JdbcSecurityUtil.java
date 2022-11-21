@@ -28,7 +28,7 @@ public class JdbcSecurityUtil {
             return;
         }
         String urlConcatChar = "?";
-        if(jdbcUrl.indexOf(urlConcatChar)<0){
+        if(!jdbcUrl.contains(urlConcatChar)){
             return;
         }
         String argString = jdbcUrl.substring(jdbcUrl.indexOf(urlConcatChar)+1);

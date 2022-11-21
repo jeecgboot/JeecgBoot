@@ -19,7 +19,7 @@ public interface ISysDepartPermissionService extends IService<SysDepartPermissio
      * @param permissionIds
      * @param lastPermissionIds
      */
-    public void saveDepartPermission(String departId,String permissionIds,String lastPermissionIds);
+    void saveDepartPermission(String departId,String permissionIds,String lastPermissionIds);
 
     /**
      * 根据部门id，菜单id获取数据规则

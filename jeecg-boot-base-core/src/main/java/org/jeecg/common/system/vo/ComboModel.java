@@ -29,12 +29,12 @@ public class ComboModel implements Serializable {
 
     public ComboModel(){
 
-    };
+    }
 
-    public ComboModel(String id,String title,boolean checked,String username){
+  public ComboModel(String id,String title,boolean checked,String username){
         this.id = id;
         this.title = title;
         this.checked = false;
         this.username = username;
-    };
+    }
 }

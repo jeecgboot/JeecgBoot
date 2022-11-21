@@ -19,21 +19,21 @@ public interface ISysAnnouncementService extends IService<SysAnnouncement> {
      * 保存系统通告
      * @param sysAnnouncement
      */
-	public void saveAnnouncement(SysAnnouncement sysAnnouncement);
+    void saveAnnouncement(SysAnnouncement sysAnnouncement);
 
     /**
      * 修改系统通告
      * @param sysAnnouncement
      * @return
      */
-	public boolean upDateAnnouncement(SysAnnouncement sysAnnouncement);
+    boolean upDateAnnouncement(SysAnnouncement sysAnnouncement);
 
     /**
      * 保存系统通告
      * @param title 标题
      * @param msgContent 信息内容
      */
-	public void saveSysAnnouncement(String title, String msgContent);
+    void saveSysAnnouncement(String title, String msgContent);
 
     /**
      * 分页查询系统通告
@@ -42,7 +42,7 @@ public interface ISysAnnouncementService extends IService<SysAnnouncement> {
      * @param msgCategory 消息类型
      * @return Page<SysAnnouncement>
      */
-	public Page<SysAnnouncement> querySysCementPageByUserId(Page<SysAnnouncement> page, String userId, String msgCategory);
+    Page<SysAnnouncement> querySysCementPageByUserId(Page<SysAnnouncement> page, String userId, String msgCategory);
 
 
     /**

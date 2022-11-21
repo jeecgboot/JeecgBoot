@@ -43,7 +43,7 @@ public class SysDepartPermissionServiceImpl extends ServiceImpl<SysDepartPermiss
     public void saveDepartPermission(String departId, String permissionIds, String lastPermissionIds) {
         List<String> add = getDiff(lastPermissionIds,permissionIds);
         if(add!=null && add.size()>0) {
-            List<SysDepartPermission> list = new ArrayList<SysDepartPermission>();
+            List<SysDepartPermission> list = new ArrayList<>();
             for (String p : add) {
                 if(oConvertUtils.isNotEmpty(p)) {
                     SysDepartPermission rolepms = new SysDepartPermission(departId, p);
@@ -70,11 +70,10 @@ public class SysDepartPermissionServiceImpl extends ServiceImpl<SysDepartPermiss
     public List<SysPermissionDataRule> getPermRuleListByDeptIdAndPermId(String departId, String permissionId) {
         SysDepartPermission departPermission = this.getOne(new QueryWrapper<SysDepartPermission>().lambda().eq(SysDepartPermission::getDepartId, departId).eq(SysDepartPermission::getPermissionId, permissionId));
         if(departPermission != null && oConvertUtils.isNotEmpty(departPermission.getDataRuleIds())){
-            LambdaQueryWrapper<SysPermissionDataRule> query = new LambdaQueryWrapper<SysPermissionDataRule>();
+            LambdaQueryWrapper<SysPermissionDataRule> query = new LambdaQueryWrapper<>();
             query.in(SysPermissionDataRule::getId, Arrays.asList(departPermission.getDataRuleIds().split(",")));
             query.orderByDesc(SysPermissionDataRule::getCreateTime);
-            List<SysPermissionDataRule> permRuleList = this.ruleMapper.selectList(query);
-            return permRuleList;
+            return this.ruleMapper.selectList(query);
         }else{
             return null;
         }
@@ -100,7 +99,7 @@ public class SysDepartPermissionServiceImpl extends ServiceImpl<SysDepartPermiss
         for (String string : mainArr) {
             map.put(string, 1);
         }
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for (String key : diffArr) {
             if(oConvertUtils.isNotEmpty(key) && !map.containsKey(key)) {
                 res.add(key);

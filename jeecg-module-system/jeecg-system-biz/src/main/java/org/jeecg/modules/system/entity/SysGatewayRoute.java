@@ -97,15 +97,5 @@ public class SysGatewayRoute implements Serializable {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "创建日期")
     private Date createTime;
-    /*    *//**更新人*//*
-    @ApiModelProperty(value = "更新人")
-    private String updateBy;
-    *//**更新日期*//*
-    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    @ApiModelProperty(value = "更新日期")
-    private Date updateTime;
-    *//**所属部门*//*
-    @ApiModelProperty(value = "所属部门")
-    private String sysOrgCode;*/
+    /*    *//**更新人*/ /**更新日期*/ /**所属部门*/
 }

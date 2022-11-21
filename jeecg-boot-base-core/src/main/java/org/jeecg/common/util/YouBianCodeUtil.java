@@ -35,14 +35,11 @@ public class YouBianCodeUtil {
 			newcode = zimu + num;
 		} else {
 			String beforeCode = code.substring(0, code.length() - 1- NUM_LENGTH);
-			String afterCode = code.substring(code.length() - 1 - NUM_LENGTH,code.length());
+			String afterCode = code.substring(code.length() - 1 - NUM_LENGTH);
 			char afterCodeZimu = afterCode.substring(0, 1).charAt(0);
-			Integer afterCodeNum = Integer.parseInt(afterCode.substring(1));
-//			org.jeecgframework.core.util.LogUtil.info(after_code);
-//			org.jeecgframework.core.util.LogUtil.info(after_code_zimu);
-//			org.jeecgframework.core.util.LogUtil.info(after_code_num);
+			int afterCodeNum = Integer.parseInt(afterCode.substring(1));
 
-			String nextNum = "";
+      String nextNum = "";
 			char nextZimu = 'A';
 			// 先判断数字等于999*，则计数从1重新开始，递增
 			if (afterCodeNum == getMaxNumByLength(NUM_LENGTH)) {
@@ -110,8 +107,7 @@ public class YouBianCodeUtil {
 	 * @return
 	 */
 	private static String getStrNum(int num) {
-		String s = String.format("%0" + NUM_LENGTH + "d", num);
-		return s;
+    return String.format("%0" + NUM_LENGTH + "d", num);
 	}
 
 	/**
@@ -168,9 +164,4 @@ public class YouBianCodeUtil {
 		}
 		
 	}
-//	public static void main(String[] args) {
-//		// org.jeecgframework.core.util.LogUtil.info(getNextZiMu('C'));
-//		// org.jeecgframework.core.util.LogUtil.info(getNextNum(8));
-//	    // org.jeecgframework.core.util.LogUtil.info(cutYouBianCode("C99A01B01")[2]);
-//	}
 }

@@ -41,11 +41,10 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 	 */
 	@Override
 	public List<SysPermissionDataRule> getPermRuleListByPermId(String permissionId) {
-		LambdaQueryWrapper<SysPermissionDataRule> query = new LambdaQueryWrapper<SysPermissionDataRule>();
+		LambdaQueryWrapper<SysPermissionDataRule> query = new LambdaQueryWrapper<>();
 		query.eq(SysPermissionDataRule::getPermissionId, permissionId);
 		query.orderByDesc(SysPermissionDataRule::getCreateTime);
-		List<SysPermissionDataRule> permRuleList = this.list(query);
-		return permRuleList;
+    return this.list(query);
 	}
 
 	/**
@@ -65,14 +64,14 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 			return null;
 		}
 		//update-end--Author:scott  Date:20191119  for：数据权限失效问题处理--------------------
-		Set<String> set = new HashSet<String>();
+		Set<String> set = new HashSet<>();
 		for (String ids : idsList) {
 			if(oConvertUtils.isEmpty(ids)) {
 				continue;
 			}
 			String[] arr = ids.split(",");
 			for (String id : arr) {
-				if(oConvertUtils.isNotEmpty(id) && !set.contains(id)) {
+				if(oConvertUtils.isNotEmpty(id)) {
 					set.add(id);
 				}
 			}

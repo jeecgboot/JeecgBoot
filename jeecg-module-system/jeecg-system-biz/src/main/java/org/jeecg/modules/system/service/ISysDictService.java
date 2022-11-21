@@ -25,7 +25,7 @@ public interface ISysDictService extends IService<SysDict> {
      * @param code
      * @return
      */
-    public List<DictModel> queryDictItemsByCode(String code);
+    List<DictModel> queryDictItemsByCode(String code);
 
 	/**
 	 * 查询有效的数据字典项
@@ -46,7 +46,7 @@ public interface ISysDictService extends IService<SysDict> {
      * 登录加载系统字典
      * @return
      */
-    public Map<String,List<DictModel>> queryAllDictItems();
+    Map<String,List<DictModel>> queryAllDictItems();
 
     /**
      * 查通过查询指定table的 text code 获取字典
@@ -67,7 +67,7 @@ public interface ISysDictService extends IService<SysDict> {
      * @return
      */
     @Deprecated
-	public List<DictModel> queryTableDictItemsByCodeAndFilter(String table, String text, String code, String filterSql);
+    List<DictModel> queryTableDictItemsByCodeAndFilter(String table, String text, String code, String filterSql);
 
     /**
      * 通过字典code及字典项的value获取字典文本
@@ -75,7 +75,7 @@ public interface ISysDictService extends IService<SysDict> {
      * @param key
      * @return
      */
-    public String queryDictTextByKey(String code, String key);
+    String queryDictTextByKey(String code, String key);
 
 	/**
 	 * 可通过多个字典code查询翻译文本
@@ -144,32 +144,21 @@ public interface ISysDictService extends IService<SysDict> {
      * @param sysDictItemList
      * @return Integer
      */
-    public Integer saveMain(SysDict sysDict, List<SysDictItem> sysDictItemList);
+    Integer saveMain(SysDict sysDict, List<SysDictItem> sysDictItemList);
 
     /**
 	 * 查询所有部门 作为字典信息 id -->value,departName -->text
 	 * @return
 	 */
-	public List<DictModel> queryAllDepartBackDictModel();
+    List<DictModel> queryAllDepartBackDictModel();
 
 	/**
 	 * 查询所有用户  作为字典信息 username -->value,realname -->text
 	 * @return
 	 */
-	public List<DictModel> queryAllUserBackDictModel();
+    List<DictModel> queryAllUserBackDictModel();
 
-//	/**
-//	 * 通过关键字查询字典表
-//	 * @param table
-//	 * @param text
-//	 * @param code
-//	 * @param keyword
-//	 * @return
-//	 */
-//	@Deprecated
-//	public List<DictModel> queryTableDictItems(String table, String text, String code,String keyword);
-
-	/**
+  /**
 	 * 查询字典表数据 只查询前10条
 	 * @param table
 	 * @param text
@@ -180,7 +169,7 @@ public interface ISysDictService extends IService<SysDict> {
 	 * @return
 	 */
 	@Deprecated
-	public List<DictModel> queryLittleTableDictItems(String table, String text, String code, String condition, String keyword, int pageSize);
+    List<DictModel> queryLittleTableDictItems(String table, String text, String code, String condition, String keyword, int pageSize);
 
 	/**
 	 * 查询字典表所有数据
@@ -192,7 +181,7 @@ public interface ISysDictService extends IService<SysDict> {
 	 * @return
 	 */
 	@Deprecated
-	public List<DictModel> queryAllTableDictItems(String table, String text, String code, String condition, String keyword);
+    List<DictModel> queryAllTableDictItems(String table, String text, String code, String condition, String keyword);
 	/**
 	  * 根据表名、显示字段名、存储字段名 查询树
 	 * @param table
@@ -211,20 +200,20 @@ public interface ISysDictService extends IService<SysDict> {
 	 * 真实删除
 	 * @param id
 	 */
-	public void deleteOneDictPhysically(String id);
+    void deleteOneDictPhysically(String id);
 
 	/**
 	 * 修改delFlag
 	 * @param delFlag
 	 * @param id
 	 */
-	public void updateDictDelFlag(int delFlag,String id);
+    void updateDictDelFlag(int delFlag,String id);
 
 	/**
 	 * 查询被逻辑删除的数据
 	 * @return
 	 */
-	public List<SysDict> queryDeleteList();
+    List<SysDict> queryDeleteList();
 
 	/**
 	 * 分页查询
@@ -234,7 +223,7 @@ public interface ISysDictService extends IService<SysDict> {
 	 * @return
 	 */
 	@Deprecated
-	public List<DictModel> queryDictTablePageList(DictQuery query,int pageSize, int pageNo);
+    List<DictModel> queryDictTablePageList(DictQuery query, int pageSize, int pageNo);
 
     /**
      * 获取字典数据

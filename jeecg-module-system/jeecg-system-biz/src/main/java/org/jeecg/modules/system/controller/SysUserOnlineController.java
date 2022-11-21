@@ -53,7 +53,7 @@ public class SysUserOnlineController {
     public Result<Page<SysUserOnlineVO>> list(@RequestParam(name="username", required=false) String username,
                                               @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,@RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
         Collection<String> keys = redisTemplate.keys(CommonConstant.PREFIX_USER_TOKEN + "*");
-        List<SysUserOnlineVO> onlineList = new ArrayList<SysUserOnlineVO>();
+        List<SysUserOnlineVO> onlineList = new ArrayList<>();
         for (String key : keys) {
             String token = (String)redisUtil.get(key);
             if (StringUtils.isNotEmpty(token)) {
@@ -79,7 +79,7 @@ public class SysUserOnlineController {
         }
         Collections.reverse(onlineList);
 
-        Page<SysUserOnlineVO> page = new Page<SysUserOnlineVO>(pageNo, pageSize);
+        Page<SysUserOnlineVO> page = new Page<>(pageNo, pageSize);
         int count = onlineList.size();
         List<SysUserOnlineVO> pages = new ArrayList<>();
         // 计算当前页第一条数据的下标
@@ -94,7 +94,7 @@ public class SysUserOnlineController {
         page.setPages(count % 10 == 0 ? count / 10 : count / 10 + 1);
         page.setRecords(pages);
 
-        Result<Page<SysUserOnlineVO>> result = new Result<Page<SysUserOnlineVO>>();
+        Result<Page<SysUserOnlineVO>> result = new Result<>();
         result.setSuccess(true);
         result.setResult(page);
         return result;

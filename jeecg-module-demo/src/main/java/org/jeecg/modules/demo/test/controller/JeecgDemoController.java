@@ -4,8 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -67,7 +65,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
                           HttpServletRequest req) {
         QueryWrapper<JeecgDemo> queryWrapper = QueryGenerator.initQueryWrapper(jeecgDemo, req.getParameterMap());
         queryWrapper.orderByDesc("create_time");
-        Page<JeecgDemo> page = new Page<JeecgDemo>(pageNo, pageSize);
+        Page<JeecgDemo> page = new Page<>(pageNo, pageSize);
 
         IPage<JeecgDemo> pageList = jeecgDemoService.page(page, queryWrapper);
         log.info("查询当前页：" + pageList.getCurrent());
@@ -232,7 +230,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
     @RequestMapping("/html")
     public ModelAndView ftl(ModelAndView modelAndView) {
         modelAndView.setViewName("demo3");
-        List<String> userList = new ArrayList<String>();
+        List<String> userList = new ArrayList<>();
         userList.add("admin");
         userList.add("user1");
         userList.add("user2");
@@ -266,10 +264,10 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
     @PermissionData(pageComponent = "jeecg/JeecgDemoList")
     public Result<?> loadMpPermissonList(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                          HttpServletRequest req) {
-        QueryWrapper<JeecgDemo> queryWrapper = new QueryWrapper<JeecgDemo>();
+        QueryWrapper<JeecgDemo> queryWrapper = new QueryWrapper<>();
         //编程方式，给queryWrapper装载数据权限规则
         QueryGenerator.installAuthMplus(queryWrapper, JeecgDemo.class);
-        Page<JeecgDemo> page = new Page<JeecgDemo>(pageNo, pageSize);
+        Page<JeecgDemo> page = new Page<>(pageNo, pageSize);
         IPage<JeecgDemo> pageList = jeecgDemoService.page(page, queryWrapper);
         return Result.OK(pageList);
     }
@@ -430,30 +428,29 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      */
     private IPage<JSONObject> queryDataPage(JSONArray dataList, Integer pageNo, Integer pageSize) {
         // 根据父级id查询子级
-        JSONArray dataDb = dataList;
         // 模拟分页（实际中应用SQL自带的分页）
         List<JSONObject> records = new ArrayList<>();
         IPage<JSONObject> page;
         long beginIndex, endIndex;
         // 如果任意一个参数为null，则不分页
         if (pageNo == null || pageSize == null) {
-            page = new Page<>(0, dataDb.size());
+            page = new Page<>(0, dataList.size());
             beginIndex = 0;
-            endIndex = dataDb.size();
+            endIndex = dataList.size();
         } else {
             page = new Page<>(pageNo, pageSize);
             beginIndex = page.offset();
             endIndex = page.offset() + page.getSize();
         }
-        for (long i = beginIndex; (i < endIndex && i < dataDb.size()); i++) {
-            JSONObject data = dataDb.getJSONObject((int) i);
+        for (long i = beginIndex; (i < endIndex && i < dataList.size()); i++) {
+            JSONObject data = dataList.getJSONObject((int) i);
             data = JSON.parseObject(data.toJSONString());
             // 不返回 children
             data.remove("children");
             records.add(data);
         }
         page.setRecords(records);
-        page.setTotal(dataDb.size());
+        page.setTotal(dataList.size());
         return page;
     }
     // =====Vue3 Native  原生页面示例===============================================================================================

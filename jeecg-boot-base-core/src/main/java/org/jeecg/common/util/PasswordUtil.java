@@ -1,5 +1,6 @@
 package org.jeecg.common.util;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.SecureRandom;
 import javax.crypto.Cipher;
@@ -41,7 +42,7 @@ public class PasswordUtil {
 	 * 
 	 * @return byte[] 盐值
 	 * */
-	public static byte[] getSalt() throws Exception {
+	public static byte[] getSalt() {
 		// 实例化安全随机数
 		SecureRandom random = new SecureRandom();
 		// 产出盐
@@ -100,9 +101,9 @@ public class PasswordUtil {
 
 			cipher.init(Cipher.ENCRYPT_MODE, key, parameterSpec);
 			//update-begin-author:sccott date:20180815 for:中文作为用户名时，加密的密码windows和linux会得到不同的结果 gitee/issues/IZUD7
-			encipheredData = cipher.doFinal(plaintext.getBytes("utf-8"));
+			encipheredData = cipher.doFinal(plaintext.getBytes(StandardCharsets.UTF_8));
 			//update-end-author:sccott date:20180815 for:中文作为用户名时，加密的密码windows和linux会得到不同的结果 gitee/issues/IZUD7
-		} catch (Exception e) {
+		} catch (Exception ignored) {
 		}
 		return bytesToHexString(encipheredData);
 	}
@@ -146,18 +147,18 @@ public class PasswordUtil {
 	 * @return
 	 */
 	public static String bytesToHexString(byte[] src) {
-		StringBuilder stringBuilder = new StringBuilder("");
-		if (src == null || src.length <= 0) {
+		StringBuilder stringBuilder = new StringBuilder();
+		if (src == null || src.length == 0) {
 			return null;
 		}
-		for (int i = 0; i < src.length; i++) {
-			int v = src[i] & 0xFF;
-			String hv = Integer.toHexString(v);
-			if (hv.length() < 2) {
-				stringBuilder.append(0);
-			}
-			stringBuilder.append(hv);
-		}
+    for (byte b : src) {
+      int v = b & 0xFF;
+      String hv = Integer.toHexString(v);
+      if (hv.length() < 2) {
+        stringBuilder.append(0);
+      }
+      stringBuilder.append(hv);
+    }
 		return stringBuilder.toString();
 	}
 

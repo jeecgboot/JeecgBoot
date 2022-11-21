@@ -23,8 +23,8 @@ public class OrgCodeRule implements IFillRuleHandler {
     public Object execute(JSONObject params, JSONObject formData) {
         ISysDepartService sysDepartService = (ISysDepartService) SpringContextUtils.getBean("sysDepartServiceImpl");
 
-        LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
-        LambdaQueryWrapper<SysDepart> query1 = new LambdaQueryWrapper<SysDepart>();
+        LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<SysDepart> query1 = new LambdaQueryWrapper<>();
         // 创建一个List集合,存储查询返回的所有SysDepart对象
         List<SysDepart> departList = new ArrayList<>();
         String[] strArray = new String[2];
@@ -78,7 +78,7 @@ public class OrgCodeRule implements IFillRuleHandler {
             // 获取父级部门的Code
             String parentCode = depart.getOrgCode();
             // 根据父级部门类型算出当前部门的类型
-            orgType = String.valueOf(Integer.valueOf(depart.getOrgType()) + 1);
+            orgType = String.valueOf(Integer.parseInt(depart.getOrgType()) + 1);
             // 处理同级部门为null的情况
             if (parentList == null || parentList.size() == 0) {
                 // 直接生成当前的部门编码并返回

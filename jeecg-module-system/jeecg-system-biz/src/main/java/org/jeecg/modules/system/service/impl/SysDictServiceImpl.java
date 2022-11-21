@@ -82,7 +82,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	public Map<String, List<DictModel>> queryAllDictItems() {
 		Map<String, List<DictModel>> res = new HashMap(5);
 		List<SysDict> ls = sysDictMapper.selectList(null);
-		LambdaQueryWrapper<SysDictItem> queryWrapper = new LambdaQueryWrapper<SysDictItem>();
+		LambdaQueryWrapper<SysDictItem> queryWrapper = new LambdaQueryWrapper<>();
 		queryWrapper.eq(SysDictItem::getStatus, 1);
 		queryWrapper.orderByAsc(SysDictItem::getSortOrder);
 		List<SysDictItem> sysDictItemList = sysDictItemMapper.selectList(queryWrapper);
@@ -100,7 +100,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		Map<String, List<DictModel>> enumRes = ResourceUtil.getEnumDictData();
 		res.putAll(enumRes);
 		//update-end-author:taoyan date:2022-7-8 for: 系统字典数据应该包括自定义的java类-枚举
-		log.debug("-------登录加载系统字典-----" + res.toString());
+		log.debug("-------登录加载系统字典-----" + res);
 		return res;
 	}
 
@@ -213,7 +213,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
 		//update-begin-author:taoyan date:2022-4-24 for: 下拉搜索组件，表单编辑页面回显下拉搜索的文本的时候，因为表名后配置了条件，导致sql执行失败，
 		String filterSql = null;
-		if(table.toLowerCase().indexOf("where")!=-1){
+		if(table.toLowerCase().contains("where")){
 			String[] arr = table.split(" (?i)where ");
 			table = arr[0];
 			filterSql = arr[1];
@@ -282,15 +282,10 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	public List<DictModel> queryAllUserBackDictModel() {
 		return baseMapper.queryAllUserBackDictModel();
 	}
-	
-//	@Override
-//	public List<DictModel> queryTableDictItems(String table, String text, String code, String keyword) {
-//		return baseMapper.queryTableDictItems(table, text, code, "%"+keyword+"%");
-//	}
 
-	@Override
+  @Override
 	public List<DictModel> queryLittleTableDictItems(String table, String text, String code, String condition, String keyword, int pageSize) {
-    	Page<DictModel> page = new Page<DictModel>(1, pageSize);
+    	Page<DictModel> page = new Page<>(1, pageSize);
 		page.setSearchCount(false);
 
 		//【issues/3713】字典接口存在SQL注入风险
@@ -322,7 +317,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		if (oConvertUtils.isNotEmpty(keyword)) {
 			// 关键字里面如果写入了 排序信息 xxxxx[orderby:create_time,desc]
 			String orderKey = "[orderby";
-			if (keyword.indexOf(orderKey) >= 0 && keyword.endsWith("]")) {
+			if (keyword.contains(orderKey) && keyword.endsWith("]")) {
 				String orderInfo = keyword.substring(keyword.indexOf(orderKey) + orderKey.length() + 1, keyword.length() - 1);
 				keyword = keyword.substring(0, keyword.indexOf(orderKey));
 				String[] orderInfoArray = orderInfo.split(SymbolConstant.COMMA);
@@ -361,8 +356,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Override
 	public List<DictModel> queryAllTableDictItems(String table, String text, String code, String condition, String keyword) {
 		String filterSql = getFilterSql(table, text, code, condition, keyword);
-		List<DictModel> ls = baseMapper.queryAllTableDictItems(table, text, code, filterSql);
-    	return ls;
+    return baseMapper.queryAllTableDictItems(table, text, code, filterSql);
 	}
 
 	@Override
@@ -451,7 +445,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			} else if (params.length == 4) {
 				condition = params[3];
 				// update-begin-author:taoyan date:20220314 for: online表单下拉搜索框表字典配置#{sys_org_code}报错 #3500
-				if(condition.indexOf(SymbolConstant.SYS_VAR_PREFIX)>=0){
+				if(condition.contains(SymbolConstant.SYS_VAR_PREFIX)){
 					condition =  QueryGenerator.getSqlRuleValue(condition);
 				}
 				// update-end-author:taoyan date:20220314 for: online表单下拉搜索框表字典配置#{sys_org_code}报错 #3500

@@ -93,8 +93,7 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 	@Transactional(rollbackFor = JeecgBootException.class)
 	public boolean deleteAndStopJob(QuartzJob job) {
 		schedulerDelete(job.getId());
-		boolean ok = this.removeById(job.getId());
-		return ok;
+        return this.removeById(job.getId());
 	}
 
 	@Override

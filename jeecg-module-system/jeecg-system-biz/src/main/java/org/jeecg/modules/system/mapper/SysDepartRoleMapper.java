@@ -19,5 +19,5 @@ public interface SysDepartRoleMapper extends BaseMapper<SysDepartRole> {
      * @param userId
      * @return
      */
-    public List<SysDepartRole> queryDeptRoleByDeptAndUser(@Param("orgCode") String orgCode, @Param("userId") String userId);
+    List<SysDepartRole> queryDeptRoleByDeptAndUser(@Param("orgCode") String orgCode, @Param("userId") String userId);
 }

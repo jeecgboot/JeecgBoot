@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
@@ -72,9 +71,9 @@ public class SysDictController {
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysDict>> queryPageList(SysDict sysDict,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
-		Result<IPage<SysDict>> result = new Result<IPage<SysDict>>();
+		Result<IPage<SysDict>> result = new Result<>();
 		QueryWrapper<SysDict> queryWrapper = QueryGenerator.initQueryWrapper(sysDict, req.getParameterMap());
-		Page<SysDict> page = new Page<SysDict>(pageNo, pageSize);
+		Page<SysDict> page = new Page<>(pageNo, pageSize);
 		IPage<SysDict> pageList = sysDictService.page(page, queryWrapper);
 		log.debug("查询当前页："+pageList.getCurrent());
 		log.debug("查询当前页数量："+pageList.getSize());
@@ -135,7 +134,7 @@ public class SysDictController {
 	@RequestMapping(value = "/getDictText/{dictCode}/{key}", method = RequestMethod.GET)
 	public Result<String> getDictText(@PathVariable("dictCode") String dictCode, @PathVariable("key") String key) {
 		log.info(" dictCode : "+ dictCode);
-		Result<String> result = new Result<String>();
+		Result<String> result = new Result<>();
 		String text = null;
 		try {
 			text = sysDictService.queryDictTextByKey(dictCode, key);
@@ -159,7 +158,7 @@ public class SysDictController {
 	@RequestMapping(value = "/getDictItems/{dictCode}", method = RequestMethod.GET)
 	public Result<List<DictModel>> getDictItems(@PathVariable("dictCode") String dictCode, @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
 		log.info(" dictCode : "+ dictCode);
-		Result<List<DictModel>> result = new Result<List<DictModel>>();
+		Result<List<DictModel>> result = new Result<>();
 		//update-begin-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
 		if(!dictQueryBlackListHandler.isPass(dictCode)){
 			return result.error500(dictQueryBlackListHandler.getError());
@@ -195,7 +194,7 @@ public class SysDictController {
 			@RequestParam(value = "sign",required = false) String sign,
 			@RequestParam(value = "pageSize", required = false) Integer pageSize) {
 		log.info(" 加载字典表数据,加载关键字: "+ keyword);
-		Result<List<DictModel>> result = new Result<List<DictModel>>();
+		Result<List<DictModel>> result = new Result<>();
 		//update-begin-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
 		if(!dictQueryBlackListHandler.isPass(dictCode)){
 			return result.error500(dictQueryBlackListHandler.getError());
@@ -278,7 +277,7 @@ public class SysDictController {
 		}
 		//update-end-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
 		try {
-			if(dictCode.indexOf(SymbolConstant.COMMA)!=-1) {
+			if(dictCode.contains(SymbolConstant.COMMA)) {
 				String[] params = dictCode.split(SymbolConstant.COMMA);
 				if(params.length!=3) {
 					result.error500("字典Code格式不正确！");
@@ -317,7 +316,7 @@ public class SysDictController {
 												  @RequestParam(name="converIsLeafVal",defaultValue ="1") int converIsLeafVal,
 												  @RequestParam(name="condition") String condition,
 												  @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
-		Result<List<TreeSelectModel>> result = new Result<List<TreeSelectModel>>();
+		Result<List<TreeSelectModel>> result = new Result<>();
 		Map<String, String> query = null;
 		if(oConvertUtils.isNotEmpty(condition)) {
 			query = JSON.parseObject(condition, Map.class);
@@ -344,7 +343,7 @@ public class SysDictController {
 												  @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
 												  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
 												  @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request){
-		Result<List<DictModel>> res = new Result<List<DictModel>>();
+		Result<List<DictModel>> res = new Result<>();
 		// SQL注入漏洞 sign签名校验
 		String dictCode = query.getTable()+","+query.getText()+","+query.getCode();
 		SqlInjectionUtil.filterContent(dictCode);
@@ -367,7 +366,7 @@ public class SysDictController {
 	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysDict> add(@RequestBody SysDict sysDict) {
-		Result<SysDict> result = new Result<SysDict>();
+		Result<SysDict> result = new Result<>();
 		try {
 			sysDict.setCreateTime(new Date());
 			sysDict.setDelFlag(CommonConstant.DEL_FLAG_0);
@@ -388,7 +387,7 @@ public class SysDictController {
 	//@RequiresRoles({"admin"})
 	@RequestMapping(value = "/edit", method = { RequestMethod.PUT,RequestMethod.POST })
 	public Result<SysDict> edit(@RequestBody SysDict sysDict) {
-		Result<SysDict> result = new Result<SysDict>();
+		Result<SysDict> result = new Result<>();
 		SysDict sysdict = sysDictService.getById(sysDict.getId());
 		if(sysdict==null) {
 			result.error500("未找到对应实体");
@@ -411,7 +410,7 @@ public class SysDictController {
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDict> delete(@RequestParam(name="id",required=true) String id) {
-		Result<SysDict> result = new Result<SysDict>();
+		Result<SysDict> result = new Result<>();
 		boolean ok = sysDictService.removeById(id);
 		if(ok) {
 			result.success("删除成功!");
@@ -430,7 +429,7 @@ public class SysDictController {
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value= {CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDict> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		Result<SysDict> result = new Result<SysDict>();
+		Result<SysDict> result = new Result<>();
 		if(oConvertUtils.isEmpty(ids)) {
 			result.error500("参数不识别！");
 		}else {
@@ -478,7 +477,7 @@ public class SysDictController {
 		QueryWrapper<SysDict> queryWrapper = QueryGenerator.initQueryWrapper(sysDict, request.getParameterMap());
 		//Step.2 AutoPoi 导出Excel
 		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-		List<SysDictPage> pageList = new ArrayList<SysDictPage>();
+		List<SysDictPage> pageList = new ArrayList<>();
 
 		List<SysDict> sysDictList = sysDictService.list(queryWrapper);
 		for (SysDict dictMain : sysDictList) {
@@ -583,7 +582,7 @@ public class SysDictController {
 	 */
 	@RequestMapping(value = "/deleteList", method = RequestMethod.GET)
 	public Result<List<SysDict>> deleteList() {
-		Result<List<SysDict>> result = new Result<List<SysDict>>();
+		Result<List<SysDict>> result = new Result<>();
 		List<SysDict> list = this.sysDictService.queryDeleteList();
 		result.setSuccess(true);
 		result.setResult(list);
@@ -633,7 +632,7 @@ public class SysDictController {
 		String msg = e.getMessage();
 		String extractvalue = "extractvalue";
 		String updatexml = "updatexml";
-		if(msg!=null && (msg.toLowerCase().indexOf(extractvalue)>=0 || msg.toLowerCase().indexOf(updatexml)>=0)){
+		if(msg!=null && (msg.toLowerCase().contains(extractvalue) || msg.toLowerCase().contains(updatexml))){
 			return Result.error("校验失败，sql解析异常！");
 		}
 		return Result.error("校验失败，sql解析异常！" + msg);

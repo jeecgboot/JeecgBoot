@@ -1943,7 +1943,7 @@
   // Change some spaces to NBSP to prevent the browser from collapsing
   // trailing spaces at the end of a line when rendering text (issue #1362).
   function splitSpaces(text, trailingBefore) {
-    if (text.length > 1 && !/  /.test(text)) { return text }
+    if (text.length > 1 && !/ {2}/.test(text)) { return text }
     var spaceBefore = trailingBefore, result = "";
     for (var i = 0; i < text.length; i++) {
       var ch = text.charAt(i);
@@ -7095,7 +7095,7 @@
     var seq = cm.state.keySeq;
     if (seq) {
       if (isModifierKey(name)) { return "handled" }
-      if (/\'$/.test(name))
+      if (/'$/.test(name))
         { cm.state.keySeq = null; }
       else
         { stopSeq.set(50, function () {

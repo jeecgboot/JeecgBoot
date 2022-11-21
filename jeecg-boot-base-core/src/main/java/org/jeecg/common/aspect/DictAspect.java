@@ -364,7 +364,7 @@ public class DictAspect {
     	if(oConvertUtils.isEmpty(key)) {
     		return null;
     	}
-        StringBuffer textValue=new StringBuffer();
+        StringBuilder textValue=new StringBuilder();
         String[] keys = key.split(",");
         for (String k : keys) {
             String tmpValue = null;

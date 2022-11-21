@@ -71,7 +71,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       return ret("number", "number");
     } else if (ch == "." && stream.match("..")) {
       return ret("spread", "meta");
-    } else if (/[\[\]{}\(\),;\:\.]/.test(ch)) {
+    } else if (/[\[\]{}(),;:.]/.test(ch)) {
       return ret(ch);
     } else if (ch == "=" && stream.eat(">")) {
       return ret("=>", "operator");
@@ -119,7 +119,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
           var kw = keywords[word]
           return ret(kw.type, kw.style, word)
         }
-        if (word == "async" && stream.match(/^(\s|\/\*.*?\*\/)*[\[\(\w]/, false))
+        if (word == "async" && stream.match(/^(\s|\/\*.*?\*\/)*[\[(\w]/, false))
           return ret("async", "keyword", word)
       }
       return ret("variable", "variable", word)
@@ -180,7 +180,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     if (arrow < 0) return;
 
     if (isTS) { // Try to skip TypeScript return type declarations after the arguments
-      var m = /:\s*(?:\w+(?:<[^>]*>|\[\])?|\{[^}]*\})\s*$/.exec(stream.string.slice(stream.start, arrow))
+      var m = /:\s*(?:\w+(?:<[^>]*>|\[])?|\{[^}]*})\s*$/.exec(stream.string.slice(stream.start, arrow))
       if (m) arrow = m.index
     }
 
@@ -431,7 +431,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     return cont();
   }
   function maybeexpression(type) {
-    if (type.match(/[;\}\)\],]/)) return pass();
+    if (type.match(/[;})\],]/)) return pass();
     return pass(expression);
   }
 
@@ -796,7 +796,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
 
   function expressionAllowed(stream, state, backUp) {
     return state.tokenize == tokenBase &&
-      /^(?:operator|sof|keyword [bcd]|case|new|export|default|spread|[\[{}\(,;:]|=>)$/.test(state.lastType) ||
+      /^(?:operator|sof|keyword [bcd]|case|new|export|default|spread|[\[{}(,;:]|=>)$/.test(state.lastType) ||
       (state.lastType == "quasi" && /\{\s*$/.test(stream.string.slice(0, stream.pos - (backUp || 0))))
   }
 
@@ -845,7 +845,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       while ((lexical.type == "stat" || lexical.type == "form") &&
              (firstChar == "}" || ((top = state.cc[state.cc.length - 1]) &&
                                    (top == maybeoperatorComma || top == maybeoperatorNoComma) &&
-                                   !/^[,\.=+\-*:?[\(]/.test(textAfter))))
+                                   !/^[,.=+\-*:?[(]/.test(textAfter))))
         lexical = lexical.prev;
       if (statementIndent && lexical.type == ")" && lexical.prev.type == "stat")
         lexical = lexical.prev;
@@ -862,7 +862,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       else return lexical.indented + (closing ? 0 : indentUnit);
     },
 
-    electricInput: /^\s*(?:case .*?:|default:|\{|\})$/,
+    electricInput: /^\s*(?:case .*?:|default:|\{|})$/,
     blockCommentStart: jsonMode ? null : "/*",
     blockCommentEnd: jsonMode ? null : "*/",
     blockCommentContinue: jsonMode ? null : " * ",

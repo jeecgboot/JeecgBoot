@@ -23,6 +23,6 @@ public interface SysPermissionDataRuleMapper extends BaseMapper<SysPermissionDat
 	 * @param permissionId
 	 * @return
 	 */
-	public List<String> queryDataRuleIds(@Param("username") String username,@Param("permissionId") String permissionId);
+    List<String> queryDataRuleIds(@Param("username") String username,@Param("permissionId") String permissionId);
 
 }

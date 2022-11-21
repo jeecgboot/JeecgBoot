@@ -337,7 +337,7 @@ public class JeecgElasticsearchTemplate {
                     emptyKeys.add(key);
                 }
                 //2、剔除上传控件值(会导致ES同步失败，报异常failed to parse field [ge_pic] of type [text] )
-                if (oConvertUtils.isNotEmpty(value) && value.indexOf("[{")!=-1) {
+                if (oConvertUtils.isNotEmpty(value) && value.contains("[{")) {
                     emptyKeys.add(key);
                     log.info("-------剔除上传控件字段------------key: "+ key);
                 }
@@ -385,7 +385,7 @@ public class JeecgElasticsearchTemplate {
             data.remove("id");
             bodySb.append(data.toJSONString()).append("\n");
         }
-        System.out.println("+-+-+-: bodySb.toString(): " + bodySb.toString());
+        System.out.println("+-+-+-: bodySb.toString(): " + bodySb);
         HttpHeaders headers = RestUtil.getHeaderApplicationJson();
         RestUtil.request(url, HttpMethod.PUT, headers, null, bodySb, JSONObject.class);
         return true;

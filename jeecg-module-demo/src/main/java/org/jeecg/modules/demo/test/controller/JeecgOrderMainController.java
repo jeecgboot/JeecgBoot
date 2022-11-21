@@ -13,12 +13,9 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.demo.test.entity.JeecgDemo;
 import org.jeecg.modules.demo.test.entity.JeecgOrderCustomer;
 import org.jeecg.modules.demo.test.entity.JeecgOrderMain;
 import org.jeecg.modules.demo.test.entity.JeecgOrderTicket;
-import org.jeecg.modules.demo.test.service.IJeecgDemoService;
 import org.jeecg.modules.demo.test.service.IJeecgOrderCustomerService;
 import org.jeecg.modules.demo.test.service.IJeecgOrderMainService;
 import org.jeecg.modules.demo.test.service.IJeecgOrderTicketService;
@@ -33,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -79,7 +75,7 @@ public class JeecgOrderMainController extends JeecgController<JeecgOrderMain, IJ
     @GetMapping(value = "/list")
     public Result<?> queryPageList(JeecgOrderMain jeecgOrderMain, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
         QueryWrapper<JeecgOrderMain> queryWrapper = QueryGenerator.initQueryWrapper(jeecgOrderMain, req.getParameterMap());
-        Page<JeecgOrderMain> page = new Page<JeecgOrderMain>(pageNo, pageSize);
+        Page<JeecgOrderMain> page = new Page<>(pageNo, pageSize);
         IPage<JeecgOrderMain> pageList = jeecgOrderMainService.page(page, queryWrapper);
         return Result.ok(pageList);
     }
@@ -186,7 +182,7 @@ public class JeecgOrderMainController extends JeecgController<JeecgOrderMain, IJ
         //获取当前用户
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
-        List<JeecgOrderMainPage> pageList = new ArrayList<JeecgOrderMainPage>();
+        List<JeecgOrderMainPage> pageList = new ArrayList<>();
 
         List<JeecgOrderMain> jeecgOrderMainList = jeecgOrderMainService.list(queryWrapper);
         for (JeecgOrderMain orderMain : jeecgOrderMainList) {

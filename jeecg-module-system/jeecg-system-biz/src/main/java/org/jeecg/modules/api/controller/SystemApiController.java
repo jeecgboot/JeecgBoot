@@ -166,14 +166,8 @@ public class SystemApiController {
     /** 查询所有的父级字典，按照create_time排序 */
     @GetMapping("/queryAllDict")
     List<DictModel> queryAllDict(){
-//        try{
-//            //睡10秒，gateway网关5秒超时，会触发熔断降级操作
-//            Thread.sleep(10000);
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
 
-        log.info("--我是jeecg-system服务节点，微服务接口queryAllDict被调用--");
+      log.info("--我是jeecg-system服务节点，微服务接口queryAllDict被调用--");
         return sysBaseApi.queryAllDict();
     }
 
@@ -497,8 +491,9 @@ public class SystemApiController {
     @GetMapping("/sendEmailMsg")
     public void sendEmailMsg(@RequestParam("email")String email,@RequestParam("title")String title,@RequestParam("content")String content){
          this.sysBaseApi.sendEmailMsg(email,title,content);
-    };
-    /**
+    }
+
+  /**
      * 41 获取公司下级部门和公司下所有用户信息
      * @param orgCode
      */
@@ -758,7 +753,7 @@ public class SystemApiController {
         String msg = e.getMessage();
         String extractvalue = "extractvalue";
         String updatexml = "updatexml";
-        if(msg!=null && (msg.toLowerCase().indexOf(extractvalue)>=0 || msg.toLowerCase().indexOf(updatexml)>=0)){
+        if(msg!=null && (msg.toLowerCase().contains(extractvalue) || msg.toLowerCase().contains(updatexml))){
             return Result.error("校验失败，sql解析异常！");
         }
         return Result.error("校验失败，sql解析异常！" + msg);

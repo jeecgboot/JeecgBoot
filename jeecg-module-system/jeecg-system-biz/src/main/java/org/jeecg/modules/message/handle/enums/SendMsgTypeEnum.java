@@ -29,7 +29,7 @@ public enum SendMsgTypeEnum {
 
 	private String implClass;
 
-	private SendMsgTypeEnum(String type, String implClass) {
+	SendMsgTypeEnum(String type, String implClass) {
 		this.type = type;
 		this.implClass = implClass;
 	}

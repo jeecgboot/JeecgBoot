@@ -79,7 +79,7 @@ public class ThirdLoginController {
         AuthRequest authRequest = factory.get(source);
         AuthResponse response = authRequest.login(callback);
         log.info(JSONObject.toJSONString(response));
-        Result<JSONObject> result = new Result<JSONObject>();
+        Result<JSONObject> result = new Result<>();
         if(response.getCode()==2000) {
 
         	JSONObject data = JSONObject.parseObject(JSONObject.toJSONString(response.getData()));
@@ -90,7 +90,7 @@ public class ThirdLoginController {
 			ThirdLoginModel tlm = new ThirdLoginModel(source, uuid, username, avatar);
         	//判断有没有这个人
 			//update-begin-author:wangshuai date:20201118 for:修改成查询第三方账户表
-        	LambdaQueryWrapper<SysThirdAccount> query = new LambdaQueryWrapper<SysThirdAccount>();
+        	LambdaQueryWrapper<SysThirdAccount> query = new LambdaQueryWrapper<>();
         	query.eq(SysThirdAccount::getThirdUserUuid, uuid);
         	query.eq(SysThirdAccount::getThirdType, source);
         	List<SysThirdAccount> thridList = sysThirdAccountService.list(query);
@@ -207,13 +207,12 @@ public class ThirdLoginController {
 	 * @param token
 	 * @param thirdType
 	 * @return
-	 * @throws Exception
-	 */
+     */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/getLoginUser/{token}/{thirdType}", method = RequestMethod.GET)
 	@ResponseBody
-	public Result<JSONObject> getThirdLoginUser(@PathVariable("token") String token,@PathVariable("thirdType") String thirdType) throws Exception {
-		Result<JSONObject> result = new Result<JSONObject>();
+	public Result<JSONObject> getThirdLoginUser(@PathVariable("token") String token,@PathVariable("thirdType") String thirdType) {
+		Result<JSONObject> result = new Result<>();
 		String username = JwtUtil.getUsername(token);
 
 		//1. 校验用户是否有效
@@ -255,7 +254,7 @@ public class ThirdLoginController {
 	@PostMapping("/bindingThirdPhone")
 	@ResponseBody
 	public Result<String> bindingThirdPhone(@RequestBody JSONObject jsonObject) {
-		Result<String> result = new Result<String>();
+		Result<String> result = new Result<>();
 		String phone = jsonObject.getString("mobile");
 		String thirdUserUuid = jsonObject.getString("thirdUserUuid");
 		// 校验验证码

@@ -24,7 +24,7 @@ public class TestSocketController {
 
     @PostMapping("/sendAll")
     public Result<String> sendAll(@RequestBody JSONObject jsonObject) {
-    	Result<String> result = new Result<String>();
+    	Result<String> result = new Result<>();
     	String message = jsonObject.getString("message");
     	JSONObject obj = new JSONObject();
     	obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_TOPIC);
@@ -37,7 +37,7 @@ public class TestSocketController {
 
     @PostMapping("/sendUser")
     public Result<String> sendUser(@RequestBody JSONObject jsonObject) {
-    	Result<String> result = new Result<String>();
+    	Result<String> result = new Result<>();
     	String userId = jsonObject.getString("userId");
     	String message = jsonObject.getString("message");
     	JSONObject obj = new JSONObject();

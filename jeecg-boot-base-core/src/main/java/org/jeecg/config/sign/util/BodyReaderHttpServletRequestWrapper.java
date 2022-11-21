@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * 保存过滤器里面的流
@@ -22,7 +23,7 @@ public class BodyReaderHttpServletRequestWrapper extends HttpServletRequestWrapp
 
         super(request);
         String sessionStream = getBodyString(request);
-        body = sessionStream.getBytes(Charset.forName("UTF-8"));
+        body = sessionStream.getBytes(StandardCharsets.UTF_8);
     }
 
     /**
@@ -35,7 +36,7 @@ public class BodyReaderHttpServletRequestWrapper extends HttpServletRequestWrapp
 
         StringBuilder sb = new StringBuilder();
         try (InputStream inputStream = cloneInputStream(request.getInputStream());
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")))) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 sb.append(line);

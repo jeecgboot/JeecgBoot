@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
@@ -80,7 +79,7 @@ public class SysPermissionController {
         long start = System.currentTimeMillis();
 		Result<List<SysPermissionTree>> result = new Result<>();
 		try {
-			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
+			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<>();
 			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
 			query.orderByAsc(SysPermission::getSortNo);
 			
@@ -122,12 +121,12 @@ public class SysPermissionController {
         long start = System.currentTimeMillis();
 		Result<List<SysPermissionTree>> result = new Result<>();
 		try {
-			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
+			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<>();
 			query.eq(SysPermission::getMenuType,CommonConstant.MENU_TYPE_0);
 			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
 			query.orderByAsc(SysPermission::getSortNo);
 			List<SysPermission> list = sysPermissionService.list(query);
-			List<SysPermissionTree> sysPermissionTreeList = new ArrayList<SysPermissionTree>();
+			List<SysPermissionTree> sysPermissionTreeList = new ArrayList<>();
 			for(SysPermission sysPermission : list){
 				SysPermissionTree sysPermissionTree = new SysPermissionTree(sysPermission);
 				sysPermissionTreeList.add(sysPermissionTree);
@@ -150,12 +149,12 @@ public class SysPermissionController {
 	public Result<List<SysPermissionTree>> getSystemSubmenu(@RequestParam("parentId") String parentId){
 		Result<List<SysPermissionTree>> result = new Result<>();
 		try{
-			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
+			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<>();
 			query.eq(SysPermission::getParentId,parentId);
 			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
 			query.orderByAsc(SysPermission::getSortNo);
 			List<SysPermission> list = sysPermissionService.list(query);
-			List<SysPermissionTree> sysPermissionTreeList = new ArrayList<SysPermissionTree>();
+			List<SysPermissionTree> sysPermissionTreeList = new ArrayList<>();
 			for(SysPermission sysPermission : list){
 				SysPermissionTree sysPermissionTree = new SysPermissionTree(sysPermission);
 				sysPermissionTreeList.add(sysPermissionTree);
@@ -205,29 +204,7 @@ public class SysPermissionController {
 	}
 	// update_end author:sunjianlei date:20200108 for: 新增批量根据父ID查询子级菜单的接口 -------------
 
-//	/**
-//	 * 查询用户拥有的菜单权限和按钮权限（根据用户账号）
-//	 * 
-//	 * @return
-//	 */
-//	@RequestMapping(value = "/queryByUser", method = RequestMethod.GET)
-//	public Result<JSONArray> queryByUser(HttpServletRequest req) {
-//		Result<JSONArray> result = new Result<>();
-//		try {
-//			String username = req.getParameter("username");
-//			List<SysPermission> metaList = sysPermissionService.queryByUser(username);
-//			JSONArray jsonArray = new JSONArray();
-//			this.getPermissionJsonArray(jsonArray, metaList, null);
-//			result.setResult(jsonArray);
-//			result.success("查询成功");
-//		} catch (Exception e) {
-//			result.error500("查询失败:" + e.getMessage());
-//			log.error(e.getMessage(), e);
-//		}
-//		return result;
-//	}
-
-	/**
+    /**
 	 * 查询用户拥有的菜单权限和按钮权限
 	 *
 	 * @return
@@ -235,7 +212,7 @@ public class SysPermissionController {
 	@RequestMapping(value = "/getUserPermissionByToken", method = RequestMethod.GET)
 	//@DynamicTable(value = DynamicTableConstant.SYS_ROLE_INDEX)
 	public Result<?> getUserPermissionByToken(HttpServletRequest request) {
-		Result<JSONObject> result = new Result<JSONObject>();
+		Result<JSONObject> result = new Result<>();
 		try {
 			//直接获取当前用户不适用前端token
 			LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
@@ -283,7 +260,7 @@ public class SysPermissionController {
 			JSONArray authjsonArray = new JSONArray();
 			this.getAuthJsonArray(authjsonArray, metaList);
 			//查询所有的权限
-			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
+			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<>();
 			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
 			query.eq(SysPermission::getMenuType, CommonConstant.MENU_TYPE_2);
 			//query.eq(SysPermission::getStatus, "1");
@@ -359,7 +336,7 @@ public class SysPermissionController {
 	//@RequiresRoles({ "admin" })
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysPermission> add(@RequestBody SysPermission permission) {
-		Result<SysPermission> result = new Result<SysPermission>();
+		Result<SysPermission> result = new Result<>();
 		try {
 			permission = PermissionDataUtil.intelligentProcessData(permission);
 			sysPermissionService.addPermission(permission);
@@ -475,7 +452,7 @@ public class SysPermissionController {
 		// 全部权限ids
 		List<String> ids = new ArrayList<>();
 		try {
-			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
+			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<>();
 			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
 			query.orderByAsc(SysPermission::getSortNo);
 			List<SysPermission> list = sysPermissionService.list(query);
@@ -485,7 +462,7 @@ public class SysPermissionController {
 			List<TreeModel> treeList = new ArrayList<>();
 			getTreeModelList(treeList, list, null);
 
-			Map<String, Object> resMap = new HashMap<String, Object>(5);
+			Map<String, Object> resMap = new HashMap<>(5);
             // 全部树节点数据
 			resMap.put("treeList", treeList);
             // 全部树ids
@@ -508,7 +485,7 @@ public class SysPermissionController {
 		Result<List<TreeModel>> result = new Result<>();
 		try {
 			List<TreeModel> list = sysPermissionService.queryListByParentId(parentId);
-			if (list == null || list.size() <= 0) {
+			if (list == null || list.size() == 0) {
 				result.error500("未找到角色信息");
 			} else {
 				result.setResult(list);
@@ -728,10 +705,7 @@ public class SysPermissionController {
 		JSONObject json = new JSONObject();
 		// 类型(0：一级菜单 1：子菜单 2：按钮)
 		if (permission.getMenuType().equals(CommonConstant.MENU_TYPE_2)) {
-			//json.put("action", permission.getPerms());
-			//json.put("type", permission.getPermsType());
-			//json.put("describe", permission.getName());
-			return null;
+            return null;
 		} else if (permission.getMenuType().equals(CommonConstant.MENU_TYPE_0) || permission.getMenuType().equals(CommonConstant.MENU_TYPE_1)) {
 			json.put("id", permission.getId());
 			if (permission.isRoute()) {
@@ -876,7 +850,7 @@ public class SysPermissionController {
 	//@RequiresRoles({ "admin" })
 	@RequestMapping(value = "/addPermissionRule", method = RequestMethod.POST)
 	public Result<SysPermissionDataRule> addPermissionRule(@RequestBody SysPermissionDataRule sysPermissionDataRule) {
-		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
+		Result<SysPermissionDataRule> result = new Result<>();
 		try {
 			sysPermissionDataRule.setCreateTime(new Date());
 			sysPermissionDataRuleService.savePermissionDataRule(sysPermissionDataRule);
@@ -891,7 +865,7 @@ public class SysPermissionController {
 	//@RequiresRoles({ "admin" })
 	@RequestMapping(value = "/editPermissionRule", method = { RequestMethod.PUT, RequestMethod.POST })
 	public Result<SysPermissionDataRule> editPermissionRule(@RequestBody SysPermissionDataRule sysPermissionDataRule) {
-		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
+		Result<SysPermissionDataRule> result = new Result<>();
 		try {
 			sysPermissionDataRuleService.saveOrUpdate(sysPermissionDataRule);
 			result.success("更新成功！");
@@ -911,7 +885,7 @@ public class SysPermissionController {
 	//@RequiresRoles({ "admin" })
 	@RequestMapping(value = "/deletePermissionRule", method = RequestMethod.DELETE)
 	public Result<SysPermissionDataRule> deletePermissionRule(@RequestParam(name = "id", required = true) String id) {
-		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
+		Result<SysPermissionDataRule> result = new Result<>();
 		try {
 			sysPermissionDataRuleService.deletePermissionDataRule(id);
 			result.success("删除成功！");

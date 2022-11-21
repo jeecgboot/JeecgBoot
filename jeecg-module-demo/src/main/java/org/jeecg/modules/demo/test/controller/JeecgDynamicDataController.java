@@ -1,6 +1,5 @@
 package org.jeecg.modules.demo.test.controller;
 
-import io.lettuce.core.dynamic.annotation.Param;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;

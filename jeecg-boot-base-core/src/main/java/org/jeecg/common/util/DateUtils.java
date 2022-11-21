@@ -21,48 +21,13 @@ import org.springframework.util.StringUtils;
  */
 public class DateUtils extends PropertyEditorSupport {
 
-    public static ThreadLocal<SimpleDateFormat> date_sdf = new ThreadLocal<SimpleDateFormat>() {
-        @Override
-        protected SimpleDateFormat initialValue() {
-            return new SimpleDateFormat("yyyy-MM-dd");
-        }
-    };
-    public static ThreadLocal<SimpleDateFormat> yyyyMMdd = new ThreadLocal<SimpleDateFormat>() {
-        @Override
-        protected SimpleDateFormat initialValue() {
-            return new SimpleDateFormat("yyyyMMdd");
-        }
-    };
-    public static ThreadLocal<SimpleDateFormat> date_sdf_wz = new ThreadLocal<SimpleDateFormat>() {
-        @Override
-        protected SimpleDateFormat initialValue() {
-            return new SimpleDateFormat("yyyy年MM月dd日");
-        }
-    };
-    public static ThreadLocal<SimpleDateFormat> time_sdf = new ThreadLocal<SimpleDateFormat>() {
-        @Override
-        protected SimpleDateFormat initialValue() {
-            return new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        }
-    };
-    public static ThreadLocal<SimpleDateFormat> yyyymmddhhmmss = new ThreadLocal<SimpleDateFormat>() {
-        @Override
-        protected SimpleDateFormat initialValue() {
-            return new SimpleDateFormat("yyyyMMddHHmmss");
-        }
-    };
-    public static ThreadLocal<SimpleDateFormat> short_time_sdf = new ThreadLocal<SimpleDateFormat>() {
-        @Override
-        protected SimpleDateFormat initialValue() {
-            return new SimpleDateFormat("HH:mm");
-        }
-    };
-    public static ThreadLocal<SimpleDateFormat> datetimeFormat = new ThreadLocal<SimpleDateFormat>() {
-        @Override
-        protected SimpleDateFormat initialValue() {
-            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        }
-    };
+    public static ThreadLocal<SimpleDateFormat> date_sdf = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd"));
+    public static ThreadLocal<SimpleDateFormat> yyyyMMdd = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMdd"));
+    public static ThreadLocal<SimpleDateFormat> date_sdf_wz = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy年MM月dd日"));
+    public static ThreadLocal<SimpleDateFormat> time_sdf = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm"));
+    public static ThreadLocal<SimpleDateFormat> yyyymmddhhmmss = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMddHHmmss"));
+    public static ThreadLocal<SimpleDateFormat> short_time_sdf = ThreadLocal.withInitial(() -> new SimpleDateFormat("HH:mm"));
+    public static ThreadLocal<SimpleDateFormat> datetimeFormat = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
     /**
      * 以毫秒表示的时间
@@ -302,8 +267,7 @@ public class DateUtils extends PropertyEditorSupport {
         Date dt = new Date();
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String nowTime = df.format(dt);
-        java.sql.Timestamp buydate = java.sql.Timestamp.valueOf(nowTime);
-        return buydate;
+      return Timestamp.valueOf(nowTime);
     }
 
     // ////////////////////////////////////////////////////////////////////////////
@@ -648,7 +612,7 @@ public class DateUtils extends PropertyEditorSupport {
             try {
                 int length10 = 10;
                 int length19 = 19;
-                if (text.indexOf(SymbolConstant.COLON) == -1 && text.length() == length10) {
+                if (!text.contains(SymbolConstant.COLON) && text.length() == length10) {
                     setValue(DateUtils.date_sdf.get().parse(text));
                 } else if (text.indexOf(SymbolConstant.COLON) > 0 && text.length() == length19) {
                     setValue(DateUtils.datetimeFormat.get().parse(text));
@@ -656,9 +620,8 @@ public class DateUtils extends PropertyEditorSupport {
                     throw new IllegalArgumentException("Could not parse date, date format is error ");
                 }
             } catch (ParseException ex) {
-                IllegalArgumentException iae = new IllegalArgumentException("Could not parse date: " + ex.getMessage());
-                iae.initCause(ex);
-                throw iae;
+                IllegalArgumentException iae = new IllegalArgumentException("Could not parse date: " + ex.getMessage(), ex);
+              throw iae;
             }
         } else {
             setValue(null);
@@ -679,7 +642,7 @@ public class DateUtils extends PropertyEditorSupport {
     public static Date parseDatetime(String str){
         try {
             return datetimeFormat.get().parse(str);
-        }catch (Exception e){
+        }catch (Exception ignored){
         }
         return null;
     }

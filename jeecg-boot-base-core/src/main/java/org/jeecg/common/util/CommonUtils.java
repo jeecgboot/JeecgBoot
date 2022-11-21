@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -45,7 +44,7 @@ public class CommonUtils {
      * 文件名 正则字符串
      * 文件名支持的字符串：字母数字中文.-_()（） 除此之外的字符将被删除
      */
-    private static String FILE_NAME_REGEX = "[^A-Za-z\\.\\(\\)\\-（）\\_0-9\\u4e00-\\u9fa5]";
+    private static String FILE_NAME_REGEX = "[^A-Za-z.()\\-（）_0-9\\u4e00-\\u9fa5]";
 
     public static String uploadOnlineImage(byte[] data,String basePath,String bizPath,String uploadType){
         String dbPath = null;
@@ -88,7 +87,7 @@ public class CommonUtils {
         // Check for Windows-style path
         int winSep = fileName.lastIndexOf('\\');
         // Cut off at latest possible point
-        int pos = (winSep > unixSep ? winSep : unixSep);
+        int pos = (Math.max(winSep, unixSep));
         if (pos != -1)  {
             // Any sort of path separator found...
             fileName = fileName.substring(pos + 1);
@@ -158,7 +157,7 @@ public class CommonUtils {
             // 获取文件名
             String orgName = mf.getOriginalFilename();
             orgName = CommonUtils.getFileName(orgName);
-            if(orgName.indexOf(SymbolConstant.SPOT)!=-1){
+            if(orgName.contains(SymbolConstant.SPOT)){
                 fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.lastIndexOf("."));
             }else{
                 fileName = orgName+ "_" + System.currentTimeMillis();
@@ -176,12 +175,10 @@ public class CommonUtils {
                 dbpath = dbpath.replace("\\", "/");
             }
             return dbpath;
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        return "";
+      return "";
     }
 
     /**
@@ -216,13 +213,8 @@ public class CommonUtils {
             return DB_TYPE;
         }
         DataSource dataSource = SpringContextUtils.getApplicationContext().getBean(DataSource.class);
-        try {
-            return getDatabaseTypeByDataSource(dataSource);
-        } catch (SQLException e) {
-            //e.printStackTrace();
-            log.warn(e.getMessage(),e);
-            return "";
-        }
+      return getDatabaseTypeByDataSource(dataSource);
+
     }
 
     /**
@@ -251,8 +243,7 @@ public class CommonUtils {
     public static DataSourceProperty getDataSourceProperty(String sourceKey){
         DynamicDataSourceProperties prop = SpringContextUtils.getApplicationContext().getBean(DynamicDataSourceProperties.class);
         Map<String, DataSourceProperty> map = prop.getDatasource();
-        DataSourceProperty db = (DataSourceProperty)map.get(sourceKey);
-        return db;
+      return map.get(sourceKey);
     }
 
     /**
@@ -267,7 +258,7 @@ public class CommonUtils {
         }
         DynamicDataSourceProperties prop = SpringContextUtils.getApplicationContext().getBean(DynamicDataSourceProperties.class);
         Map<String, DataSourceProperty> map = prop.getDatasource();
-        DataSourceProperty db = (DataSourceProperty)map.get(sourceKey);
+        DataSourceProperty db = map.get(sourceKey);
         if(db==null){
             return null;
         }
@@ -283,34 +274,30 @@ public class CommonUtils {
      * 获取数据库类型
      * @param dataSource
      * @return
-     * @throws SQLException
      */
-    private static String getDatabaseTypeByDataSource(DataSource dataSource) throws SQLException{
+    private static String getDatabaseTypeByDataSource(DataSource dataSource) {
         if("".equals(DB_TYPE)) {
-            Connection connection = dataSource.getConnection();
-            try {
-                DatabaseMetaData md = connection.getMetaData();
-                String dbType = md.getDatabaseProductName().toUpperCase();
-                String sqlserver= "SQL SERVER";
-                if(dbType.indexOf(DataBaseConstant.DB_TYPE_MYSQL)>=0) {
-                    DB_TYPE = DataBaseConstant.DB_TYPE_MYSQL;
-                }else if(dbType.indexOf(DataBaseConstant.DB_TYPE_ORACLE)>=0 ||dbType.indexOf(DataBaseConstant.DB_TYPE_DM)>=0) {
-                    DB_TYPE = DataBaseConstant.DB_TYPE_ORACLE;
-                }else if(dbType.indexOf(DataBaseConstant.DB_TYPE_SQLSERVER)>=0||dbType.indexOf(sqlserver)>=0) {
-                    DB_TYPE = DataBaseConstant.DB_TYPE_SQLSERVER;
-                }else if(dbType.indexOf(DataBaseConstant.DB_TYPE_POSTGRESQL)>=0) {
-                    DB_TYPE = DataBaseConstant.DB_TYPE_POSTGRESQL;
-                }else if(dbType.indexOf(DataBaseConstant.DB_TYPE_MARIADB)>=0) {
-                    DB_TYPE = DataBaseConstant.DB_TYPE_MARIADB;
-                }else {
-                    log.error("数据库类型:[" + dbType + "]不识别!");
-                    //throw new JeecgBootException("数据库类型:["+dbType+"]不识别!");
-                }
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }finally {
-                connection.close();
+          try (Connection connection = dataSource.getConnection()) {
+            DatabaseMetaData md = connection.getMetaData();
+            String dbType = md.getDatabaseProductName().toUpperCase();
+            String sqlserver = "SQL SERVER";
+            if (dbType.contains(DataBaseConstant.DB_TYPE_MYSQL)) {
+              DB_TYPE = DataBaseConstant.DB_TYPE_MYSQL;
+            } else if (dbType.contains(DataBaseConstant.DB_TYPE_ORACLE) || dbType.contains(DataBaseConstant.DB_TYPE_DM)) {
+              DB_TYPE = DataBaseConstant.DB_TYPE_ORACLE;
+            } else if (dbType.contains(DataBaseConstant.DB_TYPE_SQLSERVER) || dbType.contains(sqlserver)) {
+              DB_TYPE = DataBaseConstant.DB_TYPE_SQLSERVER;
+            } else if (dbType.contains(DataBaseConstant.DB_TYPE_POSTGRESQL)) {
+              DB_TYPE = DataBaseConstant.DB_TYPE_POSTGRESQL;
+            } else if (dbType.contains(DataBaseConstant.DB_TYPE_MARIADB)) {
+              DB_TYPE = DataBaseConstant.DB_TYPE_MARIADB;
+            } else {
+              log.error("数据库类型:[" + dbType + "]不识别!");
+              //throw new JeecgBootException("数据库类型:["+dbType+"]不识别!");
             }
+          } catch (Exception e) {
+            log.error(e.getMessage(), e);
+          }
         }
         return DB_TYPE;
 

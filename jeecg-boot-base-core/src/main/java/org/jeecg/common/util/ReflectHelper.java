@@ -45,8 +45,8 @@ public class ReflectHelper {
      * @desc 初始化
      */
     public void initMethods() {
-        getMethods = new Hashtable<String, Method>();
-        setMethods = new Hashtable<String, Method>();
+        getMethods = new Hashtable<>();
+        setMethods = new Hashtable<>();
         cls = obj.getClass();
         Method[] methods = cls.getMethods();
         // 定义正则表达式，从方法中过滤出getter / setter 函数.
@@ -57,19 +57,18 @@ public class ReflectHelper {
         // 把方法中的"set" 或者 "get" 去掉
         String rapl = "$1";
         String param;
-        for (int i = 0; i < methods.length; ++i) {
-            Method m = methods[i];
-            String methodName = m.getName();
-            if (Pattern.matches(gs, methodName)) {
-                param = getM.matcher(methodName).replaceAll(rapl).toLowerCase();
-                getMethods.put(param, m);
-            } else if (Pattern.matches(ss, methodName)) {
-                param = setM.matcher(methodName).replaceAll(rapl).toLowerCase();
-                setMethods.put(param, m);
-            } else {
-                // logger.info(methodName + " 不是getter,setter方法！");
-            }
+      for (Method m : methods) {
+        String methodName = m.getName();
+        if (Pattern.matches(gs, methodName)) {
+          param = getM.matcher(methodName).replaceAll(rapl).toLowerCase();
+          getMethods.put(param, m);
+        } else if (Pattern.matches(ss, methodName)) {
+          param = setM.matcher(methodName).replaceAll(rapl).toLowerCase();
+          setMethods.put(param, m);
+        } else {
+          // logger.info(methodName + " 不是getter,setter方法！");
         }
+      }
     }
 
     /**
@@ -83,7 +82,7 @@ public class ReflectHelper {
                 m.invoke(obj, object);
                 return true;
             } catch (Exception ex) {
-                log.info("invoke getter on " + property + " error: " + ex.toString());
+                log.info("invoke getter on " + property + " error: " + ex);
                 return false;
             }
         }
@@ -101,10 +100,10 @@ public class ReflectHelper {
                 /*
                  * 调用obj类的setter函数
                  */
-                value = m.invoke(obj, new Object[]{});
+                value = m.invoke(obj);
 
             } catch (Exception ex) {
-                log.info("invoke getter on " + property + " error: " + ex.toString());
+                log.info("invoke getter on " + property + " error: " + ex);
             }
         }
         return value;
@@ -117,7 +116,7 @@ public class ReflectHelper {
      * @return
      */
     public Object setAll(Map<String, Object> data) {
-        if (data == null || data.keySet().size() <= 0) {
+        if (data == null || data.keySet().size() == 0) {
             return null;
         }
         for (Entry<String, Object> entry : data.entrySet()) {
@@ -167,7 +166,7 @@ public class ReflectHelper {
      * @return
      */
     public static <T> List<T> transList2Entrys(List<Map<String, Object>> mapist, Class<T> clazz) {
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
         if (mapist != null && mapist.size() > 0) {
             for (Map<String, Object> data : mapist) {
                 list.add(ReflectHelper.setAll(clazz, data));
@@ -183,9 +182,8 @@ public class ReflectHelper {
         try {
             String firstLetter = fieldName.substring(0, 1).toUpperCase();
             String getter = "get" + firstLetter + fieldName.substring(1);
-            Method method = o.getClass().getMethod(getter, new Class[]{});
-            Object value = method.invoke(o, new Object[]{});
-            return value;
+            Method method = o.getClass().getMethod(getter);
+          return method.invoke(o);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -201,8 +199,7 @@ public class ReflectHelper {
             Field filed = o.getClass().getDeclaredField(fieldName);
             // 设置反射时取消Java的访问检查，暴力访问
             filed.setAccessible(true);
-            Object val = filed.get(o);
-            return val;
+          return filed.get(o);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -228,15 +225,15 @@ public class ReflectHelper {
     public static List<Map> getFiledsInfo(Object o) {
         Field[] fields = o.getClass().getDeclaredFields();
         String[] fieldNames = new String[fields.length];
-        List<Map> list = new ArrayList<Map>();
+        List<Map> list = new ArrayList<>();
         Map<String, Object> infoMap = null;
-        for (int i = 0; i < fields.length; i++) {
-            infoMap = new HashMap<>(5);
-            infoMap.put("type", fields[i].getType().toString());
-            infoMap.put("name", fields[i].getName());
-            infoMap.put("value", getFieldValueByName(fields[i].getName(), o));
-            list.add(infoMap);
-        }
+      for (Field field : fields) {
+        infoMap = new HashMap<>(5);
+        infoMap.put("type", field.getType().toString());
+        infoMap.put("name", field.getName());
+        infoMap.put("value", getFieldValueByName(field.getName(), o));
+        list.add(infoMap);
+      }
         return list;
     }
 

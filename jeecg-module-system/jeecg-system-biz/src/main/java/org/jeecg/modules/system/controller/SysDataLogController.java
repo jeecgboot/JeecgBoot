@@ -37,10 +37,10 @@ public class SysDataLogController {
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysDataLog>> queryPageList(SysDataLog dataLog,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
-		Result<IPage<SysDataLog>> result = new Result<IPage<SysDataLog>>();
+		Result<IPage<SysDataLog>> result = new Result<>();
 		dataLog.setType(CommonConstant.DATA_LOG_TYPE_JSON);
 		QueryWrapper<SysDataLog> queryWrapper = QueryGenerator.initQueryWrapper(dataLog, req.getParameterMap());
-		Page<SysDataLog> page = new Page<SysDataLog>(pageNo, pageSize);
+		Page<SysDataLog> page = new Page<>(pageNo, pageSize);
 		IPage<SysDataLog> pageList = service.page(page, queryWrapper);
 		log.info("查询当前页："+pageList.getCurrent());
 		log.info("查询当前页数量："+pageList.getSize());
@@ -61,11 +61,11 @@ public class SysDataLogController {
 		Result<List<SysDataLog>> result = new Result<>();
 		String dataId1 = req.getParameter("dataId1");
 		String dataId2 = req.getParameter("dataId2");
-		List<String> idList = new ArrayList<String>();
+		List<String> idList = new ArrayList<>();
 		idList.add(dataId1);
 		idList.add(dataId2);
 		try {
-			List<SysDataLog> list =  (List<SysDataLog>) service.listByIds(idList);
+			List<SysDataLog> list = service.listByIds(idList);
 			result.setResult(list);
 			result.setSuccess(true);
 		} catch (Exception e) {
@@ -84,7 +84,7 @@ public class SysDataLogController {
 		Result<List<SysDataLog>> result = new Result<>();
 		String dataTable = req.getParameter("dataTable");
 		String dataId = req.getParameter("dataId");
-		QueryWrapper<SysDataLog> queryWrapper = new QueryWrapper<SysDataLog>();
+		QueryWrapper<SysDataLog> queryWrapper = new QueryWrapper<>();
 		queryWrapper.eq("data_table", dataTable);
 		queryWrapper.eq("data_id", dataId);
 		//update-begin-author:taoyan date:2022-7-26 for: 新增查询条件-type
@@ -97,7 +97,7 @@ public class SysDataLogController {
 		//update-end-author:taoyan date:2022-7-26 for:新增查询条件-type
 
 		List<SysDataLog> list = service.list(queryWrapper);
-		if(list==null||list.size()<=0) {
+		if(list==null|| list.size() == 0) {
 			result.error500("未找到版本信息");
 		}else {
 			result.setResult(list);

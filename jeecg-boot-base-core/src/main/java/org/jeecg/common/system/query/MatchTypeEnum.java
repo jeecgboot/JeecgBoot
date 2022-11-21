@@ -36,7 +36,7 @@ public enum MatchTypeEnum {
             return null;
         }
         for (MatchTypeEnum val : values()) {
-            if (val.getValue().toLowerCase().equals(value.toLowerCase())) {
+            if (val.getValue().equalsIgnoreCase(value)) {
                 return val;
             }
         }

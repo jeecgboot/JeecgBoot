@@ -51,7 +51,7 @@ public class SysFormFileController extends JeecgController<SysFormFile, ISysForm
                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                    HttpServletRequest req) {
         QueryWrapper<SysFormFile> queryWrapper = QueryGenerator.initQueryWrapper(sysFormFile, req.getParameterMap());
-        Page<SysFormFile> page = new Page<SysFormFile>(pageNo, pageSize);
+        Page<SysFormFile> page = new Page<>(pageNo, pageSize);
         IPage<SysFormFile> pageList = sysFormFileService.page(page, queryWrapper);
         return Result.OK(pageList);
     }

@@ -12,6 +12,7 @@ import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -129,18 +130,18 @@ public class MockController {
 	        log.info("查询磁盘信息:"+fs.length+"个");
 	        List<Map<String,Object>> list = new ArrayList<>();
 
-	        for (int i = 0; i < fs.length; i++) {
-	        	if(fs[i].getTotalSpace()==0) {
-	        		continue;
-	        	}
-	        	Map<String,Object> map = new HashMap<>(5);
-	        	map.put("name", fsv.getSystemDisplayName(fs[i]));
-	        	map.put("max", fs[i].getTotalSpace());
-	        	map.put("rest", fs[i].getFreeSpace());
-	        	map.put("restPPT", fs[i].getFreeSpace()*100/fs[i].getTotalSpace());
-	        	list.add(map);
-	        	log.info(map.toString());
-	        }
+            for (File f : fs) {
+                if (f.getTotalSpace() == 0) {
+                    continue;
+                }
+                Map<String, Object> map = new HashMap<>(5);
+                map.put("name", fsv.getSystemDisplayName(f));
+                map.put("max", f.getTotalSpace());
+                map.put("rest", f.getFreeSpace());
+                map.put("restPPT", f.getFreeSpace() * 100 / f.getTotalSpace());
+                list.add(map);
+                log.info(map.toString());
+            }
 	        res.setResult(list);
 	        res.success("查询成功");
 		} catch (Exception e) {
@@ -210,7 +211,7 @@ public class MockController {
 			//json = FileUtils.re.readFileToString(jsonFile);
 			//换个写法，解决springboot读取jar包中文件的问题
 			InputStream stream = getClass().getClassLoader().getResourceAsStream(jsonSrc.replace("classpath:", ""));
-			json = IOUtils.toString(stream,"UTF-8");
+			json = IOUtils.toString(stream, StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			log.error(e.getMessage(),e);
 		}

@@ -4,14 +4,12 @@ import com.alibaba.druid.pool.DruidDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.DynamicDataSourceModel;
 import org.jeecg.common.util.ReflectHelper;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -252,8 +250,7 @@ public class DynamicDBUtil {
      */
     public static List<Map<String, Object>> findListByNamedParam(final String dbKey, String sql, Map<String, Object> param) {
         NamedParameterJdbcTemplate npJdbcTemplate = getNamedParameterJdbcTemplate(dbKey);
-        List<Map<String, Object>> list = npJdbcTemplate.queryForList(sql, param);
-        return list;
+        return npJdbcTemplate.queryForList(sql, param);
     }
 
     /**

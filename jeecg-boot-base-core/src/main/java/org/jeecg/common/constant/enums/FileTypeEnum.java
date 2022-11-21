@@ -31,7 +31,7 @@ public enum FileTypeEnum {
     private String type;
     private String value;
     private String text;
-    private FileTypeEnum(String type,String value,String text){
+    FileTypeEnum(String type,String value,String text){
         this.type = type;
         this.value = value;
         this.text = text;

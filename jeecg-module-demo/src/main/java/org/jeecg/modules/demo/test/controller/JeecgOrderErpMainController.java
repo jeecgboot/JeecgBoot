@@ -53,7 +53,7 @@ public class JeecgOrderErpMainController {
                                        @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                        HttpServletRequest req) {
         QueryWrapper<JeecgOrderMain> queryWrapper = QueryGenerator.initQueryWrapper(jeecgOrderMain, req.getParameterMap());
-        Page<JeecgOrderMain> page = new Page<JeecgOrderMain>(pageNo, pageSize);
+        Page<JeecgOrderMain> page = new Page<>(pageNo, pageSize);
         IPage<JeecgOrderMain> pageList = jeecgOrderMainService.page(page, queryWrapper);
         return Result.ok(pageList);
     }
@@ -135,7 +135,7 @@ public class JeecgOrderErpMainController {
                                                     @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                                     HttpServletRequest req) {
         QueryWrapper<JeecgOrderCustomer> queryWrapper = QueryGenerator.initQueryWrapper(jeecgOrderCustomer, req.getParameterMap());
-        Page<JeecgOrderCustomer> page = new Page<JeecgOrderCustomer>(pageNo, pageSize);
+        Page<JeecgOrderCustomer> page = new Page<>(pageNo, pageSize);
         IPage<JeecgOrderCustomer> pageList = jeecgOrderCustomerService.page(page, queryWrapper);
         return Result.ok(pageList);
     }
@@ -152,7 +152,7 @@ public class JeecgOrderErpMainController {
                                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                                   HttpServletRequest req) {
         QueryWrapper<JeecgOrderTicket> queryWrapper = QueryGenerator.initQueryWrapper(jeecgOrderTicket, req.getParameterMap());
-        Page<JeecgOrderTicket> page = new Page<JeecgOrderTicket>(pageNo, pageSize);
+        Page<JeecgOrderTicket> page = new Page<>(pageNo, pageSize);
         IPage<JeecgOrderTicket> pageList = jeecgOrderTicketService.page(page, queryWrapper);
         return Result.ok(pageList);
     }

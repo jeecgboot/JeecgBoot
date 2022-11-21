@@ -66,7 +66,7 @@ public enum RoleIndexConfigEnum {
     }
 
     public static String getIndexByRoles(List<String> roles) {
-        String[] rolesArray = roles.toArray(new String[roles.size()]);
+        String[] rolesArray = roles.toArray(new String[0]);
         for (RoleIndexConfigEnum e : RoleIndexConfigEnum.values()) {
             if (oConvertUtils.isIn(e.roleCode,rolesArray)){
                 return e.componentUrl;

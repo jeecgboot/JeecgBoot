@@ -10,6 +10,7 @@ import com.google.common.base.Joiner;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -55,7 +56,7 @@ public class JwtUtil {
             os = httpServletResponse.getOutputStream();
 			httpServletResponse.setCharacterEncoding("UTF-8");
 			httpServletResponse.setStatus(code);
-            os.write(new ObjectMapper().writeValueAsString(jsonResult).getBytes("UTF-8"));
+            os.write(new ObjectMapper().writeValueAsString(jsonResult).getBytes(StandardCharsets.UTF_8));
             os.flush();
             os.close();
         } catch (IOException e) {
@@ -137,13 +138,12 @@ public class JwtUtil {
 		//${myVar}%
 		//得到${} 后面的值
 		String moshi = "";
-		String wellNumber = WELL_NUMBER;
 
-		if(key.indexOf(SymbolConstant.RIGHT_CURLY_BRACKET)!=-1){
+    if(key.contains(SymbolConstant.RIGHT_CURLY_BRACKET)){
 			 moshi = key.substring(key.indexOf("}")+1);
 		}
 		String returnValue = null;
-		if (key.contains(wellNumber)) {
+		if (key.contains(WELL_NUMBER)) {
 			key = key.substring(2,key.indexOf("}"));
 		}
 		if (oConvertUtils.isNotEmpty(key)) {
@@ -171,19 +171,18 @@ public class JwtUtil {
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		
 		String moshi = "";
-        String wellNumber = WELL_NUMBER;
-		if(key.indexOf(SymbolConstant.RIGHT_CURLY_BRACKET)!=-1){
+    if(key.contains(SymbolConstant.RIGHT_CURLY_BRACKET)){
 			 moshi = key.substring(key.indexOf("}")+1);
 		}
 		String returnValue = null;
 		//针对特殊标示处理#{sysOrgCode}，判断替换
-		if (key.contains(wellNumber)) {
+		if (key.contains(WELL_NUMBER)) {
 			key = key.substring(2,key.indexOf("}"));
 		} else {
 			key = key;
 		}
 		//替换为系统登录用户帐号
-		if (key.equals(DataBaseConstant.SYS_USER_CODE)|| key.toLowerCase().equals(DataBaseConstant.SYS_USER_CODE_TABLE)) {
+		if (key.equals(DataBaseConstant.SYS_USER_CODE)|| key.equalsIgnoreCase(DataBaseConstant.SYS_USER_CODE_TABLE)) {
 			if(user==null) {
 				returnValue = sysUser.getUsername();
 			}else {
@@ -191,7 +190,7 @@ public class JwtUtil {
 			}
 		}
 		//替换为系统登录用户真实名字
-		else if (key.equals(DataBaseConstant.SYS_USER_NAME)|| key.toLowerCase().equals(DataBaseConstant.SYS_USER_NAME_TABLE)) {
+		else if (key.equals(DataBaseConstant.SYS_USER_NAME)|| key.equalsIgnoreCase(DataBaseConstant.SYS_USER_NAME_TABLE)) {
 			if(user==null) {
 				returnValue = sysUser.getRealname();
 			}else {
@@ -200,7 +199,7 @@ public class JwtUtil {
 		}
 		
 		//替换为系统用户登录所使用的机构编码
-		else if (key.equals(DataBaseConstant.SYS_ORG_CODE)|| key.toLowerCase().equals(DataBaseConstant.SYS_ORG_CODE_TABLE)) {
+		else if (key.equals(DataBaseConstant.SYS_ORG_CODE)|| key.equalsIgnoreCase(DataBaseConstant.SYS_ORG_CODE_TABLE)) {
 			if(user==null) {
 				returnValue = sysUser.getOrgCode();
 			}else {
@@ -208,7 +207,7 @@ public class JwtUtil {
 			}
 		}
 		//替换为系统用户所拥有的所有机构编码
-		else if (key.equals(DataBaseConstant.SYS_MULTI_ORG_CODE)|| key.toLowerCase().equals(DataBaseConstant.SYS_MULTI_ORG_CODE_TABLE)) {
+		else if (key.equals(DataBaseConstant.SYS_MULTI_ORG_CODE)|| key.equalsIgnoreCase(DataBaseConstant.SYS_MULTI_ORG_CODE_TABLE)) {
 			if(user==null){
 				//TODO 暂时使用用户登录部门，存在逻辑缺陷，不是用户所拥有的部门
 				returnValue = sysUser.getOrgCode();
@@ -221,19 +220,19 @@ public class JwtUtil {
 			}
 		}
 		//替换为当前系统时间(年月日)
-		else if (key.equals(DataBaseConstant.SYS_DATE)|| key.toLowerCase().equals(DataBaseConstant.SYS_DATE_TABLE)) {
+		else if (key.equals(DataBaseConstant.SYS_DATE)|| key.equalsIgnoreCase(DataBaseConstant.SYS_DATE_TABLE)) {
 			returnValue = DateUtils.formatDate();
 		}
 		//替换为当前系统时间（年月日时分秒）
-		else if (key.equals(DataBaseConstant.SYS_TIME)|| key.toLowerCase().equals(DataBaseConstant.SYS_TIME_TABLE)) {
+		else if (key.equals(DataBaseConstant.SYS_TIME)|| key.equalsIgnoreCase(DataBaseConstant.SYS_TIME_TABLE)) {
 			returnValue = DateUtils.now();
 		}
 		//流程状态默认值（默认未发起）
-		else if (key.equals(DataBaseConstant.BPM_STATUS)|| key.toLowerCase().equals(DataBaseConstant.BPM_STATUS_TABLE)) {
+		else if (key.equals(DataBaseConstant.BPM_STATUS)|| key.equalsIgnoreCase(DataBaseConstant.BPM_STATUS_TABLE)) {
 			returnValue = "1";
 		}
 		//update-begin-author:taoyan date:20210330 for:多租户ID作为系统变量
-		else if (key.equals(DataBaseConstant.TENANT_ID) || key.toLowerCase().equals(DataBaseConstant.TENANT_ID_TABLE)){
+		else if (key.equals(DataBaseConstant.TENANT_ID) || key.equalsIgnoreCase(DataBaseConstant.TENANT_ID_TABLE)){
 			returnValue = sysUser.getRelTenantIds();
             boolean flag = returnValue != null && returnValue.indexOf(SymbolConstant.COMMA) > 0;
             if(oConvertUtils.isEmpty(returnValue) || flag){
@@ -244,9 +243,5 @@ public class JwtUtil {
 		if(returnValue!=null){returnValue = returnValue + moshi;}
 		return returnValue;
 	}
-	
-//	public static void main(String[] args) {
-//		 String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjUzMzY1MTMsInVzZXJuYW1lIjoiYWRtaW4ifQ.xjhud_tWCNYBOg_aRlMgOdlZoWFFKB_givNElHNw3X0";
-//		 System.out.println(JwtUtil.getUsername(token));
-//	}
+
 }

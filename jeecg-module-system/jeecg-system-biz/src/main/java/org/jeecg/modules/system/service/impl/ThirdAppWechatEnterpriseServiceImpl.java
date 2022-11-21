@@ -831,7 +831,7 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
             }
 
             LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.in(SysUser::getId, userIds);
+            queryWrapper.in(SysUser::getId, (Object) userIds);
             List<SysUser> userList = userMapper.selectList(queryWrapper);
             List<String> usernameList = userList.stream().map(SysUser::getUsername).collect(Collectors.toList());
             usernameString = String.join(",", usernameList);

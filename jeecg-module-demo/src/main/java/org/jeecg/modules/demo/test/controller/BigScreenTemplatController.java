@@ -29,7 +29,7 @@ public class BigScreenTemplatController extends JeecgController<JeecgDemo, IJeec
     @RequestMapping("/html")
     public ModelAndView ftl(ModelAndView modelAndView) {
         modelAndView.setViewName("demo3");
-        List<String> userList = new ArrayList<String>();
+        List<String> userList = new ArrayList<>();
         userList.add("admin");
         userList.add("user1");
         userList.add("user2");

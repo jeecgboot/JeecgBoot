@@ -24,7 +24,7 @@ public interface SysCategoryMapper extends BaseMapper<SysCategory> {
      * @param query
 	 * @return
 	 */
-	public List<TreeSelectModel> queryListByPid(@Param("pid")  String pid,@Param("query") Map<String, String> query);
+    List<TreeSelectModel> queryListByPid(@Param("pid")  String pid,@Param("query") Map<String, String> query);
 
     /**
      * 通过code查询分类字典表
@@ -32,7 +32,7 @@ public interface SysCategoryMapper extends BaseMapper<SysCategory> {
      * @return
      */
 	@Select("SELECT ID FROM sys_category WHERE CODE = #{code,jdbcType=VARCHAR}")
-	public String queryIdByCode(@Param("code")  String code);
+    String queryIdByCode(@Param("code")  String code);
 	
 
 }

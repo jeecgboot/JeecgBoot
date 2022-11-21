@@ -148,7 +148,7 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
         //文件大小
         long size = file.getSize();
         //文件类型
-        String type = orgName.substring(orgName.lastIndexOf("."), orgName.length());
+        String type = orgName.substring(orgName.lastIndexOf("."));
         FileTypeEnum fileType = FileTypeEnum.getByType(type);
 
         //保存至 SysFiles
@@ -170,10 +170,9 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
         sysFilesMapper.insert(sysFiles);
 
         //保存至 SysFormFile
-        String tableName = SYS_FORM_FILE_TABLE_NAME;
-        String tableDataId = request.getParameter("commentId");
+      String tableDataId = request.getParameter("commentId");
         SysFormFile sysFormFile = new SysFormFile();
-        sysFormFile.setTableName(tableName);
+        sysFormFile.setTableName(SYS_FORM_FILE_TABLE_NAME);
         sysFormFile.setFileType(fileType.getValue());
         sysFormFile.setTableDataId(tableDataId);
         sysFormFile.setFileId(fileId);
@@ -183,8 +182,7 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
 
     @Override
     public List<SysCommentFileVo> queryFormFileList(String tableName, String formDataId) {
-        List<SysCommentFileVo> list = baseMapper.queryFormFileList(tableName, formDataId);
-        return list;
+      return baseMapper.queryFormFileList(tableName, formDataId);
     }
 
     @Override
@@ -192,7 +190,7 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
         this.save(sysComment);
         //发送系统消息
         String content = sysComment.getCommentContent();
-        if (content.indexOf("@") >= 0) {
+        if (content.contains("@")) {
             Set<String> set = getCommentUsername(content);
             if (set.size() > 0) {
                 String users = String.join(",", set);
@@ -225,8 +223,8 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
      * @return
      */
     private Set<String> getCommentUsername(String content) {
-        Set<String> set = new HashSet<String>(3);
-        String reg = "(@(.*?)\\[(.*?)\\])";
+        Set<String> set = new HashSet<>(3);
+        String reg = "(@(.*?)\\[(.*?)])";
         Pattern p = Pattern.compile(reg);
         Matcher m = p.matcher(content);
         while (m.find()) {
@@ -260,7 +258,7 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
             }
             String orgName = mf.getOriginalFilename();// 获取文件名
             orgName = CommonUtils.getFileName(orgName);
-            if (orgName.indexOf(".") != -1) {
+            if (orgName.contains(".")) {
                 fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.indexOf("."));
             } else {
                 fileName = orgName + "_" + System.currentTimeMillis();

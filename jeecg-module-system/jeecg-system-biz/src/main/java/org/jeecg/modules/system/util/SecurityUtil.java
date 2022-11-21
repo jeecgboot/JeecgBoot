@@ -21,8 +21,7 @@ public class SecurityUtil {
      */
     public static String jiami(String content) {
             SymmetricCrypto aes = new SymmetricCrypto(SymmetricAlgorithm.AES, key.getBytes());
-            String encryptResultStr = aes.encryptHex(content);
-            return encryptResultStr;
+        return aes.encryptHex(content);
     }
 
     /**解密
@@ -32,8 +31,7 @@ public class SecurityUtil {
     public static String jiemi(String encryptResultStr){
         SymmetricCrypto aes = new SymmetricCrypto(SymmetricAlgorithm.AES, key.getBytes());
         //解密为字符串
-        String decryptResult = aes.decryptStr(encryptResultStr, CharsetUtil.CHARSET_UTF_8);
-        return  decryptResult;
+        return aes.decryptStr(encryptResultStr, CharsetUtil.CHARSET_UTF_8);
     }
     //---AES加密---------end---------
     /**

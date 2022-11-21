@@ -94,7 +94,7 @@ public class JeecgBootExceptionHandler {
 	 */
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
 	public Result<?> httpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e){
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("不支持");
 		sb.append(e.getMethod());
 		sb.append("请求方法，");

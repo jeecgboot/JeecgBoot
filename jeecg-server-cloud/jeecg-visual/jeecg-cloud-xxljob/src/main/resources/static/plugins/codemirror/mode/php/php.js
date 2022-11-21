@@ -47,17 +47,17 @@
         // Match array operator
         state.tokenize = matchSequence([
           [["[", null]],
-          [[/\d[\w\.]*/, "number"],
+          [[/\d[\w.]*/, "number"],
            [/\$[a-zA-Z_][a-zA-Z0-9_]*/, "variable-2"],
-           [/[\w\$]+/, "variable"]],
+           [/[\w$]+/, "variable"]],
           [["]", null]]
         ], closing, escapes);
       }
-      if (stream.match(/\-\>\w/, false)) {
+      if (stream.match(/->\w/, false)) {
         // Match object operator
         state.tokenize = matchSequence([
           [["->", null]],
-          [[/[\w]+/, "variable"]]
+          [[/\w+/, "variable"]]
         ], closing, escapes);
       }
       return "variable-2";
@@ -101,14 +101,14 @@
     multiLineStrings: true,
     hooks: {
       "$": function(stream) {
-        stream.eatWhile(/[\w\$_]/);
+        stream.eatWhile(/[\w$_]/);
         return "variable-2";
       },
       "<": function(stream, state) {
         var before;
         if (before = stream.match(/<<\s*/)) {
           var quoted = stream.eat(/['"]/);
-          stream.eatWhile(/[\w\.]/);
+          stream.eatWhile(/[\w.]/);
           var delim = stream.current().slice(before[0].length + (quoted ? 2 : 1));
           if (quoted) stream.eat(quoted);
           if (delim) {
@@ -176,7 +176,7 @@
         if (state.pending) state.pending = null;
         var cur = stream.current(), openPHP = cur.search(/<\?/), m;
         if (openPHP != -1) {
-          if (style == "string" && (m = cur.match(/[\'\"]$/)) && !/\?>/.test(cur)) state.pending = m[0];
+          if (style == "string" && (m = cur.match(/['"]$/)) && !/\?>/.test(cur)) state.pending = m[0];
           else state.pending = {end: stream.pos, style: style};
           stream.backUp(cur.length - openPHP);
         }

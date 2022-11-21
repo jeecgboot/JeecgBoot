@@ -16,13 +16,13 @@ public interface IJeecgDynamicDataService extends JeecgService<JeecgDemo> {
 	 * 测试从header获取数据源
 	 * @return
 	 */
-	public List<JeecgDemo> selectSpelByHeader();
+    List<JeecgDemo> selectSpelByHeader();
 
 	/**
 	 * 使用spel从参数获取
 	 * @param dsName
 	 * @return
 	 */
-	public  List<JeecgDemo> selectSpelByKey(String dsName);
+    List<JeecgDemo> selectSpelByKey(String dsName);
 
 }

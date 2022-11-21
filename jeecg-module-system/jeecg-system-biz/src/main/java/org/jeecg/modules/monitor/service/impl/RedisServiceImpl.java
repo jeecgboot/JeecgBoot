@@ -12,7 +12,6 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
-import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.monitor.domain.RedisInfo;
 import org.jeecg.modules.monitor.exception.RedisConnectException;
@@ -44,7 +43,7 @@ public class RedisServiceImpl implements RedisService {
 	 * Redis详细信息
 	 */
 	@Override
-	public List<RedisInfo> getRedisInfo() throws RedisConnectException {
+	public List<RedisInfo> getRedisInfo() {
 		Properties info = redisConnectionFactory.getConnection().info();
 		List<RedisInfo> infoList = new ArrayList<>();
 		RedisInfo redisInfo = null;
@@ -58,18 +57,18 @@ public class RedisServiceImpl implements RedisService {
 	}
 
 	@Override
-	public Map<String, Object> getKeysSize() throws RedisConnectException {
+	public Map<String, Object> getKeysSize() {
 		Long dbSize = redisConnectionFactory.getConnection().dbSize();
 		Map<String, Object> map = new HashMap(5);
 		map.put("create_time", System.currentTimeMillis());
 		map.put("dbSize", dbSize);
 
-		log.debug("--getKeysSize--: " + map.toString());
+		log.debug("--getKeysSize--: " + map);
 		return map;
 	}
 
 	@Override
-	public Map<String, Object> getMemoryInfo() throws RedisConnectException {
+	public Map<String, Object> getMemoryInfo() {
 		Map<String, Object> map = null;
 		Properties info = redisConnectionFactory.getConnection().info();
 		for (Map.Entry<Object, Object> entry : info.entrySet()) {
@@ -116,7 +115,7 @@ public class RedisServiceImpl implements RedisService {
 				jo.put("value",map.get("dbSize"));
 			}else{
 				map = getMemoryInfo();
-				Integer usedMemory = Integer.valueOf(map.get("used_memory").toString());
+				int usedMemory = Integer.parseInt(map.get("used_memory").toString());
 				jo.put("value",usedMemory/1000);
 			}
 			String createTime = DateUtil.formatTime(DateUtil.date((Long) map.get("create_time")-(4-i)*1000));

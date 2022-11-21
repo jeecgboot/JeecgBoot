@@ -29,7 +29,7 @@ public class SystemInitListener implements ApplicationListener<ApplicationReadyE
 
         log.info(" 服务已启动，初始化路由配置 ###################");
         String context = "AnnotationConfigServletWebServerApplicationContext";
-        if (applicationReadyEvent.getApplicationContext().getDisplayName().indexOf(context) > -1) {
+        if (applicationReadyEvent.getApplicationContext().getDisplayName().contains(context)) {
             sysGatewayRouteService.addRoute2Redis(CacheConstant.GATEWAY_ROUTES);
         }
 

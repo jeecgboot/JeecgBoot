@@ -22,7 +22,7 @@ public interface JeecgOrderCustomerMapper extends BaseMapper<JeecgOrderCustomer>
 	 * @return
 	 */
     @Delete("DELETE FROM JEECG_ORDER_CUSTOMER WHERE ORDER_ID = #{mainId}")
-	public boolean deleteCustomersByMainId(String mainId);
+    boolean deleteCustomersByMainId(String mainId);
 
     /**
      * 通过主表订单外键查询客户
@@ -30,5 +30,5 @@ public interface JeecgOrderCustomerMapper extends BaseMapper<JeecgOrderCustomer>
      * @return 订单客户集合
      */
     @Select("SELECT * FROM JEECG_ORDER_CUSTOMER WHERE ORDER_ID = #{mainId}")
-	public List<JeecgOrderCustomer> selectCustomersByMainId(String mainId);
+    List<JeecgOrderCustomer> selectCustomersByMainId(String mainId);
 }

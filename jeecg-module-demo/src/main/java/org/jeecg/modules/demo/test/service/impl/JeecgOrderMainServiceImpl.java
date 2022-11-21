@@ -120,7 +120,7 @@ public class JeecgOrderMainServiceImpl extends ServiceImpl<JeecgOrderMainMapper,
         List<JeecgOrderTicket> jeecgOrderTickets = jeecgOrderTicketMapper.selectTicketsByMainId(jeecgOrderMain.getId());
         List<JeecgOrderTicket> collect = jeecgOrderTickets.stream()
                 .filter(item -> !jeecgOrderTicketList.stream()
-                .map(e -> e.getId())
+                .map(JeecgOrderTicket::getId)
                 .collect(Collectors.toList())
                 .contains(item.getId()))
                 .collect(Collectors.toList());
@@ -132,7 +132,7 @@ public class JeecgOrderMainServiceImpl extends ServiceImpl<JeecgOrderMainMapper,
         List<JeecgOrderCustomer> jeecgOrderCustomers = jeecgOrderCustomerMapper.selectCustomersByMainId(jeecgOrderMain.getId());
         List<JeecgOrderCustomer> customersCollect = jeecgOrderCustomers.stream()
                 .filter(item -> !jeecgOrderCustomerList.stream()
-                        .map(e -> e.getId())
+                        .map(JeecgOrderCustomer::getId)
                         .collect(Collectors.toList())
                         .contains(item.getId()))
                 .collect(Collectors.toList());

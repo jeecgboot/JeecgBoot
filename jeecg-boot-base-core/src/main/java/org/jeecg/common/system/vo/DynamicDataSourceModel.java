@@ -41,11 +41,6 @@ public class DynamicDataSourceModel {
      */
     private java.lang.String dbUrl;
 
-//    /**
-//     * 数据库名称
-//     */
-//    private java.lang.String dbName;
-
     /**
      * 用户名
      */

@@ -53,7 +53,7 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	public Result<?> queryPageList(SysMessage sysMessage, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
 		QueryWrapper<SysMessage> queryWrapper = QueryGenerator.initQueryWrapper(sysMessage, req.getParameterMap());
-		Page<SysMessage> page = new Page<SysMessage>(pageNo, pageSize);
+		Page<SysMessage> page = new Page<>(pageNo, pageSize);
 		IPage<SysMessage> pageList = sysMessageService.page(page, queryWrapper);
         return Result.ok(pageList);
 	}

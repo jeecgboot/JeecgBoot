@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 public class ImportExcelUtil {
 
-    public static Result<?> imporReturnRes(int errorLines,int successLines,List<String> errorMessage) throws IOException {
+    public static Result<?> imporReturnRes(int errorLines,int successLines,List<String> errorMessage) {
         if (errorLines == 0) {
             return Result.ok("共" + successLines + "行数据全部导入成功！");
         } else {

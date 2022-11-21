@@ -15,6 +15,7 @@ import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.util.ObjectUtils;
 
 /**
  * @Description: CasServiceUtil
@@ -42,7 +43,7 @@ public class CasServiceUtil {
 			HttpGet httpget = new HttpGet(url);
 			HttpResponse response = httpclient.execute(httpget);
 	        String res = readResponse(response);
-	        return res == null ? null : (res == "" ? null : res);
+	        return ObjectUtils.isEmpty(res) ? null : res;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -59,12 +60,12 @@ public class CasServiceUtil {
      */
     private static String readResponse(HttpResponse response) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-        String result = new String();
+        StringBuilder result = new StringBuilder();
         String line;
         while ((line = in.readLine()) != null) {
-            result += line;
+            result.append(line);
         }
-        return result;
+        return result.toString();
     }
     
     

@@ -99,27 +99,27 @@ public interface ISysBaseAPI extends CommonAPI {
     /** 11查询所有的父级字典，按照create_time排序
      * @return List<DictModel> 字典集合
      */
-    public List<DictModel> queryAllDict();
+    List<DictModel> queryAllDict();
 
     /**
      * 12查询所有分类字典
      * @return
      */
-    public List<SysCategoryModel> queryAllSysCategory();
+    List<SysCategoryModel> queryAllSysCategory();
 
 
     /**
      * 14查询所有部门 作为字典信息 id -->value,departName -->text
      * @return
      */
-    public List<DictModel> queryAllDepartBackDictModel();
+    List<DictModel> queryAllDepartBackDictModel();
 
     /**
      * 15根据业务类型及业务id修改消息已读
      * @param busType
      * @param busId
      */
-    public void updateSysAnnounReadFlag(String busType, String busId);
+    void updateSysAnnounReadFlag(String busType, String busId);
 
     /**
      * 16查询表字典 支持过滤数据
@@ -129,7 +129,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param filterSql
      * @return
      */
-    public List<DictModel> queryFilterTableDictInfo(String table, String text, String code, String filterSql);
+    List<DictModel> queryFilterTableDictInfo(String table, String text, String code, String filterSql);
 
     /**
      * 17查询指定table的 text code 获取字典，包含text和value
@@ -140,13 +140,13 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @Deprecated
-    public List<String> queryTableDictByKeys(String table, String text, String code, String[] keyArray);
+    List<String> queryTableDictByKeys(String table, String text, String code, String[] keyArray);
 
     /**
      * 18查询所有用户 返回ComboModel
      * @return
      */
-    public List<ComboModel> queryAllUserBackCombo();
+    List<ComboModel> queryAllUserBackCombo();
 
     /**
      * 19分页查询用户 返回JSONObject
@@ -155,40 +155,40 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param pageSize 每页显示条数
      * @return
      */
-    public JSONObject queryAllUser(String userIds, Integer pageNo, Integer pageSize);
+    JSONObject queryAllUser(String userIds, Integer pageNo, Integer pageSize);
 
     /**
      * 20获取所有角色
      * @return
      */
-    public List<ComboModel> queryAllRole();
+    List<ComboModel> queryAllRole();
 
     /**
      * 21获取所有角色 带参
      * @param roleIds 默认选中角色
      * @return
      */
-    public List<ComboModel> queryAllRole(String[] roleIds );
+    List<ComboModel> queryAllRole(String[] roleIds );
 
     /**
      * 22通过用户账号查询角色Id集合
      * @param username
      * @return
      */
-    public List<String> getRoleIdsByUsername(String username);
+    List<String> getRoleIdsByUsername(String username);
 
     /**
      * 23通过部门编号查询部门id
      * @param orgCode
      * @return
      */
-    public String getDepartIdsByOrgCode(String orgCode);
+    String getDepartIdsByOrgCode(String orgCode);
 
     /**
      * 24查询所有部门
      * @return
      */
-    public List<SysDepartModel> getAllSysDepart();
+    List<SysDepartModel> getAllSysDepart();
 
     /**
      * 25查找父级部门
@@ -202,21 +202,21 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param deptId
      * @return
      */
-    public List<String> getDeptHeadByDepId(String deptId);
+    List<String> getDeptHeadByDepId(String deptId);
 
     /**
      * 27给指定用户发消息
      * @param userIds
      * @param cmd
      */
-    public void sendWebSocketMsg(String[] userIds, String cmd);
+    void sendWebSocketMsg(String[] userIds, String cmd);
 
     /**
      * 28根据id获取所有参与用户
      * @param userIds 多个用户id
      * @return
      */
-    public List<LoginUser> queryAllUserByIds(String[] userIds);
+    List<LoginUser> queryAllUserByIds(String[] userIds);
 
     /**
      * 29将会议签到信息推动到预览

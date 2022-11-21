@@ -40,7 +40,7 @@ public class SignAuthInterceptor implements HandlerInterceptor {
         String headerSign = request.getHeader(CommonConstant.X_SIGN);
         String xTimestamp = request.getHeader(CommonConstant.X_TIMESTAMP);
         //客户端时间
-        Long clientTimestamp = Long.parseLong(xTimestamp);
+        long clientTimestamp = Long.parseLong(xTimestamp);
 
         int length = 14;
         int length1000 = 1000;

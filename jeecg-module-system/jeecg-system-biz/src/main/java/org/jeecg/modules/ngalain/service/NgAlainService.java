@@ -16,15 +16,14 @@ public interface NgAlainService {
      * @return JSONArray
      * @throws Exception
      */
-    public JSONArray getMenu(String id) throws Exception;
+    JSONArray getMenu(String id) throws Exception;
 
     /**
      * jeecg菜单
      * @param id
      * @return JSONArray
-     * @throws Exception
      */
-    public JSONArray getJeecgMenu(String id) throws Exception;
+    JSONArray getJeecgMenu(String id);
 
     /**
      * 获取字典值
@@ -33,5 +32,5 @@ public interface NgAlainService {
      * @param value
      * @return List<Map<String, String>>
      */
-    public List<Map<String, String>> getDictByTable(String table, String key, String value);
+    List<Map<String, String>> getDictByTable(String table, String key, String value);
 }

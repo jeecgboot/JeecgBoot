@@ -28,8 +28,7 @@ public class MyClassLoader extends ClassLoader {
 			throw new java.lang.IllegalArgumentException("参数不能为空！");
 		}
 		// 获得类的全名，包括包名
-		String clsName = object.getClass().getName();
-		return clsName;
+        return object.getClass().getName();
 	}
 
 	public static String getAppPath(Class cls) {
@@ -55,7 +54,7 @@ public class MyClassLoader extends ClassLoader {
 			// 在类的名称中，去掉包名的部分，获得类的文件名
 			clsName = clsName.substring(packName.length() + 1);
 			// 判定包名是否是简单包名，如果是，则直接将包名转换为路径，
-			if (packName.indexOf(SymbolConstant.SPOT) < 0) {
+			if (!packName.contains(SymbolConstant.SPOT)) {
 				path = packName + "/";
 			} else {
                 // 否则按照包名的组成部分，将包名转换为路径

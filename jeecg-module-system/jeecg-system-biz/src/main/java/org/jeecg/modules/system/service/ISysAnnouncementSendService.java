@@ -21,7 +21,7 @@ public interface ISysAnnouncementSendService extends IService<SysAnnouncementSen
      * @param userId 用户id
      * @return
      */
-	public List<String> queryByUserId(String userId);
+    List<String> queryByUserId(String userId);
 	
 	/**
 	 * 获取我的消息
@@ -29,7 +29,7 @@ public interface ISysAnnouncementSendService extends IService<SysAnnouncementSen
      * @param page 当前页数
 	 * @return
 	 */
-	public Page<AnnouncementSendModel> getMyAnnouncementSendPage(Page<AnnouncementSendModel> page,AnnouncementSendModel announcementSendModel);
+    Page<AnnouncementSendModel> getMyAnnouncementSendPage(Page<AnnouncementSendModel> page,AnnouncementSendModel announcementSendModel);
 
 	/**
 	 * 根据消息发送记录ID获取消息内容

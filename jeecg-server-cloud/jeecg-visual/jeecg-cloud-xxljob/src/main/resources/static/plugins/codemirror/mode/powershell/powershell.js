@@ -38,7 +38,7 @@ CodeMirror.defineMode('powershell', function() {
     /param|process|return|switch|throw|trap|try|until|where|while/
   ], { suffix: notCharacterOrDash });
 
-  var punctuation = /[\[\]{},;`\.]|@[({]/;
+  var punctuation = /[\[\]{},;`.]|@[({]/;
   var wordOperators = buildRegexp([
     'f',
     /b?not/,
@@ -52,9 +52,9 @@ CodeMirror.defineMode('powershell', function() {
   var symbolOperators = /[+\-*\/%]=|\+\+|--|\.\.|[+\-*&^%:=!|\/]|<(?!#)|(?!#)>/;
   var operators = buildRegexp([wordOperators, symbolOperators], { suffix: '' });
 
-  var numbers = /^((0x[\da-f]+)|((\d+\.\d+|\d\.|\.\d+|\d+)(e[\+\-]?\d+)?))[ld]?([kmgtp]b)?/i;
+  var numbers = /^((0x[\da-f]+)|((\d+\.\d+|\d\.|\.\d+|\d+)(e[+\-]?\d+)?))[ld]?([kmgtp]b)?/i;
 
-  var identifiers = /^[A-Za-z\_][A-Za-z\-\_\d]*\b/;
+  var identifiers = /^[A-Za-z_][A-Za-z\-_\d]*\b/;
 
   var symbolBuiltins = /[A-Z]:|%|\?/i;
   var namedBuiltins = buildRegexp([

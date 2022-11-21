@@ -60,7 +60,7 @@ public class PermissionDataAspect {
         //update-begin-author:taoyan date:20211027 for:JTC-132【online报表权限】online报表带参数的菜单配置数据权限无效
         //先判断是否online报表请求
         // TODO 参数顺序调整有隐患
-        if(requestPath.indexOf(UrlMatchEnum.CGREPORT_DATA.getMatchUrl())>=0){
+        if(requestPath.contains(UrlMatchEnum.CGREPORT_DATA.getMatchUrl())){
             // 获取地址栏参数
             String urlParamString = request.getParameter(CommonConstant.ONL_REP_URL_PARAM_STR);
             if(oConvertUtils.isNotEmpty(urlParamString)){
@@ -88,12 +88,9 @@ public class PermissionDataAspect {
         if(oConvertUtils.isNotEmpty(requestPath)){
             url = requestPath.replace("\\", "/");
             url = url.replace("//", "/");
-            if(url.indexOf(SymbolConstant.DOUBLE_SLASH)>=0){
+            if(url.contains(SymbolConstant.DOUBLE_SLASH)){
                 url = filterUrl(url);
             }
-			/*if(url.startsWith("/")){
-				url=url.substring(1);
-			}*/
         }
         return url;
     }
@@ -111,11 +108,11 @@ public class PermissionDataAspect {
             requestPath += "?" + queryString;
         }
         // 去掉其他参数(保留一个参数) 例如：loginController.do?login
-        if (requestPath.indexOf(SymbolConstant.AND) > -1) {
+        if (requestPath.contains(SymbolConstant.AND)) {
             requestPath = requestPath.substring(0, requestPath.indexOf("&"));
         }
-        if(requestPath.indexOf(QueryRuleEnum.EQ.getValue())!=-1){
-            if(requestPath.indexOf(SPOT_DO)!=-1){
+        if(requestPath.contains(QueryRuleEnum.EQ.getValue())){
+            if(requestPath.contains(SPOT_DO)){
                 requestPath = requestPath.substring(0,requestPath.indexOf(".do")+3);
             }else{
                 requestPath = requestPath.substring(0,requestPath.indexOf("?"));

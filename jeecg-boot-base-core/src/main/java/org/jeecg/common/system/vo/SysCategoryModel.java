@@ -1,7 +1,5 @@
 package org.jeecg.common.system.vo;
 
-import org.jeecgframework.poi.excel.annotation.Excel;
-
 /**
  * @Author qinfeng
  * @Date 2020/2/19 12:01

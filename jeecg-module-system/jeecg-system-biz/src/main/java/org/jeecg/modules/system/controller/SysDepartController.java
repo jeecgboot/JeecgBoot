@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
@@ -101,11 +100,7 @@ public class SysDepartController {
 		Result<List<SysDepartTreeModel>> result = new Result<>();
 		try {
 			// 从内存中读取
-//			List<SysDepartTreeModel> list =FindsDepartsChildrenUtil.getSysDepartTreeList();
-//			if (CollectionUtils.isEmpty(list)) {
-//				list = sysDepartService.queryTreeList();
-//			}
-			if(oConvertUtils.isNotEmpty(ids)){
+      if(oConvertUtils.isNotEmpty(ids)){
 				List<SysDepartTreeModel> departList = sysDepartService.queryTreeList(ids);
 				result.setResult(departList);
 			}else{
@@ -176,15 +171,13 @@ public class SysDepartController {
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> add(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
-		Result<SysDepart> result = new Result<SysDepart>();
+		Result<SysDepart> result = new Result<>();
 		String username = JwtUtil.getUserNameByToken(request);
 		try {
 			sysDepart.setCreateBy(username);
 			sysDepartService.saveDepartData(sysDepart, username);
 			//清除部门树内存
-			// FindsDepartsChildrenUtil.clearSysDepartTreeList();
-			// FindsDepartsChildrenUtil.clearDepartIdModel();
-			result.success("添加成功！");
+      result.success("添加成功！");
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
 			result.error500("操作失败");
@@ -204,7 +197,7 @@ public class SysDepartController {
 	public Result<SysDepart> edit(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
 		String username = JwtUtil.getUserNameByToken(request);
 		sysDepart.setUpdateBy(username);
-		Result<SysDepart> result = new Result<SysDepart>();
+		Result<SysDepart> result = new Result<>();
 		SysDepart sysDepartEntity = sysDepartService.getById(sysDepart.getId());
 		if (sysDepartEntity == null) {
 			result.error500("未找到对应实体");
@@ -213,9 +206,7 @@ public class SysDepartController {
 			// TODO 返回false说明什么？
 			if (ok) {
 				//清除部门树内存
-				//FindsDepartsChildrenUtil.clearSysDepartTreeList();
-				//FindsDepartsChildrenUtil.clearDepartIdModel();
-				result.success("修改成功!");
+        result.success("修改成功!");
 			}
 		}
 		return result;
@@ -231,7 +222,7 @@ public class SysDepartController {
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
    public Result<SysDepart> delete(@RequestParam(name="id",required=true) String id) {
 
-       Result<SysDepart> result = new Result<SysDepart>();
+       Result<SysDepart> result = new Result<>();
        SysDepart sysDepart = sysDepartService.getById(id);
        if(sysDepart==null) {
            result.error500("未找到对应实体");
@@ -239,9 +230,7 @@ public class SysDepartController {
            boolean ok = sysDepartService.delete(id);
            if(ok) {
 	            //清除部门树内存
-	   		   //FindsDepartsChildrenUtil.clearSysDepartTreeList();
-	   		   // FindsDepartsChildrenUtil.clearDepartIdModel();
-               result.success("删除成功!");
+             result.success("删除成功!");
            }
        }
        return result;
@@ -259,7 +248,7 @@ public class SysDepartController {
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 
-		Result<SysDepart> result = new Result<SysDepart>();
+		Result<SysDepart> result = new Result<>();
 		if (ids == null || "".equals(ids.trim())) {
 			result.error500("参数不识别！");
 		} else {
@@ -276,26 +265,7 @@ public class SysDepartController {
 	 */
 	@RequestMapping(value = "/queryIdTree", method = RequestMethod.GET)
 	public Result<List<DepartIdModel>> queryIdTree() {
-//		Result<List<DepartIdModel>> result = new Result<List<DepartIdModel>>();
-//		List<DepartIdModel> idList;
-//		try {
-//			idList = FindsDepartsChildrenUtil.wrapDepartIdModel();
-//			if (idList != null && idList.size() > 0) {
-//				result.setResult(idList);
-//				result.setSuccess(true);
-//			} else {
-//				sysDepartService.queryTreeList();
-//				idList = FindsDepartsChildrenUtil.wrapDepartIdModel();
-//				result.setResult(idList);
-//				result.setSuccess(true);
-//			}
-//			return result;
-//		} catch (Exception e) {
-//			log.error(e.getMessage(),e);
-//			result.setSuccess(false);
-//			return result;
-//		}
-		Result<List<DepartIdModel>> result = new Result<>();
+    Result<List<DepartIdModel>> result = new Result<>();
 		try {
 			List<DepartIdModel> list = sysDepartService.queryDepartIdTreeList();
 			result.setResult(list);
@@ -316,7 +286,7 @@ public class SysDepartController {
 	 */
 	@RequestMapping(value = "/searchBy", method = RequestMethod.GET)
 	public Result<List<SysDepartTreeModel>> searchBy(@RequestParam(name = "keyWord", required = true) String keyWord,@RequestParam(name = "myDeptSearch", required = false) String myDeptSearch) {
-		Result<List<SysDepartTreeModel>> result = new Result<List<SysDepartTreeModel>>();
+		Result<List<SysDepartTreeModel>> result = new Result<>();
 		//部门查询，myDeptSearch为1时为我的部门查询，登录用户为上级时查只查负责部门下数据
 		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		String departIds = null;
@@ -347,12 +317,7 @@ public class SysDepartController {
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
         List<SysDepart> pageList = sysDepartService.list(queryWrapper);
         //按字典排序
-        Collections.sort(pageList, new Comparator<SysDepart>() {
-            @Override
-			public int compare(SysDepart arg0, SysDepart arg1) {
-            	return arg0.getOrgCode().compareTo(arg1.getOrgCode());
-            }
-        });
+        pageList.sort(Comparator.comparing(SysDepart::getOrgCode));
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "部门列表");
         mv.addObject(NormalExcelConstants.CLASS, SysDepart.class);
@@ -391,19 +356,14 @@ public class SysDepartController {
             	int codeLength = YouBianCodeUtil.ZHANWEI_LENGTH;
                 listSysDeparts = ExcelImportUtil.importExcel(file.getInputStream(), SysDepart.class, params);
                 //按长度排序
-                Collections.sort(listSysDeparts, new Comparator<SysDepart>() {
-                    @Override
-					public int compare(SysDepart arg0, SysDepart arg1) {
-                    	return arg0.getOrgCode().length() - arg1.getOrgCode().length();
-                    }
-                });
+                listSysDeparts.sort(Comparator.comparingInt(arg0 -> arg0.getOrgCode().length()));
 
                 int num = 0;
                 for (SysDepart sysDepart : listSysDeparts) {
                 	String orgCode = sysDepart.getOrgCode();
                 	if(orgCode.length() > codeLength) {
                 		String parentCode = orgCode.substring(0, orgCode.length()-codeLength);
-                		QueryWrapper<SysDepart> queryWrapper = new QueryWrapper<SysDepart>();
+                		QueryWrapper<SysDepart> queryWrapper = new QueryWrapper<>();
                 		queryWrapper.eq("org_code", parentCode);
                 		try {
                 		SysDepart parentDept = sysDepartService.getOne(queryWrapper);
@@ -458,11 +418,11 @@ public class SysDepartController {
 	@GetMapping("listAll")
 	public Result<List<SysDepart>> listAll(@RequestParam(name = "id", required = false) String id) {
 		Result<List<SysDepart>> result = new Result<>();
-		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
+		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<>();
 		query.orderByAsc(SysDepart::getOrgCode);
 		if(oConvertUtils.isNotEmpty(id)){
 			String[] arr = id.split(",");
-			query.in(SysDepart::getId,arr);
+			query.in(SysDepart::getId, (Object) arr);
 		}
 		List<SysDepart> ls = this.sysDepartService.list(query);
 		result.setSuccess(true);
@@ -481,7 +441,7 @@ public class SysDepartController {
 			Map<String,Object> map=new HashMap(5);
 			List<SysDepartTreeModel> list = sysDepartService.queryTreeByKeyWord(keyWord);
 			//根据keyWord获取用户信息
-			LambdaQueryWrapper<SysUser> queryUser = new LambdaQueryWrapper<SysUser>();
+			LambdaQueryWrapper<SysUser> queryUser = new LambdaQueryWrapper<>();
 			queryUser.eq(SysUser::getDelFlag,CommonConstant.DEL_FLAG_0);
 			queryUser.and(i -> i.like(SysUser::getUsername, keyWord).or().like(SysUser::getRealname, keyWord));
 			List<SysUser> sysUsers = this.sysUserService.list(queryUser);

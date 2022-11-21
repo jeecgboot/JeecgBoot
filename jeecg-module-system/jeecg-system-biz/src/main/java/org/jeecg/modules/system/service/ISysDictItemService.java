@@ -20,5 +20,5 @@ public interface ISysDictItemService extends IService<SysDictItem> {
      * @param mainId 字典id
      * @return
      */
-    public List<SysDictItem> selectItemsByMainId(String mainId);
+    List<SysDictItem> selectItemsByMainId(String mainId);
 }

@@ -45,7 +45,7 @@ public enum UrlMatchEnum {
         //加强for循环进行遍历操作
         for (UrlMatchEnum lr : values) {
             //如果遍历获取的type和参数type一致
-            if (url.indexOf(lr.url) != -1) {
+            if (url.contains(lr.url)) {
                 //返回type对象的desc
                 return url.replace(lr.url, lr.matchUrl);
             }
@@ -56,11 +56,4 @@ public enum UrlMatchEnum {
     public String getMatchUrl() {
         return matchUrl;
     }
-    //    public static void main(String[] args) {
-//        /**
-//         * 比如request真实请求URL: /online/cgform/api/getData/81fcf7d8922d45069b0d5ba983612d3a
-//         * 转换匹配路由URL后（对应配置的菜单路径）:/online/cgformList/81fcf7d8922d45069b0d5ba983612d3a
-//         */
-//        System.out.println(UrlMatchEnum.getMatchResultByUrl("/online/cgform/api/getData/81fcf7d8922d45069b0d5ba983612d3a"));
-//    }
 }

@@ -21,7 +21,7 @@ public interface JeecgOrderTicketMapper extends BaseMapper<JeecgOrderTicket> {
 	 * @return
 	 */
     @Delete("DELETE FROM JEECG_ORDER_TICKET WHERE ORDER_ID = #{mainId}")
-	public boolean deleteTicketsByMainId(String mainId);
+    boolean deleteTicketsByMainId(String mainId);
 
     /**
      * 通过主表订单外键查询订单机票
@@ -29,5 +29,5 @@ public interface JeecgOrderTicketMapper extends BaseMapper<JeecgOrderTicket> {
      * @return 返回订单机票集合
      */
     @Select("SELECT * FROM JEECG_ORDER_TICKET WHERE ORDER_ID = #{mainId}")
-	public List<JeecgOrderTicket> selectTicketsByMainId(String mainId);
+    List<JeecgOrderTicket> selectTicketsByMainId(String mainId);
 }

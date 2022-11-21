@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @Description: Controller基类
@@ -102,9 +101,9 @@ public class JeecgController<T, S extends IService<T>> {
         }
         //update-end-author:liusq---date:20220629--for: 多sheet导出根据选择导出写法调整 ---
         // Step.4 多sheet处理
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         for (int i = 1; i <=count ; i++) {
-            Page<T> page = new Page<T>(i, pageNum);
+            Page<T> page = new Page<>(i, pageNum);
             IPage<T> pageList = service.page(page, queryWrapper);
             List<T> exportList = pageList.getRecords();
             Map<String, Object> map = new HashMap<>(5);
@@ -184,7 +183,7 @@ public class JeecgController<T, S extends IService<T>> {
                 //update-begin-author:taoyan date:20211124 for: 导入数据重复增加提示
                 String msg = e.getMessage();
                 log.error(msg, e);
-                if(msg!=null && msg.indexOf("Duplicate entry")>=0){
+                if(msg!=null && msg.contains("Duplicate entry")){
                     return Result.error("文件导入失败:有重复数据！");
                 }else{
                     return Result.error("文件导入失败:" + e.getMessage());

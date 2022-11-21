@@ -19,5 +19,5 @@ public interface IJeecgOrderTicketService extends IService<JeecgOrderTicket> {
      * @param mainId 订单id
      * @return 订单机票集合
      */
-	public List<JeecgOrderTicket> selectTicketsByMainId(String mainId);
+    List<JeecgOrderTicket> selectTicketsByMainId(String mainId);
 }

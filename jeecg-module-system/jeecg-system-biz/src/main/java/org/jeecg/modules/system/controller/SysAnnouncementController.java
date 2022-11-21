@@ -1,6 +1,5 @@
 package org.jeecg.modules.system.controller;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -93,10 +92,10 @@ public class SysAnnouncementController {
 									  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									  HttpServletRequest req) {
-		Result<IPage<SysAnnouncement>> result = new Result<IPage<SysAnnouncement>>();
+		Result<IPage<SysAnnouncement>> result = new Result<>();
 		sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
 		QueryWrapper<SysAnnouncement> queryWrapper = QueryGenerator.initQueryWrapper(sysAnnouncement, req.getParameterMap());
-		Page<SysAnnouncement> page = new Page<SysAnnouncement>(pageNo,pageSize);
+		Page<SysAnnouncement> page = new Page<>(pageNo, pageSize);
 
 		//update-begin-author:lvdandan date:20211229 for: sqlserver mssql-jdbc 8.2.2.jre8版本下系统公告列表查询报错 查询SQL中生成了两个create_time DESC；故注释此段代码
 		//排序逻辑 处理
@@ -123,7 +122,7 @@ public class SysAnnouncementController {
 	 */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysAnnouncement> add(@RequestBody SysAnnouncement sysAnnouncement) {
-		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
+		Result<SysAnnouncement> result = new Result<>();
 		try {
 			// update-begin-author:liusq date:20210804 for:标题处理xss攻击的问题
 			String title = XssUtils.scriptXss(sysAnnouncement.getTitile());
@@ -148,7 +147,7 @@ public class SysAnnouncementController {
 	 */
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<SysAnnouncement> eidt(@RequestBody SysAnnouncement sysAnnouncement) {
-		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
+		Result<SysAnnouncement> result = new Result<>();
 		SysAnnouncement sysAnnouncementEntity = sysAnnouncementService.getById(sysAnnouncement.getId());
 		if(sysAnnouncementEntity==null) {
 			result.error500("未找到对应实体");
@@ -174,7 +173,7 @@ public class SysAnnouncementController {
 	 */
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<SysAnnouncement> delete(@RequestParam(name="id",required=true) String id) {
-		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
+		Result<SysAnnouncement> result = new Result<>();
 		SysAnnouncement sysAnnouncement = sysAnnouncementService.getById(id);
 		if(sysAnnouncement==null) {
 			result.error500("未找到对应实体");
@@ -196,16 +195,16 @@ public class SysAnnouncementController {
 	 */
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysAnnouncement> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
+		Result<SysAnnouncement> result = new Result<>();
 		if(ids==null || "".equals(ids.trim())) {
 			result.error500("参数不识别！");
 		}else {
 			String[] id = ids.split(",");
-			for(int i=0;i<id.length;i++) {
-				SysAnnouncement announcement = sysAnnouncementService.getById(id[i]);
-				announcement.setDelFlag(CommonConstant.DEL_FLAG_1.toString());
-				sysAnnouncementService.updateById(announcement);
-			}
+      for (String s : id) {
+        SysAnnouncement announcement = sysAnnouncementService.getById(s);
+        announcement.setDelFlag(CommonConstant.DEL_FLAG_1.toString());
+        sysAnnouncementService.updateById(announcement);
+      }
 			result.success("删除成功!");
 		}
 		return result;
@@ -218,7 +217,7 @@ public class SysAnnouncementController {
 	 */
 	@RequestMapping(value = "/queryById", method = RequestMethod.GET)
 	public Result<SysAnnouncement> queryById(@RequestParam(name="id",required=true) String id) {
-		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
+		Result<SysAnnouncement> result = new Result<>();
 		SysAnnouncement sysAnnouncement = sysAnnouncementService.getById(id);
 		if(sysAnnouncement==null) {
 			result.error500("未找到对应实体");
@@ -236,7 +235,7 @@ public class SysAnnouncementController {
 	 */
 	@RequestMapping(value = "/doReleaseData", method = RequestMethod.GET)
 	public Result<SysAnnouncement> doReleaseData(@RequestParam(name="id",required=true) String id, HttpServletRequest request) {
-		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
+		Result<SysAnnouncement> result = new Result<>();
 		SysAnnouncement sysAnnouncement = sysAnnouncementService.getById(id);
 		if(sysAnnouncement==null) {
 			result.error500("未找到对应实体");
@@ -293,7 +292,7 @@ public class SysAnnouncementController {
 	 */
 	@RequestMapping(value = "/doReovkeData", method = RequestMethod.GET)
 	public Result<SysAnnouncement> doReovkeData(@RequestParam(name="id",required=true) String id, HttpServletRequest request) {
-		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
+		Result<SysAnnouncement> result = new Result<>();
 		SysAnnouncement sysAnnouncement = sysAnnouncementService.getById(id);
 		if(sysAnnouncement==null) {
 			result.error500("未找到对应实体");
@@ -323,11 +322,11 @@ public class SysAnnouncementController {
 	 */
 	@RequestMapping(value = "/listByUser", method = RequestMethod.GET)
 	public Result<Map<String, Object>> listByUser(@RequestParam(required = false, defaultValue = "5") Integer pageSize) {
-		Result<Map<String,Object>> result = new Result<Map<String,Object>>();
+		Result<Map<String,Object>> result = new Result<>();
 		LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
 		String userId = sysUser.getId();
 		// 1.将系统消息补充到用户通告阅读标记表中
-		LambdaQueryWrapper<SysAnnouncement> querySaWrapper = new LambdaQueryWrapper<SysAnnouncement>();
+		LambdaQueryWrapper<SysAnnouncement> querySaWrapper = new LambdaQueryWrapper<>();
         //全部人员
 		querySaWrapper.eq(SysAnnouncement::getMsgType,CommonConstant.MSG_TYPE_ALL);
         //未删除
@@ -341,30 +340,30 @@ public class SysAnnouncementController {
 		//update-begin--Author:liusq  Date:20210108  for： [JT-424] 【开源issue】bug处理--------------------
 		List<SysAnnouncement> announcements = sysAnnouncementService.list(querySaWrapper);
 		if(announcements.size()>0) {
-			for(int i=0;i<announcements.size();i++) {
-				//update-begin--Author:wangshuai  Date:20200803  for： 通知公告消息重复LOWCOD-759--------------------
-				//因为websocket没有判断是否存在这个用户，要是判断会出现问题，故在此判断逻辑
-				LambdaQueryWrapper<SysAnnouncementSend> query = new LambdaQueryWrapper<>();
-				query.eq(SysAnnouncementSend::getAnntId,announcements.get(i).getId());
-				query.eq(SysAnnouncementSend::getUserId,userId);
-				SysAnnouncementSend one = sysAnnouncementSendService.getOne(query);
-				if(null==one){
-					log.info("listByUser接口新增了SysAnnouncementSend：pageSize{}："+pageSize);
-					SysAnnouncementSend announcementSend = new SysAnnouncementSend();
-					announcementSend.setAnntId(announcements.get(i).getId());
-					announcementSend.setUserId(userId);
-					announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
-					sysAnnouncementSendService.save(announcementSend);
-					log.info("announcementSend.toString()",announcementSend.toString());
-				}
-				//update-end--Author:wangshuai  Date:20200803  for： 通知公告消息重复LOWCOD-759------------
-			}
+      for (SysAnnouncement announcement : announcements) {
+        //update-begin--Author:wangshuai  Date:20200803  for： 通知公告消息重复LOWCOD-759--------------------
+        //因为websocket没有判断是否存在这个用户，要是判断会出现问题，故在此判断逻辑
+        LambdaQueryWrapper<SysAnnouncementSend> query = new LambdaQueryWrapper<>();
+        query.eq(SysAnnouncementSend::getAnntId, announcement.getId());
+        query.eq(SysAnnouncementSend::getUserId, userId);
+        SysAnnouncementSend one = sysAnnouncementSendService.getOne(query);
+        if (null == one) {
+          log.info("listByUser接口新增了SysAnnouncementSend：pageSize{}：" + pageSize);
+          SysAnnouncementSend announcementSend = new SysAnnouncementSend();
+          announcementSend.setAnntId(announcement.getId());
+          announcementSend.setUserId(userId);
+          announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
+          sysAnnouncementSendService.save(announcementSend);
+          log.info("announcementSend.toString()", announcementSend);
+        }
+        //update-end--Author:wangshuai  Date:20200803  for： 通知公告消息重复LOWCOD-759------------
+      }
 		}
 		// 2.查询用户未读的系统消息
-		Page<SysAnnouncement> anntMsgList = new Page<SysAnnouncement>(0, pageSize);
+		Page<SysAnnouncement> anntMsgList = new Page<>(0, pageSize);
         //通知公告消息
 		anntMsgList = sysAnnouncementService.querySysCementPageByUserId(anntMsgList,userId,"1");
-		Page<SysAnnouncement> sysMsgList = new Page<SysAnnouncement>(0, pageSize);
+		Page<SysAnnouncement> sysMsgList = new Page<>(0, pageSize);
         //系统消息
 		sysMsgList = sysAnnouncementService.querySysCementPageByUserId(sysMsgList,userId,"2");
 		Map<String,Object> sysMsgMap = new HashMap(5);
@@ -386,7 +385,7 @@ public class SysAnnouncementController {
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(SysAnnouncement sysAnnouncement,HttpServletRequest request) {
         // Step.1 组装查询条件
-        LambdaQueryWrapper<SysAnnouncement> queryWrapper = new LambdaQueryWrapper<SysAnnouncement>(sysAnnouncement);
+        LambdaQueryWrapper<SysAnnouncement> queryWrapper = new LambdaQueryWrapper<>(sysAnnouncement);
         //Step.2 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
 		queryWrapper.eq(SysAnnouncement::getDelFlag,CommonConstant.DEL_FLAG_0.toString());
@@ -447,7 +446,7 @@ public class SysAnnouncementController {
 	 */
 	@RequestMapping(value = "/syncNotic", method = RequestMethod.GET)
 	public Result<SysAnnouncement> syncNotic(@RequestParam(name="anntId",required=false) String anntId, HttpServletRequest request) {
-		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
+		Result<SysAnnouncement> result = new Result<>();
 		JSONObject obj = new JSONObject();
 		if(StringUtils.isNotBlank(anntId)){
 			SysAnnouncement sysAnnouncement = sysAnnouncementService.getById(anntId);
@@ -542,7 +541,7 @@ public class SysAnnouncementController {
 		//查询出来的消息全部设置为已读
 		if(ls!=null && ls.size()>0){
 			String readed = "1";
-			List<String> annoceIdList = ls.stream().filter(item->!readed.equals(item.getReadFlag())).map(item->item.getId()).collect(Collectors.toList());
+			List<String> annoceIdList = ls.stream().filter(item->!readed.equals(item.getReadFlag())).map(SysAnnouncement::getId).collect(Collectors.toList());
 			if(annoceIdList!=null && annoceIdList.size()>0){
 				sysAnnouncementService.updateReaded(annoceIdList);
 			}

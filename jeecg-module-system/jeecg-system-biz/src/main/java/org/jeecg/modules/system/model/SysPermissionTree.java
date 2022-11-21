@@ -170,7 +170,7 @@ public class SysPermissionTree implements Serializable {
 		/*update_end author:wuxianquan date:20190908 for:赋值 */
 		this.title=permission.getName();
 		if (!permission.isLeaf()) {
-			this.children = new ArrayList<SysPermissionTree>();
+			this.children = new ArrayList<>();
 		}
 		this.status = permission.getStatus();
 	}

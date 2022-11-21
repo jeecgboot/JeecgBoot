@@ -67,9 +67,9 @@ public class JoaDemoController {
 									  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									  HttpServletRequest req) {
-		Result<IPage<JoaDemo>> result = new Result<IPage<JoaDemo>>();
+		Result<IPage<JoaDemo>> result = new Result<>();
 		QueryWrapper<JoaDemo> queryWrapper = QueryGenerator.initQueryWrapper(joaDemo, req.getParameterMap());
-		Page<JoaDemo> page = new Page<JoaDemo>(pageNo, pageSize);
+		Page<JoaDemo> page = new Page<>(pageNo, pageSize);
 		IPage<JoaDemo> pageList = joaDemoService.page(page, queryWrapper);
 		result.setSuccess(true);
 		result.setResult(pageList);
@@ -83,7 +83,7 @@ public class JoaDemoController {
 	 */
 	@PostMapping(value = "/add")
 	public Result<JoaDemo> add(@RequestBody JoaDemo joaDemo) {
-		Result<JoaDemo> result = new Result<JoaDemo>();
+		Result<JoaDemo> result = new Result<>();
 		try {
 			joaDemoService.save(joaDemo);
 			result.success("添加成功！");
@@ -101,7 +101,7 @@ public class JoaDemoController {
 	 */
 	@PutMapping(value = "/edit")
 	public Result<JoaDemo> edit(@RequestBody JoaDemo joaDemo) {
-		Result<JoaDemo> result = new Result<JoaDemo>();
+		Result<JoaDemo> result = new Result<>();
 		JoaDemo joaDemoEntity = joaDemoService.getById(joaDemo.getId());
 		if(joaDemoEntity==null) {
 			result.error500("未找到对应实体");
@@ -123,7 +123,7 @@ public class JoaDemoController {
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<JoaDemo> delete(@RequestParam(name="id",required=true) String id) {
-		Result<JoaDemo> result = new Result<JoaDemo>();
+		Result<JoaDemo> result = new Result<>();
 		JoaDemo joaDemo = joaDemoService.getById(id);
 		if(joaDemo==null) {
 			result.error500("未找到对应实体");
@@ -144,7 +144,7 @@ public class JoaDemoController {
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<JoaDemo> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		Result<JoaDemo> result = new Result<JoaDemo>();
+		Result<JoaDemo> result = new Result<>();
 		if(ids==null || "".equals(ids.trim())) {
 			result.error500("参数不识别！");
 		}else {
@@ -161,7 +161,7 @@ public class JoaDemoController {
 	 */
 	@GetMapping(value = "/queryById")
 	public Result<JoaDemo> queryById(@RequestParam(name="id",required=true) String id) {
-		Result<JoaDemo> result = new Result<JoaDemo>();
+		Result<JoaDemo> result = new Result<>();
 		JoaDemo joaDemo = joaDemoService.getById(id);
 		if(joaDemo==null) {
 			result.error500("未找到对应实体");

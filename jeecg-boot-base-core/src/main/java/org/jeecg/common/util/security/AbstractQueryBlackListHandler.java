@@ -52,7 +52,7 @@ public abstract class AbstractQueryBlackListHandler {
         if(list==null){
             return true;
         }
-        log.info("--获取sql信息--", list.toString());
+        log.info("--获取sql信息--", list);
         boolean flag = true;
         for (QueryTable table : list) {
             String name = table.getName();
@@ -76,7 +76,7 @@ public abstract class AbstractQueryBlackListHandler {
     /**
      * 查询的表的信息
      */
-    protected class QueryTable {
+    protected static class QueryTable {
         //表名
         private String name;
         //表的别名

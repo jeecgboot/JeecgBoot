@@ -1,7 +1,6 @@
 package org.jeecg.modules.system.entity;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;

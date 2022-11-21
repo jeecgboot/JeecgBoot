@@ -35,15 +35,11 @@ public class MybatisPlusSaasConfig {
     /**
      * 哪些表需要做多租户 表需要添加一个字段 tenant_id
      */
-    private static final List<String> TENANT_TABLE = new ArrayList<String>();
+    private static final List<String> TENANT_TABLE = new ArrayList<>();
 
     static {
         TENANT_TABLE.add("demo");
 
-//        //角色、菜单、部门
-//        tenantTable.add("sys_role");
-//        tenantTable.add("sys_permission");
-//        tenantTable.add("sys_depart");
     }
 
 
@@ -103,21 +99,5 @@ public class MybatisPlusSaasConfig {
         });
         return dynamicTableNameInnerInterceptor;
     }
-
-//    /**
-//     * 下个版本会删除，现在为了避免缓存出现问题不得不配置
-//     * @return
-//     */
-//    @Bean
-//    public ConfigurationCustomizer configurationCustomizer() {
-//        return configuration -> configuration.setUseDeprecatedExecutor(false);
-//    }
-//    /**
-//     * mybatis-plus SQL执行效率插件【生产环境可以关闭】
-//     */
-//    @Bean
-//    public PerformanceInterceptor performanceInterceptor() {
-//        return new PerformanceInterceptor();
-//    }
 
 }

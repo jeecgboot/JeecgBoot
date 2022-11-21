@@ -183,7 +183,7 @@ document.webL10n = (function(window, document, undefined) {
       // token expressions
       var reBlank = /^\s*|\s*$/;
       var reComment = /^\s*#|^\s*$/;
-      var reSection = /^\s*\[(.*)\]\s*$/;
+      var reSection = /^\s*\[(.*)]\s*$/;
       var reImport = /^\s*@import\s+url\((.*)\)\s*$/i;
       var reSplit = /^([^=\s]*)\s*=\s*(.+)$/; // TODO: escape EOLs with '\'
 
@@ -850,7 +850,7 @@ document.webL10n = (function(window, document, undefined) {
 
   // replace {[macros]} with their values
   function substIndexes(str, args, key, prop) {
-    var reIndex = /\{\[\s*([a-zA-Z]+)\(([a-zA-Z]+)\)\s*\]\}/;
+    var reIndex = /\{\[\s*([a-zA-Z]+)\(([a-zA-Z]+)\)\s*]}/;
     var reMatch = reIndex.exec(str);
     if (!reMatch || !reMatch.length)
       return str;
@@ -876,7 +876,7 @@ document.webL10n = (function(window, document, undefined) {
 
   // replace {{arguments}} with their values
   function substArguments(str, args, key) {
-    var reArgs = /\{\{\s*(.+?)\s*\}\}/g;
+    var reArgs = /\{\{\s*(.+?)\s*}}/g;
     return str.replace(reArgs, function(matched_text, arg) {
       if (args && arg in args) {
         return args[arg];

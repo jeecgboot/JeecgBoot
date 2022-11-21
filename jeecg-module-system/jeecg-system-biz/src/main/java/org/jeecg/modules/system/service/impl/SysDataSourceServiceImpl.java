@@ -65,7 +65,7 @@ public class SysDataSourceServiceImpl extends ServiceImpl<SysDataSourceMapper, S
                 String encrypt = SecurityUtil.jiami(dbPassword);
                 sysDataSource.setDbPassword(encrypt);
             }
-            Boolean result=updateById(sysDataSource);
+            boolean result=updateById(sysDataSource);
             if(result){
                 //先删除老的数据源
                // removeDynamicDataSource(d.getCode());

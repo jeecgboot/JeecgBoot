@@ -32,7 +32,7 @@ public enum DySmsEnum {
 	 */
 	private String keys;
 	
-	private DySmsEnum(String templateCode,String signName,String keys) {
+	DySmsEnum(String templateCode,String signName,String keys) {
 		this.templateCode = templateCode;
 		this.signName = signName;
 		this.keys = keys;

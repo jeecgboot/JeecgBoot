@@ -57,10 +57,7 @@ public class PushMsgUtil {
             try {
                 template = new Template("SysMessageTemplate", content, freemarkerConfig);
                 template.process(map, stringWriter);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            } catch (TemplateException e) {
+            } catch (IOException | TemplateException e) {
                 e.printStackTrace();
                 return false;
             }

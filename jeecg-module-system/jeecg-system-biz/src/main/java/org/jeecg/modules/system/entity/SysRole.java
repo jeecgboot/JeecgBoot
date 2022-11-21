@@ -1,7 +1,6 @@
 package org.jeecg.modules.system.entity;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.jeecgframework.poi.excel.annotation.Excel;

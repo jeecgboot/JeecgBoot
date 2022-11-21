@@ -3,9 +3,6 @@ package org.jeecg.modules.system.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.dynamic.datasource.DynamicRoutingDataSource;
-import com.baomidou.dynamic.datasource.creator.DruidDataSourceCreator;
-import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DataSourceProperty;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -13,7 +10,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.exception.JeecgBootException;
@@ -30,7 +26,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 
@@ -173,7 +168,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
     @AutoLog(value = "多数据源管理-通过id查询")
     @ApiOperation(value = "多数据源管理-通过id查询", notes = "多数据源管理-通过id查询")
     @GetMapping(value = "/queryById")
-    public Result<?> queryById(@RequestParam(name = "id") String id) throws InterruptedException {
+    public Result<?> queryById(@RequestParam(name = "id") String id) {
         SysDataSource sysDataSource = sysDataSourceService.getById(id);
         //密码解密
         String dbPassword = sysDataSource.getDbPassword();

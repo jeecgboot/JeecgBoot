@@ -1,6 +1,5 @@
 package org.jeecg.modules.system.security;
 
-import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.common.util.security.AbstractQueryBlackListHandler;

@@ -118,7 +118,7 @@ public class OssBootUtil {
               orgName=file.getName();
             }
             orgName = CommonUtils.getFileName(orgName);
-            String fileName = orgName.indexOf(".")==-1
+            String fileName = !orgName.contains(".")
                               ?orgName + "_" + System.currentTimeMillis()
                               :orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.lastIndexOf("."));
             if (!fileDir.endsWith(SymbolConstant.SINGLE_SLASH)) {
@@ -127,7 +127,7 @@ public class OssBootUtil {
             //update-begin-author:wangshuai date:20201012 for: 过滤上传文件夹名特殊字符，防止攻击
             fileDir=StrAttackFilter.filter(fileDir);
             //update-end-author:wangshuai date:20201012 for: 过滤上传文件夹名特殊字符，防止攻击
-            fileUrl = fileUrl.append(fileDir + fileName);
+            fileUrl = fileUrl.append(fileDir).append(fileName);
 
             if (oConvertUtils.isNotEmpty(staticDomain) && staticDomain.toLowerCase().startsWith(CommonConstant.STR_HTTP)) {
                 filePath = staticDomain + SymbolConstant.SINGLE_SLASH + fileUrl;
@@ -140,14 +140,11 @@ public class OssBootUtil {
             if (result != null) {
                 log.info("------OSS文件上传成功------" + fileUrl);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-        return filePath;
+      return filePath;
     }
 
     /**
@@ -157,7 +154,7 @@ public class OssBootUtil {
     */
     public static String getOriginalUrl(String url) {
         String originalDomain = "https://" + bucketName + "." + endPoint;
-        if(oConvertUtils.isNotEmpty(staticDomain) && url.indexOf(staticDomain)!=-1){
+        if(oConvertUtils.isNotEmpty(staticDomain) && url.contains(staticDomain)){
             url = url.replace(staticDomain,originalDomain);
         }
         return url;
@@ -193,7 +190,7 @@ public class OssBootUtil {
                 fileDir = fileDir.concat(SymbolConstant.SINGLE_SLASH);
             }
             fileDir = StrAttackFilter.filter(fileDir);
-            fileUrl = fileUrl.append(fileDir + fileName);
+            fileUrl = fileUrl.append(fileDir).append(fileName);
             if (oConvertUtils.isNotEmpty(staticDomain) && staticDomain.toLowerCase().startsWith(CommonConstant.STR_HTTP)) {
                 filePath = staticDomain + SymbolConstant.SINGLE_SLASH + fileUrl;
             } else {
@@ -274,16 +271,7 @@ public class OssBootUtil {
         return inputStream;
     }
 
-    ///**
-    // * 获取文件流
-    // * @param objectName
-    // * @return
-    // */
-    //public static InputStream getOssFile(String objectName){
-    //    return getOssFile(objectName,null);
-    //}
-
-    /**
+  /**
      * 获取文件外链
      * @param bucketName
      * @param objectName
@@ -332,18 +320,17 @@ public class OssBootUtil {
      */
     public static String upload(InputStream stream, String relativePath) {
         String filePath = null;
-        String fileUrl = relativePath;
-        initOss(endPoint, accessKeyId, accessKeySecret);
+      initOss(endPoint, accessKeyId, accessKeySecret);
         if (oConvertUtils.isNotEmpty(staticDomain) && staticDomain.toLowerCase().startsWith(CommonConstant.STR_HTTP)) {
             filePath = staticDomain + SymbolConstant.SINGLE_SLASH + relativePath;
         } else {
-            filePath = "https://" + bucketName + "." + endPoint + SymbolConstant.SINGLE_SLASH + fileUrl;
+            filePath = "https://" + bucketName + "." + endPoint + SymbolConstant.SINGLE_SLASH + relativePath;
         }
-        PutObjectResult result = ossClient.putObject(bucketName, fileUrl.toString(),stream);
+        PutObjectResult result = ossClient.putObject(bucketName, relativePath,stream);
         // 设置权限(公开读)
         ossClient.setBucketAcl(bucketName, CannedAccessControlList.PublicRead);
         if (result != null) {
-            log.info("------OSS文件上传成功------" + fileUrl);
+            log.info("------OSS文件上传成功------" + relativePath);
         }
         return filePath;
     }

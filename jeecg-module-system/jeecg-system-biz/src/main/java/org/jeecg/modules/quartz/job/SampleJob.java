@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SampleJob implements Job {
 
 	@Override
-	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+	public void execute(JobExecutionContext jobExecutionContext) {
 		log.info(" Job Execution key："+jobExecutionContext.getJobDetail().getKey());
 		log.info(String.format(" Jeecg-Boot 普通定时任务 SampleJob !  时间:" + DateUtils.getTimestamp()));
 	}

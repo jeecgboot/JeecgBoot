@@ -21,7 +21,7 @@ public interface ISysLogService extends IService<SysLog> {
 	/**
 	 * 清空所有日志记录
 	 */
-	public void removeAll();
+    void removeAll();
 	
 	/**
 	 * 获取系统总访问次数

@@ -17,12 +17,12 @@ import java.util.Map;
 public interface ISysCategoryService extends IService<SysCategory> {
 
 	/**根节点父ID的值*/
-	public static final String ROOT_PID_VALUE = "0";
+    String ROOT_PID_VALUE = "0";
 
     /**
      * 存在子节点
      */
-    public static final String HAS_CHILD = "1";
+    String HAS_CHILD = "1";
 
     /**
      * 添加分类字典
@@ -42,14 +42,14 @@ public interface ISysCategoryService extends IService<SysCategory> {
 	 * @return
      * @throws JeecgBootException
 	 */
-	public List<TreeSelectModel> queryListByCode(String pcode) throws JeecgBootException;
+    List<TreeSelectModel> queryListByCode(String pcode) throws JeecgBootException;
 	
 	/**
 	  * 根据pid查询子节点集合
 	 * @param pid
 	 * @return
 	 */
-	public List<TreeSelectModel> queryListByPid(String pid);
+    List<TreeSelectModel> queryListByPid(String pid);
 
 	/**
 	 * 根据pid查询子节点集合,支持查询条件
@@ -57,14 +57,14 @@ public interface ISysCategoryService extends IService<SysCategory> {
 	 * @param condition
 	 * @return
 	 */
-	public List<TreeSelectModel> queryListByPid(String pid, Map<String,String> condition);
+    List<TreeSelectModel> queryListByPid(String pid, Map<String,String> condition);
 
 	/**
 	 * 根据code查询id
 	 * @param code
 	 * @return
 	 */
-	public String queryIdByCode(String code);
+    String queryIdByCode(String code);
 
 	/**
 	 * 删除节点时同时删除子节点及修改父级节点

@@ -56,8 +56,7 @@ public class SysCategory implements Serializable,Comparable<SysCategory>{
 		// <0：当前对象比传入对象小。
 		// =0：当前对象等于传入对象。
 		// >0：当前对象比传入对象大。
-		int	 s = this.code.length() - o.code.length();
-		return s;
+        return this.code.length() - o.code.length();
 	}
 	@Override
 	public String toString() {

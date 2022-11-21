@@ -67,7 +67,7 @@ public class DruidConfig {
      *
      * @author BBF
      */
-    private class RemoveAdFilter implements Filter {
+    private static class RemoveAdFilter implements Filter {
 
         private final String newJs;
 

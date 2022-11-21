@@ -18,14 +18,14 @@ public interface IJeecgDemoService extends JeecgService<JeecgDemo> {
     /**
      * 测试事务
      */
-	public void testTran();
+    void testTran();
 
     /**
      * 通过id过去demo数据，先读缓存，在读数据库
      * @param id 数据库id
      * @return demo对象
      */
-	public JeecgDemo getByIdCacheable(String id);
+    JeecgDemo getByIdCacheable(String id);
 	
 	/**
 	 * 查询列表数据 在service中获取数据权限sql信息

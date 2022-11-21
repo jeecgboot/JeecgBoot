@@ -16,6 +16,6 @@ public interface SysDataLogMapper extends BaseMapper<SysDataLog>{
 	 * @param dataId
 	 * @return
 	 */
-	public String queryMaxDataVer(@Param("tableName") String tableName,@Param("dataId") String dataId);
+    String queryMaxDataVer(@Param("tableName") String tableName,@Param("dataId") String dataId);
 	
 }

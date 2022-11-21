@@ -85,7 +85,7 @@ public class MinioUtil {
             }
             orgName = CommonUtils.getFileName(orgName);
             String objectName = bizPath+"/"
-                                +( orgName.indexOf(".")==-1
+                                +(!orgName.contains(".")
                                    ?orgName + "_" + System.currentTimeMillis()
                                    :orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.lastIndexOf("."))
                                  );

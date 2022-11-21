@@ -18,7 +18,7 @@ public interface ISysRolePermissionService extends IService<SysRolePermission> {
 	 * @param roleId
 	 * @param permissionIds
 	 */
-	public void saveRolePermission(String roleId,String permissionIds);
+    void saveRolePermission(String roleId,String permissionIds);
 	
 	/**
 	 * 保存授权 将上次的权限和这次作比较 差异处理提高效率 
@@ -26,6 +26,6 @@ public interface ISysRolePermissionService extends IService<SysRolePermission> {
 	 * @param permissionIds
 	 * @param lastPermissionIds
 	 */
-	public void saveRolePermission(String roleId,String permissionIds,String lastPermissionIds);
+    void saveRolePermission(String roleId,String permissionIds,String lastPermissionIds);
 
 }

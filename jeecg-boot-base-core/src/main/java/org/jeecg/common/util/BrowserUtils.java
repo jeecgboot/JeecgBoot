@@ -32,7 +32,7 @@ public class BrowserUtils {
 	 * @return
 	 */
 	public static Double getIeVersion(HttpServletRequest request) {
-		Double version = 0.0;
+		double version = 0.0;
 		if (getBrowserType(request, IE11)) {
 			version = 11.0;
 		} else if (getBrowserType(request, IE10)) {
@@ -170,7 +170,7 @@ public class BrowserUtils {
 	}
 
 	
-	private static Map<String, String> langMap = new HashMap<String, String>();
+	private static Map<String, String> langMap = new HashMap<>();
 	private final static String ZH = "zh";
 	private final static String ZH_CN = "zh-cn";
 	
@@ -187,7 +187,7 @@ public class BrowserUtils {
 	public static String getBrowserLanguage(HttpServletRequest request) {
 		
 		String browserLang = request.getLocale().getLanguage();
-		String browserLangCode = (String)langMap.get(browserLang);
+		String browserLangCode = langMap.get(browserLang);
 		
 		if(browserLangCode == null)
 		{

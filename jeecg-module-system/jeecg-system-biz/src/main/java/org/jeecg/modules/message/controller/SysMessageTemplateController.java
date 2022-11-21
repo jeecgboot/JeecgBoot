@@ -65,7 +65,7 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	public Result<?> queryPageList(SysMessageTemplate sysMessageTemplate, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
 		QueryWrapper<SysMessageTemplate> queryWrapper = QueryGenerator.initQueryWrapper(sysMessageTemplate, req.getParameterMap());
-		Page<SysMessageTemplate> page = new Page<SysMessageTemplate>(pageNo, pageSize);
+		Page<SysMessageTemplate> page = new Page<>(pageNo, pageSize);
 		IPage<SysMessageTemplate> pageList = sysMessageTemplateService.page(page, queryWrapper);
         return Result.ok(pageList);
 	}
@@ -157,7 +157,7 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	 */
 	@PostMapping(value = "/sendMsg")
 	public Result<SysMessageTemplate> sendMessage(@RequestBody MsgParams msgParams) {
-		Result<SysMessageTemplate> result = new Result<SysMessageTemplate>();
+		Result<SysMessageTemplate> result = new Result<>();
 		try {
 			MessageDTO md = new MessageDTO();
 			md.setToAll(false);

@@ -14,7 +14,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import org.jeecg.common.constant.CommonConstant;
+
 import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -91,7 +91,7 @@ public final class XmlUtils {
      * @return the list of text from the elements.
      */
     public static List<String> getTextForElements(final String xmlAsString, final String element) {
-        final List<String> elements = new ArrayList<String>(2);
+        final List<String> elements = new ArrayList<>(2);
         final XMLReader reader = getXmlReader();
 
         final DefaultHandler handler = new DefaultHandler() {
@@ -257,7 +257,7 @@ public final class XmlUtils {
                     if (o instanceof List) {
                         items = (List<Object>) o;
                     } else {
-                        items = new LinkedList<Object>();
+                        items = new LinkedList<>();
                         items.add(o);
                         this.attributes.put(this.currentAttribute, items);
                     }
