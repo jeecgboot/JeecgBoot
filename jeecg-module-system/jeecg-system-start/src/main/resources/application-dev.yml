@@ -6,8 +6,8 @@ server:
     include-exception: true
     include-stacktrace: ALWAYS
     include-message: ALWAYS
-  servlet:
-    context-path: /jeecg-boot
+#  servlet:
+#    context-path: /jeecg-boot
   compression:
     enabled: true
     min-response-size: 1024
@@ -130,9 +130,9 @@ spring:
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
-          username: root
-          password: root
+          url: jdbc:mysql://rm-bp10s6v10v75ax5x6lo.mysql.rds.aliyuncs.com:3306/vote?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+          username: vote
+          password: 1q2w3e4r5t^Y&U*I(O)P
           driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
@@ -142,10 +142,11 @@ spring:
           #driver-class-name: com.mysql.cj.jdbc.Driver
   #redis 配置
   redis:
-    database: 0
-    host: 127.0.0.1
+    database: 2
+    host: r-8vbmrj3h4xwod10thapd.redis.zhangbei.rds.aliyuncs.com
     port: 6379
-    password: ''
+    password: 1q2w3e4r5t^Y&U*I(O)P
+
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:org/jeecg/modules/**/xml/*Mapper.xml
