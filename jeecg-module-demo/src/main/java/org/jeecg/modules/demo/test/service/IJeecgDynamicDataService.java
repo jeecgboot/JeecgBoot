@@ -20,9 +20,8 @@ public interface IJeecgDynamicDataService extends JeecgService<JeecgDemo> {
 
 	/**
 	 * 使用spel从参数获取
-	 * @param dsName
 	 * @return
 	 */
-    List<JeecgDemo> selectSpelByKey(String dsName);
+    List<JeecgDemo> selectSpelByKey();
 
 }

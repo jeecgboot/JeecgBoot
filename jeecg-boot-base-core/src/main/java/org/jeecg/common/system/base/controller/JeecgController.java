@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.shiro.SecurityUtils;
@@ -36,7 +37,9 @@ import java.util.*;
  */
 @Slf4j
 public class JeecgController<T, S extends IService<T>> {
+
     /**issues/2933 JeecgController注入service时改用protected修饰，能避免重复引用service*/
+    @Getter
     @Autowired
     protected S service;
 

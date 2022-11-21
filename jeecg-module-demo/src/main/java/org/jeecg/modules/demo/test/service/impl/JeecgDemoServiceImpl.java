@@ -54,7 +54,7 @@ public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo
 		pp3.setAge(3333);
 		pp3.setName("测试事务  小白兔 3");
 		jeecgDemoMapper.insert(pp3);
-  }
+    }
 
 
 	/**
@@ -105,11 +105,6 @@ public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo
 			}
 		}
 		return exportFieldsList != null && exportFieldsList.size()>0 ? String.join(",", exportFieldsList) : "";
-	}
-
-	@Override
-	public List<String> getCreateByList() {
-		return jeecgDemoMapper.getCreateByList();
 	}
 
 }

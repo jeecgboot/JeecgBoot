@@ -43,6 +43,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/test/jeecgDemo")
 public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoService> {
+
     @Autowired
     private IJeecgDemoService jeecgDemoService;
 
@@ -112,7 +113,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
     @AutoLog(value = "删除测试DEMO")
     @DeleteMapping(value = "/delete")
     @ApiOperation(value = "通过ID删除DEMO", notes = "通过ID删除DEMO")
-    public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
+    public Result<?> delete(@RequestParam(name = "id") String id) {
         jeecgDemoService.removeById(id);
         return Result.OK("删除成功!");
     }
@@ -125,7 +126,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      */
     @DeleteMapping(value = "/deleteBatch")
     @ApiOperation(value = "批量删除DEMO", notes = "批量删除DEMO")
-    public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
+    public Result<?> deleteBatch(@RequestParam(name = "ids") String ids) {
         this.jeecgDemoService.removeByIds(Arrays.asList(ids.split(",")));
         return Result.OK("批量删除成功！");
     }
@@ -138,7 +139,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      */
     @GetMapping(value = "/queryById")
     @ApiOperation(value = "通过ID查询DEMO", notes = "通过ID查询DEMO")
-    public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
+    public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id") String id) {
         JeecgDemo jeecgDemo = jeecgDemoService.getById(id);
         return Result.OK(jeecgDemo);
     }
@@ -154,7 +155,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
         //获取导出表格字段
         String exportFields = jeecgDemoService.getExportFields();
         //分sheet导出表格字段
-        return super.exportXlsSheet(request, jeecgDemo, JeecgDemo.class, "单表模型",exportFields,500);
+        return super.exportXlsSheet(request, jeecgDemo, JeecgDemo.class, "单表模型", null,500);
     }
 
     /**
@@ -166,7 +167,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      */
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
-        return super.importExcel(request, response, JeecgDemo.class);
+        return super.importExcel(request,  response, JeecgDemo.class);
     }
 
     // =====Redis 示例===============================================================================================
@@ -454,15 +455,5 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
         return page;
     }
     // =====Vue3 Native  原生页面示例===============================================================================================
-
-
-    /**
-     * 获取创建人
-     * @return
-     */
-    @GetMapping(value = "/groupList")
-    public Result<?> groupList() {
-        return Result.ok(jeecgDemoService.getCreateByList());
-    }
-
+    
 }

@@ -122,7 +122,7 @@ public class JoaDemoController {
 	 * @return
 	 */
 	@DeleteMapping(value = "/delete")
-	public Result<JoaDemo> delete(@RequestParam(name="id",required=true) String id) {
+	public Result<JoaDemo> delete(@RequestParam(name="id") String id) {
 		Result<JoaDemo> result = new Result<>();
 		JoaDemo joaDemo = joaDemoService.getById(id);
 		if(joaDemo==null) {
@@ -143,7 +143,7 @@ public class JoaDemoController {
 	 * @return
 	 */
 	@DeleteMapping(value = "/deleteBatch")
-	public Result<JoaDemo> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
+	public Result<JoaDemo> deleteBatch(@RequestParam(name="ids") String ids) {
 		Result<JoaDemo> result = new Result<>();
 		if(ids==null || "".equals(ids.trim())) {
 			result.error500("参数不识别！");
@@ -160,7 +160,7 @@ public class JoaDemoController {
 	 * @return
 	 */
 	@GetMapping(value = "/queryById")
-	public Result<JoaDemo> queryById(@RequestParam(name="id",required=true) String id) {
+	public Result<JoaDemo> queryById(@RequestParam(name="id") String id) {
 		Result<JoaDemo> result = new Result<>();
 		JoaDemo joaDemo = joaDemoService.getById(id);
 		if(joaDemo==null) {

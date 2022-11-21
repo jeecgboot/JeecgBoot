@@ -22,27 +22,27 @@ public class JeecgOrderMain implements Serializable {
     
 	/**主键*/
     @TableId(type = IdType.ASSIGN_ID)
-	private java.lang.String id;
+	private String id;
 	/**订单号*/
-	private java.lang.String orderCode;
+	private String orderCode;
 	/**订单类型*/
-	private java.lang.String ctype;
+	private String ctype;
 	/**订单日期*/
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private java.util.Date orderDate;
 	/**订单金额*/
-	private java.lang.Double orderMoney;
+	private Double orderMoney;
 	/**订单备注*/
-	private java.lang.String content;
+	private String content;
 	/**创建人*/
-	private java.lang.String createBy;
+	private String createBy;
 	/**创建时间*/
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private java.util.Date createTime;
 	/**修改人*/
-	private java.lang.String updateBy;
+	private String updateBy;
 	/**修改时间*/
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")

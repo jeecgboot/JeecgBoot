@@ -115,7 +115,7 @@ public class JeecgOrderMainController extends JeecgController<JeecgOrderMain, IJ
      * @return
      */
     @DeleteMapping(value = "/delete")
-    public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
+    public Result<?> delete(@RequestParam(name = "id") String id) {
         jeecgOrderMainService.delMain(id);
         return Result.ok("删除成功!");
     }
@@ -127,7 +127,7 @@ public class JeecgOrderMainController extends JeecgController<JeecgOrderMain, IJ
      * @return
      */
     @DeleteMapping(value = "/deleteBatch")
-    public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
+    public Result<?> deleteBatch(@RequestParam(name = "ids") String ids) {
         this.jeecgOrderMainService.delBatchMain(Arrays.asList(ids.split(",")));
         return Result.ok("批量删除成功!");
     }
@@ -139,7 +139,7 @@ public class JeecgOrderMainController extends JeecgController<JeecgOrderMain, IJ
      * @return
      */
     @GetMapping(value = "/queryById")
-    public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
+    public Result<?> queryById(@RequestParam(name = "id") String id) {
         JeecgOrderMain jeecgOrderMain = jeecgOrderMainService.getById(id);
         return Result.ok(jeecgOrderMain);
     }
@@ -151,7 +151,7 @@ public class JeecgOrderMainController extends JeecgController<JeecgOrderMain, IJ
      * @return
      */
     @GetMapping(value = "/queryOrderCustomerListByMainId")
-    public Result<?> queryOrderCustomerListByMainId(@RequestParam(name = "id", required = true) String id) {
+    public Result<?> queryOrderCustomerListByMainId(@RequestParam(name = "id") String id) {
         List<JeecgOrderCustomer> jeecgOrderCustomerList = jeecgOrderCustomerService.selectCustomersByMainId(id);
         return Result.ok(jeecgOrderCustomerList);
     }
@@ -163,7 +163,7 @@ public class JeecgOrderMainController extends JeecgController<JeecgOrderMain, IJ
      * @return
      */
     @GetMapping(value = "/queryOrderTicketListByMainId")
-    public Result<?> queryOrderTicketListByMainId(@RequestParam(name = "id", required = true) String id) {
+    public Result<?> queryOrderTicketListByMainId(@RequestParam(name = "id") String id) {
         List<JeecgOrderTicket> jeecgOrderTicketList = jeecgOrderTicketService.selectTicketsByMainId(id);
         return Result.ok(jeecgOrderTicketList);
     }

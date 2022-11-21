@@ -25,13 +25,13 @@ public class JoaDemo implements Serializable {
     
 	/**ID*/
 	@TableId(type = IdType.ASSIGN_ID)
-	private java.lang.String id;
+	private String id;
 	/**请假人*/
 	@Excel(name = "请假人", width = 15)
-	private java.lang.String name;
+	private String name;
 	/**请假天数*/
 	@Excel(name = "请假天数", width = 15)
-	private java.lang.Integer days;
+	private Integer days;
 	/**开始时间*/
 	@Excel(name = "开始时间", width = 20, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
@@ -44,13 +44,13 @@ public class JoaDemo implements Serializable {
 	private java.util.Date endDate;
 	/**请假原因*/
 	@Excel(name = "请假原因", width = 15)
-	private java.lang.String reason;
+	private String reason;
 	/**流程状态*/
 	@Excel(name = "流程状态", width = 15)
-	private java.lang.String bpmStatus;
+	private String bpmStatus;
 	/**创建人id*/
 	@Excel(name = "创建人id", width = 15)
-	private java.lang.String createBy;
+	private String createBy;
 	/**创建时间*/
 	@Excel(name = "创建时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
@@ -63,5 +63,5 @@ public class JoaDemo implements Serializable {
 	private java.util.Date updateTime;
 	/**修改人id*/
 	@Excel(name = "修改人id", width = 15)
-	private java.lang.String updateBy;
+	private String updateBy;
 }

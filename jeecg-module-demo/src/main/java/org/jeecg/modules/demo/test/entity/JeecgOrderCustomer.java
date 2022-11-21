@@ -23,30 +23,30 @@ public class JeecgOrderCustomer implements Serializable {
     
 	/**主键*/
     @TableId(type = IdType.ASSIGN_ID)
-	private java.lang.String id;
+	private String id;
 	/**客户名*/
 	@Excel(name="客户名字",width=15)
-	private java.lang.String name;
+	private String name;
 	/**性别*/
-	private java.lang.String sex;
+	private String sex;
 	/**身份证号码*/
 	@Excel(name="身份证号码",width=15)
-	private java.lang.String idcard;
+	private String idcard;
 	/**身份证扫描件*/
-	private java.lang.String idcardPic;
+	private String idcardPic;
 	/**电话1*/
 	@Excel(name="电话",width=15)
-	private java.lang.String telphone;
+	private String telphone;
 	/**外键*/
-	private java.lang.String orderId;
+	private String orderId;
 	/**创建人*/
-	private java.lang.String createBy;
+	private String createBy;
 	/**创建时间*/
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private java.util.Date createTime;
 	/**修改人*/
-	private java.lang.String updateBy;
+	private String updateBy;
 	/**修改时间*/
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")

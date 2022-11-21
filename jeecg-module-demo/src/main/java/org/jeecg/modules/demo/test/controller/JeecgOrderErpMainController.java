@@ -93,7 +93,7 @@ public class JeecgOrderErpMainController {
      * @return
      */
     @DeleteMapping(value = "/delete")
-    public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
+    public Result<?> delete(@RequestParam(name = "id") String id) {
         jeecgOrderMainService.delMain(id);
         return Result.ok("删除成功!");
     }
@@ -105,7 +105,7 @@ public class JeecgOrderErpMainController {
      * @return
      */
     @DeleteMapping(value = "/deleteBatch")
-    public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
+    public Result<?> deleteBatch(@RequestParam(name = "ids") String ids) {
         this.jeecgOrderMainService.removeByIds(Arrays.asList(ids.split(",")));
         return Result.ok("批量删除成功!");
     }
@@ -117,7 +117,7 @@ public class JeecgOrderErpMainController {
      * @return
      */
     @GetMapping(value = "/queryById")
-    public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
+    public Result<?> queryById(@RequestParam(name = "id") String id) {
         JeecgOrderMain jeecgOrderMain = jeecgOrderMainService.getById(id);
         return Result.ok(jeecgOrderMain);
     }
@@ -188,7 +188,7 @@ public class JeecgOrderErpMainController {
      * @return
      */
     @DeleteMapping(value = "/deleteCustomer")
-    public Result<?> deleteCustomer(@RequestParam(name = "id", required = true) String id) {
+    public Result<?> deleteCustomer(@RequestParam(name = "id") String id) {
         jeecgOrderCustomerService.removeById(id);
         return Result.ok("删除成功!");
     }
@@ -200,7 +200,7 @@ public class JeecgOrderErpMainController {
      * @return
      */
     @DeleteMapping(value = "/deleteBatchCustomer")
-    public Result<?> deleteBatchCustomer(@RequestParam(name = "ids", required = true) String ids) {
+    public Result<?> deleteBatchCustomer(@RequestParam(name = "ids") String ids) {
         this.jeecgOrderCustomerService.removeByIds(Arrays.asList(ids.split(",")));
         return Result.ok("批量删除成功!");
     }
@@ -236,7 +236,7 @@ public class JeecgOrderErpMainController {
      * @return
      */
     @DeleteMapping(value = "/deleteTicket")
-    public Result<?> deleteTicket(@RequestParam(name = "id", required = true) String id) {
+    public Result<?> deleteTicket(@RequestParam(name = "id") String id) {
         jeecgOrderTicketService.removeById(id);
         return Result.ok("删除成功!");
     }
@@ -248,7 +248,7 @@ public class JeecgOrderErpMainController {
      * @return
      */
     @DeleteMapping(value = "/deleteBatchTicket")
-    public Result<?> deleteBatchTicket(@RequestParam(name = "ids", required = true) String ids) {
+    public Result<?> deleteBatchTicket(@RequestParam(name = "ids") String ids) {
         this.jeecgOrderTicketService.removeByIds(Arrays.asList(ids.split(",")));
         return Result.ok("批量删除成功!");
     }

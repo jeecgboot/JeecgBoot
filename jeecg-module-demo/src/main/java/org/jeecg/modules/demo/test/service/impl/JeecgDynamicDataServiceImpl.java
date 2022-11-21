@@ -22,7 +22,7 @@ public class JeecgDynamicDataServiceImpl extends ServiceImpl<JeecgDemoMapper, Je
     }
 
     @Override
-    public List<JeecgDemo> selectSpelByKey(String dsName) {
+    public List<JeecgDemo> selectSpelByKey() {
         return list();
     }
 }

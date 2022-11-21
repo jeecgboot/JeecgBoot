@@ -38,7 +38,7 @@ public class JeecgDynamicDataController extends JeecgController<JeecgDemo, IJeec
     @AutoLog(value = "动态切换数据源")
     @ApiOperation(value = "动态切换数据源", notes = "动态切换数据源")
     public Result<List<JeecgDemo>> selectSpelByKey(@RequestParam(required = false) String dsName) {
-        List<JeecgDemo> list = jeecgDynamicDataService.selectSpelByKey(dsName);
+        List<JeecgDemo> list = jeecgDynamicDataService.selectSpelByKey();
         return Result.OK(list);
     }
 

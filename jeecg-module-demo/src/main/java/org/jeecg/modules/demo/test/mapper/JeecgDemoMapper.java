@@ -21,7 +21,7 @@ public interface JeecgDemoMapper extends BaseMapper<JeecgDemo> {
      * @param name 姓名
      * @return demo集合
      */
-    List<JeecgDemo> getDemoByName(@Param("name") String name);
+	List<JeecgDemo> getDemoByName(@Param("name") String name);
 	
 	/**
 	 * 查询列表数据 直接传数据权限的sql进行数据过滤
@@ -29,14 +29,14 @@ public interface JeecgDemoMapper extends BaseMapper<JeecgDemo> {
 	 * @param permissionSql
 	 * @return
 	 */
-    IPage<JeecgDemo> queryListWithPermission(Page<JeecgDemo> page,@Param("permissionSql")String permissionSql);
+	IPage<JeecgDemo> queryListWithPermission(Page<JeecgDemo> page, @Param("permissionSql") String permissionSql);
 
 	/**
 	 * 根据前缀获取所有有效权限
 	 * @param permsPrefix
 	 * @return
 	 */
-    List<String> queryAllAuth(@Param("permsPrefix")String permsPrefix);
+	List<String> queryAllAuth(@Param("permsPrefix") String permsPrefix);
 
 	/**
 	 * 查询用户已授权字段
@@ -44,13 +44,6 @@ public interface JeecgDemoMapper extends BaseMapper<JeecgDemo> {
 	 * @param permsPrefix
 	 * @return
 	 */
-    List<String> queryUserAuth(@Param("userId")String userId,@Param("permsPrefix")String permsPrefix);
-
-
-	/**
-	 * 获取创建人
-	 * @return
-	 */
-	List<String> getCreateByList();
+	List<String> queryUserAuth(@Param("userId") String userId, @Param("permsPrefix") String permsPrefix);
 
 }
