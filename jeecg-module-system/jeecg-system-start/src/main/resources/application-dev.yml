@@ -160,7 +160,7 @@ mybatis-plus:
       table-underline: true
   configuration:
     # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
-    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     # 返回类型为Map,显示null对应的字段
     call-setters-on-nulls: true
 #jeecg专用配置
@@ -214,17 +214,7 @@ jeecg:
     is_verify_token: true
     #必须校验方法
     verify_methods: remove,delete,save,add,update
-  #xxl-job配置
-  xxljob:
-    enabled: false
-    adminAddresses: http://127.0.0.1:9080/xxl-job-admin
-    appname: ${spring.application.name}
-    accessToken: ''
-    address: 127.0.0.1:30007
-    ip: 127.0.0.1
-    port: 30007
-    logPath: logs/jeecg/job/jobhandler/
-    logRetentionDays: 30
+
   #分布式锁配置
   redisson:
     address: 127.0.0.1:6379
@@ -248,51 +238,4 @@ knife4j:
     enable: false
     username: jeecg
     password: jeecg1314
-#第三方登录
-justauth:
-  enabled: true
-  type:
-    GITHUB:
-      client-id: ??
-      client-secret: ??
-      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/github/callback
-    WECHAT_ENTERPRISE:
-      client-id: ??
-      client-secret: ??
-      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_enterprise/callback
-      agent-id: ??
-    DINGTALK:
-      client-id: ??
-      client-secret: ??
-      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/dingtalk/callback
-    WECHAT_OPEN:
-      client-id: ??
-      client-secret: ??
-      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_open/callback
-  cache:
-    type: default
-    prefix: 'demo::'
-    timeout: 1h
-#第三方APP对接
-third-app:
-  enabled: false
-  type:
-    #企业微信
-    WECHAT_ENTERPRISE:
-      enabled: false
-      #CORP_ID
-      client-id: ??
-      #SECRET
-      client-secret: ??
-      #自建应用id
-      agent-id: ??
-      #自建应用秘钥（新版企微需要配置）
-      # agent-app-secret: ??
-    #钉钉
-    DINGTALK:
-      enabled: false
-      # appKey
-      client-id: ??
-      # appSecret
-      client-secret: ??
-      agent-id: ??
+
