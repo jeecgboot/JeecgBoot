@@ -132,7 +132,7 @@ spring:
         master:
           url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: root
-          password: root
+          password: 123456
           driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
@@ -180,9 +180,9 @@ jeecg:
     app: http://localhost:8051
   path:
     #文件上传根目录 设置
-    upload: /opt/upFiles
+    upload: /Users/jhm/Source/GitHub/data/jeecg/upFiles
     #webapp文件路径
-    webapp: /opt/webapp
+    webapp: /Users/jhm/Source/GitHub/data/jeecg/webapp
   shiro:
     excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**
   #阿里云oss存储和大鱼短信秘钥配置
@@ -222,7 +222,7 @@ jeecg:
     address: 127.0.0.1:30007
     ip: 127.0.0.1
     port: 30007
-    logPath: logs/jeecg/job/jobhandler/
+    logPath: /Users/jhm/Source/GitHub/data/jeecg/logs/jeecg/job/jobhandler
     logRetentionDays: 30
   #分布式锁配置
   redisson:
