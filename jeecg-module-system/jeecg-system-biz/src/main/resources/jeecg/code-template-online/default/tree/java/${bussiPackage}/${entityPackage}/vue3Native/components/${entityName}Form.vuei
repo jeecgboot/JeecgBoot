@@ -273,7 +273,7 @@
 
 <style lang="less" scoped>
   .antd-modal-form {
-    height: 500px !important;
+    min-height: 500px !important;
     overflow-y: auto;
     padding: 24px 24px 24px 24px;
   }
