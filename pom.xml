@@ -222,7 +222,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.4.3-GA2</version>
+				<version>3.4.4-beta</version>
 			</dependency>
 
 			<!-- 七牛云SDK -->
