@@ -46,7 +46,7 @@
     </a-form>
 
 		<!-- 子表单区域 -->
-    <a-tabs v-model:activeKey="activeKey">
+    <a-tabs v-model:activeKey="activeKey" animated>
 <#list subTables as sub><#rt/>
       <a-tab-pane tab="${sub.ftlDescription}" key="${sub.entityName?uncap_first}" :forceRender="true">
 			  <#if sub.foreignRelationType =='1'>
