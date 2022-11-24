@@ -160,7 +160,7 @@ public class SysUserController {
 	}
 
     //@RequiresRoles({"admin"})
-    //Permissions("system:user:add")
+    //@RequiresPermissions("system:user:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysUser> add(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -189,7 +189,7 @@ public class SysUserController {
 	}
 
     //@RequiresRoles({"admin"})
-    //Permissions("system:user:edit")
+    //@RequiresPermissions("system:user:edit")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<SysUser> edit(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -495,7 +495,7 @@ public class SysUserController {
      * @return
      */
     //@RequiresRoles({"admin"})
-    //Permissions("system:user:import")
+    //@RequiresPermissions("system:user:import")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response)throws IOException {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
