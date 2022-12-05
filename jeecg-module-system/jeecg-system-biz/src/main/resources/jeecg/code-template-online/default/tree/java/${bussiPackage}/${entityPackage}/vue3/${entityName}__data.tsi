@@ -168,9 +168,13 @@ export const searchFormSchema: FormSchema[] = [
       field: "${po.fieldName}",
 <#if po.classType=='date'>
       component: 'RangePicker',
+      componentProps: {
+          valueType: 'Date',
+      },
 <#elseif po.classType=='datetime'>
       component: 'RangePicker',
       componentProps: {
+          valueType: 'Date',
           showTime:true
       },
 <#elseif po.classType == 'time'>
