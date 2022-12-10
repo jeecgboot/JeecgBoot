@@ -39,10 +39,10 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 
 | 源码                | 源码地址                     | 
 |--------------------|------------------------|
-| `后台源码`    | https://github.com/jeecgboot/jeecg-boot        |
-| `前端源码(Vue3版)` | https://github.com/jeecgboot/jeecgboot-vue3 |
-| `前端源码(Vue2版)`  |https://github.com/jeecgboot/ant-design-vue-jeecg    |
-| `APP配套框架` | https://github.com/jeecgboot/jeecg-uniapp |
+| 后台源码    | https://github.com/jeecgboot/jeecg-boot        |
+| 前端源码 `Vue3版` | https://github.com/jeecgboot/jeecgboot-vue3 |
+| 前端源码 `Vue2版`  |https://github.com/jeecgboot/ant-design-vue-jeecg    |
+| APP配套框架 | https://github.com/jeecgboot/jeecg-uniapp |
 
 #####  快速搭建开发环境
 
