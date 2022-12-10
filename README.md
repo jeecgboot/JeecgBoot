@@ -36,10 +36,20 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 
 源码下载
 -----------------------------------
-- 后台源码 ：https://github.com/jeecgboot/jeecg-boot
-- 前端源码(Vue3版)：https://github.com/jeecgboot/jeecgboot-vue3
-- 前端源码(Vue2版)：https://github.com/jeecgboot/ant-design-vue-jeecg
-- APP配套框架：https://github.com/jeecgboot/jeecg-uniapp
+
+| 源码                | 源码地址                     | 
+|--------------------|------------------------|
+| `后台源码`    | https://github.com/jeecgboot/jeecg-boot        |
+| `前端源码(Vue3版)` | https://github.com/jeecgboot/jeecgboot-vue3 |
+| `前端源码(Vue2版)`  |https://github.com/jeecgboot/ant-design-vue-jeecg    |
+| `APP配套框架` | https://github.com/jeecgboot/jeecg-uniapp |
+
+#####  快速搭建开发环境
+
+- [通过IDEA启动前后端项目](http://doc.jeecg.com/2043874)
+- [Vue3前端项目快速启动](http://vue3.jeecg.com/2398848)
+- [Vue2前端项目快速启动](http://doc.jeecg.com/2678320)
+- [单体快速切换为微服务版](http://doc.jeecg.com/3043471)
 
 ##### 项目说明
 
@@ -52,12 +62,7 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 | `jeecg-boot-starter` | [Stater依赖项目单独维护，点击下载](https://gitee.com/jeecg/jeecg-boot-starter) |
 | `更多开源插件` | [更多源码下载](https://github.com/jeecgboot) |
 
-开发环境快速搭建
------------------------------------
-- [通过IDEA启动前后端项目](http://doc.jeecg.com/2043874)
-- [Vue3前端项目快速启动](http://vue3.jeecg.com/2398848)
-- [Vue2前端项目快速启动](http://doc.jeecg.com/2678320)
-- [单体快速切换为微服务版](http://doc.jeecg.com/3043471)
+
 
 技术文档
 -----------------------------------
