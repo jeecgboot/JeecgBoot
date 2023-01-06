@@ -35,7 +35,7 @@ public class MybatisPlusSaasConfig {
     /**
      * 哪些表需要做多租户 表需要添加一个字段 tenant_id
      */
-    private static final List<String> TENANT_TABLE = new ArrayList<String>();
+    public static final List<String> TENANT_TABLE = new ArrayList<String>();
 
     static {
         TENANT_TABLE.add("demo");
