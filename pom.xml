@@ -9,7 +9,7 @@
   	<parent>
 	    <groupId>org.springframework.boot</groupId>
 	    <artifactId>spring-boot-starter-parent</artifactId>
-	    <version>2.6.6</version>
+	    <version>2.6.14</version>
 	    <relativePath/>
 	</parent>
 
