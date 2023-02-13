@@ -36,9 +36,9 @@
 		<hutool.version>5.3.8</hutool.version>
 
 		<!-- 持久层 -->
-		<mybatis-plus.version>3.5.1</mybatis-plus.version>
+		<mybatis-plus.version>3.5.3</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>3.2.0</dynamic-datasource-spring-boot-starter.version>
-		<druid.version>1.1.22</druid.version>
+		<druid.version>1.2.15</druid.version>
 		<minidao.version>1.9.0</minidao.version>
 
 		<!-- 积木报表-->
