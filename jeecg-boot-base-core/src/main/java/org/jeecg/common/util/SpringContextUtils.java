@@ -1,8 +1,6 @@
 package org.jeecg.common.util;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.ServiceNameConstants;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -10,6 +8,9 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @Description: spring上下文工具类
@@ -56,12 +57,19 @@ public class SpringContextUtils implements ApplicationContextAware {
 	public static String getDomain(){
 		HttpServletRequest request = getHttpServletRequest();
 		StringBuffer url = request.getRequestURL();
-		//微服务情况下，获取gateway的basePath
+		//1.微服务情况下，获取gateway的basePath
 		String basePath = request.getHeader(ServiceNameConstants.X_GATEWAY_BASE_PATH);
 		if(oConvertUtils.isNotEmpty(basePath)){
 			return basePath;
 		}else{
-			return url.delete(url.length() - request.getRequestURI().length(), url.length()).toString();
+			String domain = url.delete(url.length() - request.getRequestURI().length(), url.length()).toString();
+			//2.【兼容】SSL认证之后，request.getScheme()获取不到https的问题
+			// https://blog.csdn.net/weixin_34376986/article/details/89767950
+			String scheme = request.getHeader(CommonConstant.X_FORWARDED_SCHEME);
+			if(scheme!=null && !request.getScheme().equals(scheme)){
+				domain = domain.replace(request.getScheme(),scheme);
+			}
+			return domain;
 		}
 	}
 

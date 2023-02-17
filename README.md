@@ -11,7 +11,7 @@ JEECG BOOT 低代码开发平台
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
-[![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://www.jeecg.com)
+[![](https://img.shields.io/badge/Author-北京敲敲云科技-orange.svg)](http://www.jeecg.com)
 [![](https://img.shields.io/badge/Blog-官方博客-blue.svg)](https://jeecg.blog.csdn.net)
 [![](https://img.shields.io/badge/version-3.4.4-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
@@ -34,20 +34,22 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 `JEECG业务流程:` 采用工作流来实现、扩展出任务接口，供开发编写业务逻辑，表单提供多种解决方案： 表单设计器、online配置表单、编码表单。同时实现了流程与表单的分离设计（松耦合）、并支持任务节点灵活配置，既保证了公司流程的保密性，又减少了开发人员的工作量。
 
 
-技术支持
------------------------------------
-
-关闭gitee的issue通道，使用中遇到问题或者BUG可以在 [Github上提Issues](https://github.com/jeecgboot/jeecg-boot/issues/new)
-
-官方支持： http://jeecg.com/doc/help
-
-
 源码下载
 -----------------------------------
-- 后台源码 ：https://github.com/jeecgboot/jeecg-boot
-- 前端源码(Vue3版)：https://github.com/jeecgboot/jeecgboot-vue3
-- 前端源码(Vue2版)：https://github.com/jeecgboot/ant-design-vue-jeecg
-- APP配套框架：https://github.com/jeecgboot/jeecg-uniapp
+
+| 源码                | 源码地址                     | 
+|--------------------|------------------------|
+| 后台源码    | https://github.com/jeecgboot/jeecg-boot        |
+| 前端源码 `Vue3版` | https://github.com/jeecgboot/jeecgboot-vue3 |
+| 前端源码 `Vue2版`  |https://github.com/jeecgboot/ant-design-vue-jeecg    |
+| APP配套框架 | https://github.com/jeecgboot/jeecg-uniapp |
+
+#####  快速搭建开发环境
+
+- [通过IDEA启动前后端项目](http://doc.jeecg.com/2043874)
+- [Vue3前端项目快速启动](http://vue3.jeecg.com/2398848)
+- [Vue2前端项目快速启动](http://doc.jeecg.com/2678320)
+- [单体快速切换为微服务版](http://doc.jeecg.com/3043471)
 
 ##### 项目说明
 
@@ -62,11 +64,22 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 
 
 
-
-
-适用项目
+技术文档
 -----------------------------------
-Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，尤其适合SAAS项目、企业信息管理系统（MIS）、内部办公系统（OA）、企业资源计划系统（ERP）、客户关系管理系统（CRM）等，其半智能手工Merge的开发方式，可以显著提高开发效率70%以上，极大降低开发成本。
+
+- 项目官网：  [http://www.jeecg.com](http://www.jeecg.com)
+
+- 在线演示 ：  [Vue3版本](http://boot3.jeecg.com) | [Vue2版本](http://boot.jeecg.com)  |  [敲敲云(零代码)](http://app.qiaoqiaoyun.com)
+
+- 开发文档：  [Vue3文档](http://vue3.jeecg.com) | [主项目文档](http://doc.jeecg.com) 
+
+- 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)  |   [常见问题 ](http://www.jeecg.com/doc/qa) |  [视频教程](https://space.bilibili.com/454617261/channel/series)  |  [1分钟体验低代码](https://my.oschina.net/jeecg/blog/3083313) 
+
+- 敲敲云平台(零代码)：  [http://qiaoqiaoyun.com](http://qiaoqiaoyun.com)
+
+- QQ交流群 ： ⑥730954414、VUE3群683903138、⑤860162132(满)、④774126647(满)、③816531124(满)、②769925425(满)、①284271917(满)
+> ` 提醒：【QQ群是自助服务群，建议给帮助您解决问题的同学发送指定红包，表示感谢！】 `
+
 
 
 Docker启动项目
@@ -79,25 +92,17 @@ Docker启动项目
 - [Docker启动Vue2前端](http://doc.jeecg.com/3043612)
 
 
+适用项目
+-----------------------------------
+Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，尤其适合SAAS项目、企业信息管理系统（MIS）、内部办公系统（OA）、企业资源计划系统（ERP）、客户关系管理系统（CRM）等，其半智能手工Merge的开发方式，可以显著提高开发效率70%以上，极大降低开发成本。
 
 
-技术文档
+技术支持
 -----------------------------------
 
-- 技术官网：  [http://www.jeecg.com](http://www.jeecg.com)
+关闭gitee的issue通道，使用中遇到问题或者BUG可以在 [Github上提Issues](https://github.com/jeecgboot/jeecg-boot/issues/new)
 
-- 在线演示 ： [Vue3版本](http://boot3.jeecg.com) | [Vue2版本](http://boot.jeecg.com) 
-
-- 开发文档：  [Vue3文档](http://vue3.jeecg.com) | [主项目文档](http://doc.jeecg.com) 
-
-- 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)  |  [视频教程](https://space.bilibili.com/454617261/channel/series) |   [常见问题 ](http://www.jeecg.com/doc/qa)  |   [技术支持](http://jeecg.com/doc/help) |  [1分钟体验低代码](https://my.oschina.net/jeecg/blog/3083313)
-
-- 微服务开发：  [单体升级为微服务](http://doc.jeecg.com/3043471)
-
-- QQ交流群 ： ⑥730954414、VUE3群683903138、⑤860162132(满)、④774126647(满)、③816531124(满)、②769925425(满)、①284271917(满)
-> ` 提醒：【QQ群是自助服务群，建议给帮助您解决问题的同学发送指定红包，表示感谢！】 `
-
-
+官方支持： [http://jeecg.com/doc/help](http://jeecg.com/doc/help)
 
 
 ##### Star走势图
@@ -160,7 +165,7 @@ Docker启动项目
 * 17.支持SAAS服务模式，提供SaaS多租户架构方案。
 * 18.分布式文件服务，集成minio、阿里OSS等优秀的第三方，提供便捷的文件上传与管理，同时也支持本地存储。
 * 19.主流数据库兼容，一套代码完全兼容Mysql、Postgresql、Oracle、Sqlserver、MariaDB、达梦等主流数据库。
-* 20.集成工作流activiti，并实现了只需在页面配置流程转向，可极大的简化bpm工作流的开发；用bpm的流程设计器画出了流程走向，一个工作流基本就完成了，只需写很少量的java代码；
+* 20.集成工作流activiti、flowable，并实现了只需在页面配置流程转向，可极大的简化bpm工作流的开发；用bpm的流程设计器画出了流程走向，一个工作流基本就完成了，只需写很少量的java代码；
 * 21.低代码能力：在线流程设计，采用开源Activiti流程引擎，实现在线画流程,自定义表单,表单挂靠,业务流转
 * 22.多数据源：及其简易的使用方式，在线配置数据源配置，便捷的从其他数据抓取数据；
 * 23.提供单点登录CAS集成方案，项目中已经提供完善的对接代码
