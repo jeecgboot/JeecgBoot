@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
 
 /**
  * @author 张代浩
@@ -49,24 +48,15 @@ public class ReflectHelper {
         setMethods = new Hashtable<String, Method>();
         cls = obj.getClass();
         Method[] methods = cls.getMethods();
-        // 定义正则表达式，从方法中过滤出getter / setter 函数.
-        String gs = "get(\\w+)";
-        Pattern getM = Pattern.compile(gs);
-        String ss = "set(\\w+)";
-        Pattern setM = Pattern.compile(ss);
-        // 把方法中的"set" 或者 "get" 去掉
-        String rapl = "$1";
-        String param;
         for (int i = 0; i < methods.length; ++i) {
             Method m = methods[i];
             String methodName = m.getName();
-            if (Pattern.matches(gs, methodName)) {
-                param = getM.matcher(methodName).replaceAll(rapl).toLowerCase();
-                getMethods.put(param, m);
-            } else if (Pattern.matches(ss, methodName)) {
-                param = setM.matcher(methodName).replaceAll(rapl).toLowerCase();
-                setMethods.put(param, m);
-            } else {
+            String prefix = methodName.substring(0, 3);
+            if ("get".equals(prefix)) {
+                getMethods.put(methodName.substring(3).toLowerCase(), m);
+            }else if("set".equals(prefix)) {
+                setMethods.put(methodName.substring(3).toLowerCase(), m);
+            }else {
                 // logger.info(methodName + " 不是getter,setter方法！");
             }
         }
@@ -251,5 +241,6 @@ public class ReflectHelper {
         }
         return value;
     }
+
 
 }
