@@ -23,17 +23,17 @@ import java.util.List;
 /**
  * @Description: jeecg 测试demo
  * @Author: jeecg-boot
- * @Date:  2018-12-29
+ * @Date: 2018-12-29
  * @Version: V1.0
  */
 @Service
 public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo> implements IJeecgDemoService {
+
 	@Autowired
 	JeecgDemoMapper jeecgDemoMapper;
-	
+
 	/**
-	 * 事务控制在service层面
-	 * 加上注解：@Transactional，声明的方法就是一个独立的事务（有异常DB操作全部回滚）
+	 * 事务控制在service层面 加上注解：@Transactional，声明的方法就是一个独立的事务（有异常DB操作全部回滚）
 	 */
 	@Override
 	@Transactional(rollbackFor = Exception.class)
@@ -42,21 +42,20 @@ public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo
 		pp.setAge(1111);
 		pp.setName("测试事务  小白兔 1");
 		jeecgDemoMapper.insert(pp);
-		
+
 		JeecgDemo pp2 = new JeecgDemo();
 		pp2.setAge(2222);
 		pp2.setName("测试事务  小白兔 2");
 		jeecgDemoMapper.insert(pp2);
-        //自定义异常
+		// 自定义异常
 		Integer.parseInt("hello");
-		
+
 		JeecgDemo pp3 = new JeecgDemo();
 		pp3.setAge(3333);
 		pp3.setName("测试事务  小白兔 3");
 		jeecgDemoMapper.insert(pp3);
-		return ;
+		return;
 	}
-
 
 	/**
 	 * 缓存注解测试： redis
@@ -70,11 +69,10 @@ public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo
 		return t;
 	}
 
-
 	@Override
-	public IPage<JeecgDemo> queryListWithPermission(int pageSize,int pageNo) {
+	public IPage<JeecgDemo> queryListWithPermission(int pageSize, int pageNo) {
 		Page<JeecgDemo> page = new Page<>(pageNo, pageSize);
-		//编程方式，获取当前请求的数据权限规则SQL片段
+		// 编程方式，获取当前请求的数据权限规则SQL片段
 		String sql = QueryGenerator.installAuthJdbc(JeecgDemo.class);
 		return this.baseMapper.queryListWithPermission(page, sql);
 	}
@@ -82,30 +80,30 @@ public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo
 	@Override
 	public String getExportFields() {
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		//权限配置列导出示例
-		//1.配置前缀与菜单中配置的列前缀一致
+		// 权限配置列导出示例
+		// 1.配置前缀与菜单中配置的列前缀一致
 		List<String> noAuthList = new ArrayList<>();
 		List<String> exportFieldsList = new ArrayList<>();
 		String permsPrefix = "testdemo:";
-		//查询配置菜单有效字段
+		// 查询配置菜单有效字段
 		List<String> allAuth = this.jeecgDemoMapper.queryAllAuth(permsPrefix);
-		//查询已授权字段
-		List<String> userAuth = this.jeecgDemoMapper.queryUserAuth(sysUser.getId(),permsPrefix);
-		//列出未授权字段
-		for(String perms : allAuth){
-			if(!userAuth.contains(perms)){
+		// 查询已授权字段
+		List<String> userAuth = this.jeecgDemoMapper.queryUserAuth(sysUser.getId(), permsPrefix);
+		// 列出未授权字段
+		for (String perms : allAuth) {
+			if (!userAuth.contains(perms)) {
 				noAuthList.add(perms.substring(permsPrefix.length()));
 			}
 		}
-		//实体类中字段与未授权字段比较，列出需导出字段
+		// 实体类中字段与未授权字段比较，列出需导出字段
 		Field[] fileds = JeecgDemo.class.getDeclaredFields();
 		List<Field> list = new ArrayList(Arrays.asList(fileds));
-		for(Field field : list){
-			if(!noAuthList.contains(field.getName())){
+		for (Field field : list) {
+			if (!noAuthList.contains(field.getName())) {
 				exportFieldsList.add(field.getName());
 			}
 		}
-		return exportFieldsList != null && exportFieldsList.size()>0 ? String.join(",", exportFieldsList) : "";
+		return exportFieldsList != null && exportFieldsList.size() > 0 ? String.join(",", exportFieldsList) : "";
 	}
 
 	@Override

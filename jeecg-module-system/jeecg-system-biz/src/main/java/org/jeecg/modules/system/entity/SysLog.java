@@ -79,6 +79,7 @@ public class SysLog implements Serializable {
 	 * 请求路径
 	 */
 	private String requestUrl;
+
 	/**
 	 * 请求方法
 	 */
@@ -88,10 +89,12 @@ public class SysLog implements Serializable {
 	 * 操作人用户名称
 	 */
 	private String username;
+
 	/**
 	 * 操作人用户账户
 	 */
 	private String userid;
+
 	/**
 	 * 操作详细日志
 	 */

@@ -21,18 +21,20 @@ import java.util.List;
 @Component("degradeRuleNacosPublisher")
 public class DegradeRuleNacosPublisher implements DynamicRulePublisher<List<DegradeRuleEntity>> {
 
-    @Autowired
-    private ConfigService configService;
-    @Autowired
-    private Converter<List<DegradeRuleEntity>, String> converter;
+	@Autowired
+	private ConfigService configService;
 
-    @Override
-    public void publish(String app, List<DegradeRuleEntity> rules) throws Exception {
-        AssertUtil.notEmpty(app, "app name cannot be empty");
-        if (rules == null) {
-            return;
-        }
-        configService.publishConfig(app + SentinelConStants.DEGRADE_DATA_ID_POSTFIX,
-                SentinelConStants.GROUP_ID, converter.convert(rules));
-    }
+	@Autowired
+	private Converter<List<DegradeRuleEntity>, String> converter;
+
+	@Override
+	public void publish(String app, List<DegradeRuleEntity> rules) throws Exception {
+		AssertUtil.notEmpty(app, "app name cannot be empty");
+		if (rules == null) {
+			return;
+		}
+		configService.publishConfig(app + SentinelConStants.DEGRADE_DATA_ID_POSTFIX, SentinelConStants.GROUP_ID,
+				converter.convert(rules));
+	}
+
 }

@@ -14,15 +14,17 @@ import java.util.List;
  * @Date:2020-04-21
  */
 @Service
-public class JeecgDynamicDataServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo> implements IJeecgDynamicDataService {
+public class JeecgDynamicDataServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo>
+		implements IJeecgDynamicDataService {
 
-    @Override
-    public List<JeecgDemo> selectSpelByHeader() {
-        return list();
-    }
+	@Override
+	public List<JeecgDemo> selectSpelByHeader() {
+		return list();
+	}
 
-    @Override
-    public List<JeecgDemo> selectSpelByKey(String dsName) {
-        return list();
-    }
+	@Override
+	public List<JeecgDemo> selectSpelByKey(String dsName) {
+		return list();
+	}
+
 }

@@ -16,11 +16,12 @@ import java.math.BigDecimal;
 @RequestMapping("/test/seata/account")
 public class SeataAccountController {
 
-    @Autowired
-    private SeataAccountService accountService;
+	@Autowired
+	private SeataAccountService accountService;
 
-    @PostMapping("/reduceBalance")
-    public void reduceBalance(Long userId, BigDecimal amount) {
-        accountService.reduceBalance(userId, amount);
-    }
+	@PostMapping("/reduceBalance")
+	public void reduceBalance(Long userId, BigDecimal amount) {
+		accountService.reduceBalance(userId, amount);
+	}
+
 }

@@ -29,144 +29,147 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
 
-    @Resource
-    private XxlJobUserDao xxlJobUserDao;
-    @Resource
-    private XxlJobGroupDao xxlJobGroupDao;
+	@Resource
+	private XxlJobUserDao xxlJobUserDao;
 
-    @RequestMapping
-    @PermissionLimit(adminuser = true)
-    public String index(Model model) {
+	@Resource
+	private XxlJobGroupDao xxlJobGroupDao;
 
-        // 执行器列表
-        List<XxlJobGroup> groupList = xxlJobGroupDao.findAll();
-        model.addAttribute("groupList", groupList);
+	@RequestMapping
+	@PermissionLimit(adminuser = true)
+	public String index(Model model) {
 
-        return "user/user.index";
-    }
+		// 执行器列表
+		List<XxlJobGroup> groupList = xxlJobGroupDao.findAll();
+		model.addAttribute("groupList", groupList);
 
-    @RequestMapping("/pageList")
-    @ResponseBody
-    @PermissionLimit(adminuser = true)
-    public Map<String, Object> pageList(@RequestParam(required = false, defaultValue = "0") int start,
-                                        @RequestParam(required = false, defaultValue = "10") int length,
-                                        String username, int role) {
+		return "user/user.index";
+	}
 
-        // page list
-        List<XxlJobUser> list = xxlJobUserDao.pageList(start, length, username, role);
-        int list_count = xxlJobUserDao.pageListCount(start, length, username, role);
+	@RequestMapping("/pageList")
+	@ResponseBody
+	@PermissionLimit(adminuser = true)
+	public Map<String, Object> pageList(@RequestParam(required = false, defaultValue = "0") int start,
+			@RequestParam(required = false, defaultValue = "10") int length, String username, int role) {
 
-        // package result
-        Map<String, Object> maps = new HashMap<String, Object>();
-        maps.put("recordsTotal", list_count);		// 总记录数
-        maps.put("recordsFiltered", list_count);	// 过滤后的总记录数
-        maps.put("data", list);  					// 分页列表
-        return maps;
-    }
+		// page list
+		List<XxlJobUser> list = xxlJobUserDao.pageList(start, length, username, role);
+		int list_count = xxlJobUserDao.pageListCount(start, length, username, role);
 
-    @RequestMapping("/add")
-    @ResponseBody
-    @PermissionLimit(adminuser = true)
-    public ReturnT<String> add(XxlJobUser xxlJobUser) {
+		// package result
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put("recordsTotal", list_count); // 总记录数
+		maps.put("recordsFiltered", list_count); // 过滤后的总记录数
+		maps.put("data", list); // 分页列表
+		return maps;
+	}
 
-        // valid username
-        if (!StringUtils.hasText(xxlJobUser.getUsername())) {
-            return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("system_please_input")+I18nUtil.getString("user_username") );
-        }
-        xxlJobUser.setUsername(xxlJobUser.getUsername().trim());
-        if (!(xxlJobUser.getUsername().length()>=4 && xxlJobUser.getUsername().length()<=20)) {
-            return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("system_lengh_limit")+"[4-20]" );
-        }
-        // valid password
-        if (!StringUtils.hasText(xxlJobUser.getPassword())) {
-            return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("system_please_input")+I18nUtil.getString("user_password") );
-        }
-        xxlJobUser.setPassword(xxlJobUser.getPassword().trim());
-        if (!(xxlJobUser.getPassword().length()>=4 && xxlJobUser.getPassword().length()<=20)) {
-            return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("system_lengh_limit")+"[4-20]" );
-        }
-        // md5 password
-        xxlJobUser.setPassword(DigestUtils.md5DigestAsHex(xxlJobUser.getPassword().getBytes()));
+	@RequestMapping("/add")
+	@ResponseBody
+	@PermissionLimit(adminuser = true)
+	public ReturnT<String> add(XxlJobUser xxlJobUser) {
 
-        // check repeat
-        XxlJobUser existUser = xxlJobUserDao.loadByUserName(xxlJobUser.getUsername());
-        if (existUser != null) {
-            return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("user_username_repeat") );
-        }
+		// valid username
+		if (!StringUtils.hasText(xxlJobUser.getUsername())) {
+			return new ReturnT<String>(ReturnT.FAIL_CODE,
+					I18nUtil.getString("system_please_input") + I18nUtil.getString("user_username"));
+		}
+		xxlJobUser.setUsername(xxlJobUser.getUsername().trim());
+		if (!(xxlJobUser.getUsername().length() >= 4 && xxlJobUser.getUsername().length() <= 20)) {
+			return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("system_lengh_limit") + "[4-20]");
+		}
+		// valid password
+		if (!StringUtils.hasText(xxlJobUser.getPassword())) {
+			return new ReturnT<String>(ReturnT.FAIL_CODE,
+					I18nUtil.getString("system_please_input") + I18nUtil.getString("user_password"));
+		}
+		xxlJobUser.setPassword(xxlJobUser.getPassword().trim());
+		if (!(xxlJobUser.getPassword().length() >= 4 && xxlJobUser.getPassword().length() <= 20)) {
+			return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("system_lengh_limit") + "[4-20]");
+		}
+		// md5 password
+		xxlJobUser.setPassword(DigestUtils.md5DigestAsHex(xxlJobUser.getPassword().getBytes()));
 
-        // write
-        xxlJobUserDao.save(xxlJobUser);
-        return ReturnT.SUCCESS;
-    }
+		// check repeat
+		XxlJobUser existUser = xxlJobUserDao.loadByUserName(xxlJobUser.getUsername());
+		if (existUser != null) {
+			return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("user_username_repeat"));
+		}
 
-    @RequestMapping("/update")
-    @ResponseBody
-    @PermissionLimit(adminuser = true)
-    public ReturnT<String> update(HttpServletRequest request, XxlJobUser xxlJobUser) {
+		// write
+		xxlJobUserDao.save(xxlJobUser);
+		return ReturnT.SUCCESS;
+	}
 
-        // avoid opt login seft
-        XxlJobUser loginUser = (XxlJobUser) request.getAttribute(LoginService.LOGIN_IDENTITY_KEY);
-        if (loginUser.getUsername().equals(xxlJobUser.getUsername())) {
-            return new ReturnT<String>(ReturnT.FAIL.getCode(), I18nUtil.getString("user_update_loginuser_limit"));
-        }
+	@RequestMapping("/update")
+	@ResponseBody
+	@PermissionLimit(adminuser = true)
+	public ReturnT<String> update(HttpServletRequest request, XxlJobUser xxlJobUser) {
 
-        // valid password
-        if (StringUtils.hasText(xxlJobUser.getPassword())) {
-            xxlJobUser.setPassword(xxlJobUser.getPassword().trim());
-            if (!(xxlJobUser.getPassword().length()>=4 && xxlJobUser.getPassword().length()<=20)) {
-                return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("system_lengh_limit")+"[4-20]" );
-            }
-            // md5 password
-            xxlJobUser.setPassword(DigestUtils.md5DigestAsHex(xxlJobUser.getPassword().getBytes()));
-        } else {
-            xxlJobUser.setPassword(null);
-        }
+		// avoid opt login seft
+		XxlJobUser loginUser = (XxlJobUser) request.getAttribute(LoginService.LOGIN_IDENTITY_KEY);
+		if (loginUser.getUsername().equals(xxlJobUser.getUsername())) {
+			return new ReturnT<String>(ReturnT.FAIL.getCode(), I18nUtil.getString("user_update_loginuser_limit"));
+		}
 
-        // write
-        xxlJobUserDao.update(xxlJobUser);
-        return ReturnT.SUCCESS;
-    }
+		// valid password
+		if (StringUtils.hasText(xxlJobUser.getPassword())) {
+			xxlJobUser.setPassword(xxlJobUser.getPassword().trim());
+			if (!(xxlJobUser.getPassword().length() >= 4 && xxlJobUser.getPassword().length() <= 20)) {
+				return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("system_lengh_limit") + "[4-20]");
+			}
+			// md5 password
+			xxlJobUser.setPassword(DigestUtils.md5DigestAsHex(xxlJobUser.getPassword().getBytes()));
+		}
+		else {
+			xxlJobUser.setPassword(null);
+		}
 
-    @RequestMapping("/remove")
-    @ResponseBody
-    @PermissionLimit(adminuser = true)
-    public ReturnT<String> remove(HttpServletRequest request, int id) {
+		// write
+		xxlJobUserDao.update(xxlJobUser);
+		return ReturnT.SUCCESS;
+	}
 
-        // avoid opt login seft
-        XxlJobUser loginUser = (XxlJobUser) request.getAttribute(LoginService.LOGIN_IDENTITY_KEY);
-        if (loginUser.getId() == id) {
-            return new ReturnT<String>(ReturnT.FAIL.getCode(), I18nUtil.getString("user_update_loginuser_limit"));
-        }
+	@RequestMapping("/remove")
+	@ResponseBody
+	@PermissionLimit(adminuser = true)
+	public ReturnT<String> remove(HttpServletRequest request, int id) {
 
-        xxlJobUserDao.delete(id);
-        return ReturnT.SUCCESS;
-    }
+		// avoid opt login seft
+		XxlJobUser loginUser = (XxlJobUser) request.getAttribute(LoginService.LOGIN_IDENTITY_KEY);
+		if (loginUser.getId() == id) {
+			return new ReturnT<String>(ReturnT.FAIL.getCode(), I18nUtil.getString("user_update_loginuser_limit"));
+		}
 
-    @RequestMapping("/updatePwd")
-    @ResponseBody
-    public ReturnT<String> updatePwd(HttpServletRequest request, String password){
+		xxlJobUserDao.delete(id);
+		return ReturnT.SUCCESS;
+	}
 
-        // valid password
-        if (password==null || password.trim().length()==0){
-            return new ReturnT<String>(ReturnT.FAIL.getCode(), "密码不可为空");
-        }
-        password = password.trim();
-        if (!(password.length()>=4 && password.length()<=20)) {
-            return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("system_lengh_limit")+"[4-20]" );
-        }
+	@RequestMapping("/updatePwd")
+	@ResponseBody
+	public ReturnT<String> updatePwd(HttpServletRequest request, String password) {
 
-        // md5 password
-        String md5Password = DigestUtils.md5DigestAsHex(password.getBytes());
+		// valid password
+		if (password == null || password.trim().length() == 0) {
+			return new ReturnT<String>(ReturnT.FAIL.getCode(), "密码不可为空");
+		}
+		password = password.trim();
+		if (!(password.length() >= 4 && password.length() <= 20)) {
+			return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("system_lengh_limit") + "[4-20]");
+		}
 
-        // update pwd
-        XxlJobUser loginUser = (XxlJobUser) request.getAttribute(LoginService.LOGIN_IDENTITY_KEY);
+		// md5 password
+		String md5Password = DigestUtils.md5DigestAsHex(password.getBytes());
 
-        // do write
-        XxlJobUser existUser = xxlJobUserDao.loadByUserName(loginUser.getUsername());
-        existUser.setPassword(md5Password);
-        xxlJobUserDao.update(existUser);
+		// update pwd
+		XxlJobUser loginUser = (XxlJobUser) request.getAttribute(LoginService.LOGIN_IDENTITY_KEY);
 
-        return ReturnT.SUCCESS;
-    }
+		// do write
+		XxlJobUser existUser = xxlJobUserDao.loadByUserName(loginUser.getUsername());
+		existUser.setPassword(md5Password);
+		xxlJobUserDao.update(existUser);
+
+		return ReturnT.SUCCESS;
+	}
 
 }

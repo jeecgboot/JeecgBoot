@@ -35,152 +35,139 @@ import java.util.Arrays;
 @RequestMapping("/sys/checkRule")
 public class SysCheckRuleController extends JeecgController<SysCheckRule, ISysCheckRuleService> {
 
-    @Autowired
-    private ISysCheckRuleService sysCheckRuleService;
+	@Autowired
+	private ISysCheckRuleService sysCheckRuleService;
 
-    /**
-     * 分页列表查询
-     *
-     * @param sysCheckRule
-     * @param pageNo
-     * @param pageSize
-     * @param request
-     * @return
-     */
-    @AutoLog(value = "编码校验规则-分页列表查询")
-    @ApiOperation(value = "编码校验规则-分页列表查询", notes = "编码校验规则-分页列表查询")
-    @GetMapping(value = "/list")
-    public Result queryPageList(
-            SysCheckRule sysCheckRule,
-            @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-            HttpServletRequest request
-    ) {
-        QueryWrapper<SysCheckRule> queryWrapper = QueryGenerator.initQueryWrapper(sysCheckRule, request.getParameterMap());
-        Page<SysCheckRule> page = new Page<>(pageNo, pageSize);
-        IPage<SysCheckRule> pageList = sysCheckRuleService.page(page, queryWrapper);
-        return Result.ok(pageList);
-    }
+	/**
+	 * 分页列表查询
+	 * @param sysCheckRule
+	 * @param pageNo
+	 * @param pageSize
+	 * @param request
+	 * @return
+	 */
+	@AutoLog(value = "编码校验规则-分页列表查询")
+	@ApiOperation(value = "编码校验规则-分页列表查询", notes = "编码校验规则-分页列表查询")
+	@GetMapping(value = "/list")
+	public Result queryPageList(SysCheckRule sysCheckRule,
+			@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest request) {
+		QueryWrapper<SysCheckRule> queryWrapper = QueryGenerator.initQueryWrapper(sysCheckRule,
+				request.getParameterMap());
+		Page<SysCheckRule> page = new Page<>(pageNo, pageSize);
+		IPage<SysCheckRule> pageList = sysCheckRuleService.page(page, queryWrapper);
+		return Result.ok(pageList);
+	}
 
+	/**
+	 * 通过id查询
+	 * @param ruleCode
+	 * @return
+	 */
+	@AutoLog(value = "编码校验规则-通过Code校验传入的值")
+	@ApiOperation(value = "编码校验规则-通过Code校验传入的值", notes = "编码校验规则-通过Code校验传入的值")
+	@GetMapping(value = "/checkByCode")
+	public Result checkByCode(@RequestParam(name = "ruleCode") String ruleCode,
+			@RequestParam(name = "value") String value) throws UnsupportedEncodingException {
+		SysCheckRule sysCheckRule = sysCheckRuleService.getByCode(ruleCode);
+		if (sysCheckRule == null) {
+			return Result.error("该编码不存在");
+		}
+		JSONObject errorResult = sysCheckRuleService.checkValue(sysCheckRule, URLDecoder.decode(value, "UTF-8"));
+		if (errorResult == null) {
+			return Result.ok();
+		}
+		else {
+			Result<Object> r = Result.error(errorResult.getString("message"));
+			r.setResult(errorResult);
+			return r;
+		}
+	}
 
-    /**
-     * 通过id查询
-     *
-     * @param ruleCode
-     * @return
-     */
-    @AutoLog(value = "编码校验规则-通过Code校验传入的值")
-    @ApiOperation(value = "编码校验规则-通过Code校验传入的值", notes = "编码校验规则-通过Code校验传入的值")
-    @GetMapping(value = "/checkByCode")
-    public Result checkByCode(
-            @RequestParam(name = "ruleCode") String ruleCode,
-            @RequestParam(name = "value") String value
-    ) throws UnsupportedEncodingException {
-        SysCheckRule sysCheckRule = sysCheckRuleService.getByCode(ruleCode);
-        if (sysCheckRule == null) {
-            return Result.error("该编码不存在");
-        }
-        JSONObject errorResult = sysCheckRuleService.checkValue(sysCheckRule, URLDecoder.decode(value, "UTF-8"));
-        if (errorResult == null) {
-            return Result.ok();
-        } else {
-            Result<Object> r = Result.error(errorResult.getString("message"));
-            r.setResult(errorResult);
-            return r;
-        }
-    }
+	/**
+	 * 添加
+	 * @param sysCheckRule
+	 * @return
+	 */
+	@AutoLog(value = "编码校验规则-添加")
+	@ApiOperation(value = "编码校验规则-添加", notes = "编码校验规则-添加")
+	@PostMapping(value = "/add")
+	public Result add(@RequestBody SysCheckRule sysCheckRule) {
+		sysCheckRuleService.save(sysCheckRule);
+		return Result.ok("添加成功！");
+	}
 
-    /**
-     * 添加
-     *
-     * @param sysCheckRule
-     * @return
-     */
-    @AutoLog(value = "编码校验规则-添加")
-    @ApiOperation(value = "编码校验规则-添加", notes = "编码校验规则-添加")
-    @PostMapping(value = "/add")
-    public Result add(@RequestBody SysCheckRule sysCheckRule) {
-        sysCheckRuleService.save(sysCheckRule);
-        return Result.ok("添加成功！");
-    }
+	/**
+	 * 编辑
+	 * @param sysCheckRule
+	 * @return
+	 */
+	@AutoLog(value = "编码校验规则-编辑")
+	@ApiOperation(value = "编码校验规则-编辑", notes = "编码校验规则-编辑")
+	@RequestMapping(value = "/edit", method = { RequestMethod.PUT, RequestMethod.POST })
+	public Result edit(@RequestBody SysCheckRule sysCheckRule) {
+		sysCheckRuleService.updateById(sysCheckRule);
+		return Result.ok("编辑成功!");
+	}
 
-    /**
-     * 编辑
-     *
-     * @param sysCheckRule
-     * @return
-     */
-    @AutoLog(value = "编码校验规则-编辑")
-    @ApiOperation(value = "编码校验规则-编辑", notes = "编码校验规则-编辑")
-    @RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
-    public Result edit(@RequestBody SysCheckRule sysCheckRule) {
-        sysCheckRuleService.updateById(sysCheckRule);
-        return Result.ok("编辑成功!");
-    }
+	/**
+	 * 通过id删除
+	 * @param id
+	 * @return
+	 */
+	@AutoLog(value = "编码校验规则-通过id删除")
+	@ApiOperation(value = "编码校验规则-通过id删除", notes = "编码校验规则-通过id删除")
+	@DeleteMapping(value = "/delete")
+	public Result delete(@RequestParam(name = "id", required = true) String id) {
+		sysCheckRuleService.removeById(id);
+		return Result.ok("删除成功!");
+	}
 
-    /**
-     * 通过id删除
-     *
-     * @param id
-     * @return
-     */
-    @AutoLog(value = "编码校验规则-通过id删除")
-    @ApiOperation(value = "编码校验规则-通过id删除", notes = "编码校验规则-通过id删除")
-    @DeleteMapping(value = "/delete")
-    public Result delete(@RequestParam(name = "id", required = true) String id) {
-        sysCheckRuleService.removeById(id);
-        return Result.ok("删除成功!");
-    }
+	/**
+	 * 批量删除
+	 * @param ids
+	 * @return
+	 */
+	@AutoLog(value = "编码校验规则-批量删除")
+	@ApiOperation(value = "编码校验规则-批量删除", notes = "编码校验规则-批量删除")
+	@DeleteMapping(value = "/deleteBatch")
+	public Result deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
+		this.sysCheckRuleService.removeByIds(Arrays.asList(ids.split(",")));
+		return Result.ok("批量删除成功！");
+	}
 
-    /**
-     * 批量删除
-     *
-     * @param ids
-     * @return
-     */
-    @AutoLog(value = "编码校验规则-批量删除")
-    @ApiOperation(value = "编码校验规则-批量删除", notes = "编码校验规则-批量删除")
-    @DeleteMapping(value = "/deleteBatch")
-    public Result deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
-        this.sysCheckRuleService.removeByIds(Arrays.asList(ids.split(",")));
-        return Result.ok("批量删除成功！");
-    }
+	/**
+	 * 通过id查询
+	 * @param id
+	 * @return
+	 */
+	@AutoLog(value = "编码校验规则-通过id查询")
+	@ApiOperation(value = "编码校验规则-通过id查询", notes = "编码校验规则-通过id查询")
+	@GetMapping(value = "/queryById")
+	public Result queryById(@RequestParam(name = "id", required = true) String id) {
+		SysCheckRule sysCheckRule = sysCheckRuleService.getById(id);
+		return Result.ok(sysCheckRule);
+	}
 
-    /**
-     * 通过id查询
-     *
-     * @param id
-     * @return
-     */
-    @AutoLog(value = "编码校验规则-通过id查询")
-    @ApiOperation(value = "编码校验规则-通过id查询", notes = "编码校验规则-通过id查询")
-    @GetMapping(value = "/queryById")
-    public Result queryById(@RequestParam(name = "id", required = true) String id) {
-        SysCheckRule sysCheckRule = sysCheckRuleService.getById(id);
-        return Result.ok(sysCheckRule);
-    }
+	/**
+	 * 导出excel
+	 * @param request
+	 * @param sysCheckRule
+	 */
+	@RequestMapping(value = "/exportXls")
+	public ModelAndView exportXls(HttpServletRequest request, SysCheckRule sysCheckRule) {
+		return super.exportXls(request, sysCheckRule, SysCheckRule.class, "编码校验规则");
+	}
 
-    /**
-     * 导出excel
-     *
-     * @param request
-     * @param sysCheckRule
-     */
-    @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request, SysCheckRule sysCheckRule) {
-        return super.exportXls(request, sysCheckRule, SysCheckRule.class, "编码校验规则");
-    }
-
-    /**
-     * 通过excel导入数据
-     *
-     * @param request
-     * @param response
-     * @return
-     */
-    @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
-    public Result importExcel(HttpServletRequest request, HttpServletResponse response) {
-        return super.importExcel(request, response, SysCheckRule.class);
-    }
+	/**
+	 * 通过excel导入数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
+	public Result importExcel(HttpServletRequest request, HttpServletResponse response) {
+		return super.importExcel(request, response, SysCheckRule.class);
+	}
 
 }

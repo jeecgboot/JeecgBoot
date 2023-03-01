@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
 /**
  * @Description: 产品
  * @author: zyf
@@ -19,16 +20,19 @@ import java.util.Date;
 @TableName("product")
 public class SeataProduct {
 
-    @TableId(type = IdType.AUTO)
-    private Integer id;
-    /**
-     * 价格
-     */
-    private BigDecimal price;
-    /**
-     * 库存
-     */
-    private Integer stock;
+	@TableId(type = IdType.AUTO)
+	private Integer id;
 
-    private Date lastUpdateTime;
+	/**
+	 * 价格
+	 */
+	private BigDecimal price;
+
+	/**
+	 * 库存
+	 */
+	private Integer stock;
+
+	private Date lastUpdateTime;
+
 }

@@ -1,27 +1,26 @@
 package org.jeecg.common.util;
 
-
 import java.net.InetAddress;
 
 /**
- * 
- * @Author  张代浩
+ * @Author 张代浩
  *
  */
 public class UUIDGenerator {
 
-	
 	/**
 	 * 产生一个32位的UUID
-	 * 
 	 * @return
 	 */
 
 	public static String generate() {
-		return new StringBuilder(32).append(format(getIp())).append(
-				format(getJvm())).append(format(getHiTime())).append(
-				format(getLoTime())).append(format(getCount())).toString();
-		
+		return new StringBuilder(32).append(format(getIp()))
+			.append(format(getJvm()))
+			.append(format(getHiTime()))
+			.append(format(getLoTime()))
+			.append(format(getCount()))
+			.toString();
+
 	}
 
 	private static final int IP;
@@ -29,7 +28,8 @@ public class UUIDGenerator {
 		int ipadd;
 		try {
 			ipadd = toInt(InetAddress.getLocalHost().getAddress());
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			ipadd = 0;
 		}
 		IP = ipadd;

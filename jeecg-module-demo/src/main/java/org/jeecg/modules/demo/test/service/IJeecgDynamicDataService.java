@@ -23,6 +23,6 @@ public interface IJeecgDynamicDataService extends JeecgService<JeecgDemo> {
 	 * @param dsName
 	 * @return
 	 */
-	public  List<JeecgDemo> selectSpelByKey(String dsName);
+	public List<JeecgDemo> selectSpelByKey(String dsName);
 
 }

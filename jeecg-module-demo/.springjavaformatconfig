@@ -1,0 +1,3 @@
+# https://github.com/spring-io/spring-javaformat/#java-8-support
+# 高版本支持 JDK 8
+java-baseline=8

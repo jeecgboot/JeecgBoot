@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
  * @Version: 1.0
  */
 @Slf4j
-public class JeecgServiceImpl<M extends BaseMapper<T>, T extends JeecgEntity> extends ServiceImpl<M, T> implements JeecgService<T> {
+public class JeecgServiceImpl<M extends BaseMapper<T>, T extends JeecgEntity> extends ServiceImpl<M, T>
+		implements JeecgService<T> {
 
 }

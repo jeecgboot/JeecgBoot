@@ -22,24 +22,28 @@ import java.util.HashMap;
 @Configuration
 public class GatewaySentinelExceptionConfig {
 
-    @PostConstruct
-    public void init() {
+	@PostConstruct
+	public void init() {
 
-        BlockRequestHandler blockRequestHandler = (serverWebExchange, ex) -> {
-            String msg;
-            SentinelErrorInfoEnum errorInfoEnum = SentinelErrorInfoEnum.getErrorByException(ex);
-            if (ObjectUtil.isNotEmpty(errorInfoEnum)) {
-                msg = errorInfoEnum.getError();
-            } else {
-                msg = "未知限流降级";
-            }
-            HashMap<String, String> map = new HashMap(5);
-            map.put("code", HttpStatus.TOO_MANY_REQUESTS.toString());
-            map.put("message", msg);
-            //自定义异常处理
-            return ServerResponse.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(map));
-        };
+		BlockRequestHandler blockRequestHandler = (serverWebExchange, ex) -> {
+			String msg;
+			SentinelErrorInfoEnum errorInfoEnum = SentinelErrorInfoEnum.getErrorByException(ex);
+			if (ObjectUtil.isNotEmpty(errorInfoEnum)) {
+				msg = errorInfoEnum.getError();
+			}
+			else {
+				msg = "未知限流降级";
+			}
+			HashMap<String, String> map = new HashMap(5);
+			map.put("code", HttpStatus.TOO_MANY_REQUESTS.toString());
+			map.put("message", msg);
+			// 自定义异常处理
+			return ServerResponse.status(HttpStatus.OK)
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(BodyInserters.fromValue(map));
+		};
 
-        GatewayCallbackManager.setBlockHandler(blockRequestHandler);
-    }
+		GatewayCallbackManager.setBlockHandler(blockRequestHandler);
+	}
+
 }

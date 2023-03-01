@@ -46,111 +46,119 @@ import java.util.List;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    @Resource
-    JeecgBaseConfig jeecgBaseConfig;
-    @Value("${spring.resource.static-locations:}")
-    private String staticLocations;
+	@Resource
+	JeecgBaseConfig jeecgBaseConfig;
 
-    @Autowired(required = false)
-    private PrometheusMeterRegistry prometheusMeterRegistry;
+	@Value("${spring.resource.static-locations:}")
+	private String staticLocations;
 
-    /**
-     * 静态资源的配置 - 使得可以从磁盘中读取 Html、图片、视频、音频等
-     */
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**")
-                //update-begin-author:taoyan date:20211116 for: jeecg.path.webapp配置无效 #3126
-                .addResourceLocations("file:" + jeecgBaseConfig.getPath().getUpload() + "//")
-                .addResourceLocations("file:" + jeecgBaseConfig.getPath().getWebapp() + "//")
-                //update-end-author:taoyan date:20211116 for: jeecg.path.webapp配置无效 #3126
-                .addResourceLocations(staticLocations.split(","));
-    }
+	@Autowired(required = false)
+	private PrometheusMeterRegistry prometheusMeterRegistry;
 
-    /**
-     * 方案一： 默认访问根路径跳转 doc.html页面 （swagger文档页面）
-     * 方案二： 访问根路径改成跳转 index.html页面 （简化部署方案： 可以把前端打包直接放到项目的 webapp，上面的配置）
-     */
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("doc.html");
-    }
+	/**
+	 * 静态资源的配置 - 使得可以从磁盘中读取 Html、图片、视频、音频等
+	 */
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/**")
+			// update-begin-author:taoyan date:20211116 for: jeecg.path.webapp配置无效 #3126
+			.addResourceLocations("file:" + jeecgBaseConfig.getPath().getUpload() + "//")
+			.addResourceLocations("file:" + jeecgBaseConfig.getPath().getWebapp() + "//")
+			// update-end-author:taoyan date:20211116 for: jeecg.path.webapp配置无效 #3126
+			.addResourceLocations(staticLocations.split(","));
+	}
 
-    @Bean
-    @Conditional(CorsFilterCondition.class)
-    public CorsFilter corsFilter() {
-        final UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
-        final CorsConfiguration corsConfiguration = new CorsConfiguration();
-        //是否允许请求带有验证信息
-        corsConfiguration.setAllowCredentials(true);
-        // 允许访问的客户端域名
-        corsConfiguration.addAllowedOriginPattern("*");
-        // 允许服务端访问的客户端请求头
-        corsConfiguration.addAllowedHeader("*");
-        // 允许访问的方法名,GET POST等
-        corsConfiguration.addAllowedMethod("*");
-        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
-        return new CorsFilter(urlBasedCorsConfigurationSource);
-    }
-    @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        MappingJackson2HttpMessageConverter jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter(objectMapper());
-        converters.add(jackson2HttpMessageConverter);
-    }
+	/**
+	 * 方案一： 默认访问根路径跳转 doc.html页面 （swagger文档页面） 方案二： 访问根路径改成跳转 index.html页面 （简化部署方案：
+	 * 可以把前端打包直接放到项目的 webapp，上面的配置）
+	 */
+	@Override
+	public void addViewControllers(ViewControllerRegistry registry) {
+		registry.addViewController("/").setViewName("doc.html");
+	}
 
-    /**
-     * 自定义ObjectMapper
-     */
-    @Bean
-    @Primary
-    public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        //处理bigDecimal
-        objectMapper.enable(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN);
-        objectMapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
-        //处理失败
-        objectMapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES, false);
-        //默认的处理日期时间格式
-        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-        JavaTimeModule javaTimeModule = new JavaTimeModule();
-        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        javaTimeModule.addSerializer(LocalTime.class, new LocalTimeSerializer(DateTimeFormatter.ofPattern("HH:mm:ss")));
-        javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern("HH:mm:ss")));
-        objectMapper.registerModule(javaTimeModule);
-        return objectMapper;
-    }
+	@Bean
+	@Conditional(CorsFilterCondition.class)
+	public CorsFilter corsFilter() {
+		final UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+		final CorsConfiguration corsConfiguration = new CorsConfiguration();
+		// 是否允许请求带有验证信息
+		corsConfiguration.setAllowCredentials(true);
+		// 允许访问的客户端域名
+		corsConfiguration.addAllowedOriginPattern("*");
+		// 允许服务端访问的客户端请求头
+		corsConfiguration.addAllowedHeader("*");
+		// 允许访问的方法名,GET POST等
+		corsConfiguration.addAllowedMethod("*");
+		urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+		return new CorsFilter(urlBasedCorsConfigurationSource);
+	}
 
-    /**
-     * SpringBootAdmin的Httptrace不见了
-     * https://blog.csdn.net/u013810234/article/details/110097201
-     */
-    @Bean
-    public InMemoryHttpTraceRepository getInMemoryHttpTrace(){
-        return new InMemoryHttpTraceRepository();
-    }
+	@Override
+	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+		MappingJackson2HttpMessageConverter jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter(
+				objectMapper());
+		converters.add(jackson2HttpMessageConverter);
+	}
 
+	/**
+	 * 自定义ObjectMapper
+	 */
+	@Bean
+	@Primary
+	public ObjectMapper objectMapper() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		// 处理bigDecimal
+		objectMapper.enable(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN);
+		objectMapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
+		// 处理失败
+		objectMapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES, false);
+		// 默认的处理日期时间格式
+		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+		JavaTimeModule javaTimeModule = new JavaTimeModule();
+		javaTimeModule.addSerializer(LocalDateTime.class,
+				new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+		javaTimeModule.addSerializer(LocalDate.class,
+				new LocalDateSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+		javaTimeModule.addSerializer(LocalTime.class, new LocalTimeSerializer(DateTimeFormatter.ofPattern("HH:mm:ss")));
+		javaTimeModule.addDeserializer(LocalDateTime.class,
+				new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+		javaTimeModule.addDeserializer(LocalDate.class,
+				new LocalDateDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+		javaTimeModule.addDeserializer(LocalTime.class,
+				new LocalTimeDeserializer(DateTimeFormatter.ofPattern("HH:mm:ss")));
+		objectMapper.registerModule(javaTimeModule);
+		return objectMapper;
+	}
 
-    /**
-     * 解决metrics端点不显示jvm信息的问题(zyf)
-     */
-    @Bean
-    InitializingBean forcePrometheusPostProcessor(BeanPostProcessor meterRegistryPostProcessor) {
-        return () -> meterRegistryPostProcessor.postProcessAfterInitialization(prometheusMeterRegistry, "");
-    }
+	/**
+	 * SpringBootAdmin的Httptrace不见了
+	 * https://blog.csdn.net/u013810234/article/details/110097201
+	 */
+	@Bean
+	public InMemoryHttpTraceRepository getInMemoryHttpTrace() {
+		return new InMemoryHttpTraceRepository();
+	}
 
-//    /**
-//     * 注册拦截器【拦截器拦截参数，自动切换数据源——后期实现多租户切换数据源功能】
-//     * @param registry
-//     */
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(new DynamicDatasourceInterceptor()).addPathPatterns("/test/dynamic/**");
-//    }
+	/**
+	 * 解决metrics端点不显示jvm信息的问题(zyf)
+	 */
+	@Bean
+	InitializingBean forcePrometheusPostProcessor(BeanPostProcessor meterRegistryPostProcessor) {
+		return () -> meterRegistryPostProcessor.postProcessAfterInitialization(prometheusMeterRegistry, "");
+	}
+
+	// /**
+	// * 注册拦截器【拦截器拦截参数，自动切换数据源——后期实现多租户切换数据源功能】
+	// * @param registry
+	// */
+	// @Override
+	// public void addInterceptors(InterceptorRegistry registry) {
+	// registry.addInterceptor(new
+	// DynamicDatasourceInterceptor()).addPathPatterns("/test/dynamic/**");
+	// }
 
 }

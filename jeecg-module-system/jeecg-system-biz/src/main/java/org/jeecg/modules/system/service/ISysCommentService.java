@@ -16,45 +16,37 @@ import java.util.List;
  */
 public interface ISysCommentService extends IService<SysComment> {
 
+	/**
+	 * 保存评论 返回评论ID
+	 * @param sysComment
+	 */
+	String saveOne(SysComment sysComment);
 
-    /**
-     * 保存评论 返回评论ID
-     *
-     * @param sysComment
-     */
-    String saveOne(SysComment sysComment);
+	/**
+	 * 删除
+	 * @param id
+	 */
+	void deleteOne(String id);
 
-    /**
-     * 删除
-     *
-     * @param id
-     */
-    void deleteOne(String id);
+	/**
+	 * 根据表名和数据id查询表单评论及文件信息
+	 * @param sysComment
+	 * @return
+	 */
+	List<SysCommentVO> queryFormCommentInfo(SysComment sysComment);
 
-    /**
-     * 根据表名和数据id查询表单评论及文件信息
-     *
-     * @param sysComment
-     * @return
-     */
-    List<SysCommentVO> queryFormCommentInfo(SysComment sysComment);
+	/**
+	 * 保存文件+评论
+	 * @param req
+	 */
+	void saveOneFileComment(HttpServletRequest req);
 
-
-    /**
-     * 保存文件+评论
-     *
-     * @param req
-     */
-    void saveOneFileComment(HttpServletRequest req);
-
-
-    /**
-     * 查询当前表单的文件列表
-     *
-     * @param tableName
-     * @param formDataId
-     * @return
-     */
-    List<SysCommentFileVo> queryFormFileList(String tableName, String formDataId);
+	/**
+	 * 查询当前表单的文件列表
+	 * @param tableName
+	 * @param formDataId
+	 * @return
+	 */
+	List<SysCommentFileVo> queryFormFileList(String tableName, String formDataId);
 
 }

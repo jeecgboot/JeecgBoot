@@ -12,7 +12,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
  * @author: jeecg-boot
  */
 @Service
-public class SysDataLogServiceImpl extends ServiceImpl<SysDataLogMapper,SysDataLog> implements ISysDataLogService {
+public class SysDataLogServiceImpl extends ServiceImpl<SysDataLogMapper, SysDataLog> implements ISysDataLogService {
+
 	@Autowired
 	private SysDataLogMapper logMapper;
 
@@ -23,8 +24,8 @@ public class SysDataLogServiceImpl extends ServiceImpl<SysDataLogMapper,SysDataL
 	public void addDataLog(String tableName, String dataId, String dataContent) {
 		String versionNumber = "0";
 		String dataVersion = logMapper.queryMaxDataVer(tableName, dataId);
-		if(dataVersion != null ) {
-			versionNumber = String.valueOf(Integer.parseInt(dataVersion)+1);
+		if (dataVersion != null) {
+			versionNumber = String.valueOf(Integer.parseInt(dataVersion) + 1);
 		}
 		SysDataLog log = new SysDataLog();
 		log.setDataTable(tableName);

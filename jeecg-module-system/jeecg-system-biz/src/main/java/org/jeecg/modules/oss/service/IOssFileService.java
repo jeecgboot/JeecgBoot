@@ -12,18 +12,18 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface IOssFileService extends IService<OssFile> {
 
-    /**
-     * oss文件上传
-     * @param multipartFile
-     * @throws IOException
-     */
+	/**
+	 * oss文件上传
+	 * @param multipartFile
+	 * @throws IOException
+	 */
 	void upload(MultipartFile multipartFile) throws Exception;
 
-    /**
-     * oss文件删除
-     * @param ossFile OSSFile对象
-     * @return
-     */
+	/**
+	 * oss文件删除
+	 * @param ossFile OSSFile对象
+	 * @return
+	 */
 	boolean delete(OssFile ossFile);
 
 }

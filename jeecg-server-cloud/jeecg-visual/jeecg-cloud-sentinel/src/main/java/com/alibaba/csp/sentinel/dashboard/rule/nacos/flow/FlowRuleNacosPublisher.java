@@ -37,18 +37,20 @@ import com.alibaba.nacos.api.config.ConfigService;
 @Component("flowRuleNacosPublisher")
 public class FlowRuleNacosPublisher implements DynamicRulePublisher<List<FlowRuleEntity>> {
 
-    @Autowired
-    private ConfigService configService;
-    @Autowired
-    private Converter<List<FlowRuleEntity>, String> converter;
+	@Autowired
+	private ConfigService configService;
 
-    @Override
-    public void publish(String app, List<FlowRuleEntity> rules) throws Exception {
-        AssertUtil.notEmpty(app, "app name cannot be empty");
-        if (rules == null) {
-            return;
-        }
-        configService.publishConfig(app + SentinelConStants.FLOW_DATA_ID_POSTFIX,
-                SentinelConStants.GROUP_ID, converter.convert(rules));
-    }
+	@Autowired
+	private Converter<List<FlowRuleEntity>, String> converter;
+
+	@Override
+	public void publish(String app, List<FlowRuleEntity> rules) throws Exception {
+		AssertUtil.notEmpty(app, "app name cannot be empty");
+		if (rules == null) {
+			return;
+		}
+		configService.publishConfig(app + SentinelConStants.FLOW_DATA_ID_POSTFIX, SentinelConStants.GROUP_ID,
+				converter.convert(rules));
+	}
+
 }

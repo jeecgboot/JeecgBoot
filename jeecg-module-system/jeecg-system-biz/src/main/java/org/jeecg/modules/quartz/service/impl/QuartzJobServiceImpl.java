@@ -25,8 +25,10 @@ import java.util.List;
 @Slf4j
 @Service
 public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob> implements IQuartzJobService {
+
 	@Autowired
 	private QuartzJobMapper quartzJobMapper;
+
 	@Autowired
 	private Scheduler scheduler;
 
@@ -52,7 +54,8 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 		if (success) {
 			if (CommonConstant.STATUS_NORMAL.equals(quartzJob.getStatus())) {
 				// 定时器添加
-				this.schedulerAdd(quartzJob.getId(), quartzJob.getJobClassName().trim(), quartzJob.getCronExpression().trim(), quartzJob.getParameter());
+				this.schedulerAdd(quartzJob.getId(), quartzJob.getJobClassName().trim(),
+						quartzJob.getCronExpression().trim(), quartzJob.getParameter());
 			}
 		}
 		return success;
@@ -65,22 +68,25 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 	@Transactional(rollbackFor = JeecgBootException.class)
 	public boolean resumeJob(QuartzJob quartzJob) {
 		schedulerDelete(quartzJob.getId());
-		schedulerAdd(quartzJob.getId(), quartzJob.getJobClassName().trim(), quartzJob.getCronExpression().trim(), quartzJob.getParameter());
+		schedulerAdd(quartzJob.getId(), quartzJob.getJobClassName().trim(), quartzJob.getCronExpression().trim(),
+				quartzJob.getParameter());
 		quartzJob.setStatus(CommonConstant.STATUS_NORMAL);
 		return this.updateById(quartzJob);
 	}
 
 	/**
 	 * 编辑&启停定时任务
-	 * @throws SchedulerException 
+	 * @throws SchedulerException
 	 */
 	@Override
 	@Transactional(rollbackFor = JeecgBootException.class)
 	public boolean editAndScheduleJob(QuartzJob quartzJob) throws SchedulerException {
 		if (CommonConstant.STATUS_NORMAL.equals(quartzJob.getStatus())) {
 			schedulerDelete(quartzJob.getId());
-			schedulerAdd(quartzJob.getId(), quartzJob.getJobClassName().trim(), quartzJob.getCronExpression().trim(), quartzJob.getParameter());
-		}else{
+			schedulerAdd(quartzJob.getId(), quartzJob.getJobClassName().trim(), quartzJob.getCronExpression().trim(),
+					quartzJob.getParameter());
+		}
+		else {
 			scheduler.pauseJob(JobKey.jobKey(quartzJob.getId()));
 		}
 		return this.updateById(quartzJob);
@@ -101,19 +107,24 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 	public void execute(QuartzJob quartzJob) throws Exception {
 		String jobName = quartzJob.getJobClassName().trim();
 		Date startDate = new Date();
-		String ymd = DateUtils.date2Str(startDate,DateUtils.yyyymmddhhmmss.get());
-		String identity =  jobName + ymd;
-		//3秒后执行 只执行一次
-		// update-begin--author:sunjianlei ---- date:20210511--- for：定时任务立即执行，延迟3秒改成0.1秒-------
+		String ymd = DateUtils.date2Str(startDate, DateUtils.yyyymmddhhmmss.get());
+		String identity = jobName + ymd;
+		// 3秒后执行 只执行一次
+		// update-begin--author:sunjianlei ---- date:20210511---
+		// for：定时任务立即执行，延迟3秒改成0.1秒-------
 		startDate.setTime(startDate.getTime() + 100L);
-		// update-end--author:sunjianlei ---- date:20210511--- for：定时任务立即执行，延迟3秒改成0.1秒-------
+		// update-end--author:sunjianlei ---- date:20210511---
+		// for：定时任务立即执行，延迟3秒改成0.1秒-------
 		// 定义一个Trigger
-		SimpleTrigger trigger = (SimpleTrigger)TriggerBuilder.newTrigger()
-				.withIdentity(identity, JOB_TEST_GROUP)
-				.startAt(startDate)
-				.build();
+		SimpleTrigger trigger = (SimpleTrigger) TriggerBuilder.newTrigger()
+			.withIdentity(identity, JOB_TEST_GROUP)
+			.startAt(startDate)
+			.build();
 		// 构建job信息
-		JobDetail jobDetail = JobBuilder.newJob(getClass(jobName).getClass()).withIdentity(identity).usingJobData("parameter", quartzJob.getParameter()).build();
+		JobDetail jobDetail = JobBuilder.newJob(getClass(jobName).getClass())
+			.withIdentity(identity)
+			.usingJobData("parameter", quartzJob.getParameter())
+			.build();
 		// 将trigger和 jobDetail 加入这个调度
 		scheduler.scheduleJob(jobDetail, trigger);
 		// 启动scheduler
@@ -122,7 +133,7 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 
 	@Override
 	@Transactional(rollbackFor = JeecgBootException.class)
-	public void pause(QuartzJob quartzJob){
+	public void pause(QuartzJob quartzJob) {
 		schedulerDelete(quartzJob.getId());
 		quartzJob.setStatus(CommonConstant.STATUS_DISABLE);
 		this.updateById(quartzJob);
@@ -130,7 +141,6 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 
 	/**
 	 * 添加定时任务
-	 *
 	 * @param jobClassName
 	 * @param cronExpression
 	 * @param parameter
@@ -141,7 +151,10 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 			scheduler.start();
 
 			// 构建job信息
-			JobDetail jobDetail = JobBuilder.newJob(getClass(jobClassName).getClass()).withIdentity(id).usingJobData("parameter", parameter).build();
+			JobDetail jobDetail = JobBuilder.newJob(getClass(jobClassName).getClass())
+				.withIdentity(id)
+				.usingJobData("parameter", parameter)
+				.build();
 
 			// 表达式调度构建器(即任务执行的时间)
 			CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(cronExpression);
@@ -150,18 +163,20 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 			CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(id).withSchedule(scheduleBuilder).build();
 
 			scheduler.scheduleJob(jobDetail, trigger);
-		} catch (SchedulerException e) {
+		}
+		catch (SchedulerException e) {
 			throw new JeecgBootException("创建定时任务失败", e);
-		} catch (RuntimeException e) {
+		}
+		catch (RuntimeException e) {
 			throw new JeecgBootException(e.getMessage(), e);
-		}catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new JeecgBootException("后台找不到该类名：" + jobClassName, e);
 		}
 	}
 
 	/**
 	 * 删除定时任务
-	 * 
 	 * @param id
 	 */
 	private void schedulerDelete(String id) {
@@ -169,7 +184,8 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 			scheduler.pauseTrigger(TriggerKey.triggerKey(id));
 			scheduler.unscheduleJob(TriggerKey.triggerKey(id));
 			scheduler.deleteJob(JobKey.jobKey(id));
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.error(e.getMessage(), e);
 			throw new JeecgBootException("删除定时任务失败");
 		}

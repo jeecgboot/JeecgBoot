@@ -13,32 +13,34 @@ import java.util.List;
 @Data
 public class SyncInfoVo {
 
-    /**
-     * 成功的信息
-     */
-    private List<String> successInfo;
-    /**
-     * 失败的信息
-     */
-    private List<String> failInfo;
+	/**
+	 * 成功的信息
+	 */
+	private List<String> successInfo;
 
-    public SyncInfoVo() {
-        this.successInfo = new ArrayList<>();
-        this.failInfo = new ArrayList<>();
-    }
+	/**
+	 * 失败的信息
+	 */
+	private List<String> failInfo;
 
-    public SyncInfoVo(List<String> successInfo, List<String> failInfo) {
-        this.successInfo = successInfo;
-        this.failInfo = failInfo;
-    }
+	public SyncInfoVo() {
+		this.successInfo = new ArrayList<>();
+		this.failInfo = new ArrayList<>();
+	}
 
-    public SyncInfoVo addSuccessInfo(String info) {
-        this.successInfo.add(info);
-        return this;
-    }
+	public SyncInfoVo(List<String> successInfo, List<String> failInfo) {
+		this.successInfo = successInfo;
+		this.failInfo = failInfo;
+	}
 
-    public SyncInfoVo addFailInfo(String info) {
-        this.failInfo.add(info);
-        return this;
-    }
+	public SyncInfoVo addSuccessInfo(String info) {
+		this.successInfo.add(info);
+		return this;
+	}
+
+	public SyncInfoVo addFailInfo(String info) {
+		this.failInfo.add(info);
+		return this;
+	}
+
 }

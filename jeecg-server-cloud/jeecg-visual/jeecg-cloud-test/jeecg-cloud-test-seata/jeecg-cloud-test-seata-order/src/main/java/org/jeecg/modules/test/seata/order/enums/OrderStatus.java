@@ -7,16 +7,18 @@ package org.jeecg.modules.test.seata.order.enums;
  * @version: V1.0
  */
 public enum OrderStatus {
-    /**
-     * INIT
-     */
-    INIT,
-    /**
-     * SUCCESS
-     */
-    SUCCESS,
-    /**
-     * FAIL
-     */
-    FAIL
+
+	/**
+	 * INIT
+	 */
+	INIT,
+	/**
+	 * SUCCESS
+	 */
+	SUCCESS,
+	/**
+	 * FAIL
+	 */
+	FAIL
+
 }

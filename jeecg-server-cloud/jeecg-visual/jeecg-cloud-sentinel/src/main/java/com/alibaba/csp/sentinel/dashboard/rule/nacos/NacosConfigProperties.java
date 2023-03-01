@@ -15,18 +15,18 @@ import org.springframework.stereotype.Component;
 @Data
 public class NacosConfigProperties {
 
-    private String ip;
+	private String ip;
 
-    private String namespace;
+	private String namespace;
 
-    private String username;
+	private String username;
 
-    private String password;
+	private String password;
 
-    private String groupId;
+	private String groupId;
 
-    public String getServerAddr() {
-        return this.getIp();
-    }
+	public String getServerAddr() {
+		return this.getIp();
+	}
 
 }

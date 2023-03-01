@@ -12,25 +12,25 @@ import org.jeecg.modules.system.entity.SysDataSource;
  */
 public interface ISysDataSourceService extends IService<SysDataSource> {
 
-    /**
-     * 添加数据源
-     * @param sysDataSource
-     * @return
-     */
-    Result saveDataSource(SysDataSource sysDataSource);
+	/**
+	 * 添加数据源
+	 * @param sysDataSource
+	 * @return
+	 */
+	Result saveDataSource(SysDataSource sysDataSource);
 
-    /**
-     * 修改数据源
-     * @param sysDataSource
-     * @return
-     */
-    Result editDataSource(SysDataSource sysDataSource);
+	/**
+	 * 修改数据源
+	 * @param sysDataSource
+	 * @return
+	 */
+	Result editDataSource(SysDataSource sysDataSource);
 
+	/**
+	 * 删除数据源
+	 * @param id
+	 * @return
+	 */
+	Result deleteDataSource(String id);
 
-    /**
-     * 删除数据源
-     * @param id
-     * @return
-     */
-    Result deleteDataSource(String id);
 }

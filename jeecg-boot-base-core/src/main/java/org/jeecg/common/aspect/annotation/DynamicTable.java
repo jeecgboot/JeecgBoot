@@ -12,9 +12,11 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface DynamicTable {
-    /**
-     * 需要动态解析的表名
-     * @return
-     */
-    String value();
+
+	/**
+	 * 需要动态解析的表名
+	 * @return
+	 */
+	String value();
+
 }

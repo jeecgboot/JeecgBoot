@@ -25,28 +25,28 @@ import java.util.Map;
  * @since 2018-12-28
  */
 public interface SysDictMapper extends BaseMapper<SysDict> {
-	
+
 	/**
 	 * 重复检查SQL
-     * @param duplicateCheckVo
+	 * @param duplicateCheckVo
 	 * @return
 	 */
 	@Deprecated
 	public Long duplicateCheckCountSql(DuplicateCheckVo duplicateCheckVo);
 
-    /**
-     * 重复校验 sql语句
-     * @param duplicateCheckVo
-     * @return
-     */
+	/**
+	 * 重复校验 sql语句
+	 * @param duplicateCheckVo
+	 * @return
+	 */
 	@Deprecated
 	public Long duplicateCheckCountSqlNoDataId(DuplicateCheckVo duplicateCheckVo);
 
-    /**
-     * 通过字典code获取字典数据
-     * @param code 字典code
-     * @return  List<DictModel>
-     */
+	/**
+	 * 通过字典code获取字典数据
+	 * @param code 字典code
+	 * @return List<DictModel>
+	 */
 	public List<DictModel> queryDictItemsByCode(@Param("code") String code);
 
 	/**
@@ -56,54 +56,55 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 */
 	List<DictModel> queryEnableDictItemsByCode(@Param("code") String code);
 
-
 	/**
 	 * 通过多个字典code获取字典数据
-	 *
 	 * @param dictCodeList
 	 * @return
 	 */
 	public List<DictModelMany> queryDictItemsByCodeList(@Param("dictCodeList") List<String> dictCodeList);
 
-    /**
-     * 通过查询指定table的 text code 获取字典
-     * @param table
-     * @param text
-     * @param code
-     * @return List<DictModel>
-     */
+	/**
+	 * 通过查询指定table的 text code 获取字典
+	 * @param table
+	 * @param text
+	 * @param code
+	 * @return List<DictModel>
+	 */
 	@Deprecated
-	public List<DictModel> queryTableDictItemsByCode(@Param("table") String table,@Param("text") String text,@Param("code") String code);
+	public List<DictModel> queryTableDictItemsByCode(@Param("table") String table, @Param("text") String text,
+			@Param("code") String code);
 
-    /**
-     * 通过查询指定table的 text code 获取字典（指定查询条件）
-     * @param table
-     * @param text
-     * @param code
-     * @param filterSql
-     * @return List<DictModel>
-     */
+	/**
+	 * 通过查询指定table的 text code 获取字典（指定查询条件）
+	 * @param table
+	 * @param text
+	 * @param code
+	 * @param filterSql
+	 * @return List<DictModel>
+	 */
 	@Deprecated
-	public List<DictModel> queryTableDictItemsByCodeAndFilter(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("filterSql") String filterSql);
+	public List<DictModel> queryTableDictItemsByCodeAndFilter(@Param("table") String table, @Param("text") String text,
+			@Param("code") String code, @Param("filterSql") String filterSql);
 
-    /**
-     * 通过查询指定table的 text code 获取字典
-     * @param table
-     * @param key
-     * @param value
-     * @return List<Map<String,String>>
-     */
+	/**
+	 * 通过查询指定table的 text code 获取字典
+	 * @param table
+	 * @param key
+	 * @param value
+	 * @return List<Map<String,String>>
+	 */
 	@Deprecated
 	@Select("select ${key} as \"label\",${value} as \"value\" from ${table}")
-	public List<Map<String,String>> getDictByTableNgAlain(@Param("table") String table, @Param("key") String key, @Param("value") String value);
+	public List<Map<String, String>> getDictByTableNgAlain(@Param("table") String table, @Param("key") String key,
+			@Param("value") String value);
 
-    /**
-     * 通过字典code获取字典数据
-     * @param code
-     * @param key
-     * @return
-     */
-	public String queryDictTextByKey(@Param("code") String code,@Param("key") String key);
+	/**
+	 * 通过字典code获取字典数据
+	 * @param code
+	 * @param key
+	 * @return
+	 */
+	public String queryDictTextByKey(@Param("code") String code, @Param("key") String key);
 
 	/**
 	 * 可通过多个字典code查询翻译文本
@@ -111,90 +112,102 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @param keys 数据列表
 	 * @return
 	 */
-	List<DictModelMany> queryManyDictByKeys(@Param("dictCodeList") List<String> dictCodeList, @Param("keys") List<String> keys);
+	List<DictModelMany> queryManyDictByKeys(@Param("dictCodeList") List<String> dictCodeList,
+			@Param("keys") List<String> keys);
 
-    /**
-     * 通过查询指定table的 text code key 获取字典值
-     * @param table
-     * @param text
-     * @param code
-     * @param key
-     * @return String
-     */
+	/**
+	 * 通过查询指定table的 text code key 获取字典值
+	 * @param table
+	 * @param text
+	 * @param code
+	 * @param key
+	 * @return String
+	 */
 	@Deprecated
-	public String queryTableDictTextByKey(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("key") String key);
+	public String queryTableDictTextByKey(@Param("table") String table, @Param("text") String text,
+			@Param("code") String code, @Param("key") String key);
 
-//	/**
-//	 * 通过查询指定table的 text code key 获取字典值，可批量查询
-//	 *
-//	 * @param table
-//	 * @param text
-//	 * @param code
-//	 * @param keys
-//	 * @return
-//	 */
-//	@Deprecated
-//	List<DictModel> queryTableDictTextByKeys(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("keys") List<String> keys);
+	// /**
+	// * 通过查询指定table的 text code key 获取字典值，可批量查询
+	// *
+	// * @param table
+	// * @param text
+	// * @param code
+	// * @param keys
+	// * @return
+	// */
+	// @Deprecated
+	// List<DictModel> queryTableDictTextByKeys(@Param("table") String table,
+	// @Param("text") String text, @Param("code") String code, @Param("keys") List<String>
+	// keys);
 
-//  D  /**
-////     * 通过查询指定table的 text code key 获取字典值，包含value
-////     * @param table
-////     * @param text
-////     * @param code
-////     * @param keyArray
-////     * @return List<DictModel>
-////     */
-////	@Deprecated
-////	public List<DictModel> queryTableictByKeys(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("keyArray") String[] keyArray);
+	// D /**
+	//// * 通过查询指定table的 text code key 获取字典值，包含value
+	//// * @param table
+	//// * @param text
+	//// * @param code
+	//// * @param keyArray
+	//// * @return List<DictModel>
+	//// */
+	//// @Deprecated
+	//// public List<DictModel> queryTableictByKeys(@Param("table") String table,
+	// @Param("text") String text, @Param("code") String code, @Param("keyArray") String[]
+	// keyArray);
 
 	/**
 	 * 查询所有部门 作为字典信息 id -->value,departName -->text
 	 * @return
 	 */
 	public List<DictModel> queryAllDepartBackDictModel();
-	
+
 	/**
-	 * 查询所有用户  作为字典信息 username -->value,realname -->text
+	 * 查询所有用户 作为字典信息 username -->value,realname -->text
 	 * @return
 	 */
 	public List<DictModel> queryAllUserBackDictModel();
-	
-//	/**
-//	 * 通过关键字查询出字典表
-//	 * @param table
-//	 * @param text
-//	 * @param code
-//	 * @param keyword
-//	 * @return
-//	 */
-//	@Deprecated
-//	public List<DictModel> queryTableDictItems(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("keyword") String keyword);
 
+	// /**
+	// * 通过关键字查询出字典表
+	// * @param table
+	// * @param text
+	// * @param code
+	// * @param keyword
+	// * @return
+	// */
+	// @Deprecated
+	// public List<DictModel> queryTableDictItems(@Param("table") String
+	// table,@Param("text") String text,@Param("code") String code,@Param("keyword")
+	// String keyword);
 
-//	/**
-//	 * 通过关键字查询出字典表
-//	 * @param page
-//	 * @param table
-//	 * @param text
-//	 * @param code
-//	 * @param keyword
-//	 * @return
-//	 */
-//	//IPage<DictModel> queryTableDictItems(Page<DictModel> page, @Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("keyword") String keyword);
+	// /**
+	// * 通过关键字查询出字典表
+	// * @param page
+	// * @param table
+	// * @param text
+	// * @param code
+	// * @param keyword
+	// * @return
+	// */
+	// //IPage<DictModel> queryTableDictItems(Page<DictModel> page, @Param("table") String
+	// table, @Param("text") String text, @Param("code") String code, @Param("keyword")
+	// String keyword);
 
 	/**
-	  * 根据表名、显示字段名、存储字段名 查询树
+	 * 根据表名、显示字段名、存储字段名 查询树
 	 * @param table
 	 * @param text
 	 * @param code
 	 * @param pid
 	 * @param hasChildField
-     * @param query
-     * @param pidField
+	 * @param query
+	 * @param pidField
 	 * @return
 	 */
 	@Deprecated
-	List<TreeSelectModel> queryTreeList(@Param("query") Map<String, String> query,@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("pidField") String pidField,@Param("pid") String pid,@Param("hasChildField") String hasChildField,@Param("converIsLeafVal") int converIsLeafVal);
+	List<TreeSelectModel> queryTreeList(@Param("query") Map<String, String> query, @Param("table") String table,
+			@Param("text") String text, @Param("code") String code, @Param("pidField") String pidField,
+			@Param("pid") String pid, @Param("hasChildField") String hasChildField,
+			@Param("converIsLeafVal") int converIsLeafVal);
 
 	/**
 	 * 删除
@@ -218,7 +231,6 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	@Update("update sys_dict set del_flag = #{flag,jdbcType=INTEGER} where id = #{id,jdbcType=VARCHAR}")
 	public void updateDictDelFlag(@Param("flag") int delFlag, @Param("id") String id);
 
-
 	/**
 	 * 分页查询字典表数据
 	 * @param page
@@ -227,7 +239,6 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 */
 	@Deprecated
 	public Page<DictModel> queryDictTablePageList(Page page, @Param("query") DictQuery query);
-
 
 	/**
 	 * 查询 字典表数据 支持查询条件 分页
@@ -239,7 +250,8 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @return
 	 */
 	@Deprecated
-	IPage<DictModel> queryTableDictWithFilter(Page<DictModel> page, @Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("filterSql") String filterSql);
+	IPage<DictModel> queryTableDictWithFilter(Page<DictModel> page, @Param("table") String table,
+			@Param("text") String text, @Param("code") String code, @Param("filterSql") String filterSql);
 
 	/**
 	 * 查询 字典表数据 支持查询条件 查询所有
@@ -250,17 +262,21 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @return
 	 */
 	@Deprecated
-	List<DictModel> queryAllTableDictItems(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("filterSql") String filterSql);
+	List<DictModel> queryAllTableDictItems(@Param("table") String table, @Param("text") String text,
+			@Param("code") String code, @Param("filterSql") String filterSql);
 
 	/**
 	 * 查询字典表的数据
 	 * @param table 表名
-	 * @param text   显示字段名
-	 * @param code   存储字段名
+	 * @param text 显示字段名
+	 * @param code 存储字段名
 	 * @param filterSql 条件sql
 	 * @param codeValues 存储字段值 作为查询条件in
 	 * @return
 	 */
 	@Deprecated
-	List<DictModel> queryTableDictByKeysAndFilterSql(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("filterSql") String filterSql,  @Param("codeValues") List<String> codeValues);
+	List<DictModel> queryTableDictByKeysAndFilterSql(@Param("table") String table, @Param("text") String text,
+			@Param("code") String code, @Param("filterSql") String filterSql,
+			@Param("codeValues") List<String> codeValues);
+
 }

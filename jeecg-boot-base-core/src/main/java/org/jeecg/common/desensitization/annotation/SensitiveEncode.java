@@ -9,12 +9,13 @@ import java.lang.annotation.*;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
+@Target({ ElementType.METHOD })
 public @interface SensitiveEncode {
 
-    /**
-     * 指明需要脱敏的实体类class
-     * @return
-     */
-    Class entity() default Object.class;
+	/**
+	 * 指明需要脱敏的实体类class
+	 * @return
+	 */
+	Class entity() default Object.class;
+
 }

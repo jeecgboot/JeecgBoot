@@ -15,15 +15,19 @@ import lombok.Data;
 @Data
 @TableName("sys_user_depart")
 public class SysUserDepart implements Serializable {
+
 	private static final long serialVersionUID = 1L;
-	
-	/**主键id*/
-    @TableId(type = IdType.ASSIGN_ID)
+
+	/** 主键id */
+	@TableId(type = IdType.ASSIGN_ID)
 	private String id;
-	/**用户id*/
+
+	/** 用户id */
 	private String userId;
-	/**部门id*/
+
+	/** 部门id */
 	private String depId;
+
 	public SysUserDepart(String id, String userId, String depId) {
 		super();
 		this.id = id;
@@ -35,4 +39,5 @@ public class SysUserDepart implements Serializable {
 		this.userId = id;
 		this.depId = departId;
 	}
+
 }

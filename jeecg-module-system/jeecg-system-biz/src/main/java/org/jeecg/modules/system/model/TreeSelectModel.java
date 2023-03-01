@@ -4,29 +4,31 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
-  * 树形下拉框
-  * @author: jeecg-boot
+ * 树形下拉框
+ *
+ * @author: jeecg-boot
  */
 public class TreeSelectModel implements Serializable {
 
 	private static final long serialVersionUID = 9016390975325574747L;
 
 	private String key;
-	
+
 	private String title;
+
 	/**
 	 * 是否叶子节点
 	 */
 	private boolean isLeaf;
-	
+
 	private String icon;
-	
+
 	private String parentId;
-	
+
 	private String value;
-	
+
 	private String code;
-	
+
 	public String getValue() {
 		return value;
 	}
@@ -82,7 +84,7 @@ public class TreeSelectModel implements Serializable {
 	public void setCode(String code) {
 		this.code = code;
 	}
-	
+
 	private List<TreeSelectModel> children;
 
 	public List<TreeSelectModel> getChildren() {

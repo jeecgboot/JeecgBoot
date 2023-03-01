@@ -12,39 +12,50 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * job registry instance
+ *
  * @author xuxueli 2016-10-02 19:10:24
  */
 public class JobRegistryMonitorHelper {
+
 	private static Logger logger = LoggerFactory.getLogger(JobRegistryMonitorHelper.class);
 
 	private static JobRegistryMonitorHelper instance = new JobRegistryMonitorHelper();
-	public static JobRegistryMonitorHelper getInstance(){
+
+	public static JobRegistryMonitorHelper getInstance() {
 		return instance;
 	}
 
 	private Thread registryThread;
+
 	private volatile boolean toStop = false;
-	public void start(){
+
+	public void start() {
 		registryThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				while (!toStop) {
 					try {
 						// auto registry group
-						List<XxlJobGroup> groupList = XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().findByAddressType(0);
-						if (groupList!=null && !groupList.isEmpty()) {
+						List<XxlJobGroup> groupList = XxlJobAdminConfig.getAdminConfig()
+							.getXxlJobGroupDao()
+							.findByAddressType(0);
+						if (groupList != null && !groupList.isEmpty()) {
 
 							// remove dead address (admin/executor)
-							List<Integer> ids = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().findDead(RegistryConfig.DEAD_TIMEOUT, new Date());
-							if (ids!=null && ids.size()>0) {
+							List<Integer> ids = XxlJobAdminConfig.getAdminConfig()
+								.getXxlJobRegistryDao()
+								.findDead(RegistryConfig.DEAD_TIMEOUT, new Date());
+							if (ids != null && ids.size() > 0) {
 								XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().removeDead(ids);
 							}
 
 							// fresh online address (admin/executor)
 							HashMap<String, List<String>> appAddressMap = new HashMap<String, List<String>>();
-							List<XxlJobRegistry> list = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().findAll(RegistryConfig.DEAD_TIMEOUT, new Date());
+							List<XxlJobRegistry> list = XxlJobAdminConfig.getAdminConfig()
+								.getXxlJobRegistryDao()
+								.findAll(RegistryConfig.DEAD_TIMEOUT, new Date());
 							if (list != null) {
-								for (XxlJobRegistry item: list) {
+								for (XxlJobRegistry item : list) {
 									if (RegistryConfig.RegistType.EXECUTOR.name().equals(item.getRegistryGroup())) {
 										String appname = item.getRegistryKey();
 										List<String> registryList = appAddressMap.get(appname);
@@ -61,29 +72,31 @@ public class JobRegistryMonitorHelper {
 							}
 
 							// fresh group address
-							for (XxlJobGroup group: groupList) {
+							for (XxlJobGroup group : groupList) {
 								List<String> registryList = appAddressMap.get(group.getAppname());
 								String addressListStr = null;
-								if (registryList!=null && !registryList.isEmpty()) {
+								if (registryList != null && !registryList.isEmpty()) {
 									Collections.sort(registryList);
 									addressListStr = "";
-									for (String item:registryList) {
+									for (String item : registryList) {
 										addressListStr += item + ",";
 									}
-									addressListStr = addressListStr.substring(0, addressListStr.length()-1);
+									addressListStr = addressListStr.substring(0, addressListStr.length() - 1);
 								}
 								group.setAddressList(addressListStr);
 								XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().update(group);
 							}
 						}
-					} catch (Exception e) {
+					}
+					catch (Exception e) {
 						if (!toStop) {
 							logger.error(">>>>>>>>>>> xxl-job, job registry monitor thread error:{}", e);
 						}
 					}
 					try {
 						TimeUnit.SECONDS.sleep(RegistryConfig.BEAT_TIMEOUT);
-					} catch (InterruptedException e) {
+					}
+					catch (InterruptedException e) {
 						if (!toStop) {
 							logger.error(">>>>>>>>>>> xxl-job, job registry monitor thread error:{}", e);
 						}
@@ -97,13 +110,14 @@ public class JobRegistryMonitorHelper {
 		registryThread.start();
 	}
 
-	public void toStop(){
+	public void toStop() {
 		toStop = true;
 		// interrupt and wait
 		registryThread.interrupt();
 		try {
 			registryThread.join();
-		} catch (InterruptedException e) {
+		}
+		catch (InterruptedException e) {
 			logger.error(e.getMessage(), e);
 		}
 	}

@@ -1,4 +1,5 @@
 package org.jeecg.modules.test.seata.order.dto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +17,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReduceBalanceRequest {
 
-    private Long userId;
-    private Integer price;
+	private Long userId;
+
+	private Integer price;
+
 }

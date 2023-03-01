@@ -1,15 +1,15 @@
-//package org.jeecg.common.util.superSearch;
+// package org.jeecg.common.util.superSearch;
 //
-//import lombok.Data;
+// import lombok.Data;
 //
-///**
+/// **
 // * @Description: QueryRuleVo
 // * @author: jeecg-boot
 // */
-//@Data
-//public class QueryRuleVo {
+// @Data
+// public class QueryRuleVo {
 //
-//	private String field;
-//	private String rule;
-//	private String val;
-//}
+// private String field;
+// private String rule;
+// private String val;
+// }

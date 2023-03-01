@@ -12,14 +12,16 @@ import java.util.List;
 /**
  * @Description: 部门角色
  * @Author: jeecg-boot
- * @Date:   2020-02-12
+ * @Date: 2020-02-12
  * @Version: V1.0
  */
 @Service
-public class SysDepartRoleServiceImpl extends ServiceImpl<SysDepartRoleMapper, SysDepartRole> implements ISysDepartRoleService {
+public class SysDepartRoleServiceImpl extends ServiceImpl<SysDepartRoleMapper, SysDepartRole>
+		implements ISysDepartRoleService {
 
-    @Override
-    public List<SysDepartRole> queryDeptRoleByDeptAndUser(String orgCode, String userId) {
-        return this.baseMapper.queryDeptRoleByDeptAndUser(orgCode,userId);
-    }
+	@Override
+	public List<SysDepartRole> queryDeptRoleByDeptAndUser(String orgCode, String userId) {
+		return this.baseMapper.queryDeptRoleByDeptAndUser(orgCode, userId);
+	}
+
 }

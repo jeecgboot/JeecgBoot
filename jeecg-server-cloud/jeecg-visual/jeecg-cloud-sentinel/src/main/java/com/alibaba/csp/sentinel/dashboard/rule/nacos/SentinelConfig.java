@@ -35,7 +35,7 @@ import com.alibaba.nacos.api.config.ConfigFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 
 /**
- *  sentinel配置类
+ * sentinel配置类
  *
  * @author zyf
  * @date 2022-04-13
@@ -43,123 +43,123 @@ import com.alibaba.nacos.api.config.ConfigService;
 @Configuration
 public class SentinelConfig {
 
-    @Autowired
-    private NacosConfigProperties nacosConfigProperties;
+	@Autowired
+	private NacosConfigProperties nacosConfigProperties;
 
+	/**
+	 * 流控规则
+	 * @return
+	 */
+	@Bean
+	public Converter<List<FlowRuleEntity>, String> flowRuleEntityEncoder() {
+		return JSON::toJSONString;
+	}
 
-    /**
-     * 流控规则
-     * @return
-     */
-    @Bean
-    public Converter<List<FlowRuleEntity>, String> flowRuleEntityEncoder() {
-        return JSON::toJSONString;
-    }
+	@Bean
+	public Converter<String, List<FlowRuleEntity>> flowRuleEntityDecoder() {
+		return s -> JSON.parseArray(s, FlowRuleEntity.class);
+	}
 
-    @Bean
-    public Converter<String, List<FlowRuleEntity>> flowRuleEntityDecoder() {
-        return s -> JSON.parseArray(s, FlowRuleEntity.class);
-    }
-    /**
-     *  降级规则
-     * @return
-     */
-    @Bean
-    public Converter<List<DegradeRuleEntity>, String> degradeRuleEntityEncoder() {
-        return JSON::toJSONString;
-    }
+	/**
+	 * 降级规则
+	 * @return
+	 */
+	@Bean
+	public Converter<List<DegradeRuleEntity>, String> degradeRuleEntityEncoder() {
+		return JSON::toJSONString;
+	}
 
-    @Bean
-    public Converter<String, List<DegradeRuleEntity>> degradeRuleEntityDecoder() {
-        return s -> JSON.parseArray(s, DegradeRuleEntity.class);
-    }
+	@Bean
+	public Converter<String, List<DegradeRuleEntity>> degradeRuleEntityDecoder() {
+		return s -> JSON.parseArray(s, DegradeRuleEntity.class);
+	}
 
-    /**
-     *   热点参数 规则
-     * @return
-     */
-    @Bean
-    public Converter<List<ParamFlowRuleCorrectEntity>, String> paramFlowRuleEntityEncoder() {
-        return JSON::toJSONString;
-    }
+	/**
+	 * 热点参数 规则
+	 * @return
+	 */
+	@Bean
+	public Converter<List<ParamFlowRuleCorrectEntity>, String> paramFlowRuleEntityEncoder() {
+		return JSON::toJSONString;
+	}
 
-    @Bean
-    public Converter<String, List<ParamFlowRuleCorrectEntity>> paramFlowRuleEntityDecoder() {
-        return s -> JSON.parseArray(s, ParamFlowRuleCorrectEntity.class);
-    }
+	@Bean
+	public Converter<String, List<ParamFlowRuleCorrectEntity>> paramFlowRuleEntityDecoder() {
+		return s -> JSON.parseArray(s, ParamFlowRuleCorrectEntity.class);
+	}
 
-    /**
-     * 系统规则
-     * @return
-     */
-    @Bean
-    public Converter<List<SystemRuleEntity>, String> systemRuleRuleEntityEncoder() {
-        return JSON::toJSONString;
-    }
+	/**
+	 * 系统规则
+	 * @return
+	 */
+	@Bean
+	public Converter<List<SystemRuleEntity>, String> systemRuleRuleEntityEncoder() {
+		return JSON::toJSONString;
+	}
 
-    @Bean
-    public Converter<String, List<SystemRuleEntity>> systemRuleRuleEntityDecoder() {
-        return s -> JSON.parseArray(s, SystemRuleEntity.class);
-    }
-    /**
-     * 授权规则
-     * @return
-     */
-    @Bean
-    public Converter<List<AuthorityRuleCorrectEntity>, String> authorityRuleRuleEntityEncoder() {
-        return JSON::toJSONString;
-    }
+	@Bean
+	public Converter<String, List<SystemRuleEntity>> systemRuleRuleEntityDecoder() {
+		return s -> JSON.parseArray(s, SystemRuleEntity.class);
+	}
 
-    @Bean
-    public Converter<String, List<AuthorityRuleCorrectEntity>> authorityRuleRuleEntityDecoder() {
-        return s -> JSON.parseArray(s, AuthorityRuleCorrectEntity.class);
-    }
+	/**
+	 * 授权规则
+	 * @return
+	 */
+	@Bean
+	public Converter<List<AuthorityRuleCorrectEntity>, String> authorityRuleRuleEntityEncoder() {
+		return JSON::toJSONString;
+	}
 
-    /**
-     * 网关API
-     *
-     * @return
-     * @throws Exception
-     */
-    @Bean
-    public Converter<List<ApiDefinitionEntity>, String> apiDefinitionEntityEncoder() {
-        return JSON::toJSONString;
-    }
+	@Bean
+	public Converter<String, List<AuthorityRuleCorrectEntity>> authorityRuleRuleEntityDecoder() {
+		return s -> JSON.parseArray(s, AuthorityRuleCorrectEntity.class);
+	}
 
-    @Bean
-    public Converter<String, List<ApiDefinitionEntity>> apiDefinitionEntityDecoder() {
-        return s -> JSON.parseArray(s, ApiDefinitionEntity.class);
-    }
+	/**
+	 * 网关API
+	 * @return
+	 * @throws Exception
+	 */
+	@Bean
+	public Converter<List<ApiDefinitionEntity>, String> apiDefinitionEntityEncoder() {
+		return JSON::toJSONString;
+	}
 
-    /**
-     * 网关flowRule
-     *
-     * @return
-     * @throws Exception
-     */
-    @Bean
-    public Converter<List<GatewayFlowRuleEntity>, String> gatewayFlowRuleEntityEncoder() {
-        return JSON::toJSONString;
-    }
+	@Bean
+	public Converter<String, List<ApiDefinitionEntity>> apiDefinitionEntityDecoder() {
+		return s -> JSON.parseArray(s, ApiDefinitionEntity.class);
+	}
 
-    @Bean
-    public Converter<String, List<GatewayFlowRuleEntity>> gatewayFlowRuleEntityDecoder() {
-        return s -> JSON.parseArray(s, GatewayFlowRuleEntity.class);
-    }
+	/**
+	 * 网关flowRule
+	 * @return
+	 * @throws Exception
+	 */
+	@Bean
+	public Converter<List<GatewayFlowRuleEntity>, String> gatewayFlowRuleEntityEncoder() {
+		return JSON::toJSONString;
+	}
 
-    @Bean
-    public ConfigService nacosConfigService() throws Exception {
-        Properties properties=new Properties();
-        properties.put(PropertyKeyConst.SERVER_ADDR,nacosConfigProperties.getServerAddr());
-        if(StringUtils.isNotBlank(nacosConfigProperties.getUsername())){
-            properties.put(PropertyKeyConst.USERNAME,nacosConfigProperties.getUsername());
-        }
-        if(StringUtils.isNotBlank(nacosConfigProperties.getPassword())){
-            properties.put(PropertyKeyConst.PASSWORD,nacosConfigProperties.getPassword());
-        }
-        if(StringUtils.isNotBlank(nacosConfigProperties.getNamespace())){
-            properties.put(PropertyKeyConst.NAMESPACE,nacosConfigProperties.getNamespace());
-        }
-        return ConfigFactory.createConfigService(properties);
-    }
+	@Bean
+	public Converter<String, List<GatewayFlowRuleEntity>> gatewayFlowRuleEntityDecoder() {
+		return s -> JSON.parseArray(s, GatewayFlowRuleEntity.class);
+	}
+
+	@Bean
+	public ConfigService nacosConfigService() throws Exception {
+		Properties properties = new Properties();
+		properties.put(PropertyKeyConst.SERVER_ADDR, nacosConfigProperties.getServerAddr());
+		if (StringUtils.isNotBlank(nacosConfigProperties.getUsername())) {
+			properties.put(PropertyKeyConst.USERNAME, nacosConfigProperties.getUsername());
+		}
+		if (StringUtils.isNotBlank(nacosConfigProperties.getPassword())) {
+			properties.put(PropertyKeyConst.PASSWORD, nacosConfigProperties.getPassword());
+		}
+		if (StringUtils.isNotBlank(nacosConfigProperties.getNamespace())) {
+			properties.put(PropertyKeyConst.NAMESPACE, nacosConfigProperties.getNamespace());
+		}
+		return ConfigFactory.createConfigService(properties);
+	}
+
 }

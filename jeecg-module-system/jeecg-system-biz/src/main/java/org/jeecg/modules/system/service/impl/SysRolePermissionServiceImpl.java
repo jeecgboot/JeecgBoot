@@ -26,25 +26,28 @@ import javax.servlet.http.HttpServletRequest;
  * @since 2018-12-21
  */
 @Service
-public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionMapper, SysRolePermission> implements ISysRolePermissionService {
+public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionMapper, SysRolePermission>
+		implements ISysRolePermissionService {
 
 	@Override
 	public void saveRolePermission(String roleId, String permissionIds) {
 		String ip = "";
 		try {
-			//获取request
+			// 获取request
 			HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
-			//获取IP地址
+			// 获取IP地址
 			ip = IpUtils.getIpAddr(request);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			ip = "127.0.0.1";
 		}
-		LambdaQueryWrapper<SysRolePermission> query = new QueryWrapper<SysRolePermission>().lambda().eq(SysRolePermission::getRoleId, roleId);
+		LambdaQueryWrapper<SysRolePermission> query = new QueryWrapper<SysRolePermission>().lambda()
+			.eq(SysRolePermission::getRoleId, roleId);
 		this.remove(query);
 		List<SysRolePermission> list = new ArrayList<SysRolePermission>();
-        String[] arr = permissionIds.split(",");
+		String[] arr = permissionIds.split(",");
 		for (String p : arr) {
-			if(oConvertUtils.isNotEmpty(p)) {
+			if (oConvertUtils.isNotEmpty(p)) {
 				SysRolePermission rolepms = new SysRolePermission(roleId, p);
 				rolepms.setOperateDate(new Date());
 				rolepms.setOperateIp(ip);
@@ -58,18 +61,19 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 	public void saveRolePermission(String roleId, String permissionIds, String lastPermissionIds) {
 		String ip = "";
 		try {
-			//获取request
+			// 获取request
 			HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
-			//获取IP地址
+			// 获取IP地址
 			ip = IpUtils.getIpAddr(request);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			ip = "127.0.0.1";
 		}
-		List<String> add = getDiff(lastPermissionIds,permissionIds);
-		if(add!=null && add.size()>0) {
+		List<String> add = getDiff(lastPermissionIds, permissionIds);
+		if (add != null && add.size() > 0) {
 			List<SysRolePermission> list = new ArrayList<SysRolePermission>();
 			for (String p : add) {
-				if(oConvertUtils.isNotEmpty(p)) {
+				if (oConvertUtils.isNotEmpty(p)) {
 					SysRolePermission rolepms = new SysRolePermission(roleId, p);
 					rolepms.setOperateDate(new Date());
 					rolepms.setOperateIp(ip);
@@ -78,29 +82,31 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 			}
 			this.saveBatch(list);
 		}
-		
-		List<String> delete = getDiff(permissionIds,lastPermissionIds);
-		if(delete!=null && delete.size()>0) {
+
+		List<String> delete = getDiff(permissionIds, lastPermissionIds);
+		if (delete != null && delete.size() > 0) {
 			for (String permissionId : delete) {
-				this.remove(new QueryWrapper<SysRolePermission>().lambda().eq(SysRolePermission::getRoleId, roleId).eq(SysRolePermission::getPermissionId, permissionId));
+				this.remove(new QueryWrapper<SysRolePermission>().lambda()
+					.eq(SysRolePermission::getRoleId, roleId)
+					.eq(SysRolePermission::getPermissionId, permissionId));
 			}
 		}
 	}
-	
+
 	/**
 	 * 从diff中找出main中没有的元素
 	 * @param main
 	 * @param diff
 	 * @return
 	 */
-	private List<String> getDiff(String main,String diff){
-		if(oConvertUtils.isEmpty(diff)) {
+	private List<String> getDiff(String main, String diff) {
+		if (oConvertUtils.isEmpty(diff)) {
 			return null;
 		}
-		if(oConvertUtils.isEmpty(main)) {
+		if (oConvertUtils.isEmpty(main)) {
 			return Arrays.asList(diff.split(","));
 		}
-		
+
 		String[] mainArr = main.split(",");
 		String[] diffArr = diff.split(",");
 		Map<String, Integer> map = new HashMap(5);
@@ -109,7 +115,7 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 		}
 		List<String> res = new ArrayList<String>();
 		for (String key : diffArr) {
-			if(oConvertUtils.isNotEmpty(key) && !map.containsKey(key)) {
+			if (oConvertUtils.isNotEmpty(key) && !map.containsKey(key)) {
 				res.add(key);
 			}
 		}

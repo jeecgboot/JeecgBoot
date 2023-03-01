@@ -14,13 +14,14 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "third-app.type")
 public class ThirdAppTypeConfig {
 
-    /**
-     * 对应企业微信配置
-     */
-    private ThirdAppTypeItemVo WECHAT_ENTERPRISE;
-    /**
-     * 对应钉钉配置
-     */
-    private ThirdAppTypeItemVo DINGTALK;
+	/**
+	 * 对应企业微信配置
+	 */
+	private ThirdAppTypeItemVo WECHAT_ENTERPRISE;
+
+	/**
+	 * 对应钉钉配置
+	 */
+	private ThirdAppTypeItemVo DINGTALK;
 
 }

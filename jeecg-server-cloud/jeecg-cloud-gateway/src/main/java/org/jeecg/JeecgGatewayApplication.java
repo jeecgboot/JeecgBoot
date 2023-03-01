@@ -25,33 +25,36 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
 @EnableFeignClients
 @EnableDiscoveryClient
 @SpringBootApplication
-public class JeecgGatewayApplication  implements CommandLineRunner {
-    @Resource
-    private DynamicRouteLoader dynamicRouteLoader;
+public class JeecgGatewayApplication implements CommandLineRunner {
 
-    public static void main(String[] args) {
-        ConfigurableApplicationContext applicationContext = SpringApplication.run(JeecgGatewayApplication.class, args);
-        //String userName = applicationContext.getEnvironment().getProperty("jeecg.test");
-        //System.err.println("user name :" +userName);
-    }
+	@Resource
+	private DynamicRouteLoader dynamicRouteLoader;
 
-    /**
-     * 容器初始化后加载路由
-     * @param strings
-     */
-    @Override
-    public void run(String... strings) {
-        dynamicRouteLoader.refresh(null);
-    }
+	public static void main(String[] args) {
+		ConfigurableApplicationContext applicationContext = SpringApplication.run(JeecgGatewayApplication.class, args);
+		// String userName =
+		// applicationContext.getEnvironment().getProperty("jeecg.test");
+		// System.err.println("user name :" +userName);
+	}
 
-    /**
-     * 接口地址（通过9999端口直接访问）
-     *
-     * @param indexHtml
-     * @return
-     */
-    @Bean
-    public RouterFunction<ServerResponse> indexRouter(@Value("classpath:/META-INF/resources/doc.html") final org.springframework.core.io.Resource indexHtml) {
-        return route(GET("/"), request -> ok().contentType(MediaType.TEXT_HTML).syncBody(indexHtml));
-    }
+	/**
+	 * 容器初始化后加载路由
+	 * @param strings
+	 */
+	@Override
+	public void run(String... strings) {
+		dynamicRouteLoader.refresh(null);
+	}
+
+	/**
+	 * 接口地址（通过9999端口直接访问）
+	 * @param indexHtml
+	 * @return
+	 */
+	@Bean
+	public RouterFunction<ServerResponse> indexRouter(
+			@Value("classpath:/META-INF/resources/doc.html") final org.springframework.core.io.Resource indexHtml) {
+		return route(GET("/"), request -> ok().contentType(MediaType.TEXT_HTML).syncBody(indexHtml));
+	}
+
 }

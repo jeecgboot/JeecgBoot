@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- *  持久化热点参数规则
+ * 持久化热点参数规则
  *
  * @author zyf
  * @date 2022-04-13
@@ -24,28 +24,30 @@ import java.util.stream.Collectors;
 @Component("paramFlowRuleNacosPublisher")
 public class ParamFlowRuleNacosPublisher implements DynamicRulePublisher<List<ParamFlowRuleEntity>> {
 
-    @Autowired
-    private ConfigService configService;
-    @Autowired
-    private Converter<List<ParamFlowRuleCorrectEntity>, String> converter;
+	@Autowired
+	private ConfigService configService;
 
-    @Override
-    public void publish(String app, List<ParamFlowRuleEntity> rules) throws Exception {
-        AssertUtil.notEmpty(app, "app name cannot be empty");
-        if (rules == null) {
-            return;
-        }
-        rules.forEach(e -> e.setApp(app));
+	@Autowired
+	private Converter<List<ParamFlowRuleCorrectEntity>, String> converter;
 
-        //  转换
-        List<ParamFlowRuleCorrectEntity> list = rules.stream().map(rule -> {
-            ParamFlowRuleCorrectEntity entity = new ParamFlowRuleCorrectEntity();
-            BeanUtils.copyProperties(rule, entity);
-            return entity;
-        }).collect(Collectors.toList());
+	@Override
+	public void publish(String app, List<ParamFlowRuleEntity> rules) throws Exception {
+		AssertUtil.notEmpty(app, "app name cannot be empty");
+		if (rules == null) {
+			return;
+		}
+		rules.forEach(e -> e.setApp(app));
 
-        configService.publishConfig(app + SentinelConStants.PARAM_FLOW_DATA_ID_POSTFIX,
-                SentinelConStants.GROUP_ID, converter.convert(list));
+		// 转换
+		List<ParamFlowRuleCorrectEntity> list = rules.stream().map(rule -> {
+			ParamFlowRuleCorrectEntity entity = new ParamFlowRuleCorrectEntity();
+			BeanUtils.copyProperties(rule, entity);
+			return entity;
+		}).collect(Collectors.toList());
 
-    }
+		configService.publishConfig(app + SentinelConStants.PARAM_FLOW_DATA_ID_POSTFIX, SentinelConStants.GROUP_ID,
+				converter.convert(list));
+
+	}
+
 }

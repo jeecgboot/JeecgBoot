@@ -19,13 +19,15 @@ import java.util.Date;
 @Builder
 @TableName("account")
 public class SeataAccount {
-    @TableId(type = IdType.AUTO)
-    private Long id;
 
-    /**
-     * 余额
-     */
-    private BigDecimal balance;
+	@TableId(type = IdType.AUTO)
+	private Long id;
 
-    private Date lastUpdateTime;
+	/**
+	 * 余额
+	 */
+	private BigDecimal balance;
+
+	private Date lastUpdateTime;
+
 }

@@ -9,12 +9,13 @@ import java.math.BigDecimal;
  * @version: V1.0
  */
 public interface SeataProductService {
-    /**
-     * 扣减库存
-     *
-     * @param productId 商品 ID
-     * @param count    扣减数量
-     * @return 商品总价
-     */
-    BigDecimal reduceStock(Long productId, Integer count);
+
+	/**
+	 * 扣减库存
+	 * @param productId 商品 ID
+	 * @param count 扣减数量
+	 * @return 商品总价
+	 */
+	BigDecimal reduceStock(Long productId, Integer count);
+
 }

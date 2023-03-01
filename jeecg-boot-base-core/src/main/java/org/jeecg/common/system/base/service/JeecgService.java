@@ -9,4 +9,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @Version: 1.0
  */
 public interface JeecgService<T> extends IService<T> {
+
 }

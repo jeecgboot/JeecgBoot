@@ -20,23 +20,23 @@ import org.springframework.stereotype.Component;
 @Conditional(JeecgCloudCondition.class)
 public class SystemInitListener implements ApplicationListener<ApplicationReadyEvent>, Ordered {
 
+	@Autowired
+	private ISysGatewayRouteService sysGatewayRouteService;
 
-    @Autowired
-    private ISysGatewayRouteService sysGatewayRouteService;
+	@Override
+	public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
 
-    @Override
-    public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
+		log.info(" 服务已启动，初始化路由配置 ###################");
+		String context = "AnnotationConfigServletWebServerApplicationContext";
+		if (applicationReadyEvent.getApplicationContext().getDisplayName().indexOf(context) > -1) {
+			sysGatewayRouteService.addRoute2Redis(CacheConstant.GATEWAY_ROUTES);
+		}
 
-        log.info(" 服务已启动，初始化路由配置 ###################");
-        String context = "AnnotationConfigServletWebServerApplicationContext";
-        if (applicationReadyEvent.getApplicationContext().getDisplayName().indexOf(context) > -1) {
-            sysGatewayRouteService.addRoute2Redis(CacheConstant.GATEWAY_ROUTES);
-        }
+	}
 
-    }
+	@Override
+	public int getOrder() {
+		return 1;
+	}
 
-    @Override
-    public int getOrder() {
-        return 1;
-    }
 }

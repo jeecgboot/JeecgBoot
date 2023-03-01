@@ -31,7 +31,7 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
 
 	@Resource
 	private SysLogMapper sysLogMapper;
-	
+
 	/**
 	 * @功能：清空所有日志记录
 	 */
@@ -45,21 +45,22 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
 		return sysLogMapper.findTotalVisitCount();
 	}
 
-	//update-begin--Author:zhangweijian  Date:20190428 for：传入开始时间，结束时间参数
+	// update-begin--Author:zhangweijian Date:20190428 for：传入开始时间，结束时间参数
 	@Override
 	public Long findTodayVisitCount(Date dayStart, Date dayEnd) {
-		return sysLogMapper.findTodayVisitCount(dayStart,dayEnd);
+		return sysLogMapper.findTodayVisitCount(dayStart, dayEnd);
 	}
 
 	@Override
 	public Long findTodayIp(Date dayStart, Date dayEnd) {
-		return sysLogMapper.findTodayIp(dayStart,dayEnd);
+		return sysLogMapper.findTodayIp(dayStart, dayEnd);
 	}
-	//update-end--Author:zhangweijian  Date:20190428 for：传入开始时间，结束时间参数
+	// update-end--Author:zhangweijian Date:20190428 for：传入开始时间，结束时间参数
 
 	@Override
-	public List<Map<String,Object>> findVisitCount(Date dayStart, Date dayEnd) {
+	public List<Map<String, Object>> findVisitCount(Date dayStart, Date dayEnd) {
 		DbType dbType = CommonUtils.getDatabaseTypeEnum();
-		return sysLogMapper.findVisitCount(dayStart, dayEnd,dbType.getDb());
+		return sysLogMapper.findVisitCount(dayStart, dayEnd, dbType.getDb());
 	}
+
 }

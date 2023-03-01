@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 /**
- * 服务端提供方——feign接口
- * 【提供给system-start调用测试，看feign是否畅通】
+ * 服务端提供方——feign接口 【提供给system-start调用测试，看feign是否畅通】
+ *
  * @author: jeecg-boot
  */
 @Slf4j
@@ -20,14 +20,14 @@ import javax.annotation.Resource;
 @RequestMapping("/test")
 public class JcloudDemoProviderController {
 
-    @Resource
-    private JcloudDemoService jcloudDemoService;
+	@Resource
+	private JcloudDemoService jcloudDemoService;
 
-    @GetMapping("/getMessage")
-    public String getMessage(@RequestParam String name) {
-        String msg = jcloudDemoService.getMessage(name);
-        log.info(" 微服务被调用：{} ",msg);
-        return msg;
-    }
+	@GetMapping("/getMessage")
+	public String getMessage(@RequestParam String name) {
+		String msg = jcloudDemoService.getMessage(name);
+		log.info(" 微服务被调用：{} ", msg);
+		return msg;
+	}
 
 }

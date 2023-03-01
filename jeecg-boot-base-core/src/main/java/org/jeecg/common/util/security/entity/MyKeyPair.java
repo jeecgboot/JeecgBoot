@@ -8,6 +8,9 @@ import lombok.Data;
  */
 @Data
 public class MyKeyPair {
-    private String priKey;
-    private String pubKey;
+
+	private String priKey;
+
+	private String pubKey;
+
 }

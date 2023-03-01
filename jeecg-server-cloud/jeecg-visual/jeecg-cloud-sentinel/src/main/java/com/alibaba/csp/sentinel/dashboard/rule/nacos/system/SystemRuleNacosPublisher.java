@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- *  持久化系统规则
+ * 持久化系统规则
  *
  * @author zyf
  * @date 2022-04-13
@@ -20,18 +20,20 @@ import java.util.List;
 @Component("systemRuleNacosPublisher")
 public class SystemRuleNacosPublisher implements DynamicRulePublisher<List<SystemRuleEntity>> {
 
-    @Autowired
-    private ConfigService configService;
-    @Autowired
-    private Converter<List<SystemRuleEntity>, String> converter;
+	@Autowired
+	private ConfigService configService;
 
-    @Override
-    public void publish(String app, List<SystemRuleEntity> rules) throws Exception {
-        AssertUtil.notEmpty(app, "app name cannot be empty");
-        if (rules == null) {
-            return;
-        }
-        configService.publishConfig(app + SentinelConStants.SYSTEM_DATA_ID_POSTFIX,
-                SentinelConStants.GROUP_ID, converter.convert(rules));
-    }
+	@Autowired
+	private Converter<List<SystemRuleEntity>, String> converter;
+
+	@Override
+	public void publish(String app, List<SystemRuleEntity> rules) throws Exception {
+		AssertUtil.notEmpty(app, "app name cannot be empty");
+		if (rules == null) {
+			return;
+		}
+		configService.publishConfig(app + SentinelConStants.SYSTEM_DATA_ID_POSTFIX, SentinelConStants.GROUP_ID,
+				converter.convert(rules));
+	}
+
 }

@@ -1,6 +1,5 @@
 package com.alibaba.csp.sentinel.dashboard.rule.nacos.paramflow;
 
-
 import com.alibaba.csp.sentinel.dashboard.constants.SentinelConStants;
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.ParamFlowRuleEntity;
 import com.alibaba.csp.sentinel.dashboard.rule.DynamicRuleProvider;
@@ -19,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- *  加载热点参数规则
+ * 加载热点参数规则
  *
  * @author zyf
  * @date 2022-04-13
@@ -27,26 +26,29 @@ import java.util.stream.Collectors;
 @Component("paramFlowRuleNacosProvider")
 public class ParamFlowRuleNacosProvider implements DynamicRuleProvider<List<ParamFlowRuleEntity>> {
 
-    @Autowired
-    private ConfigService configService;
-    @Autowired
-    private Converter<String, List<ParamFlowRuleCorrectEntity>> converter;
+	@Autowired
+	private ConfigService configService;
 
-    @Override
-    public List<ParamFlowRuleEntity> getRules(String appName) throws Exception {
-        String rules = configService.getConfig(appName + SentinelConStants.PARAM_FLOW_DATA_ID_POSTFIX,
-                SentinelConStants.GROUP_ID, 3000);
-        if (StringUtil.isEmpty(rules)) {
-            return new ArrayList<>();
-        }
-        List<ParamFlowRuleCorrectEntity> entityList = converter.convert(rules);
-        return entityList.stream().map(rule -> {
-            ParamFlowRule paramFlowRule = new ParamFlowRule();
-            BeanUtils.copyProperties(rule, paramFlowRule);
-            ParamFlowRuleEntity entity = ParamFlowRuleEntity.fromParamFlowRule(rule.getApp(), rule.getIp(), rule.getPort(), paramFlowRule);
-            entity.setId(rule.getId());
-            entity.setGmtCreate(rule.getGmtCreate());
-            return entity;
-        }).collect(Collectors.toList());
-    }
+	@Autowired
+	private Converter<String, List<ParamFlowRuleCorrectEntity>> converter;
+
+	@Override
+	public List<ParamFlowRuleEntity> getRules(String appName) throws Exception {
+		String rules = configService.getConfig(appName + SentinelConStants.PARAM_FLOW_DATA_ID_POSTFIX,
+				SentinelConStants.GROUP_ID, 3000);
+		if (StringUtil.isEmpty(rules)) {
+			return new ArrayList<>();
+		}
+		List<ParamFlowRuleCorrectEntity> entityList = converter.convert(rules);
+		return entityList.stream().map(rule -> {
+			ParamFlowRule paramFlowRule = new ParamFlowRule();
+			BeanUtils.copyProperties(rule, paramFlowRule);
+			ParamFlowRuleEntity entity = ParamFlowRuleEntity.fromParamFlowRule(rule.getApp(), rule.getIp(),
+					rule.getPort(), paramFlowRule);
+			entity.setId(rule.getId());
+			entity.setGmtCreate(rule.getGmtCreate());
+			return entity;
+		}).collect(Collectors.toList());
+	}
+
 }

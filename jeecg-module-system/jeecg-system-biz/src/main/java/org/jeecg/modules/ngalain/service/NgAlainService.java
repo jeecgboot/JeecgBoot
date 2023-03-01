@@ -10,28 +10,30 @@ import java.util.Map;
  * @author: jeecg-boot
  */
 public interface NgAlainService {
-    /**
-     * 菜单
-     * @param id
-     * @return JSONArray
-     * @throws Exception
-     */
-    public JSONArray getMenu(String id) throws Exception;
 
-    /**
-     * jeecg菜单
-     * @param id
-     * @return JSONArray
-     * @throws Exception
-     */
-    public JSONArray getJeecgMenu(String id) throws Exception;
+	/**
+	 * 菜单
+	 * @param id
+	 * @return JSONArray
+	 * @throws Exception
+	 */
+	public JSONArray getMenu(String id) throws Exception;
 
-    /**
-     * 获取字典值
-     * @param table
-     * @param key
-     * @param value
-     * @return List<Map<String, String>>
-     */
-    public List<Map<String, String>> getDictByTable(String table, String key, String value);
+	/**
+	 * jeecg菜单
+	 * @param id
+	 * @return JSONArray
+	 * @throws Exception
+	 */
+	public JSONArray getJeecgMenu(String id) throws Exception;
+
+	/**
+	 * 获取字典值
+	 * @param table
+	 * @param key
+	 * @param value
+	 * @return List<Map<String, String>>
+	 */
+	public List<Map<String, String>> getDictByTable(String table, String key, String value);
+
 }

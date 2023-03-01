@@ -20,11 +20,12 @@ import java.util.List;
 @Service
 public class SysDictItemServiceImpl extends ServiceImpl<SysDictItemMapper, SysDictItem> implements ISysDictItemService {
 
-    @Autowired
-    private SysDictItemMapper sysDictItemMapper;
+	@Autowired
+	private SysDictItemMapper sysDictItemMapper;
 
-    @Override
-    public List<SysDictItem> selectItemsByMainId(String mainId) {
-        return sysDictItemMapper.selectItemsByMainId(mainId);
-    }
+	@Override
+	public List<SysDictItem> selectItemsByMainId(String mainId) {
+		return sysDictItemMapper.selectItemsByMainId(mainId);
+	}
+
 }

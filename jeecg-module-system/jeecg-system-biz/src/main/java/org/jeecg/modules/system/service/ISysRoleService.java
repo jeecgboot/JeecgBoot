@@ -16,28 +16,27 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface ISysRoleService extends IService<SysRole> {
 
-    /**
-     * 导入 excel ，检查 roleCode 的唯一性
-     *
-     * @param file
-     * @param params
-     * @return
-     * @throws Exception
-     */
-    Result importExcelCheckRoleCode(MultipartFile file, ImportParams params) throws Exception;
+	/**
+	 * 导入 excel ，检查 roleCode 的唯一性
+	 * @param file
+	 * @param params
+	 * @return
+	 * @throws Exception
+	 */
+	Result importExcelCheckRoleCode(MultipartFile file, ImportParams params) throws Exception;
 
-    /**
-     * 删除角色
-     * @param roleid
-     * @return
-     */
-    public boolean deleteRole(String roleid);
+	/**
+	 * 删除角色
+	 * @param roleid
+	 * @return
+	 */
+	public boolean deleteRole(String roleid);
 
-    /**
-     * 批量删除角色
-     * @param roleids
-     * @return
-     */
-    public boolean deleteBatchRole(String[] roleids);
+	/**
+	 * 批量删除角色
+	 * @param roleids
+	 * @return
+	 */
+	public boolean deleteBatchRole(String[] roleids);
 
 }

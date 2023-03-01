@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author: jeecg-boot
  */
 public interface ISysDataLogService extends IService<SysDataLog> {
-	
+
 	/**
 	 * 添加数据日志
 	 * @param tableName

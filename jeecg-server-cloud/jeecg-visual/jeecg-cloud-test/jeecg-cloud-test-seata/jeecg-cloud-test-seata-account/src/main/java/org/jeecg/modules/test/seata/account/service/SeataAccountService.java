@@ -9,10 +9,12 @@ import java.math.BigDecimal;
  * @version: V1.0
  */
 public interface SeataAccountService {
-    /**
-     * 扣减金额
-     * @param userId 用户 ID
-     * @param amount  扣减金额
-     */
-    void reduceBalance(Long userId, BigDecimal amount);
+
+	/**
+	 * 扣减金额
+	 * @param userId 用户 ID
+	 * @param amount 扣减金额
+	 */
+	void reduceBalance(Long userId, BigDecimal amount);
+
 }

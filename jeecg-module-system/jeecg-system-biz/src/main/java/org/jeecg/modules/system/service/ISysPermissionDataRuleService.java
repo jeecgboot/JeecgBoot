@@ -18,9 +18,8 @@ public interface ISysPermissionDataRuleService extends IService<SysPermissionDat
 
 	/**
 	 * 根据菜单id查询其对应的权限数据
-	 * 
 	 * @param permissionId
-     * @return List<SysPermissionDataRule>
+	 * @return List<SysPermissionDataRule>
 	 */
 	List<SysPermissionDataRule> getPermRuleListByPermId(String permissionId);
 
@@ -30,27 +29,25 @@ public interface ISysPermissionDataRuleService extends IService<SysPermissionDat
 	 * @return
 	 */
 	List<SysPermissionDataRule> queryPermissionRule(SysPermissionDataRule permRule);
-	
-	
+
 	/**
-	  * 根据菜单ID和用户名查找数据权限配置信息
+	 * 根据菜单ID和用户名查找数据权限配置信息
 	 * @param permissionId
 	 * @param username
 	 * @return
 	 */
-	List<SysPermissionDataRule> queryPermissionDataRules(String username,String permissionId);
-	
+	List<SysPermissionDataRule> queryPermissionDataRules(String username, String permissionId);
+
 	/**
 	 * 新增菜单权限配置 修改菜单rule_flag
 	 * @param sysPermissionDataRule
 	 */
 	public void savePermissionDataRule(SysPermissionDataRule sysPermissionDataRule);
-	
+
 	/**
 	 * 删除菜单权限配置 判断菜单还有无权限
 	 * @param dataRuleId
 	 */
 	public void deletePermissionDataRule(String dataRuleId);
-	
-	
+
 }

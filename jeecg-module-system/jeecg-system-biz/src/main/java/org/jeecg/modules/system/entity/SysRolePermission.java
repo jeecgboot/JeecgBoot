@@ -25,47 +25,47 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Accessors(chain = true)
 public class SysRolePermission implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * id
-     */
-    @TableId(type = IdType.ASSIGN_ID)
-    private String id;
-    
-    /**
-     * 角色id
-     */
-    private String roleId;
+	/**
+	 * id
+	 */
+	@TableId(type = IdType.ASSIGN_ID)
+	private String id;
 
-    /**
-     * 权限id
-     */
-    private String permissionId;
-    
-    /**
-     * 数据权限
-     */
-    private String dataRuleIds;
+	/**
+	 * 角色id
+	 */
+	private String roleId;
 
-    /**
-     * 操作时间
-     */
-    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private Date operateDate;
+	/**
+	 * 权限id
+	 */
+	private String permissionId;
 
-    /**
-     * 操作ip
-     */
-    private String operateIp;
+	/**
+	 * 数据权限
+	 */
+	private String dataRuleIds;
 
-    public SysRolePermission() {
-   	}
-       
-   	public SysRolePermission(String roleId, String permissionId) {
-   		this.roleId = roleId;
-   		this.permissionId = permissionId;
-   	}
+	/**
+	 * 操作时间
+	 */
+	@JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date operateDate;
+
+	/**
+	 * 操作ip
+	 */
+	private String operateIp;
+
+	public SysRolePermission() {
+	}
+
+	public SysRolePermission(String roleId, String permissionId) {
+		this.roleId = roleId;
+		this.permissionId = permissionId;
+	}
 
 }

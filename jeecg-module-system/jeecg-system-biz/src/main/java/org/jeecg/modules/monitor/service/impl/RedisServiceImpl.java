@@ -35,10 +35,10 @@ public class RedisServiceImpl implements RedisService {
 	@Resource
 	private RedisConnectionFactory redisConnectionFactory;
 
-    /**
-     * redis信息
-     */
-    private static final String REDIS_MESSAGE = "3";
+	/**
+	 * redis信息
+	 */
+	private static final String REDIS_MESSAGE = "3";
 
 	/**
 	 * Redis详细信息
@@ -84,46 +84,48 @@ public class RedisServiceImpl implements RedisService {
 		return map;
 	}
 
-    /**
-     * 查询redis信息for报表
-     * @param type 1redis key数量 2 占用内存 3redis信息
-     * @return
-     * @throws RedisConnectException
-     */
+	/**
+	 * 查询redis信息for报表
+	 * @param type 1redis key数量 2 占用内存 3redis信息
+	 * @return
+	 * @throws RedisConnectException
+	 */
 	@Override
-	public Map<String, JSONArray> getMapForReport(String type)  throws RedisConnectException {
-		Map<String,JSONArray> mapJson=new HashMap(5);
+	public Map<String, JSONArray> getMapForReport(String type) throws RedisConnectException {
+		Map<String, JSONArray> mapJson = new HashMap(5);
 		JSONArray json = new JSONArray();
-		if(REDIS_MESSAGE.equals(type)){
+		if (REDIS_MESSAGE.equals(type)) {
 			List<RedisInfo> redisInfo = getRedisInfo();
-			for(RedisInfo info:redisInfo){
-				Map<String, Object> map= Maps.newHashMap();
+			for (RedisInfo info : redisInfo) {
+				Map<String, Object> map = Maps.newHashMap();
 				BeanMap beanMap = BeanMap.create(info);
 				for (Object key : beanMap.keySet()) {
-					map.put(key+"", beanMap.get(key));
+					map.put(key + "", beanMap.get(key));
 				}
 				json.add(map);
 			}
-			mapJson.put("data",json);
+			mapJson.put("data", json);
 			return mapJson;
 		}
 		int length = 5;
-		for(int i = 0; i < length; i++){
+		for (int i = 0; i < length; i++) {
 			JSONObject jo = new JSONObject();
 			Map<String, Object> map;
-			if("1".equals(type)){
-				map= getKeysSize();
-				jo.put("value",map.get("dbSize"));
-			}else{
+			if ("1".equals(type)) {
+				map = getKeysSize();
+				jo.put("value", map.get("dbSize"));
+			}
+			else {
 				map = getMemoryInfo();
 				Integer usedMemory = Integer.valueOf(map.get("used_memory").toString());
-				jo.put("value",usedMemory/1000);
+				jo.put("value", usedMemory / 1000);
 			}
-			String createTime = DateUtil.formatTime(DateUtil.date((Long) map.get("create_time")-(4-i)*1000));
-			jo.put("name",createTime);
+			String createTime = DateUtil.formatTime(DateUtil.date((Long) map.get("create_time") - (4 - i) * 1000));
+			jo.put("name", createTime);
 			json.add(jo);
 		}
-		mapJson.put("data",json);
+		mapJson.put("data", json);
 		return mapJson;
 	}
+
 }

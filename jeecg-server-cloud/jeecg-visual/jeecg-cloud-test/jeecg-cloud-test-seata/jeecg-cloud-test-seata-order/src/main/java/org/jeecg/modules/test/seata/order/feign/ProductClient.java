@@ -8,18 +8,20 @@ import java.math.BigDecimal;
 
 /**
  * 分布式事务产品feign客户端
+ *
  * @author: zyf
  * @date: 2022/04/21
  */
-@FeignClient(value ="seata-product")
+@FeignClient(value = "seata-product")
 public interface ProductClient {
-    /**
-     * 扣减库存
-     *
-     * @param productId
-     * @param count
-     * @return
-     */
-    @PostMapping("/test/seata/product/reduceStock")
-    BigDecimal reduceStock(@RequestParam("productId") Long productId, @RequestParam("count") Integer count);
+
+	/**
+	 * 扣减库存
+	 * @param productId
+	 * @param count
+	 * @return
+	 */
+	@PostMapping("/test/seata/product/reduceStock")
+	BigDecimal reduceStock(@RequestParam("productId") Long productId, @RequestParam("count") Integer count);
+
 }

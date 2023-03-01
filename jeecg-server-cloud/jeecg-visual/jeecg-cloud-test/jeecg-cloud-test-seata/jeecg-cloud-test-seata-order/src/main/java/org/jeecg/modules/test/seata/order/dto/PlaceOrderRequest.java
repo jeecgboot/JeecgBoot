@@ -1,10 +1,12 @@
 package org.jeecg.modules.test.seata.order.dto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
+
 /**
  * @Description: 订单请求对象
  * @author: zyf
@@ -17,12 +19,13 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class PlaceOrderRequest {
 
-    @NotNull
-    private Long userId;
+	@NotNull
+	private Long userId;
 
-    @NotNull
-    private Long productId;
+	@NotNull
+	private Long productId;
 
-    @NotNull
-    private Integer count;
+	@NotNull
+	private Integer count;
+
 }

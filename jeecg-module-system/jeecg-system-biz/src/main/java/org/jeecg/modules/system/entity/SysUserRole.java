@@ -22,20 +22,20 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class SysUserRole implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @TableId(type = IdType.ASSIGN_ID)
-    private String id;
-    
-    /**
-     * 用户id
-     */
-    private String userId;
+	@TableId(type = IdType.ASSIGN_ID)
+	private String id;
 
-    /**
-     * 角色id
-     */
-    private String roleId;
+	/**
+	 * 用户id
+	 */
+	private String userId;
+
+	/**
+	 * 角色id
+	 */
+	private String roleId;
 
 	public SysUserRole() {
 	}
@@ -44,7 +44,5 @@ public class SysUserRole implements Serializable {
 		this.userId = userId;
 		this.roleId = roleId;
 	}
-
-    
 
 }

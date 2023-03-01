@@ -48,10 +48,11 @@ public class LoginUser {
 	@SensitiveField
 	private String password;
 
-     /**
-      * 当前登录部门code
-      */
-    private String orgCode;
+	/**
+	 * 当前登录部门code
+	 */
+	private String orgCode;
+
 	/**
 	 * 头像
 	 */
@@ -87,12 +88,13 @@ public class LoginUser {
 	 * 状态(1：正常 2：冻结 ）
 	 */
 	private Integer status;
-	
+
 	private Integer delFlag;
+
 	/**
-     * 同步工作流引擎1同步0不同步
-     */
-    private Integer activitiSync;
+	 * 同步工作流引擎1同步0不同步
+	 */
+	private Integer activitiSync;
 
 	/**
 	 * 创建时间
@@ -100,7 +102,7 @@ public class LoginUser {
 	private Date createTime;
 
 	/**
-	 *  身份（1 普通员工 2 上级）
+	 * 身份（1 普通员工 2 上级）
 	 */
 	private Integer userIdentity;
 
@@ -121,10 +123,10 @@ public class LoginUser {
 	@SensitiveField
 	private String telephone;
 
-	/**多租户id配置，编辑用户的时候设置*/
+	/** 多租户id配置，编辑用户的时候设置 */
 	private String relTenantIds;
 
-	/**设备id uniapp推送用*/
+	/** 设备id uniapp推送用 */
 	private String clientId;
 
 }

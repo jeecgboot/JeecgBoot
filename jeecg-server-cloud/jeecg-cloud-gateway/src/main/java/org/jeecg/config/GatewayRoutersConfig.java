@@ -6,84 +6,90 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @author scott
- * @date 2020/05/26
- * 路由配置信息
+ * @date 2020/05/26 路由配置信息
  */
 @Configuration
 @RefreshScope
 public class GatewayRoutersConfig {
-    /**
-     * 路由配置方式：database，yml，nacos
-     */
-    public String dataType;
-    public String serverAddr;
-    public String namespace;
-    public String dataId;
-    public String routeGroup;
-    public String username;
-    public String password;
 
-    @Value("${jeecg.route.config.data-type:#{null}}")
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
-    }
-    
-    @Value("${jeecg.route.config.data-id:#{null}}")
-    public void setRouteDataId(String dataId) {
-        this.dataId = dataId + ".json";
-    }
+	/**
+	 * 路由配置方式：database，yml，nacos
+	 */
+	public String dataType;
 
-    @Value("${jeecg.route.config.group:DEFAULT_GROUP:#{null}}")
-    public void setRouteGroup(String routeGroup) {
-        this.routeGroup = routeGroup;
-    }
+	public String serverAddr;
 
-    @Value("${spring.cloud.nacos.discovery.server-addr}")
-    public void setServerAddr(String serverAddr) {
-        this.serverAddr = serverAddr;
-    }
+	public String namespace;
 
-    @Value("${spring.cloud.nacos.discovery.namespace:#{null}}")
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
+	public String dataId;
 
-    @Value("${spring.cloud.nacos.config.username:#{null}}")
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public String routeGroup;
 
-    @Value("${spring.cloud.nacos.config.password:#{null}}")
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public String username;
 
-    public String getDataType() {
-        return dataType;
-    }
+	public String password;
 
-    public String getServerAddr() {
-        return serverAddr;
-    }
+	@Value("${jeecg.route.config.data-type:#{null}}")
+	public void setDataType(String dataType) {
+		this.dataType = dataType;
+	}
 
-    public String getNamespace() {
-        return namespace;
-    }
+	@Value("${jeecg.route.config.data-id:#{null}}")
+	public void setRouteDataId(String dataId) {
+		this.dataId = dataId + ".json";
+	}
 
-    public String getDataId() {
-        return dataId;
-    }
+	@Value("${jeecg.route.config.group:DEFAULT_GROUP:#{null}}")
+	public void setRouteGroup(String routeGroup) {
+		this.routeGroup = routeGroup;
+	}
 
-    public String getRouteGroup() {
-        return routeGroup;
-    }
+	@Value("${spring.cloud.nacos.discovery.server-addr}")
+	public void setServerAddr(String serverAddr) {
+		this.serverAddr = serverAddr;
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	@Value("${spring.cloud.nacos.discovery.namespace:#{null}}")
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	@Value("${spring.cloud.nacos.config.username:#{null}}")
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	@Value("${spring.cloud.nacos.config.password:#{null}}")
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getDataType() {
+		return dataType;
+	}
+
+	public String getServerAddr() {
+		return serverAddr;
+	}
+
+	public String getNamespace() {
+		return namespace;
+	}
+
+	public String getDataId() {
+		return dataId;
+	}
+
+	public String getRouteGroup() {
+		return routeGroup;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
 
 }

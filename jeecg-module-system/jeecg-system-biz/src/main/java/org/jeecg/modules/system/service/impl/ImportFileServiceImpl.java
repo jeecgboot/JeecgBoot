@@ -8,20 +8,22 @@ import org.springframework.stereotype.Service;
 
 /**
  * excel导入 实现类
+ *
  * @author: jeecg-boot
  */
 @Slf4j
 @Service
 public class ImportFileServiceImpl implements ImportFileServiceI {
 
-    @Value("${jeecg.path.upload}")
-    private String upLoadPath;
+	@Value("${jeecg.path.upload}")
+	private String upLoadPath;
 
-    @Value(value="${jeecg.uploadType}")
-    private String uploadType;
+	@Value(value = "${jeecg.uploadType}")
+	private String uploadType;
 
-    @Override
-    public String doUpload(byte[] data) {
-        return CommonUtils.uploadOnlineImage(data, upLoadPath, "import", uploadType);
-    }
+	@Override
+	public String doUpload(byte[] data) {
+		return CommonUtils.uploadOnlineImage(data, upLoadPath, "import", uploadType);
+	}
+
 }

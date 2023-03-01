@@ -31,19 +31,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JeecgSentinelApplication {
 
-    public static void main(String[] args) {
-        System.setProperty("csp.sentinel.app.type", "1");
-        triggerSentinelInit();
-        ConfigurableApplicationContext application = SpringApplication.run(JeecgSentinelApplication.class, args);
-        Environment env = application.getEnvironment();
-        String port = env.getProperty("server.port");
-        log.info("\n----------------------------------------------------------\n\t" +
-                "Application SentinelDashboard is running! Access URLs:\n\t" +
-                "Local: \t\thttp://localhost:" + port  + "/\n\t" +
-                "----------------------------------------------------------");
-    }
+	public static void main(String[] args) {
+		System.setProperty("csp.sentinel.app.type", "1");
+		triggerSentinelInit();
+		ConfigurableApplicationContext application = SpringApplication.run(JeecgSentinelApplication.class, args);
+		Environment env = application.getEnvironment();
+		String port = env.getProperty("server.port");
+		log.info("\n----------------------------------------------------------\n\t"
+				+ "Application SentinelDashboard is running! Access URLs:\n\t" + "Local: \t\thttp://localhost:" + port
+				+ "/\n\t" + "----------------------------------------------------------");
+	}
 
-    private static void triggerSentinelInit() {
-        new Thread(() -> InitExecutor.doInit()).start();
-    }
+	private static void triggerSentinelInit() {
+		new Thread(() -> InitExecutor.doInit()).start();
+	}
+
 }

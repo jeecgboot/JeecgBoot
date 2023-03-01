@@ -11,41 +11,41 @@ import java.util.Map;
 /**
  * @Description: 分类字典
  * @Author: jeecg-boot
- * @Date:   2019-05-29
+ * @Date: 2019-05-29
  * @Version: V1.0
  */
 public interface ISysCategoryService extends IService<SysCategory> {
 
-	/**根节点父ID的值*/
+	/** 根节点父ID的值 */
 	public static final String ROOT_PID_VALUE = "0";
 
-    /**
-     * 存在子节点
-     */
-    public static final String HAS_CHILD = "1";
+	/**
+	 * 存在子节点
+	 */
+	public static final String HAS_CHILD = "1";
 
-    /**
-     * 添加分类字典
-     * @param sysCategory
-     */
+	/**
+	 * 添加分类字典
+	 * @param sysCategory
+	 */
 	void addSysCategory(SysCategory sysCategory);
 
-    /**
-     * 修改分类字典
-     * @param sysCategory
-     */
-	void updateSysCategory(SysCategory sysCategory);
-	
 	/**
-     * 根据父级编码加载分类字典的数据
+	 * 修改分类字典
+	 * @param sysCategory
+	 */
+	void updateSysCategory(SysCategory sysCategory);
+
+	/**
+	 * 根据父级编码加载分类字典的数据
 	 * @param pcode
 	 * @return
-     * @throws JeecgBootException
+	 * @throws JeecgBootException
 	 */
 	public List<TreeSelectModel> queryListByCode(String pcode) throws JeecgBootException;
-	
+
 	/**
-	  * 根据pid查询子节点集合
+	 * 根据pid查询子节点集合
 	 * @param pid
 	 * @return
 	 */
@@ -57,7 +57,7 @@ public interface ISysCategoryService extends IService<SysCategory> {
 	 * @param condition
 	 * @return
 	 */
-	public List<TreeSelectModel> queryListByPid(String pid, Map<String,String> condition);
+	public List<TreeSelectModel> queryListByPid(String pid, Map<String, String> condition);
 
 	/**
 	 * 根据code查询id
@@ -74,7 +74,6 @@ public interface ISysCategoryService extends IService<SysCategory> {
 
 	/**
 	 * 分类字典控件数据回显[表单页面]
-	 *
 	 * @param ids
 	 * @return
 	 */
@@ -82,7 +81,6 @@ public interface ISysCategoryService extends IService<SysCategory> {
 
 	/**
 	 * 分类字典控件数据回显[表单页面]
-	 *
 	 * @param ids
 	 * @param delNotExist 是否移除不存在的项，设为false如果某个key不存在数据库中，则直接返回key本身
 	 * @return

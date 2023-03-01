@@ -44,8 +44,10 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/sys/message/sysMessageTemplate")
 public class SysMessageTemplateController extends JeecgController<SysMessageTemplate, ISysMessageTemplateService> {
+
 	@Autowired
 	private ISysMessageTemplateService sysMessageTemplateService;
+
 	@Autowired
 	private PushMsgUtil pushMsgUtil;
 
@@ -54,7 +56,6 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 
 	/**
 	 * 分页列表查询
-	 * 
 	 * @param sysMessageTemplate
 	 * @param pageNo
 	 * @param pageSize
@@ -62,87 +63,82 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	 * @return
 	 */
 	@GetMapping(value = "/list")
-	public Result<?> queryPageList(SysMessageTemplate sysMessageTemplate, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+	public Result<?> queryPageList(SysMessageTemplate sysMessageTemplate,
+			@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
-		QueryWrapper<SysMessageTemplate> queryWrapper = QueryGenerator.initQueryWrapper(sysMessageTemplate, req.getParameterMap());
+		QueryWrapper<SysMessageTemplate> queryWrapper = QueryGenerator.initQueryWrapper(sysMessageTemplate,
+				req.getParameterMap());
 		Page<SysMessageTemplate> page = new Page<SysMessageTemplate>(pageNo, pageSize);
 		IPage<SysMessageTemplate> pageList = sysMessageTemplateService.page(page, queryWrapper);
-        return Result.ok(pageList);
+		return Result.ok(pageList);
 	}
 
 	/**
 	 * 添加
-	 * 
 	 * @param sysMessageTemplate
 	 * @return
 	 */
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody SysMessageTemplate sysMessageTemplate) {
 		sysMessageTemplateService.save(sysMessageTemplate);
-        return Result.ok("添加成功！");
+		return Result.ok("添加成功！");
 	}
 
 	/**
 	 * 编辑
-	 * 
 	 * @param sysMessageTemplate
 	 * @return
 	 */
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody SysMessageTemplate sysMessageTemplate) {
 		sysMessageTemplateService.updateById(sysMessageTemplate);
-        return Result.ok("更新成功！");
+		return Result.ok("更新成功！");
 	}
 
 	/**
 	 * 通过id删除
-	 * 
 	 * @param id
 	 * @return
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
 		sysMessageTemplateService.removeById(id);
-        return Result.ok("删除成功!");
+		return Result.ok("删除成功!");
 	}
 
 	/**
 	 * 批量删除
-	 * 
 	 * @param ids
 	 * @return
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 		this.sysMessageTemplateService.removeByIds(Arrays.asList(ids.split(",")));
-        return Result.ok("批量删除成功！");
+		return Result.ok("批量删除成功！");
 	}
 
 	/**
 	 * 通过id查询
-	 * 
 	 * @param id
 	 * @return
 	 */
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
 		SysMessageTemplate sysMessageTemplate = sysMessageTemplateService.getById(id);
-        return Result.ok(sysMessageTemplate);
+		return Result.ok(sysMessageTemplate);
 	}
 
 	/**
 	 * 导出excel
-	 *
 	 * @param request
 	 */
 	@GetMapping(value = "/exportXls")
-	public ModelAndView exportXls(HttpServletRequest request,SysMessageTemplate sysMessageTemplate) {
-		return super.exportXls(request, sysMessageTemplate, SysMessageTemplate.class,"推送消息模板");
+	public ModelAndView exportXls(HttpServletRequest request, SysMessageTemplate sysMessageTemplate) {
+		return super.exportXls(request, sysMessageTemplate, SysMessageTemplate.class, "推送消息模板");
 	}
 
 	/**
 	 * excel导入
-	 *
 	 * @param request
 	 * @param response
 	 * @return
@@ -166,15 +162,17 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 			md.setToUser(msgParams.getReceiver());
 			md.setType(msgParams.getMsgType());
 			String testData = msgParams.getTestData();
-			if(oConvertUtils.isNotEmpty(testData)){
+			if (oConvertUtils.isNotEmpty(testData)) {
 				Map<String, Object> data = JSON.parseObject(testData, Map.class);
 				md.setData(data);
 			}
 			sysBaseApi.sendTemplateMessage(md);
 			return result.success("消息发送成功！");
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.error("发送消息出错", e.getMessage());
 			return result.error500("发送消息出错！");
 		}
 	}
+
 }

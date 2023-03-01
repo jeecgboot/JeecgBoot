@@ -1,6 +1,5 @@
 package com.alibaba.csp.sentinel.dashboard.rule.nacos.gateway;
 
-
 import java.util.List;
 
 import com.alibaba.csp.sentinel.dashboard.constants.SentinelConStants;
@@ -23,19 +22,20 @@ import com.alibaba.nacos.api.config.ConfigService;
 @Component("gateWayFlowRulesNacosPublisher")
 public class GateWayFlowRulesNacosPublisher implements DynamicRulePublisher<List<GatewayFlowRuleEntity>> {
 
-    @Autowired
-    private ConfigService configService;
-    @Autowired
-    private Converter<List<GatewayFlowRuleEntity>, String> converter;
+	@Autowired
+	private ConfigService configService;
 
+	@Autowired
+	private Converter<List<GatewayFlowRuleEntity>, String> converter;
 
-    @Override
-    public void publish(String app, List<GatewayFlowRuleEntity> rules) throws Exception {
-        AssertUtil.notEmpty(app, "app name cannot be empty");
-        if (rules == null) {
-            return;
-        }
-        configService.publishConfig(app + SentinelConStants.GETEWAY_FLOW_DATA_ID_POSTFIX,
-                SentinelConStants.GROUP_ID, converter.convert(rules));
-    }
+	@Override
+	public void publish(String app, List<GatewayFlowRuleEntity> rules) throws Exception {
+		AssertUtil.notEmpty(app, "app name cannot be empty");
+		if (rules == null) {
+			return;
+		}
+		configService.publishConfig(app + SentinelConStants.GETEWAY_FLOW_DATA_ID_POSTFIX, SentinelConStants.GROUP_ID,
+				converter.convert(rules));
+	}
+
 }

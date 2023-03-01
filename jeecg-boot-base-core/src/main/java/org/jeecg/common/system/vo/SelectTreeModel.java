@@ -13,20 +13,25 @@ import java.util.List;
 @Data
 public class SelectTreeModel implements Serializable {
 
-    private String key;
-    private String title;
-    private String value;
-    /**
-     * 父Id
-     */
-    private String parentId;
-    /**
-     * 是否是叶节点
-     */
-    private boolean isLeaf;
-    /**
-     * 子节点
-     */
-    private List<SelectTreeModel> children;
+	private String key;
+
+	private String title;
+
+	private String value;
+
+	/**
+	 * 父Id
+	 */
+	private String parentId;
+
+	/**
+	 * 是否是叶节点
+	 */
+	private boolean isLeaf;
+
+	/**
+	 * 子节点
+	 */
+	private List<SelectTreeModel> children;
 
 }

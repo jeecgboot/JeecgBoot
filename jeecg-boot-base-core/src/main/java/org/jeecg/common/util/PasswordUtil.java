@@ -15,20 +15,18 @@ import javax.crypto.spec.PBEParameterSpec;
 public class PasswordUtil {
 
 	/**
-	 * JAVA6支持以下任意一种算法 PBEWITHMD5ANDDES PBEWITHMD5ANDTRIPLEDES
-	 * PBEWITHSHAANDDESEDE PBEWITHSHA1ANDRC2_40 PBKDF2WITHHMACSHA1
-	 * */
+	 * JAVA6支持以下任意一种算法 PBEWITHMD5ANDDES PBEWITHMD5ANDTRIPLEDES PBEWITHSHAANDDESEDE
+	 * PBEWITHSHA1ANDRC2_40 PBKDF2WITHHMACSHA1
+	 */
 
-    /**
-     * 定义使用的算法为:PBEWITHMD5andDES算法
-     * 加密算法
-     */
+	/**
+	 * 定义使用的算法为:PBEWITHMD5andDES算法 加密算法
+	 */
 	public static final String ALGORITHM = "PBEWithMD5AndDES";
 
-    /**
-     * 定义使用的算法为:PBEWITHMD5andDES算法
-     * 密钥
-     */
+	/**
+	 * 定义使用的算法为:PBEWITHMD5andDES算法 密钥
+	 */
 	public static final String SALT = "63293188";
 
 	/**
@@ -38,9 +36,8 @@ public class PasswordUtil {
 
 	/**
 	 * 获取加密算法中使用的盐值,解密中使用的盐值必须与加密中使用的相同才能完成操作. 盐长度必须为8字节
-	 * 
 	 * @return byte[] 盐值
-	 * */
+	 */
 	public static byte[] getSalt() throws Exception {
 		// 实例化安全随机数
 		SecureRandom random = new SecureRandom();
@@ -55,11 +52,9 @@ public class PasswordUtil {
 
 	/**
 	 * 根据PBE密码生成一把密钥
-	 * 
-	 * @param password
-	 *            生成密钥时所使用的密码
+	 * @param password 生成密钥时所使用的密码
 	 * @return Key PBE算法密钥
-	 * */
+	 */
 	private static Key getPbeKey(String password) {
 		// 实例化使用的算法
 		SecretKeyFactory keyFactory;
@@ -70,7 +65,8 @@ public class PasswordUtil {
 			PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray());
 			// 生成密钥
 			secretKey = keyFactory.generateSecret(keySpec);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -80,13 +76,9 @@ public class PasswordUtil {
 
 	/**
 	 * 加密明文字符串
-	 * 
-	 * @param plaintext
-	 *            待加密的明文字符串
-	 * @param password
-	 *            生成密钥时所使用的密码
-	 * @param salt
-	 *            盐值
+	 * @param plaintext 待加密的明文字符串
+	 * @param password 生成密钥时所使用的密码
+	 * @param salt 盐值
 	 * @return 加密后的密文字符串
 	 * @throws Exception
 	 */
@@ -99,23 +91,22 @@ public class PasswordUtil {
 			Cipher cipher = Cipher.getInstance(ALGORITHM);
 
 			cipher.init(Cipher.ENCRYPT_MODE, key, parameterSpec);
-			//update-begin-author:sccott date:20180815 for:中文作为用户名时，加密的密码windows和linux会得到不同的结果 gitee/issues/IZUD7
+			// update-begin-author:sccott date:20180815
+			// for:中文作为用户名时，加密的密码windows和linux会得到不同的结果 gitee/issues/IZUD7
 			encipheredData = cipher.doFinal(plaintext.getBytes("utf-8"));
-			//update-end-author:sccott date:20180815 for:中文作为用户名时，加密的密码windows和linux会得到不同的结果 gitee/issues/IZUD7
-		} catch (Exception e) {
+			// update-end-author:sccott date:20180815
+			// for:中文作为用户名时，加密的密码windows和linux会得到不同的结果 gitee/issues/IZUD7
+		}
+		catch (Exception e) {
 		}
 		return bytesToHexString(encipheredData);
 	}
 
 	/**
 	 * 解密密文字符串
-	 * 
-	 * @param ciphertext
-	 *            待解密的密文字符串
-	 * @param password
-	 *            生成密钥时所使用的密码(如需解密,该参数需要与加密时使用的一致)
-	 * @param salt
-	 *            盐值(如需解密,该参数需要与加密时使用的一致)
+	 * @param ciphertext 待解密的密文字符串
+	 * @param password 生成密钥时所使用的密码(如需解密,该参数需要与加密时使用的一致)
+	 * @param salt 盐值(如需解密,该参数需要与加密时使用的一致)
 	 * @return 解密后的明文字符串
 	 * @throws Exception
 	 */
@@ -140,9 +131,7 @@ public class PasswordUtil {
 
 	/**
 	 * 将字节数组转换为十六进制字符串
-	 * 
-	 * @param src
-	 *            字节数组
+	 * @param src 字节数组
 	 * @return
 	 */
 	public static String bytesToHexString(byte[] src) {
@@ -163,9 +152,7 @@ public class PasswordUtil {
 
 	/**
 	 * 将十六进制字符串转换为字节数组
-	 * 
-	 * @param hexString
-	 *            十六进制字符串
+	 * @param hexString 十六进制字符串
 	 * @return
 	 */
 	public static byte[] hexStringToBytes(String hexString) {
@@ -186,6 +173,5 @@ public class PasswordUtil {
 	private static byte charToByte(char c) {
 		return (byte) "0123456789ABCDEF".indexOf(c);
 	}
-
 
 }

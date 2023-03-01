@@ -29,14 +29,13 @@ public class MockController {
 	private final String JSON_PATH = "classpath:org/jeecg/modules/demo/mock/json";
 
 	/**
-	 * 通用json访问接口
-	 * 格式： http://localhost:8080/jeecg-boot/api/json/{filename}
+	 * 通用json访问接口 格式： http://localhost:8080/jeecg-boot/api/json/{filename}
 	 * @param filename
 	 * @return
 	 */
 	@RequestMapping(value = "/json/{filename}", method = RequestMethod.GET)
 	public String getJsonData(@PathVariable("filename") String filename) {
-		String jsonpath = "classpath:org/jeecg/modules/demo/mock/json/"+filename+".json";
+		String jsonpath = "classpath:org/jeecg/modules/demo/mock/json/" + filename + ".json";
 		return readJson(jsonpath);
 	}
 
@@ -89,67 +88,72 @@ public class MockController {
 	}
 
 	/**
-	  * 测试报表数据
+	 * 测试报表数据
 	 */
 	@GetMapping(value = "/report/getYearCountInfo")
 	public String getYearCountInfo() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/getCntrNoCountInfo.json");
 	}
+
 	@GetMapping(value = "/report/getMonthCountInfo")
 	public String getMonthCountInfo() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/getCntrNoCountInfo.json");
 	}
+
 	@GetMapping(value = "/report/getCntrNoCountInfo")
 	public String getCntrNoCountInfo() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/getCntrNoCountInfo.json");
 	}
+
 	@GetMapping(value = "/report/getCabinetCountInfo")
 	public String getCabinetCountInfo() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/getCntrNoCountInfo.json");
 	}
+
 	@GetMapping(value = "/report/getTubiao")
 	public String getTubiao() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/getTubiao.json");
 	}
 
 	/**
-	   * 实时磁盘监控
+	 * 实时磁盘监控
 	 * @param request
 	 * @param response
 	 * @return
 	 */
 	@GetMapping("/queryDiskInfo")
-	public Result<List<Map<String,Object>>> queryDiskInfo(HttpServletRequest request, HttpServletResponse response){
-		Result<List<Map<String,Object>>> res = new Result<>();
+	public Result<List<Map<String, Object>>> queryDiskInfo(HttpServletRequest request, HttpServletResponse response) {
+		Result<List<Map<String, Object>>> res = new Result<>();
 		try {
 			// 当前文件系统类
-	        FileSystemView fsv = FileSystemView.getFileSystemView();
-	        // 列出所有windows 磁盘
-	        File[] fs = File.listRoots();
-	        log.info("查询磁盘信息:"+fs.length+"个");
-	        List<Map<String,Object>> list = new ArrayList<>();
+			FileSystemView fsv = FileSystemView.getFileSystemView();
+			// 列出所有windows 磁盘
+			File[] fs = File.listRoots();
+			log.info("查询磁盘信息:" + fs.length + "个");
+			List<Map<String, Object>> list = new ArrayList<>();
 
-	        for (int i = 0; i < fs.length; i++) {
-	        	if(fs[i].getTotalSpace()==0) {
-	        		continue;
-	        	}
-	        	Map<String,Object> map = new HashMap<>(5);
-	        	map.put("name", fsv.getSystemDisplayName(fs[i]));
-	        	map.put("max", fs[i].getTotalSpace());
-	        	map.put("rest", fs[i].getFreeSpace());
-	        	map.put("restPPT", fs[i].getFreeSpace()*100/fs[i].getTotalSpace());
-	        	list.add(map);
-	        	log.info(map.toString());
-	        }
-	        res.setResult(list);
-	        res.success("查询成功");
-		} catch (Exception e) {
-			res.error500("查询失败"+e.getMessage());
+			for (int i = 0; i < fs.length; i++) {
+				if (fs[i].getTotalSpace() == 0) {
+					continue;
+				}
+				Map<String, Object> map = new HashMap<>(5);
+				map.put("name", fsv.getSystemDisplayName(fs[i]));
+				map.put("max", fs[i].getTotalSpace());
+				map.put("rest", fs[i].getFreeSpace());
+				map.put("restPPT", fs[i].getFreeSpace() * 100 / fs[i].getTotalSpace());
+				list.add(map);
+				log.info(map.toString());
+			}
+			res.setResult(list);
+			res.success("查询成功");
+		}
+		catch (Exception e) {
+			res.error500("查询失败" + e.getMessage());
 		}
 		return res;
 	}
 
-	//-------------------------------------------------------------------------------------------
+	// -------------------------------------------------------------------------------------------
 	/**
 	 * 工作台首页的数据
 	 * @return
@@ -178,26 +182,27 @@ public class MockController {
 	public String taskProcess() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/task_process.json");
 	}
-	//-------------------------------------------------------------------------------------------
+	// -------------------------------------------------------------------------------------------
 
-	//author:lvdandan-----date：20190315---for:添加数据日志json----
-    /**
-     * 数据日志
-     */
+	// author:lvdandan-----date：20190315---for:添加数据日志json----
+	/**
+	 * 数据日志
+	 */
 	public String sysDataLogJson() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/sysdatalog.json");
 	}
-	//author:lvdandan-----date：20190315---for:添加数据日志json----
+	// author:lvdandan-----date：20190315---for:添加数据日志json----
 
-	//--update-begin--author:wangshuai-----date：20201023---for:返回用户信息json数据----
-    /**
-     * 用户信息
-     */
-    @GetMapping(value = "/getUserInfo")
-	public String getUserInfo(){
+	// --update-begin--author:wangshuai-----date：20201023---for:返回用户信息json数据----
+	/**
+	 * 用户信息
+	 */
+	@GetMapping(value = "/getUserInfo")
+	public String getUserInfo() {
 		return readJson("classpath:org/jeecg/modules/demo/mock/json/userinfo.json");
 	}
-	//--update-end--author:wangshuai-----date：20201023---for:返回用户信息json数据----
+
+	// --update-end--author:wangshuai-----date：20201023---for:返回用户信息json数据----
 	/**
 	 * 读取json格式文件
 	 * @param jsonSrc
@@ -206,13 +211,14 @@ public class MockController {
 	private String readJson(String jsonSrc) {
 		String json = "";
 		try {
-			//File jsonFile = ResourceUtils.getFile(jsonSrc);
-			//json = FileUtils.re.readFileToString(jsonFile);
-			//换个写法，解决springboot读取jar包中文件的问题
+			// File jsonFile = ResourceUtils.getFile(jsonSrc);
+			// json = FileUtils.re.readFileToString(jsonFile);
+			// 换个写法，解决springboot读取jar包中文件的问题
 			InputStream stream = getClass().getClassLoader().getResourceAsStream(jsonSrc.replace("classpath:", ""));
-			json = IOUtils.toString(stream,"UTF-8");
-		} catch (IOException e) {
-			log.error(e.getMessage(),e);
+			json = IOUtils.toString(stream, "UTF-8");
+		}
+		catch (IOException e) {
+			log.error(e.getMessage(), e);
 		}
 		return json;
 	}

@@ -11,11 +11,11 @@ import org.jeecg.modules.system.entity.SysPosition;
  */
 public interface ISysPositionService extends IService<SysPosition> {
 
-    /**
-     * 通过code查询
-     * @param code 职务编码
-     * @return SysPosition
-     */
-    SysPosition getByCode(String code);
+	/**
+	 * 通过code查询
+	 * @param code 职务编码
+	 * @return SysPosition
+	 */
+	SysPosition getByCode(String code);
 
 }

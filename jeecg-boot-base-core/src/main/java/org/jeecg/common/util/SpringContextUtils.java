@@ -31,7 +31,6 @@ public class SpringContextUtils implements ApplicationContextAware {
 
 	/**
 	 * 获取applicationContext
-	 *
 	 * @return
 	 */
 	public static ApplicationContext getApplicationContext() {
@@ -39,11 +38,12 @@ public class SpringContextUtils implements ApplicationContextAware {
 	}
 
 	/**
-	  * 获取HttpServletRequest
+	 * 获取HttpServletRequest
 	 */
 	public static HttpServletRequest getHttpServletRequest() {
 		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 	}
+
 	/**
 	 * 获取HttpServletResponse
 	 */
@@ -52,35 +52,35 @@ public class SpringContextUtils implements ApplicationContextAware {
 	}
 
 	/**
-	*  获取项目根路径 basePath
-	*/
-	public static String getDomain(){
+	 * 获取项目根路径 basePath
+	 */
+	public static String getDomain() {
 		HttpServletRequest request = getHttpServletRequest();
 		StringBuffer url = request.getRequestURL();
-		//1.微服务情况下，获取gateway的basePath
+		// 1.微服务情况下，获取gateway的basePath
 		String basePath = request.getHeader(ServiceNameConstants.X_GATEWAY_BASE_PATH);
-		if(oConvertUtils.isNotEmpty(basePath)){
+		if (oConvertUtils.isNotEmpty(basePath)) {
 			return basePath;
-		}else{
+		}
+		else {
 			String domain = url.delete(url.length() - request.getRequestURI().length(), url.length()).toString();
-			//2.【兼容】SSL认证之后，request.getScheme()获取不到https的问题
+			// 2.【兼容】SSL认证之后，request.getScheme()获取不到https的问题
 			// https://blog.csdn.net/weixin_34376986/article/details/89767950
 			String scheme = request.getHeader(CommonConstant.X_FORWARDED_SCHEME);
-			if(scheme!=null && !request.getScheme().equals(scheme)){
-				domain = domain.replace(request.getScheme(),scheme);
+			if (scheme != null && !request.getScheme().equals(scheme)) {
+				domain = domain.replace(request.getScheme(), scheme);
 			}
 			return domain;
 		}
 	}
 
-	public static String getOrigin(){
+	public static String getOrigin() {
 		HttpServletRequest request = getHttpServletRequest();
 		return request.getHeader("Origin");
 	}
-	
+
 	/**
 	 * 通过name获取 Bean.
-	 *
 	 * @param name
 	 * @return
 	 */
@@ -90,9 +90,8 @@ public class SpringContextUtils implements ApplicationContextAware {
 
 	/**
 	 * 通过class获取Bean.
-	 *
 	 * @param clazz
-	 * @param       <T>
+	 * @param <T>
 	 * @return
 	 */
 	public static <T> T getBean(Class<T> clazz) {
@@ -101,13 +100,13 @@ public class SpringContextUtils implements ApplicationContextAware {
 
 	/**
 	 * 通过name,以及Clazz返回指定的Bean
-	 *
 	 * @param name
 	 * @param clazz
-	 * @param       <T>
+	 * @param <T>
 	 * @return
 	 */
 	public static <T> T getBean(String name, Class<T> clazz) {
 		return getApplicationContext().getBean(name, clazz);
 	}
+
 }

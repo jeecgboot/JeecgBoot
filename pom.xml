@@ -59,6 +59,12 @@
 		<!-- Log4j2爆雷漏洞 -->
 		<log4j2.version>2.17.0</log4j2.version>
 		<logback.version>1.2.9</logback.version>
+
+		<!-- 代码格式化 ./mvnw spring-javaformat:apply、mvn spring-javaformat:apply -->
+		<!-- https://mvnrepository.com/artifact/io.spring.javaformat/spring-javaformat-maven-plugin -->
+		<!-- https://github.com/spring-io/spring-javaformat/ -->
+		<!-- 高版本支持 JDK 8：https://github.com/spring-io/spring-javaformat/#java-8-support -->
+		<spring-javaformat-maven-plugin.version>0.0.38</spring-javaformat-maven-plugin.version>
 	</properties>
 
 	<modules>
@@ -364,6 +370,27 @@
                     </nonFilteredFileExtensions>
                 </configuration>
             </plugin>
+			<!--
+				代码格式化
+				./mvnw spring-javaformat:apply
+				mvn spring-javaformat:apply
+				高版本支持 JDK 8：https://github.com/spring-io/spring-javaformat/#java-8-support
+			 -->
+			<!-- https://mvnrepository.com/artifact/io.spring.javaformat/spring-javaformat-maven-plugin -->
+			<plugin>
+				<groupId>io.spring.javaformat</groupId>
+				<artifactId>spring-javaformat-maven-plugin</artifactId>
+				<version>${spring-javaformat-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<inherited>true</inherited>
+						<goals>
+							<goal>validate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<resources>
 			<resource>

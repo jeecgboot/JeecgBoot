@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 /**
  * @Description: 库存请求对象
  * @author: zyf
@@ -16,6 +17,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReduceStockRequest {
 
-    private Long productId;
-    private Integer amount;
+	private Long productId;
+
+	private Integer amount;
+
 }

@@ -62,6 +62,22 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 | `jeecg-boot-starter` | [Stater依赖项目单独维护，点击下载](https://gitee.com/jeecg/jeecg-boot-starter) |
 | `更多开源插件` | [更多源码下载](https://github.com/jeecgboot) |
 
+##### 代码规范 [spring-javaformat](https://github.com/spring-io/spring-javaformat)
+
+<details>
+<summary>代码规范说明</summary>
+
+1. 由于 <a href="https://github.com/spring-io/spring-javaformat" target="_blank">spring-javaformat</a>
+   强制所有代码按照指定格式排版，未按此要求提交的代码将不能通过合并（打包）
+2. 如果使用 IntelliJ IDEA
+   开发，请安装自动格式化软件 <a href="https://repo1.maven.org/maven2/io/spring/javaformat/spring-javaformat-intellij-idea-plugin/" target="_blank">
+   spring-javaformat-intellij-idea-plugin</a>
+3. 其他开发工具，请参考 <a href="https://github.com/spring-io/spring-javaformat" target="_blank">spring-javaformat</a>
+   说明，或`提交代码前`在项目根目录运行下列命令（需要开发者电脑支持`mvn`命令）进行代码格式化
+   ```
+   mvn spring-javaformat:apply
+   ```
+</details>
 
 
 技术文档

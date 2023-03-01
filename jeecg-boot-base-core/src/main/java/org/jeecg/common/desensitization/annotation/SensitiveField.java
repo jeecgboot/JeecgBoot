@@ -1,6 +1,5 @@
 package org.jeecg.common.desensitization.annotation;
 
-
 import org.jeecg.common.desensitization.enums.SensitiveEnum;
 
 import java.lang.annotation.*;
@@ -13,9 +12,10 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 public @interface SensitiveField {
 
-    /**
-     * 不同类型处理不同
-     * @return
-     */
-    SensitiveEnum type() default SensitiveEnum.ENCODE;
+	/**
+	 * 不同类型处理不同
+	 * @return
+	 */
+	SensitiveEnum type() default SensitiveEnum.ENCODE;
+
 }

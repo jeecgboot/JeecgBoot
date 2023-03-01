@@ -1,6 +1,5 @@
 package org.jeecg.modules.system.mapper;
 
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.system.entity.SysComment;
@@ -19,22 +18,22 @@ import java.util.Set;
  */
 public interface SysCommentMapper extends BaseMapper<SysComment> {
 
-    List<SysCommentVO> queryCommentList(@Param("tableName") String tableName, @Param("formDataId") String formDataId);
+	List<SysCommentVO> queryCommentList(@Param("tableName") String tableName, @Param("formDataId") String formDataId);
 
-    /**
-     * 根据表名和数据id查询表单文件
-     *
-     * @param tableName
-     * @param formDataId
-     * @return
-     */
-    List<SysCommentFileVo> queryFormFileList(@Param("tableName") String tableName, @Param("formDataId") String formDataId);
+	/**
+	 * 根据表名和数据id查询表单文件
+	 * @param tableName
+	 * @param formDataId
+	 * @return
+	 */
+	List<SysCommentFileVo> queryFormFileList(@Param("tableName") String tableName,
+			@Param("formDataId") String formDataId);
 
-    /**
-     * 根据用户名获取用户信息
-     * @param idSet
-     * @return
-     */
-    List<UserAvatar> queryUserAvatarList(@Param("idSet") Set<String> idSet);
+	/**
+	 * 根据用户名获取用户信息
+	 * @param idSet
+	 * @return
+	 */
+	List<UserAvatar> queryUserAvatarList(@Param("idSet") Set<String> idSet);
 
 }

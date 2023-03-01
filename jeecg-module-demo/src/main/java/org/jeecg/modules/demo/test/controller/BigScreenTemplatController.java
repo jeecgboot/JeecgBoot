@@ -22,42 +22,42 @@ import java.util.List;
 @RequestMapping("/test/bigScreen/templat")
 public class BigScreenTemplatController extends JeecgController<JeecgDemo, IJeecgDemoService> {
 
-    /**
-     * @param modelAndView
-     * @return
-     */
-    @RequestMapping("/html")
-    public ModelAndView ftl(ModelAndView modelAndView) {
-        modelAndView.setViewName("demo3");
-        List<String> userList = new ArrayList<String>();
-        userList.add("admin");
-        userList.add("user1");
-        userList.add("user2");
-        log.info("--------------test--------------");
-        modelAndView.addObject("userList", userList);
-        return modelAndView;
-    }
+	/**
+	 * @param modelAndView
+	 * @return
+	 */
+	@RequestMapping("/html")
+	public ModelAndView ftl(ModelAndView modelAndView) {
+		modelAndView.setViewName("demo3");
+		List<String> userList = new ArrayList<String>();
+		userList.add("admin");
+		userList.add("user1");
+		userList.add("user2");
+		log.info("--------------test--------------");
+		modelAndView.addObject("userList", userList);
+		return modelAndView;
+	}
 
-    /**
-     * 生产销售监控模版
-     * @param modelAndView
-     * @return
-     */
-    @RequestMapping("/index1")
-    public ModelAndView index1(ModelAndView modelAndView) {
-        modelAndView.setViewName("/bigscreen/template1/index");
-        return modelAndView;
-    }
+	/**
+	 * 生产销售监控模版
+	 * @param modelAndView
+	 * @return
+	 */
+	@RequestMapping("/index1")
+	public ModelAndView index1(ModelAndView modelAndView) {
+		modelAndView.setViewName("/bigscreen/template1/index");
+		return modelAndView;
+	}
 
-    /**
-     * 智慧物流监控模版
-     * @param modelAndView
-     * @return
-     */
-    @RequestMapping("/index2")
-    public ModelAndView index2(ModelAndView modelAndView) {
-        modelAndView.setViewName("/bigscreen/template2/index");
-        return modelAndView;
-    }
+	/**
+	 * 智慧物流监控模版
+	 * @param modelAndView
+	 * @return
+	 */
+	@RequestMapping("/index2")
+	public ModelAndView index2(ModelAndView modelAndView) {
+		modelAndView.setViewName("/bigscreen/template2/index");
+		return modelAndView;
+	}
 
 }

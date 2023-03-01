@@ -1,15 +1,15 @@
-//package org.jeecg.modules.test.feign.client;
+// package org.jeecg.modules.test.feign.client;
 //
-//import org.jeecg.common.api.vo.Result;
-//import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.RequestParam;
+// import org.jeecg.common.api.vo.Result;
+// import org.springframework.web.bind.annotation.GetMapping;
+// import org.springframework.web.bind.annotation.PostMapping;
+// import org.springframework.web.bind.annotation.RequestParam;
 //
-///**
+/// **
 // * 动态feign接口定义
 // */
-//public interface JeecgTestClientDyn {
+// public interface JeecgTestClientDyn {
 //
-//    @GetMapping(value = "/test/getMessage")
-//    Result<String> getMessage(@RequestParam(value = "name",required = false) String name);
-//}
+// @GetMapping(value = "/test/getMessage")
+// Result<String> getMessage(@RequestParam(value = "name",required = false) String name);
+// }

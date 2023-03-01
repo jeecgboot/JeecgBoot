@@ -22,18 +22,20 @@ import java.util.List;
 @Component("degradeRuleNacosProvider")
 public class DegradeRuleNacosProvider implements DynamicRuleProvider<List<DegradeRuleEntity>> {
 
-    @Autowired
-    private ConfigService configService;
-    @Autowired
-    private Converter<String, List<DegradeRuleEntity>> converter;
+	@Autowired
+	private ConfigService configService;
 
-    @Override
-    public List<DegradeRuleEntity> getRules(String appName) throws Exception {
-        String rules = configService.getConfig(appName + SentinelConStants.DEGRADE_DATA_ID_POSTFIX,
-                SentinelConStants.GROUP_ID, 3000);
-        if (StringUtil.isEmpty(rules)) {
-            return new ArrayList<>();
-        }
-        return converter.convert(rules);
-    }
+	@Autowired
+	private Converter<String, List<DegradeRuleEntity>> converter;
+
+	@Override
+	public List<DegradeRuleEntity> getRules(String appName) throws Exception {
+		String rules = configService.getConfig(appName + SentinelConStants.DEGRADE_DATA_ID_POSTFIX,
+				SentinelConStants.GROUP_ID, 3000);
+		if (StringUtil.isEmpty(rules)) {
+			return new ArrayList<>();
+		}
+		return converter.convert(rules);
+	}
+
 }

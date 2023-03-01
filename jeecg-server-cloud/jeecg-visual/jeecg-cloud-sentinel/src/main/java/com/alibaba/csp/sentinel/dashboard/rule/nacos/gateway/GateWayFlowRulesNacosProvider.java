@@ -22,19 +22,20 @@ import java.util.List;
 @Component("gateWayFlowRulesNacosProvider")
 public class GateWayFlowRulesNacosProvider implements DynamicRuleProvider<List<GatewayFlowRuleEntity>> {
 
-    @Autowired
-    private ConfigService configService;
-    @Autowired
-    private Converter<String, List<GatewayFlowRuleEntity>> converter;
+	@Autowired
+	private ConfigService configService;
 
-    @Override
-    public List<GatewayFlowRuleEntity> getRules(String appName) throws Exception {
-        String rules = configService.getConfig(appName + SentinelConStants.GETEWAY_FLOW_DATA_ID_POSTFIX,
-                SentinelConStants.GROUP_ID, 3000);
-        if (StringUtil.isEmpty(rules)) {
-            return new ArrayList<>();
-        }
-        return converter.convert(rules);
-    }
+	@Autowired
+	private Converter<String, List<GatewayFlowRuleEntity>> converter;
+
+	@Override
+	public List<GatewayFlowRuleEntity> getRules(String appName) throws Exception {
+		String rules = configService.getConfig(appName + SentinelConStants.GETEWAY_FLOW_DATA_ID_POSTFIX,
+				SentinelConStants.GROUP_ID, 3000);
+		if (StringUtil.isEmpty(rules)) {
+			return new ArrayList<>();
+		}
+		return converter.convert(rules);
+	}
 
 }

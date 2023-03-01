@@ -16,21 +16,23 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DictModel implements Serializable{
+public class DictModel implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	public DictModel() {
 	}
-	
+
 	public DictModel(String value, String text) {
 		this.value = value;
 		this.text = text;
 	}
-	
+
 	/**
 	 * 字典value
 	 */
 	private String value;
+
 	/**
 	 * 字典文本
 	 */
@@ -43,6 +45,7 @@ public class DictModel implements Serializable{
 	public String getTitle() {
 		return this.text;
 	}
+
 	/**
 	 * 特殊用途： vue3 Select组件
 	 */

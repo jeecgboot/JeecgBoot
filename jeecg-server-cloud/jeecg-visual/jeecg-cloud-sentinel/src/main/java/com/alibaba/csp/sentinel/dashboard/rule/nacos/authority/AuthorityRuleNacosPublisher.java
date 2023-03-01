@@ -22,26 +22,28 @@ import java.util.stream.Collectors;
  */
 @Component("authorityRuleNacosPublisher")
 public class AuthorityRuleNacosPublisher implements DynamicRulePublisher<List<AuthorityRuleEntity>> {
-    @Autowired
-    private ConfigService configService;
-    @Autowired
-    private Converter<List<AuthorityRuleCorrectEntity>, String> converter;
 
-    @Override
-    public void publish(String app, List<AuthorityRuleEntity> rules) throws Exception {
-        AssertUtil.notEmpty(app, "app name cannot be empty");
-        if (rules == null) {
-            return;
-        }
-        //  转换
-        List<AuthorityRuleCorrectEntity> list = rules.stream().map(rule -> {
-            AuthorityRuleCorrectEntity entity = new AuthorityRuleCorrectEntity();
-            BeanUtils.copyProperties(rule, entity);
-            return entity;
-        }).collect(Collectors.toList());
+	@Autowired
+	private ConfigService configService;
 
-        configService.publishConfig(app + SentinelConStants.AUTHORITY_DATA_ID_POSTFIX,
-                SentinelConStants.GROUP_ID, converter.convert(list));
-    }
+	@Autowired
+	private Converter<List<AuthorityRuleCorrectEntity>, String> converter;
+
+	@Override
+	public void publish(String app, List<AuthorityRuleEntity> rules) throws Exception {
+		AssertUtil.notEmpty(app, "app name cannot be empty");
+		if (rules == null) {
+			return;
+		}
+		// 转换
+		List<AuthorityRuleCorrectEntity> list = rules.stream().map(rule -> {
+			AuthorityRuleCorrectEntity entity = new AuthorityRuleCorrectEntity();
+			BeanUtils.copyProperties(rule, entity);
+			return entity;
+		}).collect(Collectors.toList());
+
+		configService.publishConfig(app + SentinelConStants.AUTHORITY_DATA_ID_POSTFIX, SentinelConStants.GROUP_ID,
+				converter.convert(list));
+	}
+
 }
-

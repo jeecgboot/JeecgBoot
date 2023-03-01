@@ -20,88 +20,86 @@ import java.math.BigInteger;
 @Configuration
 public class LoginService {
 
-    public static final String LOGIN_IDENTITY_KEY = "XXL_JOB_LOGIN_IDENTITY";
+	public static final String LOGIN_IDENTITY_KEY = "XXL_JOB_LOGIN_IDENTITY";
 
-    @Resource
-    private XxlJobUserDao xxlJobUserDao;
+	@Resource
+	private XxlJobUserDao xxlJobUserDao;
 
+	private String makeToken(XxlJobUser xxlJobUser) {
+		String tokenJson = JacksonUtil.writeValueAsString(xxlJobUser);
+		String tokenHex = new BigInteger(tokenJson.getBytes()).toString(16);
+		return tokenHex;
+	}
 
-    private String makeToken(XxlJobUser xxlJobUser){
-        String tokenJson = JacksonUtil.writeValueAsString(xxlJobUser);
-        String tokenHex = new BigInteger(tokenJson.getBytes()).toString(16);
-        return tokenHex;
-    }
-    private XxlJobUser parseToken(String tokenHex){
-        XxlJobUser xxlJobUser = null;
-        if (tokenHex != null) {
-            String tokenJson = new String(new BigInteger(tokenHex, 16).toByteArray());      // username_password(md5)
-            xxlJobUser = JacksonUtil.readValue(tokenJson, XxlJobUser.class);
-        }
-        return xxlJobUser;
-    }
+	private XxlJobUser parseToken(String tokenHex) {
+		XxlJobUser xxlJobUser = null;
+		if (tokenHex != null) {
+			String tokenJson = new String(new BigInteger(tokenHex, 16).toByteArray()); // username_password(md5)
+			xxlJobUser = JacksonUtil.readValue(tokenJson, XxlJobUser.class);
+		}
+		return xxlJobUser;
+	}
 
+	public ReturnT<String> login(HttpServletRequest request, HttpServletResponse response, String username,
+			String password, boolean ifRemember) {
 
-    public ReturnT<String> login(HttpServletRequest request, HttpServletResponse response, String username, String password, boolean ifRemember){
+		// param
+		if (username == null || username.trim().length() == 0 || password == null || password.trim().length() == 0) {
+			return new ReturnT<String>(500, I18nUtil.getString("login_param_empty"));
+		}
 
-        // param
-        if (username==null || username.trim().length()==0 || password==null || password.trim().length()==0){
-            return new ReturnT<String>(500, I18nUtil.getString("login_param_empty"));
-        }
+		// valid passowrd
+		XxlJobUser xxlJobUser = xxlJobUserDao.loadByUserName(username);
+		if (xxlJobUser == null) {
+			return new ReturnT<String>(500, I18nUtil.getString("login_param_unvalid"));
+		}
+		String passwordMd5 = DigestUtils.md5DigestAsHex(password.getBytes());
+		if (!passwordMd5.equals(xxlJobUser.getPassword())) {
+			return new ReturnT<String>(500, I18nUtil.getString("login_param_unvalid"));
+		}
 
-        // valid passowrd
-        XxlJobUser xxlJobUser = xxlJobUserDao.loadByUserName(username);
-        if (xxlJobUser == null) {
-            return new ReturnT<String>(500, I18nUtil.getString("login_param_unvalid"));
-        }
-        String passwordMd5 = DigestUtils.md5DigestAsHex(password.getBytes());
-        if (!passwordMd5.equals(xxlJobUser.getPassword())) {
-            return new ReturnT<String>(500, I18nUtil.getString("login_param_unvalid"));
-        }
+		String loginToken = makeToken(xxlJobUser);
 
-        String loginToken = makeToken(xxlJobUser);
+		// do login
+		CookieUtil.set(response, LOGIN_IDENTITY_KEY, loginToken, ifRemember);
+		return ReturnT.SUCCESS;
+	}
 
-        // do login
-        CookieUtil.set(response, LOGIN_IDENTITY_KEY, loginToken, ifRemember);
-        return ReturnT.SUCCESS;
-    }
+	/**
+	 * logout
+	 * @param request
+	 * @param response
+	 */
+	public ReturnT<String> logout(HttpServletRequest request, HttpServletResponse response) {
+		CookieUtil.remove(request, response, LOGIN_IDENTITY_KEY);
+		return ReturnT.SUCCESS;
+	}
 
-    /**
-     * logout
-     *
-     * @param request
-     * @param response
-     */
-    public ReturnT<String> logout(HttpServletRequest request, HttpServletResponse response){
-        CookieUtil.remove(request, response, LOGIN_IDENTITY_KEY);
-        return ReturnT.SUCCESS;
-    }
-
-    /**
-     * logout
-     *
-     * @param request
-     * @return
-     */
-    public XxlJobUser ifLogin(HttpServletRequest request, HttpServletResponse response){
-        String cookieToken = CookieUtil.getValue(request, LOGIN_IDENTITY_KEY);
-        if (cookieToken != null) {
-            XxlJobUser cookieUser = null;
-            try {
-                cookieUser = parseToken(cookieToken);
-            } catch (Exception e) {
-                logout(request, response);
-            }
-            if (cookieUser != null) {
-                XxlJobUser dbUser = xxlJobUserDao.loadByUserName(cookieUser.getUsername());
-                if (dbUser != null) {
-                    if (cookieUser.getPassword().equals(dbUser.getPassword())) {
-                        return dbUser;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
+	/**
+	 * logout
+	 * @param request
+	 * @return
+	 */
+	public XxlJobUser ifLogin(HttpServletRequest request, HttpServletResponse response) {
+		String cookieToken = CookieUtil.getValue(request, LOGIN_IDENTITY_KEY);
+		if (cookieToken != null) {
+			XxlJobUser cookieUser = null;
+			try {
+				cookieUser = parseToken(cookieToken);
+			}
+			catch (Exception e) {
+				logout(request, response);
+			}
+			if (cookieUser != null) {
+				XxlJobUser dbUser = xxlJobUserDao.loadByUserName(cookieUser.getUsername());
+				if (dbUser != null) {
+					if (cookieUser.getPassword().equals(dbUser.getPassword())) {
+						return dbUser;
+					}
+				}
+			}
+		}
+		return null;
+	}
 
 }

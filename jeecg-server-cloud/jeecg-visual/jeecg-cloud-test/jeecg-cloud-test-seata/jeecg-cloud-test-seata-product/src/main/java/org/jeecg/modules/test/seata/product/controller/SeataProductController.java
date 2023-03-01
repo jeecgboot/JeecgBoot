@@ -15,11 +15,12 @@ import java.math.BigDecimal;
 @RequestMapping("/test/seata/product")
 public class SeataProductController {
 
-    @Autowired
-    private SeataProductService seataProductService;
+	@Autowired
+	private SeataProductService seataProductService;
 
-    @PostMapping("/reduceStock")
-    public BigDecimal reduceStock(Long productId, Integer count) {
-        return seataProductService.reduceStock(productId, count);
-    }
+	@PostMapping("/reduceStock")
+	public BigDecimal reduceStock(Long productId, Integer count) {
+		return seataProductService.reduceStock(productId, count);
+	}
+
 }

@@ -20,27 +20,32 @@ import java.math.BigDecimal;
 @TableName("p_order")
 public class SeataOrder {
 
-    @TableId(type = IdType.AUTO)
-    private Integer id;
+	@TableId(type = IdType.AUTO)
+	private Integer id;
 
-    /**
-     * 用户ID
-     */
-    private Long userId;
-    /**
-     * 商品ID
-     */
-    private Long productId;
-    /**
-     * 订单状态
-     */
-    private OrderStatus status;
-    /**
-     * 数量
-     */
-    private Integer count;
-    /**
-     * 总金额
-     */
-    private BigDecimal totalPrice;
+	/**
+	 * 用户ID
+	 */
+	private Long userId;
+
+	/**
+	 * 商品ID
+	 */
+	private Long productId;
+
+	/**
+	 * 订单状态
+	 */
+	private OrderStatus status;
+
+	/**
+	 * 数量
+	 */
+	private Integer count;
+
+	/**
+	 * 总金额
+	 */
+	private BigDecimal totalPrice;
+
 }

@@ -24,7 +24,7 @@ public class CookieInterceptor extends HandlerInterceptorAdapter {
 			ModelAndView modelAndView) throws Exception {
 
 		// cookie
-		if (modelAndView!=null && request.getCookies()!=null && request.getCookies().length>0) {
+		if (modelAndView != null && request.getCookies() != null && request.getCookies().length > 0) {
 			HashMap<String, Cookie> cookieMap = new HashMap<String, Cookie>();
 			for (Cookie ck : request.getCookies()) {
 				cookieMap.put(ck.getName(), ck);
@@ -36,8 +36,8 @@ public class CookieInterceptor extends HandlerInterceptorAdapter {
 		if (modelAndView != null) {
 			modelAndView.addObject("I18nUtil", FtlUtil.generateStaticModel(I18nUtil.class.getName()));
 		}
-		
+
 		super.postHandle(request, response, handler, modelAndView);
 	}
-	
+
 }

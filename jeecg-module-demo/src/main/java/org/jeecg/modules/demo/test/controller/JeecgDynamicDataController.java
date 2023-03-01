@@ -26,22 +26,19 @@ import java.util.List;
 @RequestMapping("/test/dynamic")
 public class JeecgDynamicDataController extends JeecgController<JeecgDemo, IJeecgDemoService> {
 
-    @Autowired
-    private IJeecgDynamicDataService jeecgDynamicDataService;
+	@Autowired
+	private IJeecgDynamicDataService jeecgDynamicDataService;
 
-
-    /**
-     * 动态切换数据源
-
-     * @return
-     */
-    @PostMapping(value = "/test1")
-    @AutoLog(value = "动态切换数据源")
-    @ApiOperation(value = "动态切换数据源", notes = "动态切换数据源")
-    public Result<List<JeecgDemo>> selectSpelByKey(@RequestParam(required = false) String dsName) {
-        List<JeecgDemo> list = jeecgDynamicDataService.selectSpelByKey(dsName);
-        return Result.OK(list);
-    }
-
+	/**
+	 * 动态切换数据源
+	 * @return
+	 */
+	@PostMapping(value = "/test1")
+	@AutoLog(value = "动态切换数据源")
+	@ApiOperation(value = "动态切换数据源", notes = "动态切换数据源")
+	public Result<List<JeecgDemo>> selectSpelByKey(@RequestParam(required = false) String dsName) {
+		List<JeecgDemo> list = jeecgDynamicDataService.selectSpelByKey(dsName);
+		return Result.OK(list);
+	}
 
 }

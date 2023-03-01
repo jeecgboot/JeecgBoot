@@ -26,16 +26,15 @@ public interface SysLogMapper extends BaseMapper<SysLog> {
 
 	/**
 	 * 获取系统总访问次数
-	 *
 	 * @return Long
 	 */
 	Long findTotalVisitCount();
 
-	//update-begin--Author:zhangweijian  Date:20190428 for：传入开始时间，结束时间参数
+	// update-begin--Author:zhangweijian Date:20190428 for：传入开始时间，结束时间参数
 	/**
 	 * 获取系统今日访问次数
 	 * @param dayStart 开始时间
-     * @param dayEnd 结束时间
+	 * @param dayEnd 结束时间
 	 * @return Long
 	 */
 	Long findTodayVisitCount(@Param("dayStart") Date dayStart, @Param("dayEnd") Date dayEnd);
@@ -43,18 +42,20 @@ public interface SysLogMapper extends BaseMapper<SysLog> {
 	/**
 	 * 获取系统今日访问 IP数
 	 * @param dayStart 开始时间
-     * @param dayEnd 结束时间
+	 * @param dayEnd 结束时间
 	 * @return Long
 	 */
 	Long findTodayIp(@Param("dayStart") Date dayStart, @Param("dayEnd") Date dayEnd);
-	//update-end--Author:zhangweijian  Date:20190428 for：传入开始时间，结束时间参数
-	
+	// update-end--Author:zhangweijian Date:20190428 for：传入开始时间，结束时间参数
+
 	/**
-	 *   首页：根据时间统计访问数量/ip数量
+	 * 首页：根据时间统计访问数量/ip数量
 	 * @param dayStart
 	 * @param dayEnd
-     * @param dbType
+	 * @param dbType
 	 * @return
 	 */
-	List<Map<String,Object>> findVisitCount(@Param("dayStart") Date dayStart, @Param("dayEnd") Date dayEnd, @Param("dbType") String dbType);
+	List<Map<String, Object>> findVisitCount(@Param("dayStart") Date dayStart, @Param("dayEnd") Date dayEnd,
+			@Param("dbType") String dbType);
+
 }

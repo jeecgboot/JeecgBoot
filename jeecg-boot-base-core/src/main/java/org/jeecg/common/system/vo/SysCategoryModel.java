@@ -9,44 +9,49 @@ import org.jeecgframework.poi.excel.annotation.Excel;
  * @Version 1.0
  */
 public class SysCategoryModel {
-    /**主键*/
-    private java.lang.String id;
-    /**父级节点*/
-    private java.lang.String pid;
-    /**类型名称*/
-    private java.lang.String name;
-    /**类型编码*/
-    private java.lang.String code;
 
-    public String getId() {
-        return id;
-    }
+	/** 主键 */
+	private java.lang.String id;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	/** 父级节点 */
+	private java.lang.String pid;
 
-    public String getPid() {
-        return pid;
-    }
+	/** 类型名称 */
+	private java.lang.String name;
 
-    public void setPid(String pid) {
-        this.pid = pid;
-    }
+	/** 类型编码 */
+	private java.lang.String code;
 
-    public String getName() {
-        return name;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getCode() {
-        return code;
-    }
+	public String getPid() {
+		return pid;
+	}
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+	public void setPid(String pid) {
+		this.pid = pid;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
 }

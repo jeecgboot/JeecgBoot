@@ -12,16 +12,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 /**
  * @Description: 用户通告阅读标记表
  * @Author: jeecg-boot
- * @Date:  2019-02-21
+ * @Date: 2019-02-21
  * @Version: V1.0
  */
 public interface SysAnnouncementSendMapper extends BaseMapper<SysAnnouncementSend> {
 
-    /**
-     * 通过用户id查询 用户通告阅读标记表
-     * @param userId 用户id
-     * @return
-     */
+	/**
+	 * 通过用户id查询 用户通告阅读标记表
+	 * @param userId 用户id
+	 * @return
+	 */
 	public List<String> queryByUserId(@Param("userId") String userId);
 
 	/**
@@ -30,7 +30,8 @@ public interface SysAnnouncementSendMapper extends BaseMapper<SysAnnouncementSen
 	 * @param page
 	 * @return
 	 */
-	public List<AnnouncementSendModel> getMyAnnouncementSendList(Page<AnnouncementSendModel> page,@Param("announcementSendModel") AnnouncementSendModel announcementSendModel);
+	public List<AnnouncementSendModel> getMyAnnouncementSendList(Page<AnnouncementSendModel> page,
+			@Param("announcementSendModel") AnnouncementSendModel announcementSendModel);
 
 	/**
 	 * 获取一条记录
@@ -39,9 +40,9 @@ public interface SysAnnouncementSendMapper extends BaseMapper<SysAnnouncementSen
 	 */
 	AnnouncementSendModel getOne(@Param("sendId") String sendId);
 
-
 	/**
 	 * 修改为已读消息
 	 */
 	void updateReaded(@Param("userId") String userId, @Param("annoceIdList") List<String> annoceIdList);
+
 }

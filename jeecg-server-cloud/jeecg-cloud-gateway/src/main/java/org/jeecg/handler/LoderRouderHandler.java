@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 
 /**
  * 路由刷新监听（实现方式：redis监听handler）
+ *
  * @author zyf
  * @date: 2022/4/21 10:55
  */
@@ -18,13 +19,12 @@ import javax.annotation.Resource;
 @Component(GlobalConstants.LODER_ROUDER_HANDLER)
 public class LoderRouderHandler implements JeecgRedisListener {
 
-    @Resource
-    private DynamicRouteLoader dynamicRouteLoader;
+	@Resource
+	private DynamicRouteLoader dynamicRouteLoader;
 
-
-    @Override
-    public void onMessage(BaseMap message) {
-        dynamicRouteLoader.refresh(message);
-    }
+	@Override
+	public void onMessage(BaseMap message) {
+		dynamicRouteLoader.refresh(message);
+	}
 
 }

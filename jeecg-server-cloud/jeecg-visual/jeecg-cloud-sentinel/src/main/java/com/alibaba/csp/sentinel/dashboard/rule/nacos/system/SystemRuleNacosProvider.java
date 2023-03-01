@@ -13,25 +13,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *  加载系统规则
+ * 加载系统规则
  *
  * @author zyf
  * @date 2022-04-13
  */
 @Component("systemRuleNacosProvider")
 public class SystemRuleNacosProvider implements DynamicRuleProvider<List<SystemRuleEntity>> {
-    @Autowired
-    private ConfigService configService;
-    @Autowired
-    private Converter<String, List<SystemRuleEntity>> converter;
 
-    @Override
-    public List<SystemRuleEntity> getRules(String appName) throws Exception {
-        String rules = configService.getConfig(appName + SentinelConStants.SYSTEM_DATA_ID_POSTFIX,
-                SentinelConStants.GROUP_ID, 3000);
-        if (StringUtil.isEmpty(rules)) {
-            return new ArrayList<>();
-        }
-        return converter.convert(rules);
-    }
+	@Autowired
+	private ConfigService configService;
+
+	@Autowired
+	private Converter<String, List<SystemRuleEntity>> converter;
+
+	@Override
+	public List<SystemRuleEntity> getRules(String appName) throws Exception {
+		String rules = configService.getConfig(appName + SentinelConStants.SYSTEM_DATA_ID_POSTFIX,
+				SentinelConStants.GROUP_ID, 3000);
+		if (StringUtil.isEmpty(rules)) {
+			return new ArrayList<>();
+		}
+		return converter.convert(rules);
+	}
+
 }

@@ -6,7 +6,7 @@ import org.jeecg.modules.system.entity.SysGatewayRoute;
 /**
  * @Description: gateway路由管理
  * @Author: jeecg-boot
- * @Date:   2020-05-26
+ * @Date: 2020-05-26
  * @Version: V1.0
  */
 public interface SysGatewayRouteMapper extends BaseMapper<SysGatewayRoute> {

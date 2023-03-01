@@ -7,49 +7,54 @@ import java.util.Date;
  */
 public class XxlJobRegistry {
 
-    private int id;
-    private String registryGroup;
-    private String registryKey;
-    private String registryValue;
-    private Date updateTime;
+	private int id;
 
-    public int getId() {
-        return id;
-    }
+	private String registryGroup;
 
-    public void setId(int id) {
-        this.id = id;
-    }
+	private String registryKey;
 
-    public String getRegistryGroup() {
-        return registryGroup;
-    }
+	private String registryValue;
 
-    public void setRegistryGroup(String registryGroup) {
-        this.registryGroup = registryGroup;
-    }
+	private Date updateTime;
 
-    public String getRegistryKey() {
-        return registryKey;
-    }
+	public int getId() {
+		return id;
+	}
 
-    public void setRegistryKey(String registryKey) {
-        this.registryKey = registryKey;
-    }
+	public void setId(int id) {
+		this.id = id;
+	}
 
-    public String getRegistryValue() {
-        return registryValue;
-    }
+	public String getRegistryGroup() {
+		return registryGroup;
+	}
 
-    public void setRegistryValue(String registryValue) {
-        this.registryValue = registryValue;
-    }
+	public void setRegistryGroup(String registryGroup) {
+		this.registryGroup = registryGroup;
+	}
 
-    public Date getUpdateTime() {
-        return updateTime;
-    }
+	public String getRegistryKey() {
+		return registryKey;
+	}
 
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
+	public void setRegistryKey(String registryKey) {
+		this.registryKey = registryKey;
+	}
+
+	public String getRegistryValue() {
+		return registryValue;
+	}
+
+	public void setRegistryValue(String registryValue) {
+		this.registryValue = registryValue;
+	}
+
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+
 }

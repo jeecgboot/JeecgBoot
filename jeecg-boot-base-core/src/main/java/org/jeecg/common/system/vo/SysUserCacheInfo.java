@@ -9,17 +9,17 @@ import org.jeecg.common.util.DateUtils;
  * @author: jeecg-boot
  */
 public class SysUserCacheInfo {
-	
+
 	private String sysUserCode;
-	
+
 	private String sysUserName;
-	
+
 	private String sysOrgCode;
-	
+
 	private List<String> sysMultiOrgCode;
-	
+
 	private boolean oneDepart;
-	
+
 	public boolean isOneDepart() {
 		return oneDepart;
 	}

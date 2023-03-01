@@ -37,12 +37,12 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/sys/message/sysMessage")
 public class SysMessageController extends JeecgController<SysMessage, ISysMessageService> {
+
 	@Autowired
 	private ISysMessageService sysMessageService;
 
 	/**
 	 * 分页列表查询
-	 * 
 	 * @param sysMessage
 	 * @param pageNo
 	 * @param pageSize
@@ -50,17 +50,17 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	 * @return
 	 */
 	@GetMapping(value = "/list")
-	public Result<?> queryPageList(SysMessage sysMessage, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+	public Result<?> queryPageList(SysMessage sysMessage,
+			@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
 		QueryWrapper<SysMessage> queryWrapper = QueryGenerator.initQueryWrapper(sysMessage, req.getParameterMap());
 		Page<SysMessage> page = new Page<SysMessage>(pageNo, pageSize);
 		IPage<SysMessage> pageList = sysMessageService.page(page, queryWrapper);
-        return Result.ok(pageList);
+		return Result.ok(pageList);
 	}
 
 	/**
 	 * 添加
-	 * 
 	 * @param sysMessage
 	 * @return
 	 */
@@ -72,32 +72,29 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 
 	/**
 	 * 编辑
-	 * 
 	 * @param sysMessage
 	 * @return
 	 */
 	@PutMapping(value = "/edit")
-	public Result<?> edit(@RequestBody SysMessage sysMessage) {	
+	public Result<?> edit(@RequestBody SysMessage sysMessage) {
 		sysMessageService.updateById(sysMessage);
-        return Result.ok("修改成功!");
+		return Result.ok("修改成功!");
 
 	}
 
 	/**
 	 * 通过id删除
-	 * 
 	 * @param id
 	 * @return
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
 		sysMessageService.removeById(id);
-        return Result.ok("删除成功!");
+		return Result.ok("删除成功!");
 	}
 
 	/**
 	 * 批量删除
-	 * 
 	 * @param ids
 	 * @return
 	 */
@@ -105,12 +102,11 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 
 		this.sysMessageService.removeByIds(Arrays.asList(ids.split(",")));
-	    return Result.ok("批量删除成功！");
+		return Result.ok("批量删除成功！");
 	}
 
 	/**
 	 * 通过id查询
-	 * 
 	 * @param id
 	 * @return
 	 */
@@ -122,17 +118,15 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 
 	/**
 	 * 导出excel
-	 *
 	 * @param request
 	 */
 	@GetMapping(value = "/exportXls")
 	public ModelAndView exportXls(HttpServletRequest request, SysMessage sysMessage) {
-		return super.exportXls(request,sysMessage,SysMessage.class, "推送消息模板");
+		return super.exportXls(request, sysMessage, SysMessage.class, "推送消息模板");
 	}
 
 	/**
 	 * excel导入
-	 *
 	 * @param request
 	 * @param response
 	 * @return

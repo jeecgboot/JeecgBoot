@@ -38,18 +38,20 @@ import com.alibaba.nacos.api.config.ConfigService;
 @Component("flowRuleNacosProvider")
 public class FlowRuleNacosProvider implements DynamicRuleProvider<List<FlowRuleEntity>> {
 
-    @Autowired
-    private ConfigService configService;
-    @Autowired
-    private Converter<String, List<FlowRuleEntity>> converter;
+	@Autowired
+	private ConfigService configService;
 
-    @Override
-    public List<FlowRuleEntity> getRules(String appName) throws Exception {
-        String rules = configService.getConfig(appName + SentinelConStants.FLOW_DATA_ID_POSTFIX,
-                SentinelConStants.GROUP_ID, 3000);
-        if (StringUtil.isEmpty(rules)) {
-            return new ArrayList<>();
-        }
-        return converter.convert(rules);
-    }
+	@Autowired
+	private Converter<String, List<FlowRuleEntity>> converter;
+
+	@Override
+	public List<FlowRuleEntity> getRules(String appName) throws Exception {
+		String rules = configService.getConfig(appName + SentinelConStants.FLOW_DATA_ID_POSTFIX,
+				SentinelConStants.GROUP_ID, 3000);
+		if (StringUtil.isEmpty(rules)) {
+			return new ArrayList<>();
+		}
+		return converter.convert(rules);
+	}
+
 }

@@ -14,15 +14,16 @@ import javax.annotation.Resource;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    @Resource
-    private PermissionInterceptor permissionInterceptor;
-    @Resource
-    private CookieInterceptor cookieInterceptor;
+	@Resource
+	private PermissionInterceptor permissionInterceptor;
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(permissionInterceptor).addPathPatterns("/**");
-        registry.addInterceptor(cookieInterceptor).addPathPatterns("/**");
-    }
+	@Resource
+	private CookieInterceptor cookieInterceptor;
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(permissionInterceptor).addPathPatterns("/**");
+		registry.addInterceptor(cookieInterceptor).addPathPatterns("/**");
+	}
 
 }

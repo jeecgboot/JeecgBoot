@@ -11,31 +11,34 @@ import java.util.List;
 
 /**
  * swagger聚合接口，三个接口都是 doc.html需要访问的接口
+ *
  * @author zyf
  * @date: 2022/4/21 10:55
  */
 @RestController
 @RequestMapping("/swagger-resources")
 public class SwaggerResourceController {
-    private MySwaggerResourceProvider swaggerResourceProvider;
 
-    @Autowired
-    public SwaggerResourceController(MySwaggerResourceProvider swaggerResourceProvider) {
-        this.swaggerResourceProvider = swaggerResourceProvider;
-    }
+	private MySwaggerResourceProvider swaggerResourceProvider;
 
-    @RequestMapping(value = "/configuration/security")
-    public ResponseEntity<SecurityConfiguration> securityConfiguration() {
-        return new ResponseEntity<>(SecurityConfigurationBuilder.builder().build(), HttpStatus.OK);
-    }
+	@Autowired
+	public SwaggerResourceController(MySwaggerResourceProvider swaggerResourceProvider) {
+		this.swaggerResourceProvider = swaggerResourceProvider;
+	}
 
-    @RequestMapping(value = "/configuration/ui")
-    public ResponseEntity<UiConfiguration> uiConfiguration() {
-        return new ResponseEntity<>(UiConfigurationBuilder.builder().build(), HttpStatus.OK);
-    }
+	@RequestMapping(value = "/configuration/security")
+	public ResponseEntity<SecurityConfiguration> securityConfiguration() {
+		return new ResponseEntity<>(SecurityConfigurationBuilder.builder().build(), HttpStatus.OK);
+	}
 
-    @RequestMapping
-    public ResponseEntity<List<SwaggerResource>> swaggerResources() {
-        return new ResponseEntity<>(swaggerResourceProvider.get(), HttpStatus.OK);
-    }
+	@RequestMapping(value = "/configuration/ui")
+	public ResponseEntity<UiConfiguration> uiConfiguration() {
+		return new ResponseEntity<>(UiConfigurationBuilder.builder().build(), HttpStatus.OK);
+	}
+
+	@RequestMapping
+	public ResponseEntity<List<SwaggerResource>> swaggerResources() {
+		return new ResponseEntity<>(swaggerResourceProvider.get(), HttpStatus.OK);
+	}
+
 }

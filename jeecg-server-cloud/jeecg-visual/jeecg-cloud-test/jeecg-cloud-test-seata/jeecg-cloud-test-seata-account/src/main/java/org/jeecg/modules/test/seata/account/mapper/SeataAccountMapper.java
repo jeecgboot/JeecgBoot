@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.jeecg.modules.test.seata.account.entity.SeataAccount;
 
-
 /**
  * @Description: TODO
  * @author: zyf

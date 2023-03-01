@@ -29,147 +29,163 @@ import java.util.List;
  */
 @Service
 public class AdminBizImpl implements AdminBiz {
-    private static Logger logger = LoggerFactory.getLogger(AdminBizImpl.class);
 
-    @Resource
-    public XxlJobLogDao xxlJobLogDao;
-    @Resource
-    private XxlJobInfoDao xxlJobInfoDao;
-    @Resource
-    private XxlJobRegistryDao xxlJobRegistryDao;
-    @Resource
-    private XxlJobGroupDao xxlJobGroupDao;
+	private static Logger logger = LoggerFactory.getLogger(AdminBizImpl.class);
 
+	@Resource
+	public XxlJobLogDao xxlJobLogDao;
 
-    @Override
-    public ReturnT<String> callback(List<HandleCallbackParam> callbackParamList) {
-        for (HandleCallbackParam handleCallbackParam: callbackParamList) {
-            ReturnT<String> callbackResult = callback(handleCallbackParam);
-            logger.debug(">>>>>>>>> JobApiController.callback {}, handleCallbackParam={}, callbackResult={}",
-                    (callbackResult.getCode()==IJobHandler.SUCCESS.getCode()?"success":"fail"), handleCallbackParam, callbackResult);
-        }
+	@Resource
+	private XxlJobInfoDao xxlJobInfoDao;
 
-        return ReturnT.SUCCESS;
-    }
+	@Resource
+	private XxlJobRegistryDao xxlJobRegistryDao;
 
-    private ReturnT<String> callback(HandleCallbackParam handleCallbackParam) {
-        // valid log item
-        XxlJobLog log = xxlJobLogDao.load(handleCallbackParam.getLogId());
-        if (log == null) {
-            return new ReturnT<String>(ReturnT.FAIL_CODE, "log item not found.");
-        }
-        if (log.getHandleCode() > 0) {
-            return new ReturnT<String>(ReturnT.FAIL_CODE, "log repeate callback.");     // avoid repeat callback, trigger child job etc
-        }
+	@Resource
+	private XxlJobGroupDao xxlJobGroupDao;
 
-        // trigger success, to trigger child job
-        String callbackMsg = null;
-        if (IJobHandler.SUCCESS.getCode() == handleCallbackParam.getExecuteResult().getCode()) {
-            XxlJobInfo xxlJobInfo = xxlJobInfoDao.loadById(log.getJobId());
-            if (xxlJobInfo!=null && xxlJobInfo.getChildJobId()!=null && xxlJobInfo.getChildJobId().trim().length()>0) {
-                callbackMsg = "<br><br><span style=\"color:#00c0ef;\" > >>>>>>>>>>>"+ I18nUtil.getString("jobconf_trigger_child_run") +"<<<<<<<<<<< </span><br>";
+	@Override
+	public ReturnT<String> callback(List<HandleCallbackParam> callbackParamList) {
+		for (HandleCallbackParam handleCallbackParam : callbackParamList) {
+			ReturnT<String> callbackResult = callback(handleCallbackParam);
+			logger.debug(">>>>>>>>> JobApiController.callback {}, handleCallbackParam={}, callbackResult={}",
+					(callbackResult.getCode() == IJobHandler.SUCCESS.getCode() ? "success" : "fail"),
+					handleCallbackParam, callbackResult);
+		}
 
-                String[] childJobIds = xxlJobInfo.getChildJobId().split(",");
-                for (int i = 0; i < childJobIds.length; i++) {
-                    int childJobId = (childJobIds[i]!=null && childJobIds[i].trim().length()>0 && isNumeric(childJobIds[i]))?Integer.valueOf(childJobIds[i]):-1;
-                    if (childJobId > 0) {
+		return ReturnT.SUCCESS;
+	}
 
-                        JobTriggerPoolHelper.trigger(childJobId, TriggerTypeEnum.PARENT, -1, null, null, null);
-                        ReturnT<String> triggerChildResult = ReturnT.SUCCESS;
+	private ReturnT<String> callback(HandleCallbackParam handleCallbackParam) {
+		// valid log item
+		XxlJobLog log = xxlJobLogDao.load(handleCallbackParam.getLogId());
+		if (log == null) {
+			return new ReturnT<String>(ReturnT.FAIL_CODE, "log item not found.");
+		}
+		if (log.getHandleCode() > 0) {
+			return new ReturnT<String>(ReturnT.FAIL_CODE, "log repeate callback."); // avoid
+																					// repeat
+																					// callback,
+																					// trigger
+																					// child
+																					// job
+																					// etc
+		}
 
-                        // add msg
-                        callbackMsg += MessageFormat.format(I18nUtil.getString("jobconf_callback_child_msg1"),
-                                (i+1),
-                                childJobIds.length,
-                                childJobIds[i],
-                                (triggerChildResult.getCode()==ReturnT.SUCCESS_CODE?I18nUtil.getString("system_success"):I18nUtil.getString("system_fail")),
-                                triggerChildResult.getMsg());
-                    } else {
-                        callbackMsg += MessageFormat.format(I18nUtil.getString("jobconf_callback_child_msg2"),
-                                (i+1),
-                                childJobIds.length,
-                                childJobIds[i]);
-                    }
-                }
+		// trigger success, to trigger child job
+		String callbackMsg = null;
+		if (IJobHandler.SUCCESS.getCode() == handleCallbackParam.getExecuteResult().getCode()) {
+			XxlJobInfo xxlJobInfo = xxlJobInfoDao.loadById(log.getJobId());
+			if (xxlJobInfo != null && xxlJobInfo.getChildJobId() != null
+					&& xxlJobInfo.getChildJobId().trim().length() > 0) {
+				callbackMsg = "<br><br><span style=\"color:#00c0ef;\" > >>>>>>>>>>>"
+						+ I18nUtil.getString("jobconf_trigger_child_run") + "<<<<<<<<<<< </span><br>";
 
-            }
-        }
+				String[] childJobIds = xxlJobInfo.getChildJobId().split(",");
+				for (int i = 0; i < childJobIds.length; i++) {
+					int childJobId = (childJobIds[i] != null && childJobIds[i].trim().length() > 0
+							&& isNumeric(childJobIds[i])) ? Integer.valueOf(childJobIds[i]) : -1;
+					if (childJobId > 0) {
 
-        // handle msg
-        StringBuffer handleMsg = new StringBuffer();
-        if (log.getHandleMsg()!=null) {
-            handleMsg.append(log.getHandleMsg()).append("<br>");
-        }
-        if (handleCallbackParam.getExecuteResult().getMsg() != null) {
-            handleMsg.append(handleCallbackParam.getExecuteResult().getMsg());
-        }
-        if (callbackMsg != null) {
-            handleMsg.append(callbackMsg);
-        }
+						JobTriggerPoolHelper.trigger(childJobId, TriggerTypeEnum.PARENT, -1, null, null, null);
+						ReturnT<String> triggerChildResult = ReturnT.SUCCESS;
 
-        if (handleMsg.length() > 15000) {
-            handleMsg = new StringBuffer(handleMsg.substring(0, 15000));  // text最大64kb 避免长度过长
-        }
+						// add msg
+						callbackMsg += MessageFormat.format(I18nUtil.getString("jobconf_callback_child_msg1"), (i + 1),
+								childJobIds.length, childJobIds[i],
+								(triggerChildResult.getCode() == ReturnT.SUCCESS_CODE
+										? I18nUtil.getString("system_success") : I18nUtil.getString("system_fail")),
+								triggerChildResult.getMsg());
+					}
+					else {
+						callbackMsg += MessageFormat.format(I18nUtil.getString("jobconf_callback_child_msg2"), (i + 1),
+								childJobIds.length, childJobIds[i]);
+					}
+				}
 
-        // success, save log
-        log.setHandleTime(new Date());
-        log.setHandleCode(handleCallbackParam.getExecuteResult().getCode());
-        log.setHandleMsg(handleMsg.toString());
-        xxlJobLogDao.updateHandleInfo(log);
+			}
+		}
 
-        return ReturnT.SUCCESS;
-    }
+		// handle msg
+		StringBuffer handleMsg = new StringBuffer();
+		if (log.getHandleMsg() != null) {
+			handleMsg.append(log.getHandleMsg()).append("<br>");
+		}
+		if (handleCallbackParam.getExecuteResult().getMsg() != null) {
+			handleMsg.append(handleCallbackParam.getExecuteResult().getMsg());
+		}
+		if (callbackMsg != null) {
+			handleMsg.append(callbackMsg);
+		}
 
-    private boolean isNumeric(String str){
-        try {
-            int result = Integer.valueOf(str);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
+		if (handleMsg.length() > 15000) {
+			handleMsg = new StringBuffer(handleMsg.substring(0, 15000)); // text最大64kb
+																			// 避免长度过长
+		}
 
-    @Override
-    public ReturnT<String> registry(RegistryParam registryParam) {
+		// success, save log
+		log.setHandleTime(new Date());
+		log.setHandleCode(handleCallbackParam.getExecuteResult().getCode());
+		log.setHandleMsg(handleMsg.toString());
+		xxlJobLogDao.updateHandleInfo(log);
 
-        // valid
-        if (!StringUtils.hasText(registryParam.getRegistryGroup())
-                || !StringUtils.hasText(registryParam.getRegistryKey())
-                || !StringUtils.hasText(registryParam.getRegistryValue())) {
-            return new ReturnT<String>(ReturnT.FAIL_CODE, "Illegal Argument.");
-        }
+		return ReturnT.SUCCESS;
+	}
 
-        int ret = xxlJobRegistryDao.registryUpdate(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue(), new Date());
-        if (ret < 1) {
-            xxlJobRegistryDao.registrySave(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue(), new Date());
+	private boolean isNumeric(String str) {
+		try {
+			int result = Integer.valueOf(str);
+			return true;
+		}
+		catch (NumberFormatException e) {
+			return false;
+		}
+	}
 
-            // fresh
-            freshGroupRegistryInfo(registryParam);
-        }
-        return ReturnT.SUCCESS;
-    }
+	@Override
+	public ReturnT<String> registry(RegistryParam registryParam) {
 
-    @Override
-    public ReturnT<String> registryRemove(RegistryParam registryParam) {
+		// valid
+		if (!StringUtils.hasText(registryParam.getRegistryGroup())
+				|| !StringUtils.hasText(registryParam.getRegistryKey())
+				|| !StringUtils.hasText(registryParam.getRegistryValue())) {
+			return new ReturnT<String>(ReturnT.FAIL_CODE, "Illegal Argument.");
+		}
 
-        // valid
-        if (!StringUtils.hasText(registryParam.getRegistryGroup())
-                || !StringUtils.hasText(registryParam.getRegistryKey())
-                || !StringUtils.hasText(registryParam.getRegistryValue())) {
-            return new ReturnT<String>(ReturnT.FAIL_CODE, "Illegal Argument.");
-        }
+		int ret = xxlJobRegistryDao.registryUpdate(registryParam.getRegistryGroup(), registryParam.getRegistryKey(),
+				registryParam.getRegistryValue(), new Date());
+		if (ret < 1) {
+			xxlJobRegistryDao.registrySave(registryParam.getRegistryGroup(), registryParam.getRegistryKey(),
+					registryParam.getRegistryValue(), new Date());
 
-        int ret = xxlJobRegistryDao.registryDelete(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue());
-        if (ret > 0) {
+			// fresh
+			freshGroupRegistryInfo(registryParam);
+		}
+		return ReturnT.SUCCESS;
+	}
 
-            // fresh
-            freshGroupRegistryInfo(registryParam);
-        }
-        return ReturnT.SUCCESS;
-    }
+	@Override
+	public ReturnT<String> registryRemove(RegistryParam registryParam) {
 
-    private void freshGroupRegistryInfo(RegistryParam registryParam){
-        // Under consideration, prevent affecting core tables
-    }
+		// valid
+		if (!StringUtils.hasText(registryParam.getRegistryGroup())
+				|| !StringUtils.hasText(registryParam.getRegistryKey())
+				|| !StringUtils.hasText(registryParam.getRegistryValue())) {
+			return new ReturnT<String>(ReturnT.FAIL_CODE, "Illegal Argument.");
+		}
+
+		int ret = xxlJobRegistryDao.registryDelete(registryParam.getRegistryGroup(), registryParam.getRegistryKey(),
+				registryParam.getRegistryValue());
+		if (ret > 0) {
+
+			// fresh
+			freshGroupRegistryInfo(registryParam);
+		}
+		return ReturnT.SUCCESS;
+	}
+
+	private void freshGroupRegistryInfo(RegistryParam registryParam) {
+		// Under consideration, prevent affecting core tables
+	}
 
 }

@@ -10,12 +10,14 @@ import java.util.List;
  * @author: jeecg-boot
  */
 @Data
-public class SysUserRoleVO implements Serializable{
+public class SysUserRoleVO implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
-	/**部门id*/
+	/** 部门id */
 	private String roleId;
-	/**对应的用户id集合*/
+
+	/** 对应的用户id集合 */
 	private List<String> userIdList;
 
 	public SysUserRoleVO() {

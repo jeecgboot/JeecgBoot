@@ -10,49 +10,54 @@ import org.springframework.beans.BeanUtils;
 @Data
 public class DynamicDataSourceModel {
 
-    public DynamicDataSourceModel() {
+	public DynamicDataSourceModel() {
 
-    }
+	}
 
-    public DynamicDataSourceModel(Object dbSource) {
-        if (dbSource != null) {
-            BeanUtils.copyProperties(dbSource, this);
-        }
-    }
+	public DynamicDataSourceModel(Object dbSource) {
+		if (dbSource != null) {
+			BeanUtils.copyProperties(dbSource, this);
+		}
+	}
 
-    /**
-     * id
-     */
-    private java.lang.String id;
-    /**
-     * 数据源编码
-     */
-    private java.lang.String code;
-    /**
-     * 数据库类型
-     */
-    private java.lang.String dbType;
-    /**
-     * 驱动类
-     */
-    private java.lang.String dbDriver;
-    /**
-     * 数据源地址
-     */
-    private java.lang.String dbUrl;
+	/**
+	 * id
+	 */
+	private java.lang.String id;
 
-//    /**
-//     * 数据库名称
-//     */
-//    private java.lang.String dbName;
+	/**
+	 * 数据源编码
+	 */
+	private java.lang.String code;
 
-    /**
-     * 用户名
-     */
-    private java.lang.String dbUsername;
-    /**
-     * 密码
-     */
-    private java.lang.String dbPassword;
+	/**
+	 * 数据库类型
+	 */
+	private java.lang.String dbType;
+
+	/**
+	 * 驱动类
+	 */
+	private java.lang.String dbDriver;
+
+	/**
+	 * 数据源地址
+	 */
+	private java.lang.String dbUrl;
+
+	// /**
+	// * 数据库名称
+	// */
+	// private java.lang.String dbName;
+
+	/**
+	 * 用户名
+	 */
+	private java.lang.String dbUsername;
+
+	/**
+	 * 密码
+	 */
+	private java.lang.String dbPassword;
 
 }

@@ -9,27 +9,28 @@ import java.util.Map;
 import org.jeecg.modules.system.entity.SysPermission;
 
 /**
-  * 树形列表用到
-  * @author: jeecg-boot
+ * 树形列表用到
+ *
+ * @author: jeecg-boot
  */
 public class TreeModel implements Serializable {
-	
+
 	private static final long serialVersionUID = 4013193970046502756L;
 
 	private String key;
-	
+
 	private String title;
-	
+
 	private String slotTitle;
-	
+
 	private boolean isLeaf;
-	
+
 	private String icon;
-	
+
 	private Integer ruleFlag;
-	
-	private Map<String,String> scopedSlots;
-	
+
+	private Map<String, String> scopedSlots;
+
 	public Map<String, String> getScopedSlots() {
 		return scopedSlots;
 	}
@@ -69,7 +70,7 @@ public class TreeModel implements Serializable {
 	public void setIcon(String icon) {
 		this.icon = icon;
 	}
-	
+
 	private List<TreeModel> children;
 
 	public List<TreeModel> getChildren() {
@@ -81,45 +82,44 @@ public class TreeModel implements Serializable {
 	}
 
 	public TreeModel() {
-		
+
 	}
-	
+
 	public TreeModel(SysPermission permission) {
 		this.key = permission.getId();
 		this.icon = permission.getIcon();
 		this.parentId = permission.getParentId();
 		this.title = permission.getName();
-		this.slotTitle =  permission.getName();
+		this.slotTitle = permission.getName();
 		this.value = permission.getId();
 		this.isLeaf = permission.isLeaf();
 		this.label = permission.getName();
-		if(!permission.isLeaf()) {
+		if (!permission.isLeaf()) {
 			this.children = new ArrayList<TreeModel>();
 		}
 	}
-	 
-	 public TreeModel(String key,String parentId,String slotTitle,Integer ruleFlag,boolean isLeaf) {
-    	this.key = key;
-    	this.parentId = parentId;
-    	this.ruleFlag=ruleFlag;
-    	this.slotTitle =  slotTitle;
-    	Map<String,String> map = new HashMap(5);
-    	map.put("title", "hasDatarule");
-    	this.scopedSlots = map;
-    	this.isLeaf = isLeaf;
-    	this.value = key;
-    	if(!isLeaf) {
-    		this.children = new ArrayList<TreeModel>();
-    	}
-    }
-	 
-	 private String parentId;
-		
+
+	public TreeModel(String key, String parentId, String slotTitle, Integer ruleFlag, boolean isLeaf) {
+		this.key = key;
+		this.parentId = parentId;
+		this.ruleFlag = ruleFlag;
+		this.slotTitle = slotTitle;
+		Map<String, String> map = new HashMap(5);
+		map.put("title", "hasDatarule");
+		this.scopedSlots = map;
+		this.isLeaf = isLeaf;
+		this.value = key;
+		if (!isLeaf) {
+			this.children = new ArrayList<TreeModel>();
+		}
+	}
+
+	private String parentId;
+
 	private String label;
-	
+
 	private String value;
-	
-	
+
 	public String getParentId() {
 		return parentId;
 	}

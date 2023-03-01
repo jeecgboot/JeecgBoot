@@ -19,29 +19,30 @@ import javax.servlet.http.HttpServletResponse;
 @EnableScheduling
 public class JeecgNacosApplication {
 
-    /** 是否单机模式启动 */
-    private static String standalone = "true";
-    /** 是否开启鉴权 */
-    private static String enabled = "false";
+	/** 是否单机模式启动 */
+	private static String standalone = "true";
 
-    public static void main(String[] args) {
-        System.setProperty("nacos.standalone", standalone);
-        System.setProperty("nacos.core.auth.enabled", enabled);
-        System.setProperty("server.tomcat.basedir","logs");
-        //自定义启动端口号
-        System.setProperty("server.port","8848");
-        SpringApplication.run(JeecgNacosApplication.class, args);
-    }
+	/** 是否开启鉴权 */
+	private static String enabled = "false";
 
-    /**
-     * 默认跳转首页
-     *
-     * @param model
-     * @return
-     */
-    @GetMapping("/")
-    public String index(Model model, HttpServletResponse response) {
-        // 视图重定向 - 跳转
-        return "/nacos";
-    }
+	public static void main(String[] args) {
+		System.setProperty("nacos.standalone", standalone);
+		System.setProperty("nacos.core.auth.enabled", enabled);
+		System.setProperty("server.tomcat.basedir", "logs");
+		// 自定义启动端口号
+		System.setProperty("server.port", "8848");
+		SpringApplication.run(JeecgNacosApplication.class, args);
+	}
+
+	/**
+	 * 默认跳转首页
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/")
+	public String index(Model model, HttpServletResponse response) {
+		// 视图重定向 - 跳转
+		return "/nacos";
+	}
+
 }

@@ -28,55 +28,54 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class SysRole implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * id
-     */
-    @TableId(type = IdType.ASSIGN_ID)
-    private String id;
-    
-    /**
-     * 角色名称
-     */
-    @Excel(name="角色名",width=15)
-    private String roleName;
-    
-    /**
-     * 角色编码
-     */
-    @Excel(name="角色编码",width=15)
-    private String roleCode;
-    
-    /**
-          * 描述
-     */
-    @Excel(name="描述",width=60)
-    private String description;
+	/**
+	 * id
+	 */
+	@TableId(type = IdType.ASSIGN_ID)
+	private String id;
 
-    /**
-     * 创建人
-     */
-    private String createBy;
+	/**
+	 * 角色名称
+	 */
+	@Excel(name = "角色名", width = 15)
+	private String roleName;
 
-    /**
-     * 创建时间
-     */
-    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private Date createTime;
+	/**
+	 * 角色编码
+	 */
+	@Excel(name = "角色编码", width = 15)
+	private String roleCode;
 
-    /**
-     * 更新人
-     */
-    private String updateBy;
+	/**
+	 * 描述
+	 */
+	@Excel(name = "描述", width = 60)
+	private String description;
 
-    /**
-     * 更新时间
-     */
-    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private Date updateTime;
+	/**
+	 * 创建人
+	 */
+	private String createBy;
 
+	/**
+	 * 创建时间
+	 */
+	@JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date createTime;
+
+	/**
+	 * 更新人
+	 */
+	private String updateBy;
+
+	/**
+	 * 更新时间
+	 */
+	@JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date updateTime;
 
 }
