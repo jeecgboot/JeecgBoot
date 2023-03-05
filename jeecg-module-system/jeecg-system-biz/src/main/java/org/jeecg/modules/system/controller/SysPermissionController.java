@@ -1,11 +1,14 @@
 package org.jeecg.modules.system.controller;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
@@ -75,6 +78,7 @@ public class SysPermissionController {
 	 *
 	 * @return
 	 */
+	//@RequiresPermissions("system:permission:list")
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<List<SysPermissionTree>> list(SysPermission sysPermission, HttpServletRequest req) {
         long start = System.currentTimeMillis();
@@ -356,7 +360,7 @@ public class SysPermissionController {
 	 * @param permission
 	 * @return
 	 */
-	//@RequiresRoles({ "admin" })
+    @RequiresPermissions("system:permission:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysPermission> add(@RequestBody SysPermission permission) {
 		Result<SysPermission> result = new Result<SysPermission>();
@@ -376,7 +380,7 @@ public class SysPermissionController {
 	 * @param permission
 	 * @return
 	 */
-	//@RequiresRoles({ "admin" })
+    @RequiresPermissions("system:permission:edit")
 	@RequestMapping(value = "/edit", method = { RequestMethod.PUT, RequestMethod.POST })
 	public Result<SysPermission> edit(@RequestBody SysPermission permission) {
 		Result<SysPermission> result = new Result<>();
@@ -398,14 +402,14 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequestMapping(value = "/checkPermDuplication", method = RequestMethod.GET)
-	public Result<String> checkPermDuplication(@RequestParam(name = "id", required = false) String id, @RequestParam(name = "url") String url, @RequestParam(name = "alwaysShow") Boolean alwaysShow) {
+	public Result<String> checkPermDuplication(@RequestParam(name = "id", required = false) String id,@RequestParam(name = "url") String url,@RequestParam(name = "alwaysShow") Boolean alwaysShow) {
 		Result<String> result = new Result<>();
 		try {
 			boolean check=sysPermissionService.checkPermDuplication(id,url,alwaysShow);
 			if(check){
 				return Result.ok("该值可用！");
 			}
-			return Result.error("该值不可用，系统中已存在！");
+			return Result.error("访问路径不允许重复，请重定义！");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			result.error500("操作失败");
@@ -418,7 +422,7 @@ public class SysPermissionController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles({ "admin" })
+    @RequiresPermissions("system:permission:delete")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<SysPermission> delete(@RequestParam(name = "id", required = true) String id) {
 		Result<SysPermission> result = new Result<>();
@@ -437,7 +441,7 @@ public class SysPermissionController {
 	 * @param ids
 	 * @return
 	 */
-	//@RequiresRoles({ "admin" })
+    @RequiresPermissions("system:permission:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysPermission> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 		Result<SysPermission> result = new Result<>();
@@ -545,7 +549,7 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequestMapping(value = "/saveRolePermission", method = RequestMethod.POST)
-	//@RequiresRoles({ "admin" })
+    @RequiresPermissions("system:permission:saveRole")
 	public Result<String> saveRolePermission(@RequestBody JSONObject json) {
 		long start = System.currentTimeMillis();
 		Result<String> result = new Result<>();
@@ -873,7 +877,7 @@ public class SysPermissionController {
 	 * @param sysPermissionDataRule
 	 * @return
 	 */
-	//@RequiresRoles({ "admin" })
+    @RequiresPermissions("system:permission:addRule")
 	@RequestMapping(value = "/addPermissionRule", method = RequestMethod.POST)
 	public Result<SysPermissionDataRule> addPermissionRule(@RequestBody SysPermissionDataRule sysPermissionDataRule) {
 		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
@@ -888,7 +892,7 @@ public class SysPermissionController {
 		return result;
 	}
 
-	//@RequiresRoles({ "admin" })
+    @RequiresPermissions("system:permission:editRule")
 	@RequestMapping(value = "/editPermissionRule", method = { RequestMethod.PUT, RequestMethod.POST })
 	public Result<SysPermissionDataRule> editPermissionRule(@RequestBody SysPermissionDataRule sysPermissionDataRule) {
 		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
@@ -908,7 +912,7 @@ public class SysPermissionController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles({ "admin" })
+    @RequiresPermissions("system:permission:deleteRule")
 	@RequestMapping(value = "/deletePermissionRule", method = RequestMethod.DELETE)
 	public Result<SysPermissionDataRule> deletePermissionRule(@RequestParam(name = "id", required = true) String id) {
 		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
@@ -965,7 +969,7 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequestMapping(value = "/saveDepartPermission", method = RequestMethod.POST)
-	//@RequiresRoles({ "admin" })
+    @RequiresPermissions("system:permission:saveDepart")
 	public Result<String> saveDepartPermission(@RequestBody JSONObject json) {
 		long start = System.currentTimeMillis();
 		Result<String> result = new Result<>();

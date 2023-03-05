@@ -54,4 +54,56 @@
             and (a.username like #{bindKeyword} or a.realname like #{bindKeyword})
         </if>
     </select>
+
+	<!--获取用户信息（简版流程专用）-->
+	<select id="getProcessUserList" resultType="org.jeecg.modules.system.entity.SysUser">
+		select DISTINCT a.* from sys_user a
+		left join sys_user_depart b on b.user_id = a.id
+		left join sys_depart c on b.dep_id = c.id
+		<bind name="bindOrgCode" value="orgCode+'%'"/>
+		where
+		a.del_flag = 0 and a.status = 1
+		and c.org_code like #{bindOrgCode}
+		and a.username!='_reserve_user_external'
+		<if test="keyword!=null and keyword!=''">
+			<bind name="bindKeyword" value="'%'+keyword+'%'"/>
+			and (a.username like #{bindKeyword} or a.realname like #{bindKeyword})
+		</if>
+		<if test="tenantId!=null">
+			and a.id in (
+				select user_id from sys_user_tenant where tenant_id = #{tenantId} and status = '1'
+			)
+		</if>
+	</select>
+	
+	<!--获取租户下的部门-通过前台传过来的部门id-->
+    <select id="getTenantDepart" resultType="java.lang.String">
+		select id from sys_depart
+		where
+		id in
+		<foreach collection="departIds" item="departId" open="(" close=")" separator="," >
+			#{departId}
+		</foreach>
+		and tenant_id = #{tenantId}
+	</select>
+	
+	<!--根据当前租户和用户id查询用户部门数据-->
+	<select id="getTenantUserDepart" resultType="org.jeecg.modules.system.entity.SysUserDepart">
+		select * from sys_user_depart
+		where
+		user_id = #{userId}
+		and dep_id in(
+			select id from sys_depart where tenant_id = #{tenantId}
+		)
+	</select>
+	
+	<!--根据用户id和租户id,删除用户部门数据-->
+    <delete id="deleteUserDepart">
+		delete from sys_user_depart
+		where
+		user_id = #{userId}
+		and dep_id in(
+			select id from sys_depart where tenant_id = #{tenantId}
+		)
+	</delete>
 </mapper>

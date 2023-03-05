@@ -21,5 +21,10 @@ public enum LowAppAopEnum {
     /**
      * Online表单专用：数据库表转Online表单
      */
-    CGFORM_DB_IMPORT
+    CGFORM_DB_IMPORT,
+
+    /**
+     * 表单设计器专用：子表转工作表
+     */
+    DESFORM_SUB2WORK
 }

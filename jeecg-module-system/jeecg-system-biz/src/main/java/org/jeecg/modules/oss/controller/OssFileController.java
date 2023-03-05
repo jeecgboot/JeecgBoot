@@ -2,6 +2,7 @@ package org.jeecg.modules.oss.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -46,7 +47,8 @@ public class OssFileController {
 
 	@ResponseBody
 	@PostMapping("/upload")
-	//@RequiresRoles("admin")
+	@RequiresRoles("admin")
+    @RequiresPermissions("system:ossFile:upload")
 	public Result upload(@RequestParam("file") MultipartFile multipartFile) {
 		Result result = new Result();
 		try {

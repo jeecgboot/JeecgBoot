@@ -63,11 +63,12 @@ public class SensitiveInfoUtil {
      * @throws IllegalAccessException
      */
     public static Object handlerObject(Object obj, boolean isEncode) throws IllegalAccessException {
-        log.debug(" obj --> "+ obj.toString());
-        long startTime=System.currentTimeMillis();
         if (oConvertUtils.isEmpty(obj)) {
             return obj;
         }
+        long startTime=System.currentTimeMillis();
+        log.debug(" obj --> "+ obj.toString());
+        
         // 判断是不是一个对象
         Field[] fields = obj.getClass().getDeclaredFields();
         for (Field field : fields) {

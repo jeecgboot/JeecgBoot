@@ -21,6 +21,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.constant.TenantConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
@@ -50,6 +51,7 @@ public class JwtUtil {
 		// issues/I4YH95浏览器显示乱码问题
 		httpServletResponse.setHeader("Content-type", "text/html;charset=UTF-8");
         Result jsonResult = new Result(code, errorMsg);
+		jsonResult.setSuccess(false);
         OutputStream os = null;
         try {
             os = httpServletResponse.getOutputStream();
@@ -233,12 +235,8 @@ public class JwtUtil {
 			returnValue = "1";
 		}
 		//update-begin-author:taoyan date:20210330 for:多租户ID作为系统变量
-		else if (key.equals(DataBaseConstant.TENANT_ID) || key.toLowerCase().equals(DataBaseConstant.TENANT_ID_TABLE)){
-			returnValue = sysUser.getRelTenantIds();
-            boolean flag = returnValue != null && returnValue.indexOf(SymbolConstant.COMMA) > 0;
-            if(oConvertUtils.isEmpty(returnValue) || flag){
-				returnValue = SpringContextUtils.getHttpServletRequest().getHeader(CommonConstant.TENANT_ID);
-			}
+		else if (key.equals(TenantConstant.TENANT_ID) || key.toLowerCase().equals(TenantConstant.TENANT_ID_TABLE)){
+			returnValue = SpringContextUtils.getHttpServletRequest().getHeader(CommonConstant.TENANT_ID);
 		}
 		//update-end-author:taoyan date:20210330 for:多租户ID作为系统变量
 		if(returnValue!=null){returnValue = returnValue + moshi;}

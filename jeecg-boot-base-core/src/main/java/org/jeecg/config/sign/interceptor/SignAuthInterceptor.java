@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.DateUtils;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.sign.util.BodyReaderHttpServletRequestWrapper;
 import org.jeecg.config.sign.util.HttpUtils;
 import org.jeecg.config.sign.util.SignUtil;
@@ -39,6 +40,18 @@ public class SignAuthInterceptor implements HandlerInterceptor {
         //对参数进行签名验证
         String headerSign = request.getHeader(CommonConstant.X_SIGN);
         String xTimestamp = request.getHeader(CommonConstant.X_TIMESTAMP);
+        
+        if(oConvertUtils.isEmpty(xTimestamp)){
+            Result<?> result = Result.error("Sign签名校验失败！");
+            log.error("Sign 签名校验失败！Header xTimestamp 为空");
+            //校验失败返回前端
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json; charset=utf-8");
+            PrintWriter out = response.getWriter();
+            out.print(JSON.toJSON(result));
+            return false;
+        }
+
         //客户端时间
         Long clientTimestamp = Long.parseLong(xTimestamp);
 

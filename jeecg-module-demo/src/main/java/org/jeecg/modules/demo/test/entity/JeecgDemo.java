@@ -2,6 +2,7 @@ package org.jeecg.modules.demo.test.entity;
 
 import java.io.Serializable;
 
+import com.baomidou.mybatisplus.annotation.Version;
 import org.jeecg.common.system.base.entity.JeecgEntity;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -78,5 +79,8 @@ public class JeecgDemo extends JeecgEntity implements Serializable {
 
 	@ApiModelProperty(value = "租户ID")
 	private java.lang.Integer tenantId;
+	/** 乐观锁字段 */
+	@Version
+	private java.lang.Integer updateCount;
 
 }

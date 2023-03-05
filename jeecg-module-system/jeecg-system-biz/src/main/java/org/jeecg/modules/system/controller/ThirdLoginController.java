@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.controller;
 
+import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xkcoding.justauth.AuthRequestFactory;
@@ -12,16 +13,14 @@ import me.zhyd.oauth.utils.AuthStateUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.util.JwtUtil;
-import org.jeecg.common.util.PasswordUtil;
-import org.jeecg.common.util.RedisUtil;
-import org.jeecg.common.util.RestUtil;
-import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.util.*;
 import org.jeecg.config.thirdapp.ThirdAppConfig;
 import org.jeecg.config.thirdapp.ThirdAppTypeItemVo;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.SysThirdAccount;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.ThirdLoginModel;
+import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.service.ISysThirdAccountService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.service.impl.ThirdAppDingtalkServiceImpl;
@@ -31,10 +30,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,7 +50,8 @@ public class ThirdLoginController {
 	private ISysUserService sysUserService;
 	@Autowired
 	private ISysThirdAccountService sysThirdAccountService;
-
+	@Autowired
+	private ISysDictService sysDictService;
 	@Autowired
 	private BaseCommonService baseCommonService;
 	@Autowired
@@ -91,8 +93,8 @@ public class ThirdLoginController {
         	//判断有没有这个人
 			//update-begin-author:wangshuai date:20201118 for:修改成查询第三方账户表
         	LambdaQueryWrapper<SysThirdAccount> query = new LambdaQueryWrapper<SysThirdAccount>();
-        	query.eq(SysThirdAccount::getThirdUserUuid, uuid);
         	query.eq(SysThirdAccount::getThirdType, source);
+			query.and(q -> q.eq(SysThirdAccount::getThirdUserUuid, uuid).or().eq(SysThirdAccount::getThirdUserId, uuid));
         	List<SysThirdAccount> thridList = sysThirdAccountService.list(query);
 			SysThirdAccount user = null;
         	if(thridList==null || thridList.size()==0) {
@@ -235,8 +237,12 @@ public class ThirdLoginController {
 		}
 		//update-end-author:wangshuai date:20201118 for:如果真实姓名和头像不存在就取第三方登录的
 		JSONObject obj = new JSONObject();
+		//TODO 第三方登确定登录租户和部门逻辑
+		
 		//用户登录信息
 		obj.put("userInfo", sysUser);
+		//获取字典缓存【解决 #jeecg-boot/issues/3998】
+		obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
 		//token 信息
 		obj.put("token", token);
 		result.setResult(obj);
@@ -293,7 +299,7 @@ public class ThirdLoginController {
 	 */
 	@ResponseBody
 	@GetMapping("/oauth2/{source}/login")
-	public String oauth2LoginCallback(@PathVariable("source") String source, @RequestParam("state") String state, HttpServletResponse response) throws Exception {
+	public String oauth2LoginCallback(@PathVariable("source") String source, @RequestParam("state") String state, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String url;
 		if (ThirdAppConfig.WECHAT_ENTERPRISE.equalsIgnoreCase(source)) {
 			ThirdAppTypeItemVo config = thirdAppConfig.getWechatEnterprise();
@@ -303,7 +309,7 @@ public class ThirdLoginController {
 			// 企业的CorpID
 			builder.append("?appid=").append(config.getClientId());
 			// 授权后重定向的回调链接地址，请使用urlencode对链接进行处理
-			String redirectUri = RestUtil.getBaseUrl() + "/sys/thirdLogin/oauth2/wechat_enterprise/callback";
+			String redirectUri = CommonUtils.getBaseUrl(request)  + "/sys/thirdLogin/oauth2/wechat_enterprise/callback";
 			builder.append("&redirect_uri=").append(URLEncoder.encode(redirectUri, "UTF-8"));
 			// 返回类型，此时固定为：code
 			builder.append("&response_type=code");
@@ -322,7 +328,7 @@ public class ThirdLoginController {
 			builder.append("https://login.dingtalk.com/oauth2/auth");
 			// 授权通过/拒绝后回调地址。
 			// 注意 需要与注册应用时登记的域名保持一致。
-			String redirectUri = RestUtil.getBaseUrl() + "/sys/thirdLogin/oauth2/dingtalk/callback";
+			String redirectUri = CommonUtils.getBaseUrl(request) + "/sys/thirdLogin/oauth2/dingtalk/callback";
 			builder.append("?redirect_uri=").append(URLEncoder.encode(redirectUri, "UTF-8"));
 			// 固定值为code。
 			// 授权通过后返回authCode。

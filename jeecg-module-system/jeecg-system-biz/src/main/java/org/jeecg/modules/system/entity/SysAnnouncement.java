@@ -162,4 +162,7 @@ public class SysAnnouncement implements Serializable {
      * 发送记录ID
      */
     private transient String sendId;
+
+    /**租户ID*/
+    private java.lang.Integer tenantId;
 }

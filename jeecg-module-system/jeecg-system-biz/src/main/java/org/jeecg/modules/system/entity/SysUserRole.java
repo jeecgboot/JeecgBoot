@@ -36,7 +36,10 @@ public class SysUserRole implements Serializable {
      * 角色id
      */
     private String roleId;
-
+    
+    /**租户ID*/
+    private java.lang.Integer tenantId;
+    
 	public SysUserRole() {
 	}
 

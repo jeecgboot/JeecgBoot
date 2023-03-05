@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
@@ -16,6 +17,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.SysCategory;
 import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecg.modules.system.service.ISysCategoryService;
@@ -71,6 +73,12 @@ public class SysCategoryController {
 			sysCategory.setPid("0");
 		}
 		Result<IPage<SysCategory>> result = new Result<IPage<SysCategory>>();
+		//------------------------------------------------------------------------------------------------
+		//是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+			sysCategory.setTenantId(oConvertUtils.getInt(TenantContext.getTenant(),0));
+		}
+		//------------------------------------------------------------------------------------------------
 		
 		//--author:os_chengtgen---date:20190804 -----for: 分类字典页面显示错误,issues:377--------start
 		//--author:liusq---date:20211119 -----for: 【vue3】分类字典页面查询条件配置--------start
@@ -93,6 +101,12 @@ public class SysCategoryController {
 	
 	@GetMapping(value = "/childList")
 	public Result<List<SysCategory>> queryPageList(SysCategory sysCategory,HttpServletRequest req) {
+		//------------------------------------------------------------------------------------------------
+		//是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+			sysCategory.setTenantId(oConvertUtils.getInt(TenantContext.getTenant(), 0));
+		}
+		//------------------------------------------------------------------------------------------------
 		Result<List<SysCategory>> result = new Result<List<SysCategory>>();
 		QueryWrapper<SysCategory> queryWrapper = QueryGenerator.initQueryWrapper(sysCategory, req.getParameterMap());
 		List<SysCategory> list = sysCategoryService.list(queryWrapper);
@@ -199,6 +213,13 @@ public class SysCategoryController {
    */
   @RequestMapping(value = "/exportXls")
   public ModelAndView exportXls(HttpServletRequest request, SysCategory sysCategory) {
+	  //------------------------------------------------------------------------------------------------
+	  //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+	  if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+		  sysCategory.setTenantId(oConvertUtils.getInt(TenantContext.getTenant(), 0));
+	  }
+	  //------------------------------------------------------------------------------------------------
+	  
       // Step.1 组装查询条件查询数据
       QueryWrapper<SysCategory> queryWrapper = QueryGenerator.initQueryWrapper(sysCategory, request.getParameterMap());
       List<SysCategory> pageList = sysCategoryService.list(queryWrapper);

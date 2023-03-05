@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -9,6 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
@@ -40,6 +42,7 @@ public class SysFiles {
 	private String url;
 	/**创建人登录名称*/
 	@Excel(name = "创建人登录名称", width = 15)
+    @Dict(dicCode = "username",dicText = "realname",dictTable = "sys_user")
     @ApiModelProperty(value = "创建人登录名称")
 	private String createBy;
 	/**创建日期*/
@@ -118,4 +121,22 @@ public class SysFiles {
 	@Excel(name = "删除状态(0-正常,1-删除至回收站)", width = 15)
     @ApiModelProperty(value = "删除状态(0-正常,1-删除至回收站)")
 	private String delFlag;
+
+    /**
+     * 文件表不存在的字段：用户数据集合
+     */
+	@TableField(exist=false)
+    private String userData;
+
+    /**
+     * 文件表不存在的字段：用户真实姓名
+     */
+    @TableField(exist=false)
+    private String realname;
+
+    /**
+     * 文件表不存在的字段：压缩名称
+     */
+    @TableField(exist=false)
+    private String zipName;
 }

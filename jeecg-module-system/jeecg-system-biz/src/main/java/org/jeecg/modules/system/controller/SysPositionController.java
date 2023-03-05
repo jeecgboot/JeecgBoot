@@ -7,16 +7,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.quartz.service.IQuartzJobService;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.SysPosition;
 import org.jeecg.modules.system.service.ISysPositionService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -72,6 +72,12 @@ public class SysPositionController {
                                                     @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                                     HttpServletRequest req) {
         Result<IPage<SysPosition>> result = new Result<IPage<SysPosition>>();
+        //------------------------------------------------------------------------------------------------
+        //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+        if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+            sysPosition.setTenantId(oConvertUtils.getInt(TenantContext.getTenant(),0));
+        }
+        //------------------------------------------------------------------------------------------------
         QueryWrapper<SysPosition> queryWrapper = QueryGenerator.initQueryWrapper(sysPosition, req.getParameterMap());
         Page<SysPosition> page = new Page<SysPosition>(pageNo, pageSize);
         IPage<SysPosition> pageList = sysPositionService.page(page, queryWrapper);
@@ -201,6 +207,12 @@ public class SysPositionController {
             if (oConvertUtils.isNotEmpty(paramsStr)) {
                 String deString = URLDecoder.decode(paramsStr, "UTF-8");
                 SysPosition sysPosition = JSON.parseObject(deString, SysPosition.class);
+                //------------------------------------------------------------------------------------------------
+                //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+                if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+                    sysPosition.setTenantId(oConvertUtils.getInt(TenantContext.getTenant(),0));
+                }
+                //------------------------------------------------------------------------------------------------
                 queryWrapper = QueryGenerator.initQueryWrapper(sysPosition, request.getParameterMap());
             }
         } catch (UnsupportedEncodingException e) {

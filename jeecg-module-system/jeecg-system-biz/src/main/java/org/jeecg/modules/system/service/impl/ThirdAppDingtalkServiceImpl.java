@@ -29,6 +29,7 @@ import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.RestUtil;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.config.thirdapp.ThirdAppConfig;
 import org.jeecg.config.thirdapp.ThirdAppTypeItemVo;
 import org.jeecg.modules.system.entity.*;
@@ -59,6 +60,8 @@ import java.util.stream.Collectors;
 @Service
 public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
 
+    @Autowired
+    JeecgBaseConfig jeecgBaseConfig;
     @Autowired
     ThirdAppConfig thirdAppConfig;
     @Autowired
@@ -769,7 +772,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         // 封装钉钉消息
         String title = message.getTitle();
         String content = message.getContent();
-        int agentId = thirdAppConfig.getDingtalk().getAgentIdInt();
+        String agentId = thirdAppConfig.getDingtalk().getAgentId();
         Message<MarkdownMessage> mdMessage = new Message<>(agentId, new MarkdownMessage(title, content));
         if (message.getToAll()) {
             mdMessage.setTo_all_user(true);
@@ -793,7 +796,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         }
         // 封装钉钉消息
         String content = message.getContent();
-        int agentId = thirdAppConfig.getDingtalk().getAgentIdInt();
+        String agentId = thirdAppConfig.getDingtalk().getAgentId();
         Message<TextMessage> textMessage = new Message<>(agentId, new TextMessage(content));
         if (message.getToAll()) {
             textMessage.setTo_all_user(true);
@@ -826,7 +829,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         if (accessToken == null) {
             return null;
         }
-        int agentId = thirdAppConfig.getDingtalk().getAgentIdInt();
+        String agentId = thirdAppConfig.getDingtalk().getAgentId();
         return JdtMessageAPI.recallMessage(agentId, msgTaskId, getAccessToken());
     }
 
@@ -845,12 +848,22 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         if (accessToken == null) {
             return null;
         }
-        int agentId = thirdAppConfig.getDingtalk().getAgentIdInt();
+        String agentId = thirdAppConfig.getDingtalk().getAgentId();
         String markdown = "### " + announcement.getTitile() + "\n" + oConvertUtils.getString(announcement.getMsgAbstract(),"空");
         ActionCardMessage actionCard = new ActionCardMessage(markdown);
         actionCard.setTitle(announcement.getTitile());
         actionCard.setSingle_title("详情");
-        actionCard.setSingle_url(RestUtil.getBaseUrl() + "/sys/annountCement/show/" + announcement.getId());
+        String baseUrl = null;
+        //优先通过请求获取basepath，获取不到读取 jeecg.domainUrl.pc
+        try {
+            baseUrl = RestUtil.getBaseUrl();
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+            baseUrl =  jeecgBaseConfig.getDomainUrl().getPc();
+            //e.printStackTrace();
+        }
+        
+        actionCard.setSingle_url(baseUrl + "/sys/annountCement/show/" + announcement.getId());
         Message<ActionCardMessage> actionCardMessage = new Message<>(agentId, actionCard);
         if (CommonConstant.MSG_TYPE_ALL.equals(announcement.getMsgType())) {
             actionCardMessage.setTo_all_user(true);

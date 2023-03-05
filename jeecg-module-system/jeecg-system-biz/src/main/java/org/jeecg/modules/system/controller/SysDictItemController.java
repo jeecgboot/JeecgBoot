@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
@@ -73,7 +74,7 @@ public class SysDictItemController {
 	 * @功能：新增
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+    @RequiresPermissions("system:dict:item:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	@CacheEvict(value= {CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDictItem> add(@RequestBody SysDictItem sysDictItem) {
@@ -94,7 +95,7 @@ public class SysDictItemController {
 	 * @param sysDictItem
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+    @RequiresPermissions("system:dict:item:edit")
 	@RequestMapping(value = "/edit",  method = { RequestMethod.PUT,RequestMethod.POST })
 	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDictItem> edit(@RequestBody SysDictItem sysDictItem) {
@@ -118,7 +119,7 @@ public class SysDictItemController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+    @RequiresPermissions("system:dict:item:delete")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDictItem> delete(@RequestParam(name="id",required=true) String id) {
@@ -140,7 +141,7 @@ public class SysDictItemController {
 	 * @param ids
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+    @RequiresPermissions("system:dict:item:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDictItem> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
