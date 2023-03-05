@@ -39,7 +39,7 @@ public class ActuatorRedisController {
     @GetMapping("/info")
     public Result<?> getRedisInfo() throws Exception {
         List<RedisInfo> infoList = this.redisService.getRedisInfo();
-        log.info(infoList.toString());
+        //log.info(infoList.toString());
         return Result.ok(infoList);
     }
 

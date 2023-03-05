@@ -303,10 +303,10 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
         return null;
     }
 
-    @Override
-    public List<JSONObject> queryDepartsByOrgIds(String ids) {
-        return null;
-    }
+//    @Override
+//    public List<JSONObject> queryDepartsByOrgIds(String ids) {
+//        return null;
+//    }
 
     @Override
     public List<String> loadCategoryDictItem(String ids) {

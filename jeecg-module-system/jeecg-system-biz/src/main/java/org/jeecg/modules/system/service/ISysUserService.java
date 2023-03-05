@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -11,8 +12,11 @@ import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.modules.system.entity.SysRoleIndex;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
+import org.jeecg.modules.system.vo.lowapp.DepartAndUserInfo;
+import org.jeecg.modules.system.vo.lowapp.UpdateDepartInfo;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +32,17 @@ import java.util.Set;
  */
 public interface ISysUserService extends IService<SysUser> {
 
+	/**
+	 * 查询用户数据列表
+	 * 
+	 * @param req
+	 * @param queryWrapper
+	 * @param pageSize
+	 * @param pageNo
+	 * @return
+	 */
+	Result<IPage<SysUser>> queryPageList(HttpServletRequest req, QueryWrapper<SysUser> queryWrapper, Integer pageSize, Integer pageNo);
+	
 	/**
 	 * 重置密码
 	 *
@@ -184,7 +199,7 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param username
 	 * @param orgCode
 	 */
-	void updateUserDepart(String username,String orgCode);
+	void updateUserDepart(String username,String orgCode,Integer loginTenantId);
 	
 	/**
 	 * 根据手机号获取用户名和密码
@@ -277,16 +292,18 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param user 用户
 	 * @param selectedRoles 选择的角色id，多个以逗号隔开
 	 * @param selectedDeparts 选择的部门id，多个以逗号隔开
+	 * @param relTenantIds 多个租户id
 	 */
-	void saveUser(SysUser user, String selectedRoles, String selectedDeparts);
+	void saveUser(SysUser user, String selectedRoles, String selectedDeparts, String relTenantIds);
 
 	/**
 	 * 编辑用户
 	 * @param user 用户
 	 * @param roles 选择的角色id，多个以逗号隔开
 	 * @param departs 选择的部门id，多个以逗号隔开
+	 * @param relTenantIds 多个租户id
 	 */
-	void editUser(SysUser user, String roles, String departs);
+	void editUser(SysUser user, String roles, String departs, String relTenantIds);
 
 	/**
      * userId转为username
@@ -303,4 +320,73 @@ public interface ISysUserService extends IService<SysUser> {
 	 */
 	LoginUser getEncodeUserInfo(String username);
 
+    /**
+     * 用户离职
+     * @param username
+     */
+    void userQuit(String username);
+
+    /**
+     * 获取离职人员列表
+	 * @param tenantId 租户id
+     * @return
+     */
+    List<SysUser> getQuitList(Integer tenantId);
+
+    /**
+     * 更新刪除状态和离职状态
+     * @param userIds  存放用户id集合
+     * @param sysUser
+     * @return boolean
+     */
+    void updateStatusAndFlag(List<String> userIds, SysUser sysUser);
+
+	/**
+	 * 设置登录租户
+	 * @param sysUser
+	 * @return
+	 */
+	Result<JSONObject>  setLoginTenant(SysUser sysUser, JSONObject obj, String username, Result<JSONObject> result);
+
+	//--- author:taoyan date:20221231 for: QQYUN-3515【应用】应用下的组织机构管理功能，细节实现 ---
+	/**
+	 * 批量编辑用户信息
+	 * @param json
+	 */
+	void batchEditUsers(JSONObject json);
+
+	/**
+	 * 根据关键词查询用户和部门
+	 * @param keyword
+	 * @return
+	 */
+	DepartAndUserInfo searchByKeyword(String keyword);
+
+	/**
+	 * 查询 部门修改的信息
+	 * @param departId
+	 * @return
+	 */
+	UpdateDepartInfo getUpdateDepartInfo(String departId);
+
+	/**
+	 * 修改部门相关信息
+	 * @param updateDepartInfo
+	 */
+	void doUpdateDepartInfo(UpdateDepartInfo updateDepartInfo);
+
+	/**
+	 * 设置负责人 取消负责人
+	 * @param json
+	 */
+	void changeDepartChargePerson(JSONObject json);
+	//--- author:taoyan date:20221231 for: QQYUN-3515【应用】应用下的组织机构管理功能，细节实现 ---
+	
+	/**
+	 * 编辑租户用户
+	 * @param sysUser
+	 * @param tenantId
+	 * @param departs
+	 */
+	void editTenantUser(SysUser sysUser, String tenantId, String departs, String roles);
 }

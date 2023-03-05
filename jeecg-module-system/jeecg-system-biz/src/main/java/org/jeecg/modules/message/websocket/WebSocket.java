@@ -2,7 +2,6 @@ package org.jeecg.modules.message.websocket;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Resource;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
@@ -11,6 +10,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.constant.WebsocketConst;
 import org.jeecg.common.modules.redis.client.JeecgRedisClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,7 +31,7 @@ public class WebSocket {
      * Redis触发监听名字
      */
     public static final String REDIS_TOPIC_NAME = "socketHandler";
-    @Resource
+    @Autowired
     private JeecgRedisClient jeecgRedisClient;
 
 
@@ -111,14 +111,14 @@ public class WebSocket {
             log.debug("【系统 WebSocket】收到客户端消息:" + message);
         }
         
-        //------------------------------------------------------------------------------
-        JSONObject obj = new JSONObject();
-        //业务类型
-        obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_CHECK);
-        //消息内容
-        obj.put(WebsocketConst.MSG_TXT, "心跳响应");
-        this.pushMessage(userId, obj.toJSONString());
-        //------------------------------------------------------------------------------
+//        //------------------------------------------------------------------------------
+//        JSONObject obj = new JSONObject();
+//        //业务类型
+//        obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_CHECK);
+//        //消息内容
+//        obj.put(WebsocketConst.MSG_TXT, "心跳响应");
+//        this.pushMessage(userId, obj.toJSONString());
+//        //------------------------------------------------------------------------------
     }
 
     /**
@@ -130,7 +130,7 @@ public class WebSocket {
     @OnError
     public void onError(Session session, Throwable t) {
         log.warn("【系统 WebSocket】消息出现错误");
-        //t.printStackTrace();
+        t.printStackTrace();
     }
     //==========【系统 WebSocket接受、推送消息等方法 —— 具体服务节点推送ws消息】========================================================================================
     

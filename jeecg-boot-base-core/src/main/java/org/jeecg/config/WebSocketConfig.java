@@ -31,7 +31,7 @@ public class WebSocketConfig {
         FilterRegistrationBean bean = new FilterRegistrationBean();
         bean.setFilter(websocketFilter());
         //TODO 临时注释掉，测试下线上socket总断的问题
-        bean.addUrlPatterns("/websocket/*","/eoaSocket/*", "/newsWebsocket/*", "/vxeSocket/*");
+        bean.addUrlPatterns("/websocket/*","/eoaSocket/*","/eoaNewChatSocket/*", "/newsWebsocket/*", "/vxeSocket/*");
         return bean;
     }
 

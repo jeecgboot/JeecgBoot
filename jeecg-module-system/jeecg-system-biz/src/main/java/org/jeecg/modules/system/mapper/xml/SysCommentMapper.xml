@@ -72,7 +72,7 @@
     <select id="queryUserAvatarList" resultType="org.jeecg.modules.system.vo.UserAvatar">
 	   select id,  avatar, realname from sys_user
         WHERE id IN 
-        <foreach item="id" collection="idSet"  open="(" separator="or" close=")">
+        <foreach item="id" collection="idSet"  open="(" separator="," close=")">
             #{id}
         </foreach>
 	</select>

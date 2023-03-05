@@ -152,10 +152,11 @@ public interface CommonConstant {
     Integer RULE_FLAG_1 = 1;
 
     /**
-     * 是否用户已被冻结 1正常(解冻) 2冻结
+     * 是否用户已被冻结 1正常(解冻) 2冻结 3离职
      */
     Integer USER_UNFREEZE = 1;
     Integer USER_FREEZE = 2;
+    Integer USER_QUIT = 3;
     
     /**字典翻译文本后缀*/
     String DICT_TEXT_SUFFIX = "_dictText";
@@ -312,8 +313,8 @@ public interface CommonConstant {
     String X_ACCESS_TOKEN = "X-Access-Token";
     String X_SIGN = "X-Sign";
     String X_TIMESTAMP = "X-TIMESTAMP";
-    /** 租户 请求头*/
-    String TENANT_ID = "tenant-id";
+    /** 租户请求头 更名为：X-Tenant-Id */
+    String TENANT_ID = "X-Tenant-Id";
     /**===============================================================================================*/
 
     String TOKEN_IS_INVALID_MSG = "Token失效，请重新登录!";
@@ -425,4 +426,68 @@ public interface CommonConstant {
      */
     String PHONE_REDIS_KEY_PRE = "phone_msg";
 
+    /**
+     * 是文件夹
+     */
+    String IT_IS_FOLDER = "1";
+
+    /**
+     * 文件拥有者
+     */
+    String FILE_OWNER = "owner";
+
+    /**
+     * 文件管理员
+     */
+    String FILE_ADMIN = "admin";
+
+    /**
+     * 只允许编辑
+     */
+    String FILE_EDITABLE = "editable";
+
+    /**
+     * 登录失败，用于记录失败次数的key
+     */
+    String LOGIN_FAIL = "LOGIN_FAIL_";
+
+    /**
+     * 入职事件
+     */
+    Integer BPM_USER_EVENT_ADD = 1;
+
+   /**
+    * 离职事件
+    */
+    Integer BPM_USER_EVENT_LEVEL = 2;
+
+   /**
+    * 用户租户状态(正常/已通过审核的)
+    */
+   String USER_TENANT_NORMAL = "1";
+
+   /**
+    * 用户租户状态(离职)
+    */
+   String USER_TENANT_QUIT = "2";
+
+   /**
+    * 用户租户状态(审核中)
+    */
+   String USER_TENANT_UNDER_REVIEW = "3";
+   
+   /**
+    * 用户租户状态(拒绝)
+    */
+   String USER_TENANT_REFUSE = "4";
+
+   /**
+    * 不是叶子节点
+    */
+   Integer NOT_LEAF = 0;
+
+   /**
+    * 是叶子节点
+    */
+   Integer IS_LEAF = 1;
 }

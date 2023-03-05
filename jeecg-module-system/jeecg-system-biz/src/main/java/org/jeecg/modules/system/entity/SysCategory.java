@@ -50,6 +50,9 @@ public class SysCategory implements Serializable,Comparable<SysCategory>{
 	@Excel(name = "是否有子节点(1:有)", width = 15)
 	private java.lang.String hasChild;
 
+	/**租户ID*/
+	private java.lang.Integer tenantId;
+
 	@Override
 	public int compareTo(SysCategory o) {
 		//比较条件我们定的是按照code的长度升序

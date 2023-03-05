@@ -7,7 +7,7 @@ import com.aliyun.oss.model.CannedAccessControlList;
 import com.aliyun.oss.model.OSSObject;
 import com.aliyun.oss.model.PutObjectResult;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileItemStream;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.util.CommonUtils;
@@ -20,6 +20,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.UUID;
 
@@ -141,10 +142,10 @@ public class OssBootUtil {
                 log.info("------OSS文件上传成功------" + fileUrl);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(),e);
             return null;
         }catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(),e);
             return null;
         }
         return filePath;

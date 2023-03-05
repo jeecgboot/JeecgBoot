@@ -85,4 +85,8 @@ public class SysPosition {
      */
     @ApiModelProperty(value = "组织机构编码")
     private java.lang.String sysOrgCode;
+
+    /**租户ID*/
+    @ApiModelProperty(value = "租户ID")
+    private java.lang.Integer tenantId;
 }

@@ -97,7 +97,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
             sysCommentService.saveOneFileComment(request);
             return Result.OK("success");
         } catch (Exception e) {
-            log.error("评论文件上传失败", e.getMessage());
+            log.error("评论文件上传失败：{}", e.getMessage());
             return Result.error("操作失败," + e.getMessage());
         }
     }
@@ -144,7 +144,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @param req
      * @return
      */
-    ////@AutoLog(value = "系统评论回复表-分页列表查询")
+    //@AutoLog(value = "系统评论回复表-分页列表查询")
     @ApiOperation(value = "系统评论回复表-分页列表查询", notes = "系统评论回复表-分页列表查询")
     @GetMapping(value = "/list")
     public Result<IPage<SysComment>> queryPageList(SysComment sysComment,
@@ -223,7 +223,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @param id
      * @return
      */
-    ////@AutoLog(value = "系统评论回复表-通过id查询")
+    //@AutoLog(value = "系统评论回复表-通过id查询")
     @ApiOperation(value = "系统评论回复表-通过id查询", notes = "系统评论回复表-通过id查询")
     @GetMapping(value = "/queryById")
     public Result<SysComment> queryById(@RequestParam(name = "id", required = true) String id) {

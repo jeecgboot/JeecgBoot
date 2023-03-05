@@ -6,7 +6,7 @@
 	<select id="queryDictItemsByCode" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
 		   select s.item_value as "value",s.item_text as "text" from sys_dict_item s
 		   where dict_id = (select id from sys_dict where dict_code = #{code})
-		   order by s.sort_order asc
+		   order by s.sort_order asc, s.create_time DESC;
 	</select>
 
 	<!-- 通过字典code获取有效的字典数据项 -->
@@ -14,7 +14,7 @@
 		   select s.item_value as "value",s.item_text as "text" from sys_dict_item s
 		   where dict_id = (select id from sys_dict where dict_code = #{code})
 		   and s.status = 1
-		   order by s.sort_order asc
+		   order by s.sort_order asc, s.create_time DESC;
 	</select>
 
 	<!-- 通过多个字典code获取字典数据 -->
@@ -155,7 +155,14 @@
 			   <if test="query!= null">
 			       1 = 1
 				   <foreach collection="query.entrySet()" item="value"  index="key" >
-				   	and ${key} LIKE #{value}
+					   <choose>
+						   <when test="key == 'tenant_id'">
+							   and tenant_id = #{value}
+						   </when>
+						   <otherwise>
+							   and ${key} LIKE #{value}
+						   </otherwise>
+					   </choose>
 				   </foreach>
 					 <!-- udapte-end-author:sunjianlei date:20220615 for: 【issues/3709】自定义树查询条件没有处理父ID，没有树状结构了 -->
 					 <choose>
@@ -214,6 +221,14 @@
 		</if>
 	</select>
 
+	<!--根据应用id获取字典列表和详情-->
+	<select id="getDictListByLowAppId" resultType="org.jeecg.modules.system.entity.SysDict">
+		select id,dict_name,dict_code from sys_dict
+		where
+		del_flag = 0
+		and low_app_id = #{lowAppId}
+		and tenant_id = #{tenantId}
+	</select>
 
 
 </mapper>

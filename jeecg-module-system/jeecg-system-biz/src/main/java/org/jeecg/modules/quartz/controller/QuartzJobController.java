@@ -7,6 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
@@ -78,7 +79,8 @@ public class QuartzJobController {
 	 * @param quartzJob
 	 * @return
 	 */
-	//@RequiresRoles("admin")
+	@RequiresRoles("admin")
+    @RequiresPermissions("system:quartzJob:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<?> add(@RequestBody QuartzJob quartzJob) {
 		quartzJobService.saveAndScheduleJob(quartzJob);
@@ -91,7 +93,8 @@ public class QuartzJobController {
 	 * @param quartzJob
 	 * @return
 	 */
-	//@RequiresRoles("admin")
+	@RequiresRoles("admin")
+    @RequiresPermissions("system:quartzJob:edit")
 	@RequestMapping(value = "/edit", method ={RequestMethod.PUT, RequestMethod.POST})
 	public Result<?> eidt(@RequestBody QuartzJob quartzJob) {
 		try {
@@ -109,7 +112,8 @@ public class QuartzJobController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles("admin")
+	@RequiresRoles("admin")
+    @RequiresPermissions("system:quartzJob:delete")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
 		QuartzJob quartzJob = quartzJobService.getById(id);
@@ -127,7 +131,8 @@ public class QuartzJobController {
 	 * @param ids
 	 * @return
 	 */
-	//@RequiresRoles("admin")
+	@RequiresRoles("admin")
+    @RequiresPermissions("system:quartzJob:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 		if (ids == null || "".equals(ids.trim())) {
@@ -146,7 +151,8 @@ public class QuartzJobController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles("admin")
+	@RequiresRoles("admin")
+    @RequiresPermissions("system:quartzJob:pause")
 	@GetMapping(value = "/pause")
 	@ApiOperation(value = "停止定时任务")
 	public Result<Object> pauseJob(@RequestParam(name = "id") String id) {
@@ -164,7 +170,8 @@ public class QuartzJobController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles("admin")
+	@RequiresRoles("admin")
+    @RequiresPermissions("system:quartzJob:resume")
 	@GetMapping(value = "/resume")
 	@ApiOperation(value = "启动定时任务")
 	public Result<Object> resumeJob(@RequestParam(name = "id") String id) {
@@ -264,7 +271,8 @@ public class QuartzJobController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles("admin")
+	@RequiresRoles("admin")
+    @RequiresPermissions("system:quartzJob:execute")
 	@GetMapping("/execute")
 	public Result<?> execute(@RequestParam(name = "id", required = true) String id) {
 		QuartzJob quartzJob = quartzJobService.getById(id);

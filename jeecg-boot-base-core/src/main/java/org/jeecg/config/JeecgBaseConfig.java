@@ -108,4 +108,12 @@ public class JeecgBaseConfig {
     public void setFileViewDomain(String fileViewDomain) {
         this.fileViewDomain = fileViewDomain;
     }
+
+    public String getUploadType() {
+        return uploadType;
+    }
+
+    public void setUploadType(String uploadType) {
+        this.uploadType = uploadType;
+    }
 }

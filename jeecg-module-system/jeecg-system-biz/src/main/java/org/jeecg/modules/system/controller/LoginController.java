@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
@@ -76,6 +77,11 @@ public class LoginController {
 		Result<JSONObject> result = new Result<JSONObject>();
 		String username = sysLoginModel.getUsername();
 		String password = sysLoginModel.getPassword();
+		//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
+		if(isLoginFailOvertimes(username)){
+			return result.error500("该用户登录失败次数过多，请于10分钟后再次登录！");
+		}
+		//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
 		//前端密码加密，后端进行密码解密
 		//password = AesEncryptUtil.desEncrypt(sysLoginModel.getPassword().replaceAll("%2B", "\\+")).trim();//密码解密
@@ -119,6 +125,9 @@ public class LoginController {
 		String userpassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
 		String syspassword = sysUser.getPassword();
 		if (!syspassword.equals(userpassword)) {
+			//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
+			addLoginFailOvertimes(username);
+			//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 			result.error500("用户名或密码错误");
 			return result;
 		}
@@ -128,6 +137,7 @@ public class LoginController {
 		//update-begin--Author:liusq  Date:20210126  for：登录成功，删除redis中的验证码
 		redisUtil.del(realKey);
 		//update-begin--Author:liusq  Date:20210126  for：登录成功，删除redis中的验证码
+		redisUtil.del(CommonConstant.LOGIN_FAIL + username);
 		LoginUser loginUser = new LoginUser();
 		BeanUtils.copyProperties(sysUser, loginUser);
 		baseCommonService.addLog("用户名: " + username + ",登录成功！", CommonConstant.LOG_TYPE_1, null,loginUser);
@@ -271,8 +281,12 @@ public class LoginController {
 			LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
 			username = sysUser.getUsername();
 		}
+		
+		//获取登录部门
 		String orgCode= user.getOrgCode();
-		this.sysUserService.updateUserDepart(username, orgCode);
+		//获取登录租户
+		Integer tenantId = user.getLoginTenantId();
+		this.sysUserService.updateUserDepart(username, orgCode,tenantId);
 		SysUser sysUser = sysUserService.getUserByName(username);
 		JSONObject obj = new JSONObject();
 		obj.put("userInfo", sysUser);
@@ -386,7 +400,11 @@ public class LoginController {
 	public Result<JSONObject> phoneLogin(@RequestBody JSONObject jsonObject) {
 		Result<JSONObject> result = new Result<JSONObject>();
 		String phone = jsonObject.getString("mobile");
-		
+		//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
+		if(isLoginFailOvertimes(phone)){
+			return result.error500("该用户登录失败次数过多，请于10分钟后再次登录！");
+		}
+		//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 		//校验用户有效性
 		SysUser sysUser = sysUserService.getUserByPhone(phone);
 		result = sysUserService.checkUserIsEffective(sysUser);
@@ -402,6 +420,9 @@ public class LoginController {
 		//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 
 		if (!smscode.equals(code)) {
+			//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
+			addLoginFailOvertimes(phone);
+			//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 			result.setMessage("手机验证码错误");
 			return result;
 		}
@@ -427,46 +448,36 @@ public class LoginController {
 		// 获取用户部门信息
 		JSONObject obj = new JSONObject(new LinkedHashMap<>());
 
-		// 生成token
+		//1.生成token
 		String token = JwtUtil.sign(username, syspassword);
 		// 设置token缓存有效时间
 		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
 		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 2 / 1000);
 		obj.put("token", token);
 
-		// update-begin--Author:sunjianlei Date:20210802 for：获取用户租户信息
-		String tenantIds = sysUser.getRelTenantIds();
-		if (oConvertUtils.isNotEmpty(tenantIds)) {
-			List<Integer> tenantIdList = new ArrayList<>();
-			for(String id: tenantIds.split(SymbolConstant.COMMA)){
-				tenantIdList.add(Integer.valueOf(id));
-			}
-			// 该方法仅查询有效的租户，如果返回0个就说明所有的租户均无效。
-			List<SysTenant> tenantList = sysTenantService.queryEffectiveTenant(tenantIdList);
-			if (tenantList.size() == 0) {
-				result.error500("与该用户关联的租户均已被冻结，无法登录！");
-				return result;
-			} else {
-				obj.put("tenantList", tenantList);
-			}
+		//2.设置登录租户
+		Result<JSONObject> loginTenantError = sysUserService.setLoginTenant(sysUser, obj, username,result);
+		if (loginTenantError != null) {
+			return loginTenantError;
 		}
-		// update-end--Author:sunjianlei Date:20210802 for：获取用户租户信息
 
+		//3.设置登录用户信息
 		obj.put("userInfo", sysUser);
-
+		
+		//4.设置登录部门
 		List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());
 		obj.put("departs", departs);
 		if (departs == null || departs.size() == 0) {
 			obj.put("multi_depart", 0);
 		} else if (departs.size() == 1) {
-			sysUserService.updateUserDepart(username, departs.get(0).getOrgCode());
+			sysUserService.updateUserDepart(username, departs.get(0).getOrgCode(),null);
 			obj.put("multi_depart", 1);
 		} else {
 			//查询当前是否有登录部门
 			// update-begin--Author:wangshuai Date:20200805 for：如果用戶为选择部门，数据库为存在上一次登录部门，则取一条存进去
 			SysUser sysUserById = sysUserService.getById(sysUser.getId());
 			if(oConvertUtils.isEmpty(sysUserById.getOrgCode())){
-				sysUserService.updateUserDepart(username, departs.get(0).getOrgCode());
+				sysUserService.updateUserDepart(username, departs.get(0).getOrgCode(),null);
 			}
 			// update-end--Author:wangshuai Date:20200805 for：如果用戶为选择部门，数据库为存在上一次登录部门，则取一条存进去
 			obj.put("multi_depart", 2);
@@ -529,6 +540,7 @@ public class LoginController {
 	/**
 	 * 切换菜单表为vue3的表
 	 */
+	@RequiresRoles({"admin"})
 	@GetMapping(value = "/switchVue3Menu")
 	public Result<String> switchVue3Menu(HttpServletResponse response) {
 		Result<String> res = new Result<String>();
@@ -547,7 +559,13 @@ public class LoginController {
 		Result<JSONObject> result = new Result<JSONObject>();
 		String username = sysLoginModel.getUsername();
 		String password = sysLoginModel.getPassword();
+		JSONObject obj = new JSONObject();
 		
+		//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
+		if(isLoginFailOvertimes(username)){
+			return result.error500("该用户登录失败次数过多，请于10分钟后再次登录！");
+		}
+		//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 		//1. 校验用户是否有效
 		SysUser sysUser = sysUserService.getUserByName(username);
 		result = sysUserService.checkUserIsEffective(sysUser);
@@ -559,10 +577,14 @@ public class LoginController {
 		String userpassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
 		String syspassword = sysUser.getPassword();
 		if (!syspassword.equals(userpassword)) {
+			//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
+			addLoginFailOvertimes(username);
+			//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 			result.error500("用户名或密码错误");
 			return result;
 		}
 		
+		//3.设置登录部门
 		String orgCode = sysUser.getOrgCode();
 		if(oConvertUtils.isEmpty(orgCode)) {
 			//如果当前用户无选择部门 查看部门关联信息
@@ -574,15 +596,21 @@ public class LoginController {
 			}else{
 				orgCode = departs.get(0).getOrgCode();
 				sysUser.setOrgCode(orgCode);
-				this.sysUserService.updateUserDepart(username, orgCode);
+				this.sysUserService.updateUserDepart(username, orgCode,null);
 			}
 			//update-end-author:taoyan date:20220117 for: JTC-1068【app】新建用户，没有设置部门及角色，点击登录提示暂未归属部，一直在登录页面 使用手机号登录 可正常
 		}
-		JSONObject obj = new JSONObject();
-		//用户登录信息
+
+		//4. 设置登录租户
+		Result<JSONObject> loginTenantError = sysUserService.setLoginTenant(sysUser, obj, username, result);
+		if (loginTenantError != null) {
+			return loginTenantError;
+		}
+
+		//5. 设置登录用户信息
 		obj.put("userInfo", sysUser);
 		
-		// 生成token
+		//6. 生成token
 		String token = JwtUtil.sign(username, syspassword);
 		// 设置超时时间
 		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
@@ -669,6 +697,38 @@ public class LoginController {
 			result.put("token", "-1");
 		}
 		return Result.OK(result);
+	}
+
+	/**
+	 * 登录失败超出次数5 返回true
+	 * @param username
+	 * @return
+	 */
+	private boolean isLoginFailOvertimes(String username){
+		String key = CommonConstant.LOGIN_FAIL + username;
+		Object failTime = redisUtil.get(key);
+		if(failTime!=null){
+			Integer val = Integer.parseInt(failTime.toString());
+			if(val>5){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 记录登录失败次数
+	 * @param username
+	 */
+	private void addLoginFailOvertimes(String username){
+		String key = CommonConstant.LOGIN_FAIL + username;
+		Object failTime = redisUtil.get(key);
+		Integer val = 0;
+		if(failTime!=null){
+			val = Integer.parseInt(failTime.toString());
+		}
+		// 1小时
+		redisUtil.set(key, ++val, 3600);
 	}
 
 }

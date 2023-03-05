@@ -5,8 +5,12 @@ import java.util.List;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.plugins.inner.DynamicTableNameInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.TenantConstant;
+import org.jeecg.common.util.SpringContextUtils;
+import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
@@ -28,22 +32,41 @@ import net.sf.jsqlparser.expression.LongValue;
 @Configuration
 @MapperScan(value={"org.jeecg.modules.**.mapper*"})
 public class MybatisPlusSaasConfig {
+
     /**
-     * tenant_id 字段名
+     * 是否开启系统模块的租户隔离
+     *  控制范围：用户、角色、部门、我的部门、字典、分类字典、多数据源、职务、通知公告
+     *  
+     *  实现功能
+     *  1.用户表通过硬编码实现租户ID隔离
+     *  2.角色、部门、我的部门、字典、分类字典、多数据源、职务、通知公告除了硬编码还加入的 TENANT_TABLE 配置中，实现租户隔离更安全
+     *  3.菜单表、租户表不做租户隔离
+     *  4.通过拦截器MybatisInterceptor实现，增删改查数据 自动注入租户ID
      */
-    private static final String TENANT_FIELD_NAME = "tenant_id";
+    public static final Boolean OPEN_SYSTEM_TENANT_CONTROL = false;
+    
     /**
      * 哪些表需要做多租户 表需要添加一个字段 tenant_id
      */
     public static final List<String> TENANT_TABLE = new ArrayList<String>();
 
     static {
-        TENANT_TABLE.add("demo");
+        //1.需要租户隔离的表请在此配置
+        if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+            //a.系统管理表
+            TENANT_TABLE.add("sys_role");
+            TENANT_TABLE.add("sys_user_role");
+            TENANT_TABLE.add("sys_depart");
+            TENANT_TABLE.add("sys_category");
+            TENANT_TABLE.add("sys_data_source");
+            TENANT_TABLE.add("sys_position");
+            TENANT_TABLE.add("sys_announcement");
+        }
 
-//        //角色、菜单、部门
-//        tenantTable.add("sys_role");
-//        tenantTable.add("sys_permission");
-//        tenantTable.add("sys_depart");
+        //2.示例测试
+        //TENANT_TABLE.add("demo");
+        //3.online租户隔离测试
+        //TENANT_TABLE.add("ceapp_issue");
     }
 
 
@@ -54,13 +77,24 @@ public class MybatisPlusSaasConfig {
         interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(new TenantLineHandler() {
             @Override
             public Expression getTenantId() {
-                String tenantId = oConvertUtils.getString(TenantContext.getTenant(),"0");
+                String tenantId = TenantContext.getTenant();
+                //如果通过线程获取租户ID为空，则通过当前请求的request获取租户（shiro排除拦截器的请求会获取不到租户ID）
+                if(oConvertUtils.isEmpty(tenantId)){
+                    try {
+                        tenantId = TokenUtils.getTenantIdByRequest(SpringContextUtils.getHttpServletRequest());
+                    } catch (Exception e) {
+                        //e.printStackTrace();
+                    }
+                }
+                if(oConvertUtils.isEmpty(tenantId)){
+                    tenantId = "0";
+                }
                 return new LongValue(tenantId);
             }
 
             @Override
             public String getTenantIdColumn(){
-                return TENANT_FIELD_NAME;
+                return TenantConstant.TENANT_ID_TABLE;
             }
 
             // 返回 true 表示不走租户逻辑
@@ -74,10 +108,12 @@ public class MybatisPlusSaasConfig {
                 return true;
             }
         }));
-        interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
         //update-begin-author:zyf date:20220425 for:【VUEN-606】注入动态表名适配拦截器解决多表名问题
         interceptor.addInnerInterceptor(dynamicTableNameInnerInterceptor());
         //update-end-author:zyf date:20220425 for:【VUEN-606】注入动态表名适配拦截器解决多表名问题
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
+        //【jeecg-boot/issues/3847】增加@Version乐观锁支持 
+        interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
         return interceptor;
     }
 
