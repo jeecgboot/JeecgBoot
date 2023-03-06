@@ -68,6 +68,8 @@ Vue2版本专题说明
 - [快速启动——Vue2前端](http://doc.jeecg.com/2678320)
 
 #### 源码下载
+| 源码                | 源码地址                     | 
+|--------------------|------------------------|
 | 后端源码 `Vue2版`  |https://gitee.com/jeecg/jeecg-boot/tree/v3.4.3last    |
 | 前端源码 `Vue2版`  |https://github.com/jeecgboot/ant-design-vue-jeecg    |
 
