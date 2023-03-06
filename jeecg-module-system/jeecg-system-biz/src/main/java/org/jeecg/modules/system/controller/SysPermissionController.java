@@ -360,7 +360,7 @@ public class SysPermissionController {
 	 * @param permission
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:add")
+    //@RequiresPermissions("system:permission:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysPermission> add(@RequestBody SysPermission permission) {
 		Result<SysPermission> result = new Result<SysPermission>();
@@ -380,7 +380,7 @@ public class SysPermissionController {
 	 * @param permission
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:edit")
+    //@RequiresPermissions("system:permission:edit")
 	@RequestMapping(value = "/edit", method = { RequestMethod.PUT, RequestMethod.POST })
 	public Result<SysPermission> edit(@RequestBody SysPermission permission) {
 		Result<SysPermission> result = new Result<>();
@@ -548,8 +548,8 @@ public class SysPermissionController {
 	 *
 	 * @return
 	 */
+    //@RequiresPermissions("system:permission:saveRole")
 	@RequestMapping(value = "/saveRolePermission", method = RequestMethod.POST)
-    @RequiresPermissions("system:permission:saveRole")
 	public Result<String> saveRolePermission(@RequestBody JSONObject json) {
 		long start = System.currentTimeMillis();
 		Result<String> result = new Result<>();
@@ -877,7 +877,7 @@ public class SysPermissionController {
 	 * @param sysPermissionDataRule
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:addRule")
+    //@RequiresPermissions("system:permission:addRule")
 	@RequestMapping(value = "/addPermissionRule", method = RequestMethod.POST)
 	public Result<SysPermissionDataRule> addPermissionRule(@RequestBody SysPermissionDataRule sysPermissionDataRule) {
 		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
@@ -892,7 +892,7 @@ public class SysPermissionController {
 		return result;
 	}
 
-    @RequiresPermissions("system:permission:editRule")
+    //@RequiresPermissions("system:permission:editRule")
 	@RequestMapping(value = "/editPermissionRule", method = { RequestMethod.PUT, RequestMethod.POST })
 	public Result<SysPermissionDataRule> editPermissionRule(@RequestBody SysPermissionDataRule sysPermissionDataRule) {
 		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
@@ -969,7 +969,7 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequestMapping(value = "/saveDepartPermission", method = RequestMethod.POST)
-    @RequiresPermissions("system:permission:saveDepart")
+    //@RequiresPermissions("system:permission:saveDepart")
 	public Result<String> saveDepartPermission(@RequestBody JSONObject json) {
 		long start = System.currentTimeMillis();
 		Result<String> result = new Result<>();
