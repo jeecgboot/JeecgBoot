@@ -140,7 +140,7 @@ public class SysUserController {
      * @param req
      * @return
      */
-    @RequiresPermissions("system:user:listAll")
+    //@RequiresPermissions("system:user:listAll")
     @RequestMapping(value = "/listAll", method = RequestMethod.GET)
     public Result<IPage<SysUser>> queryAllPageList(SysUser user, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
@@ -148,7 +148,7 @@ public class SysUserController {
         return sysUserService.queryPageList(req, queryWrapper, pageSize, pageNo);
     }
 
-    @RequiresPermissions("system:user:add")
+    //@RequiresPermissions("system:user:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysUser> add(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -178,7 +178,7 @@ public class SysUserController {
 		return result;
 	}
 
-    @RequiresPermissions("system:user:edit")
+    //@RequiresPermissions("system:user:edit")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<SysUser> edit(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -263,7 +263,7 @@ public class SysUserController {
 
     }
 
-    @RequiresPermissions("system:user:queryById")
+    //@RequiresPermissions("system:user:queryById")
     @RequestMapping(value = "/queryById", method = RequestMethod.GET)
     public Result<SysUser> queryById(@RequestParam(name = "id", required = true) String id) {
         Result<SysUser> result = new Result<SysUser>();
@@ -277,7 +277,7 @@ public class SysUserController {
         return result;
     }
 
-    @RequiresPermissions("system:user:queryUserRole")
+    //@RequiresPermissions("system:user:queryUserRole")
     @RequestMapping(value = "/queryUserRole", method = RequestMethod.GET)
     public Result<List<String>> queryUserRole(@RequestParam(name = "userid", required = true) String userid) {
         Result<List<String>> result = new Result<>();
@@ -827,7 +827,7 @@ public class SysUserController {
     /**
      * 给指定部门添加对应的用户
      */
-    @RequiresPermissions("system:user:editDepartWithUser")
+    //@RequiresPermissions("system:user:editDepartWithUser")
     @RequestMapping(value = "/editSysDepartWithUser", method = RequestMethod.POST)
     public Result<String> editSysDepartWithUser(@RequestBody SysDepartUsersVO sysDepartUsersVO) {
         Result<String> result = new Result<String>();
