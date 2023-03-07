@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 
 /**
@@ -31,6 +32,9 @@ public class ReflectHelper {
      */
     private Hashtable<String, Method> setMethods = null;
 
+    private final static String GET_PREFIX = "get";
+    private final static String SET_PREFIX = "set";
+
     /**
      * 定义构造方法 -- 一般来说是个pojo
      *
@@ -41,23 +45,56 @@ public class ReflectHelper {
         initMethods();
     }
 
-    /**
-     * @desc 初始化
-     */
-    public void initMethods() {
+    public ReflectHelper() {
+    }
+
+    public void initMethods2(Object o) {
+        obj = o;
         getMethods = new Hashtable<String, Method>();
         setMethods = new Hashtable<String, Method>();
         cls = obj.getClass();
         Method[] methods = cls.getMethods();
+        // 定义正则表达式，从方法中过滤出getter / setter 函数.
+        String gs = "get(\\w+)";
+        Pattern getM = Pattern.compile(gs);
+        String ss = "set(\\w+)";
+        Pattern setM = Pattern.compile(ss);
+        // 把方法中的"set" 或者 "get" 去掉
+        String rapl = "$1";
+        String param;
+        for (int i = 0; i < methods.length; ++i) {
+            Method m = methods[i];
+            String methodName = m.getName();
+            if (Pattern.matches(gs, methodName)) {
+                param = getM.matcher(methodName).replaceAll(rapl).toLowerCase();
+                getMethods.put(param, m);
+            } else if (Pattern.matches(ss, methodName)) {
+                param = setM.matcher(methodName).replaceAll(rapl).toLowerCase();
+                setMethods.put(param, m);
+            } else {
+                // logger.info(methodName + " 不是getter,setter方法！");
+            }
+        }
+    }
+
+
+    /**
+     * @desc 初始化
+     */
+    public void initMethods() {
+        cls = obj.getClass();
+        Method[] methods = cls.getMethods();
+        getMethods = new Hashtable<String, Method>(methods.length/2);
+        setMethods = new Hashtable<String, Method>(methods.length/2);
         // 从方法中过滤出getter / setter 函数.
         for (int i = 0; i < methods.length; ++i) {
             Method m = methods[i];
             String methodName = m.getName();
-            String prefix = methodName.substring(0, 3);
-            if ("get".equals(prefix)) {
-                getMethods.put(methodName.substring(3).toLowerCase(), m);
-            }else if("set".equals(prefix)) {
-                setMethods.put(methodName.substring(3).toLowerCase(), m);
+            String prefix = methodName.substring(0, GET_PREFIX.length());
+            if (GET_PREFIX.equals(prefix)) {
+                getMethods.put(methodName.substring(GET_PREFIX.length()).toLowerCase(), m);
+            }else if(SET_PREFIX.equals(prefix)) {
+                setMethods.put(methodName.substring(SET_PREFIX.length()).toLowerCase(), m);
             } else {
                 // logger.info(methodName + " 不是getter,setter方法！");
             }
