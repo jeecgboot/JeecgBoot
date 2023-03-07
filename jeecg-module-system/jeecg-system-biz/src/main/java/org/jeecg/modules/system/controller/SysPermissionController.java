@@ -422,7 +422,7 @@ public class SysPermissionController {
 	 * @param id
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:delete")
+    //@RequiresPermissions("system:permission:delete")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<SysPermission> delete(@RequestParam(name = "id", required = true) String id) {
 		Result<SysPermission> result = new Result<>();
@@ -441,7 +441,7 @@ public class SysPermissionController {
 	 * @param ids
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:deleteBatch")
+    //@RequiresPermissions("system:permission:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysPermission> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 		Result<SysPermission> result = new Result<>();
@@ -912,7 +912,7 @@ public class SysPermissionController {
 	 * @param id
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:deleteRule")
+    //@RequiresPermissions("system:permission:deleteRule")
 	@RequestMapping(value = "/deletePermissionRule", method = RequestMethod.DELETE)
 	public Result<SysPermissionDataRule> deletePermissionRule(@RequestParam(name = "id", required = true) String id) {
 		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
