@@ -279,7 +279,7 @@ public class VxeMockController {
         // 逐行查询子表数据，用于计算拖轮状态
         List<JSONObject> records = page.getRecords();
         for (JSONObject record : records) {
-            Map<String, Integer> tugStatusMap = new HashMap<>(5);
+            Map<String, Integer> tugStatusMap = new HashMap<>(8);
             String id = record.getString("id");
             // 查询出主表的拖轮
             String tugMain = record.getString("tug");

@@ -132,7 +132,7 @@ public class QueryGenerator {
 		String name, type, column;
 		// update-begin--Author:taoyan  Date:20200923 for：issues/1671 如果字段加注解了@TableField(exist = false),不走DB查询-------
 		//定义实体字段和数据库字段名称的映射 高级查询中 只能获取实体字段 如果设置TableField注解 那么查询条件会出问题
-		Map<String,String> fieldColumnMap = new HashMap<>(5);
+		Map<String,String> fieldColumnMap = new HashMap<>(8);
 		for (int i = 0; i < origDescriptors.length; i++) {
 			//aliasName = origDescriptors[i].getName();  mybatis  不存在实体属性 不用处理别名的情况
 			name = origDescriptors[i].getName();
@@ -712,7 +712,7 @@ public class QueryGenerator {
 	 * @return
 	 */
 	public static Map<String, SysPermissionDataRuleModel> getRuleMap() {
-		Map<String, SysPermissionDataRuleModel> ruleMap = new HashMap<>(5);
+		Map<String, SysPermissionDataRuleModel> ruleMap = new HashMap<>(8);
 		List<SysPermissionDataRuleModel> list =JeecgDataAutorUtils.loadDataSearchConditon();
 		if(list != null&&list.size()>0){
 			if(list.get(0)==null){

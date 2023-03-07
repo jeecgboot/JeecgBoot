@@ -265,7 +265,7 @@ public class JeecgElasticsearchTemplate {
      */
     public <T> Map<String, T> getIndexMappingFormat(String indexName, String typeName, Class<T> clazz) {
         JSONObject mapping = this.getIndexMapping(indexName, typeName);
-        Map<String, T> map = new HashMap<>(5);
+        Map<String, T> map = new HashMap<>(8);
         if (mapping == null) {
             return map;
         }

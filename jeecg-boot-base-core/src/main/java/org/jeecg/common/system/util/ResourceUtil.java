@@ -29,7 +29,7 @@ public class ResourceUtil {
     /**
      * 枚举字典数据
      */
-    private final static Map<String, List<DictModel>> enumDictData = new HashMap<>(5);
+    private final static Map<String, List<DictModel>> enumDictData = new HashMap<>(8);
 
     /**
      * 所有java类

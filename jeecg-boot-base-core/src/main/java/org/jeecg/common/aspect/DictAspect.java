@@ -99,7 +99,7 @@ public class DictAspect {
                 //step.1 筛选出加了 Dict 注解的字段列表
                 List<Field> dictFieldList = new ArrayList<>();
                 // 字典数据列表， key = 字典code，value=数据列表
-                Map<String, List<String>> dataListMap = new HashMap<>(5);
+                Map<String, List<String>> dataListMap = new HashMap<>(8);
                 //取出结果集
                 List<Object> records=((IPage) ((Result) result).getResult()).getRecords();
                 //update-begin--Author:zyf -- Date:20220606 ----for：【VUEN-1230】 判断是否含有字典注解,没有注解返回-----
@@ -222,7 +222,7 @@ public class DictAspect {
      */
     private Map<String, List<DictModel>> translateAllDict(Map<String, List<String>> dataListMap) {
         // 翻译后的字典文本，key=dictCode
-        Map<String, List<DictModel>> translText = new HashMap<>(5);
+        Map<String, List<DictModel>> translText = new HashMap<>(8);
         // 需要翻译的数据（有些可以从redis缓存中获取，就不走数据库查询）
         List<String> needTranslData = new ArrayList<>();
         //step.1 先通过redis中获取缓存字典数据

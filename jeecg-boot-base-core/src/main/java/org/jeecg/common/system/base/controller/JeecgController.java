@@ -107,7 +107,7 @@ public class JeecgController<T, S extends IService<T>> {
             Page<T> page = new Page<T>(i, pageNum);
             IPage<T> pageList = service.page(page, queryWrapper);
             List<T> exportList = pageList.getRecords();
-            Map<String, Object> map = new HashMap<>(5);
+            Map<String, Object> map = new HashMap<>(8);
             ExportParams  exportParams=new ExportParams(title + "报表", "导出人:" + sysUser.getRealname(), title+i,upLoadPath);
             exportParams.setType(ExcelType.XSSF);
             //map.put("title",exportParams);

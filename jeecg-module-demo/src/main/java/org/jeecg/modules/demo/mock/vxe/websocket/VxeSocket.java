@@ -58,7 +58,7 @@ public class VxeSocket {
      * 获取某个用户所有的页面
      */
     public static Map<String, VxeSocket> getUserPool(String userId) {
-        return userPool.computeIfAbsent(userId, k -> new HashMap<>(5));
+        return userPool.computeIfAbsent(userId, k -> new HashMap<>(8));
     }
 
     /**

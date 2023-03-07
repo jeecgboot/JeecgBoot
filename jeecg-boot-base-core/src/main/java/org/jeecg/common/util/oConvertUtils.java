@@ -374,7 +374,7 @@ public class oConvertUtils {
 	 * 获取Map对象
 	 */
 	public static Map<Object, Object> getHashMap() {
-		return new HashMap<>(5);
+		return new HashMap<>(8);
 	}
 
 	/**
@@ -588,7 +588,7 @@ public class oConvertUtils {
 	public static List<Map<String, Object>> toLowerCasePageList(List<Map<String, Object>> list){
 		List<Map<String, Object>> select = new ArrayList<>();
 		for (Map<String, Object> row : list) {
-			 Map<String, Object> resultMap = new HashMap<>(5);
+			 Map<String, Object> resultMap = new HashMap<>(8);
 			 Set<String> keySet = row.keySet(); 
 			 for (String key : keySet) { 
 				 String newKey = key.toLowerCase(); 
