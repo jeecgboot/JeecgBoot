@@ -375,7 +375,7 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:add")
+    //@RequiresPermissions("system:dict:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysDict> add(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -396,7 +396,7 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:edit")
+    //@RequiresPermissions("system:dict:edit")
 	@RequestMapping(value = "/edit", method = { RequestMethod.PUT,RequestMethod.POST })
 	public Result<SysDict> edit(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -418,7 +418,7 @@ public class SysDictController {
 	 * @param id
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:delete")
+    //@RequiresPermissions("system:dict:delete")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDict> delete(@RequestParam(name="id",required=true) String id) {
@@ -437,7 +437,7 @@ public class SysDictController {
 	 * @param ids
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:deleteBatch")
+    //@RequiresPermissions("system:dict:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value= {CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDict> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
@@ -527,7 +527,7 @@ public class SysDictController {
 	 * @param
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:importExcel")
+    //@RequiresPermissions("system:dict:importExcel")
 	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
 	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
  		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
