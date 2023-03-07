@@ -113,6 +113,11 @@ public class SysDepartTreeModel implements Serializable{
         this.updateBy = sysDepart.getUpdateBy();
         this.updateTime = sysDepart.getUpdateTime();
         this.directorUserIds = sysDepart.getDirectorUserIds();
+        if(0 == sysDepart.getIzLeaf()){
+            this.isLeaf = false;
+        }else{
+            this.isLeaf = true;
+        }
     }
 
     public boolean getIsLeaf() {

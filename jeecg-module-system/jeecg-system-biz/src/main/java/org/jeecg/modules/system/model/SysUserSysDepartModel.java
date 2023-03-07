@@ -22,5 +22,7 @@ public class SysUserSysDepartModel {
     private String departId;
     private String departName;
     private String avatar;
+    private String sex;
+    private String birthday;
 
 }

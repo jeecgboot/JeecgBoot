@@ -31,10 +31,22 @@ public enum QueryRuleEnum {
     RIGHT_LIKE("RIGHT_LIKE","right_like","右模糊"),
     /**查询规则 带加号等于*/
     EQ_WITH_ADD("EQWITHADD","eq_with_add","带加号等于"),
+    // ------- 当前表单设计器内专用 -------
+    /** 值为空 */
+    EMPTY("EMPTY","empty","值为空"),
+    /** 值不为空 */
+    NOT_EMPTY("NOT_EMPTY","not_empty","值不为空"),
+    /**查询规则 不包含*/
+    NOT_IN("NOT_IN","not_in","不包含"),
+    // ------- 当前表单设计器内专用 -------
     /**查询规则 多词模糊匹配*/
     LIKE_WITH_AND("LIKEWITHAND","like_with_and","多词模糊匹配————暂时未用上"),
     /**查询规则 自定义SQL片段*/
-    SQL_RULES("USE_SQL_RULES","ext","自定义SQL片段");
+    SQL_RULES("USE_SQL_RULES","ext","自定义SQL片段"),
+    /**查询规则 多词匹配*/
+    ELE_MATCH("ELE_MATCH","elemMatch","多词匹配"),
+    /**查询规则 范围查询*/
+    RANGE("RANGE","range","范围查询");
 
     private String value;
     

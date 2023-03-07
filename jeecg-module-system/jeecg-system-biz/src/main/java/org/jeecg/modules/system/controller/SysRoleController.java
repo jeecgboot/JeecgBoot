@@ -13,29 +13,24 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.shiro.authz.annotation.RequiresRoles;
+import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.constant.CacheConstant;
+import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.util.PmsUtil;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.system.entity.SysPermission;
-import org.jeecg.modules.system.entity.SysPermissionDataRule;
-import org.jeecg.modules.system.entity.SysRole;
-import org.jeecg.modules.system.entity.SysRolePermission;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.model.TreeModel;
-import org.jeecg.modules.system.service.ISysPermissionDataRuleService;
-import org.jeecg.modules.system.service.ISysPermissionService;
-import org.jeecg.modules.system.service.ISysRolePermissionService;
-import org.jeecg.modules.system.service.ISysRoleService;
-import org.jeecgframework.poi.excel.ExcelImportUtil;
+import org.jeecg.modules.system.service.*;
+import org.jeecg.modules.system.vo.SysUserRoleCountVo;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -81,14 +76,18 @@ public class SysRoleController {
 	@Autowired
 	private ISysPermissionService sysPermissionService;
 
+    @Autowired
+    private ISysUserRoleService sysUserRoleService;
+
 	/**
-	  * 分页列表查询
+	  * 分页列表查询 【系统角色，不做租户隔离】
 	 * @param role
 	 * @param pageNo
 	 * @param pageSize
 	 * @param req
 	 * @return
 	 */
+	//@RequiresPermissions("system:role:list")
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysRole>> queryPageList(SysRole role,
 									  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -104,12 +103,40 @@ public class SysRoleController {
 	}
 	
 	/**
+	 * 分页列表查询【租户角色，做租户隔离】
+	 * @param role
+	 * @param pageNo
+	 * @param pageSize
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(value = "/listByTenant", method = RequestMethod.GET)
+	public Result<IPage<SysRole>> listByTenant(SysRole role,
+												@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+												@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+												HttpServletRequest req) {
+		Result<IPage<SysRole>> result = new Result<IPage<SysRole>>();
+		//------------------------------------------------------------------------------------------------
+		//是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+			role.setTenantId(oConvertUtils.getInt(TenantContext.getTenant(),0));
+		}
+		//------------------------------------------------------------------------------------------------
+		QueryWrapper<SysRole> queryWrapper = QueryGenerator.initQueryWrapper(role, req.getParameterMap());
+		Page<SysRole> page = new Page<SysRole>(pageNo, pageSize);
+		IPage<SysRole> pageList = sysRoleService.page(page, queryWrapper);
+		result.setSuccess(true);
+		result.setResult(pageList);
+		return result;
+	}
+	
+	/**
 	  *   添加
 	 * @param role
 	 * @return
 	 */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	//@RequiresRoles({"admin"})
+    //@RequiresPermissions("system:role:add")
 	public Result<SysRole> add(@RequestBody SysRole role) {
 		Result<SysRole> result = new Result<SysRole>();
 		try {
@@ -128,7 +155,7 @@ public class SysRoleController {
 	 * @param role
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+    //@RequiresPermissions("system:role:edit")
 	@RequestMapping(value = "/edit",method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<SysRole> edit(@RequestBody SysRole role) {
 		Result<SysRole> result = new Result<SysRole>();
@@ -152,7 +179,7 @@ public class SysRoleController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+    //@RequiresPermissions("system:role:delete")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		sysRoleService.deleteRole(id);
@@ -164,7 +191,7 @@ public class SysRoleController {
 	 * @param ids
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+    //@RequiresPermissions("system:role:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysRole> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<SysRole> result = new Result<SysRole>();
@@ -194,11 +221,43 @@ public class SysRoleController {
 		}
 		return result;
 	}
-	
+
+	/**
+	 * 查询全部角色（参与租户隔离）
+	 * 
+	 * @return
+	 */
 	@RequestMapping(value = "/queryall", method = RequestMethod.GET)
 	public Result<List<SysRole>> queryall() {
 		Result<List<SysRole>> result = new Result<>();
-		List<SysRole> list = sysRoleService.list();
+		LambdaQueryWrapper<SysRole> query = new LambdaQueryWrapper<SysRole>();
+		//------------------------------------------------------------------------------------------------
+		//是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+			query.eq(SysRole::getTenantId, oConvertUtils.getInt(TenantContext.getTenant(), 0));
+		}
+		//------------------------------------------------------------------------------------------------
+		List<SysRole> list = sysRoleService.list(query);
+		if(list==null||list.size()<=0) {
+			result.error500("未找到角色信息");
+		}else {
+			result.setResult(list);
+			result.setSuccess(true);
+		}
+		return result;
+	}
+
+	/**
+	 * 查询全部系统角色（不做租户隔离）
+	 *
+	 * @return
+	 */
+	//@RequiresPermissions("system:role:queryallNoByTenant")
+	@RequestMapping(value = "/queryallNoByTenant", method = RequestMethod.GET)
+	public Result<List<SysRole>> queryallNoByTenant() {
+		Result<List<SysRole>> result = new Result<>();
+		LambdaQueryWrapper<SysRole> query = new LambdaQueryWrapper<SysRole>();
+		List<SysRole> list = sysRoleService.list(query);
 		if(list==null||list.size()<=0) {
 			result.error500("未找到角色信息");
 		}else {
@@ -253,6 +312,13 @@ public class SysRoleController {
 	 */
 	@RequestMapping(value = "/exportXls")
 	public ModelAndView exportXls(SysRole sysRole,HttpServletRequest request) {
+		//------------------------------------------------------------------------------------------------
+		//是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+			sysRole.setTenantId(oConvertUtils.getInt(TenantContext.getTenant(), 0));
+		}
+		//------------------------------------------------------------------------------------------------
+		
 		// Step.1 组装查询条件
 		QueryWrapper<SysRole> queryWrapper = QueryGenerator.initQueryWrapper(sysRole, request.getParameterMap());
 		//Step.2 AutoPoi 导出Excel
@@ -408,6 +474,5 @@ public class SysRoleController {
 			
 		}
 	}
-	
-	
+
 }

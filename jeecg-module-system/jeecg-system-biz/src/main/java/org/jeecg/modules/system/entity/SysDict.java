@@ -81,5 +81,10 @@ public class SysDict implements Serializable {
      */
     private Date updateTime;
 
+    /**租户ID*/
+    private java.lang.Integer tenantId;
+    
+    /** 关联的低代码应用ID */
+    private java.lang.String lowAppId;
 
 }

@@ -47,4 +47,37 @@ public interface SysUserDepartMapper extends BaseMapper<SysUserDepart>{
      * @return
      */
     IPage<SysUser> getUserInformation(Page<SysUser> page,  @Param("orgCode") String orgCode,  @Param("keyword") String keyword,@Param("userId") String userId);
+
+
+	/**
+	 * 获取用户信息
+	 * @param page
+	 * @param orgCode
+	 * @param keyword
+	 * @return
+	 */
+	IPage<SysUser> getProcessUserList(Page<SysUser> page,  @Param("orgCode") String orgCode,  @Param("keyword") String keyword,  @Param("tenantId") Integer tenantId);
+
+	/**
+	 * 获取租户下的部门通过前台传过来的部门id
+	 * @param departIds
+	 * @param tenantId
+	 * @return
+	 */
+    List<String> getTenantDepart(@Param("departIds") List<String> departIds, @Param("tenantId") String tenantId);
+
+	/**
+	 * 根据当前租户和用户id查询用户部门数据
+	 * @param userId
+	 * @param tenantId
+	 * @return
+	 */
+	List<SysUserDepart> getTenantUserDepart(@Param("userId") String userId, @Param("tenantId") String tenantId);
+
+	/**
+	 * 根据用户id和租户id,删除用户部门数据
+	 * @param userId
+	 * @param tenantId
+	 */
+	void deleteUserDepart(@Param("userId") String userId, @Param("tenantId") String tenantId);
 }

@@ -3,7 +3,6 @@ package org.jeecg.common.util;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jeecg.config.JeecgBaseConfig;
 import org.springframework.http.*;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -22,8 +21,9 @@ import java.util.Map;
 public class RestUtil {
 
     private static String domain = null;
-
-    public static String getDomain() {
+    private static String path = null;
+    
+    private static String getDomain() {
         if (domain == null) {
             domain = SpringContextUtils.getDomain();
             // issues/2959
@@ -37,9 +37,7 @@ public class RestUtil {
         return domain;
     }
 
-    public static String path = null;
-
-    public static String getPath() {
+    private static String getPath() {
         if (path == null) {
             path = SpringContextUtils.getApplicationContext().getEnvironment().getProperty("server.servlet.context-path");
         }
@@ -47,18 +45,7 @@ public class RestUtil {
     }
 
     public static String getBaseUrl() {
-        String basepath = null;
-        try {
-            basepath = getDomain() + getPath();
-        } catch (Exception e) {
-            log.warn(e.getMessage(),e);
-        }
-
-        //定时任务情况下，通过request是获取不到domain的，这种情况下通过配置获取pc后台域名
-        if(oConvertUtils.isEmpty(basepath)){
-            JeecgBaseConfig jeecgBaseConfig = SpringContextUtils.getBean(JeecgBaseConfig.class);
-            basepath = jeecgBaseConfig.getDomainUrl().getPc();
-        }
+        String basepath = getDomain() + getPath();
         log.info(" RestUtil.getBaseUrl: " + basepath);
         return basepath;
     }

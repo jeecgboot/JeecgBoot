@@ -434,13 +434,13 @@ public interface ISysBaseAPI extends CommonAPI {
     @RequestMapping("/sys/api/queryDepartsByOrgcodes")
     List<JSONObject> queryDepartsByOrgcodes(@RequestParam("orgCodes") String orgCodes);
 
-    /**
-     * 39根据多个部门编码(逗号分隔)，查询返回多个部门信息
-     * @param ids
-     * @return
-     */
-    @GetMapping("/sys/api/queryDepartsByOrgIds")
-    List<JSONObject> queryDepartsByOrgIds(@RequestParam("ids") String ids);
+//    /**
+//     * 39根据多个部门编码(逗号分隔)，查询返回多个部门信息
+//     * @param ids
+//     * @return
+//     */
+//    @GetMapping("/sys/api/queryDepartsByOrgIds")
+//    List<JSONObject> queryDepartsByOrgIds(@RequestParam("ids") String ids);
     
     /**
      * 40发送邮件消息

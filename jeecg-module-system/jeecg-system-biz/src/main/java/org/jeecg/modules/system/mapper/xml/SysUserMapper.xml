@@ -48,7 +48,18 @@
 	
 	<!--  修改用户部门code -->
 	<update id="updateUserDepart">
-		UPDATE sys_user SET org_code = #{orgCode} where username = #{username}
+		UPDATE sys_user SET
+		<if test="orgCode!=null and loginTenantId!=null">
+			 org_code = #{orgCode}
+			,login_tenant_id = #{loginTenantId}
+		</if>
+		<if test="orgCode==null and loginTenantId!=null">
+			login_tenant_id = #{loginTenantId}
+		</if>
+		<if test="orgCode!=null and loginTenantId==null">
+			org_code = #{orgCode}
+		</if>
+		where username = #{username}
 	</update>
 
 	<!-- 根据手机号查询 -->
@@ -182,4 +193,53 @@
 			and username != #{username}
 		</if>
 	</select>
+
+	<!--根据角色查询用户-->
+	<select id="selectUserListByRoleId" resultType="org.jeecg.modules.system.entity.SysUser">
+		select DISTINCT a.* from sys_user a
+		left join sys_user_role ur on ur.user_id = a.id
+		where
+		a.del_flag = 0 and a.status = 1
+		and a.username!='_reserve_user_external'
+		and ur.role_id=#{roleId}
+		<if test="keyword!=null and keyword!=''">
+			<bind name="bindKeyword" value="'%'+keyword+'%'"/>
+			and (a.username like #{bindKeyword} or a.realname like #{bindKeyword})
+		</if>
+
+		<if test="tenantId!=null">
+			and a.id in (
+				select user_id from sys_user_tenant where tenant_id = #{tenantId} and status = '1'
+			)
+		</if>
+	</select>
+
+	<!--获取租户下的用户离职列表信息-->
+	<select id="getTenantQuitList" resultType="org.jeecg.modules.system.entity.SysUser">
+		select su.id,su.username,su.realname,su.sex from sys_user su
+		join sys_user_tenant sut on sut.user_id = su.id and sut.status = '2'
+		where
+		su.status = 1
+		and su.del_flag = 0
+		<if test="tenantId != 0">
+			and sut.tenant_id = #{tenantId}
+		</if>
+	</select>
+	
+  <!--更新刪除状态和离职状态-->
+  <update id="updateStatusAndFlag">
+    UPDATE
+    sys_user
+    SET
+    del_flag = 0,
+    update_by = #{sysUser.updateBy},
+    update_time = #{sysUser.updateTime},
+    status = 1
+    WHERE
+    del_flag = 1
+    AND id IN
+    <foreach collection="userIds" item="userId" open="(" close=")" separator="," >
+      #{userId}
+    </foreach>
+  </update>
 </mapper>

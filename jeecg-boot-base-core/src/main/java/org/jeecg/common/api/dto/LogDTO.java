@@ -50,6 +50,11 @@ public class LogDTO implements Serializable {
     /**操作人用户账户*/
     private String userid;
 
+    /**
+     * 租户ID
+     */
+    private Integer tenantId;
+
     public LogDTO(){
 
     }
