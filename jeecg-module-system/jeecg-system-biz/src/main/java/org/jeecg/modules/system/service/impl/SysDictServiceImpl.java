@@ -1,27 +1,34 @@
 package org.jeecg.modules.system.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.util.ResourceUtil;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictModelMany;
 import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.mapper.SysDictItemMapper;
 import org.jeecg.modules.system.mapper.SysDictMapper;
 import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecg.modules.system.service.ISysDictService;
+import org.jeecg.modules.system.vo.lowapp.SysDictVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -82,7 +89,16 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Override
 	public Map<String, List<DictModel>> queryAllDictItems() {
 		Map<String, List<DictModel>> res = new HashMap(5);
-		List<SysDict> ls = sysDictMapper.selectList(null);
+		LambdaQueryWrapper<SysDict> sysDictQueryWrapper = new LambdaQueryWrapper<SysDict>();
+		//------------------------------------------------------------------------------------------------
+		//是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+			sysDictQueryWrapper.eq(SysDict::getTenantId, oConvertUtils.getInt(TenantContext.getTenant(), 0))
+					.or().eq(SysDict::getTenantId,0);
+		}
+		//------------------------------------------------------------------------------------------------
+		
+		List<SysDict> ls = sysDictMapper.selectList(sysDictQueryWrapper);
 		LambdaQueryWrapper<SysDictItem> queryWrapper = new LambdaQueryWrapper<SysDictItem>();
 		queryWrapper.eq(SysDictItem::getStatus, 1);
 		queryWrapper.orderByAsc(SysDictItem::getSortOrder);
@@ -511,4 +527,89 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		}
 	}
 
+	@Override
+	public List<SysDictVo> getDictListByLowAppId(String lowAppId) {
+		int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
+		List<SysDict> list =  baseMapper.getDictListByLowAppId(lowAppId,tenantId);
+		//查询字典下面的字典项
+		List<SysDictVo> dictVoList = new ArrayList<>();
+		for (SysDict dict:list) {
+			SysDictVo dictVo = new SysDictVo();
+			BeanUtils.copyProperties(dict,dictVo);
+			List<SysDictItem> sysDictItems = sysDictItemMapper.selectItemsByMainId(dict.getId());
+			dictVo.setDictItemsList(sysDictItems);
+			dictVoList.add(dictVo);
+		}
+		return dictVoList;
+	}
+
+	@Override
+	public void addDictByLowAppId(SysDictVo sysDictVo) {
+		String id = this.addDict(sysDictVo.getDictName(),sysDictVo.getLowAppId());
+		this.addDictItem(id,sysDictVo.getDictItemsList());
+	}
+
+	@Override
+	public void editDictByLowAppId(SysDictVo sysDictVo) {
+		String id = sysDictVo.getId();
+		SysDict dict = baseMapper.selectById(id);
+		if(null == dict){
+			throw new JeecgBootException("字典数据不存在");
+		}
+		//判断应用id和数据库中的是否一致，不一致不让修改
+		if(!dict.getLowAppId().equals(sysDictVo.getLowAppId())){
+			throw new JeecgBootException("字典数据不存在");
+		}
+		SysDict sysDict = new SysDict();
+		sysDict.setDictName(sysDictVo.getDictName());
+		sysDict.setId(id);
+		baseMapper.updateById(sysDict);
+		this.updateDictItem(id,sysDictVo.getDictItemsList());
+	}
+
+	/**
+	 * 添加字典
+	 * @param dictName
+	 */
+	private String addDict(String dictName,String lowAppId) {
+		SysDict dict = new SysDict();
+		dict.setDictName(dictName);
+		dict.setDictCode(RandomUtil.randomString(10));
+		dict.setDelFlag(Integer.valueOf(CommonConstant.STATUS_0));
+		dict.setLowAppId(lowAppId);
+		baseMapper.insert(dict);
+		return dict.getId();
+	}
+
+	/**
+	 * 添加字典子项
+	 * @param id
+	 * @param dictItemList
+	 */
+	private void addDictItem(String id,List<SysDictItem> dictItemList) {
+		if(null!=dictItemList && dictItemList.size()>0){
+			for (SysDictItem dictItem:dictItemList) {
+				SysDictItem sysDictItem = new SysDictItem();
+				BeanUtils.copyProperties(dictItem,sysDictItem);
+				sysDictItem.setDictId(id);
+				sysDictItem.setId("");
+				sysDictItem.setStatus(Integer.valueOf(CommonConstant.STATUS_1));
+				sysDictItemMapper.insert(sysDictItem);
+			}
+		}
+	}
+
+	/**
+	 * 更新字典子项
+	 * @param id
+	 * @param dictItemList
+	 */
+	private void updateDictItem(String id,List<SysDictItem> dictItemList){
+		//先删除在新增 因为排序可能不一致
+		LambdaQueryWrapper<SysDictItem> query = new LambdaQueryWrapper<>();
+		query.eq(SysDictItem::getDictId,id);
+		sysDictItemMapper.delete(query);
+		//新增子项
+		this.addDictItem(id,dictItemList);
+	}
 }

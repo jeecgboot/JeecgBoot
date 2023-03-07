@@ -6,6 +6,7 @@ import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.model.TreeSelectModel;
+import org.jeecg.modules.system.vo.lowapp.SysDictVo;
 
 import java.util.List;
 import java.util.Map;
@@ -255,4 +256,22 @@ public interface ISysDictService extends IService<SysDict> {
 	 */
 	List<DictModel> loadDict(String dictCode, String keyword, Integer pageSize);
 
+	/**
+	 * 根据应用id获取字典列表和详情
+	 * @param lowAppId
+	 * @return
+	 */
+	List<SysDictVo> getDictListByLowAppId(String lowAppId);
+
+	/**
+	 * 创建字典
+	 * @param sysDictVo
+	 */
+	void addDictByLowAppId(SysDictVo sysDictVo);
+
+	/**
+	 * 编辑字典
+	 * @param sysDictVo
+	 */
+	void editDictByLowAppId(SysDictVo sysDictVo);
 }

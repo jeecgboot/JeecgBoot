@@ -6,110 +6,114 @@ import org.jeecg.config.vo.Shiro;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+
 /**
  * 加载项目配置
- *
  * @author: jeecg-boot
  */
 @Component("jeecgBaseConfig")
 @ConfigurationProperties(prefix = "jeecg")
 public class JeecgBaseConfig {
+    /**
+     * 签名密钥串(字典等敏感接口)
+     * @TODO 降低使用成本加的默认值,实际以 yml配置 为准
+     */
+    private String signatureSecret = "dd05f1c54d63749eda95f9fa6d49v442a";
+    /**
+     * 需要加强校验的接口清单
+     */
+    private String signUrls;
+    /**
+     * 上传模式  
+     * 本地：local\Minio：minio\阿里云：alioss
+     */
+    private String uploadType;
+    /**
+     * 是否启用安全模式
+     */
+    private Boolean safeMode = false;
+    /**
+     * shiro拦截排除
+     */
+    private Shiro shiro;
+    /**
+     * 上传文件配置
+     */
+    private Path path;
 
-	/**
-	 * 签名密钥串(字典等敏感接口)
-	 * @TODO 降低使用成本加的默认值,实际以 yml配置 为准
-	 */
-	private String signatureSecret = "dd05f1c54d63749eda95f9fa6d49v442a";
+    /**
+     * 前端页面访问地址
+     * pc: http://localhost:3100
+     * app: http://localhost:8051
+     */
+    private DomainUrl domainUrl;
 
-	/**
-	 * 需要加强校验的接口清单
-	 */
-	private String signUrls;
+    /**
+     * 文件预览
+     */
+    private String fileViewDomain;
 
-	/**
-	 * 上传模式 本地：local\Minio：minio\阿里云：alioss
-	 */
-	private String uploadType;
+    public Boolean getSafeMode() {
+        return safeMode;
+    }
 
-	/**
-	 * 是否启用安全模式
-	 */
-	private Boolean safeMode = false;
+    public void setSafeMode(Boolean safeMode) {
+        this.safeMode = safeMode;
+    }
 
-	/**
-	 * shiro拦截排除
-	 */
-	private Shiro shiro;
+    public String getSignatureSecret() {
+        return signatureSecret;
+    }
 
-	/**
-	 * 上传文件配置
-	 */
-	private Path path;
+    public void setSignatureSecret(String signatureSecret) {
+        this.signatureSecret = signatureSecret;
+    }
 
-	/**
-	 * 前端页面访问地址 pc: http://localhost:3100 app: http://localhost:8051
-	 */
-	private DomainUrl domainUrl;
+    public Shiro getShiro() {
+        return shiro;
+    }
 
-	/**
-	 * 文件预览
-	 */
-	private String fileViewDomain;
+    public void setShiro(Shiro shiro) {
+        this.shiro = shiro;
+    }
 
-	public Boolean getSafeMode() {
-		return safeMode;
-	}
+    public Path getPath() {
+        return path;
+    }
 
-	public void setSafeMode(Boolean safeMode) {
-		this.safeMode = safeMode;
-	}
+    public void setPath(Path path) {
+        this.path = path;
+    }
 
-	public String getSignatureSecret() {
-		return signatureSecret;
-	}
+    public DomainUrl getDomainUrl() {
+        return domainUrl;
+    }
 
-	public void setSignatureSecret(String signatureSecret) {
-		this.signatureSecret = signatureSecret;
-	}
+    public void setDomainUrl(DomainUrl domainUrl) {
+        this.domainUrl = domainUrl;
+    }
+    public String getSignUrls() {
+        return signUrls;
+    }
 
-	public Shiro getShiro() {
-		return shiro;
-	}
+    public void setSignUrls(String signUrls) {
+        this.signUrls = signUrls;
+    }
 
-	public void setShiro(Shiro shiro) {
-		this.shiro = shiro;
-	}
 
-	public Path getPath() {
-		return path;
-	}
+    public String getFileViewDomain() {
+        return fileViewDomain;
+    }
 
-	public void setPath(Path path) {
-		this.path = path;
-	}
+    public void setFileViewDomain(String fileViewDomain) {
+        this.fileViewDomain = fileViewDomain;
+    }
 
-	public DomainUrl getDomainUrl() {
-		return domainUrl;
-	}
+    public String getUploadType() {
+        return uploadType;
+    }
 
-	public void setDomainUrl(DomainUrl domainUrl) {
-		this.domainUrl = domainUrl;
-	}
-
-	public String getSignUrls() {
-		return signUrls;
-	}
-
-	public void setSignUrls(String signUrls) {
-		this.signUrls = signUrls;
-	}
-
-	public String getFileViewDomain() {
-		return fileViewDomain;
-	}
-
-	public void setFileViewDomain(String fileViewDomain) {
-		this.fileViewDomain = fileViewDomain;
-	}
-
+    public void setUploadType(String uploadType) {
+        this.uploadType = uploadType;
+    }
 }

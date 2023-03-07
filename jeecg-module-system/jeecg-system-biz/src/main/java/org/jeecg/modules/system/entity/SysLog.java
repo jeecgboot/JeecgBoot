@@ -112,4 +112,9 @@ public class SysLog implements Serializable {
 	@Dict(dicCode = "operate_type")
 	private Integer operateType;
 
+	/**
+	 * 租户ID
+	 */
+	private Integer tenantId;
+
 }

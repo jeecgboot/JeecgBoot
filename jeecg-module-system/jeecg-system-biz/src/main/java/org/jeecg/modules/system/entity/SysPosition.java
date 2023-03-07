@@ -26,73 +26,67 @@ import org.springframework.format.annotation.DateTimeFormat;
 @ApiModel(value = "sys_position对象", description = "职务表")
 public class SysPosition {
 
-	/**
-	 * id
-	 */
-	@TableId(type = IdType.ASSIGN_ID)
-	@ApiModelProperty(value = "id")
-	private java.lang.String id;
+    /**
+     * id
+     */
+    @TableId(type = IdType.ASSIGN_ID)
+    @ApiModelProperty(value = "id")
+    private java.lang.String id;
+    /**
+     * 职务编码
+     */
+    @Excel(name = "职务编码", width = 15)
+    @ApiModelProperty(value = "职务编码")
+    private java.lang.String code;
+    /**
+     * 职务名称
+     */
+    @Excel(name = "职务名称", width = 15)
+    @ApiModelProperty(value = "职务名称")
+    private java.lang.String name;
+    /**
+     * 职级
+     */
+    @Excel(name = "职级", width = 15,dicCode ="position_rank")
+    @ApiModelProperty(value = "职级")
+    @Dict(dicCode = "position_rank")
+    private java.lang.String postRank;
+    /**
+     * 公司id
+     */
+    @ApiModelProperty(value = "公司id")
+    private java.lang.String companyId;
+    /**
+     * 创建人
+     */
+    @ApiModelProperty(value = "创建人")
+    private java.lang.String createBy;
+    /**
+     * 创建时间
+     */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(value = "创建时间")
+    private java.util.Date createTime;
+    /**
+     * 修改人
+     */
+    @ApiModelProperty(value = "修改人")
+    private java.lang.String updateBy;
+    /**
+     * 修改时间
+     */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(value = "修改时间")
+    private java.util.Date updateTime;
+    /**
+     * 组织机构编码
+     */
+    @ApiModelProperty(value = "组织机构编码")
+    private java.lang.String sysOrgCode;
 
-	/**
-	 * 职务编码
-	 */
-	@Excel(name = "职务编码", width = 15)
-	@ApiModelProperty(value = "职务编码")
-	private java.lang.String code;
-
-	/**
-	 * 职务名称
-	 */
-	@Excel(name = "职务名称", width = 15)
-	@ApiModelProperty(value = "职务名称")
-	private java.lang.String name;
-
-	/**
-	 * 职级
-	 */
-	@Excel(name = "职级", width = 15, dicCode = "position_rank")
-	@ApiModelProperty(value = "职级")
-	@Dict(dicCode = "position_rank")
-	private java.lang.String postRank;
-
-	/**
-	 * 公司id
-	 */
-	@ApiModelProperty(value = "公司id")
-	private java.lang.String companyId;
-
-	/**
-	 * 创建人
-	 */
-	@ApiModelProperty(value = "创建人")
-	private java.lang.String createBy;
-
-	/**
-	 * 创建时间
-	 */
-	@JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@ApiModelProperty(value = "创建时间")
-	private java.util.Date createTime;
-
-	/**
-	 * 修改人
-	 */
-	@ApiModelProperty(value = "修改人")
-	private java.lang.String updateBy;
-
-	/**
-	 * 修改时间
-	 */
-	@JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@ApiModelProperty(value = "修改时间")
-	private java.util.Date updateTime;
-
-	/**
-	 * 组织机构编码
-	 */
-	@ApiModelProperty(value = "组织机构编码")
-	private java.lang.String sysOrgCode;
-
+    /**租户ID*/
+    @ApiModelProperty(value = "租户ID")
+    private java.lang.Integer tenantId;
 }

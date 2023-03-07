@@ -2,10 +2,23 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.4.4</version>
+  <version>3.5.0</version>
   <packaging>pom</packaging>
-  <name>JEECG BOOT ${project.version}</name>
+  <name>JEECG BOOT ${project.version} </name>
 
+	<developers>
+		<developer>
+			<name>北京敲敲云科技有限公司</name>
+			<email>jeecgos@163.com</email>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>http://www.jeecg.com</connection>
+		<developerConnection>https://qiaoqiaoyun.com</developerConnection>
+		<url>http://www.jeecg.com/vip</url>
+	</scm>
+	
   	<parent>
 	    <groupId>org.springframework.boot</groupId>
 	    <artifactId>spring-boot-starter-parent</artifactId>
@@ -14,7 +27,7 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.4.4</jeecgboot.version>
+		<jeecgboot.version>3.5.0</jeecgboot.version>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -42,7 +55,7 @@
 		<minidao.version>1.9.0</minidao.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.5.4</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.5.6</jimureport-spring-boot-starter.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.11.2</aliyun.oss.version>
@@ -231,6 +244,13 @@
 				<version>3.4.4-beta</version>
 			</dependency>
 
+			<!--mongon db-->
+			<dependency>
+				<groupId>org.jeecgframework.boot</groupId>
+				<artifactId>jeecg-boot-starter-mongon</artifactId>
+				<version>${jeecgboot.version}</version>
+			</dependency>
+
 			<!-- 七牛云SDK -->
 			<dependency>
 				<groupId>com.qiniu</groupId>
@@ -303,7 +323,7 @@
 			<dependency>
 				<groupId>org.jeecgframework</groupId>
 				<artifactId>jeewx-api</artifactId>
-				<version>1.5.0</version>
+				<version>1.5.1</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>commons-beanutils</artifactId>

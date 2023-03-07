@@ -7,13 +7,13 @@
 JEECG BOOT 低代码开发平台
 ===============
 
-当前最新版本： 3.4.4（发布日期：2022-11-21） 
+当前最新版本： 3.5.0（发布日期：2023-03-08） 
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京敲敲云科技-orange.svg)](http://www.jeecg.com)
 [![](https://img.shields.io/badge/Blog-官方博客-blue.svg)](https://jeecg.blog.csdn.net)
-[![](https://img.shields.io/badge/version-3.4.4-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-3.5.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -39,16 +39,14 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 
 | 源码                | 源码地址                     | 
 |--------------------|------------------------|
-| 后台源码    | https://github.com/jeecgboot/jeecg-boot        |
+| 后台源码 JAVA   | https://github.com/jeecgboot/jeecg-boot        |
 | 前端源码 `Vue3版` | https://github.com/jeecgboot/jeecgboot-vue3 |
-| 前端源码 `Vue2版`  |https://github.com/jeecgboot/ant-design-vue-jeecg    |
 | APP配套框架 | https://github.com/jeecgboot/jeecg-uniapp |
 
 #####  快速搭建开发环境
 
 - [通过IDEA启动前后端项目](http://doc.jeecg.com/2043874)
 - [Vue3前端项目快速启动](http://vue3.jeecg.com/2398848)
-- [Vue2前端项目快速启动](http://doc.jeecg.com/2678320)
 - [单体快速切换为微服务版](http://doc.jeecg.com/3043471)
 
 ##### 项目说明
@@ -57,7 +55,6 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 |--------------------|------------------------|
 | `jeecg-boot`    | SpringBoot后台源码（支持微服务）        |
 | `jeecgboot-vue3` | Vue3+TS 新版前端源码 |
-| `ant-design-vue-jeecg`  |Vue2版 前端源码     |
 | `jeecg-uniapp` | APP开发框架，一份代码多终端适配，同时支持APP、小程序、H5 |
 | `jeecg-boot-starter` | [Stater依赖项目单独维护，点击下载](https://gitee.com/jeecg/jeecg-boot-starter) |
 | `更多开源插件` | [更多源码下载](https://github.com/jeecgboot) |
@@ -80,21 +77,23 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 </details>
 
 
+
+
 技术文档
 -----------------------------------
 
 - 项目官网：  [http://www.jeecg.com](http://www.jeecg.com)
 
-- 在线演示 ：  [Vue3版本](http://boot3.jeecg.com) | [Vue2版本](http://boot.jeecg.com)  |  [敲敲云(零代码)](http://app.qiaoqiaoyun.com)
+- 在线演示 ：  [Vue3版本](http://boot3.jeecg.com)  |  [敲敲云(零代码)](http://app.qiaoqiaoyun.com)
 
 - 开发文档：  [Vue3文档](http://vue3.jeecg.com) | [主项目文档](http://doc.jeecg.com) 
 
 - 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)  |   [常见问题 ](http://www.jeecg.com/doc/qa) |  [视频教程](https://space.bilibili.com/454617261/channel/series)  |  [1分钟体验低代码](https://my.oschina.net/jeecg/blog/3083313) 
 
-- 敲敲云平台(零代码)：  [http://qiaoqiaoyun.com](http://qiaoqiaoyun.com)
-
 - QQ交流群 ： ⑥730954414、VUE3群683903138、⑤860162132(满)、④774126647(满)、③816531124(满)、②769925425(满)、①284271917(满)
 > ` 提醒：【QQ群是自助服务群，建议给帮助您解决问题的同学发送指定红包，表示感谢！】 `
+
+
 
 
 
@@ -103,9 +102,35 @@ Docker启动项目
 
 - [Docker启动单体后台](http://doc.jeecg.com/2043889)
 - [Docker启动Vue3前端](http://vue3.jeecg.com/3028878)
-
 - [Docker启动微服务后台](http://doc.jeecg.com/3043472)
-- [Docker启动Vue2前端](http://doc.jeecg.com/3043612)
+
+
+************
+
+VUE2版本专题说明
+-----------------------------------
+#### 项目介绍 
+- 项目名称：ant-design-vue-jeecg
+- 说明：JeecgBoot前端提供两套解决方案，一套VUE2和一套VUE3版本，目前vue2版本最新代码只支持到jeecgboot 3.4.3版本，一定注意。
+- 更多介绍：[Vue2版演示](http://boot.jeecg.com) |[开发文档](http://doc.jeecg.com) 
+- [快速启动——Vue2前端](http://doc.jeecg.com/2678320)
+- [Docker启动——Vue2前端](http://doc.jeecg.com/3043612)
+
+
+#### Vue2与Vue3版本区别
+> - VUE3版本彻底抛弃IE兼容，不兼容IE和低版本浏览器，只适配高版本谷歌和Edge
+ （政府、事业类单位项目需要谨慎选择——国产化迁移是一个漫长的过程，万一过程中要求IE兼容，这个不可逆）
+> - 所以如果对浏览器有要求的项目，请选择VUE2版本。
+> - VUE3版是全新的技术栈，紧跟主流（前端重写），各个功能都做了优化，拥有更好的体验效果
+
+
+#### 源码下载
+| 源码                | 源码地址                     | 
+|--------------------|------------------------|
+| 后端源码 `Vue2版`  |https://gitee.com/jeecg/jeecg-boot/tree/v3.4.3last    |
+| 前端源码 `Vue2版`  |https://gitee.com/jeecg/ant-design-vue-jeecg    |
+
+************
 
 
 适用项目

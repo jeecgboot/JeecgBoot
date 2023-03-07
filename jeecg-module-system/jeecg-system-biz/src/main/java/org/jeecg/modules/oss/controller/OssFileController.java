@@ -2,6 +2,7 @@ package org.jeecg.modules.oss.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -20,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 云存储示例 DEMO
- *
  * @author: jeecg-boot
  */
 @Slf4j
@@ -34,8 +34,8 @@ public class OssFileController {
 	@ResponseBody
 	@GetMapping("/list")
 	public Result<IPage<OssFile>> queryPageList(OssFile file,
-			@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
+                                                @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
 		Result<IPage<OssFile>> result = new Result<>();
 		QueryWrapper<OssFile> queryWrapper = QueryGenerator.initQueryWrapper(file, req.getParameterMap());
 		Page<OssFile> page = new Page<>(pageNo, pageSize);
@@ -47,7 +47,8 @@ public class OssFileController {
 
 	@ResponseBody
 	@PostMapping("/upload")
-	// @RequiresRoles("admin")
+	//@RequiresRoles("admin")
+    //@RequiresPermissions("system:ossFile:upload")
 	public Result upload(@RequestParam("file") MultipartFile multipartFile) {
 		Result result = new Result();
 		try {
@@ -68,8 +69,7 @@ public class OssFileController {
 		OssFile file = ossFileService.getById(id);
 		if (file == null) {
 			result.error500("未找到对应实体");
-		}
-		else {
+		}else {
 			boolean ok = ossFileService.delete(file);
 			result.success("删除成功!");
 		}

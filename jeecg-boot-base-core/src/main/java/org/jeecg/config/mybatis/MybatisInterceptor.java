@@ -7,6 +7,8 @@ import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.plugin.*;
 import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.config.TenantContext;
+import org.jeecg.common.constant.TenantConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.stereotype.Component;
@@ -17,9 +19,8 @@ import java.util.Properties;
 
 /**
  * mybatis拦截器，自动注入创建人、创建时间、修改人、修改时间
- *
  * @Author scott
- * @Date 2019-01-19
+ * @Date  2019-01-19
  *
  */
 @Slf4j
@@ -69,7 +70,7 @@ public class MybatisInterceptor implements Interceptor {
 							field.setAccessible(false);
 						}
 					}
-					// 注入部门编码
+					//注入部门编码
 					if ("sysOrgCode".equals(field.getName())) {
 						field.setAccessible(true);
 						Object localSysOrgCode = field.get(parameter);
@@ -83,8 +84,24 @@ public class MybatisInterceptor implements Interceptor {
 							}
 						}
 					}
-				}
-				catch (Exception e) {
+
+					//------------------------------------------------------------------------------------------------
+					//注入租户ID（是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】）
+					if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+						if (TenantConstant.TENANT_ID.equals(field.getName())) {
+							field.setAccessible(true);
+							Object localTenantId = field.get(parameter);
+							field.setAccessible(false);
+							if (localTenantId == null) {
+								field.setAccessible(true);
+								field.set(parameter, oConvertUtils.getInt(TenantContext.getTenant(),0));
+								field.setAccessible(false);
+							}
+						}
+					}
+					//------------------------------------------------------------------------------------------------
+					
+				} catch (Exception e) {
 				}
 			}
 		}
@@ -93,25 +110,23 @@ public class MybatisInterceptor implements Interceptor {
 			Field[] fields = null;
 			if (parameter instanceof ParamMap) {
 				ParamMap<?> p = (ParamMap<?>) parameter;
-				// update-begin-author:scott date:20190729 for:批量更新报错issues/IZA3Q--
-				String et = "et";
+				//update-begin-author:scott date:20190729 for:批量更新报错issues/IZA3Q--
+                String et = "et";
 				if (p.containsKey(et)) {
 					parameter = p.get(et);
-				}
-				else {
+				} else {
 					parameter = p.get("param1");
 				}
-				// update-end-author:scott date:20190729 for:批量更新报错issues/IZA3Q-
+				//update-end-author:scott date:20190729 for:批量更新报错issues/IZA3Q-
 
-				// update-begin-author:scott date:20190729 for:更新指定字段时报错 issues/#516-
+				//update-begin-author:scott date:20190729 for:更新指定字段时报错 issues/#516-
 				if (parameter == null) {
 					return invocation.proceed();
 				}
-				// update-end-author:scott date:20190729 for:更新指定字段时报错 issues/#516-
+				//update-end-author:scott date:20190729 for:更新指定字段时报错 issues/#516-
 
 				fields = oConvertUtils.getAllFields(parameter);
-			}
-			else {
+			} else {
 				fields = oConvertUtils.getAllFields(parameter);
 			}
 
@@ -119,7 +134,7 @@ public class MybatisInterceptor implements Interceptor {
 				log.debug("------field.name------" + field.getName());
 				try {
 					if ("updateBy".equals(field.getName())) {
-						// 获取登录用户信息
+						//获取登录用户信息
 						if (sysUser != null) {
 							// 登录账号
 							field.setAccessible(true);
@@ -132,8 +147,7 @@ public class MybatisInterceptor implements Interceptor {
 						field.set(parameter, new Date());
 						field.setAccessible(false);
 					}
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -151,23 +165,21 @@ public class MybatisInterceptor implements Interceptor {
 		// TODO Auto-generated method stub
 	}
 
-	// update-begin--Author:scott Date:20191213 for：关于使用Quzrtz 开启线程任务， #465
-	/**
-	 * 获取登录用户
-	 * @return
-	 */
+	//update-begin--Author:scott  Date:20191213 for：关于使用Quzrtz 开启线程任务， #465
+    /**
+     * 获取登录用户
+     * @return
+     */
 	private LoginUser getLoginUser() {
 		LoginUser sysUser = null;
 		try {
-			sysUser = SecurityUtils.getSubject().getPrincipal() != null
-					? (LoginUser) SecurityUtils.getSubject().getPrincipal() : null;
-		}
-		catch (Exception e) {
-			// e.printStackTrace();
+			sysUser = SecurityUtils.getSubject().getPrincipal() != null ? (LoginUser) SecurityUtils.getSubject().getPrincipal() : null;
+		} catch (Exception e) {
+			//e.printStackTrace();
 			sysUser = null;
 		}
 		return sysUser;
 	}
-	// update-end--Author:scott Date:20191213 for：关于使用Quzrtz 开启线程任务， #465
+	//update-end--Author:scott  Date:20191213 for：关于使用Quzrtz 开启线程任务， #465
 
 }
