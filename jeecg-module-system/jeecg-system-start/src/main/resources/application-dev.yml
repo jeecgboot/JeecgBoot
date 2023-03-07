@@ -26,7 +26,7 @@ spring:
       max-request-size: 10MB
   mail:
     host: smtp.163.com
-    username: ??
+    username: jeecgos@163.com
     password: ??
     properties:
       mail:
@@ -85,6 +85,7 @@ spring:
     # 设置ftl文件路径
     template-loader-path:
       - classpath:/templates
+    template_update_delay: 0
   # 设置静态文件路径，js,css等
   mvc:
     static-path-pattern: /**
@@ -197,7 +198,7 @@ jeecg:
     cluster-nodes: 127.0.0.1:9200
     check-enabled: false
   # 在线预览文件服务器地址配置
-  file-view-domain: 127.0.0.1:8012
+  file-view-domain: http://fileview.jeecg.com
   # minio文件上传
   minio:
     minio_url: http://minio.jeecg.com
@@ -209,10 +210,6 @@ jeecg:
     mode: dev
     #数据字典是否进行saas数据隔离，自己看自己的字典
     saas: false
-    #是否需要校验token
-    is_verify_token: true
-    #必须校验方法
-    verify_methods: remove,delete,save,add,update
   #xxl-job配置
   xxljob:
     enabled: false

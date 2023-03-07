@@ -90,7 +90,7 @@ public class CasClientController {
 			if (departs == null || departs.size() == 0) {
 				obj.put("multi_depart", 0);
 			} else if (departs.size() == 1) {
-				sysUserService.updateUserDepart(principal, departs.get(0).getOrgCode());
+				sysUserService.updateUserDepart(principal, departs.get(0).getOrgCode(),null);
 				obj.put("multi_depart", 1);
 			} else {
 				obj.put("multi_depart", 2);

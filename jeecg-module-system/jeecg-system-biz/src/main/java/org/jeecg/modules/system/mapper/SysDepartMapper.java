@@ -1,7 +1,10 @@
 package org.jeecg.modules.system.mapper;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.model.TreeModel;
@@ -90,4 +93,29 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 */
 	@Select("SELECT * FROM sys_depart where del_flag ='0' AND parent_id = #{parentId,jdbcType=VARCHAR}")
 	List<SysDepart> queryDeptByPid(@Param("parentId")String parentId);
+
+	/**
+	 * 通过父级id和租户id查询部门
+	 * @param parentId
+	 * @param tenantId
+	 * @return
+	 */
+	@InterceptorIgnore(tenantLine = "true")
+	List<SysDepart> queryBookDepTreeSync(@Param("parentId") String parentId, @Param("tenantId") Integer tenantId, @Param("departName") String departName);
+
+	@InterceptorIgnore(tenantLine = "true")
+	@Select("SELECT * FROM sys_depart where id = #{id,jdbcType=VARCHAR}")
+	SysDepart getDepartById(@Param("id") String id);
+
+	@InterceptorIgnore(tenantLine = "true")
+	List<SysDepart> getMaxCodeDepart(@Param("page") Page<SysDepart> page, @Param("parentId") String parentId);
+
+	/**
+	 * 修改部门状态字段： 是否子节点
+	 * @param id 部门id
+	 * @param leaf 叶子节点
+	 * @return int
+	 */
+	@Update("UPDATE sys_depart SET iz_leaf=#{leaf} WHERE id = #{id}")
+	int setMainLeaf(@Param("id") String id, @Param("leaf") Integer leaf);
 }

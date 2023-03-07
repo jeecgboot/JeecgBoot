@@ -8,8 +8,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
@@ -19,7 +21,9 @@ import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.common.util.SqlInjectionUtil;
+import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.model.SysDictTree;
@@ -28,6 +32,7 @@ import org.jeecg.modules.system.security.DictQueryBlackListHandler;
 import org.jeecg.modules.system.service.ISysDictItemService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.vo.SysDictPage;
+import org.jeecg.modules.system.vo.lowapp.SysDictVo;
 import org.jeecgframework.poi.excel.ExcelImportCheckUtil;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -73,6 +78,12 @@ public class SysDictController {
 	public Result<IPage<SysDict>> queryPageList(SysDict sysDict,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
 		Result<IPage<SysDict>> result = new Result<IPage<SysDict>>();
+		//------------------------------------------------------------------------------------------------
+		//是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+			sysDict.setTenantId(oConvertUtils.getInt(TenantContext.getTenant(),0));
+		}
+		//------------------------------------------------------------------------------------------------
 		QueryWrapper<SysDict> queryWrapper = QueryGenerator.initQueryWrapper(sysDict, req.getParameterMap());
 		Page<SysDict> page = new Page<SysDict>(pageNo, pageSize);
 		IPage<SysDict> pageList = sysDictService.page(page, queryWrapper);
@@ -364,7 +375,7 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+    //@RequiresPermissions("system:dict:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysDict> add(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -385,7 +396,7 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+    //@RequiresPermissions("system:dict:edit")
 	@RequestMapping(value = "/edit", method = { RequestMethod.PUT,RequestMethod.POST })
 	public Result<SysDict> edit(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -407,7 +418,7 @@ public class SysDictController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+    //@RequiresPermissions("system:dict:delete")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDict> delete(@RequestParam(name="id",required=true) String id) {
@@ -426,7 +437,7 @@ public class SysDictController {
 	 * @param ids
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+    //@RequiresPermissions("system:dict:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value= {CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDict> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
@@ -474,6 +485,13 @@ public class SysDictController {
 	 */
 	@RequestMapping(value = "/exportXls")
 	public ModelAndView exportXls(SysDict sysDict,HttpServletRequest request) {
+		//------------------------------------------------------------------------------------------------
+		//是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+			sysDict.setTenantId(oConvertUtils.getInt(TenantContext.getTenant(), 0));
+		}
+		//------------------------------------------------------------------------------------------------
+		
 		// Step.1 组装查询条件
 		QueryWrapper<SysDict> queryWrapper = QueryGenerator.initQueryWrapper(sysDict, request.getParameterMap());
 		//Step.2 AutoPoi 导出Excel
@@ -509,7 +527,7 @@ public class SysDictController {
 	 * @param
 	 * @return
 	 */
-	//@RequiresRoles({"admin"})
+    //@RequiresPermissions("system:dict:importExcel")
 	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
 	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
  		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -639,4 +657,36 @@ public class SysDictController {
 		return Result.error("校验失败，sql解析异常！" + msg);
 	}
 
+	/**
+	 * 根据应用id获取字典列表和详情
+	 * @param request
+	 */
+	@GetMapping("/getDictListByLowAppId")
+	public Result<List<SysDictVo>> getDictListByLowAppId(HttpServletRequest request){
+		String lowAppId = oConvertUtils.getString(TokenUtils.getLowAppIdByRequest(request),"0");
+		List<SysDictVo> list = sysDictService.getDictListByLowAppId(lowAppId);
+		return Result.ok(list);
+	}
+
+	/**
+	 * 添加字典
+	 * @param sysDictVo
+	 * @param request
+	 * @return
+	 */
+	@PostMapping("/addDictByLowAppId")
+	public Result<String> addDictByLowAppId(@RequestBody SysDictVo sysDictVo,HttpServletRequest request){
+		String lowAppId = oConvertUtils.getString(TokenUtils.getLowAppIdByRequest(request),"0");
+		sysDictVo.setLowAppId(lowAppId);
+		sysDictService.addDictByLowAppId(sysDictVo);
+		return Result.ok("添加成功");
+	}
+
+	@PutMapping("/editDictByLowAppId")
+	public Result<String> editDictByLowAppId(@RequestBody SysDictVo sysDictVo,HttpServletRequest request){
+		String lowAppId = oConvertUtils.getString(TokenUtils.getLowAppIdByRequest(request),"0");
+		sysDictVo.setLowAppId(lowAppId);
+		sysDictService.editDictByLowAppId(sysDictVo);
+		return Result.ok("编辑成功");
+	}
 }

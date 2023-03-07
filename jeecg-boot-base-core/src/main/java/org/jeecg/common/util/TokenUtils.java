@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.TenantConstant;
 import org.jeecg.common.desensitization.util.SensitiveInfoUtil;
 import org.jeecg.common.exception.JeecgBoot401Exception;
 import org.jeecg.common.system.util.JwtUtil;
@@ -32,6 +33,34 @@ public class TokenUtils {
             token = request.getHeader("X-Access-Token");
         }
         return token;
+    }
+
+    /**
+     * 获取 request 里传递的 tenantId (租户ID)
+     *
+     * @param request
+     * @return
+     */
+    public static String getTenantIdByRequest(HttpServletRequest request) {
+        String tenantId = request.getParameter(TenantConstant.TENANT_ID);
+        if (tenantId == null) {
+            tenantId = oConvertUtils.getString(request.getHeader(CommonConstant.TENANT_ID));
+        }
+        return tenantId;
+    }
+
+    /**
+     * 获取 request 里传递的 lowAppId (低代码应用ID)
+     *
+     * @param request
+     * @return
+     */
+    public static String getLowAppIdByRequest(HttpServletRequest request) {
+        String lowAppId = request.getParameter(TenantConstant.FIELD_LOW_APP_ID);
+        if (lowAppId == null) {
+            lowAppId = oConvertUtils.getString(request.getHeader(TenantConstant.X_LOW_APP_ID));
+        }
+        return lowAppId;
     }
 
     /**

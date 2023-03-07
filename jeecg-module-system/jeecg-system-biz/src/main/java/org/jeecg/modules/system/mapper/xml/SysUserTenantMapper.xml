@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysUserTenantMapper">
+
+    <!-- 通过租户id获取数据 -->
+    <select id="getPageUserList" resultType="org.jeecg.modules.system.entity.SysUser">
+        SELECT su.id,su.username,su.realname,su.sex,su.phone FROM sys_user su
+        JOIN sys_user_tenant str ON str.user_id = su.id and str.status = '1'
+        WHERE su.del_flag = 0
+        <if test="userTenantId!=null">
+            AND str.tenant_id = #{userTenantId}
+        </if>
+        <if test="user.username!='' and user.username!=null">
+            <bind name="bindKeyword" value="'%'+user.username+'%'"/>
+            AND su.username like #{bindKeyword}
+        </if>
+        <if test="user.realname!='' and user.realname!=null">
+            <bind name="bindRealName" value="'%'+user.realname+'%'"/>
+            AND su.realname like #{bindRealName}
+        </if>
+    </select>
+
+    <!--根据租户id获取用户ids-->
+    <select id="getUserIdsByTenantId" resultType="java.lang.String">
+        SELECT user_id FROM sys_user_tenant
+        WHERE
+        status = '1'
+        and
+        tenant_id = #{tenantId}
+    </select>
+    
+    <!--通过用户id获取租户ids-->
+    <select id="getTenantIdsByUserId" resultType="java.lang.Integer">
+        SELECT tenant_id FROM sys_user_tenant
+        WHERE status = '1'
+        and user_id = #{userId}
+    </select>
+
+    <!--通过用户id获取租户列表-->
+    <select id="getTenantListByUserId" resultType="org.jeecg.modules.system.vo.SysUserTenantVo">
+        SELECT st.id as tenantUserId,st.name,st.trade,st.house_number,st.create_by,sut.status as userTenantStatus
+        FROM sys_user_tenant sut
+        JOIN sys_tenant st ON sut.tenant_id = st.id
+        WHERE st.status = 1
+        AND st.del_flag = 0
+        AND sut.user_id = #{userId}
+        <if test="userTenantStatus!=null">
+            AND sut.status in
+            <foreach collection="userTenantStatus" index="index" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach>
+        </if>
+    </select>
+
+    <!--通过状态、当前登录人的用户名，租户id，查询用户id-->
+    <select id="getUserIdsByCreateBy" resultType="java.lang.String">
+        SELECT sut.user_id 
+        FROM sys_user_tenant sut
+        JOIN sys_tenant st on sut.tenant_id = st.id
+        WHERE sut.tenant_id = #{tenantId}
+        AND st.del_flag = 0
+        <if test="userTenantStatus!=null">
+            AND sut.status in
+            <foreach collection="userTenantStatus" index="index" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach>
+        </if>
+    </select>
+    
+    <!--联查用户和租户审核状态-->
+    <select id="getUserTenantPageList" resultType="org.jeecg.modules.system.vo.SysUserTenantVo">
+        SELECT su.id,su.realname,su.username,su.email,su.phone,su.avatar,su.work_no,su.post,su.org_code,sut.status,st.create_by 
+        FROM sys_user_tenant sut
+        LEFT JOIN sys_user su on sut.user_id = su.id
+        JOIN sys_tenant st ON sut.tenant_id = st.id
+        WHERE sut.tenant_id = #{tenantId}
+        AND st.del_flag = 0
+        <if test="user.createBy!='' and user.createBy!=null">
+            AND st.create_by = #{user.createBy}
+        </if>
+        <if test="user.username!='' and user.username!=null">
+            <bind name="bindUserName" value="'%'+user.username+'%'"/>
+            AND su.username like #{bindUserName}
+        </if>
+        <if test="user.realname!='' and user.realname!=null">
+            <bind name="bindRealName" value="'%'+user.realname+'%'"/>
+            AND su.realname like #{bindRealName}
+        </if>
+        <if test="user.sex!='' and user.sex!=null">
+            AND su.sex = #{user.sex}
+        </if>
+        AND sut.status in
+        <foreach collection="status" index="index" item="status" open="(" separator="," close=")">
+            #{status}
+        </foreach>
+    </select>
+    
+    <!--根据用户id获取租户id，没有状态-->
+    <select id="getTenantIdsNoStatus" resultType="java.lang.Integer">
+        SELECT tenant_id FROM sys_user_tenant
+        WHERE
+        user_id = #{userId}
+    </select>
+    
+    <!-- 统计一个人创建了多少个租户 -->
+    <select id="countCreateTenantNum" resultType="java.lang.Integer">
+        select count(*) count from sys_tenant where create_by = #{userId} and del_flag = 0 and status = 1
+    </select>
+
+    <!--判断当前用户是否已在该租户下面-->
+    <select id="userTenantIzExist" resultType="java.lang.Integer">
+        select count(*) count from sys_user_tenant
+        where
+        user_id = #{userId}
+        and tenant_id = #{tenantId}
+    </select>
+
+    <!--用户租户取消离职-->
+    <update id="putCancelQuit">
+        update sys_user_tenant set status='1'
+        where
+        tenant_id = #{tenantId}
+        AND user_id in
+        <foreach collection="userIds" index="index" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </update>
+</mapper>

@@ -5,6 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -65,6 +67,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      * @param sysRoleIndex
      * @return
      */
+    //@RequiresPermissions("system:roleindex:add")
     @AutoLog(value = "角色首页配置-添加")
     @ApiOperation(value = "角色首页配置-添加", notes = "角色首页配置-添加")
     @PostMapping(value = "/add")
@@ -80,6 +83,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      * @param sysRoleIndex
      * @return
      */
+    //@RequiresPermissions("system:roleindex:edit")
     @AutoLog(value = "角色首页配置-编辑")
     @ApiOperation(value = "角色首页配置-编辑", notes = "角色首页配置-编辑")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})

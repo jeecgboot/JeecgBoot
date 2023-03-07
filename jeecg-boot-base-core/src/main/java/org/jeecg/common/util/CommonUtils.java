@@ -1,5 +1,6 @@
 package org.jeecg.common.util;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DataSourceProperty;
 import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties;
 import com.baomidou.mybatisplus.annotation.DbType;
@@ -351,4 +352,44 @@ public class CommonUtils {
         log.debug("-----Common getBaseUrl----- : " + baseDomainPath);
         return baseDomainPath;
     }
+
+    /**
+     * 递归合并 fastJSON 对象
+     *
+     * @param target  目标对象
+     * @param sources 来源对象，允许多个，优先级从左到右，最右侧的优先级最高
+     */
+    public static JSONObject mergeJSON(JSONObject target, JSONObject... sources) {
+        for (JSONObject source : sources) {
+            CommonUtils.mergeJSON(target, source);
+        }
+        return target;
+    }
+
+    /**
+     * 递归合并 fastJSON 对象
+     *
+     * @param target 目标对象
+     * @param source 来源对象
+     */
+    public static JSONObject mergeJSON(JSONObject target, JSONObject source) {
+        for (String key : source.keySet()) {
+            Object sourceItem = source.get(key);
+            // 是否是 JSONObject
+            if (sourceItem instanceof Map) {
+                // target中存在此key
+                if (target.containsKey(key)) {
+                    // 两个都是 JSONObject，继续合并
+                    if (target.get(key) instanceof Map) {
+                        CommonUtils.mergeJSON(target.getJSONObject(key), source.getJSONObject(key));
+                        continue;
+                    }
+                }
+            }
+            // target不存在此key，或不是 JSONObject，则覆盖
+            target.put(key, sourceItem);
+        }
+        return target;
+    }
+
 }

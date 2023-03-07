@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.mapper;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -261,6 +262,14 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @param codeValues 存储字段值 作为查询条件in
 	 * @return
 	 */
-	@Deprecated
 	List<DictModel> queryTableDictByKeysAndFilterSql(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("filterSql") String filterSql,  @Param("codeValues") List<String> codeValues);
+
+	/**
+	 * 根据应用id获取字典列表和详情
+	 * @param lowAppId
+	 * @param tenantId
+	 * @return
+	 */
+	@InterceptorIgnore(tenantLine = "true")
+    List<SysDict> getDictListByLowAppId(@Param("lowAppId") String lowAppId, @Param("tenantId") Integer tenantId);
 }

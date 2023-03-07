@@ -71,7 +71,12 @@ public class MessageDTO implements Serializable {
     protected Map<String, Object> data;
     //update-end---author:taoyan ---date::20220705  for：支持自定义推送类型，邮件、钉钉、企业微信、系统消息-----------
     //-----------------------------------------------------------------------
-    
+
+
+    /**
+     * 抄送人
+     */
+    private String copyToUser;
     
     public MessageDTO(){
     }

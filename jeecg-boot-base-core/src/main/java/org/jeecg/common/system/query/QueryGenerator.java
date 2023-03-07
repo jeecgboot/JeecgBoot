@@ -238,7 +238,7 @@ public class QueryGenerator {
 		if(parameterMap!=null&& parameterMap.containsKey(ORDER_TYPE)) {
 			order = parameterMap.get(ORDER_TYPE)[0];
 		}
-        log.info("排序规则>>列:" + column + ",排序方式:" + order);
+        log.debug("排序规则>>列:" + column + ",排序方式:" + order);
 
 		//update-begin-author:scott date:2022-11-07 for:避免用户自定义表无默认字段{创建时间}，导致排序报错
 		//TODO 避免用户自定义表无默认字段创建时间，导致排序报错

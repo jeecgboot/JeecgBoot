@@ -93,7 +93,7 @@
     });
 
     //注册table数据
-    const [registerTable, {reload}, {rowSelection, selectedRowKeys}] = tableContext;
+    const [registerTable, {reload<#if sub.foreignRelationType =='1'>,getDataSource</#if>}, {rowSelection, selectedRowKeys}] = tableContext;
 
     watch(mainId, () => {
      <#list sub.foreignKeys as key>
@@ -111,6 +111,13 @@
             $message.createMessage.warning('请选择一个主表信息')
             return;
         }
+        <#if sub.foreignRelationType =='1'>
+        let dataSource = getDataSource();
+        if(dataSource.length  >=  1){
+            $message.createMessage.warning('一对一子表只能添加一条数据')
+            return;
+        }
+        </#if>
         openModal(true, {
             isUpdate: false,
             showFooter: true,

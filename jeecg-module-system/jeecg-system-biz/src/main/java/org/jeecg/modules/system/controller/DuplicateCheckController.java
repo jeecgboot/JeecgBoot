@@ -10,6 +10,7 @@ import org.jeecg.modules.system.mapper.SysDictMapper;
 import org.jeecg.modules.system.model.DuplicateCheckVo;
 import org.jeecg.modules.system.security.DictQueryBlackListHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,7 +48,7 @@ public class DuplicateCheckController {
 	public Result<String> doDuplicateCheck(DuplicateCheckVo duplicateCheckVo, HttpServletRequest request) {
 		Long num = null;
 
-		log.info("----duplicate check------："+ duplicateCheckVo.toString());
+		log.debug("----duplicate check------："+ duplicateCheckVo.toString());
 		//关联表字典（举例：sys_user,realname,id）
 		//SQL注入校验（只限制非法串改数据库）
 		final String[] sqlInjCheck = {duplicateCheckVo.getTableName(),duplicateCheckVo.getFieldName()};
@@ -83,5 +84,22 @@ public class DuplicateCheckController {
 			log.info("该值不可用，系统中已存在！");
 			return Result.error("该值不可用，系统中已存在！");
 		}
+	}
+
+	/**
+	 * VUEN-2584【issue】平台sql注入漏洞几个问题
+	 * 部分特殊函数 可以将查询结果混夹在错误信息中，导致数据库的信息暴露
+	 * @param e
+	 * @return
+	 */
+	@ExceptionHandler(java.sql.SQLException.class)
+	public Result<?> handleSQLException(Exception e){
+		String msg = e.getMessage();
+		String extractvalue = "extractvalue";
+		String updatexml = "updatexml";
+		if(msg!=null && (msg.toLowerCase().indexOf(extractvalue)>=0 || msg.toLowerCase().indexOf(updatexml)>=0)){
+			return Result.error("校验失败，sql解析异常！");
+		}
+		return Result.error("校验失败，sql解析异常！" + msg);
 	}
 }

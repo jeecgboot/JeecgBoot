@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.CommonSendStatus;
 import org.jeecg.common.constant.WebsocketConst;
@@ -21,6 +22,7 @@ import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.message.enums.RangeDateEnum;
 import org.jeecg.modules.message.websocket.WebSocket;
 import org.jeecg.modules.system.entity.SysAnnouncement;
@@ -93,6 +95,12 @@ public class SysAnnouncementController {
 									  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									  HttpServletRequest req) {
+		//------------------------------------------------------------------------------------------------
+		//是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+			sysAnnouncement.setTenantId(oConvertUtils.getInt(TenantContext.getTenant(), 0));
+		}
+		//------------------------------------------------------------------------------------------------
 		Result<IPage<SysAnnouncement>> result = new Result<IPage<SysAnnouncement>>();
 		sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
 		QueryWrapper<SysAnnouncement> queryWrapper = QueryGenerator.initQueryWrapper(sysAnnouncement, req.getParameterMap());
@@ -547,7 +555,32 @@ public class SysAnnouncementController {
 				sysAnnouncementService.updateReaded(annoceIdList);
 			}
 		}
+		//update-begin-author:taoyan date:2022-9-25 for: VUEN-2261【移动端 系统消息】通知公告显示7条消息，点进去查看后，仍然显示7条；其他地方已读后，未读条数减少
+		JSONObject obj = new JSONObject();
+		obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		webSocket.sendMessage(sysUser.getId(), obj.toJSONString());
+		//update-end-author:taoyan date:2022-9-25 for: VUEN-2261【移动端 系统消息】通知公告显示7条消息，点进去查看后，仍然显示7条；其他地方已读后，未读条数减少
 		return Result.ok(ls);
 	}
 
+
+    /**
+     * 根据用户id获取最新一条消息发送时间(创建时间)
+     * @param userId
+     * @return
+     */
+	@GetMapping("/getLastAnnountTime")
+	public Result<Page<SysAnnouncementSend>> getLastAnnountTime(@RequestParam(name = "userId") String userId){
+        Result<Page<SysAnnouncementSend>> result = new Result<>();
+        Page<SysAnnouncementSend> page = new Page<>(1,1);
+        LambdaQueryWrapper<SysAnnouncementSend> query = new LambdaQueryWrapper<>();
+        query.eq(SysAnnouncementSend::getUserId,userId);
+        query.select(SysAnnouncementSend::getCreateTime);
+        query.orderByDesc(SysAnnouncementSend::getCreateTime);
+        Page<SysAnnouncementSend> pageList = sysAnnouncementSendService.page(page, query);
+        result.setSuccess(true);
+        result.setResult(pageList);
+        return result;
+    }
 }

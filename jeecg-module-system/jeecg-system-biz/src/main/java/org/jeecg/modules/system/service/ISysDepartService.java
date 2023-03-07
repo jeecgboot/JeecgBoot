@@ -1,10 +1,14 @@
 package org.jeecg.modules.system.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -159,4 +163,39 @@ public interface ISysDepartService extends IService<SysDepart>{
      * @return
      */
     List<SysDepart> queryDeptByPid(String pid);
+
+    /**
+     * 获取我的部门已加入的公司
+     * @return
+     */
+    List<SysDepart> getMyDepartList();
+
+    /**
+     * 删除部门
+     * @param id
+     */
+    void deleteDepart(String id);
+
+    /**
+     * 通讯录通过租户id查询部门数据
+     * @param parentId
+     * @param tenantId
+     * @param departName
+     * @return
+     */
+    List<SysDepartTreeModel> queryBookDepTreeSync(String parentId, Integer tenantId, String departName);
+
+    /**
+     * 根据id查询部门信息
+     * @param parentId
+     * @return
+     */
+    SysDepart getDepartById(String parentId);
+
+    /**
+     * 根据id查询部门信息
+     * @param parentId
+     * @return
+     */
+    IPage<SysDepart> getMaxCodeDepart(Page<SysDepart> page, String parentId);
 }
