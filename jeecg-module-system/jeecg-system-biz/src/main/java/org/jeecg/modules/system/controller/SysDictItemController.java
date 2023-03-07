@@ -1,6 +1,5 @@
 package org.jeecg.modules.system.controller;
 
-
 import java.util.Arrays;
 import java.util.Date;
 
@@ -34,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @Author zhangweijian
@@ -48,7 +47,7 @@ public class SysDictItemController {
 
 	@Autowired
 	private ISysDictItemService sysDictItemService;
-	
+
 	/**
 	 * @功能：查询字典数据
 	 * @param sysDictItem
@@ -58,8 +57,9 @@ public class SysDictItemController {
 	 * @return
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public Result<IPage<SysDictItem>> queryPageList(SysDictItem sysDictItem,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
+	public Result<IPage<SysDictItem>> queryPageList(SysDictItem sysDictItem,
+			@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
 		Result<IPage<SysDictItem>> result = new Result<IPage<SysDictItem>>();
 		QueryWrapper<SysDictItem> queryWrapper = QueryGenerator.initQueryWrapper(sysDictItem, req.getParameterMap());
 		queryWrapper.orderByAsc("sort_order");
@@ -69,86 +69,90 @@ public class SysDictItemController {
 		result.setResult(pageList);
 		return result;
 	}
-	
+
 	/**
 	 * @功能：新增
 	 * @return
 	 */
-    //@RequiresPermissions("system:dict:item:add")
+	// @RequiresPermissions("system:dict:item:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	@CacheEvict(value= {CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
+	@CacheEvict(value = { CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE }, allEntries = true)
 	public Result<SysDictItem> add(@RequestBody SysDictItem sysDictItem) {
 		Result<SysDictItem> result = new Result<SysDictItem>();
 		try {
 			sysDictItem.setCreateTime(new Date());
 			sysDictItemService.save(sysDictItem);
 			result.success("保存成功！");
-		} catch (Exception e) {
-			log.error(e.getMessage(),e);
+		}
+		catch (Exception e) {
+			log.error(e.getMessage(), e);
 			result.error500("操作失败");
 		}
 		return result;
 	}
-	
+
 	/**
 	 * @功能：编辑
 	 * @param sysDictItem
 	 * @return
 	 */
-    //@RequiresPermissions("system:dict:item:edit")
-	@RequestMapping(value = "/edit",  method = { RequestMethod.PUT,RequestMethod.POST })
-	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
+	// @RequiresPermissions("system:dict:item:edit")
+	@RequestMapping(value = "/edit", method = { RequestMethod.PUT, RequestMethod.POST })
+	@CacheEvict(value = { CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE }, allEntries = true)
 	public Result<SysDictItem> edit(@RequestBody SysDictItem sysDictItem) {
 		Result<SysDictItem> result = new Result<SysDictItem>();
 		SysDictItem sysdict = sysDictItemService.getById(sysDictItem.getId());
-		if(sysdict==null) {
+		if (sysdict == null) {
 			result.error500("未找到对应实体");
-		}else {
+		}
+		else {
 			sysDictItem.setUpdateTime(new Date());
 			boolean ok = sysDictItemService.updateById(sysDictItem);
-			//TODO 返回false说明什么？
-			if(ok) {
+			// TODO 返回false说明什么？
+			if (ok) {
 				result.success("编辑成功!");
 			}
 		}
 		return result;
 	}
-	
+
 	/**
 	 * @功能：删除字典数据
 	 * @param id
 	 * @return
 	 */
-    //@RequiresPermissions("system:dict:item:delete")
+	// @RequiresPermissions("system:dict:item:delete")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
-	public Result<SysDictItem> delete(@RequestParam(name="id",required=true) String id) {
+	@CacheEvict(value = { CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE }, allEntries = true)
+	public Result<SysDictItem> delete(@RequestParam(name = "id", required = true) String id) {
 		Result<SysDictItem> result = new Result<SysDictItem>();
 		SysDictItem joinSystem = sysDictItemService.getById(id);
-		if(joinSystem==null) {
+		if (joinSystem == null) {
 			result.error500("未找到对应实体");
-		}else {
+		}
+		else {
 			boolean ok = sysDictItemService.removeById(id);
-			if(ok) {
+			if (ok) {
 				result.success("删除成功!");
 			}
 		}
 		return result;
 	}
-	
+
 	/**
 	 * @功能：批量删除字典数据
 	 * @param ids
 	 * @return
 	 */
-    //@RequiresPermissions("system:dict:item:deleteBatch")
+	// @RequiresPermissions("system:dict:item:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
-	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
-	public Result<SysDictItem> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
+	@CacheEvict(value = { CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE }, allEntries = true)
+	public Result<SysDictItem> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 		Result<SysDictItem> result = new Result<SysDictItem>();
-		if(ids==null || "".equals(ids.trim())) {
+		if (ids == null || "".equals(ids.trim())) {
 			result.error500("参数不识别！");
-		}else {
+		}
+		else {
 			this.sysDictItemService.removeByIds(Arrays.asList(ids.split(",")));
 			result.success("删除成功!");
 		}
@@ -166,21 +170,22 @@ public class SysDictItemController {
 	public Result<Object> doDictItemCheck(SysDictItem sysDictItem, HttpServletRequest request) {
 		Long num = Long.valueOf(0);
 		LambdaQueryWrapper<SysDictItem> queryWrapper = new LambdaQueryWrapper<SysDictItem>();
-		queryWrapper.eq(SysDictItem::getItemValue,sysDictItem.getItemValue());
-		queryWrapper.eq(SysDictItem::getDictId,sysDictItem.getDictId());
+		queryWrapper.eq(SysDictItem::getItemValue, sysDictItem.getItemValue());
+		queryWrapper.eq(SysDictItem::getDictId, sysDictItem.getDictId());
 		if (StringUtils.isNotBlank(sysDictItem.getId())) {
 			// 编辑页面校验
-			queryWrapper.ne(SysDictItem::getId,sysDictItem.getId());
+			queryWrapper.ne(SysDictItem::getId, sysDictItem.getId());
 		}
 		num = sysDictItemService.count(queryWrapper);
 		if (num == 0) {
 			// 该值可用
 			return Result.ok("该值可用！");
-		} else {
+		}
+		else {
 			// 该值不可用
 			log.info("该值不可用，系统中已存在！");
 			return Result.error("该值不可用，系统中已存在！");
 		}
 	}
-	
+
 }

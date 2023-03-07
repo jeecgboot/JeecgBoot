@@ -90,14 +90,15 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	public Map<String, List<DictModel>> queryAllDictItems() {
 		Map<String, List<DictModel>> res = new HashMap(5);
 		LambdaQueryWrapper<SysDict> sysDictQueryWrapper = new LambdaQueryWrapper<SysDict>();
-		//------------------------------------------------------------------------------------------------
-		//是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
-		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+		// ------------------------------------------------------------------------------------------------
+		// 是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+		if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
 			sysDictQueryWrapper.eq(SysDict::getTenantId, oConvertUtils.getInt(TenantContext.getTenant(), 0))
-					.or().eq(SysDict::getTenantId,0);
+				.or()
+				.eq(SysDict::getTenantId, 0);
 		}
-		//------------------------------------------------------------------------------------------------
-		
+		// ------------------------------------------------------------------------------------------------
+
 		List<SysDict> ls = sysDictMapper.selectList(sysDictQueryWrapper);
 		LambdaQueryWrapper<SysDictItem> queryWrapper = new LambdaQueryWrapper<SysDictItem>();
 		queryWrapper.eq(SysDictItem::getStatus, 1);
@@ -530,12 +531,12 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Override
 	public List<SysDictVo> getDictListByLowAppId(String lowAppId) {
 		int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
-		List<SysDict> list =  baseMapper.getDictListByLowAppId(lowAppId,tenantId);
-		//查询字典下面的字典项
+		List<SysDict> list = baseMapper.getDictListByLowAppId(lowAppId, tenantId);
+		// 查询字典下面的字典项
 		List<SysDictVo> dictVoList = new ArrayList<>();
-		for (SysDict dict:list) {
+		for (SysDict dict : list) {
 			SysDictVo dictVo = new SysDictVo();
-			BeanUtils.copyProperties(dict,dictVo);
+			BeanUtils.copyProperties(dict, dictVo);
 			List<SysDictItem> sysDictItems = sysDictItemMapper.selectItemsByMainId(dict.getId());
 			dictVo.setDictItemsList(sysDictItems);
 			dictVoList.add(dictVo);
@@ -545,33 +546,33 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
 	@Override
 	public void addDictByLowAppId(SysDictVo sysDictVo) {
-		String id = this.addDict(sysDictVo.getDictName(),sysDictVo.getLowAppId());
-		this.addDictItem(id,sysDictVo.getDictItemsList());
+		String id = this.addDict(sysDictVo.getDictName(), sysDictVo.getLowAppId());
+		this.addDictItem(id, sysDictVo.getDictItemsList());
 	}
 
 	@Override
 	public void editDictByLowAppId(SysDictVo sysDictVo) {
 		String id = sysDictVo.getId();
 		SysDict dict = baseMapper.selectById(id);
-		if(null == dict){
+		if (null == dict) {
 			throw new JeecgBootException("字典数据不存在");
 		}
-		//判断应用id和数据库中的是否一致，不一致不让修改
-		if(!dict.getLowAppId().equals(sysDictVo.getLowAppId())){
+		// 判断应用id和数据库中的是否一致，不一致不让修改
+		if (!dict.getLowAppId().equals(sysDictVo.getLowAppId())) {
 			throw new JeecgBootException("字典数据不存在");
 		}
 		SysDict sysDict = new SysDict();
 		sysDict.setDictName(sysDictVo.getDictName());
 		sysDict.setId(id);
 		baseMapper.updateById(sysDict);
-		this.updateDictItem(id,sysDictVo.getDictItemsList());
+		this.updateDictItem(id, sysDictVo.getDictItemsList());
 	}
 
 	/**
 	 * 添加字典
 	 * @param dictName
 	 */
-	private String addDict(String dictName,String lowAppId) {
+	private String addDict(String dictName, String lowAppId) {
 		SysDict dict = new SysDict();
 		dict.setDictName(dictName);
 		dict.setDictCode(RandomUtil.randomString(10));
@@ -586,11 +587,11 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	 * @param id
 	 * @param dictItemList
 	 */
-	private void addDictItem(String id,List<SysDictItem> dictItemList) {
-		if(null!=dictItemList && dictItemList.size()>0){
-			for (SysDictItem dictItem:dictItemList) {
+	private void addDictItem(String id, List<SysDictItem> dictItemList) {
+		if (null != dictItemList && dictItemList.size() > 0) {
+			for (SysDictItem dictItem : dictItemList) {
 				SysDictItem sysDictItem = new SysDictItem();
-				BeanUtils.copyProperties(dictItem,sysDictItem);
+				BeanUtils.copyProperties(dictItem, sysDictItem);
 				sysDictItem.setDictId(id);
 				sysDictItem.setId("");
 				sysDictItem.setStatus(Integer.valueOf(CommonConstant.STATUS_1));
@@ -604,12 +605,13 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	 * @param id
 	 * @param dictItemList
 	 */
-	private void updateDictItem(String id,List<SysDictItem> dictItemList){
-		//先删除在新增 因为排序可能不一致
+	private void updateDictItem(String id, List<SysDictItem> dictItemList) {
+		// 先删除在新增 因为排序可能不一致
 		LambdaQueryWrapper<SysDictItem> query = new LambdaQueryWrapper<>();
-		query.eq(SysDictItem::getDictId,id);
+		query.eq(SysDictItem::getDictId, id);
 		sysDictItemMapper.delete(query);
-		//新增子项
-		this.addDictItem(id,dictItemList);
+		// 新增子项
+		this.addDictItem(id, dictItemList);
 	}
+
 }

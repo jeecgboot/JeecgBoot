@@ -274,4 +274,5 @@ public interface ISysDictService extends IService<SysDict> {
 	 * @param sysDictVo
 	 */
 	void editDictByLowAppId(SysDictVo sysDictVo);
+
 }

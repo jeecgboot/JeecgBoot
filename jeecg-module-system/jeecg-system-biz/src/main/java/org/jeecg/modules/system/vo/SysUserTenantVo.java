@@ -11,94 +11,95 @@ import org.jeecg.common.aspect.annotation.Dict;
 @Data
 public class SysUserTenantVo {
 
-    /**
-     * 用户id
-     */
-    private String id;
+	/**
+	 * 用户id
+	 */
+	private String id;
 
-    /**
-     * 用户账号
-     */
-    private String username;
+	/**
+	 * 用户账号
+	 */
+	private String username;
 
-    /**
-     * 用户昵称
-     */
-    private String realname;
+	/**
+	 * 用户昵称
+	 */
+	private String realname;
 
-    /**
-     * 工号
-     */
-    private String workNo;
-    
-    /**
-     * 邮箱
-     */
-    private String email; 
-    
-    /**
-     * 手机号
-     */
-    private String phone;   
-    
-    /**
-     * 头像
-     */
-    private String avatar; 
-    
-    /**
-     * 职位
-     */
-    private String post;
+	/**
+	 * 工号
+	 */
+	private String workNo;
 
-    /**
-     * 审核状态
-     */
-    private String status;
+	/**
+	 * 邮箱
+	 */
+	private String email;
 
-    /**
-     * 部门名称
-     */
-    private String orgCodeTxt;
+	/**
+	 * 手机号
+	 */
+	private String phone;
 
-    /**
-     * 部门code
-     */
-    private String orgCode;
+	/**
+	 * 头像
+	 */
+	private String avatar;
 
-    /**
-     * 租户id
-     */
-    private String relTenantIds;
+	/**
+	 * 职位
+	 */
+	private String post;
 
-    /**
-     * 租户创建人
-     */
-    private String createBy;
+	/**
+	 * 审核状态
+	 */
+	private String status;
 
-    /**
-     * 用户租户状态
-     */
-    private String userTenantStatus;
+	/**
+	 * 部门名称
+	 */
+	private String orgCodeTxt;
 
-    /**
-     * 用户租户id
-     */
-    private String tenantUserId;
+	/**
+	 * 部门code
+	 */
+	private String orgCode;
 
-    /**
-     * 租户名称
-     */
-    private String name;
+	/**
+	 * 租户id
+	 */
+	private String relTenantIds;
 
-    /**
-     * 所属行业
-     */
-    @Dict(dicCode = "trade")
-    private String trade;
-    
-    /**
-     * 门牌号
-     */
-    private String houseNumber;
+	/**
+	 * 租户创建人
+	 */
+	private String createBy;
+
+	/**
+	 * 用户租户状态
+	 */
+	private String userTenantStatus;
+
+	/**
+	 * 用户租户id
+	 */
+	private String tenantUserId;
+
+	/**
+	 * 租户名称
+	 */
+	private String name;
+
+	/**
+	 * 所属行业
+	 */
+	@Dict(dicCode = "trade")
+	private String trade;
+
+	/**
+	 * 门牌号
+	 */
+	private String houseNumber;
+
 }

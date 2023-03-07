@@ -32,23 +32,23 @@ public class SysGatewayRouteController extends JeecgController<SysGatewayRoute, 
 	@Autowired
 	private ISysGatewayRouteService sysGatewayRouteService;
 
-    @PostMapping(value = "/updateAll")
-    public Result<?> updateAll(@RequestBody JSONObject json) {
-        sysGatewayRouteService.updateAll(json);
-        return Result.ok("操作成功！");
-    }
+	@PostMapping(value = "/updateAll")
+	public Result<?> updateAll(@RequestBody JSONObject json) {
+		sysGatewayRouteService.updateAll(json);
+		return Result.ok("操作成功！");
+	}
 
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(SysGatewayRoute sysGatewayRoute) {
 		LambdaQueryWrapper<SysGatewayRoute> query = new LambdaQueryWrapper<>();
 		List<SysGatewayRoute> ls = sysGatewayRouteService.list(query);
 		JSONArray array = new JSONArray();
-		for(SysGatewayRoute rt: ls){
+		for (SysGatewayRoute rt : ls) {
 			JSONObject obj = (JSONObject) JSONObject.toJSON(rt);
-			if(oConvertUtils.isNotEmpty(rt.getPredicates())){
+			if (oConvertUtils.isNotEmpty(rt.getPredicates())) {
 				obj.put("predicates", JSONArray.parseArray(rt.getPredicates()));
 			}
-			if(oConvertUtils.isNotEmpty(rt.getFilters())){
+			if (oConvertUtils.isNotEmpty(rt.getFilters())) {
 				obj.put("filters", JSONArray.parseArray(rt.getFilters()));
 			}
 			array.add(obj);
@@ -62,17 +62,16 @@ public class SysGatewayRouteController extends JeecgController<SysGatewayRoute, 
 		return Result.ok("清除成功！");
 	}
 
-    /**
-     * 通过id删除
-     *
-     * @param id
-     * @return
-     */
-    //@RequiresPermissions("system:getway:delete")
-    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
-        sysGatewayRouteService.deleteById(id);
-        return Result.ok("删除路由成功");
-    }
+	/**
+	 * 通过id删除
+	 * @param id
+	 * @return
+	 */
+	// @RequiresPermissions("system:getway:delete")
+	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+	public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
+		sysGatewayRouteService.deleteById(id);
+		return Result.ok("删除路由成功");
+	}
 
 }

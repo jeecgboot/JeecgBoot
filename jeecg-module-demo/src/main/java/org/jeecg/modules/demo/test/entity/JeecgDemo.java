@@ -91,6 +91,7 @@ public class JeecgDemo extends JeecgEntity implements Serializable {
 
 	@ApiModelProperty(value = "租户ID")
 	private java.lang.Integer tenantId;
+
 	/** 乐观锁字段 */
 	@Version
 	private java.lang.Integer updateCount;

@@ -36,39 +36,38 @@ import org.jeecg.common.util.oConvertUtils;
  **/
 public class JwtUtil {
 
-	/**Token有效期为1小时（Token在reids中缓存时间为两倍）*/
+	/** Token有效期为1小时（Token在reids中缓存时间为两倍） */
 	public static final long EXPIRE_TIME = 60 * 60 * 1000;
 	static final String WELL_NUMBER = SymbolConstant.WELL_NUMBER + SymbolConstant.LEFT_CURLY_BRACKET;
 
-    /**
-     *
-     * @param response
-     * @param code
-     * @param errorMsg
-     */
-    public static void responseError(ServletResponse response, Integer code, String errorMsg) {
+	/**
+	 * @param response
+	 * @param code
+	 * @param errorMsg
+	 */
+	public static void responseError(ServletResponse response, Integer code, String errorMsg) {
 		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 		// issues/I4YH95浏览器显示乱码问题
 		httpServletResponse.setHeader("Content-type", "text/html;charset=UTF-8");
-        Result jsonResult = new Result(code, errorMsg);
+		Result jsonResult = new Result(code, errorMsg);
 		jsonResult.setSuccess(false);
-        OutputStream os = null;
-        try {
-            os = httpServletResponse.getOutputStream();
+		OutputStream os = null;
+		try {
+			os = httpServletResponse.getOutputStream();
 			httpServletResponse.setCharacterEncoding("UTF-8");
 			httpServletResponse.setStatus(code);
-            os.write(new ObjectMapper().writeValueAsString(jsonResult).getBytes("UTF-8"));
-            os.flush();
-            os.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+			os.write(new ObjectMapper().writeValueAsString(jsonResult).getBytes("UTF-8"));
+			os.flush();
+			os.close();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * 校验token是否正确
-	 *
-	 * @param token  密钥
+	 * @param token 密钥
 	 * @param secret 用户的密码
 	 * @return 是否正确
 	 */
@@ -80,30 +79,30 @@ public class JwtUtil {
 			// 效验TOKEN
 			DecodedJWT jwt = verifier.verify(token);
 			return true;
-		} catch (Exception exception) {
+		}
+		catch (Exception exception) {
 			return false;
 		}
 	}
 
 	/**
 	 * 获得token中的信息无需secret解密也能获得
-	 *
 	 * @return token中包含的用户名
 	 */
 	public static String getUsername(String token) {
 		try {
 			DecodedJWT jwt = JWT.decode(token);
 			return jwt.getClaim("username").asString();
-		} catch (JWTDecodeException e) {
+		}
+		catch (JWTDecodeException e) {
 			return null;
 		}
 	}
 
 	/**
 	 * 生成签名,5min后过期
-	 *
 	 * @param username 用户名
-	 * @param secret   用户的密码
+	 * @param secret 用户的密码
 	 * @return 加密的token
 	 */
 	public static String sign(String username, String secret) {
@@ -116,7 +115,6 @@ public class JwtUtil {
 
 	/**
 	 * 根据request中的token获取用户账号
-	 * 
 	 * @param request
 	 * @return
 	 * @throws JeecgBootException
@@ -129,122 +127,139 @@ public class JwtUtil {
 		}
 		return username;
 	}
-	
+
 	/**
-	  *  从session中获取变量
+	 * 从session中获取变量
 	 * @param key
 	 * @return
 	 */
 	public static String getSessionData(String key) {
-		//${myVar}%
-		//得到${} 后面的值
+		// ${myVar}%
+		// 得到${} 后面的值
 		String moshi = "";
 		String wellNumber = WELL_NUMBER;
 
-		if(key.indexOf(SymbolConstant.RIGHT_CURLY_BRACKET)!=-1){
-			 moshi = key.substring(key.indexOf("}")+1);
+		if (key.indexOf(SymbolConstant.RIGHT_CURLY_BRACKET) != -1) {
+			moshi = key.substring(key.indexOf("}") + 1);
 		}
 		String returnValue = null;
 		if (key.contains(wellNumber)) {
-			key = key.substring(2,key.indexOf("}"));
+			key = key.substring(2, key.indexOf("}"));
 		}
 		if (oConvertUtils.isNotEmpty(key)) {
 			HttpSession session = SpringContextUtils.getHttpServletRequest().getSession();
 			returnValue = (String) session.getAttribute(key);
 		}
-		//结果加上${} 后面的值
-		if(returnValue!=null){returnValue = returnValue + moshi;}
+		// 结果加上${} 后面的值
+		if (returnValue != null) {
+			returnValue = returnValue + moshi;
+		}
 		return returnValue;
 	}
-	
+
 	/**
-	  * 从当前用户中获取变量
+	 * 从当前用户中获取变量
 	 * @param key
 	 * @param user
 	 * @return
 	 */
-	public static String getUserSystemData(String key,SysUserCacheInfo user) {
-		if(user==null) {
+	public static String getUserSystemData(String key, SysUserCacheInfo user) {
+		if (user == null) {
 			user = JeecgDataAutorUtils.loadUserInfo();
 		}
-		//#{sys_user_code}%
-		
+		// #{sys_user_code}%
+
 		// 获取登录用户信息
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		
+
 		String moshi = "";
-        String wellNumber = WELL_NUMBER;
-		if(key.indexOf(SymbolConstant.RIGHT_CURLY_BRACKET)!=-1){
-			 moshi = key.substring(key.indexOf("}")+1);
+		String wellNumber = WELL_NUMBER;
+		if (key.indexOf(SymbolConstant.RIGHT_CURLY_BRACKET) != -1) {
+			moshi = key.substring(key.indexOf("}") + 1);
 		}
 		String returnValue = null;
-		//针对特殊标示处理#{sysOrgCode}，判断替换
+		// 针对特殊标示处理#{sysOrgCode}，判断替换
 		if (key.contains(wellNumber)) {
-			key = key.substring(2,key.indexOf("}"));
-		} else {
+			key = key.substring(2, key.indexOf("}"));
+		}
+		else {
 			key = key;
 		}
-		//替换为系统登录用户帐号
-		if (key.equals(DataBaseConstant.SYS_USER_CODE)|| key.toLowerCase().equals(DataBaseConstant.SYS_USER_CODE_TABLE)) {
-			if(user==null) {
+		// 替换为系统登录用户帐号
+		if (key.equals(DataBaseConstant.SYS_USER_CODE)
+				|| key.toLowerCase().equals(DataBaseConstant.SYS_USER_CODE_TABLE)) {
+			if (user == null) {
 				returnValue = sysUser.getUsername();
-			}else {
+			}
+			else {
 				returnValue = user.getSysUserCode();
 			}
 		}
-		//替换为系统登录用户真实名字
-		else if (key.equals(DataBaseConstant.SYS_USER_NAME)|| key.toLowerCase().equals(DataBaseConstant.SYS_USER_NAME_TABLE)) {
-			if(user==null) {
+		// 替换为系统登录用户真实名字
+		else if (key.equals(DataBaseConstant.SYS_USER_NAME)
+				|| key.toLowerCase().equals(DataBaseConstant.SYS_USER_NAME_TABLE)) {
+			if (user == null) {
 				returnValue = sysUser.getRealname();
-			}else {
+			}
+			else {
 				returnValue = user.getSysUserName();
 			}
 		}
-		
-		//替换为系统用户登录所使用的机构编码
-		else if (key.equals(DataBaseConstant.SYS_ORG_CODE)|| key.toLowerCase().equals(DataBaseConstant.SYS_ORG_CODE_TABLE)) {
-			if(user==null) {
+
+		// 替换为系统用户登录所使用的机构编码
+		else if (key.equals(DataBaseConstant.SYS_ORG_CODE)
+				|| key.toLowerCase().equals(DataBaseConstant.SYS_ORG_CODE_TABLE)) {
+			if (user == null) {
 				returnValue = sysUser.getOrgCode();
-			}else {
+			}
+			else {
 				returnValue = user.getSysOrgCode();
 			}
 		}
-		//替换为系统用户所拥有的所有机构编码
-		else if (key.equals(DataBaseConstant.SYS_MULTI_ORG_CODE)|| key.toLowerCase().equals(DataBaseConstant.SYS_MULTI_ORG_CODE_TABLE)) {
-			if(user==null){
-				//TODO 暂时使用用户登录部门，存在逻辑缺陷，不是用户所拥有的部门
+		// 替换为系统用户所拥有的所有机构编码
+		else if (key.equals(DataBaseConstant.SYS_MULTI_ORG_CODE)
+				|| key.toLowerCase().equals(DataBaseConstant.SYS_MULTI_ORG_CODE_TABLE)) {
+			if (user == null) {
+				// TODO 暂时使用用户登录部门，存在逻辑缺陷，不是用户所拥有的部门
 				returnValue = sysUser.getOrgCode();
-			}else{
-				if(user.isOneDepart()) {
+			}
+			else {
+				if (user.isOneDepart()) {
 					returnValue = user.getSysMultiOrgCode().get(0);
-				}else {
+				}
+				else {
 					returnValue = Joiner.on(",").join(user.getSysMultiOrgCode());
 				}
 			}
 		}
-		//替换为当前系统时间(年月日)
-		else if (key.equals(DataBaseConstant.SYS_DATE)|| key.toLowerCase().equals(DataBaseConstant.SYS_DATE_TABLE)) {
+		// 替换为当前系统时间(年月日)
+		else if (key.equals(DataBaseConstant.SYS_DATE) || key.toLowerCase().equals(DataBaseConstant.SYS_DATE_TABLE)) {
 			returnValue = DateUtils.formatDate();
 		}
-		//替换为当前系统时间（年月日时分秒）
-		else if (key.equals(DataBaseConstant.SYS_TIME)|| key.toLowerCase().equals(DataBaseConstant.SYS_TIME_TABLE)) {
+		// 替换为当前系统时间（年月日时分秒）
+		else if (key.equals(DataBaseConstant.SYS_TIME) || key.toLowerCase().equals(DataBaseConstant.SYS_TIME_TABLE)) {
 			returnValue = DateUtils.now();
 		}
-		//流程状态默认值（默认未发起）
-		else if (key.equals(DataBaseConstant.BPM_STATUS)|| key.toLowerCase().equals(DataBaseConstant.BPM_STATUS_TABLE)) {
+		// 流程状态默认值（默认未发起）
+		else if (key.equals(DataBaseConstant.BPM_STATUS)
+				|| key.toLowerCase().equals(DataBaseConstant.BPM_STATUS_TABLE)) {
 			returnValue = "1";
 		}
-		//update-begin-author:taoyan date:20210330 for:多租户ID作为系统变量
-		else if (key.equals(TenantConstant.TENANT_ID) || key.toLowerCase().equals(TenantConstant.TENANT_ID_TABLE)){
+		// update-begin-author:taoyan date:20210330 for:多租户ID作为系统变量
+		else if (key.equals(TenantConstant.TENANT_ID) || key.toLowerCase().equals(TenantConstant.TENANT_ID_TABLE)) {
 			returnValue = SpringContextUtils.getHttpServletRequest().getHeader(CommonConstant.TENANT_ID);
 		}
-		//update-end-author:taoyan date:20210330 for:多租户ID作为系统变量
-		if(returnValue!=null){returnValue = returnValue + moshi;}
+		// update-end-author:taoyan date:20210330 for:多租户ID作为系统变量
+		if (returnValue != null) {
+			returnValue = returnValue + moshi;
+		}
 		return returnValue;
 	}
-	
-//	public static void main(String[] args) {
-//		 String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjUzMzY1MTMsInVzZXJuYW1lIjoiYWRtaW4ifQ.xjhud_tWCNYBOg_aRlMgOdlZoWFFKB_givNElHNw3X0";
-//		 System.out.println(JwtUtil.getUsername(token));
-//	}
+
+	// public static void main(String[] args) {
+	// String token =
+	// "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjUzMzY1MTMsInVzZXJuYW1lIjoiYWRtaW4ifQ.xjhud_tWCNYBOg_aRlMgOdlZoWFFKB_givNElHNw3X0";
+	// System.out.println(JwtUtil.getUsername(token));
+	// }
+
 }

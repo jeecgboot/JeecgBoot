@@ -659,80 +659,76 @@ public class DateUtils extends PropertyEditorSupport {
 		return null;
 	}
 
-    /**
-     * 判断两个时间是否是同一天
-     *
-     * @param date1
-     * @param date2
-     * @return
-     */
-    public static boolean isSameDay(Date date1, Date date2) {
-        if (date1 == null || date2 == null) {
-            return false;
-        }
-        Calendar calendar1 = Calendar.getInstance();
-        calendar1.setTime(date1);
-        Calendar calendar2 = Calendar.getInstance();
-        calendar2.setTime(date2);
-        boolean isSameYear = calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR);
-        boolean isSameMonth = isSameYear && calendar1.get(Calendar.MONTH) == calendar2.get(Calendar.MONTH);
-        return isSameMonth && calendar1.get(Calendar.DAY_OF_MONTH) == calendar2.get(Calendar.DAY_OF_MONTH);
-    }
+	/**
+	 * 判断两个时间是否是同一天
+	 * @param date1
+	 * @param date2
+	 * @return
+	 */
+	public static boolean isSameDay(Date date1, Date date2) {
+		if (date1 == null || date2 == null) {
+			return false;
+		}
+		Calendar calendar1 = Calendar.getInstance();
+		calendar1.setTime(date1);
+		Calendar calendar2 = Calendar.getInstance();
+		calendar2.setTime(date2);
+		boolean isSameYear = calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR);
+		boolean isSameMonth = isSameYear && calendar1.get(Calendar.MONTH) == calendar2.get(Calendar.MONTH);
+		return isSameMonth && calendar1.get(Calendar.DAY_OF_MONTH) == calendar2.get(Calendar.DAY_OF_MONTH);
+	}
 
-    /**
-     * 判断两个时间是否是同一周
-     *
-     * @param date1
-     * @param date2
-     * @return
-     */
-    public static boolean isSameWeek(Date date1, Date date2) {
-        if (date1 == null || date2 == null) {
-            return false;
-        }
-        Calendar calendar1 = Calendar.getInstance();
-        calendar1.setTime(date1);
-        Calendar calendar2 = Calendar.getInstance();
-        calendar2.setTime(date2);
-        boolean isSameYear = calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR);
-        return isSameYear && calendar1.get(Calendar.WEEK_OF_YEAR) == calendar2.get(Calendar.WEEK_OF_YEAR);
-    }
+	/**
+	 * 判断两个时间是否是同一周
+	 * @param date1
+	 * @param date2
+	 * @return
+	 */
+	public static boolean isSameWeek(Date date1, Date date2) {
+		if (date1 == null || date2 == null) {
+			return false;
+		}
+		Calendar calendar1 = Calendar.getInstance();
+		calendar1.setTime(date1);
+		Calendar calendar2 = Calendar.getInstance();
+		calendar2.setTime(date2);
+		boolean isSameYear = calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR);
+		return isSameYear && calendar1.get(Calendar.WEEK_OF_YEAR) == calendar2.get(Calendar.WEEK_OF_YEAR);
+	}
 
-    /**
-     * 判断两个时间是否是同一月
-     *
-     * @param date1
-     * @param date2
-     * @return
-     */
-    public static boolean isSameMonth(Date date1, Date date2) {
-        if (date1 == null || date2 == null) {
-            return false;
-        }
-        Calendar calendar1 = Calendar.getInstance();
-        calendar1.setTime(date1);
-        Calendar calendar2 = Calendar.getInstance();
-        calendar2.setTime(date2);
-        boolean isSameYear = calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR);
-        return isSameYear && calendar1.get(Calendar.MONTH) == calendar2.get(Calendar.MONTH);
-    }
+	/**
+	 * 判断两个时间是否是同一月
+	 * @param date1
+	 * @param date2
+	 * @return
+	 */
+	public static boolean isSameMonth(Date date1, Date date2) {
+		if (date1 == null || date2 == null) {
+			return false;
+		}
+		Calendar calendar1 = Calendar.getInstance();
+		calendar1.setTime(date1);
+		Calendar calendar2 = Calendar.getInstance();
+		calendar2.setTime(date2);
+		boolean isSameYear = calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR);
+		return isSameYear && calendar1.get(Calendar.MONTH) == calendar2.get(Calendar.MONTH);
+	}
 
-    /**
-     * 判断两个时间是否是同一年
-     *
-     * @param date1
-     * @param date2
-     * @return
-     */
-    public static boolean isSameYear(Date date1, Date date2) {
-        if (date1 == null || date2 == null) {
-            return false;
-        }
-        Calendar calendar1 = Calendar.getInstance();
-        calendar1.setTime(date1);
-        Calendar calendar2 = Calendar.getInstance();
-        calendar2.setTime(date2);
-        return calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR);
-    }
+	/**
+	 * 判断两个时间是否是同一年
+	 * @param date1
+	 * @param date2
+	 * @return
+	 */
+	public static boolean isSameYear(Date date1, Date date2) {
+		if (date1 == null || date2 == null) {
+			return false;
+		}
+		Calendar calendar1 = Calendar.getInstance();
+		calendar1.setTime(date1);
+		Calendar calendar2 = Calendar.getInstance();
+		calendar2.setTime(date2);
+		return calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR);
+	}
 
 }

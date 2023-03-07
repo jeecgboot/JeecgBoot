@@ -11,28 +11,29 @@ import java.util.List;
  **/
 @Data
 public class UpdateDepartInfo {
-    
-    private String departId;
-    
-    private String departName;
-    
-    private String parentId;
-    
-    private Boolean hasSub;
-    
-    public UpdateDepartInfo(){
-        
-    }
 
-    public UpdateDepartInfo(SysDepart depart){
-        this.departId = depart.getId();
-        this.departName = depart.getDepartName();
-        this.parentId = depart.getParentId();
-        this.hasSub = false;
-    }
+	private String departId;
 
-    /**
-     * 部门负责人ID
-     */
-    private List<String> chargePersonList;
+	private String departName;
+
+	private String parentId;
+
+	private Boolean hasSub;
+
+	public UpdateDepartInfo() {
+
+	}
+
+	public UpdateDepartInfo(SysDepart depart) {
+		this.departId = depart.getId();
+		this.departName = depart.getDepartName();
+		this.parentId = depart.getParentId();
+		this.hasSub = false;
+	}
+
+	/**
+	 * 部门负责人ID
+	 */
+	private List<String> chargePersonList;
+
 }

@@ -12,17 +12,17 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @Description: 用户部门mapper接口
  * @author: jeecg-boot
  */
-public interface SysUserDepartMapper extends BaseMapper<SysUserDepart>{
+public interface SysUserDepartMapper extends BaseMapper<SysUserDepart> {
 
-    /**
-     * 通过用户id查询部门用户
-     * @param userId 用户id
-     * @return List<SysUserDepart>
-     */
+	/**
+	 * 通过用户id查询部门用户
+	 * @param userId 用户id
+	 * @return List<SysUserDepart>
+	 */
 	List<SysUserDepart> getUserDepartByUid(@Param("userId") String userId);
 
 	/**
-	 *  查询指定部门下的用户 并且支持用户真实姓名模糊查询
+	 * 查询指定部门下的用户 并且支持用户真实姓名模糊查询
 	 * @param orgCode
 	 * @param realname
 	 * @return
@@ -37,17 +37,8 @@ public interface SysUserDepartMapper extends BaseMapper<SysUserDepart>{
 	 * @param realname
 	 * @return
 	 */
-	IPage<SysUser> queryDepartUserPageList(Page<SysUser> page, @Param("orgCode") String orgCode, @Param("username") String username, @Param("realname") String realname);
-
-    /**
-     * 获取用户信息
-     * @param page
-     * @param orgCode
-     * @param keyword
-     * @return
-     */
-    IPage<SysUser> getUserInformation(Page<SysUser> page,  @Param("orgCode") String orgCode,  @Param("keyword") String keyword,@Param("userId") String userId);
-
+	IPage<SysUser> queryDepartUserPageList(Page<SysUser> page, @Param("orgCode") String orgCode,
+			@Param("username") String username, @Param("realname") String realname);
 
 	/**
 	 * 获取用户信息
@@ -56,7 +47,18 @@ public interface SysUserDepartMapper extends BaseMapper<SysUserDepart>{
 	 * @param keyword
 	 * @return
 	 */
-	IPage<SysUser> getProcessUserList(Page<SysUser> page,  @Param("orgCode") String orgCode,  @Param("keyword") String keyword,  @Param("tenantId") Integer tenantId);
+	IPage<SysUser> getUserInformation(Page<SysUser> page, @Param("orgCode") String orgCode,
+			@Param("keyword") String keyword, @Param("userId") String userId);
+
+	/**
+	 * 获取用户信息
+	 * @param page
+	 * @param orgCode
+	 * @param keyword
+	 * @return
+	 */
+	IPage<SysUser> getProcessUserList(Page<SysUser> page, @Param("orgCode") String orgCode,
+			@Param("keyword") String keyword, @Param("tenantId") Integer tenantId);
 
 	/**
 	 * 获取租户下的部门通过前台传过来的部门id
@@ -64,7 +66,7 @@ public interface SysUserDepartMapper extends BaseMapper<SysUserDepart>{
 	 * @param tenantId
 	 * @return
 	 */
-    List<String> getTenantDepart(@Param("departIds") List<String> departIds, @Param("tenantId") String tenantId);
+	List<String> getTenantDepart(@Param("departIds") List<String> departIds, @Param("tenantId") String tenantId);
 
 	/**
 	 * 根据当前租户和用户id查询用户部门数据
@@ -80,4 +82,5 @@ public interface SysUserDepartMapper extends BaseMapper<SysUserDepart>{
 	 * @param tenantId
 	 */
 	void deleteUserDepart(@Param("userId") String userId, @Param("tenantId") String tenantId);
+
 }

@@ -46,84 +46,98 @@ import java.util.List;
 @RequestMapping("/sys/thirdLogin")
 @Slf4j
 public class ThirdLoginController {
+
 	@Autowired
 	private ISysUserService sysUserService;
+
 	@Autowired
 	private ISysThirdAccountService sysThirdAccountService;
+
 	@Autowired
 	private ISysDictService sysDictService;
+
 	@Autowired
 	private BaseCommonService baseCommonService;
+
 	@Autowired
-    private RedisUtil redisUtil;
+	private RedisUtil redisUtil;
+
 	@Autowired
 	private AuthRequestFactory factory;
 
 	@Autowired
 	ThirdAppConfig thirdAppConfig;
+
 	@Autowired
 	private ThirdAppWechatEnterpriseServiceImpl thirdAppWechatEnterpriseService;
+
 	@Autowired
 	private ThirdAppDingtalkServiceImpl thirdAppDingtalkService;
 
 	@RequestMapping("/render/{source}")
-    public void render(@PathVariable("source") String source, HttpServletResponse response) throws IOException {
-        log.info("第三方登录进入render：" + source);
-        AuthRequest authRequest = factory.get(source);
-        String authorizeUrl = authRequest.authorize(AuthStateUtils.createState());
-        log.info("第三方登录认证地址：" + authorizeUrl);
-        response.sendRedirect(authorizeUrl);
-    }
+	public void render(@PathVariable("source") String source, HttpServletResponse response) throws IOException {
+		log.info("第三方登录进入render：" + source);
+		AuthRequest authRequest = factory.get(source);
+		String authorizeUrl = authRequest.authorize(AuthStateUtils.createState());
+		log.info("第三方登录认证地址：" + authorizeUrl);
+		response.sendRedirect(authorizeUrl);
+	}
 
 	@RequestMapping("/{source}/callback")
-    public String loginThird(@PathVariable("source") String source, AuthCallback callback,ModelMap modelMap) {
+	public String loginThird(@PathVariable("source") String source, AuthCallback callback, ModelMap modelMap) {
 		log.info("第三方登录进入callback：" + source + " params：" + JSONObject.toJSONString(callback));
-        AuthRequest authRequest = factory.get(source);
-        AuthResponse response = authRequest.login(callback);
-        log.info(JSONObject.toJSONString(response));
-        Result<JSONObject> result = new Result<JSONObject>();
-        if(response.getCode()==2000) {
+		AuthRequest authRequest = factory.get(source);
+		AuthResponse response = authRequest.login(callback);
+		log.info(JSONObject.toJSONString(response));
+		Result<JSONObject> result = new Result<JSONObject>();
+		if (response.getCode() == 2000) {
 
-        	JSONObject data = JSONObject.parseObject(JSONObject.toJSONString(response.getData()));
-        	String username = data.getString("username");
-        	String avatar = data.getString("avatar");
-        	String uuid = data.getString("uuid");
-        	//构造第三方登录信息存储对象
+			JSONObject data = JSONObject.parseObject(JSONObject.toJSONString(response.getData()));
+			String username = data.getString("username");
+			String avatar = data.getString("avatar");
+			String uuid = data.getString("uuid");
+			// 构造第三方登录信息存储对象
 			ThirdLoginModel tlm = new ThirdLoginModel(source, uuid, username, avatar);
-        	//判断有没有这个人
-			//update-begin-author:wangshuai date:20201118 for:修改成查询第三方账户表
-        	LambdaQueryWrapper<SysThirdAccount> query = new LambdaQueryWrapper<SysThirdAccount>();
-        	query.eq(SysThirdAccount::getThirdType, source);
-			query.and(q -> q.eq(SysThirdAccount::getThirdUserUuid, uuid).or().eq(SysThirdAccount::getThirdUserId, uuid));
-        	List<SysThirdAccount> thridList = sysThirdAccountService.list(query);
+			// 判断有没有这个人
+			// update-begin-author:wangshuai date:20201118 for:修改成查询第三方账户表
+			LambdaQueryWrapper<SysThirdAccount> query = new LambdaQueryWrapper<SysThirdAccount>();
+			query.eq(SysThirdAccount::getThirdType, source);
+			query
+				.and(q -> q.eq(SysThirdAccount::getThirdUserUuid, uuid).or().eq(SysThirdAccount::getThirdUserId, uuid));
+			List<SysThirdAccount> thridList = sysThirdAccountService.list(query);
 			SysThirdAccount user = null;
-        	if(thridList==null || thridList.size()==0) {
-				//否则直接创建新账号
+			if (thridList == null || thridList.size() == 0) {
+				// 否则直接创建新账号
 				user = sysThirdAccountService.saveThirdUser(tlm);
-        	}else {
-        		//已存在 只设置用户名 不设置头像
-        		user = thridList.get(0);
-        	}
-        	// 生成token
-			//update-begin-author:wangshuai date:20201118 for:从第三方登录查询是否存在用户id，不存在绑定手机号
-			if(oConvertUtils.isNotEmpty(user.getSysUserId())) {
+			}
+			else {
+				// 已存在 只设置用户名 不设置头像
+				user = thridList.get(0);
+			}
+			// 生成token
+			// update-begin-author:wangshuai date:20201118 for:从第三方登录查询是否存在用户id，不存在绑定手机号
+			if (oConvertUtils.isNotEmpty(user.getSysUserId())) {
 				String sysUserId = user.getSysUserId();
 				SysUser sysUser = sysUserService.getById(sysUserId);
 				String token = saveToken(sysUser);
-    			modelMap.addAttribute("token", token);
-			}else{
-				modelMap.addAttribute("token", "绑定手机号,"+""+uuid);
+				modelMap.addAttribute("token", token);
 			}
-			//update-end-author:wangshuai date:20201118 for:从第三方登录查询是否存在用户id，不存在绑定手机号
-		//update-begin--Author:wangshuai  Date:20200729 for：接口在签名校验失败时返回失败的标识码 issues#1441--------------------
-        }else{
+			else {
+				modelMap.addAttribute("token", "绑定手机号," + "" + uuid);
+			}
+			// update-end-author:wangshuai date:20201118 for:从第三方登录查询是否存在用户id，不存在绑定手机号
+			// update-begin--Author:wangshuai Date:20200729 for：接口在签名校验失败时返回失败的标识码
+			// issues#1441--------------------
+		}
+		else {
 			modelMap.addAttribute("token", "登录失败");
 		}
-		//update-end--Author:wangshuai  Date:20200729 for：接口在签名校验失败时返回失败的标识码 issues#1441--------------------
-        result.setSuccess(false);
-        result.setMessage("第三方登录异常,请联系管理员");
-        return "thirdLogin";
-    }
+		// update-end--Author:wangshuai Date:20200729 for：接口在签名校验失败时返回失败的标识码
+		// issues#1441--------------------
+		result.setSuccess(false);
+		result.setMessage("第三方登录异常,请联系管理员");
+		return "thirdLogin";
+	}
 
 	/**
 	 * 创建新账号
@@ -133,23 +147,25 @@ public class ThirdLoginController {
 	@PostMapping("/user/create")
 	@ResponseBody
 	public Result<String> thirdUserCreate(@RequestBody ThirdLoginModel model) {
-		log.info("第三方登录创建新账号：" );
+		log.info("第三方登录创建新账号：");
 		Result<String> res = new Result<>();
 		Object operateCode = redisUtil.get(CommonConstant.THIRD_LOGIN_CODE);
-		if(operateCode==null || !operateCode.toString().equals(model.getOperateCode())){
+		if (operateCode == null || !operateCode.toString().equals(model.getOperateCode())) {
 			res.setSuccess(false);
 			res.setMessage("校验失败");
 			return res;
 		}
-		//创建新账号
-		//update-begin-author:wangshuai date:20201118 for:修改成从第三方登录查出来的user_id，在查询用户表尽行token
+		// 创建新账号
+		// update-begin-author:wangshuai date:20201118
+		// for:修改成从第三方登录查出来的user_id，在查询用户表尽行token
 		SysThirdAccount user = sysThirdAccountService.saveThirdUser(model);
-		if(oConvertUtils.isNotEmpty(user.getSysUserId())){
+		if (oConvertUtils.isNotEmpty(user.getSysUserId())) {
 			String sysUserId = user.getSysUserId();
 			SysUser sysUser = sysUserService.getById(sysUserId);
 			// 生成token
 			String token = saveToken(sysUser);
-			//update-end-author:wangshuai date:20201118 for:修改成从第三方登录查出来的user_id，在查询用户表尽行token
+			// update-end-author:wangshuai date:20201118
+			// for:修改成从第三方登录查出来的user_id，在查询用户表尽行token
 			res.setResult(token);
 			res.setSuccess(true);
 		}
@@ -166,14 +182,14 @@ public class ThirdLoginController {
 	public Result<String> checkPassword(@RequestBody JSONObject json) {
 		Result<String> result = new Result<>();
 		Object operateCode = redisUtil.get(CommonConstant.THIRD_LOGIN_CODE);
-		if(operateCode==null || !operateCode.toString().equals(json.getString("operateCode"))){
+		if (operateCode == null || !operateCode.toString().equals(json.getString("operateCode"))) {
 			result.setSuccess(false);
 			result.setMessage("校验失败");
 			return result;
 		}
 		String username = json.getString("uuid");
 		SysUser user = this.sysUserService.getUserByName(username);
-		if(user==null){
+		if (user == null) {
 			result.setMessage("用户未找到");
 			result.setSuccess(false);
 			return result;
@@ -181,7 +197,7 @@ public class ThirdLoginController {
 		String password = json.getString("password");
 		String salt = user.getSalt();
 		String passwordEncode = PasswordUtil.encrypt(user.getUsername(), password, salt);
-		if(!passwordEncode.equals(user.getPassword())){
+		if (!passwordEncode.equals(user.getPassword())) {
 			result.setMessage("密码不正确");
 			result.setSuccess(false);
 			return result;
@@ -214,36 +230,37 @@ public class ThirdLoginController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/getLoginUser/{token}/{thirdType}", method = RequestMethod.GET)
 	@ResponseBody
-	public Result<JSONObject> getThirdLoginUser(@PathVariable("token") String token,@PathVariable("thirdType") String thirdType) throws Exception {
+	public Result<JSONObject> getThirdLoginUser(@PathVariable("token") String token,
+			@PathVariable("thirdType") String thirdType) throws Exception {
 		Result<JSONObject> result = new Result<JSONObject>();
 		String username = JwtUtil.getUsername(token);
 
-		//1. 校验用户是否有效
+		// 1. 校验用户是否有效
 		SysUser sysUser = sysUserService.getUserByName(username);
 		result = sysUserService.checkUserIsEffective(sysUser);
-		if(!result.isSuccess()) {
+		if (!result.isSuccess()) {
 			return result;
 		}
-		//update-begin-author:wangshuai date:20201118 for:如果真实姓名和头像不存在就取第三方登录的
+		// update-begin-author:wangshuai date:20201118 for:如果真实姓名和头像不存在就取第三方登录的
 		LambdaQueryWrapper<SysThirdAccount> query = new LambdaQueryWrapper<>();
-		query.eq(SysThirdAccount::getSysUserId,sysUser.getId());
-		query.eq(SysThirdAccount::getThirdType,thirdType);
+		query.eq(SysThirdAccount::getSysUserId, sysUser.getId());
+		query.eq(SysThirdAccount::getThirdType, thirdType);
 		SysThirdAccount account = sysThirdAccountService.getOne(query);
-		if(oConvertUtils.isEmpty(sysUser.getRealname())){
+		if (oConvertUtils.isEmpty(sysUser.getRealname())) {
 			sysUser.setRealname(account.getRealname());
 		}
-		if(oConvertUtils.isEmpty(sysUser.getAvatar())){
+		if (oConvertUtils.isEmpty(sysUser.getAvatar())) {
 			sysUser.setAvatar(account.getAvatar());
 		}
-		//update-end-author:wangshuai date:20201118 for:如果真实姓名和头像不存在就取第三方登录的
+		// update-end-author:wangshuai date:20201118 for:如果真实姓名和头像不存在就取第三方登录的
 		JSONObject obj = new JSONObject();
-		//TODO 第三方登确定登录租户和部门逻辑
-		
-		//用户登录信息
+		// TODO 第三方登确定登录租户和部门逻辑
+
+		// 用户登录信息
 		obj.put("userInfo", sysUser);
-		//获取字典缓存【解决 #jeecg-boot/issues/3998】
+		// 获取字典缓存【解决 #jeecg-boot/issues/3998】
 		obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
-		//token 信息
+		// token 信息
 		obj.put("token", token);
 		result.setResult(obj);
 		result.setSuccess(true);
@@ -251,9 +268,9 @@ public class ThirdLoginController {
 		baseCommonService.addLog("用户名: " + username + ",登录成功[第三方用户]！", CommonConstant.LOG_TYPE_1, null);
 		return result;
 	}
+
 	/**
 	 * 第三方绑定手机号返回token
-	 *
 	 * @param jsonObject
 	 * @return
 	 */
@@ -266,23 +283,24 @@ public class ThirdLoginController {
 		String thirdUserUuid = jsonObject.getString("thirdUserUuid");
 		// 校验验证码
 		String captcha = jsonObject.getString("captcha");
-		//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
-		String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+phone;
+		// update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+		String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE + phone;
 		Object captchaCache = redisUtil.get(redisKey);
-		//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+		// update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 		if (oConvertUtils.isEmpty(captcha) || !captcha.equals(captchaCache)) {
 			result.setMessage("验证码错误");
 			result.setSuccess(false);
 			return result;
 		}
-		//校验用户有效性
+		// 校验用户有效性
 		SysUser sysUser = sysUserService.getUserByPhone(phone);
-		if(sysUser != null){
+		if (sysUser != null) {
 			// 存在用户，直接绑定
-			sysThirdAccountService.updateThirdUserId(sysUser,thirdUserUuid);
-		}else{
+			sysThirdAccountService.updateThirdUserId(sysUser, thirdUserUuid);
+		}
+		else {
 			// 不存在手机号，创建用户
-			sysUser = sysThirdAccountService.createUser(phone,thirdUserUuid);
+			sysUser = sysThirdAccountService.createUser(phone, thirdUserUuid);
 		}
 		String token = saveToken(sysUser);
 		result.setSuccess(true);
@@ -292,14 +310,14 @@ public class ThirdLoginController {
 
 	/**
 	 * 企业微信/钉钉 OAuth2登录
-	 *
 	 * @param source
 	 * @param state
 	 * @return
 	 */
 	@ResponseBody
 	@GetMapping("/oauth2/{source}/login")
-	public String oauth2LoginCallback(@PathVariable("source") String source, @RequestParam("state") String state, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public String oauth2LoginCallback(@PathVariable("source") String source, @RequestParam("state") String state,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String url;
 		if (ThirdAppConfig.WECHAT_ENTERPRISE.equalsIgnoreCase(source)) {
 			ThirdAppTypeItemVo config = thirdAppConfig.getWechatEnterprise();
@@ -309,7 +327,7 @@ public class ThirdLoginController {
 			// 企业的CorpID
 			builder.append("?appid=").append(config.getClientId());
 			// 授权后重定向的回调链接地址，请使用urlencode对链接进行处理
-			String redirectUri = CommonUtils.getBaseUrl(request)  + "/sys/thirdLogin/oauth2/wechat_enterprise/callback";
+			String redirectUri = CommonUtils.getBaseUrl(request) + "/sys/thirdLogin/oauth2/wechat_enterprise/callback";
 			builder.append("&redirect_uri=").append(URLEncoder.encode(redirectUri, "UTF-8"));
 			// 返回类型，此时固定为：code
 			builder.append("&response_type=code");
@@ -321,7 +339,8 @@ public class ThirdLoginController {
 			// 终端使用此参数判断是否需要带上身份信息
 			builder.append("#wechat_redirect");
 			url = builder.toString();
-		} else if (ThirdAppConfig.DINGTALK.equalsIgnoreCase(source)) {
+		}
+		else if (ThirdAppConfig.DINGTALK.equalsIgnoreCase(source)) {
 			ThirdAppTypeItemVo config = thirdAppConfig.getDingtalk();
 			StringBuilder builder = new StringBuilder();
 			// 构造钉钉OAuth2登录授权地址
@@ -341,11 +360,14 @@ public class ThirdLoginController {
 			builder.append("&scope=openid");
 			// 跟随authCode原样返回。
 			builder.append("&state=").append(state);
-            //update-begin---author:wangshuai ---date:20220613  for：[issues/I5BOUF]oauth2 钉钉无法登录------------
-            builder.append("&prompt=").append("consent");
-            //update-end---author:wangshuai ---date:20220613  for：[issues/I5BOUF]oauth2 钉钉无法登录--------------
-            url = builder.toString();
-		} else {
+			// update-begin---author:wangshuai ---date:20220613 for：[issues/I5BOUF]oauth2
+			// 钉钉无法登录------------
+			builder.append("&prompt=").append("consent");
+			// update-end---author:wangshuai ---date:20220613 for：[issues/I5BOUF]oauth2
+			// 钉钉无法登录--------------
+			url = builder.toString();
+		}
+		else {
 			return "不支持的source";
 		}
 		log.info("oauth2 login url:" + url);
@@ -353,75 +375,78 @@ public class ThirdLoginController {
 		return "login…";
 	}
 
-    /**
-     * 企业微信/钉钉 OAuth2登录回调
-     *
-     * @param code
-     * @param state
-     * @param response
-     * @return
-     */
+	/**
+	 * 企业微信/钉钉 OAuth2登录回调
+	 * @param code
+	 * @param state
+	 * @param response
+	 * @return
+	 */
 	@ResponseBody
 	@GetMapping("/oauth2/{source}/callback")
-	public String oauth2LoginCallback(
-			@PathVariable("source") String source,
+	public String oauth2LoginCallback(@PathVariable("source") String source,
 			// 企业微信返回的code
 			@RequestParam(value = "code", required = false) String code,
 			// 钉钉返回的code
-			@RequestParam(value = "authCode", required = false) String authCode,
-			@RequestParam("state") String state,
+			@RequestParam(value = "authCode", required = false) String authCode, @RequestParam("state") String state,
 			HttpServletResponse response) {
-        SysUser loginUser;
-        if (ThirdAppConfig.WECHAT_ENTERPRISE.equalsIgnoreCase(source)) {
-            log.info("【企业微信】OAuth2登录进入callback：code=" + code + ", state=" + state);
-            loginUser = thirdAppWechatEnterpriseService.oauth2Login(code);
-            if (loginUser == null) {
-                return "登录失败";
-            }
-        } else if (ThirdAppConfig.DINGTALK.equalsIgnoreCase(source)) {
+		SysUser loginUser;
+		if (ThirdAppConfig.WECHAT_ENTERPRISE.equalsIgnoreCase(source)) {
+			log.info("【企业微信】OAuth2登录进入callback：code=" + code + ", state=" + state);
+			loginUser = thirdAppWechatEnterpriseService.oauth2Login(code);
+			if (loginUser == null) {
+				return "登录失败";
+			}
+		}
+		else if (ThirdAppConfig.DINGTALK.equalsIgnoreCase(source)) {
 			log.info("【钉钉】OAuth2登录进入callback：authCode=" + authCode + ", state=" + state);
 			loginUser = thirdAppDingtalkService.oauth2Login(authCode);
 			if (loginUser == null) {
 				return "登录失败";
 			}
-        } else {
-            return "不支持的source";
-        }
-        try {
+		}
+		else {
+			return "不支持的source";
+		}
+		try {
 
-			//update-begin-author:taoyan date:2022-6-30 for: 工作流发送消息 点击消息链接跳转办理页面
+			// update-begin-author:taoyan date:2022-6-30 for: 工作流发送消息 点击消息链接跳转办理页面
 			String redirect = "";
 			if (state.indexOf("?") > 0) {
 				String[] arr = state.split("\\?");
 				state = arr[0];
-				if(arr.length>1){
+				if (arr.length > 1) {
 					redirect = arr[1];
 				}
 			}
 
 			String token = saveToken(loginUser);
 			state += "/oauth2-app/login?oauth2LoginToken=" + URLEncoder.encode(token, "UTF-8");
-			//update-begin---author:wangshuai ---date:20220613  for：[issues/I5BOUF]oauth2 钉钉无法登录------------
+			// update-begin---author:wangshuai ---date:20220613 for：[issues/I5BOUF]oauth2
+			// 钉钉无法登录------------
 			state += "&thirdType=" + source;
-			//state += "&thirdType=" + "wechat_enterprise";
+			// state += "&thirdType=" + "wechat_enterprise";
 			if (redirect != null && redirect.length() > 0) {
 				state += "&" + redirect;
 			}
-			//update-end-author:taoyan date:2022-6-30 for: 工作流发送消息 点击消息链接跳转办理页面
+			// update-end-author:taoyan date:2022-6-30 for: 工作流发送消息 点击消息链接跳转办理页面
 
-            //update-end---author:wangshuai ---date:20220613  for：[issues/I5BOUF]oauth2 钉钉无法登录------------
+			// update-end---author:wangshuai ---date:20220613 for：[issues/I5BOUF]oauth2
+			// 钉钉无法登录------------
 			log.info("OAuth2登录重定向地址: " + state);
-            try {
-                response.sendRedirect(state);
-                return "ok";
-            } catch (IOException e) {
-                e.printStackTrace();
-                return "重定向失败";
-            }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return "解码失败";
-        }
-    }
+			try {
+				response.sendRedirect(state);
+				return "ok";
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+				return "重定向失败";
+			}
+		}
+		catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return "解码失败";
+		}
+	}
 
 }

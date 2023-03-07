@@ -26,14 +26,16 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, OssFile> impl
 		fileName = CommonUtils.getFileName(fileName);
 		OssFile ossFile = new OssFile();
 		ossFile.setFileName(fileName);
-		String url = OssBootUtil.upload(multipartFile,"upload/test");
-		if(oConvertUtils.isEmpty(url)){
+		String url = OssBootUtil.upload(multipartFile, "upload/test");
+		if (oConvertUtils.isEmpty(url)) {
 			throw new JeecgBootException("上传文件失败! ");
 		}
-		//update-begin--Author:scott  Date:20201227 for：JT-361【文件预览】阿里云原生域名可以文件预览，自己映射域名kkfileview提示文件下载失败-------------------
+		// update-begin--Author:scott Date:20201227
+		// for：JT-361【文件预览】阿里云原生域名可以文件预览，自己映射域名kkfileview提示文件下载失败-------------------
 		// 返回阿里云原生域名前缀URL
 		ossFile.setUrl(OssBootUtil.getOriginalUrl(url));
-		//update-end--Author:scott  Date:20201227 for：JT-361【文件预览】阿里云原生域名可以文件预览，自己映射域名kkfileview提示文件下载失败-------------------
+		// update-end--Author:scott Date:20201227
+		// for：JT-361【文件预览】阿里云原生域名可以文件预览，自己映射域名kkfileview提示文件下载失败-------------------
 		this.save(ossFile);
 	}
 
@@ -44,7 +46,7 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, OssFile> impl
 			OssBootUtil.deleteUrl(ossFile.getUrl());
 		}
 		catch (Exception ex) {
-			log.error(ex.getMessage(),ex);
+			log.error(ex.getMessage(), ex);
 			return false;
 		}
 		return true;
