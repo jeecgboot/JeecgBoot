@@ -254,7 +254,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 			}
 		}
 		else { // 反之则查询出所有同级的部门,获取结果后有两种情况,有同级和没有同级
-			// 封装查询同级的条件
+				// 封装查询同级的条件
 			query.eq(SysDepart::getParentId, parentId);
 			// 降序排序
 			query.orderByDesc(SysDepart::getOrgCode);
@@ -272,7 +272,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 				newOrgCode = YouBianCodeUtil.getSubYouBianCode(parentCode, null);
 			}
 			else { // 处理有同级部门的情况
-				// 获取同级部门的编码,利用工具类
+					// 获取同级部门的编码,利用工具类
 				String subCode = parentList.get(0).getOrgCode();
 				// 返回生成的当前部门编码
 				newOrgCode = YouBianCodeUtil.getSubYouBianCode(parentCode, subCode);

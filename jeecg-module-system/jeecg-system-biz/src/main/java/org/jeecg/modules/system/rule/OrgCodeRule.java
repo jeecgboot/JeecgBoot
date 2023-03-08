@@ -77,9 +77,9 @@ public class OrgCodeRule implements IFillRuleHandler {
 			}
 		}
 		else {// 反之则查询出所有同级的部门,获取结果后有两种情况,有同级和没有同级
-			// 获取自己部门最大值orgCode部门信息
-			// update-begin---author:wangshuai ---date:20230211
-			// for：[QQYUN-4209]租户隔离下部门新建不了------------
+				// 获取自己部门最大值orgCode部门信息
+				// update-begin---author:wangshuai ---date:20230211
+				// for：[QQYUN-4209]租户隔离下部门新建不了------------
 			Page<SysDepart> page = new Page<>(1, 1);
 			IPage<SysDepart> pageList = sysDepartService.getMaxCodeDepart(page, parentId);
 			List<SysDepart> records = pageList.getRecords();
@@ -97,7 +97,7 @@ public class OrgCodeRule implements IFillRuleHandler {
 				newOrgCode = YouBianCodeUtil.getSubYouBianCode(parentCode, null);
 			}
 			else { // 处理有同级部门的情况
-				// 获取同级部门的编码,利用工具类
+					// 获取同级部门的编码,利用工具类
 				String subCode = records.get(0).getOrgCode();
 				// 返回生成的当前部门编码
 				newOrgCode = YouBianCodeUtil.getSubYouBianCode(parentCode, subCode);

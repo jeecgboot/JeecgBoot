@@ -40,7 +40,7 @@ public class ResourceUtil {
 	 * 所有枚举java类
 	 */
 
-	private final static String CLASS_ENMU_PATTERN = "/**/*Enum.class";
+	private final static String CLASS_ENUM_PATTERN = "/**/*Enum.class";
 
 	/**
 	 * 包路径 org.jeecg
@@ -62,7 +62,7 @@ public class ResourceUtil {
 		}
 		ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 		String pattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
-				+ ClassUtils.convertClassNameToResourcePath(BASE_PACKAGE) + CLASS_ENMU_PATTERN;
+				+ ClassUtils.convertClassNameToResourcePath(BASE_PACKAGE) + CLASS_ENUM_PATTERN;
 		try {
 			Resource[] resources = resourcePatternResolver.getResources(pattern);
 			MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory(resourcePatternResolver);
