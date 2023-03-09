@@ -192,6 +192,8 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 			sysDepart.setOrgType(String.valueOf(orgType));
 			sysDepart.setCreateTime(new Date());
 			sysDepart.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
+			//新添加的部门是叶子节点
+			sysDepart.setIzLeaf(CommonConstant.IS_LEAF);
 			this.save(sysDepart);
             //update-begin---author:wangshuai ---date:20220307  for：[JTC-119]在部门管理菜单下设置部门负责人 创建用户的时候不需要处理
 			//新增部门的时候新增负责部门
