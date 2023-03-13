@@ -12,7 +12,7 @@
  Target Server Version : 15004188
  File Encoding         : 65001
 
- Date: 07/03/2023 11:19:06
+ Date: 13/03/2023 10:11:30
 */
 
 
@@ -2492,7 +2492,8 @@ CREATE TABLE [dbo].[jimu_report_data_source] (
   [update_by] nvarchar(50) COLLATE Chinese_PRC_CI_AS  NULL,
   [update_time] datetime2(7)  NULL,
   [connect_times] int  NULL,
-  [tenant_id] nvarchar(10) COLLATE Chinese_PRC_CI_AS  NULL
+  [tenant_id] nvarchar(10) COLLATE Chinese_PRC_CI_AS  NULL,
+  [type] nvarchar(10) COLLATE Chinese_PRC_CI_AS  NULL
 )
 GO
 
@@ -2604,17 +2605,24 @@ EXEC sp_addextendedproperty
 'COLUMN', N'tenant_id'
 GO
 
+EXEC sp_addextendedproperty
+'MS_Description', N'类型(report:报表;drag:仪表盘)',
+'SCHEMA', N'dbo',
+'TABLE', N'jimu_report_data_source',
+'COLUMN', N'type'
+GO
+
 
 -- ----------------------------
 -- Records of jimu_report_data_source
 -- ----------------------------
-INSERT INTO [dbo].[jimu_report_data_source] ([id], [name], [report_id], [code], [remark], [db_type], [db_driver], [db_url], [db_username], [db_password], [create_by], [create_time], [update_by], [update_time], [connect_times], [tenant_id]) VALUES (N'1324261983692902402', N'jeewx', N'1324261770294071296', N'', NULL, N'MYSQL', N'com.mysql.jdbc.Driver', N'jdbc:mysql://127.0.0.1:3306/jeewx-boot?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8', N'root', N'root', N'jeecg', N'2020-11-05 16:07:15.0000000', NULL, N'2020-11-05 16:07:15.0000000', N'0', NULL)
+INSERT INTO [dbo].[jimu_report_data_source] ([id], [name], [report_id], [code], [remark], [db_type], [db_driver], [db_url], [db_username], [db_password], [create_by], [create_time], [update_by], [update_time], [connect_times], [tenant_id], [type]) VALUES (N'1324261983692902402', N'jeewx', N'1324261770294071296', N'', NULL, N'MYSQL', N'com.mysql.jdbc.Driver', N'jdbc:mysql://127.0.0.1:3306/jeewx-boot?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8', N'root', N'root', N'jeecg', N'2020-11-05 16:07:15.0000000', NULL, N'2020-11-05 16:07:15.0000000', N'0', NULL, N'report')
 GO
 
-INSERT INTO [dbo].[jimu_report_data_source] ([id], [name], [report_id], [code], [remark], [db_type], [db_driver], [db_url], [db_username], [db_password], [create_by], [create_time], [update_by], [update_time], [connect_times], [tenant_id]) VALUES (N'26d21fe4f27920d2f56abc8d90a8e527', N'oracle', N'1308645288868712448', N'', NULL, N'ORACLE', N'oracle.jdbc.OracleDriver', N'jdbc:oracle:thin:@192.168.1.199:1521:helowin', N'jeecgbootbpm', N'jeecg196283', N'admin', N'2021-01-05 19:26:24.0000000', NULL, N'2021-01-05 19:26:24.0000000', N'0', NULL)
+INSERT INTO [dbo].[jimu_report_data_source] ([id], [name], [report_id], [code], [remark], [db_type], [db_driver], [db_url], [db_username], [db_password], [create_by], [create_time], [update_by], [update_time], [connect_times], [tenant_id], [type]) VALUES (N'26d21fe4f27920d2f56abc8d90a8e527', N'oracle', N'1308645288868712448', N'', NULL, N'ORACLE', N'oracle.jdbc.OracleDriver', N'jdbc:oracle:thin:@192.168.1.199:1521:helowin', N'jeecgbootbpm', N'jeecg196283', N'admin', N'2021-01-05 19:26:24.0000000', NULL, N'2021-01-05 19:26:24.0000000', N'0', NULL, N'report')
 GO
 
-INSERT INTO [dbo].[jimu_report_data_source] ([id], [name], [report_id], [code], [remark], [db_type], [db_driver], [db_url], [db_username], [db_password], [create_by], [create_time], [update_by], [update_time], [connect_times], [tenant_id]) VALUES (N'8f90daf47d15d35ca6cf420748b8b9ba', N'localhost', N'1316944968992034816', N'', NULL, N'MYSQL5.7', N'com.mysql.cj.jdbc.Driver', N'jdbc:mysql://127.0.0.1:3306/jeecg-boot?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8', N'root', N'root', N'admin', N'2021-01-13 14:34:00.0000000', NULL, N'2021-01-13 14:34:00.0000000', N'0', NULL)
+INSERT INTO [dbo].[jimu_report_data_source] ([id], [name], [report_id], [code], [remark], [db_type], [db_driver], [db_url], [db_username], [db_password], [create_by], [create_time], [update_by], [update_time], [connect_times], [tenant_id], [type]) VALUES (N'8f90daf47d15d35ca6cf420748b8b9ba', N'localhost', N'1316944968992034816', N'', NULL, N'MYSQL5.7', N'com.mysql.cj.jdbc.Driver', N'jdbc:mysql://127.0.0.1:3306/jeecg-boot?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8', N'root', N'root', N'admin', N'2021-01-13 14:34:00.0000000', NULL, N'2021-01-13 14:34:00.0000000', N'0', NULL, N'report')
 GO
 
 
