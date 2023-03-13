@@ -190,4 +190,14 @@ public interface ISysTenantService extends IService<SysTenant> {
      * @param sysTenantPackUser
      */
     void deleteApply(SysTenantPackUser sysTenantPackUser);
+
+    /**
+     * 产品包用户列表
+     * @param tenantId
+     * @param packId
+     * @param status
+     * @param page
+     * @return
+     */
+    IPage<TenantPackUser> queryTenantPackUserList(String tenantId, String packId, Integer status, Page<TenantPackUser> page);
 }

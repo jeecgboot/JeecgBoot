@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.constant.TenantConstant;
@@ -9,7 +10,6 @@ import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.aop.TenantLog;
 import org.jeecg.modules.system.entity.SysPackPermission;
-import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysTenantPack;
 import org.jeecg.modules.system.entity.SysTenantPackUser;
 import org.jeecg.modules.system.mapper.SysPackPermissionMapper;
@@ -18,11 +18,8 @@ import org.jeecg.modules.system.mapper.SysTenantPackUserMapper;
 import org.jeecg.modules.system.service.ISysTenantPackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
