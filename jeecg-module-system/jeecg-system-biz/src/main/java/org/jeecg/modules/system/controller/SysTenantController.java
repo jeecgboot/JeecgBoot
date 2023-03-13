@@ -67,8 +67,8 @@ public class SysTenantController {
     //@RequiresPermissions("system:tenant:list")
     @PermissionData(pageComponent = "system/TenantList")
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public Result<IPage<SysTenant>> queryPageList(SysTenant sysTenant,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
+	public Result<IPage<SysTenant>> queryPageList(SysTenant sysTenant, @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                                  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize, HttpServletRequest req) {
 		Result<IPage<SysTenant>> result = new Result<IPage<SysTenant>>();
         //---author:zhangyafei---date:20210916-----for: 租户管理添加日期范围查询---
         Date beginDate=null;
@@ -104,8 +104,8 @@ public class SysTenantController {
      */
     @GetMapping("/recycleBinPageList")
     //@RequiresPermissions("system:tenant:recycleBinPageList")
-    public Result<IPage<SysTenant>> recycleBinPageList(SysTenant sysTenant,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-                                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req){
+    public Result<IPage<SysTenant>> recycleBinPageList(SysTenant sysTenant, @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                                       @RequestParam(name="pageSize", defaultValue="10") Integer pageSize, HttpServletRequest req){
         Result<IPage<SysTenant>> result = new Result<IPage<SysTenant>>();
         Page<SysTenant> page = new Page<SysTenant>(pageNo, pageSize);
         IPage<SysTenant> pageList = sysTenantService.getRecycleBinPageList(page, sysTenant);
@@ -218,8 +218,10 @@ public class SysTenantController {
             result.error500("参数为空！");
         }
         //------------------------------------------------------------------------------------------------
-        //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
-        if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+        //获取登录用户信息
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】, admin给特权可以管理所有租户
+        if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && !"admin".equals(sysUser.getUsername())){
             Integer loginSessionTenant = oConvertUtils.getInt(TenantContext.getTenant());
             if(loginSessionTenant!=null && !loginSessionTenant.equals(Integer.valueOf(id))){
                 result.error500("无权限访问他人租户！");
@@ -360,7 +362,7 @@ public class SysTenantController {
      */
     @PutMapping("/invitationUserJoin")
     //@RequiresPermissions("system:tenant:invitation:user")
-    public Result<String> invitationUserJoin(@RequestParam("ids") String ids,@RequestParam("userIds") String userIds){
+    public Result<String> invitationUserJoin(@RequestParam("ids") String ids, @RequestParam("userIds") String userIds){
         sysTenantService.invitationUserJoin(ids,userIds);
         return Result.ok("邀请用户成功");
     }
@@ -417,7 +419,7 @@ public class SysTenantController {
      * @return
      */
     @RequestMapping(value = "/editOwnTenant", method ={RequestMethod.PUT, RequestMethod.POST})
-    public Result<SysTenant> editOwnTenant(@RequestBody SysTenant tenant,HttpServletRequest req) {
+    public Result<SysTenant> editOwnTenant(@RequestBody SysTenant tenant, HttpServletRequest req) {
         Result<SysTenant> result = new Result();
         String tenantId = TokenUtils.getTenantIdByRequest(req);
         if(!tenantId.equals(tenant.getId().toString())){
@@ -556,7 +558,7 @@ public class SysTenantController {
      */
     @PutMapping("/cancelTenant")
     //@RequiresPermissions("system:tenant:cancelTenant")
-    public Result<String> cancelTenant(@RequestBody SysTenant sysTenant,HttpServletRequest request) {
+    public Result<String> cancelTenant(@RequestBody SysTenant sysTenant, HttpServletRequest request) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         SysTenant tenant = sysTenantService.getById(sysTenant.getId());
         if (null == tenant) {
@@ -638,7 +640,7 @@ public class SysTenantController {
      * @return
      */
     @DeleteMapping("/exitUserTenant")
-    public Result<String> exitUserTenant(@RequestBody SysTenant sysTenant,HttpServletRequest request){
+    public Result<String> exitUserTenant(@RequestBody SysTenant sysTenant, HttpServletRequest request){
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //验证用户是否已存在
         Integer count = relationService.userTenantIzExist(sysUser.getId(),sysTenant.getId());
@@ -796,5 +798,25 @@ public class SysTenantController {
     public Result<TenantDepartAuthInfo> queryTenantAuthInfo(@RequestParam(name="id",required=true) String id) {
         TenantDepartAuthInfo info = sysTenantService.getTenantDepartAuthInfo(Integer.parseInt(id));
         return Result.ok(info);
+    }
+
+    /**
+     * 获取产品包下的用户列表(分页)
+     * @param tenantId
+     * @param packId
+     * @param status
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/queryTenantPackUserList")
+    public Result<IPage<TenantPackUser>> queryTenantPackUserList(@RequestParam("tenantId") String tenantId,
+                                                                 @RequestParam("packId") String packId,
+                                                                 @RequestParam("status") Integer status,
+                                                                 @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                                                 @RequestParam(name="pageSize", defaultValue="10") Integer pageSize){
+        Page<TenantPackUser> page = new Page<>(pageNo,pageSize);
+        IPage<TenantPackUser> pageList = sysTenantService.queryTenantPackUserList(tenantId,packId,status,page);
+        return Result.ok(pageList);
     }
 }

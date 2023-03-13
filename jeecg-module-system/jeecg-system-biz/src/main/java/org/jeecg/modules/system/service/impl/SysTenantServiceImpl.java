@@ -74,7 +74,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     public Long countUserLinkTenant(String id) {
         LambdaQueryWrapper<SysUserTenant> query = new LambdaQueryWrapper<>();
         query.eq(SysUserTenant::getTenantId,id);
-        query.eq(SysUserTenant::getStatus,CommonConstant.STATUS_1);
+        query.eq(SysUserTenant::getStatus, CommonConstant.STATUS_1);
         // 查找出已被关联的用户数量
         return userTenantMapper.selectCount(query);
     }
@@ -107,7 +107,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
                     SysUserTenant relation = new SysUserTenant();
                     relation.setUserId(userId);
                     relation.setTenantId(Integer.valueOf(id));
-                    relation.setStatus(CommonConstant.USER_TENANT_UNDER_REVIEW);
+                    relation.setStatus(CommonConstant.USER_TENANT_NORMAL);
                     userTenantMapper.insert(relation);
                 }
                 //update-end---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
@@ -557,6 +557,46 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         if(packUser!=null && packUser.getId()!=null && packUser.getStatus()==0){
             sysTenantPackUserMapper.deleteById(packUser.getId());
         }
+    }
+
+    @Override
+    public IPage<TenantPackUser> queryTenantPackUserList(String tenantId, String packId, Integer status, Page<TenantPackUser> page) {
+        // 查询用户
+        List<TenantPackUser> userList = baseMapper.queryTenantPackUserList(page,tenantId, packId,status);
+        // 获取产品包下用户部门和职位
+        userList = getPackUserPositionAndDepart(userList);
+        return page.setRecords(userList);
+    }
+
+    /**
+     * 获取用户职位和部门
+     * @param userList
+     * @return
+     */
+    private List<TenantPackUser> getPackUserPositionAndDepart(List<TenantPackUser> userList) {
+        if(userList!=null && userList.size()>0){
+            List<String> userIdList = userList.stream().map(i->i.getId()).collect(Collectors.toList());
+            // 部门
+            List<UserDepart> depList = baseMapper.queryUserDepartList(userIdList);
+            // 职位
+            //List<UserPosition> userPositions = baseMapper.queryUserPositionList(userIdList);
+            // 遍历用户 往用户中添加 部门信息和职位信息
+            for (TenantPackUser user : userList) {
+                //添加部门
+                for (UserDepart dep : depList) {
+                    if (user.getId().equals(dep.getUserId())) {
+                        user.addDepart(dep.getDepartName());
+                    }
+                }
+//                //添加职位
+//                for (UserPosition userPosition : userPositions) {
+//                    if (user.getId().equals(userPosition.getUserId())) {
+//                        user.addPosition(userPosition.getPositionName());
+//                    }
+//                }
+            }
+        }
+        return userList;
     }
 
     /**
