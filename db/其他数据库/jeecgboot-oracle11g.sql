@@ -11,7 +11,7 @@
  Target Server Version : 110200
  File Encoding         : 65001
 
- Date: 07/03/2023 11:20:38
+ Date: 13/03/2023 10:26:56
 */
 
 
@@ -1005,7 +1005,8 @@ CREATE TABLE "JEECGBOOT"."JIMU_REPORT_DATA_SOURCE" (
   "UPDATE_BY" NVARCHAR2(50),
   "UPDATE_TIME" DATE,
   "CONNECT_TIMES" NUMBER(11,0),
-  "TENANT_ID" NVARCHAR2(10)
+  "TENANT_ID" NVARCHAR2(10),
+  "TYPE" VARCHAR2(10 BYTE)
 )
 LOGGING
 NOCOMPRESS
@@ -1037,13 +1038,14 @@ COMMENT ON COLUMN "JEECGBOOT"."JIMU_REPORT_DATA_SOURCE"."UPDATE_BY" IS '更新�
 COMMENT ON COLUMN "JEECGBOOT"."JIMU_REPORT_DATA_SOURCE"."UPDATE_TIME" IS '更新日期';
 COMMENT ON COLUMN "JEECGBOOT"."JIMU_REPORT_DATA_SOURCE"."CONNECT_TIMES" IS '连接失败次数';
 COMMENT ON COLUMN "JEECGBOOT"."JIMU_REPORT_DATA_SOURCE"."TENANT_ID" IS '多租户标识';
+COMMENT ON COLUMN "JEECGBOOT"."JIMU_REPORT_DATA_SOURCE"."TYPE" IS '类型(report:报表;drag:仪表盘)';
 
 -- ----------------------------
 -- Records of JIMU_REPORT_DATA_SOURCE
 -- ----------------------------
-INSERT INTO "JEECGBOOT"."JIMU_REPORT_DATA_SOURCE" VALUES ('1324261983692902402', 'jeewx', '1324261770294071296', NULL, NULL, 'MYSQL', 'com.mysql.jdbc.Driver', 'jdbc:mysql://127.0.0.1:3306/jeewx-boot?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8', 'root', 'root', 'jeecg', TO_DATE('2020-11-05 16:07:15', 'SYYYY-MM-DD HH24:MI:SS'), NULL, TO_DATE('2020-11-05 16:07:15', 'SYYYY-MM-DD HH24:MI:SS'), '0', NULL);
-INSERT INTO "JEECGBOOT"."JIMU_REPORT_DATA_SOURCE" VALUES ('26d21fe4f27920d2f56abc8d90a8e527', 'oracle', '1308645288868712448', NULL, NULL, 'ORACLE', 'oracle.jdbc.OracleDriver', 'jdbc:oracle:thin:@192.168.1.199:1521:helowin', 'jeecgbootbpm', 'jeecg196283', 'admin', TO_DATE('2021-01-05 19:26:24', 'SYYYY-MM-DD HH24:MI:SS'), NULL, TO_DATE('2021-01-05 19:26:24', 'SYYYY-MM-DD HH24:MI:SS'), '0', NULL);
-INSERT INTO "JEECGBOOT"."JIMU_REPORT_DATA_SOURCE" VALUES ('8f90daf47d15d35ca6cf420748b8b9ba', 'localhost', '1316944968992034816', NULL, NULL, 'MYSQL5.7', 'com.mysql.cj.jdbc.Driver', 'jdbc:mysql://127.0.0.1:3306/jeecg-boot?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8', 'root', 'root', 'admin', TO_DATE('2021-01-13 14:34:00', 'SYYYY-MM-DD HH24:MI:SS'), NULL, TO_DATE('2021-01-13 14:34:00', 'SYYYY-MM-DD HH24:MI:SS'), '0', NULL);
+INSERT INTO "JEECGBOOT"."JIMU_REPORT_DATA_SOURCE" VALUES ('1324261983692902402', 'jeewx', '1324261770294071296', NULL, NULL, 'MYSQL', 'com.mysql.jdbc.Driver', 'jdbc:mysql://127.0.0.1:3306/jeewx-boot?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8', 'root', 'root', 'jeecg', TO_DATE('2020-11-05 16:07:15', 'SYYYY-MM-DD HH24:MI:SS'), NULL, TO_DATE('2020-11-05 16:07:15', 'SYYYY-MM-DD HH24:MI:SS'), '0', NULL, 'report');
+INSERT INTO "JEECGBOOT"."JIMU_REPORT_DATA_SOURCE" VALUES ('26d21fe4f27920d2f56abc8d90a8e527', 'oracle', '1308645288868712448', NULL, NULL, 'ORACLE', 'oracle.jdbc.OracleDriver', 'jdbc:oracle:thin:@192.168.1.199:1521:helowin', 'jeecgbootbpm', 'jeecg196283', 'admin', TO_DATE('2021-01-05 19:26:24', 'SYYYY-MM-DD HH24:MI:SS'), NULL, TO_DATE('2021-01-05 19:26:24', 'SYYYY-MM-DD HH24:MI:SS'), '0', NULL, 'report');
+INSERT INTO "JEECGBOOT"."JIMU_REPORT_DATA_SOURCE" VALUES ('8f90daf47d15d35ca6cf420748b8b9ba', 'localhost', '1316944968992034816', NULL, NULL, 'MYSQL5.7', 'com.mysql.cj.jdbc.Driver', 'jdbc:mysql://127.0.0.1:3306/jeecg-boot?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8', 'root', 'root', 'admin', TO_DATE('2021-01-13 14:34:00', 'SYYYY-MM-DD HH24:MI:SS'), NULL, TO_DATE('2021-01-13 14:34:00', 'SYYYY-MM-DD HH24:MI:SS'), '0', NULL, 'report');
 
 -- ----------------------------
 -- Table structure for JIMU_REPORT_DB
