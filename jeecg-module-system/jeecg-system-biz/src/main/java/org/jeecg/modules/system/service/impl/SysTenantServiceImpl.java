@@ -26,10 +26,8 @@ import org.jeecg.modules.system.service.ISysTenantService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.vo.tenant.*;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -91,27 +89,31 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
 
     @Override
     @CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
-    public void invitationUserJoin(String ids, String userIds) {
+    public void invitationUserJoin(String ids, String phone) {
         String[] idArray = ids.split(SymbolConstant.COMMA);
-        String[] userIdArray = userIds.split(SymbolConstant.COMMA);
-        //先循环用户id，避免多次查询
-        for (String userId : userIdArray) {
-            //循环租户id
-            for (String id:idArray) {
-                //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
-                LambdaQueryWrapper<SysUserTenant> query = new LambdaQueryWrapper<>();
-                query.eq(SysUserTenant::getTenantId,id);
-                query.eq(SysUserTenant::getUserId,userId);
-                long count = userTenantMapper.selectCount(query);
-                if(count == 0){
-                    SysUserTenant relation = new SysUserTenant();
-                    relation.setUserId(userId);
-                    relation.setTenantId(Integer.valueOf(id));
-                    relation.setStatus(CommonConstant.USER_TENANT_NORMAL);
-                    userTenantMapper.insert(relation);
-                }
-                //update-end---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
+        //update-begin---author:wangshuai ---date:20230313  for：【QQYUN-4605】后台的邀请谁加入租户，没办法选不是租户下的用户，通过手机号邀请------------
+        SysUser userByPhone = userService.getUserByPhone(phone);
+        //说明用户不存在
+        if(null == userByPhone){
+            throw new JeecgBootException("当前用户不存在，请核对手机号");
+        }
+        String userId = userByPhone.getId();
+        //循环租户id
+        for (String id:idArray) {
+            //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
+            LambdaQueryWrapper<SysUserTenant> query = new LambdaQueryWrapper<>();
+            query.eq(SysUserTenant::getTenantId,id);
+            query.eq(SysUserTenant::getUserId,userId);
+            long count = userTenantMapper.selectCount(query);
+            if(count == 0){
+                SysUserTenant relation = new SysUserTenant();
+                relation.setUserId(userId);
+                relation.setTenantId(Integer.valueOf(id));
+                relation.setStatus(CommonConstant.USER_TENANT_NORMAL);
+                userTenantMapper.insert(relation);
             }
+            //update-end---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
+        //update-end---author:wangshuai ---date:20230313  for：【QQYUN-4605】后台的邀请谁加入租户，没办法选不是租户下的用户，通过手机号邀请------------
         }
     }
 
@@ -477,6 +479,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
                 .eq(SysTenantPackUser::getUserId, sysTenantPackUser.getUserId())
                 .eq(SysTenantPackUser::getPackId, sysTenantPackUser.getPackId());
         sysTenantPackUserMapper.delete(query);
+
     }
 
     @Override
@@ -578,8 +581,8 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
             List<String> userIdList = userList.stream().map(i->i.getId()).collect(Collectors.toList());
             // 部门
             List<UserDepart> depList = baseMapper.queryUserDepartList(userIdList);
-            // 职位
-            //List<UserPosition> userPositions = baseMapper.queryUserPositionList(userIdList);
+//            // 职位
+//            List<UserPosition> userPositions = baseMapper.queryUserPositionList(userIdList);
             // 遍历用户 往用户中添加 部门信息和职位信息
             for (TenantPackUser user : userList) {
                 //添加部门
