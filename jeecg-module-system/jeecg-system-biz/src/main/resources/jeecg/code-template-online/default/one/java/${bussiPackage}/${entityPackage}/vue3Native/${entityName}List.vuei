@@ -21,7 +21,7 @@
 <#assign query_flag = false>
     <!--查询区域-->
     <div class="jeecg-basic-table-form-container">
-      <a-form @keyup.enter.native="searchQuery" :model="queryParam" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form ref="formRef" @keyup.enter.native="searchQuery" :model="queryParam" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-row :gutter="24">
 <#-- 开始循环 -->
 <#list columns as po>
@@ -145,7 +145,8 @@
   import { startProcess } from '/@/api/common/api';
   </#if>
 
-  const queryParam = ref<any>({});
+  const formRef = ref();
+  const queryParam = reactive<any>({});
   const toggleSearchStatus = ref<boolean>(false);
   const registerModal = ref();
   //注册table数据
@@ -161,12 +162,13 @@
         fixed: 'right',
       },
       beforeFetch: (params) => {
-        return Object.assign(params, queryParam.value);
+        return Object.assign(params, queryParam);
       },
     },
     exportConfig: {
       name: "${tableVo.ftlDescription}",
       url: getExportUrl,
+      params: queryParam,
     },
 	  importConfig: {
 	    url: getImportUrl,
@@ -294,7 +296,7 @@
    * 重置
    */
   function searchReset() {
-    queryParam.value = {};
+    formRef.value.resetFields();
     selectedRowKeys.value = [];
     //刷新数据
     reload();
@@ -306,7 +308,7 @@
    */
   function setFieldsValue(map) {
     Object.keys(map).map((key) => {
-      queryParam.value[key] = map[key];
+      queryParam[key] = map[key];
     });
   }
   </#if>
@@ -318,7 +320,7 @@
    * @param value
    */
   function handleAreaChange(key, value) {
-    queryParam.value[key] = value.join(',');
+    queryParam[key] = value.join(',');
   }
   </#if>
 
@@ -344,7 +346,7 @@
    * @param value
    */
   function handleFormChange(key, value) {
-    queryParam.value[key] = value;
+    queryParam[key] = value;
   }
   
   /**
