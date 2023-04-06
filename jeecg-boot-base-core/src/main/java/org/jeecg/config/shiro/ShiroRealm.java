@@ -152,15 +152,13 @@ public class ShiroRealm extends AuthorizingRealm {
                     boolean isAuthorization = false;
                     //========================================================================
                     // 查询用户信息（如果租户不匹配从数据库中重新查询一次用户信息）
+                    String loginUserKey = CacheConstant.SYS_USERS_CACHE + "::" + username;
+                    redisUtil.del(loginUserKey);
                     LoginUser loginUserFromDb = commonApi.getUserByName(username);
                     if (oConvertUtils.isNotEmpty(loginUserFromDb.getRelTenantIds())) {
                         String[] newArray = loginUserFromDb.getRelTenantIds().split(",");
                         if (oConvertUtils.isIn(contextTenantId, newArray)) { 
                             isAuthorization = true;
-
-                            //清空redis缓存
-                            String loginUserKey = CacheConstant.SYS_USERS_CACHE + "::" + username;
-                            redisUtil.del(loginUserKey);
                         }
                     }
                     //========================================================================
