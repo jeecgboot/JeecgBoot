@@ -633,18 +633,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 			}
 		}
 
-		//update-begin---author:wangshuai ---date:20230112  for：用户创建的时候增加临时角色 test------------
-		//开启租户saas模式
-		if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
-			String testRoleId = "ee8626f80f7c2619917b6236f3a7f02b";
-			//如果前台没有传递角色或者传过来的劫色没有临时角色,那么默认临时角色 test
-			if (oConvertUtils.isEmpty(selectedRoles) || !selectedRoles.contains(testRoleId)) {
-				SysUserRole userRole = new SysUserRole(user.getId(), testRoleId);
-				sysUserRoleMapper.insert(userRole);
-			}
-		}
-		//update-end---author:wangshuai ---date:20230112  for：用户创建的时候增加临时角色 test------------
-		
 		//step.3 保存所属部门
 		if(oConvertUtils.isNotEmpty(selectedDeparts)) {
 			String[] arr = selectedDeparts.split(",");
