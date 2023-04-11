@@ -44,6 +44,12 @@
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>jeecg-boot-common</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>lombok</artifactId>
+					<groupId>org.projectlombok</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!--集成springmvc框架并实现自动配置 -->
 		<dependency>
@@ -58,6 +64,16 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>jakarta.activation</artifactId>
+					<groupId>com.sun.activation</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jakarta.mail</artifactId>
+					<groupId>com.sun.mail</groupId>
+				</exclusion>
+		      </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -123,6 +139,12 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>${mysql-connector-java.version}</version>
 			<scope>runtime</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>protobuf-java</artifactId>
+					<groupId>com.google.protobuf</groupId>
+				</exclusion>
+		        </exclusions>
 		</dependency>
 		<!--  sqlserver-->
 		<dependency>
@@ -144,12 +166,24 @@
 			<artifactId>postgresql</artifactId>
 			<version>${postgresql.version}</version>
 			<scope>runtime</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>checker-qual</artifactId>
+					<groupId>org.checkerframework</groupId>
+				</exclusion>
+		        </exclusions>
 		</dependency>
 
 		<!-- Quartz定时任务 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-quartz</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>mchange-commons-java</artifactId>
+					<groupId>com.mchange</groupId>
+				</exclusion>
+		      </exclusions>
 		</dependency>
 
 		<!--JWT-->
@@ -175,6 +209,14 @@
 					<groupId>org.apache.shiro</groupId>
 					<artifactId>shiro-core</artifactId>
 				</exclusion>
+				<exclusion>
+					<artifactId>antlr4-runtime</artifactId>
+					<groupId>org.antlr</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>commons-cli</artifactId>
+					<groupId>commons-cli</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
@@ -183,6 +225,16 @@
 			<groupId>com.github.xiaoymin</groupId>
 			<artifactId>knife4j-spring-boot-starter</artifactId>
 			<version>${knife4j-spring-boot-starter.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>byte-buddy</artifactId>
+					<groupId>net.bytebuddy</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>classgraph</artifactId>
+					<groupId>io.github.classgraph</groupId>
+				</exclusion>
+			      </exclusions>
 		</dependency>
 
 		<!-- 代码生成器 -->
@@ -207,19 +259,38 @@
 					<artifactId>xercesImpl</artifactId>
 					<groupId>xerces</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>curvesapi</artifactId>
+					<groupId>com.github.virtuald</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>2.12.2</version>
-			<optional>true</optional>
-		</dependency>
-
 		<!-- mini文件存储服务 -->
 		<dependency>
 			<groupId>io.minio</groupId>
 			<artifactId>minio</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>okio</artifactId>
+					<groupId>com.squareup.okio</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>okhttp</artifactId>
+					<groupId>com.squareup.okhttp3</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>error_prone_annotations</artifactId>
+					<groupId>com.google.errorprone</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>j2objc-annotations</artifactId>
+					<groupId>com.google.j2objc</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>checker-qual</artifactId>
+					<groupId>org.checkerframework</groupId>
+				</exclusion>
+		      </exclusions>
 		</dependency>
 
 		<!-- 阿里云短信 -->
@@ -233,15 +304,26 @@
 			<groupId>com.aliyun.oss</groupId>
 			<artifactId>aliyun-sdk-oss</artifactId>
 			<version>${aliyun.oss.version}</version>
-		</dependency>
-		<!-- 第三方登录  -->
-		<dependency>
-			<groupId>com.xkcoding.justauth</groupId>
-			<artifactId>justauth-spring-boot-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>jaxb-api</artifactId>
+					<groupId>javax.xml.bind</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>stax-api</artifactId>
+					<groupId>stax</groupId>
+				</exclusion>
+			      </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>annotations</artifactId>
+					<groupId>org.jetbrains</groupId>
+				</exclusion>
+			      </exclusions>
 		</dependency>
 		<!-- 解决okhttp引用了kotlin,应用启动有警告日志问题 -->
 		<dependency>
@@ -251,6 +333,18 @@
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-io</artifactId>
+					<groupId>commons-io</groupId>
+				</exclusion>
+      			</exclusions>
+		</dependency>
+		<dependency>
+		        <groupId>org.projectlombok</groupId>
+		        <artifactId>lombok</artifactId>
+		        <version>1.18.24</version>
+		        <scope>provided</scope>
 		</dependency>
 	</dependencies>
 
