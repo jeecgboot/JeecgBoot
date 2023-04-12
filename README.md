@@ -50,9 +50,9 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 #####  快速搭建开发环境
 
-- [通过IDEA启动前后端项目](http://doc.jeecg.com/2043874)
+- [通过IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup.html)
 - [Vue3前端项目快速启动](http://help.jeecg.com/setup/startup.html)
-- [单体快速切换为微服务版](http://doc.jeecg.com/3043471)
+- [单体快速切换为微服务版](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
 
 ##### 项目说明
 
@@ -95,9 +95,9 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 Docker启动项目
 -----------------------------------
 
-- [Docker启动单体后台](http://doc.jeecg.com/2043889)
+- [Docker启动单体后台](https://help.jeecg.com/java/setup/docker/up.html)
 - [Docker启动Vue3前端](http://help.jeecg.com/publish/docker.html)
-- [Docker启动微服务后台](http://doc.jeecg.com/3043472)
+- [Docker启动微服务后台](https://help.jeecg.com/java/springcloud/docker.html)
 
 
 
@@ -294,7 +294,7 @@ VUE2版本专题介绍
 
 8、服务监控 SpringBootAdmin√
 
-9、链路跟踪 Skywalking   [参考文档](http://doc.jeecg.com/2350293)
+9、链路跟踪 Skywalking   [参考文档](https://help.jeecg.com/java/springcloud/super/skywarking.html)
 
 10、消息中间件 RabbitMQ  √
 
