@@ -73,11 +73,9 @@ Jeecg-Boot low code development platform can be applied in the development of an
 Docker starts the project
 -----------------------------------
 
-- [Docker starts the monomer background](http://doc.jeecg.com/2043889)
+- [Docker starts the monomer background](https://help.jeecg.com/java/setup/docker/up.html)
 - [Docker starts the Vue3 front-end](http://help.jeecg.com/publish/docker.html)
-
-- [Docker starts the micro-service background](http://doc.jeecg.com/3043472)
-- [Docker starts the Vue2 front-end](http://doc.jeecg.com/3043612)
+- [Docker starts the micro-service background](https://help.jeecg.com/java/springcloud/docker.html)
 
 
 
@@ -89,11 +87,11 @@ Technical documentation
 
 - Demo ： [Vue3](http://boot3.jeecg.com) | [Vue2](http://boot.jeecg.com) 
 
-- Doc：  [Vue3](http://help.jeecg.com) | [Main](http://doc.jeecg.com) 
+- Doc：  [Vue3](http://help.jeecg.com) | [Vue2](http://doc.jeecg.com) 
 
 - Newbie guide： [Quick start](http://www.jeecg.com/doc/quickstart)  |  [video](https://space.bilibili.com/454617261/channel/series) |   [Q&A ](http://www.jeecg.com/doc/qa)  |   [help](http://jeecg.com/doc/help) |  [1 minute experience](https://my.oschina.net/jeecg/blog/3083313)
 
-- Microservice Development：  [Monomer upgrade to microservice](http://doc.jeecg.com/3043471)
+- Microservice Development：  [Monomer upgrade to microservice](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
 
 - QQ group ： ⑥730954414、683903138、⑤860162132(full)、④774126647(full)、③816531124(full)、②769925425(full)、①284271917(full)
 
@@ -263,7 +261,7 @@ Technical Architecture:
 
 8. Service monitoring SpringBootAdmin√
 
-9. link tracking Skywalking  [reference document](http://doc.jeecg.com/2350293)
+9. link tracking Skywalking  [reference document](https://help.jeecg.com/java/springcloud/super/skywarking.html)
 
 10. Messaging middleware RabbitMQ √
 
