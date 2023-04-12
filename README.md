@@ -33,6 +33,11 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 
 `JEECG业务流程:` 采用工作流来实现、扩展出任务接口，供开发编写业务逻辑，表单提供多种解决方案： 表单设计器、online配置表单、编码表单。同时实现了流程与表单的分离设计（松耦合）、并支持任务节点灵活配置，既保证了公司流程的保密性，又减少了开发人员的工作量。
 
+适用项目
+-----------------------------------
+Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，尤其适合SAAS项目、企业信息管理系统（MIS）、内部办公系统（OA）、企业资源计划系统（ERP）、客户关系管理系统（CRM）等，其半智能手工Merge的开发方式，可以显著提高开发效率70%以上，极大降低开发成本。
+
+
 
 源码下载
 -----------------------------------
@@ -46,7 +51,7 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 #####  快速搭建开发环境
 
 - [通过IDEA启动前后端项目](http://doc.jeecg.com/2043874)
-- [Vue3前端项目快速启动](http://vue3.jeecg.com/2398848)
+- [Vue3前端项目快速启动](http://help.jeecg.com/setup/startup.html)
 - [单体快速切换为微服务版](http://doc.jeecg.com/3043471)
 
 ##### 项目说明
@@ -61,6 +66,12 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 
 
 
+技术支持
+-----------------------------------
+
+关闭gitee的issue通道，使用中遇到问题或者BUG可以在 [Github上提Issues](https://github.com/jeecgboot/jeecg-boot/issues/new)
+
+官方支持： [http://jeecg.com/doc/help](http://jeecg.com/doc/help)
 
 
 技术文档
@@ -70,7 +81,7 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 
 - 在线演示 ：  [Vue3版本](http://boot3.jeecg.com)  |  [敲敲云(零代码)](http://app.qiaoqiaoyun.com)
 
-- 开发文档：  [Vue3文档](http://vue3.jeecg.com) | [主项目文档](http://doc.jeecg.com) 
+- 开发文档：  [Vue3文档](http://help.jeecg.com) | [Vue2文档](http://doc.jeecg.com) 
 
 - 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)  |   [常见问题 ](http://www.jeecg.com/doc/qa) |  [视频教程](https://space.bilibili.com/454617261/channel/series)  |  [1分钟体验低代码](https://my.oschina.net/jeecg/blog/3083313) 
 
@@ -85,13 +96,14 @@ Docker启动项目
 -----------------------------------
 
 - [Docker启动单体后台](http://doc.jeecg.com/2043889)
-- [Docker启动Vue3前端](http://vue3.jeecg.com/3028878)
+- [Docker启动Vue3前端](http://help.jeecg.com/publish/docker.html)
 - [Docker启动微服务后台](http://doc.jeecg.com/3043472)
 
 
-************
 
-VUE2版本专题说明
+=======【VUE2版本专题介绍】=======================================================================
+
+VUE2版本专题介绍
 -----------------------------------
 #### 项目介绍 
 - 项目名称：ant-design-vue-jeecg
@@ -114,20 +126,11 @@ VUE2版本专题说明
 | 后端源码 `Vue2版`  |https://gitee.com/jeecg/jeecg-boot/tree/v3.4.3last    |
 | 前端源码 `Vue2版`  |https://gitee.com/jeecg/ant-design-vue-jeecg    |
 
-************
+=========【VUE2版本专题介绍】==========================================================================
 
 
-适用项目
------------------------------------
-Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，尤其适合SAAS项目、企业信息管理系统（MIS）、内部办公系统（OA）、企业资源计划系统（ERP）、客户关系管理系统（CRM）等，其半智能手工Merge的开发方式，可以显著提高开发效率70%以上，极大降低开发成本。
 
 
-技术支持
------------------------------------
-
-关闭gitee的issue通道，使用中遇到问题或者BUG可以在 [Github上提Issues](https://github.com/jeecgboot/jeecg-boot/issues/new)
-
-官方支持： [http://jeecg.com/doc/help](http://jeecg.com/doc/help)
 
 
 ##### Star走势图

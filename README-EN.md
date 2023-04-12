@@ -74,7 +74,7 @@ Docker starts the project
 -----------------------------------
 
 - [Docker starts the monomer background](http://doc.jeecg.com/2043889)
-- [Docker starts the Vue3 front-end](http://vue3.jeecg.com/3028878)
+- [Docker starts the Vue3 front-end](http://help.jeecg.com/publish/docker.html)
 
 - [Docker starts the micro-service background](http://doc.jeecg.com/3043472)
 - [Docker starts the Vue2 front-end](http://doc.jeecg.com/3043612)
@@ -89,7 +89,7 @@ Technical documentation
 
 - Demo ： [Vue3](http://boot3.jeecg.com) | [Vue2](http://boot.jeecg.com) 
 
-- Doc：  [Vue3](http://vue3.jeecg.com) | [Main](http://doc.jeecg.com) 
+- Doc：  [Vue3](http://help.jeecg.com) | [Main](http://doc.jeecg.com) 
 
 - Newbie guide： [Quick start](http://www.jeecg.com/doc/quickstart)  |  [video](https://space.bilibili.com/454617261/channel/series) |   [Q&A ](http://www.jeecg.com/doc/qa)  |   [help](http://jeecg.com/doc/help) |  [1 minute experience](https://my.oschina.net/jeecg/blog/3083313)
 
