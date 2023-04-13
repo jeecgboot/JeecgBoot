@@ -31,6 +31,11 @@ public class SqlInjectionUtil {
 	private final static String SHOW_TABLES = "show\\s+tables";
 
 	/**
+	 * sleep函数
+	 */
+	private final static Pattern FUN_SLEEP = Pattern.compile("sleep\\([\\d\\.]*\\)");
+
+	/**
 	 * sql注释的正则
 	 */
 	private final static Pattern SQL_ANNOTATION = Pattern.compile("/\\*[\\s\\S]*\\*/");
@@ -279,6 +284,14 @@ public class SqlInjectionUtil {
 		Matcher matcher = SQL_ANNOTATION.matcher(str);
 		if(matcher.find()){
 			String error = "请注意，值可能存在SQL注入风险---> \\*.*\\";
+			log.error(error);
+			throw new RuntimeException(error);
+		}
+		
+		// issues/4737 sys/duplicate/check SQL注入 #4737
+		Matcher sleepMatcher = FUN_SLEEP.matcher(str);
+		if(sleepMatcher.find()){
+			String error = "请注意，值可能存在SQL注入风险---> sleep";
 			log.error(error);
 			throw new RuntimeException(error);
 		}
