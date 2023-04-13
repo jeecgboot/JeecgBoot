@@ -186,7 +186,7 @@
 		</dependency>
 
 		<!-- 代码生成器 -->
-		<!-- 如下载失败，请参考此文档  http://doc.jeecg.com/2043876 -->
+		<!-- 如下载失败，请参考此文档  https://help.jeecg.com/java/setup/maven.html -->
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>codegenerate</artifactId>
