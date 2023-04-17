@@ -7,7 +7,7 @@
 JEECG BOOT Low Code Development Platform
 ===============
 
-The Latest Version： 3.5.1（Release date：2023-04-25） 
+The Latest Version： 3.5.1（Release date：2023-04-20） 
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)

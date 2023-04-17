@@ -7,7 +7,7 @@
 JEECG BOOT 低代码开发平台
 ===============
 
-当前最新版本： 3.5.1（发布日期：2023-04-25） 
+当前最新版本： 3.5.1（发布日期：2023-04-20） 
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
