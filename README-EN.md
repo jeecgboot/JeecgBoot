@@ -506,6 +506,12 @@ Technical Architecture:
 
 ![](https://oscimg.oschina.net/oscnet/up-6b81781b43086819049c4421206810667c5.png)
 
+##### uniapp
+![](https://oscimg.oschina.net/oscnet/up-aac943fbd26561879c57a41f7a406edf274.png)
+
+![](https://oscimg.oschina.net/oscnet/up-9a44ba2e82b09c750629d12fafd7f60f553.png)
+
+
 ##### app
 ![](https://oscimg.oschina.net/oscnet/da543c5d0d57baab0cecaa4670c8b68c521.jpg)
 ![](https://oscimg.oschina.net/oscnet/fda4bd82cab9d682de1c1fbf2060bf14fa6.jpg)
