@@ -13,6 +13,8 @@ spring:
     nacos:
       config:
         server-addr: @config.server-addr@
+        group: @config.group@
+        namespace: @config.namespace@
       discovery:
         server-addr: ${spring.cloud.nacos.config.server-addr}
     gateway:
