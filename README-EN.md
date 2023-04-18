@@ -93,7 +93,7 @@ Technical documentation
 
 - Microservice Development：  [Monomer upgrade to microservice](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
 
-- QQ group ： ⑥730954414、683903138、⑤860162132(full)、④774126647(full)、③816531124(full)、②769925425(full)、①284271917(full)
+- QQ group ： ⑦791696430、⑥730954414、683903138、⑤860162132(full)、④774126647(full)、③816531124(full)、②769925425(full)、①284271917(full)
 
 
 
