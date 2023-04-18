@@ -87,7 +87,7 @@ Technical documentation
 
 - Demo ： [Vue3](http://boot3.jeecg.com) | [Vue2](http://boot.jeecg.com) 
 
-- Doc：  [Vue3](http://help.jeecg.com) | [Vue2](http://doc.jeecg.com) 
+- Doc：  [http://help.jeecg.com](http://help.jeecg.com)
 
 - Newbie guide： [Quick start](http://www.jeecg.com/doc/quickstart)  |  [video](https://space.bilibili.com/454617261/channel/series) |   [Q&A ](http://www.jeecg.com/doc/qa)  |   [help](http://jeecg.com/doc/help) |  [1 minute experience](https://my.oschina.net/jeecg/blog/3083313)
 
