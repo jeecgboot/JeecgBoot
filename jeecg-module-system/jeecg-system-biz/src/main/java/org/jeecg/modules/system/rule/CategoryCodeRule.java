@@ -1,7 +1,7 @@
 package org.jeecg.modules.system.rule;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.handler.IFillRuleHandler;
 import org.jeecg.common.util.SpringContextUtils;
@@ -50,16 +50,20 @@ public class CategoryCodeRule implements IFillRuleHandler {
          * 3.添加子节点有兄弟元素 YouBianCodeUtil.getNextYouBianCode(lastCode);
          * */
         //找同类 确定上一个最大的code值
-        LambdaQueryWrapper<SysCategory> query = new LambdaQueryWrapper<SysCategory>().eq(SysCategory::getPid, categoryPid).isNotNull(SysCategory::getCode).orderByDesc(SysCategory::getCode);
         SysCategoryMapper baseMapper = (SysCategoryMapper) SpringContextUtils.getBean("sysCategoryMapper");
-        List<SysCategory> list = baseMapper.selectList(query);
+        //update-begin---author:wangshuai ---date:20230424  for：【issues/4846】开启saas多租户功能后，租户管理员在添加分类字典时，报错------------
+        Page<SysCategory> page = new Page<>(1,1);
+        List<SysCategory> list = baseMapper.getMaxCategoryCodeByPage(page,categoryPid);
+        //update-end---author:wangshuai ---date:20230424  for：【issues/4846】开启saas多租户功能后，租户管理员在添加分类字典时，报错------------
         if (list == null || list.size() == 0) {
             if (ROOT_PID_VALUE.equals(categoryPid)) {
                 //情况1
                 categoryCode = YouBianCodeUtil.getNextYouBianCode(null);
             } else {
                 //情况2
-                SysCategory parent = (SysCategory) baseMapper.selectById(categoryPid);
+                //update-begin---author:wangshuai ---date:20230424  for：【issues/4846】开启saas多租户功能后，租户管理员在添加分类字典时，报错------------
+                SysCategory parent = (SysCategory) baseMapper.selectSysCategoryById(categoryPid);
+                //update-end---author:wangshuai ---date:20230424  for：【issues/4846】开启saas多租户功能后，租户管理员在添加分类字典时，报错------------
                 categoryCode = YouBianCodeUtil.getSubYouBianCode(parent.getCode(), null);
             }
         } else {
