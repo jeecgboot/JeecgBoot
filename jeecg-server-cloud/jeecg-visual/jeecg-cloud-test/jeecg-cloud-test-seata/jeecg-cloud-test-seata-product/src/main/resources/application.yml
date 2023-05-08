@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: seata-product
+  main:
+    allow-bean-definition-overriding: true
   datasource:
     dynamic:
       seata: true    # 开启对 seata的支持
