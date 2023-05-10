@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.util.RestUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import java.util.*;
  */
 @Slf4j
 @Component
+@ConditionalOnProperty(prefix = "jeecg.elasticsearch", name = "cluster-nodes")
 public class JeecgElasticsearchTemplate {
     /** es服务地址 */
     private String baseUrl;

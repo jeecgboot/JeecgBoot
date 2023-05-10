@@ -11,6 +11,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.JeecgBaseConfig;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -40,9 +42,9 @@ public class JeecgController<T, S extends IService<T>> {
     /**issues/2933 JeecgController注入service时改用protected修饰，能避免重复引用service*/
     @Autowired
     protected S service;
-
-    @Value("${jeecg.path.upload}")
-    private String upLoadPath;
+    @Resource
+    private JeecgBaseConfig jeecgBaseConfig;
+    
     /**
      * 导出excel
      *
@@ -69,7 +71,7 @@ public class JeecgController<T, S extends IService<T>> {
         mv.addObject(NormalExcelConstants.CLASS, clazz);
         //update-begin--Author:liusq  Date:20210126 for：图片导出报错，ImageBasePath未设置--------------------
         ExportParams  exportParams=new ExportParams(title + "报表", "导出人:" + sysUser.getRealname(), title);
-        exportParams.setImageBasePath(upLoadPath);
+        exportParams.setImageBasePath(jeecgBaseConfig.getPath().getUpload());
         //update-end--Author:liusq  Date:20210126 for：图片导出报错，ImageBasePath未设置----------------------
         mv.addObject(NormalExcelConstants.PARAMS,exportParams);
         mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
@@ -108,7 +110,7 @@ public class JeecgController<T, S extends IService<T>> {
             IPage<T> pageList = service.page(page, queryWrapper);
             List<T> exportList = pageList.getRecords();
             Map<String, Object> map = new HashMap<>(5);
-            ExportParams  exportParams=new ExportParams(title + "报表", "导出人:" + sysUser.getRealname(), title+i,upLoadPath);
+            ExportParams  exportParams=new ExportParams(title + "报表", "导出人:" + sysUser.getRealname(), title+i,jeecgBaseConfig.getPath().getUpload());
             exportParams.setType(ExcelType.XSSF);
             //map.put("title",exportParams);
             //表格Title
