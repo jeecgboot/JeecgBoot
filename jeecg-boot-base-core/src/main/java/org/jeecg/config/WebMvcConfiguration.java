@@ -25,6 +25,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -59,12 +60,13 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**")
-                //update-begin-author:taoyan date:20211116 for: jeecg.path.webapp配置无效 #3126
-                .addResourceLocations("file:" + jeecgBaseConfig.getPath().getUpload() + "//")
-                .addResourceLocations("file:" + jeecgBaseConfig.getPath().getWebapp() + "//")
-                //update-end-author:taoyan date:20211116 for: jeecg.path.webapp配置无效 #3126
-                .addResourceLocations(staticLocations.split(","));
+        ResourceHandlerRegistration resourceHandlerRegistration = registry.addResourceHandler("/**");
+        if (jeecgBaseConfig.getPath() != null && jeecgBaseConfig.getPath().getUpload() != null) {
+            resourceHandlerRegistration
+                    .addResourceLocations("file:" + jeecgBaseConfig.getPath().getUpload() + "//")
+                    .addResourceLocations("file:" + jeecgBaseConfig.getPath().getWebapp() + "//");
+        }
+        resourceHandlerRegistration.addResourceLocations(staticLocations.split(","));
     }
 
     /**
