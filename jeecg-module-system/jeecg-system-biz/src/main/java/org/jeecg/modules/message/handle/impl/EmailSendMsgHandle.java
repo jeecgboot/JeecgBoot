@@ -58,6 +58,7 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
         //update-begin-author：taoyan date:20200811 for:配置类数据获取
         if(oConvertUtils.isEmpty(emailFrom)){
             StaticConfig staticConfig = SpringContextUtils.getBean(StaticConfig.class);
+            log.info("邮件配置 emailFrom：" + emailFrom);
             setEmailFrom(staticConfig.getEmailFrom());
         }
         //update-end-author：taoyan date:20200811 for:配置类数据获取
