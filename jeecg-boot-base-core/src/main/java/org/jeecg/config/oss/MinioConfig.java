@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @Configuration
-@ConditionalOnProperty(prefix = "jeecg.minio.minio", name = "minio_url")
+@ConditionalOnProperty(prefix = "jeecg.minio", name = "minio_url")
 public class MinioConfig {
     @Value(value = "${jeecg.minio.minio_url}")
     private String minioUrl;
