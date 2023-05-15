@@ -5,16 +5,13 @@
 //import org.jeecg.modules.demo.test.mapper.JeecgDemoMapper;
 //import org.jeecg.modules.demo.test.service.IJeecgDemoService;
 //import org.jeecg.modules.system.service.ISysDataLogService;
-//import org.junit.Assert;
-//import org.junit.Test;
-//import org.junit.runner.RunWith;
+//import org.junit.jupiter.api.Test;
 //import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.test.context.junit4.SpringRunner;
+//import org.springframework.util.Assert;
 //
 //import javax.annotation.Resource;
 //import java.util.List;
 //
-//@RunWith(SpringRunner.class)
 //@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,classes = JeecgSystemApplication.class)
 //public class SampleTest {
 //
@@ -31,7 +28,7 @@
 //	public void testSelect() {
 //		System.out.println(("----- selectAll method test ------"));
 //		List<JeecgDemo> userList = jeecgDemoMapper.selectList(null);
-//		Assert.assertEquals(5, userList.size());
+//        Assert.isTrue(5 == userList.size(), "结果不是 5 条");
 //		userList.forEach(System.out::println);
 //	}
 //
