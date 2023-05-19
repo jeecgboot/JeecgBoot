@@ -2,13 +2,16 @@ package org.jeecg;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.util.oConvertUtils;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 
+import javax.servlet.annotation.WebFilter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -18,6 +21,7 @@ import java.net.UnknownHostException;
 */
 @Slf4j
 @SpringBootApplication
+@MapperScan("org.jeecg.modules.wo.**.mapper")
 //@EnableAutoConfiguration(exclude={MongoAutoConfiguration.class})
 public class JeecgSystemApplication extends SpringBootServletInitializer {
 
@@ -25,6 +29,7 @@ public class JeecgSystemApplication extends SpringBootServletInitializer {
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(JeecgSystemApplication.class);
     }
+
 
     public static void main(String[] args) throws UnknownHostException {
         ConfigurableApplicationContext application = SpringApplication.run(JeecgSystemApplication.class, args);

@@ -24,7 +24,7 @@ import java.util.Map;
 
 
 @Slf4j
-@Component
+//@Component
 public class JimuReportTokenService implements JmReportTokenServiceI {
     @Autowired
     private SysBaseApiImpl sysBaseApi;
