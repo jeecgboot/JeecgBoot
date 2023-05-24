@@ -46,6 +46,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.*;
 
 /**
@@ -200,9 +202,20 @@ public class SysDictController {
 	 */
 	@RequestMapping(value = "/loadDict/{dictCode}", method = RequestMethod.GET)
 	public Result<List<DictModel>> loadDict(@PathVariable("dictCode") String dictCode,
-			@RequestParam(name="keyword",required = false) String keyword,
-			@RequestParam(value = "sign",required = false) String sign,
-			@RequestParam(value = "pageSize", required = false) Integer pageSize) {
+											@RequestParam(name="keyword",required = false) String keyword,
+											@RequestParam(value = "sign",required = false) String sign,
+											@RequestParam(value = "pageSize", required = false) Integer pageSize) {
+		
+		//update-begin-author:taoyan date:2023-5-22 for: /issues/4905 因为中括号(%5)的问题导致的 表单生成器字段配置时，选择关联字段，在进行高级配置时，无法加载数据库列表，提示 Sgin签名校验错误！ #4905 RouteToRequestUrlFilter
+		if(keyword!=null && keyword.indexOf("%5")>=0){
+			try {
+				keyword = URLDecoder.decode(keyword, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				log.error("下拉搜索关键字解码失败", e);
+			}
+		}
+		//update-end-author:taoyan date:2023-5-22 for: /issues/4905 因为中括号(%5)的问题导致的  表单生成器字段配置时，选择关联字段，在进行高级配置时，无法加载数据库列表，提示 Sgin签名校验错误！ #4905
+		
 		log.info(" 加载字典表数据,加载关键字: "+ keyword);
 		Result<List<DictModel>> result = new Result<List<DictModel>>();
 		//update-begin-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
