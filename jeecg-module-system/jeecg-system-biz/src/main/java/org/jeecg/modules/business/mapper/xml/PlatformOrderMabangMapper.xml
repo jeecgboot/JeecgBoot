@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.PlatformOrderMabangMapper">
+
+    <update id="updateMergedOrder">
+        UPDATE platform_order
+        SET target = #{target}
+        WHERE platform_order_id IN
+        <foreach
+                collection="sources"
+                separator=","
+                index="i"
+                item="v"
+                open="("
+                close=")">
+            #{v}
+        </foreach>;
+    </update>
+
+    <update id="updateMergedOrderItems">
+        UPDATE platform_order_content
+        SET platform_order_id = #{target}
+        WHERE platform_order_id IN
+        <foreach
+                collection="sources"
+                separator=","
+                index="i"
+                item="v"
+                open="("
+                close=")">
+            #{v}
+        </foreach>
+    </update>
+    <update id="batchUpdateById">
+        UPDATE platform_order po
+        SET po.update_by = 'mabang api',
+        po.update_time = NOW(),
+        shop_id =
+        case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then shopErpToId(#{item.shopErpCode})
+        </foreach>
+        end,
+        logistic_channel_name = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.logisticChannelName}
+        </foreach>
+        end,
+        platform_order_id = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.platformOrderId}
+        </foreach>
+        end,
+        platform_order_number = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.platformOrderNumber}
+        </foreach>
+        end,
+        erp_order_id = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.erpOrderId}
+        </foreach>
+        end,
+        tracking_number = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.trackingNumber}
+        </foreach>
+        end,
+        internal_tracking_number = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.trackingNumber1}
+        </foreach>
+        end,
+        order_time = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.orderTime}
+        </foreach>
+        end,
+        shipping_time = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.shippingTime}
+        </foreach>
+        end,
+        recipient = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.recipient}
+        </foreach>
+        end,
+        country = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.country}
+        </foreach>
+        end,
+        postcode = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.postcode}
+        </foreach>
+        end,
+        erp_status = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.status}
+        </foreach>
+        end,
+        product_available = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.productAvailable}
+        </foreach>
+        end,
+        can_send = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.canSend}
+        </foreach>
+        end
+        where id in
+        <foreach collection="orders" separator="," open="(" close=")" index="index" item="item">
+            #{item.id}
+        </foreach>
+
+    </update>
+
+
+    <delete id="batchDeleteByMainID">
+        DELETE
+        FROM platform_order_content poc
+        WHERE poc.platform_order_id
+        IN
+        <foreach collection="mainIDs" item="item" index="index" separator="," close=")" open="(">
+            #{item}
+        </foreach>
+
+    </delete>
+
+
+    <select id="findIdByErpCode" resultType="java.lang.String">
+        SELECT id
+        FROM platform_order
+        WHERE platform_order_number = #{1}
+    </select>
+
+    <select id="findIdByErpId" resultType="java.lang.String">
+        SELECT id
+        FROM platform_order
+        WHERE erp_order_id = #{1}
+    </select>
+    <select id="searchExistence" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
+        FROM platform_order
+        WHERE platform_order_id
+        IN
+        <foreach collection="orders" open="(" close=")" separator="," index="index" item="item">
+            #{item}
+        </foreach>
+    </select>
+
+    <insert id="insertOrdersFromMabang" parameterType="list">
+        INSERT INTO platform_order(id, create_by, create_time, update_by,
+        update_time, shop_id, logistic_channel_name,
+        platform_order_id, platform_order_number, erp_order_id,
+        tracking_number, internal_tracking_number, order_time, shipping_time, recipient,
+        country, postcode, erp_status, product_available, can_send)
+        VALUES
+        <foreach collection="orders" separator="," open="" close="" item="order" index="index">
+            (
+            #{order.id},
+            'mabang api',
+            NOW(),
+            'mabang api',
+            NOW(),
+            shopErpToId(#{order.shopErpCode}),
+            #{order.logisticChannelName},
+            #{order.platformOrderId},
+            #{order.platformOrderNumber},
+            #{order.erpOrderId},
+            #{order.trackingNumber},
+            #{order.trackingNumber1},
+            #{order.orderTime},
+            #{order.shippingTime},
+            #{order.recipient},
+            #{order.country},
+            #{order.postcode},
+            #{order.status},
+            #{order.productAvailable},
+            #{order.canSend}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertOrderItemsFromMabang">
+        INSERT INTO platform_order_content(
+        id, create_by, create_time,
+        update_by, update_time, platform_order_id,
+        sku_id, quantity, erp_status, product_available)
+        VALUES
+        <foreach collection="items" separator="," open="" close="" item="item" index="index">
+            (
+            UUID(), 'Mabang API', NOW(),
+            'Mabang API', NOW(), #{item.platformOrderId},
+            skuErpToId(#{item.erpCode}), #{item.quantity}, #{item.erpStatus},
+            #{item.productAvailable})
+        </foreach>
+    </insert>
+
+    <update id="batchUpdateErpStatusByMainId">
+        UPDATE platform_order_content
+        SET erp_status = #{statusCode}
+        WHERE erp_status &lt;&gt; 5
+        AND platform_order_id IN
+        <foreach collection="orderIDs" separator="," open="(" close=")" index="index" item="orderId">
+            #{orderId}
+        </foreach>
+    </update>
+</mapper>

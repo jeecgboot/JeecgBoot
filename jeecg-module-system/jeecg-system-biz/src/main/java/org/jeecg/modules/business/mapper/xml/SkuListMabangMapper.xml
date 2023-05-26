@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.SkuListMabangMapper">
+
+    <select id="searchExistence" resultType="org.jeecg.modules.business.entity.Sku">
+        SELECT *
+        FROM sku
+        WHERE erp_code
+        IN
+        <foreach collection="skuErpCode" open="(" close=")" separator="," index="index" item="item">
+            #{item}
+        </foreach>
+    </select>
+    <select id="searchProductExistence" resultType="org.jeecg.modules.business.entity.Product">
+        SELECT *
+        FROM product
+        WHERE code
+        IN
+        <foreach collection="productCode" open="(" close=")" separator="," index="index" item="item">
+            #{item}
+        </foreach>
+    </select>
+    <select id="searchProductId" resultType="java.lang.String">
+        SELECT id
+        FROM product
+        WHERE code = #{productCode}
+    </select>
+    <select id="searchSkuId" resultType="java.lang.String">
+        SELECT id
+        FROM sku
+        WHERE erp_code = #{erpCode}
+    </select>
+    <select id="searchSensitiveAttributeId" resultType="java.lang.String">
+        SELECT id
+        FROM sensitive_attribute
+        WHERE en_name = #{enName}
+    </select>
+
+</mapper>

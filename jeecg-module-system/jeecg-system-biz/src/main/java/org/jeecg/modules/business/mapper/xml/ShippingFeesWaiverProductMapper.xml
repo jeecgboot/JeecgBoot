@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.ShippingFeesWaiverProductMapper">
+
+	<delete id="deleteByMainId" parameterType="java.lang.String">
+		DELETE 
+		FROM  shipping_fees_waiver_product 
+		WHERE
+			 waiver_id = #{mainId} 	</delete>
+	
+	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.business.entity.ShippingFeesWaiverProduct">
+		SELECT * 
+		FROM  shipping_fees_waiver_product
+		WHERE
+			 waiver_id = #{mainId} 	</select>
+
+	<select id="searchWaiversBySkuIds"
+			resultType="org.jeecg.modules.business.vo.SkuShippingFeesWaiver"
+			resultMap="skuShippingFeesWaiverMap">
+        SELECT sku.id, sku.erp_code, sfw.id AS waiver_id, sfw.name AS waiver_name, sfw.threshold, sfw.fees
+        FROM shipping_fees_waiver_product sfwp
+        JOIN shipping_fees_waiver sfw ON sfwp.waiver_id = sfw.id
+        JOIN sku ON sku.product_id = sfwp.product_id
+		WHERE sku.id IN
+		<foreach collection="list" index="i" item="item" open="(" separator="," close=")">#{item}</foreach>
+	</select>
+
+	<resultMap id="skuShippingFeesWaiverMap" type="org.jeecg.modules.business.vo.SkuShippingFeesWaiver">
+		<constructor>
+			<idArg column="id"
+				   javaType="String"/>
+			<arg column="erp_code"
+				 javaType="String"/>
+			<arg javaType="org.jeecg.modules.business.entity.ShippingFeesWaiver"
+				 resultMap="shippingFeesWaiverProductMap"/>
+		</constructor>
+	</resultMap>
+
+	<resultMap id="shippingFeesWaiverProductMap" type="org.jeecg.modules.business.entity.ShippingFeesWaiver">
+		<id property="id" column="waiver_id" javaType="string"/>
+		<result property="name" column="waiver_name" javaType="string"/>
+		<result property="threshold" column="threshold"/>
+		<result property="fees" column="fees" javaType="decimal"/>
+	</resultMap>
+
+</mapper>

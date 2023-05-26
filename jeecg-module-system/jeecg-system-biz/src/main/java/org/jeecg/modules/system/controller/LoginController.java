@@ -79,7 +79,7 @@ public class LoginController {
 		String password = sysLoginModel.getPassword();
 		//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 		if(isLoginFailOvertimes(username)){
-			return result.error500("该用户登录失败次数过多，请于10分钟后再次登录！");
+			return result.error500("sys.login.loginFailOvertimes");
 		}
 		//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
@@ -87,27 +87,6 @@ public class LoginController {
 		//password = AesEncryptUtil.desEncrypt(sysLoginModel.getPassword().replaceAll("%2B", "\\+")).trim();//密码解密
 		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
 
-		//update-begin-author:taoyan date:20190828 for:校验验证码
-        String captcha = sysLoginModel.getCaptcha();
-        if(captcha==null){
-            result.error500("验证码无效");
-            return result;
-        }
-        String lowerCaseCaptcha = captcha.toLowerCase();
-        //update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
-		// 加入密钥作为混淆，避免简单的拼接，被外部利用，用户自定义该密钥即可
-        String origin = lowerCaseCaptcha+sysLoginModel.getCheckKey()+jeecgBaseConfig.getSignatureSecret();
-		String realKey = Md5Util.md5Encode(origin, "utf-8");
-		//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
-		Object checkCode = redisUtil.get(realKey);
-		//当进入登录页时，有一定几率出现验证码错误 #1714
-		if(checkCode==null || !checkCode.toString().equals(lowerCaseCaptcha)) {
-            log.warn("验证码错误，key= {} , Ui checkCode= {}, Redis checkCode = {}", sysLoginModel.getCheckKey(), lowerCaseCaptcha, checkCode);
-			result.error500("验证码错误");
-			// 改成特殊的code 便于前端判断
-			result.setCode(HttpStatus.PRECONDITION_FAILED.value());
-			return result;
-		}
 		//update-end-author:taoyan date:20190828 for:校验验证码
 		
 		//1. 校验用户是否有效
@@ -128,14 +107,13 @@ public class LoginController {
 			//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 			addLoginFailOvertimes(username);
 			//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
-			result.error500("用户名或密码错误");
+			result.error500("sys.login.wrongCredentials");
 			return result;
 		}
 				
 		//用户登录信息
 		userInfo(sysUser, result);
 		//update-begin--Author:liusq  Date:20210126  for：登录成功，删除redis中的验证码
-		redisUtil.del(realKey);
 		//update-begin--Author:liusq  Date:20210126  for：登录成功，删除redis中的验证码
 		redisUtil.del(CommonConstant.LOGIN_FAIL + username);
 		LoginUser loginUser = new LoginUser();
@@ -192,7 +170,7 @@ public class LoginController {
 		//用户退出逻辑
 	    String token = request.getHeader(CommonConstant.X_ACCESS_TOKEN);
 	    if(oConvertUtils.isEmpty(token)) {
-	    	return Result.error("退出登录失败！");
+	    	return Result.error("sys.login.errorLogout");
 	    }
 	    String username = JwtUtil.getUsername(token);
 		LoginUser sysUser = sysBaseApi.getUserByName(username);
@@ -209,9 +187,9 @@ public class LoginController {
 			redisUtil.del(String.format("%s::%s", CacheConstant.SYS_USERS_CACHE, sysUser.getUsername()));
 			//调用shiro的logout
 			SecurityUtils.getSubject().logout();
-	    	return Result.ok("退出登录成功！");
+	    	return Result.ok("sys.login.logoutSuccess");
 	    }else {
-	    	return Result.error("Token无效!");
+	    	return Result.error("sys.login.invalidToken");
 	    }
 	}
 	
@@ -242,7 +220,7 @@ public class LoginController {
 		//update-end--Author:zhangweijian  Date:20190428 for：传入开始时间，结束时间参数
 		obj.put("todayIp", todayIp);
 		result.setResult(obj);
-		result.success("登录成功");
+		result.success("sys.login.loginSuccessTitle");
 		return result;
 	}
 	
@@ -295,147 +273,6 @@ public class LoginController {
 	}
 
 	/**
-	 * 短信登录接口
-	 * 
-	 * @param jsonObject
-	 * @return
-	 */
-	@PostMapping(value = "/sms")
-	public Result<String> sms(@RequestBody JSONObject jsonObject) {
-		Result<String> result = new Result<String>();
-		String mobile = jsonObject.get("mobile").toString();
-		//手机号模式 登录模式: "2"  注册模式: "1"
-		String smsmode=jsonObject.get("smsmode").toString();
-		log.info(mobile);
-		if(oConvertUtils.isEmpty(mobile)){
-			result.setMessage("手机号不允许为空！");
-			result.setSuccess(false);
-			return result;
-		}
-		
-		//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
-		String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+mobile;
-		Object object = redisUtil.get(redisKey);
-		//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
-		
-		if (object != null) {
-			result.setMessage("验证码10分钟内，仍然有效！");
-			result.setSuccess(false);
-			return result;
-		}
-
-		//随机数
-		String captcha = RandomUtil.randomNumbers(6);
-		JSONObject obj = new JSONObject();
-    	obj.put("code", captcha);
-		try {
-			boolean b = false;
-			//注册模板
-			if (CommonConstant.SMS_TPL_TYPE_1.equals(smsmode)) {
-				SysUser sysUser = sysUserService.getUserByPhone(mobile);
-				if(sysUser!=null) {
-					result.error500(" 手机号已经注册，请直接登录！");
-					baseCommonService.addLog("手机号已经注册，请直接登录！", CommonConstant.LOG_TYPE_1, null);
-					return result;
-				}
-				b = DySmsHelper.sendSms(mobile, obj, DySmsEnum.REGISTER_TEMPLATE_CODE);
-			}else {
-				//登录模式，校验用户有效性
-				SysUser sysUser = sysUserService.getUserByPhone(mobile);
-				result = sysUserService.checkUserIsEffective(sysUser);
-				if(!result.isSuccess()) {
-					String message = result.getMessage();
-					String userNotExist="该用户不存在，请注册";
-					if(userNotExist.equals(message)){
-						result.error500("该用户不存在或未绑定手机号");
-					}
-					return result;
-				}
-				
-				/**
-				 * smsmode 短信模板方式  0 .登录模板、1.注册模板、2.忘记密码模板
-				 */
-				if (CommonConstant.SMS_TPL_TYPE_0.equals(smsmode)) {
-					//登录模板
-					b = DySmsHelper.sendSms(mobile, obj, DySmsEnum.LOGIN_TEMPLATE_CODE);
-				} else if(CommonConstant.SMS_TPL_TYPE_2.equals(smsmode)) {
-					//忘记密码模板
-					b = DySmsHelper.sendSms(mobile, obj, DySmsEnum.FORGET_PASSWORD_TEMPLATE_CODE);
-				}
-			}
-
-			if (b == false) {
-				result.setMessage("短信验证码发送失败,请稍后重试");
-				result.setSuccess(false);
-				return result;
-			}
-			
-			//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
-			//验证码10分钟内有效
-			redisUtil.set(redisKey, captcha, 600);
-			//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
-			
-			//update-begin--Author:scott  Date:20190812 for：issues#391
-			//result.setResult(captcha);
-			//update-end--Author:scott  Date:20190812 for：issues#391
-			result.setSuccess(true);
-
-		} catch (ClientException e) {
-			e.printStackTrace();
-			result.error500(" 短信接口未配置，请联系管理员！");
-			return result;
-		}
-		return result;
-	}
-	
-
-	/**
-	 * 手机号登录接口
-	 * 
-	 * @param jsonObject
-	 * @return
-	 */
-	@ApiOperation("手机号登录接口")
-	@PostMapping("/phoneLogin")
-	public Result<JSONObject> phoneLogin(@RequestBody JSONObject jsonObject) {
-		Result<JSONObject> result = new Result<JSONObject>();
-		String phone = jsonObject.getString("mobile");
-		//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
-		if(isLoginFailOvertimes(phone)){
-			return result.error500("该用户登录失败次数过多，请于10分钟后再次登录！");
-		}
-		//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
-		//校验用户有效性
-		SysUser sysUser = sysUserService.getUserByPhone(phone);
-		result = sysUserService.checkUserIsEffective(sysUser);
-		if(!result.isSuccess()) {
-			return result;
-		}
-		
-		String smscode = jsonObject.getString("captcha");
-
-		//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
-		String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+phone;
-		Object code = redisUtil.get(redisKey);
-		//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
-
-		if (!smscode.equals(code)) {
-			//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
-			addLoginFailOvertimes(phone);
-			//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
-			result.setMessage("手机验证码错误");
-			return result;
-		}
-		//用户信息
-		userInfo(sysUser, result);
-		//添加日志
-		baseCommonService.addLog("用户名: " + sysUser.getUsername() + ",登录成功！", CommonConstant.LOG_TYPE_1, null);
-
-		return result;
-	}
-
-
-	/**
 	 * 用户信息
 	 *
 	 * @param sysUser
@@ -484,7 +321,7 @@ public class LoginController {
 		}
 		obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
 		result.setResult(obj);
-		result.success("登录成功");
+		result.success("sys.login.loginSuccessTitle");
 		return result;
 	}
 
@@ -500,41 +337,6 @@ public class LoginController {
 		map.put("iv",EncryptedString.iv);
 		result.setResult(map);
 		return result;
-	}
-
-	/**
-	 * 后台生成图形验证码 ：有效
-	 * @param response
-	 * @param key
-	 */
-	@ApiOperation("获取验证码")
-	@GetMapping(value = "/randomImage/{key}")
-	public Result<String> randomImage(HttpServletResponse response,@PathVariable("key") String key){
-		Result<String> res = new Result<String>();
-		try {
-			//生成验证码
-			String code = RandomUtil.randomString(BASE_CHECK_CODES,4);
-			//存到redis中
-			String lowerCaseCode = code.toLowerCase();
-			
-			//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
-			// 加入密钥作为混淆，避免简单的拼接，被外部利用，用户自定义该密钥即可
-			String origin = lowerCaseCode+key+jeecgBaseConfig.getSignatureSecret();
-			String realKey = Md5Util.md5Encode(origin, "utf-8");
-			//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
-            
-			redisUtil.set(realKey, lowerCaseCode, 60);
-			log.info("获取验证码，Redis key = {}，checkCode = {}", realKey, code);
-			//返回前端
-			String base64 = RandImageUtil.generate(code);
-			res.setSuccess(true);
-			res.setResult(base64);
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-			res.error500("获取验证码失败,请检查redis配置!");
-			return res;
-		}
-		return res;
 	}
 
 	/**
@@ -563,7 +365,7 @@ public class LoginController {
 		
 		//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 		if(isLoginFailOvertimes(username)){
-			return result.error500("该用户登录失败次数过多，请于10分钟后再次登录！");
+			return result.error500("sys.login.loginFailOvertimes");
 		}
 		//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 		//1. 校验用户是否有效
@@ -580,7 +382,7 @@ public class LoginController {
 			//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 			addLoginFailOvertimes(username);
 			//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
-			result.error500("用户名或密码错误");
+			result.error500("sys.login.wrongCredentials");
 			return result;
 		}
 		
@@ -621,82 +423,8 @@ public class LoginController {
 		result.setResult(obj);
 		result.setSuccess(true);
 		result.setCode(200);
-		baseCommonService.addLog("用户名: " + username + ",登录成功[移动端]！", CommonConstant.LOG_TYPE_1, null);
+		baseCommonService.addLog("User : " + username + ",Logged In [移动端]！", CommonConstant.LOG_TYPE_1, null);
 		return result;
-	}
-
-	/**
-	 * 图形验证码
-	 * @param sysLoginModel
-	 * @return
-	 */
-	@RequestMapping(value = "/checkCaptcha", method = RequestMethod.POST)
-	public Result<?> checkCaptcha(@RequestBody SysLoginModel sysLoginModel){
-		String captcha = sysLoginModel.getCaptcha();
-		String checkKey = sysLoginModel.getCheckKey();
-		if(captcha==null){
-			return Result.error("验证码无效");
-		}
-		String lowerCaseCaptcha = captcha.toLowerCase();
-		String realKey = Md5Util.md5Encode(lowerCaseCaptcha+checkKey, "utf-8");
-		Object checkCode = redisUtil.get(realKey);
-		if(checkCode==null || !checkCode.equals(lowerCaseCaptcha)) {
-			return Result.error("验证码错误");
-		}
-		return Result.ok();
-	}
-	/**
-	 * 登录二维码
-	 */
-	@ApiOperation(value = "登录二维码", notes = "登录二维码")
-	@GetMapping("/getLoginQrcode")
-	public Result<?>  getLoginQrcode() {
-		String qrcodeId = CommonConstant.LOGIN_QRCODE_PRE+IdWorker.getIdStr();
-		//定义二维码参数
-		Map params = new HashMap(5);
-		params.put("qrcodeId", qrcodeId);
-		//存放二维码唯一标识30秒有效
-		redisUtil.set(CommonConstant.LOGIN_QRCODE + qrcodeId, qrcodeId, 30);
-		return Result.OK(params);
-	}
-	/**
-	 * 扫码二维码
-	 */
-	@ApiOperation(value = "扫码登录二维码", notes = "扫码登录二维码")
-	@PostMapping("/scanLoginQrcode")
-	public Result<?> scanLoginQrcode(@RequestParam String qrcodeId, @RequestParam String token) {
-		Object check = redisUtil.get(CommonConstant.LOGIN_QRCODE + qrcodeId);
-		if (oConvertUtils.isNotEmpty(check)) {
-			//存放token给前台读取
-			redisUtil.set(CommonConstant.LOGIN_QRCODE_TOKEN+qrcodeId, token, 60);
-		} else {
-			return Result.error("二维码已过期,请刷新后重试");
-		}
-		return Result.OK("扫码成功");
-	}
-
-
-	/**
-	 * 获取用户扫码后保存的token
-	 */
-	@ApiOperation(value = "获取用户扫码后保存的token", notes = "获取用户扫码后保存的token")
-	@GetMapping("/getQrcodeToken")
-	public Result getQrcodeToken(@RequestParam String qrcodeId) {
-		Object token = redisUtil.get(CommonConstant.LOGIN_QRCODE_TOKEN + qrcodeId);
-		Map result = new HashMap(5);
-		Object qrcodeIdExpire = redisUtil.get(CommonConstant.LOGIN_QRCODE + qrcodeId);
-		if (oConvertUtils.isEmpty(qrcodeIdExpire)) {
-			//二维码过期通知前台刷新
-			result.put("token", "-2");
-			return Result.OK(result);
-		}
-		if (oConvertUtils.isNotEmpty(token)) {
-			result.put("success", true);
-			result.put("token", token);
-		} else {
-			result.put("token", "-1");
-		}
-		return Result.OK(result);
 	}
 
 	/**

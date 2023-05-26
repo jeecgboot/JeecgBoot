@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.LogisticChannelPriceMapper">
+
+    <delete id="deleteByMainId" parameterType="java.lang.String">
+        DELETE
+        FROM logistic_channel_price
+        WHERE channel_id = #{mainId}    </delete>
+
+    <select id="selectByMainId" parameterType="java.lang.String"
+            resultType="org.jeecg.modules.business.entity.LogisticChannelPrice">
+        SELECT *
+        FROM logistic_channel_price
+        WHERE channel_id = #{mainId}    </select>
+
+    <select id="findBy" resultType="org.jeecg.modules.business.entity.LogisticChannelPrice">
+        SELECT lcp.*
+        FROM logistic_channel_price lcp
+                 JOIN logistic_channel lc ON lc.id = lcp.channel_id
+        WHERE zh_name = #{channelName}
+          AND weight_range_start &lt;= #{trueWeight}
+          AND weight_range_end &gt;= #{trueWeight}
+          AND effective_country = #{country}
+          AND effective_date &lt;= #{date}
+          AND active = 1
+        ORDER BY effective_date DESC
+        LIMIT 1    </select>
+
+    <select id="findPricesBy" resultType="org.jeecg.modules.business.entity.LogisticChannelPrice">
+        SELECT lcp.*
+        FROM logistic_channel_price lcp
+                 JOIN logistic_channel lc ON lc.id = lcp.channel_id
+                 JOIN country c ON lcp.effective_country = c.code
+        WHERE effective_date &lt;= #{date}
+          AND (c.name_en IN
+       <foreach
+            collection="countryNames"
+            separator=","
+            open="("
+            close=")"
+            index="index"
+            item="item"
+            >
+            #{item}
+        </foreach>
+           OR c.special_name IN
+        <foreach
+            collection="countryNames"
+            separator=","
+            open="("
+            close=")"
+            index="index"
+            item="item"
+            >
+            #{item}
+         </foreach>
+              )
+          AND lc.zh_name IN
+        <foreach
+                collection="channelNames"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="item"
+        >
+            #{item}
+        </foreach>
+          AND active = 1 </select>
+
+    <select id="findByIdDateWeightAndCountry" resultType="org.jeecg.modules.business.entity.LogisticChannelPrice">
+        SELECT lcp.*
+        FROM logistic_channel_price lcp
+        WHERE channel_id = #{channelId}
+          AND weight_range_start &lt;= #{trueWeight}
+          AND weight_range_end &gt;= #{trueWeight}
+          AND effective_country = #{country}
+          AND effective_date &lt;= #{date}
+        ORDER BY effective_date DESC
+        LIMIT 1    </select>
+
+    <select id="getAllCountry" resultType="java.lang.String">
+        SELECT DISTINCT effective_country
+        FROM logistic_channel_price
+        ORDER BY effective_country    </select>
+</mapper>

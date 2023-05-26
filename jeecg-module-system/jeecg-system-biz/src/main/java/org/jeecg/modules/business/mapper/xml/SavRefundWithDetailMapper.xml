@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.SavRefundWithDetailMapper">
+
+    <select id="findUnprocessedRefundsByClient" resultType="org.jeecg.modules.business.entity.SavRefundWithDetail">
+        SELECT sr.*
+        FROM sav_refund_with_detail sr
+                 JOIN platform_order po ON sr.platform_order_id = po.id
+                 JOIN shop s ON po.shop_id = s.id
+        WHERE invoice_number IS NULL
+          AND s.owner_id = #{clientId}
+    </select>
+</mapper>

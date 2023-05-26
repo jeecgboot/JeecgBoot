@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.SkuLogisticChoiceMapper">
+
+    <select id="findAllChoices" resultType="org.jeecg.modules.business.entity.SkuLogisticChoice">
+        SELECT slc.*
+        FROM sku_logistic_choice slc
+                 JOIN country c ON slc.country_id = c.id
+        WHERE sku_id = #{skuId}
+          AND c.code = #{countryCode}
+        ORDER BY effective_date DESC
+    </select>
+
+    <select id="findLatestChoice" resultType="org.jeecg.modules.business.entity.SkuLogisticChoice">
+        SELECT slc.*
+        FROM sku_logistic_choice slc
+                 JOIN country c ON slc.country_id = c.id
+        WHERE sku_id = #{skuId}
+          AND c.code = #{countryCode}
+        ORDER BY effective_date DESC
+        LIMIT 1
+    </select>
+
+    <select id="findClosestChoice" resultType="org.jeecg.modules.business.entity.SkuLogisticChoice">
+        SELECT slc.*
+        FROM sku_logistic_choice slc
+                 JOIN country c ON slc.country_id = c.id
+        WHERE sku_id = #{skuId}
+          AND c.code = #{countryCode}
+          AND effective_date &lt;= #{date}
+        ORDER BY effective_date DESC
+        LIMIT 1
+    </select>
+</mapper>

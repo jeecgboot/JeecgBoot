@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.PlatformOrderMapper">
+
+    <sql id="pagePendingOrderByClientId">
+        SELECT p.*
+        FROM platform_order p
+                 JOIN shop s ON p.shop_id = s.id
+                 JOIN client c ON s.owner_id = c.id
+        WHERE c.id = #{clientId}
+          AND p.status = 2
+    </sql>
+
+    <sql id="pagePurchasingOrderByClientId">
+        SELECT p.*
+        FROM platform_order p
+                 JOIN shop s ON p.shop_id = s.id
+                 JOIN client c ON s.owner_id = c.id
+        WHERE c.id = #{clientId}
+          AND p.status = 3
+    </sql>
+
+    <sql id="pageProcessedOrderByClientId">
+        SELECT p.*
+        FROM platform_order p
+                 JOIN shop s ON p.shop_id = s.id
+                 JOIN client c ON s.owner_id = c.id
+        WHERE c.id = #{clientId}
+          AND p.status = 1
+    </sql>
+
+    <sql id="allOrderByClientId">
+        SELECT p.*
+        FROM platform_order p
+                 JOIN shop s ON p.shop_id = s.id
+                 JOIN client c ON s.owner_id = c.id
+        WHERE c.id = #{clientId}
+    </sql>
+    <insert id="insertFromMabangOrder" parameterType="org.jeecg.modules.business.domain.api.mabang.getorderlist.Order">
+        INSERT INTO platform_order(id, create_by,
+                                   create_time, update_by,
+                                   update_time, shop_id,
+                                   logistic_channel_name, platform_order_id,
+                                   platform_order_number, tracking_number,
+                                   order_time, shipping_time,
+                                   recipient, country, status, can_send)
+        SELECT #{id},
+               'admin',
+               NOW(),
+               'admin',
+               NOW(),
+               shop.id,
+               #{logisticChannelName},
+               #{platformOrderId},
+               #{platformOrderNumber},
+               #{trackingNumber},
+               #{orderTime},
+               #{shippingTime},
+               #{recipient},
+               #{country},
+               #{status},
+               #{canSend}
+        FROM shop
+        WHERE erp_code = #{shopErpCode}
+    </insert>
+
+    <select id="pagePendingOrderByClientId"
+            resultType="org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage">
+        <include refid="pagePendingOrderByClientId"/>
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="pagePurchasingOrderByClientId"
+            resultType="org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage">
+        <include refid="pagePurchasingOrderByClientId"/>
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="pageProcessedOrderByClientId"
+            resultType="org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage">
+        <include refid="pageProcessedOrderByClientId"/>
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <update id="updateStatus">
+        UPDATE platform_order
+        SET status = #{status}
+        WHERE id = #{orderID}
+    </update>
+
+    <update id="batchUpdateStatus">
+        UPDATE platform_order
+        SET status = #{status}
+        WHERE id IN
+        <foreach collection="orderIDList" item="item" index="index"
+                 close=")" open="(" separator=",">
+            #{item}
+        </foreach>
+    </update>
+    <update id="updateMergedOrder">
+        UPDATE platform_order
+        SET target = #{target}
+        WHERE platform_order_id IN
+        <foreach
+                collection="sources"
+                separator=","
+                index="i"
+                item="v"
+                open="("
+                close=")">
+            #{v}
+        </foreach>
+    </update>
+
+    <select id="queryQuantities" resultType="org.jeecg.modules.business.vo.clientPlatformOrder.section.OrderQuantity">
+        SELECT
+        sum(IF(status = '1', 1, 0)) as processed,
+        sum(IF(status = '2', 1, 0)) as pending,
+        sum(IF(status = '3', 1, 0)) as purchasing
+        FROM (<include refid="allOrderByClientId"/>) AS t
+    </select>
+
+    <select id="findIdByErpCode" resultType="java.lang.String">
+        SELECT id
+        FROM platform_order
+        WHERE platform_order_number = #{1}
+    </select>
+
+
+    <select id="findUninvoicedOrders" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
+        FROM platform_order AS po
+        WHERE po.shop_id IN
+        <foreach
+                collection="shopIDs"
+                index="index"
+                item="item"
+                open="("
+                close=")"
+                separator=",">
+            #{item}
+        </foreach>
+        AND shipping_time >= #{begin}
+        AND #{end} >= shipping_time
+        AND shipping_invoice_number IS NULL
+    </select>
+    <select id="findUninvoicedOrdersForShopsAndStatus" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
+        FROM platform_order po join shop s ON po.shop_id = s.id
+        WHERE po.shop_id IN
+        <foreach
+                collection="shopIDs"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="shop"
+        >
+            #{shop}
+        </foreach>
+        AND order_time &gt;= #{begin}
+        AND order_time &lt;= #{end}
+        AND shipping_invoice_number IS NULL
+        AND erp_status IN
+        <foreach
+                collection="erpStatuses"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="erpStatus"
+        >
+            #{erpStatus}
+        </foreach>
+        ;
+    </select>
+    <select id="findUninvoicedShippedOrders" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT po.*
+        FROM platform_order po join shop s ON po.shop_id = s.id
+        WHERE erp_status = 3
+          AND shipping_invoice_number IS NULL
+    </select>
+
+    <select id="findPreviousInvoice" resultType="java.lang.String">
+        SELECT shipping_invoice_number
+        FROM platform_order
+        WHERE shipping_invoice_number IS NOT NULL
+          AND shipping_invoice_number LIKE '%-2%'
+        ORDER BY shipping_invoice_number DESC
+        LIMIT 1
+    </select>
+
+    <select id="findPreviousCompleteInvoice" resultType="java.lang.String">
+        SELECT shipping_invoice_number
+        FROM platform_order
+        WHERE shipping_invoice_number IS NOT NULL
+          AND shipping_invoice_number LIKE '%-7%'
+        ORDER BY shipping_invoice_number DESC
+        LIMIT 1
+    </select>
+
+    <select id="findEarliestUninvoicedPlatformOrder" resultType="date">
+        SELECT shipping_time
+        FROM platform_order
+        WHERE shipping_invoice_number IS NULL
+            AND shipping_time IS NOT NULL
+            AND erp_status = 3
+            AND shop_id IN
+            <foreach
+                    collection="shopIDs"
+                    separator=","
+                    open="("
+                    close=")"
+                    index="index"
+                    item="shopId"
+            >
+                #{shopId}
+            </foreach>
+        ORDER BY shipping_time
+        LIMIT 1
+    </select>
+
+    <select id="findLatestUninvoicedPlatformOrder" resultType="date">
+        SELECT shipping_time
+        FROM platform_order
+        WHERE shipping_invoice_number IS NULL
+            AND shipping_time IS NOT NULL
+            AND erp_status = 3
+            AND shop_id IN
+            <foreach
+                    collection="shopIDs"
+                    separator=","
+                    open="("
+                    close=")"
+                    index="index"
+                    item="shopId"
+            >
+                #{shopId}
+            </foreach>
+        ORDER BY shipping_time DESC
+        LIMIT 1
+    </select>
+
+    <select id="findEarliestUninvoicedPlatformOrderTime" resultType="date">
+        SELECT po.order_time FROM platform_order as po
+        JOIN shop as s
+            ON po.shop_id = s.id
+        WHERE po.shipping_invoice_number IS NULL
+            AND po.order_time IS NOT NULL
+            AND po.erp_status IN
+            <foreach
+                    collection="erpStatuses"
+                    separator=","
+                    open="("
+                    close=")"
+                    index="index"
+                    item="erpStatus"
+            >
+                #{erpStatus}
+            </foreach>
+            AND s.active = 1
+            AND po.shop_id IN
+            <foreach
+                    collection="shopIDs"
+                    separator=","
+                    open="("
+                    close=")"
+                    index="index"
+                    item="shopId"
+            >
+                #{shopId}
+            </foreach>
+        ORDER BY po.order_time
+        LIMIT 1
+    </select>
+
+    <select id="findLatestUninvoicedPlatformOrderTime" resultType="date">
+        SELECT po.order_time FROM platform_order as po
+        JOIN shop as s
+            ON po.shop_id = s.id
+        WHERE po.shipping_invoice_number IS NULL
+            AND po.order_time IS NOT NULL
+            AND po.erp_status IN
+            <foreach
+                    collection="erpStatuses"
+                    separator=","
+                    open="("
+                    close=")"
+                    index="index"
+                    item="erpStatus"
+            >
+                #{erpStatus}
+            </foreach>
+            AND s.active = 1
+            AND po.shop_id IN
+            <foreach
+                    collection="shopIDs"
+                    separator=","
+                    open="("
+                    close=")"
+                    index="index"
+                    item="shopId"
+            >
+                #{shopId}
+            </foreach>
+        ORDER BY order_time DESC
+        LIMIT 1
+    </select>
+
+
+    <select id="findBySku" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               shop_id,
+               logistic_channel_name,
+               platform_order_id,
+               platform_order_number,
+               tracking_number,
+               order_time,
+               shipping_time,
+               recipient,
+               country,
+               postcode,
+               fret_fee,
+               shipping_invoice_number,
+               status,
+               target,
+               erp_order_id,
+               erp_status,
+               can_send
+        FROM sku_platform_order
+        WHERE sku_id = #{id}
+    </select>
+    <select id="findByClient" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
+        FROM client_platform_order
+        <if test="id != null">
+            WHERE clientID = #{id}
+        </if>
+
+    </select>
+    <select id="findByMonthCountryChannel" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
+        FROM platform_order po
+        WHERE DATE_FORMAT(po.order_time, '%c') = #{month}
+        <if test="country != null">
+            AND country = #{country}
+        </if>
+        <if test="channelName != null">
+            AND logistic_channel_name = #{channelName}
+        </if>
+    </select>
+    <select id="allChannels" resultType="java.lang.String">
+        SELECT DISTINCT logistic_channel_name
+        FROM wia_app.platform_order WHERE logistic_channel_name != '';
+    </select>
+    <select id="allCountries" resultType="java.lang.String">
+        SELECT DISTINCT country
+        FROM wia_app.platform_order
+    </select>
+
+    <select id="fetchBillCodesOfParcelsWithoutTrace" resultType="java.lang.String">
+        SELECT internal_tracking_number
+        FROM platform_order
+        WHERE logistic_channel_name IN
+        <foreach
+                collection="transporters"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="transporter"
+        >
+            #{transporter}
+        </foreach>
+          AND shipping_time &gt;= #{startDate}
+          AND shipping_time &lt;= #{endDate}
+          AND internal_tracking_number NOT IN (SELECT p.bill_code
+                                               FROM parcel_trace pt
+                                                        JOIN parcel p ON pt.parcel_id = p.id
+                                               WHERE pt.scan_type = 'End Delivered')
+          AND internal_tracking_number IS NOT NULL;
+    </select>
+
+    <select id="fetchUninvoicedOrdersForShops" resultType="java.lang.String">
+        SELECT platform_order_id
+        FROM platform_order po join shop s ON po.shop_id = s.id
+        WHERE erp_code IN
+        <foreach
+                collection="shops"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="shop"
+        >
+            #{shop}
+        </foreach>
+        AND order_time &gt;= #{startDateTime}
+        AND order_time &lt;= #{endDateTime}
+        AND shipping_invoice_number IS NULL
+        AND erp_status IN (1,2);
+    </select>
+
+    <select id="fetchInvoicedShippedOrdersNotInShops" resultType="java.lang.String">
+        SELECT platform_order_id
+        FROM platform_order po join shop s ON po.shop_id = s.id
+        WHERE erp_code NOT IN
+        <foreach
+                collection="shops"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="shop"
+        >
+            #{shop}
+        </foreach>
+        AND shipping_time &gt;= #{startDateTime}
+        AND shipping_time &lt;= #{endDateTime}
+        AND shipping_invoice_number IS NOT NULL
+        AND erp_status = 3
+        # Skip CNE packages whose tracking number are not yet up-to-date
+        AND tracking_number NOT REGEXP '3A5V[0-9]{9}|DY01[0-9]{11}';
+    </select>
+
+    <select id="fetchOrderInShopsReadyForShopifySync" resultType="org.jeecg.modules.business.entity.PlatformOrderShopSync">
+        SELECT po.platform_order_id, po.tracking_number, s.shopify_prefix, s.shopify_token, po.postcode
+        FROM platform_order po join shop s ON po.shop_id = s.id
+        WHERE erp_code IN
+        <foreach
+                collection="shops"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="shop"
+        >
+            #{shop}
+        </foreach>
+        AND ready_for_shopify_sync = 1
+        AND erp_status = 3
+        ORDER BY shipping_time;
+    </select>
+
+    <select id="fetchUninvoicedShippedOrderIDInShops" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT id
+        FROM platform_order po
+        WHERE po.shop_id IN
+        <foreach
+                collection="shops"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="shop"
+        >
+            #{shop}
+        </foreach>
+        AND po.shipping_time between #{startDate} AND #{endDate}
+        AND po.erp_status = 3;
+    </select>
+    <select id="fetchUninvoicedShippedOrderIDInShopsAndOrderTime" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT id
+        FROM platform_order po
+        WHERE po.shop_id IN
+        <foreach
+                collection="shops"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="shop"
+        >
+            #{shop}
+        </foreach>
+        AND po.order_time between #{startDate} AND #{endDate}
+        AND po.erp_status IN
+        <foreach
+                collection="erpStatuses"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="erpStatus"
+        >
+            #{erpStatus}
+        </foreach>;
+    </select>
+</mapper>

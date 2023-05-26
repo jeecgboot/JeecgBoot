@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.LogisticExpenseDetailMapper">
+
+
+    <select id="findBy" resultType="org.jeecg.modules.business.entity.LogisticExpenseDetail">
+        SELECT *
+        FROM logistic_expense_detail
+        WHERE tracking_number IN
+        <foreach collection="trackingNumbers" separator="," item="v" index="i" close=")" open="(">
+            #{v}
+        </foreach>
+    </select>
+    <select id="findExpenseByInvoiceCodes" resultType="java.math.BigDecimal">
+        SELECT `Frais de FRET`+ `Frais de livraison` AS `amount`
+        FROM wia_app.detail_de_facture
+        WHERE `N° de facture` IN
+        <foreach collection="codes" open="(" close=")" index="i" item="v" separator=",">
+            #{v}
+        </foreach>
+    </select>
+
+    <select id="findBetween" resultType="org.jeecg.modules.business.vo.PlatformOrderLogisticExpenseDetail">
+        SELECT *
+        FROM platform_order_logistic_expense_detail AS po
+        WHERE shippingTime >= #{start}
+        AND #{end} >= shippingTime
+        <if test="country != null and country.size != 0">
+            AND country IN
+            <foreach collection="country" separator="," item="v" index="i" close=")" open="(">
+                #{v}
+            </foreach>
+        </if>
+        <if test="channelName != null and channelName.size != 0">
+            AND logisticChannelName IN
+            <foreach collection="channelName" separator="," item="v" index="i" close=")" open="(">
+                #{v}
+            </foreach>
+        </if>
+    </select>
+
+    <insert id="insertOrMerge">
+        INSERT INTO logistic_expense_detail(id, create_by, create_time, platform_order_serial_id,
+        virtual_tracking_number, logistic_internal_number, tracking_number, real_weight,
+        volumetric_weight, charging_weight, discount, shipping_fee, fuel_surcharge,
+        registration_fee, second_delivery_fee, vat, vat_service_fee, additional_fee,
+        total_fee, logistic_company_id, compensation)
+        VALUES
+        <foreach collection="data" item="item" index="i" open="" close="" separator=",">
+            (#{item.id}, #{item.createBy}, NOW(), #{item.platformOrderSerialId}, #{item.virtualTrackingNumber},
+            #{item.logisticInternalNumber}, #{item.trackingNumber}, COALESCE(#{item.realWeight}, 0.0),
+            COALESCE(#{item.volumetricWeight}, 0.0), #{item.chargingWeight}, COALESCE(#{item.discount}, 0.0),
+            #{item.shippingFee}, COALESCE(#{item.fuelSurcharge}, 0.0), #{item.registrationFee},
+            COALESCE(#{item.secondDeliveryFee}, 0.0), COALESCE(#{item.vat}, 0.0), COALESCE(#{item.vatServiceFee}, 0.0),
+            COALESCE(#{item.additionalFee}, 0.0), #{item.totalFee}, #{item.logisticCompanyId},
+            COALESCE(#{item.compensation}, 0.0))
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        update_by = VALUES(create_by),
+        update_time = NOW(),
+        discount = discount + VALUES(discount),
+        shipping_fee = shipping_fee + VALUES(shipping_fee),
+        fuel_surcharge = fuel_surcharge + VALUES(fuel_surcharge),
+        registration_fee = registration_fee + VALUES(registration_fee),
+        second_delivery_fee = second_delivery_fee + VALUES(second_delivery_fee),
+        vat = vat + VALUES(vat),
+        vat_service_fee = vat_service_fee + VALUES(vat_service_fee),
+        additional_fee = additional_fee + VALUES(additional_fee),
+        total_fee = total_fee + VALUES(total_fee),
+        compensation = compensation + VALUES(compensation)
+    </insert>
+</mapper>

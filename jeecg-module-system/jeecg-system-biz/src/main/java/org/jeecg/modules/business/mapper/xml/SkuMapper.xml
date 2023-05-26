@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.SkuMapper">
+
+    <delete id="deleteByMainId" parameterType="java.lang.String">
+        DELETE
+        FROM sku
+        WHERE product_id = #{mainId}    </delete>
+
+    <select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.business.entity.Sku">
+        SELECT *
+        FROM sku
+        WHERE product_id = #{mainId}    </select>
+
+
+    <sql id="selectSkuByClientId">
+        SELECT *
+        FROM inventory_record i
+        <if test="clientId != null">
+            WHERE i.client_id = #{clientId}
+        </if>
+    </sql>
+
+    <select id="pageSkuByClientId" resultType="org.jeecg.modules.business.vo.inventory.InventoryRecord">
+        <include refid="selectSkuByClientId"/>
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="countTotal" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM (<include refid="selectSkuByClientId"/>) AS t
+    </select>
+
+    <update id="addSkuQuantity" parameterType="map">
+        UPDATE sku
+        SET purchasing_amount = CASE id
+        <foreach collection="quantities" close="" open="" index="ID" item="quantity" separator="">
+            WHEN #{ID} THEN purchasing_amount + #{quantity}
+        </foreach>
+        END
+        WHERE id IN
+        <foreach collection="quantities" index="ID" item="quantity" open="(" close=")" separator=",">
+            #{ID}
+        </foreach>
+    </update>
+
+    <update id="batchUpdateStock" parameterType="java.util.List">
+        UPDATE sku
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="purchasing_amount =case" suffix="end,">
+                <foreach collection="list" item="i" index="index">
+                    <if test="i.purchasingAmount!=null">
+                        when erp_code=#{i.erpCode} then #{i.purchasingAmount}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="available_amount =case" suffix="end,">
+                <foreach collection="list" item="i" index="index">
+                    <if test="i.availableAmount!=null">
+                        when erp_code=#{i.erpCode} then #{i.availableAmount}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by =case" suffix="end,">
+                <foreach collection="list" item="i" index="index">
+                    <if test="i.updateBy!=null">
+                        when erp_code=#{i.erpCode} then #{i.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time =case" suffix="end,">
+                <foreach collection="list" item="i" index="index">
+                    <if test="i.updateTime!=null">
+                        when erp_code=#{i.erpCode} then #{i.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        WHERE
+        <foreach collection="list" separator="or" item="i" index="index" >
+            erp_code=#{i.erpCode}
+        </foreach>
+    </update>
+
+    <select id="selectByErpCode" parameterType="java.lang.String" resultType="org.jeecg.modules.business.entity.Sku">
+        SELECT *
+        FROM sku
+        WHERE erp_code IN
+        <foreach collection="erpCodes" index="erpCode" item="quantity" open="(" close=")" separator=",">
+            #{erpCode}
+        </foreach>    </select>
+</mapper>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.ShippingInvoiceMapper">
+
+    <select id="fetchShopOwnerFromInvoiceNumber" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT distinct c.*
+        FROM client c
+            JOIN shop s ON c.id = s.owner_id
+            JOIN platform_order po on s.id = po.shop_id
+        WHERE po.shipping_invoice_number = #{invoiceNumber}
+    </select>
+    <select id="fetchShippingInvoiceNumber" resultType="java.lang.String">
+        SELECT invoice_number
+        FROM shipping_invoice s
+        WHERE s.id = #{invoiceID}
+    </select>
+    <select id="fetchShippingInvoice" resultType="org.jeecg.modules.business.entity.ShippingInvoice">
+        SELECT total_amount, discount_amount, final_amount, paid_amount
+        FROM shipping_invoice s
+        WHERE s.invoice_number = #{invoiceNumber}
+    </select>
+    <select id="fetchPlatformOrder" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT id, fret_fee, country, order_service_fee, packaging_material_fee
+        FROM platform_order p
+        WHERE p.shipping_invoice_number = #{invoiceNumber}
+    </select>
+    <select id="fetchPlatformOrderContent" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
+        SELECT quantity, service_fee, vat, shipping_fee
+        FROM platform_order_content p
+        WHERE p.platform_order_id = #{platformOrderId}
+    </select>
+</mapper>
