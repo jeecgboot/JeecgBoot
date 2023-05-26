@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.ParcelTraceMapper">
+
+    <delete id="deleteByMainId" parameterType="java.lang.String">
+        DELETE
+        FROM parcel_trace
+        WHERE parcel_id = #{mainId}    </delete>
+
+    <select id="selectByMainId" parameterType="java.lang.String"
+            resultType="org.jeecg.modules.business.entity.ParcelTrace">
+        SELECT *
+        FROM parcel_trace
+        WHERE parcel_id = #{mainId}
+        ORDER BY scan_time DESC
+    </select>
+
+    <insert id="insertOrIgnoreJTTraces" parameterType="list">
+        INSERT IGNORE INTO parcel_trace(id, create_by, create_time, update_by, update_time, parcel_id, scan_time,
+        scan_type, description, description_en)
+        VALUES
+        <foreach collection="traces" separator="," open="" close="" item="trace" index="index">
+            (
+            UUID(),
+            'jt api',
+            NOW(),
+            'jt api',
+            NOW(),
+            #{trace.parcelId},
+            #{trace.scanTime},
+            #{trace.scanType},
+            #{trace.descriptionCn},
+            #{trace.descriptionEn}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateEQTraces" parameterType="list">
+        INSERT INTO parcel_trace(id, create_by, create_time, update_by, update_time, parcel_id, scan_time,
+        scan_type, description_en, trace_location, trace_status, trace_code)
+        VALUES
+        <foreach collection="traces" separator="," open="" close="" item="trace" index="index">
+            (
+            UUID(),
+            'eq api',
+            NOW(),
+            'eq api',
+            NOW(),
+            #{trace.parcelId},
+            #{trace.traceDateTime},
+            #{trace.scanType},
+            #{trace.traceContent},
+            #{trace.traceLocation},
+            #{trace.traceStatus},
+            #{trace.traceKind}
+            )
+        </foreach>
+        ON DUPLICATE KEY UPDATE scan_type = values(scan_type), UPDATE_TIME = NOW()
+    </insert>
+
+    <insert id="insertOrIgnoreYDTraces" parameterType="list">
+        INSERT IGNORE INTO parcel_trace(id, create_by, create_time, update_by, update_time, parcel_id, scan_time,
+        description, description_en, trace_location, trace_status, trace_code, scan_type)
+        VALUES
+        <foreach collection="traces" separator="," open="" close="" item="trace" index="index">
+            (
+            UUID(),
+            'yd api',
+            NOW(),
+            'yd api',
+            NOW(),
+            #{trace.parcelId},
+            #{trace.scanTime},
+            #{trace.descriptionCn},
+            #{trace.descriptionEn},
+            #{trace.traceLocation},
+            #{trace.traceStatus},
+            #{trace.traceCode},
+            #{trace.scanType}
+            )
+        </foreach>
+    </insert>
+</mapper>

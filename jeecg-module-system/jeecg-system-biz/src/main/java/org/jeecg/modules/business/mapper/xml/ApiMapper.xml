@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.ApiMapper">
+    <select id="searchByTrackingNumbers" resultType="org.jeecg.modules.business.domain.api.wia.Parcel"
+            resultMap="parcelResultMap">
+        SELECT p.country as destination, p.third_bill_code as trackingNumber, 'CN' as origin,
+        scan_type as scanType,
+        scan_time as scanTime,
+        IF(pt.description_en IS NOT NULL, pt.description_en, pt.description) as description
+        from parcel p
+        join parcel_trace pt on p.id = pt.parcel_id
+        where third_bill_code
+        IN
+        <foreach collection="trackingNumbers" open="(" close=")" separator="," index="index" item="item">
+            #{item}
+        </foreach>
+        ORDER BY trackingNumber, scan_time DESC
+    </select>
+
+    <resultMap id="parcelResultMap" type="org.jeecg.modules.business.domain.api.wia.Parcel">
+        <result property="destination" column="destination" javaType="String"/>
+        <result property="trackingNumber" column="trackingNumber" javaType="String"/>
+        <result property="origin" column="origin" javaType="String"/>
+        <collection property="traces" ofType="org.jeecg.modules.business.domain.api.wia.ParcelTrace">
+            <result property="scanTime" column="scanTime" javaType="Date"/>
+            <result property="scanType" column="scanType" javaType="String"/>
+            <result property="description" column="description" javaType="String"/>
+        </collection>
+    </resultMap>
+</mapper>

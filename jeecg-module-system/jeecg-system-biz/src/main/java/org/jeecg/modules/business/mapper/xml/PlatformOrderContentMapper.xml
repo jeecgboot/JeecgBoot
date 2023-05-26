@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.PlatformOrderContentMapper">
+
+
+    <delete id="deleteByMainId" parameterType="java.lang.String">
+        DELETE
+        FROM platform_order_content
+        WHERE platform_order_id = #{mainId}
+    </delete>
+    <delete id="batchDeleteByID">
+        <if test="IDs.size != 0">
+            DELETE FROM platform_order_content
+            WHERE id IN
+            <foreach
+                    collection="IDs"
+                    separator=","
+                    item="item"
+                    index="index"
+                    open="("
+                    close=")"
+            >
+                #{item}
+            </foreach>
+        </if>
+
+    </delete>
+
+    <select id="selectByMainId" parameterType="java.lang.String"
+            resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
+        SELECT *
+        FROM platform_order_content
+        WHERE platform_order_id = #{mainId}    </select>
+
+    <select id="selectClientVersionByMainId" parameterType="java.lang.String"
+            resultType="org.jeecg.modules.business.entity.ClientPlatformOrderContent">
+        SELECT *
+        FROM platform_order_content
+        WHERE platform_order_id = #{mainId}    </select>
+
+    <select id="searchOrderContent" resultType="org.jeecg.modules.business.vo.SkuQuantity">
+        SELECT sku_id as 'key', sum(quantity) AS 'value'
+        FROM platform_order_content
+        WHERE erp_status &lt;&gt; 5
+        AND platform_order_id IN
+        <foreach collection="list" index="i" item="item" open="(" separator="," close=")">#{item}</foreach>
+        GROUP BY sku_id
+    </select>
+
+    <select id="fetchOrderContent" parameterType="java.lang.String"
+            resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
+        SELECT *
+        FROM platform_order_content
+        WHERE erp_status &lt;&gt; 5
+        AND platform_order_id IN <foreach collection="list" index="i" item="item" open="(" separator="," close=")">#{item}</foreach>
+    </select>
+
+    <select id="searchSkuDetail"
+            resultType="org.jeecg.modules.business.vo.SkuDetail"
+            resultMap="skuDetailResultMap">
+        SELECT *
+        FROM sku_price_promotion
+        WHERE sku_id IN
+        <foreach collection="list" index="i" item="item" open="(" separator="," close=")">#{item}</foreach>
+    </select>
+    <select id="getAllWeightsDiscountsServiceFees"
+            resultType="org.jeecg.modules.business.vo.SkuWeightDiscountServiceFees">
+        SELECT *
+        FROM sku_weight_discount_service_fees
+    </select>
+
+
+    <resultMap id="skuDetailResultMap" type="org.jeecg.modules.business.vo.SkuDetail">
+        <constructor>
+            <idArg column="sku_id"
+                   javaType="String"/>
+            <arg column="erp_code"
+                 javaType="String"/>
+            <arg column="image_source"
+                 javaType="String"/>
+            <arg column="name_en"
+                 javaType="String"/>
+            <arg column="name_zh"
+                 javaType="String"/>
+            <arg javaType="org.jeecg.modules.business.entity.SkuPrice"
+                 resultMap="skuPriceResultMap"/>
+            <arg javaType="org.jeecg.modules.business.entity.Promotion"
+                 resultMap="promotionResultMap"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="skuPriceResultMap" type="org.jeecg.modules.business.entity.SkuPrice">
+        <id property="id" column="price_id" javaType="string"/>
+        <result property="skuId" column="sku_id" javaType="string"/>
+        <result property="price" column="price"/>
+        <result property="threshold" column="threshold"/>
+        <result property="discountedPrice" column="discounted_price"/>
+        <result property="date" column="price_date"/>
+    </resultMap>
+
+    <resultMap id="promotionResultMap" type="org.jeecg.modules.business.entity.Promotion">
+        <constructor>
+            <idArg column="promotion_id" javaType="String"/>
+            <arg column="promo_milestone" javaType="_int"/>
+            <arg column="quantity_purchased" javaType="_int"/>
+            <arg column="discount" javaType="decimal"/>
+        </constructor>
+    </resultMap>
+
+    <select id="findUninvoicedOrderContents" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
+        SELECT poc.*
+        FROM platform_order_content poc
+        JOIN platform_order po ON poc.platform_order_id = po.id
+        WHERE po.shop_id IN
+        <foreach
+                collection="shopIDs"
+                index="index"
+                item="item"
+                open="("
+                close=")"
+                separator=",">
+            #{item}
+        </foreach>
+        AND po.shipping_time >= #{begin}
+        AND #{end} >= po.shipping_time
+        AND po.shipping_invoice_number IS NULL
+        AND poc.erp_status = 3
+    </select>
+    <select id="findUninvoicedOrderContentsForShopsAndStatus" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
+        SELECT poc.*
+        FROM platform_order_content poc
+        JOIN platform_order po ON poc.platform_order_id = po.id
+        WHERE po.shop_id IN
+        <foreach
+                collection="shopIDs"
+                index="index"
+                item="shop"
+                open="("
+                close=")"
+                separator=",">
+            #{shop}
+        </foreach>
+        AND po.order_time >= #{begin}
+        AND #{end} >= po.order_time
+        AND po.shipping_invoice_number IS NULL
+        AND poc.erp_status IN
+        <foreach
+                collection="erpStatuses"
+                index="index"
+                item="erpStatus"
+                open="("
+                close=")"
+                separator=",">
+            #{erpStatus}
+        </foreach>
+    </select>
+
+    <select id="findUninvoicedShippedOrderContents" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
+        SELECT poc.*
+        FROM platform_order_content poc
+        JOIN platform_order po ON poc.platform_order_id = po.id
+        JOIN shop s ON po.shop_id = s.id
+        WHERE
+            po.shipping_invoice_number IS NULL
+        AND poc.erp_status = 3
+    </select>
+
+    <update id="batchUpdateForPurchase">
+        UPDATE platform_order_content poc
+        SET po.update_by = 'mabang api',
+        po.update_time = NOW(),
+        shop_id =
+        case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then shopErpToId(#{item.shopErpCode})
+        </foreach>
+        end,
+        logistic_channel_name = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.logisticChannelName}
+        </foreach>
+        end,
+        platform_order_id = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.platformOrderId}
+        </foreach>
+        end,
+        platform_order_number = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.platformOrderNumber}
+        </foreach>
+        end,
+        erp_order_id = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.erpOrderId}
+        </foreach>
+        end,
+        tracking_number = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.trackingNumber}
+        </foreach>
+        end,
+        internal_tracking_number = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.trackingNumber1}
+        </foreach>
+        end,
+        order_time = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.orderTime}
+        </foreach>
+        end,
+        shipping_time = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.shippingTime}
+        </foreach>
+        end,
+        recipient = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.recipient}
+        </foreach>
+        end,
+        country = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.country}
+        </foreach>
+        end,
+        postcode = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.postcode}
+        </foreach>
+        end,
+        erp_status = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.status}
+        </foreach>
+        end
+        where id in
+        <foreach collection="orders" separator="," open="(" close=")" index="index" item="item">
+            #{item.id}
+        </foreach>
+
+    </update>
+</mapper>

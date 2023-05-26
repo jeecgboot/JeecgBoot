@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.SavRefundMapper">
+    <select id="fetchRefundAmount" resultType="java.math.BigDecimal">
+        SELECT total_refund_amount
+        FROM sav_refund s
+        WHERE s.invoice_number = #{invoiceNumber}
+    </select>
+</mapper>

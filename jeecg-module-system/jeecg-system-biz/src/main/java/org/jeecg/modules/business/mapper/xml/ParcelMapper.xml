@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.ParcelMapper">
+    <insert id="insertOrIgnoreJTParcels" parameterType="list">
+        INSERT IGNORE INTO parcel(id, create_by, create_time, update_by, update_time, bill_code, country,
+                                  third_bill_code, order_no)
+        VALUES
+        <foreach collection="parcels" separator="," open="" close="" item="parcel" index="index">
+            (
+            #{parcel.id},
+            'jt api',
+            NOW(),
+            'jt api',
+            NOW(),
+            #{parcel.billCode},
+            #{parcel.country},
+            #{parcel.thirdBillCode},
+            #{parcel.orderNo}
+            )
+        </foreach>
+    </insert>
+
+    <select id="searchByBillCode" resultType="org.jeecg.modules.business.entity.Parcel">
+        SELECT * from parcel WHERE bill_code
+        IN
+        <foreach collection="billCodes" open="(" close=")" separator="," index="index" item="item">
+            #{item}
+        </foreach>
+    </select>
+
+    <insert id="insertOrUpdateEQParcels" parameterType="list">
+        INSERT INTO parcel(id, create_by, create_time, update_by, update_time, bill_code, country,
+        third_bill_code, product_code)
+        VALUES
+        <foreach collection="parcels" separator="," open="" close="" item="parcel" index="index">
+            (
+            #{parcel.id},
+            'eq api',
+            NOW(),
+            'eq api',
+            NOW(),
+            #{parcel.billCode},
+            #{parcel.country},
+            #{parcel.thirdBillCode},
+            #{parcel.productCode}
+            )
+        </foreach>
+        ON DUPLICATE KEY UPDATE third_bill_code = values(third_bill_code), UPDATE_TIME = NOW()
+    </insert>
+
+    <insert id="insertOrIgnoreYDParcels" parameterType="list">
+        INSERT IGNORE INTO parcel(id, create_by, create_time, update_by, update_time, bill_code, country,
+        third_bill_code, order_no, product_code)
+        VALUES
+        <foreach collection="parcels" separator="," open="" close="" item="parcel" index="index">
+            (
+            #{parcel.id},
+            'yd api',
+            NOW(),
+            'yd api',
+            NOW(),
+            #{parcel.thirdBillCode},
+            #{parcel.country},
+            #{parcel.thirdBillCode},
+            #{parcel.orderNo},
+            #{parcel.productCode}
+            )
+        </foreach>
+    </insert>
+</mapper>

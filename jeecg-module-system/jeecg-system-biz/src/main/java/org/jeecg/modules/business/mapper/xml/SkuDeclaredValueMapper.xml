@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.SkuDeclaredValueMapper">
+
+    <delete id="deleteByMainId" parameterType="java.lang.String">
+        DELETE
+        FROM sku_declared_value
+        WHERE sku_id = #{mainId}    </delete>
+
+    <select id="selectByMainId" parameterType="java.lang.String"
+            resultType="org.jeecg.modules.business.entity.SkuDeclaredValue">
+        SELECT *
+        FROM sku_declared_value
+        WHERE sku_id = #{mainId}    </select>
+
+    <select id="getLatestSkuDeclaredValues" resultType="org.jeecg.modules.business.entity.SkuDeclaredValue">
+        SELECT sdv.*
+        FROM sku_declared_value sdv
+                 INNER JOIN
+             (SELECT sku_id, MAX(effective_date) max_date
+              FROM sku_declared_value sdv
+              GROUP BY sku_id) sdv2 ON sdv.sku_id = sdv2.sku_id AND sdv.effective_date = sdv2.max_date
+                 JOIN sku s ON sdv.sku_id = s.id
+    </select>
+
+    <select id="getDeclaredValueForDate" resultType="java.math.BigDecimal">
+        SELECT sdv.declared_value
+        FROM sku_declared_value sdv
+                 JOIN sku s ON sdv.sku_id = s.id
+        WHERE sku_id = #{skuId}
+          AND effective_date &lt;= #{date}
+        ORDER BY effective_date DESC
+        LIMIT 1    </select>
+
+    <select id="getLatestDeclaredValues" resultType="java.util.Map" resultMap="declaredValueMap">
+        SELECT erp_code, sdv.declared_value
+        FROM sku_declared_value sdv
+                 INNER JOIN
+             (SELECT sku_id, MAX(effective_date) max_date
+              FROM sku_declared_value sdv
+              GROUP BY sku_id) sdv2 ON sdv.sku_id = sdv2.sku_id AND sdv.effective_date = sdv2.max_date
+                 JOIN sku s ON sdv.sku_id = s.id
+    </select>
+
+    <resultMap id="declaredValueMap" type="java.util.HashMap">
+        <result property="key" column="erp_code"/>
+        <result property="value" column="declared_value"/>
+    </resultMap>
+
+    <insert id="insertNewDeclaredValues">
+        INSERT INTO sku_declared_value(id, create_by, create_time, sku_id, declared_value, effective_date)
+        VALUES
+        <foreach collection="items" separator="," open="" close="" item="item" index="index">
+            (
+            #{item.id}, #{item.createBy}, #{item.createTime},
+            skuErpToId(#{item.erpCode}), #{item.declaredValue}, #{item.effectiveDate}
+            )
+        </foreach>
+    </insert>
+</mapper>

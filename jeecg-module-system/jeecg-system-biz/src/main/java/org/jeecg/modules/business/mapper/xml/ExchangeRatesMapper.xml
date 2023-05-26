@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.ExchangeRatesMapper">
+
+    <select id="getLatestExchangeRate" resultType="java.math.BigDecimal">
+        SELECT rate
+        FROM exchange_rates
+        WHERE original_currency = #{original}
+          AND target_currency = #{target}
+        ORDER BY effective_date DESC
+        LIMIT 1    </select>
+</mapper>

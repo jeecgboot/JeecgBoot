@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.CountryMapper">
+    <select id="findByCode" resultType="org.jeecg.modules.business.entity.Country">
+        SELECT *
+        FROM country
+        WHERE code = #{param1}
+    </select>
+
+    <select id="findByEnName" resultType="org.jeecg.modules.business.entity.Country">
+        SELECT *
+        FROM country
+        WHERE name_en = #{param1} or special_name = #{param1}
+    </select>
+
+    <select id="findByZhName" resultType="org.jeecg.modules.business.entity.Country">
+        SELECT *
+        FROM country
+        WHERE name_zh = #{param1}
+    </select>
+    <select id="findAlias" resultType="org.jeecg.modules.business.vo.CountryCodeAlias">
+        SELECT *
+        FROM country_code_alias
+        WHERE alias = #{param1}
+    </select>
+    <select id="findAll" resultType="org.jeecg.modules.business.entity.Country">
+        SELECT * FROM country
+    </select>
+    <select id="findActiveCountries" resultType="org.jeecg.modules.business.entity.Country">
+        SELECT DISTINCT c.id, c.name_en, c.name_zh, c.code, c.special_name FROM country as c
+        JOIN platform_order as po
+            ON po.country = c.name_en
+            AND po.erp_status IN (1,2,3);
+    </select>
+
+</mapper>

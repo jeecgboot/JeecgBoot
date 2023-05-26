@@ -15,10 +15,6 @@ public class SysLoginModel {
     private String username;
 	@ApiModelProperty(value = "密码")
     private String password;
-	@ApiModelProperty(value = "验证码")
-    private String captcha;
-	@ApiModelProperty(value = "验证码key")
-    private String checkKey;
 
     public String getUsername() {
         return username;
@@ -35,21 +31,5 @@ public class SysLoginModel {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    public String getCaptcha() {
-        return captcha;
-    }
-
-    public void setCaptcha(String captcha) {
-        this.captcha = captcha;
-    }
-
-	public String getCheckKey() {
-		return checkKey;
-	}
-
-	public void setCheckKey(String checkKey) {
-		this.checkKey = checkKey;
-	}
     
 }

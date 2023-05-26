@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.PromotionMapper">
+
+    <select id="findBySku" parameterType="java.lang.String" resultType="org.jeecg.modules.business.entity.Promotion">
+        SELECT id, promo_milestone AS `promoMilestone`, quantity_purchased AS quantityPurchased, discount
+        FROM sku_promotion JOIN promotion_content pc on sku_promotion.id = pc.promotion_id
+        where sku_id = #{skuId}
+        </select>
+
+    <resultMap id="promotionResultMap" type="org.jeecg.modules.business.entity.Promotion">
+        <constructor>
+            <idArg column="id" javaType="String"/>
+            <arg column="promoMilestone" javaType="_int"/>
+            <arg column="quantityPurchased" javaType="int"/>
+            <arg column="discount" javaType="decimal"/>
+        </constructor>
+    </resultMap>
+    
+    <update id="updatePurchasedQuantity" parameterType="org.jeecg.modules.business.entity.Promotion">
+        UPDATE sku_promotion
+        SET update_time = NOW() AND quantity_purchased = #{quantityPurchased}
+        WHERE id = #{id}
+    </update>
+
+
+</mapper>

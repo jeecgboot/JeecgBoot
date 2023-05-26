@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.PurchaseOrderMapper">
+    <insert id="addPurchase">
+        INSERT INTO purchase_order(id, create_by, create_time, update_by,
+                                   update_time, client_id, total_amount,
+                                   discount_amount, final_amount, invoice_number)
+        VALUES (#{ID}, #{creator}, NOW(), #{creator}, NOW(), #{clientID},
+                #{totalAmount}, #{discount}, #{finalAmount},
+                #{invoiceNumber});
+    </insert>
+
+    <update id="updatePaymentDocument">
+        UPDATE purchase_order
+        SET payment_document = #{fileName},
+            status='proofUploaded'
+        WHERE id = #{purchaseID}
+    </update>
+    <update id="confirmPayment">
+        UPDATE purchase_order
+        SET status = 'confirmed'
+        WHERE id = #{purchaseID}
+    </update>
+    <update id="confirmPurchase">
+        UPDATE purchase_order
+        SET status = 'purchasing'
+        WHERE id = #{purchaseID}
+    </update>
+
+    <sql id="pageByClientID">
+        SELECT p.*
+        FROM purchase_order p
+        <if test="clientID != null">
+            WHERE p.client_id = #{clientID}
+        </if>
+    </sql>
+
+    <select id="pageByClientID" resultType="org.jeecg.modules.business.entity.PurchaseOrder">
+        <include refid="pageByClientID"/>
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="countTotal" resultType="long">
+        SELECT COUNT(*)
+        FROM (<include refid="pageByClientID"/>) t
+    </select>
+
+    <select id="lastInvoiceNumber" resultType="java.lang.String">
+        SELECT invoice_number
+        FROM purchase_order
+        WHERE MONTH(create_time) = MONTH(CURRENT_DATE())
+          AND YEAR(create_time) = YEAR(CURRENT_DATE())
+        ORDER BY create_time DESC
+        LIMIT 1
+    </select>
+    <select id="selectPaymentDocument" resultType="java.lang.String">
+        SELECT payment_document
+        FROM purchase_order
+        WHERE id = #{purchaseID}
+    </select>
+    <select id="getInvoiceNumber" resultType="java.lang.String">
+        SELECT invoice_number
+        FROM purchase_order
+        WHERE id = #{purchaseID}
+    </select>
+</mapper>
