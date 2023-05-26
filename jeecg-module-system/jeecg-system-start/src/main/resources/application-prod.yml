@@ -25,9 +25,9 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
   mail:
-    host: smtp.163.com
-    username: ??
-    password: ??
+    host: smtp.gmail.com
+    username: ?
+    password: ?
     properties:
       mail:
         smtp:
@@ -66,7 +66,7 @@ spring:
   #json 时间戳统一转换
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
-    time-zone: GMT+8
+    time-zone: GMT+2
   jpa:
     open-in-view: false
   aop:
@@ -145,6 +145,13 @@ spring:
   redis:
     database: 0
     host: 127.0.0.1
+    lettuce:
+      pool:
+        max-active: 8   #最大连接数据库连接数,设 0 为没有限制
+        max-idle: 8     #最大等待连接中的数量,设 0 为没有限制
+        max-wait: -1ms  #最大建立连接等待时间。如果超过此时间将接到异常。设为-1表示无限制。
+        min-idle: 0     #最小等待连接中的数量,设 0 为没有限制
+      shutdown-timeout: 100ms
     port: 6379
     password: ''
 #mybatis plus 设置
@@ -180,10 +187,30 @@ jeecg:
     pc: http://localhost:3100
     app: http://localhost:8051
   path:
-    #文件上传根目录 设置
-    upload: /opt/jeecg-boot/upload
+    upload: /temp/wia/upload
+    save: /temp/wia/save
+
+    # purchase invoice template
+    purchaseTemplatePath: /wia/files/Purchase_Invoice_Template.xlsx
+    # where to store generated file
+    purchaseInvoiceDir: /wia/invoices/purchase
+
+    # shipping invoice template
+    shippingTemplatePath_EU: /wia/files/Shipping_Invoice_Template_EU.xlsx
+    shippingTemplatePath_US: /wia/files/Shipping_Invoice_Template_US.xlsx
+
+    # complete invoice template
+    completeTemplatePath_EU: /wia/files/Complete_Invoice_Template_EU.xlsx
+    completeTemplatePath_US: /wia/files/Complete_Invoice_Template_US.xlsx
+    # where to store generated file
+    shippingInvoiceDir: /temp/wia/invoices/shipping
+    shippingInvoiceDetailDir: /temp/wia/invoices/shippingDetail
+    shippingInvoicePdfDir: /temp/wia/invoices/pdf/shipping
+    shippingInvoiceDetailPdfDir: /temp/wia/invoices/pdf/shippingDetail
+    # CDG location
+    CGS: /wia/files/WIASourcingCGCVF_mai.pdf
     #webapp文件路径
-    webapp: /opt/jeecg-boot/webapp
+    webapp: /wia_app
   shiro:
     excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**,/api/getUserInfo
   #阿里云oss存储和大鱼短信秘钥配置
