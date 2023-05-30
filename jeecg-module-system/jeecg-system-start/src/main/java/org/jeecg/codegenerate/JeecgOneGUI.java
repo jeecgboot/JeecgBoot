@@ -10,7 +10,7 @@ import org.jeecgframework.codegenerate.window.CodeWindow;
  */
 public class JeecgOneGUI {
 
-	/** 使用手册： http://doc.jeecg.com/2684691 */
+	/** 使用手册： https://help.jeecg.com/vue3/codegen/gui.html */
     public static void main(String[] args) {
     	new CodeWindow().pack();
 	}

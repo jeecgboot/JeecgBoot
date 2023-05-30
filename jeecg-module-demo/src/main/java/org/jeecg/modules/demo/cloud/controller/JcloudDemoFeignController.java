@@ -44,7 +44,7 @@
 ////    /**
 ////     * 测试调用 erp 微服务接口
 ////     * 【如何测试：通过archetype生成微服务模块，快速集成测试】
-////     *  http://doc.jeecg.com/2194069
+////     *  https://help.jeecg.com/java/springcloud/archetype.html
 ////     * @return
 ////     */
 ////    @GetMapping("/callErp")

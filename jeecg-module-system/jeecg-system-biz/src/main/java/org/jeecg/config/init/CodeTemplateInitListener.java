@@ -17,7 +17,6 @@ import java.nio.charset.StandardCharsets;
  * 自动初始化代码生成器模板
  * <p>
  * 解决JAR发布需要手工配置代码生成器模板问题
- * http://doc.jeecg.com/2043922
  * @author zhang
  */
 @Slf4j
