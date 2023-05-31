@@ -205,15 +205,15 @@ Technical Architecture:
 
 #### backend
 
-- Basic framework: Spring Boot 2.6.6
+- Basic framework: Spring Boot 2.6.14
 
 - Microservice framework: Spring Cloud Alibaba 2021.0.1.0
 
 - Persistence layer framework: MybatisPlus 3.5.1
 
-- Report tool: JimuReport 1.5.2
+- Report tool: JimuReport 1.5.8
 
-- Security framework: Apache Shiro 1.8.0, Jwt 3.11.0
+- Security framework: Apache Shiro 1.10.0, Jwt 3.11.0
 
 - Microservice technology stack: Spring Cloud Alibaba, Nacos, Gateway, Sentinel, Skywalking
 
