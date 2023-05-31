@@ -238,15 +238,15 @@ VUE2版本专题介绍
 
 #### 后端
 
-- 基础框架：Spring Boot 2.6.6
+- 基础框架：Spring Boot 2.6.14
 
 - 微服务框架： Spring Cloud Alibaba 2021.0.1.0
 
 - 持久层框架：MybatisPlus 3.5.1
 
-- 报表工具： JimuReport 1.5.2
+- 报表工具： JimuReport 1.5.8
 
-- 安全框架：Apache Shiro 1.8.0，Jwt 3.11.0
+- 安全框架：Apache Shiro 1.10.0，Jwt 3.11.0
 
 - 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywalking
 
