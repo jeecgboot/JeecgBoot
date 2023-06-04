@@ -3,6 +3,8 @@ package org.jeecg.common.util.security;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 查询表/字段 黑名单处理
@@ -20,6 +22,11 @@ public abstract class AbstractQueryBlackListHandler {
      * ruleMap.put("sys_user", "username,password")sys_user中的username和password不支持查询
      */
     public static Map<String, String> ruleMap = new HashMap<>();
+
+    /**
+     * 以下字符不能出现在表名中或是字段名中
+     */
+    public static final Pattern ILLEGAL_NAME_REG = Pattern.compile("[-]{2,}");
 
     static {
         ruleMap.put("sys_user", "password,salt");
@@ -53,7 +60,10 @@ public abstract class AbstractQueryBlackListHandler {
             return true;
         }
         log.info("--获取sql信息--", list.toString());
-        boolean flag = true;
+        boolean flag = checkTableAndFieldsName(list);
+        if(flag == false){
+            return false;
+        }
         for (QueryTable table : list) {
             String name = table.getName();
             String fieldString = ruleMap.get(name);
@@ -72,6 +82,46 @@ public abstract class AbstractQueryBlackListHandler {
         }
         return flag;
     }
+
+    /**
+     * 校验表名和字段名是否有效，或是是否会带些特殊的字符串进行sql注入
+     * issues/4983 SQL Injection in 3.5.1 #4983
+     * @return
+     */
+    private boolean checkTableAndFieldsName(List<QueryTable> list){
+        boolean flag = true;
+        for(QueryTable queryTable: list){
+            String tableName = queryTable.getName();
+            if(hasSpecialString(tableName)){
+                flag = false;
+                log.warn("sql黑名单校验，表名【"+tableName+"】包含特殊字符");
+                break;
+            }
+            Set<String> fields = queryTable.getFields();
+            for(String name: fields){
+                if(hasSpecialString(name)){
+                    flag = false;
+                    log.warn("sql黑名单校验，字段名【"+name+"】包含特殊字符");
+                    break;
+                } 
+            }
+        }
+        return flag;
+    }
+
+    /**
+     * 是否包含特殊的字符串
+     * @param name
+     * @return
+     */
+    private boolean hasSpecialString(String name){
+        Matcher m = ILLEGAL_NAME_REG.matcher(name);
+        if (m.find()) {
+            return true;
+        }
+        return false;
+    }
+    
 
     /**
      * 查询的表的信息
