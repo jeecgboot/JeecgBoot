@@ -165,7 +165,7 @@ mybatis-plus:
     call-setters-on-nulls: true
 #jeecg专用配置
 minidao:
-  base-package: org.jeecg.modules.jmreport.*
+  base-package: org.jeecg.modules.jmreport.*,org.jeecg.modules.drag.*
 jeecg:
   # 是否启用安全模式
   safeMode: false
