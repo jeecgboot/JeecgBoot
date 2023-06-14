@@ -18,6 +18,7 @@ import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
+import org.jeecg.modules.message.entity.SysMessage;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +93,9 @@ public class InvoiceController {
                                                @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                                @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                                @RequestParam(name = "type") String type,
+                                               @RequestParam(name = "warehouses[]") List<String> warehouses,
                                                HttpServletRequest req) {
+        String warehouseString = String.join(",", warehouses);
         QueryWrapper<PlatformOrder> queryWrapper = QueryGenerator.initQueryWrapper(platformOrder, req.getParameterMap());
         LambdaQueryWrapper<PlatformOrder> lambdaQueryWrapper = queryWrapper.lambda();
         if(type.equals("shipping"))
@@ -107,7 +110,7 @@ public class InvoiceController {
         Page<PlatformOrder> page = new Page<>(pageNo, pageSize);
         IPage<PlatformOrder> pageList;
         log.info("Request for " + type + " orders from client : " + clientId);
-        if (shopIDs == null || shopIDs.isEmpty()) {
+        if (shopIDs == null || shopIDs.isEmpty()) { // obsolete, used in old pages only
             lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT po.id FROM platform_order po\n" +
                     " JOIN shop s ON po.shop_id = s.id\n" +
                     " JOIN client c ON s.owner_id = c.id WHERE c.id = '" + clientId + "'");
@@ -118,12 +121,20 @@ public class InvoiceController {
             if(start != null || end != null){
                 log.info("Specified period between " + start + " and " + end);
                 if (type.equals("shipping"))
-                    lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT id FROM platform_order po WHERE po.shipping_time between '" + start + "' AND '" + end + "'");
+                    lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT po.id FROM platform_order po\n" +
+                            "JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name\n" +
+                            "WHERE po.shipping_time between '" + start + "' AND '" + end + "'\n" +
+                            "AND lc.warehouse_in_china IN (" + warehouseString + ")");
                 else
-                    lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT id FROM platform_order po WHERE po.order_time between '" + start + "' AND '" + end + "'");
+                    lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT po.id FROM platform_order po\n" +
+                            "JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name\n" +
+                            "WHERE po.order_time between '" + start + "' AND '" + end + "'\n" +
+                            "AND lc.warehouse_in_china IN (" + warehouseString + ")");
             }
-            else {
-                lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT id FROM platform_order po");
+            else {// obsolete
+                lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT po.id FROM platform_order po\n" +
+                        "JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name\n" +
+                        "WHERE lc.warehouse_in_china IN (" + warehouseString + ")");
             }
             pageList = platformOrderMapper.selectPage(page, lambdaQueryWrapper);
             return Result.OK(pageList);
@@ -171,7 +182,6 @@ public class InvoiceController {
     public Result<?> makeCompleteShippingInvoice(@RequestBody ShippingInvoiceParam param) {
         try {
             String method = param.getErpStatuses().toString().equals("[3]") ? "post" : param.getErpStatuses().toString().equals("[1, 2]") ? "pre-shipping" : "all";
-            System.out.println(param.getErpStatuses().toString());
             InvoiceMetaData metaData = shippingInvoiceService.makeCompleteInvoicePostShipping(param, method);
             return Result.OK(metaData);
         } catch (UserException e) {
@@ -228,8 +238,10 @@ public class InvoiceController {
         log.info("Request for valid order time period for shops: " + shopIDs.toString() +
                 " and erpStatuses : " + erpStatuses.toString());
         Period period = shippingInvoiceService.getValidOrderTimePeriod(shopIDs, erpStatuses);
-        if (period.isValid())
+        if (period.isValid()) {
+            System.out.println("start : " + period.start() + "; end : " + period.end());
             return Result.OK(period);
+        }
         else return Result.error("No package in the selected period");
     }
 

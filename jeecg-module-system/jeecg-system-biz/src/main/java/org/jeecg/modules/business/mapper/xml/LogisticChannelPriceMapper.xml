@@ -20,19 +20,31 @@
         WHERE zh_name = #{channelName}
           AND weight_range_start &lt;= #{trueWeight}
           AND weight_range_end &gt;= #{trueWeight}
-          AND effective_country = #{country}
+          AND effective_country IN
+            <foreach collection="countryList"
+               separator=","
+               open="("
+               close=")"
+               index="index"
+               item="country"
+            >
+                #{country}
+            </foreach>
           AND effective_date &lt;= #{date}
           AND active = 1
         ORDER BY effective_date DESC
         LIMIT 1    </select>
 
     <select id="findPricesBy" resultType="org.jeecg.modules.business.entity.LogisticChannelPrice">
-        SELECT lcp.*
+        SELECT lcp.id, lcp.create_by, lcp.create_time, lcp.update_by, lcp.update_time,
+        lc.id AS channel_id, effective_date, effective_country,
+        weight_range_start, weight_range_end, minimum_weight, minimum_weight_price, cal_unit, cal_unit_price,
+        additional_cost, registration_fee, minimum_declared_value, picking_fee_per_item
         FROM logistic_channel_price lcp
-                 JOIN logistic_channel lc ON lc.id = lcp.channel_id
-                 JOIN country c ON lcp.effective_country = c.code
+            JOIN logistic_channel lc ON lc.id = lcp.channel_id or lcp.channel_id = lc.same_price_channel_id
+            JOIN country c ON lcp.effective_country = c.code
         WHERE effective_date &lt;= #{date}
-          AND (c.name_en IN
+        AND (c.name_en IN
        <foreach
             collection="countryNames"
             separator=","

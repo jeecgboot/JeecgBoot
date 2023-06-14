@@ -63,7 +63,7 @@ public class JeecgController<T, S extends IService<T>> {
         }
         // Step.2 获取导出数据
         List<T> exportList = service.list(queryWrapper);
-
+        System.out.println("Export LIST : " + exportList.toString());
         // Step.3 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
         //此处设置的filename无效 ,前端会重更新设置一下

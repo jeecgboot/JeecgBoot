@@ -19,7 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @Description: 物流渠道
  * @Author: jeecg-boot
  * @Date: 2022-05-31
- * @Version: V1.1
+ * @Version: V1.2
  */
 @ApiModel(value = "logistic_channel对象", description = "物流渠道")
 @Data
@@ -68,7 +68,13 @@ public class LogisticChannel implements Serializable {
      */
     @Excel(name = "中文名称", width = 15)
     @ApiModelProperty(value = "中文名称")
-    private String zhName;
+    private java.lang.String zhName;
+    /**
+     * 渠道编码
+     */
+    @Excel(name = "渠道编码", width = 15)
+    @ApiModelProperty(value = "渠道编码")
+    private java.lang.String code;
     /**
      * 英文名称
      */
@@ -102,15 +108,16 @@ public class LogisticChannel implements Serializable {
     @ApiModelProperty(value = "是否活跃")
     private String active;
     /**
-     * 是否活跃
-     */
-    @Excel(name = "渠道编码", width = 15)
-    @ApiModelProperty(value = "渠道编码")
-    private String code;
-    /**
      * 仓库是否在中国
      */
     @Excel(name = "中国仓库", width = 15)
     @ApiModelProperty(value = "中国仓库")
-    private String warehouseInChina;
+    private java.lang.String warehouseInChina;
+    /**
+     * 对标物流渠道ID
+     */
+    @Excel(name = "对标物流渠道ID", width = 15, dictTable = "logistic_channel", dicText = "internal_name", dicCode = "id")
+    @Dict(dictTable = "logistic_channel", dicText = "internal_name", dicCode = "id")
+    @ApiModelProperty(value = "对标物流渠道ID")
+    private java.lang.String samePriceChannelId;
 }

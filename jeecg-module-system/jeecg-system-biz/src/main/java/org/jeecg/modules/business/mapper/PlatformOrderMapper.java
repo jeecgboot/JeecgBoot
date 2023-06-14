@@ -81,7 +81,8 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<PlatformOrder> findUninvoicedOrders(
             @Param("shopIDs") List<String> shopIds,
             @Param("begin") Date begin,
-            @Param("end") Date end
+            @Param("end") Date end,
+            @Param("warehouses") List<String> warehouses
     );
 
     /**
@@ -114,13 +115,13 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
 
     String findPreviousCompleteInvoice();
 
-    Date findEarliestUninvoicedPlatformOrder(List<String> shopIDs);
+    Date findEarliestUninvoicedPlatformOrder(@Param("shopIDs") List<String> shopIDs);
 
-    Date findLatestUninvoicedPlatformOrder(List<String> shopIDs);
+    Date findLatestUninvoicedPlatformOrder(@Param("shopIDs") List<String> shopIDs);
 
-    Date findEarliestUninvoicedPlatformOrderTime(List<String> shopIDs, List<Integer> erpStatuses);
+    Date findEarliestUninvoicedPlatformOrderTime(@Param("shopIDs") List<String> shopIDs, @Param("erpStatuses") List<Integer> erpStatuses);
 
-    Date findLatestUninvoicedPlatformOrderTime(List<String> shopIDs, List<Integer> erpStatuses);
+    Date findLatestUninvoicedPlatformOrderTime(@Param("shopIDs") List<String> shopIDs, @Param("erpStatuses") List<Integer> erpStatuses);
 
     /**
      * Find all platform order containing a particular sku
@@ -167,11 +168,13 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<PlatformOrderShopSync> fetchOrderInShopsReadyForShopifySync(@Param("shops") List<String> shopCodes);
 
     List<PlatformOrder> fetchUninvoicedShippedOrderIDInShops(@Param("startDate") String startDate,
-                                                           @Param("endDate") String endDate,
-                                                           @Param("shops") List<String> shops);
+                                                             @Param("endDate") String endDate,
+                                                             @Param("shops") List<String> shops,
+                                                             @Param("warehouses") List<String> warehouses);
 
     List<PlatformOrder> fetchUninvoicedShippedOrderIDInShopsAndOrderTime(@Param("startDate") String startDate,
                                                                          @Param("endDate") String endDate,
                                                                          @Param("shops") List<String> shops,
-                                                                         @Param("erpStatuses") List<Integer> erpStatuses);
+                                                                         @Param("erpStatuses") List<Integer> erpStatuses,
+                                                                         @Param("warehouses") List<String> warehouses);
 }

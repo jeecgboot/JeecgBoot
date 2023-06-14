@@ -130,6 +130,7 @@
     <select id="findUninvoicedOrders" resultType="org.jeecg.modules.business.entity.PlatformOrder">
         SELECT *
         FROM platform_order AS po
+        JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
         WHERE po.shop_id IN
         <foreach
                 collection="shopIDs"
@@ -139,6 +140,17 @@
                 close=")"
                 separator=",">
             #{item}
+        </foreach>
+        AND lc.warehouse_in_china IN
+        <foreach
+                collection="warehouses"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="warehouse"
+        >
+            #{warehouse}
         </foreach>
         AND shipping_time >= #{begin}
         AND #{end} >= shipping_time
@@ -201,7 +213,7 @@
 
     <select id="findEarliestUninvoicedPlatformOrder" resultType="date">
         SELECT shipping_time
-        FROM platform_order
+        FROM platform_order AS po
         WHERE shipping_invoice_number IS NULL
             AND shipping_time IS NOT NULL
             AND erp_status = 3
@@ -222,7 +234,7 @@
 
     <select id="findLatestUninvoicedPlatformOrder" resultType="date">
         SELECT shipping_time
-        FROM platform_order
+        FROM platform_order AS po
         WHERE shipping_invoice_number IS NULL
             AND shipping_time IS NOT NULL
             AND erp_status = 3
@@ -447,8 +459,9 @@
     </select>
 
     <select id="fetchUninvoicedShippedOrderIDInShops" resultType="org.jeecg.modules.business.entity.PlatformOrder">
-        SELECT id
+        SELECT po.id
         FROM platform_order po
+        JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
         WHERE po.shop_id IN
         <foreach
                 collection="shops"
@@ -460,12 +473,24 @@
         >
             #{shop}
         </foreach>
+        AND lc.warehouse_in_china IN
+        <foreach
+                collection="warehouses"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="warehouse"
+        >
+            #{warehouse}
+        </foreach>
         AND po.shipping_time between #{startDate} AND #{endDate}
         AND po.erp_status = 3;
     </select>
     <select id="fetchUninvoicedShippedOrderIDInShopsAndOrderTime" resultType="org.jeecg.modules.business.entity.PlatformOrder">
         SELECT id
         FROM platform_order po
+        JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
         WHERE po.shop_id IN
         <foreach
                 collection="shops"
@@ -476,6 +501,17 @@
                 item="shop"
         >
             #{shop}
+        </foreach>
+        AND lc.warehouse_in_china IN
+        <foreach
+                collection="warehouses"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="warehouse"
+        >
+            #{warehouse}
         </foreach>
         AND po.order_time between #{startDate} AND #{endDate}
         AND po.erp_status IN

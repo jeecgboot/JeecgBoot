@@ -78,12 +78,12 @@ public class LogisticChannelServiceImpl extends ServiceImpl<LogisticChannelMappe
     }
 
     @Override
-    public LogisticChannelPrice findLogisticsChannelPrice(String channelName, Date date, int trueWeight, String country) {
-        return logisticChannelPriceMapper.findBy(channelName, new java.util.Date(), BigDecimal.valueOf(trueWeight), country);
+    public LogisticChannelPrice findLogisticsChannelPrice(String channelName, Date date, int trueWeight, List<String> countryList) {
+        return logisticChannelPriceMapper.findBy(channelName, new java.util.Date(), BigDecimal.valueOf(trueWeight), countryList);
     }
 
     @Override
-    public List<CostTrialCalculation> logisticChannelTrial(int weight, int volume, String country) {
+    public List<CostTrialCalculation> logisticChannelTrial(int weight, int volume, List<String> countryList) {
         List<LogisticChannel> channels = list();
 
         return channels.stream()
@@ -98,7 +98,7 @@ public class LogisticChannelServiceImpl extends ServiceImpl<LogisticChannelMappe
                     } else {
                         trueWeight = weight;
                     }
-                    LogisticChannelPrice price = findLogisticsChannelPrice(channelName, new Date(), trueWeight, country);
+                    LogisticChannelPrice price = findLogisticsChannelPrice(channelName, new Date(), trueWeight, countryList);
                     if (price != null) {
                         return new CostTrialCalculation(price, trueWeight, internalName, code);
                     } else {

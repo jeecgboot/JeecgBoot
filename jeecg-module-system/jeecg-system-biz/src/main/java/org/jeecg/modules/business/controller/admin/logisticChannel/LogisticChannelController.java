@@ -269,11 +269,11 @@ public class LogisticChannelController {
 
 
     @GetMapping(value = "/find")
-    public Result<List<CostTrialCalculation>> findPrices(@RequestParam(name = "country") String country,
+    public Result<List<CostTrialCalculation>> findPrices(@RequestParam(name = "countryList[]") List<String> countryList,
                                                          @RequestParam(name = "weight") int weight,
                                                          @RequestParam(name = "volume", defaultValue = "1") int volume) {
 
-        List<CostTrialCalculation> calculations = logisticChannelService.logisticChannelTrial(weight, volume, country);
+        List<CostTrialCalculation> calculations = logisticChannelService.logisticChannelTrial(weight, volume, countryList);
         return Result.OK(calculations);
     }
 
@@ -329,7 +329,7 @@ public class LogisticChannelController {
                 logisticChannelService.logisticChannelTrial(
                         totalWeight,
                         totalVolume,
-                        param.getCountryCode()
+                        Collections.singletonList(param.getCountryCode())
                 );
 
         return Result.OK(calculations);

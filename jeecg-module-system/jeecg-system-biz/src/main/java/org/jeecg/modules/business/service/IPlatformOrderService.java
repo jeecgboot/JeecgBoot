@@ -78,7 +78,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * @param end     end of the period
      * @return list of uninvoiced orders
      */
-    Map<PlatformOrder, List<PlatformOrderContent>> findUninvoicedOrders(List<String> shopIds, Date begin, Date end);
+    Map<PlatformOrder, List<PlatformOrderContent>> findUninvoicedOrders(List<String> shopIds, Date begin, Date end, List<String> warehouses);
 
     /**
      * Find all uninvoiced platform orders by shop ID
@@ -95,7 +95,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * @param end     end of the period
      * @return list of uninvoiced orders
      */
-    Map<PlatformOrder, List<PlatformOrderContent>> findUninvoicedOrderContentsForShopsAndStatus(List<String> shopIds, Date begin, Date end, List<Integer> erpStatuses);
+    Map<PlatformOrder, List<PlatformOrderContent>> findUninvoicedOrderContentsForShopsAndStatus(List<String> shopIds, Date begin, Date end, List<Integer> erpStatuses, List<String> warehouses);
 
     /**
      * Fetch data for orders and their contents
@@ -138,5 +138,5 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     List<PlatformOrderShopSync> fetchOrderInShopsReadyForShopifySync(List<String> shopCodes);
 
-    List<PlatformOrder> fetchUninvoicedShippedOrderIDInShops(String startDate, String endDate, List<String> shops);
+    List<PlatformOrder> fetchUninvoicedShippedOrderIDInShops(String startDate, String endDate, List<String> shops, List<String> warehouses);
 }
