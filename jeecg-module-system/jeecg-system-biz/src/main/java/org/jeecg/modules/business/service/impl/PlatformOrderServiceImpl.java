@@ -265,9 +265,9 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
 
     @Override
-    public Map<PlatformOrder, List<PlatformOrderContent>> findUninvoicedOrders(List<String> shopIds, Date begin, Date end) {
-        List<PlatformOrder> orderList = platformOrderMap.findUninvoicedOrders(shopIds, begin, end);
-        List<PlatformOrderContent> orderContents = platformOrderContentMap.findUninvoicedOrderContents(shopIds, begin, end);
+    public Map<PlatformOrder, List<PlatformOrderContent>> findUninvoicedOrders(List<String> shopIds, Date begin, Date end, List<String> warehouses) {
+        List<PlatformOrder> orderList = platformOrderMap.findUninvoicedOrders(shopIds, begin, end, warehouses);
+        List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContent(orderList.stream().map(PlatformOrder::getId).collect(toList()));
         Map<String, PlatformOrder> orderMap = orderList.stream().collect(toMap(PlatformOrder::getId, Function.identity()));
         return orderContents.stream().collect(groupingBy(platformOrderContent -> orderMap.get(platformOrderContent.getPlatformOrderId())));
     }
@@ -287,7 +287,7 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
                 );
     }
     @Override
-    public Map<PlatformOrder, List<PlatformOrderContent>> findUninvoicedOrderContentsForShopsAndStatus(List<String> shopIds, Date begin, Date end, List<Integer> erpStatuses) {
+    public Map<PlatformOrder, List<PlatformOrderContent>> findUninvoicedOrderContentsForShopsAndStatus(List<String> shopIds, Date begin, Date end, List<Integer> erpStatuses, List<String> warehouses) {
         List<PlatformOrder> orderList = platformOrderMap.findUninvoicedOrdersForShopsAndStatus(shopIds, begin, end, erpStatuses);
         List<PlatformOrderContent> orderContents = platformOrderContentMap.findUninvoicedOrderContentsForShopsAndStatus(shopIds, begin, end, erpStatuses);
         Map<String, PlatformOrder> orderMap = orderList.stream().collect(toMap(PlatformOrder::getId, Function.identity()));
@@ -363,7 +363,7 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
 
     @Override
-    public List<PlatformOrder> fetchUninvoicedShippedOrderIDInShops(String startDate, String endDate, List<String> shops) {
-        return platformOrderMap.fetchUninvoicedShippedOrderIDInShops(startDate, endDate, shops);
+    public List<PlatformOrder> fetchUninvoicedShippedOrderIDInShops(String startDate, String endDate, List<String> shops, List<String> warehouses) {
+        return platformOrderMap.fetchUninvoicedShippedOrderIDInShops(startDate, endDate, shops, warehouses);
     }
 }

@@ -139,7 +139,8 @@ public class PlatformOrderShippingInvoiceService {
                 param.shopIDs(),
                 param.start(),
                 param.end(),
-                param.getErpStatuses()
+                param.getErpStatuses(),
+                param.getWarehouses()
         );
         // Chooses invoice template based on client's preference on currency
         return getInvoiceMetaData(username, invoice);
@@ -211,10 +212,10 @@ public class PlatformOrderShippingInvoiceService {
         List<PlatformOrder> platformOrderList;
         if(param.getErpStatuses().toString().equals("post")) {
             //On récupère les commandes entre 2 dates d'expédition avec un status 3
-            platformOrderList = platformOrderMapper.fetchUninvoicedShippedOrderIDInShops(param.getStart(), param.getEnd(), param.shopIDs());
+            platformOrderList = platformOrderMapper.fetchUninvoicedShippedOrderIDInShops(param.getStart(), param.getEnd(), param.shopIDs(), param.getWarehouses());
         } else {
             // On récupère les commandes entre 2 dates de commandes avec un status (1,2) ou (1,2,3)
-            platformOrderList = platformOrderMapper.fetchUninvoicedShippedOrderIDInShopsAndOrderTime(param.getStart(), param.getEnd(), param.shopIDs(), param.getErpStatuses());
+            platformOrderList = platformOrderMapper.fetchUninvoicedShippedOrderIDInShopsAndOrderTime(param.getStart(), param.getEnd(), param.shopIDs(), param.getErpStatuses(), param.getWarehouses());
         }
         // on récupère seulement les ID des commandes
         List<String> orderIds = platformOrderList.stream().map(PlatformOrder::getId).collect(Collectors.toList());

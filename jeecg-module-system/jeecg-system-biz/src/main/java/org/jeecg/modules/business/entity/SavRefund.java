@@ -64,8 +64,9 @@ public class SavRefund implements Serializable {
     /**
      * 平台订单ID
      */
-    @Excel(name = "平台订单ID", width = 15, dictTable = "platform_order", dicText = "platform_order_id", dicCode = "id")
-    @Dict(dictTable = "platform_order", dicText = "platform_order_id", dicCode = "id")
+//    @Excel(name = "平台订单ID", width = 15, dictTable = "platform_order", dicText = "platform_order_id", dicCode = "id")
+    @Excel(name = "平台订单ID", width = 15)
+//    @Dict(dictTable = "platform_order", dicText = "platform_order_id", dicCode = "id")
     @ApiModelProperty(value = "平台订单ID")
     private String platformOrderId;
     /**

@@ -18,7 +18,8 @@ public enum ScanType {
     WAITING_FOR_DELIVERY("Waiting for Delivery"),
     ARRIVED_PORT("Arrived at Port"),
     FLIGHT_PREPARING("Flight Preparing"),
-    CN_CUSTOMS_INSPECTION("Customs Inspection");
+    CN_CUSTOMS_INSPECTION("Customs Inspection"),
+    BAGGING("Bagging");
 
     private final String desc;
     ScanType(String desc) {

@@ -47,9 +47,9 @@ public interface ILogisticChannelService extends IService<LogisticChannel> {
      * @param country     2 letters code of the destination country
      * @return one suitable logistic channel price
      */
-    LogisticChannelPrice findLogisticsChannelPrice(String channelName, Date date, int trueWeight, String country);
+    LogisticChannelPrice findLogisticsChannelPrice(String channelName, Date date, int trueWeight, List<String> country);
 
 
-    List<CostTrialCalculation> logisticChannelTrial(int weight, int volume, String country);
+    List<CostTrialCalculation> logisticChannelTrial(int weight, int volume, List<String> countryList);
 
 }

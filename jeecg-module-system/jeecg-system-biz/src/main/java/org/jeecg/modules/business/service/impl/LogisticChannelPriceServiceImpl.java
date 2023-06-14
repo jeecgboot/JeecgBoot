@@ -19,10 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description: 物流渠道价格
@@ -95,7 +92,7 @@ public class LogisticChannelPriceServiceImpl extends ServiceImpl<LogisticChannel
                 logisticChannelName,
                 order.getShippingTime(),
                 weight,
-                countryCode
+                Collections.singletonList(countryCode)
         );
 
         if (price == null) {

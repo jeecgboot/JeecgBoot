@@ -11,6 +11,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.business.entity.Client;
 import org.jeecg.modules.business.entity.ClientSku;
@@ -19,6 +20,7 @@ import org.jeecg.modules.business.service.IClientService;
 import org.jeecg.modules.business.service.IClientSkuService;
 import org.jeecg.modules.business.service.IShopService;
 import org.jeecg.modules.business.vo.ClientPage;
+import org.jeecg.modules.online.cgform.mapper.OnlCgformFieldMapper;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -130,7 +132,21 @@ public class ClientController {
             return Result.error("未找到对应数据");
         }
         clientService.updateMain(client, clientPage.getShopList(), clientPage.getClientSkuList());
+        updateShopId();
+        log.info("Shop names replaced by new created shop IDs");
         return Result.OK("编辑成功!");
+    }
+
+    /**
+     * Call a routine to replace shop names (from MabangAPI)
+     * by shop IDs in platform_order table after creating a new shop
+     */
+    private static void updateShopId() {
+        OnlCgformFieldMapper onlCgformFieldMapper = SpringContextUtils.getBean(OnlCgformFieldMapper.class);
+        Map<String, Object> params = new HashMap<>();
+        String sql = "UPDATE platform_order SET shop_id = shopErpToId(shop_id) WHERE shop_id NOT LIKE '1%'";
+        params.put("execute_sql_string", sql);
+        onlCgformFieldMapper.executeUpdatetSQL(params);
     }
 
     /**

@@ -15,14 +15,21 @@ public class ShippingInvoiceParam {
     private final String start;
     private final String end;
     private final List<Integer> erpStatuses;
+    private final List<String> warehouses;
     private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
-    public ShippingInvoiceParam(@JsonProperty("clientID") String clientID, @JsonProperty("shopIDs") List<String> shopIDs, @JsonProperty("start") String start, @JsonProperty("end") String end, @JsonProperty("erpStatuses") List<Integer> erpStatuses) {
+    public ShippingInvoiceParam(@JsonProperty("clientID") String clientID,
+                                @JsonProperty("shopIDs") List<String> shopIDs,
+                                @JsonProperty("start") String start,
+                                @JsonProperty("end") String end,
+                                @JsonProperty("erpStatuses") List<Integer> erpStatuses,
+                                @JsonProperty("warehouses") List<String> warehouses) {
         this.clientID = clientID;
         this.shopIDs = shopIDs;
         this.start = start;
         this.end = end;
         this.erpStatuses = erpStatuses;
+        this.warehouses = warehouses;
     }
 
     public String clientID() {
@@ -40,13 +47,15 @@ public class ShippingInvoiceParam {
     public Date end() throws ParseException {
         return format.parse(end);
     }
-    public List<Integer> getErpStatuses() { return erpStatuses; }
     public String getStart() {
         return this.start;
     }
-
     public String getEnd() {
         return this.end;
+    }
+    public List<Integer> getErpStatuses() { return erpStatuses; }
+    public List<String> getWarehouses() {
+        return warehouses;
     }
     @Override
     public String toString() {
@@ -54,6 +63,8 @@ public class ShippingInvoiceParam {
                 ", shopIDs=" + shopIDs +
                 ", start=" + start +
                 ", end=" + end +
+                ", end=" + erpStatuses +
+                ", warehouses=" + warehouses +
                 '}';
     }
 }
