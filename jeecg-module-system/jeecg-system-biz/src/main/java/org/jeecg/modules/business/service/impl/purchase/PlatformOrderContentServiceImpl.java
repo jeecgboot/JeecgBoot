@@ -20,8 +20,11 @@ import java.util.Map;
 @Service
 public class PlatformOrderContentServiceImpl extends ServiceImpl<PlatformOrderContentMapper, PlatformOrderContent> implements IPlatformOrderContentService {
     @Autowired
-    private PlatformOrderContentMapper platformOrderContentMapper;
+    private final PlatformOrderContentMapper platformOrderContentMapper;
 
+    public PlatformOrderContentServiceImpl(PlatformOrderContentMapper platformOrderContentMapper) {
+        this.platformOrderContentMapper = platformOrderContentMapper;
+    }
     public List<SkuWeightDiscountServiceFees> getAllSKUWeightsDiscountsServiceFees() {
         return platformOrderContentMapper.getAllWeightsDiscountsServiceFees();
     }
@@ -51,5 +54,7 @@ public class PlatformOrderContentServiceImpl extends ServiceImpl<PlatformOrderCo
         }
 
     }
-
+    @Override public List<PlatformOrderContent> fetchPlatformOrderContentsToArchive(List<String> orderIDs) {
+        return platformOrderContentMapper.fetchPlatformOrderContentsToArchive(orderIDs);
+    }
 }

@@ -28,4 +28,5 @@ public interface ParcelTraceMapper extends BaseMapper<ParcelTrace> {
     void insertOrUpdateEQTraces(@Param("traces") List<EQuickTraceData> traceDetails);
 
     void insertOrIgnoreYDTraces(@Param("traces") List<YDTraceDetail> traceDetails);
+    List<ParcelTrace> fetchParcelTracesToArchive(@Param("parcelIDs") List<String> parcelIDs);
 }

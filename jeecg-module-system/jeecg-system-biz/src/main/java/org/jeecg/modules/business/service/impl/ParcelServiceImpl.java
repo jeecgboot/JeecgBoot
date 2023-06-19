@@ -218,4 +218,7 @@ public class ParcelServiceImpl extends ServiceImpl<ParcelMapper, Parcel> impleme
         }
         log.info("Finished inserting {} parcels and their traces into DB.", parcelTraces.size());
     }
+    public List<Parcel> fetchParcelsToArchive(List<String> trackingNumbers) {
+        return parcelMapper.fetchParcelsToArchive(trackingNumbers);
+    }
 }

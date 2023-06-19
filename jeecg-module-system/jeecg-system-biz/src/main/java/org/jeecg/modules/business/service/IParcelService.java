@@ -46,4 +46,5 @@ public interface IParcelService extends IService<Parcel> {
 	void saveEQParcelAndTraces(List<EQuickResponse> parcelTraces);
 
 	void saveYDParcelAndTraces(List<YDTraceData> traceData);
+	List<Parcel> fetchParcelsToArchive(List<String> trackingNumbers);
 }
