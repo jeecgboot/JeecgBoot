@@ -241,4 +241,12 @@
         </foreach>
 
     </update>
+    <select id="fetchPlatformOrderContentsToArchive" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
+        SELECT *
+        FROM platform_order_content
+        WHERE platform_order_id IN
+        <foreach collection="orderIDs" separator="," open="(" close=")" index="index" item="orderID">
+            #{orderID}
+        </foreach>;
+    </select>
 </mapper>

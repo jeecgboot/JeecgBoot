@@ -488,7 +488,7 @@
         AND po.erp_status = 3;
     </select>
     <select id="fetchUninvoicedShippedOrderIDInShopsAndOrderTime" resultType="org.jeecg.modules.business.entity.PlatformOrder">
-        SELECT id
+        SELECT po.id
         FROM platform_order po
         JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
         WHERE po.shop_id IN
@@ -525,5 +525,11 @@
         >
             #{erpStatus}
         </foreach>;
+    </select>
+    <select id="fetchPlatformOrdersToArchive" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
+        FROM platform_order po
+        WHERE erp_status IN (4,5)
+        AND order_time BETWEEN #{startDate} AND #{endDate};
     </select>
 </mapper>

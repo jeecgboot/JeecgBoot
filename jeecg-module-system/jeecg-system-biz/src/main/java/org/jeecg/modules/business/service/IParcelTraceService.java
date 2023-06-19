@@ -14,4 +14,5 @@ import java.util.List;
 public interface IParcelTraceService extends IService<ParcelTrace> {
 
     public List<ParcelTrace> selectByMainId(String mainId);
+    List<ParcelTrace> fetchParcelTracesToArchive(List<String> parcelIDs);
 }

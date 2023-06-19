@@ -25,4 +25,7 @@ public class ParcelTraceServiceImpl extends ServiceImpl<ParcelTraceMapper, Parce
     public List<ParcelTrace> selectByMainId(String mainId) {
         return parcelTraceMapper.selectByMainId(mainId);
     }
+    public List<ParcelTrace> fetchParcelTracesToArchive(List<String> parcelIDs) {
+        return parcelTraceMapper.fetchParcelTracesToArchive(parcelIDs);
+    }
 }

@@ -80,4 +80,12 @@
             )
         </foreach>
     </insert>
+    <select id="fetchParcelTracesToArchive" resultType="org.jeecg.modules.business.entity.Parcel">
+        SELECT *
+        FROM parcel_trace
+        WHERE parcel_id IN
+        <foreach collection="parcelIDs" separator="," open="(" close=")" item="parcelID" index="index">
+            #{parcelID}
+        </foreach>;
+    </select>
 </mapper>
