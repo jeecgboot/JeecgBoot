@@ -1,7 +1,6 @@
 package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.swagger.models.auth.In;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.controller.UserException;
@@ -10,7 +9,6 @@ import org.jeecg.modules.business.domain.shippingInvoice.CompleteInvoice;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoice;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoiceFactory;
 import org.jeecg.modules.business.entity.PlatformOrder;
-import org.jeecg.modules.business.entity.ShippingInvoiceEntity;
 import org.jeecg.modules.business.mapper.*;
 import org.jeecg.modules.business.vo.*;
 import org.jetbrains.annotations.NotNull;
@@ -20,8 +18,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -112,8 +115,14 @@ public class PlatformOrderShippingInvoiceService {
     }
     public Period getValidOrderTimePeriod(List<String> shopIDs, List<Integer> erpStatuses) {
         Date begin = platformOrderMapper.findEarliestUninvoicedPlatformOrderTime(shopIDs, erpStatuses);
+        ZoneId shanghai = ZoneId.of("Asia/Shanghai");
+        ZoneId paris = ZoneId.of("Europe/Paris");
+        LocalDateTime ldt = LocalDateTime.ofInstant(begin.toInstant(), shanghai);
+        Date beginZoned = Date.from(ldt.atZone(paris).toInstant());
         Date end = platformOrderMapper.findLatestUninvoicedPlatformOrderTime(shopIDs, erpStatuses);
-        return new Period(begin, end);
+        ldt = LocalDateTime.ofInstant(end.toInstant(), shanghai);
+        Date endZoned = Date.from(ldt.atZone(paris).toInstant());
+        return new Period(beginZoned, endZoned);
     }
 
     /**
