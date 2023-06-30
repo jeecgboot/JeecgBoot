@@ -225,6 +225,7 @@ public class ParcelServiceImpl extends ServiceImpl<ParcelMapper, Parcel> impleme
         }
         log.info("Finished inserting {} parcels and their traces into DB.", parcelTraces.size());
     }
+
     @Override
     @Transactional
     public void saveCMKParcelAndTraces(List<CMKParcelTraceData> parcelTraces) {

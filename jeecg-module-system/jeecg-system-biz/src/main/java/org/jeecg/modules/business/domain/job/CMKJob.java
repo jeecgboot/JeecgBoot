@@ -36,7 +36,6 @@ public class CMKJob implements Job {
     private IPlatformOrderService platformOrderService;
 
     private static final Integer DEFAULT_NUMBER_OF_DAYS = 15;
-    private static final Integer DEFAULT_NUMBER_OF_THREADS = 10;
     private static final Integer DEFAULT_MAXIMUM_NUMBER_OF_PARCELS_PER_TRANSACTION = 800;
     private static final List<String> DEFAULT_TRANSPORTERS = Arrays.asList("CMK-JJ-PH 法 美 德", "CMK-DB-PH6000", "CMK-DB-PH18000", "CMK-DB-PH10000");
 

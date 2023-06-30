@@ -86,6 +86,25 @@
             )
         </foreach>
     </insert>
+    <insert id="insertOrIgnoreCMKParcels" parameterType="list">
+        INSERT IGNORE INTO parcel(id, create_by, create_time, update_by, update_time, bill_code, country,
+        third_bill_code, order_no, product_code)
+        VALUES
+        <foreach collection="parcels" separator="," open="" close="" item="parcel" index="index">
+            (
+            #{parcel.id},
+            'cmk api',
+            NOW(),
+            'cmk api',
+            NOW(),
+            #{parcel.thirdBillCode},
+            #{parcel.country},
+            #{parcel.thirdBillCode},
+            #{parcel.detail.orderNo},
+            #{parcel.detail.productCode}
+            )
+        </foreach>
+    </insert>
     <select id="fetchParcelsToArchive" resultType="org.jeecg.modules.business.entity.Parcel">
         SELECT *
         FROM parcel
@@ -94,11 +113,12 @@
             #{number}
         </foreach>;
     </select>
+
     <insert id="insertParcelsArchive" parameterType="list">
         INSERT INTO parcel_delete(id, create_by, create_time,
-                                    update_by, update_time, bill_code,
-                                    country, third_bill_code,
-                                    order_no, product_code)
+        update_by, update_time, bill_code,
+        country, third_bill_code,
+        order_no, product_code)
         VALUES
         <foreach collection="parcels" separator="," open="" close="" item="parcel" index="index">
             (
