@@ -80,6 +80,28 @@
             )
         </foreach>
     </insert>
+
+    <insert id="insertOrIgnoreCMKTraces" parameterType="list">
+        INSERT IGNORE INTO parcel_trace(id, create_by, create_time, update_by, update_time, parcel_id, scan_time,
+        description, description_en, trace_location, scan_type)
+        VALUES
+        <foreach collection="traces" separator="," open="" close="" item="trace" index="index">
+            (
+            UUID(),
+            'cmk api',
+            NOW(),
+            'cmk api',
+            NOW(),
+            #{trace.parcelId},
+            #{trace.time},
+            #{trace.description},
+            #{trace.descriptionEn},
+            #{trace.location},
+            #{trace.scanType}
+            )
+        </foreach>
+    </insert>
+
     <select id="fetchParcelTracesToArchive" resultType="org.jeecg.modules.business.entity.Parcel">
         SELECT *
         FROM parcel_trace

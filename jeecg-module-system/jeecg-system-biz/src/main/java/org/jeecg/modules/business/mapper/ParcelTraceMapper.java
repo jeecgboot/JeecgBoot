@@ -2,6 +2,7 @@ package org.jeecg.modules.business.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.business.domain.api.cmk.CMKParcelTrace;
 import org.jeecg.modules.business.domain.api.equick.EQuickTraceData;
 import org.jeecg.modules.business.domain.api.jt.JTParcelTraceDetail;
 import org.jeecg.modules.business.domain.api.yd.YDTraceDetail;
@@ -28,5 +29,8 @@ public interface ParcelTraceMapper extends BaseMapper<ParcelTrace> {
     void insertOrUpdateEQTraces(@Param("traces") List<EQuickTraceData> traceDetails);
 
     void insertOrIgnoreYDTraces(@Param("traces") List<YDTraceDetail> traceDetails);
+
+    void insertOrIgnoreCMKTraces(@Param("traces") List<CMKParcelTrace> traceDetails);
+
     List<ParcelTrace> fetchParcelTracesToArchive(@Param("parcelIDs") List<String> parcelIDs);
 }

@@ -2,14 +2,19 @@ package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.modules.business.domain.api.cmk.CMKParcelDetail;
+import org.jeecg.modules.business.domain.api.cmk.CMKParcelTrace;
+import org.jeecg.modules.business.domain.api.cmk.CMKParcelTraceData;
 import org.jeecg.modules.business.domain.api.equick.EQuickResponse;
 import org.jeecg.modules.business.domain.api.equick.EQuickTraceData;
 import org.jeecg.modules.business.domain.api.jt.JTParcelTrace;
 import org.jeecg.modules.business.domain.api.jt.JTParcelTraceDetail;
 import org.jeecg.modules.business.domain.api.yd.YDTraceData;
 import org.jeecg.modules.business.domain.api.yd.YDTraceDetail;
+import org.jeecg.modules.business.entity.Country;
 import org.jeecg.modules.business.entity.Parcel;
 import org.jeecg.modules.business.entity.ParcelTrace;
+import org.jeecg.modules.business.mapper.CountryMapper;
 import org.jeecg.modules.business.mapper.ParcelMapper;
 import org.jeecg.modules.business.mapper.ParcelTraceMapper;
 import org.jeecg.modules.business.service.IParcelService;
@@ -36,6 +41,8 @@ public class ParcelServiceImpl extends ServiceImpl<ParcelMapper, Parcel> impleme
     private ParcelMapper parcelMapper;
     @Autowired
     private ParcelTraceMapper parcelTraceMapper;
+    @Autowired
+    private CountryMapper countryMapper;
 
     @Override
     @Transactional
@@ -218,6 +225,54 @@ public class ParcelServiceImpl extends ServiceImpl<ParcelMapper, Parcel> impleme
         }
         log.info("Finished inserting {} parcels and their traces into DB.", parcelTraces.size());
     }
+
+    @Override
+    @Transactional
+    public void saveCMKParcelAndTraces(List<CMKParcelTraceData> parcelTraces) {
+        if (parcelTraces.isEmpty()) {
+            return;
+        }
+        log.info("Started inserting {} CMK parcels and their traces into DB.", parcelTraces.size() );
+        List<String> parcelBillCodes = parcelTraces.stream()
+                .map(CMKParcelTraceData::getThirdBillCode)
+                .collect(Collectors.toList());
+        List<Parcel> existingParcels = parcelMapper.searchByBillCode(parcelBillCodes);
+        Map<String, Parcel> billCodeToExistingParcels = existingParcels.stream().collect(
+                Collectors.toMap(Parcel::getBillCode, Function.identity())
+        );
+        List<Country> countryList = countryMapper.findAll();
+        Map<String, String> countryNameMap = new HashMap<>();
+        countryList.forEach(country -> countryNameMap.put(country.getNameZh(), country.getCode()));
+
+        List<CMKParcelTraceData> parcelToInsert = new ArrayList<>();
+        List<CMKParcelTrace> tracesToInsert = new ArrayList<>();
+        for (CMKParcelTraceData parcelAndTrace : parcelTraces) {
+            List<CMKParcelTrace> traceDetails = parcelAndTrace.getTraceList();
+            CMKParcelDetail parcelDetail = parcelAndTrace.getDetail();
+            if (traceDetails.isEmpty()) {
+                break;
+            }
+            // Country name in detail is in Chinese, have to be converted to country code
+            parcelAndTrace.setCountry(countryNameMap.get(parcelDetail.getCountry()));
+            Parcel existingParcel = billCodeToExistingParcels.get(parcelAndTrace.getThirdBillCode());
+            if (existingParcel == null) {
+                parcelToInsert.add(parcelAndTrace);
+                traceDetails.forEach(trace -> trace.parcelTraceProcess(parcelAndTrace.getId()));
+            } else {
+                traceDetails.forEach(trace -> trace.parcelTraceProcess(existingParcel.getId()));
+            }
+            tracesToInsert.addAll(new ArrayList<>(traceDetails).stream().filter(CMKParcelTrace::isUseful).collect(Collectors.toList()));
+        }
+        log.info("After filtering, {} parcels will be inserted into the DB.", parcelToInsert.size());
+        if (!parcelToInsert.isEmpty()) {
+            parcelMapper.insertOrIgnoreCMKParcels(parcelToInsert);
+        }
+        if (!tracesToInsert.isEmpty()) {
+            parcelTraceMapper.insertOrIgnoreCMKTraces(tracesToInsert);
+        }
+        log.info("Finished inserting {} parcels and their traces into DB.", parcelTraces.size());
+    }
+
     public List<Parcel> fetchParcelsToArchive(List<String> trackingNumbers) {
         return parcelMapper.fetchParcelsToArchive(trackingNumbers);
     }
