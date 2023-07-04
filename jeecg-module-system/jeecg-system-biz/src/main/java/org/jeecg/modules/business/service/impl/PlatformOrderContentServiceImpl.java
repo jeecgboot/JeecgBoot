@@ -1,4 +1,4 @@
-package org.jeecg.modules.business.service.impl.purchase;
+package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +11,7 @@ import org.jeecg.modules.business.vo.SkuWeightDiscountServiceFees;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,11 @@ public class PlatformOrderContentServiceImpl extends ServiceImpl<PlatformOrderCo
         }
 
     }
-    @Override public List<PlatformOrderContent> fetchPlatformOrderContentsToArchive(List<String> orderIDs) {
+    @Override
+    public List<PlatformOrderContent> fetchPlatformOrderContentsToArchive(List<String> orderIDs) {
         return platformOrderContentMapper.fetchPlatformOrderContentsToArchive(orderIDs);
+    }
+    public void savePlatformOrderContentArchive(List<PlatformOrderContent> platformOrderContents) {
+        platformOrderContentMapper.insertPlatformOrderContentsArchives(platformOrderContents);
     }
 }
