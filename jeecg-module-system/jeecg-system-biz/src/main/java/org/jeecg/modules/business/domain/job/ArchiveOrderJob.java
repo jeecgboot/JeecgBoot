@@ -39,6 +39,7 @@ public class ArchiveOrderJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         LocalDateTime endDateTime = LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get("CTT")));
         LocalDateTime startDateTime = endDateTime.minusDays(DEFAULT_NUMBER_OF_DAYS);
+        String excludedTrackingNumbersRegex = null;
         List<String> shops = DEFAULT_EXCLUDED_SHOPS;
         JobDataMap jobDataMap = context.getMergedJobDataMap();
         String parameter = ((String) jobDataMap.get("parameter"));
@@ -52,6 +53,9 @@ public class ArchiveOrderJob implements Job {
                 if (!jsonObject.isNull("endDateTime")) {
                     String endDateStr = jsonObject.getString("endDateTime");
                     endDateTime = LocalDateTime.parse(endDateStr);
+                }
+                if (!jsonObject.isNull("excludedTrackingNumbersRegex")) {
+                     excludedTrackingNumbersRegex = jsonObject.getString("excludedTrackingNumbersRegex");
                 }
                 if (!jsonObject.isNull("excludedShops")) {
                     JSONArray shopsArray = jsonObject.getJSONArray("excludedShops");
@@ -70,7 +74,7 @@ public class ArchiveOrderJob implements Job {
             throw new RuntimeException("EndDateTime must be strictly greater than StartDateTime !");
         }
 
-        List<String> platformOrderIds = platformOrderService.fetchInvoicedShippedOrdersNotInShops(startDateTime, endDateTime, shops);
+        List<String> platformOrderIds = platformOrderService.fetchInvoicedShippedOrdersNotInShops(startDateTime, endDateTime, shops, excludedTrackingNumbersRegex);
 
         ExecutorService executor = Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS);
 
