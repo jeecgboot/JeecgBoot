@@ -3,6 +3,7 @@
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
   <version>1.2.0</version>
+>>>>>>> a4a96e4a (fix: issue in previous merge)
   <packaging>pom</packaging>
   <name>WIA APP ${project.version} </name>
 

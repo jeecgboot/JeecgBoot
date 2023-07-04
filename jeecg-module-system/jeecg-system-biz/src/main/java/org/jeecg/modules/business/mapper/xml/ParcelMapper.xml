@@ -3,7 +3,7 @@
 <mapper namespace="org.jeecg.modules.business.mapper.ParcelMapper">
     <insert id="insertOrIgnoreJTParcels" parameterType="list">
         INSERT IGNORE INTO parcel(id, create_by, create_time, update_by, update_time, bill_code, country,
-                                  third_bill_code, order_no)
+        third_bill_code, order_no)
         VALUES
         <foreach collection="parcels" separator="," open="" close="" item="parcel" index="index">
             (
@@ -64,25 +64,6 @@
             #{parcel.thirdBillCode},
             #{parcel.orderNo},
             #{parcel.productCode}
-            )
-        </foreach>
-    </insert>
-    <insert id="insertOrIgnoreCMKParcels" parameterType="list">
-        INSERT IGNORE INTO parcel(id, create_by, create_time, update_by, update_time, bill_code, country,
-        third_bill_code, order_no, product_code)
-        VALUES
-        <foreach collection="parcels" separator="," open="" close="" item="parcel" index="index">
-            (
-            #{parcel.id},
-            'cmk api',
-            NOW(),
-            'cmk api',
-            NOW(),
-            #{parcel.thirdBillCode},
-            #{parcel.country},
-            #{parcel.thirdBillCode},
-            #{parcel.detail.orderNo},
-            #{parcel.detail.productCode}
             )
         </foreach>
     </insert>
