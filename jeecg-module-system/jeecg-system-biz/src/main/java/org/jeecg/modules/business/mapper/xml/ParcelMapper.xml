@@ -94,23 +94,16 @@
             #{number}
         </foreach>;
     </select>
-<<<<<<< HEAD
-    <insert id="insertParcelsArchive" parameterType="list">
-        INSERT INTO parcel_delete(id, create_by, create_time,
-                                    update_by, update_time, bill_code,
-                                    country, third_bill_code,
-                                    order_no, product_code)
-=======
 
-    <insert id="insertOrIgnoreCMKParcels" parameterType="list">
-        INSERT IGNORE INTO parcel(id, create_by, create_time, update_by, update_time, bill_code, country,
-        third_bill_code, order_no, product_code)
->>>>>>> 9c5c7432b6824185b589760c500b696f46f82c58
+        <insert id="insertParcelsArchive" parameterType="list">
+            INSERT INTO parcel_delete(id, create_by, create_time,
+            update_by, update_time, bill_code,
+            country, third_bill_code,
+            order_no, product_code)
         VALUES
         <foreach collection="parcels" separator="," open="" close="" item="parcel" index="index">
             (
             #{parcel.id},
-<<<<<<< HEAD
             #{parcel.createBy},
             #{parcel.createTime},
             #{parcel.updateBy},
@@ -122,18 +115,5 @@
             #{parcel.productCode}
             )
         </foreach>;
-=======
-            'cmk api',
-            NOW(),
-            'cmk api',
-            NOW(),
-            #{parcel.thirdBillCode},
-            #{parcel.country},
-            #{parcel.thirdBillCode},
-            #{parcel.detail.orderNo},
-            #{parcel.detail.productCode}
-            )
-        </foreach>
->>>>>>> 9c5c7432b6824185b589760c500b696f46f82c58
     </insert>
 </mapper>
