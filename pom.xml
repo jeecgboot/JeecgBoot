@@ -2,9 +2,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.5.0</version>
+  <version>0.2.5</version>
   <packaging>pom</packaging>
-  <name>JEECG BOOT ${project.version} </name>
+  <name>WIA APP ${project.version} </name>
 
 	<developers>
 		<developer>

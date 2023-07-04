@@ -80,6 +80,10 @@
             )
         </foreach>
     </insert>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9c5c7432b6824185b589760c500b696f46f82c58
     <insert id="insertOrIgnoreCMKTraces" parameterType="list">
         INSERT IGNORE INTO parcel_trace(id, create_by, create_time, update_by, update_time, parcel_id, scan_time,
         description, description_en, trace_location, scan_type)
@@ -100,7 +104,12 @@
             )
         </foreach>
     </insert>
+<<<<<<< HEAD
     <select id="fetchParcelTracesToArchive" resultType="org.jeecg.modules.business.entity.ParcelTrace">
+=======
+
+    <select id="fetchParcelTracesToArchive" resultType="org.jeecg.modules.business.entity.Parcel">
+>>>>>>> 9c5c7432b6824185b589760c500b696f46f82c58
         SELECT *
         FROM parcel_trace
         WHERE parcel_id IN

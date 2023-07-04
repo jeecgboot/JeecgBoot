@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8080
   tomcat:
     max-swallow-size: -1
   error:
@@ -187,8 +187,8 @@ jeecg:
     pc: http://localhost:3100
     app: http://localhost:8051
   path:
-    upload: /temp/wia/upload
-    save: /temp/wia/save
+    upload: /wia/upload
+    save: /wia/save
 
     # purchase invoice template
     purchaseTemplatePath: /wia/files/Purchase_Invoice_Template.xlsx
@@ -203,10 +203,10 @@ jeecg:
     completeTemplatePath_EU: /wia/files/Complete_Invoice_Template_EU.xlsx
     completeTemplatePath_US: /wia/files/Complete_Invoice_Template_US.xlsx
     # where to store generated file
-    shippingInvoiceDir: /temp/wia/invoices/shipping
-    shippingInvoiceDetailDir: /temp/wia/invoices/shippingDetail
-    shippingInvoicePdfDir: /temp/wia/invoices/pdf/shipping
-    shippingInvoiceDetailPdfDir: /temp/wia/invoices/pdf/shippingDetail
+    shippingInvoiceDir: /wia/invoices/shipping
+    shippingInvoiceDetailDir: /wia/invoices/shippingDetail
+    shippingInvoicePdfDir: /wia/invoices/pdf/shipping
+    shippingInvoiceDetailPdfDir: /wia/invoices/pdf/shippingDetail
     # CDG location
     CGS: /wia/files/WIASourcingCGCVF_mai.pdf
     #webapp文件路径
