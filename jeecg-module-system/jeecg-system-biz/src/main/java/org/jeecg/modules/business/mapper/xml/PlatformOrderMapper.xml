@@ -435,8 +435,10 @@
         AND shipping_time &lt;= #{endDateTime}
         AND shipping_invoice_number IS NOT NULL
         AND erp_status = 3
-        # Skip CNE packages whose tracking number are not yet up-to-date
-        AND tracking_number NOT REGEXP '3A5V[0-9]{9}|DY01[0-9]{11}';
+         <if test="excludedTrackingNumbersRegex != null">
+            AND tracking_number NOT REGEXP #{excludedTrackingNumbersRegex}
+        </if>
+        ;
     </select>
 
     <select id="fetchOrderInShopsReadyForShopifySync" resultType="org.jeecg.modules.business.entity.PlatformOrderShopSync">

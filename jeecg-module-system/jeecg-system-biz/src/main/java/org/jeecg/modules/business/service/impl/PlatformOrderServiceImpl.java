@@ -353,8 +353,8 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
 
     @Override
-    public List<String> fetchInvoicedShippedOrdersNotInShops(LocalDateTime startDatetime, LocalDateTime endDatetime, List<String> shopCodes) {
-        return platformOrderMap.fetchInvoicedShippedOrdersNotInShops(startDatetime, endDatetime, shopCodes);
+    public List<String> fetchInvoicedShippedOrdersNotInShops(LocalDateTime startDatetime, LocalDateTime endDatetime, List<String> shopCodes, String excludedTrackingNumbersRegex) {
+        return platformOrderMap.fetchInvoicedShippedOrdersNotInShops(startDatetime, endDatetime, shopCodes, excludedTrackingNumbersRegex);
     }
 
     @Override
