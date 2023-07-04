@@ -145,10 +145,21 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     /**
      * Fetch all platform orders between 2 dates and of status erp_status 4 or 5
      * this list will then be archived
+<<<<<<< HEAD
+     * @param startDate Start date time
+     * @param endDate End date time
+=======
      *
      * @param startDate
      * @param endDate
+>>>>>>> 9c5c7432b6824185b589760c500b696f46f82c58
      * @return List of PlatformOrder
      */
     List<PlatformOrder> fetchPlatformOrdersToArchive(String startDate, String endDate);
+
+    /**
+     * Archive a list of platform orders
+     * @param platformOrders list of platform orders
+     */
+    void savePlatformOrderArchive(List<PlatformOrder> platformOrders);
 }

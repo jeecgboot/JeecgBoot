@@ -135,7 +135,7 @@ spring:
         master:
           url: jdbc:mysql://127.0.0.1:3306/wia_app_3?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Europe/Paris
           username: admin
-          password: admin
+          password: WIASourcing2021
           driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
@@ -190,28 +190,28 @@ jeecg:
     app: http://localhost:8051
   path:
     #文件上传根目录 设置
-    upload: E:\data\upload
-    save: E:\data\save
+    upload: C:\dev\upload
+    save: C:\dev\save
     # email template folder
-    emailTemplateDir: E://IdeaProject//wia_app_3//wia_app//jeecg-module-system//jeecg-system-biz//src//main//resources//templates
+    emailTemplateDir: C://Users//logau//IdeaProject//wia_app_3//wia_app//jeecg-module-system//jeecg-system-biz//src//main//resources//templates
 
     # purchase invoice template
-    purchaseTemplatePath: E://data//templates//Purchase_Invoice_Template.xlsx
+    purchaseTemplatePath: C://dev//templates//Purchase_Invoice_Template.xlsx
     # where to store generated file
-    purchaseInvoiceDir: E://data//invoices//purchase
+    purchaseInvoiceDir: C://dev//invoices//purchase
 
     # purchase invoice template
-    shippingTemplatePath_EU: E://data//templates//Shipping_Invoice_Template_EU.xlsx
-    shippingTemplatePath_US: E://data//templates//Shipping_Invoice_Template_US.xlsx
+    shippingTemplatePath_EU: C://dev//templates//Shipping_Invoice_Template_EU.xlsx
+    shippingTemplatePath_US: C://dev//templates//Shipping_Invoice_Template_US.xlsx
 
     # complete invoice template
-    completeTemplatePath_EU: E://data//templates//Complete_Invoice_Template_EU.xlsx
-    completeTemplatePath_US: E://data//templates//Complete_Invoice_Template_US.xlsx
+    completeTemplatePath_EU: C://dev//templates//Complete_Invoice_Template_EU.xlsx
+    completeTemplatePath_US: C://dev//templates//Complete_Invoice_Template_US.xlsx
     # where to store generated file
-    shippingInvoiceDir: E://data//invoices//shipping
-    shippingInvoiceDetailDir: E://data//invoices//shippingDetail
-    shippingInvoicePdfDir: E://data//invoices//pdf//shipping
-    shippingInvoiceDetailPdfDir: E://data//invoices//pdf//shippingDetail
+    shippingInvoiceDir: C://dev//invoices//shipping
+    shippingInvoiceDetailDir: C://dev//invoices//shippingDetail
+    shippingInvoicePdfDir: C://dev//invoices//pdf//shipping
+    shippingInvoiceDetailPdfDir: C://dev//invoices//pdf//shippingDetail
     #webapp文件路径
     webapp: /opt/webapp
   shiro:
