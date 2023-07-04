@@ -249,4 +249,34 @@
             #{orderID}
         </foreach>;
     </select>
+    <insert id="insertPlatformOrderContentsArchives" parameterType="list">
+        INSERT INTO platform_order_content_delete(id, create_by, create_time,
+                                                    update_by, update_time,
+                                                    platform_order_id, sku_id,
+                                                    quantity, purchase_fee,
+                                                    shipping_fee, service_fee,
+                                                    vat, status, erp_status,
+                                                    product_available, picking_fee)
+        VALUES
+        <foreach collection="orderContents" separator="," open="" close="" item="content" index="index">
+            (
+            #{content.id},
+            #{content.createBy},
+            #{content.createTime},
+            #{content.updateBy},
+            #{content.updateTime},
+            #{content.platformOrderId},
+            #{content.skuId},
+            #{content.quantity},
+            #{content.purchaseFee},
+            #{content.shippingFee},
+            #{content.serviceFee},
+            #{content.vat},
+            #{content.status},
+            #{content.erpStatus},
+            #{content.productAvailable},
+            #{content.pickingFee}
+            )
+        </foreach>;
+    </insert>
 </mapper>

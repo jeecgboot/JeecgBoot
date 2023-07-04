@@ -122,19 +122,19 @@ public class InvoiceController {
                 log.info("Specified period between " + start + " and " + end);
                 if (type.equals("shipping"))
                     lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT po.id FROM platform_order po\n" +
-                            "JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name\n" +
+                            "LEFT JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name\n" +
                             "WHERE po.shipping_time between '" + start + "' AND '" + end + "'\n" +
-                            "AND lc.warehouse_in_china IN (" + warehouseString + ")");
+                            "AND (lc.warehouse_in_china IN (" + warehouseString + ") OR po.logistic_channel_name = '' OR po.logistic_channel_name IS NULL)");
                 else
                     lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT po.id FROM platform_order po\n" +
-                            "JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name\n" +
+                            "LEFT JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name\n" +
                             "WHERE po.order_time between '" + start + "' AND '" + end + "'\n" +
-                            "AND lc.warehouse_in_china IN (" + warehouseString + ")");
+                            "AND (lc.warehouse_in_china IN (" + warehouseString + ") OR po.logistic_channel_name = '' OR po.logistic_channel_name IS NULL)");
             }
             else {// obsolete
                 lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT po.id FROM platform_order po\n" +
                         "JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name\n" +
-                        "WHERE lc.warehouse_in_china IN (" + warehouseString + ")");
+                        "WHERE (lc.warehouse_in_china IN (" + warehouseString + ") OR po.logistic_channel_name = '' OR po.logistic_channel_name IS NULL)");
             }
             pageList = platformOrderMapper.selectPage(page, lambdaQueryWrapper);
             return Result.OK(pageList);

@@ -3,6 +3,7 @@ package org.jeecg.modules.business.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.domain.api.cmk.CMKParcelTrace;
+import org.jeecg.modules.business.domain.api.cmk.CMKParcelTraceData;
 import org.jeecg.modules.business.domain.api.equick.EQuickTraceData;
 import org.jeecg.modules.business.domain.api.jt.JTParcelTraceDetail;
 import org.jeecg.modules.business.domain.api.yd.YDTraceDetail;
@@ -32,5 +33,16 @@ public interface ParcelTraceMapper extends BaseMapper<ParcelTrace> {
 
     void insertOrIgnoreCMKTraces(@Param("traces") List<CMKParcelTrace> traceDetails);
 
+    /**
+     * Fetches parcel traces to archive
+     * @param parcelIDs
+     * @return List of parcel traces
+     */
     List<ParcelTrace> fetchParcelTracesToArchive(@Param("parcelIDs") List<String> parcelIDs);
+
+    /**
+     * inserts into parce_trace_delete table parcels to archive
+     * @param parcelTraces
+     */
+    void insertParceTracesArchive(@Param("parcelTraces") List<ParcelTrace> parcelTraces);
 }

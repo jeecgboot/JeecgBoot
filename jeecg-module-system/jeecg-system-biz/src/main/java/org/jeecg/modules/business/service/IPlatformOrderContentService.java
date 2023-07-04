@@ -34,5 +34,12 @@ public interface IPlatformOrderContentService extends IService<PlatformOrderCont
     List<SkuWeightDiscountServiceFees> getAllSKUWeightsDiscountsServiceFees();
 
     List<SkuQuantity> searchOrderContent(List<String> orderIDList);
+
+    /**
+     * Fetches all platform order centents to archive from platform order id
+     * @param orderIDs platform order id
+     * @return list of platform order content to archive
+     */
     List<PlatformOrderContent> fetchPlatformOrderContentsToArchive(List<String> orderIDs);
+    void savePlatformOrderContentArchive(List<PlatformOrderContent> platformOrderContents);
 }
