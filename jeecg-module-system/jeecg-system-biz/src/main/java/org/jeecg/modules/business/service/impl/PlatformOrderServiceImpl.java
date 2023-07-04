@@ -370,4 +370,8 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     public List<PlatformOrder> fetchPlatformOrdersToArchive(String startDate, String endDate) {
         return platformOrderMap.fetchPlatformOrdersToArchive(startDate, endDate);
     }
+    @Override
+    public void savePlatformOrderArchive(List<PlatformOrder> platformOrders) {
+        platformOrderMap.insertPlatformOrdersArchives(platformOrders);
+    }
 }

@@ -2,6 +2,7 @@ package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.business.entity.ParcelTrace;
+import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.mapper.ParcelTraceMapper;
 import org.jeecg.modules.business.service.IParcelTraceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,12 @@ public class ParcelTraceServiceImpl extends ServiceImpl<ParcelTraceMapper, Parce
     public List<ParcelTrace> selectByMainId(String mainId) {
         return parcelTraceMapper.selectByMainId(mainId);
     }
+    @Override
     public List<ParcelTrace> fetchParcelTracesToArchive(List<String> parcelIDs) {
         return parcelTraceMapper.fetchParcelTracesToArchive(parcelIDs);
+    }
+    @Override
+    public void saveParcelTraceArchive(List<ParcelTrace> parcelTraces) {
+        parcelTraceMapper.insertParceTracesArchive(parcelTraces);
     }
 }

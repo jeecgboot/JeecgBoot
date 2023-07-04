@@ -532,4 +532,51 @@
         WHERE erp_status IN (4,5)
         AND order_time BETWEEN #{startDate} AND #{endDate};
     </select>
+    <insert id="insertPlatformOrdersArchives" parameterType="list">
+        INSERT INTO platform_order_delete(id, create_by,
+                                          create_time, update_by,
+                                          update_time, shop_id,
+                                          logistic_channel_name, platform_order_id,
+                                          platform_order_number, tracking_number,
+                                          order_time, shipping_time,
+                                          recipient, country, postcode, status, fret_fee,
+                                          order_service_fee, shipping_invoice_number,
+                                          target, erp_order_id, erp_status, invoice_logistic_channel_name,
+                                          internal_tracking_number, product_available, ready_for_shopify_sync,
+                                          can_send, picking_fee, packaging_material_fee)
+        VALUES
+        <foreach collection="orders" separator="," open="" close="" item="order" index="index">
+            (
+                #{order.id},
+                #{order.createBy},
+                #{order.createTime},
+                #{order.updateBy},
+                #{order.updateTime},
+                #{order.shopId},
+                #{order.logisticChannelName},
+                #{order.platformOrderId},
+                #{order.platformOrderNumber},
+                #{order.trackingNumber},
+                #{order.orderTime},
+                #{order.shippingTime},
+                #{order.recipient},
+                #{order.country},
+                #{order.postcode},
+                #{order.status},
+                #{order.fretFee},
+                #{order.orderServiceFee},
+                #{order.shippingInvoiceNumber},
+                #{order.target},
+                #{order.erpOrderId},
+                #{order.erpStatus},
+                #{order.invoiceLogisticChannelName},
+                #{order.internalTrackingNumber},
+                #{order.productAvailable},
+                #{order.readyForShopifySync},
+                #{order.canSend},
+                #{order.pickingFee},
+                #{order.packagingMaterialFee}
+        )
+        </foreach>;
+    </insert>
 </mapper>

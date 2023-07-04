@@ -68,30 +68,39 @@ public class DBArchivingJob implements Job {
         if (!endDateTime.isAfter(startDateTime)) {
             throw new RuntimeException("EndDateTime must be strictly greater than StartDateTime !");
         }
-        System.out.println("startdatetime : " + startDateTime + "\nendDateTime : " + endDateTime);
         String startDate = startDateTime.toString().substring(0,10);
         endDateTime = endDateTime.plusDays(1);
         String endDate = endDateTime.toString().substring(0,10);
-        System.out.println("startdatetime : " + startDateTime + "\nendDateTime : " + endDateTime);
-        System.out.println("startdate : " + startDate + "\nendDate : " + endDate);
 
-        // step1: sauvegarde des entrées dans des objets
-        // insertion des objets dans les tables d'archives
-        // drop les entrées dans l'ancienne table
-
+        // sauvegarde des entrées dans des listes
+        // suppression des entrées dans l'ancienne table
         List<PlatformOrder> platformOrders = platformOrderService.fetchPlatformOrdersToArchive(startDate, endDate);
         List<String> platformOrderIDs = platformOrders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
         List<PlatformOrderContent> platformOrderContents = platformOrderContentService.fetchPlatformOrderContentsToArchive(platformOrderIDs);
-        List<String> platformOrderTrackingNumber = platformOrders.stream().map(PlatformOrder::getTrackingNumber).collect(Collectors.toList());
-        try {
-            List<Parcel> parcels = parcelService.fetchParcelsToArchive(platformOrderTrackingNumber);
-            List<String> parcelIDs = parcels.stream().map(Parcel::getId).collect(Collectors.toList());
-            List<ParcelTrace> parcelTraces = parcelTraceService.fetchParcelTracesToArchive(parcelIDs);
-            System.out.println("Parcel count : " + parcels.size());
-            System.out.println("Parcel_trace count : " + parcelTraces.size());
-        } catch (Exception ignored) {
 
+        log.info("Archiving entries between ["+startDate+" and "+endDate+"]\n"
+                +"- Platform Order entries : " + platformOrders.size() + "\n"
+                +"- Platform Order Content entries : " + platformOrderContents.size());
+        platformOrderService.savePlatformOrderArchive(platformOrders);
+        platformOrderContentService.savePlatformOrderContentArchive(platformOrderContents);
+        platformOrderService.delBatchMain(platformOrderIDs);
+
+        List<String> platformOrderTrackingNumber = platformOrders.stream().map(PlatformOrder::getTrackingNumber).collect(Collectors.toList());
+        if(platformOrderTrackingNumber.size() > 0) {
+            List<Parcel> parcels = parcelService.fetchParcelsToArchive(platformOrderTrackingNumber);
+            if(parcels.size() > 0) {
+                log.info("- Parcel entries : " + parcels.size());
+                parcelService.saveParcelArchive(parcels);
+
+                List<String> parcelIDs = parcels.stream().map(Parcel::getId).collect(Collectors.toList());
+                List<ParcelTrace> parcelTraces = parcelTraceService.fetchParcelTracesToArchive(parcelIDs);
+                if(parcelTraces.size() > 0) {
+                    log.info("- Parcel trace entries : " + parcelTraces.size());
+                    parcelTraceService.saveParcelTraceArchive(parcelTraces);
+                }
+                parcelService.delBatchMain(parcelIDs);
+            }
         }
-        System.out.println(platformOrderIDs);
+        log.info("Archiving Done.");
     }
 }

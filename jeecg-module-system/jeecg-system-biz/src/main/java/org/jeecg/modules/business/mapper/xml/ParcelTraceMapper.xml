@@ -80,7 +80,27 @@
             )
         </foreach>
     </insert>
-    <select id="fetchParcelTracesToArchive" resultType="org.jeecg.modules.business.entity.Parcel">
+    <insert id="insertOrIgnoreCMKTraces" parameterType="list">
+        INSERT IGNORE INTO parcel_trace(id, create_by, create_time, update_by, update_time, parcel_id, scan_time,
+        description, description_en, trace_location, scan_type)
+        VALUES
+        <foreach collection="traces" separator="," open="" close="" item="trace" index="index">
+            (
+            UUID(),
+            'cmk api',
+            NOW(),
+            'cmk api',
+            NOW(),
+            #{trace.parcelId},
+            #{trace.time},
+            #{trace.description},
+            #{trace.descriptionEn},
+            #{trace.location},
+            #{trace.scanType}
+            )
+        </foreach>
+    </insert>
+    <select id="fetchParcelTracesToArchive" resultType="org.jeecg.modules.business.entity.ParcelTrace">
         SELECT *
         FROM parcel_trace
         WHERE parcel_id IN
@@ -88,4 +108,29 @@
             #{parcelID}
         </foreach>;
     </select>
+    <insert id="insertParceTracesArchive" parameterType="list">
+        INSERT INTO parcel_trace_delete (id, create_by, create_time,
+                                        update_by, update_time,
+                                        parcel_id, scan_time, scan_type,
+                                        description, description_en,
+                                        trace_location, trace_status, trace_code)
+        VALUES
+        <foreach collection="parcelTraces" separator="," open="" close="" item="trace" index="index">
+            (
+            #{trace.id},
+            #{trace.createBy},
+            #{trace.createTime},
+            #{trace.updateBy},
+            #{trace.updateTime},
+            #{trace.parcelId},
+            #{trace.scanTime},
+            #{trace.scanType},
+            #{trace.description},
+            #{trace.descriptionEn},
+            #{trace.traceLocation},
+            #{trace.traceStatus},
+            #{trace.traceCode}
+            )
+        </foreach>;
+    </insert>
 </mapper>

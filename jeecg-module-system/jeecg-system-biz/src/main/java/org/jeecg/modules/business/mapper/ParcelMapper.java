@@ -2,6 +2,7 @@ package org.jeecg.modules.business.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.business.domain.api.cmk.CMKParcelTraceData;
 import org.jeecg.modules.business.domain.api.equick.EQuickResponse;
 import org.jeecg.modules.business.domain.api.jt.JTParcelTrace;
 import org.jeecg.modules.business.domain.api.yd.YDTraceData;
@@ -26,5 +27,18 @@ public interface ParcelMapper extends BaseMapper<Parcel> {
     void insertOrUpdateEQParcels(List<EQuickResponse> parcels);
 
     void insertOrIgnoreYDParcels(List<YDTraceData> parcels);
+    void insertOrIgnoreCMKParcels(List<CMKParcelTraceData> parcels);
+
+    /**
+     * fetch all parcels from platform order's tracking number, to archive
+     * @param trackingNumbers
+     * @return List of parcels
+     */
     List<Parcel> fetchParcelsToArchive(@Param("trackingNumbers") List<String> trackingNumbers);
+
+    /**
+     * Inserts into parce_trace_delete table parcel traces to archive
+     * @param parcels
+     */
+    void insertParcelsArchive(@Param("parcels") List<Parcel> parcels);
 }

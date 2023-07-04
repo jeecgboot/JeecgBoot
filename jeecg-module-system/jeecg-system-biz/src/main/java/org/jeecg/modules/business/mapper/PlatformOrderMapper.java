@@ -178,4 +178,5 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
                                                                          @Param("erpStatuses") List<Integer> erpStatuses,
                                                                          @Param("warehouses") List<String> warehouses);
     List<PlatformOrder> fetchPlatformOrdersToArchive(@Param("startDate") String startDate, @Param("endDate") String endDate);
+    void insertPlatformOrdersArchives(@Param("orders") List<PlatformOrder> platformOrders);
 }
