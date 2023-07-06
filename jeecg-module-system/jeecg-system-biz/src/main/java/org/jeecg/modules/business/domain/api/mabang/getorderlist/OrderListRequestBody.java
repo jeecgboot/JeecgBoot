@@ -18,11 +18,13 @@ public class OrderListRequestBody implements RequestBody {
     private LocalDateTime endDate;
     // 1.Normal 2.Abnormal 3.All
     private final static String CAN_SEND = "3";
+    private String cursor = "";
     private Integer page = 1;
+    private boolean hasNext = true;
 
     @Override
     public String api() {
-        return "order-get-order-list";
+        return "order-get-order-list-new";
     }
 
     @Override
@@ -35,19 +37,29 @@ public class OrderListRequestBody implements RequestBody {
             putNonNull(json, datetimeType.text() + "End", endDate, formatter::format);
         }
         putNonNull(json, "canSend", CAN_SEND);
-        putNonNull(json, "page", page);
+        putNonNull(json, "cursor", cursor);
         return json;
     }
 
-    void nextPage() {
-        setPage(this.page + 1);
+    String getCursor() {
+        return cursor;
     }
-
+    void setCursor(String cursor) {
+        this.cursor = cursor;
+    }
     int getPage() {
         return page;
     }
-
-
+    void setPage(int page) {
+        this.page = page;
+    }
+    void nextPage() {
+        this.page += 1;
+    }
+    boolean getHasNext() { return hasNext; }
+    void setHasNext(boolean hasNext) {
+        this.hasNext = hasNext;
+    }
     public OrderListRequestBody setStatus(OrderStatus status) {
         this.status = status;
         return this;
@@ -73,8 +85,8 @@ public class OrderListRequestBody implements RequestBody {
         return this;
     }
 
-    public OrderListRequestBody setPage(int page) {
-        this.page = page;
+    public OrderListRequestBody setPage(String cursor) {
+        this.cursor = cursor;
         return this;
     }
 
