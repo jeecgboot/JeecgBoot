@@ -5,15 +5,25 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.domain.api.mabang.Response;
 
+import static cn.hutool.core.util.StrUtil.trim;
+
 /**
  * Immutable object
  */
 @Slf4j
 public class OrderListResponse extends Response {
     /**
-     * total page number
+     * Response message
      */
-    private final int pageCount;
+    private String message;
+    /**
+     * Has next page
+     */
+    private boolean hasNext;
+    /**
+     *  下一页页码（加密串）
+     */
+    private String nextCursor;
     /**
      * Total data number
      */
@@ -25,9 +35,11 @@ public class OrderListResponse extends Response {
 
     private final JSONObject rawData;
 
-    OrderListResponse(Code code, int pageCount, int dataCount, JSONArray data, JSONObject rawData) {
+    OrderListResponse(Code code, String message, String hasNext, String nextCursor, int dataCount, JSONArray data, JSONObject rawData) {
         super(code);
-        this.pageCount = pageCount;
+        setMessage(message);
+        setHasNext(hasNext);
+        setNextCursor(nextCursor);
         this.dataCount = dataCount;
         this.data = data;
         this.rawData = rawData;
@@ -44,19 +56,37 @@ public class OrderListResponse extends Response {
     public static OrderListResponse parse(JSONObject json) throws OrderListRequestErrorException {
         log.debug("Constructing a response by json.");
         String code = json.getString("code");
+        String message = json.getString("message");
         if (code.equals(Code.ERROR.value))
-            throw new OrderListRequestErrorException(json.getString("message"));
-
+            throw new OrderListRequestErrorException(message);
         JSONObject data = json.getJSONObject("data");
-        int pageCount = Integer.parseInt(data.getString("pageCount"));
-        int dataCount = Integer.parseInt(data.getString("dataCount"));
+        String hasNext = data.getString("hasNext");
+        String nextCursor = data.getString("nextCursor");
+        int dataCount = Integer.parseInt(data.getString("total"));
         JSONArray realData = data.getJSONArray("data");
-        log.info("Constructed response: data contained {}, total page {}, total data {}", realData.size(), pageCount, dataCount);
-        return new OrderListResponse(Code.SUCCESS, pageCount, dataCount, realData, json);
+        log.info("Constructed response: data contained {}, total data {}", realData.size(), dataCount);
+        return new OrderListResponse(Code.SUCCESS, message, hasNext, nextCursor, dataCount, realData, json);
     }
 
-    public int getTotalPage() {
-        return pageCount;
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = trim(message);
+    }
+    public boolean getHasNext() {
+        return hasNext;
+    }
+    public void setHasNext(String hasNext) {
+        this.hasNext = hasNext.equals("true");
+    }
+    public String getNextCursor() {
+        return this.nextCursor;
+    }
+
+    public void setNextCursor(String nextCursor) {
+        this.nextCursor = nextCursor;
     }
 
     public JSONArray getData() {
@@ -74,7 +104,6 @@ public class OrderListResponse extends Response {
     @Override
     public String toString() {
         return "OrderListResponse{" +
-                "pageCount=" + pageCount +
                 ", dataCount=" + dataCount +
                 '}';
     }
