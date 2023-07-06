@@ -18,6 +18,7 @@ public class OrderListRequestBody implements RequestBody {
     private LocalDateTime endDate;
     // 1.Normal 2.Abnormal 3.All
     private final static String CAN_SEND = "3";
+    private final String maxRows = "1000";
     private String cursor = "";
     private Integer page = 1;
     private boolean hasNext = true;
@@ -38,6 +39,7 @@ public class OrderListRequestBody implements RequestBody {
         }
         putNonNull(json, "canSend", CAN_SEND);
         putNonNull(json, "cursor", cursor);
+        putNonNull(json, "maxRows", maxRows);
         return json;
     }
 
