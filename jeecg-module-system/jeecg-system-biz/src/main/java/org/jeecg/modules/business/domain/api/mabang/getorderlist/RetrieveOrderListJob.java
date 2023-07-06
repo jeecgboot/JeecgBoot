@@ -74,10 +74,10 @@ public class RetrieveOrderListJob implements Job {
 
         // sent request for newly paid orders
         OrderListRequestBody body = new OrderListRequestBody();
-        body.setDatetimeType(DateType.PAID);
-        body.setStartDate(begin);
-        body.setEndDate(end);
-        body.setStatus(OrderStatus.AllUnshipped);
+        body.setDatetimeType(DateType.PAID)
+                .setStartDate(begin)
+                .setEndDate(end)
+                .setStatus(OrderStatus.AllUnshipped);
         OrderListRawStream rawStream = new OrderListRawStream(body);
         // get data in json array format
         List<OrderListResponse> rawStreamAll = rawStream.all();
@@ -118,10 +118,11 @@ public class RetrieveOrderListJob implements Job {
 
         // Query orders that updated in a certain duration of time in the past.
         OrderListRequestBody updatedOrderBody = new OrderListRequestBody();
-        updatedOrderBody.setStartDate(begin);
-        updatedOrderBody.setEndDate(end);
-        updatedOrderBody.setDatetimeType(DateType.UPDATE);
-        updatedOrderBody.setStatus(OrderStatus.Pending);
+        updatedOrderBody
+                .setStartDate(begin)
+                .setEndDate(end)
+                .setDatetimeType(DateType.UPDATE)
+                .setStatus(OrderStatus.Pending);
 
         OrderListRawStream rawStream = new OrderListRawStream(updatedOrderBody);
         OrderListStream stream = new OrderListStream(rawStream);
