@@ -1,11 +1,15 @@
 package org.jeecg.modules.business.controller.admin;
 
+import com.aspose.pdf.PageSize;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.base.CaseFormat;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONObject;
+import org.apache.tomcat.util.json.JSONParser;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
@@ -22,6 +26,10 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.List;
+
+import static org.apache.commons.lang3.StringUtils.stripAll;
+import static org.jeecg.common.util.SqlInjectionUtil.specialFilterContentForDictSql;
 
 /**
  * @Description: 售后退款
@@ -38,7 +46,7 @@ public class SavRefundController extends JeecgController<SavRefund, ISavRefundSe
     private ISavRefundService savRefundService;
 
     @Autowired
-    private ISavRefundWithDetailService savRefundWithShopCodeService;
+    private ISavRefundWithDetailService savRefundWithDetailService;
 
     /**
      * 分页列表查询
@@ -53,12 +61,29 @@ public class SavRefundController extends JeecgController<SavRefund, ISavRefundSe
     @ApiOperation(value = "售后退款-分页列表查询", notes = "售后退款-分页列表查询")
     @GetMapping(value = "/list")
     public Result<?> queryPageList(SavRefundWithDetail savRefund,
+                                   @RequestParam(name = "shop", defaultValue = "") String shop,
+                                   @RequestParam(name = "orderID", defaultValue = "") String platformOrderId,
                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                   @RequestParam(name = "column", defaultValue = "invoice_umber") String column,
+                                   @RequestParam(name = "order", defaultValue = "ASC") String order,
                                    HttpServletRequest req) {
-        QueryWrapper<SavRefundWithDetail> queryWrapper = QueryGenerator.initQueryWrapper(savRefund, req.getParameterMap());
-        Page<SavRefundWithDetail> page = new Page<>(pageNo, pageSize);
-        IPage<SavRefundWithDetail> pageList = savRefundWithShopCodeService.page(page, queryWrapper);
+        String parsedColumn = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column.replace("_dictText",""));
+        try {
+            specialFilterContentForDictSql(parsedColumn);
+        }
+        catch (RuntimeException e) {
+            e.printStackTrace();
+            return Result.error("Error 400 : Bad Request");
+        }
+        String parsedShop = "%"+shop.toUpperCase()+"%";
+        String parsedPlatformOrderId = "%"+platformOrderId+"%";
+        if(!order.equalsIgnoreCase("ASC") && !order.equalsIgnoreCase("DESC")) {
+            return Result.error("Error 400 Bad Request");
+        }
+        List<SavRefundWithDetail> refundList = savRefundWithDetailService.fetchRefundsWhere(parsedShop, parsedPlatformOrderId, parsedColumn, order);
+        IPage<SavRefundWithDetail> pageList = new Page<>(pageNo, pageSize);
+        pageList.setRecords(refundList);
         return Result.OK(pageList);
     }
 
