@@ -33,8 +33,9 @@ public class OrderListRawStream implements NetworkDataStream<OrderListResponse> 
         if (currentResponse.getDataCount() == 0) {
             return null;
         }
-        began = true;
+        toSend.setCursor(currentResponse.getNextCursor());
         toSend.nextPage();
+        began = true;
         return currentResponse;
     }
 
@@ -49,8 +50,8 @@ public class OrderListRawStream implements NetworkDataStream<OrderListResponse> 
             throw new IllegalStateException("Calling hasNext before begin");
         }
         // still has page left, true
-        if (toSend.getPage() <= currentResponse.getTotalPage()) {
-            log.info("page: {}/{}, has next", toSend.getPage(), currentResponse.getTotalPage());
+        if (currentResponse.getHasNext()) {
+            log.info("page: {}, has next", toSend.getPage());
             return true;
         }
         // no page left, false
@@ -72,6 +73,7 @@ public class OrderListRawStream implements NetworkDataStream<OrderListResponse> 
 
         log.info("Sending request for page {}.", toSend.getPage());
         this.currentResponse = new OrderListRequest(toSend).send();
+        toSend.setCursor(currentResponse.getNextCursor());
         toSend.nextPage();
         return this.currentResponse;
     }

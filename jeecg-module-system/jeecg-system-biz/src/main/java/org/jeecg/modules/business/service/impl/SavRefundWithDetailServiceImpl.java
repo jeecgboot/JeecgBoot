@@ -27,4 +27,8 @@ public class SavRefundWithDetailServiceImpl extends ServiceImpl<SavRefundWithDet
     public List<SavRefundWithDetail> findUnprocessedRefundsByClient(String clientId) {
         return savRefundMapper.findUnprocessedRefundsByClient(clientId);
     }
+    @Override
+    public List<SavRefundWithDetail> fetchRefundsWhere(String shop, String orderID, String column, String order) {
+        return savRefundMapper.fetchRefundsWhere(shop, orderID, column, order);
+    }
 }

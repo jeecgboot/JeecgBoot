@@ -10,4 +10,13 @@
         WHERE invoice_number IS NULL
           AND s.owner_id = #{clientId}
     </select>
+    <select id="fetchRefundsWhere" resultType="org.jeecg.modules.business.entity.SavRefundWithDetail">
+        SELECT sr.*
+        FROM sav_refund_with_detail sr
+                 JOIN platform_order po ON sr.platform_order_id = po.id
+                 JOIN shop s ON po.shop_id = s.id
+        WHERE s.erp_code LIKE #{shop}
+        AND po.platform_order_id LIKE #{orderID}
+        ORDER BY ${column} ${order};
+    </select>
 </mapper>
