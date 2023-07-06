@@ -367,8 +367,12 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         return platformOrderMap.fetchUninvoicedShippedOrderIDInShops(startDate, endDate, shops, warehouses);
     }
     @Override
-    public List<PlatformOrder> fetchPlatformOrdersToArchive(String startDate, String endDate) {
-        return platformOrderMap.fetchPlatformOrdersToArchive(startDate, endDate);
+    public List<PlatformOrder> fetchOrdersToArchiveBetweenDate(String startDate, String endDate) {
+        return platformOrderMap.fetchOrdersToArchiveBetweenDate(startDate, endDate);
+    }
+    @Override
+    public List<PlatformOrder> fetchOrdersToArchiveBeforeDate(String endDate) {
+        return platformOrderMap.fetchOrdersToArchiveBeforeDate(endDate);
     }
     @Override
     public void savePlatformOrderArchive(List<PlatformOrder> platformOrders) {

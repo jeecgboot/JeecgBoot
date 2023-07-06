@@ -45,8 +45,8 @@ public class DBArchivingJob implements Job {
     private static final Integer DEFAULT_NUMBER_OF_DAYS = 365;
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        LocalDateTime endDateTime = LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get("CTT")));
-        LocalDateTime startDateTime = endDateTime.minusDays(DEFAULT_NUMBER_OF_DAYS);
+        LocalDateTime endDateTime = LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get("CTT"))).minusDays(DEFAULT_NUMBER_OF_DAYS);
+        LocalDateTime startDateTime = null;
         JobDataMap jobDataMap = context.getMergedJobDataMap();
         String parameter = ((String) jobDataMap.get("parameter"));
         if (parameter != null) {
@@ -59,48 +59,62 @@ public class DBArchivingJob implements Job {
                 if (!jsonObject.isNull("endDateTime")) {
                     String endDateStr = jsonObject.getString("endDateTime");
                     endDateTime = LocalDateTime.parse(endDateStr);
+                    if(endDateTime.isAfter(LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get("CTT"))).minusDays(DEFAULT_NUMBER_OF_DAYS))) {
+                        throw new RuntimeException("Error : Only orders older than 1 year can be archived !");
+                    }
                 }
             }
             catch (JSONException e) {
                 log.error("Error while parsing parameter as JSON, falling back to default parameters.");
             }
         }
-        if (!endDateTime.isAfter(startDateTime)) {
-            throw new RuntimeException("EndDateTime must be strictly greater than StartDateTime !");
-        }
-        String startDate = startDateTime.toString().substring(0,10);
+
+        String startDate;
         endDateTime = endDateTime.plusDays(1);
         String endDate = endDateTime.toString().substring(0,10);
-
-        // sauvegarde des entrées dans des listes
-        // suppression des entrées dans l'ancienne table
-        List<PlatformOrder> platformOrders = platformOrderService.fetchPlatformOrdersToArchive(startDate, endDate);
-        List<String> platformOrderIDs = platformOrders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
-        List<PlatformOrderContent> platformOrderContents = platformOrderContentService.fetchPlatformOrderContentsToArchive(platformOrderIDs);
-
-        log.info("Archiving entries between ["+startDate+" and "+endDate+"]\n"
-                +"- Platform Order entries : " + platformOrders.size() + "\n"
-                +"- Platform Order Content entries : " + platformOrderContents.size());
-        platformOrderService.savePlatformOrderArchive(platformOrders);
-        platformOrderContentService.savePlatformOrderContentArchive(platformOrderContents);
-        platformOrderService.delBatchMain(platformOrderIDs);
-
-        List<String> platformOrderTrackingNumber = platformOrders.stream().map(PlatformOrder::getTrackingNumber).collect(Collectors.toList());
-        if(platformOrderTrackingNumber.size() > 0) {
-            List<Parcel> parcels = parcelService.fetchParcelsToArchive(platformOrderTrackingNumber);
-            if(parcels.size() > 0) {
-                log.info("- Parcel entries : " + parcels.size());
-                parcelService.saveParcelArchive(parcels);
-
-                List<String> parcelIDs = parcels.stream().map(Parcel::getId).collect(Collectors.toList());
-                List<ParcelTrace> parcelTraces = parcelTraceService.fetchParcelTracesToArchive(parcelIDs);
-                if(parcelTraces.size() > 0) {
-                    log.info("- Parcel trace entries : " + parcelTraces.size());
-                    parcelTraceService.saveParcelTraceArchive(parcelTraces);
-                }
-                parcelService.delBatchMain(parcelIDs);
-            }
+        List<PlatformOrder> platformOrders;
+        if (startDateTime != null) {
+            if(!endDateTime.isAfter(startDateTime))
+                throw new RuntimeException("EndDateTime must be strictly greater than StartDateTime !");
+            startDate = startDateTime.toString().substring(0,10);
+            platformOrders = platformOrderService.fetchOrdersToArchiveBetweenDate(startDate, endDate);
+            log.info("Archiving entries between ["+startDate+" and "+endDate+"]");
         }
-        log.info("Archiving Done.");
+        else {
+            platformOrders = platformOrderService.fetchOrdersToArchiveBeforeDate(endDate);
+            log.info("Archiving entries before ["+endDate+"]");
+        }
+        if(platformOrders.size() > 0) {
+            // sauvegarde des entrées dans des listes
+            // suppression des entrées dans l'ancienne table
+            List<String> platformOrderIDs = platformOrders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
+            List<PlatformOrderContent> platformOrderContents = platformOrderContentService.fetchPlatformOrderContentsToArchive(platformOrderIDs);
+            log.info("- Platform Order entries : " + platformOrders.size() + "\n"
+                    + "- Platform Order Content entries : " + platformOrderContents.size());
+            platformOrderService.savePlatformOrderArchive(platformOrders);
+            platformOrderContentService.savePlatformOrderContentArchive(platformOrderContents);
+            platformOrderService.delBatchMain(platformOrderIDs);
+
+            List<String> platformOrderTrackingNumber = platformOrders.stream().map(PlatformOrder::getTrackingNumber).collect(Collectors.toList());
+            if (platformOrderTrackingNumber.size() > 0) {
+                List<Parcel> parcels = parcelService.fetchParcelsToArchive(platformOrderTrackingNumber);
+                if (parcels.size() > 0) {
+                    log.info("- Parcel entries : " + parcels.size());
+                    parcelService.saveParcelArchive(parcels);
+
+                    List<String> parcelIDs = parcels.stream().map(Parcel::getId).collect(Collectors.toList());
+                    List<ParcelTrace> parcelTraces = parcelTraceService.fetchParcelTracesToArchive(parcelIDs);
+                    if (parcelTraces.size() > 0) {
+                        log.info("- Parcel trace entries : " + parcelTraces.size());
+                        parcelTraceService.saveParcelTraceArchive(parcelTraces);
+                    }
+                    parcelService.delBatchMain(parcelIDs);
+                }
+            }
+            log.info("Archiving Done.");
+        }
+        else {
+            log.info("Nothing to archive !");
+        }
     }
 }
