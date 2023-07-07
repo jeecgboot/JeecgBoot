@@ -58,7 +58,7 @@ public class RestUtil {
     static {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(3000);
-        requestFactory.setReadTimeout(3000);
+        requestFactory.setReadTimeout(10000);
         RT = new RestTemplate(requestFactory);
         // 解决乱码问题
         RT.getMessageConverters().set(1, new StringHttpMessageConverter(StandardCharsets.UTF_8));
