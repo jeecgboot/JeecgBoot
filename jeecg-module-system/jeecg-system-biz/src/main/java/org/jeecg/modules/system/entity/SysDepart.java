@@ -89,7 +89,7 @@ public class SysDepart implements Serializable {
 	/**租户ID*/
 	private java.lang.Integer tenantId;
 
-	/**是否有叶子节点: 1是0否*/
+	/**是否是叶子节点: 1是0否*/
 	private Integer izLeaf;
 
     //update-begin---author:wangshuai ---date:20200308  for：[JTC-119]在部门管理菜单下设置部门负责人，新增字段负责人ids和旧的负责人ids

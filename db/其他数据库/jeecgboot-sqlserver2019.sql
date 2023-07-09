@@ -17971,7 +17971,7 @@ EXEC sp_addextendedproperty
 GO
 
 EXEC sp_addextendedproperty
-'MS_Description', N'是否有叶子节点: 1是0否',
+'MS_Description', N'是否是叶子节点: 1是0否',
 'SCHEMA', N'dbo',
 'TABLE', N'sys_depart',
 'COLUMN', N'iz_leaf'

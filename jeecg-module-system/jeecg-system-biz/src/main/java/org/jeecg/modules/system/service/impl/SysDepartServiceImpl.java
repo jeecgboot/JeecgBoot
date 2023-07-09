@@ -309,11 +309,11 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	@Transactional(rollbackFor = Exception.class)
 	public void deleteBatchWithChildren(List<String> ids) {
 		List<String> idList = new ArrayList<String>();
+		//删除后需要把某些父节点设置为叶子节点
+		this.checkParentDepIzleafAndSet(ids);
 		for(String id: ids) {
 			idList.add(id);
 			this.checkChildrenExists(id, idList);
-			//删除部门设置父级的叶子结点
-			this.setIzLeaf(id);
 		}
 		this.removeByIds(idList);
 		//根据部门id获取部门角色id
@@ -846,7 +846,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 
 	@Override
 	public void deleteDepart(String id) {
-    	//删除部门设置父级的叶子结点
+		//删除单个部门时判断父级是否是叶子结点并设置
 		this.setIzLeaf(id);
 		this.delete(id);
 		//删除部门用户关系表
@@ -878,7 +878,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	}
 
 	/**
-	 * 设置父级节点是否存在叶子结点
+	 * 删除单个部门时判断父级是否是叶子结点并设置
 	 * @param id
 	 */
 	private void setIzLeaf(String id) {
@@ -889,6 +889,29 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 			if(count == 1){
 				//若父节点无其他子节点，则该父节点是叶子节点
 				departMapper.setMainLeaf(parentId, CommonConstant.IS_LEAF);
+			}
+		}
+	}
+
+	/**
+	 * 查出parentid下的所有子节点，如果是要删除的部门ids的子集，把parent设为叶子节点，直至清空列表
+	 * @param ids size >= 0
+	 */
+	private void checkParentDepIzleafAndSet(List<String> ids) {
+		ids = new ArrayList<>(ids);
+		while (ids.size() != 0){
+			SysDepart depart = this.getDepartById(ids.get(0));
+			String parentId = depart.getParentId();
+			if(oConvertUtils.isNotEmpty(parentId)){
+				LambdaQueryWrapper<SysDepart> eq = new LambdaQueryWrapper<SysDepart>().select(SysDepart::getId).eq(SysDepart::getParentId, parentId);
+				List<SysDepart> listDepts = this.list(eq);
+				List<String> collect = listDepts.stream().map(SysDepart::getId).collect(Collectors.toList());
+				if (ids.containsAll(collect)){
+					departMapper.setMainLeaf(parentId, CommonConstant.IS_LEAF);
+				}
+				ids.removeAll(collect);
+			}else {
+				ids.remove(0);
 			}
 		}
 	}

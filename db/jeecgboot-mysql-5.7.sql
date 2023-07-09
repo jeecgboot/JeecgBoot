@@ -4352,7 +4352,7 @@ CREATE TABLE `sys_depart`  (
   `update_by` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '更新人',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
   `tenant_id` int(10) NULL DEFAULT 0 COMMENT '租户ID',
-  `iz_leaf` tinyint(1) NULL DEFAULT 0 COMMENT '是否有叶子节点: 1是0否',
+  `iz_leaf` tinyint(1) NULL DEFAULT 0 COMMENT '是否是叶子节点: 1是0否',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uniq_depart_org_code`(`org_code`) USING BTREE,
   INDEX `idx_sd_parent_id`(`parent_id`) USING BTREE,
