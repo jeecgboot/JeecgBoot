@@ -35,6 +35,10 @@ public class MySwaggerResourceProvider implements SwaggerResourcesProvider {
      * 网关路由
      */
     private final RouteLocator routeLocator;
+    /**
+     * Nacos名字服务
+     */
+    private NamingService naming;
 
     /**
      * nacos服务地址
@@ -115,9 +119,12 @@ public class MySwaggerResourceProvider implements SwaggerResourcesProvider {
             if(namespace!=null && !"".equals(namespace)){
                 properties.setProperty("namespace",namespace);
             }
-            NamingService naming = NamingFactory.createNamingService(properties);
+            //【issues/5115】因swagger文档导致gateway内存溢出
+            if (this.naming == null) {
+                this.naming = NamingFactory.createNamingService(properties);
+            }
             
-            List<Instance> list = naming.selectInstances(routeId, true);
+            List<Instance> list = this.naming.selectInstances(routeId, true);
             if (ObjectUtil.isNotEmpty(list)) {
                 hasRoute = true;
             }
