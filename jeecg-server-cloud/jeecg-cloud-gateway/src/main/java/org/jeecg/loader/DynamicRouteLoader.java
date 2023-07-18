@@ -117,6 +117,8 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
             log.warn("initConfigService fail");
         }
         try {
+            log.info("jeecg.route.config.data-id = {}", gatewayRoutersConfig.getDataId());
+            log.info("nacos.config.group = {}", gatewayRoutersConfig.getRouteGroup());
             String configInfo = configService.getConfig(gatewayRoutersConfig.getDataId(), gatewayRoutersConfig.getRouteGroup(), DEFAULT_TIMEOUT);
             if (StringUtils.isNotBlank(configInfo)) {
                 log.info("获取网关当前配置:\r\n{}", configInfo);
