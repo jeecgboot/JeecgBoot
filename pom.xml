@@ -432,8 +432,24 @@
 				<config.namespace></config.namespace>
 				<!--Nacos配置分组名称-->
 				<config.group>DEFAULT_GROUP</config.group>
+				<!--Nacos用户名-->
+				<config.username></config.username>
+				<!--Nacos密码-->
+				<config.password></config.password>
             </properties>
         </profile>
+		<!-- 测试Nacos开启鉴权、设置分组和命名空间
+		<profile>
+			<id>dev</id>
+			<properties>
+				<profile.name>dev</profile.name>
+				<config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
+				<config.namespace>ac14ab82-51f8-4f0c-aa5b-25fb8384bfb6</config.namespace>
+				<config.group>JEECGDEV_GROUP</config.group>
+				<config.username>nacos</config.username>
+				<config.password>nacos</config.password>
+			</properties>
+		</profile> -->
         <!-- 测试 -->
         <profile>
             <id>test</id>
@@ -446,8 +462,12 @@
 				<config.namespace></config.namespace>
 				<!--Nacos配置分组名称-->
 				<config.group>DEFAULT_GROUP</config.group>
-            </properties>
-        </profile>
+				<!--Nacos用户名-->
+				<config.username></config.username>
+				<!--Nacos密码-->
+				<config.password></config.password>
+			</properties>
+		</profile>
         <!-- 生产 -->
         <profile>
             <id>prod</id>
@@ -460,6 +480,10 @@
 				<config.namespace></config.namespace>
 				<!--Nacos配置分组名称-->
 				<config.group>DEFAULT_GROUP</config.group>
+				<!--Nacos用户名-->
+				<config.username></config.username>
+				<!--Nacos密码-->
+				<config.password></config.password>
             </properties>
         </profile>
 		<!-- SpringCloud运行环境 -->
