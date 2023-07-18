@@ -52,10 +52,10 @@
 		<mybatis-plus.version>3.5.1</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>3.2.0</dynamic-datasource-spring-boot-starter.version>
 		<druid.version>1.1.22</druid.version>
-		<minidao.version>1.9.0</minidao.version>
+		<minidao.version>1.9.1</minidao.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.5.8</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.5.9</jimureport-spring-boot-starter.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.11.2</aliyun.oss.version>
