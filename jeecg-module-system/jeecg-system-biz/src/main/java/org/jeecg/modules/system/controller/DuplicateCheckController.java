@@ -9,6 +9,7 @@ import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.modules.system.mapper.SysDictMapper;
 import org.jeecg.modules.system.model.DuplicateCheckVo;
 import org.jeecg.modules.system.security.DictQueryBlackListHandler;
+import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,13 +69,22 @@ public class DuplicateCheckController {
 		}
 		//update-end-author:taoyan date:20220329 for: VUEN-223【安全漏洞】当前被攻击的接口
 		// update-end-author:taoyan date:20211227 for: JTC-25 【online报表】oracle 操作问题 录入弹框啥都不填直接保存 ①编码不是应该提示必填么？②报错也应该是具体文字提示，不是后台错误日志
-		if (StringUtils.isNotBlank(duplicateCheckVo.getDataId())) {
-			// [2].编辑页面校验
-			num = sysDictMapper.duplicateCheckCountSql(duplicateCheckVo);
-		} else {
-			// [1].添加页面校验
-			num = sysDictMapper.duplicateCheckCountSqlNoDataId(duplicateCheckVo);
+
+		// update-begin-author:liusq date:20230721 for: [issues/5134] duplicate/check Sql泄露问题
+		try{
+			if (StringUtils.isNotBlank(duplicateCheckVo.getDataId())) {
+				// [2].编辑页面校验
+				num = sysDictMapper.duplicateCheckCountSql(duplicateCheckVo);
+			} else {
+				// [1].添加页面校验
+				num = sysDictMapper.duplicateCheckCountSqlNoDataId(duplicateCheckVo);
+			}
+		}catch(MyBatisSystemException e){
+			log.error(e.getMessage(), e);
+			String errorCause = "查询异常,请检查唯一校验的配置！";
+			return Result.error(errorCause);
 		}
+		// update-end-author:liusq date:20230721 for: [issues/5134] duplicate/check Sql泄露问题
 
 		if (num == null || num == 0) {
 			// 该值可用
