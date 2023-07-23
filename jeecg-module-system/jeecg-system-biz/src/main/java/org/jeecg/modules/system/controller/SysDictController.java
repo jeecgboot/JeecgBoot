@@ -347,6 +347,11 @@ public class SysDictController {
 		// SQL注入漏洞 sign签名校验(表名,label字段,val字段,条件)
 		String dictCode = tbname+","+text+","+code+","+condition;
         SqlInjectionUtil.filterContent(dictCode);
+		//update-begin-author:scott date:20230723 for:【issues/5173】SQL注入
+		if(!dictQueryBlackListHandler.isPass(dictCode)){
+			return result.error500(dictQueryBlackListHandler.getError());
+		}
+		//update-end-author:scott date:20230723 for:【issues/5173】SQL注入
 		List<TreeSelectModel> ls = sysDictService.queryTreeList(query,tbname, text, code, pidField, pid,hasChildField,converIsLeafVal);
 		result.setSuccess(true);
 		result.setResult(ls);
