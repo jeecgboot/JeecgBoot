@@ -87,7 +87,8 @@ Technical documentation
 
 - Website：  [http://www.jeecg.com](http://www.jeecg.com)
 
-- Demo ： [Vue3](http://boot3.jeecg.com) | [Vue2](http://boot.jeecg.com) 
+- Demo ： [Vue3](http://boot3.jeecg.com) | [Vue2](http://boot.jeecg.com)  | [APP](http://jeecg.com/appIndex)
+> [please click obtain account password to obtain](http://jeecg.com/doc/demo) 
 
 - Doc：  [http://help.jeecg.com](http://help.jeecg.com)
 
