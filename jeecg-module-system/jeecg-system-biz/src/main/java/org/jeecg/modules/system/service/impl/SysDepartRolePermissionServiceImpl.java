@@ -51,7 +51,8 @@ public class SysDepartRolePermissionServiceImpl extends ServiceImpl<SysDepartRol
         List<String> delete = getDiff(permissionIds,lastPermissionIds);
         if(delete!=null && delete.size()>0) {
             for (String permissionId : delete) {
-                this.remove(new QueryWrapper<SysDepartRolePermission>().lambda().eq(SysDepartRolePermission::getRoleId, roleId).eq(SysDepartRolePermission::getPermissionId, permissionId));
+                this.remove(new QueryWrapper<SysDepartRolePermission>().lambda().eq(SysDepartRolePermission::getRoleId, roleId).eq(SysDepartRolePermission::getPermissionId, permissionId)
+                           .in(SysDepartRolePermission::getRoleId, roleIds));
             }
         }
     }
