@@ -84,7 +84,8 @@ Docker快速启动项目
 
 - 项目官网：  [http://www.jeecg.com](http://www.jeecg.com)
 
-- 在线演示 ：  [低代码演示](http://boot3.jeecg.com)  |  [零代码体验](http://app.qiaoqiaoyun.com)
+- 在线演示 ：  [Vue3演示](http://boot3.jeecg.com)  |  [Vue2演示](http://boot3.jeecg.com) | [APP演示](http://jeecg.com/appIndex)
+> 演示系统的登录账号密码，请点击 [获取账号密码](http://jeecg.com/doc/demo) 获取 
 
 - 开发文档：  [http://help.jeecg.com](http://help.jeecg.com)
 
