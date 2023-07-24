@@ -57,9 +57,9 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 | `jeecg-boot`    | SpringBoot后台源码（支持微服务）        |
 | `jeecgboot-vue3` | Vue3+TS 新版前端源码 |
 | `ant-design-vue-jeecg`  |Vue2版前端源码     |
-| `jeecg-uniapp` | APP开发框架，一份代码多终端适配，同时支持APP、小程序、H5 |
+| `jeecg-uniapp` | [APP开发框架，一份代码多终端适配，同时支持APP、小程序、H5](https://github.com/jeecgboot/jeecg-uniapp) |
 | `jeecg-boot-starter` | [Stater依赖项目单独维护，点击下载](https://gitee.com/jeecg/jeecg-boot-starter) |
-| `更多开源项目` | [更多源码下载](https://github.com/jeecgboot) |
+| `更多开源项目` | [更多源码下载](http://jeecg.com/download) |
 
 
 快速搭建开发环境

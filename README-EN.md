@@ -44,10 +44,12 @@ Official Support: http://jeecg.com/doc/help
 
 Download the source code
 -----------------------------------
-- The background source ：https://github.com/jeecgboot/jeecg-boot
-- Front-end source (Vue3 version)：https://github.com/jeecgboot/jeecgboot-vue3
-- Front-end source (Vue2 version)：https://github.com/jeecgboot/ant-design-vue-jeecg
-- APP Supporting framework：https://github.com/jeecgboot/jeecg-uniapp
+项目源码
+-----------------------------------
+| Source |Front-end source (Vue3 version) | Front-end source (Vue2 version) | The background source |
+|-|-|-|-|
+| Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)  | [ant-design-vue-jeecg](https://github.com/jeecgboot/ant-design-vue-jeecg) | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) |
+| Gitee | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)  | [ant-design-vue-jeecg](https://gitee.com/jeecg/ant-design-vue-jeecg)  | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
 
 ##### Project description
 
@@ -56,9 +58,9 @@ Download the source code
 | `jeecg-boot`    | SpringBoot background source code (support microservices)      |
 | `jeecgboot-vue3` | Vue3+TS new front-end source code|
 | `ant-design-vue-jeecg`  |Vue2 version front-end source code     |
-| `jeecg-uniapp` | APP development framework, a code multi terminal adaptation, and support APP, small program, H5 |
+| `jeecg-uniapp` | [APP development framework, a code multi terminal adaptation, and support APP, small program, H5](https://github.com/jeecgboot/jeecg-uniapp) |
 | `jeecg-boot-starter` | [Stater relies on the project to be maintained separately. Click Download](https://gitee.com/jeecg/jeecg-boot-starter) |
-| `More` | [Download more source code](https://github.com/jeecgboot) |
+| `More` | [Download more source code](http://jeecg.com/download) |
 
 
 
