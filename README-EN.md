@@ -86,17 +86,12 @@ Technical documentation
 -----------------------------------
 
 - Website：  [http://www.jeecg.com](http://www.jeecg.com)
-
+- Doc：  [http://help.jeecg.com](http://help.jeecg.com)
+- Newbie guide： [Quick start](http://www.jeecg.com/doc/quickstart)  |  [video](https://space.bilibili.com/454617261/channel/series) |   [Q&A ](http://www.jeecg.com/doc/qa)  |   [help](http://jeecg.com/doc/help) |  [1 minute experience](https://my.oschina.net/jeecg/blog/3083313)
+- Microservice Development：  [Monomer upgrade to microservice](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
+- QQ group ： ⑦791696430、⑥730954414、683903138、⑤860162132(full)、④774126647(full)、③816531124(full)、②769925425(full)、①284271917(full)
 - Demo ： [Vue3](http://boot3.jeecg.com) | [Vue2](http://boot.jeecg.com)  | [APP](http://jeecg.com/appIndex)
 > [please click obtain account password to obtain](http://jeecg.com/doc/demo) 
-
-- Doc：  [http://help.jeecg.com](http://help.jeecg.com)
-
-- Newbie guide： [Quick start](http://www.jeecg.com/doc/quickstart)  |  [video](https://space.bilibili.com/454617261/channel/series) |   [Q&A ](http://www.jeecg.com/doc/qa)  |   [help](http://jeecg.com/doc/help) |  [1 minute experience](https://my.oschina.net/jeecg/blog/3083313)
-
-- Microservice Development：  [Monomer upgrade to microservice](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
-
-- QQ group ： ⑦791696430、⑥730954414、683903138、⑤860162132(full)、④774126647(full)、③816531124(full)、②769925425(full)、①284271917(full)
 
 
 

@@ -83,16 +83,15 @@ Docker快速启动项目
 -----------------------------------
 
 - 项目官网：  [http://www.jeecg.com](http://www.jeecg.com)
+- 开发文档：  [http://help.jeecg.com](http://help.jeecg.com)
+- 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)  |   [常见问题 ](http://www.jeecg.com/doc/qa) |  [视频教程](https://space.bilibili.com/454617261/channel/series)  |  [1分钟低代码体验](https://my.oschina.net/jeecg/blog/3083313) 
 
 - 在线演示 ：  [Vue3演示](http://boot3.jeecg.com)  |  [Vue2演示](http://boot3.jeecg.com) | [APP演示](http://jeecg.com/appIndex)
 > 演示系统的登录账号密码，请点击 [获取账号密码](http://jeecg.com/doc/demo) 获取 
-
-- 开发文档：  [http://help.jeecg.com](http://help.jeecg.com)
-
-- 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)  |   [常见问题 ](http://www.jeecg.com/doc/qa) |  [视频教程](https://space.bilibili.com/454617261/channel/series)  |  [1分钟低代码体验](https://my.oschina.net/jeecg/blog/3083313) 
-
+>
 - QQ交流群 ： ⑦791696430、⑥730954414、VUE3群683903138、⑤860162132(满)、④774126647(满)、③816531124(满)、②769925425(满)、①284271917(满)
 > ` 提醒：【QQ群是自助服务群，建议给帮助您解决问题的同学发送指定红包，表示感谢！】 `
+
 
 
 
