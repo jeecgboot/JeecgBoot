@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.domain.api.cmk.CMKParcelTraceData;
 import org.jeecg.modules.business.domain.api.equick.EQuickResponse;
+import org.jeecg.modules.business.domain.api.hualei.HLResponseItem;
 import org.jeecg.modules.business.domain.api.jt.JTParcelTrace;
 import org.jeecg.modules.business.domain.api.yd.YDTraceData;
 import org.jeecg.modules.business.entity.Parcel;
@@ -28,6 +29,7 @@ public interface ParcelMapper extends BaseMapper<Parcel> {
 
     void insertOrIgnoreYDParcels(List<YDTraceData> parcels);
     void insertOrIgnoreCMKParcels(List<CMKParcelTraceData> parcels);
+    void insertOrIgnoreHLParcels(List<HLResponseItem> parcels);
 
     /**
      * fetch all parcels from platform order's tracking number, to archive

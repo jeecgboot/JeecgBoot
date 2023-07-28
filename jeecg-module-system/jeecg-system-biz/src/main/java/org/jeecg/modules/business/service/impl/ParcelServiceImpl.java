@@ -7,6 +7,8 @@ import org.jeecg.modules.business.domain.api.cmk.CMKParcelTrace;
 import org.jeecg.modules.business.domain.api.cmk.CMKParcelTraceData;
 import org.jeecg.modules.business.domain.api.equick.EQuickResponse;
 import org.jeecg.modules.business.domain.api.equick.EQuickTraceData;
+import org.jeecg.modules.business.domain.api.hualei.HLParcelTraceDetail;
+import org.jeecg.modules.business.domain.api.hualei.HLResponseItem;
 import org.jeecg.modules.business.domain.api.jt.JTParcelTrace;
 import org.jeecg.modules.business.domain.api.jt.JTParcelTraceDetail;
 import org.jeecg.modules.business.domain.api.yd.YDTraceData;
@@ -271,6 +273,46 @@ public class ParcelServiceImpl extends ServiceImpl<ParcelMapper, Parcel> impleme
             parcelTraceMapper.insertOrIgnoreCMKTraces(tracesToInsert);
         }
         log.info("Finished inserting {} parcels and their traces into DB.", parcelTraces.size());
+    }
+
+    @Override
+    @Transactional
+    public void saveHLParcelAndTraces(List<HLResponseItem> parcelTraces) {
+        if (parcelTraces.isEmpty()) {
+            return;
+        }
+        log.info("Started inserting {} HL parcels and their traces into DB.", parcelTraces.size() );
+        List<String> parcelBillCodes = parcelTraces.stream()
+                .map(HLResponseItem::getBillCode)
+                .collect(Collectors.toList());
+        List<Parcel> existingParcels = parcelMapper.searchByBillCode(parcelBillCodes);
+        Map<String, Parcel> billCodeToExistingParcels = existingParcels.stream().collect(
+                Collectors.toMap(Parcel::getBillCode, Function.identity())
+        );
+        List<HLResponseItem> parcelToInsert = new ArrayList<>();
+        List<HLParcelTraceDetail> tracesToInsert = new ArrayList<>();
+        for (HLResponseItem parcelAndTrace : parcelTraces) {
+            List<HLParcelTraceDetail> traceDetails = parcelAndTrace.getTracesList();
+            if (traceDetails.isEmpty()) {
+                break;
+            }
+            Parcel existingParcel = billCodeToExistingParcels.get(parcelAndTrace.getBillCode());
+            if (existingParcel == null) {
+                parcelToInsert.add(parcelAndTrace);
+                traceDetails.forEach(trace -> trace.parcelTraceProcess(parcelAndTrace.getId()));
+            } else {
+                traceDetails.forEach(trace -> trace.parcelTraceProcess(existingParcel.getId()));
+            }
+            tracesToInsert.addAll(traceDetails);
+        }
+        log.info("After filtering, {} parcels will be inserted into the DB.", parcelToInsert.size());
+        if (!parcelToInsert.isEmpty()) {
+            parcelMapper.insertOrIgnoreHLParcels(parcelToInsert);
+        }
+        if (!tracesToInsert.isEmpty()) {
+            parcelTraceMapper.insertOrIgnoreHLTraces(tracesToInsert);
+        }
+        log.info("Finished inserting {} HL parcels and their traces into DB.", parcelTraces.size());
     }
     @Override
     @Transactional
