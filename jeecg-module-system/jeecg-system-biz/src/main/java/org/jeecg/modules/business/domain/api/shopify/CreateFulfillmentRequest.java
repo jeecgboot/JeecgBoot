@@ -20,7 +20,7 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
         CANADA_POST("https://www.canadapost-postescanada.ca/track-reperage/en#/search?searchFor=%s", "Canada Post", "(201255|732131)[0-9]{10}"),
         SWISS_POST("https://service.post.ch/ekp-web/ui/entry/search/%s", "Swiss Post", "[0-9]{18}"),
         EARLY_BIRD("https://earlybird.se/", "Early Bird", "[0-9]{19}"),
-        DAO("https://www.dao.as/privat/find-din-pakke?stregkode=%s", "DAO", "00057151271[0-9]{9}"),
+        DAO("https://www.dao.as/privat/find-din-pakke?stregkode=%s", "DAO", "00057151270[0-9]{10}"),
         DHL_PACKET("https://www.dhl.de/en/privatkunden/pakete-empfangen/verfolgen.html?piececode=%s", "DHL Packet", "0034[0-9]{16}"),
         GLS_NL("https://www.gls-info.nl/tracking", "GLS", "[0-9]{20}"),
         GLS_NL_2("https://www.gls-info.nl/tracking", "GLS", "(1437|1000)[0-9]{10}"),

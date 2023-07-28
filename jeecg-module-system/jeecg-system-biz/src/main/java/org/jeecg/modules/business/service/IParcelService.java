@@ -3,6 +3,7 @@ package org.jeecg.modules.business.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.domain.api.cmk.CMKParcelTraceData;
 import org.jeecg.modules.business.domain.api.equick.EQuickResponse;
+import org.jeecg.modules.business.domain.api.hualei.HLResponseItem;
 import org.jeecg.modules.business.domain.api.jt.JTParcelTrace;
 import org.jeecg.modules.business.domain.api.yd.YDTraceData;
 import org.jeecg.modules.business.entity.Parcel;
@@ -48,6 +49,8 @@ public interface IParcelService extends IService<Parcel> {
 
 	void saveYDParcelAndTraces(List<YDTraceData> traceData);
 	void saveCMKParcelAndTraces(List<CMKParcelTraceData> traceData);
+
+	void saveHLParcelAndTraces(List<HLResponseItem> parcelTraces);
 	List<Parcel> fetchParcelsToArchive(List<String> trackingNumbers);
 	void saveParcelArchive(List<Parcel> parcels);
 }

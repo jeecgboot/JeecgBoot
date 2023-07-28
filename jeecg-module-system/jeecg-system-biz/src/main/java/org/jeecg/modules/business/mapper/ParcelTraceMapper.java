@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.domain.api.cmk.CMKParcelTrace;
 import org.jeecg.modules.business.domain.api.cmk.CMKParcelTraceData;
 import org.jeecg.modules.business.domain.api.equick.EQuickTraceData;
+import org.jeecg.modules.business.domain.api.hualei.HLParcelTraceDetail;
 import org.jeecg.modules.business.domain.api.jt.JTParcelTraceDetail;
 import org.jeecg.modules.business.domain.api.yd.YDTraceDetail;
 import org.jeecg.modules.business.entity.ParcelTrace;
@@ -32,6 +33,8 @@ public interface ParcelTraceMapper extends BaseMapper<ParcelTrace> {
     void insertOrIgnoreYDTraces(@Param("traces") List<YDTraceDetail> traceDetails);
 
     void insertOrIgnoreCMKTraces(@Param("traces") List<CMKParcelTrace> traceDetails);
+
+    void insertOrIgnoreHLTraces(@Param("traces") List<HLParcelTraceDetail> tracesToInsert);
 
     /**
      * Fetches parcel traces to archive
