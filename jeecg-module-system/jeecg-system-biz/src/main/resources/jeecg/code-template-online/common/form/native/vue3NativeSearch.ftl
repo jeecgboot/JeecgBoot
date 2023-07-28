@@ -1,3 +1,4 @@
+<#include "/common/utils.ftl">
 <#if po.isQuery=='Y'>
 <#assign query_flag=true>
 	<#if query_field_no==2>
@@ -13,7 +14,7 @@
 	</#if>
 	<#if po.queryMode=='single'>
           <#if query_field_no gt 1>  </#if><a-col :lg="8">
-            <#if query_field_no gt 1>  </#if><a-form-item label="${po.filedComment}">
+            <#if query_field_no gt 1>  </#if><a-form-item label="${po.filedComment}" name="${po.fieldName}">
             <#if po.classType=='sel_search'>
               <#if query_field_no gt 1>  </#if><j-search-select placeholder="请选择${po.filedComment}" v-model:value="queryParam.${po.fieldName}" dict="${po.dictTable},${po.dictText},${po.dictField}" />
             <#elseif po.classType=='sel_user'>

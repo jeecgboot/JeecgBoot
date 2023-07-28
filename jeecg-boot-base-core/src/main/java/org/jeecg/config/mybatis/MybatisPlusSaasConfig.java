@@ -54,13 +54,13 @@ public class MybatisPlusSaasConfig {
         //1.需要租户隔离的表请在此配置
         if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
             //a.系统管理表
-            TENANT_TABLE.add("sys_role");
-            TENANT_TABLE.add("sys_user_role");
+            //TENANT_TABLE.add("sys_role");
+            //TENANT_TABLE.add("sys_user_role");
             TENANT_TABLE.add("sys_depart");
             TENANT_TABLE.add("sys_category");
             TENANT_TABLE.add("sys_data_source");
             TENANT_TABLE.add("sys_position");
-            TENANT_TABLE.add("sys_announcement");
+            //TENANT_TABLE.add("sys_announcement");
         }
 
         //2.示例测试

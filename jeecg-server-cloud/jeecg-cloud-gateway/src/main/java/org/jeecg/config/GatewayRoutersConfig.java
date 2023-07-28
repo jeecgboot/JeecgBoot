@@ -33,7 +33,7 @@ public class GatewayRoutersConfig {
         this.dataId = dataId + ".json";
     }
 
-    @Value("${jeecg.route.config.group:DEFAULT_GROUP:#{null}}")
+    @Value("${spring.cloud.nacos.config.group:DEFAULT_GROUP:#{null}}")
     public void setRouteGroup(String routeGroup) {
         this.routeGroup = routeGroup;
     }
@@ -43,7 +43,7 @@ public class GatewayRoutersConfig {
         this.serverAddr = serverAddr;
     }
 
-    @Value("${spring.cloud.nacos.discovery.namespace:#{null}}")
+    @Value("${spring.cloud.nacos.config.namespace:#{null}}")
     public void setNamespace(String namespace) {
         this.namespace = namespace;
     }

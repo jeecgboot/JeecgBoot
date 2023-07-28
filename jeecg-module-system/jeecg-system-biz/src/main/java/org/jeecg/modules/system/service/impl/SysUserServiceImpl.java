@@ -1,6 +1,6 @@
 package org.jeecg.modules.system.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -633,18 +634,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 			}
 		}
 
-		//update-begin---author:wangshuai ---date:20230112  for：用户创建的时候增加临时角色 test------------
-		//开启租户saas模式
-		if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
-			String testRoleId = "ee8626f80f7c2619917b6236f3a7f02b";
-			//如果前台没有传递角色或者传过来的劫色没有临时角色,那么默认临时角色 test
-			if (oConvertUtils.isEmpty(selectedRoles) || !selectedRoles.contains(testRoleId)) {
-				SysUserRole userRole = new SysUserRole(user.getId(), testRoleId);
-				sysUserRoleMapper.insert(userRole);
-			}
-		}
-		//update-end---author:wangshuai ---date:20230112  for：用户创建的时候增加临时角色 test------------
-		
 		//step.3 保存所属部门
 		if(oConvertUtils.isNotEmpty(selectedDeparts)) {
 			String[] arr = selectedDeparts.split(",");
@@ -827,6 +816,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		//设置用户登录缓存租户
 		this.updateUserDepart(username, null,sysUser.getLoginTenantId());
 		log.info(" 登录接口用户的租户ID = {}", sysUser.getLoginTenantId());
+		if(sysUser.getLoginTenantId()!=null){
+			//登录的时候需要手工设置下会话中的租户ID,不然登录接口无法通过租户隔离查询到数据
+			TenantContext.setTenant(sysUser.getLoginTenantId()+"");
+		}
 		return null;
 	}
 
@@ -864,12 +857,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }else{
 			//是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
 			if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
-				SysUserTenant relation = new SysUserTenant();
-				relation.setUserId(userId);
-				String tenantId = oConvertUtils.getString(TenantContext.getTenant(), "0");
-				relation.setTenantId(Integer.valueOf(tenantId));
-				relation.setStatus(CommonConstant.STATUS_1);
-				relationMapper.insert(relation);
+				//update-begin---author:wangshuai ---date:20230220  for：判断当前用户是否在当前租户里面，如果不存在在新增------------
+				String tenantId = TenantContext.getTenant();
+				if(oConvertUtils.isNotEmpty(tenantId)){
+					Integer count = relationMapper.userTenantIzExist(userId, Integer.parseInt(tenantId));
+					if(count == 0){
+						SysUserTenant relation = new SysUserTenant();
+						relation.setUserId(userId);
+						relation.setTenantId(Integer.parseInt(tenantId));
+						relation.setStatus(CommonConstant.STATUS_1);
+						relationMapper.insert(relation);
+					}
+				}
+				//update-end---author:wangshuai ---date:20230220  for：判断当前用户是否在当前租户里面，如果不存在在新增------------
 			}
 		}
     }
@@ -885,21 +885,24 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         //数据库的租户id
 		List<Integer> oldTenantIds = relationMapper.getTenantIdsNoStatus(userId);
         //如果传过来的租户id为空，那么就删除租户
-        if (oConvertUtils.isEmpty(relTenantIds)) {
+        if (oConvertUtils.isEmpty(relTenantIds) && CollectionUtils.isNotEmpty(oldTenantIds)) {
             this.deleteTenantByUserId(userId, null);
-        } else if (oConvertUtils.isNotEmpty(relTenantIds) && oConvertUtils.isEmpty(oldTenantIds)) {
+        } else if (oConvertUtils.isNotEmpty(relTenantIds) && CollectionUtils.isEmpty(oldTenantIds)) {
             //如果传过来的租户id不为空但是数据库的租户id为空，那么就新增
             this.saveUserTenant(userId, relTenantIds);
         } else {
 			//都不为空，需要比较，进行添加或删除
-			if(oConvertUtils.isNotEmpty(oldTenantIds)){
+			if(oConvertUtils.isNotEmpty(relTenantIds) && CollectionUtils.isNotEmpty(oldTenantIds)){
 				//找到新的租户id与原来的租户id不同之处，进行删除
-				List<Integer> tenantIdList = oldTenantIds.stream().filter(item -> !relTenantIds.contains(item.toString())).collect(Collectors.toList());
-				for (Integer tenantId : tenantIdList) {
+				String[] relTenantIdArray = relTenantIds.split(SymbolConstant.COMMA);
+				List<String> relTenantIdList = Arrays.asList(relTenantIdArray);
+				
+				List<Integer> deleteTenantIdList = oldTenantIds.stream().filter(item -> !relTenantIdList.contains(item.toString())).collect(Collectors.toList());
+				for (Integer tenantId : deleteTenantIdList) {
 					this.deleteTenantByUserId(userId, tenantId);
 				}
 				//找到原来租户的用户id与新的租户id不同之处，进行新增
-				String tenantIds = Arrays.stream(relTenantIds.split(SymbolConstant.COMMA)).filter(item -> !oldTenantIds.contains(Integer.valueOf(item))).collect(Collectors.joining(","));
+				String tenantIds = relTenantIdList.stream().filter(item -> !oldTenantIds.contains(Integer.valueOf(item))).collect(Collectors.joining(","));
 				this.saveUserTenant(userId, tenantIds);
 			}
         }

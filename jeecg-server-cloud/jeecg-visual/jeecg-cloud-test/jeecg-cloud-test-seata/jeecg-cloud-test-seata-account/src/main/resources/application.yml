@@ -3,17 +3,20 @@ server:
 spring:
   application:
     name: seata-account
+  main:
+    allow-bean-definition-overriding: true
+  autoconfigure:
+    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
   datasource:
     dynamic:
       seata: true    # 开启对 seata的支持
-      seata-mode: AT #支持XA及AT模式,默认AT
+      primary: account
       datasource:
-        # 设置 账号数据源配置
         account:
-          driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://127.0.0.1:3306/jeecg_account?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useSSL=false
+          url: jdbc:mysql://127.0.0.1:3306/jeecg_account?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
           username: root
           password: root
+          driver-class-name: com.mysql.cj.jdbc.Driver
           schema: classpath:sql/schema-account.sql
 seata:
   enable-auto-data-source-proxy: false

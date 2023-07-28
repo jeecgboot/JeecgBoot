@@ -62,6 +62,8 @@ public class DySmsHelper {
 
         //update-begin-author：taoyan date:20200811 for:配置类数据获取
         StaticConfig staticConfig = SpringContextUtils.getBean(StaticConfig.class);
+        logger.info("阿里大鱼短信秘钥 accessKeyId：" + staticConfig.getAccessKeyId());
+        logger.info("阿里大鱼短信秘钥 accessKeySecret："+ staticConfig.getAccessKeySecret());
         setAccessKeyId(staticConfig.getAccessKeyId());
         setAccessKeySecret(staticConfig.getAccessKeySecret());
         //update-end-author：taoyan date:20200811 for:配置类数据获取

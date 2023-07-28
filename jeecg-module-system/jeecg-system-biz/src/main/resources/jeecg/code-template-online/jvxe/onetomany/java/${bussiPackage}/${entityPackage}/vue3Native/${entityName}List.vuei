@@ -22,7 +22,7 @@
     <#assign query_flag = false>
     <!--查询区域-->
     <div class="jeecg-basic-table-form-container">
-      <a-form @keyup.enter.native="reload" :model="queryParam" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form ref="formRef" @keyup.enter.native="reload" :model="queryParam" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-row :gutter="24">
           <#-- 开始循环 -->
           <#list columns as po>
@@ -150,6 +150,8 @@
   import { startProcess } from '/@/api/common/api';
   </#if>
   
+  const formRef = ref();
+  const queryParam = reactive<any>({});
   const checkedKeys = ref<Array<string | number>>([]);
   //注册model
   const [registerModal, {openModal}] = useModal();
@@ -166,12 +168,13 @@
                fixed:'right'
            },
            beforeFetch: (params) => {
-             return Object.assign(params, queryParam.value);
+             return Object.assign(params, queryParam);
            },
         },
         exportConfig: {
             name:"${tableVo.ftlDescription}",
             url: getExportUrl,
+            params: queryParam,
         },
         importConfig: {
             url: getImportUrl,
@@ -304,7 +307,7 @@
    * @param value
    */
   function handleFormChange(key, value) {
-    queryParam.value[key] = value;
+    queryParam[key] = value;
   }
    /**
     * 初始化字典配置
@@ -330,7 +333,6 @@
     </#if>
 
   /* ----------------------以下为原生查询需要添加的-------------------------- */
-  const queryParam = ref<any>({});
   const toggleSearchStatus = ref<boolean>(false);
   const labelCol = reactive({
     xs: { span: 24 },
@@ -344,7 +346,7 @@
    * 重置
    */
   function searchReset() {
-    queryParam.value = {};
+    formRef.value.resetFields();
     selectedRowKeys.value = [];
     //刷新数据
     reload();
@@ -355,7 +357,7 @@
    */
   function setFieldsValue(map) {
     Object.keys(map).map((key) => {
-      queryParam.value[key] = map[key];
+      queryParam[key] = map[key];
     });
   }
   </#if>
@@ -367,7 +369,7 @@
    * @param value
    */
   function handleAreaChange(key, value) {
-    queryParam.value[key] = value.join(',');
+    queryParam[key] = value.join(',');
   }
   </#if>
 </script>

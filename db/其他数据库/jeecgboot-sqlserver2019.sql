@@ -12,7 +12,7 @@
  Target Server Version : 15004188
  File Encoding         : 65001
 
- Date: 13/03/2023 10:11:30
+ Date: 07/06/2023 17:58:50
 */
 
 
@@ -2620,6 +2620,9 @@ INSERT INTO [dbo].[jimu_report_data_source] ([id], [name], [report_id], [code], 
 GO
 
 INSERT INTO [dbo].[jimu_report_data_source] ([id], [name], [report_id], [code], [remark], [db_type], [db_driver], [db_url], [db_username], [db_password], [create_by], [create_time], [update_by], [update_time], [connect_times], [tenant_id], [type]) VALUES (N'26d21fe4f27920d2f56abc8d90a8e527', N'oracle', N'1308645288868712448', N'', NULL, N'ORACLE', N'oracle.jdbc.OracleDriver', N'jdbc:oracle:thin:@192.168.1.199:1521:helowin', N'jeecgbootbpm', N'jeecg196283', N'admin', N'2021-01-05 19:26:24.0000000', NULL, N'2021-01-05 19:26:24.0000000', N'0', NULL, N'report')
+GO
+
+INSERT INTO [dbo].[jimu_report_data_source] ([id], [name], [report_id], [code], [remark], [db_type], [db_driver], [db_url], [db_username], [db_password], [create_by], [create_time], [update_by], [update_time], [connect_times], [tenant_id], [type]) VALUES (N'707437208002265088', N'MySQL5.7', NULL, NULL, NULL, N'MYSQL5.7', N'com.mysql.cj.jdbc.Driver', N'jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai', N'root', N'@JimuReportSMy3f94QGFM=', N'admin', N'2022-07-14 13:49:44.0000000', N'admin', N'2023-04-24 15:11:14.0000000', N'0', NULL, N'drag')
 GO
 
 INSERT INTO [dbo].[jimu_report_data_source] ([id], [name], [report_id], [code], [remark], [db_type], [db_driver], [db_url], [db_username], [db_password], [create_by], [create_time], [update_by], [update_time], [connect_times], [tenant_id], [type]) VALUES (N'8f90daf47d15d35ca6cf420748b8b9ba', N'localhost', N'1316944968992034816', N'', NULL, N'MYSQL5.7', N'com.mysql.cj.jdbc.Driver', N'jdbc:mysql://127.0.0.1:3306/jeecg-boot?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8', N'root', N'root', N'admin', N'2021-01-13 14:34:00.0000000', NULL, N'2021-01-13 14:34:00.0000000', N'0', NULL, N'report')
@@ -10003,6 +10006,4820 @@ GO
 
 
 -- ----------------------------
+-- Table structure for onl_drag_comp
+-- ----------------------------
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[onl_drag_comp]') AND type IN ('U'))
+	DROP TABLE [dbo].[onl_drag_comp]
+GO
+
+CREATE TABLE [dbo].[onl_drag_comp] (
+  [id] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [parent_id] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NULL,
+  [comp_name] nvarchar(50) COLLATE Chinese_PRC_CI_AS  NULL,
+  [comp_type] nvarchar(20) COLLATE Chinese_PRC_CI_AS  NULL,
+  [icon] nvarchar(50) COLLATE Chinese_PRC_CI_AS  NULL,
+  [order_num] int  NULL,
+  [type_id] int  NULL,
+  [comp_config] nvarchar(max) COLLATE Chinese_PRC_CI_AS  NULL,
+  [status] nvarchar(2) COLLATE Chinese_PRC_CI_AS  NULL,
+  [create_by] nvarchar(50) COLLATE Chinese_PRC_CI_AS  NULL,
+  [create_time] datetime2(7)  NULL,
+  [update_by] nvarchar(50) COLLATE Chinese_PRC_CI_AS  NULL,
+  [update_time] datetime2(7)  NULL
+)
+GO
+
+ALTER TABLE [dbo].[onl_drag_comp] SET (LOCK_ESCALATION = TABLE)
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'主键',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_comp',
+'COLUMN', N'id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'组件名称',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_comp',
+'COLUMN', N'comp_name'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'图标',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_comp',
+'COLUMN', N'icon'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'排序',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_comp',
+'COLUMN', N'order_num'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'组件类型',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_comp',
+'COLUMN', N'type_id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'组件配置',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_comp',
+'COLUMN', N'comp_config'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'状态0:无效 1:有效',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_comp',
+'COLUMN', N'status'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'创建人登录名称',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_comp',
+'COLUMN', N'create_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'创建日期',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_comp',
+'COLUMN', N'create_time'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'更新人登录名称',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_comp',
+'COLUMN', N'update_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'更新日期',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_comp',
+'COLUMN', N'update_time'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'组件库',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_comp'
+GO
+
+
+-- ----------------------------
+-- Records of onl_drag_comp
+-- ----------------------------
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'100', N'0', N'常用组件', N'', N'ant-design:setting-twotone', N'2', NULL, NULL, N'1', NULL, NULL, N'jeecg', N'2022-04-24 11:02:19.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'100102', N'0', N'数据展示', N'dataList', N'ant-design:table-outlined', N'3', NULL, NULL, N'1', NULL, NULL, N'admin', N'2022-04-29 09:49:48.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'100102100', N'100102', N'动态表格', N'JTable', N'bi:table', N'12', NULL, N'{
+  "w": 24,
+  "h": 42,
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/42/tableData",
+  "tableList": "http://api.jeecg.com/mock/42/tableList",
+  "timeOut": 0,
+  "chartData": [
+    {
+      "fieldTxt": "姓名",
+      "fieldName": "name",
+      "type": "field",
+      "isShow": "Y",
+      "isTotal": "N"
+    },
+    {
+      "fieldTxt": "年龄",
+      "fieldName": "age",
+      "type": "field",
+      "isShow": "Y",
+      "isTotal": "Y"
+    },
+    {
+      "fieldTxt": "性别",
+      "fieldName": "sex",
+      "type": "field",
+      "isShow": "Y",
+      "isTotal": "N"
+    },
+    {
+      "fieldTxt": "住址",
+      "fieldName": "address",
+      "type": "field",
+      "isShow": "Y",
+      "isTotal": "N"
+    },
+    {
+      "title": "新增",
+      "show": 1,
+      "position": "top",
+      "type": "button",
+      "key": "add"
+    },
+    {
+      "title": "编辑",
+      "show": 1,
+      "position": "row",
+      "type": "button",
+      "key": "edit"
+    },
+    {
+      "title": "导出",
+      "show": 1,
+      "position": "top",
+      "type": "button",
+      "key": "export"
+    }
+  ]
+}', N'0', NULL, NULL, NULL, N'2022-04-28 15:37:26.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'100103', N'100104', N'快捷导航', N'JQuickNav', N'ion:navigate', N'6', NULL, N'{
+  "w": 12,
+  "h": 26,
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/42/nav",
+  "timeOut": -1,
+  "linkageConfig": [],
+  "chartData": [
+    {
+      "title": "首页",
+      "icon": "icon-jeecg-homepage",
+      "color": "#1fdaca"
+    },
+    {
+      "title": "仪表盘",
+      "icon": "icon-jeecg-shijian",
+      "color": "#bf0c2c"
+    },
+    {
+      "title": "组件",
+      "icon": "icon-jeecg-dangan",
+      "color": "#e18525"
+    },
+    {
+      "title": "系统管理",
+      "icon": "icon-jeecg-shezhi",
+      "color": "#3fb27f"
+    },
+    {
+      "title": "权限管理",
+      "icon": "icon-jeecg-yuechi",
+      "color": "#4daf1bc9"
+    },
+    {
+      "title": "图表",
+      "icon": "icon-jeecg-fujin",
+      "color": "#00d8ff"
+    }
+  ],
+  "option": {
+    "icon": {
+      "scriptUrl": "//at.alicdn.com/t/font_3237315_b3fqd960glt.js",
+      "fontSize": 30
+    },
+    "card": {
+      "title": "快捷导航",
+      "extra": "更多",
+      "rightHref": "",
+      "size": "default"
+    },
+    "body": {
+      "column": 3,
+      "textAlign": "center",
+      "iconAlign": "top"
+    }
+  }
+}', N'1', NULL, NULL, N'admin', N'2022-04-29 19:50:38.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'100104', N'0', N'首页常用', N'home', N'carbon:home', N'9', NULL, NULL, N'1', NULL, NULL, N'admin', N'2022-04-29 09:50:07.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'100104100', N'100104', N'统计卡片', N'JGrowCard', N'mdi:card-bulleted-outline', N'7', NULL, N'{
+  "w": 12,
+  "h": 19,
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/42/nav",
+  "timeOut": 0,
+  "turnConfig": {
+    "url": ""
+  },
+  "linkageConfig": [],
+  "chartData": [
+    {
+      "title": "访问数",
+      "icon": "icon-jeecg-qianbao",
+      "value": 2000,
+      "total": 120000,
+      "prefix":"$",
+      "color": "green",
+      "action": "月"
+    },
+    {
+      "title": "成交额",
+      "icon": "icon-jeecg-youhuiquan",
+      "value": 20000,
+      "total": 500000,
+      "prefix":"$",
+      "color": "blue",
+      "action": "月"
+    },
+    {
+      "title": "下载数",
+      "icon": "icon-jeecg-tupian",
+      "value": 8000,
+      "prefix":"$",
+      "total": 120000,
+      "color": "orange",
+      "action": "周"
+    },
+    {
+      "title": "成交数",
+      "icon": "icon-jeecg-jifen",
+      "value": 5000,
+      "prefix":"$",
+      "total": 50000,
+      "color": "purple",
+      "action": "年"
+    }
+  ],
+  "option": {
+    "icon": {
+      "scriptUrl": "//at.alicdn.com/t/font_3237315_b3fqd960glt.js",
+      "fontSize": 20
+    },
+    "card": {
+      "title": "统计卡片",
+      "extra": "更多",
+      "rightHref": "",
+      "size": "default"
+    },
+    "body": {
+      "horizontal": 8,
+      "vertical": 8,
+      "span": 6
+    }
+  }
+}', N'1', NULL, NULL, N'admin', N'2022-05-07 18:24:23.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'100105', N'100104', N'项目列表', N'JProjectCard', N'ant-design:unordered-list-outlined', N'8', NULL, N'{
+  "w": 12,
+  "h": 33,
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/42/nav",
+  "timeOut": -1,
+  "linkageConfig": [],
+  "chartData": [
+    {
+      "title": "Github",
+      "icon": "icon-jeecg-social-github",
+      "color": "",
+      "desc": "不要等待机会，而要创造机会。",
+      "group": "开源组",
+      "date": "2021-04-01"
+    },
+    {
+      "title": "Vue",
+      "icon": "icon-jeecg-social-buysellads",
+      "color": "#3fb27f",
+      "desc": "现在的你决定将来的你。",
+      "group": "算法组",
+      "date": "2021-04-01"
+    },
+    {
+      "title": "Html5",
+      "icon": "icon-jeecg-html5",
+      "color": "#e18525",
+      "desc": "没有什么才能比努力更重要。",
+      "group": "上班摸鱼",
+      "date": "2021-04-01"
+    },
+    {
+      "title": "Angular",
+      "icon": "icon-jeecg-social-product-hunt",
+      "color": "#bf0c2c",
+      "desc": "热情和欲望可以突破一切难关。",
+      "group": "UI",
+      "date": "2021-04-01"
+    },
+    {
+      "title": "React",
+      "icon": "icon-jeecg-social-skype",
+      "color": "#00d8ff",
+      "desc": "健康的身体是实目标的基石。",
+      "group": "技术牛",
+      "date": "2021-04-01"
+    },
+    {
+      "title": "Js",
+      "icon": "icon-jeecg-social-pengyou",
+      "color": "#4daf1bc9",
+      "desc": "路是走出来的，而不是空想出来的。",
+      "group": "架构组",
+      "date": "2021-04-01"
+    }
+  ],
+  "option": {
+    "icon": {
+      "scriptUrl": "//at.alicdn.com/t/font_3237315_b3fqd960glt.js",
+      "fontSize": 30
+    },
+    "card": {
+      "title": "项目列表",
+      "extra": "更多",
+      "rightHref": "",
+      "size": "default"
+    },
+    "body": {
+      "column": 3
+    }
+  }
+}', N'1', NULL, NULL, N'admin', N'2022-04-29 19:52:42.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'100106', N'100104', N'待办事项', N'JWaitMatter', N'ant-design:ordered-list-outlined', N'9', NULL, N'{
+  "w": 12,
+  "h": 19,
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/42/nav",
+  "timeOut": -1,
+  "linkageConfig": [],
+  "chartData": [
+    {
+      "title": "待办公文",
+      "icon": "icon-jeecg-yudu",
+      "content": 23,
+      "desc": "今日已办 3",
+      "date": "2021-04-01"
+    },
+    {
+      "title": "待办流程",
+      "icon": "icon-jeecg-shuju",
+      "content": 23,
+      "desc": "今日已办 3",
+      "date": "2021-04-01"
+    },
+    {
+      "title": "待办任务",
+      "icon": "icon-jeecg-tongzhi",
+      "content": 23,
+      "desc": "今日已办 3 今日更新 5",
+      "date": "2021-04-01"
+    }
+  ],
+  "option": {
+    "icon": {
+      "scriptUrl": "//at.alicdn.com/t/font_3237315_b3fqd960glt.js",
+      "fontSize": 25
+    },
+    "card": {
+      "title": "待办事项",
+      "extra": "更多",
+      "rightHref": "",
+      "size": "default"
+    },
+    "body": {
+      "column": 3
+    }
+  }
+}', N'1', NULL, NULL, N'admin', N'2022-04-29 19:52:49.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'100108', N'100', N'Iframe', N'JIframe', N'ic:outline-web-asset', N'11', NULL, N'{
+  "w": 12,
+  "h": 26,
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/42/nav",
+  "timeOut": 0,
+  "linkageConfig": [],
+  "chartData": "http://www.jeecg.com",
+  "option": {
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "body": {
+      "url": "https://help.jeecg.com"
+    }
+  }
+}', N'1', NULL, NULL, N'admin', N'2022-05-07 11:02:00.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'100109', N'100', N'图片', N'JImg', N'ion:image-sharp', N'13', NULL, N'{
+    "w": 12,
+    "h": 26,
+    "dataType": 1,
+    "url": "http://api.jeecg.com/mock/42/nav",
+    "timeOut": -1,
+    "option": {
+        "card": {
+            "title": "",
+            "extra": "",
+            "rightHref": "",
+            "size": "default"
+        },
+        "body": {
+            "url": "https://static.jeecg.com/upload/test/df_1616583016208.png"
+        }
+    }
+}', N'1', NULL, NULL, N'admin', N'2022-04-29 10:41:39.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'100110', N'100', N'文本', N'JText', N'ant-design:font-colors-outlined', N'14', NULL, N'{
+  "w": 5,
+  "h": 5,
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/42/nav",
+  "timeOut": 0,
+  "turnConfig": {
+    "url": ""
+  },
+  "chartData": "JeecgBoot面板设计",
+  "option": {
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "body": {
+      "text": "",
+      "color": "#4A90E2",
+      "fontWeight": "bold",
+      "marginLeft": 76,
+      "marginTop": 10
+    }
+  }
+}', N'1', NULL, NULL, N'admin', N'2022-04-29 10:49:04.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'100112', N'100102', N'数据表格', N'JCommonTable', N'ant-design:table-outlined', N'2', NULL, N'{
+  "w": 24,
+  "h": 42,
+  "dataType": 1,
+  "timeOut": -1,
+  "linkageConfig": [],
+  "option": {},
+  "chartData": [
+    {
+      "name": "4月",
+      "value": 50
+    },
+    {
+      "name": "2月",
+      "value": 200
+    },
+    {
+      "name": "3月",
+      "value": 300
+    },
+    {
+      "name": "4月",
+      "value": 400
+    },
+    {
+      "name": "5月",
+      "value": 50
+    },
+    {
+      "name": "6月",
+      "value": 120
+    }
+  ]
+}', N'1', NULL, NULL, NULL, N'2022-04-22 18:58:17.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1501033448017510401', N'100', N'轮播图', N'JCarousel', N'ic:baseline-image', N'5', NULL, N'{
+  "w": 24,
+  "h": 22,
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/42/carousel",
+  "timeOut": -1,
+  "linkageConfig": [],
+  "dataMapping": [
+    {
+      "filed": "路径",
+      "mapping": ""
+    }
+  ],
+  "option": {
+    "autoplay": true,
+    "dots": true,
+    "dotPosition": "bottom"
+  },
+  "chartData": [
+    {
+      "src": "https://jeecgos.oss-cn-beijing.aliyuncs.com/files/site/drag/0.png"
+		},
+		{
+			"src": "https://jeecgos.oss-cn-beijing.aliyuncs.com/files/site/drag/1.png"
+		},
+		{
+			"src": "https://jeecgos.oss-cn-beijing.aliyuncs.com/files/site/drag/2.png"
+		}
+  ]
+}', N'1', N'jeecg', N'2022-03-08 11:13:57.0000000', N'admin', N'2022-04-22 18:58:47.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1501439613197119490', N'100102', N'数据列表', N'JList', N'ph:list-numbers', N'4', NULL, N'{
+  "w": 12,
+  "h": 24,
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/42/list",
+  "linkageConfig": [],
+  "dataMapping": [
+    {
+      "filed": "标题",
+      "mapping": ""
+    },
+    {
+      "filed": "描述",
+      "mapping": ""
+    },
+    {
+      "filed": "时间",
+      "mapping": ""
+    },
+    {
+      "filed": "封面",
+      "mapping": ""
+    }
+  ],
+  "timeOut": -1,
+  "option": {
+    "showTitlePrefix": true,
+    "showTimePrefix": true,
+    "titleFontSize": 18,
+    "layout": "horizontal"
+  },
+  "chartData": [
+    {
+      "title": "通知一",
+      "date": "2022-3-9 14:20:21"
+    },
+    {
+      "title": "通知二",
+      "date": "2022-3-8 14:20:21"
+    },
+    {
+      "title": "通知三",
+      "date": "2022-3-7 14:20:21"
+    },
+    {
+      "title": "通知四",
+      "date": "2022-3-4 14:20:21"
+    }
+  ]
+}', N'1', N'jeecg', N'2022-03-09 14:07:54.0000000', N'admin', N'2022-04-29 19:38:46.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1501439614397119490', N'100104', N'最新动态', N'JDynamicInfo', N'ic:sharp-list-alt', N'16', NULL, N'{
+  "w": 12,
+  "h": 28,
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/42/list",
+  "linkageConfig": [],
+  "dataMapping": [
+    {
+      "filed": "名称",
+      "mapping": ""
+    },
+    {
+      "filed": "描述",
+      "mapping": ""
+    },
+    {
+      "filed": "时间",
+      "mapping": ""
+    },
+    {
+      "filed": "头像",
+      "mapping": ""
+    }
+  ],
+  "timeOut": -1,
+  "option": {
+    "titleFontSize": 18
+  },
+  "chartData": [
+    {
+      "name": "威廉",
+      "date": "刚刚",
+      "desc": "在 <a>开源组</a> 创建了项目 <a>Vue</a>",
+      "avatar": "https://jeecgdev.oss-cn-beijing.aliyuncs.com/upload/test/320222_1646724689691.jpg"
+    },
+    {
+      "name": "艾文",
+      "date": "1个小时前",
+      "desc": "关注了 <a>威廉</a>",
+      "avatar": "https://jeecgdev.oss-cn-beijing.aliyuncs.com/upload/test/320305_1646724680756.jpg"
+    },
+    {
+      "name": "克里斯",
+      "date": "1天前",
+      "desc": "发布了 <a>个人动态</a>",
+      "avatar": "https://jeecgdev.oss-cn-beijing.aliyuncs.com/upload/test/299258_1646724675255.jpg"
+    },
+    {
+      "name": "Jeecg",
+      "date": "2天前",
+      "desc": "发表文章 <a>如何编写一个Vite插件</a>",
+      "avatar": "https://jeecgdev.oss-cn-beijing.aliyuncs.com/upload/test/2.4jeecg_1621512120602.png"
+    }
+  ]
+}', N'1', N'jeecg', N'2022-03-09 14:07:54.0000000', N'admin', N'2022-04-29 19:52:54.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1536970245843996673', N'200200', N'对比柱形图', N'JMultipleBar', N'material-symbols:grouped-bar-chart', N'5', NULL, N'{
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/26/stackedBar",
+  "timeOut": 0,
+  "turnConfig": {
+    "url": ""
+  },
+  "linkageConfig": [],
+  "dataMapping": [
+    {
+      "filed": "分组",
+      "mapping": ""
+    },
+    {
+      "filed": "维度",
+      "mapping": ""
+    },
+    {
+      "filed": "数值",
+      "mapping": ""
+    }
+  ],
+  "chartData": [
+    {
+      "name": "1991",
+      "value": 3,
+      "type": "Lon"
+    },
+    {
+      "name": "1992",
+      "value": 4,
+      "type": "Lon"
+    },
+    {
+      "name": "1993",
+      "value": 3.5,
+      "type": "Lon"
+    },
+    {
+      "name": "1994",
+      "value": 5,
+      "type": "Lon"
+    },
+    {
+      "name": "1995",
+      "value": 4.9,
+      "type": "Lon"
+    },
+    {
+      "name": "1996",
+      "value": 6,
+      "type": "Lon"
+    },
+    {
+      "name": "1997",
+      "value": 7,
+      "type": "Lon"
+    },
+    {
+      "name": "1998",
+      "value": 9,
+      "type": "Lon"
+    },
+    {
+      "name": "1999",
+      "value": 13,
+      "type": "Lon"
+    },
+    {
+      "name": "1991",
+      "value": 3,
+      "type": "Bor"
+    },
+    {
+      "name": "1992",
+      "value": 4,
+      "type": "Bor"
+    },
+    {
+      "name": "1993",
+      "value": 3.5,
+      "type": "Bor"
+    },
+    {
+      "name": "1994",
+      "value": 5,
+      "type": "Bor"
+    },
+    {
+      "name": "1995",
+      "value": 4.9,
+      "type": "Bor"
+    },
+    {
+      "name": "1996",
+      "value": 6,
+      "type": "Bor"
+    },
+    {
+      "name": "1997",
+      "value": 7,
+      "type": "Bor"
+    },
+    {
+      "name": "1998",
+      "value": 9,
+      "type": "Bor"
+    },
+    {
+      "name": "1999",
+      "value": 13,
+      "type": "Bor"
+    }
+  ],
+  "option": {
+    "title": {
+      "text": "多数据对比柱形图",
+      "show": true
+    },
+    "grid": {
+      "bottom": 115,
+          "top":90
+    },
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "tooltip": {
+      "trigger": "axis",
+      "axisPointer": {
+        "type": "shadow",
+        "label": {
+          "show": true,
+          "backgroundColor": "#333"
+        }
+      }
+    },
+    "series": []
+  }
+}', N'1', NULL, N'2022-06-15 15:13:57.0000000', N'admin', N'2022-08-04 19:19:06.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1537002903949037570', N'200', N'折线图', N'line', N'teenyicons:area-chart-outline', N'2', NULL, NULL, N'1', NULL, N'2022-06-15 17:23:43.0000000', NULL, N'2022-06-17 19:56:48.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1537284032572702721', N'1537002903949037570', N'平滑折线图', N'JSmoothLine', N'mdi:chart-bell-curve', N'2', NULL, N'{
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/33/chart",
+  "timeOut": 0,
+  "turnConfig": {
+    "url": ""
+  },
+  "linkageConfig": [],
+  "dataMapping": [
+    {
+      "filed": "维度",
+      "mapping": ""
+    },
+    {
+      "filed": "数值",
+      "mapping": ""
+    }
+  ],
+  "chartData": [
+    {
+      "value": 1000,
+      "name": "联想"
+    },
+    {
+      "value": 7350,
+      "name": "小米"
+    },
+    {
+      "value": 5800,
+      "name": "华为"
+    },
+    {
+      "value": 6000,
+      "name": "苹果"
+    },
+    {
+      "value": 3000,
+      "name": "戴尔"
+    }
+  ],
+  "option": {
+    "grid": {
+      "show": false,
+      "bottom": 115,
+          "top":90
+    },
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "title": {
+      "text": "平滑折线图",
+      "subtext": "",
+      "left": "left"
+    },
+    "series": [
+      {
+        "data": [],
+        "smooth": true,
+        "type": "line"
+      }
+    ]
+  }
+}', N'1', NULL, N'2022-06-16 12:00:49.0000000', N'admin', N'2022-08-04 19:19:43.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1537318081257291777', N'1537764165146476546', N'普通散点图', N'JScatter', N'mdi:chart-scatter-plot', N'100', NULL, N'{
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/33/chart",
+  "timeOut": 0,
+  "turnConfig": {
+    "url": ""
+  },
+  "linkageConfig": [],
+  "dataMapping": [
+    {
+      "filed": "维度",
+      "mapping": ""
+    },
+    {
+      "filed": "数值",
+      "mapping": ""
+    }
+  ],
+  "chartData": [
+    {
+      "name": 200,
+      "value": 300
+    },
+    {
+      "name": 400,
+      "value": 500
+    },
+    {
+      "name": 150,
+      "value": 320
+    },
+    {
+      "name": 320,
+      "value": 320
+    },
+    {
+      "name": 170,
+      "value": 300
+    }
+  ],
+  "option": {
+    "grid": {
+      "show": false,
+      "bottom": 115
+    },
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "title": {
+      "text": "基础散点图",
+      "show": true,
+      "textStyle": {
+        "color": "#464646"
+      }
+    },
+    "tooltip": {
+      "trigger": "item",
+      "formatter": "x:{b}<br/>y:{c}",
+      "axisPointer": {
+        "type": "shadow",
+        "label": {
+          "show": true,
+          "backgroundColor": "#333"
+        }
+      }
+    },
+    "yAxis": {
+      "splitLine": {
+        "interval": 2
+      },
+      "lineStyle": {
+        "color": "#f3f3f3"
+      }
+    },
+    "series": [
+      {
+        "data": [],
+        "type": "scatter",
+        "symbolSize": 20,
+        "itemStyle": {
+          "color": "#64b5f6"
+        }
+      }
+    ]
+  }
+}', N'1', NULL, N'2022-06-16 14:16:07.0000000', NULL, N'2022-06-16 17:10:52.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1537764165146476546', N'200', N'散点图', N'scatter', N'ant-design:dot-chart-outlined', N'100', NULL, NULL, N'1', NULL, N'2022-06-17 19:48:42.0000000', NULL, N'2022-06-17 19:49:24.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1537764868216684545', N'200', N'漏斗图', N'funnel', N'ant-design:funnel-plot-filled', N'100', NULL, NULL, N'1', NULL, N'2022-06-17 19:51:30.0000000', NULL, N'2022-06-17 19:51:52.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1537773378102984706', N'200', N'雷达图', N'radar', N'ant-design:radar-chart-outlined', N'100', NULL, NULL, N'1', NULL, N'2022-06-17 20:25:18.0000000', NULL, N'2022-06-17 20:26:03.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'200', N'0', N'图表组件', N'chart', N'ant-design:bar-chart-outlined', N'1', NULL, N'', N'1', NULL, NULL, NULL, N'2022-04-29 17:52:06.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'200200', N'200', N'柱形图', N'', N'ant-design:bar-chart-outlined', N'1', NULL, N'', N'1', NULL, NULL, NULL, N'2022-04-29 09:37:37.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'200200201', N'200200', N'基础柱形图', N'JBar', N'ic:baseline-bar-chart', NULL, NULL, N'{
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/33/chart",
+  "timeOut": 0,
+  "turnConfig": {
+    "url": ""
+  },
+  "linkageConfig": [],
+  "dataMapping": [
+    {
+      "filed": "维度",
+      "mapping": ""
+    },
+    {
+      "filed": "数值",
+      "mapping": ""
+    }
+  ],
+  "chartData": [
+    {
+      "name": "苹果",
+      "value": 1000879,
+      "type": "手机品牌"
+    },
+    {
+      "name": "三星",
+      "value": 3400879,
+      "type": "手机品牌"
+    },
+    {
+      "name": "小米",
+      "value": 2300879,
+      "type": "手机品牌"
+    },
+    {
+      "name": "oppo",
+      "value": 5400879,
+      "type": "手机品牌"
+    },
+    {
+      "name": "vivo",
+      "value": 3400879,
+      "type": "手机品牌"
+    }
+  ],
+  "option": {
+    "grid": {
+      "show": false,
+       "top":90, 
+      "bottom": 115
+    },
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "title": {
+      "text": "基础柱形图",
+      "show": true,
+      "textStyle": {
+        "color": "#464646"
+      }
+    },
+    "tooltip": {
+      "trigger": "axis",
+      "axisPointer": {
+        "type": "shadow",
+        "label": {
+          "show": true,
+          "backgroundColor": "#333"
+        }
+      }
+    },
+    "yAxis": {
+      "splitLine": {
+        "interval": 2
+      },
+      "lineStyle": {
+        "color": "#f3f3f3"
+      }
+    },
+    "series": [
+      {
+        "data": [],
+        "type": "bar",
+        "barWidth": 40,
+        "itemStyle": {
+          "color": "#64b5f6",
+          "borderRadius": 0
+        }
+      }
+    ]
+  }
+}', N'1', NULL, NULL, N'admin', N'2022-08-04 19:18:21.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'200201', N'200', N'饼图', N'JPie', N'ant-design:pie-chart-outlined', N'2', NULL, N'{
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/33/chart",
+  "timeOut": -1,
+  "turnConfig": {
+    "url": ""
+  },
+  "linkageConfig": [],
+  "dataMapping": [
+    {
+      "filed": "维度",
+      "mapping": ""
+    },
+    {
+      "filed": "数值",
+      "mapping": ""
+    }
+  ],
+  "chartData": [
+    {
+      "value": 1048,
+      "name": "vivo"
+    },
+    {
+      "value": 735,
+      "name": "oppo"
+    },
+    {
+      "value": 580,
+      "name": "苹果"
+    },
+    {
+      "value": 484,
+      "name": "小米"
+    },
+    {
+      "value": 300,
+      "name": "三星"
+    }
+  ],
+  "option": {
+    "grid": {
+      "show": false,
+      "bottom": 115
+    },
+    "title": {
+      "text": "基础饼图",
+      "subtext": "",
+      "left": "left",
+      "show": true
+    },
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "tooltip": {
+      "trigger": "item"
+    },
+    "legend": {
+      "orient": "vertical"
+    },
+    "series": [
+      {
+        "name": "Access From",
+        "type": "pie",
+        "radius": "50%",
+        "data": [],
+        "emphasis": {
+          "itemStyle": {
+            "shadowBlur": 10,
+            "shadowOffsetX": 0,
+            "shadowColor": "rgba(0, 0, 0, 0.5)"
+          }
+        }
+      }
+    ]
+  }
+}', N'1', NULL, NULL, N'admin', N'2022-05-23 14:07:29.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'200202', N'1537002903949037570', N'基础折线图', N'JLine', N'teenyicons:area-chart-outline', N'1', NULL, N'{
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/33/chart",
+  "timeOut": 0,
+  "turnConfig": {
+    "url": ""
+  },
+  "linkageConfig": [],
+  "dataMapping": [
+    {
+      "filed": "维度",
+      "mapping": ""
+    },
+    {
+      "filed": "数值",
+      "mapping": ""
+    }
+  ],
+  "chartData": [
+    {
+      "value": 1000,
+      "name": "联想"
+    },
+    {
+      "value": 7350,
+      "name": "小米"
+    },
+    {
+      "value": 5800,
+      "name": "华为"
+    },
+    {
+      "value": 6000,
+      "name": "苹果"
+    },
+    {
+      "value": 3000,
+      "name": "戴尔"
+    }
+  ],
+  "option": {
+    "grid": {
+      "show": false,
+      "bottom": 115,
+          "top":90
+    },
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "title": {
+      "text": "基础折线图",
+      "subtext": "",
+      "left": 10
+    },
+    "series": [
+      {
+        "data": [],
+        "type": "line",
+         "itemStyle": {
+          "color": "#64b5f6"
+        }
+      }
+    ]
+  }
+}', N'1', NULL, NULL, N'admin', N'2022-08-04 19:20:12.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'200204', N'1537773378102984706', N'普通雷达图', N'JRadar', N'ant-design:radar-chart-outlined', N'4', NULL, N'{
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/33/radar",
+  "timeOut": 0,
+  "turnConfig": {
+    "url": ""
+  },
+  "linkageConfig": [],
+  "dataMapping": [
+    {
+      "filed": "分组",
+      "mapping": ""
+    },
+    {
+      "filed": "维度",
+      "mapping": ""
+    },
+    {
+      "filed": "数值",
+      "mapping": ""
+    }
+  ],
+  "chartData": [
+    {
+      "value": 75,
+      "name": "得分",
+      "type": "NBA",
+      "max": 100
+    },
+    {
+      "value": 65,
+      "name": "篮板",
+      "type": "NBA",
+      "max": 100
+    },
+    {
+      "value": 55,
+      "name": "防守",
+      "type": "NBA",
+      "max": 100
+    },
+    {
+      "value": 74,
+      "name": "失误",
+      "type": "NBA",
+      "max": 100
+    },
+    {
+      "value": 38,
+      "name": "盖帽",
+      "type": "NBA",
+      "max": 100
+    },
+    {
+      "value": 88,
+      "name": "三分",
+      "type": "NBA",
+      "max": 100
+    }
+  ],
+  "option": {
+    "grid": {
+      "show": false,
+      "bottom": 115
+    },
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "title": {
+      "text": "基础雷达图",
+      "show": true
+    },
+    "legend": {
+      "data": []
+    },
+    "radar": [
+      {
+        "indicator": []
+      }
+    ],
+    "series": [
+      {
+        "type": "radar",
+        "data": []
+      }
+    ]
+  }
+}', N'1', NULL, NULL, N'admin', N'2022-06-17 20:25:47.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'200205', N'200', N'环形图', N'JRing', N'mdi:chart-donut', N'5', NULL, N'{
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/33/chart",
+  "timeOut": 0,
+  "turnConfig": {
+    "url": ""
+  },
+  "linkageConfig": [],
+  "dataMapping": [
+    {
+      "filed": "维度",
+      "mapping": ""
+    },
+    {
+      "filed": "数值",
+      "mapping": ""
+    }
+  ],
+  "chartData": [
+    {
+      "value": 1048,
+      "name": "oppo"
+    },
+    {
+      "value": 735,
+      "name": "vivo"
+    },
+    {
+      "value": 580,
+      "name": "苹果"
+    },
+    {
+      "value": 484,
+      "name": "小米"
+    },
+    {
+      "value": 300,
+      "name": "三星"
+    }
+  ],
+  "option": {
+    "grid": {
+      "show": false,
+      "bottom": 115
+    },
+    "title": {
+      "text": "基础环形图",
+      "show": true
+    },
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "tooltip": {
+      "trigger": "item"
+    },
+    "series": [
+      {
+        "name": "Access From",
+        "type": "pie",
+        "radius": [
+          "40%",
+          "70%"
+        ],
+        "avoidLabelOverlap": false,
+        "label": {
+          "show": false,
+          "position": "center"
+        },
+        "emphasis": {
+          "label": {
+            "show": true,
+            "fontSize": "25",
+            "fontWeight": "bold"
+          }
+        },
+        "labelLine": {
+          "show": false
+        },
+        "data": []
+      }
+    ]
+  }
+}', N'1', NULL, NULL, N'admin', N'2022-04-22 19:05:11.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'200206', N'200', N'面积图', N'JArea', N'teenyicons:area-chart-solid', N'6', NULL, N'{
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/33/chart",
+  "timeOut": -1,
+  "turnConfig": {
+    "url": ""
+  },
+  "linkageConfig": [],
+  "dataMapping": [
+    {
+      "filed": "维度",
+      "mapping": ""
+    },
+    {
+      "filed": "数值",
+      "mapping": ""
+    }
+  ],
+  "chartData": [
+    {
+      "value": 1048,
+      "name": "华为"
+    },
+    {
+      "value": 605,
+      "name": "vivo"
+    },
+    {
+      "value": 580,
+      "name": "oppo"
+    },
+    {
+      "value": 484,
+      "name": "苹果"
+    },
+    {
+      "value": 300,
+      "name": "小米"
+    }
+  ],
+  "option": {
+    "grid": {
+      "bottom": 115
+    },
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "title": {
+      "text": "基础面积图",
+      "show": true
+    },
+    "xAxis": {
+      "boundaryGap": false,
+      "data": []
+    },
+    "series": [
+      {
+        "data": [],
+        "type": "line",
+        "areaStyle": {}
+      }
+    ]
+  }
+}', N'1', NULL, NULL, N'admin', N'2022-04-22 19:04:01.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'200207', N'200', N'象形图', N'JPictorialBar', N'ant-design:dot-chart-outlined', N'10', NULL, N'{
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/26/pictogram",
+  "timeOut": 0,
+  "turnConfig": {
+    "url": ""
+  },
+  "linkageConfig": [],
+  "dataMapping": [
+    {
+      "filed": "维度",
+      "mapping": ""
+    },
+    {
+      "filed": "数值",
+      "mapping": ""
+    }
+  ],
+  "chartData": [
+    {
+      "name": "驯鹿",
+      "value": 123,
+      "symbol": "path://M-22.788,24.521c2.08-0.986,3.611-3.905,4.984-5.892 c-2.686,2.782-5.047,5.884-9.102,7.312c-0.992,0.005-0.25-2.016,0.34-2.362l1.852-0.41c0.564-0.218,0.785-0.842,0.902-1.347 c2.133-0.727,4.91-4.129,6.031-6.194c1.748-0.7,4.443-0.679,5.734-2.293c1.176-1.468,0.393-3.992,1.215-6.557 c0.24-0.754,0.574-1.581,1.008-2.293c-0.611,0.011-1.348-0.061-1.959-0.608c-1.391-1.245-0.785-2.086-1.297-3.313 c1.684,0.744,2.5,2.584,4.426,2.586C-8.46,3.012-8.255,2.901-8.04,2.824c6.031-1.952,15.182-0.165,19.498-3.937 c1.15-3.933-1.24-9.846-1.229-9.938c0.008-0.062-1.314-0.004-1.803-0.258c-1.119-0.771-6.531-3.75-0.17-3.33 c0.314-0.045,0.943,0.259,1.439,0.435c-0.289-1.694-0.92-0.144-3.311-1.946c0,0-1.1-0.855-1.764-1.98 c-0.836-1.09-2.01-2.825-2.992-4.031c-1.523-2.476,1.367,0.709,1.816,1.108c1.768,1.704,1.844,3.281,3.232,3.983 c0.195,0.203,1.453,0.164,0.926-0.468c-0.525-0.632-1.367-1.278-1.775-2.341c-0.293-0.703-1.311-2.326-1.566-2.711 c-0.256-0.384-0.959-1.718-1.67-2.351c-1.047-1.187-0.268-0.902,0.521-0.07c0.789,0.834,1.537,1.821,1.672,2.023 c0.135,0.203,1.584,2.521,1.725,2.387c0.102-0.259-0.035-0.428-0.158-0.852c-0.125-0.423-0.912-2.032-0.961-2.083 c-0.357-0.852-0.566-1.908-0.598-3.333c0.4-2.375,0.648-2.486,0.549-0.705c0.014,1.143,0.031,2.215,0.602,3.247 c0.807,1.496,1.764,4.064,1.836,4.474c0.561,3.176,2.904,1.749,2.281-0.126c-0.068-0.446-0.109-2.014-0.287-2.862 c-0.18-0.849-0.219-1.688-0.113-3.056c0.066-1.389,0.232-2.055,0.277-2.299c0.285-1.023,0.4-1.088,0.408,0.135 c-0.059,0.399-0.131,1.687-0.125,2.655c0.064,0.642-0.043,1.768,0.172,2.486c0.654,1.928-0.027,3.496,1,3.514 c1.805-0.424,2.428-1.218,2.428-2.346c-0.086-0.704-0.121-0.843-0.031-1.193c0.221-0.568,0.359-0.67,0.312-0.076 c-0.055,0.287,0.031,0.533,0.082,0.794c0.264,1.197,0.912,0.114,1.283-0.782c0.15-0.238,0.539-2.154,0.545-2.522 c-0.023-0.617,0.285-0.645,0.309,0.01c0.064,0.422-0.248,2.646-0.205,2.334c-0.338,1.24-1.105,3.402-3.379,4.712 c-0.389,0.12-1.186,1.286-3.328,2.178c0,0,1.729,0.321,3.156,0.246c1.102-0.19,3.707-0.027,4.654,0.269 c1.752,0.494,1.531-0.053,4.084,0.164c2.26-0.4,2.154,2.391-1.496,3.68c-2.549,1.405-3.107,1.475-2.293,2.984 c3.484,7.906,2.865,13.183,2.193,16.466c2.41,0.271,5.732-0.62,7.301,0.725c0.506,0.333,0.648,1.866-0.457,2.86 c-4.105,2.745-9.283,7.022-13.904,7.662c-0.977-0.194,0.156-2.025,0.803-2.247l1.898-0.03c0.596-0.101,0.936-0.669,1.152-1.139 c3.16-0.404,5.045-3.775,8.246-4.818c-4.035-0.718-9.588,3.981-12.162,1.051c-5.043,1.423-11.449,1.84-15.895,1.111 c-3.105,2.687-7.934,4.021-12.115,5.866c-3.271,3.511-5.188,8.086-9.967,10.414c-0.986,0.119-0.48-1.974,0.066-2.385l1.795-0.618 C-22.995,25.682-22.849,25.035-22.788,24.521z",
+      "symbolSize": [
+        60,
+        60
+      ]
+    },
+    {
+      "name": "飞机",
+      "value": 60,
+      "symbol": "path://M1.112,32.559l2.998,1.205l-2.882,2.268l-2.215-0.012L1.112,32.559z M37.803,23.96 c0.158-0.838,0.5-1.509,0.961-1.904c-0.096-0.037-0.205-0.071-0.344-0.071c-0.777-0.005-2.068-0.009-3.047-0.009 c-0.633,0-1.217,0.066-1.754,0.18l2.199,1.804H37.803z M39.738,23.036c-0.111,0-0.377,0.325-0.537,0.924h1.076 C40.115,23.361,39.854,23.036,39.738,23.036z M39.934,39.867c-0.166,0-0.674,0.705-0.674,1.986s0.506,1.986,0.674,1.986 s0.672-0.705,0.672-1.986S40.102,39.867,39.934,39.867z M38.963,38.889c-0.098-0.038-0.209-0.07-0.348-0.073 c-0.082,0-0.174,0-0.268-0.001l-7.127,4.671c0.879,0.821,2.42,1.417,4.348,1.417c0.979,0,2.27-0.006,3.047-0.01 c0.139,0,0.25-0.034,0.348-0.072c-0.646-0.555-1.07-1.643-1.07-2.967C37.891,40.529,38.316,39.441,38.963,38.889z M32.713,23.96 l-12.37-10.116l-4.693-0.004c0,0,4,8.222,4.827,10.121H32.713z M59.311,32.374c-0.248,2.104-5.305,3.172-8.018,3.172H39.629 l-25.325,16.61L9.607,52.16c0,0,6.687-8.479,7.95-10.207c1.17-1.6,3.019-3.699,3.027-6.407h-2.138 c-5.839,0-13.816-3.789-18.472-5.583c-2.818-1.085-2.396-4.04-0.031-4.04h0.039l-3.299-11.371h3.617c0,0,4.352,5.696,5.846,7.5 c2,2.416,4.503,3.678,8.228,3.87h30.727c2.17,0,4.311,0.417,6.252,1.046c3.49,1.175,5.863,2.7,7.199,4.027 C59.145,31.584,59.352,32.025,59.311,32.374z M22.069,30.408c0-0.815-0.661-1.475-1.469-1.475c-0.812,0-1.471,0.66-1.471,1.475 s0.658,1.475,1.471,1.475C21.408,31.883,22.069,31.224,22.069,30.408z M27.06,30.408c0-0.815-0.656-1.478-1.466-1.478 c-0.812,0-1.471,0.662-1.471,1.478s0.658,1.477,1.471,1.477C26.404,31.885,27.06,31.224,27.06,30.408z M32.055,30.408 c0-0.815-0.66-1.475-1.469-1.475c-0.808,0-1.466,0.66-1.466,1.475s0.658,1.475,1.466,1.475 C31.398,31.883,32.055,31.224,32.055,30.408z M37.049,30.408c0-0.815-0.658-1.478-1.467-1.478c-0.812,0-1.469,0.662-1.469,1.478 s0.656,1.477,1.469,1.477C36.389,31.885,37.049,31.224,37.049,30.408z M42.039,30.408c0-0.815-0.656-1.478-1.465-1.478 c-0.811,0-1.469,0.662-1.469,1.478s0.658,1.477,1.469,1.477C41.383,31.885,42.039,31.224,42.039,30.408z M55.479,30.565 c-0.701-0.436-1.568-0.896-2.627-1.347c-0.613,0.289-1.551,0.476-2.73,0.476c-1.527,0-1.639,2.263,0.164,2.316 C52.389,32.074,54.627,31.373,55.479,30.565z",
+      "symbolSize": [
+        65,
+        35
+      ]
+    },
+    {
+      "name": "火箭",
+      "value": 25,
+      "symbol": "path://M-244.396,44.399c0,0,0.47-2.931-2.427-6.512c2.819-8.221,3.21-15.709,3.21-15.709s5.795,1.383,5.795,7.325C-237.818,39.679-244.396,44.399-244.396,44.399z M-260.371,40.827c0,0-3.881-12.946-3.881-18.319c0-2.416,0.262-4.566,0.669-6.517h17.684c0.411,1.952,0.675,4.104,0.675,6.519c0,5.291-3.87,18.317-3.87,18.317H-260.371z M-254.745,18.951c-1.99,0-3.603,1.676-3.603,3.744c0,2.068,1.612,3.744,3.603,3.744c1.988,0,3.602-1.676,3.602-3.744S-252.757,18.951-254.745,18.951z M-255.521,2.228v-5.098h1.402v4.969c1.603,1.213,5.941,5.069,7.901,12.5h-17.05C-261.373,7.373-257.245,3.558-255.521,2.228zM-265.07,44.399c0,0-6.577-4.721-6.577-14.896c0-5.942,5.794-7.325,5.794-7.325s0.393,7.488,3.211,15.708C-265.539,41.469-265.07,44.399-265.07,44.399z M-252.36,45.15l-1.176-1.22L-254.789,48l-1.487-4.069l-1.019,2.116l-1.488-3.826h8.067L-252.36,45.15z",
+      "symbolSize": [
+        50,
+        60
+      ]
+    },
+    {
+      "name": "高铁",
+      "value": 18,
+      "symbol": "path://M67.335,33.596L67.335,33.596c-0.002-1.39-1.153-3.183-3.328-4.218h-9.096v-2.07h5.371 c-4.939-2.07-11.199-4.141-14.89-4.141H19.72v12.421v5.176h38.373c4.033,0,8.457-1.035,9.142-5.176h-0.027 c0.076-0.367,0.129-0.751,0.129-1.165L67.335,33.596L67.335,33.596z M27.999,30.413h-3.105v-4.141h3.105V30.413z M35.245,30.413 h-3.104v-4.141h3.104V30.413z M42.491,30.413h-3.104v-4.141h3.104V30.413z M49.736,30.413h-3.104v-4.141h3.104V30.413z  M14.544,40.764c1.143,0,2.07-0.927,2.07-2.07V35.59V25.237c0-1.145-0.928-2.07-2.07-2.07H-9.265c-1.143,0-2.068,0.926-2.068,2.07 v10.351v3.105c0,1.144,0.926,2.07,2.068,2.07H14.544L14.544,40.764z M8.333,26.272h3.105v4.141H8.333V26.272z M1.087,26.272h3.105 v4.141H1.087V26.272z M-6.159,26.272h3.105v4.141h-3.105V26.272z M-9.265,41.798h69.352v1.035H-9.265V41.798z",
+      "symbolSize": [
+        50,
+        30
+      ]
+    },
+    {
+      "name": "轮船",
+      "value": 12,
+      "symbol": "path://M16.678,17.086h9.854l-2.703,5.912c5.596,2.428,11.155,5.575,16.711,8.607c3.387,1.847,6.967,3.75,10.541,5.375 v-6.16l-4.197-2.763v-5.318L33.064,12.197h-11.48L20.43,15.24h-4.533l-1.266,3.286l0.781,0.345L16.678,17.086z M49.6,31.84 l0.047,1.273L27.438,20.998l0.799-1.734L49.6,31.84z M33.031,15.1l12.889,8.82l0.027,0.769L32.551,16.1L33.031,15.1z M22.377,14.045 h9.846l-1.539,3.365l-2.287-1.498h1.371l0.721-1.352h-2.023l-0.553,1.037l-0.541-0.357h-0.34l0.359-0.684h-2.025l-0.361,0.684 h-3.473L22.377,14.045z M23.695,20.678l-0.004,0.004h0.004V20.678z M24.828,18.199h-2.031l-0.719,1.358h2.029L24.828,18.199z  M40.385,34.227c-12.85-7.009-25.729-14.667-38.971-12.527c1.26,8.809,9.08,16.201,8.213,24.328 c-0.553,4.062-3.111,0.828-3.303,7.137c15.799,0,32.379,0,48.166,0l0.066-4.195l1.477-7.23 C50.842,39.812,45.393,36.961,40.385,34.227z M13.99,35.954c-1.213,0-2.195-1.353-2.195-3.035c0-1.665,0.98-3.017,2.195-3.017 c1.219,0,2.195,1.352,2.195,3.017C16.186,34.604,15.213,35.954,13.99,35.954z M23.691,20.682h-2.02l-0.588,1.351h2.023 L23.691,20.682z M19.697,18.199l-0.721,1.358h2.025l0.727-1.358H19.697z",
+      "symbolSize": [
+        50,
+        35
+      ]
+    },
+    {
+      "name": "汽车",
+      "value": 9,
+      "symbol": "path://M49.592,40.883c-0.053,0.354-0.139,0.697-0.268,0.963c-0.232,0.475-0.455,0.519-1.334,0.475 c-1.135-0.053-2.764,0-4.484,0.068c0,0.476,0.018,0.697,0.018,0.697c0.111,1.299,0.697,1.342,0.931,1.342h3.7 c0.326,0,0.628,0,0.861-0.154c0.301-0.196,0.43-0.772,0.543-1.78c0.017-0.146,0.025-0.336,0.033-0.56v-0.01 c0-0.068,0.008-0.154,0.008-0.25V41.58l0,0C49.6,41.348,49.6,41.09,49.592,40.883L49.592,40.883z M6.057,40.883 c0.053,0.354,0.137,0.697,0.268,0.963c0.23,0.475,0.455,0.519,1.334,0.475c1.137-0.053,2.762,0,4.484,0.068 c0,0.476-0.018,0.697-0.018,0.697c-0.111,1.299-0.697,1.342-0.93,1.342h-3.7c-0.328,0-0.602,0-0.861-0.154 c-0.309-0.18-0.43-0.772-0.541-1.78c-0.018-0.146-0.027-0.336-0.035-0.56v-0.01c0-0.068-0.008-0.154-0.008-0.25V41.58l0,0 C6.057,41.348,6.057,41.09,6.057,40.883L6.057,40.883z M49.867,32.766c0-2.642-0.344-5.224-0.482-5.507 c-0.104-0.207-0.766-0.749-2.271-1.773c-1.522-1.042-1.487-0.887-1.766-1.566c0.25-0.078,0.492-0.224,0.639-0.241 c0.326-0.034,0.345,0.274,1.023,0.274c0.68,0,2.152-0.18,2.453-0.48c0.301-0.303,0.396-0.405,0.396-0.672 c0-0.268-0.156-0.818-0.447-1.146c-0.293-0.327-1.541-0.49-2.273-0.585c-0.729-0.095-0.834,0-1.022,0.121 c-0.304,0.189-0.32,1.919-0.32,1.919l-0.713,0.018c-0.465-1.146-1.11-3.452-2.117-5.269c-1.103-1.979-2.256-2.599-2.737-2.754 c-0.474-0.146-0.904-0.249-4.131-0.576c-3.298-0.344-5.922-0.388-8.262-0.388c-2.342,0-4.967,0.052-8.264,0.388 c-3.229,0.336-3.66,0.43-4.133,0.576s-1.633,0.775-2.736,2.754c-1.006,1.816-1.652,4.123-2.117,5.269L9.87,23.109 c0,0-0.008-1.729-0.318-1.919c-0.189-0.121-0.293-0.225-1.023-0.121c-0.732,0.104-1.98,0.258-2.273,0.585 c-0.293,0.327-0.447,0.878-0.447,1.146c0,0.267,0.094,0.379,0.396,0.672c0.301,0.301,1.773,0.48,2.453,0.48 c0.68,0,0.697-0.309,1.023-0.274c0.146,0.018,0.396,0.163,0.637,0.241c-0.283,0.68-0.24,0.524-1.764,1.566 c-1.506,1.033-2.178,1.566-2.271,1.773c-0.139,0.283-0.482,2.865-0.482,5.508s0.189,5.02,0.189,5.86c0,0.354,0,0.976,0.076,1.565 c0.053,0.354,0.129,0.697,0.268,0.966c0.232,0.473,0.447,0.516,1.334,0.473c1.137-0.051,2.779,0,4.477,0.07 c1.135,0.043,2.297,0.086,3.33,0.11c2.582,0.051,1.826-0.379,2.928-0.36c1.102,0.016,5.447,0.196,9.424,0.196 c3.976,0,8.332-0.182,9.423-0.196c1.102-0.019,0.346,0.411,2.926,0.36c1.033-0.018,2.195-0.067,3.332-0.11 c1.695-0.062,3.348-0.121,4.477-0.07c0.886,0.043,1.103,0,1.332-0.473c0.132-0.269,0.218-0.611,0.269-0.966 c0.086-0.592,0.078-1.213,0.078-1.565C49.678,37.793,49.867,35.408,49.867,32.766L49.867,32.766z M13.219,19.735 c0.412-0.964,1.652-2.9,2.256-3.244c0.145-0.087,1.426-0.491,4.637-0.706c2.953-0.198,6.217-0.276,7.73-0.276 c1.513,0,4.777,0.078,7.729,0.276c3.201,0.215,4.502,0.611,4.639,0.706c0.775,0.533,1.842,2.28,2.256,3.244 c0.412,0.965,0.965,2.858,0.861,3.116c-0.104,0.258,0.104,0.388-1.291,0.275c-1.387-0.103-10.088-0.216-14.185-0.216 c-4.088,0-12.789,0.113-14.184,0.216c-1.395,0.104-1.188-0.018-1.291-0.275C12.254,22.593,12.805,20.708,13.219,19.735 L13.219,19.735z M16.385,30.511c-0.619,0.155-0.988,0.491-1.764,0.482c-0.775,0-2.867-0.353-3.314-0.371 c-0.447-0.017-0.842,0.302-1.076,0.362c-0.23,0.06-0.688-0.104-1.377-0.318c-0.688-0.216-1.092-0.155-1.316-1.094 c-0.232-0.93,0-2.264,0-2.264c1.488-0.068,2.928,0.069,5.621,0.826c2.693,0.758,4.191,2.213,4.191,2.213 S17.004,30.357,16.385,30.511L16.385,30.511z M36.629,37.293c-1.23,0.164-6.386,0.207-8.794,0.207c-2.412,0-7.566-0.051-8.799-0.207 c-1.256-0.164-2.891-1.67-1.764-2.865c1.523-1.627,1.24-1.576,4.701-2.023C24.967,32.018,27.239,32,27.834,32 c0.584,0,2.865,0.025,5.859,0.404c3.461,0.447,3.178,0.396,4.699,2.022C39.521,35.623,37.887,37.129,36.629,37.293L36.629,37.293z  M48.129,29.582c-0.232,0.93-0.629,0.878-1.318,1.093c-0.688,0.216-1.145,0.371-1.377,0.319c-0.231-0.053-0.627-0.371-1.074-0.361 c-0.448,0.018-2.539,0.37-3.313,0.37c-0.772,0-1.146-0.328-1.764-0.481c-0.621-0.154-0.966-0.154-0.966-0.154 s1.49-1.464,4.191-2.213c2.693-0.758,4.131-0.895,5.621-0.826C48.129,27.309,48.361,28.643,48.129,29.582L48.129,29.582z",
+      "symbolSize": [
+        40,
+        30
+      ]
+    },
+    {
+      "name": "跑步",
+      "value": 2,
+      "symbol": "path://M13.676,32.955c0.919-0.031,1.843-0.008,2.767-0.008v0.007c0.827,0,1.659,0.041,2.486-0.019 c0.417-0.028,1.118,0.325,1.14-0.545c0.014-0.637-0.156-1.279-0.873-1.367c-1.919-0.241-3.858-0.233-5.774,0.019 c-0.465,0.062-0.998,0.442-0.832,1.069C12.715,32.602,13.045,32.977,13.676,32.955z M14.108,29.013 c1.47-0.007,2.96-0.122,4.414,0.035c1.792,0.192,3.1-0.412,4.273-2.105c-3.044,0-5.882,0.014-8.719-0.01 c-0.768-0.005-1.495,0.118-1.461,1C12.642,28.731,13.329,29.014,14.108,29.013z M23.678,36.593c-0.666-0.69-1.258-1.497-2.483-1.448 c-2.341,0.095-4.689,0.051-7.035,0.012c-0.834-0.014-1.599,0.177-1.569,1.066c0.031,0.854,0.812,1.062,1.636,1.043 c1.425-0.033,2.852-0.01,4.278-0.01v-0.01c1.562,0,3.126,0.008,4.691-0.005C23.614,37.239,24.233,37.174,23.678,36.593z  M32.234,42.292h-0.002c-1.075,0.793-2.589,0.345-3.821,1.048c-0.359,0.193-0.663,0.465-0.899,0.799 c-1.068,1.623-2.052,3.301-3.117,4.928c-0.625,0.961-0.386,1.805,0.409,2.395c0.844,0.628,1.874,0.617,2.548-0.299 c1.912-2.573,3.761-5.197,5.621-7.814C33.484,42.619,33.032,42.387,32.234,42.292z M43.527,28.401 c-0.688-1.575-2.012-0.831-3.121-0.895c-1.047-0.058-2.119,1.128-3.002,0.345c-0.768-0.677-1.213-1.804-1.562-2.813 c-0.45-1.305-1.495-2.225-2.329-3.583c2.953,1.139,4.729,0.077,5.592-1.322c0.99-1.61,0.718-3.725-0.627-4.967 c-1.362-1.255-3.414-1.445-4.927-0.452c-1.933,1.268-2.206,2.893-0.899,6.11c-2.098-0.659-3.835-1.654-5.682-2.383 c-0.735-0.291-1.437-1.017-2.293-0.666c-2.263,0.927-4.522,1.885-6.723,2.95c-1.357,0.658-1.649,1.593-1.076,2.638 c0.462,0.851,1.643,1.126,2.806,0.617c0.993-0.433,1.994-0.857,2.951-1.374c1.599-0.86,3.044-0.873,4.604,0.214 c1.017,0.707,0.873,1.137,0.123,1.849c-1.701,1.615-3.516,3.12-4.933,5.006c-1.042,1.388-0.993,2.817,0.255,4.011 c1.538,1.471,3.148,2.869,4.708,4.315c0.485,0.444,0.907,0.896-0.227,1.104c-1.523,0.285-3.021,0.694-4.538,1.006 c-1.109,0.225-2.02,1.259-1.83,2.16c0.223,1.07,1.548,1.756,2.687,1.487c3.003-0.712,6.008-1.413,9.032-2.044 c1.549-0.324,2.273-1.869,1.344-3.115c-0.868-1.156-1.801-2.267-2.639-3.445c-1.964-2.762-1.95-2.771,0.528-5.189 c1.394-1.357,1.379-1.351,2.437,0.417c0.461,0.769,0.854,1.703,1.99,1.613c2.238-0.181,4.407-0.755,6.564-1.331 C43.557,30.447,43.88,29.206,43.527,28.401z",
+      "symbolSize": [
+        50,
+        50
+      ]
+    },
+    {
+      "name": "步行",
+      "value": 1,
+      "symbol": "path://M29.902,23.275c1.86,0,3.368-1.506,3.368-3.365c0-1.859-1.508-3.365-3.368-3.365 c-1.857,0-3.365,1.506-3.365,3.365C26.537,21.769,28.045,23.275,29.902,23.275z M36.867,30.74c-1.666-0.467-3.799-1.6-4.732-4.199 c-0.932-2.6-3.131-2.998-4.797-2.998s-7.098,3.894-7.098,3.894c-1.133,1.001-2.1,6.502-0.967,6.769 c1.133,0.269,1.266-1.533,1.934-3.599c0.666-2.065,3.797-3.466,3.797-3.466s0.201,2.467-0.398,3.866 c-0.599,1.399-1.133,2.866-1.467,6.198s-1.6,3.665-3.799,6.266c-2.199,2.598-0.6,3.797,0.398,3.664 c1.002-0.133,5.865-5.598,6.398-6.998c0.533-1.397,0.668-3.732,0.668-3.732s0,0,2.199,1.867c2.199,1.865,2.332,4.6,2.998,7.73 s2.332,0.934,2.332-0.467c0-1.401,0.269-5.465-1-7.064c-1.265-1.6-3.73-3.465-3.73-5.265s1.199-3.732,1.199-3.732 c0.332,1.667,3.335,3.065,5.599,3.399C38.668,33.206,38.533,31.207,36.867,30.74z",
+      "symbolSize": [
+        40,
+        50
+      ]
+    }
+  ],
+  "option": {
+    "title": {
+      "show": true,
+      "text": "象形柱图"
+    },
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "grid": {
+      "bottom": 115
+    },
+    "tooltip": {
+      "trigger": "axis",
+      "axisPointer": {
+        "type": "shadow",
+        "label": {
+          "show": true,
+          "backgroundColor": "#333"
+        }
+      }
+    },
+    "series": []
+  }
+}', N'1', NULL, N'2022-01-05 16:52:27.0000000', N'admin', N'2022-04-24 11:03:33.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'200208', N'1537764868216684545', N'普通漏斗图', N'JFunnel', N'ant-design:funnel-plot-filled', N'8', NULL, N'{
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/26/funnel",
+  "timeOut": 0,
+  "turnConfig": {
+    "url": ""
+  },
+  "linkageConfig": [],
+  "dataMapping": [
+    {
+      "filed": "维度",
+      "mapping": ""
+    },
+    {
+      "filed": "数值",
+      "mapping": ""
+    }
+  ],
+  "chartData": [
+    {
+      "value": 335,
+      "name": "直接访问"
+    },
+    {
+      "value": 310,
+      "name": "邮件营销"
+    },
+    {
+      "value": 234,
+      "name": "联盟广告"
+    }
+  ],
+  "option": {
+    "title": {
+      "text": "基础漏斗图",
+      "show": true
+    },
+    "grid": {
+      "bottom": 115
+    },
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "tooltip": {
+      "trigger": "item",
+      "formatter": "{a} <br/>{b} : {c}%"
+    },
+    "legend": {
+      "orient": "horizontal"
+    },
+    "series": [
+      {
+        "name": "Funnel",
+        "type": "funnel",
+        "left": "10%",
+        "width": "80%",
+        "sort": "descending",
+        "gap": 2,
+        "label": {
+          "show": true,
+          "position": "inside"
+        },
+        "labelLine": {
+          "length": 10,
+          "lineStyle": {
+            "width": 1,
+            "type": "solid"
+          }
+        },
+        "itemStyle": {
+          "borderColor": "#fff",
+          "borderWidth": 1
+        },
+        "emphasis": {
+          "label": {
+            "fontSize": 20
+          }
+        }
+      }
+    ]
+  }
+}', N'1', NULL, N'2022-01-06 14:38:04.0000000', N'admin', N'2022-06-17 19:51:26.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'200211', N'200300', N'基础仪表盘', N'JGauge', N'mdi:gauge', NULL, NULL, N'{
+  "dataType": 1,
+  "url": "http://api.jeecg.com/mock/26/gauge",
+  "timeOut": -1,
+  "turnConfig": {
+    "url": ""
+  },
+  "linkageConfig": [],
+  "dataMapping": [
+    {
+      "filed": "名称",
+      "mapping": ""
+    },
+    {
+      "filed": "数值",
+      "mapping": ""
+    }
+  ],
+  "chartData": [
+    {
+      "min": 1,
+      "max": 10,
+      "label": "名称",
+      "value": 4,
+      "unit": "%"
+    }
+  ],
+  "option": {
+    "title": {
+      "text": "标准仪表盘"
+    },
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "tooltip": {
+      "formatter": "{a} <br/>{b} : {c}%"
+    },
+    "grid": {
+      "bottom": 115
+    },
+    "series": [
+      {
+        "axisLabel": {
+          "show": true,
+          "fontSize": 12
+        },
+        "detail": {
+          "fontSize": 25,
+          "formatter": "{value}"
+        },
+        "splitLine": {
+          "length": 12,
+          "lineStyle": {
+            "color": "#eee",
+            "width": 4
+          }
+        },
+        "axisTick": {
+          "show": true,
+          "lineStyle": {
+            "color": "#eee"
+          }
+        },
+        "progress": {
+          "show": true
+        },
+        "data": [],
+ "itemStyle": {
+          "color": "#64b5f6"
+        },
+        "type": "gauge"
+      }
+    ]
+  }
+}', N'1', N'jeecg', N'2021-12-26 18:32:05.0000000', N'admin', N'2022-04-24 10:57:39.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'200300', N'200', N'仪表盘', N'', N'mdi:gauge', N'10', NULL, N'', N'1', NULL, NULL, NULL, N'2022-04-22 19:10:00.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'200400', N'708970414976712704', N'通用组件', N'JCommon', N'teenyicons:area-chart-solid', N'6', NULL, N'{
+  "dataType": 1,
+  "background": "#ffffff",
+  "url": "http://api.jeecg.com/mock/33/chart",
+  "timeOut": 0,
+  "turnConfig": {
+    "url": ""
+  },
+  "linkageConfig": [],
+  "dataMapping": [],
+  "chartData": [
+    {
+      "value": 0,
+      "name": ""
+    }
+  ],
+  "option": {
+    "grid": {
+      "bottom": 115
+    },
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "title": {
+      "text": "",
+      "show": true
+    }
+  }
+}', N'1', NULL, NULL, N'admin', N'2022-07-01 17:34:27.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'708970414976712704', N'0', N'个性组件', N'custom', N'ant-design:appstore-twotone', N'100', NULL, NULL, N'1', N'admin', N'2022-07-18 19:22:09.0000000', N'admin', N'2022-07-18 19:33:20.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'708970874177503232', N'708970414976712704', N'牛气冲天', N'JCommon', N'ant-design:heart-outlined', N'100', NULL, N'{
+  "dataType": 1,
+  "background": "#ffffff",
+  "url": "http://api.jeecg.com/mock/33/chart",
+  "timeOut": 0,
+  "turnConfig": {
+    "url": ""
+  },
+  "customOption": "var path=''path://M1472.28,127.91v1C1551,161.7,1579,253.05,1566,330.91a302.16,302.16,0,0,1-10.75,45c-1.53,4.64-2.58,11.74-5.84,15.49-4.58,5.24-17.68,7.14-24.16,9.56-16.89,6.31-33.09,14.32-49,22.73a288.45,288.45,0,0,0-41,26.87c-5.65,4.35-12.1,13-19,15-5,1.48-13-2.41-18-3.47-13-2.75-26.75-4.88-40-5.2-34.31-.84-68.14-.13-101-12.07-87.12-31.65-121-121.33-121-207.95-8.6,6.19-14.51,17.69-19.24,27-12.29,24.17-18.25,50.2-20.93,77-9.21,92.11,29.78,183.68,110.17,232,17.52,10.54,39.51,23,60,26-27.07,22.42-61.21,39.27-91,58l-24,15.1c-3.06,1.92-8.39,4-10.25,7.28-3.37,5.86,12.26,15.67,16.25,18.32,19,12.57,45.11,21.88,68,22.35-14.3,12.93-35.35,20.72-51,32.66-34,26-63.52,56.3-91.71,88.34a787.23,787.23,0,0,0-57.4,73c-12.44,18.05-23,37.85-38,54-13.26,14.26-28.7,25.07-44.92,35.66-56.3,36.75-122.64,58.87-187,76.76-91.95,25.57-185.55,44.87-277,72.31-41.2,12.35-81.72,26.39-117,51.7-11.09,8-22.6,17.26-31.57,27.57-4.78,5.49-11.54,16.79-18.44,19.4-6.5,2.45-17.27-.17-24-1.13-21.36-3-50.8-8.45-64.21-27.27-9.24-13-3-28.7,5.88-40,17.49-22.23,44.8-39.36,71.33-48.66,53.62-18.78,111-24.35,165-42.34,25.32-8.44,54.45-19.34,71.49-41,21.79-27.7,14.86-74.74,5.94-106-26.46-92.7-114.26-157-210.43-159,14.47,18,33.35,30.17,41.31,53,2.84,8.16,2.07,15.62,2.86,24,1.79,18.79,6.07,37.51,19,52,28.13,31.53,70.68,26.37,102.82,49.93,17.21,12.61,32.57,33.58,27.1,56.07-10.26,42.27-68.2,52.95-104.1,59.42-57.71,10.42-118.24,18.08-173,40-30.44,12.18-59.21,31.26-72.13,62.6-19.22,46.59,5,87.25,44.13,113.33a263.25,263.25,0,0,0,41,22.09c4.22,1.84,12.58,3.76,11.82,9.6-1.91,14.69-8.09,29.16-10.39,44-4.36,28.12-5.11,57.57-4.41,86,1.54,62.75,7,125,7,188,0,39-.72,79-10.73,117-12.41,47.06-52.6,77.71-69.21,123a177.6,177.6,0,0,0-11,53c-.64,14.62,1.52,29.6-1.7,44-3.28,14.63-19.08,24.93-20.24,39-1.48,18,10.2,33.95,7.6,52-3.72,25.85-33.15,41.75-27,70,3.33,15.35,18.49,24.8,32.33,29.66,28.41,10,63.53,12.06,93,5.68,19.29-4.18,41.85-16,32-39.34-16.25,4.65-30.79,10.21-48,11-16.31.71-31.87-3.27-48-4v-1c29.51-5.48,58.33-7.43,85-23-14.07-44.48-78.23-59.81-76-110,.64-13.92,8.93-27.24,17.09-38,18.37-24.2,43.35-42.89,67.87-60.42,58.41-41.76,121.88-75.85,180-118,37.2-27,70.16-60.68,106-89.57,16.43,79.56,64.1,157.63,124,211.83,20.94,19,44.5,33.9,67,50.8,11.75,8.82,25.72,18.68,33.54,31.37,8.65,14.06-8.82,18.72-8.4,32,.46,14.58,16.09,26.43,19.35,41,2.91,13-1.16,25.79-5.54,38-3.51,9.81-6.76,21.2,1.52,29.67,6.93,7.08,18.29,9.25,27.53,11.45,25.93,6.14,53.84,6.41,80,2,8.67-1.47,40.39-11.88,28.83-26.48-3.37-4.25-19.71-.6-24.83-.6-23,0-42.29-5.75-64-12v-1c25.71,0,58.05-.69,82-11-7.68-18.45-19.4-37.15-34-50.91-11.59-10.93-25.16-18.77-35.56-31.09-37.67-44.64-65-113-62.4-172,1.41-32.05,18.57-53.87,35.62-80,19.45-29.79,38.76-59.78,57.54-90,8.14-13.11,16.85-25.89,25-39,2.87-4.62,6.56-13.55,11.85-15.69,6.63-2.68,18,1,24.95,1.6,22.7,1.83,45.45,4.82,68,8,73.16,10.17,145.12,22.29,216,43.41,15.49,4.61,31.33,8.38,47,12.35,7.83,2,17.29,3,24,7.75,28.88,20.47,61.08,50.49,76.74,82.62,10.42,21.38,9.22,47.09,24.72,66,30,36.62,76.59,55.44,109.5,89,22.06,22.51,25,52.87,38.3,80,5.78,11.84,18.15,18.21,23.39,30,9.57,21.55-5.94,45.37-13,65-5.93,16.62-2.68,37.29,8.63,51,28.34,34.37,85.85,32.9,125.68,25.39,21.63-4.08,45-13.08,45-38.39-33.33.09-65,2.77-98-5.48-14.23-3.55-26.6-9.94-40-15.52v-1c45.78,5.91,88.63,10.78,134-2-13.48-32.38-41.31-63.58-67-86.83-22.22-20.11-45.87-38.14-63-63.17-19-27.75-26.23-61.69-23.94-95,1.07-15.61,8.5-30.09,5.24-46-5.58-27.3-24.69-47.5-36-72-11.87-25.65-13.5-55.3-15.4-83-.84-12.21-3.08-26.88-.63-39,1.37-6.77,7.76-13.69,11.93-19,11-14,23.22-26.45,35.79-39,20.79-20.76,45.55-37.78,69-55.37,32.27-24.21,65.23-49,101-67.85,24-12.65,58.09-21.5,79.91.31,19,19,18.11,52.46,3.73,73.91-6.5,9.7-18.93,17-21.17,29-3.86,20.58,15.81,43.32-7.47,58.9-30.6,20.47-81.21,5.06-100.63,43.1a53.83,53.83,0,0,0-5.07,16c-5.36,34.59,6.69,80.69,32.7,104.91,11.92,11.1,29.9,18.48,46,12.16,3.89-1.53,11.44-4.6,12.65-9.1,1-3.68-4.44-6.88-6.65-9a102.67,102.67,0,0,1-18.69-24c-14-25.5-15.53-49.67-14.31-78h1c.75,36.25,22.54,76.42,57,90,42.58-109.73,89.4-217.41,110.42-334,8.3-46,17.54-102.62,1.36-148-5.89-16.53-21.23-23.44-35.78-31.31-29.79-16.11-59.59-31.3-91-44.09-8.3-3.37-16.6-6.81-25-9.92-3.63-1.34-9.71-2.44-12.38-5.38-3.17-3.49-.62-16.55-.62-21.3,0-20,.28-40.07-1.09-60a870.11,870.11,0,0,0-11.33-95c-8.14-45.1-19.57-89.75-17.54-136,1.44-32.95,3.38-70.71,22.48-99,8.7-12.88,22.25-21.62,33.48-32.08,17.49-16.29,33.42-34.41,45.8-54.92,16.85-27.91,27.29-59.34,34.55-91,5.5-24,8.46-48.26,18.51-71,17.57-39.74,54.62-67.63,70.08-108,11.51-30.07,9.57-65.44.92-96-3.24-11.42-6.37-24.73-15.86-32.67-26.77-22.36-65.92,2.83-61.81,35.67,2.31,18.57,25.16,26.94,39.81,16.37,9.18-6.63,10-16,10-26.37h1c1,7.24,2.88,13.66,1.1,21-5.85,24.08-34.91,38.31-56.1,23.22-23.42-16.69-27.41-51.5-10.84-74.22a58.1,58.1,0,0,1,21.84-18.51c11.76-5.52,22.5-5,35-4.49v-1c-5.86-3.08-11.5-6.23-18-7.76-33.08-7.79-45,24.6-68,38.95-52,32.51-108.58,62.8-167,81.81,0-81.44-16.39-176.06-91-223.56a189.17,189.17,0,0,0-48-21.71c-21.73-6.48-44.43-8.73-67-8.73m133,55c0,6.85.56,13.72-2.67,20-8.44,16.45-28,18.37-42.33,9v-1c14,.61,27.06-.94,36.47-13,3.6-4.61,5.06-10.41,8.53-15m28,41c9.74,33-39.31,61.09-61,33,19.8,3.85,38.15.49,51.53-16,4.25-5.23,6-11.45,9.47-17m25,56c-2,15.68-10.38,29.06-25,35.88-18.57,8.67-48.86,2.65-56-18.88,20.19,10.63,41.93,14.1,62,.65,7.47-5,12.19-12.14,19-17.65m186,36-23.14,54-29.86,67h-1v-66h-1c-5,28.89-23.6,57.21-33,85h-1l-4-59h-1l-14,39-9,22-10-51h-1c-1.56,11.56-4.92,29.05-11,39l-18-34c-.82,10.06-4.13,27.77-10,36l-20-44,44-14.34,67-27.91,76-45.75m-182,19c-1,46.3-68.69,59.78-89,19,7.24,2.29,13.51,6.61,21,8.53a61.2,61.2,0,0,0,51-10.29c6.62-4.92,11-11.78,17-17.24m-510,23c4.91,26.55-30.79,50.19-50,27,15.91,3.09,30.78.15,41.67-13,3.55-4.28,5-9.65,8.33-14m17,38c2.32,8.49,5.16,16,3.54,25-5,27.78-32.38,37.31-56.54,28v-1a51.93,51.93,0,0,0,47.69-31c3-6.73,2.48-14.42,5.31-21m28,32c24.78,24.8,25.68,67.05-9,84.63-8.79,4.46-18.31,5.37-28,5.37v-1c24.42-11.62,42.28-34,42-62-.09-8.54-6.36-19.21-5-27m57,27c29,22.14,29.88,67.72,3,91.83-13.69,12.28-29.28,15.17-47,15.17v-1c33.84-11.52,51.46-46,50-80-.39-8.8-6.23-17.58-6-26m76,15c32.9,23.18,31.66,75.17,3,100.83-14.75,13.21-32,16.17-51,16.17v-1c33.86-13.15,55.87-46.86,55-83-.27-10.86-7.83-22.88-7-33m367,0c-1.53,11.34-6.74,22.81-11.76,33-5.79,11.79-12.83,23.62-22.33,32.83-32.55,31.58-79.5,22.37-113.91-.83,3.4-14.17,15-26.81,26-35.73,34.26-27.82,80.08-29.27,122-29.27m83,153v1c-32.1,9-68.74,12.91-102,13v1l70,1,37-3v1c-32.09,13.35-65.32,29.91-101,30v1c39.41,0,72.72-12.82,110-23-6,8.07-16.41,13.4-25,18.29-26,14.78-55.32,20.71-85,20.71-14.48,0-32.39-1.69-42.81-13-13.24-14.41-3.73-39.46,11.81-48.05,15-8.3,34.65-6.49,51-4.74,25.45,2.73,50.37,4.83,76,4.83m46,40v1c-72.51,34.36-150.45,63-232,63v1c50.37,0,102.12-5,151-17.88,20.48-5.4,39.55-16.27,60-21.12v1c-67.17,35.76-136.49,64-214,64v1c49.63,0,98.61-6.95,146-22,18.9-6,36.58-14.83,55-22-13.6,14-39.3,21.26-57,28.85-54.69,23.48-109.23,39.15-169,39.15-29.63,0-87.91-8.9-72.45-52,10.38-28.94,53.16-25,77.45-25,26.34,0,52.55,3.12,79,2s54.08-6.6,80-12c32.94-6.82,63.51-21.3,96-29m-490,95c-9,12.82-22,23.86-33,35-13.57,13.74-26.34,28.34-40,42-9.52,9.52-21.78,19.12-33.47,5.82-6.26-7.12-8.17-19.63-.42-26.43,10.95-9.61,28-15.38,40.89-22.17,20.8-11,43.44-27.7,66-34.22m110,7c13.35,13.32,27.65,25.68,41,39,8.43,8.42,17.17,16.84,26,24.83,7,6.32,19.4,14.49,21.61,24.17,3.34,14.66-14,28.53-27.61,22.35-8.07-3.66-11.35-15.11-15.42-22.35-11.5-20.39-22.56-41.2-33.32-62-3.38-6.52-13.32-18.7-12.26-26m-58,3c0,37.17-1.35,76,2.17,113,1.3,13.63,5.23,34.75-9.17,42.59-13.67,7.44-36.07-1.26-34.9-18.59.71-10.58,6.13-21.87,9.18-32l19-63c3.75-12.51,5.9-31.54,13.72-42m-21,9c-6,19-20.18,37.46-29.69,55-9.86,18.19-18.64,41-31.7,57-7.09,8.69-20.53,7.56-28.42.5-12.18-10.9-6.4-24.08,3.81-33.32,20.52-18.57,40.48-37.76,61-56.34,8.27-7.48,15.88-16.4,25-22.83m41,0c18.35,30,36.3,60.21,55,90,6.77,10.82,18.18,24.73,7.71,37-7.85,9.17-26.4,12-33.24,0-4.52-7.89-5.11-19.19-7.29-28-5.31-21.25-9.84-42.7-15-64-2.29-9.44-9.28-25.59-7.13-35m-889,172c-21.37-15-38.7-38.46-57-57-22.46-22.73-50.59-44.87-69-71,14.95,2.24,29.74,12,42,20.35,36.79,25,67,66.75,84,107.65m-130-95c15.29,21.27,35.84,39.06,56,55.58,9.21,7.56,21.44,14.27,29,23.42-32-1.37-58.8-24.18-74.13-51-3.78-6.61-13.15-20.27-10.87-28m1243,10c5.1,17.26,2.45,39.26,2,57-1,41.87-6.18,83.51-17.43,124-5.68,20.43-14.79,39.76-20.58,60h1c5.34-16.88,17.8-33.09,25.75-49,18.06-36.11,35.72-73.55,48.25-112h1c-1.71,21.7-7.08,43.65-11.2,65a1364.13,1364.13,0,0,1-42.8,164h1l48.58-77,41.42-81h1l-34.33,130-24.87,70-16.8,40h1l35-49,47-79h1c-11.54,44.6-23.55,88.39-41.42,131-10.72,25.55-24.91,49-36.58,74l46.37-61,30.63-44h1c-2.82,19.19-11.82,38.78-18.31,57a892.42,892.42,0,0,1-60.69,135,595.42,595.42,0,0,0,63-75h1c-2.34,15.9-9.21,31.82-14.33,47-11.65,34.49-27.12,68.68-47.34,99-9.95,14.93-21.5,30.6-36.33,41,0-23.32,3.72-46.66,4-70,.93-78.47-3.47-156.65-17.42-234a892.72,892.72,0,0,0-29.25-118c-4.27-13.12-8.85-26.18-13.93-39-2.51-6.32-7.29-14.22-7.84-21-.44-5.6,2.71-12.57,4.07-18,3.14-12.59,6.07-25.27,8.57-38,7.43-37.9,12.8-76.37,12.8-115h2c1.2,58.05,17.25,118.15,3,176h1c16.24-39.6,34-77.54,45.58-119a454.82,454.82,0,0,0,10.34-46c1.31-7.76,1.07-17.84,4.08-25m-413,70c5.41-1.52,11.34-3.23,17-2.55,45.43,5.41,38.79,62.68,22,91.55h-1l-1-27h-1l-5,28h-1l-5-39h-1l-2,40h-1l-12-50h-1l2,49h-1l-14-47h-1l4,47h-1c-6.44-15-14.6-34.95-17-51h-1l10,55h-1c-9.22-20.8-21.68-47.51-25-70h-1l15,74h-1c-8.36-15.68-17-34.66-21-52h-1l11,53h-1l-20-43h-1l12,50h-1l-22-41h-1l16,48c-10.14-7.77-19.56-23.5-25-35h-1l15,37c-7.66-3.57-14.41-12.46-18-20h-1l13,25c-28.92-15.39-67.06-61.19-30-89.46,4.72-3.6,10.4-5,16-6.54-8-27.15,18.21-52,44-52,17.77,0,33.13,12,40,28m-39,23,1,1-1-1m157,165v-1l26-9v-1l-29,4v-1l35-17v-1l-39,11v-1l44-27v-1l-48,17v-1l42-29-45,18v-1l44-31v-1l-50,26v-1l59-46c-21.47,11.31-43.75,30.16-67,37v-1l44-37-48,27,35-34-45,27,32-35-41,29,25-34-31,25,13-23-19,19c7.13-27.47,25.41-68.94,61-62.53,6.42,1.15,13,3.62,18,7.86,3,2.52,6,8.94,10.1,9.46,5.24.67,12.45-3.1,17.91-3.62,14.25-1.35,28.44,5.57,37,16.83,9.21,12.19,12.1,28.87,5.73,43-2.64,5.85-8.72,11.12-10.59,17-1.24,3.88,3.09,8.47,4.35,12,2.22,6.23,2.34,14.57.87,21-8.36,36.41-53.28,33.2-81.32,32m-316-149c-9.77,26.84-33.09,53-51.84,74-62,69.42-148.28,112.34-240.16,124.72-28.53,3.84-56.39,3.28-85,3.28v-2c32.11-4.32,65.57-17.48,96-28.31,76.94-27.38,152-62.23,217-112.34,23.38-18,42-40.27,64-59.35m191.33,2.67.34.67-.34-.67m-40,3,.34.67-.34-.67m-23.33,19.33,1,1-1-1m305,6c47.91,32.33,77.54,87.44,68.41,146-4.37,28-17.32,68.7-53.41,62.67-39.88-6.66-32.15-69.51,8-66.34,7.87.62,14.47,3.37,21,7.67,8.36-40.54,6.18-75.37-14.85-112a159.52,159.52,0,0,0-18.44-26c-3.15-3.59-9.46-7.43-10.71-12m-143,3,1,1-1-1m-18,2,1,1-1-1m34,3,1,1-1-1m26,15,1,1-1-1m23,1,1,1-1-1m-238,40-27-7v1c8.65,2,20.27,7.08,26,14l-39-6v1c12,1,26.62,7,37,13v1l-52-4v1l47,13v1l-51-1v1l48,11v1h-56v1l57,7v1l-77,3v1c24.17,0,53.5,2.4,77,8v1l-59,4v1l57,5v1l-49,6v1l51,4v1l-46,8v1h50v1l-39,11v1l38-2v1l-23,9v1l26-5c-3.72,6.43-11.75,10.68-18,14.4-19.67,11.7-47.78,20.06-67,2.41a35,35,0,0,1-10.53-17.81c-.8-3.77.68-9.29-1.54-12.57s-8.52-3.8-12-5.31a42.36,42.36,0,0,1-17.08-13.12c-20.88-28.29-1-67.22,33.08-70,0-5.45.48-10.86,2.47-16,16.06-41.47,75.51-20,94.53,7m138,22h-1c-4.91-26.06-35.82-46.31-56-20-4.56-12.85,14.79-25.15,25-27.19,28.54-5.71,40.67,24.69,32,47.19m91-41,1,1-1-1m-154,4-2,13-8-11c3.64-3.31,5.3-3.42,10-2m-5,20c-29.83-6.15-51.37,18.89-37,47-4.81-1.64-8.47-5-11.61-9-10.65-13.57-8.63-34.2,5.61-44.36,12-8.53,35-7.37,43,6.36m160-9,1,1-1-1M1097,1069.23l.66.34-.66-.34m194.33,12.67,3-1,1,7-12,3c.57-3.17,3.82-12.42,8-9m-65,33c-5.93-4.35-9.93-17-12-24-.82-2.83-1.91-8.2,2.09-9.25,3.68-1,5.61,3.48,6.35,6.25a112.35,112.35,0,0,1,3.52,27m7-8c.68-3.53,2.4-21.07,7.79-20.08,6.55,1.2-5.14,18.35-7.79,20.08m137-12,1,1-1-1m-135,24c5-7,12.85-13.76,20-18.53,2.36-1.58,7.77-4.78,9.86-1,1.86,3.35-2.55,6.85-4.88,8.45-6.81,4.68-16.85,9.65-25,11.1m-21-5c-3.62-1.56-19.7-8.26-17.65-13.59,1.12-2.93,5.28-.19,6.65.87,4.32,3.36,8.69,7.77,11,12.72m65,46c3.6-5.28,11.31-7.72,15.67-13,8.57-10.39,8.57-26.61,0-37-3.9-4.73-10.23-7.27-13.67-12,10.34,0,20.07,2,27.91,9.3,13,12.06,11.9,34.24-1.92,45.17-8.33,6.59-17.81,7.53-28,7.53m316-55-1,3,1-3m-376,18c-6.47,3.88-19.5,4.25-27,4-2.73-.11-8.66-.88-8.08-4.91.52-3.54,5.3-4,8.08-4a102.69,102.69,0,0,1,27,4.9m-55,1v2l-12,4-3-4c3.47-7.92,8.72-5.29,15-2m63.13-3.25c4.09-1.1,6,5.2,1.77,6.28-4,1-5.85-5.18-1.77-6.28m18.87,4.25v-2c3.26,0,21.77-3.61,21.65,1.87s-18.45.54-21.65.13m-10,4a109.5,109.5,0,0,1,12,6.28c2.7,1.54,5.39,3.1,8,4.77,3,1.91,13,12.66,3,11.66-6.45-.64-23.11-16.37-23-22.71m-66,1c-2.24,6.14-5.66,11.24-6,18-1,23.73,19.44,33.62,40,32-11.45,13.82-36.37,12.67-47.47-1-9.27-11.45-8.17-27.5.4-38.95a31.67,31.67,0,0,1,13.07-10m55,2c.71,8-2.25,19.48-5.09,27-1,2.62-3.14,7-6.7,6.17-4-1-2.74-6.51-1.74-9.17,2.92-7.8,7.6-18.14,13.53-24m-11,2c-4.65,5.77-12,14-20,13,2.12-7.39,12.9-11.73,20-13m136,143c-9.89,22.12-39.74,19.35-56,7.24s-24.49-37.81-27-57.24h1l17,21-12-26,27,26-20-32,40,32-30-39,41,30-31-37,44,30-40-39,64,42-40-36-16-16,50,30-41-37,43,22-38-32v-1l41,18-39-29,41,14v-1l-33-20v-1l25,5v-1l-24-10c7-3.14,14.66-1.63,22-1.09,23.3,1.71,50.28,10.14,56,36.09a35.71,35.71,0,0,1-1.46,21c-1.49,3.71-6.09,7.91-5.94,12,.34,9.16,10.9,17.45,11.38,28,1.11,24.47-16.4,46.95-42,47.54-9.75.23-17.92-3.94-27-6.54m-116-137,7,22c-7.65-1.25-9.62-15.74-7-22m127,11,1,1-1-1m-68,18v7c-7.6.51-10.64-2.39-12-10l12,3m-20-2c2.48,8.81,4,17.11.9,26-6.8,19.17-30.6,26-46.9,14.36-8.19-5.87-12-14.8-14-24.36,16.33,13.11,35.34,21.78,51.67,2,4.52-5.48,4.51-12.5,8.33-18m94,16v1l3,1-3-2m-159,5v13l-7,1-3-4,10-10m-63,6-14,22,20-18-18,36h1c5.28-11.12,15.22-24.52,25-32l-19,49h1l27-41h1l-16,48h1c4.46-14.08,15.76-28.77,24-41h1l-16,52h1l23-50h1l-20,72h1l30-68h1l-13,56h1l21-50h1l-8,48h1l18-47h1l-5,46h1l14-47h1l-1,43h1l10-39h1l2,26h1l3-26h1c6.57,17,12.39,37.56,8.48,56-5.16,24.33-31.08,41.28-54.48,29-10.63,28-49.21,32.56-70,13.82-11.91-10.75-15.64-28.55-12-43.82-22.18-3.33-31.83-27.15-26.25-47,5.65-20.14,28.24-41.12,48.25-47m219,4,1,1-1-1m-1165,9c11.79,43.13,63.28,76.37,105,85v1c-35.68-.74-79-19.55-96.22-52-4.37-8.25-12.45-24.61-8.78-34m1163,6,1,1-1-1m-232,3,1,1-1-1m-536,47c-15.95-5.39-31.12-10.22-48-11.83-45.95-4.38-87.44,11.77-127,32.83,7-12.12,20.55-21.05,32-28.67,39.85-26.52,91.69-32.75,137-17.66,22.11,7.36,52,20.84,54.82,47.33,3.26,30.35-41.74,49.71-55.75,19-5.87-12.88.9-29.5,6.93-41m188-32,76,15v1l-42,22v1l47,10v1l-44,24v1l65-3-26,19-42,28v1l75-14v1l-93,67,80-19c-12,15.65-34.36,27.6-50,39.65-30.72,23.67-61.34,53.17-95,72.35,5.57-19.33,17.38-38.12,24.79-57a458.62,458.62,0,0,0,26.93-102,331.28,331.28,0,0,0,2.19-74c-.76-9.5-7.57-25.25-4.91-34m562,1,2,2-2-2m24,3,1,1-1-1m-37,4,1,1-1-1m-46,9,1,1-1-1m15,0,3,3-3-3m20,0,1,1-1-1m313,7,1,1-1-1m-592,129-74,3v-1l28-21c-26.61.55-58.13,3.82-84,10l20-15,49-33-61-5,15-10.15,34-18.85v-1l-59-15v-2l58-12.42,22.57-3.94,3.8,8.36,6.63,24,22.25,58,18.75,35m111-126,1,1-1-1m10,11,1,1-1-1m359,5c-3.64,7.95-11,14.48-16.72,21a376.36,376.36,0,0,1-48.28,45.4c-81,64.74-191,95.89-292,63.6v-1c93.66-7.39,189-40.62,273-81.26,29.13-14.09,55.56-32.6,84-47.74m-335,5,1,1-1-1m-18.67,12.67.34.66-.34-.66m746.67,3.33c-4,10.82-11.47,20.72-16.74,31-11.54,22.51-22,47.75-25.26,73h-1c-25.77-42.14.69-86.29,43-104m-69,5c-6.38,9.06-15.37,16.66-22.71,25-23.71,26.94-49.14,56.12-62.29,90-5.31-10-1.62-26.62,1.16-37,9.65-36.18,47.59-69.39,83.84-78m-1350,74c-5.76-7.72-10.07-16.77-19-21.58-7.09-3.82-14.48.3-14.65,8.58-.19,10.13,7.28,18.1,10.65,27-9.55-2.21-17.11-7.11-24-14-16.27-16.26-26.69-45.3,0-57.68a31.9,31.9,0,0,1,12-3.06c26-.78,41.69,39.59,35,60.74m29,18c5.18-8.3,13.44-15.74,14.63-26,1-8.18-6.44-12.49-13.63-9.87-9.58,3.5-13.89,13-22,17.87a56.19,56.19,0,0,1,5.76-26c5.62-11.42,14.81-25.06,28.24-27.69,28.06-5.48,42.54,25.25,27.78,46.69-4.66,6.77-11,12.13-17.78,16.64a49,49,0,0,1-23,8.36m1115-60-2,4,2-4m-992,21.39c24.32-1.72,28.64,37.5,4,39.52-27.06,2.22-30.95-37.61-4-39.52m-154,27.94c27.49-4.82,35.84,37.46,8,42.34-27.08,4.75-35.1-37.59-8-42.34m-24,13.67c-9.38,5.65-21.43,4.64-28.28,15-3.9,5.89.36,11.42,6.28,13.53,9.5,3.38,19.82.42,29-2.52-9.88,19.83-47.72,36.81-66.83,20.32-18.74-16.17-8-43,12.83-49.8,6.92-2.26,13.8-2.52,21-2.52,9.4,0,17.71,1.29,26,6m47,30c9.11,2.49,20.28,9,30,5.26,7.07-2.72,8.31-9.74,3.77-15.26-6.34-7.71-15-11.08-23.77-15,17-12.62,57.8.34,64.21,20,7.8,23.92-15.09,42.14-37.21,36.08a62,62,0,0,1-19-9.29c-7.59-5.34-15.32-12.7-18-21.79m970-27,11,96-44-41,5,60c-17-11.28-32.55-28.55-47-43l29,78-32-24.12-51-39.88c11.93,28.5,35.45,54.33,44,84l-39-28.63-77-57.37c15.81,29.7,41.11,57.58,53,89-22.38-9.41-44.15-29.53-64-43.58q-61.1-43.21-123-85.42c4.26-1.53,9.57.39,14,1,10.31,1.42,20.65,2.8,31,3.83a694.58,694.58,0,0,0,99,3.13c45.84-2,92.82-10.18,136-26,18.85-6.91,36.29-20,55-25.95m-1140,4.46c25.56-.81,26.56,39.2,1,39.2-24.83,0-25.94-38.41-1-39.2M797,1405.23l.66.34-.66-.34m841.33,13.67-1,2,1-2m-1156,8c-.44,10.17-3.59,28.15,8,34,14.89,7.46,18-24,18-32,17.73,13.7,18.84,56.69-1,69-21.27,13.2-43-5-43-27,0-7.36.64-14,3-21,3-9,7.1-17.39,15-23m588,12c1.81,42,10.69,83.63,28.31,122,7.81,17,18.66,31.77,27.69,48-18.64-1.48-37.52-6.86-56-9.92-37.14-6.15-74.55-11.29-112-14.91-33.14-3.21-67.66-6.36-101-4.08-20.42,1.4-40.6,5.39-61,6.82-22.36,1.57-47.11,3.25-69-2.39-10.33-2.66-21.8-8.89-23-20.52,13.73,4.35,23,10,38,10-5.17-13.8-3.92-31.05,0-45h1c6.38,14.77,21.44,28.52,37,33,0-16.18-2.43-36.79,7-51,7.41,15.63,19.47,32.84,37,38-.14-17.15-2-32.81,8-48,3.36,4.69,4.52,10.92,7.43,16,7.29,12.74,19,24.15,32.57,30,0-16.21-.22-35.54,8-50h1c8.11,18.3,14.61,37.08,32,49-4.83-20.29.31-47.81,10-66,4.24,6.74,5.81,15.62,8.86,23,6.89,16.68,15.59,32.88,28.14,46,0-19.12-.59-38,2.13-57,.89-6.21,1.57-17,6.87-21,1.35,31.27,22.24,61.38,42,84-1.09-25.29-2.9-49.67,0-75,1.16-10.35,2.42-24.05,8-33,12.83,37.82,18.07,80.41,45,112a499.31,499.31,0,0,1,.83-88c1-9.94.8-22.92,5.17-32m214,42,1,1-1-1m-635,3c-1.72,11.45-8,23.06-13.72,33-22.54,39.4-64.15,66.87-109.28,71.95-24.81,2.8-67.3,2.25-72.67-29.95-7.37-44.11,58.5-56.52,65.91-12,1.12,6.72-.2,12.59-2.24,19,40.85,0,77.9-15.94,105.91-46,10.34-11.1,16.65-24.61,26.09-36m-300,23.3c55.12-7.94,82.86,65.83,36,96a51,51,0,0,1-21,7.41c-54,7-80.66-66.35-35-95.84a51.36,51.36,0,0,1,20-7.57m-3,29.7c-3.64,7.79-16.4,22.36-15.75,30.9.27,3.49,5.17,5,7.75,6.41,7.92,4.3,15.67,9.22,24,12.69l17-33-33-17m1132,41,20,59,11,35-45-37,15,57-44-41,2,55-46-52v58h-1l-37.42-62-21.58-37c12.07,1.62,23.69,5.68,36,6,44.13,1.08,76-16.59,111-41m-1109,204v-1c53-12.15,110.13-43.3,150-80-14.43,8.22-27.55,18.83-42,27.13-39.89,22.9-86.13,41-132,46.87v-1c58.55-19.05,116.35-52.27,161-95-14.74,9.18-28.22,20.37-43,29.57-35.05,21.83-72.47,39.29-112,51.15-12,3.6-24.57,8.61-37,10.28,21.82-14.49,50.72-20.72,74-33.31,48-25.94,88.27-58.6,127-96.69,15.34-15.09,43.34-40.45,67-28.62,39.51,19.75,0,63.81-19,81.53-37,34.43-82.1,54-129,70.78-20.52,7.33-43.1,16.57-65,18.31m468-153v1c-56.73,26.52-100,91.38-100,154-28.71-14.54-35.34-59.06-19.3-84,18.72-29.13,54.16-46.72,85.3-59.4,10.77-4.38,22.44-9.89,34-11.6m45,3c-8.66,11.77-20.89,20.85-29.57,33-21,29.33-32.33,67-32.43,103-6.52-4.69-11.48-11.94-15.22-19-28.43-53.65,32.72-99.73,77.22-117m-581,4c42.61,13.62,88.26,20,133,16.91,20.57-1.41,40.61-7.29,61-8.91v1c-14.54,9-27.7,19-44,24.95-55.81,20.46-105.49.78-151-32.95l1-1m1532,8c-16.45,31.23-22,62.25-9,96-40.31-18.8-28.28-81.58,9-96m-1125,7c-5.59,9.72-13.3,18-18.69,28-15.09,27.84-26.05,63.11-26.31,95,18.47-1.46,37.55-3.83,51.91,11,27.62,28.62-9.23,63.21-40.91,57.5-28.41-5.13-39-37.23-39-62.54,0-49.78,24.67-108.17,73-129m-196,22-6,6,6-6m-234,5c33.75,19.62,76.22,22.1,114,22v1c-28.48,16.62-65,19.94-93,.65-6.34-4.37-21.71-15-21-23.65m252,13-1,2,1-2m-3,2-8,8,8-8m996,47c-2.89,22.83-.92,41.85,5,64l-22-19,5,56h-1l-30-54h-1l-4,34h-1l-22-40-2,29h-1l-25-63c22.71,11.62,49.89,13.22,74,4.92,8.84-3,16.39-8.66,25-11.92m-1176,102v2l-38,30,8-26-34,28,12-35-37,32,8-34-38,37c4.62-16,13.74-31.83,20.69-47,2.35-5.14,4.42-14.67,9.52-17.69,7.43-4.38,19-2,26.79-.18,23.32,5.59,41.5,19.46,62,30.87m447,60-14-19h-1l10,24h-1l-15-19,13,28-36-41,24,47-40-43,17,40h-1l-34-40,19,44-37-41,12,29c-8.25-5.81-27.23-20.9-29.53-31-1.74-7.63,4.91-16.47,10.57-20.7,13.44-10,36.41-9.18,52-5.4,13.58,3.3,31.36,9.74,40.21,21.19,5.76,7.45,7.92,18.09,10.79,26.91m-45-28,1,1-1-1m-34,4,1,1-1-1m18,0,1,1-1-1m44,2,1,3h1l-2-3m-80,1,1,1-1-1m74,4,1,3h1l-2-3m-589,187c-2.56,11.16-11,30-4.06,40.9,3.39,5.37,10.43,5.65,16.06,6.38,14.54,1.89,29.49-2.14,44-3.28v1c-21,6-51.89,20.17-74,13.2-8.63-2.73-8.12-10.89-6.24-18.2,3.55-13.8,12.82-31.26,24.24-40Zm1484-1557c0,21.15-18,38.3-40.22,38.3s-40.22-17.15-40.22-38.3,18-38.3,40.22-38.3S1666.24,493.75,1666.24,514.9Z'';option={backgroundColor:new echarts.graphic.RadialGradient(0,0,1,[{offset:0,color:''#06798c''},{offset:1,color:''#07162b''}]),title:{text:''牛气冲天'',top:100,left:100,textStyle:{fontWeight:''normal'',fontSize:40,color:''#fff'',fontFamily:''STXinwei'',textShadowColor:''#c30d23'',textShadowBlur:''2'',textShadowOffsetX:1,textShadowOffsetY:3,}},grid:{left:''80%'',top:''42%'',bottom:100},xAxis:{show:false,data:[''2017'']},yAxis:{show:false,},series:[{type:''liquidFill'',data:[0.7,0.8,0.75,0.21,0.2,0.13,0.1,],radius:''90%'',waveLength:''90%'',waveHeight:''10'',amplitude:10,z:2,outline:{show:false},backgroundStyle:{color:new echarts.graphic.LinearGradient(1,0,0,0,[{offset:0,color:\"#1afae8\"},{offset:0.3,color:\"#007771\"},{offset:0.6,color:\"#27AEFA\"},{offset:1,color:\"#4D8AFF\"}]),borderColor:new echarts.graphic.LinearGradient(1,0,.3,1,[{offset:0,color:''#5dfff8''},{offset:0.3,color:''#33ffe6''},{offset:0.5,color:''#049a8c''},{offset:1,color:''#f63469''}]),borderWidth:1,shadowColor:''#040b17'',shadowOffsetX:-5,shadowOffsetY:5,shadowBlur:5},shape:path,color:new echarts.graphic.LinearGradient(1,0,.23,1,[{offset:0,color:''#FDD43F''},{offset:0.3,color:''#33ffe6''},{offset:0.5,color:''#049a8c''},{offset:1,color:''#f63469''}]),label:{normal:{formatter:'''',}}},{name:'''',type:\"effectScatter\",rippleEffect:{period:10,scale:12,brushType:''stroke'',color:new echarts.graphic.LinearGradient(1,0,.3,1,[{offset:0,color:''rgba(93, 255, 248, .3)'',},{offset:0.3,color:''rgba(51, 255, 230, .3)'',},{offset:0.5,color:''rgba(4, 154, 140, .3)'',},{offset:1,color:''rgba(246, 52, 105, .3)'',}]),},z:0,symbolPosition:''end'',symbol:path,\"symbolSize\":[80,100],\"symbolOffset\":[0,-9],itemStyle:{normal:{color:''rgba(0, 0, 0, 0)'',}},data:[0]},]};return option;",
+  "linkageConfig": [],
+  "dataMapping": [],
+  "chartData": [
+    {
+      "value": 0,
+      "name": ""
+    }
+  ],
+  "option": {
+    "grid": {
+      "bottom": 115
+    },
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "title": {
+      "text": "",
+      "show": true
+    }
+  }
+}', N'1', N'admin', N'2022-07-18 19:23:58.0000000', N'admin', N'2022-07-18 19:34:37.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'708976410864304128', N'708970414976712704', N'五行相克', N'JCommon', N'ant-design:appstore-twotone', N'100', NULL, N'{
+  "dataType": 1,
+  "h": 55,
+  "background": "#ffffff",
+  "url": "http://api.jeecg.com/mock/33/chart",
+  "timeOut": 0,
+  "turnConfig": {
+    "url": ""
+  },
+  "customOption": "var wuXin=new Array(''木'',''火'',''土'',''金'',''水'');var color=[''#78a355'',''#d93a49'',''#8e3e1f'',''#dea32c'',''#50b7c1''];function roundDatas(num){var datas=[];for(var i=0;i<num;i++){var x=Math.cos(72*i*Math.PI/180);var y=Math.sin(72*i*Math.PI/180);datas.push({name:wuXin[i],x:y,y:-x,itemStyle:{normal:{color:color[i]}}});}return datas;}function linkDatas(num){var ldatas=[];for(var i=0;i<num;i++){ldatas.push({label:{normal:{show:true,formatter:''相生''}},lineStyle:{normal:{color:''#94d6da'',width:2,curveness:0.3,opacity:0.8,type:''dashed'',}},source:i,target:i+1});ldatas.push({lineStyle:{normal:{color:''#FF5151'',width:2,curveness:0,opacity:0.8}},label:{normal:{show:true,formatter:''相克''}},source:i,target:i+2});}ldatas.push({label:{normal:{show:true,formatter:''相生''}},lineStyle:{normal:{color:''#94d6da'',type:''dashed'',width:2,curveness:0.3,opacity:0.8}},source:(i-1),target:0});ldatas.push({lineStyle:{normal:{color:''#FF5151'',width:2,curveness:0,opacity:0.8}},label:{normal:{show:true,formatter:''相克''}},source:3,target:0});ldatas.push({lineStyle:{normal:{color:''#FF5151'',width:2,curveness:0,opacity:0.8}},label:{normal:{show:true,formatter:''相克''}},source:4,target:1});return ldatas;}option={backgroundColor:''#2E2E2E'',title:{text:''五行相生相克图'',subtext:'''',left:50,top:10,backgroundColor:''#FFFAFA'',borderRadius:8,textStyle:{color:''#102b6a'',},subtextStyle:{color:''#102b6a'',}},color:[''#000000'',''#FFFFFF''],series:[{name:''五行'',type:''graph'',focusNodeAdjacency:true,edgeSymbol:['''',''arrow''],edgeSymbolSize:[3,15],edgeLabel:{normal:{textStyle:{fontSize:15}}},label:{normal:{show:true,formatter:''{b}'',fontSize:46}},symbol:''circle'',symbolSize:60,top:''60'',left:''200'',width:''400'',height:''400'',data:roundDatas(5),links:linkDatas(5)},{name:''大圆'',type:''pie'',radius:''52'',center:[''400'',''268''],data:[{value:50,name:''阴''},{value:50,name:''阳''},],roseType:''radius'',hoverAnimation:false,label:{normal:{show:false}},labelLine:{normal:{show:false,}}},{name:''黑色圆'',type:''pie'',zlevel:2,radius:''26'',center:[''400'',''294''],data:[{value:50,name:''''},],roseType:''radius'',hoverAnimation:false,label:{normal:{show:false}},labelLine:{normal:{show:false,}}},{name:''白色圆'',type:''pie'',zlevel:2,radius:''26'',center:[''400'',''242''],data:[{value:50,name:''''},],roseType:''radius'',hoverAnimation:false,label:{normal:{show:false}},labelLine:{normal:{show:false,}}},{name:''黑色圆小'',type:''pie'',zlevel:3,radius:''12'',center:[''400'',''242''],data:[{value:50,name:''''},],roseType:''radius'',hoverAnimation:false,label:{normal:{show:false}},labelLine:{normal:{show:false,}}},{name:''白色圆小'',type:''pie'',zlevel:3,radius:''12'',center:[''400'',''294''],data:[{value:50,name:''''},],roseType:''radius'',hoverAnimation:false,label:{normal:{show:false}},labelLine:{normal:{show:false,}}}]};return option;",
+  "linkageConfig": [],
+  "dataMapping": [],
+  "chartData": [
+    {
+      "value": 0,
+      "name": ""
+    }
+  ],
+  "option": {
+    "grid": {
+      "bottom": 115
+    },
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "title": {
+      "text": "",
+      "show": true
+    }
+  }
+}', N'1', N'admin', N'2022-07-18 19:45:58.0000000', N'admin', N'2022-07-18 20:40:09.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'708976410864304129', N'708970414976712704', N'甘特图', N'JCommon', N'ant-design:appstore-twotone', N'100', NULL, N'{
+  "dataType": 1,
+  "h": 55,
+  "background": "#ffffff",
+  "url": "http://api.jeecg.com/mock/33/chart",
+  "timeOut": 0,
+  "turnConfig": {
+    "url": ""
+  },
+  "customOption": "option={''backgroundColor'':''#fff'',''title'':{''text'':''工程项目工期'',''padding'':20,''textStyle'':{''fontSize'':17,''fontWeight'':''bolder'',''color'':''#333''},''subtextStyle'':{''fontSize'':13,''fontWeight'':''bolder''}},''legend'':{''data'':[''计划工期'',''可行性研究阶段'',''初步设计阶段'',''施工图设计阶段'',''项目实施阶段'',''项目验收阶段''],''align'':''right'',''right'':80,''top'':50},''grid'':{''containLabel'':true,''show'':false,''right'':130,''left'':40,''bottom'':40,''top'':90},''xAxis'':{''type'':''time'',''axisLabel'':{''show'':true,''interval'':0},''axisLine'':{''show'':true}},''yAxis'':{''axisLabel'':{''show'':true,''interval'':0,''formatter'':function(value,index){var last='''';var max=5;var len=value.length;var hang=Math.ceil(len/max);if(hang>1){for(var i=0;i<hang;i++){var start=i*max;var end=start+max;var temp=value.substring(start,end)+'''';last+=temp;}return last;}else{return value;}}},''data'':[''临夏自治州2015年度治理工程项目'',''标段一'',''标段二'']},''tooltip'':{''trigger'':''axis'',''formatter'':function(params){var res='''';var name='''';var start0='''';var start='''';var end0='''';var end='''';for(var i in params){var k=i%2;if(!k){start0=params[i].data;start=start0.getFullYear()+''-''+(start0.getMonth()+1)+''-''+start0.getDate();}if(k){name=params[i].seriesName;end0=params[i].data;end=end0.getFullYear()+''-''+(end0.getMonth()+1)+''-''+end0.getDate();res+=name+'' : ''+start+''~''+end+''</br>'';}}return res;}},''series'':[{''name'':''计划工期'',''type'':''bar'',''stack'':''总量0'',''label'':{''normal'':{''show'':true,''color'':''#000'',''position'':''right'',''formatter'':function(params){return params.seriesName}}},''itemStyle'':{''normal'':{''color'':''skyblue'',''borderColor'':''#fff'',''borderWidth'':2}},''zlevel'':-1,''data'':[new Date(1525132800000),new Date(1520985600000),new Date(1525132800000)]},{''name'':''计划工期'',''type'':''bar'',''stack'':''总量0'',''itemStyle'':{''normal'':{''color'':''white''}},''zlevel'':-1,''z'':3,''data'':[new Date(1514764800000),new Date(1514764800000),new Date(1521072000000)]},{''name'':''可行性研究阶段'',''type'':''bar'',''stack'':''总量2'',''label'':{''normal'':{''show'':true,''color'':''#000'',''position'':''right'',''formatter'':function(params){return params.seriesName}}},''itemStyle'':{''normal'':{''color'':''green'',''borderColor'':''#fff'',''borderWidth'':2}},''zlevel'':-1,''data'':[new Date(1515542400000),new Date(1515542400000),new Date(1522368000000)]},{''name'':''可行性研究阶段'',''type'':''bar'',''stack'':''总量2'',''itemStyle'':{''normal'':{''color'':''white''}},''zlevel'':-1,''z'':3,''data'':[new Date(1514851200000),new Date(1514851200000),new Date(1521158400000)]},{''name'':''初步设计阶段'',''type'':''bar'',''stack'':''总量3'',''label'':{''normal'':{''show'':true,''color'':''#000'',''position'':''right'',''formatter'':function(params){return params.seriesName}}},''itemStyle'':{''normal'':{''color'':''red'',''borderColor'':''#fff'',''borderWidth'':2}},''zlevel'':-1,''data'':[new Date(1519084800000),new Date(1516406400000),new Date(1523318400000)]},{''name'':''初步设计阶段'',''type'':''bar'',''stack'':''总量3'',''itemStyle'':{''normal'':{''color'':''white''}},''zlevel'':-1,''z'':3,''data'':[new Date(1517443200000),new Date(1515715200000),new Date(1522540800000)]},{''name'':''施工图设计阶段'',''type'':''bar'',''stack'':''总量4'',''label'':{''normal'':{''show'':true,''color'':''#000'',''position'':''right'',''formatter'':function(params){return params.seriesName}}},''itemStyle'':{''normal'':{''color'':''brown'',''borderColor'':''#fff'',''borderWidth'':2}},''zlevel'':-1,''data'':[new Date(1520553600000),new Date(1516838400000),new Date(1524182400000)]},{''name'':''施工图设计阶段'',''type'':''bar'',''stack'':''总量4'',''itemStyle'':{''normal'':{''color'':''white''}},''zlevel'':-1,''z'':3,''data'':[new Date(1519516800000),new Date(1516492800000),new Date(1523404800000)]},{''name'':''项目实施阶段'',''type'':''bar'',''stack'':''总量5'',''label'':{''normal'':{''show'':true,''color'':''#000'',''position'':''right'',''formatter'':function(params){return params.seriesName}}},''itemStyle'':{''normal'':{''color'':''yellow'',''borderColor'':''#fff'',''borderWidth'':2}},''zlevel'':-1,''data'':[new Date(1520812800000),new Date(1518652800000),new Date(1525046400000)]},{''name'':''项目实施阶段'',''type'':''bar'',''stack'':''总量5'',''itemStyle'':{''normal'':{''color'':''white''}},''zlevel'':-1,''z'':3,''data'':[new Date(1520640000000),new Date(1516924800000),new Date(1524268800000)]},{''name'':''项目验收阶段'',''type'':''bar'',''stack'':''总量6'',''label'':{''normal'':{''show'':true,''color'':''#000'',''position'':''right'',''formatter'':function(params){return params.seriesName}}},''itemStyle'':{''normal'':{''color'':''orange'',''borderColor'':''#fff'',''borderWidth'':2}},''zlevel'':-1,''data'':[new Date(1522368000000),new Date(1520899200000),new Date(1525132800000)]},{''name'':''项目验收阶段'',''type'':''bar'',''stack'':''总量6'',''itemStyle'':{''normal'':{''color'':''white''}},''zlevel'':-1,''z'':3,''data'':[new Date(1521072000000),new Date(1518739200000),new Date(1525046400000)]}]};return option;",
+  "linkageConfig": [],
+  "dataMapping": [],
+  "chartData": [
+    {
+      "value": 0,
+      "name": ""
+    }
+  ],
+  "option": {
+    "grid": {
+      "bottom": 115
+    },
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "default"
+    },
+    "title": {
+      "text": "",
+      "show": true
+    }
+  }
+}', N'1', N'admin', N'2022-07-18 19:45:58.0000000', N'admin', N'2022-07-25 15:42:04.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'725214423934730240', N'100', N'数值', N'JNumber', N'ant-design:field-number-outlined', N'14', NULL, N'{
+  "w": 5,
+  "h": 9,
+  "dataType": 1,
+  "timeOut": 0,
+  "turnConfig": {
+    "url": ""
+  },
+  "chartData": {
+    "value": "1024"
+  },
+  "analysis": {
+    "isCompare": false,
+    "compareType": "",
+    "trendType": "1"
+  },
+  "option": {
+    "isCompare": false,
+    "trendType": "1",
+    "card": {
+      "title": "",
+      "extra": "",
+      "rightHref": "",
+      "size": "small",
+      "textStyle": {
+        "fontSize": 18,
+        "fontWeight": "bold",
+        "color": "#464646"
+      }
+    },
+    "body": {
+      "text": "",
+      "color": "#000000",
+      "fontWeight": "bold"
+    }
+  }
+}', N'1', N'jeecg', N'2022-09-01 15:10:03.0000000', N'jeecg', N'2022-09-02 16:52:23.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'728116316742778880', N'100', N'按钮', N'JCustomButton', N'teenyicons:button-outline', N'100', NULL, N'{
+  "w": 12,
+  "h": 12,
+  "dataType": 1,
+  "url": "",
+  "timeOut": 0,
+  "chartData": [
+    {
+      "btnId": "74591654852155",
+      "title": "销售订单",
+      "icon": "ant-design:calendar-twotone",
+      "color": "#ED4B82",
+      "operationType": "1",
+      "worksheet": "",
+      "view": "",
+      "defVal": [],
+      "customPage": "",
+      "href": {
+        "url": "",
+        "isParam": false,
+        "params": []
+      },
+      "openMode": "2",
+      "bizFlow": "",
+      "click": {
+        "type": "1",
+        "message": {
+          "title": "你确认执行此操作吗？",
+          "okText": "确认",
+          "cancelText": "取消"
+        }
+      }
+    }
+  ],
+  "option": {
+    "title": "",
+    "btnType": "button",
+    "btnStyle": "solid",
+    "btnWidth": "custom",
+    "btnDirection": "column",
+    "rowNum": 4
+  }
+}', N'1', N'jeecg', N'2022-09-09 15:21:08.0000000', N'admin', N'2023-05-15 13:37:11.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_comp] ([id], [parent_id], [comp_name], [comp_type], [icon], [order_num], [type_id], [comp_config], [status], [create_by], [create_time], [update_by], [update_time]) VALUES (N'729550825967222784', N'100102', N'透视表', N'JPivotTable', N'ant-design:table-outlined', N'13', NULL, N'{
+  "w": 24,
+  "h": 42,
+  "dataType": 1,
+  "timeOut": 0,
+  "chartData": {
+    "x": [
+      {
+        "62eb2e00c349cde9883d3c1c": [
+          "测试1",
+          "测试1",
+          "测试2",
+          "测试3"
+        ]
+      },
+      {
+        "62f37518df6db6d3e0c9b7ad": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "y": [
+          "2022/09",
+          "2022"
+        ],
+        "t_id": "62f37456cf07c28f9312dd13",
+        "data": [
+          111,
+          null,
+          null,
+          null
+        ],
+        "sum": 111,
+        "summary_col": false
+      },
+      {
+        "y": [
+          "2022/09",
+          "2022"
+        ],
+        "t_id": "62f37456cf07c28f9312dd14",
+        "data": [
+          444,
+          null,
+          null,
+          null
+        ],
+        "sum": 444,
+        "summary_col": false
+      },
+      {
+        "y": [
+          "2022/08",
+          "2022"
+        ],
+        "t_id": "62f37456cf07c28f9312dd13",
+        "data": [
+          null,
+          222,
+          333,
+          444
+        ],
+        "sum": 999,
+        "summary_col": false
+      },
+      {
+        "y": [
+          "2022/08",
+          "2022"
+        ],
+        "t_id": "62f37456cf07c28f9312dd14",
+        "data": [
+          null,
+          333,
+          222,
+          111
+        ],
+        "sum": 666,
+        "summary_col": false
+      },
+      {
+        "y": [],
+        "t_id": "62f37456cf07c28f9312dd13",
+        "data": [
+          111,
+          222,
+          333,
+          444
+        ],
+        "sum": 278,
+        "summary_col": true
+      },
+      {
+        "y": [],
+        "t_id": "62f37456cf07c28f9312dd14",
+        "data": [
+          444,
+          333,
+          222,
+          111
+        ],
+        "sum": 1110,
+        "summary_col": true
+      }
+    ]
+  },
+  "option": {
+		"card": {
+			"title": "",
+			"extra": "",
+			"rightHref": "",
+			"size": "default"
+		}
+  }
+}', N'1', N'jeecg', N'2022-09-13 14:21:21.0000000', N'jeecg', N'2022-09-13 20:13:32.0000000')
+GO
+
+
+-- ----------------------------
+-- Table structure for onl_drag_dataset_head
+-- ----------------------------
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[onl_drag_dataset_head]') AND type IN ('U'))
+	DROP TABLE [dbo].[onl_drag_dataset_head]
+GO
+
+CREATE TABLE [dbo].[onl_drag_dataset_head] (
+  [id] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [name] nvarchar(100) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [code] nvarchar(36) COLLATE Chinese_PRC_CI_AS  NULL,
+  [parent_id] nvarchar(36) COLLATE Chinese_PRC_CI_AS  NULL,
+  [db_source] nvarchar(100) COLLATE Chinese_PRC_CI_AS  NULL,
+  [query_sql] nvarchar(max) COLLATE Chinese_PRC_CI_AS  NULL,
+  [content] nvarchar(1000) COLLATE Chinese_PRC_CI_AS  NULL,
+  [iz_agent] nvarchar(10) COLLATE Chinese_PRC_CI_AS  NULL,
+  [data_type] nvarchar(50) COLLATE Chinese_PRC_CI_AS  NULL,
+  [api_method] nvarchar(10) COLLATE Chinese_PRC_CI_AS  NULL,
+  [create_time] datetime2(7)  NULL,
+  [create_by] nvarchar(50) COLLATE Chinese_PRC_CI_AS  NULL,
+  [update_time] datetime2(7)  NULL,
+  [update_by] nvarchar(50) COLLATE Chinese_PRC_CI_AS  NULL,
+  [low_app_id] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NULL,
+  [tenant_id] int  NULL
+)
+GO
+
+ALTER TABLE [dbo].[onl_drag_dataset_head] SET (LOCK_ESCALATION = TABLE)
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'id',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_head',
+'COLUMN', N'id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'名称',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_head',
+'COLUMN', N'name'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'编码',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_head',
+'COLUMN', N'code'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'父id',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_head',
+'COLUMN', N'parent_id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'动态数据源',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_head',
+'COLUMN', N'db_source'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'查询数据SQL',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_head',
+'COLUMN', N'query_sql'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'描述',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_head',
+'COLUMN', N'content'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'iz_agent',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_head',
+'COLUMN', N'iz_agent'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'数据类型',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_head',
+'COLUMN', N'data_type'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'api方法：get/post',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_head',
+'COLUMN', N'api_method'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'应用ID',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_head',
+'COLUMN', N'low_app_id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'租户ID',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_head',
+'COLUMN', N'tenant_id'
+GO
+
+
+-- ----------------------------
+-- Records of onl_drag_dataset_head
+-- ----------------------------
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1516317603268657153', N'示例_参数查询', N'', N'1516743332632494082', N'707437208002265088', N'select * from demo where name like ''%${name}%''', N'', N'', N'sql', N'get', N'2022-04-21 15:59:43.0000000', N'admin', N'2022-04-21 17:28:44.0000000', N'admin', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1516743332632494082', N'示例数据集', NULL, NULL, NULL, N'0', NULL, N'0', NULL, NULL, N'2022-04-20 19:39:25.0000000', N'admin', NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1516743766914924546', N'统计近十日的登陆次数', N'', N'1516743332632494082', N'707437208002265088', N'SELECT
+	count(*) num,
+	DATE_FORMAT(create_time, ''%Y-%m-%d'') AS `day`
+FROM
+	sys_log
+WHERE
+	log_type = 1
+AND create_time > DATE_SUB(NOW(), INTERVAL 10 DAY)
+GROUP BY
+	DATE_FORMAT(create_time, ''%Y-%m-%d'')', N'', N'', N'sql', N'get', N'2022-04-20 19:41:08.0000000', N'admin', N'2023-06-06 15:25:30.0000000', N'admin', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1516748630344630273', N'项目性质收入统计JSON', N'', N'1516743332632494082', N'', N'[
+    {
+        "column1": "市场化-电商业务",
+        "column2": 4865.41,
+        "column3": 0,
+        "column4": 0,
+        "column5": 0,
+        "column6": 0,
+        "column7": 0,
+        "column8": 4865.41
+    },
+    {
+        "column1": "统筹型",
+        "column2": 35767081.88,
+        "column3": 0,
+        "column4": 0,
+        "column5": 0,
+        "column6": 0,
+        "column7": 0,
+        "column8": 35767081.88
+    },
+    {
+        "column1": "市场化-非股东",
+        "column2": 1487045.35,
+        "column3": 0,
+        "column4": 0,
+        "column5": 0,
+        "column6": 0,
+        "column7": 0,
+        "column8": 1487045.35
+    },
+    {
+        "column1": "市场化-参控股",
+        "column2": 382690.56,
+        "column3": 0,
+        "column4": 0,
+        "column5": 0,
+        "column6": 0,
+        "column7": 0,
+        "column8": 382690.56
+    },
+    {
+        "column1": "市场化-员工福利",
+        "column2": 256684.91,
+        "column3": 0,
+        "column4": 0,
+        "column5": 0,
+        "column6": 0,
+        "column7": 0,
+        "column8": 265684.91
+    },
+    {
+        "column1": "市场化-再保险",
+        "column2": 563451.03,
+        "column3": 0,
+        "column4": 0,
+        "column5": 0,
+        "column6": 0,
+        "column7": 0,
+        "column8": 563451.03
+    },
+    {
+        "column1": "市场化-海外业务",
+        "column2": 760576.25,
+        "column3": 770458.75,
+        "column4": 0,
+        "column5": 0,
+        "column6": 0,
+        "column7": 0,
+        "column8": 1531035.00
+    },
+    {
+        "column1": "市场化-风险咨询",
+        "column2": 0.00,
+        "column3": 910183.93,
+        "column4": 0,
+        "column5": 0,
+        "column6": 0,
+        "column7": 226415.09,
+        "column8": 1136599.02
+    }
+]', N'', N'', N'json', N'get', N'2022-04-20 20:00:28.0000000', N'admin', NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1517020649262972930', N'项目性质收入统计SQL', N'', N'1516743332632494082', N'707437208002265088', N'SELECT
+	id,
+	nature,
+	insurance_fee,
+	risk_consulting_fee,
+	evaluation_fee,
+	insurance_evaluation_fee,
+	bidding_consulting_fee,
+	interol_consulting_fee,
+	(
+		insurance_fee + 
+		risk_consulting_fee + 
+		risk_consulting_fee + 
+		evaluation_fee + 
+		insurance_evaluation_fee + 
+		bidding_consulting_fee + 
+		interol_consulting_fee
+	) AS ''total''
+FROM
+	jeecg_project_nature_income', N'', N'', N'sql', N'get', N'2022-04-21 14:01:22.0000000', N'admin', N'2022-04-21 14:02:36.0000000', N'admin', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1517045842874236930', N'统计男女比例', N'', N'1516743332632494082', N'707437208002265088', N'select count(*) cout, sex from sys_user group by sex', N'', N'', N'sql', N'get', N'2022-04-21 15:41:29.0000000', N'admin', N'2022-04-21 16:09:23.0000000', N'admin', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1517046231342284802', N'图表API示例-年龄占比', N'', N'1516743332632494082', N'', N'http://api.jeecg.com/mock/51/jingwu/nianling', N'', N'', N'api', N'get', N'2022-04-21 15:43:02.0000000', N'admin', N'2022-04-21 16:54:33.0000000', N'admin', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1517046731341070337', N'统计每日大屏创建情况', N'', N'1516743332632494082', N'707437208002265088', N'SELECT count(*) c,DATE_FORMAT(create_time, ''%Y-%m-%d'') as date  from jmreport_big_screen GROUP BY date order by date desc', N'', N'', N'sql', N'get', N'2022-04-21 15:45:01.0000000', N'admin', NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1517071247723233281', N'示例_根据年龄查询用户', N'', N'1516743332632494082', N'707437208002265088', N'select * from demo where age=${age}', N'', N'', N'sql', N'get', N'2022-04-21 17:22:26.0000000', N'admin', N'2023-04-27 14:25:34.0000000', N'admin', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1519274169102020610', N'钻取api', N'', N'1516743332632494082', N'', N'http://api.jeecg.com/mock/51/drilling/deptuser', N'', N'0', N'api', N'get', N'2022-04-27 19:16:03.0000000', N'admin', N'2022-04-29 18:52:08.0000000', N'jeecg', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1519945036454813698', N'数据列表', N'', N'1516743332632494082', N'', N'http://api.jeecg.com/mock/51/datalist/list', N'', N'0', N'api', N'get', N'2022-04-29 15:41:51.0000000', N'admin', N'2022-04-29 17:00:15.0000000', N'admin', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1519962879095332865', N'首页快速导航', N'', N'1516743332632494082', N'', N'http://api.jeecg.com/mock/51/home/quick', N'', N'0', N'api', N'get', N'2022-04-29 16:52:45.0000000', N'admin', NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1522098873378549762', N'出资', N'', N'1516743332632494082', N'', N'http://api.jeecg.com/mock/51/chuzi', N'', N'0', N'api', N'get', N'2022-05-05 14:20:25.0000000', N'admin', N'2022-05-05 14:22:06.0000000', N'admin', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1522181219549196289', N'智慧社区_违法犯罪人员分析', N'', N'1516743332632494082', N'', N'http://api.jeecg.com/mock/51/Illegal', N'', N'0', N'api', N'get', N'2022-05-05 19:47:38.0000000', N'admin', NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1522182473872584705', N'智慧社区_人员出入记录', N'', N'1516743332632494082', N'', N'http://api.jeecg.com/mock/51/ace', N'', N'0', N'api', N'get', N'2022-05-05 19:52:37.0000000', N'admin', NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1522184215045615618', N'智慧社区_年龄分部', N'', N'1516743332632494082', N'', N'http://api.jeecg.com/mock/51/age', N'', N'0', N'api', N'get', N'2022-05-05 19:59:32.0000000', N'admin', NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1522185936018878466', N'智慧社区_地区分部', N'', N'1516743332632494082', N'', N'http://api.jeecg.com/mock/51/region', N'', N'0', N'api', N'get', N'2022-05-05 20:06:23.0000000', N'admin', N'2022-05-05 20:06:38.0000000', N'admin', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1522187101267832833', N'智慧社区_时间分部', N'', N'1516743332632494082', N'', N'[
+  {
+    "name": "6:00-9:00",
+    "value": 800
+  },
+  {
+    "name": "10:00-12:00",
+    "value": 300
+  },
+  {
+    "name": "13:00-15:00",
+    "value": 500
+  },
+  {
+    "name": "16:00-20:00",
+    "value": 800
+  },
+  {
+    "name": "21:00-24:00",
+    "value": 600
+  }
+]', N'', N'0', N'json', N'get', N'2022-05-05 20:11:00.0000000', N'admin', N'2022-05-05 20:11:12.0000000', N'admin', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1522422772532256770', N'乡村振兴_表格', N'', N'1516743332632494082', N'', N'[
+  {
+    "name": "数据",
+    "sj": "1000",
+    "type": "担保",
+    "je": "50",
+    "jg": "机构",
+    "jl": "数据2"
+  },
+  {
+    "name": "数据1",
+    "sj": "1500",
+    "type": "担保",
+    "je": "100",
+    "jg": "机构2",
+    "jl": "李四"
+  },
+  {
+    "name": "数据",
+    "sj": "1000",
+    "type": "担保",
+    "je": "50",
+    "jg": "机构",
+    "jl": "数据2"
+  },
+  {
+    "name": "数据1",
+    "sj": "1500",
+    "type": "担保",
+    "je": "100",
+    "jg": "机构2",
+    "jl": "李四"
+  },
+  {
+    "name": "数据",
+    "sj": "1000",
+    "type": "担保",
+    "je": "50",
+    "jg": "机构",
+    "jl": "数据2"
+  },
+  {
+    "name": "数据1",
+    "sj": "1500",
+    "type": "担保",
+    "je": "100",
+    "jg": "机构2",
+    "jl": "李四"
+  },
+  {
+    "name": "数据",
+    "sj": "1000",
+    "type": "担保",
+    "je": "50",
+    "jg": "机构",
+    "jl": "数据2"
+  },
+  {
+    "name": "数据1",
+    "sj": "1500",
+    "type": "担保",
+    "je": "100",
+    "jg": "机构2",
+    "jl": "李四"
+  }
+]', N'', N'0', N'json', N'get', N'2022-05-06 11:47:29.0000000', N'admin', NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1522455203175997442', N'智能大数据_计划生产', N'', N'1516743332632494082', N'', N'[
+    {
+        "gh": "ACDFE_0045",
+        "gjbm": "56-REE-4",
+        "jh": "1",
+        "dqgx": "工程",
+        "zt": "未开始"
+    },
+    {
+        "gh": "ACDFE_0045",
+        "gjbm": "BB-1L-0004",
+        "jh": "2",
+        "dqgx": "工序",
+        "zt": "未开始"
+    },
+    {
+        "gh": "JFL5GZ1-01",
+        "gjbm": "DB-F5GNT-1",
+        "jh": "1",
+        "dqgx": "工程",
+        "zt": "未开始"
+    },
+    {
+        "gh": "JFL5GZ1-01",
+        "gjbm": "A5-0001",
+        "jh": "1",
+        "dqgx": "总装工序",
+        "zt": "未开始"
+    },
+    {
+        "gh": "ACDFE_0045",
+        "gjbm": "56-REE-4",
+        "jh": "1",
+        "dqgx": "工程",
+        "zt": "未开始"
+    },
+    {
+        "gh": "ACDFE_0045",
+        "gjbm": "BB-1L-0004",
+        "jh": "2",
+        "dqgx": "工序",
+        "zt": "未开始"
+    },
+    {
+        "gh": "JFL5GZ1-01",
+        "gjbm": "DB-F5GNT-1",
+        "jh": "1",
+        "dqgx": "工程",
+        "zt": "未开始"
+    },
+    {
+        "gh": "JFL5GZ1-01",
+        "gjbm": "A5-0001",
+        "jh": "1",
+        "dqgx": "总装工序",
+        "zt": "未开始"
+    },
+    {
+        "gh": "ACDFE_0045",
+        "gjbm": "56-REE-4",
+        "jh": "1",
+        "dqgx": "工程",
+        "zt": "未开始"
+    },
+    {
+        "gh": "ACDFE_0045",
+        "gjbm": "BB-1L-0004",
+        "jh": "2",
+        "dqgx": "工序",
+        "zt": "未开始"
+    },
+    {
+        "gh": "JFL5GZ1-01",
+        "gjbm": "DB-F5GNT-1",
+        "jh": "1",
+        "dqgx": "工程",
+        "zt": "未开始"
+    },
+    {
+        "gh": "JFL5GZ1-01",
+        "gjbm": "A5-0001",
+        "jh": "1",
+        "dqgx": "总装工序",
+        "zt": "未开始"
+    }
+]', N'', N'0', N'json', N'get', N'2022-05-06 13:56:21.0000000', N'admin', N'2022-05-06 18:22:13.0000000', N'admin', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1522464505970302978', N'旅游数据监控', N'', N'1516743332632494082', N'', N'[{"type1":"路线1","type2":"1111","type3":"1111"},{"type1":"路线2","type2":"1111","type3":"1111"},{"type1":"路线3","type3":"1111","type2":"1111"},{"type1":"路线4","type2":"1111","type3":"1111"},{"type1":"路线5","type2":"1111","type3":"1111"},{"type1":"路线6","type2":"1111","type3":"1111"},{"type1":"路线7","type2":"1111","type3":"1111"},{"type1":"路线8","type2":"1111","type3":"1111"},{"type1":"路线9","type2":"1111","type3":"1111"},{"type1":"路线10","type2":"1111","type3":"1111"},{"type1":"路线11","type2":"1111","type3":"1111"},{"type1":"路线12","type2":"1111","type3":"1111"},{"type1":"路线13","type2":"1111","type3":"1111"},{"type1":"路线14","type2":"1111","type3":"1111"},{"type1":"路线15","type2":"1111","type3":"1111"},{"type1":"路线16","type2":"1111","type3":"1111"},{"type1":"路线17","type2":"1111","type3":"1111"},{"type1":"路线18","type2":"1111","type3":"1111"},{"type1":"路线19","type2":"1111","type3":"1111"},{"type1":"路线20","type2":"1111","type3":"1111"}]', N'', N'0', N'json', N'get', N'2022-05-06 14:33:19.0000000', N'admin', NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1522503560003067906', N'首页_近一周访问量', N'', N'1516743332632494082', N'707437208002265088', N'select count(*) as visit
+        	   ,count(distinct(ip)) as ip
+        	   ,DATE_FORMAT(create_time, ''%Y-%m-%d'') as tian
+        	   ,DATE_FORMAT(create_time, ''%m-%d'') as type
+        	   from sys_log 
+         where log_type = 1 and create_time <= sysdate() and create_time >= (select date_sub(curdate(),interval 7 day))
+         group by tian,type
+         order by tian desc', N'', N'0', N'sql', N'get', N'2022-05-06 17:08:30.0000000', N'admin', N'2022-05-06 17:49:07.0000000', N'admin', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1522522034783920129', N'智能大数据_实际生产', N'', N'1516743332632494082', N'', N'[
+    {
+        "gh": "ATJDS01",
+        "gjbm": "TYIY-908",
+        "jgsj": "2021-03-28 17:07",
+        "dqgx": "工序1",
+        "zt": "已完成"
+    },
+    {
+        "gh": "ATJDS01",
+        "gjbm": "11CPER-44",
+        "jgsj": "2021-03-29 18:07",
+        "dqgx": "工序2",
+        "zt": "已完成"
+    },
+    {
+        "gh": "PFTE56",
+        "gjbm": "F56677",
+        "jgsj": "2021-02-28 07:07",
+        "dqgx": "工序1",
+        "zt": "已完成"
+    },
+    {
+        "gh": "PFTE56",
+        "gjbm": "99CVB-1",
+        "jgsj": "2021-03-28 17:07",
+        "dqgx": "工序3",
+        "zt": "已完成"
+    },
+    {
+        "gh": "ATJDS01",
+        "gjbm": "TYIY-908",
+        "jgsj": "2021-03-28 17:07",
+        "dqgx": "工序1",
+        "zt": "已完成"
+    },
+    {
+        "gh": "ATJDS01",
+        "gjbm": "11CPER-44",
+        "jgsj": "2021-03-28 17:07",
+        "dqgx": "工序2",
+        "zt": "已完成"
+    },
+    {
+        "gh": "PFTE56",
+        "gjbm": "F56677",
+        "jgsj": "2021-03-28 17:07",
+        "dqgx": "工序1",
+        "zt": "已完成"
+    },
+    {
+        "gh": "PFTE56",
+        "gjbm": "99CVB-1",
+        "jgsj": "2021-03-28 17:07",
+        "dqgx": "工序3",
+        "zt": "已完成"
+    },
+    {
+        "gh": "ATJDS01",
+        "gjbm": "TYIY-908",
+        "jgsj": "2021-03-28 17:07",
+        "dqgx": "工序1",
+        "zt": "已完成"
+    },
+    {
+        "gh": "ATJDS01",
+        "gjbm": "11CPER-44",
+        "jgsj": "2021-03-28 17:07",
+        "dqgx": "工序2",
+        "zt": "已完成"
+    },
+    {
+        "gh": "PFTE56",
+        "gjbm": "F56677",
+        "jgsj": "2021-03-28 17:07",
+        "dqgx": "工序1",
+        "zt": "已完成"
+    },
+    {
+        "gh": "PFTE56",
+        "gjbm": "99CVB-1",
+        "jgsj": "2021-03-28 17:07",
+        "dqgx": "工序3",
+        "zt": "已完成"
+    }
+]', N'', N'0', N'json', N'get', N'2022-05-06 18:21:55.0000000', N'admin', N'2022-05-06 18:23:06.0000000', N'admin', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1522523544120991745', N'智能大数据_一览表', N'', N'1516743332632494082', N'', N'[
+    {
+        "ddh": "A5CCU_2017...",
+        "zcxm": "国际城0902",
+        "zl": "2548",
+        "jhrq": "2021-04-21",
+        "scjd": "100%"
+    },
+    {
+        "ddh": "A5CCU_2017...",
+        "zcxm": "新城ERT",
+        "zl": "27215",
+        "jhrq": "2021-05-21",
+        "scjd": "54%"
+    },
+    {
+        "ddh": "A5CCU_2018...",
+        "zcxm": "天桥TTY",
+        "zl": "5423",
+        "jhrq": "2021-12-21",
+        "scjd": "100%"
+    },
+    {
+        "ddh": "A5CCU_2018...",
+        "zcxm": "国际中心地",
+        "zl": "14427",
+        "jhrq": "2021-12-21",
+        "scjd": "88%"
+    },
+    {
+        "ddh": "A5CCU_2019...",
+        "zcxm": "新生广场",
+        "zl": "2808",
+        "jhrq": "2021-08-21",
+        "scjd": "98%"
+    },
+    {
+        "ddh": "A5CCU_2017...",
+        "zcxm": "国际城0902",
+        "zl": "2548",
+        "jhrq": "2021-04-21",
+        "scjd": "100%"
+    },
+    {
+        "ddh": "A5CCU_2019...",
+        "zcxm": "新生广场",
+        "zl": "2808",
+        "jhrq": "2021-08-21",
+        "scjd": "98%"
+    },
+    {
+        "ddh": "A5CCU_2017...",
+        "zcxm": "新城ERT",
+        "zl": "27215",
+        "jhrq": "2021-05-21",
+        "scjd": "54%"
+    }
+]', N'', N'0', N'json', N'get', N'2022-05-06 18:27:55.0000000', N'admin', N'2022-05-06 18:28:53.0000000', N'admin', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1522824721899511810', N'示例_数据表格', N'', N'1516743332632494082', N'707437208002265088', N'select * from demo where sex=''${sex}''', N'', N'0', N'sql', N'get', N'2022-05-07 14:24:41.0000000', N'admin', N'2022-05-07 14:53:35.0000000', N'admin', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1522853857095376898', N'示例_日期范围查询', N'', N'1516743332632494082', N'707437208002265088', N'select * from sys_user where create_time >= ''${createTime_begin}'' and create_time <=''${createTime_end}''', N'', N'0', N'sql', N'get', N'2022-05-07 16:20:27.0000000', N'admin', N'2022-05-07 19:29:07.0000000', N'admin', NULL, NULL)
+GO
+
+
+-- ----------------------------
+-- Table structure for onl_drag_dataset_item
+-- ----------------------------
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[onl_drag_dataset_item]') AND type IN ('U'))
+	DROP TABLE [dbo].[onl_drag_dataset_item]
+GO
+
+CREATE TABLE [dbo].[onl_drag_dataset_item] (
+  [id] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [head_id] nvarchar(36) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [field_name] nvarchar(36) COLLATE Chinese_PRC_CI_AS  NULL,
+  [field_txt] nvarchar(1000) COLLATE Chinese_PRC_CI_AS  NULL,
+  [field_type] nvarchar(10) COLLATE Chinese_PRC_CI_AS  NULL,
+  [widget_type] nvarchar(30) COLLATE Chinese_PRC_CI_AS  NULL,
+  [dict_code] nvarchar(500) COLLATE Chinese_PRC_CI_AS  NULL,
+  [iz_show] nvarchar(5) COLLATE Chinese_PRC_CI_AS  NULL,
+  [iz_search] nvarchar(10) COLLATE Chinese_PRC_CI_AS  NULL,
+  [iz_total] nvarchar(5) COLLATE Chinese_PRC_CI_AS  NULL,
+  [search_mode] nvarchar(10) COLLATE Chinese_PRC_CI_AS  NULL,
+  [order_num] int  NULL,
+  [create_by] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NULL,
+  [create_time] datetime2(7)  NULL,
+  [update_by] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NULL,
+  [update_time] datetime2(7)  NULL
+)
+GO
+
+ALTER TABLE [dbo].[onl_drag_dataset_item] SET (LOCK_ESCALATION = TABLE)
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'id',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_item',
+'COLUMN', N'id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'主表ID',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_item',
+'COLUMN', N'head_id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'字段名',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_item',
+'COLUMN', N'field_name'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'字段文本',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_item',
+'COLUMN', N'field_txt'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'字段类型',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_item',
+'COLUMN', N'field_type'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'控件类型',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_item',
+'COLUMN', N'widget_type'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'字典Code',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_item',
+'COLUMN', N'dict_code'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'是否列表显示',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_item',
+'COLUMN', N'iz_show'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'是否查询',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_item',
+'COLUMN', N'iz_search'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'是否计算总计（仅对数值有效）',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_item',
+'COLUMN', N'iz_total'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'查询模式',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_item',
+'COLUMN', N'search_mode'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'排序',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_item',
+'COLUMN', N'order_num'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'创建人',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_item',
+'COLUMN', N'create_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'创建时间',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_item',
+'COLUMN', N'create_time'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'修改人',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_item',
+'COLUMN', N'update_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'修改时间',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_item',
+'COLUMN', N'update_time'
+GO
+
+
+-- ----------------------------
+-- Records of onl_drag_dataset_item
+-- ----------------------------
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1516748630361407489', N'1516748630344630273', N'column1', N'项目性质', N'String', NULL, N'', N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-20 20:00:28.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1516748630373990402', N'1516748630344630273', N'column5', N'保险公估费', N'Integer', NULL, N'', N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-20 20:00:28.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1516748630382379010', N'1516748630344630273', N'column4', N'承保公估评估费', N'Integer', NULL, N'', N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-20 20:00:28.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1516748630394961921', N'1516748630344630273', N'column3', N'风险咨询费', N'Integer', NULL, N'', N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-20 20:00:28.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1516748630403350530', N'1516748630344630273', N'column2', N'保险经纪佣金费', N'Integer', NULL, N'', N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-20 20:00:28.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1516748630415933442', N'1516748630344630273', N'column8', N'总计', N'Integer', NULL, N'', N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-20 20:00:28.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1516748630424322049', N'1516748630344630273', N'column7', N'内控咨询费', N'Integer', NULL, N'', N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-20 20:00:28.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1516748630432710658', N'1516748630344630273', N'column6', N'投标咨询费', N'Integer', NULL, N'', N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-20 20:00:28.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517020958387372033', N'1517020649262972930', N'nature', N'项目性质', N'String', NULL, NULL, N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-21 14:01:22.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517020958395760641', N'1517020649262972930', N'insurance_fee', N'保险经纪佣金费', N'Integer', NULL, NULL, N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-21 14:01:22.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517020958412537857', N'1517020649262972930', N'risk_consulting_fee', N'风险咨询费', N'Integer', NULL, NULL, N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-21 14:01:22.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517020958429315073', N'1517020649262972930', N'evaluation_fee', N'承保公估评估费', N'Integer', NULL, NULL, N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-21 14:01:22.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517020958446092290', N'1517020649262972930', N'insurance_evaluation_fee', N'保险公估费', N'Integer', NULL, NULL, N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-21 14:01:22.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517020958462869505', N'1517020649262972930', N'bidding_consulting_fee', N'投标咨询费', N'Integer', NULL, NULL, N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-21 14:01:22.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517020958475452418', N'1517020649262972930', N'interol_consulting_fee', N'内控咨询费', N'Integer', NULL, NULL, N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-21 14:01:22.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517020958483841026', N'1517020649262972930', N'total', N'total', N'Integer', NULL, NULL, N'N', NULL, N'N', NULL, NULL, N'admin', N'2022-04-21 14:01:22.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517046731353653249', N'1517046731341070337', N'date', N'日期', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-04-21 15:45:01.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517046731362041857', N'1517046731341070337', N'c', N'数量', N'String', NULL, NULL, N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-21 15:45:01.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517052863103139842', N'1517045842874236930', N'sex', N'性别', N'String', NULL, N'sex', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-04-21 15:41:29.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517052863115722754', N'1517045842874236930', N'cout', N'人数', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-04-21 15:41:29.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517064229583093762', N'1517046231342284802', N'name', N'年龄', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-04-21 16:46:03.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517064229595676674', N'1517046231342284802', N'value', N'数量', N'Integer', NULL, NULL, N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-04-21 16:46:03.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517072834290024450', N'1516317603268657153', N'name', N'name', N'String', NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'admin', N'2022-04-21 17:28:44.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517072834331967489', N'1516317603268657153', N'sex', N'sex', N'String', NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'admin', N'2022-04-21 17:28:44.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517072834340356097', N'1516317603268657153', N'age', N'age', N'String', NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'admin', N'2022-04-21 17:28:44.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1519962879107915777', N'1519962879095332865', N'title', N'title', N'String', NULL, NULL, N'true', NULL, NULL, NULL, N'1', N'admin', N'2022-04-29 16:52:45.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1519962879124692994', N'1519962879095332865', N'icon', N'icon', N'String', NULL, NULL, N'true', NULL, NULL, NULL, N'2', N'admin', N'2022-04-29 16:52:45.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1519962879137275906', N'1519962879095332865', N'color', N'color', N'String', NULL, NULL, N'true', NULL, NULL, NULL, N'3', N'admin', N'2022-04-29 16:52:45.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1519962879149858817', N'1519962879095332865', N'href', N'href', N'String', NULL, NULL, N'true', NULL, NULL, NULL, N'4', N'admin', N'2022-04-29 16:52:45.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1519964769946296322', N'1519945036454813698', N'title', N'title', N'String', NULL, NULL, N'true', NULL, NULL, NULL, N'1', N'admin', N'2022-04-29 15:41:51.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1519964769958879233', N'1519945036454813698', N'date', N'date', N'String', NULL, NULL, N'true', NULL, NULL, NULL, N'2', N'admin', N'2022-04-29 15:41:51.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1519964769975656449', N'1519945036454813698', N'remark', N'remark', N'String', NULL, NULL, N'true', NULL, NULL, NULL, N'3', N'admin', N'2022-04-29 15:41:51.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1519964769988239361', N'1519945036454813698', N'pic', N'pic', N'String', NULL, NULL, N'true', NULL, NULL, NULL, N'4', N'admin', N'2022-04-29 15:41:51.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1519992923574362113', N'1519274169102020610', N'name', N'name', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, N'1', N'admin', N'2022-04-27 19:16:03.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1519992923586945026', N'1519274169102020610', N'value', N'value', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, N'2', N'admin', N'2022-04-27 19:16:03.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522181219565973505', N'1522181219549196289', N'value', N'value', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, N'1', N'admin', N'2022-05-05 19:47:38.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522181219578556417', N'1522181219549196289', N'name', N'name', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, N'2', N'admin', N'2022-05-05 19:47:38.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522182473885167618', N'1522182473872584705', N'name', N'姓名', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, N'1', N'admin', N'2022-05-05 19:52:37.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522182473897750530', N'1522182473872584705', N'type', N'类型', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, N'2', N'admin', N'2022-05-05 19:52:37.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522182473914527746', N'1522182473872584705', N'mode', N'开门方式', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, N'3', N'admin', N'2022-05-05 19:52:37.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522182473927110658', N'1522182473872584705', N'date', N'日期', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, N'4', N'admin', N'2022-05-05 19:52:37.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522184215058198530', N'1522184215045615618', N'value', N'value', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, N'1', N'admin', N'2022-05-05 19:59:32.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522184215074975746', N'1522184215045615618', N'name', N'name', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, N'2', N'admin', N'2022-05-05 19:59:32.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522185998719528962', N'1522185936018878466', N'name', N'name', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, N'1', N'admin', N'2022-05-05 20:06:23.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522185998732111873', N'1522185936018878466', N'value', N'value', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, N'2', N'admin', N'2022-05-05 20:06:23.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522187150638985217', N'1522187101267832833', N'name', N'name', N'String', NULL, N'', NULL, NULL, NULL, NULL, NULL, N'admin', N'2022-05-05 20:11:00.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522187150651568129', N'1522187101267832833', N'value', N'value', N'String', NULL, N'', NULL, NULL, NULL, NULL, NULL, N'admin', N'2022-05-05 20:11:00.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522422772574199809', N'1522422772532256770', N'name', N'客户姓名', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 11:47:29.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522422772590977026', N'1522422772532256770', N'sj', N'放款时间', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 11:47:29.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522422772607754242', N'1522422772532256770', N'type', N'担保方式', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 11:47:29.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522422772620337154', N'1522422772532256770', N'je', N'放款金额', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 11:47:29.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522422772632920065', N'1522422772532256770', N'jg', N'法人机构', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 11:47:29.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522422772666474497', N'1522422772532256770', N'jl', N'客户经理', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 11:47:29.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522464505987080193', N'1522464505970302978', N'type1', N'路线', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 14:33:19.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522464505999663105', N'1522464505970302978', N'type2', N'车辆', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 14:33:19.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522464506012246018', N'1522464505970302978', N'type3', N'人数', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 14:33:19.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522513781081513985', N'1522503560003067906', N'visit', N'访问量', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 17:08:30.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522513781094096898', N'1522503560003067906', N'ip', N'ip地址', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 17:08:30.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522513781123457025', N'1522503560003067906', N'tian', N'年月', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 17:08:30.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522513781136039937', N'1522503560003067906', N'type', N'天', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 17:08:30.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522522111850061825', N'1522455203175997442', N'gh', N'工号', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 13:56:21.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522522111866839042', N'1522455203175997442', N'gjbm', N'构件编号', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 13:56:21.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522522111879421953', N'1522455203175997442', N'jh', N'序号', N'String', NULL, N'', N'N', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 13:56:21.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522522111892004865', N'1522455203175997442', N'dqgx', N'当前工序', N'String', NULL, N'', N'Y', NULL, NULL, NULL, N'3', N'admin', N'2022-05-06 13:56:21.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522522111904587777', N'1522455203175997442', N'zt', N'状态', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 13:56:21.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522522331996495874', N'1522522034783920129', N'gh', N'工号', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 18:21:55.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522522332013273090', N'1522522034783920129', N'gjbm', N'编码', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 18:21:55.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522522332025856002', N'1522522034783920129', N'jgsj', N'完成时间', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 18:21:55.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522522332038438913', N'1522522034783920129', N'dqgx', N'工序', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 18:21:55.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522522332051021826', N'1522522034783920129', N'zt', N'状态', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 18:21:55.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522523789429055490', N'1522523544120991745', N'ddh', N'订单号', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 18:27:55.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522523789445832705', N'1522523544120991745', N'zcxm', N'在产项目', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 18:27:55.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522523789458415618', N'1522523544120991745', N'zl', N'重量', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 18:27:55.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522523789470998530', N'1522523544120991745', N'jhrq', N'交货日期', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 18:27:55.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522523789479387138', N'1522523544120991745', N'scjd', N'产量进度', N'String', NULL, N'', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-06 18:27:55.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522535242705936386', N'1522098873378549762', N'name', N'name', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, N'1', N'admin', N'2022-05-05 14:22:06.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522535242718519298', N'1522098873378549762', N'value', N'value', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, N'2', N'admin', N'2022-05-05 14:22:06.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522535242731102210', N'1522098873378549762', N'type', N'type', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, N'3', N'admin', N'2022-05-05 14:22:06.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522831994227056641', N'1522824721899511810', N'name', N'姓名', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-07 14:50:53.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522831994243833857', N'1522824721899511810', N'punch_time', N'打卡时间', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-07 14:50:53.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522831994264805377', N'1522824721899511810', N'salary_money', N'工资', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-07 14:50:53.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522831994281582593', N'1522824721899511810', N'bonus_money', N'奖金', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-07 14:50:53.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522831994298359810', N'1522824721899511810', N'sex', N'性别', N'String', NULL, N'sex', N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-07 14:50:53.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522831994319331330', N'1522824721899511810', N'age', N'年龄', N'String', NULL, N'', N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2022-05-07 14:50:53.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522831994336108545', N'1522824721899511810', N'birthday', N'生日', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-07 14:50:53.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522831994348691458', N'1522824721899511810', N'email', N'邮箱', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-07 14:50:53.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522831994365468673', N'1522824721899511810', N'content', N'个人简介', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-07 14:50:53.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522902540205744130', N'1522853857095376898', N'username', N'username', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-07 16:20:27.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522902540218327041', N'1522853857095376898', N'realname', N'realname', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-07 16:20:27.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522902540230909954', N'1522853857095376898', N'sex', N'sex', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-07 16:20:27.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522902540243492866', N'1522853857095376898', N'create_time', N'create_time', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2022-05-07 16:20:27.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'811451544708886528', N'1517071247723233281', N'name', N'name', N'String', NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'admin', N'2023-04-27 14:25:35.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'811451544750829568', N'1517071247723233281', N'sex', N'sex', N'String', NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'admin', N'2023-04-27 14:25:35.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'811451544767606784', N'1517071247723233281', N'age', N'age', N'String', NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'admin', N'2023-04-27 14:25:35.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'825962141328650240', N'1516743766914924546', N'day', N'日期', N'String', NULL, NULL, N'Y', NULL, NULL, NULL, NULL, N'admin', N'2023-06-06 15:25:30.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_item] ([id], [head_id], [field_name], [field_txt], [field_type], [widget_type], [dict_code], [iz_show], [iz_search], [iz_total], [search_mode], [order_num], [create_by], [create_time], [update_by], [update_time]) VALUES (N'825962141399953408', N'1516743766914924546', N'num', N'登录次数', N'String', NULL, NULL, N'Y', NULL, N'Y', NULL, NULL, N'admin', N'2023-06-06 15:25:30.0000000', NULL, NULL)
+GO
+
+
+-- ----------------------------
+-- Table structure for onl_drag_dataset_param
+-- ----------------------------
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[onl_drag_dataset_param]') AND type IN ('U'))
+	DROP TABLE [dbo].[onl_drag_dataset_param]
+GO
+
+CREATE TABLE [dbo].[onl_drag_dataset_param] (
+  [id] nvarchar(36) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [head_id] nvarchar(36) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [param_name] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [param_txt] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NULL,
+  [param_value] nvarchar(1000) COLLATE Chinese_PRC_CI_AS  NULL,
+  [order_num] int  NULL,
+  [iz_search] int  NULL,
+  [widget_type] nvarchar(50) COLLATE Chinese_PRC_CI_AS  NULL,
+  [search_mode] int  NULL,
+  [dict_code] nvarchar(255) COLLATE Chinese_PRC_CI_AS  NULL,
+  [create_by] nvarchar(50) COLLATE Chinese_PRC_CI_AS  NULL,
+  [create_time] datetime2(7)  NULL,
+  [update_by] nvarchar(50) COLLATE Chinese_PRC_CI_AS  NULL,
+  [update_time] datetime2(7)  NULL
+)
+GO
+
+ALTER TABLE [dbo].[onl_drag_dataset_param] SET (LOCK_ESCALATION = TABLE)
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'动态报表ID',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_param',
+'COLUMN', N'head_id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'参数字段',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_param',
+'COLUMN', N'param_name'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'参数文本',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_param',
+'COLUMN', N'param_txt'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'参数默认值',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_param',
+'COLUMN', N'param_value'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'排序',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_param',
+'COLUMN', N'order_num'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'查询标识0否1是 默认0',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_param',
+'COLUMN', N'iz_search'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'查询控件类型',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_param',
+'COLUMN', N'widget_type'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'查询模式1简单2范围',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_param',
+'COLUMN', N'search_mode'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'字典',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_param',
+'COLUMN', N'dict_code'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'创建人登录名称',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_param',
+'COLUMN', N'create_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'创建日期',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_param',
+'COLUMN', N'create_time'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'更新人登录名称',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_param',
+'COLUMN', N'update_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'更新日期',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_dataset_param',
+'COLUMN', N'update_time'
+GO
+
+
+-- ----------------------------
+-- Records of onl_drag_dataset_param
+-- ----------------------------
+INSERT INTO [dbo].[onl_drag_dataset_param] ([id], [head_id], [param_name], [param_txt], [param_value], [order_num], [iz_search], [widget_type], [search_mode], [dict_code], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517072834441019393', N'1516317603268657153', N'name', N'name', N'', NULL, NULL, NULL, NULL, NULL, N'admin', N'2022-04-21 17:28:44.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_param] ([id], [head_id], [param_name], [param_txt], [param_value], [order_num], [iz_search], [widget_type], [search_mode], [dict_code], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522831994378051586', N'1522824721899511810', N'sex', N'sex', N'1', NULL, NULL, NULL, NULL, N'sex', N'admin', N'2022-05-07 14:50:53.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_param] ([id], [head_id], [param_name], [param_txt], [param_value], [order_num], [iz_search], [widget_type], [search_mode], [dict_code], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522902540256075778', N'1522853857095376898', N'createTime_begin', N'createTime_begin', N'2011-01-01', NULL, NULL, NULL, NULL, NULL, N'admin', N'2022-05-07 16:20:28.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_param] ([id], [head_id], [param_name], [param_txt], [param_value], [order_num], [iz_search], [widget_type], [search_mode], [dict_code], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522902540272852993', N'1522853857095376898', N'createTime_end', N'createTime_end', N'2022-12-31', NULL, NULL, NULL, NULL, NULL, N'admin', N'2022-05-07 16:20:28.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_dataset_param] ([id], [head_id], [param_name], [param_txt], [param_value], [order_num], [iz_search], [widget_type], [search_mode], [dict_code], [create_by], [create_time], [update_by], [update_time]) VALUES (N'811451544792772608', N'1517071247723233281', N'age', N'age', N'0', NULL, NULL, NULL, NULL, NULL, N'admin', N'2023-04-27 14:25:35.0000000', NULL, NULL)
+GO
+
+
+-- ----------------------------
+-- Table structure for onl_drag_page
+-- ----------------------------
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[onl_drag_page]') AND type IN ('U'))
+	DROP TABLE [dbo].[onl_drag_page]
+GO
+
+CREATE TABLE [dbo].[onl_drag_page] (
+  [id] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [name] nvarchar(100) COLLATE Chinese_PRC_CI_AS  NULL,
+  [path] nvarchar(100) COLLATE Chinese_PRC_CI_AS  NULL,
+  [background_color] nvarchar(10) COLLATE Chinese_PRC_CI_AS  NULL,
+  [background_image] nvarchar(255) COLLATE Chinese_PRC_CI_AS  NULL,
+  [design_type] int  NULL,
+  [theme] nvarchar(10) COLLATE Chinese_PRC_CI_AS  NULL,
+  [style] nvarchar(20) COLLATE Chinese_PRC_CI_AS  NULL,
+  [cover_url] nvarchar(500) COLLATE Chinese_PRC_CI_AS  NULL,
+  [template] nvarchar(max) COLLATE Chinese_PRC_CI_AS  NULL,
+  [protection_code] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NULL,
+  [type] nvarchar(10) COLLATE Chinese_PRC_CI_AS  NULL,
+  [iz_template] nvarchar(10) COLLATE Chinese_PRC_CI_AS  NULL,
+  [create_by] nvarchar(50) COLLATE Chinese_PRC_CI_AS  NULL,
+  [create_time] datetime2(7)  NULL,
+  [update_by] nvarchar(50) COLLATE Chinese_PRC_CI_AS  NULL,
+  [update_time] datetime2(7)  NULL,
+  [low_app_id] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NULL,
+  [tenant_id] int  NULL,
+  [update_count] int  NULL
+)
+GO
+
+ALTER TABLE [dbo].[onl_drag_page] SET (LOCK_ESCALATION = TABLE)
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'主键',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'界面名称',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'name'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'访问路径',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'path'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'背景色',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'background_color'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'背景图',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'background_image'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'设计模式(1:pc,2:手机,3:平板)',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'design_type'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'主题色',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'theme'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'面板主题',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'style'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'封面图',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'cover_url'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'布局json',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'template'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'保护码',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'protection_code'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'分类(1:仪表盘设计 2:门户设计)',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'type'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'是否模板(1:是；0不是)',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'iz_template'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'创建人登录名称',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'create_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'创建日期',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'create_time'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'更新人登录名称',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'update_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'更新日期',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'update_time'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'应用ID',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'low_app_id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'租户ID',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page',
+'COLUMN', N'tenant_id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'可视化拖拽界面',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page'
+GO
+
+
+-- ----------------------------
+-- Records of onl_drag_page
+-- ----------------------------
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1504359493847306242', N'流程门户', N'/drag/page/view/1504359493847306242', NULL, NULL, NULL, NULL, NULL, NULL, N'[{"component":"eoa-cms-apply-process","w":16,"moved":false,"x":0,"h":43,"i":"ec47ccc3-fadb-4b4f-b156-be622e95a39f","y":59,"pageCompId":"1526478613069701121"},{"component":"eoa-cms-comm-use","w":24,"moved":false,"x":0,"h":15,"i":"7fb16df0-15dc-43c7-908e-7edb803cf1db","y":0,"pageCompId":"1526478613174558721"},{"component":"eoa-cms-process-notice","w":8,"moved":false,"x":16,"h":44,"i":"57eb306f-c556-4425-8966-ca315c83754a","y":15,"pageCompId":"1526478613275222017"},{"component":"eoa-cms-my-process","w":16,"moved":false,"x":0,"h":44,"i":"6dbe85c8-a57a-4fa9-8223-c320ebb3aa38","y":15,"pageCompId":"1526478613384273922"},{"component":"eoa-cms-user-notice","w":8,"moved":false,"x":16,"h":43,"i":"62b1793a-de33-4196-81fd-d1476131cc92","y":59,"pageCompId":"1526478613489131521"},{"component":"eoa-cms-process-chart","w":16,"moved":false,"x":0,"h":36,"i":"a0ad5cf9-81f8-415f-94d9-00ce57214192","y":102,"pageCompId":"1526478613593989121"},{"component":"eoa-cms-process-type","w":8,"moved":false,"x":16,"h":36,"i":"fbe20e5e-7aaa-4642-8368-28d2f2638cfd","y":102,"pageCompId":"1526478613694652418"},{"component":"eoa-cms-email","w":16,"moved":false,"x":0,"h":48,"i":"f7bd7396-b869-446b-8042-63871c77f05e","y":138,"pageCompId":"1526478613803704322"},{"component":"eoa-cms-plan","w":8,"moved":false,"x":16,"h":48,"i":"5a99de6c-8636-41be-8fe4-934bfce171f5","y":138,"pageCompId":"1526478613904367618"}]', N'', N'2', N'0', N'jeecg', N'2022-03-17 15:30:28.0000000', N'admin', N'2023-05-15 11:06:58.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1504364941187043329', N'企业门户', N'/drag/page/view/1504364941187043329', NULL, NULL, NULL, NULL, NULL, NULL, N'[{"component":"eoa-cms-banner","w":24,"moved":false,"x":0,"h":34,"i":"43d3d2e3-7311-4714-bf93-8dd4a3984615","y":0,"pageCompId":"1526476125109231618"},{"component":"eoa-cms-news-info","w":16,"moved":false,"x":0,"h":63,"i":"e2b21502-d058-4cad-b16d-9a986ed1c1c4","y":34,"pageCompId":"1526476125247643650"},{"component":"eoa-cms-user-notice","w":8,"moved":false,"x":16,"h":38,"i":"1b834694-04df-491b-a734-aa38d70c1ed6","y":34,"pageCompId":"1526476125352501250"},{"component":"eoa-cms-rule-info","w":9,"moved":false,"x":0,"h":44,"i":"fa29e703-60b0-43b5-a84e-ff92eb9188b5","y":97,"pageCompId":"1526476125457358849"},{"component":"eoa-cms-sign-news","w":7,"moved":false,"x":9,"h":44,"i":"5cd2720b-4ac9-4485-92a1-e77363883012","y":97,"pageCompId":"1526476125562216450"},{"component":"eoa-cms-plan","w":8,"moved":false,"x":16,"h":49,"i":"7bc89a6e-8a1e-4e5e-8aad-a59011bd7bd1","y":72,"pageCompId":"1526476125667074049"},{"component":"eoa-cms-link","w":8,"moved":false,"x":16,"h":20,"i":"5b7716a2-b0ab-4344-8a72-da53b5beb9f0","y":121,"pageCompId":"1526476125771931649"}]', N'', N'2', N'0', N'jeecg', N'2022-03-17 15:52:06.0000000', N'admin', N'2023-05-15 11:07:00.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1516747539813007362', N'示例_项目性质收入统计JSON', N'/drag/page/view/1516747539813007362', NULL, NULL, NULL, NULL, NULL, NULL, N'[{"component":"JPie","w":12,"moved":false,"x":0,"h":42,"i":"a2ada7ba-ff55-4d2c-ba1b-10eb3c04b5f7","y":0,"pageCompId":"1517018288431857665"},{"component":"JBar","w":12,"moved":false,"x":12,"h":42,"i":"195569f9-8bd3-4e8f-892a-f81f60a25ba8","y":0,"pageCompId":"1517018288566075393"},{"component":"JLine","w":24,"moved":false,"x":0,"h":44,"i":"5cde89e3-1174-4a95-8385-065c1ee1a22d","y":42,"pageCompId":"1517018288670932994"},{"component":"JCommonTable","w":24,"moved":false,"x":0,"h":48,"i":"2ed05f21-e822-4c4e-8657-02edb10b1cca","y":86,"pageCompId":"1517018288775790593"}]', N'', N'1', N'1', N'admin', N'2022-04-20 19:56:08.0000000', N'admin', N'2023-05-15 11:07:40.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1517018517935783937', N'示例_项目性质收入统计SQL', N'/drag/page/view/1517018517935783937', NULL, NULL, NULL, NULL, NULL, NULL, N'[{"component":"JTabs","w":24,"moved":false,"x":0,"h":56,"i":"19dd2a57-e10d-418b-8146-cd30de6e9aea","y":0,"pageCompId":"1524663379220791297"},{"component":"JCommonTable","w":24,"moved":false,"x":0,"h":48,"i":"e9e93d41-076f-436a-b466-3c327478e94d","y":56,"pageCompId":"1524663379359203329"}]', N'', N'1', N'1', N'admin', N'2022-04-21 13:52:54.0000000', N'admin', N'2022-05-12 16:10:51.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1517062686729338882', N'示例_年龄占比API', N'/drag/page/view/1517062686729338882', NULL, NULL, NULL, NULL, NULL, NULL, N'[{"component":"JLine","w":13,"moved":false,"x":0,"h":44,"i":"503ecff5-5f00-4188-90f7-227f5847b895","y":0,"pageCompId":"1517064663387373570"},{"component":"JRing","w":11,"moved":false,"x":13,"h":44,"i":"5a72ce0b-838d-4777-838a-1a0505ef8394","y":0,"pageCompId":"1517064663563534337"},{"component":"JFunnel","w":13,"moved":false,"x":0,"h":49,"i":"39790ea2-63de-41b4-957b-5a51b7e11f29","y":44,"pageCompId":"1517064663664197634"},{"component":"JCommonTable","w":11,"moved":false,"x":13,"h":49,"i":"9c1f12e1-d71d-4a12-b601-d6730fcd0223","y":44,"pageCompId":"1517064663798415361"}]', N'', N'1', N'1', N'admin', N'2022-04-21 16:48:25.0000000', N'admin', N'2022-04-21 16:56:16.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1517067453027352578', N'示例_查询_联动', N'/drag/page/view/1517067453027352578', NULL, NULL, N'100', N'default', N'default', NULL, N'[{"component":"JForm","w":24,"moved":false,"x":0,"h":12,"i":"d83aab3e-fb0e-4f5a-8c04-3b870e7d0cdd","y":0,"pageCompId":"811451560194256896"},{"component":"JBar","w":12,"moved":false,"x":0,"h":42,"i":"79f3e507-d7ab-4cd5-9402-ca5b41086a73","y":12,"pageCompId":"811451560223617024"},{"component":"JPie","w":12,"moved":false,"x":12,"h":42,"i":"95f190fb-69cc-4dc7-8f4c-b9f33460ad60","y":12,"pageCompId":"811451560236199936"},{"component":"JLine","w":12,"moved":false,"x":0,"h":42,"i":"a7de05b4-3eab-40ce-bb95-39d650ea3c1b","y":54,"pageCompId":"811451560252977152"},{"component":"JProgress","w":12,"moved":false,"x":12,"h":42,"i":"9e46a297-752b-40bc-95c7-d28f87ce7cd5","y":54,"pageCompId":"811451560269754368"}]', N'', N'1', N'1', N'admin', N'2022-04-21 17:07:21.0000000', N'admin', N'2023-04-27 14:25:38.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1519992838245441538', N'示例_钻取', N'/drag/page/view/1519992838245441538', NULL, NULL, NULL, NULL, NULL, NULL, N'[{"component":"JBar","w":12,"moved":false,"x":0,"h":42,"i":"c801a065-ca40-4095-8d27-6cf722deb09e","y":0,"pageCompId":"1519994699446870018"},{"component":"JPie","w":12,"moved":false,"x":12,"h":42,"i":"58236f99-4803-4a3c-ad39-e83949270517","y":0,"pageCompId":"1519994699518173186"}]', N'', N'1', N'1', N'jeecg', N'2022-04-29 18:51:47.0000000', N'jeecg', N'2022-04-29 18:59:11.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1522121177760280578', N'示例_医院综合数据统计', N'/drag/page/view/1522121177760280578', NULL, NULL, NULL, NULL, NULL, NULL, N'[{"component":"JText","w":9,"moved":false,"x":8,"h":8,"i":"5df901ff-2237-4aaf-91b2-74eb9103dc09","y":0,"pageCompId":"1523906947722629122"},{"component":"JStackBar","w":8,"moved":false,"x":0,"h":37,"i":"35c97a7b-966d-4124-8589-9ad9175085e2","y":0,"pageCompId":"1523906947861041153"},{"component":"JArea","w":7,"moved":false,"x":17,"h":25,"i":"f9936af9-9347-4ea2-8fda-4eef38fc2851","y":35,"pageCompId":"1523906947932344321"},{"component":"JBar","w":8,"moved":false,"x":0,"h":29,"i":"94f35443-fdf7-462c-8ed1-5eff21f41624","y":37,"pageCompId":"1523906948037201921"},{"component":"JColorGauge","w":4,"moved":false,"x":0,"h":27,"i":"6685b078-9067-42a5-a14d-9037dbe12131","y":66,"pageCompId":"1523906948108505089"},{"component":"JColorGauge","w":4,"moved":false,"x":4,"h":27,"i":"1e968150-d9d6-411b-833d-f95b231ae4ad","y":66,"pageCompId":"1523906948179808258"},{"component":"JPie","w":7,"moved":false,"x":17,"h":32,"i":"cbc6855a-1bc5-403b-be2d-76af53b1eb40","y":60,"pageCompId":"1523906948246917122"},{"component":"JLine","w":7,"moved":false,"x":17,"h":35,"i":"cc1dde8c-c064-438c-96a2-82a70bcb6815","y":0,"pageCompId":"1523906948351774722"},{"component":"JRing","w":9,"moved":false,"x":8,"h":34,"i":"ac652ca3-c956-4e0b-8dc3-b1407f4d8f5c","y":24,"pageCompId":"1523906948423077889"},{"component":"JFunnel","w":9,"moved":false,"x":8,"h":34,"i":"142fe7cf-1e45-4c52-9e6b-625bdf16d002","y":58,"pageCompId":"1523906948490186754"},{"component":"JGrowCard","w":9,"moved":false,"x":8,"h":16,"i":"3d9d75ff-99f5-49da-b16e-88447705dcc3","y":8,"pageCompId":"1523906948561489921"}]', N'', N'1', N'1', N'admin', N'2022-05-05 15:49:03.0000000', N'admin', N'2022-05-10 14:05:04.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1522172834409885698', N'示例_智慧社区', N'/drag/page/view/1522172834409885698', NULL, NULL, NULL, NULL, NULL, NULL, N'[{"component":"JText","w":10,"moved":false,"x":7,"h":7,"i":"a027c162-fc08-430b-aaca-428a40bf6757","y":0,"pageCompId":"1524661142020980737"},{"component":"JText","w":7,"moved":false,"x":0,"h":6,"i":"08290325-ab4c-4637-9533-50bb9ce0e92b","y":0,"pageCompId":"1524661142121644034"},{"component":"JText","w":7,"moved":false,"x":0,"h":6,"i":"543590d0-763e-4871-8c8b-72258b10f68e","y":6,"pageCompId":"1524661142226501634"},{"component":"JText","w":7,"moved":false,"x":0,"h":5,"i":"6253853a-75fb-42b4-ad93-b94cdd66b2c0","y":12,"pageCompId":"1524661142331359233"},{"component":"JPie","w":7,"moved":false,"x":0,"h":36,"i":"a20e09ed-a2db-4b0b-8c9a-e745eb747378","y":17,"pageCompId":"1524661142436216833"},{"component":"JText","w":7,"moved":false,"x":0,"h":6,"i":"64040039-455f-47c8-800e-f6061af70451","y":53,"pageCompId":"1524661142541074433"},{"component":"JCommonTable","w":7,"moved":false,"x":0,"h":43,"i":"485ad866-aeae-4137-8227-bef27c9275b0","y":59,"pageCompId":"1524661142645932033"},{"component":"JText","w":7,"moved":false,"x":17,"h":5,"i":"aa8f5bac-5cdd-484b-b7ec-145b34119d94","y":0,"pageCompId":"1524661142750789634"},{"component":"JText","w":7,"moved":false,"x":17,"h":5,"i":"cd378afa-20ce-4d37-abcd-9b73af9bd70a","y":35,"pageCompId":"1524661142855647234"},{"component":"JText","w":7,"moved":false,"x":17,"h":5,"i":"0b9d4f60-d3a2-43bd-a444-2378974cbac0","y":69,"pageCompId":"1524661142960504833"},{"component":"JLine","w":7,"moved":false,"x":17,"h":28,"i":"a88af204-bba2-48e0-857a-056f77a62838","y":74,"pageCompId":"1524661143065362433"},{"component":"JBar","w":7,"moved":false,"x":17,"h":29,"i":"fc62f6b2-54b2-42fb-ac49-730a458365f7","y":40,"pageCompId":"1524661143170220033"},{"component":"JRing","w":7,"moved":false,"x":17,"h":30,"i":"a0fd33e9-ad35-4f54-8f1c-15e6d6a0e1a8","y":5,"pageCompId":"1524661143275077633"},{"component":"JGauge","w":10,"moved":false,"x":7,"h":30,"i":"a65c5a00-3a09-488e-8ed7-957c37c74ec5","y":7,"pageCompId":"1524661143379935234"},{"component":"JColorGauge","w":10,"moved":false,"x":7,"h":31,"i":"0633a426-0e0a-4b4d-9813-575166ab382e","y":37,"pageCompId":"1524661143518347265"},{"component":"JStackBar","w":10,"moved":false,"x":7,"h":34,"i":"0be25d6b-60e4-40a3-8af2-637bab222491","y":68,"pageCompId":"1524661143660953602"}]', N'', N'1', N'1', N'admin', N'2022-05-05 19:14:19.0000000', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1522417428246568961', N'示例_乡村振兴普惠金融服务', N'/drag/page/view/1522417428246568961', NULL, NULL, NULL, NULL, NULL, NULL, N'[{"component":"JImg","w":1,"moved":false,"x":0,"h":5,"i":"62cb9a5f-eb84-4f74-8e35-3fa54fd867f0","y":8,"pageCompId":"1522524336454377473"},{"component":"JText","w":6,"moved":false,"x":0,"h":8,"i":"7e21b964-9332-4348-b36e-30314b6f92c2","y":0,"pageCompId":"1522524336693452802"},{"component":"JText","w":5,"moved":false,"x":1,"h":5,"i":"1edb6c33-8eb8-4f22-8711-55aef46767d7","y":8,"pageCompId":"1522524336823476225"},{"component":"JImg","w":1,"moved":false,"x":0,"h":5,"i":"f4d32efe-0cff-4845-8c38-bde3fdb0657c","y":13,"pageCompId":"1522524336903168002"},{"component":"JImg","w":1,"moved":false,"x":0,"h":5,"i":"6b640017-ec02-407e-87d3-35b4da262384","y":18,"pageCompId":"1522524336974471169"},{"component":"JText","w":5,"moved":false,"x":1,"h":5,"i":"f64eb1a5-faec-4b42-8490-88cddf20669b","y":13,"pageCompId":"1522524337066745858"},{"component":"JText","w":5,"moved":false,"x":1,"h":5,"i":"402b8a18-951c-4bd0-b817-17b75d18cbd2","y":18,"pageCompId":"1522524337146437633"},{"component":"JCommonTable","w":14,"moved":false,"x":0,"h":43,"i":"aafe3aec-5265-4769-8ba3-c3f693287100","y":38,"pageCompId":"1522524337251295233"},{"component":"JLine","w":10,"moved":false,"x":14,"h":29,"i":"ba474f88-f06a-4459-adc0-53929c564e5f","y":0,"pageCompId":"1522524337356152834"},{"component":"JBar","w":10,"moved":false,"x":14,"h":28,"i":"88f93cd9-3a51-42aa-9a11-6edf685a5db9","y":29,"pageCompId":"1522524337461010433"},{"component":"JPie","w":10,"moved":false,"x":14,"h":24,"i":"4e7bb9d5-72c2-4f21-85cb-0f6289d9099e","y":57,"pageCompId":"1522524337565868034"},{"component":"JText","w":5,"moved":false,"x":1,"h":5,"i":"53d91193-8d89-4291-be1b-cc6e43ef1bf9","y":23,"pageCompId":"1522524337670725634"},{"component":"JImg","w":1,"moved":false,"x":0,"h":5,"i":"e04f860d-3355-4ce2-8ad7-c7597f7365e2","y":23,"pageCompId":"1522524337742028802"},{"component":"JImg","w":1,"moved":false,"x":0,"h":5,"i":"e52f5ced-8159-46e6-8a60-7349e9eb26b9","y":28,"pageCompId":"1522524337813331969"},{"component":"JText","w":5,"moved":false,"x":1,"h":5,"i":"b6d236f0-827a-4b32-a556-e85fe44e7df1","y":28,"pageCompId":"1522524337884635138"},{"component":"JText","w":5,"moved":false,"x":1,"h":5,"i":"018f02bb-eb4b-43f3-a98e-9a712681bb26","y":33,"pageCompId":"1522524337951744001"},{"component":"JImg","w":1,"moved":false,"x":0,"h":5,"i":"ecc0ff70-9aa0-48ee-84c1-625c5069044c","y":33,"pageCompId":"1522524338023047170"},{"component":"JFunnel","w":8,"moved":false,"x":6,"h":38,"i":"19ab2147-2c5c-47c7-8dce-bec960353793","y":0,"pageCompId":"1522524338094350337"}]', N'', N'1', N'1', N'admin', N'2022-05-06 11:26:15.0000000', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1522451603569778690', N'示例_智能大数据', N'/drag/page/view/1522451603569778690', NULL, NULL, NULL, NULL, NULL, NULL, N'[{"component":"JText","w":4,"moved":false,"x":0,"h":6,"i":"6070607f-f8cd-48f9-b8e6-74511388b222","y":0,"pageCompId":"1522523872572743681"},{"component":"JText","w":4,"moved":false,"x":0,"h":6,"i":"0ced8073-18dc-4d50-84be-5364d338a6b4","y":6,"pageCompId":"1522523872849567745"},{"component":"JBar","w":12,"moved":false,"x":0,"h":44,"i":"e8e1e96a-6bcd-470f-8d52-3be655942a97","y":12,"pageCompId":"1522523872954425346"},{"component":"JPie","w":6,"moved":false,"x":0,"h":42,"i":"5d40565e-8ac4-4156-8130-ab627e98a80c","y":56,"pageCompId":"1522523873038311426"},{"component":"JPie","w":6,"moved":false,"x":6,"h":42,"i":"60495499-f2d4-463d-ad7f-2487ee47592d","y":56,"pageCompId":"1522523873143169025"},{"component":"JTabs","w":12,"moved":false,"x":12,"h":50,"i":"a83d340c-a493-4d37-935c-be8a35c09097","y":0,"pageCompId":"1522523873235443714"},{"component":"JTabs","w":12,"moved":false,"x":12,"h":48,"i":"7903672e-9139-4db9-ab25-24c0612537cb","y":50,"pageCompId":"1522523873340301313"},{"component":"JText","w":4,"moved":false,"x":4,"h":6,"i":"38364ada-5aeb-4ca3-8bfe-c81c3894846d","y":0,"pageCompId":"1522523873445158914"},{"component":"JText","w":4,"moved":false,"x":4,"h":6,"i":"6f1363fd-4306-4452-82ac-b0427e064b59","y":6,"pageCompId":"1522523873529044994"},{"component":"JText","w":4,"moved":false,"x":8,"h":6,"i":"8a101ba0-496e-451c-8d37-fefa1858f19c","y":0,"pageCompId":"1522523873621319682"},{"component":"JText","w":4,"moved":false,"x":8,"h":6,"i":"45600ba8-6cff-4083-8db8-fead5cfc88ab","y":6,"pageCompId":"1522523873726177281"}]', N'', N'1', N'1', N'admin', N'2022-05-06 13:42:03.0000000', N'admin', N'2022-05-06 18:29:13.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1522460228585529346', N'示例_旅游数据监控', N'/drag/page/view/1522460228585529346', NULL, NULL, NULL, NULL, NULL, NULL, N'[{"component":"JRing","w":8,"moved":false,"x":0,"h":30,"i":"3e514383-e7b8-4038-8037-da02ceeb251f","y":0,"pageCompId":"1522466576295534593"},{"component":"JBar","w":8,"moved":false,"x":0,"h":24,"i":"7c31dea0-fdf9-46ae-83f3-a3c1e50641f6","y":30,"pageCompId":"1522466576429752321"},{"component":"JLine","w":8,"moved":false,"x":0,"h":26,"i":"661c80a4-668f-4446-8f56-d8628e2511f9","y":54,"pageCompId":"1522466576526221314"},{"component":"JPie","w":7,"moved":false,"x":17,"h":31,"i":"09a859e0-d906-4d6a-92d2-5cb9966aedfb","y":0,"pageCompId":"1522466576605913090"},{"component":"JImg","w":9,"moved":false,"x":8,"h":25,"i":"c30dbcb0-4d27-4f25-83f5-de2bbbac401c","y":11,"pageCompId":"1522466576702382082"},{"component":"JText","w":5,"moved":false,"x":8,"h":5,"i":"d4f386cb-6074-4f46-84a7-7328b2b147bf","y":0,"pageCompId":"1522466576777879554"},{"component":"JText","w":4,"moved":false,"x":13,"h":5,"i":"e355be6c-3c7f-4f6e-8014-7ff591f8c9b0","y":0,"pageCompId":"1522466576878542849"},{"component":"JText","w":5,"moved":false,"x":8,"h":5,"i":"f6cb6f0f-3e74-4f97-8965-c83102f62248","y":5,"pageCompId":"1522466576954040321"},{"component":"JText","w":4,"moved":false,"x":13,"h":6,"i":"3e3d8fee-844f-4437-a593-899b6b1ff811","y":5,"pageCompId":"1522466577054703617"},{"component":"JPie","w":9,"moved":false,"x":8,"h":44,"i":"c3bb7ba4-8dc9-4e2a-8252-77ed74dd10d0","y":36,"pageCompId":"1522466577159561217"},{"component":"JCommonTable","w":7,"moved":false,"x":17,"h":49,"i":"d3edcc06-4e00-4934-ab1e-066f058ea618","y":31,"pageCompId":"1522466577264418817"}]', N'', N'1', N'1', N'admin', N'2022-05-06 14:16:19.0000000', N'admin', N'2022-05-06 14:41:33.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1522466781443137538', N'示例_首页', N'/drag/page/view/1522466781443137538', NULL, NULL, NULL, NULL, NULL, NULL, N'[{"component":"JQuickNav","w":13,"moved":false,"x":0,"h":28,"i":"a80f65fe-cdc3-4fbe-a383-c526eda9886e","y":19,"pageCompId":"1522504050518532098"},{"component":"JList","w":11,"moved":false,"x":13,"h":44,"i":"4d7f78a3-6520-45ae-85e4-ac0cfca514b3","y":39,"pageCompId":"1522504050690498562"},{"component":"JGrowCard","w":24,"moved":false,"x":0,"h":19,"i":"1aab1f6b-316e-4046-9ec0-d68d35fa6142","y":0,"pageCompId":"1522504050782773249"},{"component":"JProjectCard","w":13,"moved":false,"x":0,"h":36,"i":"ab1fcd58-e150-4816-b06a-5d2a62517510","y":47,"pageCompId":"1522504050862465026"},{"component":"JWaitMatter","w":11,"moved":false,"x":13,"h":20,"i":"e5a73961-e1ba-462c-bf86-78fbb94390d4","y":19,"pageCompId":"1522504050958934017"},{"component":"JLine","w":24,"moved":false,"x":0,"h":41,"i":"b1786985-070f-4f7b-8c46-b61c0ac9b8c7","y":83,"pageCompId":"1522504051076374530"}]', N'', N'1', N'1', N'admin', N'2022-05-06 14:42:21.0000000', N'admin', N'2022-05-06 17:10:27.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1522507145776472065', N'示例_数据分析', N'/drag/page/view/1522507145776472065', NULL, NULL, NULL, NULL, NULL, NULL, N'[{"component":"JBar","w":12,"moved":false,"x":0,"h":42,"i":"cfe42a6f-d74e-46f4-8a64-c2b7d13b0d12","y":23,"pageCompId":"1522520321213603842"},{"component":"JStackBar","w":12,"moved":false,"x":12,"h":42,"i":"fe5628ab-6e56-4f25-88bf-21e4d5d2eb40","y":23,"pageCompId":"1522520321352015874"},{"component":"JPie","w":12,"moved":false,"x":0,"h":42,"i":"70d1dace-e2d2-4080-8736-f9cac6b9e727","y":65,"pageCompId":"1522520321456873474"},{"component":"JLine","w":12,"moved":false,"x":12,"h":42,"i":"32560edd-a4b5-4b7d-8f8b-7e84ce1c5213","y":65,"pageCompId":"1522520321549148162"},{"component":"JCommonTable","w":24,"moved":false,"x":0,"h":42,"i":"1f3f12e8-f852-4e81-9b11-6f4a762500f9","y":107,"pageCompId":"1522520321628839937"},{"component":"JTabs","w":15,"moved":false,"x":0,"h":43,"i":"43c93eaa-1db0-42e2-8865-f0deb138782e","y":233,"pageCompId":"1522520321725308929"},{"component":"JGrid","w":24,"moved":false,"x":0,"h":40,"i":"1ac58009-1e17-4136-8309-313a9111ebb6","y":193,"pageCompId":"1522520321935024129"},{"component":"JCarousel","w":24,"moved":false,"x":0,"h":23,"i":"85bab599-d0e8-4989-9e76-a662dd71ab93","y":0,"pageCompId":"1522520322014715906"},{"component":"JIframe","w":24,"moved":false,"x":0,"h":36,"i":"39c79717-7996-43b8-89db-b9cacfed9bc0","y":276,"pageCompId":"1522520322115379202"},{"component":"JPictorialBar","w":9,"moved":false,"x":15,"h":43,"i":"8b8d91a4-8796-431f-a6a8-ff1379dbc93c","y":233,"pageCompId":"1522520322216042498"},{"component":"JBar","w":15,"moved":false,"x":0,"h":44,"i":"7027c8c1-6178-40cb-8a54-e98e468679fc","y":149,"pageCompId":"1522520322329288706"},{"component":"JLine","w":9,"moved":false,"x":15,"h":44,"i":"eb6b93ec-c49e-446d-8aed-5370c391b1bc","y":149,"pageCompId":"1522520322421563394"}]', N'', N'1', N'1', N'admin', N'2022-05-06 17:22:45.0000000', N'admin', N'2022-05-06 18:15:07.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1522823348231397378', N'示例_数据表格', N'/drag/page/view/1522823348231397378', NULL, NULL, NULL, NULL, NULL, NULL, N'[{"component":"JForm","w":24,"moved":false,"x":0,"h":12,"i":"2c69541d-4945-4734-8813-f719cccff3e3","y":0,"pageCompId":"1524656729709641730"},{"component":"JCommonTable","w":24,"moved":false,"x":0,"h":42,"i":"491fc4c0-782c-49ac-838c-ae7003abece2","y":12,"pageCompId":"1524656729776750593"}]', N'', N'1', N'1', N'admin', N'2022-05-07 14:19:14.0000000', N'admin', N'2022-05-12 15:44:26.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1522835471967772673', N'示例_日期范围查询', N'/drag/page/view/1522835471967772673', NULL, NULL, NULL, NULL, NULL, NULL, N'[{"component":"JBar","w":12,"moved":false,"x":0,"h":42,"i":"918fc3ea-c88a-4c42-892b-d2a14967258e","y":12,"pageCompId":"1526496110877696002"},{"component":"JBar","w":12,"moved":false,"x":12,"h":42,"i":"d14e4994-171d-4ca1-8bd8-85dc821f56a7","y":12,"pageCompId":"1526496110948999169"},{"component":"JForm","w":24,"moved":false,"x":0,"h":12,"i":"eba57ed3-52c2-4ebd-aa70-81ed565d8488","y":0,"pageCompId":"1526496111003525121"}]', N'', N'1', N'1', N'admin', N'2022-05-07 15:07:24.0000000', N'admin', N'2022-05-17 17:33:28.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'1524641995740446722', N'示例_全组件', N'/drag/page/view/1524641995740446722', NULL, NULL, NULL, NULL, NULL, NULL, N'[{"component":"JBar","w":12,"moved":false,"x":0,"h":39,"i":"fa778a18-c782-4f15-849b-f41e95ebf2e5","y":24,"pageCompId":"1546761823821938690"},{"component":"JPie","w":12,"moved":false,"x":0,"h":42,"i":"70157e6a-4357-41e6-9b33-7c54897c0630","y":63,"pageCompId":"1546761823821938691"},{"component":"JStackBar","w":12,"moved":false,"x":12,"h":39,"i":"2a223f69-813b-4f55-8849-d7265cebf295","y":24,"pageCompId":"1546761823821938692"},{"component":"JDynamicBar","w":12,"moved":false,"x":12,"h":42,"i":"9be9a362-e019-4ce5-a6ec-35d986582f65","y":63,"pageCompId":"1546761823821938693"},{"component":"JLine","w":12,"moved":false,"x":0,"h":37,"i":"7be6d89a-4e82-4a98-8574-39ce47e3dd9e","y":105,"pageCompId":"1546761823821938694"},{"component":"JRadar","w":12,"moved":false,"x":12,"h":37,"i":"0693213b-fc57-41f7-891a-55c252469a5d","y":105,"pageCompId":"1546761823889047554"},{"component":"JRing","w":12,"moved":false,"x":0,"h":36,"i":"f720948d-e768-44a5-8f51-ccaf6292523e","y":142,"pageCompId":"1546761823889047555"},{"component":"JArea","w":12,"moved":false,"x":12,"h":36,"i":"d69757e5-f19a-48b1-bea4-d9456086e45e","y":142,"pageCompId":"1546761823889047556"},{"component":"JProgress","w":12,"moved":false,"x":0,"h":33,"i":"4efbcc2a-5b1d-46c2-9b6d-40e26d69e967","y":178,"pageCompId":"1546761823889047557"},{"component":"JFunnel","w":12,"moved":false,"x":12,"h":33,"i":"fba9dcee-2737-48bc-afc5-865484ce1be3","y":178,"pageCompId":"1546761823889047558"},{"component":"JPictorialBar","w":12,"moved":false,"x":0,"h":38,"i":"17497727-7589-4ec7-8a45-c15a4317602b","y":211,"pageCompId":"1546761823951962113"},{"component":"JGauge","w":12,"moved":false,"x":12,"h":38,"i":"7136f472-1e93-4387-b147-1bb06673f338","y":211,"pageCompId":"1546761823951962114"},{"component":"JColorGauge","w":12,"moved":false,"x":0,"h":48,"i":"6fa66881-2c04-4720-8fe9-5ccdc6f5edb0","y":249,"pageCompId":"1546761823951962115"},{"component":"JTabs","w":12,"moved":false,"x":12,"h":48,"i":"a9b26f9d-3a79-430a-80fb-4261d9fc40e7","y":249,"pageCompId":"1546761823951962116"},{"component":"JGrid","w":24,"moved":false,"x":0,"h":40,"i":"ed8dfb23-63c9-4d3d-8bef-aad3a5de4cc4","y":297,"pageCompId":"1546761823951962117"},{"component":"JCommonTable","w":24,"moved":false,"x":0,"h":50,"i":"eb4af4a3-8fce-40f9-832c-c749e75dac5d","y":349,"pageCompId":"1546761824014876674"},{"component":"JList","w":12,"moved":false,"x":0,"h":38,"i":"e2b2073e-d523-4545-a9a2-903710c50952","y":399,"pageCompId":"1546761824014876675"},{"component":"JForm","w":24,"moved":false,"x":0,"h":12,"i":"27d36825-02a8-49b5-a058-4ab710516fdd","y":337,"pageCompId":"1546761824014876676"},{"component":"JCarousel","w":24,"moved":false,"x":0,"h":24,"i":"0c12ecb7-0ff2-498d-811f-b10b303b2ab3","y":0,"pageCompId":"1546761824014876677"},{"component":"JIframe","w":24,"moved":false,"x":0,"h":42,"i":"193478dd-b57c-4930-84b4-f021721c8f52","y":437,"pageCompId":"1546761824014876678"},{"component":"JCalendar","w":12,"moved":false,"x":12,"h":38,"i":"df8b75f0-9243-47b4-8773-47916cd6768b","y":399,"pageCompId":"1546761824014876679"},{"component":"JImg","w":10,"moved":false,"x":0,"h":24,"i":"e326ea85-2fc7-4c72-bf68-3d525cbdd271","y":479,"pageCompId":"1546761824014876680"},{"component":"JText","w":6,"moved":false,"x":0,"h":6,"i":"798187db-1959-4d6e-be8a-adcd7b249558","y":556,"pageCompId":"1546761824081985537"},{"component":"JRadioButton","w":5,"moved":false,"x":7,"h":6,"i":"6cb30c18-e63d-428e-9b29-52dd04e1b182","y":556,"pageCompId":"1546761824081985538"},{"component":"JQuickNav","w":12,"moved":false,"x":0,"h":26,"i":"1e215e4d-89ea-4de8-bd33-9a392746b3cb","y":503,"pageCompId":"1546761824081985539"},{"component":"JGrowCard","w":14,"moved":false,"x":10,"h":24,"i":"12eaede2-77dd-4603-8c5a-7b914632ea38","y":479,"pageCompId":"1546761824081985540"},{"component":"JProjectCard","w":12,"moved":false,"x":12,"h":38,"i":"baa68293-3cfc-4563-a841-d498652c934b","y":524,"pageCompId":"1546761824081985541"},{"component":"JWaitMatter","w":12,"moved":false,"x":12,"h":21,"i":"2507f501-ec3f-4210-b980-c6544188fef8","y":503,"pageCompId":"1546761824081985542"},{"component":"JDynamicInfo","w":12,"moved":false,"x":0,"h":27,"i":"8837f7a2-d767-4ff4-8537-d6cd61b9312d","y":529,"pageCompId":"1546761824081985543"}]', N'', N'1', N'1', N'admin', N'2022-05-12 14:45:53.0000000', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'750931735173201920', N'双11', N'/drag/page/view/750931735173201920', NULL, NULL, N'100', N'default', N'default', N'', N'[{"component":"JMultipleBar","w":12,"moved":false,"x":12,"h":42,"i":"5a4b8360-890b-4f0e-92a8-342f42573fb1","y":0,"orderNum":126,"pageCompId":"750939797242052608"},{"component":"JMixLineBar","w":12,"moved":false,"x":0,"h":42,"i":"46888850-01e3-4655-8fac-257a82874988","y":16,"orderNum":168,"pageCompId":"750939797271412736"},{"component":"JBar","w":12,"moved":false,"x":12,"h":42,"i":"479c3829-ba95-4522-af6a-49ef84bf029f","y":42,"orderNum":126,"pageCompId":"750939797288189952"},{"component":"JPie","w":12,"moved":false,"x":0,"h":16,"i":"5f4d3595-1886-4528-84e5-b100f64e97ca","y":0,"orderNum":126,"pageCompId":"750939797300772864"},{"component":"JNegativeBar","w":12,"moved":false,"x":12,"h":42,"i":"34f9be94-c288-470a-837e-f5b5e56381e8","y":84,"orderNum":142,"pageCompId":"750939797313355776"},{"component":"JMixLineBar","w":12,"moved":false,"x":0,"h":42,"i":"74c17127-28de-4aa7-b01a-a2f1eb1f9324","y":58,"orderNum":142,"pageCompId":"750939797321744384"}]', N'', N'1', N'0', N'admin', N'2022-11-11 14:21:28.0000000', N'jeecg', N'2023-02-20 10:44:09.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'817932088040796160', N'111', N'/drag/page/view/817932088040796160', NULL, NULL, N'100', N'default', N'default', NULL, N'[{"component":"JBar","w":12,"moved":false,"x":0,"h":30,"i":"7dd6fde0-caa4-4204-974e-d56300ad69f3","y":0,"orderNum":0,"pageCompId":"817961335140691968"}]', NULL, N'1', N'0', N'admin', N'2023-05-15 11:36:56.0000000', N'admin', N'2023-05-15 13:33:10.0000000', NULL, N'0', N'1')
+GO
+
+INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'825988076505444352', N'示例_项目性质收入统计JSON_副本', N'/drag/page/view/825988076505444352', NULL, NULL, N'100', N'default', N'default', NULL, N'[{"component":"JPie","w":12,"moved":false,"x":0,"h":42,"i":"a2ada7ba-ff55-4d2c-ba1b-10eb3c04b5f7","y":0,"pageCompId":"826005888498184192"},{"component":"JBar","w":12,"moved":false,"x":12,"h":42,"i":"195569f9-8bd3-4e8f-892a-f81f60a25ba8","y":0,"pageCompId":"826005888569487360"},{"component":"JLine","w":24,"moved":false,"x":0,"h":44,"i":"5cde89e3-1174-4a95-8385-065c1ee1a22d","y":42,"pageCompId":"826005888598847488"},{"component":"JCommonTable","w":24,"moved":false,"x":0,"h":48,"i":"2ed05f21-e822-4c4e-8657-02edb10b1cca","y":86,"pageCompId":"826005888611430400"}]', NULL, N'1', N'0', N'admin', N'2023-06-06 17:08:34.0000000', N'admin', N'2023-06-06 18:19:21.0000000', NULL, NULL, N'3')
+GO
+
+
+-- ----------------------------
+-- Table structure for onl_drag_page_comp
+-- ----------------------------
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[onl_drag_page_comp]') AND type IN ('U'))
+	DROP TABLE [dbo].[onl_drag_page_comp]
+GO
+
+CREATE TABLE [dbo].[onl_drag_page_comp] (
+  [id] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [parent_id] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NULL,
+  [page_Id] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NULL,
+  [comp_id] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NULL,
+  [component] nvarchar(50) COLLATE Chinese_PRC_CI_AS  NULL,
+  [config] nvarchar(max) COLLATE Chinese_PRC_CI_AS  NULL,
+  [create_by] nvarchar(50) COLLATE Chinese_PRC_CI_AS  NULL,
+  [create_time] datetime2(7)  NULL,
+  [update_by] nvarchar(50) COLLATE Chinese_PRC_CI_AS  NULL,
+  [update_time] datetime2(7)  NULL
+)
+GO
+
+ALTER TABLE [dbo].[onl_drag_page_comp] SET (LOCK_ESCALATION = TABLE)
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'主键',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page_comp',
+'COLUMN', N'id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'父组件ID',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page_comp',
+'COLUMN', N'parent_id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'界面ID',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page_comp',
+'COLUMN', N'page_Id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'组件库ID',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page_comp',
+'COLUMN', N'comp_id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'组件名称',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page_comp',
+'COLUMN', N'component'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'组件配置',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page_comp',
+'COLUMN', N'config'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'创建人登录名称',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page_comp',
+'COLUMN', N'create_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'创建日期',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page_comp',
+'COLUMN', N'create_time'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'更新人登录名称',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page_comp',
+'COLUMN', N'update_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'更新日期',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page_comp',
+'COLUMN', N'update_time'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'可视化拖拽页面组件',
+'SCHEMA', N'dbo',
+'TABLE', N'onl_drag_page_comp'
+GO
+
+
+-- ----------------------------
+-- Records of onl_drag_page_comp
+-- ----------------------------
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517018288431857665', NULL, N'1516747539813007362', NULL, N'JPie', N'{"dataMapping":[{"mapping":"column1","filed":"维度"},{"mapping":"column8","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"项目性质收入统计JSON","query":[],"dataSetApi":"[{\"column1\":\"市场化-电商业务\",\"column2\":4865.41,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":4865.41},{\"column1\":\"统筹型\",\"column2\":35767081.88,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":35767081.88},{\"column1\":\"市场化-非股东\",\"column2\":1487045.35,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":1487045.35},{\"column1\":\"市场化-参控股\",\"column2\":382690.56,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":382690.56},{\"column1\":\"市场化-员工福利\",\"column2\":256684.91,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":265684.91},{\"column1\":\"市场化-再保险\",\"column2\":563451.03,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":563451.03},{\"column1\":\"市场化-海外业务\",\"column2\":760576.25,\"column3\":770458.75,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":1531035.00},{\"column1\":\"市场化-风险咨询\",\"column2\":0.00,\"column3\":910183.93,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":226415.09,\"column8\":1136599.02}]","url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"chartData":"[{\"value\":1048,\"name\":\"vivo\"},{\"value\":735,\"name\":\"oppo\"},{\"value\":580,\"name\":\"苹果\"},{\"value\":484,\"name\":\"小米\"},{\"value\":300,\"name\":\"三星\"}]","size":{"height":420},"dataSetId":"1516748630344630273","fieldOption":[{"label":"项目性质","text":"项目性质","value":"column1"},{"label":"保险公估费","text":"保险公估费","value":"column5"},{"label":"承保公估评估费","text":"承保公估评估费","value":"column4"},{"label":"风险咨询费","text":"风险咨询费","value":"column3"},{"label":"保险经纪佣金费","text":"保险经纪佣金费","value":"column2"},{"label":"总计","text":"总计","value":"column8"},{"label":"内控咨询费","text":"内控咨询费","value":"column7"},{"label":"投标咨询费","text":"投标咨询费","value":"column6"}],"dataSetType":"json","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"legend":{"orient":"vertical"},"series":[{"data":[],"name":"AccessFrom","emphasis":{"itemStyle":{"shadowOffsetX":0,"shadowBlur":10,"shadowColor":"rgba(0,0,0,0.5)"}},"type":"pie","radius":"50%"}],"tooltip":{"trigger":"item"},"title":{"subtext":"","left":"left","show":true,"text":"基础饼图"},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":""}}}', N'admin', N'2022-04-21 13:51:59.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517018288566075393', NULL, N'1516747539813007362', NULL, N'JBar', N'{"dataMapping":[{"mapping":"column1","filed":"维度"},{"mapping":"column8","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"项目性质收入统计JSON","query":[],"dataSetApi":"[{\"column1\":\"市场化-电商业务\",\"column2\":4865.41,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":4865.41},{\"column1\":\"统筹型\",\"column2\":35767081.88,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":35767081.88},{\"column1\":\"市场化-非股东\",\"column2\":1487045.35,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":1487045.35},{\"column1\":\"市场化-参控股\",\"column2\":382690.56,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":382690.56},{\"column1\":\"市场化-员工福利\",\"column2\":256684.91,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":265684.91},{\"column1\":\"市场化-再保险\",\"column2\":563451.03,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":563451.03},{\"column1\":\"市场化-海外业务\",\"column2\":760576.25,\"column3\":770458.75,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":1531035.00},{\"column1\":\"市场化-风险咨询\",\"column2\":0.00,\"column3\":910183.93,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":226415.09,\"column8\":1136599.02}]","url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"chartData":"[{\"name\":\"苹果\",\"value\":1000879,\"type\":\"手机品牌\"},{\"name\":\"三星\",\"value\":3400879,\"type\":\"手机品牌\"},{\"name\":\"小米\",\"value\":2300879,\"type\":\"手机品牌\"},{\"name\":\"oppo\",\"value\":5400879,\"type\":\"手机品牌\"},{\"name\":\"vivo\",\"value\":3400879,\"type\":\"手机品牌\"}]","size":{"height":420},"dataSetId":"1516748630344630273","fieldOption":[{"label":"项目性质","text":"项目性质","value":"column1"},{"label":"保险公估费","text":"保险公估费","value":"column5"},{"label":"承保公估评估费","text":"承保公估评估费","value":"column4"},{"label":"风险咨询费","text":"风险咨询费","value":"column3"},{"label":"保险经纪佣金费","text":"保险经纪佣金费","value":"column2"},{"label":"总计","text":"总计","value":"column8"},{"label":"内控咨询费","text":"内控咨询费","value":"column7"},{"label":"投标咨询费","text":"投标咨询费","value":"column6"}],"dataSetType":"json","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180,180,180,0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":""}}}', N'admin', N'2022-04-21 13:51:59.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517018288670932994', NULL, N'1516747539813007362', NULL, N'JLine', N'{"dataMapping":[{"mapping":"column1","filed":"维度"},{"mapping":"column8","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"项目性质收入统计JSON","query":[],"dataSetApi":"[{\"column1\":\"市场化-电商业务\",\"column2\":4865.41,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":4865.41},{\"column1\":\"统筹型\",\"column2\":35767081.88,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":35767081.88},{\"column1\":\"市场化-非股东\",\"column2\":1487045.35,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":1487045.35},{\"column1\":\"市场化-参控股\",\"column2\":382690.56,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":382690.56},{\"column1\":\"市场化-员工福利\",\"column2\":256684.91,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":265684.91},{\"column1\":\"市场化-再保险\",\"column2\":563451.03,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":563451.03},{\"column1\":\"市场化-海外业务\",\"column2\":760576.25,\"column3\":770458.75,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":1531035.00},{\"column1\":\"市场化-风险咨询\",\"column2\":0.00,\"column3\":910183.93,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":226415.09,\"column8\":1136599.02}]","url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"chartData":"[{\"value\":1000,\"name\":\"联想\"},{\"value\":7350,\"name\":\"小米\"},{\"value\":5800,\"name\":\"华为\"},{\"value\":6000,\"name\":\"苹果\"},{\"value\":3000,\"name\":\"戴尔\"}]","size":{"width":1650,"height":474},"dataSetId":"1516748630344630273","fieldOption":[{"label":"项目性质","text":"项目性质","value":"column1"},{"label":"保险公估费","text":"保险公估费","value":"column5"},{"label":"承保公估评估费","text":"承保公估评估费","value":"column4"},{"label":"风险咨询费","text":"风险咨询费","value":"column3"},{"label":"保险经纪佣金费","text":"保险经纪佣金费","value":"column2"},{"label":"总计","text":"总计","value":"column8"},{"label":"内控咨询费","text":"内控咨询费","value":"column7"},{"label":"投标咨询费","text":"投标咨询费","value":"column6"}],"dataSetType":"json","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"type":"line"}],"title":{"subtext":"","left":"left","text":"基础折线图"},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":""}}}', N'admin', N'2022-04-21 13:52:00.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517018288775790593', NULL, N'1516747539813007362', NULL, N'JCommonTable', N'{"paramOption":[],"dataType":2,"dataSetName":"项目性质收入统计JSON","query":[],"h":42,"dataSetApi":"[{\"column1\":\"市场化-电商业务\",\"column2\":4865.41,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":4865.41},{\"column1\":\"统筹型\",\"column2\":35767081.88,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":35767081.88},{\"column1\":\"市场化-非股东\",\"column2\":1487045.35,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":1487045.35},{\"column1\":\"市场化-参控股\",\"column2\":382690.56,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":382690.56},{\"column1\":\"市场化-员工福利\",\"column2\":256684.91,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":265684.91},{\"column1\":\"市场化-再保险\",\"column2\":563451.03,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":563451.03},{\"column1\":\"市场化-海外业务\",\"column2\":760576.25,\"column3\":770458.75,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":1531035.00},{\"column1\":\"市场化-风险咨询\",\"column2\":0.00,\"column3\":910183.93,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":226415.09,\"column8\":1136599.02}]","timeOut":-1,"chartData":"[{\"name\":\"4月\",\"value\":50},{\"name\":\"2月\",\"value\":200},{\"name\":\"3月\",\"value\":300},{\"name\":\"4月\",\"value\":400},{\"name\":\"5月\",\"value\":50},{\"name\":\"6月\",\"value\":120}]","size":{"width":1650,"height":518},"dataSetId":"1516748630344630273","fieldOption":[{"label":"项目性质","text":"项目性质","value":"column1"},{"label":"保险公估费","text":"保险公估费","value":"column5"},{"label":"承保公估评估费","text":"承保公估评估费","value":"column4"},{"label":"风险咨询费","text":"风险咨询费","value":"column3"},{"label":"保险经纪佣金费","text":"保险经纪佣金费","value":"column2"},{"label":"总计","text":"总计","value":"column8"},{"label":"内控咨询费","text":"内控咨询费","value":"column7"},{"label":"投标咨询费","text":"投标咨询费","value":"column6"}],"dataSetType":"json","w":24,"linkageConfig":[],"dataSetIzAgent":"","option":{"columns":[{"izTotal":"Y","izShow":"Y","dataIndex":"column1","title":"项目性质"},{"izTotal":"Y","izShow":"Y","dataIndex":"column5","title":"保险公估费"},{"izTotal":"Y","izShow":"Y","dataIndex":"column4","title":"承保公估评估费"},{"izTotal":"Y","izShow":"Y","dataIndex":"column3","title":"风险咨询费"},{"izTotal":"Y","izShow":"Y","dataIndex":"column2","title":"保险经纪佣金费"},{"izTotal":"Y","izShow":"Y","dataIndex":"column8","title":"总计"},{"izTotal":"Y","izShow":"Y","dataIndex":"column7","title":"内控咨询费"},{"izTotal":"Y","izShow":"Y","dataIndex":"column6","title":"投标咨询费"}]}}', N'admin', N'2022-04-21 13:52:00.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517064663387373570', NULL, N'1517062686729338882', NULL, N'JLine', N'{"dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"图表API示例-年龄占比","query":[],"dataSetApi":"http://api.jeecg.com/mock/51/jingwu/nianling","url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"chartData":"[{\"value\":1000,\"name\":\"联想\"},{\"value\":7350,\"name\":\"小米\"},{\"value\":5800,\"name\":\"华为\"},{\"value\":6000,\"name\":\"苹果\"},{\"value\":3000,\"name\":\"戴尔\"}]","size":{"width":889,"height":474},"dataSetId":"1517046231342284802","fieldOption":[{"label":"年龄","text":"年龄","value":"name"},{"label":"数量","text":"数量","value":"value"}],"dataSetType":"api","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"type":"line"}],"title":{"subtext":"","left":"left","show":false,"text":"基础折线图"},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":""}}}', N'admin', N'2022-04-21 16:56:16.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517064663563534337', NULL, N'1517062686729338882', NULL, N'JRing', N'{"dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"图表API示例-年龄占比","query":[],"dataSetApi":"http://api.jeecg.com/mock/51/jingwu/nianling","url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"value\":1048,\"name\":\"oppo\"},{\"value\":735,\"name\":\"vivo\"},{\"value\":580,\"name\":\"苹果\"},{\"value\":484,\"name\":\"小米\"},{\"value\":300,\"name\":\"三星\"}]","size":{"width":751,"height":474},"dataSetId":"1517046231342284802","fieldOption":[{"label":"年龄","text":"年龄","value":"name"},{"label":"数量","text":"数量","value":"value"}],"dataSetType":"api","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"name":"AccessFrom","avoidLabelOverlap":false,"emphasis":{"label":{"show":true,"fontSize":"25","fontWeight":"bold"}},"label":{"show":false,"position":"center"},"labelLine":{"show":false},"type":"pie","radius":["40%","70%"]}],"tooltip":{"trigger":"item","textStyle":{"color":"#464646"}},"title":{"show":false,"text":"基础环形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":""}}}', N'admin', N'2022-04-21 16:56:16.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517064663664197634', NULL, N'1517062686729338882', NULL, N'JFunnel', N'{"dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"图表API示例-年龄占比","query":[],"dataSetApi":"http://api.jeecg.com/mock/51/jingwu/nianling","url":"http://api.jeecg.com/mock/26/funnel","timeOut":0,"chartData":"[{\"value\":335,\"name\":\"直接访问\"},{\"value\":310,\"name\":\"邮件营销\"},{\"value\":234,\"name\":\"联盟广告\"}]","size":{"width":889,"height":529},"dataSetId":"1517046231342284802","fieldOption":[{"label":"年龄","text":"年龄","value":"name"},{"label":"数量","text":"数量","value":"value"}],"dataSetType":"api","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"bottom":115},"legend":{"orient":"horizontal"},"series":[{"left":"10%","gap":2,"name":"Funnel","width":"80%","emphasis":{"label":{"fontSize":20}},"itemStyle":{"borderColor":"#fff","borderWidth":1},"sort":"descending","label":{"show":true,"position":"inside"},"labelLine":{"lineStyle":{"width":1,"type":"solid"},"length":10},"type":"funnel"}],"tooltip":{"formatter":"{a}<br/>{b}:{c}%","trigger":"item"},"title":{"show":true,"text":"基础漏斗图"},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":""}}}', N'admin', N'2022-04-21 16:56:16.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1517064663798415361', NULL, N'1517062686729338882', NULL, N'JCommonTable', N'{"paramOption":[],"dataType":2,"dataSetName":"图表API示例-年龄占比","query":[],"h":42,"dataSetApi":"http://api.jeecg.com/mock/51/jingwu/nianling","timeOut":-1,"chartData":"[{\"name\":\"4月\",\"value\":50},{\"name\":\"2月\",\"value\":200},{\"name\":\"3月\",\"value\":300},{\"name\":\"4月\",\"value\":400},{\"name\":\"5月\",\"value\":50},{\"name\":\"6月\",\"value\":120}]","size":{"width":751,"height":529},"dataSetId":"1517046231342284802","fieldOption":[{"label":"年龄","text":"年龄","value":"name"},{"label":"数量","text":"数量","value":"value"}],"dataSetType":"api","w":24,"linkageConfig":[],"dataSetIzAgent":"","option":{"columns":[{"izShow":"Y","dataIndex":"name","title":"年龄"},{"izTotal":"Y","izShow":"Y","dataIndex":"value","title":"数量"}]}}', N'admin', N'2022-04-21 16:56:16.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1519994699446870018', NULL, N'1519992838245441538', NULL, N'JBar', N'{"dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"钻取api","query":[],"dataSetApi":"http://api.jeecg.com/mock/51/drilling/deptuser","drillData":[{"source":"name","target":"name"}],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"name\":\"苹果\",\"value\":1000879,\"type\":\"手机品牌\"},{\"name\":\"三星\",\"value\":3400879,\"type\":\"手机品牌\"},{\"name\":\"小米\",\"value\":2300879,\"type\":\"手机品牌\"},{\"name\":\"oppo\",\"value\":5400879,\"type\":\"手机品牌\"},{\"name\":\"vivo\",\"value\":3400879,\"type\":\"手机品牌\"}]","size":{"height":420},"dataSetId":"1519274169102020610","fieldOption":[{"label":"name","text":"name","value":"name"},{"label":"value","text":"value","value":"value"}],"dataSetType":"api","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"yAxis":{"axisLabel":{"color":"#909198"},"name":"销售量","nameTextStyle":{"color":"#333333"}},"xAxis":{"axisLabel":{"color":"#909198"},"axisLine":{"lineStyle":{"color":"#333333"}},"name":"类别","nameTextStyle":{"color":"#333333"}},"grid":{"bottom":115,"show":false},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180,180,180,0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"部门销售统计","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'jeecg', N'2022-04-29 18:59:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1519994699518173186', NULL, N'1519992838245441538', NULL, N'JPie', N'{"dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"钻取api","query":[],"dataSetApi":"http://api.jeecg.com/mock/51/drilling/deptuser","drillData":[{"source":"name","target":"name"}],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"value\":1048,\"name\":\"vivo\"},{\"value\":735,\"name\":\"oppo\"},{\"value\":580,\"name\":\"苹果\"},{\"value\":484,\"name\":\"小米\"},{\"value\":300,\"name\":\"三星\"}]","size":{"height":420},"dataSetId":"1519274169102020610","fieldOption":[{"label":"name","text":"name","value":"name"},{"label":"value","text":"value","value":"value"}],"dataSetType":"api","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"grid":{"bottom":115,"show":false},"legend":{"orient":"vertical"},"series":[{"data":[],"name":"AccessFrom","emphasis":{"itemStyle":{"shadowOffsetX":0,"shadowBlur":10,"shadowColor":"rgba(0,0,0,0.5)"}},"type":"pie","radius":"50%"}],"tooltip":{"trigger":"item"},"title":{"subtext":"","left":"left","show":true,"text":"基础饼图"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'jeecg', N'2022-04-29 18:59:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522466576295534593', NULL, N'1522460228585529346', NULL, N'JRing', N'{"chartData":"[{\"name\":\"18~30岁\",\"value\":5500},{\"name\":\"30~40岁\",\"value\":2000},{\"name\":\"40~60岁\",\"value\":1500},{\"name\":\"60岁以上\",\"value\":1200},{\"name\":\"18岁以下\",\"value\":800}]","size":{"width":411,"height":320},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"name":"AccessFrom","avoidLabelOverlap":false,"emphasis":{"label":{"show":true,"fontSize":"25","fontWeight":"bold"}},"label":{"show":false,"position":"center"},"labelLine":{"show":false},"type":"pie","radius":["40%","70%"]}],"legend":{"orient":"vertical"},"tooltip":{"trigger":"item"},"title":{"show":true,"text":"年龄占比","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 14:41:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522466576429752321', NULL, N'1522460228585529346', NULL, N'JBar', N'{"chartData":"[{\"name\":\"石家庄\",\"value\":51},{\"name\":\"邢台\",\"value\":121},{\"name\":\"邯郸\",\"value\":78},{\"name\":\"保定\",\"value\":66},{\"name\":\"廊坊\",\"value\":80},{\"name\":\"唐山\",\"value\":100}]","size":{"width":411,"height":254},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"bottom":63,"show":false,"right":14},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180,180,180,0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"游客地区分部","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 14:41:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522466576526221314', NULL, N'1522460228585529346', NULL, N'JLine', N'{"chartData":"[{\"name\":\"5/1\",\"value\":1000},{\"name\":\"5/2\",\"value\":7350},{\"name\":\"5/3\",\"value\":5800},{\"name\":\"5/4\",\"value\":6000},{\"name\":\"5/5\",\"value\":3000}]","size":{"width":411,"height":276},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"xAxis":{"axisLabel":{"color":"#909198"},"axisLine":{"lineStyle":{"color":"#333333"}},"nameTextStyle":{"color":"#333333"}},"grid":{"left":46,"bottom":58,"show":false,"right":1},"series":[{"data":[],"type":"line"}],"title":{"subtext":"","left":"left","text":"游客趋势分析","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 14:41:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522466576605913090', NULL, N'1522460228585529346', NULL, N'JPie', N'{"chartData":"[{\"value\":1048,\"name\":\"火车\"},{\"value\":735,\"name\":\"飞机\"},{\"value\":580,\"name\":\"轮船\"},{\"value\":484,\"name\":\"自驾\"},{\"value\":300,\"name\":\"徒步\"}]","size":{"width":358,"height":331},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"isRose":true,"grid":{"bottom":115,"show":false},"legend":{"r":1,"orient":"vertical"},"series":[{"data":[],"name":"AccessFrom","emphasis":{"itemStyle":{"shadowOffsetX":0,"shadowBlur":10,"shadowColor":"rgba(0,0,0,0.5)"}},"type":"pie","radius":"50%"}],"tooltip":{"trigger":"item"},"innerRadius":50,"title":{"subtext":"","left":"left","show":true,"text":"交通方式","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 14:41:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522466576702382082', NULL, N'1522460228585529346', NULL, N'JImg', N'{"size":{"width":463,"height":265},"w":10,"dataType":1,"h":20,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"url":"http://minio.jeecg.com/otatest/111_1651818408914.png"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 14:41:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522466576777879554', NULL, N'1522460228585529346', NULL, N'JText', N'{"chartData":"五星级","size":{"width":253,"height":45},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":76},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 14:41:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522466576878542849', NULL, N'1522460228585529346', NULL, N'JText', N'{"chartData":"四星级","size":{"width":200,"height":45},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":76},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 14:41:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522466576954040321', NULL, N'1522460228585529346', NULL, N'JText', N'{"chartData":"56789","size":{"height":50},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":76},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 14:41:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522466577054703617', NULL, N'1522460228585529346', NULL, N'JText', N'{"chartData":"6789","size":{"width":200,"height":56},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":76},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 14:41:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522466577159561217', NULL, N'1522460228585529346', NULL, N'JPie', N'{"chartData":"[{\"name\":\"2~3小时\",\"value\":3500},{\"name\":\">=3小时\",\"value\":2400},{\"name\":\"1~2小时\",\"value\":2300},{\"name\":\"<=1小时\",\"value\":1800}]","size":{"width":463,"height":474},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"grid":{"bottom":115,"show":false},"legend":{"orient":"vertical"},"series":[{"data":[],"name":"AccessFrom","emphasis":{"itemStyle":{"shadowOffsetX":0,"shadowBlur":10,"shadowColor":"rgba(0,0,0,0.5)"}},"type":"pie","radius":"50%"}],"tooltip":{"trigger":"item"},"innerRadius":50,"title":{"subtext":"","left":"left","show":true,"text":"基础饼图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 14:41:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522466577264418817', NULL, N'1522460228585529346', NULL, N'JCommonTable', N'{"paramOption":[],"dataType":2,"dataSetName":"旅游数据监控","h":42,"dataSetApi":"[{\"type1\":\"路线1\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线2\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线3\",\"type3\":\"1111\",\"type2\":\"1111\"},{\"type1\":\"路线4\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线5\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线6\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线7\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线8\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线9\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线10\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线11\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线12\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线13\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线14\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线15\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线16\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线17\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线18\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线19\",\"type2\":\"1111\",\"type3\":\"1111\"},{\"type1\":\"路线20\",\"type2\":\"1111\",\"type3\":\"1111\"}]","drillData":[],"timeOut":0,"chartData":"[{\"name\":\"4月\",\"value\":50},{\"name\":\"2月\",\"value\":200},{\"name\":\"3月\",\"value\":300},{\"name\":\"4月\",\"value\":400},{\"name\":\"5月\",\"value\":50},{\"name\":\"6月\",\"value\":120}]","size":{"width":358,"height":529},"dataSetId":"1522464505970302978","fieldOption":[{"label":"路线","text":"路线","value":"type1"},{"label":"车辆","text":"车辆","value":"type2"},{"label":"人数","text":"人数","value":"type3"}],"dataSetType":"json","w":24,"linkageConfig":[],"dataSetIzAgent":"0","option":{"columns":[{"izShow":"Y","dataIndex":"type1","title":"路线"},{"izShow":"Y","dataIndex":"type2","title":"车辆"},{"izShow":"Y","dataIndex":"type3","title":"人数"}]}}', N'admin', N'2022-05-06 14:41:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522504050518532098', NULL, N'1522466781443137538', NULL, N'JQuickNav', N'{"paramOption":[],"dataType":2,"dataSetName":"首页快速导航","h":26,"dataSetApi":"http://api.jeecg.com/mock/51/home/quick","drillData":[],"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"chartData":"[{\"title\":\"首页\",\"icon\":\"icon-jeecg-homepage\",\"color\":\"#1fdaca\"},{\"title\":\"仪表盘\",\"icon\":\"icon-jeecg-shijian\",\"color\":\"#bf0c2c\"},{\"title\":\"组件\",\"icon\":\"icon-jeecg-dangan\",\"color\":\"#e18525\"},{\"title\":\"系统管理\",\"icon\":\"icon-jeecg-shezhi\",\"color\":\"#3fb27f\"},{\"title\":\"权限管理\",\"icon\":\"icon-jeecg-yuechi\",\"color\":\"#4daf1bc9\"},{\"title\":\"图表\",\"icon\":\"icon-jeecg-fujin\",\"color\":\"#00d8ff\"}]","size":{"width":674,"height":298},"dataSetId":"1519962879095332865","fieldOption":[{"label":"title","text":"title","value":"title"},{"label":"icon","text":"icon","value":"icon"},{"label":"color","text":"color","value":"color"},{"label":"href","text":"href","value":"href"}],"dataSetType":"api","w":12,"turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"icon":{"scriptUrl":"//at.alicdn.com/t/font_3237315_b3fqd960glt.js","fontSize":30},"body":{"textAlign":"center","column":3,"iconAlign":"top"},"card":{"rightHref":"http://jeecg.com","size":"default","extra":"更多","textStyle":{"color":"#4A4A4A"},"title":"快捷导航"}}}', N'admin', N'2022-05-06 17:10:27.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522504050690498562', NULL, N'1522466781443137538', NULL, N'JList', N'{"dataMapping":[{"mapping":"title","filed":"标题"},{"mapping":"remark","filed":"描述"},{"mapping":"date","filed":"时间"},{"mapping":"pic","filed":"封面"}],"paramOption":[],"dataType":2,"dataSetName":"数据列表","h":24,"dataSetApi":"http://api.jeecg.com/mock/51/datalist/list","drillData":[],"url":"http://api.jeecg.com/mock/42/list","timeOut":0,"chartData":"[{\"title\":\"通知一\",\"date\":\"2022-3-914:20:21\"},{\"title\":\"通知二\",\"date\":\"2022-3-814:20:21\"},{\"title\":\"通知三\",\"date\":\"2022-3-714:20:21\"},{\"title\":\"通知四\",\"date\":\"2022-3-414:20:21\"}]","size":{"width":568,"height":474},"dataSetId":"1519945036454813698","fieldOption":[{"label":"title","text":"title","value":"title"},{"label":"date","text":"date","value":"date"},{"label":"remark","text":"remark","value":"remark"},{"label":"pic","text":"pic","value":"pic"}],"dataSetType":"api","w":12,"turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"layout":"horizontal","showTitlePrefix":true,"titleFontSize":18,"showTimePrefix":true}}', N'admin', N'2022-05-06 17:10:27.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522504050782773249', NULL, N'1522466781443137538', NULL, N'JGrowCard', N'{"chartData":"[{\"title\":\"访问数\",\"icon\":\"icon-jeecg-qianbao\",\"value\":2000,\"total\":120000,\"color\":\"green\",\"action\":\"月\"},{\"title\":\"成交额\",\"icon\":\"icon-jeecg-youhuiquan\",\"value\":20000,\"total\":500000,\"color\":\"blue\",\"action\":\"月\"},{\"title\":\"下载数\",\"icon\":\"icon-jeecg-tupian\",\"value\":8000,\"total\":120000,\"color\":\"orange\",\"action\":\"周\"},{\"title\":\"成交数\",\"icon\":\"icon-jeecg-jifen\",\"value\":5000,\"total\":50000,\"color\":\"purple\",\"action\":\"年\"}]","size":{"width":1252,"height":199},"w":12,"dataType":1,"h":19,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"icon":{"scriptUrl":"//at.alicdn.com/t/font_3237315_b3fqd960glt.js","fontSize":20},"body":{"horizontal":8,"vertical":8,"span":6},"card":{"rightHref":"","size":"default","extra":"更多","title":"统计卡片"}}}', N'admin', N'2022-05-06 17:10:27.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522504050862465026', NULL, N'1522466781443137538', NULL, N'JProjectCard', N'{"chartData":"[{\"title\":\"Github\",\"icon\":\"icon-jeecg-social-github\",\"color\":\"\",\"desc\":\"不要等待机会，而要创造机会。\",\"group\":\"开源组\",\"date\":\"2021-04-01\"},{\"title\":\"Vue\",\"icon\":\"icon-jeecg-social-buysellads\",\"color\":\"#3fb27f\",\"desc\":\"现在的你决定将来的你。\",\"group\":\"算法组\",\"date\":\"2021-04-01\"},{\"title\":\"Html5\",\"icon\":\"icon-jeecg-html5\",\"color\":\"#e18525\",\"desc\":\"没有什么才能比努力更重要。\",\"group\":\"上班摸鱼\",\"date\":\"2021-04-01\"},{\"title\":\"Angular\",\"icon\":\"icon-jeecg-social-product-hunt\",\"color\":\"#bf0c2c\",\"desc\":\"热情和欲望可以突破一切难关。\",\"group\":\"UI\",\"date\":\"2021-04-01\"},{\"title\":\"React\",\"icon\":\"icon-jeecg-social-skype\",\"color\":\"#00d8ff\",\"desc\":\"健康的身体是实目标的基石。\",\"group\":\"技术牛\",\"date\":\"2021-04-01\"},{\"title\":\"Js\",\"icon\":\"icon-jeecg-social-pengyou\",\"color\":\"#4daf1bc9\",\"desc\":\"路是走出来的，而不是空想出来的。\",\"group\":\"架构组\",\"date\":\"2021-04-01\"}]","size":{"width":674,"height":386},"w":12,"dataType":1,"h":33,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"icon":{"scriptUrl":"//at.alicdn.com/t/font_3237315_b3fqd960glt.js","fontSize":30},"body":{"column":3},"card":{"rightHref":"","size":"default","extra":"更多","title":"项目列表"}}}', N'admin', N'2022-05-06 17:10:27.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522504050958934017', NULL, N'1522466781443137538', NULL, N'JWaitMatter', N'{"chartData":"[{\"title\":\"待办公文\",\"icon\":\"icon-jeecg-yudu\",\"content\":23,\"desc\":\"今日已办3\",\"date\":\"2021-04-01\"},{\"title\":\"待办流程\",\"icon\":\"icon-jeecg-shuju\",\"content\":23,\"desc\":\"今日已办3\",\"date\":\"2021-04-01\"},{\"title\":\"待办任务\",\"icon\":\"icon-jeecg-tongzhi\",\"content\":23,\"desc\":\"今日已办3今日更新5\",\"date\":\"2021-04-01\"}]","size":{"width":568,"height":210},"w":12,"dataType":1,"h":19,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"icon":{"scriptUrl":"//at.alicdn.com/t/font_3237315_b3fqd960glt.js","fontSize":25},"body":{"column":3},"card":{"rightHref":"","size":"default","extra":"更多","title":"待办事项"}}}', N'admin', N'2022-05-06 17:10:27.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522504051076374530', NULL, N'1522466781443137538', NULL, N'JLine', N'{"dataMapping":[{"mapping":"type","filed":"维度"},{"mapping":"visit","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"首页_近一周访问量","dataSetApi":"selectcount(*)asvisit\t,count(distinct(ip))asip\t,DATE_FORMAT(create_time,''%Y-%m-%d'')astian\t,DATE_FORMAT(create_time,''%m-%d'')astype\tfromsys_logwherelog_type=1andcreate_time<=sysdate()andcreate_time>=(selectdate_sub(curdate(),interval7day))groupbytian,typeorderbytianasc","drillData":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"value\":1000,\"name\":\"联想\"},{\"value\":7350,\"name\":\"小米\"},{\"value\":5800,\"name\":\"华为\"},{\"value\":6000,\"name\":\"苹果\"},{\"value\":3000,\"name\":\"戴尔\"}]","size":{"width":1252,"height":441},"dataSetId":"1522503560003067906","fieldOption":[{"label":"visit","text":"visit","value":"visit"},{"label":"ip","text":"ip","value":"ip"},{"label":"tian","text":"tian","value":"tian"},{"label":"type","text":"type","value":"type"}],"dataSetType":"sql","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"type":"line"}],"title":{"subtext":"","left":"left","text":"近一周在线访问量","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 17:10:27.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522520321213603842', NULL, N'1522507145776472065', NULL, N'JBar', N'{"chartData":"[{\"name\":\"苹果\",\"value\":1000879,\"type\":\"手机品牌\"},{\"name\":\"三星\",\"value\":3400879,\"type\":\"手机品牌\"},{\"name\":\"小米\",\"value\":2300879,\"type\":\"手机品牌\"},{\"name\":\"oppo\",\"value\":5400879,\"type\":\"手机品牌\"},{\"name\":\"vivo\",\"value\":3400879,\"type\":\"手机品牌\"}]","size":{"height":420},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"bottom":115,"show":false},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180,180,180,0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"静态数据","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:15:06.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522520321352015874', NULL, N'1522507145776472065', NULL, N'JStackBar', N'{"dataMapping":[{"mapping":"type","filed":"分组"},{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"出资","dataSetApi":"http://api.jeecg.com/mock/51/chuzi","drillData":[],"url":"http://api.jeecg.com/mock/26/stackedBar","timeOut":0,"chartData":"[{\"name\":\"1991\",\"value\":3,\"type\":\"Lon\"},{\"name\":\"1992\",\"value\":4,\"type\":\"Lon\"},{\"name\":\"1993\",\"value\":3.5,\"type\":\"Lon\"},{\"name\":\"1994\",\"value\":5,\"type\":\"Lon\"},{\"name\":\"1995\",\"value\":4.9,\"type\":\"Lon\"},{\"name\":\"1996\",\"value\":6,\"type\":\"Lon\"},{\"name\":\"1997\",\"value\":7,\"type\":\"Lon\"},{\"name\":\"1998\",\"value\":9,\"type\":\"Lon\"},{\"name\":\"1999\",\"value\":13,\"type\":\"Lon\"},{\"name\":\"1991\",\"value\":3,\"type\":\"Bor\"},{\"name\":\"1992\",\"value\":4,\"type\":\"Bor\"},{\"name\":\"1993\",\"value\":3.5,\"type\":\"Bor\"},{\"name\":\"1994\",\"value\":5,\"type\":\"Bor\"},{\"name\":\"1995\",\"value\":4.9,\"type\":\"Bor\"},{\"name\":\"1996\",\"value\":6,\"type\":\"Bor\"},{\"name\":\"1997\",\"value\":7,\"type\":\"Bor\"},{\"name\":\"1998\",\"value\":9,\"type\":\"Bor\"},{\"name\":\"1999\",\"value\":13,\"type\":\"Bor\"}]","size":{"height":420},"dataSetId":"1522098873378549762","fieldOption":[{"label":"name","text":"name","value":"name"},{"label":"value","text":"value","value":"value"},{"label":"type","text":"type","value":"type"}],"dataSetType":"api","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"grid":{"bottom":115},"series":[],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"api数据集","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:15:06.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522520321456873474', NULL, N'1522507145776472065', NULL, N'JPie', N'{"dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"智慧社区_时间分部","dataSetApi":"[{\"name\":\"6:00-9:00\",\"value\":800},{\"name\":\"10:00-12:00\",\"value\":300},{\"name\":\"13:00-15:00\",\"value\":500},{\"name\":\"16:00-20:00\",\"value\":800},{\"name\":\"21:00-24:00\",\"value\":600}]","drillData":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"value\":1048,\"name\":\"vivo\"},{\"value\":735,\"name\":\"oppo\"},{\"value\":580,\"name\":\"苹果\"},{\"value\":484,\"name\":\"小米\"},{\"value\":300,\"name\":\"三星\"}]","size":{"height":420},"dataSetId":"1522187101267832833","fieldOption":[{"label":"name","text":"name","value":"name"},{"label":"value","text":"value","value":"value"}],"dataSetType":"json","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"grid":{"bottom":115,"show":false},"legend":{"orient":"vertical"},"series":[{"data":[],"name":"AccessFrom","emphasis":{"itemStyle":{"shadowOffsetX":0,"shadowBlur":10,"shadowColor":"rgba(0,0,0,0.5)"}},"type":"pie","radius":"50%"}],"tooltip":{"trigger":"item"},"innerRadius":50,"title":{"subtext":"","left":"left","show":true,"text":"JSON数据集","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:15:06.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522520321549148162', NULL, N'1522507145776472065', NULL, N'JLine', N'{"dataMapping":[{"mapping":"day","filed":"维度"},{"mapping":"num","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"统计近十日的登陆次数","dataSetApi":"SELECT\tcount(*)num,\tDATE_FORMAT(create_time,''%Y-%m-%d'')AS`day`FROM\tsys_logWHERE\tlog_type=1ANDcreate_time>DATE_SUB(NOW(),INTERVAL10DAY)GROUPBY\tDATE_FORMAT(create_time,''%Y-%m-%d'')","drillData":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"value\":1000,\"name\":\"联想\"},{\"value\":7350,\"name\":\"小米\"},{\"value\":5800,\"name\":\"华为\"},{\"value\":6000,\"name\":\"苹果\"},{\"value\":3000,\"name\":\"戴尔\"}]","size":{"height":420},"dataSetId":"1516743766914924546","fieldOption":[{"label":"日期","text":"日期","value":"day"},{"label":"登录次数","text":"登录次数","value":"num"}],"dataSetType":"sql","dataNum":"5","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"type":"line"}],"title":{"subtext":"","left":"left","text":"SQL数据集","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:15:06.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522520321628839937', NULL, N'1522507145776472065', NULL, N'JCommonTable', N'{"paramOption":[],"dataType":2,"dataSetName":"首页_近一周访问量","h":42,"dataSetApi":"selectcount(*)asvisit\t,count(distinct(ip))asip\t,DATE_FORMAT(create_time,''%Y-%m-%d'')astian\t,DATE_FORMAT(create_time,''%m-%d'')astype\tfromsys_logwherelog_type=1andcreate_time<=sysdate()andcreate_time>=(selectdate_sub(curdate(),interval7day))groupbytian,typeorderbytianasc","drillData":[],"timeOut":"10","chartData":"[{\"name\":\"4月\",\"value\":50},{\"name\":\"2月\",\"value\":200},{\"name\":\"3月\",\"value\":300},{\"name\":\"4月\",\"value\":400},{\"name\":\"5月\",\"value\":50},{\"name\":\"6月\",\"value\":120}]","size":{"height":420},"dataSetId":"1522503560003067906","fieldOption":[{"label":"访问量","text":"访问量","value":"visit"},{"label":"ip地址","text":"ip地址","value":"ip"},{"label":"年月","text":"年月","value":"tian"},{"label":"天","text":"天","value":"type"}],"dataSetType":"sql","w":24,"linkageConfig":[],"dataSetIzAgent":"0","option":{"columns":[{"izShow":"Y","dataIndex":"visit","title":"访问量"},{"izShow":"Y","dataIndex":"ip","title":"ip地址"},{"izShow":"Y","dataIndex":"tian","title":"年月"},{"izShow":"Y","dataIndex":"type","title":"天"}]}}', N'admin', N'2022-05-06 18:15:06.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522520321725308929', NULL, N'1522507145776472065', NULL, N'JTabs', N'{"size":{"width":779,"height":463},"w":12,"h":40,"option":{"title":"选项卡"},"child":[{"h":42,"index":0,"i":"63de7e7e-3894-4d71-84a3-9b2fd9b9c760","title":"通知","horizontal":false,"component":"JList","size":10,"w":12,"x":0,"text":"0.042","id":"3343bdb3-fd05-4eee-9bc7-844a148752da","config":{"dataMapping":[{"mapping":"title","filed":"标题"},{"mapping":"remark","filed":"描述"},{"mapping":"date","filed":"时间"},{"mapping":"pic","filed":"封面"}],"paramOption":[],"dataType":2,"dataSetName":"数据列表","h":24,"dataSetApi":"http://api.jeecg.com/mock/51/datalist/list","drillData":[],"url":"http://api.jeecg.com/mock/42/list","timeOut":0,"chartData":"[{\"title\":\"通知一\",\"date\":\"2022-3-914:20:21\"},{\"title\":\"通知二\",\"date\":\"2022-3-814:20:21\"},{\"title\":\"通知三\",\"date\":\"2022-3-714:20:21\"},{\"title\":\"通知四\",\"date\":\"2022-3-414:20:21\"}]","paddingBottom":90,"dataSetId":"1519945036454813698","fieldOption":[{"label":"title","text":"title","value":"title"},{"label":"date","text":"date","value":"date"},{"label":"remark","text":"remark","value":"remark"},{"label":"pic","text":"pic","value":"pic"}],"dataSetType":"api","w":12,"turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"layout":"horizontal","showTitlePrefix":true,"titleFontSize":18,"showTimePrefix":true}},"child":[]},{"h":42,"index":0,"i":"7e716106-3f6b-4350-80d0-7fe0ed3b46f2","title":"图片展示","horizontal":false,"component":"JImg","size":10,"w":12,"x":0,"text":"0.042","id":"49dc2c4c-871b-4d5d-8e21-d3cd93602661","config":{"paddingBottom":90,"w":10,"dataType":1,"h":20,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"url":"http://minio.jeecg.com/otatest/jeecg_1651199708342.png"},"card":{"rightHref":"","size":"default","extra":"","title":""}}},"child":[]}]}', N'admin', N'2022-05-06 18:15:06.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522520321935024129', NULL, N'1522507145776472065', NULL, N'JGrid', N'{"size":{"width":1632,"height":400},"w":12,"h":40,"option":{"card":{"rightHref":"","size":"default","extra":"","title":""}},"child":[{"h":42,"i":"7b247427-b86c-4c59-877d-618088d056ec","title":"标题","parentId":"1ac58009-1e17-4136-8309-313a9111ebb6","horizontal":false,"component":"JRing","size":10,"w":12,"x":0,"text":"0.042","id":"e845c133-1b8d-4252-a216-06c0857e388a","config":{"dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"智慧社区_地区分部","dataSetApi":"http://api.jeecg.com/mock/51/region","drillData":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"value\":1048,\"name\":\"oppo\"},{\"value\":735,\"name\":\"vivo\"},{\"value\":580,\"name\":\"苹果\"},{\"value\":484,\"name\":\"小米\"},{\"value\":300,\"name\":\"三星\"}]","paddingBottom":90,"dataSetId":"1522185936018878466","fieldOption":[{"label":"name","text":"name","value":"name"},{"label":"value","text":"value","value":"value"}],"dataSetType":"api","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"grid":{"top":65,"bottom":115,"show":false},"series":[{"data":[],"name":"AccessFrom","avoidLabelOverlap":false,"emphasis":{"label":{"show":true,"fontSize":"25","fontWeight":"bold"}},"label":{"show":false,"position":"center"},"labelLine":{"show":false},"type":"pie","radius":["40%","70%"]}],"legend":{"t":12},"tooltip":{"trigger":"item"},"title":{"show":true,"text":"环形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}},"span":"8","child":[]},{"h":42,"i":"6d907478-b400-4723-860d-45b24e3adbee","title":"标题","parentId":"1ac58009-1e17-4136-8309-313a9111ebb6","horizontal":false,"component":"JRadar","size":10,"w":12,"x":0,"text":"0.042","id":"7cebf65a-81ba-479e-870e-8610a0f00d0c","config":{"chartData":"[{\"value\":75,\"name\":\"得分\",\"type\":\"NBA\",\"max\":100},{\"value\":65,\"name\":\"篮板\",\"type\":\"NBA\",\"max\":100},{\"value\":55,\"name\":\"防守\",\"type\":\"NBA\",\"max\":100},{\"value\":74,\"name\":\"失误\",\"type\":\"NBA\",\"max\":100},{\"value\":38,\"name\":\"盖帽\",\"type\":\"NBA\",\"max\":100},{\"value\":88,\"name\":\"三分\",\"type\":\"NBA\",\"max\":100}]","paddingBottom":90,"dataMapping":[{"mapping":"","filed":"分组"},{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/radar","timeOut":0,"option":{"radar":[{"indicator":[]}],"grid":{"top":51,"bottom":115,"show":false},"legend":{"data":[]},"series":[{"data":[],"type":"radar"}],"title":{"show":true,"text":"基础雷达图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}},"span":"8","child":[]},{"h":42,"i":"6e99dc19-fe5e-4c36-8eb6-b3dd6ea19dd8","title":"标题","parentId":"1ac58009-1e17-4136-8309-313a9111ebb6","horizontal":false,"component":"JArea","size":10,"w":12,"x":0,"text":"0.042","id":"6fe47c5a-85ac-46ec-9640-936cd2501523","config":{"dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"图表API示例-年龄占比","dataSetApi":"http://api.jeecg.com/mock/51/jingwu/nianling","drillData":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"value\":1048,\"name\":\"华为\"},{\"value\":605,\"name\":\"vivo\"},{\"value\":580,\"name\":\"oppo\"},{\"value\":484,\"name\":\"苹果\"},{\"value\":300,\"name\":\"小米\"}]","paddingBottom":90,"dataSetId":"1517046231342284802","fieldOption":[{"label":"年龄","text":"年龄","value":"name"},{"label":"数量","text":"数量","value":"value"}],"dataSetType":"api","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"xAxis":{"data":[],"boundaryGap":false},"grid":{"bottom":31},"series":[{"areaStyle":{},"data":[],"type":"line"}],"tooltip":{"textStyle":{"color":"#464646"}},"title":{"show":true,"text":"基础面积图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}},"span":"8","child":[]}]}', N'admin', N'2022-05-06 18:15:06.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522520322014715906', NULL, N'1522507145776472065', NULL, N'JCarousel', N'{"chartData":"[{\"src\":\"http://minio.jeecg.com/otatest/temp/0_1647504880335.png\"},{\"src\":\"http://minio.jeecg.com/otatest/temp/1_1647504883878.png\"},{\"src\":\"http://minio.jeecg.com/otatest/temp/2_1647504886551.png\"}]","size":{"width":1252,"height":243},"dataMapping":[{"mapping":"","filed":"路径"}],"w":24,"dataType":1,"h":22,"linkageConfig":[],"url":"http://api.jeecg.com/mock/42/carousel","timeOut":0,"option":{"dots":true,"autoplay":true,"dotPosition":"bottom"}}', N'admin', N'2022-05-06 18:15:06.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522520322115379202', NULL, N'1522507145776472065', NULL, N'JIframe', N'{"size":{"width":1252,"height":386},"w":12,"dataType":1,"h":26,"linkageConfig":[],"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"url":"http://www.jeecg.com/"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:15:07.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522520322216042498', NULL, N'1522507145776472065', NULL, N'JPictorialBar', N'{"chartData":"[{\"name\":\"驯鹿\",\"value\":123,\"symbol\":\"path://M-22.788,24.521c2.08-0.986,3.611-3.905,4.984-5.892c-2.686,2.782-5.047,5.884-9.102,7.312c-0.992,0.005-0.25-2.016,0.34-2.362l1.852-0.41c0.564-0.218,0.785-0.842,0.902-1.347c2.133-0.727,4.91-4.129,6.031-6.194c1.748-0.7,4.443-0.679,5.734-2.293c1.176-1.468,0.393-3.992,1.215-6.557c0.24-0.754,0.574-1.581,1.008-2.293c-0.611,0.011-1.348-0.061-1.959-0.608c-1.391-1.245-0.785-2.086-1.297-3.313c1.684,0.744,2.5,2.584,4.426,2.586C-8.46,3.012-8.255,2.901-8.04,2.824c6.031-1.952,15.182-0.165,19.498-3.937c1.15-3.933-1.24-9.846-1.229-9.938c0.008-0.062-1.314-0.004-1.803-0.258c-1.119-0.771-6.531-3.75-0.17-3.33c0.314-0.045,0.943,0.259,1.439,0.435c-0.289-1.694-0.92-0.144-3.311-1.946c0,0-1.1-0.855-1.764-1.98c-0.836-1.09-2.01-2.825-2.992-4.031c-1.523-2.476,1.367,0.709,1.816,1.108c1.768,1.704,1.844,3.281,3.232,3.983c0.195,0.203,1.453,0.164,0.926-0.468c-0.525-0.632-1.367-1.278-1.775-2.341c-0.293-0.703-1.311-2.326-1.566-2.711c-0.256-0.384-0.959-1.718-1.67-2.351c-1.047-1.187-0.268-0.902,0.521-0.07c0.789,0.834,1.537,1.821,1.672,2.023c0.135,0.203,1.584,2.521,1.725,2.387c0.102-0.259-0.035-0.428-0.158-0.852c-0.125-0.423-0.912-2.032-0.961-2.083c-0.357-0.852-0.566-1.908-0.598-3.333c0.4-2.375,0.648-2.486,0.549-0.705c0.014,1.143,0.031,2.215,0.602,3.247c0.807,1.496,1.764,4.064,1.836,4.474c0.561,3.176,2.904,1.749,2.281-0.126c-0.068-0.446-0.109-2.014-0.287-2.862c-0.18-0.849-0.219-1.688-0.113-3.056c0.066-1.389,0.232-2.055,0.277-2.299c0.285-1.023,0.4-1.088,0.408,0.135c-0.059,0.399-0.131,1.687-0.125,2.655c0.064,0.642-0.043,1.768,0.172,2.486c0.654,1.928-0.027,3.496,1,3.514c1.805-0.424,2.428-1.218,2.428-2.346c-0.086-0.704-0.121-0.843-0.031-1.193c0.221-0.568,0.359-0.67,0.312-0.076c-0.055,0.287,0.031,0.533,0.082,0.794c0.264,1.197,0.912,0.114,1.283-0.782c0.15-0.238,0.539-2.154,0.545-2.522c-0.023-0.617,0.285-0.645,0.309,0.01c0.064,0.422-0.248,2.646-0.205,2.334c-0.338,1.24-1.105,3.402-3.379,4.712c-0.389,0.12-1.186,1.286-3.328,2.178c0,0,1.729,0.321,3.156,0.246c1.102-0.19,3.707-0.027,4.654,0.269c1.752,0.494,1.531-0.053,4.084,0.164c2.26-0.4,2.154,2.391-1.496,3.68c-2.549,1.405-3.107,1.475-2.293,2.984c3.484,7.906,2.865,13.183,2.193,16.466c2.41,0.271,5.732-0.62,7.301,0.725c0.506,0.333,0.648,1.866-0.457,2.86c-4.105,2.745-9.283,7.022-13.904,7.662c-0.977-0.194,0.156-2.025,0.803-2.247l1.898-0.03c0.596-0.101,0.936-0.669,1.152-1.139c3.16-0.404,5.045-3.775,8.246-4.818c-4.035-0.718-9.588,3.981-12.162,1.051c-5.043,1.423-11.449,1.84-15.895,1.111c-3.105,2.687-7.934,4.021-12.115,5.866c-3.271,3.511-5.188,8.086-9.967,10.414c-0.986,0.119-0.48-1.974,0.066-2.385l1.795-0.618C-22.995,25.682-22.849,25.035-22.788,24.521z\",\"symbolSize\":[60,60]},{\"name\":\"飞机\",\"value\":60,\"symbol\":\"path://M1.112,32.559l2.998,1.205l-2.882,2.268l-2.215-0.012L1.112,32.559zM37.803,23.96c0.158-0.838,0.5-1.509,0.961-1.904c-0.096-0.037-0.205-0.071-0.344-0.071c-0.777-0.005-2.068-0.009-3.047-0.009c-0.633,0-1.217,0.066-1.754,0.18l2.199,1.804H37.803zM39.738,23.036c-0.111,0-0.377,0.325-0.537,0.924h1.076C40.115,23.361,39.854,23.036,39.738,23.036zM39.934,39.867c-0.166,0-0.674,0.705-0.674,1.986s0.506,1.986,0.674,1.986s0.672-0.705,0.672-1.986S40.102,39.867,39.934,39.867zM38.963,38.889c-0.098-0.038-0.209-0.07-0.348-0.073c-0.082,0-0.174,0-0.268-0.001l-7.127,4.671c0.879,0.821,2.42,1.417,4.348,1.417c0.979,0,2.27-0.006,3.047-0.01c0.139,0,0.25-0.034,0.348-0.072c-0.646-0.555-1.07-1.643-1.07-2.967C37.891,40.529,38.316,39.441,38.963,38.889zM32.713,23.96l-12.37-10.116l-4.693-0.004c0,0,4,8.222,4.827,10.121H32.713zM59.311,32.374c-0.248,2.104-5.305,3.172-8.018,3.172H39.629l-25.325,16.61L9.607,52.16c0,0,6.687-8.479,7.95-10.207c1.17-1.6,3.019-3.699,3.027-6.407h-2.138c-5.839,0-13.816-3.789-18.472-5.583c-2.818-1.085-2.396-4.04-0.031-4.04h0.039l-3.299-11.371h3.617c0,0,4.352,5.696,5.846,7.5c2,2.416,4.503,3.678,8.228,3.87h30.727c2.17,0,4.311,0.417,6.252,1.046c3.49,1.175,5.863,2.7,7.199,4.027C59.145,31.584,59.352,32.025,59.311,32.374zM22.069,30.408c0-0.815-0.661-1.475-1.469-1.475c-0.812,0-1.471,0.66-1.471,1.475s0.658,1.475,1.471,1.475C21.408,31.883,22.069,31.224,22.069,30.408zM27.06,30.408c0-0.815-0.656-1.478-1.466-1.478c-0.812,0-1.471,0.662-1.471,1.478s0.658,1.477,1.471,1.477C26.404,31.885,27.06,31.224,27.06,30.408zM32.055,30.408c0-0.815-0.66-1.475-1.469-1.475c-0.808,0-1.466,0.66-1.466,1.475s0.658,1.475,1.466,1.475C31.398,31.883,32.055,31.224,32.055,30.408zM37.049,30.408c0-0.815-0.658-1.478-1.467-1.478c-0.812,0-1.469,0.662-1.469,1.478s0.656,1.477,1.469,1.477C36.389,31.885,37.049,31.224,37.049,30.408zM42.039,30.408c0-0.815-0.656-1.478-1.465-1.478c-0.811,0-1.469,0.662-1.469,1.478s0.658,1.477,1.469,1.477C41.383,31.885,42.039,31.224,42.039,30.408zM55.479,30.565c-0.701-0.436-1.568-0.896-2.627-1.347c-0.613,0.289-1.551,0.476-2.73,0.476c-1.527,0-1.639,2.263,0.164,2.316C52.389,32.074,54.627,31.373,55.479,30.565z\",\"symbolSize\":[65,35]},{\"name\":\"火箭\",\"value\":25,\"symbol\":\"path://M-244.396,44.399c0,0,0.47-2.931-2.427-6.512c2.819-8.221,3.21-15.709,3.21-15.709s5.795,1.383,5.795,7.325C-237.818,39.679-244.396,44.399-244.396,44.399zM-260.371,40.827c0,0-3.881-12.946-3.881-18.319c0-2.416,0.262-4.566,0.669-6.517h17.684c0.411,1.952,0.675,4.104,0.675,6.519c0,5.291-3.87,18.317-3.87,18.317H-260.371zM-254.745,18.951c-1.99,0-3.603,1.676-3.603,3.744c0,2.068,1.612,3.744,3.603,3.744c1.988,0,3.602-1.676,3.602-3.744S-252.757,18.951-254.745,18.951zM-255.521,2.228v-5.098h1.402v4.969c1.603,1.213,5.941,5.069,7.901,12.5h-17.05C-261.373,7.373-257.245,3.558-255.521,2.228zM-265.07,44.399c0,0-6.577-4.721-6.577-14.896c0-5.942,5.794-7.325,5.794-7.325s0.393,7.488,3.211,15.708C-265.539,41.469-265.07,44.399-265.07,44.399zM-252.36,45.15l-1.176-1.22L-254.789,48l-1.487-4.069l-1.019,2.116l-1.488-3.826h8.067L-252.36,45.15z\",\"symbolSize\":[50,60]},{\"name\":\"高铁\",\"value\":18,\"symbol\":\"path://M67.335,33.596L67.335,33.596c-0.002-1.39-1.153-3.183-3.328-4.218h-9.096v-2.07h5.371c-4.939-2.07-11.199-4.141-14.89-4.141H19.72v12.421v5.176h38.373c4.033,0,8.457-1.035,9.142-5.176h-0.027c0.076-0.367,0.129-0.751,0.129-1.165L67.335,33.596L67.335,33.596zM27.999,30.413h-3.105v-4.141h3.105V30.413zM35.245,30.413h-3.104v-4.141h3.104V30.413zM42.491,30.413h-3.104v-4.141h3.104V30.413zM49.736,30.413h-3.104v-4.141h3.104V30.413zM14.544,40.764c1.143,0,2.07-0.927,2.07-2.07V35.59V25.237c0-1.145-0.928-2.07-2.07-2.07H-9.265c-1.143,0-2.068,0.926-2.068,2.07v10.351v3.105c0,1.144,0.926,2.07,2.068,2.07H14.544L14.544,40.764zM8.333,26.272h3.105v4.141H8.333V26.272zM1.087,26.272h3.105v4.141H1.087V26.272zM-6.159,26.272h3.105v4.141h-3.105V26.272zM-9.265,41.798h69.352v1.035H-9.265V41.798z\",\"symbolSize\":[50,30]},{\"name\":\"轮船\",\"value\":12,\"symbol\":\"path://M16.678,17.086h9.854l-2.703,5.912c5.596,2.428,11.155,5.575,16.711,8.607c3.387,1.847,6.967,3.75,10.541,5.375v-6.16l-4.197-2.763v-5.318L33.064,12.197h-11.48L20.43,15.24h-4.533l-1.266,3.286l0.781,0.345L16.678,17.086zM49.6,31.84l0.047,1.273L27.438,20.998l0.799-1.734L49.6,31.84zM33.031,15.1l12.889,8.82l0.027,0.769L32.551,16.1L33.031,15.1zM22.377,14.045h9.846l-1.539,3.365l-2.287-1.498h1.371l0.721-1.352h-2.023l-0.553,1.037l-0.541-0.357h-0.34l0.359-0.684h-2.025l-0.361,0.684h-3.473L22.377,14.045zM23.695,20.678l-0.004,0.004h0.004V20.678zM24.828,18.199h-2.031l-0.719,1.358h2.029L24.828,18.199zM40.385,34.227c-12.85-7.009-25.729-14.667-38.971-12.527c1.26,8.809,9.08,16.201,8.213,24.328c-0.553,4.062-3.111,0.828-3.303,7.137c15.799,0,32.379,0,48.166,0l0.066-4.195l1.477-7.23C50.842,39.812,45.393,36.961,40.385,34.227zM13.99,35.954c-1.213,0-2.195-1.353-2.195-3.035c0-1.665,0.98-3.017,2.195-3.017c1.219,0,2.195,1.352,2.195,3.017C16.186,34.604,15.213,35.954,13.99,35.954zM23.691,20.682h-2.02l-0.588,1.351h2.023L23.691,20.682zM19.697,18.199l-0.721,1.358h2.025l0.727-1.358H19.697z\",\"symbolSize\":[50,35]},{\"name\":\"汽车\",\"value\":9,\"symbol\":\"path://M49.592,40.883c-0.053,0.354-0.139,0.697-0.268,0.963c-0.232,0.475-0.455,0.519-1.334,0.475c-1.135-0.053-2.764,0-4.484,0.068c0,0.476,0.018,0.697,0.018,0.697c0.111,1.299,0.697,1.342,0.931,1.342h3.7c0.326,0,0.628,0,0.861-0.154c0.301-0.196,0.43-0.772,0.543-1.78c0.017-0.146,0.025-0.336,0.033-0.56v-0.01c0-0.068,0.008-0.154,0.008-0.25V41.58l0,0C49.6,41.348,49.6,41.09,49.592,40.883L49.592,40.883zM6.057,40.883c0.053,0.354,0.137,0.697,0.268,0.963c0.23,0.475,0.455,0.519,1.334,0.475c1.137-0.053,2.762,0,4.484,0.068c0,0.476-0.018,0.697-0.018,0.697c-0.111,1.299-0.697,1.342-0.93,1.342h-3.7c-0.328,0-0.602,0-0.861-0.154c-0.309-0.18-0.43-0.772-0.541-1.78c-0.018-0.146-0.027-0.336-0.035-0.56v-0.01c0-0.068-0.008-0.154-0.008-0.25V41.58l0,0C6.057,41.348,6.057,41.09,6.057,40.883L6.057,40.883zM49.867,32.766c0-2.642-0.344-5.224-0.482-5.507c-0.104-0.207-0.766-0.749-2.271-1.773c-1.522-1.042-1.487-0.887-1.766-1.566c0.25-0.078,0.492-0.224,0.639-0.241c0.326-0.034,0.345,0.274,1.023,0.274c0.68,0,2.152-0.18,2.453-0.48c0.301-0.303,0.396-0.405,0.396-0.672c0-0.268-0.156-0.818-0.447-1.146c-0.293-0.327-1.541-0.49-2.273-0.585c-0.729-0.095-0.834,0-1.022,0.121c-0.304,0.189-0.32,1.919-0.32,1.919l-0.713,0.018c-0.465-1.146-1.11-3.452-2.117-5.269c-1.103-1.979-2.256-2.599-2.737-2.754c-0.474-0.146-0.904-0.249-4.131-0.576c-3.298-0.344-5.922-0.388-8.262-0.388c-2.342,0-4.967,0.052-8.264,0.388c-3.229,0.336-3.66,0.43-4.133,0.576s-1.633,0.775-2.736,2.754c-1.006,1.816-1.652,4.123-2.117,5.269L9.87,23.109c0,0-0.008-1.729-0.318-1.919c-0.189-0.121-0.293-0.225-1.023-0.121c-0.732,0.104-1.98,0.258-2.273,0.585c-0.293,0.327-0.447,0.878-0.447,1.146c0,0.267,0.094,0.379,0.396,0.672c0.301,0.301,1.773,0.48,2.453,0.48c0.68,0,0.697-0.309,1.023-0.274c0.146,0.018,0.396,0.163,0.637,0.241c-0.283,0.68-0.24,0.524-1.764,1.566c-1.506,1.033-2.178,1.566-2.271,1.773c-0.139,0.283-0.482,2.865-0.482,5.508s0.189,5.02,0.189,5.86c0,0.354,0,0.976,0.076,1.565c0.053,0.354,0.129,0.697,0.268,0.966c0.232,0.473,0.447,0.516,1.334,0.473c1.137-0.051,2.779,0,4.477,0.07c1.135,0.043,2.297,0.086,3.33,0.11c2.582,0.051,1.826-0.379,2.928-0.36c1.102,0.016,5.447,0.196,9.424,0.196c3.976,0,8.332-0.182,9.423-0.196c1.102-0.019,0.346,0.411,2.926,0.36c1.033-0.018,2.195-0.067,3.332-0.11c1.695-0.062,3.348-0.121,4.477-0.07c0.886,0.043,1.103,0,1.332-0.473c0.132-0.269,0.218-0.611,0.269-0.966c0.086-0.592,0.078-1.213,0.078-1.565C49.678,37.793,49.867,35.408,49.867,32.766L49.867,32.766zM13.219,19.735c0.412-0.964,1.652-2.9,2.256-3.244c0.145-0.087,1.426-0.491,4.637-0.706c2.953-0.198,6.217-0.276,7.73-0.276c1.513,0,4.777,0.078,7.729,0.276c3.201,0.215,4.502,0.611,4.639,0.706c0.775,0.533,1.842,2.28,2.256,3.244c0.412,0.965,0.965,2.858,0.861,3.116c-0.104,0.258,0.104,0.388-1.291,0.275c-1.387-0.103-10.088-0.216-14.185-0.216c-4.088,0-12.789,0.113-14.184,0.216c-1.395,0.104-1.188-0.018-1.291-0.275C12.254,22.593,12.805,20.708,13.219,19.735L13.219,19.735zM16.385,30.511c-0.619,0.155-0.988,0.491-1.764,0.482c-0.775,0-2.867-0.353-3.314-0.371c-0.447-0.017-0.842,0.302-1.076,0.362c-0.23,0.06-0.688-0.104-1.377-0.318c-0.688-0.216-1.092-0.155-1.316-1.094c-0.232-0.93,0-2.264,0-2.264c1.488-0.068,2.928,0.069,5.621,0.826c2.693,0.758,4.191,2.213,4.191,2.213S17.004,30.357,16.385,30.511L16.385,30.511zM36.629,37.293c-1.23,0.164-6.386,0.207-8.794,0.207c-2.412,0-7.566-0.051-8.799-0.207c-1.256-0.164-2.891-1.67-1.764-2.865c1.523-1.627,1.24-1.576,4.701-2.023C24.967,32.018,27.239,32,27.834,32c0.584,0,2.865,0.025,5.859,0.404c3.461,0.447,3.178,0.396,4.699,2.022C39.521,35.623,37.887,37.129,36.629,37.293L36.629,37.293zM48.129,29.582c-0.232,0.93-0.629,0.878-1.318,1.093c-0.688,0.216-1.145,0.371-1.377,0.319c-0.231-0.053-0.627-0.371-1.074-0.361c-0.448,0.018-2.539,0.37-3.313,0.37c-0.772,0-1.146-0.328-1.764-0.481c-0.621-0.154-0.966-0.154-0.966-0.154s1.49-1.464,4.191-2.213c2.693-0.758,4.131-0.895,5.621-0.826C48.129,27.309,48.361,28.643,48.129,29.582L48.129,29.582z\",\"symbolSize\":[40,30]},{\"name\":\"跑步\",\"value\":2,\"symbol\":\"path://M13.676,32.955c0.919-0.031,1.843-0.008,2.767-0.008v0.007c0.827,0,1.659,0.041,2.486-0.019c0.417-0.028,1.118,0.325,1.14-0.545c0.014-0.637-0.156-1.279-0.873-1.367c-1.919-0.241-3.858-0.233-5.774,0.019c-0.465,0.062-0.998,0.442-0.832,1.069C12.715,32.602,13.045,32.977,13.676,32.955zM14.108,29.013c1.47-0.007,2.96-0.122,4.414,0.035c1.792,0.192,3.1-0.412,4.273-2.105c-3.044,0-5.882,0.014-8.719-0.01c-0.768-0.005-1.495,0.118-1.461,1C12.642,28.731,13.329,29.014,14.108,29.013zM23.678,36.593c-0.666-0.69-1.258-1.497-2.483-1.448c-2.341,0.095-4.689,0.051-7.035,0.012c-0.834-0.014-1.599,0.177-1.569,1.066c0.031,0.854,0.812,1.062,1.636,1.043c1.425-0.033,2.852-0.01,4.278-0.01v-0.01c1.562,0,3.126,0.008,4.691-0.005C23.614,37.239,24.233,37.174,23.678,36.593zM32.234,42.292h-0.002c-1.075,0.793-2.589,0.345-3.821,1.048c-0.359,0.193-0.663,0.465-0.899,0.799c-1.068,1.623-2.052,3.301-3.117,4.928c-0.625,0.961-0.386,1.805,0.409,2.395c0.844,0.628,1.874,0.617,2.548-0.299c1.912-2.573,3.761-5.197,5.621-7.814C33.484,42.619,33.032,42.387,32.234,42.292zM43.527,28.401c-0.688-1.575-2.012-0.831-3.121-0.895c-1.047-0.058-2.119,1.128-3.002,0.345c-0.768-0.677-1.213-1.804-1.562-2.813c-0.45-1.305-1.495-2.225-2.329-3.583c2.953,1.139,4.729,0.077,5.592-1.322c0.99-1.61,0.718-3.725-0.627-4.967c-1.362-1.255-3.414-1.445-4.927-0.452c-1.933,1.268-2.206,2.893-0.899,6.11c-2.098-0.659-3.835-1.654-5.682-2.383c-0.735-0.291-1.437-1.017-2.293-0.666c-2.263,0.927-4.522,1.885-6.723,2.95c-1.357,0.658-1.649,1.593-1.076,2.638c0.462,0.851,1.643,1.126,2.806,0.617c0.993-0.433,1.994-0.857,2.951-1.374c1.599-0.86,3.044-0.873,4.604,0.214c1.017,0.707,0.873,1.137,0.123,1.849c-1.701,1.615-3.516,3.12-4.933,5.006c-1.042,1.388-0.993,2.817,0.255,4.011c1.538,1.471,3.148,2.869,4.708,4.315c0.485,0.444,0.907,0.896-0.227,1.104c-1.523,0.285-3.021,0.694-4.538,1.006c-1.109,0.225-2.02,1.259-1.83,2.16c0.223,1.07,1.548,1.756,2.687,1.487c3.003-0.712,6.008-1.413,9.032-2.044c1.549-0.324,2.273-1.869,1.344-3.115c-0.868-1.156-1.801-2.267-2.639-3.445c-1.964-2.762-1.95-2.771,0.528-5.189c1.394-1.357,1.379-1.351,2.437,0.417c0.461,0.769,0.854,1.703,1.99,1.613c2.238-0.181,4.407-0.755,6.564-1.331C43.557,30.447,43.88,29.206,43.527,28.401z\",\"symbolSize\":[50,50]},{\"name\":\"步行\",\"value\":1,\"symbol\":\"path://M29.902,23.275c1.86,0,3.368-1.506,3.368-3.365c0-1.859-1.508-3.365-3.368-3.365c-1.857,0-3.365,1.506-3.365,3.365C26.537,21.769,28.045,23.275,29.902,23.275zM36.867,30.74c-1.666-0.467-3.799-1.6-4.732-4.199c-0.932-2.6-3.131-2.998-4.797-2.998s-7.098,3.894-7.098,3.894c-1.133,1.001-2.1,6.502-0.967,6.769c1.133,0.269,1.266-1.533,1.934-3.599c0.666-2.065,3.797-3.466,3.797-3.466s0.201,2.467-0.398,3.866c-0.599,1.399-1.133,2.866-1.467,6.198s-1.6,3.665-3.799,6.266c-2.199,2.598-0.6,3.797,0.398,3.664c1.002-0.133,5.865-5.598,6.398-6.998c0.533-1.397,0.668-3.732,0.668-3.732s0,0,2.199,1.867c2.199,1.865,2.332,4.6,2.998,7.73s2.332,0.934,2.332-0.467c0-1.401,0.269-5.465-1-7.064c-1.265-1.6-3.73-3.465-3.73-5.265s1.199-3.732,1.199-3.732c0.332,1.667,3.335,3.065,5.599,3.399C38.668,33.206,38.533,31.207,36.867,30.74z\",\"symbolSize\":[40,50]}]","size":{"width":463,"height":463},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/pictogram","timeOut":0,"option":{"grid":{"bottom":115},"series":[],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"象形柱图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:15:07.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522520322329288706', NULL, N'1522507145776472065', NULL, N'JBar', N'{"dataMapping":[{"mapping":"type","filed":"维度"},{"mapping":"visit","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"首页_近一周访问量","dataSetApi":"selectcount(*)asvisit\t,count(distinct(ip))asip\t,DATE_FORMAT(create_time,''%Y-%m-%d'')astian\t,DATE_FORMAT(create_time,''%m-%d'')astype\tfromsys_logwherelog_type=1andcreate_time<=sysdate()andcreate_time>=(selectdate_sub(curdate(),interval7day))groupbytian,typeorderbytiandesc","drillData":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":"10","chartData":"[{\"name\":\"苹果\",\"value\":1000879,\"type\":\"手机品牌\"},{\"name\":\"三星\",\"value\":3400879,\"type\":\"手机品牌\"},{\"name\":\"小米\",\"value\":2300879,\"type\":\"手机品牌\"},{\"name\":\"oppo\",\"value\":5400879,\"type\":\"手机品牌\"},{\"name\":\"vivo\",\"value\":3400879,\"type\":\"手机品牌\"}]","size":{"width":779,"height":474},"dataSetId":"1522503560003067906","fieldOption":[{"label":"访问量","text":"访问量","value":"visit"},{"label":"ip地址","text":"ip地址","value":"ip"},{"label":"年月","text":"年月","value":"tian"},{"label":"天","text":"天","value":"type"}],"dataSetType":"sql","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"bottom":115,"show":false},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180,180,180,0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"定时刷新","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:15:07.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522520322421563394', NULL, N'1522507145776472065', NULL, N'JLine', N'{"chartData":"[{\"value\":1000,\"name\":\"联想\"},{\"value\":7350,\"name\":\"小米\"},{\"value\":5800,\"name\":\"华为\"},{\"value\":6000,\"name\":\"苹果\"},{\"value\":3000,\"name\":\"戴尔\"}]","dataFilter":"returndata.filter((item)=>{returnitem.value>5000});","size":{"width":463,"height":474},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"type":"line"}],"title":{"subtext":"","left":"left","text":"数据过滤","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:15:07.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522523872572743681', NULL, N'1522451603569778690', NULL, N'JText', N'{"chartData":"本日产量","size":{"width":200,"height":56},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":76},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:29:13.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522523872849567745', NULL, N'1522451603569778690', NULL, N'JText', N'{"chartData":"456786","size":{"width":200,"height":56},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":76},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:29:13.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522523872954425346', NULL, N'1522451603569778690', NULL, N'JBar', N'{"chartData":"[{\"name\":\"19日\",\"value\":100879,\"type\":\"手机品牌\"},{\"name\":\"20日\",\"value\":340879,\"type\":\"手机品牌\"},{\"name\":\"21日\",\"value\":230879,\"type\":\"手机品牌\"},{\"name\":\"22日\",\"value\":540879,\"type\":\"手机品牌\"},{\"name\":\"23日\",\"value\":340879,\"type\":\"手机品牌\"},{\"name\":\"24日\",\"value\":30879,\"type\":\"手机品牌\"},{\"name\":\"25日\",\"value\":34879,\"type\":\"手机品牌\"}]","size":{"width":621,"height":474},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"bottom":57,"show":false,"right":6},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180,180,180,0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"每日产能","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:29:13.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522523873038311426', NULL, N'1522451603569778690', NULL, N'JPie', N'{"chartData":"[{\"name\":\"未完成\",\"value\":4.9},{\"name\":\"已完成\",\"value\":95.1}]","size":{"width":306,"height":452},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"grid":{"bottom":115,"show":false},"legend":{"r":10,"orient":"horizontal","t":1},"series":[{"data":[],"name":"AccessFrom","emphasis":{"itemStyle":{"shadowOffsetX":0,"shadowBlur":10,"shadowColor":"rgba(0,0,0,0.5)"}},"type":"pie","radius":"50%"}],"tooltip":{"trigger":"item"},"innerRadius":50,"title":{"subtext":"","left":"left","show":true,"text":"昨日概况","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:29:13.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522523873143169025', NULL, N'1522451603569778690', NULL, N'JPie', N'{"chartData":"[{\"name\":\"未完成\",\"value\":3.8},{\"name\":\"已完成\",\"value\":96.2}]","size":{"width":306,"height":452},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"grid":{"bottom":115,"show":false},"legend":{"r":12,"orient":"horizontal"},"series":[{"data":[],"name":"AccessFrom","emphasis":{"itemStyle":{"shadowOffsetX":0,"shadowBlur":10,"shadowColor":"rgba(0,0,0,0.5)"}},"type":"pie","radius":"50%"}],"tooltip":{"trigger":"item"},"innerRadius":50,"title":{"subtext":"","left":"left","show":true,"text":"月概况","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:29:13.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522523873235443714', NULL, N'1522451603569778690', NULL, N'JTabs', N'{"size":{"width":621,"height":540},"w":12,"h":40,"option":{"title":"选项卡"},"child":[{"h":42,"index":0,"i":"4c96d729-f16d-4fea-a9c5-f82a6aef0225","title":"实际生产","horizontal":false,"component":"JCommonTable","size":10,"w":12,"x":0,"text":"0.042","id":"1daf6c6b-7061-40d3-8980-cd20c163da40","config":{"paramOption":[],"dataType":2,"dataSetName":"智能大数据_实际生产","h":42,"dataSetApi":"[{\"gh\":\"ATJDS01\",\"gjbm\":\"TYIY-908\",\"jgsj\":\"2021-03-2817:07\",\"dqgx\":\"工序1\",\"zt\":\"已完成\"},{\"gh\":\"ATJDS01\",\"gjbm\":\"11CPER-44\",\"jgsj\":\"2021-03-2918:07\",\"dqgx\":\"工序2\",\"zt\":\"已完成\"},{\"gh\":\"PFTE56\",\"gjbm\":\"F56677\",\"jgsj\":\"2021-02-2807:07\",\"dqgx\":\"工序1\",\"zt\":\"已完成\"},{\"gh\":\"PFTE56\",\"gjbm\":\"99CVB-1\",\"jgsj\":\"2021-03-2817:07\",\"dqgx\":\"工序3\",\"zt\":\"已完成\"},{\"gh\":\"ATJDS01\",\"gjbm\":\"TYIY-908\",\"jgsj\":\"2021-03-2817:07\",\"dqgx\":\"工序1\",\"zt\":\"已完成\"},{\"gh\":\"ATJDS01\",\"gjbm\":\"11CPER-44\",\"jgsj\":\"2021-03-2817:07\",\"dqgx\":\"工序2\",\"zt\":\"已完成\"},{\"gh\":\"PFTE56\",\"gjbm\":\"F56677\",\"jgsj\":\"2021-03-2817:07\",\"dqgx\":\"工序1\",\"zt\":\"已完成\"},{\"gh\":\"PFTE56\",\"gjbm\":\"99CVB-1\",\"jgsj\":\"2021-03-2817:07\",\"dqgx\":\"工序3\",\"zt\":\"已完成\"},{\"gh\":\"ATJDS01\",\"gjbm\":\"TYIY-908\",\"jgsj\":\"2021-03-2817:07\",\"dqgx\":\"工序1\",\"zt\":\"已完成\"},{\"gh\":\"ATJDS01\",\"gjbm\":\"11CPER-44\",\"jgsj\":\"2021-03-2817:07\",\"dqgx\":\"工序2\",\"zt\":\"已完成\"},{\"gh\":\"PFTE56\",\"gjbm\":\"F56677\",\"jgsj\":\"2021-03-2817:07\",\"dqgx\":\"工序1\",\"zt\":\"已完成\"},{\"gh\":\"PFTE56\",\"gjbm\":\"99CVB-1\",\"jgsj\":\"2021-03-2817:07\",\"dqgx\":\"工序3\",\"zt\":\"已完成\"}]","drillData":[],"timeOut":0,"chartData":"[{\"name\":\"4月\",\"value\":50},{\"name\":\"2月\",\"value\":200},{\"name\":\"3月\",\"value\":300},{\"name\":\"4月\",\"value\":400},{\"name\":\"5月\",\"value\":50},{\"name\":\"6月\",\"value\":120}]","paddingBottom":90,"dataSetId":"1522522034783920129","fieldOption":[{"label":"工号","text":"工号","value":"gh"},{"label":"编码","text":"编码","value":"gjbm"},{"label":"完成时间","text":"完成时间","value":"jgsj"},{"label":"工序","text":"工序","value":"dqgx"},{"label":"状态","text":"状态","value":"zt"}],"dataSetType":"json","w":24,"linkageConfig":[],"dataSetIzAgent":"0","option":{"columns":[{"izShow":"Y","dataIndex":"gh","title":"工号"},{"izShow":"Y","dataIndex":"gjbm","title":"编码"},{"izShow":"Y","dataIndex":"jgsj","title":"完成时间"},{"izShow":"Y","dataIndex":"dqgx","title":"工序"},{"izShow":"Y","dataIndex":"zt","title":"状态"}]}},"child":[]},{"h":42,"index":0,"i":"6163f3c5-7cd3-471f-84df-b53603bc922f","title":"计划生产","horizontal":false,"component":"JCommonTable","size":10,"w":12,"x":0,"text":"0.042","id":"59ce013b-526f-487a-816a-de2d87ce4b9d","config":{"paramOption":[],"dataType":2,"dataSetName":"智能大数据","h":42,"dataSetApi":"[{\"gh\":\"ACDFE_0045\",\"gjbm\":\"56-REE-4\",\"jh\":\"1\",\"dqgx\":\"工程\",\"zt\":\"未开始\"},{\"gh\":\"ACDFE_0045\",\"gjbm\":\"BB-1L-0004\",\"jh\":\"2\",\"dqgx\":\"工序\",\"zt\":\"未开始\"},{\"gh\":\"JFL5GZ1-01\",\"gjbm\":\"DB-F5GNT-1\",\"jh\":\"1\",\"dqgx\":\"工程\",\"zt\":\"未开始\"},{\"gh\":\"JFL5GZ1-01\",\"gjbm\":\"A5-0001\",\"jh\":\"1\",\"dqgx\":\"总装工序\",\"zt\":\"未开始\"},{\"gh\":\"ACDFE_0045\",\"gjbm\":\"56-REE-4\",\"jh\":\"1\",\"dqgx\":\"工程\",\"zt\":\"未开始\"},{\"gh\":\"ACDFE_0045\",\"gjbm\":\"BB-1L-0004\",\"jh\":\"2\",\"dqgx\":\"工序\",\"zt\":\"未开始\"},{\"gh\":\"JFL5GZ1-01\",\"gjbm\":\"DB-F5GNT-1\",\"jh\":\"1\",\"dqgx\":\"工程\",\"zt\":\"未开始\"},{\"gh\":\"JFL5GZ1-01\",\"gjbm\":\"A5-0001\",\"jh\":\"1\",\"dqgx\":\"总装工序\",\"zt\":\"未开始\"},{\"gh\":\"ACDFE_0045\",\"gjbm\":\"56-REE-4\",\"jh\":\"1\",\"dqgx\":\"工程\",\"zt\":\"未开始\"},{\"gh\":\"ACDFE_0045\",\"gjbm\":\"BB-1L-0004\",\"jh\":\"2\",\"dqgx\":\"工序\",\"zt\":\"未开始\"},{\"gh\":\"JFL5GZ1-01\",\"gjbm\":\"DB-F5GNT-1\",\"jh\":\"1\",\"dqgx\":\"工程\",\"zt\":\"未开始\"},{\"gh\":\"JFL5GZ1-01\",\"gjbm\":\"A5-0001\",\"jh\":\"1\",\"dqgx\":\"总装工序\",\"zt\":\"未开始\"}]","drillData":[],"timeOut":0,"chartData":"[{\"name\":\"4月\",\"value\":50},{\"name\":\"2月\",\"value\":200},{\"name\":\"3月\",\"value\":300},{\"name\":\"4月\",\"value\":400},{\"name\":\"5月\",\"value\":50},{\"name\":\"6月\",\"value\":120}]","paddingBottom":90,"dataSetId":"1522455203175997442","fieldOption":[{"label":"工号","text":"工号","value":"gh"},{"label":"构件编号","text":"构件编号","value":"gjbm"},{"label":"序号","text":"序号","value":"jh"},{"label":"状态","text":"状态","value":"zt"},{"label":"当前工序","text":"当前工序","value":"dqgx"}],"dataSetType":"json","w":24,"linkageConfig":[],"dataSetIzAgent":"0","option":{"columns":[{"izShow":"Y","dataIndex":"gh","title":"工号"},{"izShow":"Y","dataIndex":"gjbm","title":"构件编号"},{"izShow":"N","dataIndex":"jh","title":"序号"},{"izShow":"Y","dataIndex":"zt","title":"状态"},{"izShow":"Y","dataIndex":"dqgx","title":"当前工序"}]}},"child":[]}]}', N'admin', N'2022-05-06 18:29:13.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522523873340301313', NULL, N'1522451603569778690', NULL, N'JTabs', N'{"size":{"width":621,"height":518},"w":12,"h":40,"option":{"title":"选项卡"},"child":[{"h":42,"index":0,"i":"7b87441d-0f82-454a-80b9-6040dc1f8f5a","title":"项目履约一览表","horizontal":false,"component":"JCommonTable","size":10,"w":12,"x":0,"text":"0.042","id":"f437ad36-afbd-475b-8402-e8be433022a2","config":{"paramOption":[],"dataType":2,"dataSetName":"智能大数据_一览表","h":42,"dataSetApi":"[{\"ddh\":\"A5CCU_2017...\",\"zcxm\":\"国际城0902\",\"zl\":\"2548\",\"jhrq\":\"2021-04-21\",\"scjd\":\"100%\"},{\"ddh\":\"A5CCU_2017...\",\"zcxm\":\"新城ERT\",\"zl\":\"27215\",\"jhrq\":\"2021-05-21\",\"scjd\":\"54%\"},{\"ddh\":\"A5CCU_2018...\",\"zcxm\":\"天桥TTY\",\"zl\":\"5423\",\"jhrq\":\"2021-12-21\",\"scjd\":\"100%\"},{\"ddh\":\"A5CCU_2018...\",\"zcxm\":\"国际中心地\",\"zl\":\"14427\",\"jhrq\":\"2021-12-21\",\"scjd\":\"88%\"},{\"ddh\":\"A5CCU_2019...\",\"zcxm\":\"新生广场\",\"zl\":\"2808\",\"jhrq\":\"2021-08-21\",\"scjd\":\"98%\"},{\"ddh\":\"A5CCU_2017...\",\"zcxm\":\"国际城0902\",\"zl\":\"2548\",\"jhrq\":\"2021-04-21\",\"scjd\":\"100%\"},{\"ddh\":\"A5CCU_2019...\",\"zcxm\":\"新生广场\",\"zl\":\"2808\",\"jhrq\":\"2021-08-21\",\"scjd\":\"98%\"},{\"ddh\":\"A5CCU_2017...\",\"zcxm\":\"新城ERT\",\"zl\":\"27215\",\"jhrq\":\"2021-05-21\",\"scjd\":\"54%\"}]","drillData":[],"timeOut":0,"chartData":"[{\"name\":\"4月\",\"value\":50},{\"name\":\"2月\",\"value\":200},{\"name\":\"3月\",\"value\":300},{\"name\":\"4月\",\"value\":400},{\"name\":\"5月\",\"value\":50},{\"name\":\"6月\",\"value\":120}]","paddingBottom":90,"dataSetId":"1522523544120991745","fieldOption":[{"label":"订单号","text":"订单号","value":"ddh"},{"label":"在产项目","text":"在产项目","value":"zcxm"},{"label":"重量","text":"重量","value":"zl"},{"label":"交货日期","text":"交货日期","value":"jhrq"},{"label":"产量进度","text":"产量进度","value":"scjd"}],"dataSetType":"json","w":24,"linkageConfig":[],"dataSetIzAgent":"0","option":{"columns":[{"izShow":"Y","dataIndex":"ddh","title":"订单号"},{"izShow":"Y","dataIndex":"zcxm","title":"在产项目"},{"izShow":"Y","dataIndex":"zl","title":"重量"},{"izShow":"Y","dataIndex":"jhrq","title":"交货日期"},{"izShow":"Y","dataIndex":"scjd","title":"产量进度"}]}},"child":[]}]}', N'admin', N'2022-05-06 18:29:13.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522523873445158914', NULL, N'1522451603569778690', NULL, N'JText', N'{"chartData":"本周产量","size":{"width":200,"height":56},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":76},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:29:13.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522523873529044994', NULL, N'1522451603569778690', NULL, N'JText', N'{"chartData":"1234678","size":{"width":200,"height":56},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":76},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:29:13.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522523873621319682', NULL, N'1522451603569778690', NULL, N'JText', N'{"chartData":"本月产量","size":{"width":200,"height":56},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":76},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:29:13.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522523873726177281', NULL, N'1522451603569778690', NULL, N'JText', N'{"chartData":"87653908","size":{"width":200,"height":56},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":76},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:29:13.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524336454377473', NULL, N'1522417428246568961', NULL, N'JImg', N'{"size":{"width":43,"height":45},"w":10,"dataType":1,"h":20,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"url":"https://jeecgos.oss-cn-beijing.aliyuncs.com/bigscreen/images/8830d68590e34dfdadd8ca0845763fd4.jpg"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524336693452802', NULL, N'1522417428246568961', NULL, N'JText', N'{"chartData":"乡村振兴普惠金融服务平台","size":{"width":306,"height":78},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","fontSize":23,"text":"","fontWeight":"bold","marginTop":10,"marginLeft":11},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524336823476225', NULL, N'1522417428246568961', NULL, N'JText', N'{"chartData":"农牧耕田（亩）：12345","size":{"width":253,"height":45},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","fontSize":14,"text":"","fontWeight":"bold","marginTop":10,"marginLeft":13},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524336903168002', NULL, N'1522417428246568961', NULL, N'JImg', N'{"size":{"width":43,"height":45},"w":10,"dataType":1,"h":20,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"url":"https://jeecgos.oss-cn-beijing.aliyuncs.com/bigscreen/images/8830d68590e34dfdadd8ca0845763fd4.jpg"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524336974471169', NULL, N'1522417428246568961', NULL, N'JImg', N'{"size":{"width":43,"height":45},"w":10,"dataType":1,"h":20,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"url":"https://jeecgos.oss-cn-beijing.aliyuncs.com/bigscreen/images/8830d68590e34dfdadd8ca0845763fd4.jpg"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524337066745858', NULL, N'1522417428246568961', NULL, N'JText', N'{"chartData":"农牧产量（斤）：56789","size":{"height":50},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","fontSize":14,"text":"","fontWeight":"bold","marginTop":10,"marginLeft":11},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524337146437633', NULL, N'1522417428246568961', NULL, N'JText', N'{"chartData":"综合产品：4567768","size":{"height":50},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","fontSize":14,"text":"","fontWeight":"bold","marginTop":10,"marginLeft":13},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524337251295233', NULL, N'1522417428246568961', NULL, N'JCommonTable', N'{"paramOption":[],"dataType":2,"dataSetName":"乡村振兴_表格","h":42,"dataSetApi":"[{\"name\":\"数据\",\"sj\":\"1000\",\"type\":\"担保\",\"je\":\"50\",\"jg\":\"机构\",\"jl\":\"数据2\"},{\"name\":\"数据1\",\"sj\":\"1500\",\"type\":\"担保\",\"je\":\"100\",\"jg\":\"机构2\",\"jl\":\"李四\"},{\"name\":\"数据\",\"sj\":\"1000\",\"type\":\"担保\",\"je\":\"50\",\"jg\":\"机构\",\"jl\":\"数据2\"},{\"name\":\"数据1\",\"sj\":\"1500\",\"type\":\"担保\",\"je\":\"100\",\"jg\":\"机构2\",\"jl\":\"李四\"},{\"name\":\"数据\",\"sj\":\"1000\",\"type\":\"担保\",\"je\":\"50\",\"jg\":\"机构\",\"jl\":\"数据2\"},{\"name\":\"数据1\",\"sj\":\"1500\",\"type\":\"担保\",\"je\":\"100\",\"jg\":\"机构2\",\"jl\":\"李四\"},{\"name\":\"数据\",\"sj\":\"1000\",\"type\":\"担保\",\"je\":\"50\",\"jg\":\"机构\",\"jl\":\"数据2\"},{\"name\":\"数据1\",\"sj\":\"1500\",\"type\":\"担保\",\"je\":\"100\",\"jg\":\"机构2\",\"jl\":\"李四\"}]","drillData":[],"timeOut":0,"chartData":"","size":{"width":726,"height":463},"dataSetId":"1522422772532256770","fieldOption":[{"label":"客户姓名","text":"客户姓名","value":"name"},{"label":"放款时间","text":"放款时间","value":"sj"},{"label":"担保方式","text":"担保方式","value":"type"},{"label":"放款金额","text":"放款金额","value":"je"},{"label":"法人机构","text":"法人机构","value":"jg"},{"label":"客户经理","text":"客户经理","value":"jl"}],"dataSetType":"json","w":24,"linkageConfig":[],"dataSetIzAgent":"0","option":{"columns":[{"izShow":"Y","dataIndex":"name","title":"客户姓名"},{"izShow":"Y","dataIndex":"sj","title":"放款时间"},{"izShow":"Y","dataIndex":"type","title":"担保方式"},{"izShow":"Y","dataIndex":"je","title":"放款金额"},{"izShow":"Y","dataIndex":"jg","title":"法人机构"},{"izShow":"Y","dataIndex":"jl","title":"客户经理"}]}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524337356152834', NULL, N'1522417428246568961', NULL, N'JLine', N'{"chartData":"[{\"value\":1000,\"name\":\"苹果\"},{\"value\":7350,\"name\":\"小米\"},{\"value\":5800,\"name\":\"梨\"},{\"value\":6000,\"name\":\"葡萄\"},{\"value\":3000,\"name\":\"山楂\"}]","size":{"width":516,"height":309},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"grid":{"bottom":61,"show":false,"right":62},"series":[{"data":[],"type":"line"}],"title":{"subtext":"","left":"left","text":"五年产业变化趋势","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524337461010433', NULL, N'1522417428246568961', NULL, N'JBar', N'{"chartData":"[{\"name\":\"苹果\",\"value\":1000879,\"type\":\"手机品牌\"},{\"name\":\"大豆\",\"value\":3400879,\"type\":\"手机品牌\"},{\"name\":\"小米\",\"value\":2300879,\"type\":\"手机品牌\"},{\"name\":\"小麦\",\"value\":5400879,\"type\":\"手机品牌\"},{\"name\":\"果蔬\",\"value\":3400879,\"type\":\"手机品牌\"}]","size":{"width":516,"height":298},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"xAxis":{"axisLabel":{"color":"#909198"},"axisLine":{"lineStyle":{"color":"#333333"}},"nameTextStyle":{"color":"#333333"}},"grid":{"left":66,"bottom":65,"show":false,"right":1},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180,180,180,0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"农产品排名","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524337565868034', NULL, N'1522417428246568961', NULL, N'JPie', N'{"chartData":"[{\"value\":1048,\"name\":\"蔬菜\"},{\"value\":735,\"name\":\"果物\"},{\"value\":580,\"name\":\"粮食\"},{\"value\":484,\"name\":\"小米\"},{\"value\":300,\"name\":\"养殖\"}]","size":{"width":516,"height":254},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"grid":{"bottom":115,"show":false},"legend":{"orient":"vertical"},"series":[{"data":[],"name":"AccessFrom","emphasis":{"itemStyle":{"shadowOffsetX":0,"shadowBlur":10,"shadowColor":"rgba(0,0,0,0.5)"}},"type":"pie","radius":"50%"}],"tooltip":{"trigger":"item"},"innerRadius":50,"title":{"subtext":"","left":"left","show":true,"text":"农业占比","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524337670725634', NULL, N'1522417428246568961', NULL, N'JText', N'{"chartData":"综合收入：678904","size":{"height":50},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","fontSize":14,"text":"","fontWeight":"bold","marginTop":10,"marginLeft":11},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524337742028802', NULL, N'1522417428246568961', NULL, N'JImg', N'{"size":{"width":43,"height":45},"w":10,"dataType":1,"h":20,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"url":"https://jeecgos.oss-cn-beijing.aliyuncs.com/bigscreen/images/8830d68590e34dfdadd8ca0845763fd4.jpg"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524337813331969', NULL, N'1522417428246568961', NULL, N'JImg', N'{"size":{"width":43,"height":45},"w":10,"dataType":1,"h":20,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"url":"https://jeecgos.oss-cn-beijing.aliyuncs.com/bigscreen/images/8830d68590e34dfdadd8ca0845763fd4.jpg"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524337884635138', NULL, N'1522417428246568961', NULL, N'JText', N'{"chartData":"农牧产量（斤）：56789","size":{"height":50},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","fontSize":14,"text":"","fontWeight":"bold","marginTop":10,"marginLeft":11},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524337951744001', NULL, N'1522417428246568961', NULL, N'JText', N'{"chartData":"农牧产量（斤）：56789","size":{"height":50},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","fontSize":14,"text":"","fontWeight":"bold","marginTop":10,"marginLeft":11},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524338023047170', NULL, N'1522417428246568961', NULL, N'JImg', N'{"size":{"width":43,"height":45},"w":10,"dataType":1,"h":20,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"url":"https://jeecgos.oss-cn-beijing.aliyuncs.com/bigscreen/images/8830d68590e34dfdadd8ca0845763fd4.jpg"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1522524338094350337', NULL, N'1522417428246568961', NULL, N'JFunnel', N'{"chartData":"[{\"value\":335,\"name\":\"果蔬\"},{\"value\":310,\"name\":\"粮食\"},{\"value\":234,\"name\":\"养殖\"}]","size":{"width":411,"height":408},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/funnel","timeOut":0,"option":{"grid":{"bottom":115},"legend":{"orient":"horizontal","show":false},"series":[{"left":"10%","gap":2,"name":"Funnel","width":"80%","emphasis":{"label":{"fontSize":20}},"itemStyle":{"borderColor":"#fff","borderWidth":1},"sort":"descending","label":{"show":true,"position":"inside"},"labelLine":{"lineStyle":{"width":1,"type":"solid"},"length":10},"type":"funnel"}],"tooltip":{"formatter":"{a}<br/>{b}:{c}%","trigger":"item"},"title":{"show":true,"text":"农产品收入排行","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-06 18:31:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1523906947722629122', NULL, N'1522121177760280578', NULL, N'JText', N'{"chartData":"医院综合数据统计","size":{"width":607,"height":78},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","fontSize":25,"text":"","fontWeight":"bold","marginTop":10,"marginLeft":216},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-10 14:05:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1523906947861041153', NULL, N'1522121177760280578', NULL, N'JStackBar', N'{"chartData":"[{\"name\":\"内科\",\"value\":10079,\"type\":\"床位\"},{\"name\":\"外科\",\"value\":34879,\"type\":\"床位\"},{\"name\":\"儿科\",\"value\":20879,\"type\":\"床位\"},{\"name\":\"骨科\",\"value\":5879,\"type\":\"床位\"},{\"name\":\"放射科\",\"value\":3479,\"type\":\"床位\"},{\"name\":\"内科\",\"value\":1879,\"type\":\"接诊\"},{\"name\":\"外科\",\"value\":3879,\"type\":\"接诊\"},{\"name\":\"儿科\",\"value\":2309,\"type\":\"接诊\"},{\"name\":\"放射科\",\"value\":5409,\"type\":\"接诊\"},{\"name\":\"骨科\",\"value\":3479,\"type\":\"接诊\"}]","size":{"width":539,"height":397},"dataMapping":[{"mapping":"","filed":"分组"},{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/stackedBar","timeOut":0,"option":{"yAxis":{"axisLabel":{"color":"#909198"},"splitLine":{"lineStyle":{"color":"#F3F3F3"}},"nameTextStyle":{"color":"#333333"}},"xAxis":{"axisLabel":{"color":"#909198"},"axisLine":{"lineStyle":{"color":"#333333"}},"type":"category","nameTextStyle":{"color":"#333333"}},"grid":{"bottom":115},"series":[],"legend":{"r":4,"t":1},"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"机构情况","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-10 14:05:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1523906947932344321', NULL, N'1522121177760280578', NULL, N'JArea', N'{"chartData":"[{\"value\":300,\"name\":\"2010\"},{\"value\":605,\"name\":\"2011\"},{\"value\":580,\"name\":\"2012\"},{\"value\":700,\"name\":\"2013\"},{\"value\":1048,\"name\":\"2014\"}]","size":{"width":470,"height":265},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"yAxis":{"axisLabel":{"color":"#909198"},"splitLine":{"lineStyle":{"color":"#F3F3F3"}},"name":"床位数","nameTextStyle":{"color":"#333333"}},"xAxis":{"axisLabel":{"color":"#909198"},"data":[],"axisLine":{"lineStyle":{"color":"#333333"}},"name":"年份","boundaryGap":false,"nameTextStyle":{"color":"#333333"}},"grid":{"left":46,"bottom":46,"right":25},"series":[{"areaStyle":{},"data":[],"type":"line"}],"title":{"show":true,"text":"床位总数","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-10 14:05:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1523906948037201921', NULL, N'1522121177760280578', NULL, N'JBar', N'{"chartData":"[{\"name\":\"教授\",\"value\":123},{\"name\":\"博士\",\"value\":98},{\"name\":\"硕士\",\"value\":75},{\"name\":\"本科\",\"value\":66}]","size":{"width":539,"height":309},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"yAxis":{"axisLabel":{"color":"#909198"},"lineStyle":{"color":"#f3f3f3"},"splitLine":{"lineStyle":{"color":"#F3F3F3"},"interval":2},"nameTextStyle":{"color":"#333333"}},"xAxis":{"axisLabel":{"color":"#909198"},"axisLine":{"lineStyle":{"color":"#333333"}},"type":"value","nameTextStyle":{"color":"#333333"}},"grid":{"top":1,"left":38,"bottom":70,"show":false},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180,180,180,0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"top":1,"show":false,"text":"","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-10 14:05:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1523906948108505089', NULL, N'1522121177760280578', NULL, N'JColorGauge', N'{"chartData":"[{\"name\":\"满意度\",\"value\":95,\"unit\":\"%\"}]","size":{"width":264,"height":287},"dataMapping":[{"mapping":"","filed":"名称"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/gauge","timeOut":0,"option":{"series":[{"axisLabel":{"show":true,"fontSize":12},"pointer":{"width":8},"axisLine":{"lineStyle":{"color":[[0.25,"#FF6E76"],[0.5,"#FDDD60"],[1,"#58D9F9"]],"width":10}},"anchor":{"itemStyle":{"color":"#FAC858"}},"splitLine":{"lineStyle":{"color":"#EEEEEE","width":4},"length":12},"axisTick":{"lineStyle":{"color":"#EEEEEE"},"show":true},"title":{"fontSize":14}}],"tooltip":{"formatter":"{a}<br/>{b}:{c}%"},"title":{"top":1,"show":false,"text":"多色仪表盘","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":""}}}', N'admin', N'2022-05-10 14:05:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1523906948179808258', NULL, N'1522121177760280578', NULL, N'JColorGauge', N'{"chartData":"[{\"name\":\"投诉率\",\"value\":4,\"unit\":\"%\"}]","size":{"width":264,"height":287},"dataMapping":[{"mapping":"","filed":"名称"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/gauge","timeOut":0,"option":{"series":[{"axisLabel":{"show":true,"fontSize":12},"pointer":{"width":8},"axisLine":{"lineStyle":{"color":[[0.25,"#FF6E76"],[0.5,"#FDDD60"],[1,"#58D9F9"]],"width":10}},"anchor":{"itemStyle":{"color":"#FAC858"}},"splitLine":{"lineStyle":{"color":"#EEEEEE","width":4},"length":12},"axisTick":{"lineStyle":{"color":"#EEEEEE"},"show":true},"title":{"fontSize":14}}],"tooltip":{"formatter":"{a}<br/>{b}:{c}%"},"title":{"show":false,"text":"多色仪表盘","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-10 14:05:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1523906948246917122', NULL, N'1522121177760280578', NULL, N'JPie', N'{"chartData":"[{\"name\":\"核磁共振\",\"value\":1000879},{\"name\":\"呼吸机\",\"value\":3400879},{\"name\":\"CT\",\"value\":2300879},{\"name\":\"彩超\",\"value\":5400879},{\"name\":\"3D打印\",\"value\":3000}]","size":{"width":470,"height":342},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"isRose":true,"grid":{"top":47,"bottom":115,"show":false},"legend":{"r":7,"orient":"vertical"},"series":[{"data":[],"name":"AccessFrom","emphasis":{"itemStyle":{"shadowOffsetX":0,"shadowBlur":10,"shadowColor":"rgba(0,0,0,0.5)"}},"type":"pie","radius":"50%"}],"tooltip":{"trigger":"item"},"innerRadius":50,"title":{"subtext":"","left":"left","show":true,"text":"设备情况","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-10 14:05:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1523906948351774722', NULL, N'1522121177760280578', NULL, N'JLine', N'{"chartData":"[{\"name\":\"1月\",\"value\":2,\"series\":\"医师\",\"type\":\"bar\"},{\"name\":\"2月\",\"value\":4.9,\"series\":\"医师\",\"type\":\"bar\"},{\"name\":\"3月\",\"value\":7,\"series\":\"医师\",\"type\":\"bar\"},{\"name\":\"4月\",\"value\":23.2,\"series\":\"医师\",\"type\":\"bar\"},{\"name\":\"5月\",\"value\":25.6,\"series\":\"医师\",\"type\":\"bar\"},{\"name\":\"6月\",\"value\":76.7,\"series\":\"医师\",\"type\":\"bar\"},{\"name\":\"7月\",\"value\":135.6,\"series\":\"医师\",\"type\":\"bar\"},{\"name\":\"8月\",\"value\":162.2,\"series\":\"医师\",\"type\":\"bar\"},{\"name\":\"9月\",\"value\":32.6,\"series\":\"医师\",\"type\":\"bar\"},{\"name\":\"10月\",\"value\":20,\"series\":\"医师\",\"type\":\"bar\"},{\"name\":\"11月\",\"value\":6.4,\"series\":\"医师\",\"type\":\"bar\"},{\"name\":\"12月\",\"value\":3.3,\"series\":\"医师\",\"type\":\"bar\"},{\"name\":\"1月\",\"value\":2.6,\"series\":\"护士\",\"type\":\"bar\"},{\"name\":\"2月\",\"value\":5.9,\"series\":\"护士\",\"type\":\"bar\"},{\"name\":\"3月\",\"value\":9,\"series\":\"护士\",\"type\":\"bar\"},{\"name\":\"4月\",\"value\":26.4,\"series\":\"护士\",\"type\":\"bar\"},{\"name\":\"5月\",\"value\":28.7,\"series\":\"护士\",\"type\":\"bar\"},{\"name\":\"6月\",\"value\":70.7,\"series\":\"护士\",\"type\":\"bar\"},{\"name\":\"7月\",\"value\":175.6,\"series\":\"护士\",\"type\":\"bar\"},{\"name\":\"8月\",\"value\":182.2,\"series\":\"护士\",\"type\":\"bar\"},{\"name\":\"9月\",\"value\":48.7,\"series\":\"护士\",\"type\":\"bar\"},{\"name\":\"10月\",\"value\":18.8,\"series\":\"护士\",\"type\":\"bar\"},{\"name\":\"11月\",\"value\":6,\"series\":\"护士\",\"type\":\"bar\"},{\"name\":\"12月\",\"value\":2.3,\"series\":\"护士\",\"type\":\"bar\"}]","size":{"width":470,"height":375},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"yAxis":{"axisLabel":{"color":"#909198"},"splitLine":{"lineStyle":{"color":"#F3F3F3"}},"name":"人数","nameTextStyle":{"color":"#333333"}},"xAxis":{"axisLabel":{"color":"#909198"},"axisLine":{"lineStyle":{"color":"#333333"}},"name":"月份","nameTextStyle":{"color":"#333333"}},"grid":{"left":33,"bottom":87,"show":false,"right":53},"series":[{"data":[],"type":"line"}],"title":{"subtext":"","left":"left","text":"人员总数","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-10 14:05:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1523906948423077889', NULL, N'1522121177760280578', NULL, N'JRing', N'{"chartData":"[{\"value\":1048,\"name\":\"消炎药\"},{\"value\":735,\"name\":\"感冒药\"},{\"value\":580,\"name\":\"皮肤类药物\"},{\"value\":484,\"name\":\"外科用药\"}]","size":{"width":607,"height":364},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"name":"AccessFrom","avoidLabelOverlap":false,"emphasis":{"label":{"show":true,"fontSize":"25","fontWeight":"bold"}},"label":{"show":false,"position":"center"},"labelLine":{"show":false},"type":"pie","radius":["40%","70%"]}],"tooltip":{"trigger":"item"},"title":{"show":true,"text":"科室用药","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-10 14:05:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1523906948490186754', NULL, N'1522121177760280578', NULL, N'JFunnel', N'{"chartData":"[{\"value\":25,\"name\":\"特级护士\"},{\"value\":310,\"name\":\"住院总医师\"},{\"value\":234,\"name\":\"护士\"},{\"name\":\"主任\",\"value\":50}]","size":{"width":607,"height":364},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/funnel","timeOut":0,"option":{"grid":{"bottom":115},"legend":{"orient":"horizontal"},"series":[{"left":"10%","gap":2,"name":"Funnel","width":"80%","emphasis":{"label":{"fontSize":20}},"itemStyle":{"borderColor":"#fff","borderWidth":1},"sort":"descending","label":{"show":true,"position":"inside"},"labelLine":{"lineStyle":{"width":1,"type":"solid"},"length":10},"type":"funnel"}],"tooltip":{"formatter":"{a}<br/>{b}:{c}%","trigger":"item"},"title":{"show":true,"text":"基础漏斗图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-10 14:05:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1523906948561489921', NULL, N'1522121177760280578', NULL, N'JGrowCard', N'{"chartData":"[  {    \"title\": \"床位数\",    \"icon\": \"\",    \"value\": 258,    \"prefix\": \"\",    \"color\": \"green\",    \"action\": \"\"  },  {    \"title\": \"人员数\",    \"icon\": \"\",    \"value\": 1120,    \"total\": \"\",    \"prefix\": \"\",    \"color\": \"blue\",    \"action\": \"\"  },  {    \"title\": \"百万设置\",    \"icon\": \"\",    \"value\": 870,    \"prefix\": \"\",    \"total\": \"\",    \"color\": \"orange\",    \"action\": \"\"  }]","size":{"width":607,"height":166},"w":12,"dataType":1,"h":19,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"icon":{"scriptUrl":"//at.alicdn.com/t/font_3237315_b3fqd960glt.js","fontSize":20},"body":{"horizontal":8,"vertical":8,"span":8},"card":{"rightHref":"","size":"default","extra":"更多","title":"统计卡片"}}}', N'admin', N'2022-05-10 14:05:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524656729709641730', NULL, N'1522823348231397378', NULL, N'JForm', N'{"size":{"height":120},"w":24,"dataType":2,"h":12,"linkageConfig":[{"linkageId":"491fc4c0-782c-49ac-838c-ae7003abece2","linkage":[{"source":"name","target":"name"},{"source":"sex","target":"sex"}]}],"timeOut":-1,"option":{"fields":[{"fieldName":"sex","dictCode":"sex","fieldTxt":"性别","defaultValue":"1","searchMode":"","action":"","id":"row57227ae2-04d1-4306-8878-314e099cd5ac","izSearch":"1","widgetType":"select"}]}}', N'admin', N'2022-05-12 15:44:26.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524656729776750593', NULL, N'1522823348231397378', NULL, N'JCommonTable', N'{"paramOption":[{"defaultVal":"1","label":"sex","text":"sex","value":"sex"}],"dataType":2,"dataSetName":"示例_数据表格","query":[],"h":42,"dataSetApi":"select*fromdemowheresex=''${sex}''","drillData":[],"timeOut":0,"chartData":"[{\"name\":\"4月\",\"value\":50},{\"name\":\"2月\",\"value\":200},{\"name\":\"3月\",\"value\":300},{\"name\":\"4月\",\"value\":400},{\"name\":\"5月\",\"value\":50},{\"name\":\"6月\",\"value\":120}]","size":{"height":420},"dataSetId":"1522824721899511810","fieldOption":[{"label":"姓名","text":"姓名","value":"name"},{"label":"打卡时间","text":"打卡时间","value":"punch_time"},{"label":"工资","text":"工资","value":"salary_money"},{"label":"奖金","text":"奖金","value":"bonus_money"},{"label":"性别","text":"性别","value":"sex"},{"label":"年龄","text":"年龄","value":"age"},{"label":"生日","text":"生日","value":"birthday"},{"label":"邮箱","text":"邮箱","value":"email"},{"label":"个人简介","text":"个人简介","value":"content"}],"dataSetType":"sql","w":24,"linkageConfig":[],"dataSetIzAgent":"0","option":{"columns":[{"izShow":"Y","dataIndex":"name","title":"姓名"},{"izShow":"Y","dataIndex":"punch_time","title":"打卡时间"},{"izShow":"Y","dataIndex":"salary_money","title":"工资"},{"izShow":"Y","dataIndex":"bonus_money","title":"奖金"},{"izShow":"Y","dataIndex":"sex","title":"性别"},{"izTotal":"Y","izShow":"Y","dataIndex":"age","title":"年龄"},{"izShow":"Y","dataIndex":"birthday","title":"生日"},{"izShow":"Y","dataIndex":"email","title":"邮箱"},{"izShow":"Y","dataIndex":"content","title":"个人简介"}]}}', N'admin', N'2022-05-12 15:44:26.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524661142020980737', NULL, N'1522172834409885698', NULL, N'JText', N'{"chartData":"智慧社区内网比对平台","size":{"width":676,"height":67},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","fontSize":25,"text":"","fontWeight":"bold","marginTop":10,"marginLeft":188},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524661142121644034', NULL, N'1522172834409885698', NULL, N'JText', N'{"chartData":"当前对比数据","size":{"width":470,"height":56},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#182FC7","fontSize":15,"text":"","fontWeight":"bold","marginTop":10,"marginLeft":50},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524661142226501634', NULL, N'1522172834409885698', NULL, N'JText', N'{"chartData":"256321","size":{"width":470,"height":56},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":60},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524661142331359233', NULL, N'1522172834409885698', NULL, N'JText', N'{"chartData":"违法犯罪人员分析","size":{"width":470,"height":45},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":76},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524661142436216833', NULL, N'1522172834409885698', NULL, N'JPie', N'{"dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"智慧社区_违法犯罪人员分析","dataSetApi":"http://api.jeecg.com/mock/51/Illegal","drillData":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"value\":1048,\"name\":\"vivo\"},{\"value\":735,\"name\":\"oppo\"},{\"value\":580,\"name\":\"苹果\"},{\"value\":484,\"name\":\"小米\"},{\"value\":300,\"name\":\"三星\"}]","size":{"width":470,"height":386},"dataSetId":"1522181219549196289","fieldOption":[{"label":"value","text":"value","value":"value"},{"label":"name","text":"name","value":"name"}],"dataSetType":"api","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"grid":{"bottom":115,"show":false},"legend":{"r":7,"orient":"horizontal"},"series":[{"data":[],"name":"AccessFrom","emphasis":{"itemStyle":{"shadowOffsetX":0,"shadowBlur":10,"shadowColor":"rgba(0,0,0,0.5)"}},"type":"pie","radius":"50%"}],"tooltip":{"trigger":"item"},"innerRadius":50,"title":{"subtext":"","left":"left","show":false,"text":"基础饼图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524661142541074433', NULL, N'1522172834409885698', NULL, N'JText', N'{"chartData":"人口出入记录","size":{"width":470,"height":56},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":76},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524661142645932033', NULL, N'1522172834409885698', NULL, N'JCommonTable', N'{"paramOption":[],"dataType":2,"dataSetName":"智慧社区_人员出入记录","h":42,"dataSetApi":"http://api.jeecg.com/mock/51/ace","drillData":[],"timeOut":0,"chartData":"[{\"name\":\"4月\",\"value\":50},{\"name\":\"2月\",\"value\":200},{\"name\":\"3月\",\"value\":300},{\"name\":\"4月\",\"value\":400},{\"name\":\"5月\",\"value\":50},{\"name\":\"6月\",\"value\":120}]","size":{"width":470,"height":463},"dataSetId":"1522182473872584705","fieldOption":[{"label":"姓名","text":"姓名","value":"name"},{"label":"类型","text":"类型","value":"type"},{"label":"开门方式","text":"开门方式","value":"mode"},{"label":"日期","text":"日期","value":"date"}],"dataSetType":"api","w":24,"linkageConfig":[],"dataSetIzAgent":"0","option":{"columns":[{"izShow":"Y","dataIndex":"name","title":"姓名"},{"izShow":"Y","dataIndex":"type","title":"类型"},{"izShow":"Y","dataIndex":"mode","title":"开门方式"},{"izShow":"Y","dataIndex":"date","title":"日期"}]}}', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524661142750789634', NULL, N'1522172834409885698', NULL, N'JText', N'{"chartData":"JeecgBoot面板设计","size":{"width":470,"height":45},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":76},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524661142855647234', NULL, N'1522172834409885698', NULL, N'JText', N'{"chartData":"JeecgBoot面板设计","size":{"width":470,"height":45},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":76},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524661142960504833', NULL, N'1522172834409885698', NULL, N'JText', N'{"chartData":"JeecgBoot面板设计","size":{"width":470,"height":45},"w":5,"dataType":1,"h":5,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":76},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524661143065362433', NULL, N'1522172834409885698', NULL, N'JLine', N'{"dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"智慧社区_时间分部","dataSetApi":"[{\"name\":\"6:00-9:00\",\"value\":800},{\"name\":\"10:00-12:00\",\"value\":300},{\"name\":\"13:00-15:00\",\"value\":500},{\"name\":\"16:00-20:00\",\"value\":800},{\"name\":\"21:00-24:00\",\"value\":600}]","drillData":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"value\":1000,\"name\":\"联想\"},{\"value\":7350,\"name\":\"小米\"},{\"value\":5800,\"name\":\"华为\"},{\"value\":6000,\"name\":\"苹果\"},{\"value\":3000,\"name\":\"戴尔\"}]","size":{"width":470,"height":298},"dataSetId":"1522187101267832833","fieldOption":[{"label":"name","text":"name","value":"name"},{"label":"value","text":"value","value":"value"}],"dataSetType":"json","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"type":"line"}],"title":{"subtext":"","left":"left","text":"时间分部","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524661143170220033', NULL, N'1522172834409885698', NULL, N'JBar', N'{"dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"智慧社区_地区分部","dataSetApi":"http://api.jeecg.com/mock/51/region","drillData":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"name\":\"苹果\",\"value\":1000879,\"type\":\"手机品牌\"},{\"name\":\"三星\",\"value\":3400879,\"type\":\"手机品牌\"},{\"name\":\"小米\",\"value\":2300879,\"type\":\"手机品牌\"},{\"name\":\"oppo\",\"value\":5400879,\"type\":\"手机品牌\"},{\"name\":\"vivo\",\"value\":3400879,\"type\":\"手机品牌\"}]","size":{"width":470,"height":309},"dataSetId":"1522185936018878466","fieldOption":[{"label":"name","text":"name","value":"name"},{"label":"value","text":"value","value":"value"}],"dataSetType":"api","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"bottom":115,"show":false},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180,180,180,0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"地域分部","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524661143275077633', NULL, N'1522172834409885698', NULL, N'JRing', N'{"dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"智慧社区_年龄分部","dataSetApi":"http://api.jeecg.com/mock/51/age","drillData":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"value\":1048,\"name\":\"oppo\"},{\"value\":735,\"name\":\"vivo\"},{\"value\":580,\"name\":\"苹果\"},{\"value\":484,\"name\":\"小米\"},{\"value\":300,\"name\":\"三星\"}]","size":{"width":470,"height":320},"dataSetId":"1522184215045615618","fieldOption":[{"label":"value","text":"value","value":"value"},{"label":"name","text":"name","value":"name"}],"dataSetType":"api","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"name":"AccessFrom","avoidLabelOverlap":false,"emphasis":{"label":{"show":true,"fontSize":"25","fontWeight":"bold"}},"label":{"show":false,"position":"center"},"labelLine":{"show":false},"type":"pie","radius":["40%","70%"]}],"tooltip":{"trigger":"item"},"title":{"show":false,"text":"年龄分部","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524661143379935234', NULL, N'1522172834409885698', NULL, N'JGauge', N'{"chartData":"[{\"min\":1,\"max\":10,\"label\":\"名称\",\"value\":10,\"unit\":\"%\"}]","size":{"width":516,"height":320},"dataMapping":[{"mapping":"","filed":"名称"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/gauge","timeOut":0,"option":{"grid":{"bottom":115},"series":[{"axisLabel":{"show":true,"fontSize":12},"data":[],"splitLine":{"lineStyle":{"color":"#eee","width":4},"length":12},"axisTick":{"lineStyle":{"color":"#eee"},"show":true},"progress":{"show":true},"detail":{"formatter":"{value}","fontSize":25},"type":"gauge"}],"tooltip":{"formatter":"{a}<br/>{b}:{c}%"},"title":{"text":"环比","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524661143518347265', NULL, N'1522172834409885698', NULL, N'JColorGauge', N'{"chartData":"[{\"name\":\"降低率\",\"value\":4,\"unit\":\"%\"}]","size":{"width":516,"height":331},"dataMapping":[{"mapping":"","filed":"名称"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/gauge","timeOut":0,"option":{"series":[{"axisLabel":{"show":true,"fontSize":12},"pointer":{"width":8},"axisLine":{"lineStyle":{"color":[[0.25,"#FF6E76"],[0.5,"#FDDD60"],[1,"#58D9F9"]],"width":10}},"anchor":{"itemStyle":{"color":"#FAC858"}},"splitLine":{"lineStyle":{"color":"#eee","width":4},"length":12},"axisTick":{"lineStyle":{"color":"#eee"},"show":true},"title":{"fontSize":14}}],"tooltip":{"formatter":"{a}<br/>{b}:{c}%"},"title":{"text":"同比","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524661143660953602', NULL, N'1522172834409885698', NULL, N'JStackBar', N'{"chartData":"[{\"name\":\"1991\",\"value\":3,\"type\":\"Lon\"},{\"name\":\"1992\",\"value\":4,\"type\":\"Lon\"},{\"name\":\"1993\",\"value\":3.5,\"type\":\"Lon\"},{\"name\":\"1994\",\"value\":5,\"type\":\"Lon\"},{\"name\":\"1995\",\"value\":4.9,\"type\":\"Lon\"},{\"name\":\"1996\",\"value\":6,\"type\":\"Lon\"},{\"name\":\"1997\",\"value\":7,\"type\":\"Lon\"},{\"name\":\"1998\",\"value\":9,\"type\":\"Lon\"},{\"name\":\"1999\",\"value\":13,\"type\":\"Lon\"},{\"name\":\"1991\",\"value\":3,\"type\":\"Bor\"},{\"name\":\"1992\",\"value\":4,\"type\":\"Bor\"},{\"name\":\"1993\",\"value\":3.5,\"type\":\"Bor\"},{\"name\":\"1994\",\"value\":5,\"type\":\"Bor\"},{\"name\":\"1995\",\"value\":4.9,\"type\":\"Bor\"},{\"name\":\"1996\",\"value\":6,\"type\":\"Bor\"},{\"name\":\"1997\",\"value\":7,\"type\":\"Bor\"},{\"name\":\"1998\",\"value\":9,\"type\":\"Bor\"},{\"name\":\"1999\",\"value\":13,\"type\":\"Bor\"}]","size":{"width":676,"height":364},"dataMapping":[{"mapping":"","filed":"分组"},{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/stackedBar","timeOut":0,"option":{"grid":{"bottom":115},"series":[],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"年份分部","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-05-12 16:01:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524663379220791297', NULL, N'1517018517935783937', NULL, N'JTabs', N'{"size":{"width":1650,"height":606},"w":12,"h":40,"option":{"title":"选项卡"},"child":[{"component":"JPie","w":12,"x":0,"h":42,"i":"68ebef80-9ded-4168-8d89-19ec64bc21d9","title":"饼图","config":{"dataMapping":[{"mapping":"nature","filed":"维度"},{"mapping":"total","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"项目性质收入统计SQL","query":[],"dataSetApi":"SELECT\tid,\tnature,\tinsurance_fee,\trisk_consulting_fee,\tevaluation_fee,\tinsurance_evaluation_fee,\tbidding_consulting_fee,\tinterol_consulting_fee,\t(\t\tinsurance_fee+\t\trisk_consulting_fee+\t\trisk_consulting_fee+\t\tevaluation_fee+\t\tinsurance_evaluation_fee+\t\tbidding_consulting_fee+\t\tinterol_consulting_fee\t)AS''total''FROM\tjeecg_project_nature_income","url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"chartData":"[{\"value\":1048,\"name\":\"vivo\"},{\"value\":735,\"name\":\"oppo\"},{\"value\":580,\"name\":\"苹果\"},{\"value\":484,\"name\":\"小米\"},{\"value\":300,\"name\":\"三星\"}]","paddingBottom":90,"dataSetId":"1517020649262972930","fieldOption":[{"label":"项目性质","text":"项目性质","value":"nature"},{"label":"保险经纪佣金费","text":"保险经纪佣金费","value":"insurance_fee"},{"label":"风险咨询费","text":"风险咨询费","value":"risk_consulting_fee"},{"label":"承保公估评估费","text":"承保公估评估费","value":"evaluation_fee"},{"label":"保险公估费","text":"保险公估费","value":"insurance_evaluation_fee"},{"label":"投标咨询费","text":"投标咨询费","value":"bidding_consulting_fee"},{"label":"内控咨询费","text":"内控咨询费","value":"interol_consulting_fee"},{"label":"total","text":"total","value":"total"}],"dataSetType":"sql","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"legend":{"orient":"vertical"},"series":[{"data":[],"name":"AccessFrom","emphasis":{"itemStyle":{"shadowOffsetX":0,"shadowBlur":10,"shadowColor":"rgba(0,0,0,0.5)"}},"type":"pie","radius":"50%"}],"tooltip":{"trigger":"item"},"title":{"subtext":"","left":"left","show":true,"text":"基础饼图"},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":""}}}},{"horizontal":false,"component":"JBar","size":10,"w":12,"x":0,"h":42,"i":"305bdc5d-37d6-42a4-baf3-a7a1f27b6bfb","text":"0.042","id":"0b42743d-492f-467b-bfaf-0769110749ab","title":"柱形图","config":{"dataMapping":[{"mapping":"nature","filed":"维度"},{"mapping":"total","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"项目性质收入统计SQL","query":[],"dataSetApi":"SELECT\tid,\tnature,\tinsurance_fee,\trisk_consulting_fee,\tevaluation_fee,\tinsurance_evaluation_fee,\tbidding_consulting_fee,\tinterol_consulting_fee,\t(\t\tinsurance_fee+\t\trisk_consulting_fee+\t\trisk_consulting_fee+\t\tevaluation_fee+\t\tinsurance_evaluation_fee+\t\tbidding_consulting_fee+\t\tinterol_consulting_fee\t)AS''total''FROM\tjeecg_project_nature_income","url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"chartData":"[{\"name\":\"苹果\",\"value\":1000879,\"type\":\"手机品牌\"},{\"name\":\"三星\",\"value\":3400879,\"type\":\"手机品牌\"},{\"name\":\"小米\",\"value\":2300879,\"type\":\"手机品牌\"},{\"name\":\"oppo\",\"value\":5400879,\"type\":\"手机品牌\"},{\"name\":\"vivo\",\"value\":3400879,\"type\":\"手机品牌\"}]","paddingBottom":90,"dataSetId":"1517020649262972930","fieldOption":[{"label":"项目性质","text":"项目性质","value":"nature"},{"label":"保险经纪佣金费","text":"保险经纪佣金费","value":"insurance_fee"},{"label":"风险咨询费","text":"风险咨询费","value":"risk_consulting_fee"},{"label":"承保公估评估费","text":"承保公估评估费","value":"evaluation_fee"},{"label":"保险公估费","text":"保险公估费","value":"insurance_evaluation_fee"},{"label":"投标咨询费","text":"投标咨询费","value":"bidding_consulting_fee"},{"label":"内控咨询费","text":"内控咨询费","value":"interol_consulting_fee"},{"label":"total","text":"total","value":"total"}],"dataSetType":"sql","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180,180,180,0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}},"child":[]}]}', N'admin', N'2022-05-12 16:10:51.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1524663379359203329', NULL, N'1517018517935783937', NULL, N'JCommonTable', N'{"paramOption":[],"dataType":2,"dataSetName":"项目性质收入统计SQL","query":[],"h":42,"dataSetApi":"SELECT\tid,\tnature,\tinsurance_fee,\trisk_consulting_fee,\tevaluation_fee,\tinsurance_evaluation_fee,\tbidding_consulting_fee,\tinterol_consulting_fee,\t(\t\tinsurance_fee+\t\trisk_consulting_fee+\t\trisk_consulting_fee+\t\tevaluation_fee+\t\tinsurance_evaluation_fee+\t\tbidding_consulting_fee+\t\tinterol_consulting_fee\t)AS''total''FROM\tjeecg_project_nature_income","timeOut":-1,"chartData":"[{\"name\":\"4月\",\"value\":50},{\"name\":\"2月\",\"value\":200},{\"name\":\"3月\",\"value\":300},{\"name\":\"4月\",\"value\":400},{\"name\":\"5月\",\"value\":50},{\"name\":\"6月\",\"value\":120}]","size":{"width":1636,"height":518},"dataSetId":"1517020649262972930","fieldOption":[{"label":"项目性质","text":"项目性质","value":"nature"},{"label":"保险经纪佣金费","text":"保险经纪佣金费","value":"insurance_fee"},{"label":"风险咨询费","text":"风险咨询费","value":"risk_consulting_fee"},{"label":"承保公估评估费","text":"承保公估评估费","value":"evaluation_fee"},{"label":"保险公估费","text":"保险公估费","value":"insurance_evaluation_fee"},{"label":"投标咨询费","text":"投标咨询费","value":"bidding_consulting_fee"},{"label":"内控咨询费","text":"内控咨询费","value":"interol_consulting_fee"},{"label":"total","text":"total","value":"total"}],"dataSetType":"sql","w":24,"linkageConfig":[],"dataSetIzAgent":"","option":{"columns":[{"izTotal":"Y","izShow":"Y","dataIndex":"nature","title":"项目性质"},{"izTotal":"Y","izShow":"Y","dataIndex":"insurance_fee","title":"保险经纪佣金费"},{"izTotal":"Y","izShow":"Y","dataIndex":"risk_consulting_fee","title":"风险咨询费"},{"izTotal":"Y","izShow":"Y","dataIndex":"evaluation_fee","title":"承保公估评估费"},{"izTotal":"Y","izShow":"Y","dataIndex":"insurance_evaluation_fee","title":"保险公估费"},{"izTotal":"Y","izShow":"Y","dataIndex":"bidding_consulting_fee","title":"投标咨询费"},{"izTotal":"Y","izShow":"Y","dataIndex":"interol_consulting_fee","title":"内控咨询费"},{"izTotal":"N","izShow":"N","dataIndex":"total","title":"total"}]}}', N'admin', N'2022-05-12 16:10:51.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526476125109231618', NULL, N'1504364941187043329', NULL, N'eoa-cms-banner', N'{"size":{"width":1636,"height":364}}', N'jeecg', N'2022-05-17 16:14:03.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526476125247643650', NULL, N'1504364941187043329', NULL, N'eoa-cms-news-info', N'{"size":{"width":1087,"height":683}}', N'jeecg', N'2022-05-17 16:14:03.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526476125352501250', NULL, N'1504364941187043329', NULL, N'eoa-cms-user-notice', N'{"size":{"width":539,"height":408}}', N'jeecg', N'2022-05-17 16:14:03.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526476125457358849', NULL, N'1504364941187043329', NULL, N'eoa-cms-rule-info', N'{"size":{"width":607,"height":474}}', N'jeecg', N'2022-05-17 16:14:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526476125562216450', NULL, N'1504364941187043329', NULL, N'eoa-cms-sign-news', N'{"size":{"width":470,"height":474}}', N'jeecg', N'2022-05-17 16:14:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526476125667074049', NULL, N'1504364941187043329', NULL, N'eoa-cms-plan', N'{"size":{"width":539,"height":529}}', N'jeecg', N'2022-05-17 16:14:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526476125771931649', NULL, N'1504364941187043329', NULL, N'eoa-cms-link', N'{"size":{"width":539,"height":210}}', N'jeecg', N'2022-05-17 16:14:04.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526478613069701121', NULL, N'1504359493847306242', NULL, N'eoa-cms-apply-process', N'{"size":{"width":1087,"height":463}}', N'jeecg', N'2022-05-17 16:23:57.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526478613174558721', NULL, N'1504359493847306242', NULL, N'eoa-cms-comm-use', N'{"size":{"width":1636,"height":155}}', N'jeecg', N'2022-05-17 16:23:57.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526478613275222017', NULL, N'1504359493847306242', NULL, N'eoa-cms-process-notice', N'{"size":{"width":539,"height":474}}', N'jeecg', N'2022-05-17 16:23:57.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526478613384273922', NULL, N'1504359493847306242', NULL, N'eoa-cms-my-process', N'{"size":{"width":1087,"height":474}}', N'jeecg', N'2022-05-17 16:23:57.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526478613489131521', NULL, N'1504359493847306242', NULL, N'eoa-cms-user-notice', N'{"size":{"width":539,"height":463}}', N'jeecg', N'2022-05-17 16:23:57.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526478613593989121', NULL, N'1504359493847306242', NULL, N'eoa-cms-process-chart', N'{"size":{"width":1087,"height":386}}', N'jeecg', N'2022-05-17 16:23:57.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526478613694652418', NULL, N'1504359493847306242', NULL, N'eoa-cms-process-type', N'{"size":{"width":539,"height":386}}', N'jeecg', N'2022-05-17 16:23:57.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526478613803704322', NULL, N'1504359493847306242', NULL, N'eoa-cms-email', N'{"size":{"width":1087,"height":518}}', N'jeecg', N'2022-05-17 16:23:57.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526478613904367618', NULL, N'1504359493847306242', NULL, N'eoa-cms-plan', N'{"size":{"width":539,"height":518}}', N'jeecg', N'2022-05-17 16:23:57.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526496110877696002', NULL, N'1522835471967772673', NULL, N'JBar', N'{"dataMapping":[{"mapping":"username","filed":"维度"},{"mapping":"sex","filed":"数值"}],"paramOption":[{"defaultVal":"2011-01-01","label":"createTime_begin","text":"createTime_begin","value":"createTime_begin"},{"defaultVal":"2022-12-31","label":"createTime_end","text":"createTime_end","value":"createTime_end"}],"dataType":2,"dataSetName":"示例_日期范围查询","query":[],"dataSetApi":"select * from sys_user where create_time >= ''${createTime_begin}'' and create_time <=''${createTime_end}''","drillData":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"name\":\"苹果\",\"value\":1000879,\"type\":\"手机品牌\"},{\"name\":\"三星\",\"value\":3400879,\"type\":\"手机品牌\"},{\"name\":\"小米\",\"value\":2300879,\"type\":\"手机品牌\"},{\"name\":\"oppo\",\"value\":5400879,\"type\":\"手机品牌\"},{\"name\":\"vivo\",\"value\":3400879,\"type\":\"手机品牌\"}]","size":{"height":420},"dataSetId":"1522853857095376898","fieldOption":[{"label":"username","text":"username","value":"username"},{"label":"realname","text":"realname","value":"realname"},{"label":"sex","text":"sex","value":"sex"},{"label":"create_time","text":"create_time","value":"create_time"}],"dataSetType":"sql","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"bottom":115,"show":false},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180,180,180,0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"表单日期范围查询","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', NULL, N'2022-05-17 17:33:28.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526496110948999169', NULL, N'1522835471967772673', NULL, N'JBar', N'{"dataMapping":[{"mapping":"username","filed":"维度"},{"mapping":"sex","filed":"数值"}],"paramOption":[{"defaultVal":"2011-01-01","label":"createTime_begin","text":"createTime_begin","value":"createTime_begin"},{"defaultVal":"2022-12-31","label":"createTime_end","text":"createTime_end","value":"createTime_end"}],"dataType":2,"dataSetName":"示例_日期范围查询","query":[{"field":"createTime","widgetType":"date"}],"dataSetApi":"select * from sys_user where create_time >= ''${createTime_begin}'' and create_time <=''${createTime_end}''","drillData":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"name\":\"苹果\",\"value\":1000879,\"type\":\"手机品牌\"},{\"name\":\"三星\",\"value\":3400879,\"type\":\"手机品牌\"},{\"name\":\"小米\",\"value\":2300879,\"type\":\"手机品牌\"},{\"name\":\"oppo\",\"value\":5400879,\"type\":\"手机品牌\"},{\"name\":\"vivo\",\"value\":3400879,\"type\":\"手机品牌\"}]","size":{"height":420},"dataSetId":"1522853857095376898","fieldOption":[{"label":"username","text":"username","value":"username"},{"label":"realname","text":"realname","value":"realname"},{"label":"sex","text":"sex","value":"sex"},{"label":"create_time","text":"create_time","value":"create_time"}],"dataSetType":"sql","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"yAxis":{"axisLabel":{"color":"#909198"},"lineStyle":{"color":"#f3f3f3"},"splitLine":{"lineStyle":{"color":"#F0EDED"},"show":true,"interval":2},"nameTextStyle":{"color":"#333333"}},"xAxis":{"axisLabel":{"color":"#7ED321"},"axisLine":{"lineStyle":{"color":"#333333"}},"splitLine":{"lineStyle":{"color":"#417505"},"show":false},"nameTextStyle":{"color":"#333333"}},"grid":{"bottom":115,"show":false},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180,180,180,0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":"单个组件日期范围查询"}}}', NULL, N'2022-05-17 17:33:28.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1526496111003525121', NULL, N'1522835471967772673', NULL, N'JForm', N'{"size":{"height":120},"w":24,"dataType":2,"h":12,"linkageConfig":[{"linkageId":"918fc3ea-c88a-4c42-892b-d2a14967258e","linkage":[{"source":"createTime_begin","target":"createTime_begin"},{"source":"createTime_end","target":"createTime_end"}]}],"timeOut":-1,"option":{"fields":[{"fieldName":"createTime","dictCode":"","fieldTxt":"创建时间","defaultValue":"","searchMode":"range","action":"","id":"rowdffe5384-d885-4ae7-9eab-81b8ee76265c","izSearch":"1","widgetType":"date"}]}}', NULL, N'2022-05-17 17:33:28.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761823821938690', NULL, N'1524641995740446722', NULL, N'JBar', N'{"dataMapping":[{"mapping":"tian","filed":"维度"},{"mapping":"visit","filed":"数值"}],"paramOption":[{"defaultVal":"","label":"创建时间","text":"创建时间","value":"create_time"}],"dataType":2,"dataSetName":"首页_近一周访问量","query":[],"dataSetApi":"select count(*) as visit        \t   ,count(distinct(ip)) as ip        \t   ,DATE_FORMAT(create_time, ''%Y-%m-%d'') as tian        \t   ,DATE_FORMAT(create_time, ''%m-%d'') as type        \t   from sys_log          where log_type = 1 and create_time <= sysdate() and create_time >= (select date_sub(curdate(),interval 7 day))         group by tian,type         order by tian desc","drillData":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"name\":\"苹果\",\"value\":1000879,\"type\":\"手机品牌\"},{\"name\":\"三星\",\"value\":3400879,\"type\":\"手机品牌\"},{\"name\":\"小米\",\"value\":2300879,\"type\":\"手机品牌\"},{\"name\":\"oppo\",\"value\":5400879,\"type\":\"手机品牌\"},{\"name\":\"vivo\",\"value\":3400879,\"type\":\"手机品牌\"}]","size":{"width":813,"height":419},"dataSetId":"1522503560003067906","fieldOption":[{"label":"visit","text":"visit","value":"visit"},{"label":"ip","text":"ip","value":"ip"},{"label":"tian","text":"tian","value":"tian"},{"label":"type","text":"type","value":"type"}],"dataSetType":"sql","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"bottom":115,"show":false},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180, 180, 180, 0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"SQL数据集-柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761823821938691', NULL, N'1524641995740446722', NULL, N'JPie', N'{"dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"智慧社区_时间分部","query":[],"dataSetApi":"[  {    \"name\": \"6:00-9:00\",    \"value\": 800  },  {    \"name\": \"10:00-12:00\",    \"value\": 300  },  {    \"name\": \"13:00-15:00\",    \"value\": 500  },  {    \"name\": \"16:00-20:00\",    \"value\": 800  },  {    \"name\": \"21:00-24:00\",    \"value\": 600  }]","drillData":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"value\":1048,\"name\":\"vivo\"},{\"value\":735,\"name\":\"oppo\"},{\"value\":580,\"name\":\"苹果\"},{\"value\":484,\"name\":\"小米\"},{\"value\":300,\"name\":\"三星\"}]","size":{"height":420},"dataSetId":"1522187101267832833","fieldOption":[{"label":"name","text":"name","value":"name"},{"label":"value","text":"value","value":"value"}],"dataSetType":"json","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"grid":{"bottom":115,"show":false},"legend":{"orient":"vertical"},"series":[{"data":[],"name":"Access From","emphasis":{"itemStyle":{"shadowOffsetX":0,"shadowBlur":10,"shadowColor":"rgba(0, 0, 0, 0.5)"}},"type":"pie","radius":"50%"}],"tooltip":{"trigger":"item"},"innerRadius":50,"title":{"subtext":"","left":"left","show":true,"text":"JSON数据集-饼图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761823821938692', NULL, N'1524641995740446722', NULL, N'JStackBar', N'{"dataMapping":[{"mapping":"type","filed":"分组"},{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"出资","query":[],"dataSetApi":"http://api.jeecg.com/mock/51/chuzi","drillData":[],"url":"http://api.jeecg.com/mock/26/stackedBar","timeOut":0,"chartData":"[{\"name\":\"1991\",\"value\":3,\"type\":\"Lon\"},{\"name\":\"1992\",\"value\":4,\"type\":\"Lon\"},{\"name\":\"1993\",\"value\":3.5,\"type\":\"Lon\"},{\"name\":\"1994\",\"value\":5,\"type\":\"Lon\"},{\"name\":\"1995\",\"value\":4.9,\"type\":\"Lon\"},{\"name\":\"1996\",\"value\":6,\"type\":\"Lon\"},{\"name\":\"1997\",\"value\":7,\"type\":\"Lon\"},{\"name\":\"1998\",\"value\":9,\"type\":\"Lon\"},{\"name\":\"1999\",\"value\":13,\"type\":\"Lon\"},{\"name\":\"1991\",\"value\":3,\"type\":\"Bor\"},{\"name\":\"1992\",\"value\":4,\"type\":\"Bor\"},{\"name\":\"1993\",\"value\":3.5,\"type\":\"Bor\"},{\"name\":\"1994\",\"value\":5,\"type\":\"Bor\"},{\"name\":\"1995\",\"value\":4.9,\"type\":\"Bor\"},{\"name\":\"1996\",\"value\":6,\"type\":\"Bor\"},{\"name\":\"1997\",\"value\":7,\"type\":\"Bor\"},{\"name\":\"1998\",\"value\":9,\"type\":\"Bor\"},{\"name\":\"1999\",\"value\":13,\"type\":\"Bor\"}]","size":{"width":813,"height":419},"dataSetId":"1522098873378549762","fieldOption":[{"label":"name","text":"name","value":"name"},{"label":"value","text":"value","value":"value"},{"label":"type","text":"type","value":"type"}],"dataSetType":"api","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"grid":{"bottom":115},"series":[],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"API数据集-堆叠柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761823821938693', NULL, N'1524641995740446722', NULL, N'JDynamicBar', N'{"chartData":"[{\"name\":\"1991\",\"value\":131,\"type\":\"Lon\"},{\"name\":\"1992\",\"value\":141,\"type\":\"Lon\"},{\"name\":\"1993\",\"value\":31.5,\"type\":\"Lon\"},{\"name\":\"1994\",\"value\":53,\"type\":\"Lon\"},{\"name\":\"1995\",\"value\":41.9,\"type\":\"Lon\"},{\"name\":\"1996\",\"value\":61,\"type\":\"Lon\"},{\"name\":\"1997\",\"value\":17,\"type\":\"Lon\"},{\"name\":\"1998\",\"value\":19,\"type\":\"Lon\"},{\"name\":\"1999\",\"value\":113,\"type\":\"Lon\"}]","size":{"height":420},"dataMapping":[{"mapping":"","filed":"分组"},{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/stackedBar","timeOut":0,"option":{"xAxis":{"type":"value"},"grid":{"bottom":115},"series":[],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"text":"静态数据集-动态柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761823821938694', NULL, N'1524641995740446722', NULL, N'JLine', N'{"dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"钻取api","query":[],"dataSetApi":"http://api.jeecg.com/mock/51/drilling/deptuser","drillData":[{"source":"name","target":"name"}],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"name\":\"联想\",\"value\":1000},{\"name\":\"小米\",\"value\":7350},{\"name\":\"华为\",\"value\":5800},{\"name\":\"苹果\",\"value\":6000},{\"name\":\"戴尔\",\"value\":3000}]","size":{"width":813,"height":397},"dataSetId":"1519274169102020610","fieldOption":[{"label":"name","text":"name","value":"name"},{"label":"value","text":"value","value":"value"}],"dataSetType":"api","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"type":"line"}],"title":{"subtext":"","left":"left","text":"钻取-折线图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761823889047554', NULL, N'1524641995740446722', NULL, N'JRadar', N'{"chartData":"[{\"value\":75,\"name\":\"得分\",\"type\":\"NBA\",\"max\":100},{\"value\":65,\"name\":\"篮板\",\"type\":\"NBA\",\"max\":100},{\"value\":55,\"name\":\"防守\",\"type\":\"NBA\",\"max\":100},{\"value\":74,\"name\":\"失误\",\"type\":\"NBA\",\"max\":100},{\"value\":38,\"name\":\"盖帽\",\"type\":\"NBA\",\"max\":100},{\"value\":88,\"name\":\"三分\",\"type\":\"NBA\",\"max\":100}]","size":{"width":813,"height":397},"dataMapping":[{"mapping":"","filed":"分组"},{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/radar","timeOut":0,"option":{"radar":[{"indicator":[]}],"grid":{"bottom":115,"show":false},"legend":{"data":[]},"series":[{"data":[],"type":"radar"}],"title":{"show":true,"text":"基础雷达图"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761823889047555', NULL, N'1524641995740446722', NULL, N'JRing', N'{"chartData":"[{\"value\":1048,\"name\":\"oppo\"},{\"value\":735,\"name\":\"vivo\"},{\"value\":580,\"name\":\"苹果\"},{\"value\":484,\"name\":\"小米\"},{\"value\":300,\"name\":\"三星\"}]","size":{"width":813,"height":386},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"name":"Access From","avoidLabelOverlap":false,"emphasis":{"label":{"show":true,"fontSize":"25","fontWeight":"bold"}},"label":{"show":false,"position":"center"},"labelLine":{"show":false},"type":"pie","radius":["40%","70%"]}],"tooltip":{"trigger":"item"},"title":{"show":true,"text":"基础环形图"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761823889047556', NULL, N'1524641995740446722', NULL, N'JArea', N'{"chartData":"[{\"value\":1048,\"name\":\"华为\"},{\"value\":605,\"name\":\"vivo\"},{\"value\":580,\"name\":\"oppo\"},{\"value\":484,\"name\":\"苹果\"},{\"value\":300,\"name\":\"小米\"}]","size":{"width":813,"height":386},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"xAxis":{"data":[],"boundaryGap":false},"grid":{"bottom":115},"series":[{"areaStyle":{},"data":[],"type":"line"}],"title":{"show":true,"text":"基础面积图"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761823889047557', NULL, N'1524641995740446722', NULL, N'JProgress', N'{"chartData":[{"name":"内存使用率","value":50}],"size":{"width":813,"height":353},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"grid":{"show":false},"series":[{"barWidth":19,"color":"#151B87","itemStyle":{"normal":{"barBorderRadius":10}},"zlevel":1,"label":{"formatter":"{c}{a}","offset":[0,-40],"color":"black","show":true,"fontSize":24,"position":"right"}},{"barWidth":19,"color":"#eeeeee","barGap":"-100%","itemStyle":{"normal":{"barBorderRadius":10}},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础进度图","textStyle":{"color":"#464646"}}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761823889047558', NULL, N'1524641995740446722', NULL, N'JFunnel', N'{"chartData":"[{\"value\":335,\"name\":\"直接访问\"},{\"value\":310,\"name\":\"邮件营销\"},{\"value\":234,\"name\":\"联盟广告\"}]","size":{"width":813,"height":353},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/funnel","timeOut":0,"option":{"grid":{"bottom":115},"legend":{"orient":"horizontal"},"series":[{"left":"10%","gap":2,"name":"Funnel","width":"80%","emphasis":{"label":{"fontSize":20}},"itemStyle":{"borderColor":"#fff","borderWidth":1},"sort":"descending","label":{"show":true,"position":"inside"},"labelLine":{"lineStyle":{"width":1,"type":"solid"},"length":10},"type":"funnel"}],"tooltip":{"formatter":"{a} <br/>{b} : {c}%","trigger":"item"},"title":{"show":true,"text":"基础漏斗图"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761823951962113', NULL, N'1524641995740446722', NULL, N'JPictorialBar', N'{"chartData":"[{\"name\":\"驯鹿\",\"value\":123,\"symbol\":\"path://M-22.788,24.521c2.08-0.986,3.611-3.905,4.984-5.892 c-2.686,2.782-5.047,5.884-9.102,7.312c-0.992,0.005-0.25-2.016,0.34-2.362l1.852-0.41c0.564-0.218,0.785-0.842,0.902-1.347 c2.133-0.727,4.91-4.129,6.031-6.194c1.748-0.7,4.443-0.679,5.734-2.293c1.176-1.468,0.393-3.992,1.215-6.557 c0.24-0.754,0.574-1.581,1.008-2.293c-0.611,0.011-1.348-0.061-1.959-0.608c-1.391-1.245-0.785-2.086-1.297-3.313 c1.684,0.744,2.5,2.584,4.426,2.586C-8.46,3.012-8.255,2.901-8.04,2.824c6.031-1.952,15.182-0.165,19.498-3.937 c1.15-3.933-1.24-9.846-1.229-9.938c0.008-0.062-1.314-0.004-1.803-0.258c-1.119-0.771-6.531-3.75-0.17-3.33 c0.314-0.045,0.943,0.259,1.439,0.435c-0.289-1.694-0.92-0.144-3.311-1.946c0,0-1.1-0.855-1.764-1.98 c-0.836-1.09-2.01-2.825-2.992-4.031c-1.523-2.476,1.367,0.709,1.816,1.108c1.768,1.704,1.844,3.281,3.232,3.983 c0.195,0.203,1.453,0.164,0.926-0.468c-0.525-0.632-1.367-1.278-1.775-2.341c-0.293-0.703-1.311-2.326-1.566-2.711 c-0.256-0.384-0.959-1.718-1.67-2.351c-1.047-1.187-0.268-0.902,0.521-0.07c0.789,0.834,1.537,1.821,1.672,2.023 c0.135,0.203,1.584,2.521,1.725,2.387c0.102-0.259-0.035-0.428-0.158-0.852c-0.125-0.423-0.912-2.032-0.961-2.083 c-0.357-0.852-0.566-1.908-0.598-3.333c0.4-2.375,0.648-2.486,0.549-0.705c0.014,1.143,0.031,2.215,0.602,3.247 c0.807,1.496,1.764,4.064,1.836,4.474c0.561,3.176,2.904,1.749,2.281-0.126c-0.068-0.446-0.109-2.014-0.287-2.862 c-0.18-0.849-0.219-1.688-0.113-3.056c0.066-1.389,0.232-2.055,0.277-2.299c0.285-1.023,0.4-1.088,0.408,0.135 c-0.059,0.399-0.131,1.687-0.125,2.655c0.064,0.642-0.043,1.768,0.172,2.486c0.654,1.928-0.027,3.496,1,3.514 c1.805-0.424,2.428-1.218,2.428-2.346c-0.086-0.704-0.121-0.843-0.031-1.193c0.221-0.568,0.359-0.67,0.312-0.076 c-0.055,0.287,0.031,0.533,0.082,0.794c0.264,1.197,0.912,0.114,1.283-0.782c0.15-0.238,0.539-2.154,0.545-2.522 c-0.023-0.617,0.285-0.645,0.309,0.01c0.064,0.422-0.248,2.646-0.205,2.334c-0.338,1.24-1.105,3.402-3.379,4.712 c-0.389,0.12-1.186,1.286-3.328,2.178c0,0,1.729,0.321,3.156,0.246c1.102-0.19,3.707-0.027,4.654,0.269 c1.752,0.494,1.531-0.053,4.084,0.164c2.26-0.4,2.154,2.391-1.496,3.68c-2.549,1.405-3.107,1.475-2.293,2.984 c3.484,7.906,2.865,13.183,2.193,16.466c2.41,0.271,5.732-0.62,7.301,0.725c0.506,0.333,0.648,1.866-0.457,2.86 c-4.105,2.745-9.283,7.022-13.904,7.662c-0.977-0.194,0.156-2.025,0.803-2.247l1.898-0.03c0.596-0.101,0.936-0.669,1.152-1.139 c3.16-0.404,5.045-3.775,8.246-4.818c-4.035-0.718-9.588,3.981-12.162,1.051c-5.043,1.423-11.449,1.84-15.895,1.111 c-3.105,2.687-7.934,4.021-12.115,5.866c-3.271,3.511-5.188,8.086-9.967,10.414c-0.986,0.119-0.48-1.974,0.066-2.385l1.795-0.618 C-22.995,25.682-22.849,25.035-22.788,24.521z\",\"symbolSize\":[60,60]},{\"name\":\"飞机\",\"value\":60,\"symbol\":\"path://M1.112,32.559l2.998,1.205l-2.882,2.268l-2.215-0.012L1.112,32.559z M37.803,23.96 c0.158-0.838,0.5-1.509,0.961-1.904c-0.096-0.037-0.205-0.071-0.344-0.071c-0.777-0.005-2.068-0.009-3.047-0.009 c-0.633,0-1.217,0.066-1.754,0.18l2.199,1.804H37.803z M39.738,23.036c-0.111,0-0.377,0.325-0.537,0.924h1.076 C40.115,23.361,39.854,23.036,39.738,23.036z M39.934,39.867c-0.166,0-0.674,0.705-0.674,1.986s0.506,1.986,0.674,1.986 s0.672-0.705,0.672-1.986S40.102,39.867,39.934,39.867z M38.963,38.889c-0.098-0.038-0.209-0.07-0.348-0.073 c-0.082,0-0.174,0-0.268-0.001l-7.127,4.671c0.879,0.821,2.42,1.417,4.348,1.417c0.979,0,2.27-0.006,3.047-0.01 c0.139,0,0.25-0.034,0.348-0.072c-0.646-0.555-1.07-1.643-1.07-2.967C37.891,40.529,38.316,39.441,38.963,38.889z M32.713,23.96 l-12.37-10.116l-4.693-0.004c0,0,4,8.222,4.827,10.121H32.713z M59.311,32.374c-0.248,2.104-5.305,3.172-8.018,3.172H39.629 l-25.325,16.61L9.607,52.16c0,0,6.687-8.479,7.95-10.207c1.17-1.6,3.019-3.699,3.027-6.407h-2.138 c-5.839,0-13.816-3.789-18.472-5.583c-2.818-1.085-2.396-4.04-0.031-4.04h0.039l-3.299-11.371h3.617c0,0,4.352,5.696,5.846,7.5 c2,2.416,4.503,3.678,8.228,3.87h30.727c2.17,0,4.311,0.417,6.252,1.046c3.49,1.175,5.863,2.7,7.199,4.027 C59.145,31.584,59.352,32.025,59.311,32.374z M22.069,30.408c0-0.815-0.661-1.475-1.469-1.475c-0.812,0-1.471,0.66-1.471,1.475 s0.658,1.475,1.471,1.475C21.408,31.883,22.069,31.224,22.069,30.408z M27.06,30.408c0-0.815-0.656-1.478-1.466-1.478 c-0.812,0-1.471,0.662-1.471,1.478s0.658,1.477,1.471,1.477C26.404,31.885,27.06,31.224,27.06,30.408z M32.055,30.408 c0-0.815-0.66-1.475-1.469-1.475c-0.808,0-1.466,0.66-1.466,1.475s0.658,1.475,1.466,1.475 C31.398,31.883,32.055,31.224,32.055,30.408z M37.049,30.408c0-0.815-0.658-1.478-1.467-1.478c-0.812,0-1.469,0.662-1.469,1.478 s0.656,1.477,1.469,1.477C36.389,31.885,37.049,31.224,37.049,30.408z M42.039,30.408c0-0.815-0.656-1.478-1.465-1.478 c-0.811,0-1.469,0.662-1.469,1.478s0.658,1.477,1.469,1.477C41.383,31.885,42.039,31.224,42.039,30.408z M55.479,30.565 c-0.701-0.436-1.568-0.896-2.627-1.347c-0.613,0.289-1.551,0.476-2.73,0.476c-1.527,0-1.639,2.263,0.164,2.316 C52.389,32.074,54.627,31.373,55.479,30.565z\",\"symbolSize\":[65,35]},{\"name\":\"火箭\",\"value\":25,\"symbol\":\"path://M-244.396,44.399c0,0,0.47-2.931-2.427-6.512c2.819-8.221,3.21-15.709,3.21-15.709s5.795,1.383,5.795,7.325C-237.818,39.679-244.396,44.399-244.396,44.399z M-260.371,40.827c0,0-3.881-12.946-3.881-18.319c0-2.416,0.262-4.566,0.669-6.517h17.684c0.411,1.952,0.675,4.104,0.675,6.519c0,5.291-3.87,18.317-3.87,18.317H-260.371z M-254.745,18.951c-1.99,0-3.603,1.676-3.603,3.744c0,2.068,1.612,3.744,3.603,3.744c1.988,0,3.602-1.676,3.602-3.744S-252.757,18.951-254.745,18.951z M-255.521,2.228v-5.098h1.402v4.969c1.603,1.213,5.941,5.069,7.901,12.5h-17.05C-261.373,7.373-257.245,3.558-255.521,2.228zM-265.07,44.399c0,0-6.577-4.721-6.577-14.896c0-5.942,5.794-7.325,5.794-7.325s0.393,7.488,3.211,15.708C-265.539,41.469-265.07,44.399-265.07,44.399z M-252.36,45.15l-1.176-1.22L-254.789,48l-1.487-4.069l-1.019,2.116l-1.488-3.826h8.067L-252.36,45.15z\",\"symbolSize\":[50,60]},{\"name\":\"高铁\",\"value\":18,\"symbol\":\"path://M67.335,33.596L67.335,33.596c-0.002-1.39-1.153-3.183-3.328-4.218h-9.096v-2.07h5.371 c-4.939-2.07-11.199-4.141-14.89-4.141H19.72v12.421v5.176h38.373c4.033,0,8.457-1.035,9.142-5.176h-0.027 c0.076-0.367,0.129-0.751,0.129-1.165L67.335,33.596L67.335,33.596z M27.999,30.413h-3.105v-4.141h3.105V30.413z M35.245,30.413 h-3.104v-4.141h3.104V30.413z M42.491,30.413h-3.104v-4.141h3.104V30.413z M49.736,30.413h-3.104v-4.141h3.104V30.413z  M14.544,40.764c1.143,0,2.07-0.927,2.07-2.07V35.59V25.237c0-1.145-0.928-2.07-2.07-2.07H-9.265c-1.143,0-2.068,0.926-2.068,2.07 v10.351v3.105c0,1.144,0.926,2.07,2.068,2.07H14.544L14.544,40.764z M8.333,26.272h3.105v4.141H8.333V26.272z M1.087,26.272h3.105 v4.141H1.087V26.272z M-6.159,26.272h3.105v4.141h-3.105V26.272z M-9.265,41.798h69.352v1.035H-9.265V41.798z\",\"symbolSize\":[50,30]},{\"name\":\"轮船\",\"value\":12,\"symbol\":\"path://M16.678,17.086h9.854l-2.703,5.912c5.596,2.428,11.155,5.575,16.711,8.607c3.387,1.847,6.967,3.75,10.541,5.375 v-6.16l-4.197-2.763v-5.318L33.064,12.197h-11.48L20.43,15.24h-4.533l-1.266,3.286l0.781,0.345L16.678,17.086z M49.6,31.84 l0.047,1.273L27.438,20.998l0.799-1.734L49.6,31.84z M33.031,15.1l12.889,8.82l0.027,0.769L32.551,16.1L33.031,15.1z M22.377,14.045 h9.846l-1.539,3.365l-2.287-1.498h1.371l0.721-1.352h-2.023l-0.553,1.037l-0.541-0.357h-0.34l0.359-0.684h-2.025l-0.361,0.684 h-3.473L22.377,14.045z M23.695,20.678l-0.004,0.004h0.004V20.678z M24.828,18.199h-2.031l-0.719,1.358h2.029L24.828,18.199z  M40.385,34.227c-12.85-7.009-25.729-14.667-38.971-12.527c1.26,8.809,9.08,16.201,8.213,24.328 c-0.553,4.062-3.111,0.828-3.303,7.137c15.799,0,32.379,0,48.166,0l0.066-4.195l1.477-7.23 C50.842,39.812,45.393,36.961,40.385,34.227z M13.99,35.954c-1.213,0-2.195-1.353-2.195-3.035c0-1.665,0.98-3.017,2.195-3.017 c1.219,0,2.195,1.352,2.195,3.017C16.186,34.604,15.213,35.954,13.99,35.954z M23.691,20.682h-2.02l-0.588,1.351h2.023 L23.691,20.682z M19.697,18.199l-0.721,1.358h2.025l0.727-1.358H19.697z\",\"symbolSize\":[50,35]},{\"name\":\"汽车\",\"value\":9,\"symbol\":\"path://M49.592,40.883c-0.053,0.354-0.139,0.697-0.268,0.963c-0.232,0.475-0.455,0.519-1.334,0.475 c-1.135-0.053-2.764,0-4.484,0.068c0,0.476,0.018,0.697,0.018,0.697c0.111,1.299,0.697,1.342,0.931,1.342h3.7 c0.326,0,0.628,0,0.861-0.154c0.301-0.196,0.43-0.772,0.543-1.78c0.017-0.146,0.025-0.336,0.033-0.56v-0.01 c0-0.068,0.008-0.154,0.008-0.25V41.58l0,0C49.6,41.348,49.6,41.09,49.592,40.883L49.592,40.883z M6.057,40.883 c0.053,0.354,0.137,0.697,0.268,0.963c0.23,0.475,0.455,0.519,1.334,0.475c1.137-0.053,2.762,0,4.484,0.068 c0,0.476-0.018,0.697-0.018,0.697c-0.111,1.299-0.697,1.342-0.93,1.342h-3.7c-0.328,0-0.602,0-0.861-0.154 c-0.309-0.18-0.43-0.772-0.541-1.78c-0.018-0.146-0.027-0.336-0.035-0.56v-0.01c0-0.068-0.008-0.154-0.008-0.25V41.58l0,0 C6.057,41.348,6.057,41.09,6.057,40.883L6.057,40.883z M49.867,32.766c0-2.642-0.344-5.224-0.482-5.507 c-0.104-0.207-0.766-0.749-2.271-1.773c-1.522-1.042-1.487-0.887-1.766-1.566c0.25-0.078,0.492-0.224,0.639-0.241 c0.326-0.034,0.345,0.274,1.023,0.274c0.68,0,2.152-0.18,2.453-0.48c0.301-0.303,0.396-0.405,0.396-0.672 c0-0.268-0.156-0.818-0.447-1.146c-0.293-0.327-1.541-0.49-2.273-0.585c-0.729-0.095-0.834,0-1.022,0.121 c-0.304,0.189-0.32,1.919-0.32,1.919l-0.713,0.018c-0.465-1.146-1.11-3.452-2.117-5.269c-1.103-1.979-2.256-2.599-2.737-2.754 c-0.474-0.146-0.904-0.249-4.131-0.576c-3.298-0.344-5.922-0.388-8.262-0.388c-2.342,0-4.967,0.052-8.264,0.388 c-3.229,0.336-3.66,0.43-4.133,0.576s-1.633,0.775-2.736,2.754c-1.006,1.816-1.652,4.123-2.117,5.269L9.87,23.109 c0,0-0.008-1.729-0.318-1.919c-0.189-0.121-0.293-0.225-1.023-0.121c-0.732,0.104-1.98,0.258-2.273,0.585 c-0.293,0.327-0.447,0.878-0.447,1.146c0,0.267,0.094,0.379,0.396,0.672c0.301,0.301,1.773,0.48,2.453,0.48 c0.68,0,0.697-0.309,1.023-0.274c0.146,0.018,0.396,0.163,0.637,0.241c-0.283,0.68-0.24,0.524-1.764,1.566 c-1.506,1.033-2.178,1.566-2.271,1.773c-0.139,0.283-0.482,2.865-0.482,5.508s0.189,5.02,0.189,5.86c0,0.354,0,0.976,0.076,1.565 c0.053,0.354,0.129,0.697,0.268,0.966c0.232,0.473,0.447,0.516,1.334,0.473c1.137-0.051,2.779,0,4.477,0.07 c1.135,0.043,2.297,0.086,3.33,0.11c2.582,0.051,1.826-0.379,2.928-0.36c1.102,0.016,5.447,0.196,9.424,0.196 c3.976,0,8.332-0.182,9.423-0.196c1.102-0.019,0.346,0.411,2.926,0.36c1.033-0.018,2.195-0.067,3.332-0.11 c1.695-0.062,3.348-0.121,4.477-0.07c0.886,0.043,1.103,0,1.332-0.473c0.132-0.269,0.218-0.611,0.269-0.966 c0.086-0.592,0.078-1.213,0.078-1.565C49.678,37.793,49.867,35.408,49.867,32.766L49.867,32.766z M13.219,19.735 c0.412-0.964,1.652-2.9,2.256-3.244c0.145-0.087,1.426-0.491,4.637-0.706c2.953-0.198,6.217-0.276,7.73-0.276 c1.513,0,4.777,0.078,7.729,0.276c3.201,0.215,4.502,0.611,4.639,0.706c0.775,0.533,1.842,2.28,2.256,3.244 c0.412,0.965,0.965,2.858,0.861,3.116c-0.104,0.258,0.104,0.388-1.291,0.275c-1.387-0.103-10.088-0.216-14.185-0.216 c-4.088,0-12.789,0.113-14.184,0.216c-1.395,0.104-1.188-0.018-1.291-0.275C12.254,22.593,12.805,20.708,13.219,19.735 L13.219,19.735z M16.385,30.511c-0.619,0.155-0.988,0.491-1.764,0.482c-0.775,0-2.867-0.353-3.314-0.371 c-0.447-0.017-0.842,0.302-1.076,0.362c-0.23,0.06-0.688-0.104-1.377-0.318c-0.688-0.216-1.092-0.155-1.316-1.094 c-0.232-0.93,0-2.264,0-2.264c1.488-0.068,2.928,0.069,5.621,0.826c2.693,0.758,4.191,2.213,4.191,2.213 S17.004,30.357,16.385,30.511L16.385,30.511z M36.629,37.293c-1.23,0.164-6.386,0.207-8.794,0.207c-2.412,0-7.566-0.051-8.799-0.207 c-1.256-0.164-2.891-1.67-1.764-2.865c1.523-1.627,1.24-1.576,4.701-2.023C24.967,32.018,27.239,32,27.834,32 c0.584,0,2.865,0.025,5.859,0.404c3.461,0.447,3.178,0.396,4.699,2.022C39.521,35.623,37.887,37.129,36.629,37.293L36.629,37.293z  M48.129,29.582c-0.232,0.93-0.629,0.878-1.318,1.093c-0.688,0.216-1.145,0.371-1.377,0.319c-0.231-0.053-0.627-0.371-1.074-0.361 c-0.448,0.018-2.539,0.37-3.313,0.37c-0.772,0-1.146-0.328-1.764-0.481c-0.621-0.154-0.966-0.154-0.966-0.154 s1.49-1.464,4.191-2.213c2.693-0.758,4.131-0.895,5.621-0.826C48.129,27.309,48.361,28.643,48.129,29.582L48.129,29.582z\",\"symbolSize\":[40,30]},{\"name\":\"跑步\",\"value\":2,\"symbol\":\"path://M13.676,32.955c0.919-0.031,1.843-0.008,2.767-0.008v0.007c0.827,0,1.659,0.041,2.486-0.019 c0.417-0.028,1.118,0.325,1.14-0.545c0.014-0.637-0.156-1.279-0.873-1.367c-1.919-0.241-3.858-0.233-5.774,0.019 c-0.465,0.062-0.998,0.442-0.832,1.069C12.715,32.602,13.045,32.977,13.676,32.955z M14.108,29.013 c1.47-0.007,2.96-0.122,4.414,0.035c1.792,0.192,3.1-0.412,4.273-2.105c-3.044,0-5.882,0.014-8.719-0.01 c-0.768-0.005-1.495,0.118-1.461,1C12.642,28.731,13.329,29.014,14.108,29.013z M23.678,36.593c-0.666-0.69-1.258-1.497-2.483-1.448 c-2.341,0.095-4.689,0.051-7.035,0.012c-0.834-0.014-1.599,0.177-1.569,1.066c0.031,0.854,0.812,1.062,1.636,1.043 c1.425-0.033,2.852-0.01,4.278-0.01v-0.01c1.562,0,3.126,0.008,4.691-0.005C23.614,37.239,24.233,37.174,23.678,36.593z  M32.234,42.292h-0.002c-1.075,0.793-2.589,0.345-3.821,1.048c-0.359,0.193-0.663,0.465-0.899,0.799 c-1.068,1.623-2.052,3.301-3.117,4.928c-0.625,0.961-0.386,1.805,0.409,2.395c0.844,0.628,1.874,0.617,2.548-0.299 c1.912-2.573,3.761-5.197,5.621-7.814C33.484,42.619,33.032,42.387,32.234,42.292z M43.527,28.401 c-0.688-1.575-2.012-0.831-3.121-0.895c-1.047-0.058-2.119,1.128-3.002,0.345c-0.768-0.677-1.213-1.804-1.562-2.813 c-0.45-1.305-1.495-2.225-2.329-3.583c2.953,1.139,4.729,0.077,5.592-1.322c0.99-1.61,0.718-3.725-0.627-4.967 c-1.362-1.255-3.414-1.445-4.927-0.452c-1.933,1.268-2.206,2.893-0.899,6.11c-2.098-0.659-3.835-1.654-5.682-2.383 c-0.735-0.291-1.437-1.017-2.293-0.666c-2.263,0.927-4.522,1.885-6.723,2.95c-1.357,0.658-1.649,1.593-1.076,2.638 c0.462,0.851,1.643,1.126,2.806,0.617c0.993-0.433,1.994-0.857,2.951-1.374c1.599-0.86,3.044-0.873,4.604,0.214 c1.017,0.707,0.873,1.137,0.123,1.849c-1.701,1.615-3.516,3.12-4.933,5.006c-1.042,1.388-0.993,2.817,0.255,4.011 c1.538,1.471,3.148,2.869,4.708,4.315c0.485,0.444,0.907,0.896-0.227,1.104c-1.523,0.285-3.021,0.694-4.538,1.006 c-1.109,0.225-2.02,1.259-1.83,2.16c0.223,1.07,1.548,1.756,2.687,1.487c3.003-0.712,6.008-1.413,9.032-2.044 c1.549-0.324,2.273-1.869,1.344-3.115c-0.868-1.156-1.801-2.267-2.639-3.445c-1.964-2.762-1.95-2.771,0.528-5.189 c1.394-1.357,1.379-1.351,2.437,0.417c0.461,0.769,0.854,1.703,1.99,1.613c2.238-0.181,4.407-0.755,6.564-1.331 C43.557,30.447,43.88,29.206,43.527,28.401z\",\"symbolSize\":[50,50]},{\"name\":\"步行\",\"value\":1,\"symbol\":\"path://M29.902,23.275c1.86,0,3.368-1.506,3.368-3.365c0-1.859-1.508-3.365-3.368-3.365 c-1.857,0-3.365,1.506-3.365,3.365C26.537,21.769,28.045,23.275,29.902,23.275z M36.867,30.74c-1.666-0.467-3.799-1.6-4.732-4.199 c-0.932-2.6-3.131-2.998-4.797-2.998s-7.098,3.894-7.098,3.894c-1.133,1.001-2.1,6.502-0.967,6.769 c1.133,0.269,1.266-1.533,1.934-3.599c0.666-2.065,3.797-3.466,3.797-3.466s0.201,2.467-0.398,3.866 c-0.599,1.399-1.133,2.866-1.467,6.198s-1.6,3.665-3.799,6.266c-2.199,2.598-0.6,3.797,0.398,3.664 c1.002-0.133,5.865-5.598,6.398-6.998c0.533-1.397,0.668-3.732,0.668-3.732s0,0,2.199,1.867c2.199,1.865,2.332,4.6,2.998,7.73 s2.332,0.934,2.332-0.467c0-1.401,0.269-5.465-1-7.064c-1.265-1.6-3.73-3.465-3.73-5.265s1.199-3.732,1.199-3.732 c0.332,1.667,3.335,3.065,5.599,3.399C38.668,33.206,38.533,31.207,36.867,30.74z\",\"symbolSize\":[40,50]}]","size":{"width":813,"height":408},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/pictogram","timeOut":0,"option":{"grid":{"bottom":115},"series":[],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"象形柱图"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761823951962114', NULL, N'1524641995740446722', NULL, N'JGauge', N'{"chartData":"[{\"min\":1,\"max\":10,\"label\":\"名称\",\"value\":4,\"unit\":\"%\"}]","size":{"width":813,"height":408},"dataMapping":[{"mapping":"","filed":"名称"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/gauge","timeOut":0,"option":{"grid":{"bottom":115},"series":[{"axisLabel":{"show":true,"fontSize":12},"data":[],"splitLine":{"lineStyle":{"color":"#eee","width":4},"length":12},"axisTick":{"lineStyle":{"color":"#eee"},"show":true},"progress":{"show":true},"detail":{"formatter":"{value}","fontSize":25},"type":"gauge"}],"tooltip":{"formatter":"{a} <br/>{b} : {c}%"},"title":{"text":"标准仪表盘"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761823951962115', NULL, N'1524641995740446722', NULL, N'JColorGauge', N'{"chartData":"[{\"name\":\"使用率\",\"value\":4,\"unit\":\"%\"}]","size":{"width":813,"height":518},"dataMapping":[{"mapping":"","filed":"名称"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/gauge","timeOut":0,"option":{"series":[{"axisLabel":{"show":true,"fontSize":12},"pointer":{"width":8},"axisLine":{"lineStyle":{"color":[[0.25,"#FF6E76"],[0.5,"#FDDD60"],[1,"#58D9F9"]],"width":10}},"anchor":{"itemStyle":{"color":"#FAC858"}},"splitLine":{"lineStyle":{"color":"#eee","width":4},"length":12},"axisTick":{"lineStyle":{"color":"#eee"},"show":true},"title":{"fontSize":14}}],"tooltip":{"formatter":"{a} <br/>{b} : {c}%"},"title":{"text":"多色仪表盘"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761823951962116', NULL, N'1524641995740446722', NULL, N'JTabs', N'{"size":{"width":813,"height":518},"w":12,"h":40,"option":{"title":"选项卡"},"child":[{"component":"JBar","w":12,"x":0,"h":42,"i":"53be7509-a4fe-417c-b1c4-d699e6c901e4","title":"柱形图","config":{"chartData":"[{\"name\":\"苹果\",\"value\":1000879,\"type\":\"手机品牌\"},{\"name\":\"三星\",\"value\":3400879,\"type\":\"手机品牌\"},{\"name\":\"小米\",\"value\":2300879,\"type\":\"手机品牌\"},{\"name\":\"oppo\",\"value\":5400879,\"type\":\"手机品牌\"},{\"name\":\"vivo\",\"value\":3400879,\"type\":\"手机品牌\"}]","paddingBottom":90,"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"bottom":115,"show":false},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180, 180, 180, 0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}},{"h":42,"index":0,"i":"634b775d-46dc-4a0f-8fe6-29abcebc148e","title":"雷达图","horizontal":false,"component":"JRadar","size":10,"w":12,"x":0,"text":"0.042","id":"b5fb856d-72b1-4f9a-80d9-79907ecbbe4d","config":{"chartData":[{"max":100,"name":"得分","type":"NBA","value":75},{"max":100,"name":"篮板","type":"NBA","value":65},{"max":100,"name":"防守","type":"NBA","value":55},{"max":100,"name":"失误","type":"NBA","value":74},{"max":100,"name":"盖帽","type":"NBA","value":38},{"max":100,"name":"三分","type":"NBA","value":88}],"paddingBottom":90,"dataMapping":[{"mapping":"","filed":"分组"},{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/radar","timeOut":0,"option":{"radar":[{"indicator":[]}],"grid":{"bottom":115,"show":false},"legend":{"data":[]},"series":[{"data":[],"type":"radar"}],"title":{"show":true,"text":"基础雷达图"},"card":{"rightHref":"","size":"default","extra":"","title":""}}},"child":[]},{"h":42,"index":0,"i":"33070b19-1b6f-47b3-8184-9ad437e52a3e","title":"表格","horizontal":false,"component":"JCommonTable","size":10,"w":12,"x":0,"text":"0.042","id":"03399fae-2199-42d4-8637-910aaa97c20f","config":{"chartData":"[{\"name\":\"4月\",\"value\":50},{\"name\":\"2月\",\"value\":200},{\"name\":\"3月\",\"value\":300},{\"name\":\"4月\",\"value\":400},{\"name\":\"5月\",\"value\":50},{\"name\":\"6月\",\"value\":120}]","paddingBottom":90,"w":24,"dataType":1,"h":42,"linkageConfig":[],"timeOut":0,"option":{}},"child":[]}]}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761823951962117', NULL, N'1524641995740446722', NULL, N'JGrid', N'{"size":{"width":1632,"height":400},"w":12,"h":40,"option":{"card":{"rightHref":"","size":"default","extra":"","title":""}},"child":[{"h":42,"i":"039463e0-4ab8-4a7c-ab62-1cc66da41654","title":"标题","parentId":"ed8dfb23-63c9-4d3d-8bef-aad3a5de4cc4","horizontal":false,"component":"JRing","size":10,"w":12,"x":0,"text":"0.042","id":"ca5d3493-7720-4ae8-827d-ae83d91d175a","config":{"dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"value","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"智慧社区_年龄分部","query":[],"dataSetApi":"http://api.jeecg.com/mock/51/age","drillData":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"chartData":"[{\"value\":1048,\"name\":\"oppo\"},{\"value\":735,\"name\":\"vivo\"},{\"value\":580,\"name\":\"苹果\"},{\"value\":484,\"name\":\"小米\"},{\"value\":300,\"name\":\"三星\"}]","paddingBottom":90,"dataSetId":"1522184215045615618","fieldOption":[{"label":"value","text":"value","value":"value"},{"label":"name","text":"name","value":"name"}],"dataSetType":"api","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"name":"Access From","avoidLabelOverlap":false,"emphasis":{"label":{"show":true,"fontSize":"25","fontWeight":"bold"}},"label":{"show":false,"position":"center"},"labelLine":{"show":false},"type":"pie","radius":["40%","70%"]}],"tooltip":{"trigger":"item"},"title":{"show":false,"text":"基础环形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}},"span":"8","child":[]},{"h":42,"i":"17a02601-f044-47e9-a2d1-da1a31551742","title":"标题","parentId":"ed8dfb23-63c9-4d3d-8bef-aad3a5de4cc4","horizontal":false,"component":"JList","size":10,"w":12,"x":0,"text":"0.042","id":"404465d9-8b7d-483b-9bde-9b6492cb362f","config":{"dataMapping":[{"mapping":"title","filed":"标题"},{"mapping":"remark","filed":"描述"},{"mapping":"date","filed":"时间"},{"mapping":"pic","filed":"封面"}],"paramOption":[],"dataType":2,"dataSetName":"数据列表","query":[],"h":24,"dataSetApi":"http://api.jeecg.com/mock/51/datalist/list","drillData":[],"url":"http://api.jeecg.com/mock/42/list","timeOut":0,"chartData":"[{\"title\":\"通知一\",\"date\":\"2022-3-9 14:20:21\"},{\"title\":\"通知二\",\"date\":\"2022-3-8 14:20:21\"},{\"title\":\"通知三\",\"date\":\"2022-3-7 14:20:21\"},{\"title\":\"通知四\",\"date\":\"2022-3-4 14:20:21\"}]","paddingBottom":90,"dataSetId":"1519945036454813698","fieldOption":[{"label":"title","text":"title","value":"title"},{"label":"date","text":"date","value":"date"},{"label":"remark","text":"remark","value":"remark"},{"label":"pic","text":"pic","value":"pic"}],"dataSetType":"api","w":12,"turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"layout":"horizontal","showTitlePrefix":true,"titleFontSize":18,"showTimePrefix":true}},"span":"8","child":[]},{"h":42,"i":"7d484bd7-ca44-457c-a2c1-fdf6dff5f06e","title":"标题","parentId":"ed8dfb23-63c9-4d3d-8bef-aad3a5de4cc4","horizontal":false,"component":"JImg","size":10,"w":12,"x":0,"text":"0.042","id":"d2480f4d-9424-4300-99ca-50a7000159f2","config":{"paddingBottom":90,"w":10,"dataType":1,"h":20,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"url":"http://minio.jeecg.com/otatest/jeecg_1651199708342.png"},"card":{"rightHref":"","size":"default","extra":"","title":""}}},"span":"8","child":[]}]}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761824014876674', NULL, N'1524641995740446722', NULL, N'JCommonTable', N'{"paramOption":[{"defaultVal":"1","label":"sex","text":"sex","value":"sex"}],"dataType":2,"dataSetName":"示例_数据表格","query":[],"h":42,"dataSetApi":"select * from demo where sex=''${sex}''","drillData":[],"timeOut":0,"chartData":"[{\"name\":\"4月\",\"value\":50},{\"name\":\"2月\",\"value\":200},{\"name\":\"3月\",\"value\":300},{\"name\":\"4月\",\"value\":400},{\"name\":\"5月\",\"value\":50},{\"name\":\"6月\",\"value\":120}]","size":{"width":1636,"height":540},"dataSetId":"1522824721899511810","fieldOption":[{"label":"姓名","text":"姓名","value":"name"},{"label":"打卡时间","text":"打卡时间","value":"punch_time"},{"label":"工资","text":"工资","value":"salary_money"},{"label":"奖金","text":"奖金","value":"bonus_money"},{"label":"性别","text":"性别","value":"sex"},{"label":"年龄","text":"年龄","value":"age"},{"label":"生日","text":"生日","value":"birthday"},{"label":"邮箱","text":"邮箱","value":"email"},{"label":"个人简介","text":"个人简介","value":"content"}],"dataSetType":"sql","w":24,"linkageConfig":[],"dataSetIzAgent":"0","option":{"columns":[{"izShow":"Y","dataIndex":"name","title":"姓名"},{"izShow":"Y","dataIndex":"punch_time","title":"打卡时间"},{"izShow":"Y","dataIndex":"salary_money","title":"工资"},{"izShow":"Y","dataIndex":"bonus_money","title":"奖金"},{"izShow":"Y","dataIndex":"sex","title":"性别"},{"izTotal":"Y","izShow":"Y","dataIndex":"age","title":"年龄"},{"izShow":"Y","dataIndex":"birthday","title":"生日"},{"izShow":"Y","dataIndex":"email","title":"邮箱"},{"izShow":"Y","dataIndex":"content","title":"个人简介"}]}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761824014876675', NULL, N'1524641995740446722', NULL, N'JList', N'{"dataMapping":[{"mapping":"title","filed":"标题"},{"mapping":"remark","filed":"描述"},{"mapping":"date","filed":"时间"},{"mapping":"pic","filed":"封面"}],"paramOption":[],"dataType":2,"dataSetName":"数据列表","query":[],"h":24,"dataSetApi":"http://api.jeecg.com/mock/51/datalist/list","drillData":[],"url":"http://api.jeecg.com/mock/42/list","timeOut":0,"chartData":"[{\"title\":\"通知一\",\"date\":\"2022-3-9 14:20:21\"},{\"title\":\"通知二\",\"date\":\"2022-3-8 14:20:21\"},{\"title\":\"通知三\",\"date\":\"2022-3-7 14:20:21\"},{\"title\":\"通知四\",\"date\":\"2022-3-4 14:20:21\"}]","size":{"width":813,"height":408},"dataSetId":"1519945036454813698","fieldOption":[{"label":"title","text":"title","value":"title"},{"label":"date","text":"date","value":"date"},{"label":"remark","text":"remark","value":"remark"},{"label":"pic","text":"pic","value":"pic"}],"dataSetType":"api","w":12,"turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"layout":"horizontal","showTitlePrefix":true,"titleFontSize":18,"showTimePrefix":true}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761824014876676', NULL, N'1524641995740446722', NULL, N'JForm', N'{"size":{"height":120},"w":24,"dataType":2,"h":12,"linkageConfig":[{"linkageId":"eb4af4a3-8fce-40f9-832c-c749e75dac5d","linkage":[{"source":"sex","target":"sex"}]}],"timeOut":-1,"option":{"fields":[{"fieldName":"sex","dictCode":"sex","fieldTxt":"性别","defaultValue":"1","searchMode":"","action":"","id":"row57227ae2-04d1-4306-8878-314e099cd5ac","izSearch":"1","widgetType":"select"}]}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761824014876677', NULL, N'1524641995740446722', NULL, N'JCarousel', N'{"chartData":"[{\"src\":\"http://minio.jeecg.com/otatest/temp/0_1647504880335.png\"},{\"src\":\"http://minio.jeecg.com/otatest/temp/1_1647504883878.png\"},{\"src\":\"http://minio.jeecg.com/otatest/temp/2_1647504886551.png\"}]","size":{"width":1636,"height":254},"dataMapping":[{"mapping":"","filed":"路径"}],"w":24,"dataType":1,"h":22,"linkageConfig":[],"url":"http://api.jeecg.com/mock/42/carousel","timeOut":0,"option":{"dots":true,"autoplay":true,"dotPosition":"bottom"}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761824014876678', NULL, N'1524641995740446722', NULL, N'JIframe', N'{"chartData":"http://www.jeecg.com","size":{"width":1636,"height":452},"w":12,"dataType":1,"h":26,"linkageConfig":[],"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"url":"http://www.jeecg.com/"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761824014876679', NULL, N'1524641995740446722', NULL, N'JCalendar', N'{"chartData":"[{\"title\":\"座谈会\",\"start\":\"2022-03-11 11:32:33\",\"end\":\"2022-03-11 18:32:33\",\"color\":\"#000000\",\"allday\":\"0\"},{\"title\":\"冬奥会\",\"start\":\"2022-03-04 11:32:33\",\"end\":\"2022-03-13 18:32:33\",\"color\":\"#4A90E2\",\"allday\":\"1\"}]","size":{"width":813,"height":408},"dataMapping":[{"mapping":"","filed":"标题"},{"mapping":"","filed":"开始"},{"mapping":"","filed":"结束"},{"mapping":"","filed":"全天"},{"mapping":"","filed":"颜色"}],"w":10,"dataType":1,"h":40,"linkageConfig":[],"url":"http://api.jeecg.com/mock/42/calendar","timeOut":0}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761824014876680', NULL, N'1524641995740446722', NULL, N'JImg', N'{"size":{"width":676,"height":254},"w":10,"dataType":1,"h":20,"turnConfig":{"url":""},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"url":"http://minio.jeecg.com/otatest/jeecg_1651199708342.png"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761824081985537', NULL, N'1524641995740446722', NULL, N'JText', N'{"chartData":"JeecgBoot面板设计","size":{"width":402,"height":56},"w":5,"dataType":1,"h":5,"turnConfig":{"url":"http://jeecg.com"},"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"body":{"color":"#4A90E2","text":"","fontWeight":"bold","marginTop":10,"marginLeft":76},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761824081985538', NULL, N'1524641995740446722', NULL, N'JRadioButton', N'{"chartData":"[  {    \"title\": \"Jeecg官网\",    \"value\": 0,    \"href\": \"http://jeecg.com\",    \"data\": {}  },  {    \"title\": \"项目首页\",    \"value\": 1,    \"href\": \"/system/notice\",    \"data\": {}  }]","size":{"width":333,"height":56},"w":3,"dataType":1,"h":4,"linkageConfig":[],"url":"","timeOut":0,"option":{"title":"按钮","body":{"spaceSize":23,"size":"small","marginTop":12,"marginLeft":66}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761824081985539', NULL, N'1524641995740446722', NULL, N'JQuickNav', N'{"paramOption":[],"dataType":2,"dataSetName":"首页快速导航","query":[],"h":26,"dataSetApi":"http://api.jeecg.com/mock/51/home/quick","drillData":[],"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"chartData":"[{\"title\":\"首页\",\"icon\":\"icon-jeecg-homepage\",\"color\":\"#1fdaca\"},{\"title\":\"仪表盘\",\"icon\":\"icon-jeecg-shijian\",\"color\":\"#bf0c2c\"},{\"title\":\"组件\",\"icon\":\"icon-jeecg-dangan\",\"color\":\"#e18525\"},{\"title\":\"系统管理\",\"icon\":\"icon-jeecg-shezhi\",\"color\":\"#3fb27f\"},{\"title\":\"权限管理\",\"icon\":\"icon-jeecg-yuechi\",\"color\":\"#4daf1bc9\"},{\"title\":\"图表\",\"icon\":\"icon-jeecg-fujin\",\"color\":\"#00d8ff\"}]","size":{"width":813,"height":276},"dataSetId":"1519962879095332865","fieldOption":[{"label":"title","text":"title","value":"title"},{"label":"icon","text":"icon","value":"icon"},{"label":"color","text":"color","value":"color"},{"label":"href","text":"href","value":"href"}],"dataSetType":"api","w":12,"turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"0","option":{"icon":{"scriptUrl":"//at.alicdn.com/t/font_3237315_b3fqd960glt.js","fontSize":30},"body":{"textAlign":"center","column":3,"iconAlign":"top"},"card":{"rightHref":"","size":"default","extra":"更多","title":"快捷导航"}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761824081985540', NULL, N'1524641995740446722', NULL, N'JGrowCard', N'{"chartData":"[{\"title\":\"访问数\",\"icon\":\"icon-jeecg-qianbao\",\"value\":2000,\"total\":120000,\"prefix\":\"$\",\"color\":\"green\",\"action\":\"月\"},{\"title\":\"成交额\",\"icon\":\"icon-jeecg-youhuiquan\",\"value\":20000,\"total\":500000,\"prefix\":\"$\",\"color\":\"blue\",\"action\":\"月\"},{\"title\":\"下载数\",\"icon\":\"icon-jeecg-tupian\",\"value\":8000,\"prefix\":\"$\",\"total\":120000,\"color\":\"orange\",\"action\":\"周\"},{\"title\":\"成交数\",\"icon\":\"icon-jeecg-jifen\",\"value\":5000,\"prefix\":\"$\",\"total\":50000,\"color\":\"purple\",\"action\":\"年\"}]","size":{"width":950,"height":254},"w":12,"dataType":1,"h":19,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"icon":{"scriptUrl":"//at.alicdn.com/t/font_3237315_b3fqd960glt.js","fontSize":20},"body":{"horizontal":8,"vertical":8,"span":6},"card":{"rightHref":"","size":"default","extra":"更多","title":"统计卡片"}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761824081985541', NULL, N'1524641995740446722', NULL, N'JProjectCard', N'{"chartData":"[{\"title\":\"Github\",\"icon\":\"icon-jeecg-social-github\",\"color\":\"\",\"desc\":\"不要等待机会，而要创造机会。\",\"group\":\"开源组\",\"date\":\"2021-04-01\"},{\"title\":\"Vue\",\"icon\":\"icon-jeecg-social-buysellads\",\"color\":\"#3fb27f\",\"desc\":\"现在的你决定将来的你。\",\"group\":\"算法组\",\"date\":\"2021-04-01\"},{\"title\":\"Html5\",\"icon\":\"icon-jeecg-html5\",\"color\":\"#e18525\",\"desc\":\"没有什么才能比努力更重要。\",\"group\":\"上班摸鱼\",\"date\":\"2021-04-01\"},{\"title\":\"Angular\",\"icon\":\"icon-jeecg-social-product-hunt\",\"color\":\"#bf0c2c\",\"desc\":\"热情和欲望可以突破一切难关。\",\"group\":\"UI\",\"date\":\"2021-04-01\"},{\"title\":\"React\",\"icon\":\"icon-jeecg-social-skype\",\"color\":\"#00d8ff\",\"desc\":\"健康的身体是实目标的基石。\",\"group\":\"技术牛\",\"date\":\"2021-04-01\"},{\"title\":\"Js\",\"icon\":\"icon-jeecg-social-pengyou\",\"color\":\"#4daf1bc9\",\"desc\":\"路是走出来的，而不是空想出来的。\",\"group\":\"架构组\",\"date\":\"2021-04-01\"}]","size":{"width":813,"height":408},"w":12,"dataType":1,"h":33,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"icon":{"scriptUrl":"//at.alicdn.com/t/font_3237315_b3fqd960glt.js","fontSize":30},"body":{"column":3},"card":{"rightHref":"","size":"default","extra":"更多","title":"项目列表"}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761824081985542', NULL, N'1524641995740446722', NULL, N'JWaitMatter', N'{"chartData":"[{\"title\":\"待办公文\",\"icon\":\"icon-jeecg-yudu\",\"content\":23,\"desc\":\"今日已办 3\",\"date\":\"2021-04-01\"},{\"title\":\"待办流程\",\"icon\":\"icon-jeecg-shuju\",\"content\":23,\"desc\":\"今日已办 3\",\"date\":\"2021-04-01\"},{\"title\":\"待办任务\",\"icon\":\"icon-jeecg-tongzhi\",\"content\":23,\"desc\":\"今日已办 3 今日更新 5\",\"date\":\"2021-04-01\"}]","size":{"width":813,"height":221},"w":12,"dataType":1,"h":19,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/42/nav","timeOut":0,"option":{"icon":{"scriptUrl":"//at.alicdn.com/t/font_3237315_b3fqd960glt.js","fontSize":25},"body":{"column":3},"card":{"rightHref":"","size":"default","extra":"更多","title":"待办事项"}}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'1546761824081985543', NULL, N'1524641995740446722', NULL, N'JDynamicInfo', N'{"chartData":"[{\"name\":\"威廉\",\"date\":\"刚刚\",\"desc\":\"在 <a>开源组</a> 创建了项目 <a>Vue</a>\",\"avatar\":\"https://jeecgdev.oss-cn-beijing.aliyuncs.com/upload/test/320222_1646724689691.jpg\"},{\"name\":\"艾文\",\"date\":\"1个小时前\",\"desc\":\"关注了 <a>威廉</a>\",\"avatar\":\"https://jeecgdev.oss-cn-beijing.aliyuncs.com/upload/test/320305_1646724680756.jpg\"},{\"name\":\"克里斯\",\"date\":\"1天前\",\"desc\":\"发布了 <a>个人动态</a>\",\"avatar\":\"https://jeecgdev.oss-cn-beijing.aliyuncs.com/upload/test/299258_1646724675255.jpg\"},{\"name\":\"Jeecg\",\"date\":\"2天前\",\"desc\":\"发表文章 <a>如何编写一个Vite插件</a>\",\"avatar\":\"https://jeecgdev.oss-cn-beijing.aliyuncs.com/upload/test/2.4jeecg_1621512120602.png\"}]","size":{"width":813,"height":287},"dataMapping":[{"mapping":"","filed":"名称"},{"mapping":"","filed":"描述"},{"mapping":"","filed":"时间"},{"mapping":"","filed":"头像"}],"w":12,"dataType":1,"h":28,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/42/list","timeOut":0,"option":{"titleFontSize":18}}', N'admin', N'2022-07-12 15:42:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'750939797242052608', NULL, N'750931735173201920', NULL, N'JMultipleBar', N'{"chartData":"[{\"name\":\"1991\",\"value\":3,\"type\":\"Lon\"},{\"name\":\"1992\",\"value\":4,\"type\":\"Lon\"},{\"name\":\"1993\",\"value\":3.5,\"type\":\"Lon\"},{\"name\":\"1994\",\"value\":5,\"type\":\"Lon\"},{\"name\":\"1995\",\"value\":4.9,\"type\":\"Lon\"},{\"name\":\"1996\",\"value\":6,\"type\":\"Lon\"},{\"name\":\"1997\",\"value\":7,\"type\":\"Lon\"},{\"name\":\"1998\",\"value\":9,\"type\":\"Lon\"},{\"name\":\"1999\",\"value\":13,\"type\":\"Lon\"},{\"name\":\"1991\",\"value\":3,\"type\":\"Bor\"},{\"name\":\"1992\",\"value\":4,\"type\":\"Bor\"},{\"name\":\"1993\",\"value\":3.5,\"type\":\"Bor\"},{\"name\":\"1994\",\"value\":5,\"type\":\"Bor\"},{\"name\":\"1995\",\"value\":4.9,\"type\":\"Bor\"},{\"name\":\"1996\",\"value\":6,\"type\":\"Bor\"},{\"name\":\"1997\",\"value\":7,\"type\":\"Bor\"},{\"name\":\"1998\",\"value\":9,\"type\":\"Bor\"},{\"name\":\"1999\",\"value\":13,\"type\":\"Bor\"}]","borderColor":"#FFFFFF00","size":{"height":420},"dataMapping":[{"mapping":"","filed":"分组"},{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"background":"#FFFFFF","dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/stackedBar","timeOut":0,"option":{"grid":{"top":90,"bottom":115},"series":[],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"多数据对比柱形图"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-11-11 14:53:30.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'750939797271412736', NULL, N'750931735173201920', NULL, N'JMixLineBar', N'{"chartData":"[{\"name\":\"1991\",\"value\":110,\"type\":\"降水量\"},{\"name\":\"1992\",\"value\":130,\"type\":\"降水量\"},{\"name\":\"1993\",\"value\":113.5,\"type\":\"降水量\"},{\"name\":\"1994\",\"value\":150,\"type\":\"降水量\"},{\"name\":\"1995\",\"value\":240.9,\"type\":\"降水量\"},{\"name\":\"1996\",\"value\":160,\"type\":\"降水量\"},{\"name\":\"1997\",\"value\":97,\"type\":\"降水量\"},{\"name\":\"1998\",\"value\":290,\"type\":\"降水量\"},{\"name\":\"1999\",\"value\":230,\"type\":\"降水量\"},{\"name\":\"1991\",\"value\":33,\"type\":\"温度\"},{\"name\":\"1992\",\"value\":35,\"type\":\"温度\"},{\"name\":\"1993\",\"value\":37,\"type\":\"温度\"},{\"name\":\"1994\",\"value\":35,\"type\":\"温度\"},{\"name\":\"1995\",\"value\":34.9,\"type\":\"温度\"},{\"name\":\"1996\",\"value\":36,\"type\":\"温度\"},{\"name\":\"1997\",\"value\":37,\"type\":\"温度\"},{\"name\":\"1998\",\"value\":39,\"type\":\"温度\"},{\"name\":\"1999\",\"value\":33,\"type\":\"温度\"}]","borderColor":"#FFFFFF00","size":{"height":420},"dataMapping":[{"mapping":"","filed":"分组"},{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"seriesType":[{"series":"降水量","type":"bar"},{"series":"温度","type":"line"}],"background":"#FFFFFF","dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/stackedBar","timeOut":0,"option":{"grid":{"top":90,"bottom":115},"series":[],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"折柱图"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-11-11 14:53:30.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'750939797288189952', NULL, N'750931735173201920', NULL, N'JBar', N'{"chartData":"[{\"name\":\"苹果\",\"value\":1000879,\"type\":\"手机品牌\"},{\"name\":\"三星\",\"value\":3400879,\"type\":\"手机品牌\"},{\"name\":\"小米\",\"value\":2300879,\"type\":\"手机品牌\"},{\"name\":\"oppo\",\"value\":5400879,\"type\":\"手机品牌\"},{\"name\":\"vivo\",\"value\":3400879,\"type\":\"手机品牌\"}]","borderColor":"#FFFFFF00","size":{"height":420},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"background":"#FFFFFF","dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#5470c6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-11-11 14:53:30.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'750939797300772864', NULL, N'750931735173201920', NULL, N'JPie', N'{"chartData":"[{\"value\":1048,\"name\":\"vivo\"},{\"value\":735,\"name\":\"oppo\"},{\"value\":580,\"name\":\"苹果\"},{\"value\":484,\"name\":\"小米\"},{\"value\":300,\"name\":\"三星\"}]","borderColor":"#FFFFFF00","size":{"width":891,"height":166},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"background":"#FFFFFF","dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"option":{"grid":{"bottom":115,"show":false},"legend":{"orient":"vertical"},"series":[{"data":[],"name":"Access From","emphasis":{"itemStyle":{"shadowOffsetX":0,"shadowBlur":10,"shadowColor":"rgba(0, 0, 0, 0.5)"}},"type":"pie","radius":"50%"}],"tooltip":{"trigger":"item"},"title":{"subtext":"","left":"left","show":true,"text":"基础饼图"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-11-11 14:53:30.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'750939797313355776', NULL, N'750931735173201920', NULL, N'JNegativeBar', N'{"chartData":"[{\"name\":\"周一\",\"value\":200,\"type\":\"利润\"},{\"name\":\"周二\",\"value\":170,\"type\":\"利润\"},{\"name\":\"周三\",\"value\":240,\"type\":\"利润\"},{\"name\":\"周四\",\"value\":244,\"type\":\"利润\"},{\"name\":\"周五\",\"value\":200,\"type\":\"利润\"},{\"name\":\"周六\",\"value\":220,\"type\":\"利润\"},{\"name\":\"周日\",\"value\":210,\"type\":\"利润\"},{\"name\":\"周一\",\"value\":320,\"type\":\"收入\"},{\"name\":\"周二\",\"value\":302,\"type\":\"收入\"},{\"name\":\"周三\",\"value\":341,\"type\":\"收入\"},{\"name\":\"周四\",\"value\":374,\"type\":\"收入\"},{\"name\":\"周五\",\"value\":390,\"type\":\"收入\"},{\"name\":\"周六\",\"value\":450,\"type\":\"收入\"},{\"name\":\"周日\",\"value\":420,\"type\":\"收入\"},{\"name\":\"周一\",\"value\":-120,\"type\":\"支出\"},{\"name\":\"周二\",\"value\":-132,\"type\":\"支出\"},{\"name\":\"周三\",\"value\":-101,\"type\":\"支出\"},{\"name\":\"周四\",\"value\":-134,\"type\":\"支出\"},{\"name\":\"周五\",\"value\":-190,\"type\":\"支出\"},{\"name\":\"周六\",\"value\":-230,\"type\":\"支出\"},{\"name\":\"周日\",\"value\":-210,\"type\":\"支出\"}]","borderColor":"#FFFFFF00","size":{"height":420},"dataMapping":[{"mapping":"","filed":"分组"},{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"background":"#FFFFFF","dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/stackedBar","timeOut":0,"option":{"xAxis":{"type":"value"},"grid":{"top":90,"bottom":115},"series":[],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"正负条形图"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-11-11 14:53:30.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'750939797321744384', NULL, N'750931735173201920', NULL, N'JMixLineBar', N'{"chartData":"[{\"name\":\"1991\",\"type\":\"降水量\",\"value\":110},{\"name\":\"1992\",\"type\":\"降水量\",\"value\":130},{\"name\":\"1993\",\"type\":\"降水量\",\"value\":113.5},{\"name\":\"1994\",\"type\":\"降水量\",\"value\":150},{\"name\":\"1995\",\"type\":\"降水量\",\"value\":240.9},{\"name\":\"1996\",\"type\":\"降水量\",\"value\":160},{\"name\":\"1997\",\"type\":\"降水量\",\"value\":97},{\"name\":\"1998\",\"type\":\"降水量\",\"value\":290},{\"name\":\"1999\",\"type\":\"降水量\",\"value\":230},{\"name\":\"1991\",\"type\":\"温度\",\"value\":33},{\"name\":\"1992\",\"type\":\"温度\",\"value\":35},{\"name\":\"1993\",\"type\":\"温度\",\"value\":37},{\"name\":\"1994\",\"type\":\"温度\",\"value\":35},{\"name\":\"1995\",\"type\":\"温度\",\"value\":34.9},{\"name\":\"1996\",\"type\":\"温度\",\"value\":36},{\"name\":\"1997\",\"type\":\"温度\",\"value\":37},{\"name\":\"1998\",\"type\":\"温度\",\"value\":39},{\"name\":\"1999\",\"type\":\"温度\",\"value\":33}]","borderColor":"#FFFFFF00","size":{"height":420},"dataMapping":[{"mapping":"","filed":"分组"},{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"seriesType":[{"series":"降水量","type":"bar"},{"series":"温度","type":"line"}],"background":"#FFFFFF","dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/stackedBar","timeOut":0,"option":{"grid":{"top":90,"bottom":115},"series":[],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"折柱图"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2022-11-11 14:53:30.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'763678099293241344', NULL, NULL, NULL, N'JNumber', N'{
+    "id": "69f30ceb-db97-4f39-8541-eda61e5c433f",
+    "component": "JNumber",
+    "config": {
+        "formType": "design",
+        "dataType": 4,
+        "timeOut": 0,
+        "option": {
+            "isCompare": false,
+            "trendType": "1",
+            "card": {
+                "title": "",
+                "extra": "",
+                "rightHref": "",
+                "size": "small"
+            },
+            "body": {
+                "text": "",
+                "color": "#000000",
+                "fontWeight": "bold"
+            }
+        },
+        "size": {
+            "height": 500
+        },
+        "dataNum": "",
+        "chart": {
+            "category": "Number",
+            "subclass": "JNumber"
+        },
+        "typeFields": [
+            
+        ],
+        "nameFields": [
+            
+        ],
+        "valueFields": [
+            {
+                "fieldName": "record_count",
+                "fieldTxt": "记录数量",
+                "fieldType": "count",
+                "widgetType": "text"
+            }
+        ],
+        "assistYFields": [
+            
+        ],
+        "assistTypeFields": [
+            
+        ],
+        "calcFields": [
+            
+        ],
+        "tableName": "test_1031",
+        "sorts": {
+            "name": "",
+            "type": ""
+        },
+        "filter": {
+            "queryField": "create_time",
+            "queryRange": "month",
+            "customTime": null,
+            "conditionMode": "and",
+            "conditionFields": [
+                
+            ]
+        },
+        "analysis": {
+            "isRawData": true,
+            "showMode": 1,
+            "showData": 1,
+            "isCompare": false,
+            "compareType": "",
+            "trendType": "1",
+            "compareValue": null,
+            "showFields": [
+                
+            ]
+        },
+        "formId": "test_1031",
+        "formName": "test1031",
+        "compStyleConfig": {
+            "summary": {
+                "showY": true,
+                "showTotal": false,
+                "showField": "",
+                "totalType": "sum",
+                "showName": "总计"
+            },
+            "showUnit": {
+                "numberLevel": "",
+                "decimal": 0,
+                "position": "suffix",
+                "unit": ""
+            },
+            "assist": {
+                "showUnit": {
+                    "numberLevel": "",
+                    "decimal": 0,
+                    "position": "suffix",
+                    "unit": ""
+                },
+                "summary": {
+                    "showY": true,
+                    "showField": "",
+                    "totalType": "sum",
+                    "showName": "总计"
+                }
+            },
+            "headerFreeze": true,
+            "unilineShow": true,
+            "columnFreeze": true,
+            "lineFreeze": true
+        },
+        "filterField": []
+    }
+}', N'jeecg', N'2022-12-16 18:30:58.0000000', N'jeecg', N'2022-12-16 18:31:31.0000000')
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'763699587304030208', NULL, NULL, NULL, N'JBar', N'{
+    "id": "116606b2-4620-42d6-9202-36f39288a8d5",
+    "component": "JBar",
+    "config": {
+        "formType": "design",
+        "dataType": 4,
+        "timeOut": 0,
+        "option": {
+            "grid": {
+                "show": false,
+                "top": 90,
+                "bottom": 115
+            },
+            "card": {
+                "title": "",
+                "extra": "",
+                "rightHref": "",
+                "size": "default"
+            },
+            "title": {
+                "text": "基础柱形图",
+                "show": true,
+                "textStyle": {
+                    "color": "#464646"
+                }
+            },
+            "tooltip": {
+                "trigger": "axis",
+                "axisPointer": {
+                    "type": "shadow",
+                    "label": {
+                        "show": true,
+                        "backgroundColor": "#333"
+                    }
+                }
+            },
+            "yAxis": {
+                "splitLine": {
+                    "interval": 2
+                },
+                "lineStyle": {
+                    "color": "#f3f3f3"
+                }
+            },
+            "series": [
+                {
+                    "data": [
+                        
+                    ],
+                    "type": "bar",
+                    "barWidth": 40,
+                    "itemStyle": {
+                        "color": "#64b5f6",
+                        "borderRadius": 0
+                    }
+                }
+            ]
+        },
+        "size": {
+            "height": 500
+        },
+        "dataNum": "",
+        "chart": {
+            "category": "Bar",
+            "subclass": "JBar",
+            "isGroup": false
+        },
+        "typeFields": [
+            
+        ],
+        "nameFields": [
+            {
+                "fieldName": "create_time",
+                "fieldTxt": "创建时间",
+                "fieldType": "date",
+                "widgetType": "date"
+            }
+        ],
+        "valueFields": [
+            {
+                "fieldName": "record_count",
+                "fieldTxt": "记录数量",
+                "fieldType": "count",
+                "widgetType": "text"
+            }
+        ],
+        "assistYFields": [
+            
+        ],
+        "assistTypeFields": [
+            
+        ],
+        "calcFields": [
+            
+        ],
+        "tableName": "test_1031",
+        "sorts": {
+            "name": "",
+            "type": ""
+        },
+        "filter": {
+            "queryField": "create_time",
+            "queryRange": "month",
+            "customTime": null,
+            "conditionMode": "and",
+            "conditionFields": [
+                
+            ]
+        },
+        "analysis": {
+            "isRawData": true,
+            "showMode": 1,
+            "showData": 1,
+            "isCompare": false,
+            "compareType": "",
+            "trendType": "1",
+            "compareValue": null,
+            "showFields": [
+                
+            ]
+        },
+        "formId": "test_1031",
+        "formName": "test1031",
+        "compStyleConfig": {
+            "summary": {
+                "showY": true,
+                "showTotal": false,
+                "showField": "",
+                "totalType": "sum",
+                "showName": "总计"
+            },
+            "showUnit": {
+                "numberLevel": "",
+                "decimal": 0,
+                "position": "suffix",
+                "unit": ""
+            },
+            "assist": {
+                "showUnit": {
+                    "numberLevel": "",
+                    "decimal": 0,
+                    "position": "suffix",
+                    "unit": ""
+                },
+                "summary": {
+                    "showY": true,
+                    "showField": "",
+                    "totalType": "sum",
+                    "showName": "总计"
+                }
+            },
+            "headerFreeze": true,
+            "unilineShow": true,
+            "columnFreeze": true,
+            "lineFreeze": true
+        }
+    }
+}', N'jeecg', N'2022-12-16 19:56:21.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'767345445303287808', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed854e9a6b01854e9a6b1f0000","config":{"assistYFields":[],"formId":"chu_fang_yao","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"chu_fang_yao","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"处方药","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2022-12-26 21:23:41.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'767345445714329600', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed854e9a6b01854e9a6b8f0001","config":{"assistYFields":[],"formId":"chu_fang_yao","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"chu_fang_yao","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"处方药","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2022-12-26 21:23:41.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'767559322439843840', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed8551a47f018551a47fb80000","config":{"assistYFields":[],"formId":"aaaa1","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"aaaa1","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"aaaa1","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2022-12-27 11:33:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'767559322888634368', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed8551a47f018551a480340001","config":{"assistYFields":[],"formId":"aaaa1","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"aaaa1","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"aaaa1","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2022-12-27 11:33:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'767901443155886080', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed8556812001855681206b0000","config":{"assistYFields":[],"formId":"app_haha","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"app_haha","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"app_haha","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2022-12-28 10:13:01.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'767901444070244352', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed8556812001855681215e0001","config":{"assistYFields":[],"formId":"app_haha","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"app_haha","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"app_haha","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2022-12-28 10:13:01.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'767901473807859712', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed85568120018556813d150004","config":{"assistYFields":[],"formId":"cc22ss","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"cc22ss","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"工单积分","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2022-12-28 10:13:09.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'767901473874968576', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed85568120018556813d250005","config":{"assistYFields":[],"formId":"cc22ss","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"cc22ss","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"工单积分","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2022-12-28 10:13:09.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'767924238153744384', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed8556d40d018556d40de50000","config":{"assistYFields":[],"formId":"adsfadsf","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"adsfadsf","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"测删除流程","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2022-12-28 11:43:36.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'767924238397014016', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed8556d40d018556d40e3d0001","config":{"assistYFields":[],"formId":"adsfadsf","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"adsfadsf","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"测删除流程","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2022-12-28 11:43:36.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'767924244520697856', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed8556d40d018556d413ef0004","config":{"assistYFields":[],"formId":"adsfadsf","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"adsfadsf","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"测删除流程","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2022-12-28 11:43:37.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'767924244587806720', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed8556d40d018556d414020005","config":{"assistYFields":[],"formId":"adsfadsf","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"adsfadsf","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"测删除流程","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2022-12-28 11:43:37.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'768016824029741056', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed855824e101855824e1440000","config":{"assistYFields":[],"formId":"issue","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"issue","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"issue","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2022-12-28 17:51:30.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'768016824646303744', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed855824e101855824e1e90001","config":{"assistYFields":[],"formId":"issue","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"issue","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"issue","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2022-12-28 17:51:30.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'768017225172975616', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed855824e10185582656ef0004","config":{"assistYFields":[],"formId":"xiao_shou_yuan_ttk6","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"xiao_shou_yuan_ttk6","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"销售员","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2022-12-28 17:53:06.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'768017225214918656', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed855824e10185582656fa0005","config":{"assistYFields":[],"formId":"xiao_shou_yuan_ttk6","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"xiao_shou_yuan_ttk6","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"销售员","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2022-12-28 17:53:06.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'768392697476087808', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed855d7c4c01855d7c4cb70000","config":{"assistYFields":[],"formId":"sha_gua_d_byfr","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"sha_gua_d_byfr","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"傻瓜d","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2022-12-29 18:45:05.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'768392697882935296', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed855d7c4c01855d7c4d260001","config":{"assistYFields":[],"formId":"sha_gua_d_byfr","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"sha_gua_d_byfr","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"傻瓜d","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2022-12-29 18:45:05.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'768475451123363840', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402885e8855ea95b01855ea95b090000","config":{"assistYFields":[],"formId":"jeecg_6666_1j8e","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"jeecg_6666_1j8e","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'qinfeng', N'2022-12-30 00:13:55.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'768475451270164480', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402885e8855ea95b01855ea95b3f0001","config":{"assistYFields":[],"formId":"jeecg_6666_1j8e","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"jeecg_6666_1j8e","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'qinfeng', N'2022-12-30 00:13:55.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'768682668124602368', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed85619b340185619b34e90000","config":{"assistYFields":[],"formId":"sdfa_gku1","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"sdfa_gku1","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"sdfa","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2022-12-30 13:57:20.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'768682668229459968', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed85619b340185619b35140001","config":{"assistYFields":[],"formId":"sdfa_gku1","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"sdfa_gku1","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"sdfa","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2022-12-30 13:57:20.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'768685401766428672', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed85619b34018561a526e20004","config":{"assistYFields":[],"formId":"dd_fsog","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"dd_fsog","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"dd","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2022-12-30 14:08:11.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'768685401812566016', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed85619b34018561a526ed0005","config":{"assistYFields":[],"formId":"dd_fsog","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"dd_fsog","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"dd","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2022-12-30 14:08:12.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'771249231264546816', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed8586144f018586144f220000","config":{"assistYFields":[],"formId":"xiao_mi_feng_e1f5","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"xiao_mi_feng_e1f5","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"小蜜蜂","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-06 15:55:56.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'771249231428124672', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed8586144f018586144f520001","config":{"assistYFields":[],"formId":"xiao_mi_feng_e1f5","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"xiao_mi_feng_e1f5","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"小蜜蜂","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-06 15:55:56.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'771261664033046528', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed8586144f018586418a160004","config":{"assistYFields":[],"formId":"sdf_1yop","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"sdf_1yop","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"sdf","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-06 16:45:20.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'771261664058212352', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed8586144f018586418a1e0005","config":{"assistYFields":[],"formId":"sdf_1yop","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"sdf_1yop","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"sdf","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-06 16:45:20.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772335059084574720', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed859582870185958287160000","config":{"assistYFields":[],"formId":"yao_pin_guan_li_56so","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"yao_pin_guan_li_56so","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"药品管理","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-09 15:50:38.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772335059160072192', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed859582870185958287330001","config":{"assistYFields":[],"formId":"yao_pin_guan_li_56so","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"yao_pin_guan_li_56so","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"药品管理","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-09 15:50:38.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772685203479003136', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed859a7c5801859a7c586c0000","config":{"assistYFields":[],"formId":"jeecg_xiao_hong_shu_12712a_e8rd","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"jeecg_xiao_hong_shu_12712a_e8rd","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"小红书12——*%^712a","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-10 15:01:59.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772685204120731648', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed859a7c5801859a7c591a0001","config":{"assistYFields":[],"formId":"jeecg_xiao_hong_shu_12712a_e8rd","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"jeecg_xiao_hong_shu_12712a_e8rd","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"小红书12——*%^712a","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-10 15:01:59.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772685310186291200', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed859a7c5801859a7cbbe30004","config":{"assistYFields":[],"formId":"jeecg_xiao_hong_shu_sdf_kv7o","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"jeecg_xiao_hong_shu_sdf_kv7o","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"小红书@sdf","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-10 15:02:24.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772685310215651328', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed859a7c5801859a7cbbeb0005","config":{"assistYFields":[],"formId":"jeecg_xiao_hong_shu_sdf_kv7o","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"jeecg_xiao_hong_shu_sdf_kv7o","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"小红书@sdf","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-10 15:02:24.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772685793072316416', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed859a7c5801859a7e7d9c0008","config":{"assistYFields":[],"formId":"jeecg_xiao_hong_shu_23_387y","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"jeecg_xiao_hong_shu_23_387y","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"小红书2@3","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-10 15:04:19.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772685793105870848', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed859a7c5801859a7e7da40009","config":{"assistYFields":[],"formId":"jeecg_xiao_hong_shu_23_387y","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"jeecg_xiao_hong_shu_23_387y","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"小红书2@3","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-10 15:04:19.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772688060278177792', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed859a7c5801859a86bd1d000c","config":{"assistYFields":[],"formId":"jeecg_xiao_hong_shu_1asdfasdc_asdf_v5va","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"jeecg_xiao_hong_shu_1asdfasdc_asdf_v5va","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"小红书@1ASDFASDC_)-ASDF","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-10 15:13:20.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772688060315926528', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed859a7c5801859a86bd25000d","config":{"assistYFields":[],"formId":"jeecg_xiao_hong_shu_1asdfasdc_asdf_v5va","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"jeecg_xiao_hong_shu_1asdfasdc_asdf_v5va","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"小红书@1ASDFASDC_)-ASDF","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-10 15:13:20.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772690418093588480', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed859a7c5801859a8f51010010","config":{"assistYFields":[],"formId":"jeecg_23123asdf__nin_ha_a_si_d_hp0c","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"jeecg_23123asdf__nin_ha_a_si_d_hp0c","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"!23123&asdf_您哈阿斯顿发（）%1%","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-10 15:22:42.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772690418114560000', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed859a7c5801859a8f51060011","config":{"assistYFields":[],"formId":"jeecg_23123asdf__nin_ha_a_si_d_hp0c","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"jeecg_23123asdf__nin_ha_a_si_d_hp0c","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"!23123&asdf_您哈阿斯顿发（）%1%","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-10 15:22:42.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772690532560338944', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed859a7c5801859a8fbb9c0014","config":{"assistYFields":[],"formId":"ni_hao_a_8123mm_thah","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"ni_hao_a_8123mm_thah","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"你好啊&8123MM……","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-10 15:23:09.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772690532589699072', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed859a7c5801859a8fbba30015","config":{"assistYFields":[],"formId":"ni_hao_a_8123mm_thah","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"ni_hao_a_8123mm_thah","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"你好啊&8123MM……","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-10 15:23:09.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772691585053818880', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed859a7c5801859a938fd20018","config":{"assistYFields":[],"formId":"a_si_dun_fa_song_dao_fa_song_d_b9jd","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"a_si_dun_fa_song_dao_fa_song_d_b9jd","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"阿斯顿发送到发送到发送到发送到发送到发送到发送到发斯蒂芬！12312412341234234","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-10 15:27:20.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772691585078984704', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed859a7c5801859a938fd70019","config":{"assistYFields":[],"formId":"a_si_dun_fa_song_dao_fa_song_d_b9jd","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"a_si_dun_fa_song_dao_fa_song_d_b9jd","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"阿斯顿发送到发送到发送到发送到发送到发送到发送到发斯蒂芬！12312412341234234","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-10 15:27:20.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772692400153886720', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed859a7c5801859a9686f0001c","config":{"assistYFields":[],"formId":"a_si_dun_fa_sheng_a_si_dun_fa__4db1","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"a_si_dun_fa_sheng_a_si_dun_fa__4db1","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"阿斯顿发生阿斯顿发送到发送到发送到发送到发送到发送到发送到发斯蒂芬","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-10 15:30:34.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772692400195829760', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed859a7c5801859a9686f9001d","config":{"assistYFields":[],"formId":"a_si_dun_fa_sheng_a_si_dun_fa__4db1","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"a_si_dun_fa_sheng_a_si_dun_fa__4db1","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"阿斯顿发生阿斯顿发送到发送到发送到发送到发送到发送到发送到发斯蒂芬","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-10 15:30:34.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772700410687324160', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed859a7c5801859ab3ab540020","config":{"assistYFields":[],"formId":"adff_2z3v","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"adff_2z3v","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"adff","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-10 16:02:24.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'772700410708295680', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed859a7c5801859ab3ab590021","config":{"assistYFields":[],"formId":"adff_2z3v","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"adff_2z3v","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"adff","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-10 16:02:24.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773096203617370112', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed85a0538e0185a0538e260000","config":{"assistYFields":[],"formId":"aaaa1","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"aaaa1","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-11 18:15:09.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773096204087132160', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed85a0538e0185a0538ea60001","config":{"assistYFields":[],"formId":"aaaa1","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"aaaa1","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-11 18:15:09.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773098908486270976', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed85a05d650185a05d65430000","config":{"assistYFields":[],"formId":"aaaa1","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"aaaa1","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"aaaa1","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-11 18:25:53.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773098909077667840', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed85a05d650185a05d65dd0001","config":{"assistYFields":[],"formId":"aaaa1","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"aaaa1","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"aaaa1","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-11 18:25:54.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773104813269385216', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed85a05d650185a072e0940004","config":{"assistYFields":[],"formId":"aaaa1","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"aaaa1","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"aaaa1","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-11 18:49:21.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773104813302939648', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed85a05d650185a072e09c0005","config":{"assistYFields":[],"formId":"aaaa1","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"aaaa1","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"aaaa1","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-11 18:49:21.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773115065989660672', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed85a05d650185a0982d2b0008","config":{"assistYFields":[],"formId":"chu_fang_yao","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"chu_fang_yao","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"处方药","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-11 19:30:06.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773115066019020800', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed85a05d650185a0982d330009","config":{"assistYFields":[],"formId":"chu_fang_yao","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"chu_fang_yao","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"处方药","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-11 19:30:06.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773115287805427712', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed85a05d650185a098fbc1000c","config":{"assistYFields":[],"formId":"yao_pin_guan_li_56so","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"yao_pin_guan_li_56so","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"药品管理","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-11 19:30:59.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773115287834787840', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed85a05d650185a098fbc7000d","config":{"assistYFields":[],"formId":"yao_pin_guan_li_56so","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"yao_pin_guan_li_56so","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"药品管理","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-11 19:30:59.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773115301323669504', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed85a05d650185a09908580010","config":{"assistYFields":[],"formId":"sha_gua_d_byfr","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"sha_gua_d_byfr","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"傻瓜d","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-11 19:31:02.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773115301357223936', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed85a05d650185a09908600011","config":{"assistYFields":[],"formId":"sha_gua_d_byfr","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"sha_gua_d_byfr","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"傻瓜d","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-11 19:31:02.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773115303651508224', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed85a05d650185a0990a830014","config":{"assistYFields":[],"formId":"xiao_shou_yuan_ttk6","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"xiao_shou_yuan_ttk6","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"销售员","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-11 19:31:02.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773115303664091136', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed85a05d650185a0990a860015","config":{"assistYFields":[],"formId":"xiao_shou_yuan_ttk6","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"xiao_shou_yuan_ttk6","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"销售员","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-11 19:31:02.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773426738789154816', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed85a506090185a50609000000","config":{"assistYFields":[],"formId":"chu_fang_yao","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"chu_fang_yao","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"处方药","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-12 16:08:34.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773426739690930176', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed85a506090185a50609ea0001","config":{"assistYFields":[],"formId":"chu_fang_yao","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"chu_fang_yao","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"处方药","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-12 16:08:35.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773451899168948224', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed85a506090185a56191810004","config":{"assistYFields":[],"formId":"sha_gua_d_byfr","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"sha_gua_d_byfr","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"傻瓜d","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-12 17:48:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773451899227668480', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed85a506090185a56191900005","config":{"assistYFields":[],"formId":"sha_gua_d_byfr","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"sha_gua_d_byfr","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"傻瓜d","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-12 17:48:33.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773495830288072704', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed85a601630185a60163780000","config":{"assistYFields":[],"formId":"xiao_shou_yuan_ttk6","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"xiao_shou_yuan_ttk6","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-12 20:43:07.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773495830288072705', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed85a601630185a60163780001","config":{"assistYFields":[],"formId":"yao_pin_guan_li_56so","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"yao_pin_guan_li_56so","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-12 20:43:07.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773495831030464512', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed85a601630185a601643d0003","config":{"assistYFields":[],"formId":"yao_pin_guan_li_56so","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"yao_pin_guan_li_56so","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-12 20:43:07.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773495831030464513', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed85a601630185a601643c0002","config":{"assistYFields":[],"formId":"xiao_shou_yuan_ttk6","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"xiao_shou_yuan_ttk6","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-12 20:43:07.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773498678044327936', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881ed85a60bbf0185a60bbfaf0000","config":{"assistYFields":[],"formId":"jeecg_250_nfr2","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"jeecg_250_nfr2","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"250","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-01-12 20:54:26.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'773498678862217216', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881ed85a60bbf0185a60bc07a0001","config":{"assistYFields":[],"formId":"jeecg_250_nfr2","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"jeecg_250_nfr2","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"250","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-01-12 20:54:26.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'780286279472414720', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e5860680e501860680e5ec0000","config":{"assistYFields":[],"formId":"ce_shi_app_fist_demo","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"ce_shi_app_fist_demo","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"测试app第一个例子11","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-01-31 14:25:56.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'780286283788353536', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e5860680e501860680ea2c0001","config":{"assistYFields":[],"formId":"ce_shi_app_fist_demo","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"ce_shi_app_fist_demo","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"测试app第一个例子11","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-01-31 14:25:57.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'780292924277555200', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e5860699120186069912970000","config":{"assistYFields":[],"formId":"wo_de_ke_hu","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"wo_de_ke_hu","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"我的客户","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-01-31 14:52:21.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'780292924671819776', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e5860699120186069913010001","config":{"assistYFields":[],"formId":"wo_de_ke_hu","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"wo_de_ke_hu","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"我的客户","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-01-31 14:52:21.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'780727462598311936', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e5860cc5e901860cc5e9ee0000","config":{"assistYFields":[],"formId":"aaaa","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"aaaa","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"测试mogo列表查询和数据权限","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-02-01 19:39:03.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'780727462719946752', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e5860cc5e901860cc5ea180001","config":{"assistYFields":[],"formId":"aaaa","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"aaaa","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"测试mogo列表查询和数据权限","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-02-01 19:39:03.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'781081487378251776', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e58611cdd9018611cdd92f0000","config":{"assistYFields":[],"formId":"jeecg_xiao_hong_shu_123_iaxy","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"jeecg_xiao_hong_shu_123_iaxy","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"小红书123","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-02-02 19:05:49.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'781081487483109376', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e58611cdd9018611cdd9590001","config":{"assistYFields":[],"formId":"jeecg_xiao_hong_shu_123_iaxy","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"jeecg_xiao_hong_shu_123_iaxy","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"小红书123","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-02-02 19:05:49.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'781081970767593472', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e58611cdd9018611cf9b710004","config":{"assistYFields":[],"formId":"adff_2z3v","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"adff_2z3v","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-02-02 19:07:44.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'781081970788564992', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e58611cdd9018611cf9b770005","config":{"assistYFields":[],"formId":"adff_2z3v","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"adff_2z3v","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-02-02 19:07:44.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'781082322384486400', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e58611cdd9018611d0e2ea0008","config":{"assistYFields":[],"formId":"aaaa1","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"aaaa1","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-02-02 19:09:08.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'781082322409652224', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e58611cdd9018611d0e2f00009","config":{"assistYFields":[],"formId":"aaaa1","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"aaaa1","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-02-02 19:09:08.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'781082329376391168', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e58611cdd9018611d0e96c000c","config":{"assistYFields":[],"formId":"sdfa_gku1","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"sdfa_gku1","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-02-02 19:09:09.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'781082329397362688', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e58611cdd9018611d0e972000d","config":{"assistYFields":[],"formId":"sdfa_gku1","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"sdfa_gku1","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-02-02 19:09:09.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'781084613351079936', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e58611cdd9018611d9388b0010","config":{"assistYFields":[],"formId":"demo_auto_number","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"demo_auto_number","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"示例：自动编号","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'admin', N'2023-02-02 19:18:14.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'781084613380440064', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e58611cdd9018611d938920011","config":{"assistYFields":[],"formId":"demo_auto_number","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"demo_auto_number","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"示例：自动编号","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'admin', N'2023-02-02 19:18:14.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'781123317377564672', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e58612660601861266066a0000","config":{"assistYFields":[],"formId":"zhua_yao_zp4u","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"zhua_yao_zp4u","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"抓药","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-02-02 21:52:02.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'781123317734080512', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e5861266060186126606cc0001","config":{"assistYFields":[],"formId":"zhua_yao_zp4u","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"zhua_yao_zp4u","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"抓药","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-02-02 21:52:02.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'781704807987576832', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e5861aa97901861aa979ba0000","config":{"assistYFields":[],"formId":"ce_shi_biao_dan_001_gsdm","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"ce_shi_biao_dan_001_gsdm","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"测试表单001","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-02-04 12:22:40.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'781704808121794560', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e5861aa97901861aa979ec0001","config":{"assistYFields":[],"formId":"ce_shi_biao_dan_001_gsdm","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"ce_shi_biao_dan_001_gsdm","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"测试表单001","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-02-04 12:22:40.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'786408878929641472', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e5865d82c901865d82c90e0000","config":{"assistYFields":[],"formId":"ce_shi_biao_dan_001_gsdm","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"ce_shi_biao_dan_001_gsdm","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"测试表单001","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-02-17 11:54:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'786408880452173824', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e5865d82c901865d82caac0001","config":{"assistYFields":[],"formId":"ce_shi_biao_dan_001_gsdm","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"ce_shi_biao_dan_001_gsdm","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"测试表单001","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-02-17 11:54:58.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'787463779545808896', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e5866c807d01866c807df20000","config":{"assistYFields":[],"formId":"xiao_shou_yuan_ttk6","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"xiao_shou_yuan_ttk6","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"销售员","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-02-20 09:46:46.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'787463779721969664', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e5866c807d01866c807e2e0001","config":{"assistYFields":[],"formId":"xiao_shou_yuan_ttk6","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"xiao_shou_yuan_ttk6","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"销售员","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-02-20 09:46:46.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'787463782867697664', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e5866c807d01866c80811e0004","config":{"assistYFields":[],"formId":"sha_gua_d_byfr","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"sha_gua_d_byfr","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"傻瓜d","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-02-20 09:46:46.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'787463782884474880', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e5866c807d01866c8081230005","config":{"assistYFields":[],"formId":"sha_gua_d_byfr","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"sha_gua_d_byfr","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"傻瓜d","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-02-20 09:46:46.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'787463790937538560', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e5866c807d01866c8088a30008","config":{"assistYFields":[],"formId":"yao_pin_guan_li_56so","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"yao_pin_guan_li_56so","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"药品管理","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-02-20 09:46:48.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'787463790962704384', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e5866c807d01866c8088a80009","config":{"assistYFields":[],"formId":"yao_pin_guan_li_56so","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"yao_pin_guan_li_56so","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"药品管理","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-02-20 09:46:48.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'788345993070411776', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e5867909f701867909f75d0000","config":{"assistYFields":[],"formId":"sfasd_c6km","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"sfasd_c6km","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"sfasd","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-02-22 20:12:22.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'788345993238183936', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e5867909f701867909f78c0001","config":{"assistYFields":[],"formId":"sfasd_c6km","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"sfasd_c6km","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"sfasd","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-02-22 20:12:22.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'788677763355672576', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e5867dc0f001867dc0f0840000","config":{"assistYFields":[],"formId":"ku_cun_h3ht","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"ku_cun_h3ht","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"库存","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-02-23 18:10:42.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'788677763523444736', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e5867dc0f001867dc0f0b40001","config":{"assistYFields":[],"formId":"ku_cun_h3ht","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"ku_cun_h3ht","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"库存","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-02-23 18:10:42.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'788677867252776960', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e5867dc0f001867dc151500004","config":{"assistYFields":[],"formId":"ru_ku_dan_5rq0","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"ru_ku_dan_5rq0","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"入库单","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-02-23 18:11:07.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'788677867277942784', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e5867dc0f001867dc151560005","config":{"assistYFields":[],"formId":"ru_ku_dan_5rq0","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"ru_ku_dan_5rq0","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"入库单","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-02-23 18:11:07.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'790747819019370496', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e5869b2bc201869b2bc2130000","config":{"assistYFields":[],"formId":"bao_bao_cai_pu_2cqr","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"bao_bao_cai_pu_2cqr","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"宝宝菜谱","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-03-01 11:16:22.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'790747819141005312', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e5869b2bc201869b2bc23c0001","config":{"assistYFields":[],"formId":"bao_bao_cai_pu_2cqr","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"bao_bao_cai_pu_2cqr","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"宝宝菜谱","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-03-01 11:16:22.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'790755458344321024', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e5869b478c01869b478cbe0000","config":{"assistYFields":[],"formId":"su_cai_zhun_bei_1fps","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"su_cai_zhun_bei_1fps","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"素材准备","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-03-01 11:46:43.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'790755458709225472', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e5869b478c01869b478d200001","config":{"assistYFields":[],"formId":"su_cai_zhun_bei_1fps","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"su_cai_zhun_bei_1fps","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"素材准备","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-03-01 11:46:43.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'793418272129187840', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e586c11ecf0186c11ecf520000","config":{"assistYFields":[],"formId":"hong_niu_pin_zhong_u7d2","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"hong_niu_pin_zhong_u7d2","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"红牛品种","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-03-08 20:07:47.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'793418272720584704', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e586c11ecf0186c11ecff00001","config":{"assistYFields":[],"formId":"hong_niu_pin_zhong_u7d2","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"hong_niu_pin_zhong_u7d2","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"红牛品种","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-03-08 20:07:47.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'795896466006638592', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e586e4566d0186e4566d3c0000","config":{"assistYFields":[],"formId":"cai_gou_dan_jp29","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"cai_gou_dan_jp29","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"采购单","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-03-15 16:15:15.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'795896466132467712', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e586e4566d0186e4566d690001","config":{"assistYFields":[],"formId":"cai_gou_dan_jp29","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"cai_gou_dan_jp29","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"采购单","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-03-15 16:15:15.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'795896576572686336', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e586e4566d0186e456d4430004","config":{"assistYFields":[],"formId":"cai_gou_ming_xi_fqt7","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"cai_gou_ming_xi_fqt7","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"采购明细","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-03-15 16:15:41.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'795896576606240768', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e586e4566d0186e456d44b0005","config":{"assistYFields":[],"formId":"cai_gou_ming_xi_fqt7","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"cai_gou_ming_xi_fqt7","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"采购明细","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-03-15 16:15:41.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'796307505735041024', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e586ea2dc70186ea2dc7d20000","config":{"assistYFields":[],"formId":"chan_pin_4jvg","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"chan_pin_4jvg","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"产品","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-03-16 19:28:34.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'796307506150277120', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e586ea2dc70186ea2dc8410001","config":{"assistYFields":[],"formId":"chan_pin_4jvg","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"chan_pin_4jvg","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"产品","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-03-16 19:28:34.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'796307694893957120', NULL, NULL, NULL, N'JNumber', N'{"component":"JNumber","id":"402881e586ea2dc70186ea2e78090004","config":{"assistYFields":[],"formId":"ku_cun_v2ve","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"filterField":[],"timeOut":0,"tableName":"ku_cun_v2ve","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"库存","nameFields":[],"dataNum":"","chart":{"subclass":"JNumber","category":"Number"},"sorts":{"name":"","type":""},"option":{"isCompare":false,"trendType":"1","body":{"color":"#000000","text":"","fontWeight":"bold"},"card":{"rightHref":"","size":"small","extra":"","title":""}}}}', N'jeecg', N'2023-03-16 19:29:19.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'796307694914928640', NULL, NULL, NULL, N'JBar', N'{"component":"JBar","id":"402881e586ea2dc70186ea2e780f0005","config":{"assistYFields":[],"formId":"ku_cun_v2ve","compStyleConfig":{"summary":{"showName":"总计","showField":"","showTotal":false,"showY":true,"totalType":"sum"},"lineFreeze":true,"columnFreeze":true,"assist":{"summary":{"showName":"总计","showField":"","showY":true,"totalType":"sum"},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0}},"showUnit":{"unit":"","numberLevel":"","position":"suffix","decimal":0},"headerFreeze":true,"unilineShow":true},"formType":"design","assistTypeFields":[],"dataType":4,"calcFields":[],"valueFields":[{"fieldName":"record_count","fieldTxt":"记录数量","fieldType":"count","widgetType":"text"}],"analysis":{"showData":1,"isRawData":true,"isCompare":false,"compareType":"","showMode":1,"showFields":[],"trendType":"1"},"timeOut":0,"tableName":"ku_cun_v2ve","typeFields":[],"filter":{"conditionMode":"and","conditionFields":[],"queryField":"create_time","queryRange":"month"},"size":{"height":500},"formName":"库存","nameFields":[{"fieldName":"create_time","fieldTxt":"创建时间","fieldType":"date","widgetType":"date"}],"dataNum":"","chart":{"subclass":"JBar","category":"Bar","isGroup":false},"sorts":{"name":"","type":""},"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}}', N'jeecg', N'2023-03-16 19:29:19.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'811451560194256896', NULL, N'1517067453027352578', NULL, N'JForm', N'{"borderColor":"#FFFFFF00","paramOption":[{"defaultVal":"1","label":"sex","text":"sex","value":"sex"}],"dataType":2,"dataSetName":"示例_参数查询","query":[],"h":12,"dataSetApi":"select*fromdemowherenamelike''%${name}%''","timeOut":-1,"size":{"height":120},"dataSetId":"1516317603268657153","fieldOption":[{"label":"id","text":"id","value":"id"},{"label":"姓名","text":"姓名","value":"name"},{"label":"key_word","text":"key_word","value":"key_word"},{"label":"punch_time","text":"punch_time","value":"punch_time"},{"label":"salary_money","text":"salary_money","value":"salary_money"},{"label":"bonus_money","text":"bonus_money","value":"bonus_money"},{"label":"sex","text":"sex","value":"sex"},{"label":"age","text":"age","value":"age"},{"label":"birthday","text":"birthday","value":"birthday"},{"label":"email","text":"email","value":"email"},{"label":"content","text":"content","value":"content"},{"label":"create_by","text":"create_by","value":"create_by"},{"label":"create_time","text":"create_time","value":"create_time"},{"label":"update_by","text":"update_by","value":"update_by"},{"label":"update_time","text":"update_time","value":"update_time"},{"label":"sys_org_code","text":"sys_org_code","value":"sys_org_code"},{"label":"tenant_id","text":"tenant_id","value":"tenant_id"}],"dataSetType":"sql","background":"#FFFFFF","w":24,"linkageConfig":[{"linkageId":"79f3e507-d7ab-4cd5-9402-ca5b41086a73","linkage":[{"source":"name","target":"name"}]},{"linkageId":"95f190fb-69cc-4dc7-8f4c-b9f33460ad60","linkage":[{"source":"name","target":"name"}]}],"dataSetIzAgent":"","option":{"fields":[{"fieldName":"name","fieldTxt":"姓名","id":"row0789b9da-89e4-4402-af25-2bb1043d68f7","izSearch":"1","widgetType":"input"}]}}', N'admin', N'2023-04-27 14:25:38.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'811451560223617024', NULL, N'1517067453027352578', NULL, N'JBar', N'{"dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"age","filed":"数值"}],"paramOption":[{"defaultVal":"","label":"name","text":"name","value":"name"}],"dataType":2,"dataSetName":"示例_参数查询","query":[],"dataSetApi":"select*fromdemowherenamelike''%${name}%''","url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"chartData":"[{\"name\":\"苹果\",\"value\":1000879,\"type\":\"手机品牌\"},{\"name\":\"三星\",\"value\":3400879,\"type\":\"手机品牌\"},{\"name\":\"小米\",\"value\":2300879,\"type\":\"手机品牌\"},{\"name\":\"oppo\",\"value\":5400879,\"type\":\"手机品牌\"},{\"name\":\"vivo\",\"value\":3400879,\"type\":\"手机品牌\"}]","size":{"height":420},"dataSetId":"1516317603268657153","fieldOption":[{"label":"id","text":"id","value":"id"},{"label":"name","text":"name","value":"name"},{"label":"key_word","text":"key_word","value":"key_word"},{"label":"punch_time","text":"punch_time","value":"punch_time"},{"label":"salary_money","text":"salary_money","value":"salary_money"},{"label":"bonus_money","text":"bonus_money","value":"bonus_money"},{"label":"sex","text":"sex","value":"sex"},{"label":"age","text":"age","value":"age"},{"label":"birthday","text":"birthday","value":"birthday"},{"label":"email","text":"email","value":"email"},{"label":"content","text":"content","value":"content"},{"label":"create_by","text":"create_by","value":"create_by"},{"label":"create_time","text":"create_time","value":"create_time"},{"label":"update_by","text":"update_by","value":"update_by"},{"label":"update_time","text":"update_time","value":"update_time"},{"label":"sys_org_code","text":"sys_org_code","value":"sys_org_code"},{"label":"tenant_id","text":"tenant_id","value":"tenant_id"}],"dataSetType":"sql","turnConfig":{"url":""},"linkageConfig":[{"linkageId":"a7de05b4-3eab-40ce-bb95-39d650ea3c1b","linkage":[{"source":"age","target":"age"}]}],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180,180,180,0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":""}}}', N'admin', N'2023-04-27 14:25:38.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'811451560236199936', NULL, N'1517067453027352578', NULL, N'JPie', N'{"borderColor":"#FFFFFF00","dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"age","filed":"数值"}],"paramOption":[{"defaultVal":"","label":"name","text":"name","value":"name"}],"dataType":2,"dataSetName":"示例_参数查询","query":[],"dataSetApi":"select*fromdemowherenamelike''%${name}%''","url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"chartData":"[{\"value\":1048,\"name\":\"vivo\"},{\"value\":735,\"name\":\"oppo\"},{\"value\":580,\"name\":\"苹果\"},{\"value\":484,\"name\":\"小米\"},{\"value\":300,\"name\":\"三星\"}]","size":{"height":420},"dataSetId":"1516317603268657153","fieldOption":[{"label":"id","text":"id","value":"id"},{"label":"name","text":"name","value":"name"},{"label":"key_word","text":"key_word","value":"key_word"},{"label":"punch_time","text":"punch_time","value":"punch_time"},{"label":"salary_money","text":"salary_money","value":"salary_money"},{"label":"bonus_money","text":"bonus_money","value":"bonus_money"},{"label":"sex","text":"sex","value":"sex"},{"label":"age","text":"age","value":"age"},{"label":"birthday","text":"birthday","value":"birthday"},{"label":"email","text":"email","value":"email"},{"label":"content","text":"content","value":"content"},{"label":"create_by","text":"create_by","value":"create_by"},{"label":"create_time","text":"create_time","value":"create_time"},{"label":"update_by","text":"update_by","value":"update_by"},{"label":"update_time","text":"update_time","value":"update_time"},{"label":"sys_org_code","text":"sys_org_code","value":"sys_org_code"},{"label":"tenant_id","text":"tenant_id","value":"tenant_id"}],"dataSetType":"sql","background":"#FFFFFF","turnConfig":{"url":""},"linkageConfig":[{"linkageId":"9e46a297-752b-40bc-95c7-d28f87ce7cd5","linkage":[{"source":"age","target":"age"}]},{"linkageId":"a7de05b4-3eab-40ce-bb95-39d650ea3c1b","linkage":[{"source":"age","target":"age"}]}],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"legend":{"orient":"vertical"},"series":[{"data":[],"name":"AccessFrom","emphasis":{"itemStyle":{"shadowOffsetX":0,"shadowBlur":10,"shadowColor":"rgba(0,0,0,0.5)"}},"type":"pie","radius":"50%"}],"tooltip":{"trigger":"item"},"title":{"subtext":"","left":"left","show":true,"text":"基础饼图"},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":""}}}', N'admin', N'2023-04-27 14:25:38.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'811451560252977152', NULL, N'1517067453027352578', NULL, N'JLine', N'{"borderColor":"#FFFFFF00","dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"age","filed":"数值"}],"paramOption":[{"defaultVal":"","label":"age","text":"age","value":"age"}],"dataType":2,"dataSetName":"示例_根据年龄查询用户","query":[],"dataSetApi":"select*fromdemowhereage=${age}","url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"chartData":"[{\"value\":1000,\"name\":\"联想\"},{\"value\":7350,\"name\":\"小米\"},{\"value\":5800,\"name\":\"华为\"},{\"value\":6000,\"name\":\"苹果\"},{\"value\":3000,\"name\":\"戴尔\"}]","size":{"height":420},"dataSetId":"1517071247723233281","fieldOption":[{"label":"id","text":"id","value":"id"},{"label":"name","text":"name","value":"name"},{"label":"key_word","text":"key_word","value":"key_word"},{"label":"punch_time","text":"punch_time","value":"punch_time"},{"label":"salary_money","text":"salary_money","value":"salary_money"},{"label":"bonus_money","text":"bonus_money","value":"bonus_money"},{"label":"sex","text":"sex","value":"sex"},{"label":"age","text":"age","value":"age"},{"label":"birthday","text":"birthday","value":"birthday"},{"label":"email","text":"email","value":"email"},{"label":"content","text":"content","value":"content"},{"label":"create_by","text":"create_by","value":"create_by"},{"label":"create_time","text":"create_time","value":"create_time"},{"label":"update_by","text":"update_by","value":"update_by"},{"label":"update_time","text":"update_time","value":"update_time"},{"label":"sys_org_code","text":"sys_org_code","value":"sys_org_code"},{"label":"tenant_id","text":"tenant_id","value":"tenant_id"}],"dataSetType":"sql","background":"#FFFFFF","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"type":"line"}],"title":{"subtext":"","left":"left","text":"基础折线图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":""}}}', N'admin', N'2023-04-27 14:25:38.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'811451560269754368', NULL, N'1517067453027352578', NULL, N'JProgress', N'{"borderColor":"#FFFFFF00","dataMapping":[{"mapping":"name","filed":"维度"},{"mapping":"age","filed":"数值"}],"paramOption":[{"defaultVal":"","label":"age","text":"age","value":"age"}],"dataType":2,"dataSetName":"示例_根据年龄查询用户","query":[],"dataSetApi":"select*fromdemowhereage=${age}","url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"chartData":"[{\"name\":\"内存使用率\",\"value\":50}]","size":{"height":420},"dataSetId":"1517071247723233281","fieldOption":[{"label":"id","text":"id","value":"id"},{"label":"name","text":"name","value":"name"},{"label":"key_word","text":"key_word","value":"key_word"},{"label":"punch_time","text":"punch_time","value":"punch_time"},{"label":"salary_money","text":"salary_money","value":"salary_money"},{"label":"bonus_money","text":"bonus_money","value":"bonus_money"},{"label":"sex","text":"sex","value":"sex"},{"label":"age","text":"age","value":"age"},{"label":"birthday","text":"birthday","value":"birthday"},{"label":"email","text":"email","value":"email"},{"label":"content","text":"content","value":"content"},{"label":"create_by","text":"create_by","value":"create_by"},{"label":"create_time","text":"create_time","value":"create_time"},{"label":"update_by","text":"update_by","value":"update_by"},{"label":"update_time","text":"update_time","value":"update_time"},{"label":"sys_org_code","text":"sys_org_code","value":"sys_org_code"},{"label":"tenant_id","text":"tenant_id","value":"tenant_id"}],"dataSetType":"sql","background":"#FFFFFF","linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"show":false},"series":[{"barWidth":19,"color":"#151B87","itemStyle":{"normal":{"barBorderRadius":10}},"zlevel":1,"label":{"formatter":"{c}{a}","offset":[0,-40],"color":"black","show":true,"fontSize":24,"position":"right"}},{"barWidth":19,"color":"#eeeeee","barGap":"-100%","itemStyle":{"normal":{"barBorderRadius":10}},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础进度图","textStyle":{"color":"#464646"}}}}', N'admin', N'2023-04-27 14:25:38.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'817961335140691968', NULL, N'817932088040796160', NULL, N'JBar', N'{"chartData":[{"name":"苹果","type":"手机品牌","value":1000879},{"name":"三星","type":"手机品牌","value":3400879},{"name":"小米","type":"手机品牌","value":2300879},{"name":"oppo","type":"手机品牌","value":5400879},{"name":"vivo","type":"手机品牌","value":3400879}],"size":{"height":300},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2023-05-15 13:33:10.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'826005888498184192', NULL, N'825988076505444352', NULL, N'JPie', N'{"dataMapping":[{"mapping":"column1","filed":"维度"},{"mapping":"column8","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"项目性质收入统计JSON","query":[],"dataSetApi":"[{\"column1\":\"市场化-电商业务\",\"column2\":4865.41,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":4865.41},{\"column1\":\"统筹型\",\"column2\":35767081.88,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":35767081.88},{\"column1\":\"市场化-非股东\",\"column2\":1487045.35,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":1487045.35},{\"column1\":\"市场化-参控股\",\"column2\":382690.56,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":382690.56},{\"column1\":\"市场化-员工福利\",\"column2\":256684.91,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":265684.91},{\"column1\":\"市场化-再保险\",\"column2\":563451.03,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":563451.03},{\"column1\":\"市场化-海外业务\",\"column2\":760576.25,\"column3\":770458.75,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":1531035.00},{\"column1\":\"市场化-风险咨询\",\"column2\":0.00,\"column3\":910183.93,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":226415.09,\"column8\":1136599.02}]","url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"chartData":"[{\"value\":1048,\"name\":\"vivo\"},{\"value\":735,\"name\":\"oppo\"},{\"value\":580,\"name\":\"苹果\"},{\"value\":484,\"name\":\"小米\"},{\"value\":300,\"name\":\"三星\"}]","size":{"height":420},"dataSetId":"1516748630344630273","fieldOption":[{"label":"项目性质","text":"项目性质","value":"column1"},{"label":"保险公估费","text":"保险公估费","value":"column5"},{"label":"承保公估评估费","text":"承保公估评估费","value":"column4"},{"label":"风险咨询费","text":"风险咨询费","value":"column3"},{"label":"保险经纪佣金费","text":"保险经纪佣金费","value":"column2"},{"label":"总计","text":"总计","value":"column8"},{"label":"内控咨询费","text":"内控咨询费","value":"column7"},{"label":"投标咨询费","text":"投标咨询费","value":"column6"}],"dataSetType":"json","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"legend":{"orient":"vertical"},"series":[{"data":[],"name":"AccessFrom","emphasis":{"itemStyle":{"shadowOffsetX":0,"shadowBlur":10,"shadowColor":"rgba(0,0,0,0.5)"}},"type":"pie","radius":"50%"}],"tooltip":{"trigger":"item"},"title":{"subtext":"","left":"left","show":true,"text":"基础饼图"},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":""}}}', N'admin', N'2023-06-06 18:19:20.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'826005888569487360', NULL, N'825988076505444352', NULL, N'JBar', N'{"dataMapping":[{"mapping":"column1","filed":"维度"},{"mapping":"column8","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"项目性质收入统计JSON","query":[],"dataSetApi":"[{\"column1\":\"市场化-电商业务\",\"column2\":4865.41,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":4865.41},{\"column1\":\"统筹型\",\"column2\":35767081.88,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":35767081.88},{\"column1\":\"市场化-非股东\",\"column2\":1487045.35,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":1487045.35},{\"column1\":\"市场化-参控股\",\"column2\":382690.56,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":382690.56},{\"column1\":\"市场化-员工福利\",\"column2\":256684.91,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":265684.91},{\"column1\":\"市场化-再保险\",\"column2\":563451.03,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":563451.03},{\"column1\":\"市场化-海外业务\",\"column2\":760576.25,\"column3\":770458.75,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":1531035.00},{\"column1\":\"市场化-风险咨询\",\"column2\":0.00,\"column3\":910183.93,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":226415.09,\"column8\":1136599.02}]","url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"chartData":"[{\"name\":\"苹果\",\"value\":1000879,\"type\":\"手机品牌\"},{\"name\":\"三星\",\"value\":3400879,\"type\":\"手机品牌\"},{\"name\":\"小米\",\"value\":2300879,\"type\":\"手机品牌\"},{\"name\":\"oppo\",\"value\":5400879,\"type\":\"手机品牌\"},{\"name\":\"vivo\",\"value\":3400879,\"type\":\"手机品牌\"}]","size":{"height":420},"dataSetId":"1516748630344630273","fieldOption":[{"label":"项目性质","text":"项目性质","value":"column1"},{"label":"保险公估费","text":"保险公估费","value":"column5"},{"label":"承保公估评估费","text":"承保公估评估费","value":"column4"},{"label":"风险咨询费","text":"风险咨询费","value":"column3"},{"label":"保险经纪佣金费","text":"保险经纪佣金费","value":"column2"},{"label":"总计","text":"总计","value":"column8"},{"label":"内控咨询费","text":"内控咨询费","value":"column7"},{"label":"投标咨询费","text":"投标咨询费","value":"column6"}],"dataSetType":"json","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180,180,180,0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":""}}}', N'admin', N'2023-06-06 18:19:21.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'826005888598847488', NULL, N'825988076505444352', NULL, N'JLine', N'{"dataMapping":[{"mapping":"column1","filed":"维度"},{"mapping":"column8","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"项目性质收入统计JSON","query":[],"dataSetApi":"[{\"column1\":\"市场化-电商业务\",\"column2\":4865.41,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":4865.41},{\"column1\":\"统筹型\",\"column2\":35767081.88,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":35767081.88},{\"column1\":\"市场化-非股东\",\"column2\":1487045.35,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":1487045.35},{\"column1\":\"市场化-参控股\",\"column2\":382690.56,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":382690.56},{\"column1\":\"市场化-员工福利\",\"column2\":256684.91,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":265684.91},{\"column1\":\"市场化-再保险\",\"column2\":563451.03,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":563451.03},{\"column1\":\"市场化-海外业务\",\"column2\":760576.25,\"column3\":770458.75,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":1531035.00},{\"column1\":\"市场化-风险咨询\",\"column2\":0.00,\"column3\":910183.93,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":226415.09,\"column8\":1136599.02}]","url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"chartData":"[{\"value\":1000,\"name\":\"联想\"},{\"value\":7350,\"name\":\"小米\"},{\"value\":5800,\"name\":\"华为\"},{\"value\":6000,\"name\":\"苹果\"},{\"value\":3000,\"name\":\"戴尔\"}]","size":{"width":1650,"height":474},"dataSetId":"1516748630344630273","fieldOption":[{"label":"项目性质","text":"项目性质","value":"column1"},{"label":"保险公估费","text":"保险公估费","value":"column5"},{"label":"承保公估评估费","text":"承保公估评估费","value":"column4"},{"label":"风险咨询费","text":"风险咨询费","value":"column3"},{"label":"保险经纪佣金费","text":"保险经纪佣金费","value":"column2"},{"label":"总计","text":"总计","value":"column8"},{"label":"内控咨询费","text":"内控咨询费","value":"column7"},{"label":"投标咨询费","text":"投标咨询费","value":"column6"}],"dataSetType":"json","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"type":"line"}],"title":{"subtext":"","left":"left","text":"基础折线图"},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":""}}}', N'admin', N'2023-06-06 18:19:21.0000000', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'826005888611430400', NULL, N'825988076505444352', NULL, N'JCommonTable', N'{"paramOption":[],"dataType":2,"dataSetName":"项目性质收入统计JSON","query":[],"h":42,"dataSetApi":"[{\"column1\":\"市场化-电商业务\",\"column2\":4865.41,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":4865.41},{\"column1\":\"统筹型\",\"column2\":35767081.88,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":35767081.88},{\"column1\":\"市场化-非股东\",\"column2\":1487045.35,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":1487045.35},{\"column1\":\"市场化-参控股\",\"column2\":382690.56,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":382690.56},{\"column1\":\"市场化-员工福利\",\"column2\":256684.91,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":265684.91},{\"column1\":\"市场化-再保险\",\"column2\":563451.03,\"column3\":0,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":563451.03},{\"column1\":\"市场化-海外业务\",\"column2\":760576.25,\"column3\":770458.75,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":0,\"column8\":1531035.00},{\"column1\":\"市场化-风险咨询\",\"column2\":0.00,\"column3\":910183.93,\"column4\":0,\"column5\":0,\"column6\":0,\"column7\":226415.09,\"column8\":1136599.02}]","timeOut":-1,"chartData":"[{\"name\":\"4月\",\"value\":50},{\"name\":\"2月\",\"value\":200},{\"name\":\"3月\",\"value\":300},{\"name\":\"4月\",\"value\":400},{\"name\":\"5月\",\"value\":50},{\"name\":\"6月\",\"value\":120}]","size":{"width":1650,"height":518},"dataSetId":"1516748630344630273","fieldOption":[{"label":"项目性质","text":"项目性质","value":"column1"},{"label":"保险公估费","text":"保险公估费","value":"column5"},{"label":"承保公估评估费","text":"承保公估评估费","value":"column4"},{"label":"风险咨询费","text":"风险咨询费","value":"column3"},{"label":"保险经纪佣金费","text":"保险经纪佣金费","value":"column2"},{"label":"总计","text":"总计","value":"column8"},{"label":"内控咨询费","text":"内控咨询费","value":"column7"},{"label":"投标咨询费","text":"投标咨询费","value":"column6"}],"dataSetType":"json","w":24,"linkageConfig":[],"dataSetIzAgent":"","option":{"columns":[{"izTotal":"Y","izShow":"Y","dataIndex":"column1","title":"项目性质"},{"izTotal":"Y","izShow":"Y","dataIndex":"column5","title":"保险公估费"},{"izTotal":"Y","izShow":"Y","dataIndex":"column4","title":"承保公估评估费"},{"izTotal":"Y","izShow":"Y","dataIndex":"column3","title":"风险咨询费"},{"izTotal":"Y","izShow":"Y","dataIndex":"column2","title":"保险经纪佣金费"},{"izTotal":"Y","izShow":"Y","dataIndex":"column8","title":"总计"},{"izTotal":"Y","izShow":"Y","dataIndex":"column7","title":"内控咨询费"},{"izTotal":"Y","izShow":"Y","dataIndex":"column6","title":"投标咨询费"}]}}', N'admin', N'2023-06-06 18:19:21.0000000', NULL, NULL)
+GO
+
+
+-- ----------------------------
 -- Table structure for oss_file
 -- ----------------------------
 IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[oss_file]') AND type IN ('U'))
@@ -15014,6 +19831,75 @@ GO
 -- ----------------------------
 -- Records of sys_log
 -- ----------------------------
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1632743293639704578', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-06 22:01:51.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633795132552331266', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 19:41:29.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633795234301952002', N'3', N'将 jeecg 添加到角色 232', N'2', N'admin', N'管理员', NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 19:41:53.0000000', NULL, NULL, N'1')
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633795819784847361', N'2', N'编辑用户，username： zhagnxiao', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 19:44:13.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633797138973147137', N'2', N'添加用户，username： sdfas', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 19:49:27.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633799025831133186', N'2', N'添加用户，username： 123', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 19:56:57.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633799090641518594', N'2', N'编辑用户，username： 123', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 19:57:12.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633799500294995970', N'2', N'添加用户，username： sdfasdf', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 19:58:50.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633799606465413122', N'2', N'编辑用户，username： sdfasdf', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 19:59:15.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633802472806670338', N'1', N'用户名: 管理员,退出成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 20:10:39.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633802491123195906', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 20:10:43.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633802551785414658', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=0)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@400bd6e8', NULL, N'44', NULL, N'2023-03-09 20:10:58.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633802611273228290', N'2', N'添加用户，username： asdfasdf', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 20:11:12.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633802653614727170', N'2', N'批量删除用户， ids： 1633802611139010562,1633799500227887106,1633799025764024321,1633797138843123714', N'3', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 20:11:22.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633802992560627713', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=0)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@767bb69d', NULL, N'18', NULL, N'2023-03-09 20:12:43.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633802993412071426', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=总经理, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=0)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@f9470cd', NULL, N'24', NULL, N'2023-03-09 20:12:43.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633803007035170818', N'2', N'编辑用户，username： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 20:12:46.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633804165707456513', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=1000)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@7460e74a', NULL, N'15', NULL, N'2023-03-09 20:17:22.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633804994137026562', N'2', N'修改角色ID: 1501570619841810433 的权限配置，操作人： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 20:20:40.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633807285640491010', N'2', N'编辑用户，username： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 20:29:46.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1666007096779063299', N'2', N'修改角色ID: 1501570619841810433 的权限配置，操作人： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-06-06 17:00:19.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1666007226924122114', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'11', NULL, N'2023-06-06 17:00:50.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1666008971326767106', N'2', N'修改角色ID: 1501570619841810433 的权限配置，操作人： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-06-06 17:07:46.0000000', NULL, NULL, NULL)
+GO
+
 
 -- ----------------------------
 -- Table structure for sys_permission
@@ -15258,7 +20144,7 @@ GO
 INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1170592628746878978', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'菜单管理', N'/system/menu', N'system/menu/index', N'1', NULL, NULL, N'1', NULL, N'1', N'3', N'0', N'ant-design:menu-fold-outlined', N'0', N'0', N'0', N'0', NULL, N'admin', N'2019-09-08 15:00:05.0000000', N'admin', N'2022-11-10 16:42:38.0000000', N'0', N'0', N'1', N'0')
 GO
 
-INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'119213522910765570', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'租户用户', N'/system/user/tenantUserList', N'system/user/TenantUserList', N'1', NULL, NULL, N'1', NULL, NULL, N'3.2', N'0', N'ant-design:user', N'1', N'0', N'0', N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2022-12-30 10:11:27.0000000', N'0', N'0', NULL, N'0')
+INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'119213522910765570', N'1633804334561746946', N'租户用户', N'/system/user/tenantUserList', N'system/user/TenantUserList', N'1', NULL, NULL, N'1', NULL, NULL, N'3.2', N'0', N'ant-design:user', N'1', N'0', N'0', N'0', NULL, NULL, N'2018-12-25 20:34:38.0000000', N'admin', N'2023-03-09 20:18:16.0000000', N'0', N'0', NULL, N'0')
 GO
 
 INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1211885237487923202', N'1207203817658105858', N'btn:add', N'', N'', N'1', NULL, NULL, N'2', N'btn:add', N'1', N'1', N'0', NULL, N'1', N'0', N'0', NULL, NULL, N'admin', N'2019-12-31 13:42:11.0000000', N'admin', N'2020-01-07 20:07:53.0000000', N'0', N'0', N'1', N'0')
@@ -15825,7 +20711,7 @@ GO
 INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1447535997560909826', N'1438108197270446081', N'禁用', NULL, NULL, N'0', NULL, NULL, N'2', N'demo.dbarray', N'2', NULL, N'0', NULL, N'1', N'0', N'0', N'0', NULL, N'admin', N'2021-10-11 20:14:10.0000000', N'admin', N'2021-10-11 20:18:48.0000000', N'0', N'0', N'1', N'0')
 GO
 
-INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1447763172274495489', N'', N'统计报表', N'/report', N'layouts/RouteView', N'1', NULL, NULL, N'0', NULL, N'0', N'3.1', N'0', N'ant-design:bar-chart-outlined', N'0', N'0', N'0', N'0', NULL, N'jeecg', N'2021-10-12 11:16:53.0000000', N'admin', N'2023-03-04 15:00:49.0000000', N'0', N'0', NULL, N'0')
+INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1447763172274495489', N'', N'统计报表', N'/report', N'layouts/RouteView', N'1', NULL, NULL, N'0', NULL, N'0', N'5', N'0', N'ant-design:bar-chart-outlined', N'0', N'0', N'0', N'0', NULL, N'jeecg', N'2021-10-12 11:16:53.0000000', N'admin', N'2023-03-09 20:21:04.0000000', N'0', N'0', NULL, N'0')
 GO
 
 INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1447763517847396354', N'1447763172274495489', N'EChartDemo', N'/report/chartDemo', N'report/chartdemo/index', N'1', NULL, NULL, N'1', NULL, N'0', N'1', N'0', NULL, N'1', N'0', N'0', N'0', NULL, N'jeecg', N'2021-10-12 11:18:15.0000000', N'jeecg', N'2021-10-14 14:36:38.0000000', N'0', N'0', NULL, N'0')
@@ -15888,10 +20774,19 @@ GO
 INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1465686870713782273', N'1455100420297859074', N'AUTO在线表单', N'/online/cgformList/:id', N'super/online/cgform/auto/default/OnlineAutoList', N'1', NULL, NULL, N'1', NULL, N'0', N'5', N'0', NULL, N'1', N'0', N'1', N'0', NULL, N'admin', N'2021-11-30 22:19:16.0000000', NULL, NULL, N'0', N'0', NULL, N'0')
 GO
 
+INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1473927410093187073', N'1455100420297859074', N'仪表盘设计器', N'/drag/page', N'super/drag/page/pageList', N'1', NULL, NULL, N'1', NULL, N'0', N'3', N'0', N'', N'0', N'1', N'0', N'0', NULL, N'admin', N'2021-12-23 16:04:13.0000000', N'admin', N'2023-05-15 11:06:42.0000000', N'0', N'0', NULL, N'0')
+GO
+
+INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1473955758466981890', N'1473927410093187073', N'面板预览', N'/drag/page/view/:id', N'super/drag/page/view', N'1', NULL, NULL, N'1', NULL, N'0', N'99', N'0', NULL, N'1', N'0', N'1', N'0', NULL, N'admin', N'2021-12-23 17:56:52.0000000', N'admin', N'2022-11-16 14:39:51.0000000', N'0', N'0', NULL, N'0')
+GO
+
 INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1509417558230999041', N'1455100420297859074', N'AUTO树表单列表', N'/online/cgformTreeList/:id', N'super/online/cgform/auto/tree/OnlineAutoTreeList', N'1', NULL, NULL, N'1', NULL, N'0', N'5', N'0', NULL, N'1', N'0', N'1', N'0', NULL, N'admin', N'2022-03-31 14:29:24.0000000', NULL, NULL, N'0', N'0', NULL, N'0')
 GO
 
 INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1534418199197323265', N'1438108197958311537', N'单表原生示例', N'/one/OneNativeList', N'demo/jeecg/Native/one/OneNativeList', N'1', NULL, NULL, N'1', NULL, N'0', N'13', N'0', NULL, N'1', N'0', N'0', N'0', NULL, N'admin', N'2022-06-08 14:13:01.0000000', N'admin', N'2022-06-08 14:13:12.0000000', N'0', N'0', NULL, N'0')
+GO
+
+INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1542385335362383873', N'1473927410093187073', N'删除仪表盘', NULL, NULL, N'0', NULL, NULL, N'2', N'onl:drag:page:delete', N'1', NULL, N'0', NULL, N'1', N'0', N'0', N'0', NULL, N'admin', N'2022-06-30 13:51:35.0000000', N'admin', N'2022-06-30 13:51:42.0000000', N'0', N'0', N'1', N'0')
 GO
 
 INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1580833876002627585', N'1447763172274495489', N'Online报表例子', N'/online/cgreport/1256627801873821698', N'1', N'0', N'', NULL, N'1', NULL, N'0', N'3', N'0', NULL, N'1', N'0', N'0', N'0', NULL, N'admin', N'2022-10-14 16:12:21.0000000', N'admin', N'2022-10-14 16:21:55.0000000', N'0', N'0', NULL, N'0')
@@ -16101,7 +20996,7 @@ GO
 INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1596335805278990338', N'1596141938193747970', N'账户设置用户编辑权限', NULL, NULL, N'0', NULL, NULL, N'2', N'system:user:setting:edit', N'1', NULL, N'0', NULL, N'1', N'0', N'0', N'0', NULL, N'admin', N'2022-11-26 10:51:29.0000000', NULL, NULL, N'0', N'0', N'1', N'0')
 GO
 
-INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1597419994965786625', N'd7d6e2e4e2934f2c9385a623fd98c6f3', N'租户角色', N'/system/role/TenantRoleList', N'system/role/TenantRoleList', N'1', N'', NULL, N'1', NULL, N'0', N'3.2', N'0', N'ant-design:line-height-outlined', N'1', N'0', N'0', N'0', NULL, N'admin', N'2022-11-29 10:39:40.0000000', N'admin', N'2023-03-04 15:01:43.0000000', N'0', N'0', NULL, N'0')
+INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1597419994965786625', N'1633804334561746946', N'租户角色', N'/system/role/TenantRoleList', N'system/role/TenantRoleList', N'1', N'', NULL, N'1', NULL, N'0', N'3.2', N'0', N'ant-design:line-height-outlined', N'1', N'0', N'0', N'0', NULL, N'admin', N'2022-11-29 10:39:40.0000000', N'admin', N'2023-03-09 20:18:23.0000000', N'0', N'0', NULL, N'0')
 GO
 
 INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'15c92115213910765570', N'3f915b2769fc80648e92d04e84ca059d', N'通过ID查询用户信息接口', NULL, NULL, N'0', NULL, NULL, N'2', N'system:user:queryById', N'1', NULL, N'0', NULL, N'1', N'0', N'0', N'0', NULL, N'admin', N'2022-11-14 19:20:22.0000000', NULL, NULL, N'0', N'0', N'1', N'0')
@@ -16150,6 +21045,9 @@ INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component
 GO
 
 INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1621620772498288641', N'1280350452934307841', N'添加租户', NULL, NULL, N'0', NULL, NULL, N'2', N'system:tenant:add', N'1', NULL, N'0', NULL, N'1', N'0', N'0', N'0', NULL, N'admin', N'2023-01-11 15:08:29.0000000', NULL, NULL, N'0', N'0', N'1', N'0')
+GO
+
+INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1633804334561746946', N'', N'我的租户', N'/mytenant', N'layouts/RouteView', N'1', N'', NULL, N'0', NULL, N'0', N'4', N'0', N'ant-design:ant-design-outlined', N'0', N'0', N'0', N'0', NULL, N'admin', N'2023-03-09 20:18:03.0000000', N'admin', N'2023-03-09 20:20:57.0000000', N'0', N'0', NULL, N'0')
 GO
 
 INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1697220712498288641', N'1280350452934307841', N'根据ids查询租户', NULL, NULL, N'0', NULL, NULL, N'2', N'system:tenant:queryList', N'1', NULL, N'0', NULL, N'1', N'0', N'0', N'0', NULL, N'admin', N'2023-01-11 15:08:29.0000000', NULL, NULL, N'0', N'0', N'1', N'0')
@@ -19109,10 +24007,22 @@ GO
 INSERT INTO [dbo].[sys_role_permission] ([id], [role_id], [permission_id], [data_rule_ids], [operate_date], [operate_ip]) VALUES (N'1632635480313671681', N'e51758fa916c881624b046d26bd09230', N'9502685863ab87f0ad1134142788a385', NULL, N'2023-03-06 14:53:26.0000000', N'127.0.0.1')
 GO
 
+INSERT INTO [dbo].[sys_role_permission] ([id], [role_id], [permission_id], [data_rule_ids], [operate_date], [operate_ip]) VALUES (N'1633804994019586049', N'1501570619841810433', N'1633804334561746946', NULL, N'2023-03-09 20:20:40.0000000', N'127.0.0.1')
+GO
+
 INSERT INTO [dbo].[sys_role_permission] ([id], [role_id], [permission_id], [data_rule_ids], [operate_date], [operate_ip]) VALUES (N'165acd6046a0eaf975099f46a3c898ea', N'f6817f48af4fb3af11b9e8bf182f618b', N'4f66409ef3bbd69c1d80469d6e2a885e', NULL, NULL, NULL)
 GO
 
 INSERT INTO [dbo].[sys_role_permission] ([id], [role_id], [permission_id], [data_rule_ids], [operate_date], [operate_ip]) VALUES (N'1664b92dff13e1575e3a929caa2fa14d', N'f6817f48af4fb3af11b9e8bf182f618b', N'd2bbf9ebca5a8fa2e227af97d2da7548', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_role_permission] ([id], [role_id], [permission_id], [data_rule_ids], [operate_date], [operate_ip]) VALUES (N'1666007096779063297', N'1501570619841810433', N'1473927410093187073', NULL, N'2023-06-06 17:00:19.0000000', N'127.0.0.1')
+GO
+
+INSERT INTO [dbo].[sys_role_permission] ([id], [role_id], [permission_id], [data_rule_ids], [operate_date], [operate_ip]) VALUES (N'1666007096779063298', N'1501570619841810433', N'1542385335362383873', NULL, N'2023-06-06 17:00:19.0000000', N'127.0.0.1')
+GO
+
+INSERT INTO [dbo].[sys_role_permission] ([id], [role_id], [permission_id], [data_rule_ids], [operate_date], [operate_ip]) VALUES (N'1666008971238686721', N'1501570619841810433', N'1473955758466981890', NULL, N'2023-06-06 17:07:46.0000000', N'127.0.0.1')
 GO
 
 INSERT INTO [dbo].[sys_role_permission] ([id], [role_id], [permission_id], [data_rule_ids], [operate_date], [operate_ip]) VALUES (N'16ef8ed3865ccc6f6306200760896c50', N'ee8626f80f7c2619917b6236f3a7f02b', N'e8af452d8948ea49d37c934f5100ae6a', NULL, NULL, NULL)
@@ -20591,7 +25501,10 @@ GO
 -- ----------------------------
 -- Records of sys_tenant
 -- ----------------------------
-INSERT INTO [dbo].[sys_tenant] ([id], [name], [create_time], [create_by], [begin_date], [end_date], [status], [trade], [company_size], [company_address], [company_logo], [house_number], [work_place], [secondary_domain], [login_bkgd_img], [position], [department], [del_flag], [update_by], [update_time], [apply_status]) VALUES (N'1', N'北京租户001', N'2020-07-10 15:43:32.0000000', N'admin', NULL, NULL, N'1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'0', NULL, NULL, N'1')
+INSERT INTO [dbo].[sys_tenant] ([id], [name], [create_time], [create_by], [begin_date], [end_date], [status], [trade], [company_size], [company_address], [company_logo], [house_number], [work_place], [secondary_domain], [login_bkgd_img], [position], [department], [del_flag], [update_by], [update_time], [apply_status]) VALUES (N'1', N'白酒集团', N'2020-07-10 15:43:32.0000000', N'admin', NULL, NULL, N'1', NULL, NULL, NULL, NULL, N'7WIUCW', NULL, NULL, NULL, NULL, NULL, N'1', N'admin', N'2023-03-09 20:27:48.0000000', N'1')
+GO
+
+INSERT INTO [dbo].[sys_tenant] ([id], [name], [create_time], [create_by], [begin_date], [end_date], [status], [trade], [company_size], [company_address], [company_logo], [house_number], [work_place], [secondary_domain], [login_bkgd_img], [position], [department], [del_flag], [update_by], [update_time], [apply_status]) VALUES (N'1000', N'北京敲敲云科技有限公司', N'2023-03-09 19:55:11.0000000', N'admin', NULL, NULL, N'1', NULL, NULL, NULL, NULL, N'2PI3U6', NULL, NULL, NULL, NULL, NULL, N'0', N'admin', N'2023-03-09 21:38:56.0000000', NULL)
 GO
 
 
@@ -20870,6 +25783,9 @@ GO
 -- ----------------------------
 -- Records of sys_tenant_pack_user
 -- ----------------------------
+INSERT INTO [dbo].[sys_tenant_pack_user] ([id], [pack_id], [user_id], [tenant_id], [create_by], [create_time], [update_by], [update_time], [status]) VALUES (N'1633795234318729217', N'1633795213938606082', N'a75d45a015c44384a04449ee80dc3503', N'1', N'admin', N'2023-03-09 19:41:53.0000000', NULL, NULL, N'1')
+GO
+
 
 -- ----------------------------
 -- Table structure for sys_third_account
@@ -21242,19 +26158,16 @@ GO
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
-INSERT INTO [dbo].[sys_user] ([id], [username], [realname], [password], [salt], [avatar], [birthday], [sex], [email], [phone], [org_code], [status], [del_flag], [third_id], [third_type], [activiti_sync], [work_no], [post], [telephone], [create_by], [create_time], [update_by], [update_time], [user_identity], [depart_ids], [client_id], [login_tenant_id], [bpm_status]) VALUES (N'1572778193260863489', N'123123', N'12312322', N'0938718c770fa385', N'mSBQHHZP', N'temp/4afbfbedab64034f9015f1bca8c379310b551dab_1663814505787.jpg', N'2022-09-16 00:00:00.0000000', N'1', N'111@1.com', N'18611788521', NULL, N'1', N'1', NULL, NULL, N'1', N'11', N'devleader', NULL, N'admin', N'2022-09-22 10:41:57.0000000', N'admin', N'2022-09-22 10:42:12.0000000', N'1', N'', NULL, NULL, NULL)
-GO
-
 INSERT INTO [dbo].[sys_user] ([id], [username], [realname], [password], [salt], [avatar], [birthday], [sex], [email], [phone], [org_code], [status], [del_flag], [third_id], [third_type], [activiti_sync], [work_no], [post], [telephone], [create_by], [create_time], [update_by], [update_time], [user_identity], [depart_ids], [client_id], [login_tenant_id], [bpm_status]) VALUES (N'3d464b4ea0d2491aab8a7bde74c57e95', N'zhangsan', N'张三', N'02ea098224c7d0d2077c14b9a3a1ed16', N'x5xRdeKB', N'https://static.jeecg.com/temp/jmlogo_1606575041993.png', NULL, NULL, NULL, NULL, N'财务部', N'1', N'0', NULL, NULL, N'1', N'0005', N'总经理', NULL, N'admin', N'2020-05-14 21:26:24.0000000', N'admin', N'2020-09-09 14:42:51.0000000', N'1', N'', NULL, NULL, NULL)
 GO
 
 INSERT INTO [dbo].[sys_user] ([id], [username], [realname], [password], [salt], [avatar], [birthday], [sex], [email], [phone], [org_code], [status], [del_flag], [third_id], [third_type], [activiti_sync], [work_no], [post], [telephone], [create_by], [create_time], [update_by], [update_time], [user_identity], [depart_ids], [client_id], [login_tenant_id], [bpm_status]) VALUES (N'a75d45a015c44384a04449ee80dc3503', N'jeecg', N'jeecg', N'eee378a1258530cb', N'mIgiYJow', N'https://static.jeecg.com/temp/国炬软件logo_1606575029126.png', NULL, N'1', NULL, NULL, N'A02A01', N'1', N'0', NULL, NULL, N'1', N'00002', N'devleader', NULL, N'admin', N'2019-02-13 16:02:36.0000000', N'jeecg', N'2022-03-09 23:03:21.0000000', N'1', N'', NULL, NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_user] ([id], [username], [realname], [password], [salt], [avatar], [birthday], [sex], [email], [phone], [org_code], [status], [del_flag], [third_id], [third_type], [activiti_sync], [work_no], [post], [telephone], [create_by], [create_time], [update_by], [update_time], [user_identity], [depart_ids], [client_id], [login_tenant_id], [bpm_status]) VALUES (N'e9ca23d68d884d4ebb19d07889727dae', N'admin', N'管理员', N'cb362cfeefbf3d8d', N'RCGTeGiH', N'https://static.jeecg.com/temp/国炬软件logo_1606575029126.png', N'2018-12-05 00:00:00.0000000', N'1', N'jeecg@163.com', N'18611111111', N'A01', N'1', N'0', NULL, NULL, N'1', N'00001', N'总经理', NULL, NULL, N'2019-06-21 17:54:10.0000000', N'admin', N'2022-11-03 10:19:31.0000000', N'2', N'c6d7cb4deeac411cb3384b1b31278596', NULL, N'0', NULL)
+INSERT INTO [dbo].[sys_user] ([id], [username], [realname], [password], [salt], [avatar], [birthday], [sex], [email], [phone], [org_code], [status], [del_flag], [third_id], [third_type], [activiti_sync], [work_no], [post], [telephone], [create_by], [create_time], [update_by], [update_time], [user_identity], [depart_ids], [client_id], [login_tenant_id], [bpm_status]) VALUES (N'e9ca23d68d884d4ebb19d07889727dae', N'admin', N'管理员', N'cb362cfeefbf3d8d', N'RCGTeGiH', N'https://static.jeecg.com/temp/国炬软件logo_1606575029126.png', N'2018-12-05 00:00:00.0000000', N'1', N'jeecg@163.com', N'18611111111', N'A01', N'1', N'0', NULL, NULL, N'1', N'00001', N'总经理', NULL, NULL, N'2019-06-21 17:54:10.0000000', N'admin', N'2023-03-09 20:29:46.0000000', N'2', N'', NULL, N'1000', NULL)
 GO
 
-INSERT INTO [dbo].[sys_user] ([id], [username], [realname], [password], [salt], [avatar], [birthday], [sex], [email], [phone], [org_code], [status], [del_flag], [third_id], [third_type], [activiti_sync], [work_no], [post], [telephone], [create_by], [create_time], [update_by], [update_time], [user_identity], [depart_ids], [client_id], [login_tenant_id], [bpm_status]) VALUES (N'f0019fdebedb443c98dcb17d88222c38', N'zhagnxiao', N'张小红12', N'f898134e5e52ae11a2ffb2c3b57a4e90', N'go3jJ4zX', N'https://static.jeecg.com/temp/jmlogo_1606575041993.png', N'2019-04-01 00:00:00.0000000', NULL, NULL, N'18611711111', N'研发部,财务部', N'1', N'0', NULL, NULL, N'1', N'00003', N'devleader', NULL, N'admin', N'2020-10-01 19:34:10.0000000', N'admin', N'2023-03-04 15:02:35.0000000', N'2', N'1582683631414632450', NULL, NULL, NULL)
+INSERT INTO [dbo].[sys_user] ([id], [username], [realname], [password], [salt], [avatar], [birthday], [sex], [email], [phone], [org_code], [status], [del_flag], [third_id], [third_type], [activiti_sync], [work_no], [post], [telephone], [create_by], [create_time], [update_by], [update_time], [user_identity], [depart_ids], [client_id], [login_tenant_id], [bpm_status]) VALUES (N'f0019fdebedb443c98dcb17d88222c38', N'zhagnxiao', N'张小红12', N'f898134e5e52ae11a2ffb2c3b57a4e90', N'go3jJ4zX', N'https://static.jeecg.com/temp/jmlogo_1606575041993.png', N'2019-04-01 00:00:00.0000000', NULL, NULL, N'18611711111', N'研发部,财务部', N'1', N'0', NULL, NULL, N'1', N'00003', N'devleader,总经理', NULL, N'admin', N'2020-10-01 19:34:10.0000000', N'admin', N'2023-03-09 19:44:13.0000000', N'2', N'1582683631414632450', NULL, NULL, NULL)
 GO
 
 
@@ -21449,16 +26362,13 @@ GO
 INSERT INTO [dbo].[sys_user_depart] ([ID], [user_id], [dep_id]) VALUES (N'1f3a0267811327b9eca86b0cc2b956f3', N'bcbe1290783a469a83ae3bd8effe15d4', N'5159cde220114246b045e574adceafe9')
 GO
 
-INSERT INTO [dbo].[sys_user_depart] ([ID], [user_id], [dep_id]) VALUES (N'1587992837927714818', N'e9ca23d68d884d4ebb19d07889727dae', N'c6d7cb4deeac411cb3384b1b31278596')
+INSERT INTO [dbo].[sys_user_depart] ([ID], [user_id], [dep_id]) VALUES (N'1633795820112003074', N'f0019fdebedb443c98dcb17d88222c38', N'1582683631414632450')
 GO
 
-INSERT INTO [dbo].[sys_user_depart] ([ID], [user_id], [dep_id]) VALUES (N'1631913005669896194', N'f0019fdebedb443c98dcb17d88222c38', N'1582683631414632450')
+INSERT INTO [dbo].[sys_user_depart] ([ID], [user_id], [dep_id]) VALUES (N'1633795820124585985', N'f0019fdebedb443c98dcb17d88222c38', N'57197590443c44f083d42ae24ef26a2c')
 GO
 
-INSERT INTO [dbo].[sys_user_depart] ([ID], [user_id], [dep_id]) VALUES (N'1631913005669896195', N'f0019fdebedb443c98dcb17d88222c38', N'57197590443c44f083d42ae24ef26a2c')
-GO
-
-INSERT INTO [dbo].[sys_user_depart] ([ID], [user_id], [dep_id]) VALUES (N'1631913005678284802', N'f0019fdebedb443c98dcb17d88222c38', N'67fc001af12a4f9b8458005d3f19934a')
+INSERT INTO [dbo].[sys_user_depart] ([ID], [user_id], [dep_id]) VALUES (N'1633795820137168898', N'f0019fdebedb443c98dcb17d88222c38', N'67fc001af12a4f9b8458005d3f19934a')
 GO
 
 
@@ -21527,13 +26437,13 @@ GO
 INSERT INTO [dbo].[sys_user_role] ([id], [user_id], [role_id], [tenant_id]) VALUES (N'1303584634118918145', N'3d464b4ea0d2491aab8a7bde74c57e95', N'ee8626f80f7c2619917b6236f3a7f02b', N'0')
 GO
 
-INSERT INTO [dbo].[sys_user_role] ([id], [user_id], [role_id], [tenant_id]) VALUES (N'1587992837868994562', N'e9ca23d68d884d4ebb19d07889727dae', N'1501570619841810433', N'0')
+INSERT INTO [dbo].[sys_user_role] ([id], [user_id], [role_id], [tenant_id]) VALUES (N'1633795820044894209', N'f0019fdebedb443c98dcb17d88222c38', N'ee8626f80f7c2619917b6236f3a7f02b', N'0')
 GO
 
-INSERT INTO [dbo].[sys_user_role] ([id], [user_id], [role_id], [tenant_id]) VALUES (N'1587992837885771777', N'e9ca23d68d884d4ebb19d07889727dae', N'f6817f48af4fb3af11b9e8bf182f618b', N'0')
+INSERT INTO [dbo].[sys_user_role] ([id], [user_id], [role_id], [tenant_id]) VALUES (N'1633807285908926466', N'e9ca23d68d884d4ebb19d07889727dae', N'1501570619841810433', N'1000')
 GO
 
-INSERT INTO [dbo].[sys_user_role] ([id], [user_id], [role_id], [tenant_id]) VALUES (N'1631913005644730370', N'f0019fdebedb443c98dcb17d88222c38', N'ee8626f80f7c2619917b6236f3a7f02b', N'0')
+INSERT INTO [dbo].[sys_user_role] ([id], [user_id], [role_id], [tenant_id]) VALUES (N'1633807285971841026', N'e9ca23d68d884d4ebb19d07889727dae', N'f6817f48af4fb3af11b9e8bf182f618b', N'1000')
 GO
 
 INSERT INTO [dbo].[sys_user_role] ([id], [user_id], [role_id], [tenant_id]) VALUES (N'31af310584bd5795f76b1fe8c38294a0', N'70f5dcf03f36471dabba81381919291f', N'e51758fa916c881624b046d26bd09230', N'0')
@@ -22818,7 +27728,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table ceshi_note
 -- ----------------------------
-ALTER TABLE [dbo].[ceshi_note] ADD CONSTRAINT [PK__ceshi_no__3213E83FF7E4A701] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[ceshi_note] ADD CONSTRAINT [PK__ceshi_no__3213E83F8D5CD362] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -22827,7 +27737,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table demo
 -- ----------------------------
-ALTER TABLE [dbo].[demo] ADD CONSTRAINT [PK__demo__3213E83F2CABF780] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[demo] ADD CONSTRAINT [PK__demo__3213E83F25821FE3] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -22836,7 +27746,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table demo_field_def_val_main
 -- ----------------------------
-ALTER TABLE [dbo].[demo_field_def_val_main] ADD CONSTRAINT [PK__demo_fie__3213E83F6C8F4538] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[demo_field_def_val_main] ADD CONSTRAINT [PK__demo_fie__3213E83F5322E239] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -22845,7 +27755,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table demo_field_def_val_sub
 -- ----------------------------
-ALTER TABLE [dbo].[demo_field_def_val_sub] ADD CONSTRAINT [PK__demo_fie__3213E83F59AF3504] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[demo_field_def_val_sub] ADD CONSTRAINT [PK__demo_fie__3213E83F794844AB] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -22854,7 +27764,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_monthly_growth_analysis
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_monthly_growth_analysis] ADD CONSTRAINT [PK__jeecg_mo__3213E83FC8ED98B5] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_monthly_growth_analysis] ADD CONSTRAINT [PK__jeecg_mo__3213E83F5258F5C5] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -22863,7 +27773,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_order_customer
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_order_customer] ADD CONSTRAINT [PK__jeecg_or__3213E83FEF361E82] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_order_customer] ADD CONSTRAINT [PK__jeecg_or__3213E83F76C9610C] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -22872,7 +27782,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_order_main
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_order_main] ADD CONSTRAINT [PK__jeecg_or__3213E83FE350402D] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_order_main] ADD CONSTRAINT [PK__jeecg_or__3213E83F7B8F2553] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -22881,7 +27791,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_order_ticket
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_order_ticket] ADD CONSTRAINT [PK__jeecg_or__3213E83F14757BE4] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_order_ticket] ADD CONSTRAINT [PK__jeecg_or__3213E83F5C24FD14] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -22890,7 +27800,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_project_nature_income
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_project_nature_income] ADD CONSTRAINT [PK__jeecg_pr__3213E83F149F4269] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_project_nature_income] ADD CONSTRAINT [PK__jeecg_pr__3213E83F50FE75BA] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -22909,7 +27819,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_dict
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_dict] ADD CONSTRAINT [PK__jimu_dic__3213E83F36C00E97] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_dict] ADD CONSTRAINT [PK__jimu_dic__3213E83F2D4444AC] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -22947,7 +27857,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_dict_item
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_dict_item] ADD CONSTRAINT [PK__jimu_dic__3213E83FDCB09773] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_dict_item] ADD CONSTRAINT [PK__jimu_dic__3213E83FEC7C2E77] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -22978,7 +27888,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_report
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_report] ADD CONSTRAINT [PK__jimu_rep__3213E83F2090C74C] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_report] ADD CONSTRAINT [PK__jimu_rep__3213E83F188040AE] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23003,7 +27913,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_report_data_source
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_report_data_source] ADD CONSTRAINT [PK__jimu_rep__3213E83F697E6500] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_report_data_source] ADD CONSTRAINT [PK__jimu_rep__3213E83FEC1E5491] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23034,7 +27944,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_report_db
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_report_db] ADD CONSTRAINT [PK__jimu_rep__3213E83F45BCE2C8] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_report_db] ADD CONSTRAINT [PK__jimu_rep__3213E83F7B09AA81] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23059,7 +27969,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_report_db_field
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_report_db_field] ADD CONSTRAINT [PK__jimu_rep__3213E83F3E80A08A] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_report_db_field] ADD CONSTRAINT [PK__jimu_rep__3213E83F42AA59B5] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23078,7 +27988,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_report_db_param
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_report_db_param] ADD CONSTRAINT [PK__jimu_rep__3213E83F681D8137] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_report_db_param] ADD CONSTRAINT [PK__jimu_rep__3213E83F2B7AA030] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23097,7 +28007,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_report_link
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_report_link] ADD CONSTRAINT [PK__jimu_rep__3213E83F36B61176] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_report_link] ADD CONSTRAINT [PK__jimu_rep__3213E83F0DE5358D] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23116,7 +28026,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_report_map
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_report_map] ADD CONSTRAINT [PK__jimu_rep__3213E83F92DD4E69] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_report_map] ADD CONSTRAINT [PK__jimu_rep__3213E83F5014F834] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23125,7 +28035,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_report_share
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_report_share] ADD CONSTRAINT [PK__jimu_rep__3213E83F16EB7B78] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_report_share] ADD CONSTRAINT [PK__jimu_rep__3213E83F4DD2FB11] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23134,7 +28044,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_auth_data
 -- ----------------------------
-ALTER TABLE [dbo].[onl_auth_data] ADD CONSTRAINT [PK__onl_auth__3213E83FE30D5CAC] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_auth_data] ADD CONSTRAINT [PK__onl_auth__3213E83F580A32AD] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23143,7 +28053,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_auth_page
 -- ----------------------------
-ALTER TABLE [dbo].[onl_auth_page] ADD CONSTRAINT [PK__onl_auth__3213E83F99C2C355] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_auth_page] ADD CONSTRAINT [PK__onl_auth__3213E83FC432ED56] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23152,7 +28062,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_auth_relation
 -- ----------------------------
-ALTER TABLE [dbo].[onl_auth_relation] ADD CONSTRAINT [PK__onl_auth__3213E83F5C0B6CDB] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_auth_relation] ADD CONSTRAINT [PK__onl_auth__3213E83F600E31FB] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23189,7 +28099,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_button
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_button] ADD CONSTRAINT [PK__onl_cgfo__3214EC2745BB6166] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[onl_cgform_button] ADD CONSTRAINT [PK__onl_cgfo__3214EC27BEADCF86] PRIMARY KEY CLUSTERED ([ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23220,7 +28130,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_enhance_java
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_enhance_java] ADD CONSTRAINT [PK__onl_cgfo__3214EC2765271160] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[onl_cgform_enhance_java] ADD CONSTRAINT [PK__onl_cgfo__3214EC27CB48C2F9] PRIMARY KEY CLUSTERED ([ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23245,7 +28155,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_enhance_js
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_enhance_js] ADD CONSTRAINT [PK__onl_cgfo__3214EC275C278D8F] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[onl_cgform_enhance_js] ADD CONSTRAINT [PK__onl_cgfo__3214EC27FBB74D5E] PRIMARY KEY CLUSTERED ([ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23264,7 +28174,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_enhance_sql
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_enhance_sql] ADD CONSTRAINT [PK__onl_cgfo__3214EC27D568A45C] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[onl_cgform_enhance_sql] ADD CONSTRAINT [PK__onl_cgfo__3214EC27721BD4F3] PRIMARY KEY CLUSTERED ([ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23283,7 +28193,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_field
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_field] ADD CONSTRAINT [PK__onl_cgfo__3213E83F34F24577] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgform_field] ADD CONSTRAINT [PK__onl_cgfo__3213E83F6418492E] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23320,7 +28230,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_head
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_head] ADD CONSTRAINT [PK__onl_cgfo__3213E83FEF6BB97F] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgform_head] ADD CONSTRAINT [PK__onl_cgfo__3213E83F00693F65] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23339,7 +28249,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_index
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_index] ADD CONSTRAINT [PK__onl_cgfo__3213E83F42A9062C] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgform_index] ADD CONSTRAINT [PK__onl_cgfo__3213E83F2BB48F39] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23364,7 +28274,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgreport_head
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgreport_head] ADD CONSTRAINT [PK__onl_cgre__3213E83FD319BEB7] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgreport_head] ADD CONSTRAINT [PK__onl_cgre__3213E83FDCB3F5C9] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23395,7 +28305,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgreport_item
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgreport_item] ADD CONSTRAINT [PK__onl_cgre__3213E83F44A8101E] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgreport_item] ADD CONSTRAINT [PK__onl_cgre__3213E83F364AD8D8] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23414,7 +28324,81 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgreport_param
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgreport_param] ADD CONSTRAINT [PK__onl_cgre__3213E83F4E8C509A] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgreport_param] ADD CONSTRAINT [PK__onl_cgre__3213E83F66D22633] PRIMARY KEY CLUSTERED ([id])
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
+ON [PRIMARY]
+GO
+
+
+-- ----------------------------
+-- Primary Key structure for table onl_drag_comp
+-- ----------------------------
+ALTER TABLE [dbo].[onl_drag_comp] ADD CONSTRAINT [PK__onl_drag__3213E83F7946B343] PRIMARY KEY CLUSTERED ([id])
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
+ON [PRIMARY]
+GO
+
+
+-- ----------------------------
+-- Primary Key structure for table onl_drag_dataset_head
+-- ----------------------------
+ALTER TABLE [dbo].[onl_drag_dataset_head] ADD CONSTRAINT [PK__onl_drag__3213E83F2DBA5686] PRIMARY KEY CLUSTERED ([id])
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
+ON [PRIMARY]
+GO
+
+
+-- ----------------------------
+-- Indexes structure for table onl_drag_dataset_item
+-- ----------------------------
+CREATE NONCLUSTERED INDEX [idx_oddi_head_id]
+ON [dbo].[onl_drag_dataset_item] (
+  [head_id] ASC
+)
+GO
+
+
+-- ----------------------------
+-- Primary Key structure for table onl_drag_dataset_item
+-- ----------------------------
+ALTER TABLE [dbo].[onl_drag_dataset_item] ADD CONSTRAINT [PK__onl_drag__3213E83F5CDB94CB] PRIMARY KEY CLUSTERED ([id])
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
+ON [PRIMARY]
+GO
+
+
+-- ----------------------------
+-- Indexes structure for table onl_drag_dataset_param
+-- ----------------------------
+CREATE NONCLUSTERED INDEX [idx_oddp_head_id]
+ON [dbo].[onl_drag_dataset_param] (
+  [head_id] ASC
+)
+GO
+
+
+-- ----------------------------
+-- Primary Key structure for table onl_drag_dataset_param
+-- ----------------------------
+ALTER TABLE [dbo].[onl_drag_dataset_param] ADD CONSTRAINT [PK__onl_drag__3213E83FAB0A5E2A] PRIMARY KEY CLUSTERED ([id])
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
+ON [PRIMARY]
+GO
+
+
+-- ----------------------------
+-- Primary Key structure for table onl_drag_page
+-- ----------------------------
+ALTER TABLE [dbo].[onl_drag_page] ADD CONSTRAINT [PK__onl_drag__3213E83F09AA0B64] PRIMARY KEY CLUSTERED ([id])
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
+ON [PRIMARY]
+GO
+
+
+-- ----------------------------
+-- Primary Key structure for table onl_drag_page_comp
+-- ----------------------------
+ALTER TABLE [dbo].[onl_drag_page_comp] ADD CONSTRAINT [PK__onl_drag__3213E83FE3DB0999] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23423,7 +28407,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table oss_file
 -- ----------------------------
-ALTER TABLE [dbo].[oss_file] ADD CONSTRAINT [PK__oss_file__3213E83F05F30FE9] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[oss_file] ADD CONSTRAINT [PK__oss_file__3213E83F6541D98D] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23522,7 +28506,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table rep_demo_dxtj
 -- ----------------------------
-ALTER TABLE [dbo].[rep_demo_dxtj] ADD CONSTRAINT [PK__rep_demo__3213E83F5429BC7F] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[rep_demo_dxtj] ADD CONSTRAINT [PK__rep_demo__3213E83F8199307D] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23531,7 +28515,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table rep_demo_employee
 -- ----------------------------
-ALTER TABLE [dbo].[rep_demo_employee] ADD CONSTRAINT [PK__rep_demo__3213E83F04AF2C8C] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[rep_demo_employee] ADD CONSTRAINT [PK__rep_demo__3213E83F31475988] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23540,7 +28524,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table rep_demo_gongsi
 -- ----------------------------
-ALTER TABLE [dbo].[rep_demo_gongsi] ADD CONSTRAINT [PK__rep_demo__3213E83FC2297A45] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[rep_demo_gongsi] ADD CONSTRAINT [PK__rep_demo__3213E83FBD9870B0] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23549,7 +28533,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table rep_demo_jianpiao
 -- ----------------------------
-ALTER TABLE [dbo].[rep_demo_jianpiao] ADD CONSTRAINT [PK__rep_demo__3213E83FAEB384EE] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[rep_demo_jianpiao] ADD CONSTRAINT [PK__rep_demo__3213E83F3764277F] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23558,7 +28542,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_announcement
 -- ----------------------------
-ALTER TABLE [dbo].[sys_announcement] ADD CONSTRAINT [PK__sys_anno__3213E83F1A5F764B] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_announcement] ADD CONSTRAINT [PK__sys_anno__3213E83FEF0AA031] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23577,7 +28561,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_category
 -- ----------------------------
-ALTER TABLE [dbo].[sys_category] ADD CONSTRAINT [PK__sys_cate__3213E83F189E1F2C] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_category] ADD CONSTRAINT [PK__sys_cate__3213E83FC903358B] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23596,7 +28580,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_check_rule
 -- ----------------------------
-ALTER TABLE [dbo].[sys_check_rule] ADD CONSTRAINT [PK__sys_chec__3213E83F99BB1333] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_check_rule] ADD CONSTRAINT [PK__sys_chec__3213E83FED10D033] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23616,7 +28600,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_comment
 -- ----------------------------
-ALTER TABLE [dbo].[sys_comment] ADD CONSTRAINT [PK__sys_comm__3213E83F7F64780E] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_comment] ADD CONSTRAINT [PK__sys_comm__3213E83FE8A2C8A9] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23636,7 +28620,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_data_log
 -- ----------------------------
-ALTER TABLE [dbo].[sys_data_log] ADD CONSTRAINT [PK__sys_data__3213E83F36D9030D] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_data_log] ADD CONSTRAINT [PK__sys_data__3213E83F55FB2A53] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23655,7 +28639,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_data_source
 -- ----------------------------
-ALTER TABLE [dbo].[sys_data_source] ADD CONSTRAINT [PK__sys_data__3213E83FFBEA9489] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_data_source] ADD CONSTRAINT [PK__sys_data__3213E83FEFCA2564] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23692,7 +28676,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_depart
 -- ----------------------------
-ALTER TABLE [dbo].[sys_depart] ADD CONSTRAINT [PK__sys_depa__3213E83F53116BC4] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_depart] ADD CONSTRAINT [PK__sys_depa__3213E83F4EE70371] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23701,7 +28685,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_depart_permission
 -- ----------------------------
-ALTER TABLE [dbo].[sys_depart_permission] ADD CONSTRAINT [PK__sys_depa__3213E83F7682CE9B] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_depart_permission] ADD CONSTRAINT [PK__sys_depa__3213E83FA6A7CF63] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23710,7 +28694,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_depart_role
 -- ----------------------------
-ALTER TABLE [dbo].[sys_depart_role] ADD CONSTRAINT [PK__sys_depa__3213E83FDEFD6AE8] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_depart_role] ADD CONSTRAINT [PK__sys_depa__3213E83F4FCD4E53] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23742,7 +28726,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_depart_role_permission
 -- ----------------------------
-ALTER TABLE [dbo].[sys_depart_role_permission] ADD CONSTRAINT [PK__sys_depa__3213E83F9F266237] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_depart_role_permission] ADD CONSTRAINT [PK__sys_depa__3213E83FAA3CE439] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23751,7 +28735,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_depart_role_user
 -- ----------------------------
-ALTER TABLE [dbo].[sys_depart_role_user] ADD CONSTRAINT [PK__sys_depa__3213E83F54E7F5C3] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_depart_role_user] ADD CONSTRAINT [PK__sys_depa__3213E83F3E414059] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23770,7 +28754,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_dict
 -- ----------------------------
-ALTER TABLE [dbo].[sys_dict] ADD CONSTRAINT [PK__sys_dict__3213E83FA0BE0970] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_dict] ADD CONSTRAINT [PK__sys_dict__3213E83F33B0867C] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23808,7 +28792,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_dict_item
 -- ----------------------------
-ALTER TABLE [dbo].[sys_dict_item] ADD CONSTRAINT [PK__sys_dict__3213E83F010BB9F9] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_dict_item] ADD CONSTRAINT [PK__sys_dict__3213E83F5784787D] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23833,7 +28817,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_files
 -- ----------------------------
-ALTER TABLE [dbo].[sys_files] ADD CONSTRAINT [PK__sys_file__3213E83F5A975C3B] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_files] ADD CONSTRAINT [PK__sys_file__3213E83F67541EDB] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23852,7 +28836,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_fill_rule
 -- ----------------------------
-ALTER TABLE [dbo].[sys_fill_rule] ADD CONSTRAINT [PK__sys_fill__3213E83FA0057AD2] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_fill_rule] ADD CONSTRAINT [PK__sys_fill__3213E83FA6773AC4] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23878,7 +28862,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_form_file
 -- ----------------------------
-ALTER TABLE [dbo].[sys_form_file] ADD CONSTRAINT [PK__sys_form__3213E83F2429D539] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_form_file] ADD CONSTRAINT [PK__sys_form__3213E83FFA26491A] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23887,7 +28871,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_gateway_route
 -- ----------------------------
-ALTER TABLE [dbo].[sys_gateway_route] ADD CONSTRAINT [PK__sys_gate__3213E83FBF445748] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_gateway_route] ADD CONSTRAINT [PK__sys_gate__3213E83FD5908936] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23924,7 +28908,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_log
 -- ----------------------------
-ALTER TABLE [dbo].[sys_log] ADD CONSTRAINT [PK__sys_log__3213E83FE76D1067] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_log] ADD CONSTRAINT [PK__sys_log__3213E83F923CE65D] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23955,7 +28939,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_permission
 -- ----------------------------
-ALTER TABLE [dbo].[sys_permission] ADD CONSTRAINT [PK__sys_perm__3213E83F87278AC0] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_permission] ADD CONSTRAINT [PK__sys_perm__3213E83FAD2D6645] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -23974,7 +28958,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_permission_data_rule
 -- ----------------------------
-ALTER TABLE [dbo].[sys_permission_data_rule] ADD CONSTRAINT [PK__sys_perm__3213E83FD4DA6C24] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_permission_data_rule] ADD CONSTRAINT [PK__sys_perm__3213E83F3D8BA6FA] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24035,7 +29019,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_permission_v2
 -- ----------------------------
-ALTER TABLE [dbo].[sys_permission_v2] ADD CONSTRAINT [PK__sys_perm__3213E83F8EEE9CFB] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_permission_v2] ADD CONSTRAINT [PK__sys_perm__3213E83F56EE97A4] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24054,7 +29038,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_position
 -- ----------------------------
-ALTER TABLE [dbo].[sys_position] ADD CONSTRAINT [PK__sys_posi__3213E83F448665E5] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_position] ADD CONSTRAINT [PK__sys_posi__3213E83FFBB5443A] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24063,7 +29047,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_quartz_job
 -- ----------------------------
-ALTER TABLE [dbo].[sys_quartz_job] ADD CONSTRAINT [PK__sys_quar__3213E83F00199709] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_quartz_job] ADD CONSTRAINT [PK__sys_quar__3213E83F1542EA83] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24088,7 +29072,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_role
 -- ----------------------------
-ALTER TABLE [dbo].[sys_role] ADD CONSTRAINT [PK__sys_role__3213E83FF2D3B976] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_role] ADD CONSTRAINT [PK__sys_role__3213E83F462B1101] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24097,7 +29081,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_role_index
 -- ----------------------------
-ALTER TABLE [dbo].[sys_role_index] ADD CONSTRAINT [PK__sys_role__3213E83FD2775F53] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_role_index] ADD CONSTRAINT [PK__sys_role__3213E83F948A50FB] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24129,7 +29113,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_role_permission
 -- ----------------------------
-ALTER TABLE [dbo].[sys_role_permission] ADD CONSTRAINT [PK__sys_role__3213E83FCB80DA3D] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_role_permission] ADD CONSTRAINT [PK__sys_role__3213E83F749F6CE4] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24166,7 +29150,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_sms
 -- ----------------------------
-ALTER TABLE [dbo].[sys_sms] ADD CONSTRAINT [PK__sys_sms__3213E83FD71C497F] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_sms] ADD CONSTRAINT [PK__sys_sms__3213E83F439D2EA6] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24185,7 +29169,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_sms_template
 -- ----------------------------
-ALTER TABLE [dbo].[sys_sms_template] ADD CONSTRAINT [PK__sys_sms___3213E83F73786521] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_sms_template] ADD CONSTRAINT [PK__sys_sms___3213E83FFFC6F5A2] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24194,7 +29178,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_tenant
 -- ----------------------------
-ALTER TABLE [dbo].[sys_tenant] ADD CONSTRAINT [PK__sys_tena__3213E83F436B64B0] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_tenant] ADD CONSTRAINT [PK__sys_tena__3213E83F6A008036] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24203,7 +29187,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_tenant_pack
 -- ----------------------------
-ALTER TABLE [dbo].[sys_tenant_pack] ADD CONSTRAINT [PK__sys_tena__3213E83FFFB5C8E8] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_tenant_pack] ADD CONSTRAINT [PK__sys_tena__3213E83F708CFFB3] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24212,7 +29196,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_tenant_pack_perms
 -- ----------------------------
-ALTER TABLE [dbo].[sys_tenant_pack_perms] ADD CONSTRAINT [PK__sys_tena__3213E83F1CC0AADC] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_tenant_pack_perms] ADD CONSTRAINT [PK__sys_tena__3213E83F692247E9] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24221,7 +29205,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_tenant_pack_user
 -- ----------------------------
-ALTER TABLE [dbo].[sys_tenant_pack_user] ADD CONSTRAINT [PK__sys_tena__3213E83F372999BA] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_tenant_pack_user] ADD CONSTRAINT [PK__sys_tena__3213E83F8DDA7AB1] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24241,7 +29225,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_third_account
 -- ----------------------------
-ALTER TABLE [dbo].[sys_third_account] ADD CONSTRAINT [PK__sys_thir__3213E83F3D7D9F62] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_third_account] ADD CONSTRAINT [PK__sys_thir__3213E83FFB516205] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24284,7 +29268,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user] ADD CONSTRAINT [PK__sys_user__3213E83F96C0BB47] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_user] ADD CONSTRAINT [PK__sys_user__3213E83F51E93394] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24321,7 +29305,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user_agent
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user_agent] ADD CONSTRAINT [PK__sys_user__3213E83F30C2DC9A] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_user_agent] ADD CONSTRAINT [PK__sys_user__3213E83F1AD9C164] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24353,7 +29337,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user_depart
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user_depart] ADD CONSTRAINT [PK__sys_user__3214EC27102DA902] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[sys_user_depart] ADD CONSTRAINT [PK__sys_user__3214EC27A3E20949] PRIMARY KEY CLUSTERED ([ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24385,7 +29369,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user_role
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user_role] ADD CONSTRAINT [PK__sys_user__3213E83FE60450C0] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_user_role] ADD CONSTRAINT [PK__sys_user__3213E83FC8AD7BE0] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24406,11 +29390,18 @@ ON [dbo].[sys_user_tenant] (
 )
 GO
 
+CREATE NONCLUSTERED INDEX [uniq_sut_user_rel_tenant]
+ON [dbo].[sys_user_tenant] (
+  [user_id] ASC,
+  [tenant_id] ASC
+)
+GO
+
 
 -- ----------------------------
 -- Primary Key structure for table sys_user_tenant
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user_tenant] ADD CONSTRAINT [PK__sys_user__3213E83FAE3DA22C] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_user_tenant] ADD CONSTRAINT [PK__sys_user__3213E83F96EDAE89] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24419,7 +29410,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_demo
 -- ----------------------------
-ALTER TABLE [dbo].[test_demo] ADD CONSTRAINT [PK__test_dem__3213E83FA7D0363E] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_demo] ADD CONSTRAINT [PK__test_dem__3213E83FBB350386] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24428,7 +29419,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_enhance_select
 -- ----------------------------
-ALTER TABLE [dbo].[test_enhance_select] ADD CONSTRAINT [PK__test_enh__3213E83F1627B77A] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_enhance_select] ADD CONSTRAINT [PK__test_enh__3213E83FB2AFE765] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24437,7 +29428,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_note
 -- ----------------------------
-ALTER TABLE [dbo].[test_note] ADD CONSTRAINT [PK__test_not__3213E83F11715188] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_note] ADD CONSTRAINT [PK__test_not__3213E83F9368EFBB] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24446,7 +29437,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_order_customer
 -- ----------------------------
-ALTER TABLE [dbo].[test_order_customer] ADD CONSTRAINT [PK__test_ord__3213E83FAB4758BB] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_order_customer] ADD CONSTRAINT [PK__test_ord__3213E83F8D7A9256] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24455,7 +29446,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_order_main
 -- ----------------------------
-ALTER TABLE [dbo].[test_order_main] ADD CONSTRAINT [PK__test_ord__3213E83FF2049B14] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_order_main] ADD CONSTRAINT [PK__test_ord__3213E83FD333BC08] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24464,7 +29455,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_order_product
 -- ----------------------------
-ALTER TABLE [dbo].[test_order_product] ADD CONSTRAINT [PK__test_ord__3213E83F901253CC] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_order_product] ADD CONSTRAINT [PK__test_ord__3213E83F9773EF98] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24473,7 +29464,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_shoptype_tree
 -- ----------------------------
-ALTER TABLE [dbo].[test_shoptype_tree] ADD CONSTRAINT [PK__test_sho__3213E83F19572FB9] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_shoptype_tree] ADD CONSTRAINT [PK__test_sho__3213E83FA49BC9A7] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -24482,7 +29473,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_v3_hello
 -- ----------------------------
-ALTER TABLE [dbo].[test_v3_hello] ADD CONSTRAINT [PK__test_v3___3213E83FD37A655B] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_v3_hello] ADD CONSTRAINT [PK__test_v3___3213E83FF8331800] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO

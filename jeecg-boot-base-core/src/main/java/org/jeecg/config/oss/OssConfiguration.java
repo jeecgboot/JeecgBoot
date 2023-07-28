@@ -2,6 +2,7 @@ package org.jeecg.config.oss;
 
 import org.jeecg.common.util.oss.OssBootUtil;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
  * @author: jeecg-boot
  */
 @Configuration
+@ConditionalOnProperty(prefix = "jeecg.oss", name = "endpoint")
 public class OssConfiguration {
 
     @Value("${jeecg.oss.endpoint}")

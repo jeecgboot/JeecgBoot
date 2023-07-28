@@ -28,9 +28,9 @@ public interface ParcelMapper extends BaseMapper<Parcel> {
     void insertOrUpdateEQParcels(List<EQuickResponse> parcels);
 
     void insertOrIgnoreYDParcels(List<YDTraceData> parcels);
+  
     void insertOrIgnoreCMKParcels(List<CMKParcelTraceData> parcels);
     void insertOrIgnoreHLParcels(List<HLResponseItem> parcels);
-
     /**
      * fetch all parcels from platform order's tracking number, to archive
      * @param trackingNumbers
