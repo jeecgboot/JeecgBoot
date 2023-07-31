@@ -258,7 +258,6 @@
         JOIN shop as s
             ON po.shop_id = s.id
         WHERE po.shipping_invoice_number IS NULL
-            AND po.order_time IS NOT NULL
             AND po.erp_status IN
             <foreach
                     collection="erpStatuses"
@@ -291,7 +290,6 @@
         JOIN shop as s
             ON po.shop_id = s.id
         WHERE po.shipping_invoice_number IS NULL
-            AND po.order_time IS NOT NULL
             AND po.erp_status IN
             <foreach
                     collection="erpStatuses"
@@ -487,6 +485,7 @@
             #{warehouse}
         </foreach>
         AND po.shipping_time between #{startDate} AND #{endDate}
+        AND po.shipping_invoice_number IS NULL
         AND po.erp_status = 3;
     </select>
     <select id="fetchUninvoicedShippedOrderIDInShopsAndOrderTime" resultType="org.jeecg.modules.business.entity.PlatformOrder">
@@ -516,6 +515,7 @@
             #{warehouse}
         </foreach>
         AND po.order_time between #{startDate} AND #{endDate}
+        AND po.shipping_invoice_number IS NULL
         AND po.erp_status IN
         <foreach
                 collection="erpStatuses"
