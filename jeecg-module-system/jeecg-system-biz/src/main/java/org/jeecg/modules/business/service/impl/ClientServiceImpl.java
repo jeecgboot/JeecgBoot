@@ -117,4 +117,8 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         return clientUserMap.selectClientByUserId(sysUser.getId());
     }
 
+    @Override
+    public String getClientEntity(String id) {
+        return clientMapper.getClientEntity(id);
+    }
 }

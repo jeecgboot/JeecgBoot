@@ -8,4 +8,6 @@ public class InvoiceMetaData {
     private final String filename;
 
     private final String invoiceCode;
+
+    private final String invoiceEntity;
 }

@@ -165,4 +165,10 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * @param platformOrders list of platform orders
      */
     void savePlatformOrderArchive(List<PlatformOrder> platformOrders);
+
+    /**
+     * Cancel Invoice
+     * @param invoiceNumber
+     */
+    void cancelInvoice(String invoiceNumber);
 }

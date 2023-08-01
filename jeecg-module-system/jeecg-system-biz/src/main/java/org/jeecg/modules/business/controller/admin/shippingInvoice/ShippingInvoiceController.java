@@ -17,8 +17,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.business.entity.Client;
 import org.jeecg.modules.business.entity.ShippingInvoice;
-import org.jeecg.modules.business.service.EmailService;
-import org.jeecg.modules.business.service.IShippingInvoiceService;
+import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.ShippingInvoicePage;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -70,6 +69,14 @@ import java.util.stream.Stream;
 @RequestMapping("/generated/shippingInvoice")
 @Slf4j
 public class ShippingInvoiceController {
+    @Autowired
+    private IClientService clientService;
+    @Autowired
+    private IPlatformOrderContentService platformOrderContentService;
+    @Autowired
+    private IPlatformOrderService platformOrderService;
+    @Autowired
+    private ISavRefundService savRefundService;
     @Autowired
     private IShippingInvoiceService shippingInvoiceService;
     @Autowired
@@ -296,6 +303,30 @@ public class ShippingInvoiceController {
         return pathList;
     }
 
+    /** Finds the absolute path of invoice file by recursively walking the directory and it's subdirectories
+     *
+     * @param dirPath
+     * @param invoiceNumber
+     * @return List of paths for the file but should only find one result
+     */
+    public List<Path> getPath(String dirPath, String invoiceNumber, String invoiceEntity) {
+        List<Path> pathList = new ArrayList<>();
+        //Recursively list all files
+        //The walk() method returns a Stream by walking the file tree beginning with a given starting file/directory in a depth-first manner.
+        try (Stream<Path> stream = Files.walk(Paths.get(dirPath))) {
+            pathList = stream.map(Path::normalize)
+                    .filter(Files::isRegularFile) // directories, hidden files and files without extension are not included
+                    .filter(path -> path.getFileName().toString().contains(invoiceNumber))
+                    .filter(path -> path.getFileName().toString().contains(invoiceEntity))
+                    .filter(path -> path.getFileName().toString().endsWith(EXTENSION))
+                    .collect(Collectors.toList());
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+        return pathList;
+    }
+
     /**
      *  Finds the absolute path of invoice file and return the path
      * @param invoiceNumber
@@ -470,5 +501,56 @@ public class ShippingInvoiceController {
         }
         log.info("Found client for invoice {} : {}", invoiceNumber, client.fullName());
         return Result.OK(client);
+    }
+
+    /**
+     * Deletes an invoice
+     * @param invoiceNumber invoice number to cancel
+     * @return if update successful
+     */
+    @PostMapping(value = "/cancelInvoice")
+    public Result<?> cancelInvoice(@RequestParam("id") String id, @RequestParam("invoiceNumber") String invoiceNumber, @RequestParam("clientId") String clientId) {
+        log.info("Cancelling invoice number : {}", invoiceNumber);
+        platformOrderContentService.cancelInvoice(invoiceNumber);
+        platformOrderService.cancelInvoice(invoiceNumber);
+        savRefundService.cancelInvoice(invoiceNumber);
+        shippingInvoiceService.delMain(id);
+        log.info("Deleting invoice files ...");
+        String invoiceEntity = clientService.getClientEntity(clientId);
+        List<Path> invoicePathList = getPath(INVOICE_LOCATION, invoiceNumber, invoiceEntity);
+        List<Path> detailPathList = getPath(INVOICE_DETAIL_LOCATION, invoiceNumber, invoiceEntity);
+        if(invoicePathList.isEmpty() ||detailPathList.isEmpty()) {
+            log.error("FILE NOT FOUND : " + invoiceNumber);
+            return Result.ok("Invoice canceled, but file not found.");
+        }
+        else {
+            for (Path path : invoicePathList) {
+                log.info(path.toString());
+            }
+            for (Path path : detailPathList) {
+                log.info(path.toString());
+            }
+            try {
+                File invoiceFile = new File(invoicePathList.get(0).toString());
+                File detailFile = new File(detailPathList.get(0).toString());
+                if(invoiceFile.delete()) {
+                    log.info("Invoice file {} delete successful.", invoicePathList.get(0).toString());
+                } else {
+                    log.error("Invoice file delete fail.");
+                    return Result.error("Invoice file delete fail.");
+                }
+                if(detailFile.delete()) {
+                    log.info("Detail file {} delete successful.", detailPathList.get(0).toString());
+                } else {
+                    log.error("Detail file delete fail.");
+                    return Result.error("Detail file delete fail.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return  Result.error(e.getMessage());
+            }
+        }
+        log.info("Invoice files deleted.");
+        return Result.ok("Invoice cancel successful.");
     }
 }

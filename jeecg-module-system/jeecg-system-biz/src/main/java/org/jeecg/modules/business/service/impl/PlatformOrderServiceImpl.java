@@ -378,4 +378,8 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     public void savePlatformOrderArchive(List<PlatformOrder> platformOrders) {
         platformOrderMap.insertPlatformOrdersArchives(platformOrders);
     }
+    @Override
+    public void cancelInvoice(String invoiceNumber) {
+        platformOrderMap.cancelInvoice(invoiceNumber);
+    }
 }
