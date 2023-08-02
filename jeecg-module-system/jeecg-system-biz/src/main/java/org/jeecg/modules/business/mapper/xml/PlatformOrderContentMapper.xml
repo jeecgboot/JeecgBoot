@@ -279,4 +279,13 @@
             )
         </foreach>;
     </insert>
+    <update id="cancelInvoice">
+        UPDATE platform_order_content
+        SET picking_fee = 0.0,
+            shipping_fee = NULL,
+            service_fee  = NULL,
+            vat          = NULL,
+            purchase_fee = 0.0
+        WHERE platform_order_id IN (SELECT id FROM platform_order WHERE shipping_invoice_number = #{invoiceNumber});
+    </update>
 </mapper>

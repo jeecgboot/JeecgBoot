@@ -42,4 +42,10 @@ public interface IPlatformOrderContentService extends IService<PlatformOrderCont
      */
     List<PlatformOrderContent> fetchPlatformOrderContentsToArchive(List<String> orderIDs);
     void savePlatformOrderContentArchive(List<PlatformOrderContent> platformOrderContents);
+
+    /**
+     * Cancels an invoice
+     * @param invoiceNumber
+     */
+    void cancelInvoice(String invoiceNumber);
 }

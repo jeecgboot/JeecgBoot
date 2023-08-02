@@ -51,6 +51,12 @@ public class ShippingInvoice implements Serializable {
     @ApiModelProperty(value = "更新人")
     private String updateBy;
     /**
+     * 客户 ID
+     */
+    @Excel(name = "客户", width = 15)
+    @ApiModelProperty(value = "客户")
+    private String clientId;
+    /**
      * 更新日期
      */
     @JsonFormat(timezone = "GMT+2", pattern = "yyyy-MM-dd HH:mm:ss")
@@ -103,6 +109,9 @@ public class ShippingInvoice implements Serializable {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+    public void setClientI(String clientId) {
+        this.clientId = clientId;
+    }
     public void setInvoiceNumber(String invoiceNumber) {
         this.invoiceNumber = invoiceNumber;
     }
@@ -135,6 +144,7 @@ public class ShippingInvoice implements Serializable {
                                  Date createTime,
                                  String updateBy,
                                  Date updateTime,
+                                 String clientId,
                                  String invoiceNumber,
                                  BigDecimal totalAmount,
                                  BigDecimal discountAmount,
@@ -145,6 +155,7 @@ public class ShippingInvoice implements Serializable {
         this.createTime = createTime;
         this.updateBy = updateBy;
         this.updateTime = updateTime;
+        this.clientId = clientId;
         this.invoiceNumber = invoiceNumber;
         this.totalAmount = totalAmount;
         this.discountAmount = discountAmount;
@@ -153,12 +164,13 @@ public class ShippingInvoice implements Serializable {
     }
     public static ShippingInvoice of(
             String username,
+            String clientId,
             String invoiceNumber,
             BigDecimal totalAmount,
             BigDecimal discountAmount,
             BigDecimal paidAmount
     ) {
-        return new ShippingInvoice(null, username, new Date(), username, new Date(),
+        return new ShippingInvoice(null, username, new Date(), username, new Date(), clientId,
                 invoiceNumber, totalAmount, discountAmount, totalAmount.subtract(discountAmount), paidAmount);
     }
 }
