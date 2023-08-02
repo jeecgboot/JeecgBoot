@@ -6,4 +6,11 @@
         FROM sav_refund s
         WHERE s.invoice_number = #{invoiceNumber}
     </select>
+    <update id="cancelInvoice">
+        UPDATE sav_refund
+        SET invoice_number      = NULL,
+            refund_date         = NULL,
+            total_refund_amount = 0.0
+        WHERE invoice_number = #{invoiceNumber};
+    </update>
 </mapper>

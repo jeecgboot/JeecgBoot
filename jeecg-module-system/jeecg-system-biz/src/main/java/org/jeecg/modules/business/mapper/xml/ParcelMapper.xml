@@ -86,6 +86,27 @@
             )
         </foreach>
     </insert>
+
+    <insert id="insertOrIgnoreHLParcels" parameterType="list">
+        INSERT IGNORE INTO parcel(id, create_by, create_time, update_by, update_time, bill_code, country,
+        third_bill_code, order_no, product_code)
+        VALUES
+        <foreach collection="parcels" separator="," open="" close="" item="parcel" index="index">
+            (
+            #{parcel.id},
+            'hl api',
+            NOW(),
+            'hl api',
+            NOW(),
+            #{parcel.billCode},
+            #{parcel.country},
+            #{parcel.trackingNumber},
+            #{parcel.orderNumber},
+            #{parcel.productCode}
+            )
+        </foreach>
+    </insert>
+
     <select id="fetchParcelsToArchive" resultType="org.jeecg.modules.business.entity.Parcel">
         SELECT *
         FROM parcel

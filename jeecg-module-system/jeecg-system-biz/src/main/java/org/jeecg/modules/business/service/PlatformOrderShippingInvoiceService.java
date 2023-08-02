@@ -258,13 +258,14 @@ public class PlatformOrderShippingInvoiceService {
         // save to DB
         org.jeecg.modules.business.entity.ShippingInvoice shippingInvoiceEntity = org.jeecg.modules.business.entity.ShippingInvoice.of(
                 username,
+                invoice.client().getId(),
                 invoice.code(),
                 invoice.getTotalAmount(),
                 invoice.reducedAmount(),
                 invoice.paidAmount()
         );
         shippingInvoiceMapper.insert(shippingInvoiceEntity);
-        return new InvoiceMetaData(filename, invoice.code());
+        return new InvoiceMetaData(filename, invoice.code(), invoice.client().getInvoiceEntity());
     }
 
     /**
@@ -317,7 +318,7 @@ public class PlatformOrderShippingInvoiceService {
         return factureDetailMapper.selectList(queryWrapper);
     }
 
-    public byte[] exportToExcel(List<FactureDetail> details, String invoiceNumber) throws IOException {
+    public byte[] exportToExcel(List<FactureDetail> details, String invoiceNumber, String invoiceEntity) throws IOException {
         SheetManager sheetManager = SheetManager.createXLSX();
         for (String title : titles) {
             sheetManager.write(title);
@@ -370,15 +371,16 @@ public class PlatformOrderShippingInvoiceService {
             sheetManager.nextRow();
         }
 
-        Path target = Paths.get(INVOICE_DETAIL_DIR, "Détail_calcul_de_facture_" + invoiceNumber + ".xlsx");
+        Path target = Paths.get(INVOICE_DETAIL_DIR, "Détail_calcul_de_facture_" + invoiceNumber + "_(" + invoiceEntity + ").xlsx");
         int i = 2;
         while (Files.exists(target)) {
-            target = Paths.get(INVOICE_DETAIL_DIR, "Détail_calcul_de_facture_" + invoiceNumber + "_" + i + ".xlsx");
+            target = Paths.get(INVOICE_DETAIL_DIR, "Détail_calcul_de_facture_" + invoiceNumber + "_(" + invoiceEntity + ")_" + i + ".xlsx");
             i++;
         }
         Files.createFile(target);
         sheetManager.export(target);
         sheetManager.getWorkbook().close();
+        System.gc();
         return Files.readAllBytes(target);
     }
 }

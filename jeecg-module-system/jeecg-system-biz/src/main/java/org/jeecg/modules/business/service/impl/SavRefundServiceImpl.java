@@ -32,4 +32,8 @@ public class SavRefundServiceImpl extends ServiceImpl<SavRefundMapper, SavRefund
     public List<BigDecimal> getRefundAmount(String invoiceNumber) {
         return savRefundMapper.fetchRefundAmount(invoiceNumber);
     }
+    @Override
+    public void cancelInvoice(String invoiceNumber) {
+        savRefundMapper.cancelInvoice(invoiceNumber);
+    }
 }

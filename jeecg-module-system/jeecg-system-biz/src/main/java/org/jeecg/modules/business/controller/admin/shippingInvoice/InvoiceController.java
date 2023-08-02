@@ -323,9 +323,9 @@ public class InvoiceController {
     }
 
     @GetMapping(value = "/downloadInvoiceDetail")
-    public byte[] downloadInvoiceDetail(@RequestParam("invoiceNumber") String invoiceNumber) throws IOException {
+    public byte[] downloadInvoiceDetail(@RequestParam("invoiceNumber") String invoiceNumber, @RequestParam("invoiceEntity") String invoiceEntity) throws IOException {
         List<FactureDetail> res = shippingInvoiceService.getInvoiceDetail(invoiceNumber);
-        return shippingInvoiceService.exportToExcel(res, invoiceNumber);
+        return shippingInvoiceService.exportToExcel(res, invoiceNumber, invoiceEntity);
     }
 
     @GetMapping(value = "/breakdown/byShop")

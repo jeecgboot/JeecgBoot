@@ -387,7 +387,7 @@ public class ShippingInvoiceFactory {
                                          List<SavRefundWithDetail> savRefunds,
                                          String subject, boolean skipShippingTimeComparing) throws UserException {
         log.info("Orders to be invoiced: {}", orderAndContent);
-        if (orderAndContent == null) {
+        if (orderAndContent == null || orderAndContent.size() == 0) {
             throw new UserException("No platform order in the selected period!");
         }
         Map<String, BigDecimal> skuRealWeights = new HashMap<>();
@@ -397,7 +397,7 @@ public class ShippingInvoiceFactory {
         Map<LogisticChannel, List<LogisticChannelPrice>> channelPriceMap;
         Map<String, LogisticChannel> logisticChannelMap = logisticChannelMapper.getAll().stream()
                 .collect(toMap(LogisticChannel::getId, Function.identity()));
-        if(subject.contains("Pre") || subject.contains("All")) {
+        if(subject.contains("order time")) {
             channelPriceMap = getChannelPriceMap(logisticChannelMap, orderAndContent, skipShippingTimeComparing, "order");
         }
         else {
