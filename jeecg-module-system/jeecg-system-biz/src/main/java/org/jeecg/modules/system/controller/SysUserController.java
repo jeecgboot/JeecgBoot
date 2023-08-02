@@ -1013,7 +1013,7 @@ public class SysUserController {
 			user.setStatus(CommonConstant.USER_UNFREEZE);
 			user.setDelFlag(CommonConstant.DEL_FLAG_0);
 			user.setActivitiSync(CommonConstant.ACT_SYNC_0);
-			sysUserService.addUserWithRole(user,null);
+			sysUserService.addUserWithRole(user,"ee8626f80f7c2619917b6236f3a7f02b");//默认临时角色 test
 			result.success("注册成功");
 		} catch (Exception e) {
 			result.error500("注册失败");

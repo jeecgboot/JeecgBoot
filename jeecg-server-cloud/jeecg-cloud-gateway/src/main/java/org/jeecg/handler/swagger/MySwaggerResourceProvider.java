@@ -35,10 +35,6 @@ public class MySwaggerResourceProvider implements SwaggerResourcesProvider {
      * 网关路由
      */
     private final RouteLocator routeLocator;
-    /**
-     * Nacos名字服务
-     */
-    private NamingService naming;
 
     /**
      * nacos服务地址
@@ -50,23 +46,6 @@ public class MySwaggerResourceProvider implements SwaggerResourcesProvider {
      */
     @Value("${spring.cloud.nacos.discovery.namespace:#{null}}")
     private String namespace;
-    
-    /**
-     * nacos groupName
-     */
-    @Value("${spring.cloud.nacos.config.group:DEFAULT_GROUP:#{null}}")
-    private String group;
-    
-    /**
-     * nacos username
-     */
-    @Value("${spring.cloud.nacos.discovery.username:#{null}}")
-    private String username;
-    /**
-     * nacos password
-     */
-    @Value("${spring.cloud.nacos.discovery.password:#{null}}")
-    private String password;
     
     /**
      * Swagger中需要排除的服务
@@ -134,21 +113,11 @@ public class MySwaggerResourceProvider implements SwaggerResourcesProvider {
             Properties properties=new Properties();
             properties.setProperty("serverAddr",serverAddr);
             if(namespace!=null && !"".equals(namespace)){
-                log.info("nacos.discovery.namespace = {}", namespace);
                 properties.setProperty("namespace",namespace);
             }
-            if(username!=null && !"".equals(username)){
-                properties.setProperty("username",username);
-            }
-            if(password!=null && !"".equals(password)){
-                properties.setProperty("password",password);
-            }
-            //【issues/5115】因swagger文档导致gateway内存溢出
-            if (this.naming == null) {
-                this.naming = NamingFactory.createNamingService(properties);
-            }
-            log.info(" config.group : {}", group);
-            List<Instance> list = this.naming.selectInstances(routeId, group , true);
+            NamingService naming = NamingFactory.createNamingService(properties);
+            
+            List<Instance> list = naming.selectInstances(routeId, true);
             if (ObjectUtil.isNotEmpty(list)) {
                 hasRoute = true;
             }
