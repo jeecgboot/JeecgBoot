@@ -1,7 +1,6 @@
 package org.jeecg.config;
 
 import org.jeecg.config.vo.DomainUrl;
-import org.jeecg.config.vo.Elasticsearch;
 import org.jeecg.config.vo.Path;
 import org.jeecg.config.vo.Shiro;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -53,18 +52,6 @@ public class JeecgBaseConfig {
      * 文件预览
      */
     private String fileViewDomain;
-     /**
-     * ES配置
-     */
-    private Elasticsearch elasticsearch;
-
-    public Elasticsearch getElasticsearch() {
-        return elasticsearch;
-    }
-
-    public void setElasticsearch(Elasticsearch elasticsearch) {
-        this.elasticsearch = elasticsearch;
-    }
 
     public Boolean getSafeMode() {
         return safeMode;

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-parent</artifactId>
-		<version>3.5.3</version>
+		<version>3.5.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jeecg-boot-base-core</artifactId>
@@ -186,7 +186,7 @@
 		</dependency>
 
 		<!-- 代码生成器 -->
-		<!-- 如下载失败，请参考此文档  https://help.jeecg.com/java/setup/maven.html -->
+		<!-- 如下载失败，请参考此文档  http://doc.jeecg.com/2043876 -->
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>codegenerate</artifactId>

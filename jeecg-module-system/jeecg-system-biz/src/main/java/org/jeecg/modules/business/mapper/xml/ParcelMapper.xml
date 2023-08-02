@@ -115,10 +115,12 @@
             #{number}
         </foreach>;
     </select>
-    <insert id="insertParcelsArchive" parameterType="list">
-        INSERT INTO parcel_delete(id, create_by, create_time,
-        update_by, update_time, bill_code,
-        country, third_bill_code,
+
+        <insert id="insertParcelsArchive" parameterType="list">
+            INSERT INTO parcel_delete(id, create_by, create_time,
+            update_by, update_time, bill_code,
+            country, third_bill_code,
+            order_no, product_code)
         VALUES
         <foreach collection="parcels" separator="," open="" close="" item="parcel" index="index">
             (

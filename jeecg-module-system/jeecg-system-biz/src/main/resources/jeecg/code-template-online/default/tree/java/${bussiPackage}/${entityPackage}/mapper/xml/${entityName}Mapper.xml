@@ -1,8 +1,6 @@
 <#assign hasChildrenField = "">
 <#assign pidFieldName = "">
 <#assign textFieldName = "">
-<#assign textDbFieldName = "">
-<#assign pidDbFieldName = "">
 <#list originalColumns as po>
   <#if po.fieldDbName == tableVo.extendParams.hasChildren>
     <#assign hasChildrenField = po.fieldName>
@@ -10,11 +8,9 @@
   <#-- begin 【vue3专用】 -->
   <#if po.fieldDbName == tableVo.extendParams.pidField>
     <#assign pidFieldName = po.fieldName>
-    <#assign pidDbFieldName = po.fieldDbName>
   </#if>
   <#if po.fieldDbName == tableVo.extendParams.textField>
     <#assign textFieldName = po.fieldName>
-    <#assign textDbFieldName = po.fieldDbName>
   </#if>
   <#-- end 【vue3专用】 -->
 </#list>
@@ -30,11 +26,11 @@
 	<select id="queryListByPid" parameterType="java.lang.Object" resultType="org.jeecg.common.system.vo.SelectTreeModel">
 		select
 		  id as "key",
-		  ${textDbFieldName} as "title",
+		  ${textFieldName} as "title",
 		  (case when ${Format.humpToUnderline(hasChildrenField)} = '1' then 0 else 1 end) as isLeaf,
-		  ${pidDbFieldName} as parentId
+		  ${pidFieldName} as parentId
 		from ${tableName}
-		where ${pidDbFieldName} = ${r'#'}{pid}
+		where ${pidFieldName} = ${r'#'}{pid}
 		<if test="query != null">
 			<foreach collection="query.entrySet()" item="value" index="key">
 				and ${r'$'}{key} = ${r'#'}{value}
