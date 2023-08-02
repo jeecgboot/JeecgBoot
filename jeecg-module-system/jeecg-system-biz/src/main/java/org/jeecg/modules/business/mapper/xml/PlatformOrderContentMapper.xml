@@ -281,7 +281,7 @@
     </insert>
     <update id="cancelInvoice">
         UPDATE platform_order_content
-        SET purchase_fee = 0.0,
+        SET picking_fee = 0.0,
             shipping_fee = NULL,
             service_fee  = NULL,
             vat          = NULL,
