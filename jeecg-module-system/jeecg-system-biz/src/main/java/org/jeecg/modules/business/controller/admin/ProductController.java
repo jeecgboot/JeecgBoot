@@ -263,11 +263,13 @@ public class ProductController {
 
     @PostMapping(value="/editBatch")
     public Result<?> editBatch(@RequestBody ProductsParam productsParam) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         List<Product> products = new ArrayList<>();
         for(String id : productsParam.getIds()) {
             Product product = new Product();
             product.setId(id);
             product.setWeight(productsParam.getWeight());
+            product.setUpdateBy(sysUser.getUsername());
             products.add(product);
         }
         productService.updateWeightBatch(products);

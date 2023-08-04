@@ -8,6 +8,11 @@
         <foreach collection="products" separator=" " open="" close="" index="index" item="item">
             when #{item.id} then #{item.weight}
         </foreach>
+        end,
+        update_by = case id
+        <foreach collection="products" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.updateBy}
+        </foreach>
         end
         where id in
         <foreach collection="products" separator="," open="(" close=")" index="index" item="item">
