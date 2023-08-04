@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jeecg.modules.business.vo.ProductsParam;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -260,4 +261,16 @@ public class ProductController {
         return Result.OK("文件导入失败！");
     }
 
+    @PostMapping(value="/editBatch")
+    public Result<?> editBatch(@RequestBody ProductsParam productsParam) {
+        List<Product> products = new ArrayList<>();
+        for(String id : productsParam.getIds()) {
+            Product product = new Product();
+            product.setId(id);
+            product.setWeight(productsParam.getWeight());
+            products.add(product);
+        }
+        productService.updateWeightBatch(products);
+        return Result.ok("Updated all products");
+    }
 }
