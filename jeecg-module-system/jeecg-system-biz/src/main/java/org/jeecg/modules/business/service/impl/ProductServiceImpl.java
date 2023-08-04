@@ -73,5 +73,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 			productMapper.deleteById(id);
 		}
 	}
-	
+
+	@Override
+	@Transactional
+	public void updateWeightBatch (List<Product> productList) {
+		productMapper.updateWeightBatch(productList);
+	}
 }
