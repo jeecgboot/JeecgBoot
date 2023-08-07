@@ -1,6 +1,6 @@
 package org.jeecg.modules.business.domain.excel;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import lombok.Data;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -12,30 +12,33 @@ import java.nio.file.Path;
 import java.util.Date;
 
 /**
- * Provide operation that manipulate Excel sheet driven by cursor.
+ * Provide operation that manipulates Excel sheet driven by cursor.
  * The cursor's position is in the (0, 0) at the beginning.
  */
+@Data
 public class SheetManager {
+
     private final Workbook workbook;
 
-    private final Sheet sheet;
+    private final Sheet detailSheet;
 
-    private int row;
+    private final Sheet savSheet;
 
-    private int col;
+    private Sheet currentSheet;
+
+    private int currentRow;
+
+    private int currentCol;
 
     private int max_col;
 
-    private SheetManager(Workbook workbook, Sheet sheet) {
+    private SheetManager(Workbook workbook, Sheet detailSheet, Sheet savSheet) {
         this.workbook = workbook;
-        this.sheet = sheet;
-        row = 0;
-        col = 0;
+        this.detailSheet = detailSheet;
+        this.savSheet = savSheet;
+        this.currentRow = 0;
+        this.currentCol = 0;
         max_col = 10;
-    }
-
-    public Workbook getWorkbook() {
-        return workbook;
     }
 
     /**
@@ -45,47 +48,44 @@ public class SheetManager {
      * @return the sheetManager instance.
      */
     public static SheetManager createXLSX() {
-        return createXLSX("sheet1");
+        return createXLSX("Détails", "SAV");
     }
 
     /**
      * Same as {@code createXLSX()}, with customer sheet name.
      *
-     * @param name the customer sheet name
+     * @param detailSheetName Details sheet name
+     * @param savSheetName SAV sheet name
      * @return the sheetManager object.
      */
-    public static SheetManager createXLSX(String name) {
+    public static SheetManager createXLSX(String detailSheetName, String savSheetName) {
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet(name);
-        return new SheetManager(workbook, sheet);
+        Sheet detailSheet = workbook.createSheet(detailSheetName);
+        Sheet savSheet = workbook.createSheet(savSheetName);
+        return new SheetManager(workbook, detailSheet, savSheet);
     }
 
-    /**
-     * Create a sheet manager for a sheet of a ".xls" Excel workbook.
-     *
-     * @param path       path of the workbook.
-     * @param sheetIndex index of the sheet, begin from 0
-     * @return the sheet manager object
-     * @throws IOException any error while opening the workbook.
-     */
-    public static SheetManager readXLS(Path path, int sheetIndex) throws IOException {
-        FileInputStream fis = new FileInputStream(path.toFile());
-        Workbook workbook = new HSSFWorkbook(fis);
-        return new SheetManager(workbook, workbook.getSheetAt(sheetIndex));
+    public void startDetailsSheet() {
+        this.currentSheet = detailSheet;
+    }
+
+    public void startSavSheet() {
+        this.currentSheet = savSheet;
+        this.currentRow = 0;
+        this.currentCol = 0;
     }
 
     /**
      * Same as {@code readXLS} but for ".xlsx" Excel workbook.
      *
      * @param path       path of the workbook.
-     * @param sheetIndex index of the sheet, begin from 0
      * @return the sheet manager object
      * @throws IOException any error while opening the workbook.
      */
-    public static SheetManager readXLSX(Path path, int sheetIndex) throws IOException {
+    public static SheetManager readXLSX(Path path) throws IOException {
         FileInputStream fis = new FileInputStream(path.toFile());
         Workbook workbook = new XSSFWorkbook(fis);
-        return new SheetManager(workbook, workbook.getSheetAt(sheetIndex));
+        return new SheetManager(workbook, workbook.getSheetAt(0), workbook.getSheetAt(1));
     }
 
     /**
@@ -96,12 +96,12 @@ public class SheetManager {
      * @param col col index of the location
      */
     public void go(int row, int col) {
-        this.row = row;
+        this.currentRow = row;
         _moveCol(col);
     }
 
     public void moveRow(int row) {
-        this.row = row;
+        this.currentRow = row;
     }
 
     public void moveCol(int col) {
@@ -109,31 +109,31 @@ public class SheetManager {
     }
 
     public int row() {
-        return row;
+        return currentRow;
     }
 
     public int col() {
-        return col;
+        return currentCol;
     }
 
     /**
-     * Move cursor to the bottom cell.
+     * Move the cursor to the bottom cell.
      */
     public void nextRow() {
-        this.row += 1;
+        this.currentRow += 1;
     }
 
     /**
-     * Move cursor to the left cell.
+     * Move the cursor to the left cell.
      */
     public void nextCol() {
-        _moveCol(this.col + 1);
+        _moveCol(this.currentCol + 1);
     }
 
     /**
      * Write a value to the cell pointed by cursor.
      *
-     * @param value the value to be wrote, if value is null then we will change the cell to a Blank cell.
+     * @param value the value to be written, if value is null then we will change the cell to a Blank cell.
      */
     public void write(String value) {
         cell().setCellValue(value);
@@ -142,7 +142,7 @@ public class SheetManager {
     /**
      * Write a value to the cell pointed by cursor.
      *
-     * @param value the value to be wrote, if value is null then we will change the cell to a Blank cell.
+     * @param value the value to be written, if value is null then we will change the cell to a Blank cell.
      */
     public void write(int value) {
         cell().setCellValue(value);
@@ -151,7 +151,7 @@ public class SheetManager {
     /**
      * Write a value to the cell pointed by cursor.
      *
-     * @param value the value to be wrote, if value is null then we will change the cell to a Blank cell.
+     * @param value the value to be written, if value is null then we will change the cell to a Blank cell.
      */
     public void write(BigDecimal value) {
         cell().setCellValue(value.doubleValue());
@@ -160,7 +160,7 @@ public class SheetManager {
     /**
      * Write a value to the cell pointed by cursor.
      *
-     * @param value the value to be wrote
+     * @param value the value to be written
      */
     public void write(Date value) {
         cell().setCellValue(value);
@@ -202,7 +202,8 @@ public class SheetManager {
     public void export(Path target) throws IOException {
         /* adjust all cols' width before export */
         for (int i = 0; i < max_col; i++) {
-            sheet.autoSizeColumn(i);
+            detailSheet.autoSizeColumn(i);
+            savSheet.autoSizeColumn(i);
         }
         FileOutputStream fos = new FileOutputStream(target.toFile());
         workbook.write(fos);
@@ -211,13 +212,13 @@ public class SheetManager {
 
     private Cell cell() {
 
-        Row row = sheet.getRow(this.row);
+        Row row = currentSheet.getRow(this.currentRow);
         if (row == null) {
-            row = sheet.createRow(this.row);
+            row = currentSheet.createRow(this.currentRow);
         }
-        Cell cell = row.getCell(col);
+        Cell cell = row.getCell(currentCol);
         if (cell == null) {
-            cell = row.createCell(col);
+            cell = row.createCell(currentCol);
         }
         return cell;
     }
@@ -226,7 +227,7 @@ public class SheetManager {
         if (dst > max_col) {
             max_col = dst + 5;
         }
-        col = dst;
+        currentCol = dst;
     }
 
 
