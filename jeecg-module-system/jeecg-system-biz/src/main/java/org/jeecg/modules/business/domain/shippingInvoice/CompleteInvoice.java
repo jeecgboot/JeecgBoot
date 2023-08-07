@@ -1,11 +1,11 @@
 package org.jeecg.modules.business.domain.shippingInvoice;
 
-import org.jeecg.modules.business.domain.invoice.InvoiceStyleFactory;
 import org.jeecg.modules.business.domain.invoice.Row;
 import org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoiceEntry;
 import org.jeecg.modules.business.entity.Client;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderContent;
+import org.jeecg.modules.business.entity.SavRefundWithDetail;
 import org.jeecg.modules.business.vo.PromotionDetail;
 
 import java.math.BigDecimal;
@@ -22,11 +22,11 @@ public class CompleteInvoice extends ShippingInvoice {
 
     private final List<PromotionDetail> promotions;
 
-    public CompleteInvoice(Client targetClient, String code,
-                           String subject,
+    public CompleteInvoice(Client targetClient, String code, String subject,
                            Map<PlatformOrder, List<PlatformOrderContent>> ordersToContent,
-                           List<PurchaseInvoiceEntry> purchaseInvoiceEntries, List<PromotionDetail> promotions, BigDecimal exchangeRate) {
-        super(targetClient, code, subject, ordersToContent, null, exchangeRate);
+                           List<SavRefundWithDetail> savRefunds, List<PurchaseInvoiceEntry> purchaseInvoiceEntries,
+                           List<PromotionDetail> promotions, BigDecimal exchangeRate) {
+        super(targetClient, code, subject, ordersToContent, savRefunds, exchangeRate);
         this.purchaseInvoiceEntries = purchaseInvoiceEntries;
         this.promotions = promotions;
     }

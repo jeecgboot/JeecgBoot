@@ -109,17 +109,18 @@ public class ShippingInvoiceFactory {
      * </ol>
      *
      * @param customerId the customer id
-     * @param ordersIds  the list of order IDs
+     * @param orderIds  the list of order IDs
      * @return the generated invoice
      * @throws UserException if package used by the invoice can not or find more than 1 logistic
      *                       channel price, this exception will be thrown.
      */
     @Transactional
-    public ShippingInvoice createShippingInvoice(String customerId, List<String> ordersIds, String type, String start, String end) throws UserException {
-        log.info("Creating an invoice with arguments:\n client ID: {}, order IDs: {}]", customerId, ordersIds);
+    public ShippingInvoice createShippingInvoice(String customerId, List<String> orderIds, String type, String start, String end) throws UserException {
+        log.info("Creating an invoice with arguments:\n client ID: {}, order IDs: {}]", customerId, orderIds);
         // find orders and their contents of the invoice
-        Map<PlatformOrder, List<PlatformOrderContent>> uninvoicedOrderToContent = platformOrderService.fetchOrderData(ordersIds);
+        Map<PlatformOrder, List<PlatformOrderContent>> uninvoicedOrderToContent = platformOrderService.fetchOrderData(orderIds);
         Set<PlatformOrder> platformOrders = uninvoicedOrderToContent.keySet();
+        List<SavRefundWithDetail> savRefunds = savRefundWithDetailService.findUnprocessedRefundsByClient(customerId);
         List<String> shopIds = platformOrders.stream()
                 .map(PlatformOrder::getShopId)
                 .distinct()
@@ -134,7 +135,7 @@ public class ShippingInvoiceFactory {
             subject = String.format("Shipping fees, order time from %s to %s", start, end);
         else
             throw new UserException("Couldn't create shipping invoice of unknown type.");
-        return createInvoice(customerId, shopIds, uninvoicedOrderToContent, null, subject, true);
+        return createInvoice(customerId, shopIds, uninvoicedOrderToContent, savRefunds, subject, true);
     }
 
     /**
@@ -152,18 +153,19 @@ public class ShippingInvoiceFactory {
      *
      * @param username   current username
      * @param customerId the customer id
-     * @param ordersIds  the list of order IDs
+     * @param orderIds  the list of order IDs
      * @param shippingMethod "post" = postShipping, "pre" = preShipping, "all" = all shipping methods
      * @return the generated invoice
      * @throws UserException if package used by the invoice can not or find more than 1 logistic
      *                       channel price, this exception will be thrown.
      */
     @Transactional
-    public CompleteInvoice createCompleteShippingInvoice(String username, String customerId, List<String> ordersIds, String shippingMethod, String start, String end) throws UserException {
-        log.info("Creating a complete invoice for \n client ID: {}, order IDs: {}]", customerId, ordersIds);
+    public CompleteInvoice createCompleteShippingInvoice(String username, String customerId, List<String> orderIds, String shippingMethod, String start, String end) throws UserException {
+        log.info("Creating a complete invoice for \n client ID: {}, order IDs: {}]", customerId, orderIds);
         // find orders and their contents of the invoice
-        Map<PlatformOrder, List<PlatformOrderContent>> uninvoicedOrderToContent = platformOrderService.fetchOrderData(ordersIds);
+        Map<PlatformOrder, List<PlatformOrderContent>> uninvoicedOrderToContent = platformOrderService.fetchOrderData(orderIds);
         Set<PlatformOrder> platformOrders = uninvoicedOrderToContent.keySet();
+        List<SavRefundWithDetail> savRefunds = savRefundWithDetailService.findUnprocessedRefundsByClient(customerId);
         List<String> shopIds = platformOrders.stream()
                 .map(PlatformOrder::getShopId)
                 .distinct()
@@ -180,7 +182,7 @@ public class ShippingInvoiceFactory {
             subject = String.format("Purchase and Shipping fees, order time from %s to %s", start, end);
         else throw new UserException("Couldn't create complete invoice for unknown shipping method");
 
-        return createInvoice(username, customerId, shopIds, uninvoicedOrderToContent, subject);
+        return createInvoice(username, customerId, shopIds, uninvoicedOrderToContent, savRefunds, subject);
     }
 
 
@@ -200,6 +202,7 @@ public class ShippingInvoiceFactory {
      * @param username   Current username
      * @param customerId Customer ID
      * @param shopIds    Shop IDs
+     * @param savRefunds List of SAV refunds
      * @param subject    Invoice subject
      * @return the generated invoice
      * @throws UserException if package used by the invoice can not or find more than 1 logistic
@@ -208,7 +211,7 @@ public class ShippingInvoiceFactory {
     @Transactional
     public CompleteInvoice createInvoice(String username, String customerId, List<String> shopIds,
                                          Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent,
-                                         String subject) throws UserException {
+                                         List<SavRefundWithDetail> savRefunds, String subject) throws UserException {
         Client client = clientMapper.selectById(customerId);
         log.info("User {} is creating a complete invoice for customer {}", username, client.getInternalCode());
 
@@ -243,10 +246,13 @@ public class ShippingInvoiceFactory {
 
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
         List<PromotionDetail> promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseID);
+        if (savRefunds != null) {
+            updateSavRefundsInDb(savRefunds, invoiceCode);
+        }
 
         updateOrdersAndContentsInDb(orderAndContent);
 
-        return new CompleteInvoice(client, invoiceCode, subject, orderAndContent,
+        return new CompleteInvoice(client, invoiceCode, subject, orderAndContent, savRefunds,
                 purchaseOrderSkuList, promotionDetails, eurToUsd);
     }
 
