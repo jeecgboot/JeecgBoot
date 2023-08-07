@@ -19,4 +19,10 @@
         AND po.platform_order_id LIKE #{orderID}
         ORDER BY ${column} ${order};
     </select>
+
+    <select id="getRefundsByInvoiceNumber" resultType="org.jeecg.modules.business.entity.SavRefundWithDetail">
+        SELECT *
+        FROM sav_refund_with_detail
+        WHERE invoice_number = #{invoiceNumber}
+    </select>
 </mapper>
