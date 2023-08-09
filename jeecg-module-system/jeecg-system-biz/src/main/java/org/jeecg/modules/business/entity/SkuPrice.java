@@ -13,13 +13,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 
 /**
- * @Description: The price of a sku
+ * @Description: SKU价格表
  * @Author: jeecg-boot
- * @Date: 2021-04-16
- * @Version: V1.0
+ * @Date: 2023-05-10
+ * @Version: V1.1
  */
 @ApiModel(value = "sku对象", description = "SKU表")
 @Setter
@@ -30,7 +31,7 @@ public class SkuPrice implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * id in the DB
+     * 主键
      */
     @TableId(type = IdType.ASSIGN_ID)
     @ApiModelProperty(value = "主键")
@@ -38,13 +39,28 @@ public class SkuPrice implements Serializable {
     private String id;
 
     /**
+     * 创建人
+     */
+    @ApiModelProperty(value = "创建人")
+    private java.lang.String createBy;
+    /**
+     * 创建日期
+     */
+    @JsonFormat(timezone = "GMT+2", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(value = "创建日期")
+    private java.util.Date createTime;
+    /**
+     * 更新人
+     */
+    @ApiModelProperty(value = "更新人")
+    private java.lang.String updateBy;
+    /**
      * SKU ID
      */
     @Dict(dictTable = "sku", dicText = "erp_code", dicCode = "id")
     @ApiModelProperty(value = "SKU ID")
-    @Getter
     private String skuId;
-
     /**
      * 价格
      */
@@ -60,59 +76,57 @@ public class SkuPrice implements Serializable {
     @ApiModelProperty(value = "优惠价起订量")
     @Getter
     private Integer threshold;
-
     /**
-     * 优惠价, maybe null from DB which stands for no discount price
+     * 优惠价
      */
     @Excel(name = "优惠价", width = 15)
     @ApiModelProperty(value = "优惠价")
     @Getter
-    private BigDecimal discountedPrice;
-
+    private java.math.BigDecimal discountedPrice;
     /**
      * 生效日期
      */
     @Excel(name = "生效日期", width = 15, format = "yyyy-MM-dd")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    @JsonFormat(timezone = "GMT+2", pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @ApiModelProperty(value = "生效日期")
-    @Getter
     private Date date;
-
-    /**创建人*/
-    @ApiModelProperty(value = "创建人")
-    private String createBy;
-
-    /**创建日期*/
-    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    @ApiModelProperty(value = "创建日期")
-    private Date createTime;
-
-    /**更新日期*/
-    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    @ApiModelProperty(value = "更新日期")
-    private Date updateTime;
-
-    /**更新人*/
-    @ApiModelProperty(value = "更新人")
-    private String updateBy;
+    /**
+     * 人民币价格
+     */
+    @Excel(name = "人民币价格", width = 15)
+    @ApiModelProperty(value = "人民币价格")
+    @Getter
+    private java.math.BigDecimal priceRmb;
+    /**
+     * 人民币优惠价
+     */
+    @Excel(name = "人民币优惠价", width = 15)
+    @ApiModelProperty(value = "人民币优惠价")
+    @Getter
+    private java.math.BigDecimal discountedPriceRmb;
 
     /**
      * The price of a sku depends on its quantity, Given a quantity here, return the correspondent price.
      *
      * @param quantity a quantity
+     * @param eurToRmb Exchange rate from EUR to RMB
      * @return the price correspondent to the quantity
      */
-    public BigDecimal getPrice(int quantity) {
-        if (quantity >= threshold) {
-            return discountedPrice == null ? price : discountedPrice;
+    public BigDecimal getPrice(int quantity, BigDecimal eurToRmb) {
+        BigDecimal priceCandidate = price;
+        BigDecimal discountedPriceCandidate = discountedPrice == null ? price : discountedPrice;
+        if (priceRmb != null) {
+            priceCandidate = priceRmb.divide(eurToRmb, RoundingMode.HALF_UP);
+            discountedPriceCandidate = discountedPriceRmb == null ? priceCandidate : discountedPriceRmb.divide(eurToRmb, RoundingMode.HALF_UP);
         }
-        return price;
+        if (quantity >= threshold) {
+            return discountedPriceCandidate;
+        }
+        return priceCandidate;
     }
 
     public String toString() {
-        return String.format("%s, %s[%d]", price, discountedPrice, threshold);
+        return String.format("%s, %s[%d], %s(RMB), %s[%d](RMB)", price, discountedPrice, threshold, priceRmb, discountedPriceRmb, threshold);
     }
 }

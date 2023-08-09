@@ -96,6 +96,8 @@
         <result property="threshold" column="threshold"/>
         <result property="discountedPrice" column="discounted_price"/>
         <result property="date" column="price_date"/>
+        <result property="priceRmb" column="price_rmb"/>
+        <result property="discountedPriceRmb" column="discounted_price_rmb"/>
     </resultMap>
 
     <resultMap id="promotionResultMap" type="org.jeecg.modules.business.entity.Promotion">

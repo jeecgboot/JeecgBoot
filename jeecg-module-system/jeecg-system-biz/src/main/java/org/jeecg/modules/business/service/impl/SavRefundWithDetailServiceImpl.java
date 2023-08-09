@@ -31,4 +31,9 @@ public class SavRefundWithDetailServiceImpl extends ServiceImpl<SavRefundWithDet
     public List<SavRefundWithDetail> fetchRefundsWhere(String shop, String orderID, String column, String order) {
         return savRefundMapper.fetchRefundsWhere(shop, orderID, column, order);
     }
+
+    @Override
+    public List<SavRefundWithDetail> getRefundsByInvoiceNumber(String invoiceNumber) {
+        return savRefundMapper.getRefundsByInvoiceNumber(invoiceNumber);
+    }
 }
