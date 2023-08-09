@@ -78,7 +78,7 @@ public class InvoiceController {
         Set<String> skuIds = orderContents.stream().map(PlatformOrderContent::getSkuId).collect(Collectors.toSet());
         List<String> skusWithoutPrice = platformOrderContentMap.searchSkuDetail(new ArrayList<>(skuIds))
                 .stream()
-                .filter(skuDetail -> skuDetail.getPrice().getPrice() == null)
+                .filter(skuDetail -> skuDetail.getPrice().getPrice() == null && skuDetail.getPrice().getPriceRmb() == null)
                 .map(SkuDetail::getErpCode)
                 .collect(Collectors.toList());
         if (skusWithoutPrice.isEmpty()) {

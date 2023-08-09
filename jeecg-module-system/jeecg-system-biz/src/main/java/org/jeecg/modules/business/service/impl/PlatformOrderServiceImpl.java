@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.entity.*;
+import org.jeecg.modules.business.mapper.ExchangeRatesMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.service.IClientService;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -48,14 +50,17 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     private final PlatformOrderContentMapper platformOrderContentMap;
     private final IShippingFeesWaiverProductService shippingFeesWaiverProductService;
     private final IClientService clientService;
+    private final ExchangeRatesMapper exchangeRatesMapper;
 
     @Autowired
     public PlatformOrderServiceImpl(PlatformOrderMapper platformOrderMap, PlatformOrderContentMapper platformOrderContentMap,
-                                    IShippingFeesWaiverProductService shippingFeesWaiverProductService, IClientService clientService) {
+                                    IShippingFeesWaiverProductService shippingFeesWaiverProductService, IClientService clientService,
+                                    ExchangeRatesMapper exchangeRatesMapper) {
         this.platformOrderMap = platformOrderMap;
         this.platformOrderContentMap = platformOrderContentMap;
         this.shippingFeesWaiverProductService = shippingFeesWaiverProductService;
         this.clientService = clientService;
+        this.exchangeRatesMapper = exchangeRatesMapper;
     }
 
     @Override
@@ -217,6 +222,7 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
 
     @Override
     public List<OrderContentDetail> searchPurchaseOrderDetail(List<SkuQuantity> skuQuantities) {
+        BigDecimal eurToRmb = exchangeRatesMapper.getLatestExchangeRate("EUR", "RMB");
         // convert list of (ID, quantity) to map between ID and quantity
         Map<String, Integer> skuQuantity =
                 skuQuantities.stream()
@@ -234,7 +240,8 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
                 .map(
                         skuDetail -> new OrderContentDetail(
                                 skuDetail,
-                                skuQuantity.get(skuDetail.getSkuId())
+                                skuQuantity.get(skuDetail.getSkuId()),
+                                eurToRmb
                         )
                 )
                 .collect(toList());
