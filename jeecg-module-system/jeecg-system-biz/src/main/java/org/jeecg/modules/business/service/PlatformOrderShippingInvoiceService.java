@@ -9,6 +9,7 @@ import org.jeecg.modules.business.domain.shippingInvoice.CompleteInvoice;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoice;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoiceFactory;
 import org.jeecg.modules.business.entity.PlatformOrder;
+import org.jeecg.modules.business.entity.SavRefundWithDetail;
 import org.jeecg.modules.business.mapper.*;
 import org.jeecg.modules.business.vo.*;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -85,7 +87,7 @@ public class PlatformOrderShippingInvoiceService {
     @Value("${jeecg.path.shippingInvoiceDetailDir}")
     private String INVOICE_DETAIL_DIR;
 
-    private final static String[] titles = {
+    private final static String[] DETAILS_TITLES = {
             "Boutique",
             "N° de Mabang",
             "N° de commande",
@@ -105,6 +107,16 @@ public class PlatformOrderShippingInvoiceService {
             "Frais de préparation",
             "Frais de matériel d'emballage",
             "TVA",
+            "N° de facture"
+    };
+    private final static String[] SAV_TITLES = {
+            "Boutique",
+            "N° de Mabang",
+            "N° de commande",
+            "Date du remboursement",
+            "Montant d'achat remboursé",
+            "Montant de livraison remboursé",
+            "Montant total du remboursement",
             "N° de facture"
     };
 
@@ -318,9 +330,10 @@ public class PlatformOrderShippingInvoiceService {
         return factureDetailMapper.selectList(queryWrapper);
     }
 
-    public byte[] exportToExcel(List<FactureDetail> details, String invoiceNumber, String invoiceEntity) throws IOException {
+    public byte[] exportToExcel(List<FactureDetail> details, List<SavRefundWithDetail> refunds, String invoiceNumber, String invoiceEntity) throws IOException {
         SheetManager sheetManager = SheetManager.createXLSX();
-        for (String title : titles) {
+        sheetManager.startDetailsSheet();
+        for (String title : DETAILS_TITLES) {
             sheetManager.write(title);
             sheetManager.nextCol();
         }
@@ -367,6 +380,37 @@ public class PlatformOrderShippingInvoiceService {
             sheetManager.write(detail.getTVA());
             sheetManager.nextCol();
             sheetManager.write(detail.getFactureNum());
+            sheetManager.moveCol(0);
+            sheetManager.nextRow();
+        }
+        sheetManager.startSavSheet();
+        for (String title : SAV_TITLES) {
+            sheetManager.write(title);
+            sheetManager.nextCol();
+        }
+        sheetManager.moveCol(0);
+        sheetManager.nextRow();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        for (SavRefundWithDetail refund : refunds) {
+            sheetManager.write(refund.getShopName());
+            sheetManager.nextCol();
+            sheetManager.write(refund.getMabangId());
+            sheetManager.nextCol();
+            sheetManager.write(refund.getPlatformOrderNumber());
+            sheetManager.nextCol();
+            sheetManager.write(sdf.format(refund.getRefundDate()));
+            sheetManager.nextCol();
+            sheetManager.write(refund.getPurchaseRefundAmount());
+            sheetManager.nextCol();
+            sheetManager.write(refund.getShippingFee()
+                    .add(refund.getFretFee())
+                    .add(refund.getVat())
+                    .add(refund.getServiceFee()));
+            sheetManager.nextCol();
+            sheetManager.write(refund.getTotalRefundAmount());
+            sheetManager.nextCol();
+            sheetManager.write(refund.getInvoiceNumber());
             sheetManager.moveCol(0);
             sheetManager.nextRow();
         }

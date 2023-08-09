@@ -21,7 +21,7 @@ import java.util.Date;
  * @Description: 售后退款
  * @Author: jeecg-boot
  * @Date: 2022-08-19
- * @Version: V1.2
+ * @Version: V1.3
  */
 @Data
 @TableName("sav_refund_with_detail")
@@ -117,9 +117,17 @@ public class SavRefundWithDetail implements Serializable {
      */
     private String erpCode;
     /**
+     * 店铺名称
+     */
+    private String shopName;
+    /**
      * 订单交易号
      */
     private String platformOrderNumber;
+    /**
+     * 订单序列号
+     */
+    private String mabangId;
     /**
      * 挂号费
      */

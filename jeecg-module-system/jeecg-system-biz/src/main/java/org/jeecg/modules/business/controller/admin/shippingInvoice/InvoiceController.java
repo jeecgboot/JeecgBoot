@@ -55,6 +55,8 @@ public class InvoiceController {
     @Autowired
     private ISavRefundService iSavRefundService;
     @Autowired
+    private ISavRefundWithDetailService savRefundWithDetailService;
+    @Autowired
     private IExchangeRatesService iExchangeRatesService;
     @Autowired
     private IQuartzJobService quartzJobService;
@@ -76,7 +78,7 @@ public class InvoiceController {
         Set<String> skuIds = orderContents.stream().map(PlatformOrderContent::getSkuId).collect(Collectors.toSet());
         List<String> skusWithoutPrice = platformOrderContentMap.searchSkuDetail(new ArrayList<>(skuIds))
                 .stream()
-                .filter(skuDetail -> skuDetail.getPrice().getPrice() == null)
+                .filter(skuDetail -> skuDetail.getPrice().getPrice() == null && skuDetail.getPrice().getPriceRmb() == null)
                 .map(SkuDetail::getErpCode)
                 .collect(Collectors.toList());
         if (skusWithoutPrice.isEmpty()) {
@@ -98,14 +100,19 @@ public class InvoiceController {
         String warehouseString = String.join(",", warehouses);
         QueryWrapper<PlatformOrder> queryWrapper = QueryGenerator.initQueryWrapper(platformOrder, req.getParameterMap());
         LambdaQueryWrapper<PlatformOrder> lambdaQueryWrapper = queryWrapper.lambda();
-        if(type.equals("shipping"))
-            lambdaQueryWrapper.in(PlatformOrder::getErpStatus, OrderStatus.Shipped.getCode());
-        else if(type.equals("pre-shipping"))
-            lambdaQueryWrapper.in(PlatformOrder::getErpStatus, Arrays.asList(OrderStatus.Pending.getCode(), OrderStatus.Preparing.getCode()));
-        else if(type.equals("all"))
-            lambdaQueryWrapper.in(PlatformOrder::getErpStatus, Arrays.asList(OrderStatus.Pending.getCode(), OrderStatus.Preparing.getCode(), OrderStatus.Shipped.getCode()));
-        else
-            return Result.error("Error 404 : page not found.");
+        switch (type) {
+            case "shipping":
+                lambdaQueryWrapper.in(PlatformOrder::getErpStatus, OrderStatus.Shipped.getCode());
+                break;
+            case "pre-shipping":
+                lambdaQueryWrapper.in(PlatformOrder::getErpStatus, Arrays.asList(OrderStatus.Pending.getCode(), OrderStatus.Preparing.getCode()));
+                break;
+            case "all":
+                lambdaQueryWrapper.in(PlatformOrder::getErpStatus, Arrays.asList(OrderStatus.Pending.getCode(), OrderStatus.Preparing.getCode(), OrderStatus.Shipped.getCode()));
+                break;
+            default:
+                return Result.error("Error 404 : page not found.");
+        }
         lambdaQueryWrapper.isNull(PlatformOrder::getShippingInvoiceNumber);
         Page<PlatformOrder> page = new Page<>(pageNo, pageSize);
         IPage<PlatformOrder> pageList;
@@ -262,6 +269,7 @@ public class InvoiceController {
         } else {
             log.info("Specified shop IDs : " + param.shopIDs());
             lambdaQueryWrapper.in(PlatformOrder::getShopId, param.shopIDs());
+            lambdaQueryWrapper.isNull(PlatformOrder::getShippingInvoiceNumber);
             if(param.getErpStatuses() != null) {
                 log.info("Specified erpStatuses : " + param.getErpStatuses());
                 lambdaQueryWrapper.in(PlatformOrder::getErpStatus, param.getErpStatuses());
@@ -294,6 +302,7 @@ public class InvoiceController {
         } else {
             log.info("Specified shop IDs : " + param.shopIDs());
             lambdaQueryWrapper.in(PlatformOrder::getShopId, param.shopIDs());
+            lambdaQueryWrapper.isNull(PlatformOrder::getShippingInvoiceNumber);
             lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT id FROM platform_order po WHERE po.erp_status = '3' AND po.shipping_time between '" + param.getStart() + "' AND '" + param.getEnd() + "'" );
             // on récupère les résultats de la requete
             List<PlatformOrder> orderID = platformOrderMapper.selectList(lambdaQueryWrapper);
@@ -324,8 +333,9 @@ public class InvoiceController {
 
     @GetMapping(value = "/downloadInvoiceDetail")
     public byte[] downloadInvoiceDetail(@RequestParam("invoiceNumber") String invoiceNumber, @RequestParam("invoiceEntity") String invoiceEntity) throws IOException {
-        List<FactureDetail> res = shippingInvoiceService.getInvoiceDetail(invoiceNumber);
-        return shippingInvoiceService.exportToExcel(res, invoiceNumber, invoiceEntity);
+        List<FactureDetail> factureDetails = shippingInvoiceService.getInvoiceDetail(invoiceNumber);
+        List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceNumber);
+        return shippingInvoiceService.exportToExcel(factureDetails, refunds, invoiceNumber, invoiceEntity);
     }
 
     @GetMapping(value = "/breakdown/byShop")

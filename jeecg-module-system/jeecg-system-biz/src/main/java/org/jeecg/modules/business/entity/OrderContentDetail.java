@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 
 /**
- * This class describe the relation among a sku identified by its id, its quantity,
+ * This class describes the relation among a sku identified by its id, its quantity,
  * and its correspondent price and promotion.
  */
 @Data
@@ -18,6 +18,8 @@ public class OrderContentDetail {
     private final SkuDetail skuDetail;
 
     private final Integer quantity;
+
+    private final BigDecimal exchangeRate;
 
     /**
      * Calculate the reduced amount by applying the promotion to the sku.
@@ -35,7 +37,7 @@ public class OrderContentDetail {
      * @return the total price (price * quantity)
      */
     public BigDecimal totalPrice() {
-        BigDecimal unit = skuDetail.getPrice().getPrice(quantity);
+        BigDecimal unit = skuDetail.getPrice().getPrice(quantity, exchangeRate);
         BigDecimal total = unit.multiply(new BigDecimal(quantity));
         log.info("unit: {}", unit);
         log.info("total: {}", total);
@@ -43,7 +45,7 @@ public class OrderContentDetail {
     }
 
     public BigDecimal unitPrice(){
-        return skuDetail.getPrice().getPrice(quantity);
+        return skuDetail.getPrice().getPrice(quantity, exchangeRate);
     }
 
     public int promotionCount() {

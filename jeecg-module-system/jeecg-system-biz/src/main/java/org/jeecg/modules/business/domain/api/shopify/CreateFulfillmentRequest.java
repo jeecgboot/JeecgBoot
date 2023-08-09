@@ -42,6 +42,7 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
         UK_ROYAL_MAIL("https://www.royalmail.com/track-your-item#/tracking-results/%s", "Royal Mail", "(FJ002|WB788)[0-9]{6}GB"),
         POST_NL("https://postnl.post/", "PostNL International Mail", "LS[0-9]{9}NL"),
         COLI_COLI("https://www.colicoli.fr/trackings?id=%s", "Coli Coli", "CC[0-9]{14}[A-Z]*"),
+        LUXEMBOURG_POST("https://www.post.lu/particuliers/colis-courrier/track-and-trace#/search", "Luxembourg Post", "LL[0-9]{9}LU"),
         ;
 
         private final String trackingUrl;
