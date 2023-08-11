@@ -21,7 +21,7 @@ public class PmsUtil {
 
     private static String uploadPath;
 
-    @Value("${jeecg.path.upload}")
+    @Value("${jeecg.path.upload:}")
     public void setUploadPath(String uploadPath) {
         PmsUtil.uploadPath = uploadPath;
     }

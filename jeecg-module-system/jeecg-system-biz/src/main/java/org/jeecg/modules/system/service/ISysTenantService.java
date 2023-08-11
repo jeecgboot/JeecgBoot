@@ -45,11 +45,11 @@ public interface ISysTenantService extends IService<SysTenant> {
     boolean removeTenantById(String id);
 
     /**
-     * 邀请用户加入租户
+     * 邀请用户加入租户,通过手机号
      * @param ids
-     * @param userIds
+     * @param phone
      */
-    void invitationUserJoin(String ids, String userIds);
+    void invitationUserJoin(String ids, String phone);
 
     /**
      * 请离用户（租户）
@@ -190,4 +190,14 @@ public interface ISysTenantService extends IService<SysTenant> {
      * @param sysTenantPackUser
      */
     void deleteApply(SysTenantPackUser sysTenantPackUser);
+
+    /**
+     * 产品包用户列表
+     * @param tenantId
+     * @param packId
+     * @param status
+     * @param page
+     * @return
+     */
+    IPage<TenantPackUser> queryTenantPackUserList(String tenantId, String packId, Integer status, Page<TenantPackUser> page);
 }

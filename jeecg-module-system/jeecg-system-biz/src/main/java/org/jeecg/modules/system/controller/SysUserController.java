@@ -167,7 +167,7 @@ public class SysUserController {
             user.setOrgCode(null);
 			// 保存用户走一个service 保证事务
             //获取租户ids
-            String relTenantIds = jsonObject.getString("realTenantIds");
+            String relTenantIds = jsonObject.getString("relTenantIds");
             sysUserService.saveUser(user, selectedRoles, selectedDeparts, relTenantIds);
             baseCommonService.addLog("添加用户，username： " +user.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
 			result.success("添加成功！");
@@ -1013,7 +1013,7 @@ public class SysUserController {
 			user.setStatus(CommonConstant.USER_UNFREEZE);
 			user.setDelFlag(CommonConstant.DEL_FLAG_0);
 			user.setActivitiSync(CommonConstant.ACT_SYNC_0);
-			sysUserService.addUserWithRole(user,"ee8626f80f7c2619917b6236f3a7f02b");//默认临时角色 test
+			sysUserService.addUserWithRole(user,null);
 			result.success("注册成功");
 		} catch (Exception e) {
 			result.error500("注册失败");

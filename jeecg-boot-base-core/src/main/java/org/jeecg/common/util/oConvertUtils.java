@@ -1,5 +1,6 @@
 package org.jeecg.common.util;
 
+import com.alibaba.fastjson.JSONArray;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.jeecg.common.constant.CommonConstant;
@@ -86,7 +87,7 @@ public class oConvertUtils {
 	}
 
 	public static int getInt(String s, int defval) {
-		if (s == null || s == "") {
+		if (s == null || "".equals(s)) {
 			return (defval);
 		}
 		try {
@@ -97,7 +98,7 @@ public class oConvertUtils {
 	}
 
 	public static int getInt(String s) {
-		if (s == null || s == "") {
+		if (s == null || "".equals(s)) {
 			return 0;
 		}
 		try {
@@ -108,7 +109,7 @@ public class oConvertUtils {
 	}
 
 	public static int getInt(String s, Integer df) {
-		if (s == null || s == "") {
+		if (s == null || "".equals(s)) {
 			return df;
 		}
 		try {
@@ -131,7 +132,7 @@ public class oConvertUtils {
 	}
 
 	public static double getDouble(String s, double defval) {
-		if (s == null || s == "") {
+		if (s == null || "".equals(s)) {
 			return (defval);
 		}
 		try {
@@ -353,21 +354,61 @@ public class oConvertUtils {
 	/**
 	 * 判断元素是否在数组内
 	 * 
-	 * @param substring
-	 * @param source
+	 * @param child
+	 * @param all
 	 * @return
 	 */
-	public static boolean isIn(String substring, String[] source) {
-		if (source == null || source.length == 0) {
+	public static boolean isIn(String child, String[] all) {
+		if (all == null || all.length == 0) {
 			return false;
 		}
-		for (int i = 0; i < source.length; i++) {
-			String aSource = source[i];
-			if (aSource.equals(substring)) {
+		for (int i = 0; i < all.length; i++) {
+			String aSource = all[i];
+			if (aSource.equals(child)) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * 判断元素是否在数组内
+	 *
+	 * @param childArray
+	 * @param all
+	 * @return
+	 */
+	public static boolean isArrayIn(String[] childArray, String[] all) {
+		if (all == null || all.length == 0) {
+			return false;
+		}
+		for (String v : childArray) {
+			if (!isIn(v, all)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 判断元素是否在数组内
+	 *
+	 * @param childArray
+	 * @param all
+	 * @return
+	 */
+	public static boolean isJsonArrayIn(JSONArray childArray, String[] all) {
+		if (all == null || all.length == 0) {
+			return false;
+		}
+
+		String[] childs = childArray.toArray(new String[]{});
+		for (String v : childs) {
+			if (!isIn(v, all)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -649,6 +690,95 @@ public class oConvertUtils {
 		return (list == null || list.size() == 0);
 	}
 
+	/**
+	 * 判断旧值与新值 是否相等
+	 *
+	 * @param oldVal
+	 * @param newVal
+	 * @return
+	 */
+	public static boolean isEqual(Object oldVal, Object newVal) {
+		if (oldVal != null && newVal != null) {
+			if (isArray(oldVal)) {
+				return equalityOfArrays((Object[]) oldVal, (Object[]) newVal);
+			}else if(oldVal instanceof JSONArray){
+				return equalityOfJSONArray((JSONArray) oldVal, (JSONArray) newVal);
+			}
+			return oldVal.equals(newVal);
+		} else {
+			if (oldVal == null && newVal == null) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+
+	/**
+	 * 方法描述 判断一个对象是否是一个数组
+	 *
+	 * @param obj
+	 * @return
+	 * @author yaomy
+	 * @date 2018年2月5日 下午5:03:00
+	 */
+	public static boolean isArray(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		return obj.getClass().isArray();
+	}
+	
+	/**
+	 * 判断两个数组是否相等（数组元素不分顺序）
+	 *
+	 * @param oldVal
+	 * @param newVal
+	 * @return
+	 */
+	public static boolean equalityOfJSONArray(JSONArray oldVal, JSONArray newVal) {
+		if (oldVal != null && newVal != null) {
+			Object[] oldValArray = oldVal.toArray();
+			Object[] newValArray = newVal.toArray();
+			return equalityOfArrays(oldValArray,newValArray);
+		} else {
+			if (oldVal == null && newVal == null) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+
+	/**
+	 * 判断两个数组是否相等（数组元素不分顺序）
+	 *
+	 * @param oldVal
+	 * @param newVal
+	 * @return
+	 */
+	public static boolean equalityOfArrays(Object[] oldVal, Object newVal[]) {
+		if (oldVal != null && newVal != null) {
+			Arrays.sort(oldVal);
+			Arrays.sort(newVal);
+			return Arrays.equals(oldVal, newVal);
+		} else {
+			if (oldVal == null && newVal == null) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+
+//	public static void main(String[] args) {
+////		String[] a = new String[]{"1", "2"};
+////		String[] b = new String[]{"2", "1"};
+//		Integer a = null;
+//		Integer b = 1;
+//		System.out.println(oConvertUtils.isEqual(a, b));
+//	}
+	
 	/**
 	 * 判断 list 是否不为空
 	 *

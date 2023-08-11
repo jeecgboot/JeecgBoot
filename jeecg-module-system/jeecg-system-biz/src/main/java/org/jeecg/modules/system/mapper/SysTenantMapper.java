@@ -91,4 +91,14 @@ public interface SysTenantMapper extends BaseMapper<SysTenant> {
      * @return
      */
     List<UserPosition> queryUserPositionList(@Param("userIdList") List<String> userIdList);
+
+    /**
+     * 查询产品包关联的用户列表
+     * @param page
+     * @param tenantId
+     * @param packId
+     * @param status
+     * @return
+     */
+    List<TenantPackUser> queryTenantPackUserList(@Param("page") Page<TenantPackUser> page, @Param("tenantId") String tenantId, @Param("packId") String packId, @Param("status") Integer status);
 }

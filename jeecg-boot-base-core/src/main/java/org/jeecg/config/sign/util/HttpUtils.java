@@ -1,5 +1,12 @@
 package org.jeecg.config.sign.util;
 
+import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.util.oConvertUtils;
+import org.springframework.http.HttpMethod;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,15 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import javax.servlet.http.HttpServletRequest;
-
-import lombok.extern.slf4j.Slf4j;
-import org.jeecg.common.constant.SymbolConstant;
-import org.jeecg.common.util.oConvertUtils;
-import org.springframework.http.HttpMethod;
-
-import com.alibaba.fastjson.JSONObject;
 
 /**
  * http 工具类 获取请求中的参数
@@ -43,6 +41,12 @@ public class HttpUtils {
         if (pathVariable.contains(SymbolConstant.COMMA)) {
             log.info(" pathVariable: {}",pathVariable);
             String deString = URLDecoder.decode(pathVariable, "UTF-8");
+          
+            //https://www.52dianzi.com/category/article/37/565371.html
+            if(deString.contains("%")){
+                deString = URLDecoder.decode(deString, "UTF-8");
+                log.info("存在%情况下，执行两次解码 — pathVariable decode: {}",deString);
+            }
             log.info(" pathVariable decode: {}",deString);
             result.put(SignUtil.X_PATH_VARIABLE, deString);
         }
@@ -81,6 +85,12 @@ public class HttpUtils {
         if (pathVariable.contains(SymbolConstant.COMMA)) {
             log.info(" pathVariable: {}",pathVariable);
             String deString = URLDecoder.decode(pathVariable, "UTF-8");
+           
+            //https://www.52dianzi.com/category/article/37/565371.html
+            if(deString.contains("%")){
+                deString = URLDecoder.decode(deString, "UTF-8");
+                log.info("存在%情况下，执行两次解码 — pathVariable decode: {}",deString);
+            }
             log.info(" pathVariable decode: {}",deString);
             result.put(SignUtil.X_PATH_VARIABLE, deString);
         }

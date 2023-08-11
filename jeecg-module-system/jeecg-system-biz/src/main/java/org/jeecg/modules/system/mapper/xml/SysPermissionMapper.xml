@@ -68,6 +68,21 @@
 			   )
 			   and p.del_flag = 0
 			<!--update end Author:lvdandan  Date:20200213 for：加入部门权限 -->
+			
+			<!-- update begin Author: taoyan  Date:20200213 for：QQYUN-4303 【low app】 用户登录的时候 加载low app的套餐权限 加到用户信息 -->
+			    UNION 
+				SELECT p.* 
+				FROM  sys_permission p
+				WHERE exists(
+				select a.id from sys_tenant_pack_perms a
+				join sys_tenant_pack b on a.pack_id = b.id
+				join sys_tenant_pack_user c on c.pack_id = b.id
+				join sys_user d on d.id = c.user_id
+				where p.id = a.permission_id AND d.username = #{username,jdbcType=VARCHAR}
+				)
+				and p.del_flag = 0
+			<!-- update end Author: taoyan  Date:20200213 for：QQYUN-4303 【low app】 用户登录的时候 加载low app的套餐权限 加到用户信息 -->
+			
 		   ) h order by h.sort_no ASC
 	</select>
 
