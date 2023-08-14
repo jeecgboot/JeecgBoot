@@ -56,6 +56,9 @@ public class DictQueryBlackListHandler extends AbstractQueryBlackListHandler {
         if (tableName.contains(" ")) {
             tableName = tableName.substring(0, tableName.indexOf(" "));
         }
+        if (tableName.contains(".")) {
+            tableName = tableName.substring(tableName.indexOf(".")+1, tableName.length());
+        }
         //【issues/4393】 sys_user , (sys_user), sys_user%20, %60sys_user%60
         String reg = "\\s+|\\(|\\)|`";
         return tableName.replaceAll(reg, "");
