@@ -67,14 +67,14 @@ public abstract class AbstractQueryBlackListHandler {
         }
         for (QueryTable table : list) {
             String name = table.getName();
-            String fieldString = ruleMap.get(name);
+            String fieldRule = ruleMap.get(name);
             // 有没有配置这张表
-            if (fieldString != null) {
-                if ("*".equals(fieldString) || table.isAll()) {
+            if (fieldRule != null) {
+                if ("*".equals(fieldRule) || table.isAll()) {
                     flag = false;
                     log.warn("sql黑名单校验，表【"+name+"】禁止查询");
                     break;
-                } else if (table.existSameField(fieldString)) {
+                } else if (table.existSameField(fieldRule)) {
                     flag = false;
                     break;
                 }

@@ -5,6 +5,8 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.common.util.security.AbstractQueryBlackListHandler;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +25,17 @@ public class DictQueryBlackListHandler extends AbstractQueryBlackListHandler {
 
     @Override
     protected List<QueryTable> getQueryTableInfo(String dictCodeString) {
+        //针对转义字符进行解码
+        try {
+            if (dictCodeString.contains("%")) {
+                dictCodeString = URLDecoder.decode(dictCodeString, "UTF-8");
+            }
+        } catch (UnsupportedEncodingException e) {
+            //e.printStackTrace();
+        }
+        dictCodeString = dictCodeString.trim();
+        
+        // 无论什么场景 第二、三个元素一定是表的字段，直接add
         if (dictCodeString != null && dictCodeString.indexOf(SymbolConstant.COMMA) > 0) {
             String[] arr = dictCodeString.split(SymbolConstant.COMMA);
             if (arr.length != 3 && arr.length != 4) {
