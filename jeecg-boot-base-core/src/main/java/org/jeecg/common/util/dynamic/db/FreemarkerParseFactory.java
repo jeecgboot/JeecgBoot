@@ -34,11 +34,11 @@ public class FreemarkerParseFactory {
     /**
      * 文件缓存
      */
-    private static final Configuration TPL_CONFIG = new Configuration();
+    private static final Configuration TPL_CONFIG = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
     /**
      * SQL 缓存
      */
-    private static final Configuration SQL_CONFIG = new Configuration();
+    private static final Configuration SQL_CONFIG = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
 
     private static StringTemplateLoader stringTemplateLoader = new StringTemplateLoader();
 
@@ -47,8 +47,7 @@ public class FreemarkerParseFactory {
             .compile("(?ms)/\\*.*?\\*/|^\\s*//.*?$");
 
     static {
-        TPL_CONFIG.setClassForTemplateLoading(
-                new FreemarkerParseFactory().getClass(), "/");
+        TPL_CONFIG.setClassForTemplateLoading(new FreemarkerParseFactory().getClass(), "/");
         TPL_CONFIG.setNumberFormat("0.#####################");
         SQL_CONFIG.setTemplateLoader(stringTemplateLoader);
         SQL_CONFIG.setNumberFormat("0.#####################");
@@ -57,6 +56,7 @@ public class FreemarkerParseFactory {
 
         //update-begin-author:taoyan date:2022-8-10 for: freemarker模板注入问题 禁止解析ObjectConstructor，Execute和freemarker.template.utility.JythonRuntime。
         //https://ackcent.com/in-depth-freemarker-template-injection/
+        TPL_CONFIG.setNewBuiltinClassResolver(TemplateClassResolver.SAFER_RESOLVER);
         SQL_CONFIG.setNewBuiltinClassResolver(TemplateClassResolver.SAFER_RESOLVER);
         //update-end-author:taoyan date:2022-8-10 for: freemarker模板注入问题 禁止解析ObjectConstructor，Execute和freemarker.template.utility.JythonRuntime。
     }
@@ -169,7 +169,7 @@ public class FreemarkerParseFactory {
         //"where and"
         String whereAnd = DataBaseConstant.SQL_WHERE+" and";
         //", where"
-        String commaWhere = SymbolConstant.COMMA+" "+DataBaseConstant.SQL_WHERE;
+        String commaWhere = SymbolConstant.COMMA+" "+ DataBaseConstant.SQL_WHERE;
         //", "
         String commaSpace = SymbolConstant.COMMA + " ";
         if (sql.endsWith(DataBaseConstant.SQL_WHERE) || sql.endsWith(whereSpace)) {
