@@ -49,13 +49,13 @@
 		<hutool.version>5.3.8</hutool.version>
 
 		<!-- 持久层 -->
-		<mybatis-plus.version>3.5.1</mybatis-plus.version>
+		<mybatis-plus.version>3.5.3</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>3.2.0</dynamic-datasource-spring-boot-starter.version>
 		<druid.version>1.1.22</druid.version>
-		<minidao.version>1.9.1</minidao.version>
+		<minidao.version>1.9.2</minidao.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.5.9</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.6.1</jimureport-spring-boot-starter.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.11.2</aliyun.oss.version>
@@ -63,7 +63,7 @@
 		<shiro.version>1.12.0</shiro.version>
 		<java-jwt.version>3.11.0</java-jwt.version>
 		<shiro-redis.version>3.1.0</shiro-redis.version>
-		<codegenerate.version>1.4.3</codegenerate.version>
+		<codegenerate.version>1.4.4</codegenerate.version>
 		<autopoi-web.version>1.4.5</autopoi-web.version>
 		<minio.version>8.0.3</minio.version>
 		<justauth-spring-boot-starter.version>1.3.4</justauth-spring-boot-starter.version>
@@ -235,7 +235,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.5.3-beta</version>
+				<version>3.5.3</version>
 			</dependency>
 
 			<!--mongon db-->
@@ -317,7 +317,7 @@
 			<dependency>
 				<groupId>org.jeecgframework</groupId>
 				<artifactId>jeewx-api</artifactId>
-				<version>1.5.1</version>
+				<version>1.5.2</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>commons-beanutils</artifactId>
