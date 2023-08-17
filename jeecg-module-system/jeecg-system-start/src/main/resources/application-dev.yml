@@ -135,7 +135,7 @@ spring:
         master:
           url: jdbc:mysql://127.0.0.1:3306/wia_app_3?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Europe/Paris
           username: admin
-          password: WIASourcing2021
+          password: admin
           driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
