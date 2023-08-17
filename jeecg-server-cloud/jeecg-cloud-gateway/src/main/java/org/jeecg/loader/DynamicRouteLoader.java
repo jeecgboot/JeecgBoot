@@ -21,6 +21,7 @@ import org.jeecg.config.RouterDataType;
 import org.jeecg.loader.repository.DynamicRouteService;
 import org.jeecg.loader.repository.MyInMemoryRouteDefinitionRepository;
 import org.jeecg.loader.vo.MyRouteDefinition;
+import org.jeecg.loader.vo.PredicatesVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
@@ -35,10 +36,7 @@ import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.Executor;
 
 /**
@@ -207,7 +205,23 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
             }
             Object predicates = obj.get("predicates");
             if (predicates != null) {
-                JSONArray list = JSON.parseArray(predicates.toString());
+                
+                List<PredicatesVo> list = JSON.parseArray(predicates.toString(), PredicatesVo.class);
+                Map<String, List<String>> groupedPredicates = new HashMap<>();
+
+                for (PredicatesVo predicatesVo : list) {
+                    String name = predicatesVo.getName();
+                    List<String> args = predicatesVo.getArgs();
+                    groupedPredicates.computeIfAbsent(name, k -> new ArrayList<>()).addAll(args);
+                }
+
+                list = new ArrayList<>();
+                for (Map.Entry<String, List<String>> entry : groupedPredicates.entrySet()) {
+                    String name = entry.getKey();
+                    List<String> args = entry.getValue();
+                    list.add(new PredicatesVo(name, args));
+                }
+                
                 List<PredicateDefinition> predicateDefinitionList = new ArrayList<>();
                 for (Object map : list) {
                     JSONObject json = (JSONObject) map;
