@@ -18,7 +18,6 @@ import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
-import org.jeecg.modules.message.entity.SysMessage;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +41,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/shippingInvoice")
 @Slf4j
 public class InvoiceController {
+    @Autowired
+    private IClientService clientService;
     @Autowired
     private IShopService shopService;
     @Autowired
@@ -154,15 +155,14 @@ public class InvoiceController {
         else return Result.error("No package in the selected period");
     }
     /**
-     * Make invoice for orders indicated by param.
+     * Make shipping invoice for shops between 2 dates and orders with specified status.
      *
-     * @param param invoice making parameter
+     * @param param  ClientID, shopIDs[], startDate, endDate, erpStatuses[], warehouses[]
      * @return Result of the generation, in case of error, message will be contained,
      * in case of success, data will contain filename.
      */
     @PostMapping(value = "/make")
     public Result<?> makeInvoice(@RequestBody ShippingInvoiceParam param) {
-        System.out.println(param);
         try {
             InvoiceMetaData metaData = shippingInvoiceService.makeInvoice(param);
             return Result.OK(metaData);
@@ -174,8 +174,8 @@ public class InvoiceController {
         }
     }
     /**
-     * Same as makeCompletePreShippingInvoice but for post shipping
-     * @param param ClientID, shopIDs[], startDate, endDate
+     * Make complete invoice (Purchase + shipping) for shops between 2 dates and orders with specified status.
+     * @param param ClientID, shopIDs[], startDate, endDate, erpStatuses[], warehouses[]
      * @return
      */
     @PostMapping(value = "/makeComplete")
@@ -214,7 +214,7 @@ public class InvoiceController {
 
 
     /**
-     * Make complete pre-shipping invoice (Purchase + shipping) for specified orders
+     * Make complete shipping invoice (Purchase + shipping) for specified orders and statuses
      *
      * @param param Parameters for creating a pre-shipping invoice
      * @return Result of the generation, in case of error, message will be contained,
@@ -328,6 +328,11 @@ public class InvoiceController {
         return shippingInvoiceService.exportToExcel(res, invoiceNumber, invoiceEntity);
     }
 
+    /**
+     * Returns a breakdown of all invoicable shops
+     *
+     * @return List of Shipping fees estimation
+     */
     @GetMapping(value = "/breakdown/byShop")
     public Result<?> getOrdersByClientAndShops() {
         List<String> errorMessages = new ArrayList<>();
@@ -335,10 +340,114 @@ public class InvoiceController {
         if (shippingFeesEstimation.isEmpty()) {
             return Result.error("No data");
         } else {
+            Map<String, String> clientIDCodeMap = new HashMap<>();
+            for(ShippingFeesEstimation estimation: shippingFeesEstimation) {
+                String clientId;
+                if(clientIDCodeMap.containsKey(estimation.getCode())){
+                    clientId = clientIDCodeMap.get(estimation.getCode());
+                }
+                else {
+                    clientId = clientService.getClientByInternalCode(estimation.getCode());
+                    clientIDCodeMap.put(estimation.getCode(), clientId);
+                }
+                if (estimation.getIsCompleteInvoice().equals("1")) {
+                    List<String> shopIds = shopService.listIdByClient(clientId);
+                    Period period = shippingInvoiceService.getValidPeriod(shopIds);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(period.start());
+                    String start = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH) + 1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH));
+                    calendar.setTime(period.end());
+                    String end = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH) + 1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH) + 1 < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH) + 1);
+
+                    List<String> orderIds = shippingInvoiceService.getShippingOrderIdBetweenDate(shopIds, start, end, Arrays.asList("0", "1"));
+                    ShippingInvoiceOrderParam param = new ShippingInvoiceOrderParam(clientId, orderIds, "post");
+                    Result<?> checkSkuPrices = checkSkuPrices(param);
+                    estimation.setErrorMessage(checkSkuPrices.getCode() == 200 ? "" : checkSkuPrices.getMessage());
+                }
+                System.gc();
+            }
             return Result.OK(errorMessages.toString(), shippingFeesEstimation);
         }
     }
 
+    /**
+     * Takes a list of ShippingFeesEstimations and groups the estimations by client
+     * @param estimationsByShop List of estimations
+     * @return List of estimation grouped by client
+     */
+    @PostMapping(value = "/breakdown/byClient")
+    public Result<?> getOrdersByClient(@RequestBody List<ShippingFeesEstimation> estimationsByShop) {
+        Map<String, List<ShippingFeesEstimation>> estimationClientMap = new HashMap<>();
+        List<ShippingFeesEstimationClient> estimationByClients = new ArrayList<>();
+        estimationsByShop.forEach(estimation -> {
+            if(estimationClientMap.containsKey(estimation.getCode())){
+                estimationClientMap.get(estimation.getCode()).add(estimation);
+            }else {
+                List<ShippingFeesEstimation> l = new ArrayList<>();
+                l.add(estimation);
+                estimationClientMap.put(estimation.getCode(), l);
+            }
+        });
+        for(Map.Entry<String, List<ShippingFeesEstimation>> entry : estimationClientMap.entrySet()) {
+            String code = entry.getKey();
+            String clientId = clientService.getClientByInternalCode(code);
+            List<String> shops = new ArrayList<>();
+            int ordersToProcess = 0;
+            int processedOrders = 0;
+            BigDecimal dueForProcessedOrders = BigDecimal.ZERO;
+            String isCompleteInvoice = "0";
+            int hasErrors = 0;
+            for(ShippingFeesEstimation estimation: entry.getValue()) {
+                shops.add(estimation.getShop());
+                isCompleteInvoice = estimation.getIsCompleteInvoice();
+                ordersToProcess += estimation.getOrdersToProcess();
+                processedOrders += estimation.getProcessedOrders();
+                dueForProcessedOrders = dueForProcessedOrders.add(estimation.getDueForProcessedOrders());
+                hasErrors = estimation.getErrorMessage().isEmpty() ? hasErrors : hasErrors+1;
+            }
+            ShippingFeesEstimationClient estimationClient = new ShippingFeesEstimationClient(clientId, code, ordersToProcess, processedOrders, dueForProcessedOrders, isCompleteInvoice, hasErrors);
+            estimationByClients.add(estimationClient);
+            System.gc();
+        }
+        return Result.ok(estimationByClients);
+    }
+
+    /**
+     * Invoices all available orders with status 3 for a list of client
+     * @param clientCodes list of clients to invoice
+     * @param invoiceType invoice type (shipping or complete)
+     * @return list of invoice infos
+     */
+    @GetMapping(value = "/breakdown/makeInvoice")
+    public Result<?> makeBreakdownInvoice(@RequestParam(value = "codes[]") List<String> clientCodes, @RequestParam("invoiceType") int invoiceType) {
+        Map<String, List<String>> clientShopIDsMap = new HashMap<>();
+        List<InvoiceMetaData> invoiceList = new ArrayList<>();
+        for(String id: clientCodes) {
+            clientShopIDsMap.put(id, shopService.listIdByClient(id));
+        }
+        for(Map.Entry<String, List<String>> entry: clientShopIDsMap.entrySet()) {
+            Period period = shippingInvoiceService.getValidPeriod(entry.getValue());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(period.start());
+            String start = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH)+1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH));
+            calendar.setTime(period.end());
+            String end = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH)+1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH)+1 < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH)+1);
+            System.out.println( "[" + start + "] --- [" + end + "]");
+            try {
+                ShippingInvoiceParam param = new ShippingInvoiceParam(entry.getKey(), entry.getValue(), start, end, Collections.singletonList(3), Arrays.asList("0", "1"));
+                InvoiceMetaData metaData;
+                if(invoiceType == 0)
+                    metaData = shippingInvoiceService.makeInvoice(param);
+                else
+                    metaData = shippingInvoiceService.makeCompleteInvoicePostShipping(param, "post");
+                invoiceList.add(metaData);
+            } catch (UserException | IOException | ParseException e) {
+                log.error(e.getMessage());
+            }
+            System.gc();
+        }
+        return Result.ok(invoiceList);
+    }
     /**
      * Get an estimate of shipping fees for selected orders
      * @param param Parameters for creating a pre-shipping invoice

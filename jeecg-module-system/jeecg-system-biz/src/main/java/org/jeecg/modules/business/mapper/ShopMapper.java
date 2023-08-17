@@ -20,4 +20,6 @@ public interface ShopMapper extends BaseMapper<Shop> {
 	public List<Shop> selectByMainId(@Param("mainId") String mainId);
 
     List<Shop> selectByClient(@Param("clientID") String clientID);
+
+    List<String> selectShopIdByClient(@Param("clientID") String clientID);
 }

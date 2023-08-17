@@ -1,6 +1,7 @@
 package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.swagger.models.auth.In;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.controller.UserException;
@@ -124,7 +125,10 @@ public class PlatformOrderShippingInvoiceService {
         Date endZoned = Date.from(ldt.atZone(paris).toInstant());
         return new Period(beginZoned, endZoned);
     }
-
+    public List<String> getShippingOrderIdBetweenDate(List<String> shops, String start, String end, List<String> wareHouses) {
+        List<PlatformOrder> orders = platformOrderMapper.fetchUninvoicedShippedOrderIDInShops( start, end, shops, wareHouses);
+        return orders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
+    }
     /**
      * Make an invoice based on parameters.
      *
@@ -179,7 +183,7 @@ public class PlatformOrderShippingInvoiceService {
     }
 
     /**
-     * Make a complete pre-shipping (purchase + shipping) invoice for specified orders
+     * Make a complete shipping invoice (purchase + shipping) invoice for specified orders and order statuses
      *
      * @param param the parameters to make the invoice
      * @return name of the invoice, can be used to in {@code getInvoiceBinary}.

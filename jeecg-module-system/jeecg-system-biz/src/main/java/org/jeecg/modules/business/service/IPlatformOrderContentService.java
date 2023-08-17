@@ -48,4 +48,9 @@ public interface IPlatformOrderContentService extends IService<PlatformOrderCont
      * @param invoiceNumber
      */
     void cancelInvoice(String invoiceNumber);
+    /**
+     * Cancels a batch of invoices
+     * @param invoiceNumbers
+     */
+    void cancelBatchInvoice(List<String> invoiceNumbers);
 }
