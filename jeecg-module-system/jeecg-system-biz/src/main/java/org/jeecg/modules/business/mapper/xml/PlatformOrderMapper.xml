@@ -599,4 +599,16 @@
             packaging_material_fee = 0.0
         WHERE shipping_invoice_number = #{invoiceNumber};
     </update>
+    <update id="cancelBatchInvoice">
+        UPDATE platform_order
+        SET fret_fee                = NULL,
+            order_service_fee       = NULL,
+            shipping_invoice_number = NULL,
+            picking_fee = 0.0,
+            packaging_material_fee = 0.0
+        WHERE shipping_invoice_number IN
+        <foreach collection="invoiceNumbers" separator="," open="(" close=")" index="index" item="invoiceNumber">
+            #{invoiceNumber}
+        </foreach>;
+    </update>
 </mapper>
