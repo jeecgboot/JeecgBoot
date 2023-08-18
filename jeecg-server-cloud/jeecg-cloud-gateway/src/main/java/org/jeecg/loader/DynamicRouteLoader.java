@@ -224,7 +224,7 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
                 
                 List<PredicateDefinition> predicateDefinitionList = new ArrayList<>();
                 for (Object map : list) {
-                    JSONObject json = (JSONObject) map;
+                    JSONObject json = JSON.parseObject(JSON.toJSONString(map));
                     PredicateDefinition predicateDefinition = new PredicateDefinition();
                     //update-begin-author:zyf date:20220419 for:【VUEN-762】路由条件添加异常问题,原因是部分路由条件参数需要设置固定key
                     String name=json.getString("name");
