@@ -136,7 +136,7 @@ public class SysRoleController {
 	 * @return
 	 */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-    //@RequiresPermissions("system:role:add")
+    @RequiresPermissions("system:role:add")
 	public Result<SysRole> add(@RequestBody SysRole role) {
 		Result<SysRole> result = new Result<SysRole>();
 		try {
@@ -155,7 +155,7 @@ public class SysRoleController {
 	 * @param role
 	 * @return
 	 */
-    //@RequiresPermissions("system:role:edit")
+    @RequiresPermissions("system:role:edit")
 	@RequestMapping(value = "/edit",method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<SysRole> edit(@RequestBody SysRole role) {
 		Result<SysRole> result = new Result<SysRole>();
@@ -179,7 +179,7 @@ public class SysRoleController {
 	 * @param id
 	 * @return
 	 */
-    //@RequiresPermissions("system:role:delete")
+    @RequiresPermissions("system:role:delete")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		sysRoleService.deleteRole(id);
@@ -191,7 +191,7 @@ public class SysRoleController {
 	 * @param ids
 	 * @return
 	 */
-    //@RequiresPermissions("system:role:deleteBatch")
+    @RequiresPermissions("system:role:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysRole> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<SysRole> result = new Result<SysRole>();
@@ -252,7 +252,7 @@ public class SysRoleController {
 	 *
 	 * @return
 	 */
-	//@RequiresPermissions("system:role:queryallNoByTenant")
+	@RequiresPermissions("system:role:queryallNoByTenant")
 	@RequestMapping(value = "/queryallNoByTenant", method = RequestMethod.GET)
 	public Result<List<SysRole>> queryallNoByTenant() {
 		Result<List<SysRole>> result = new Result<>();
