@@ -67,7 +67,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      * @param sysRoleIndex
      * @return
      */
-    //@RequiresPermissions("system:roleindex:add")
+    @RequiresPermissions("system:roleindex:add")
     @AutoLog(value = "角色首页配置-添加")
     @ApiOperation(value = "角色首页配置-添加", notes = "角色首页配置-添加")
     @PostMapping(value = "/add")
@@ -83,7 +83,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      * @param sysRoleIndex
      * @return
      */
-    //@RequiresPermissions("system:roleindex:edit")
+    @RequiresPermissions("system:roleindex:edit")
     @AutoLog(value = "角色首页配置-编辑")
     @ApiOperation(value = "角色首页配置-编辑", notes = "角色首页配置-编辑")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})

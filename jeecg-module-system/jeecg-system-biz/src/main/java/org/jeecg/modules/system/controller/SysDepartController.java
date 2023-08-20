@@ -173,7 +173,7 @@ public class SysDepartController {
 	 * @param sysDepart
 	 * @return
 	 */
-    //@RequiresPermissions("system:depart:add")
+    @RequiresPermissions("system:depart:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> add(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
@@ -199,7 +199,7 @@ public class SysDepartController {
 	 * @param sysDepart
 	 * @return
 	 */
-    //@RequiresPermissions("system:depart:edit")
+    @RequiresPermissions("system:depart:edit")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> edit(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
@@ -227,7 +227,7 @@ public class SysDepartController {
     * @param id
     * @return
     */
-    //@RequiresPermissions("system:depart:delete")
+    @RequiresPermissions("system:depart:delete")
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
    public Result<SysDepart> delete(@RequestParam(name="id",required=true) String id) {
@@ -253,7 +253,7 @@ public class SysDepartController {
 	 * @param ids
 	 * @return
 	 */
-    //@RequiresPermissions("system:depart:deleteBatch")
+    @RequiresPermissions("system:depart:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
@@ -377,7 +377,7 @@ public class SysDepartController {
      * @param response
      * @return
      */
-    //@RequiresPermissions("system:depart:importExcel")
+    @RequiresPermissions("system:depart:importExcel")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
