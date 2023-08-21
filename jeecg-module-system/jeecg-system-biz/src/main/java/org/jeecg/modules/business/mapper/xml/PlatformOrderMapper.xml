@@ -594,7 +594,11 @@
             order_service_fee       = NULL,
             shipping_invoice_number = NULL,
             picking_fee = 0.0,
-            packaging_material_fee = 0.0
+            packaging_material_fee = 0.0,
+            erp_status =
+                CASE erp_status
+                    WHEN 4 THEN 3
+                    END
         WHERE shipping_invoice_number = #{invoiceNumber};
     </update>
     <update id="cancelBatchInvoice">
@@ -603,7 +607,11 @@
             order_service_fee       = NULL,
             shipping_invoice_number = NULL,
             picking_fee = 0.0,
-            packaging_material_fee = 0.0
+            packaging_material_fee = 0.0,
+            erp_status =
+                CASE erp_status
+                    WHEN 4 THEN 3
+                END
         WHERE shipping_invoice_number IN
         <foreach collection="invoiceNumbers" separator="," open="(" close=")" index="index" item="invoiceNumber">
             #{invoiceNumber}
