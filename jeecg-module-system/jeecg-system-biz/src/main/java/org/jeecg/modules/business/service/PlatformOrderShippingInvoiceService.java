@@ -1,7 +1,7 @@
 package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.swagger.models.auth.In;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.controller.UserException;
@@ -19,6 +19,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,11 +31,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
+@Slf4j
 public class PlatformOrderShippingInvoiceService {
 
     @Autowired
@@ -55,6 +60,8 @@ public class PlatformOrderShippingInvoiceService {
     FactureDetailMapper factureDetailMapper;
     @Autowired
     IPlatformOrderService platformOrderService;
+    @Autowired
+    private IShopService shopService;
     @Autowired
     CountryService countryService;
     @Autowired
@@ -235,7 +242,7 @@ public class PlatformOrderShippingInvoiceService {
                 purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService);
         String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         List<PlatformOrder> platformOrderList;
-        if(param.getErpStatuses().toString().equals("post")) {
+        if(method.equals("post")) {
             //On récupère les commandes entre 2 dates d'expédition avec un status 3
             platformOrderList = platformOrderMapper.fetchUninvoicedShippedOrderIDInShops(param.getStart(), param.getEnd(), param.shopIDs(), param.getWarehouses());
         } else {
@@ -281,7 +288,7 @@ public class PlatformOrderShippingInvoiceService {
                 invoice.paidAmount()
         );
         shippingInvoiceMapper.insert(shippingInvoiceEntity);
-        return new InvoiceMetaData(filename, invoice.code(), invoice.client().getInvoiceEntity());
+        return new InvoiceMetaData(filename, invoice.code(), invoice.client().getInvoiceEntity(), "");
     }
 
     /**
@@ -430,5 +437,75 @@ public class PlatformOrderShippingInvoiceService {
         sheetManager.getWorkbook().close();
         System.gc();
         return Files.readAllBytes(target);
+    }
+
+
+    /**
+     * make shipping invoice by client and type (shipping or complete)
+     * @param clientIds list of client codes
+     * @param invoiceType shipping invoice or complete invoice
+     * @return list of filename (invoices and details)
+     */
+    @Transactional
+    public List<InvoiceMetaData> breakdownInvoiceClientByType(List<String> clientIds, int invoiceType) {
+        Map<String, List<String>> clientShopIDsMap = new HashMap<>();
+        List<InvoiceMetaData> invoiceList = new ArrayList<>();
+        for(String id: clientIds) {
+            clientShopIDsMap.put(id, shopService.listIdByClient(id));
+        }
+        for(Map.Entry<String, List<String>> entry: clientShopIDsMap.entrySet()) {
+            Period period = getValidPeriod(entry.getValue());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(period.start());
+            String start = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH)+1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH));
+            calendar.setTime(period.end());
+            String end = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH)+1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH)+1 < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH)+1);
+            log.info( "Invoicing : " + (invoiceType == 0 ? "Shipping Invoice" : "Complete Shipping Invoice") +
+                    "\nclient : " + entry.getKey() +
+                    "\nbetween dates : [" + start + "] --- [" + end + "]");
+            try {
+                ShippingInvoiceParam param = new ShippingInvoiceParam(entry.getKey(), entry.getValue(), start, end, Collections.singletonList(3), Arrays.asList("0", "1"));
+                InvoiceMetaData metaData;
+                if(invoiceType == 0)
+                    metaData = makeInvoice(param);
+                else
+                    metaData = makeCompleteInvoicePostShipping(param, "post");
+                invoiceList.add(metaData);
+            } catch (UserException | IOException | ParseException e) {
+                invoiceList.add(new InvoiceMetaData("", "error", entry.getKey(), e.getMessage()));
+                log.error(e.getMessage());
+            }
+            System.gc();
+        }
+        return invoiceList;
+    }
+
+    @Transactional
+    public String zipInvoices(List<String> invoiceList) throws IOException {
+        log.info("Zipping Invoices ...");
+        String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
+        String now = new SimpleDateFormat("yyyy-MM-dd_HH-mm").format(new Date());
+        String zipFilename = Paths.get(INVOICE_DIR).getParent().toAbsolutePath() + "/breakdownInvoices_" + username + "_" + now +".zip";
+        final FileOutputStream fos = new FileOutputStream(zipFilename);
+        ZipOutputStream zipOut = new ZipOutputStream(fos);
+
+        for (String srcFile : invoiceList) {
+            File fileToZip = new File(srcFile);
+            FileInputStream fis = new FileInputStream(fileToZip);
+            ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+            zipOut.putNextEntry(zipEntry);
+
+            byte[] bytes = new byte[1024];
+            int length;
+            while((length = fis.read(bytes)) >= 0) {
+                zipOut.write(bytes, 0, length);
+            }
+            fis.close();
+        }
+
+        zipOut.close();
+        fos.close();
+        log.info("Zipping done ...");
+        return zipFilename;
     }
 }

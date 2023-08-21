@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alibaba.fastjson.JSONObject;
+import freemarker.template.Template;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -21,17 +22,28 @@ import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Controller for request related to shipping invoice
@@ -61,6 +73,22 @@ public class InvoiceController {
     private IExchangeRatesService iExchangeRatesService;
     @Autowired
     private IQuartzJobService quartzJobService;
+    @Autowired
+    private IPendingTaskService pendingTaskService;
+    @Autowired
+    private FreeMarkerConfigurer freemarkerConfigurer;
+    @Autowired
+    private EmailService emailService;
+
+    @Value("${jeecg.path.shippingInvoiceDir}")
+    private String INVOICE_DIR;
+
+    @Value("${jeecg.path.shippingInvoiceDetailDir}")
+    private String INVOICE_DETAIL_DIR;
+
+    @Autowired
+    Environment env;
+
 
     @GetMapping(value = "/shopsByClient")
     public Result<List<Shop>> getShopsByClient(@RequestParam("clientID") String clientID) {
@@ -424,40 +452,72 @@ public class InvoiceController {
 
     /**
      * Invoices all available orders with status 3 for a list of client
-     * @param clientCodes list of clients to invoice
-     * @param invoiceType invoice type (shipping or complete)
+     * @param shippingClientIds list of clients to invoice shipping fees
+     * @param completeClientIds list of clients to invoice complete fees
      * @return list of invoice infos
      */
     @GetMapping(value = "/breakdown/makeInvoice")
-    public Result<?> makeBreakdownInvoice(@RequestParam(value = "codes[]") List<String> clientCodes, @RequestParam("invoiceType") int invoiceType) {
-        Map<String, List<String>> clientShopIDsMap = new HashMap<>();
+    public Result<?> makeBreakdownInvoice(@RequestParam(value = "shipping[]", required = false) List<String> shippingClientIds,
+                                          @RequestParam(value = "complete[]", required = false) List<String> completeClientIds) throws IOException {
+        List<InvoiceMetaData> metaDataErrorList = new ArrayList<>();
+        if(pendingTaskService.getStatus("BI").equals("1")) {
+            return Result.error("Task is already running, please retry in a moment !");
+        }
         List<InvoiceMetaData> invoiceList = new ArrayList<>();
-        for(String id: clientCodes) {
-            clientShopIDsMap.put(id, shopService.listIdByClient(id));
+        pendingTaskService.setStatus(1, "BI");
+        if(shippingClientIds != null) {
+            log.info("Making shipping invoice for clients : {}", shippingClientIds);
+            invoiceList.addAll(shippingInvoiceService.breakdownInvoiceClientByType(shippingClientIds, 0));
         }
-        for(Map.Entry<String, List<String>> entry: clientShopIDsMap.entrySet()) {
-            Period period = shippingInvoiceService.getValidPeriod(entry.getValue());
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(period.start());
-            String start = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH)+1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH));
-            calendar.setTime(period.end());
-            String end = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH)+1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH)+1 < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH)+1);
-            System.out.println( "[" + start + "] --- [" + end + "]");
-            try {
-                ShippingInvoiceParam param = new ShippingInvoiceParam(entry.getKey(), entry.getValue(), start, end, Collections.singletonList(3), Arrays.asList("0", "1"));
-                InvoiceMetaData metaData;
-                if(invoiceType == 0)
-                    metaData = shippingInvoiceService.makeInvoice(param);
-                else
-                    metaData = shippingInvoiceService.makeCompleteInvoicePostShipping(param, "post");
-                invoiceList.add(metaData);
-            } catch (UserException | IOException | ParseException e) {
-                log.error(e.getMessage());
+        if(completeClientIds != null) {
+            log.info("Making complete shipping invoice for clients : {}", completeClientIds);
+            invoiceList.addAll(shippingInvoiceService.breakdownInvoiceClientByType(completeClientIds, 1));
+        }
+        if(!invoiceList.isEmpty()) {
+            List<String> filenameList = new ArrayList<>();
+            for(InvoiceMetaData metaData: invoiceList){
+                if(metaData.getInvoiceCode().equals("error")) {
+                    metaDataErrorList.add(metaData);
+                }
+                else {
+                    filenameList.add(INVOICE_DIR + "//" + metaData.getFilename());
+                    List<FactureDetail> factureDetails = shippingInvoiceService.getInvoiceDetail(metaData.getInvoiceCode());
+                    List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(metaData.getInvoiceCode());
+                    shippingInvoiceService.exportToExcel(factureDetails, refunds, metaData.getInvoiceCode(), metaData.getInvoiceEntity());
+                    filenameList.add(INVOICE_DETAIL_DIR + "//Détail_calcul_de_facture_" + metaData.getInvoiceCode() + "_(" + metaData.getInvoiceEntity() + ").xlsx");
+                }
             }
-            System.gc();
+            String zipFilename = shippingInvoiceService.zipInvoices(filenameList);
+            String subject = "Invoices generated from Breakdown Page";
+            String destEmail = env.getProperty("spring.mail.username");
+            Properties prop = emailService.getMailSender();
+            Map <String, Object> templateModel = new HashMap<>();
+            templateModel.put("errors", metaDataErrorList);
+
+            Session session = Session.getInstance(prop, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(env.getProperty("spring.mail.username"), env.getProperty("spring.mail.password"));
+                }
+            });
+            try {
+                freemarkerConfigurer = emailService.freemarkerClassLoaderConfig();
+                Template freemarkerTemplate = freemarkerConfigurer.getConfiguration()
+                        .getTemplate("breakdownInvoiceMail.ftl");
+                String htmlBody = FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, templateModel);
+                emailService.sendMessageWithAttachment(destEmail, subject, htmlBody, zipFilename,session);
+                log.info("Mail sent successfully");
+                return Result.OK("component.email.emailSent");
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+                return Result.error("An error occurred while trying to send an email.");
+            }
         }
-        return Result.ok(invoiceList);
+        pendingTaskService.setStatus(0, "BI");
+        return Result.ok();
     }
+
     /**
      * Get an estimate of shipping fees for selected orders
      * @param param Parameters for creating a pre-shipping invoice

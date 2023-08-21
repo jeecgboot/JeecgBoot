@@ -193,7 +193,7 @@ jeecg:
     upload: C:\dev\upload
     save: C:\dev\save
     # email template folder
-    emailTemplateDir: C://Users//logau//IdeaProject//wia_app_3//wia_app//jeecg-module-system//jeecg-system-biz//src//main//resources//templates
+    emailTemplateDir: C://Users//logau//Documents//wia_app//jeecg-module-system//jeecg-system-biz//src//main//resources//templates
 
     # purchase invoice template
     purchaseTemplatePath: C://dev//templates//Purchase_Invoice_Template.xlsx

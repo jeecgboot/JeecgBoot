@@ -478,7 +478,7 @@ public class ShippingInvoiceController {
             return Result.OK("component.email.emailSent");
         }
         catch(Exception e) {
-            return Result.error("An error occured while trying to send an email.");
+            return Result.error("An error occurred while trying to send an email.");
         }
     }
 

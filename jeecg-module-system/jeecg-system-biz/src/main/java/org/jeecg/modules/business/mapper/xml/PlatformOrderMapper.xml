@@ -486,7 +486,6 @@
             #{warehouse}
         </foreach>
         AND po.shipping_time between #{startDate} AND #{endDate}
-        AND po.shipping_invoice_number IS NULL
         AND po.erp_status = 3;
     </select>
     <select id="fetchUninvoicedShippedOrderIDInShopsAndOrderTime" resultType="org.jeecg.modules.business.entity.PlatformOrder">
@@ -517,7 +516,6 @@
             #{warehouse}
         </foreach>
         AND po.order_time between #{startDate} AND #{endDate}
-        AND po.shipping_invoice_number IS NULL
         AND po.erp_status IN
         <foreach
                 collection="erpStatuses"
