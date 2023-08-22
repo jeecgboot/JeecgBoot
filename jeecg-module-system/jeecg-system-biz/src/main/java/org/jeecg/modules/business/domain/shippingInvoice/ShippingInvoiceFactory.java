@@ -669,7 +669,7 @@ public class ShippingInvoiceFactory {
                 }
             }
             if (channel == null) {
-                String format = "Can not find propre channel for" +
+                String format = "Can not find propre channel for " +
                         "package Serial No: %s, delivered at %s, " +
                         "weight: %s, channel name: %s, destination: %s";
                 String msg = String.format(
@@ -691,7 +691,7 @@ public class ShippingInvoiceFactory {
                     .max(Comparator.comparing(LogisticChannelPrice::getEffectiveDate));
             price = priceCandidate.orElse(null);
             if (price == null) {
-                String format = "Can not find propre channel price for" +
+                String format = "Can not find proper channel price for " +
                         "package Serial No: %s, delivered at %s, " +
                         "weight: %s, channel name: %s, destination: %s";
                 String msg = String.format(
@@ -789,9 +789,11 @@ public class ShippingInvoiceFactory {
                     // Calculate total amounts
                     invoice.tableData();
                     estimations.add(new ShippingFeesEstimation(
-                            client.getInternalCode(), shop.getErpCode(), 0, orders.entrySet().size(), invoice.getTotalAmount()));
+                            client.getInternalCode(), shop.getErpCode(), 0, orders.entrySet().size(), invoice.getTotalAmount(), client.getIsCompleteInvoice(), ""));
                 } catch (UserException e) {
                     log.error("Couldn't calculate all fees for shop {} for following reason {}", shop.getErpCode(), e.getMessage());
+                    estimations.add(new ShippingFeesEstimation(
+                            client.getInternalCode(), shop.getErpCode(), 0, orders.entrySet().size(), BigDecimal.ZERO, client.getIsCompleteInvoice(), e.getMessage()));
                     errorMessages.add(e.getMessage());
                 }
             }
@@ -845,7 +847,7 @@ public class ShippingInvoiceFactory {
                 // Calculate total amounts
                 invoice.tableData();
                 estimations.add(new ShippingFeesEstimation(
-                        client.getInternalCode(), shop.getErpCode(), 0, orders.entrySet().size(), invoice.getTotalAmount()));
+                        client.getInternalCode(), shop.getErpCode(), 0, orders.entrySet().size(), invoice.getTotalAmount(), client.getIsCompleteInvoice(), ""));
             } catch (UserException e) {
                 log.error("Couldn't calculate all fees for shop {} for following reason {}", shop.getErpCode(), e.getMessage());
                 errorMessages.add(e.getMessage());

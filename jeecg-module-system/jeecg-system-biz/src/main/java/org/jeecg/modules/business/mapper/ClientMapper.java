@@ -5,6 +5,9 @@ import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.Client;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @Description: 客户
  * @Author: jeecg-boot
@@ -15,4 +18,6 @@ import org.springframework.stereotype.Repository;
 public interface ClientMapper extends BaseMapper<Client> {
 
     String getClientEntity(@Param("id") String id);
+    Map<String, String> getClientsEntity(@Param("ids") List<String> ids);
+    String getClientByInternalCode(@Param("code") String code);
 }

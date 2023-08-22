@@ -27,7 +27,7 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.5.0</jeecgboot.version>
+		<jeecgboot.version>3.5.1</jeecgboot.version>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 

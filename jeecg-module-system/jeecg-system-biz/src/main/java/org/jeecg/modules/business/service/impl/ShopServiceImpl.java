@@ -29,4 +29,8 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 	public List<Shop> listByClient(String clientID) {
 		return shopMapper.selectByClient(clientID);
 	}
+	@Override
+	public List<String> listIdByClient(String clientID) {
+		return shopMapper.selectShopIdByClient(clientID);
+	}
 }

@@ -181,6 +181,9 @@ public class Client implements Serializable {
     @ApiModelProperty(value = "是否活跃")
     private String active;
 
+    @Excel(name = "是否完整发票", width = 15)
+    @ApiModelProperty(value = "完整发票")
+    private String isCompleteInvoice;
     public String fullName() {
         return firstName + " " + surname;
     }

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 客户
@@ -38,6 +39,8 @@ public interface IClientService extends IService<Client> {
 	 */
 	public void delBatchMain (Collection<? extends Serializable> idList);
 	public String getClientEntity(String id);
+	public Map<String, String> getClientsEntity(List<String> ids);
+	public String getClientByInternalCode(String code);
 	/**
 	 * Get current user's client information
 	 * @return client or null if current user's role is not client

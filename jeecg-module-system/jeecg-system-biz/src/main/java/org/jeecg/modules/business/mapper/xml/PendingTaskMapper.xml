@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.PendingTaskMapper">
+    <update id="setStatus">
+        UPDATE pending_task
+        SET on_going = #{status}
+        WHERE code = #{code};
+    </update>
+    <select id="getStatus" resultType="java.lang.String">
+        SELECT on_going
+        FROM pending_task
+        WHERE code = #{code};
+    </select>
+</mapper>
