@@ -35,15 +35,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Controller for request related to shipping invoice
@@ -74,7 +70,9 @@ public class InvoiceController {
     @Autowired
     private IQuartzJobService quartzJobService;
     @Autowired
-    private IPendingTaskService pendingTaskService;
+    private ITaskService pendingTaskService;
+    @Autowired
+    private ITaskHistoryService taskHistoryService;
     @Autowired
     private FreeMarkerConfigurer freemarkerConfigurer;
     @Autowired
@@ -460,11 +458,15 @@ public class InvoiceController {
     public Result<?> makeBreakdownInvoice(@RequestParam(value = "shipping[]", required = false) List<String> shippingClientIds,
                                           @RequestParam(value = "complete[]", required = false) List<String> completeClientIds) throws IOException {
         List<InvoiceMetaData> metaDataErrorList = new ArrayList<>();
-        if(pendingTaskService.getStatus("BI").equals("1")) {
-            return Result.error("Task is already running, please retry in a moment !");
+        TaskHistory ongoingBITask = taskHistoryService.getLatestRunningTask("BI");
+        if(ongoingBITask != null) {
+            return Result.error("Task is already run by " + ongoingBITask.getCreateBy() + ", please retry in a moment !");
         }
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         List<InvoiceMetaData> invoiceList = new ArrayList<>();
-        pendingTaskService.setStatus(1, "BI");
+        taskHistoryService.insert(new TaskHistory(sysUser.getUsername(), 1, "BI"));
+        TaskHistory lastRunningTask = taskHistoryService.getLatestRunningTask("BI");
+
         if(shippingClientIds != null) {
             log.info("Making shipping invoice for clients : {}", shippingClientIds);
             invoiceList.addAll(shippingInvoiceService.breakdownInvoiceClientByType(shippingClientIds, 0));
@@ -490,7 +492,6 @@ public class InvoiceController {
                 }
                 log.info("Generating detail files ...{}/{}", cpt++, invoiceList.size());
             }
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             String zipFilename = shippingInvoiceService.zipInvoices(filenameList);
             String subject = "Invoices generated from Breakdown Page";
             String destEmail = sysUser.getEmail();
@@ -512,17 +513,21 @@ public class InvoiceController {
                 emailService.sendMessageWithAttachment(destEmail, subject, htmlBody, zipFilename,session);
                 log.info("Mail sent successfully");
 
-                pendingTaskService.setStatus(0, "BI");
+                lastRunningTask.setOngoing(0);
+                taskHistoryService.updateById(lastRunningTask);
                 return Result.OK("component.email.emailSent");
             }
             catch(Exception e) {
                 e.printStackTrace();
+
+                lastRunningTask.setOngoing(-1);
+                taskHistoryService.updateById(lastRunningTask);
                 return Result.error("An error occurred while trying to send an email.");
             }
         }
-
-        pendingTaskService.setStatus(0, "BI");
-        return Result.ok();
+        lastRunningTask.setOngoing(0);
+        taskHistoryService.updateById(lastRunningTask);
+        return Result.ok("Nothing invoiced");
     }
 
     /**

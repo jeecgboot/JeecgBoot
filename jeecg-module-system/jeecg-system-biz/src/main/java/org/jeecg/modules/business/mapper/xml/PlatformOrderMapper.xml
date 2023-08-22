@@ -597,8 +597,11 @@
             packaging_material_fee = 0.0,
             erp_status =
                 CASE erp_status
-                    WHEN 4 THEN 3
-                    END
+                    WHEN '4' THEN '3'
+                    WHEN '3' THEN '3'
+                    WHEN '1' THEN '1'
+                    WHEN '2' THEN '2'
+                END
         WHERE shipping_invoice_number = #{invoiceNumber};
     </update>
     <update id="cancelBatchInvoice">
@@ -610,7 +613,10 @@
             packaging_material_fee = 0.0,
             erp_status =
                 CASE erp_status
-                    WHEN 4 THEN 3
+                    WHEN '4' THEN '3'
+                    WHEN '3' THEN '3'
+                    WHEN '1' THEN '1'
+                    WHEN '2' THEN '2'
                 END
         WHERE shipping_invoice_number IN
         <foreach collection="invoiceNumbers" separator="," open="(" close=")" index="index" item="invoiceNumber">
