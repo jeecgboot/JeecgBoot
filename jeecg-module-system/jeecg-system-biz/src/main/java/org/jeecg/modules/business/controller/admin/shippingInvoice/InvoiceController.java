@@ -475,6 +475,8 @@ public class InvoiceController {
         }
         if(!invoiceList.isEmpty()) {
             List<String> filenameList = new ArrayList<>();
+            log.info("Generating detail files ...0/{}", invoiceList.size());
+            int cpt = 1;
             for(InvoiceMetaData metaData: invoiceList){
                 if(metaData.getInvoiceCode().equals("error")) {
                     metaDataErrorList.add(metaData);
@@ -486,10 +488,12 @@ public class InvoiceController {
                     shippingInvoiceService.exportToExcel(factureDetails, refunds, metaData.getInvoiceCode(), metaData.getInvoiceEntity());
                     filenameList.add(INVOICE_DETAIL_DIR + "//Détail_calcul_de_facture_" + metaData.getInvoiceCode() + "_(" + metaData.getInvoiceEntity() + ").xlsx");
                 }
+                log.info("Generating detail files ...{}/{}", cpt++, invoiceList.size());
             }
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             String zipFilename = shippingInvoiceService.zipInvoices(filenameList);
             String subject = "Invoices generated from Breakdown Page";
-            String destEmail = env.getProperty("spring.mail.username");
+            String destEmail = sysUser.getEmail();
             Properties prop = emailService.getMailSender();
             Map <String, Object> templateModel = new HashMap<>();
             templateModel.put("errors", metaDataErrorList);
@@ -507,6 +511,8 @@ public class InvoiceController {
                 String htmlBody = FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, templateModel);
                 emailService.sendMessageWithAttachment(destEmail, subject, htmlBody, zipFilename,session);
                 log.info("Mail sent successfully");
+
+                pendingTaskService.setStatus(0, "BI");
                 return Result.OK("component.email.emailSent");
             }
             catch(Exception e) {
@@ -514,6 +520,7 @@ public class InvoiceController {
                 return Result.error("An error occurred while trying to send an email.");
             }
         }
+
         pendingTaskService.setStatus(0, "BI");
         return Result.ok();
     }

@@ -45,7 +45,9 @@ public class EmailServiceImpl implements EmailService {
         Message message = new MimeMessage(session);
 
         message.setFrom(new InternetAddress(Objects.requireNonNull(env.getProperty("spring.mail.username"))));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient));
+        message.setRecipient(Message.RecipientType.TO, InternetAddress.parse(recipient)[0]);
+        if(!recipient.equals(env.getProperty("spring.mail.username")))
+            message.setRecipient(Message.RecipientType.CC, InternetAddress.parse(Objects.requireNonNull(env.getProperty("spring.mail.username")))[0]);
 
         message.setSubject(subject);
 
