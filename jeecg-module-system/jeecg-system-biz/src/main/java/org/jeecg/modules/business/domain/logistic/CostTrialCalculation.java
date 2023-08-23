@@ -6,6 +6,7 @@ import lombok.Data;
 import org.jeecg.modules.business.entity.LogisticChannelPrice;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 
 /**
@@ -23,45 +24,34 @@ public class CostTrialCalculation {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private final Date effectiveDate;
 
-    private final double unitPrice;
+    private final BigDecimal unitPrice;
 
-    private final double shippingCost;
+    private final BigDecimal shippingCost;
 
-    private final double registrationCost;
+    private final BigDecimal registrationCost;
 
-    private final double additionalCost;
+    private final BigDecimal additionalCost;
 
 
-    private CostTrialCalculation(String countryCode, String logisticsChannelName, String logisticChannelCode, double unitPrice, double shippingCost,
-                                 double registrationCost, double additionalCost, Date effectiveDate) {
+    private CostTrialCalculation(String countryCode, String logisticsChannelName, String logisticChannelCode, BigDecimal unitPrice, BigDecimal shippingCost,
+                                 BigDecimal registrationCost, BigDecimal additionalCost, Date effectiveDate) {
         this.countryCode = countryCode;
         this.logisticsChannelName = logisticsChannelName;
         this.logisticChannelCode = logisticChannelCode;
         this.unitPrice = unitPrice;
-        this.shippingCost = format(shippingCost);
-        this.registrationCost = format(registrationCost);
-        this.additionalCost = format(additionalCost);
+        this.shippingCost = shippingCost;
+        this.registrationCost = registrationCost;
+        this.additionalCost = additionalCost;
         this.effectiveDate = effectiveDate;
     }
 
     public CostTrialCalculation(LogisticChannelPrice price, int weight, String logisticsChannelName, String code) {
-        this(price.getEffectiveCountry(), logisticsChannelName, code, price.getCalUnitPrice().doubleValue(), price.calculateShippingPrice(BigDecimal.valueOf(weight)).doubleValue(),
-                price.getRegistrationFee().doubleValue(), price.getAdditionalCost().doubleValue(), price.getEffectiveDate());
+        this(price.getEffectiveCountry(), logisticsChannelName, code, price.getCalUnitPrice(), price.calculateShippingPrice(BigDecimal.valueOf(weight)),
+                price.getRegistrationFee(), price.getAdditionalCost(), price.getEffectiveDate());
     }
 
     @JsonProperty("TotalCost")
     public double getTotalCost() {
-        return format(shippingCost + registrationCost + additionalCost);
-    }
-
-
-    /**
-     * Format a decimal with 2 unit.
-     *
-     * @param n the number to format
-     * @return the number formatted
-     */
-    private double format(double n) {
-        return BigDecimal.valueOf(n).setScale(2, BigDecimal.ROUND_UP).doubleValue();
+        return shippingCost.add(registrationCost).add(additionalCost).setScale(2, RoundingMode.CEILING).doubleValue();
     }
 }
