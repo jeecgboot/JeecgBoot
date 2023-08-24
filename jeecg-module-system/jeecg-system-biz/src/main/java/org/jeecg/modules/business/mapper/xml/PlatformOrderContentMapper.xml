@@ -289,7 +289,8 @@
             purchase_fee = 0.0,
             erp_status =
                 CASE erp_status
-                    WHEN 4 THEN 3
+                    WHEN '4' THEN '3'
+                ELSE erp_status
                 END
         WHERE platform_order_id IN (SELECT id FROM platform_order WHERE shipping_invoice_number = #{invoiceNumber});
     </update>
@@ -302,7 +303,8 @@
         purchase_fee = 0.0,
         erp_status =
             CASE erp_status
-                WHEN 4 THEN 3
+                WHEN '4' THEN '3'
+            ELSE erp_status
             END
         WHERE platform_order_id IN
         (SELECT id FROM platform_order

@@ -1,28 +1,29 @@
 package org.jeecg.modules.business.controller.admin;
 
-import java.util.Arrays;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.modules.business.entity.TaskHistory;
-import org.jeecg.modules.business.service.ITaskHistoryService;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-
+import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.modules.business.entity.TaskHistory;
+import org.jeecg.modules.business.service.ITaskHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.jeecg.common.aspect.annotation.AutoLog;
 
- /**
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.jeecg.modules.business.entity.TaskHistory.TaskStatus.CANCELLED;
+
+/**
  * @Description: task history
  * @Author: jeecg-boot
  * @Date:   2023-08-22
@@ -163,7 +164,7 @@ public class TaskHistoryController extends JeecgController<TaskHistory, ITaskHis
 	 public Result<?> resetTask(@RequestParam("task") String taskCode) {
 		 List<TaskHistory> allRunningTasks = taskHistoryService.getAllRunningTasksByCode(taskCode);
 		 for(TaskHistory taskHistory: allRunningTasks) {
-			 taskHistory.setOngoing(-1);
+			 taskHistory.setOngoing(CANCELLED.getCode());
 			 taskHistoryService.updateById(taskHistory);
 		 }
 		 return Result.ok("Reset successful !");

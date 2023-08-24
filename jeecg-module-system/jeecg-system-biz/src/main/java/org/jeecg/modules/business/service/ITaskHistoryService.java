@@ -15,7 +15,7 @@ public interface ITaskHistoryService extends IService<TaskHistory> {
 
     TaskHistory getLatestRunningTask(String taskCode);
 
-    List<TaskHistory> getAllRunningTasksByCode(String bi);
+    List<TaskHistory> getAllRunningTasksByCode(String code);
 
     void insert(TaskHistory taskHistory);
 }
