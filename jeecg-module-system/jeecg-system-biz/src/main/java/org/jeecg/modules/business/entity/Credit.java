@@ -53,8 +53,8 @@ public class Credit implements Serializable {
     @ApiModelProperty(value = "更新日期")
     private java.util.Date updateTime;
     /**client_id*/
-    @Excel(name = "client_id", width = 15, dictTable = "client", dicText = "internal_code", dicCode = "id")
-    @Dict(dictTable = "client", dicText = "internal_code", dicCode = "id")
+    @Excel(name = "client_id", width = 15, dictTable = "client WHERE active = '1'", dicText = "internal_code", dicCode = "id")
+    @Dict(dictTable = "client WHERE active = '1'", dicText = "internal_code", dicCode = "id")
     @ApiModelProperty(value = "client_id")
     private java.lang.String clientId;
     /**amount*/
