@@ -9,6 +9,8 @@ public class InvoiceMetaData {
 
     private final String invoiceCode;
 
+    private final String internalCode;
+
     private final String invoiceEntity;
 
     private final String errorMsg;

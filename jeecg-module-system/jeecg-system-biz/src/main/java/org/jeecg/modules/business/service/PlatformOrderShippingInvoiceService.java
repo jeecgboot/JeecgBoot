@@ -288,7 +288,7 @@ public class PlatformOrderShippingInvoiceService {
                 invoice.paidAmount()
         );
         shippingInvoiceMapper.insert(shippingInvoiceEntity);
-        return new InvoiceMetaData(filename, invoice.code(), invoice.client().getInvoiceEntity(), "");
+        return new InvoiceMetaData(filename, invoice.code(), invoice.client().getInternalCode(), invoice.client().getInvoiceEntity(), "");
     }
 
     /**
@@ -341,7 +341,7 @@ public class PlatformOrderShippingInvoiceService {
         return factureDetailMapper.selectList(queryWrapper);
     }
 
-    public byte[] exportToExcel(List<FactureDetail> details, List<SavRefundWithDetail> refunds, String invoiceNumber, String invoiceEntity) throws IOException {
+    public byte[] exportToExcel(List<FactureDetail> details, List<SavRefundWithDetail> refunds, String invoiceNumber, String invoiceEntity, String internalCode) throws IOException {
         SheetManager sheetManager = SheetManager.createXLSX();
         sheetManager.startDetailsSheet();
         for (String title : DETAILS_TITLES) {
@@ -426,10 +426,10 @@ public class PlatformOrderShippingInvoiceService {
             sheetManager.nextRow();
         }
 
-        Path target = Paths.get(INVOICE_DETAIL_DIR, "Détail_calcul_de_facture_" + invoiceNumber + "_(" + invoiceEntity + ").xlsx");
+        Path target = Paths.get(INVOICE_DETAIL_DIR, internalCode + "_(" + invoiceEntity + ")_" + invoiceNumber + "_Détail_calcul_de_facture.xlsx");
         int i = 2;
         while (Files.exists(target)) {
-            target = Paths.get(INVOICE_DETAIL_DIR, "Détail_calcul_de_facture_" + invoiceNumber + "_(" + invoiceEntity + ")_" + i + ".xlsx");
+            target = Paths.get(INVOICE_DETAIL_DIR, internalCode + "_(" + invoiceEntity + ")_" + invoiceNumber + "_Détail_calcul_de_facture_(" + i + ").xlsx");
             i++;
         }
         Files.createFile(target);
@@ -472,7 +472,7 @@ public class PlatformOrderShippingInvoiceService {
                     metaData = makeCompleteInvoicePostShipping(param, "post");
                 invoiceList.add(metaData);
             } catch (UserException | IOException | ParseException e) {
-                invoiceList.add(new InvoiceMetaData("", "error", entry.getKey(), e.getMessage()));
+                invoiceList.add(new InvoiceMetaData("", "error", "", entry.getKey(), e.getMessage()));
                 log.error(e.getMessage());
             }
             System.gc();

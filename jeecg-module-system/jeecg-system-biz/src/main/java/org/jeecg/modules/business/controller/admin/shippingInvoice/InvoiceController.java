@@ -358,10 +358,10 @@ public class InvoiceController {
     }
 
     @GetMapping(value = "/downloadInvoiceDetail")
-    public byte[] downloadInvoiceDetail(@RequestParam("invoiceNumber") String invoiceNumber, @RequestParam("invoiceEntity") String invoiceEntity) throws IOException {
+    public byte[] downloadInvoiceDetail(@RequestParam("invoiceNumber") String invoiceNumber, @RequestParam("invoiceEntity") String invoiceEntity, @RequestParam("internalCode") String internalCode) throws IOException {
         List<FactureDetail> factureDetails = shippingInvoiceService.getInvoiceDetail(invoiceNumber);
         List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceNumber);
-        return shippingInvoiceService.exportToExcel(factureDetails, refunds, invoiceNumber, invoiceEntity);
+        return shippingInvoiceService.exportToExcel(factureDetails, refunds, invoiceNumber, invoiceEntity, internalCode);
     }
 
     /**
@@ -487,14 +487,14 @@ public class InvoiceController {
                     filenameList.add(INVOICE_DIR + "//" + metaData.getFilename());
                     List<FactureDetail> factureDetails = shippingInvoiceService.getInvoiceDetail(metaData.getInvoiceCode());
                     List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(metaData.getInvoiceCode());
-                    shippingInvoiceService.exportToExcel(factureDetails, refunds, metaData.getInvoiceCode(), metaData.getInvoiceEntity());
-                    filenameList.add(INVOICE_DETAIL_DIR + "//Détail_calcul_de_facture_" + metaData.getInvoiceCode() + "_(" + metaData.getInvoiceEntity() + ").xlsx");
+                    shippingInvoiceService.exportToExcel(factureDetails, refunds, metaData.getInvoiceCode(), metaData.getInvoiceEntity(), metaData.getInternalCode());
+                    filenameList.add(INVOICE_DETAIL_DIR + "//" + metaData.getInternalCode() + "_(" + metaData.getInvoiceEntity() + ")_" + metaData.getInvoiceCode() + "_Détail_calcul_de_facture.xlsx");
                 }
                 log.info("Generating detail files ...{}/{}", cpt++, invoiceList.size());
             }
             String zipFilename = shippingInvoiceService.zipInvoices(filenameList);
             String subject = "Invoices generated from Breakdown Page";
-            String destEmail = sysUser.getEmail();
+            String destEmail = sysUser.getEmail() == null ? env.getProperty("spring.mail.username") : sysUser.getEmail();
             Properties prop = emailService.getMailSender();
             Map <String, Object> templateModel = new HashMap<>();
             templateModel.put("errors", metaDataErrorList);
