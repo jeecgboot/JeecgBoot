@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>1.5.0</version>
+  <version>1.6.0</version>
   <packaging>pom</packaging>
   <name>WIA APP ${project.version} </name>
 
@@ -384,6 +384,15 @@
                     </nonFilteredFileExtensions>
                 </configuration>
             </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.6</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+
 		</plugins>
 		<resources>
 			<resource>
