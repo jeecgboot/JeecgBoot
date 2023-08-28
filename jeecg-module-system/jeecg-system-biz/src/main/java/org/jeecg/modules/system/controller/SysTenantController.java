@@ -363,6 +363,289 @@ public class SysTenantController {
     
 
 
+    //===========【低代码应用，前端专用接口 —— 加入限制只能维护和查看自己拥有的租户】==========================================================
+    /**
+     *  查询当前用户的所有有效租户【低代码应用专用接口】
+     * @return
+     */
+    @RequestMapping(value = "/getCurrentUserTenant", method = RequestMethod.GET)
+    public Result<Map<String,Object>> getCurrentUserTenant() {
+        Result<Map<String,Object>> result = new Result<Map<String,Object>>();
+        try {
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
+            List<Integer> tenantIdList = relationService.getTenantIdsByUserId(sysUser.getId());
+            Map<String,Object> map = new HashMap(5);
+            if (null!=tenantIdList && tenantIdList.size()>0) {
+            //update-end---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
+                // 该方法仅查询有效的租户，如果返回0个就说明所有的租户均无效。
+                List<SysTenant> tenantList = sysTenantService.queryEffectiveTenant(tenantIdList);
+                map.put("list", tenantList);
+            }
+            result.setSuccess(true);
+            result.setResult(map);
+        }catch(Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("查询失败！");
+        }
+        return result;
+    }
+
+    /**
+     * 邀请用户【低代码应用专用接口】
+     * @param ids
+     * @param phone
+     * @return
+     */
+    @PutMapping("/invitationUserJoin")
+    @RequiresPermissions("system:tenant:invitation:user")
+    public Result<String> invitationUserJoin(@RequestParam("ids") String ids, @RequestParam("phone") String phone){
+        sysTenantService.invitationUserJoin(ids,phone);
+        return Result.ok("邀请用户成功");
+    }
+
+    /**
+     * 获取用户列表数据【低代码应用专用接口】
+     * @param user
+     * @param pageNo
+     * @param pageSize
+     * @param req
+     * @return
+     */
+    @RequestMapping(value = "/getTenantUserList", method = RequestMethod.GET)
+    @RequiresPermissions("system:tenant:user:list")
+    public Result<IPage<SysUser>> getTenantUserList(SysUser user,
+                                                    @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                                    @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                                    @RequestParam(name="userTenantId") String userTenantId,
+                                                    HttpServletRequest req) {
+        Result<IPage<SysUser>> result = new Result<>();
+        Page<SysUser> page = new Page<>(pageNo, pageSize);
+        Page<SysUser> pageList = relationService.getPageUserList(page,Integer.valueOf(userTenantId),user);
+        result.setSuccess(true);
+        result.setResult(pageList);
+        return result;
+    }
+
+    /**
+     * 请离用户租户【低代码应用专用接口】
+     * @param userIds
+     * @param tenantId
+     * @return
+     */
+    @PutMapping("/leaveTenant")
+    @RequiresPermissions("system:tenant:leave")
+    public Result<String> leaveTenant(@RequestParam("userIds") String userIds,
+                                      @RequestParam("tenantId") String tenantId){
+        Result<String> result = new Result<>();
+        //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && !"admin".equals(sysUser.getUsername())){
+            Integer loginSessionTenant = oConvertUtils.getInt(TenantContext.getTenant());
+            if(loginSessionTenant!=null && !loginSessionTenant.equals(Integer.valueOf(tenantId))){
+                result.error500("无权限访问他人租户！");
+                return result;
+            }
+        }
+        sysTenantService.leaveTenant(userIds,tenantId);
+        return Result.ok("请离成功");
+    }
+
+    /**
+     *  编辑（只允许修改自己拥有的租户）【低代码应用专用接口】
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/editOwnTenant", method ={RequestMethod.PUT, RequestMethod.POST})
+    public Result<SysTenant> editOwnTenant(@RequestBody SysTenant tenant, HttpServletRequest req) {
+        Result<SysTenant> result = new Result();
+        String tenantId = TokenUtils.getTenantIdByRequest(req);
+        if(!tenantId.equals(tenant.getId().toString())){
+            return result.error500("无权修改他人租户！");
+        }
+
+        SysTenant sysTenant = sysTenantService.getById(tenant.getId());
+        if(sysTenant==null) {
+            return result.error500("未找到对应实体");
+        }
+        if(oConvertUtils.isEmpty(sysTenant.getHouseNumber())){
+            tenant.setHouseNumber(RandomUtil.randomStringUpper(6));
+        }
+        boolean ok = sysTenantService.updateById(tenant);
+        if(ok) {
+            result.success("修改成功!");
+        }
+        return result;
+    }
+    
+    /**
+     * 创建租户并且将用户保存到中间表【低代码应用专用接口】
+     * @param sysTenant
+     */
+    @PostMapping("/saveTenantJoinUser")
+    public Result<Integer> saveTenantJoinUser(@RequestBody SysTenant sysTenant){
+        Result<Integer> result = new Result<>();
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        //------------------------------------------------------------------------------------------------
+        //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+        if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+            //---author:scott---date:20220111-----for: 限制免费用户只能创建两个租户--
+            Integer count = sysTenantService.countCreateTenantNum(sysUser.getUsername());
+            if (count > 2) {
+                Set<String> roles = sysUserService.getUserRolesSet(sysUser.getUsername());
+                //创建一个付费角色 paymember
+                if (roles==null || (!roles.contains("paymember") && !roles.contains("admin"))) {
+                    return result.error500("免费用户最多创建两个租户!");    
+                }
+            }
+            //---author:scott---date:20220111-----for:  限制免费用户只能创建两个租户--
+        }
+        //------------------------------------------------------------------------------------------------
+        Integer tenantId = sysTenantService.saveTenantJoinUser(sysTenant, sysUser.getId());
+        result.setSuccess(true);
+        result.setMessage("创建成功");
+        result.setResult(tenantId);
+        return result;
+    }
+
+    /**
+     * 加入租户通过门牌号【低代码应用专用接口】
+     * @param sysTenant
+     */
+    @PostMapping("/joinTenantByHouseNumber")
+    public Result<Integer> joinTenantByHouseNumber(@RequestBody SysTenant sysTenant){
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        Integer tenantId = sysTenantService.joinTenantByHouseNumber(sysTenant, sysUser.getId());
+        Result<Integer> result = new Result<>();
+        if(tenantId != 0){
+            result.setMessage("申请租户成功");
+            result.setSuccess(true);
+            result.setResult(tenantId);
+            return result;
+        }else{
+            result.setMessage("该门牌号不存在");
+            result.setSuccess(false);
+            return result;
+        }
+    }
+    
+    //update-begin---author:wangshuai ---date:20230107  for：[QQYUN-3725]申请加入租户，审核中状态增加接口------------
+    /**
+     * 分页获取租户用户数据(vue3用户租户页面)【低代码应用专用接口】
+     *
+     * @param pageNo
+     * @param pageSize
+     * @param userTenantStatus
+     * @param type
+     * @param req
+     * @return
+     */
+    @GetMapping("/getUserTenantPageList")
+    @RequiresPermissions("system:tenant:tenantPageList")
+    public Result<IPage<SysUserTenantVo>> getUserTenantPageList(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                                @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                                @RequestParam(name = "userTenantStatus") String userTenantStatus,
+                                                                @RequestParam(name = "type", required = false) String type,
+                                                                SysUser user,
+                                                                HttpServletRequest req) {
+        Page<SysUserTenantVo> page = new Page<SysUserTenantVo>(pageNo, pageSize);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String tenantId = oConvertUtils.getString(TenantContext.getTenant(), "0");
+        IPage<SysUserTenantVo> list = relationService.getUserTenantPageList(page, Arrays.asList(userTenantStatus.split(SymbolConstant.COMMA)), user, Integer.valueOf(tenantId));
+        return Result.ok(list);
+    }
+
+    /**
+     * 通过用户id获取租户列表【低代码应用专用接口】
+     *
+     * @param userTenantStatus 关系表的状态
+     * @return
+     */
+    @GetMapping("/getTenantListByUserId")
+    //@RequiresPermissions("system:tenant:getTenantListByUserId")
+    public Result<List<SysUserTenantVo>> getTenantListByUserId(@RequestParam(name = "userTenantStatus", required = false) String userTenantStatus) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<String> list = null;
+        if (oConvertUtils.isNotEmpty(userTenantStatus)) {
+            list = Arrays.asList(userTenantStatus.split(SymbolConstant.COMMA));
+        }
+        //租户状态，用户id,租户用户关系状态
+        List<SysUserTenantVo> sysTenant = relationService.getTenantListByUserId(sysUser.getId(), list);
+        return Result.ok(sysTenant);
+    }
+
+    /**
+     * 更新用户租户关系状态【低代码应用专用接口】
+     */
+    @PutMapping("/updateUserTenantStatus")
+    //@RequiresPermissions("system:tenant:updateUserTenantStatus")
+    public Result<String> updateUserTenantStatus(@RequestBody SysUserTenant userTenant) {
+        String tenantId = TenantContext.getTenant();
+        if (oConvertUtils.isEmpty(tenantId)) {
+            return Result.error("未找到当前租户信息"); 
+        }
+        relationService.updateUserTenantStatus(userTenant.getUserId(), tenantId, userTenant.getStatus());
+        return Result.ok("更新用户租户状态成功");
+    }
+
+    /**
+     * 注销租户【低代码应用专用接口】
+     *
+     * @param sysTenant
+     * @return
+     */
+    @PutMapping("/cancelTenant")
+    //@RequiresPermissions("system:tenant:cancelTenant")
+    public Result<String> cancelTenant(@RequestBody SysTenant sysTenant, HttpServletRequest request) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        SysTenant tenant = sysTenantService.getById(sysTenant.getId());
+        if (null == tenant) {
+            return Result.error("未找到当前租户信息");
+        }
+        if (!sysUser.getUsername().equals(tenant.getCreateBy())) {
+            return Result.error("无权限，只能注销自己创建的租户！");
+        }
+        SysUser userById = sysUserService.getById(sysUser.getId());
+        String loginPassword = request.getParameter("loginPassword");
+        String passwordEncode = PasswordUtil.encrypt(sysUser.getUsername(),loginPassword, userById.getSalt());
+        if (!passwordEncode.equals(userById.getPassword())) {
+            return Result.error("密码不正确");
+        }
+        sysTenantService.removeById(sysTenant.getId());
+        return Result.ok("注销成功");
+    }
+    //update-end---author:wangshuai ---date:20230107  for：[QQYUN-3725]申请加入租户，审核中状态增加接口------------
+
+    /**
+     * 获取租户用户不同状态下的数量【低代码应用专用接口】
+     * @return
+     */
+    @GetMapping("/getTenantStatusCount")
+    public Result<Long> getTenantStatusCount(@RequestParam(value = "status",defaultValue = "1") String status, HttpServletRequest req){
+        String tenantId = TokenUtils.getTenantIdByRequest(req);
+        if (null == tenantId) {
+            return Result.error("未找到当前租户信息");
+        }
+        LambdaQueryWrapper<SysUserTenant> query = new LambdaQueryWrapper<>();
+        query.eq(SysUserTenant::getTenantId,tenantId);
+        query.eq(SysUserTenant::getStatus,status);
+        long count = relationService.count(query);
+        return Result.ok(count);
+    }
+
+    /**
+     * 用户取消租户申请【低代码应用专用接口】
+     * @param tenantId
+     * @return
+     */
+    @PutMapping("/cancelApplyTenant")
+    public Result<String> cancelApplyTenant(@RequestParam("tenantId") String tenantId){
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        sysTenantService.leaveTenant(sysUser.getId(),tenantId);
+        return Result.ok("取消申请成功");
+    }
+
+    //===========【低代码应用，前端专用接口 —— 加入限制只能维护和查看自己拥有的租户】==========================================================
 
     /**
      * 彻底删除租户
