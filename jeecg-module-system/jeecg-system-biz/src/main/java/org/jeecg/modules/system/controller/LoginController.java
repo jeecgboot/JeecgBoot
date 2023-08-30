@@ -727,8 +727,8 @@ public class LoginController {
 		if(failTime!=null){
 			val = Integer.parseInt(failTime.toString());
 		}
-		// 1小时
-		redisUtil.set(key, ++val, 3600);
+		// 10分钟
+		redisUtil.set(key, ++val, 600);
 	}
 
 }

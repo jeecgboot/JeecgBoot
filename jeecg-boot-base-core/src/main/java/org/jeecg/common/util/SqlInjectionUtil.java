@@ -33,7 +33,7 @@ public class SqlInjectionUtil {
 	/**
 	 * sleep函数
 	 */
-	private final static Pattern FUN_SLEEP = Pattern.compile("sleep\\([\\d\\.]*\\)", Pattern.CASE_INSENSITIVE);
+	private final static Pattern FUN_SLEEP = Pattern.compile("sleep\\(.*\\)", Pattern.CASE_INSENSITIVE);
 
 	/**
 	 * sql注释的正则
