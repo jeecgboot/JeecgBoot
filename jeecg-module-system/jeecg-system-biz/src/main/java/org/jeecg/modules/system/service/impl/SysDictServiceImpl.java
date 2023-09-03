@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
@@ -13,7 +14,6 @@ import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.util.ResourceUtil;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictModelMany;
@@ -25,14 +25,18 @@ import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.mapper.SysDictItemMapper;
 import org.jeecg.modules.system.mapper.SysDictMapper;
+import org.jeecg.modules.system.model.DuplicateCheckVo;
 import org.jeecg.modules.system.model.TreeSelectModel;
+import org.jeecg.modules.system.security.DictQueryBlackListHandler;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.vo.lowapp.SysDictVo;
+import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -53,6 +57,53 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     private SysDictMapper sysDictMapper;
     @Autowired
     private SysDictItemMapper sysDictItemMapper;
+	@Autowired
+	private DictQueryBlackListHandler dictQueryBlackListHandler;
+
+	@Override
+	public boolean duplicateCheckData(DuplicateCheckVo duplicateCheckVo) {
+		Long count = null;
+
+		// 1.针对采用 ${}写法的表名和字段进行转义和check
+		String table = SqlInjectionUtil.getSqlInjectTableName(duplicateCheckVo.getTableName());
+		String fieldName = SqlInjectionUtil.getSqlInjectField(duplicateCheckVo.getFieldName());
+		duplicateCheckVo.setTableName(table);
+		duplicateCheckVo.setFieldName(fieldName);
+		
+		// 2.SQL注入check（只限制非法串改数据库）
+		//关联表字典（举例：sys_user,realname,id）
+		SqlInjectionUtil.filterContent(table, fieldName);
+		
+		// 3.表字典黑名单check
+		String checkSql = table + SymbolConstant.COMMA + fieldName + SymbolConstant.COMMA;
+		dictQueryBlackListHandler.isPass(checkSql);
+
+		// 4.执行SQL 查询是否存在值
+		try{
+			if (StringUtils.isNotBlank(duplicateCheckVo.getDataId())) {
+				// [1].编辑页面校验
+				count = sysDictMapper.duplicateCheckCountSql(duplicateCheckVo);
+			} else {
+				// [2].添加页面校验
+				count = sysDictMapper.duplicateCheckCountSqlNoDataId(duplicateCheckVo);
+			}
+		}catch(MyBatisSystemException e){
+			log.error(e.getMessage(), e);
+			String errorCause = "查询异常,请检查唯一校验的配置！";
+			throw new JeecgBootException(errorCause);
+		}
+
+		// 4.返回结果
+		if (count == null || count == 0) {
+			// 该值可用
+			return true;
+		} else {
+			// 该值不可用
+			log.info("该值不可用，系统中已存在！");
+			return false;
+		}
+	}
+
 
 	/**
 	 * 通过查询指定code 获取字典
@@ -152,22 +203,69 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	/**
 	 * 通过查询指定table的 text code 获取字典
 	 * dictTableCache采用redis缓存有效期10分钟
-	 * @param table
+	 * @param tableFilterSql
 	 * @param text
 	 * @param code
 	 * @return
 	 */
 	@Override
-	//@Cacheable(value = CacheConstant.SYS_DICT_TABLE_CACHE)
-	public List<DictModel> queryTableDictItemsByCode(String table, String text, String code) {
+	@Deprecated
+	public List<DictModel> queryTableDictItemsByCode(String tableFilterSql, String text, String code) {
 		log.debug("无缓存dictTableList的时候调用这里！");
-		return sysDictMapper.queryTableDictItemsByCode(table,text,code);
+
+		// 1.表字典黑名单check
+		String str = tableFilterSql+","+text+","+code;
+		if(!dictQueryBlackListHandler.isPass(str)){
+			log.error(dictQueryBlackListHandler.getError());
+			return null;
+		}
+
+		// 2.分割SQL获取表名和条件
+		String table = null;
+		String filterSql = null;
+		if(tableFilterSql.toLowerCase().indexOf(DataBaseConstant.SQL_WHERE)>0){
+			String[] arr = tableFilterSql.split(" (?i)where ");
+			table = arr[0];
+			filterSql = oConvertUtils.getString(arr[1], null);
+		}else{
+			table = tableFilterSql;
+		}
+		
+		// 3.SQL注入check
+		SqlInjectionUtil.filterContent(table, text, code);
+		SqlInjectionUtil.specialFilterContentForDictSql(filterSql);
+		
+		// 4.针对采用 ${}写法的表名和字段进行转义和check
+		table = SqlInjectionUtil.getSqlInjectTableName(table);
+		text = SqlInjectionUtil.getSqlInjectField(text);
+		code = SqlInjectionUtil.getSqlInjectField(code);
+		
+		//return sysDictMapper.queryTableDictItemsByCode(tableFilterSql,text,code);
+		return sysDictMapper.queryTableDictWithFilter(table,text,code,filterSql);
 	}
 
 	@Override
 	public List<DictModel> queryTableDictItemsByCodeAndFilter(String table, String text, String code, String filterSql) {
 		log.debug("无缓存dictTableList的时候调用这里！");
-		return sysDictMapper.queryTableDictItemsByCodeAndFilter(table,text,code,filterSql);
+
+		// 1.SQL注入校验（只限制非法串改数据库）
+		SqlInjectionUtil.specialFilterContentForDictSql(table);
+		SqlInjectionUtil.filterContent(text, code);
+		SqlInjectionUtil.specialFilterContentForDictSql(filterSql);
+		
+		// 2.表字典黑名单 Check
+		String str = table+","+text+","+code;
+		if(!dictQueryBlackListHandler.isPass(str)){
+			log.error(dictQueryBlackListHandler.getError());
+			return null;
+		}
+
+		// 3.针对采用 ${}写法的表名和字段进行转义和check
+		table = SqlInjectionUtil.getSqlInjectTableName(table);
+		text = SqlInjectionUtil.getSqlInjectField(text);
+		code = SqlInjectionUtil.getSqlInjectField(code);
+		
+		return sysDictMapper.queryTableDictWithFilter(table,text,code,filterSql);
 	}
 	
 	/**
@@ -183,27 +281,70 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Cacheable(value = CacheConstant.SYS_DICT_TABLE_CACHE, unless = "#result == null ")
 	public String queryTableDictTextByKey(String table,String text,String code, String key) {
 		log.debug("无缓存dictTable的时候调用这里！");
-		return sysDictMapper.queryTableDictTextByKey(table,text,code,key);
+		
+		// 1.表字典黑名单check
+		String str = table+","+text+","+code;
+		if(!dictQueryBlackListHandler.isPass(str)){
+			log.error(dictQueryBlackListHandler.getError());
+			return null;
+		}
+		// 2.sql注入check
+		SqlInjectionUtil.filterContent(table, text, code, key);
+
+		// 3.针对采用 ${}写法的表名和字段进行转义和check
+		table = SqlInjectionUtil.getSqlInjectTableName(table);
+		text = SqlInjectionUtil.getSqlInjectField(text);
+		code = SqlInjectionUtil.getSqlInjectField(code);
+		
+		List<DictModel> dictModeList = sysDictMapper.queryTableDictByKeysAndFilterSql(table, text, code, null, Arrays.asList(key));
+		if(CollectionUtils.isEmpty(dictModeList)){
+			return null;
+		}else{
+			return dictModeList.get(0).getText();
+		}
+		
+		//此方法删除（20230902）
+		//return sysDictMapper.queryTableDictTextByKey(table,text,code,key);
 	}
 
 	@Override
-	public List<DictModel> queryTableDictTextByKeys(String table, String text, String code, List<String> keys) {
-		//update-begin-author:taoyan date:20220113 for: @dict注解支持 dicttable 设置where条件
+	public List<DictModel> queryTableDictTextByKeys(String table, String text, String code, List<String> codeValues) {
+		// 1.表字典黑名单check
+		String str = table+","+text+","+code;
+		if(!dictQueryBlackListHandler.isPass(str)){
+			log.error(dictQueryBlackListHandler.getError());
+			return null;
+		}
+
+		// 2.分割SQL获取表名和条件
 		String filterSql = null;
 		if(table.toLowerCase().indexOf(DataBaseConstant.SQL_WHERE)>0){
 			String[] arr = table.split(" (?i)where ");
 			table = arr[0];
 			filterSql = arr[1];
 		}
-		String[] tableAndFields = new String[]{table, text, code};
-		SqlInjectionUtil.filterContent(tableAndFields);
+		
+		// 3.SQL注入check
+		SqlInjectionUtil.filterContent(table, text, code);
 		SqlInjectionUtil.specialFilterContentForDictSql(filterSql);
-		return sysDictMapper.queryTableDictByKeysAndFilterSql(table, text, code, filterSql, keys);
+
+		// 4.针对采用 ${}写法的表名和字段进行转义和check
+		table = SqlInjectionUtil.getSqlInjectTableName(table);
+		text = SqlInjectionUtil.getSqlInjectField(text);
+		code = SqlInjectionUtil.getSqlInjectField(code);
+		
+		return sysDictMapper.queryTableDictByKeysAndFilterSql(table, text, code, filterSql, codeValues);
 		//update-end-author:taoyan date:20220113 for: @dict注解支持 dicttable 设置where条件
 	}
 
 	@Override
 	public List<String> queryTableDictByKeys(String table, String text, String code, String keys) {
+		String str = table+","+text+","+code;
+		if(!dictQueryBlackListHandler.isPass(str)){
+			log.error(dictQueryBlackListHandler.getError());
+			return null;
+		}
+		
 		return this.queryTableDictByKeys(table, text, code, keys, true);
 	}
 
@@ -213,46 +354,56 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	 * @param table
 	 * @param text
 	 * @param code
-	 * @param keys (逗号分隔)
+	 * @param codeValuesStr (逗号分隔)
 	 * @param delNotExist 是否移除不存在的项，默认为true，设为false如果某个key不存在数据库中，则直接返回key本身
 	 * @return
 	 */
 	@Override
-	//update-begin--Author:lvdandan  Date:20201204 for：JT-36【online】树形列表bug修改后，还是显示原来值 暂时去掉缓存
-	//@Cacheable(value = CacheConstant.SYS_DICT_TABLE_BY_KEYS_CACHE)
-	//update-end--Author:lvdandan  Date:20201204 for：JT-36【online】树形列表bug修改后，还是显示原来值 暂时去掉缓存
-	public List<String> queryTableDictByKeys(String table, String text, String code, String keys, boolean delNotExist) {
-		if(oConvertUtils.isEmpty(keys)){
+	public List<String> queryTableDictByKeys(String table, String text, String code, String codeValuesStr, boolean delNotExist) {
+		if(oConvertUtils.isEmpty(codeValuesStr)){
 			return null;
 		}
-		String[] keyArray = keys.split(",");
 
-		//update-begin-author:taoyan date:2022-4-24 for: 下拉搜索组件，表单编辑页面回显下拉搜索的文本的时候，因为表名后配置了条件，导致sql执行失败，
+		//1.分割sql获取表名 和 条件sql
 		String filterSql = null;
 		if(table.toLowerCase().indexOf("where")!=-1){
 			String[] arr = table.split(" (?i)where ");
 			table = arr[0];
 			filterSql = arr[1];
 		}
-		String[] tableAndFields = new String[]{table, text, code};
-		SqlInjectionUtil.filterContent(tableAndFields);
-		SqlInjectionUtil.specialFilterContentForDictSql(filterSql);
-		List<DictModel> dicts = sysDictMapper.queryTableDictByKeysAndFilterSql(table, text, code, filterSql, Arrays.asList(keyArray));
-		//update-end-author:taoyan date:2022-4-24 for: 下拉搜索组件，表单编辑页面回显下拉搜索的文本的时候，因为表名后配置了条件，导致sql执行失败，
-		List<String> texts = new ArrayList<>(dicts.size());
 
-		// update-begin--author:sunjianlei--date:20210514--for：新增delNotExist参数，设为false不删除数据库里不存在的key ----
-		// 查询出来的顺序可能是乱的，需要排个序
-		for (String key : keyArray) {
-			List<DictModel> res = dicts.stream().filter(i -> key.equals(i.getValue())).collect(Collectors.toList());
+		// 2.SQL注入check
+		SqlInjectionUtil.filterContent(table, text, code);
+		SqlInjectionUtil.specialFilterContentForDictSql(filterSql);
+
+		// 3.表字典黑名单check
+		String str = table+","+text+","+code;
+		if(!dictQueryBlackListHandler.isPass(str)){
+			log.error(dictQueryBlackListHandler.getError());
+			return null;
+		}
+		
+		// 4.针对采用 ${}写法的表名和字段进行转义和check
+		table = SqlInjectionUtil.getSqlInjectTableName(table);
+		text = SqlInjectionUtil.getSqlInjectField(text);
+		code = SqlInjectionUtil.getSqlInjectField(code);
+		
+		//字典条件值
+		String[] codeValues = codeValuesStr.split(",");
+		// 5.查询字典数据
+		List<DictModel> dicts = sysDictMapper.queryTableDictByKeysAndFilterSql(SqlInjectionUtil.getSqlInjectTableName(table), 
+				SqlInjectionUtil.getSqlInjectField(text), SqlInjectionUtil.getSqlInjectField(code), filterSql, Arrays.asList(codeValues));
+		
+		List<String> texts = new ArrayList<>(dicts.size());
+		// 6.查询出来的顺序可能是乱的，需要排个序
+		for (String conditionalVal : codeValues) {
+			List<DictModel> res = dicts.stream().filter(i -> conditionalVal.equals(i.getValue())).collect(Collectors.toList());
 			if (res.size() > 0) {
 				texts.add(res.get(0).getText());
 			} else if (!delNotExist) {
-				texts.add(key);
+				texts.add(conditionalVal);
 			}
 		}
-		// update-end--author:sunjianlei--date:20210514--for：新增delNotExist参数，设为false不删除数据库里不存在的key ----
-
 		return texts;
 	}
 
@@ -308,12 +459,18 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	public List<DictModel> queryLittleTableDictItems(String table, String text, String code, String condition, String keyword, int pageSize) {
     	Page<DictModel> page = new Page<DictModel>(1, pageSize);
 		page.setSearchCount(false);
+		
+		//为了防止sql（jeecg提供了防注入的方法，可以在拼接 SQL 语句时自动对参数进行转义，避免SQL注入攻击）
+		// 1. 针对采用 ${}写法的表名和字段进行转义和check
+		table = SqlInjectionUtil.getSqlInjectTableName(table);
+		text = SqlInjectionUtil.getSqlInjectField(text);
+		code = SqlInjectionUtil.getSqlInjectField(code);
 
-		//【issues/3713】字典接口存在SQL注入风险
-		SqlInjectionUtil.specialFilterContentForDictSql(code);
-
+		// 2. 查询条件SQL (获取条件sql方法含sql注入校验)
 		String filterSql = getFilterSql(table, text, code, condition, keyword);
-		IPage<DictModel> pageList = baseMapper.queryTableDictWithFilter(page, table, text, code, filterSql);
+		
+		// 3. 返回表字典数据
+		IPage<DictModel> pageList = baseMapper.queryPageTableDictWithFilter(page, table, text, code, filterSql);
 		return pageList.getRecords();
 	}
 
@@ -326,14 +483,16 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	 * @return
 	 */
 	private String getFilterSql(String table, String text, String code, String condition, String keyword){
-		String keywordSql = null, filterSql = "", sqlWhere = " where ";
-		// update-begin-author:sunjianlei date:20220112 for: 【JTC-631】判断如果 table 携带了 where 条件，那么就使用 and 查询，防止报错
+		String filterSql = "";
+		String keywordSql = null;
+		String sqlWhere = "where ";
+		
+		//【JTC-631】判断如果 table 携带了 where 条件，那么就使用 and 查询，防止报错
         if (table.toLowerCase().contains(sqlWhere)) {
             sqlWhere = " and ";
 		}
-		// update-end-author:sunjianlei date:20220112 for: 【JTC-631】判断如果 table 携带了 where 条件，那么就使用 and 查询，防止报错
 
-		//update-begin-author:taoyan date:2022-8-15 for: 下拉搜索组件 支持传入排序信息 查询排序
+		// 下拉搜索组件 支持传入排序信息 查询排序
 		String orderField = "", orderType = "";
 		if (oConvertUtils.isNotEmpty(keyword)) {
 			// 关键字里面如果写入了 排序信息 xxxxx[orderby:create_time,desc]
@@ -358,7 +517,8 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 				}
 			}
 		}
-		//update-end-author:taoyan date:2022-8-15 for: 下拉搜索组件 支持传入排序信息 查询排序
+		
+		//下拉搜索组件 支持传入排序信息 查询排序
 		if(oConvertUtils.isNotEmpty(condition) && oConvertUtils.isNotEmpty(keywordSql)){
 			filterSql+= sqlWhere + condition + " and " + keywordSql;
 		}else if(oConvertUtils.isNotEmpty(condition)){
@@ -366,24 +526,68 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		}else if(oConvertUtils.isNotEmpty(keywordSql)){
 			filterSql+= sqlWhere + keywordSql;
 		}
-		//update-begin-author:taoyan date:2022-8-15 for: 下拉搜索组件 支持传入排序信息 查询排序
+		
 		// 增加排序逻辑
 		if (oConvertUtils.isNotEmpty(orderField)) {
 			filterSql += " order by " + orderField + " " + orderType;
 		}
-		//update-end-author:taoyan date:2022-8-15 for: 下拉搜索组件 支持传入排序信息 查询排序
-		return filterSql;
+
+		// result.1 返回条件SQL（去掉 where 关键词）
+		final String wherePattern = "(?i)where "; // (?i) 表示不区分大小写
+		String filterSqlString = filterSql.trim().replaceAll(wherePattern, "");
+
+		// result.2 条件SQL进行漏洞 check
+		SqlInjectionUtil.specialFilterContentForDictSql(filterSqlString);
+		
+		return filterSqlString;
 	}
+	
+	
 	@Override
 	public List<DictModel> queryAllTableDictItems(String table, String text, String code, String condition, String keyword) {
+		// 1.获取条件sql
 		String filterSql = getFilterSql(table, text, code, condition, keyword);
-		List<DictModel> ls = baseMapper.queryAllTableDictItems(table, text, code, filterSql);
+
+		// 为了防止sql（jeecg提供了防注入的方法，可以在拼接 SQL 语句时自动对参数进行转义，避免SQL注入攻击）
+		// 2.针对采用 ${}写法的表名和字段进行转义和check
+		table = SqlInjectionUtil.getSqlInjectTableName(table);
+		text = SqlInjectionUtil.getSqlInjectField(text);
+		code = SqlInjectionUtil.getSqlInjectField(code);
+		
+		List<DictModel> ls = baseMapper.queryTableDictWithFilter(table, text, code, filterSql);
     	return ls;
 	}
 
 	@Override
-	public List<TreeSelectModel> queryTreeList(Map<String, String> query,String table, String text, String code, String pidField,String pid,String hasChildField,int converIsLeafVal) {
-		return baseMapper.queryTreeList(query, table, text, code, pidField, pid, hasChildField,converIsLeafVal);
+	public List<TreeSelectModel> queryTreeList(Map<String, String> query, String table, String text, String code, String pidField, String pid, String hasChildField, int converIsLeafVal) {
+		//为了防止sql（jeecg提供了防注入的方法，可以在拼接 SQL 语句时自动对参数进行转义，避免SQL注入攻击）
+		// 1.针对采用 ${}写法的表名和字段进行转义和check
+		table = SqlInjectionUtil.getSqlInjectTableName(table);
+		text = SqlInjectionUtil.getSqlInjectField(text);
+		code = SqlInjectionUtil.getSqlInjectField(code);
+		pidField = SqlInjectionUtil.getSqlInjectField(pidField);
+		hasChildField = SqlInjectionUtil.getSqlInjectField(hasChildField);
+
+		// 2.检测最终SQL是否存在SQL注入风险
+		String dictCode = table + "," + text + "," + code;
+		SqlInjectionUtil.filterContent(dictCode);
+
+		// 3.表字典SQL表名黑名单 Check
+		if(!dictQueryBlackListHandler.isPass(dictCode)){
+			log.error("Sql异常：{}", dictQueryBlackListHandler.getError());
+			return null;
+		}
+		// 4.检测查询条件是否存在SQL注入
+		Map<String, String> queryParams = null;
+		if (query != null) {
+			queryParams = new HashMap<>(5);
+			for (Map.Entry<String, String> searchItem : query.entrySet()) {
+				String fieldName = searchItem.getKey();
+				queryParams.put(SqlInjectionUtil.getSqlInjectField(fieldName), searchItem.getValue());
+			}
+		}
+		
+		return baseMapper.queryTreeList(queryParams, table, text, code, pidField, pid, hasChildField, converIsLeafVal);
 	}
 
 	@Override
@@ -405,6 +609,26 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Override
 	public List<DictModel> queryDictTablePageList(DictQuery query, int pageSize, int pageNo) {
 		Page page = new Page(pageNo,pageSize,false);
+		
+		//为了防止sql（jeecg提供了防注入的方法，可以在拼接 SQL 语句时自动对参数进行转义，避免SQL注入攻击）
+		// 1. 针对采用 ${}写法的表名和字段进行转义和check
+		String table = SqlInjectionUtil.getSqlInjectTableName(query.getTable());
+		String text = SqlInjectionUtil.getSqlInjectTableName(query.getText());
+		String code = SqlInjectionUtil.getSqlInjectTableName(query.getCode());
+		query.setCode(table);
+		query.setTable(text);
+		query.setText(code);
+		
+		// 2.表字典黑名单check
+		String dictCode = table+","+text+","+code;
+		if(!dictQueryBlackListHandler.isPass(dictCode)){
+			log.error(dictQueryBlackListHandler.getError());
+			return null;
+		}
+		
+		// 3.SQL注入check
+		SqlInjectionUtil.filterContent(dictCode);
+		
 		Page<DictModel> pageList = baseMapper.queryDictTablePageList(page, query);
 		return pageList.getRecords();
 	}
@@ -419,17 +643,8 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 				// 字典Code格式不正确
 				return null;
 			}
-			//SQL注入校验（只限制非法串改数据库）
-			//update-begin-author:taoyan date:2022-7-4 for: issues/I5BNY9 指定带过滤条件的字典table在生成代码后失效
-			// 表名后也有可能带条件and语句 不能走filterContent方法
-			SqlInjectionUtil.specialFilterContentForDictSql(params[0]);
-			final String[] sqlInjCheck = {params[1], params[2]};
-			//update-end-author:taoyan date:2022-7-4 for: issues/I5BNY9 指定带过滤条件的字典table在生成代码后失效
-			//【issues/3713】字典接口存在SQL注入风险
-			SqlInjectionUtil.filterContent(sqlInjCheck);
+	
 			if (params.length == 4) {
-				// SQL注入校验（查询条件SQL 特殊check，此方法仅供此处使用）
-				SqlInjectionUtil.specialFilterContentForDictSql(params[3]);
 				ls = this.queryTableDictItemsByCodeAndFilter(params[0], params[1], params[2], params[3]);
 			} else if (params.length == 3) {
 				ls = this.queryTableDictItemsByCode(params[0], params[1], params[2]);
@@ -454,7 +669,13 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
 	@Override
 	public List<DictModel> loadDict(String dictCode, String keyword, Integer pageSize) {
-		//【issues/3713】字典接口存在SQL注入风险
+		// 1.表字典黑名单check
+		if(!dictQueryBlackListHandler.isPass(dictCode)){
+			log.error(dictQueryBlackListHandler.getError());
+			return null;
+		}
+		
+		// 2.字典SQL注入风险check
 		SqlInjectionUtil.specialFilterContentForDictSql(dictCode);
 
 		if (dictCode.contains(SymbolConstant.COMMA)) {

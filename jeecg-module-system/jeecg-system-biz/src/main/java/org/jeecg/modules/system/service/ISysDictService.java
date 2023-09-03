@@ -5,6 +5,7 @@ import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
+import org.jeecg.modules.system.model.DuplicateCheckVo;
 import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecg.modules.system.vo.lowapp.SysDictVo;
 
@@ -20,6 +21,15 @@ import java.util.Map;
  * @since 2018-12-28
  */
 public interface ISysDictService extends IService<SysDict> {
+
+	/**
+	 *  校验数据是否可用，不存在重复数据
+	 *  
+	 * @param duplicateCheckVo
+	 * @return
+	 */
+	@Deprecated
+	public boolean duplicateCheckData(DuplicateCheckVo duplicateCheckVo);
 
     /**
      * 通过字典code获取字典数据
@@ -51,13 +61,13 @@ public interface ISysDictService extends IService<SysDict> {
 
     /**
      * 查通过查询指定table的 text code 获取字典
-     * @param table
+     * @param tableFilterSql
      * @param text
      * @param code
      * @return
      */
     @Deprecated
-    List<DictModel> queryTableDictItemsByCode(String table, String text, String code);
+    List<DictModel> queryTableDictItemsByCode(String tableFilterSql, String text, String code);
 
     /**
      * 通过查询指定table的 text code 获取字典（指定查询条件）
@@ -206,7 +216,7 @@ public interface ISysDictService extends IService<SysDict> {
 	 * @return
 	 */
 	@Deprecated
-	List<TreeSelectModel> queryTreeList(Map<String, String> query,String table, String text, String code, String pidField,String pid,String hasChildField,int converIsLeafVal);
+	List<TreeSelectModel> queryTreeList(Map<String, String> query, String table, String text, String code, String pidField, String pid, String hasChildField, int converIsLeafVal);
 
 	/**
 	 * 真实删除
@@ -235,7 +245,7 @@ public interface ISysDictService extends IService<SysDict> {
 	 * @return
 	 */
 	@Deprecated
-	public List<DictModel> queryDictTablePageList(DictQuery query,int pageSize, int pageNo);
+	public List<DictModel> queryDictTablePageList(DictQuery query, int pageSize, int pageNo);
 
     /**
      * 获取字典数据
