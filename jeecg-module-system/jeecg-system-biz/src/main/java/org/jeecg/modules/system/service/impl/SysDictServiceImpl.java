@@ -18,6 +18,7 @@ import org.jeecg.common.system.util.ResourceUtil;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictModelMany;
 import org.jeecg.common.system.vo.DictQuery;
+import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
@@ -456,18 +457,18 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 //	}
 
 	@Override
-	public List<DictModel> queryLittleTableDictItems(String table, String text, String code, String condition, String keyword, int pageSize) {
+	public List<DictModel> queryLittleTableDictItems(String tableSql, String text, String code, String condition, String keyword, int pageSize) {
     	Page<DictModel> page = new Page<DictModel>(1, pageSize);
 		page.setSearchCount(false);
 		
 		//为了防止sql（jeecg提供了防注入的方法，可以在拼接 SQL 语句时自动对参数进行转义，避免SQL注入攻击）
 		// 1. 针对采用 ${}写法的表名和字段进行转义和check
-		table = SqlInjectionUtil.getSqlInjectTableName(table);
+		String table = SqlInjectionUtil.getSqlInjectTableName(CommonUtils.getTableNameByTableSql(tableSql));
 		text = SqlInjectionUtil.getSqlInjectField(text);
 		code = SqlInjectionUtil.getSqlInjectField(code);
 
 		// 2. 查询条件SQL (获取条件sql方法含sql注入校验)
-		String filterSql = getFilterSql(table, text, code, condition, keyword);
+		String filterSql = getFilterSql(tableSql, text, code, condition, keyword);
 		
 		// 3. 返回表字典数据
 		IPage<DictModel> pageList = baseMapper.queryPageTableDictWithFilter(page, table, text, code, filterSql);
@@ -475,21 +476,22 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	}
 
 	/**
-	 * 获取条件语句
+	 * 获取条件语句 (下拉搜索组件 支持传入排序信息 查询排序)
+	 * 
 	 * @param text
 	 * @param code
 	 * @param condition
 	 * @param keyword
 	 * @return
 	 */
-	private String getFilterSql(String table, String text, String code, String condition, String keyword){
+	private String getFilterSql(String tableSql, String text, String code, String condition, String keyword){
 		String filterSql = "";
 		String keywordSql = null;
 		String sqlWhere = "where ";
 		
 		//【JTC-631】判断如果 table 携带了 where 条件，那么就使用 and 查询，防止报错
-        if (table.toLowerCase().contains(sqlWhere)) {
-            sqlWhere = " and ";
+        if (tableSql.toLowerCase().contains(sqlWhere)) {
+            sqlWhere = CommonUtils.getFilterSqlByTableSql(tableSql) + " and ";
 		}
 
 		// 下拉搜索组件 支持传入排序信息 查询排序
@@ -532,13 +534,16 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			filterSql += " order by " + orderField + " " + orderType;
 		}
 
-		// result.1 返回条件SQL（去掉 where 关键词）
-		final String wherePattern = "(?i)where "; // (?i) 表示不区分大小写
-		String filterSqlString = filterSql.trim().replaceAll(wherePattern, "");
-
-		// result.2 条件SQL进行漏洞 check
+		// 处理返回条件
+		// 1.1 返回条件SQL（去掉开头的 where ）
+		final String wherePrefix = "(?i)where "; // (?i) 表示不区分大小写
+		String filterSqlString = filterSql.trim().replaceAll(wherePrefix, "");
+		// 1.2 条件SQL进行漏洞 check
 		SqlInjectionUtil.specialFilterContentForDictSql(filterSqlString);
-		
+		// 1.3 判断如何返回条件是 order by开头则前面拼上 1=1
+		if (oConvertUtils.isNotEmpty(filterSqlString) && filterSqlString.trim().toUpperCase().startsWith("ORDER")) {
+			filterSqlString = " 1=1 " + filterSqlString;
+		}
 		return filterSqlString;
 	}
 	
