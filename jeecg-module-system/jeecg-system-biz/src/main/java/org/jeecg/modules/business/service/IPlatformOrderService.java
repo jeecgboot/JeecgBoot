@@ -176,4 +176,12 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * @param invoiceNumbers
      */
     void cancelBatchInvoice(List<String> invoiceNumbers);
+
+    /**
+     * Find all order that can be invoiced by small clients (type 2) themselves.
+     * Invoices of erp_status 1
+     * @param shopIds list of shop id
+     * @return list of orders
+     */
+    List<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds);
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysUserRoleMapper">
+    <select id="getRoleByUserId" parameterType="java.lang.String" resultType="org.jeecg.modules.system.entity.SysRole">
+        SELECT sr.role_code, sr.id
+        FROM sys_user_role sur
+            JOIN sys_role sr
+                ON sr.id = sur.role_id
+        WHERE sur.user_id = #{userId};
+    </select>
+</mapper>

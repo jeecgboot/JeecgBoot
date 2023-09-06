@@ -540,6 +540,23 @@
         WHERE erp_status IN (4,5)
         AND order_time &lt; #{endDate};
     </select>
+    <select id="findUninvoicedOrdersByShopForClient" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
+        FROM platform_order
+        WHERE erp_status = 1
+        AND shipping_invoice_number IS NULL
+        AND shop_id IN
+        <foreach
+                collection="shopIds"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="shopId"
+        >
+            #{shopId}
+        </foreach>;
+    </select>
     <insert id="insertPlatformOrdersArchives" parameterType="list">
         INSERT INTO platform_order_delete(id, create_by,
                                           create_time, update_by,

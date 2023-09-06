@@ -5,7 +5,8 @@
             resultType="org.jeecg.modules.business.entity.Client">
         SELECT c.*
         FROM user_client
-            JOIN client c
-                ON c.id = user_client.client_id
-        WHERE user_id = #{userId}    </select>
+                 JOIN client c
+                      ON c.id = user_client.client_id
+        WHERE user_id = #{userId}
+    </select>
 </mapper>

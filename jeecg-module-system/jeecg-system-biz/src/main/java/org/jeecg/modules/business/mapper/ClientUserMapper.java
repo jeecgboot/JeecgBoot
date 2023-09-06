@@ -1,7 +1,9 @@
 package org.jeecg.modules.business.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.Client;
+import org.jeecg.modules.business.entity.UserClient;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Repository;
  * @Version: V1.0
  */
 @Repository
-public interface ClientUserMapper {
+public interface ClientUserMapper extends BaseMapper<UserClient> {
     /**
      * Find client information for current system user
      *

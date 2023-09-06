@@ -393,4 +393,9 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     public void cancelBatchInvoice(List<String> invoiceNumbers) {
         platformOrderMap.cancelBatchInvoice(invoiceNumbers);
     }
+
+    @Override
+    public List<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds) {
+        return platformOrderMap.findUninvoicedOrdersByShopForClient(shopIds);
+    }
 }

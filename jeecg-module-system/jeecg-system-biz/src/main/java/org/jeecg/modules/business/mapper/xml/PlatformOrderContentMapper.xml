@@ -128,6 +128,20 @@
         AND po.shipping_invoice_number IS NULL
         AND poc.erp_status = 3
     </select>
+    <select id="findUninvoicedOrderContents" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
+        SELECT poc.*
+        FROM platform_order_content poc
+        WHERE platform_order_id IN
+        <foreach
+                collection="orderIds"
+                index="index"
+                item="orderId"
+                open="("
+                close=")"
+                separator=",">
+            #{orderId}
+        </foreach>
+    </select>
     <select id="findUninvoicedOrderContentsForShopsAndStatus" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
         SELECT poc.*
         FROM platform_order_content poc

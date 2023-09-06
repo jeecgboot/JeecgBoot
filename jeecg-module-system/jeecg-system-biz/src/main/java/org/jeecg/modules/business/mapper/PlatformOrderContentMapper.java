@@ -53,6 +53,7 @@ public interface PlatformOrderContentMapper extends BaseMapper<PlatformOrderCont
             @Param("begin") Date begin,
             @Param("end") Date end
     );
+    List<PlatformOrderContent> findUninvoicedOrderContents(@Param("orderIds") List<String> orderIds);
 
     /**
      * Find all uninvoiced order content for specified shop between order time period with specified status ([1,2] or [1,2,3])

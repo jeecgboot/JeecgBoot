@@ -61,6 +61,8 @@ public class InvoiceController {
     @Autowired
     private PlatformOrderMapper platformOrderMapper;
     @Autowired
+    private IPlatformOrderService platformOrderService;
+    @Autowired
     private PlatformOrderContentMapper platformOrderContentMap;
     @Autowired
     private IShippingInvoiceService iShippingInvoiceService;
@@ -285,7 +287,7 @@ public class InvoiceController {
      * @param req
      * @return sku prices available code : 200 = success
      */
-        @PostMapping(value = "/preShipping/ordersBetweenOrderDates")
+    @PostMapping(value = "/preShipping/ordersBetweenOrderDates")
     public Result<?> getOrdersBetweenOrderDates(PlatformOrder platformOrder, @RequestBody ShippingInvoiceParam param, HttpServletRequest req) {
         QueryWrapper<PlatformOrder> queryWrapper = QueryGenerator.initQueryWrapper(platformOrder, req.getParameterMap());
         LambdaQueryWrapper<PlatformOrder> lambdaQueryWrapper = queryWrapper.lambda();
@@ -308,6 +310,19 @@ public class InvoiceController {
         ShippingInvoiceOrderParam args = new ShippingInvoiceOrderParam(param.clientID(), orderIds, "pre-shipping");
         // on check s'il y a des SKU sans prix
         return checkSkuPrices(args);
+    }
+
+     @GetMapping(value = "/preShipping/orderByShops")
+    public Result<?> getOrdersByShops(@RequestParam("shopIds") String shopIds) {
+        log.info("User : {} is requesting uninvoiced orders for shops : [{}]",
+                ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername(),
+                shopIds);
+        List<String> shopIdList = Arrays.asList(shopIds.split(","));
+        List<PlatformOrder> orders = platformOrderService.findUninvoicedOrdersByShopForClient(shopIdList);
+        IPage<PlatformOrder> page = new Page<>();
+        page.setRecords(orders);
+        page.setTotal(orders.size());
+        return Result.OK(page);
     }
 
     /**
