@@ -146,6 +146,14 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- openGauss 驱动 -->
+		<dependency>
+			<groupId>org.opengauss</groupId>
+			<artifactId>opengauss-jdbc</artifactId>
+			<version>${opengauss.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
 		<!-- Quartz定时任务 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
