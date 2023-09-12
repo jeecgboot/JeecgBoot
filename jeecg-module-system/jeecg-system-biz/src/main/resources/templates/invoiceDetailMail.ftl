@@ -30,7 +30,7 @@
                                     <td style="padding:10px 0;"><b>Client :</b> ${invoiceEntity}</td>
                                 </tr>
                                 <tr>
-                                    <td style="padding:10px 0;"><b>Numéro de facture :</b> <a href="http://app.wia-sourcing.com/business/admin/shippingInvoice/Invoice?invoiceID=${invoiceID}"> ${invoiceNumber} </a></td>
+                                    <td style="padding:10px 0;"><b>Numéro de facture :</b> <a href="http://app.wia-sourcing.com/business/admin/shippingInvoice/Invoice?invoice=${invoiceNumber}"> ${invoiceNumber} </a></td>
                                 </tr>
                                 <tr>
                                  <td style="padding:35px 0 5px 0;">Merci d’utiliser nos services.</td>

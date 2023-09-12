@@ -450,7 +450,6 @@ public class ShippingInvoiceController {
 
     @GetMapping(value = "/sendDetailsByEmail")
     public Result<?> sendDetailsByEmail(@RequestParam("invoiceNumber") String invoiceNumber,
-                                        @RequestParam("invoiceID") String invoiceID,
                                         @RequestParam("email") String email,
                                         @RequestParam("invoiceEntity") String invoiceEntity) throws Exception {
         String filePath = getInvoiceList(invoiceNumber, "detail");
@@ -460,7 +459,6 @@ public class ShippingInvoiceController {
         Map <String, Object> templateModel = new HashMap<>();
         templateModel.put("fileType", fileType);
         templateModel.put("invoiceEntity", invoiceEntity);
-        templateModel.put("invoiceID", invoiceID);
         templateModel.put("invoiceNumber", invoiceNumber);
 
         Session session = Session.getInstance(prop, new Authenticator() {

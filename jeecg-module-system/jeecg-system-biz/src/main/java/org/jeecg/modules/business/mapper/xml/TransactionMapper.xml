@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.TransactionMapper">
+    <select id="list" resultType="org.jeecg.modules.business.entity.Transaction">
+        SELECT * FROM transaction;
+    </select>
+    <select id="listByClientId" resultType="org.jeecg.modules.business.entity.Transaction">
+        SELECT *
+        FROM transaction
+        WHERE client_id = #{clientId}
+        ORDER BY create_time;
+    </select>
+</mapper>

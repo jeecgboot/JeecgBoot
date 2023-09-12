@@ -9,10 +9,10 @@
             JOIN platform_order po on s.id = po.shop_id
         WHERE po.shipping_invoice_number = #{invoiceNumber}
     </select>
-    <select id="fetchShippingInvoiceNumber" resultType="java.lang.String">
-        SELECT invoice_number
-        FROM shipping_invoice s
-        WHERE s.id = #{invoiceID}
+    <select id="fetchShippingInvoiceId" resultType="java.lang.String">
+        SELECT id
+        FROM shipping_invoice
+        WHERE invoice_number = #{invoiceNumber}
     </select>
     <select id="fetchShippingInvoice" resultType="org.jeecg.modules.business.entity.ShippingInvoice">
         SELECT total_amount, discount_amount, final_amount, paid_amount

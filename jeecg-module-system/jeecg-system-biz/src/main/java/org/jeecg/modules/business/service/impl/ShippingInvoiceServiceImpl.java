@@ -72,8 +72,8 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
 
     @Override
     @Transactional
-    public String getShippingInvoiceNumber(String invoiceID) {
-        return shippingInvoiceMapper.fetchShippingInvoiceNumber(invoiceID);
+    public String getShippingInvoiceId(String invoiceNumber) {
+        return shippingInvoiceMapper.fetchShippingInvoiceId(invoiceNumber);
     }
     @Override
     @Transactional

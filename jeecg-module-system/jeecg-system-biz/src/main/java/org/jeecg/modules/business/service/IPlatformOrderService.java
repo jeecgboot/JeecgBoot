@@ -183,5 +183,5 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * @param shopIds list of shop id
      * @return list of orders
      */
-    List<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds);
+    List<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses);
 }

@@ -318,7 +318,7 @@ public class InvoiceController {
                 ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername(),
                 shopIds);
         List<String> shopIdList = Arrays.asList(shopIds.split(","));
-        List<PlatformOrder> orders = platformOrderService.findUninvoicedOrdersByShopForClient(shopIdList);
+        List<PlatformOrder> orders = platformOrderService.findUninvoicedOrdersByShopForClient(shopIdList, Collections.singletonList(1));
         IPage<PlatformOrder> page = new Page<>();
         page.setRecords(orders);
         page.setTotal(orders.size());
@@ -559,12 +559,12 @@ public class InvoiceController {
     }
 
     @GetMapping(value = "/checkInvoiceValidity")
-    public Result<?> checkInvoiceValidity(@RequestParam("invoiceID") String invoiceID, @RequestParam("email") String email, @RequestParam("orgCode") String orgCode) {
-        String invoiceNumber;
+    public Result<?> checkInvoiceValidity(@RequestParam("invoiceNumber") String invoiceNumber, @RequestParam("email") String email, @RequestParam("orgCode") String orgCode) {
+        String invoiceID;
         String customerFullName;
-        invoiceNumber = iShippingInvoiceService.getShippingInvoiceNumber(invoiceID);
+        invoiceID = iShippingInvoiceService.getShippingInvoiceId(invoiceNumber);
         // if invoice exists
-        if (invoiceNumber == null) {
+        if (invoiceID == null) {
             return Result.error("Error 404 page not found.");
         }
         // if user is a customer, we check if he's the owner of the shops
