@@ -43,6 +43,7 @@ public class AddPortraitTubeJob implements Job {
             TUBE_40_SKU_MULTIPLE, TUBE_40_SKU_SINGLE);
     private static final String PREFIX_50_CANVAS = "JJ2501";
     private static final String PREFIX_40_CANVAS = "JJ2500";
+    private static final String PREFIX_30_CANVAS = "JJ2502";
 
     @Autowired
     private IPlatformOrderService platformOrderService;
@@ -165,6 +166,8 @@ public class AddPortraitTubeJob implements Job {
             } else if (sku.startsWith(PREFIX_50_CANVAS)) {
                 canvas50Count += quantity;
             } else if (sku.startsWith(PREFIX_40_CANVAS)) {
+                canvas40Count += quantity;
+            } else if (sku.startsWith(PREFIX_30_CANVAS)) {
                 canvas40Count += quantity;
             }
         }
