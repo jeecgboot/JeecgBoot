@@ -66,4 +66,8 @@ public class PlatformOrderContentServiceImpl extends ServiceImpl<PlatformOrderCo
     public void cancelInvoice(String invoiceNumber) {
         platformOrderContentMapper.cancelInvoice(invoiceNumber);
     }
+    @Override
+    public void cancelBatchInvoice(List<String> invoiceNumbers) {
+        platformOrderContentMapper.cancelBatchInvoice(invoiceNumbers);
+    }
 }

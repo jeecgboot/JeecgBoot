@@ -13,4 +13,14 @@
             total_refund_amount = 0.0
         WHERE invoice_number = #{invoiceNumber};
     </update>
+    <update id="cancelBatchInvoice">
+        UPDATE sav_refund
+        SET invoice_number      = NULL,
+            refund_date         = NULL,
+            total_refund_amount = 0.0
+        WHERE invoice_number IN
+        <foreach collection="invoiceNumbers" separator="," open="(" close=")" index="index" item="invoiceNumber">
+            #{invoiceNumber}
+        </foreach>;
+    </update>
 </mapper>

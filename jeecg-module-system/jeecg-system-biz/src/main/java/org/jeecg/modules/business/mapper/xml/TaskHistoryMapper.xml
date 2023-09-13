@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.TaskHistoryMapper">
+    <select id="getLatestRunningTask" resultType="org.jeecg.modules.business.entity.TaskHistory">
+        SELECT id, create_by, create_time, update_by, update_time, ongoing, task_code FROM task_history
+            WHERE task_code = #{code}
+            AND ongoing = 1
+        ORDER BY create_time DESC
+        LIMIT 1;
+    </select>
+    <select id="getAllRunningTasks" resultType="org.jeecg.modules.business.entity.TaskHistory">
+        SELECT id, create_by, create_time, update_by, update_time, ongoing, task_code FROM task_history
+        WHERE task_code = #{code}
+          AND ongoing = 1;
+    </select>
+
+</mapper>

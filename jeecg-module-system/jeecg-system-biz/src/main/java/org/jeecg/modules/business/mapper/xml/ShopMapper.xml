@@ -17,4 +17,9 @@
         FROM shop
         WHERE owner_id = #{clientID} AND active = '1'
     </select>
+    <select id="selectShopIdByClient" resultType="java.lang.String">
+        SELECT shop.id
+        FROM shop
+        WHERE owner_id = #{clientID} AND active = '1'
+    </select>
 </mapper>

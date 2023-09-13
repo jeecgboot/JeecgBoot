@@ -6,4 +6,17 @@
     FROM client
         WHERE id = #{id}
 </select>
+<select id="getClientsEntity" parameterType="java.lang.String" resultType="java.util.Map">
+    SELECT id, invoice_entity
+    FROM client
+        WHERE id IN
+        <foreach collection="ids" separator="," open="(" close=")" index="index" item="id">
+            #{id}
+        </foreach>;
+</select>
+<select id="getClientByInternalCode" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT id
+    FROM client
+        WHERE internal_code = #{code}
+</select>
 </mapper>

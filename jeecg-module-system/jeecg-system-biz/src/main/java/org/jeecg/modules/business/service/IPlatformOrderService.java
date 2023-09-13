@@ -171,4 +171,9 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * @param invoiceNumber
      */
     void cancelInvoice(String invoiceNumber);
+    /**
+     * Cancel Invoice
+     * @param invoiceNumbers
+     */
+    void cancelBatchInvoice(List<String> invoiceNumbers);
 }

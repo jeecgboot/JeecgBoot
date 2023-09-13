@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.service.impl;
 
+import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
@@ -45,7 +46,9 @@ public class EmailServiceImpl implements EmailService {
         Message message = new MimeMessage(session);
 
         message.setFrom(new InternetAddress(Objects.requireNonNull(env.getProperty("spring.mail.username"))));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient));
+        message.setRecipient(Message.RecipientType.TO, InternetAddress.parse(recipient)[0]);
+        if(!recipient.equals(env.getProperty("spring.mail.username")))
+            message.setRecipient(Message.RecipientType.CC, InternetAddress.parse(Objects.requireNonNull(env.getProperty("spring.mail.username")))[0]);
 
         message.setSubject(subject);
 
@@ -64,11 +67,9 @@ public class EmailServiceImpl implements EmailService {
     }
     @Override
     @Transactional
-    public FreeMarkerConfigurer freemarkerClassLoaderConfig() throws IOException {
+    public FreeMarkerConfigurer freemarkerClassLoaderConfig() {
         Configuration configuration = new Configuration(Configuration.VERSION_2_3_31);
-        TemplateLoader templateLoader = new FileTemplateLoader(new File(env.getProperty("jeecg.path.emailTemplateDir"))) {
-        };
-        configuration.setTemplateLoader(templateLoader);
+        configuration.setTemplateLoader(new ClassTemplateLoader(getClass(), "/templates"));
         FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
         freeMarkerConfigurer.setConfiguration(configuration);
         return freeMarkerConfigurer;

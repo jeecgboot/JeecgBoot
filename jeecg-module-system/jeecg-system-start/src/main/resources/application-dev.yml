@@ -135,7 +135,7 @@ spring:
         master:
           url: jdbc:mysql://127.0.0.1:3306/wia_app_3?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Europe/Paris
           username: admin
-          password: WIASourcing2021
+          password: admin
           driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
@@ -193,7 +193,7 @@ jeecg:
     upload: C:\dev\upload
     save: C:\dev\save
     # email template folder
-    emailTemplateDir: C://Users//logau//IdeaProject//wia_app_3//wia_app//jeecg-module-system//jeecg-system-biz//src//main//resources//templates
+    emailTemplateDir: C://Users//logau//Documents//wia_app//jeecg-module-system//jeecg-system-biz//src//main//resources//templates
 
     # purchase invoice template
     purchaseTemplatePath: C://dev//templates//Purchase_Invoice_Template.xlsx

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @Description: 客户
@@ -120,5 +121,14 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     @Override
     public String getClientEntity(String id) {
         return clientMapper.getClientEntity(id);
+    }
+    @Override
+    public Map<String, String> getClientsEntity(List<String> ids) {
+        return clientMapper.getClientsEntity(ids);
+    }
+
+    @Override
+    public String getClientByInternalCode(String code) {
+        return clientMapper.getClientByInternalCode(code);
     }
 }

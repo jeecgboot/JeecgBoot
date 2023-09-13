@@ -486,7 +486,6 @@
             #{warehouse}
         </foreach>
         AND po.shipping_time between #{startDate} AND #{endDate}
-        AND po.shipping_invoice_number IS NULL
         AND po.erp_status = 3;
     </select>
     <select id="fetchUninvoicedShippedOrderIDInShopsAndOrderTime" resultType="org.jeecg.modules.business.entity.PlatformOrder">
@@ -517,7 +516,6 @@
             #{warehouse}
         </foreach>
         AND po.order_time between #{startDate} AND #{endDate}
-        AND po.shipping_invoice_number IS NULL
         AND po.erp_status IN
         <foreach
                 collection="erpStatuses"
@@ -596,7 +594,29 @@
             order_service_fee       = NULL,
             shipping_invoice_number = NULL,
             picking_fee = 0.0,
-            packaging_material_fee = 0.0
+            packaging_material_fee = 0.0,
+            erp_status =
+                CASE erp_status
+                    WHEN '4' THEN '3'
+                ELSE erp_status
+                END
         WHERE shipping_invoice_number = #{invoiceNumber};
+    </update>
+    <update id="cancelBatchInvoice">
+        UPDATE platform_order
+        SET fret_fee                = NULL,
+            order_service_fee       = NULL,
+            shipping_invoice_number = NULL,
+            picking_fee = 0.0,
+            packaging_material_fee = 0.0,
+            erp_status =
+                CASE erp_status
+                    WHEN '4' THEN '3'
+                ELSE erp_status
+                END
+        WHERE shipping_invoice_number IN
+        <foreach collection="invoiceNumbers" separator="," open="(" close=")" index="index" item="invoiceNumber">
+            #{invoiceNumber}
+        </foreach>;
     </update>
 </mapper>

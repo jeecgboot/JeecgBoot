@@ -13,9 +13,15 @@ import java.util.List;
  * @Version: V1.0
  */
 public interface ISavRefundService extends IService<SavRefund> {
-    List<BigDecimal> getRefundAmount(String invoiceNumber);/**
+    List<BigDecimal> getRefundAmount(String invoiceNumber);
+    /**
      * Cancel Invoice
      * @param invoiceNumber
      */
     void cancelInvoice(String invoiceNumber);
+    /**
+     * Cancel Batch Invoice
+     * @param invoiceNumbers
+     */
+    void cancelBatchInvoice(List<String> invoiceNumbers);
 }
