@@ -165,7 +165,7 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
         if(data.size() > dataRowNumber + 1)
         {
             int startRow = LAST_ROW+1;
-            int fileLastRow = sheet.getLastRowNum(); //62
+            int fileLastRow = sheet.getLastRowNum();
             // shifting the footer of the file, to X rows below
             // making sure the whole footer is in the same page (13 lines) and we fill the end of page with blank data lines
             
