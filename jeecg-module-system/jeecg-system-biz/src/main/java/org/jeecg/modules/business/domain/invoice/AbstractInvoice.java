@@ -158,7 +158,6 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
         int dataRowNumber = LAST_ROW - FIRST_ROW;
         int additionalRowNum = Math.max(data.size() - dataRowNumber - 1, 0);
         TOTAL_ROW = LAST_ROW + additionalRowNum;
-        System.out.println("initial TOTAL_ROW : " + TOTAL_ROW);
         Sheet sheet = factory.getWorkbook().getSheetAt(0);
         org.apache.poi.ss.usermodel.Row sourceRow = sheet.getRow(FIRST_ROW);
         int footerRow = TOTAL_ROW + 1; // la ligne à laquelle le footer commence (1 ligne avant le total)
@@ -169,10 +168,7 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
             int fileLastRow = sheet.getLastRowNum(); //62
             // shifting the footer of the file, to X rows below
             // making sure the whole footer is in the same page (13 lines) and we fill the end of page with blank data lines
-            System.out.println("additionalRowNum : " + additionalRowNum);
-            System.out.println("PAGE_ROW_MAX : " + PAGE_ROW_MAX);
-            System.out.println("additionalRowNum%PAGE_ROW_MAX : " + additionalRowNum%PAGE_ROW_MAX);
-
+            
             // si le nombre de lignes de data rentre dans 1 page A4
              if(data.size() < 44) {
                 if(TOTAL_ROW > LAST_ROW + 3) { // s'il ne reste pas assez de place pour le footer
@@ -343,7 +339,6 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
         if (targetClient.getCurrency().equals("USD")) {
             org.apache.poi.ss.usermodel.Row dollarRow;
             String formula;
-            System.out.println(((LAST_ROW + additionalRowNum - 44) % 63));
             if ((((LAST_ROW + additionalRowNum - 44) % 63) < 13) && ((LAST_ROW + additionalRowNum - 44) % 63) > 0) {
                 dollarRow = sheet.getRow(TOTAL_ROW + 2);
                 formula = "H"+ (TOTAL_ROW + 2) +" *" + exchangeRate;
