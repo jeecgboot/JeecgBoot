@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -31,6 +32,7 @@ public class ArchiveOrderJob implements Job {
 
     private static final List<String> DEFAULT_EXCLUDED_SHOPS = Arrays.asList("JCH3", "JCH4", "JCH5", "FB2");
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 10;
+    private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 300;
 
     @Autowired
     private IPlatformOrderService platformOrderService;
@@ -76,7 +78,8 @@ public class ArchiveOrderJob implements Job {
 
         List<String> platformOrderIds = platformOrderService.fetchInvoicedShippedOrdersNotInShops(startDateTime, endDateTime, shops, excludedTrackingNumbersRegex);
 
-        ExecutorService executor = Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS);
+        ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
+                MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
 
         log.info("Constructing order archiving requests");
         List<ArchiveOrderRequestBody> archiveOrderRequestBodies = new ArrayList<>();
@@ -95,7 +98,7 @@ public class ArchiveOrderJob implements Job {
                         log.error("Error communicating with MabangAPI", e);
                     }
                     return success;
-                }, executor))
+                }, throttlingExecutorService))
                 .collect(Collectors.toList());
         List<Boolean> results = changeOrderFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
         long nbSuccesses = results.stream().filter(b -> b).count();

@@ -92,7 +92,7 @@ public class InvoiceStyleFactory {
         rightSideDecimalStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         // decimal
 //        DataFormat format =workbook.createDataFormat();
-        leftSideStyle.setDataFormat(creationHelper.createDataFormat().getFormat("#,##0.00"));
+        rightSideDecimalStyle.setDataFormat(creationHelper.createDataFormat().getFormat("#,##0.00"));
         // font
         Font font = workbook.createFont();
         font.setFontName("Arial");
