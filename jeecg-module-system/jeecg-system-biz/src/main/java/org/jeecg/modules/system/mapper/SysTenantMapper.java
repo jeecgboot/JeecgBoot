@@ -21,7 +21,7 @@ public interface SysTenantMapper extends BaseMapper<SysTenant> {
     /**
      * 获取最大值id
      */
-    @Select("select MAX(id) id FROM sys_tenant")
+    @Select("SELECT IFNULL(MAX(id), 0) FROM `sys_tenant`")
     int getMaxTenantId();
     
     /**
