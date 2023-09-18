@@ -34,6 +34,9 @@ public class OrderItem {
 
     private String productAvailable;
 
+    @JSONField(name = "specifics")
+    private String specifics;
+
     /**
      * Status :
      * 2 = Normal
