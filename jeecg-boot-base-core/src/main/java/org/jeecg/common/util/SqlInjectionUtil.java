@@ -101,6 +101,10 @@ public class SqlInjectionUtil {
 	 */
 	static final Pattern fieldPattern = Pattern.compile("^[a-zA-Z0-9_]+$");
 	public static String getSqlInjectField(String field) {
+		if(oConvertUtils.isEmpty(field)){
+			return null;
+		}
+		
 		field = field.trim();
 
 		if (field.contains(SymbolConstant.COMMA)) {
