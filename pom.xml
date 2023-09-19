@@ -51,7 +51,7 @@
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.3</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>3.2.0</dynamic-datasource-spring-boot-starter.version>
-		<druid.version>1.2.15</druid.version>
+		<druid.version>1.2.18</druid.version>
 		<minidao.version>1.9.3</minidao.version>
 
 		<!-- 积木报表-->
@@ -345,6 +345,18 @@
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-nosql-starter</artifactId>
 				<version>1.5.6</version>
+			</dependency>
+			<!-- druid -->
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>druid-spring-boot-starter</artifactId>
+				<version>${druid.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>druid</artifactId>
+				<version>${druid.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

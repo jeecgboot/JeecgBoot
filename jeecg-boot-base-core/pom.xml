@@ -102,13 +102,6 @@
 			<version>${mybatis-plus.version}</version>
 		</dependency>
 
-		<!-- druid -->
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>druid-spring-boot-starter</artifactId>
-			<version>${druid.version}</version>
-		</dependency>
-
 		<!-- 动态数据源 -->
 		<dependency>
 			<groupId>com.baomidou</groupId>
