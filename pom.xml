@@ -49,8 +49,8 @@
 		<hutool.version>5.3.8</hutool.version>
 
 		<!-- 持久层 -->
-		<mybatis-plus.version>3.5.3</mybatis-plus.version>
-		<dynamic-datasource-spring-boot-starter.version>3.2.0</dynamic-datasource-spring-boot-starter.version>
+		<mybatis-plus.version>3.5.3.2</mybatis-plus.version>
+		<dynamic-datasource-spring-boot-starter.version>4.1.3</dynamic-datasource-spring-boot-starter.version>
 		<druid.version>1.2.15</druid.version>
 		<minidao.version>1.9.3</minidao.version>
 
@@ -267,7 +267,7 @@
 			<dependency>
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
-				<version>1.4</version>
+				<version>1.5</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>commons-io</artifactId>
