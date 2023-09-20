@@ -1,4 +1,4 @@
-FROM anapsix/alpine-java:8_server-jre_unlimited
+FROM alibabadragonwell/dragonwell:17-anolis
 
 MAINTAINER jeecgos@163.com
 
