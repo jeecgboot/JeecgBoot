@@ -14,6 +14,8 @@ public enum UrlMatchEnum {
     CGFORM_TREE_DATA("/online/cgform/api/getTreeData/", "/online/cgformList/"),
     /**求URL与菜单路由URL转换规则 /online/cgreport/api/getColumnsAndData/ */
     CGREPORT_DATA("/online/cgreport/api/getColumnsAndData/", "/online/cgreport/"),
+    /** 求URL与菜单路由URL转换规则/online/cgreport/api/getData/ 【vue3报表数据请求地址】 */
+    CGREPORT_ONLY_DATA("/online/cgreport/api/getData/", "/online/cgreport/"),
     /**求URL与菜单路由URL转换规则 /online/cgreport/api/exportXls/ */
     CGREPORT_EXCEL_DATA("/online/cgreport/api/exportXls/", "/online/cgreport/"),
     /**求URL与菜单路由URL转换规则 /online/cgreport/api/exportManySheetXls/ */
