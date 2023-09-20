@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.5.3</version>
+  <version>3.5.5</version>
   <packaging>pom</packaging>
   <name>JEECG BOOT ${project.version} </name>
 
@@ -27,7 +27,7 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.5.3</jeecgboot.version>
+		<jeecgboot.version>3.5.5</jeecgboot.version>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -49,13 +49,13 @@
 		<hutool.version>5.3.8</hutool.version>
 
 		<!-- 持久层 -->
-		<mybatis-plus.version>3.5.3</mybatis-plus.version>
-		<dynamic-datasource-spring-boot-starter.version>3.2.0</dynamic-datasource-spring-boot-starter.version>
+		<mybatis-plus.version>3.5.3.1</mybatis-plus.version>
+		<dynamic-datasource-spring-boot-starter.version>3.5.2</dynamic-datasource-spring-boot-starter.version>
 		<druid.version>1.2.18</druid.version>
 		<minidao.version>1.9.3</minidao.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.6.2-GA</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.6.2-GA5</jimureport-spring-boot-starter.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.11.2</aliyun.oss.version>
@@ -267,7 +267,7 @@
 			<dependency>
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
-				<version>1.4</version>
+				<version>1.5</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>commons-io</artifactId>

@@ -44,7 +44,11 @@ public class HttpUtils {
           
             //https://www.52dianzi.com/category/article/37/565371.html
             if(deString.contains("%")){
-                deString = URLDecoder.decode(deString, "UTF-8");
+                try {
+                    deString = URLDecoder.decode(deString, "UTF-8");
+                } catch (Exception e) {
+                    //e.printStackTrace();
+                }
                 log.info("存在%情况下，执行两次解码 — pathVariable decode: {}",deString);
             }
             log.info(" pathVariable decode: {}",deString);

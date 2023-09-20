@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-visual</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>3.5.3</version>
+        <version>3.5.5</version>
     </parent>
     <artifactId>jeecg-cloud-sentinel</artifactId>
     <name>jeecg-cloud-sentinel</name>
@@ -116,7 +116,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.3</version>
+            <version>4.5.14</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
