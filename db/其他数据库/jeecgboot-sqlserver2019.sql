@@ -12,7 +12,7 @@
  Target Server Version : 15004188
  File Encoding         : 65001
 
- Date: 20/09/2023 15:11:44
+ Date: 21/09/2023 13:47:01
 */
 
 
@@ -9621,13 +9621,13 @@ GO
 INSERT INTO [dbo].[onl_cgreport_head] ([id], [code], [name], [cgr_sql], [return_val_field], [return_txt_field], [return_type], [db_source], [content], [low_app_id], [update_time], [update_by], [create_time], [create_by]) VALUES (N'1260179852088135681', N'tj_user_report', N'统一有效系统用户', N'select id,realname,username,sex,birthday,avatar,phone,email from sys_user', NULL, NULL, N'1', NULL, NULL, NULL, N'2022-11-07 19:09:25.0000000', N'admin', N'2020-05-12 20:07:44.0000000', N'admin')
 GO
 
-INSERT INTO [dbo].[onl_cgreport_head] ([id], [code], [name], [cgr_sql], [return_val_field], [return_txt_field], [return_type], [db_source], [content], [low_app_id], [update_time], [update_by], [create_time], [create_by]) VALUES (N'1590154651759259649', N'withparamreport', N'带参数报表', N'select * from demo where sex = ''${sex}''', NULL, NULL, N'1', N'local_mysql', NULL, NULL, N'2023-09-20 10:07:46.0000000', N'admin', N'2022-11-09 09:29:47.0000000', N'admin')
+INSERT INTO [dbo].[onl_cgreport_head] ([id], [code], [name], [cgr_sql], [return_val_field], [return_txt_field], [return_type], [db_source], [content], [low_app_id], [update_time], [update_by], [create_time], [create_by]) VALUES (N'1590154651759259649', N'withparamreport', N'带参数报表', N'select * from demo where sex = ''${sex}''', NULL, NULL, N'1', NULL, NULL, NULL, N'2023-09-20 21:47:26.0000000', N'admin', N'2022-11-09 09:29:47.0000000', N'admin')
 GO
 
-INSERT INTO [dbo].[onl_cgreport_head] ([id], [code], [name], [cgr_sql], [return_val_field], [return_txt_field], [return_type], [db_source], [content], [low_app_id], [update_time], [update_by], [create_time], [create_by]) VALUES (N'6c7f59741c814347905a938f06ee003c', N'report_user', N'统计在线用户', N'select realname,username,sex,birthday,avatar,phone,email from sys_user', NULL, NULL, N'1', N'', NULL, NULL, N'2022-10-25 11:41:18.0000000', N'admin', N'2019-03-25 11:20:45.0000000', N'admin')
+INSERT INTO [dbo].[onl_cgreport_head] ([id], [code], [name], [cgr_sql], [return_val_field], [return_txt_field], [return_type], [db_source], [content], [low_app_id], [update_time], [update_by], [create_time], [create_by]) VALUES (N'6c7f59741c814347905a938f06ee003c', N'report_user', N'统计在线用户', N'select realname,username,sex,birthday,avatar,phone,email from sys_user', NULL, NULL, N'1', NULL, NULL, NULL, N'2022-10-25 11:41:18.0000000', N'admin', N'2019-03-25 11:20:45.0000000', N'admin')
 GO
 
-INSERT INTO [dbo].[onl_cgreport_head] ([id], [code], [name], [cgr_sql], [return_val_field], [return_txt_field], [return_type], [db_source], [content], [low_app_id], [update_time], [update_by], [create_time], [create_by]) VALUES (N'87b55a515d3441b6b98e48e5b35474a6', N'demo', N'Report Demo', N'select * from demo', NULL, NULL, N'1', N'', NULL, NULL, N'2020-05-03 01:14:35.0000000', N'admin', N'2019-03-12 11:25:16.0000000', N'admin')
+INSERT INTO [dbo].[onl_cgreport_head] ([id], [code], [name], [cgr_sql], [return_val_field], [return_txt_field], [return_type], [db_source], [content], [low_app_id], [update_time], [update_by], [create_time], [create_by]) VALUES (N'87b55a515d3441b6b98e48e5b35474a6', N'demo', N'Report Demo', N'select * from demo', NULL, NULL, N'1', NULL, NULL, NULL, N'2020-05-03 01:14:35.0000000', N'admin', N'2019-03-12 11:25:16.0000000', N'admin')
 GO
 
 
@@ -12776,6 +12776,9 @@ GO
 INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'1522853857095376898', N'示例_日期范围查询', N'', N'1516743332632494082', N'707437208002265088', N'select * from sys_user where create_time >= ''${createTime_begin}'' and create_time <=''${createTime_end}''', N'', N'0', N'sql', N'get', N'2022-05-07 16:20:27.0000000', N'admin', N'2022-05-07 19:29:07.0000000', N'admin', NULL, NULL)
 GO
 
+INSERT INTO [dbo].[onl_drag_dataset_head] ([id], [name], [code], [parent_id], [db_source], [query_sql], [content], [iz_agent], [data_type], [api_method], [create_time], [create_by], [update_time], [update_by], [low_app_id], [tenant_id]) VALUES (N'864649684727169024', N'222', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'2023-09-21 09:35:59.0000000', N'admin', NULL, NULL, NULL, NULL)
+GO
+
 
 -- ----------------------------
 -- Table structure for onl_drag_dataset_item
@@ -13591,16 +13594,7 @@ GO
 INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'750938006131638272', N'单表示例', N'/drag/page/view/750938006131638272', NULL, NULL, N'100', N'default', N'default', NULL, N'[{"component":"JBar","pcX":0,"w":12,"moved":false,"pcY":42,"x":0,"h":39,"i":"cc1f6705-a9f0-4044-8ac2-06eedca5d2bf","y":42,"orderNum":0,"pageCompId":"817922650978430976"},{"component":"JLine","pcX":0,"w":12,"moved":false,"pcY":81,"x":0,"h":42,"i":"79d6ec63-0bb5-4065-8bac-4debeebe4365","y":81,"orderNum":42,"pageCompId":"817922651032956928"},{"component":"JRing","pcX":0,"w":12,"moved":false,"pcY":0,"x":0,"h":42,"i":"68edd288-1c8c-4b6d-8b28-a92efee80d8a","y":0,"orderNum":84,"pageCompId":"817922651049734144"},{"component":"JGauge","pcX":0,"w":12,"moved":false,"pcY":123,"x":0,"h":42,"i":"87836c01-e1aa-4cde-8769-ef3a2bbfaf4b","y":123,"orderNum":126,"pageCompId":"817922651070705664"},{"component":"JFunnel","pcX":12,"w":12,"moved":false,"pcY":0,"x":12,"h":42,"i":"190e9dcc-4f19-4461-a420-0a7d4b340194","y":0,"orderNum":210,"pageCompId":"817922651095871488"},{"component":"JBar","pcX":12,"w":12,"moved":false,"pcY":42,"x":12,"h":42,"i":"77df8b4c-038f-4646-9a14-e1f4ea339cde","y":42,"orderNum":164,"pageCompId":"817922651112648704"},{"component":"JStackBar","pcX":0,"w":12,"moved":false,"pcY":165,"x":0,"h":42,"i":"4d24ed2e-9cef-4f3d-8e42-754346f2d1ce","y":165,"orderNum":164,"pageCompId":"817922651133620224"},{"component":"JDynamicBar","pcX":12,"w":12,"moved":false,"pcY":84,"x":12,"h":42,"i":"d2a65733-dbce-42a8-8cc6-4d8228b664c7","y":84,"orderNum":206,"pageCompId":"817922651154591744"},{"component":"JMultipleBar","pcX":12,"w":12,"moved":false,"pcY":126,"x":12,"h":42,"i":"a1a6fb86-af98-4347-8412-5446acdef70c","y":126,"orderNum":248,"pageCompId":"817922651175563264"},{"component":"JNegativeBar","pcX":12,"w":12,"moved":false,"pcY":168,"x":12,"h":42,"i":"f0840234-2a10-4b7d-8d40-d987c9218911","y":168,"orderNum":248,"pageCompId":"817922651192340480"}]', N'', N'1', N'0', N'admin', N'2022-11-11 14:46:23.0000000', N'admin', N'2023-05-15 10:59:38.0000000', NULL, NULL, N'1')
 GO
 
-INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'817932088040796160', N'111', N'/drag/page/view/817932088040796160', NULL, NULL, N'100', N'default', N'default', NULL, N'[{"component":"JBar","w":12,"moved":false,"x":0,"h":30,"i":"7dd6fde0-caa4-4204-974e-d56300ad69f3","y":0,"orderNum":0,"pageCompId":"817961335140691968"}]', NULL, N'1', N'0', N'admin', N'2023-05-15 11:36:56.0000000', N'admin', N'2023-05-15 13:33:10.0000000', NULL, N'0', N'1')
-GO
-
 INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'825877703655731200', N'sdf', N'/drag/page/view/825877703655731200', NULL, NULL, N'100', N'default', N'default', NULL, N'[{"component":"JSmoothLine","w":12,"moved":false,"x":0,"h":30,"i":"4b9e6c6c-5b10-4ad7-b60c-39b1a7d6a9d8","y":0,"orderNum":0,"pageCompId":"851377504979591168"},{"component":"JNumber","w":5,"moved":false,"x":12,"h":9,"i":"27572106-cdfe-4826-9641-31af422c7d9d","y":0,"orderNum":30,"pageCompId":"851377505004756992"},{"component":"JList","w":12,"moved":false,"x":0,"h":24,"i":"fef4d669-e64b-45d5-9756-b2eafe79d4f5","y":30,"orderNum":30,"pageCompId":"851377505025728512"}]', NULL, N'1', N'0', N'admin', N'2023-06-06 09:49:59.0000000', N'admin', N'2023-08-15 18:37:05.0000000', NULL, N'0', N'7')
-GO
-
-INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'851377552496861184', N'sadfasdf', N'/drag/page/view/851377552496861184', NULL, NULL, N'100', N'default', N'default', N'temp/大屏12_1692095834802.png', N'[{"component":"JBar","w":12,"moved":false,"x":0,"h":30,"i":"14eacd82-f6a6-438b-83b3-4b8ceac0cf28","y":0,"orderNum":0,"pageCompId":"851377612953559040"},{"component":"JCarousel","w":24,"x":0,"h":22,"i":"5eab36ba-eed8-4279-92ab-f44ecd9c6c8e","y":30,"orderNum":30,"pageCompId":"851377613020667904"}]', NULL, N'1', N'0', N'admin', N'2023-08-15 18:37:17.0000000', N'admin', N'2023-08-15 18:37:31.0000000', NULL, N'0', N'3')
-GO
-
-INSERT INTO [dbo].[onl_drag_page] ([id], [name], [path], [background_color], [background_image], [design_type], [theme], [style], [cover_url], [template], [protection_code], [type], [iz_template], [create_by], [create_time], [update_by], [update_time], [low_app_id], [tenant_id], [update_count]) VALUES (N'854947132326617088', N'2323', N'/drag/page/view/854947132326617088', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'1', N'0', N'admin', N'2023-08-25 15:01:31.0000000', N'admin', N'2023-08-25 15:01:31.0000000', NULL, N'0', N'2')
 GO
 
 
@@ -14857,9 +14851,6 @@ GO
 INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'817922651192340480', NULL, N'750938006131638272', NULL, N'JNegativeBar', N'{"chartData":"[{\"name\":\"周一\",\"value\":200,\"type\":\"利润\"},{\"name\":\"周二\",\"value\":170,\"type\":\"利润\"},{\"name\":\"周三\",\"value\":240,\"type\":\"利润\"},{\"name\":\"周四\",\"value\":244,\"type\":\"利润\"},{\"name\":\"周五\",\"value\":200,\"type\":\"利润\"},{\"name\":\"周六\",\"value\":220,\"type\":\"利润\"},{\"name\":\"周日\",\"value\":210,\"type\":\"利润\"},{\"name\":\"周一\",\"value\":320,\"type\":\"收入\"},{\"name\":\"周二\",\"value\":302,\"type\":\"收入\"},{\"name\":\"周三\",\"value\":341,\"type\":\"收入\"},{\"name\":\"周四\",\"value\":374,\"type\":\"收入\"},{\"name\":\"周五\",\"value\":390,\"type\":\"收入\"},{\"name\":\"周六\",\"value\":450,\"type\":\"收入\"},{\"name\":\"周日\",\"value\":420,\"type\":\"收入\"},{\"name\":\"周一\",\"value\":-120,\"type\":\"支出\"},{\"name\":\"周二\",\"value\":-132,\"type\":\"支出\"},{\"name\":\"周三\",\"value\":-101,\"type\":\"支出\"},{\"name\":\"周四\",\"value\":-134,\"type\":\"支出\"},{\"name\":\"周五\",\"value\":-190,\"type\":\"支出\"},{\"name\":\"周六\",\"value\":-230,\"type\":\"支出\"},{\"name\":\"周日\",\"value\":-210,\"type\":\"支出\"}]","borderColor":"#FFFFFF00","size":{"height":420},"dataMapping":[{"mapping":"","filed":"分组"},{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"background":"#FFFFFF","dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/26/stackedBar","timeOut":0,"option":{"xAxis":{"type":"value"},"grid":{"top":90,"bottom":115},"series":[],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"正负条形图"},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2023-05-15 10:59:27.0000000', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'817961335140691968', NULL, N'817932088040796160', NULL, N'JBar', N'{"chartData":[{"name":"苹果","type":"手机品牌","value":1000879},{"name":"三星","type":"手机品牌","value":3400879},{"name":"小米","type":"手机品牌","value":2300879},{"name":"oppo","type":"手机品牌","value":5400879},{"name":"vivo","type":"手机品牌","value":3400879}],"size":{"height":300},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2023-05-15 13:33:10.0000000', NULL, NULL)
-GO
-
 INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'826049694035705856', NULL, N'1516742733803323394', NULL, N'JTabs', N'{"paramOption":[],"dataType":2,"dataSetName":"统计近十日的登陆次数","query":[],"h":40,"dataSetApi":"SELECT\tcount(*)num,\tDATE_FORMAT(create_time,''%Y-%m-%d'')AS`day`FROM\tsys_logWHERE\tlog_type=1ANDcreate_time>DATE_SUB(NOW(),INTERVAL10DAY)GROUPBY\tDATE_FORMAT(create_time,''%Y-%m-%d'')","size":{"width":1650,"height":529},"dataSetId":"1516743766914924546","fieldOption":[{"label":"登录次数","text":"登录次数","value":"num"},{"label":"日期","text":"日期","value":"day"}],"dataSetType":"sql","w":12,"dataSetIzAgent":"","option":{"title":"选项卡"},"child":[{"component":"JBar","w":12,"x":0,"h":42,"i":"2c5a2c1f-2cab-48bc-9a0c-c3c9b648e9b9","title":"柱状图","config":{"dataMapping":[{"mapping":"day","filed":"维度"},{"mapping":"num","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"统计近十日的登陆次数","query":[],"dataSetApi":"SELECT\tcount(*)num,\tDATE_FORMAT(create_time,''%Y-%m-%d'')AS`day`FROM\tsys_logWHERE\tlog_type=1ANDcreate_time>DATE_SUB(NOW(),INTERVAL10DAY)GROUPBY\tDATE_FORMAT(create_time,''%Y-%m-%d'')","url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"chartData":"[{\"name\":\"苹果\",\"value\":1000879,\"type\":\"手机品牌\"},{\"name\":\"三星\",\"value\":3400879,\"type\":\"手机品牌\"},{\"name\":\"小米\",\"value\":2300879,\"type\":\"手机品牌\"},{\"name\":\"oppo\",\"value\":5400879,\"type\":\"手机品牌\"},{\"name\":\"vivo\",\"value\":3400879,\"type\":\"手机品牌\"}]","paddingBottom":90,"dataSetId":"1516743766914924546","fieldOption":[{"label":"登录次数","text":"登录次数","value":"num"},{"label":"日期","text":"日期","value":"day"}],"dataSetType":"sql","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"showBackground":true,"backgroundStyle":{"color":"rgba(180,180,180,0.2)"},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":""}}}},{"horizontal":false,"component":"JLine","size":10,"w":12,"x":0,"h":42,"i":"34e3d56e-f567-45e7-bb59-346a8ec23fc6","text":"0.042","id":"a466d3c1-3a35-45f1-9ef1-271ca1a2e37c","title":"曲线图","config":{"dataMapping":[{"mapping":"day","filed":"维度"},{"mapping":"num","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"统计近十日的登陆次数","query":[],"dataSetApi":"SELECT\tcount(*)num,\tDATE_FORMAT(create_time,''%Y-%m-%d'')AS`day`FROM\tsys_logWHERE\tlog_type=1ANDcreate_time>DATE_SUB(NOW(),INTERVAL10DAY)GROUPBY\tDATE_FORMAT(create_time,''%Y-%m-%d'')","url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"chartData":"[{\"value\":1000,\"name\":\"联想\"},{\"value\":7350,\"name\":\"小米\"},{\"value\":5800,\"name\":\"华为\"},{\"value\":6000,\"name\":\"苹果\"},{\"value\":3000,\"name\":\"戴尔\"}]","paddingBottom":90,"dataSetId":"1516743766914924546","fieldOption":[{"label":"登录次数","text":"登录次数","value":"num"},{"label":"日期","text":"日期","value":"day"}],"dataSetType":"sql","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"series":[{"data":[],"type":"line"}],"title":{"subtext":"","left":"left","text":"基础折线图"},"card":{"rightHref":"","size":"default","extra":"","textStyle":{"color":"#4A4A4A"},"title":""}}},"child":[]},{"horizontal":false,"component":"JPie","size":10,"w":12,"x":0,"h":42,"i":"9e2087e1-fd80-4096-995c-27d35d05478a","text":"0.042","id":"be62c001-795b-4b77-9a91-d6be1ad6d1ce","title":"饼图","config":{"dataMapping":[{"mapping":"day","filed":"维度"},{"mapping":"num","filed":"数值"}],"paramOption":[],"dataType":2,"dataSetName":"统计近十日的登陆次数","query":[],"dataSetApi":"SELECT\tcount(*)num,\tDATE_FORMAT(create_time,''%Y-%m-%d'')AS`day`FROM\tsys_logWHERE\tlog_type=1ANDcreate_time>DATE_SUB(NOW(),INTERVAL10DAY)GROUPBY\tDATE_FORMAT(create_time,''%Y-%m-%d'')","url":"http://api.jeecg.com/mock/33/chart","timeOut":-1,"chartData":"[{\"value\":1048,\"name\":\"vivo\"},{\"value\":735,\"name\":\"oppo\"},{\"value\":580,\"name\":\"苹果\"},{\"value\":484,\"name\":\"小米\"},{\"value\":300,\"name\":\"三星\"}]","paddingBottom":90,"dataSetId":"1516743766914924546","fieldOption":[{"label":"登录次数","text":"登录次数","value":"num"},{"label":"日期","text":"日期","value":"day"}],"dataSetType":"sql","turnConfig":{"url":""},"linkageConfig":[],"dataSetIzAgent":"","option":{"grid":{"bottom":115,"show":false},"legend":{"orient":"vertical"},"series":[{"data":[],"name":"AccessFrom","emphasis":{"itemStyle":{"shadowOffsetX":0,"shadowBlur":10,"shadowColor":"rgba(0,0,0,0.5)"}},"type":"pie","radius":"50%"}],"tooltip":{"trigger":"item"},"title":{"subtext":"","left":"left","show":true,"text":"基础饼图"},"card":{"rightHref":"","size":"default","extra":"","title":""}}},"child":[]}]}', N'admin', N'2023-06-06 21:13:25.0000000', NULL, NULL)
 GO
 
@@ -14873,12 +14864,6 @@ INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id],
 GO
 
 INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'851377505025728512', NULL, N'825877703655731200', NULL, N'JList', N'{"chartData":[{"date":"2022-3-9 14:20:21","title":"通知一"},{"date":"2022-3-8 14:20:21","title":"通知二"},{"date":"2022-3-7 14:20:21","title":"通知三"},{"date":"2022-3-4 14:20:21","title":"通知四"}],"size":{"height":240},"dataMapping":[{"mapping":"","filed":"标题"},{"mapping":"","filed":"描述"},{"mapping":"","filed":"时间"},{"mapping":"","filed":"封面"}],"w":12,"dataType":1,"h":24,"linkageConfig":[],"url":"http://api.jeecg.com/mock/42/list","timeOut":-1,"option":{"layout":"horizontal","showTitlePrefix":true,"titleFontSize":18,"showTimePrefix":true}}', N'admin', N'2023-08-15 18:37:05.0000000', NULL, NULL)
-GO
-
-INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'851377612953559040', NULL, N'851377552496861184', NULL, N'JBar', N'{"chartData":[{"name":"苹果","type":"手机品牌","value":1000879},{"name":"三星","type":"手机品牌","value":3400879},{"name":"小米","type":"手机品牌","value":2300879},{"name":"oppo","type":"手机品牌","value":5400879},{"name":"vivo","type":"手机品牌","value":3400879}],"size":{"height":300},"dataMapping":[{"mapping":"","filed":"维度"},{"mapping":"","filed":"数值"}],"dataType":1,"turnConfig":{"url":""},"linkageConfig":[],"url":"http://api.jeecg.com/mock/33/chart","timeOut":0,"option":{"yAxis":{"lineStyle":{"color":"#f3f3f3"},"splitLine":{"interval":2}},"grid":{"top":90,"bottom":115,"show":false},"series":[{"barWidth":40,"data":[],"itemStyle":{"color":"#64b5f6","borderRadius":0},"type":"bar"}],"tooltip":{"axisPointer":{"label":{"backgroundColor":"#333","show":true},"type":"shadow"},"trigger":"axis"},"title":{"show":true,"text":"基础柱形图","textStyle":{"color":"#464646"}},"card":{"rightHref":"","size":"default","extra":"","title":""}}}', N'admin', N'2023-08-15 18:37:31.0000000', NULL, NULL)
-GO
-
-INSERT INTO [dbo].[onl_drag_page_comp] ([id], [parent_id], [page_Id], [comp_id], [component], [config], [create_by], [create_time], [update_by], [update_time]) VALUES (N'851377613020667904', NULL, N'851377552496861184', NULL, N'JCarousel', N'{"chartData":[{"src":"https://jeecgos.oss-cn-beijing.aliyuncs.com/files/site/drag/0.png"},{"src":"https://jeecgos.oss-cn-beijing.aliyuncs.com/files/site/drag/1.png"},{"src":"https://jeecgos.oss-cn-beijing.aliyuncs.com/files/site/drag/2.png"}],"size":{"height":220},"dataMapping":[{"mapping":"","filed":"路径"}],"w":24,"dataType":1,"h":22,"linkageConfig":[],"url":"http://api.jeecg.com/mock/42/carousel","timeOut":-1,"option":{"dots":true,"autoplay":true,"dotPosition":"bottom"}}', N'admin', N'2023-08-15 18:37:31.0000000', NULL, NULL)
 GO
 
 
@@ -14964,300 +14949,291 @@ GO
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for qrtz_blob_triggers
+-- Table structure for QRTZ_BLOB_TRIGGERS
 -- ----------------------------
-IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qrtz_blob_triggers]') AND type IN ('U'))
-	DROP TABLE [dbo].[qrtz_blob_triggers]
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[QRTZ_BLOB_TRIGGERS]') AND type IN ('U'))
+	DROP TABLE [dbo].[QRTZ_BLOB_TRIGGERS]
 GO
 
-CREATE TABLE [dbo].[qrtz_blob_triggers] (
-  [SCHED_NAME] nvarchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [TRIGGER_NAME] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [TRIGGER_GROUP] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [BLOB_DATA] varbinary(max)  NULL
+CREATE TABLE [dbo].[QRTZ_BLOB_TRIGGERS] (
+  [SCHED_NAME] varchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [TRIGGER_NAME] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [TRIGGER_GROUP] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [BLOB_DATA] image  NULL
 )
 GO
 
-ALTER TABLE [dbo].[qrtz_blob_triggers] SET (LOCK_ESCALATION = TABLE)
+ALTER TABLE [dbo].[QRTZ_BLOB_TRIGGERS] SET (LOCK_ESCALATION = TABLE)
 GO
 
 
 -- ----------------------------
--- Records of qrtz_blob_triggers
+-- Records of QRTZ_BLOB_TRIGGERS
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for qrtz_calendars
+-- Table structure for QRTZ_CALENDARS
 -- ----------------------------
-IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qrtz_calendars]') AND type IN ('U'))
-	DROP TABLE [dbo].[qrtz_calendars]
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[QRTZ_CALENDARS]') AND type IN ('U'))
+	DROP TABLE [dbo].[QRTZ_CALENDARS]
 GO
 
-CREATE TABLE [dbo].[qrtz_calendars] (
-  [SCHED_NAME] nvarchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [CALENDAR_NAME] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [CALENDAR] varbinary(max)  NOT NULL
+CREATE TABLE [dbo].[QRTZ_CALENDARS] (
+  [SCHED_NAME] varchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [CALENDAR_NAME] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [CALENDAR] image  NOT NULL
 )
 GO
 
-ALTER TABLE [dbo].[qrtz_calendars] SET (LOCK_ESCALATION = TABLE)
+ALTER TABLE [dbo].[QRTZ_CALENDARS] SET (LOCK_ESCALATION = TABLE)
 GO
 
 
 -- ----------------------------
--- Records of qrtz_calendars
+-- Records of QRTZ_CALENDARS
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for qrtz_cron_triggers
+-- Table structure for QRTZ_CRON_TRIGGERS
 -- ----------------------------
-IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qrtz_cron_triggers]') AND type IN ('U'))
-	DROP TABLE [dbo].[qrtz_cron_triggers]
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[QRTZ_CRON_TRIGGERS]') AND type IN ('U'))
+	DROP TABLE [dbo].[QRTZ_CRON_TRIGGERS]
 GO
 
-CREATE TABLE [dbo].[qrtz_cron_triggers] (
-  [SCHED_NAME] nvarchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [TRIGGER_NAME] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [TRIGGER_GROUP] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [CRON_EXPRESSION] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [TIME_ZONE_ID] nvarchar(80) COLLATE Chinese_PRC_CI_AS  NULL
+CREATE TABLE [dbo].[QRTZ_CRON_TRIGGERS] (
+  [SCHED_NAME] varchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [TRIGGER_NAME] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [TRIGGER_GROUP] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [CRON_EXPRESSION] varchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [TIME_ZONE_ID] varchar(80) COLLATE Chinese_PRC_CI_AS  NULL
 )
 GO
 
-ALTER TABLE [dbo].[qrtz_cron_triggers] SET (LOCK_ESCALATION = TABLE)
+ALTER TABLE [dbo].[QRTZ_CRON_TRIGGERS] SET (LOCK_ESCALATION = TABLE)
 GO
 
 
 -- ----------------------------
--- Records of qrtz_cron_triggers
+-- Records of QRTZ_CRON_TRIGGERS
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for qrtz_fired_triggers
+-- Table structure for QRTZ_FIRED_TRIGGERS
 -- ----------------------------
-IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qrtz_fired_triggers]') AND type IN ('U'))
-	DROP TABLE [dbo].[qrtz_fired_triggers]
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[QRTZ_FIRED_TRIGGERS]') AND type IN ('U'))
+	DROP TABLE [dbo].[QRTZ_FIRED_TRIGGERS]
 GO
 
-CREATE TABLE [dbo].[qrtz_fired_triggers] (
-  [SCHED_NAME] nvarchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [ENTRY_ID] nvarchar(95) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [TRIGGER_NAME] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [TRIGGER_GROUP] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [INSTANCE_NAME] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+CREATE TABLE [dbo].[QRTZ_FIRED_TRIGGERS] (
+  [SCHED_NAME] varchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [ENTRY_ID] varchar(95) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [TRIGGER_NAME] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [TRIGGER_GROUP] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [INSTANCE_NAME] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
   [FIRED_TIME] bigint  NOT NULL,
   [SCHED_TIME] bigint  NOT NULL,
   [PRIORITY] int  NOT NULL,
-  [STATE] nvarchar(16) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [JOB_NAME] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NULL,
-  [JOB_GROUP] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NULL,
-  [IS_NONCONCURRENT] nvarchar(1) COLLATE Chinese_PRC_CI_AS  NULL,
-  [REQUESTS_RECOVERY] nvarchar(1) COLLATE Chinese_PRC_CI_AS  NULL
+  [STATE] varchar(16) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [JOB_NAME] varchar(200) COLLATE Chinese_PRC_CI_AS  NULL,
+  [JOB_GROUP] varchar(200) COLLATE Chinese_PRC_CI_AS  NULL,
+  [IS_NONCONCURRENT] varchar(1) COLLATE Chinese_PRC_CI_AS  NULL,
+  [REQUESTS_RECOVERY] varchar(1) COLLATE Chinese_PRC_CI_AS  NULL
 )
 GO
 
-ALTER TABLE [dbo].[qrtz_fired_triggers] SET (LOCK_ESCALATION = TABLE)
+ALTER TABLE [dbo].[QRTZ_FIRED_TRIGGERS] SET (LOCK_ESCALATION = TABLE)
 GO
 
 
 -- ----------------------------
--- Records of qrtz_fired_triggers
+-- Records of QRTZ_FIRED_TRIGGERS
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for qrtz_job_details
+-- Table structure for QRTZ_JOB_DETAILS
 -- ----------------------------
-IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qrtz_job_details]') AND type IN ('U'))
-	DROP TABLE [dbo].[qrtz_job_details]
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[QRTZ_JOB_DETAILS]') AND type IN ('U'))
+	DROP TABLE [dbo].[QRTZ_JOB_DETAILS]
 GO
 
-CREATE TABLE [dbo].[qrtz_job_details] (
-  [SCHED_NAME] nvarchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [JOB_NAME] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [JOB_GROUP] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [DESCRIPTION] nvarchar(250) COLLATE Chinese_PRC_CI_AS  NULL,
-  [JOB_CLASS_NAME] nvarchar(250) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [IS_DURABLE] nvarchar(1) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [IS_NONCONCURRENT] nvarchar(1) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [IS_UPDATE_DATA] nvarchar(1) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [REQUESTS_RECOVERY] nvarchar(1) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [JOB_DATA] varbinary(max)  NULL
+CREATE TABLE [dbo].[QRTZ_JOB_DETAILS] (
+  [SCHED_NAME] varchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [JOB_NAME] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [JOB_GROUP] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [DESCRIPTION] varchar(250) COLLATE Chinese_PRC_CI_AS  NULL,
+  [JOB_CLASS_NAME] varchar(250) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [IS_DURABLE] varchar(1) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [IS_NONCONCURRENT] varchar(1) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [IS_UPDATE_DATA] varchar(1) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [REQUESTS_RECOVERY] varchar(1) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [JOB_DATA] image  NULL
 )
 GO
 
-ALTER TABLE [dbo].[qrtz_job_details] SET (LOCK_ESCALATION = TABLE)
+ALTER TABLE [dbo].[QRTZ_JOB_DETAILS] SET (LOCK_ESCALATION = TABLE)
 GO
 
 
 -- ----------------------------
--- Records of qrtz_job_details
+-- Records of QRTZ_JOB_DETAILS
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for qrtz_locks
+-- Table structure for QRTZ_LOCKS
 -- ----------------------------
-IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qrtz_locks]') AND type IN ('U'))
-	DROP TABLE [dbo].[qrtz_locks]
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[QRTZ_LOCKS]') AND type IN ('U'))
+	DROP TABLE [dbo].[QRTZ_LOCKS]
 GO
 
-CREATE TABLE [dbo].[qrtz_locks] (
-  [SCHED_NAME] nvarchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [LOCK_NAME] nvarchar(40) COLLATE Chinese_PRC_CI_AS  NOT NULL
+CREATE TABLE [dbo].[QRTZ_LOCKS] (
+  [SCHED_NAME] varchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [LOCK_NAME] varchar(40) COLLATE Chinese_PRC_CI_AS  NOT NULL
 )
 GO
 
-ALTER TABLE [dbo].[qrtz_locks] SET (LOCK_ESCALATION = TABLE)
+ALTER TABLE [dbo].[QRTZ_LOCKS] SET (LOCK_ESCALATION = TABLE)
 GO
 
 
 -- ----------------------------
--- Records of qrtz_locks
+-- Records of QRTZ_LOCKS
 -- ----------------------------
-INSERT INTO [dbo].[qrtz_locks] ([SCHED_NAME], [LOCK_NAME]) VALUES (N'MyScheduler', N'STATE_ACCESS')
-GO
-
-INSERT INTO [dbo].[qrtz_locks] ([SCHED_NAME], [LOCK_NAME]) VALUES (N'MyScheduler', N'TRIGGER_ACCESS')
-GO
-
 
 -- ----------------------------
--- Table structure for qrtz_paused_trigger_grps
+-- Table structure for QRTZ_PAUSED_TRIGGER_GRPS
 -- ----------------------------
-IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qrtz_paused_trigger_grps]') AND type IN ('U'))
-	DROP TABLE [dbo].[qrtz_paused_trigger_grps]
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[QRTZ_PAUSED_TRIGGER_GRPS]') AND type IN ('U'))
+	DROP TABLE [dbo].[QRTZ_PAUSED_TRIGGER_GRPS]
 GO
 
-CREATE TABLE [dbo].[qrtz_paused_trigger_grps] (
-  [SCHED_NAME] nvarchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [TRIGGER_GROUP] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL
+CREATE TABLE [dbo].[QRTZ_PAUSED_TRIGGER_GRPS] (
+  [SCHED_NAME] varchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [TRIGGER_GROUP] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL
 )
 GO
 
-ALTER TABLE [dbo].[qrtz_paused_trigger_grps] SET (LOCK_ESCALATION = TABLE)
+ALTER TABLE [dbo].[QRTZ_PAUSED_TRIGGER_GRPS] SET (LOCK_ESCALATION = TABLE)
 GO
 
 
 -- ----------------------------
--- Records of qrtz_paused_trigger_grps
+-- Records of QRTZ_PAUSED_TRIGGER_GRPS
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for qrtz_scheduler_state
+-- Table structure for QRTZ_SCHEDULER_STATE
 -- ----------------------------
-IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qrtz_scheduler_state]') AND type IN ('U'))
-	DROP TABLE [dbo].[qrtz_scheduler_state]
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[QRTZ_SCHEDULER_STATE]') AND type IN ('U'))
+	DROP TABLE [dbo].[QRTZ_SCHEDULER_STATE]
 GO
 
-CREATE TABLE [dbo].[qrtz_scheduler_state] (
-  [SCHED_NAME] nvarchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [INSTANCE_NAME] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+CREATE TABLE [dbo].[QRTZ_SCHEDULER_STATE] (
+  [SCHED_NAME] varchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [INSTANCE_NAME] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
   [LAST_CHECKIN_TIME] bigint  NOT NULL,
   [CHECKIN_INTERVAL] bigint  NOT NULL
 )
 GO
 
-ALTER TABLE [dbo].[qrtz_scheduler_state] SET (LOCK_ESCALATION = TABLE)
+ALTER TABLE [dbo].[QRTZ_SCHEDULER_STATE] SET (LOCK_ESCALATION = TABLE)
 GO
 
 
 -- ----------------------------
--- Records of qrtz_scheduler_state
+-- Records of QRTZ_SCHEDULER_STATE
 -- ----------------------------
-INSERT INTO [dbo].[qrtz_scheduler_state] ([SCHED_NAME], [INSTANCE_NAME], [LAST_CHECKIN_TIME], [CHECKIN_INTERVAL]) VALUES (N'MyScheduler', N'qin1695191929500', N'1695193093715', N'15000')
+
+-- ----------------------------
+-- Table structure for QRTZ_SIMPLE_TRIGGERS
+-- ----------------------------
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[QRTZ_SIMPLE_TRIGGERS]') AND type IN ('U'))
+	DROP TABLE [dbo].[QRTZ_SIMPLE_TRIGGERS]
 GO
 
-
--- ----------------------------
--- Table structure for qrtz_simple_triggers
--- ----------------------------
-IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qrtz_simple_triggers]') AND type IN ('U'))
-	DROP TABLE [dbo].[qrtz_simple_triggers]
-GO
-
-CREATE TABLE [dbo].[qrtz_simple_triggers] (
-  [SCHED_NAME] nvarchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [TRIGGER_NAME] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [TRIGGER_GROUP] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+CREATE TABLE [dbo].[QRTZ_SIMPLE_TRIGGERS] (
+  [SCHED_NAME] varchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [TRIGGER_NAME] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [TRIGGER_GROUP] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
   [REPEAT_COUNT] bigint  NOT NULL,
   [REPEAT_INTERVAL] bigint  NOT NULL,
   [TIMES_TRIGGERED] bigint  NOT NULL
 )
 GO
 
-ALTER TABLE [dbo].[qrtz_simple_triggers] SET (LOCK_ESCALATION = TABLE)
+ALTER TABLE [dbo].[QRTZ_SIMPLE_TRIGGERS] SET (LOCK_ESCALATION = TABLE)
 GO
 
 
 -- ----------------------------
--- Records of qrtz_simple_triggers
+-- Records of QRTZ_SIMPLE_TRIGGERS
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for qrtz_simprop_triggers
+-- Table structure for QRTZ_SIMPROP_TRIGGERS
 -- ----------------------------
-IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qrtz_simprop_triggers]') AND type IN ('U'))
-	DROP TABLE [dbo].[qrtz_simprop_triggers]
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[QRTZ_SIMPROP_TRIGGERS]') AND type IN ('U'))
+	DROP TABLE [dbo].[QRTZ_SIMPROP_TRIGGERS]
 GO
 
-CREATE TABLE [dbo].[qrtz_simprop_triggers] (
-  [SCHED_NAME] nvarchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [TRIGGER_NAME] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [TRIGGER_GROUP] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [STR_PROP_1] nvarchar(512) COLLATE Chinese_PRC_CI_AS  NULL,
-  [STR_PROP_2] nvarchar(512) COLLATE Chinese_PRC_CI_AS  NULL,
-  [STR_PROP_3] nvarchar(512) COLLATE Chinese_PRC_CI_AS  NULL,
+CREATE TABLE [dbo].[QRTZ_SIMPROP_TRIGGERS] (
+  [SCHED_NAME] varchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [TRIGGER_NAME] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [TRIGGER_GROUP] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [STR_PROP_1] varchar(512) COLLATE Chinese_PRC_CI_AS  NULL,
+  [STR_PROP_2] varchar(512) COLLATE Chinese_PRC_CI_AS  NULL,
+  [STR_PROP_3] varchar(512) COLLATE Chinese_PRC_CI_AS  NULL,
   [INT_PROP_1] int  NULL,
   [INT_PROP_2] int  NULL,
   [LONG_PROP_1] bigint  NULL,
   [LONG_PROP_2] bigint  NULL,
-  [DEC_PROP_1] decimal(13,4)  NULL,
-  [DEC_PROP_2] decimal(13,4)  NULL,
-  [BOOL_PROP_1] nvarchar(1) COLLATE Chinese_PRC_CI_AS  NULL,
-  [BOOL_PROP_2] nvarchar(1) COLLATE Chinese_PRC_CI_AS  NULL
+  [DEC_PROP_1] numeric(13,4)  NULL,
+  [DEC_PROP_2] numeric(13,4)  NULL,
+  [BOOL_PROP_1] varchar(1) COLLATE Chinese_PRC_CI_AS  NULL,
+  [BOOL_PROP_2] varchar(1) COLLATE Chinese_PRC_CI_AS  NULL
 )
 GO
 
-ALTER TABLE [dbo].[qrtz_simprop_triggers] SET (LOCK_ESCALATION = TABLE)
+ALTER TABLE [dbo].[QRTZ_SIMPROP_TRIGGERS] SET (LOCK_ESCALATION = TABLE)
 GO
 
 
 -- ----------------------------
--- Records of qrtz_simprop_triggers
+-- Records of QRTZ_SIMPROP_TRIGGERS
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for qrtz_triggers
+-- Table structure for QRTZ_TRIGGERS
 -- ----------------------------
-IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[qrtz_triggers]') AND type IN ('U'))
-	DROP TABLE [dbo].[qrtz_triggers]
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[QRTZ_TRIGGERS]') AND type IN ('U'))
+	DROP TABLE [dbo].[QRTZ_TRIGGERS]
 GO
 
-CREATE TABLE [dbo].[qrtz_triggers] (
-  [SCHED_NAME] nvarchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [TRIGGER_NAME] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [TRIGGER_GROUP] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [JOB_NAME] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [JOB_GROUP] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [DESCRIPTION] nvarchar(250) COLLATE Chinese_PRC_CI_AS  NULL,
+CREATE TABLE [dbo].[QRTZ_TRIGGERS] (
+  [SCHED_NAME] varchar(120) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [TRIGGER_NAME] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [TRIGGER_GROUP] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [JOB_NAME] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [JOB_GROUP] varchar(200) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [DESCRIPTION] varchar(250) COLLATE Chinese_PRC_CI_AS  NULL,
   [NEXT_FIRE_TIME] bigint  NULL,
   [PREV_FIRE_TIME] bigint  NULL,
   [PRIORITY] int  NULL,
-  [TRIGGER_STATE] nvarchar(16) COLLATE Chinese_PRC_CI_AS  NOT NULL,
-  [TRIGGER_TYPE] nvarchar(8) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [TRIGGER_STATE] varchar(16) COLLATE Chinese_PRC_CI_AS  NOT NULL,
+  [TRIGGER_TYPE] varchar(8) COLLATE Chinese_PRC_CI_AS  NOT NULL,
   [START_TIME] bigint  NOT NULL,
   [END_TIME] bigint  NULL,
-  [CALENDAR_NAME] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NULL,
+  [CALENDAR_NAME] varchar(200) COLLATE Chinese_PRC_CI_AS  NULL,
   [MISFIRE_INSTR] smallint  NULL,
-  [JOB_DATA] varbinary(max)  NULL
+  [JOB_DATA] image  NULL
 )
 GO
 
-ALTER TABLE [dbo].[qrtz_triggers] SET (LOCK_ESCALATION = TABLE)
+ALTER TABLE [dbo].[QRTZ_TRIGGERS] SET (LOCK_ESCALATION = TABLE)
 GO
 
 
 -- ----------------------------
--- Records of qrtz_triggers
+-- Records of QRTZ_TRIGGERS
 -- ----------------------------
 
 -- ----------------------------
@@ -17049,7 +17025,7 @@ CREATE TABLE [dbo].[sys_data_log] (
   [create_time] datetime2(7)  NULL,
   [update_by] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NULL,
   [update_time] datetime2(7)  NULL,
-  [data_table] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NULL,
+  [data_table] nvarchar(200) COLLATE Chinese_PRC_CI_AS  NULL,
   [data_id] nvarchar(32) COLLATE Chinese_PRC_CI_AS  NULL,
   [data_content] nvarchar(max) COLLATE Chinese_PRC_CI_AS  NULL,
   [data_version] int  NULL,
@@ -19827,7 +19803,7 @@ GO
 INSERT INTO [dbo].[sys_gateway_route] ([id], [router_id], [name], [uri], [predicates], [filters], [retryable], [strip_prefix], [persistable], [show_api], [status], [create_by], [create_time], [update_by], [update_time], [sys_org_code]) VALUES (N'jeecg-demo', N'jeecg-demo', N'jeecg-demo', N'lb://jeecg-demo', N'[{"args":["/mock/**","/bigscreen/template1/**","/bigscreen/template2/**","/test/**"],"name":"Path"}]', N'[]', NULL, NULL, NULL, NULL, N'1', N'admin', N'2020-11-16 19:41:51.0000000', NULL, NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_gateway_route] ([id], [router_id], [name], [uri], [predicates], [filters], [retryable], [strip_prefix], [persistable], [show_api], [status], [create_by], [create_time], [update_by], [update_time], [sys_org_code]) VALUES (N'jeecg-system', N'jeecg-system', N'jeecg-system', N'lb://jeecg-system', N'[{"args":["/sys/**","/online/**","/bigscreen/**","/jmreport/**","/druid/**","/generic/**"],"name":"Path"}]', N'[]', NULL, NULL, NULL, NULL, N'1', N'admin', N'2020-11-16 19:41:51.0000000', NULL, NULL, NULL)
+INSERT INTO [dbo].[sys_gateway_route] ([id], [router_id], [name], [uri], [predicates], [filters], [retryable], [strip_prefix], [persistable], [show_api], [status], [create_by], [create_time], [update_by], [update_time], [sys_org_code]) VALUES (N'jeecg-system', N'jeecg-system', N'jeecg-system', N'lb://jeecg-system', N'[{"args":["/sys/**","/online/**","/bigscreen/**","/jmreport/**","/druid/**","/generic/**","/actuator/**","/drag/**"],"name":"Path"}]', N'[]', NULL, NULL, NULL, NULL, N'1', N'admin', N'2020-11-16 19:41:51.0000000', NULL, NULL, NULL)
 GO
 
 
@@ -19984,1266 +19960,6 @@ GO
 -- ----------------------------
 -- Records of sys_log
 -- ----------------------------
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1632743293639704578', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-06 22:01:51.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633795132552331266', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 19:41:29.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633795234301952002', N'3', N'将 jeecg 添加到角色 232', N'2', N'admin', N'管理员', NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 19:41:53.0000000', NULL, NULL, N'1')
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633795819784847361', N'2', N'编辑用户，username： zhagnxiao', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 19:44:13.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633797138973147137', N'2', N'添加用户，username： sdfas', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 19:49:27.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633799025831133186', N'2', N'添加用户，username： 123', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 19:56:57.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633799090641518594', N'2', N'编辑用户，username： 123', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 19:57:12.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633799500294995970', N'2', N'添加用户，username： sdfasdf', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 19:58:50.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633799606465413122', N'2', N'编辑用户，username： sdfasdf', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 19:59:15.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633802472806670338', N'1', N'用户名: 管理员,退出成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 20:10:39.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633802491123195906', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 20:10:43.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633802551785414658', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=0)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@400bd6e8', NULL, N'44', NULL, N'2023-03-09 20:10:58.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633802611273228290', N'2', N'添加用户，username： asdfasdf', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 20:11:12.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633802653614727170', N'2', N'批量删除用户， ids： 1633802611139010562,1633799500227887106,1633799025764024321,1633797138843123714', N'3', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 20:11:22.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633802992560627713', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=0)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@767bb69d', NULL, N'18', NULL, N'2023-03-09 20:12:43.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633802993412071426', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=总经理, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=0)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@f9470cd', NULL, N'24', NULL, N'2023-03-09 20:12:43.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633803007035170818', N'2', N'编辑用户，username： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 20:12:46.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633804165707456513', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=1000)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@7460e74a', NULL, N'15', NULL, N'2023-03-09 20:17:22.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633804994137026562', N'2', N'修改角色ID: 1501570619841810433 的权限配置，操作人： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 20:20:40.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1633807285640491010', N'2', N'编辑用户，username： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-09 20:29:46.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1635825273931530242', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-15 10:08:32.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1635825454450180097', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=0)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@6d4be5cb', NULL, N'671', NULL, N'2023-03-15 10:09:15.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1635825466001293314', N'2', N'职务表-添加', N'2', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.add()', NULL, N'[{"code":"a391ah1efm","createBy":"admin","createTime":1678846157912,"id":"1635825465938378753","name":"asdf","sysOrgCode":"A01","tenantId":0}]', NULL, N'11', NULL, N'2023-03-15 10:09:18.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1635825466265534466', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=0)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@675dd7b5', NULL, N'19', NULL, N'2023-03-15 10:09:18.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1635825474704474113', N'2', N'职务表-通过id查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryById()', NULL, N'  id: 1635825465938378753', NULL, N'9', NULL, N'2023-03-15 10:09:20.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1635825482002563074', N'2', N'职务表-编辑', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.edit()', NULL, N'[{"id":"1635825465938378753","name":"asdfddd","updateBy":"admin","updateTime":1678846161720}]', NULL, N'33', NULL, N'2023-03-15 10:09:22.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1635825482333913090', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=0)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@48f89947', NULL, N'19', NULL, N'2023-03-15 10:09:22.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1635825490617663489', N'2', N'职务表-通过id删除', N'4', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.delete()', NULL, N'  id: 1635825465938378753', NULL, N'36', NULL, N'2023-03-15 10:09:24.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1635825490877710338', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=0)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@1d8927b4', NULL, N'22', NULL, N'2023-03-15 10:09:24.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1635825614517403649', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=0)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@5bfb5ffc', NULL, N'21', NULL, N'2023-03-15 10:09:53.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1635825699263315970', N'2', N'添加用户，username： adfaf', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-15 10:10:14.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1635825710390804481', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=0)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@7b5bbf90', NULL, N'26', NULL, N'2023-03-15 10:10:16.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1635826367264948225', N'2', N'删除用户，id： 1635825699129098241', N'3', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-03-15 10:12:53.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1643245759300886529', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-04-04 21:34:54.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1643463881031127042', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-04-05 12:01:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1643463957786890242', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'258', NULL, N'2023-04-05 12:01:56.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1643463957786890243', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'265', NULL, N'2023-04-05 12:01:56.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1643463957795278850', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'267', NULL, N'2023-04-05 12:01:56.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1643464311811313666', N'1', N'用户名: 管理员,退出成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-04-05 12:03:21.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1643474559058022402', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-04-05 12:44:04.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1643474580847431681', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'38', NULL, N'2023-04-05 12:44:09.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1643474580847431682', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'38', NULL, N'2023-04-05 12:44:09.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1643474581006815234', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'70', NULL, N'2023-04-05 12:44:09.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1643474588011302913', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'33', NULL, N'2023-04-05 12:44:11.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1643474607397376002', N'2', N'online修改数据,表名:ceshi_note,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["31cf57ac0ce04a34aff6aa15867d6d95",{"aaa":"","pop_cc":"","ccc":"2","dep_id":"c6d7cb4deeac411cb3384b1b31278596","sex":"1","remark":"sd","pic":"temp/lowcodemin2_1667033196391.jpg","salary":22,"accc":"<p>asdfafd</p>","update_time":"2023-04-05 12:44:15","jeecg_row_key":"1586278360710615042","user_id":"jeecg","kai_guan":"Y","log_txt":"afad","name":"单表示例","file2":"temp/lowcode22_1667033194717.jpg","shengshiqu":"130303","id":"1586278360710615042","daa_type":"1185039122143719425","update_by":"admin","age":333}]', NULL, N'69', NULL, N'2023-04-05 12:44:15.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1643474612908691458', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'42', NULL, N'2023-04-05 12:44:17.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1645327933952995329', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'0:0:0:0:0:0:0:1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-04-10 15:28:43.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1645327935702020098', N'1', N'用户名: 管理员,退出成功！', NULL, N'admin', N'管理员', N'0:0:0:0:0:0:0:1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-04-10 15:28:43.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1645328062109954049', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'0:0:0:0:0:0:0:1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-04-10 15:29:13.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1645431200204668930', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-04-10 22:19:03.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1645431935042535426', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'60', NULL, N'2023-04-10 22:21:59.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1645431935097061378', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'68', NULL, N'2023-04-10 22:21:59.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1645431935097061379', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'70', NULL, N'2023-04-10 22:21:59.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1645431982077460482', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'31', NULL, N'2023-04-10 22:22:10.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1645432087417405441', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'24', NULL, N'2023-04-10 22:22:35.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1645432087442571265', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'29', NULL, N'2023-04-10 22:22:35.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1645432087459348481', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'19', NULL, N'2023-04-10 22:22:35.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1647783388524507138', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-04-17 10:05:49.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1647852881539997697', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-04-17 14:41:57.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1648500086328246273', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-04-19 09:33:43.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1648500189503930370', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'165', NULL, N'2023-04-19 09:34:07.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1648500189566844929', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'168', NULL, N'2023-04-19 09:34:08.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1648500189566844930', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'180', NULL, N'2023-04-19 09:34:08.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1648500197124980737', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'58', NULL, N'2023-04-19 09:34:09.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1648500232524906498', N'2', N'online修改数据,表名:ceshi_note,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["31cf57ac0ce04a34aff6aa15867d6d95",{"birthday":"2023-03-30","aaa":"","pop_cc":"","ccc":"2","dep_id":"c6d7cb4deeac411cb3384b1b31278596","sex":"1","remark":"sd","pic":"temp/lowcodemin2_1667033196391.jpg","salary":22,"xia_time":"2023-04-19 05:04:04","accc":"<p>asdfafd</p>","update_time":"2023-04-19 09:34:17","jeecg_row_key":"1586278360710615042","user_id":"jeecg","kai_guan":"Y","log_txt":"afad","name":"单表示例","file2":"temp/lowcode22_1667033194717.jpg","shengshiqu":"130303","id":"1586278360710615042","daa_type":"1185039122143719425","update_by":"admin","age":333}]', NULL, N'97', NULL, N'2023-04-19 09:34:18.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1648500253496426497', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'61', NULL, N'2023-04-19 09:34:23.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1648500316280963074', N'2', N'online列表加载,表名:test_order_main,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'123', NULL, N'2023-04-19 09:34:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1648500317639917570', N'2', N'online表单加载,表名:test_order_main,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'448', NULL, N'2023-04-19 09:34:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1648500317639917571', N'2', N'online表单加载,表名:test_order_main,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'447', NULL, N'2023-04-19 09:34:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1648500322723414018', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'131', NULL, N'2023-04-19 09:34:39.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1656222610113662977', N'1', N'用户登录失败，用户不存在！', NULL, NULL, NULL, N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-05-10 17:00:16.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1657938055996829698', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-05-15 10:36:50.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1657938324113518593', N'2', N'修改角色ID: 1501570619841810433 的权限配置，操作人： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-05-15 10:37:54.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1657940202096357377', N'2', N'修改角色ID: 1501570619841810433 的权限配置，操作人： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-05-15 10:45:22.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1657947064069992449', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'8', NULL, N'2023-05-15 11:12:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1657947072500543490', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'9', NULL, N'2023-05-15 11:12:40.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1657947075210063874', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'3', NULL, N'2023-05-15 11:12:41.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1657947527356035074', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'8', NULL, N'2023-05-15 11:14:28.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1657947533236449281', N'2', N'数据源表-通过id查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.c()', NULL, N'', NULL, N'2', NULL, N'2023-05-15 11:14:30.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1657949931371704322', N'2', N'填值规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysFillRuleController.queryPageList()', NULL, N'  sysFillRule: SysFillRule(id=null, ruleName=null, ruleCode=null, ruleClass=null, ruleParams=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@3d0bc776', NULL, N'35', NULL, N'2023-05-15 11:24:02.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1657949935360487425', N'2', N'编码校验规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysCheckRuleController.queryPageList()', NULL, N'  sysCheckRule: SysCheckRule(id=null, ruleName=null, ruleCode=null, ruleJson=null, ruleDescription=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  request: org.apache.shiro.web.servlet.ShiroHttpServletRequest@48d43a3e', NULL, N'58', NULL, N'2023-05-15 11:24:02.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1657949940041330690', N'2', N'填值规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysFillRuleController.queryPageList()', NULL, N'  sysFillRule: SysFillRule(id=null, ruleName=null, ruleCode=null, ruleClass=null, ruleParams=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@64228b0b', NULL, N'12', NULL, N'2023-05-15 11:24:04.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1657949942507581441', N'2', N'编码校验规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysCheckRuleController.queryPageList()', NULL, N'  sysCheckRule: SysCheckRule(id=null, ruleName=null, ruleCode=null, ruleJson=null, ruleDescription=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  request: org.apache.shiro.web.servlet.ShiroHttpServletRequest@740eb2da', NULL, N'15', NULL, N'2023-05-15 11:24:04.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1657951418793537538', N'2', N'修改角色ID: 1501570619841810433 的权限配置，操作人： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-05-15 11:29:56.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1657952014669918209', N'2', N'修改角色ID: 1501570619841810433 的权限配置，操作人： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-05-15 11:32:18.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1657952226041868290', N'1', N'用户名: 管理员,退出成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-05-15 11:33:09.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1657952245755097090', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-05-15 11:33:13.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665898547792977922', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-06-06 09:48:59.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665911976096309249', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-06-06 10:42:21.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983235161194497', N'2', N'数据集-编辑', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.e.a()', NULL, N'[{"apiMethod":"get","code":"","content":"","dataType":"sql","datasetParamList":[],"dbSource":"707437208002265088","id":"1516743766914924546","izAgent":"","name":"统计近十日的登陆次数","parentId":"1516743332632494082","querySql":"SELECT\n\tcount(*) num,\n\tDATE_FORMAT(create_time, ''%Y-%m-%d'') AS `day`\nFROM\n\tsys_log\nWHERE\n\tlog_type = 1\nAND create_time > DATE_SUB(NOW(), INTERVAL 10 DAY)\nGROUP BY\n\tDATE_FORMAT(create_time, ''%Y-%m-%d'')"}]', NULL, N'79', NULL, N'2023-06-06 15:25:30.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983408520167426', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'9', NULL, N'2023-06-06 15:26:12.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983433094594561', N'2', N'数据源表-添加', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'[{"connectTimes":0,"createBy":"admin","createTime":1686036377565,"dbDriver":"com.mysql.cj.jdbc.Driver","dbPassword":"","dbType":"MYSQL5.7","dbUrl":"jdbc:mysql://127.0.0.1:3306/jimureport?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai","dbUsername":"","id":"825962339354324992","name":"1","type":"drag"},null]', NULL, N'19', NULL, N'2023-06-06 15:26:18.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983433224617985', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'8', NULL, N'2023-06-06 15:26:18.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983451373371393', N'2', N'数据源表-添加', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'[{"connectTimes":0,"createBy":"admin","createTime":1686036381925,"dbDriver":"com.mysql.jdbc.Driver","dbPassword":"","dbType":"MYSQL5.5","dbUrl":"jdbc:mysql://127.0.0.1:3306/jimureport?characterEncoding=UTF-8&useUnicode=true&useSSL=false","dbUsername":"","id":"825962357641490432","name":"2","type":"drag"},null]', NULL, N'36', NULL, N'2023-06-06 15:26:22.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983451503394817', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'7', NULL, N'2023-06-06 15:26:22.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983470008664066', N'2', N'数据源表-添加', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'[{"connectTimes":0,"createBy":"admin","createTime":1686036386376,"dbDriver":"com.mysql.cj.jdbc.Driver","dbPassword":"","dbType":"MYSQL5.7","dbUrl":"jdbc:mysql://127.0.0.1:3306/jimureport?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai","dbUsername":"","id":"825962376310337536","name":"3","type":"drag"},null]', NULL, N'19', NULL, N'2023-06-06 15:26:26.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983470264516609', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'9', NULL, N'2023-06-06 15:26:26.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983487670878209', N'2', N'数据源表-添加', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'[{"connectTimes":0,"createBy":"admin","createTime":1686036390572,"dbDriver":"com.mysql.cj.jdbc.Driver","dbPassword":"","dbType":"MYSQL5.7","dbUrl":"jdbc:mysql://127.0.0.1:3306/jimureport?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai","dbUsername":"","id":"825962393909637120","name":"4","type":"drag"},null]', NULL, N'34', NULL, N'2023-06-06 15:26:31.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983487926730753', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'9', NULL, N'2023-06-06 15:26:31.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983501612744706', N'2', N'数据源表-添加', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'[{"connectTimes":0,"createBy":"admin","createTime":1686036393899,"dbDriver":"com.mysql.jdbc.Driver","dbPassword":"","dbType":"MYSQL5.5","dbUrl":"jdbc:mysql://127.0.0.1:3306/jimureport?characterEncoding=UTF-8&useUnicode=true&useSSL=false","dbUsername":"","id":"825962407864086528","name":"5","type":"drag"},null]', NULL, N'38', NULL, N'2023-06-06 15:26:34.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983501872791553', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'7', NULL, N'2023-06-06 15:26:34.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983518364794881', N'2', N'数据源表-添加', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'[{"connectTimes":0,"createBy":"admin","createTime":1686036397893,"dbDriver":"oracle.jdbc.OracleDriver","dbPassword":"","dbType":"ORACLE","dbUrl":"jdbc:oracle:thin:@127.0.0.1:1521:ORCL","dbUsername":"","id":"825962424611942400","name":"6","type":"drag"},null]', NULL, N'35', NULL, N'2023-06-06 15:26:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983518620647425', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'7', NULL, N'2023-06-06 15:26:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983538442928130', N'2', N'数据源表-添加', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'[{"connectTimes":0,"createBy":"admin","createTime":1686036402673,"dbDriver":"oracle.jdbc.OracleDriver","dbPassword":"","dbType":"ORACLE","dbUrl":"jdbc:oracle:thin:@127.0.0.1:1521:ORCL","dbUsername":"","id":"825962444660715520","name":"7","type":"drag"},null]', NULL, N'35', NULL, N'2023-06-06 15:26:43.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983538702974978', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'10', NULL, N'2023-06-06 15:26:43.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983551759843330', N'2', N'数据源表-添加', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'[{"connectTimes":0,"createBy":"admin","createTime":1686036405852,"dbDriver":"com.mysql.cj.jdbc.Driver","dbPassword":"","dbType":"MYSQL5.7","dbUrl":"jdbc:mysql://127.0.0.1:3306/jimureport?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai","dbUsername":"","id":"825962457994407936","name":"8","type":"drag"},null]', NULL, N'30', NULL, N'2023-06-06 15:26:46.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983552024084482', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'12', NULL, N'2023-06-06 15:26:46.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983567392014338', N'2', N'数据源表-添加', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'[{"connectTimes":0,"createBy":"admin","createTime":1686036409593,"dbDriver":"com.mysql.cj.jdbc.Driver","dbPassword":"","dbType":"MYSQL5.7","dbUrl":"jdbc:mysql://127.0.0.1:3306/jimureport?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai","dbUsername":"","id":"825962473685299200","name":"9","type":"drag"},null]', NULL, N'29', NULL, N'2023-06-06 15:26:50.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983567589146625', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'9', NULL, N'2023-06-06 15:26:50.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983586283159554', N'2', N'数据源表-添加', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'[{"dbDriver":"com.mysql.cj.jdbc.Driver","dbPassword":"","dbType":"MYSQL5.7","dbUrl":"jdbc:mysql://127.0.0.1:3306/jimureport?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai","dbUsername":"","id":"","name":"99"},null]', NULL, N'4', NULL, N'2023-06-06 15:26:54.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983978601578498', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'7', NULL, N'2023-06-06 15:28:28.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983988269449218', N'2', N'数据源表-通过id删除', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'25', NULL, N'2023-06-06 15:28:30.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983988395278338', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'7', NULL, N'2023-06-06 15:28:30.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983993365528578', N'2', N'数据源表-通过id删除', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'16', NULL, N'2023-06-06 15:28:31.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983993562660866', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'11', NULL, N'2023-06-06 15:28:31.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983998134452226', N'2', N'数据源表-通过id删除', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'20', NULL, N'2023-06-06 15:28:32.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665983998264475649', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'12', NULL, N'2023-06-06 15:28:32.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665984002886598658', N'2', N'数据源表-通过id删除', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'20', NULL, N'2023-06-06 15:28:33.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665984003012427777', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'10', NULL, N'2023-06-06 15:28:33.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665984008750235650', N'2', N'数据源表-通过id删除', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'2', NULL, N'2023-06-06 15:28:35.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665984008880259073', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'11', NULL, N'2023-06-06 15:28:35.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665984014156693505', N'2', N'数据源表-通过id删除', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'24', NULL, N'2023-06-06 15:28:36.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665984014219608066', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'10', NULL, N'2023-06-06 15:28:36.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665984018866896897', N'2', N'数据源表-通过id删除', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'20', NULL, N'2023-06-06 15:28:37.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665984018992726017', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'12', NULL, N'2023-06-06 15:28:37.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665984027620409345', N'2', N'数据源表-通过id删除', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'21', NULL, N'2023-06-06 15:28:39.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665984027750432769', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'9', NULL, N'2023-06-06 15:28:39.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665984032389332993', N'2', N'数据源表-通过id删除', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'3', NULL, N'2023-06-06 15:28:40.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1665984032452247553', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'6', NULL, N'2023-06-06 15:28:40.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1666070637338865666', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-06-06 21:12:49.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1666070776082247682', N'2', N'修改数据库连接ID:707437208002265088 ,连接名字: MySQL5.7，操作人： admin', N'2', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-06-06 21:13:22.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1668798475741659138', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-06-14 09:52:16.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1679802786827177986', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-07-14 18:39:28.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681161458824212482', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-07-18 12:38:21.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681161744875745281', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@7fbe4f13', NULL, N'16', NULL, N'2023-07-18 12:39:29.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681161745408421890', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=总经理, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@7ec98dad', NULL, N'9', NULL, N'2023-07-18 12:39:29.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681161773568978945', N'2', N'编辑用户，username： zhangsan', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-07-18 12:39:36.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681161780737044481', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@48efbb3e', NULL, N'5', NULL, N'2023-07-18 12:39:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681161781248749570', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=devleader,总经理, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@18c30f3a', NULL, N'7', NULL, N'2023-07-18 12:39:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681161797455540225', N'2', N'编辑用户，username： zhagnxiao', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-07-18 12:39:42.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681161818787770370', N'2', N'删除用户，id： f0019fdebedb443c98dcb17d88222c38', N'3', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-07-18 12:39:47.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681163141344096257', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@1e193503', NULL, N'6', NULL, N'2023-07-18 12:45:02.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681164039411691521', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@455ebee', NULL, N'6', NULL, N'2023-07-18 12:48:36.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681235831006420994', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-07-18 17:33:53.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681235947117338626', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'admin', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'45', NULL, N'2023-07-18 17:34:20.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681235947167670274', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'admin', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'63', NULL, N'2023-07-18 17:34:20.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681235947167670275', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'admin', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'58', NULL, N'2023-07-18 17:34:20.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681235975940595713', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'admin', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'15', NULL, N'2023-07-18 17:34:27.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681235975944790018', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'admin', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'17', NULL, N'2023-07-18 17:34:27.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681235975995121666', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'admin', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'28', NULL, N'2023-07-18 17:34:27.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681236440262631425', N'2', N'职务表-分页列表查询', N'1', N'admin', N'admin', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@550f76ca', NULL, N'21', NULL, N'2023-07-18 17:36:18.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681236441126658049', N'2', N'职务表-分页列表查询', N'1', N'admin', N'admin', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=总经理, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@5fb02e48', NULL, N'6', NULL, N'2023-07-18 17:36:18.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681236444809256961', N'2', N'编辑用户，username： admin', N'2', N'admin', N'admin', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-07-18 17:36:19.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681237956881014786', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'21', NULL, N'2023-07-18 17:42:19.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681237956881014787', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'19', NULL, N'2023-07-18 17:42:19.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681237956931346434', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'34', NULL, N'2023-07-18 17:42:19.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681237963172470785', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'7', NULL, N'2023-07-18 17:42:21.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681237995586052097', N'2', N'online修改数据,表名:ceshi_note,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["31cf57ac0ce04a34aff6aa15867d6d95",{"birthday":"2023-03-30","aaa":"","pop_cc":"","ccc":"2","dep_id":"c6d7cb4deeac411cb3384b1b31278596","sex":"1","remark":"sd","pic":"temp/lowcodemin2_1667033196391.jpg","salary":22,"xia_time":"2023-04-19 05:04:04","accc":"<p>asdfafd</p>","update_time":"2023-07-18 17:42:28","jeecg_row_key":"1586278360710615042","user_id":"admin,jeecg","kai_guan":"Y","log_txt":"afad","name":"单表示例","file2":"temp/lowcode22_1667033194717.jpg","shengshiqu":"130303","id":"1586278360710615042","daa_type":"1185039122143719425","update_by":"admin","age":333}]', NULL, N'47', NULL, N'2023-07-18 17:42:29.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681238002590539777', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'4', NULL, N'2023-07-18 17:42:30.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681238059138146305', N'2', N'online修改数据,表名:ceshi_note,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["31cf57ac0ce04a34aff6aa15867d6d95",{"birthday":"2023-03-30","aaa":"","pop_cc":"","ccc":"2","dep_id":"c6d7cb4deeac411cb3384b1b31278596","sex":"1","remark":"sd","pic":"temp/lowcodemin2_1667033196391.jpg","salary":22,"xia_time":"2023-04-19 05:04:04","accc":"<p>asdfafd</p>","update_time":"2023-07-18 17:42:43","jeecg_row_key":"1586278360710615042","user_id":"jeecg","kai_guan":"Y","log_txt":"afad","name":"单表示例","file2":"temp/lowcode22_1667033194717.jpg","shengshiqu":"130303","id":"1586278360710615042","daa_type":"1185039122143719425","update_by":"admin","age":333}]', NULL, N'11', NULL, N'2023-07-18 17:42:44.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681238065496711170', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'5', NULL, N'2023-07-18 17:42:45.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681238095695699969', N'2', N'online修改数据,表名:ceshi_note,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["31cf57ac0ce04a34aff6aa15867d6d95",{"birthday":"2023-03-30","aaa":"","pop_cc":"","ccc":"2","dep_id":"c6d7cb4deeac411cb3384b1b31278596","sex":"1","remark":"sd","pic":"temp/lowcodemin2_1667033196391.jpg","salary":22,"xia_time":"2023-04-19 05:04:04","accc":"<p>asdfafd</p>","update_time":"2023-07-18 17:42:52","jeecg_row_key":"1586278360710615042","user_id":"jeecg,zhangsan","kai_guan":"Y","log_txt":"afad","name":"单表示例","file2":"temp/lowcode22_1667033194717.jpg","shengshiqu":"130303","id":"1586278360710615042","daa_type":"1185039122143719425","update_by":"admin","age":333}]', NULL, N'25', NULL, N'2023-07-18 17:42:53.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681238100309434370', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'4', NULL, N'2023-07-18 17:42:54.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681238128402882562', N'2', N'online修改数据,表名:ceshi_note,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["31cf57ac0ce04a34aff6aa15867d6d95",{"birthday":"2023-03-30","aaa":"","pop_cc":"","ccc":"2","dep_id":"c6d7cb4deeac411cb3384b1b31278596","sex":"1","remark":"sd","pic":"temp/lowcodemin2_1667033196391.jpg","salary":22,"xia_time":"2023-04-19 05:04:04","accc":"<p>asdfafd</p>","update_time":"2023-07-18 17:43:00","jeecg_row_key":"1586278360710615042","user_id":"zhangsan","kai_guan":"Y","log_txt":"afad","name":"单表示例","file2":"temp/lowcode22_1667033194717.jpg","shengshiqu":"130303","id":"1586278360710615042","daa_type":"1185039122143719425","update_by":"admin","age":333}]', NULL, N'29', NULL, N'2023-07-18 17:43:00.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681238140377620482', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'6', NULL, N'2023-07-18 17:43:03.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681238186569490433', N'2', N'online修改数据,表名:ceshi_note,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["31cf57ac0ce04a34aff6aa15867d6d95",{"birthday":"2023-03-30","aaa":"","pop_cc":"孙亦菲","ccc":"2","dep_id":"c6d7cb4deeac411cb3384b1b31278596","sex":"1","remark":"sd","pic":"temp/lowcodemin2_1667033196391.jpg","salary":22,"xia_time":"2023-04-19 05:04:04","accc":"<p>asdfafd</p>","update_time":"2023-07-18 17:43:14","jeecg_row_key":"1586278360710615042","user_id":"zhangsan","kai_guan":"Y","log_txt":"afad","name":"单表示例","file2":"temp/lowcode22_1667033194717.jpg","shengshiqu":"130303","id":"1586278360710615042","daa_type":"1185039122143719425","update_by":"admin","age":333}]', NULL, N'27', NULL, N'2023-07-18 17:43:14.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681238191711707137', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'5', NULL, N'2023-07-18 17:43:15.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681238235047256065', N'2', N'online修改数据,表名:ceshi_note,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["31cf57ac0ce04a34aff6aa15867d6d95",{"birthday":"2023-03-30","aaa":"","pop_cc":"龙佳昊","ccc":"2","dep_id":"c6d7cb4deeac411cb3384b1b31278596","sex":"1","remark":"sd","pic":"temp/lowcodemin2_1667033196391.jpg","salary":22,"xia_time":"2023-04-19 05:04:04","accc":"<p>asdfafd</p>","update_time":"2023-07-18 17:43:25","jeecg_row_key":"1586278360710615042","user_id":"zhangsan","kai_guan":"Y","log_txt":"afad","name":"单表示例","file2":"temp/lowcode22_1667033194717.jpg","shengshiqu":"130303","id":"1586278360710615042","daa_type":"1185039122143719425","update_by":"admin","age":333}]', NULL, N'21', NULL, N'2023-07-18 17:43:26.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681238240453713921', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'5', NULL, N'2023-07-18 17:43:27.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681268141135183873', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'168', NULL, N'2023-07-18 19:42:16.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681268141244235778', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'189', NULL, N'2023-07-18 19:42:16.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681268141244235779', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'204', NULL, N'2023-07-18 19:42:16.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681268153382551553', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'59', NULL, N'2023-07-18 19:42:19.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681268194230878210', N'2', N'online修改数据,表名:ceshi_note,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["31cf57ac0ce04a34aff6aa15867d6d95",{"birthday":"2023-03-30","aaa":"","pop_cc":"孙亦菲,龙佳昊","ccc":"2","dep_id":"c6d7cb4deeac411cb3384b1b31278596","sex":"1","remark":"sd","pic":"temp/lowcodemin2_1667033196391.jpg","salary":22,"xia_time":"2023-04-19 05:04:04","accc":"<p>asdfafd</p>","update_time":"2023-07-18 19:42:28","jeecg_row_key":"1586278360710615042","user_id":"zhangsan","kai_guan":"Y","log_txt":"afad","name":"单表示例","file2":"temp/lowcode22_1667033194717.jpg","shengshiqu":"130303","id":"1586278360710615042","daa_type":"1185039122143719425","update_by":"admin","age":333}]', NULL, N'84', NULL, N'2023-07-18 19:42:29.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681268200090320897', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'45', NULL, N'2023-07-18 19:42:30.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681268237167968257', N'2', N'online修改数据,表名:ceshi_note,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["31cf57ac0ce04a34aff6aa15867d6d95",{"birthday":"2023-03-30","aaa":"","pop_cc":"小红帽4,名字","ccc":"2","dep_id":"c6d7cb4deeac411cb3384b1b31278596","sex":"1","remark":"sd","pic":"temp/lowcodemin2_1667033196391.jpg","salary":22,"xia_time":"2023-04-19 05:04:04","accc":"<p>asdfafd</p>","update_time":"2023-07-18 19:42:38","jeecg_row_key":"1586278360710615042","user_id":"zhangsan","kai_guan":"Y","log_txt":"afad","name":"单表示例","file2":"temp/lowcode22_1667033194717.jpg","shengshiqu":"130303","id":"1586278360710615042","daa_type":"1185039122143719425","update_by":"admin","age":333}]', NULL, N'74', NULL, N'2023-07-18 19:42:39.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681268242788335618', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'80', NULL, N'2023-07-18 19:42:40.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681268272278487042', N'2', N'online修改数据,表名:ceshi_note,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["31cf57ac0ce04a34aff6aa15867d6d95",{"birthday":"2023-03-30","aaa":"","pop_cc":"名字,龙佳昊","ccc":"2","dep_id":"c6d7cb4deeac411cb3384b1b31278596","sex":"1","remark":"sd","pic":"temp/lowcodemin2_1667033196391.jpg","salary":22,"xia_time":"2023-04-19 05:04:04","accc":"<p>asdfafd</p>","update_time":"2023-07-18 19:42:47","jeecg_row_key":"1586278360710615042","user_id":"zhangsan","kai_guan":"Y","log_txt":"afad","name":"单表示例","file2":"temp/lowcode22_1667033194717.jpg","shengshiqu":"130303","id":"1586278360710615042","daa_type":"1185039122143719425","update_by":"admin","age":333}]', NULL, N'52', NULL, N'2023-07-18 19:42:47.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681268277957574657', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'53', NULL, N'2023-07-18 19:42:49.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1681268306982158337', N'2', N'online修改数据,表名:ceshi_note,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["31cf57ac0ce04a34aff6aa15867d6d95",{"birthday":"2023-03-30","aaa":"","pop_cc":"龙建林","ccc":"2","dep_id":"c6d7cb4deeac411cb3384b1b31278596","sex":"1","remark":"sd","pic":"temp/lowcodemin2_1667033196391.jpg","salary":22,"xia_time":"2023-04-19 05:04:04","accc":"<p>asdfafd</p>","update_time":"2023-07-18 19:42:55","jeecg_row_key":"1586278360710615042","user_id":"zhangsan","kai_guan":"Y","log_txt":"afad","name":"单表示例","file2":"temp/lowcode22_1667033194717.jpg","shengshiqu":"130303","id":"1586278360710615042","daa_type":"1185039122143719425","update_by":"admin","age":333}]', NULL, N'71', NULL, N'2023-07-18 19:42:56.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683063891578052609', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-07-23 18:37:56.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683063951229444097', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'147', NULL, N'2023-07-23 18:38:10.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683063951254609921', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'153', NULL, N'2023-07-23 18:38:10.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683063951254609922', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'153', NULL, N'2023-07-23 18:38:10.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683063960008122369', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'52', NULL, N'2023-07-23 18:38:13.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683063964454084610', N'2', N'online修改数据,表名:ceshi_note,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["31cf57ac0ce04a34aff6aa15867d6d95",{"birthday":"2023-03-30","aaa":"","pop_cc":"龙建林","ccc":"2","dep_id":"c6d7cb4deeac411cb3384b1b31278596","sex":"1","remark":"sd","pic":"temp/lowcodemin2_1667033196391.jpg","salary":22,"xia_time":"2023-04-19 05:04:04","accc":"<p>asdfafd</p>","update_time":"2023-07-23 18:38:13","jeecg_row_key":"1586278360710615042","user_id":"zhangsan","kai_guan":"Y","log_txt":"afad","name":"单表示例","file2":"temp/lowcode22_1667033194717.jpg","shengshiqu":"130303","id":"1586278360710615042","daa_type":"1185039122143719425","update_by":"admin","age":333}]', NULL, N'87', NULL, N'2023-07-23 18:38:14.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683064068388937730', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'82', NULL, N'2023-07-23 18:38:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683064068523155457', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'102', NULL, N'2023-07-23 18:38:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683064068523155458', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'102', NULL, N'2023-07-23 18:38:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683064077129867266', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'30', NULL, N'2023-07-23 18:38:40.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683064077129867267', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'28', NULL, N'2023-07-23 18:38:40.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683064077259890689', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'68', NULL, N'2023-07-23 18:38:41.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683064084570562562', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'66', NULL, N'2023-07-23 18:38:42.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683064100194344961', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'21', NULL, N'2023-07-23 18:38:46.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683064100194344962', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'21', NULL, N'2023-07-23 18:38:46.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683064100345339906', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'58', NULL, N'2023-07-23 18:38:46.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683064155282333697', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'78', NULL, N'2023-07-23 18:38:59.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683064155374608386', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'98', NULL, N'2023-07-23 18:38:59.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683064155374608387', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'98', NULL, N'2023-07-23 18:38:59.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683064161418600449', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'22', NULL, N'2023-07-23 18:39:01.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683064161418600450', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'22', NULL, N'2023-07-23 18:39:01.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683064161565401090', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'57', NULL, N'2023-07-23 18:39:01.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683066808854896641', N'2', N'online列表加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'79', NULL, N'2023-07-23 18:49:32.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683066808993308673', N'2', N'online表单加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'114', NULL, N'2023-07-23 18:49:32.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683066808993308674', N'2', N'online表单加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'113', NULL, N'2023-07-23 18:49:32.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683066819701366786', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'89', NULL, N'2023-07-23 18:49:34.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683066820036911105', N'2', N'online列表加载,表名:test_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'145', NULL, N'2023-07-23 18:49:34.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683066820041105409', N'2', N'online列表加载,表名:test_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'148', NULL, N'2023-07-23 18:49:34.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683066820296957953', N'2', N'online表单加载,表名:test_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'209', NULL, N'2023-07-23 18:49:34.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683066820296957954', N'2', N'online表单加载,表名:test_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'205', NULL, N'2023-07-23 18:49:34.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683066830929518594', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'35', NULL, N'2023-07-23 18:49:37.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683066881550573570', N'2', N'online修改数据,表名:test_v3_hello,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["9ab817fd4c2e4e7ba6652c4fa46af389",{"birthday":"2022-10-30","cc":"","rel_user_dictText":"zhagnxiao","update_time":"2023-07-23 18:49:49","jeecg_row_key":"1586554463777943554","sex":"1","name":"袁清妍","rel_user":"1260208702503366657","id":"1586554463777943554","update_by":"admin","age":30,"rel_filed":"22233"}]', NULL, N'50', NULL, N'2023-07-23 18:49:49.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683068017900773378', N'2', N'online表单加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'23', NULL, N'2023-07-23 18:54:20.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683068017900773379', N'2', N'online表单加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'22', NULL, N'2023-07-23 18:54:20.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683068018039185409', N'2', N'online列表加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'57', NULL, N'2023-07-23 18:54:20.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683068060124831746', N'2', N'online表单加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'21', NULL, N'2023-07-23 18:54:30.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683068060124831747', N'2', N'online表单加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'21', NULL, N'2023-07-23 18:54:30.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683068060263243777', N'2', N'online列表加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'54', NULL, N'2023-07-23 18:54:30.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683068064931504130', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'21', NULL, N'2023-07-23 18:54:31.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683068064931504131', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'21', NULL, N'2023-07-23 18:54:31.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683068065153802241', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'73', NULL, N'2023-07-23 18:54:31.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074461589000193', N'2', N'online列表加载,表名:demo_field_def_val_main,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'174', NULL, N'2023-07-23 19:19:56.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074462478192641', N'2', N'online表单加载,表名:demo_field_def_val_main,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'399', NULL, N'2023-07-23 19:19:57.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074462478192642', N'2', N'online表单加载,表名:demo_field_def_val_main,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'403', NULL, N'2023-07-23 19:19:57.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074468350218241', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'159', NULL, N'2023-07-23 19:19:58.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074493113389058', N'2', N'online修改数据,表名:demo_field_def_val_main,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["4adec929a6594108bef5b35ee9966e9f",{"update_time":"2023-07-23 19:20:03","code":"${order_num_rule_param}","address":"北京市 朝阳区","sex":"2","name":"admin","id":"1580543461659652098","update_by":"admin","address_param":"北京市 昌平区"}]', NULL, N'159', NULL, N'2023-07-23 19:20:04.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074521299111938', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'144', NULL, N'2023-07-23 19:20:11.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074649783226369', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'70', NULL, N'2023-07-23 19:20:41.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074808017539074', N'2', N'online表单加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'32', NULL, N'2023-07-23 19:21:19.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074808017539075', N'2', N'online表单加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'33', NULL, N'2023-07-23 19:21:19.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074808172728321', N'2', N'online列表加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'70', NULL, N'2023-07-23 19:21:19.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074813470134273', N'2', N'online表单加载,表名:test_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'70', NULL, N'2023-07-23 19:21:20.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074813470134274', N'2', N'online表单加载,表名:test_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'70', NULL, N'2023-07-23 19:21:20.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074813692432386', N'2', N'online列表加载,表名:test_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'122', NULL, N'2023-07-23 19:21:20.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074813692432387', N'2', N'online列表加载,表名:test_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'122', NULL, N'2023-07-23 19:21:20.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074856067485697', N'2', N'online新增数据,表名:test_v3_hello,添加成功!', N'2', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["9ab817fd4c2e4e7ba6652c4fa46af389",{"birthday":"2023-07-12","create_by":"admin","create_time":"2023-07-23 19:21:30","sys_org_code":"A01","sex":"1","name":"123","rel_user":"1586554454185570306","id":"1683074855849381889","age":123,"rel_filed":"44"},null]', NULL, N'53', NULL, N'2023-07-23 19:21:30.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074896525742081', N'2', N'online列表加载,表名:test_order_main,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'105', NULL, N'2023-07-23 19:21:40.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074897687564290', N'2', N'online表单加载,表名:test_order_main,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'381', NULL, N'2023-07-23 19:21:40.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074897687564291', N'2', N'online表单加载,表名:test_order_main,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'382', NULL, N'2023-07-23 19:21:40.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074970085445634', N'2', N'online新增数据,表名:test_order_main,添加成功!', N'2', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["56870166aba54ebfacb20ba6c770bd73",{"order_code":"CN2023072319214115","test_order_product":[{"product_name":"1212","price":1212,"num":21,"pro_type":"1","descc":"121","order_fk_id":"1683074969561157634","create_by":"admin","create_time":"2023-07-23 19:21:57"}],"create_by":"admin","descc":"111","create_time":"2023-07-23 19:21:57","xiala":"1,2","id":"1683074969561157634","test_order_customer":[{"name":"222","sex":"1","age":22,"birthday":"2023-07-06","address":"","order_id":"1683074969561157634","sys_org_code":"A01","create_time":"2023-07-23 19:21:57","create_by":"admin"}]},null]', NULL, N'125', NULL, N'2023-07-23 19:21:58.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074982169235457', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'145', NULL, N'2023-07-23 19:22:00.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683074990528483330', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'140', NULL, N'2023-07-23 19:22:02.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683075072762007553', N'2', N'online列表加载,表名:asdfa,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'76', NULL, N'2023-07-23 19:22:22.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683075072871059457', N'2', N'online表单加载,表名:asdfa,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'103', NULL, N'2023-07-23 19:22:22.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683075072887836673', N'2', N'online表单加载,表名:asdfa,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'96', NULL, N'2023-07-23 19:22:22.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683075083465871361', N'2', N'online新增数据,表名:asdfa,添加成功!', N'2', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["ae9df52b46584493bdf4eae2d8a6a4ad",{"aaa":"11","create_by":"admin","ccc":"111","create_time":"2023-07-23 19:22:24","sys_org_code":"A01","id":"1683075083251961857"},null]', NULL, N'50', NULL, N'2023-07-23 19:22:25.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683075090218700801', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'51', NULL, N'2023-07-23 19:22:26.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683075102965190658', N'2', N'online修改数据,表名:asdfa,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["ae9df52b46584493bdf4eae2d8a6a4ad",{"aaa":"11333","ccc":"11133","update_time":"2023-07-23 19:22:29","jeecg_row_key":"1683075083251961857","id":"1683075083251961857","update_by":"admin"}]', NULL, N'51', NULL, N'2023-07-23 19:22:29.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683075115422273538', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'57', NULL, N'2023-07-23 19:22:32.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683102700084625410', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'29', NULL, N'2023-07-23 21:12:09.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683102700084625411', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'22', NULL, N'2023-07-23 21:12:09.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683102700210454530', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'50', NULL, N'2023-07-23 21:12:09.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683102709542780929', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'12', NULL, N'2023-07-23 21:12:11.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683116065490194434', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-07-23 22:05:15.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683372565131415553', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-07-24 15:04:30.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382122759049218', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'123', NULL, N'2023-07-24 15:42:28.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382122800992257', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'134', NULL, N'2023-07-24 15:42:28.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382122809380866', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'134', NULL, N'2023-07-24 15:42:28.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382419841601537', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'34', NULL, N'2023-07-24 15:43:39.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382419841601538', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'34', NULL, N'2023-07-24 15:43:39.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382420000985089', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'72', NULL, N'2023-07-24 15:43:39.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382429102624769', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'34', NULL, N'2023-07-24 15:43:41.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382483544690690', N'2', N'online修改数据,表名:ceshi_note,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["31cf57ac0ce04a34aff6aa15867d6d95",{"birthday":"2023-03-30","aaa":"","pop_cc":"龙建林","ccc":"2","dep_id":"c6d7cb4deeac411cb3384b1b31278596","sex":"1","remark":"sd","pic":"temp/lowcodemin2_1667033196391.jpg","salary":22,"xia_time":"2023-04-19 05:04:04","accc":"<p>asdfafd</p>","update_time":"2023-07-24 15:43:54","jeecg_row_key":"1586278360710615042","user_id":"zhangsan","kai_guan":"Y","log_txt":"afad","name":"单表示例","file2":"temp/lowcode22_1667033194717.jpg","shengshiqu":"120105","id":"1586278360710615042","daa_type":"1590548229606047745","update_by":"admin","age":333}]', NULL, N'68', NULL, N'2023-07-24 15:43:54.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382489194418177', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'39', NULL, N'2023-07-24 15:43:56.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382514632871938', N'2', N'online列表加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'68', NULL, N'2023-07-24 15:44:02.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382514796449794', N'2', N'online表单加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'107', NULL, N'2023-07-24 15:44:02.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382514796449795', N'2', N'online表单加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'107', NULL, N'2023-07-24 15:44:02.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382522736267265', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'68', NULL, N'2023-07-24 15:44:04.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382522941788161', N'2', N'online列表加载,表名:test_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'126', NULL, N'2023-07-24 15:44:04.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382522941788162', N'2', N'online列表加载,表名:test_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'126', NULL, N'2023-07-24 15:44:04.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382523189252097', N'2', N'online表单加载,表名:test_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'185', NULL, N'2023-07-24 15:44:04.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683382523189252098', N'2', N'online表单加载,表名:test_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'185', NULL, N'2023-07-24 15:44:04.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683384204740251649', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'22', NULL, N'2023-07-24 15:50:45.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683384204740251650', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'23', NULL, N'2023-07-24 15:50:45.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683384204895440898', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'58', NULL, N'2023-07-24 15:50:45.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683384347157843969', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'21', NULL, N'2023-07-24 15:51:19.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683384347157843970', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'21', NULL, N'2023-07-24 15:51:19.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683384347304644610', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'57', NULL, N'2023-07-24 15:51:19.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683384616046284802', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'21', NULL, N'2023-07-24 15:52:23.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683384616046284803', N'2', N'online表单加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'21', NULL, N'2023-07-24 15:52:23.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683384616201474050', N'2', N'online列表加载,表名:ceshi_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'57', NULL, N'2023-07-24 15:52:23.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683681080634998785', N'1', N'用户名: 管理员,退出成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-07-25 11:30:26.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1683681098846666754', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-07-25 11:30:30.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1691384246080106498', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-15 17:40:03.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1693194148448555009', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@3bab6967', NULL, N'127', NULL, N'2023-08-20 17:31:58.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1693194149358718978', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=总经理, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@71426b16', NULL, N'31', NULL, N'2023-08-20 17:31:58.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1693194152294731778', N'2', N'编辑用户，username： zhangsan', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-20 17:31:59.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1693197340406173700', N'2', N'添加用户，username： jeecg23', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-20 17:44:39.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1693197428809519106', N'2', N'删除用户，id： 1693197340406173698', N'3', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-20 17:45:00.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1693197642031157249', N'2', N'编辑用户，username： zhangsan', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-20 17:45:51.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1693199607742046210', N'1', N'用户名: 管理员,退出成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-20 17:53:39.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1693199634656894977', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-20 17:53:46.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1693199782199926785', N'2', N'修改角色ID: f6817f48af4fb3af11b9e8bf182f618b 的权限配置，操作人： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-20 17:54:21.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1693199793490993154', N'1', N'用户名: 管理员,退出成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-20 17:54:24.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1693199812495384577', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-20 17:54:28.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1693218382956691457', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'192.168.1.11', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'231', NULL, N'2023-08-20 19:08:16.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694630192586928129', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'172.17.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-24 16:38:17.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694630513937723394', N'2', N'online列表加载,表名:ccccccc,操作成功', N'1', N'admin', N'管理员', N'172.17.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'267', NULL, N'2023-08-24 16:39:34.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694630514201964546', N'2', N'online表单加载,表名:ccccccc,操作成功', N'1', N'admin', N'管理员', N'172.17.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'342', NULL, N'2023-08-24 16:39:34.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694630514201964547', N'2', N'online表单加载,表名:ccccccc,操作成功', N'1', N'admin', N'管理员', N'172.17.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'340', NULL, N'2023-08-24 16:39:34.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694630557386518529', N'2', N'online新增数据,表名:ccccccc,添加成功!', N'2', N'admin', N'管理员', N'172.17.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["bd021e8443714004800267fad1cbcb05",{"aa":"121","dd":"2023-08-05","ee":"2023-08-10 16:39:38","nn":"2222","create_by":"admin","ddc":"<p>23232323</p>","create_time":"2023-08-24 16:39:44","sys_org_code":"A01","id":"1694630556740595713"},null]', NULL, N'147', NULL, N'2023-08-24 16:39:44.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694630566823702530', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'172.17.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'182', NULL, N'2023-08-24 16:39:47.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694630580111257602', N'2', N'online表单加载,表名:ccccccc,操作成功', N'1', N'admin', N'管理员', N'172.17.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'87', NULL, N'2023-08-24 16:39:50.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694630580178366466', N'2', N'online表单加载,表名:ccccccc,操作成功', N'1', N'admin', N'管理员', N'172.17.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'59', NULL, N'2023-08-24 16:39:50.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694630580694265858', N'2', N'online列表加载,表名:ccccccc,操作成功', N'1', N'admin', N'管理员', N'172.17.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'199', NULL, N'2023-08-24 16:39:50.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694630600730456066', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'172.17.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@262a20d', NULL, N'111', NULL, N'2023-08-24 16:39:55.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694630602815025153', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'172.17.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=总经理, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@8fa18cb', NULL, N'38', NULL, N'2023-08-24 16:39:55.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694630605985918977', N'2', N'编辑用户，username： zhangsan', N'2', N'admin', N'管理员', N'172.17.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-24 16:39:56.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694630927919722498', N'1', N'用户名: 管理员,退出成功！', NULL, N'admin', N'管理员', N'172.17.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-24 16:41:13.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694633744499716097', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'172.17.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-24 16:52:24.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694896475257667586', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-25 10:16:24.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694937342588653570', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-25 12:58:48.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694937611623895041', N'2', N'填值规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysFillRuleController.queryPageList()', NULL, N'  sysFillRule: SysFillRule(id=null, ruleName=null, ruleCode=null, ruleClass=null, ruleParams=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@7f3fa5ba', NULL, N'54', NULL, N'2023-08-25 12:59:52.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694937631802691586', N'2', N'填值规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysFillRuleController.queryPageList()', NULL, N'  sysFillRule: SysFillRule(id=null, ruleName=null, ruleCode=null, ruleClass=null, ruleParams=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@63328bc8', NULL, N'12', NULL, N'2023-08-25 12:59:56.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694937724471644162', N'2', N'编码校验规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysCheckRuleController.queryPageList()', NULL, N'  sysCheckRule: SysCheckRule(id=null, ruleName=null, ruleCode=null, ruleJson=null, ruleDescription=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  request: org.apache.shiro.web.servlet.ShiroHttpServletRequest@32c4b9b0', NULL, N'62', NULL, N'2023-08-25 13:00:19.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694937777936437249', N'2', N'编码校验规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysCheckRuleController.queryPageList()', NULL, N'  sysCheckRule: SysCheckRule(id=null, ruleName=null, ruleCode=null, ruleJson=null, ruleDescription=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  request: org.apache.shiro.web.servlet.ShiroHttpServletRequest@6371b067', NULL, N'9', NULL, N'2023-08-25 13:00:31.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694937781493207042', N'2', N'填值规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysFillRuleController.queryPageList()', NULL, N'  sysFillRule: SysFillRule(id=null, ruleName=null, ruleCode=null, ruleClass=null, ruleParams=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@3778f09e', NULL, N'11', NULL, N'2023-08-25 13:00:32.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694937836799299586', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@6bcd02ac', NULL, N'58', NULL, N'2023-08-25 13:00:45.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694937848899866625', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 99999  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@26b58edd', NULL, N'20', NULL, N'2023-08-25 13:00:48.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694937972334039041', N'2', N'多数据源管理-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysDataSourceController.queryPageList()', NULL, N'  sysDataSource: SysDataSource(id=null, code=null, name=null, remark=null, dbType=null, dbDriver=null, dbUrl=null, dbName=null, dbUsername=null, dbPassword=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@144b87c3', NULL, N'64', NULL, N'2023-08-25 13:01:18.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694938380276240386', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@751e33d3', NULL, N'22', NULL, N'2023-08-25 13:02:55.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694938435733327874', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@1dd0ba3e', NULL, N'26', NULL, N'2023-08-25 13:03:08.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694940721872277506', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-25 13:12:13.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694946655562534914', N'2', N'修改角色ID: ee8626f80f7c2619917b6236f3a7f02b 的权限配置，操作人： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-25 13:35:48.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694946677502939138', N'2', N'角色首页配置-通过code查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysRoleIndexController.queryByCode()', NULL, N'  roleCode: admin  request: org.apache.shiro.web.servlet.ShiroHttpServletRequest@1fff1b6b', NULL, N'16', NULL, N'2023-08-25 13:35:53.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694946682959728641', N'2', N'角色首页配置-编辑', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysRoleIndexController.edit()', NULL, N'[{"component":"22","id":"1549658299929718786","priority":0,"roleCode":"admin","route":true,"status":"0","updateBy":"admin","updateTime":1692941754435,"url":"222"},null]', NULL, N'22', NULL, N'2023-08-25 13:35:54.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694946707311857666', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 99999  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@3823386a', NULL, N'14', NULL, N'2023-08-25 13:36:00.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694947152361066497', N'2', N'编码校验规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysCheckRuleController.queryPageList()', NULL, N'  sysCheckRule: SysCheckRule(id=null, ruleName=null, ruleCode=null, ruleJson=null, ruleDescription=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  request: org.apache.shiro.web.servlet.ShiroHttpServletRequest@640cb107', NULL, N'10', NULL, N'2023-08-25 13:37:46.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694947155498405890', N'2', N'填值规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysFillRuleController.queryPageList()', NULL, N'  sysFillRule: SysFillRule(id=null, ruleName=null, ruleCode=null, ruleClass=null, ruleParams=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@5a50aff0', NULL, N'10', NULL, N'2023-08-25 13:37:47.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1694988949871337474', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-25 16:23:52.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696337796312834050', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-29 09:43:42.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696344827899912193', N'1', N'用户名: 管理员,退出成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-29 10:11:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696344853791350785', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-29 10:11:44.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696344883671572482', N'2', N'online列表加载,表名:test_order_main,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'346', NULL, N'2023-08-29 10:11:51.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696344884527210498', N'2', N'online表单加载,表名:test_order_main,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'490', NULL, N'2023-08-29 10:11:52.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696344884724342786', N'2', N'online表单加载,表名:test_order_main,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'532', NULL, N'2023-08-29 10:11:52.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696344884917280769', N'2', N'online表单加载,表名:test_order_product,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'145', NULL, N'2023-08-29 10:11:52.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696344884980195330', N'2', N'online表单加载,表名:test_order_product,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'155', NULL, N'2023-08-29 10:11:52.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696344892274089985', N'2', N'online表单加载,表名:test_order_customer,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'114', NULL, N'2023-08-29 10:11:54.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696344892399919105', N'2', N'online表单加载,表名:test_order_customer,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'107', NULL, N'2023-08-29 10:11:54.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696352179705311234', N'2', N'职务表-分页列表查询', N'1', N'admin', N'admin', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@e6b0e96', NULL, N'74', NULL, N'2023-08-29 10:40:51.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696352285032673281', N'2', N'添加用户，username： asdd', N'2', N'admin', N'admin', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-29 10:41:16.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696352311091884034', N'1', N'用户名: admin,退出成功！', NULL, N'admin', N'admin', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-29 10:41:22.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696352346152071170', N'1', N'用户名: asdd,登录成功！', NULL, N'asdd', N'asdd', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-29 10:41:31.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696352371544387585', N'1', N'用户名: asdd,退出成功！', NULL, N'asdd', N'asdd', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-29 10:41:37.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696352400761909249', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-29 10:41:44.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696352445779374082', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@e0c9ca7', NULL, N'16', NULL, N'2023-08-29 10:41:54.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696352484203393026', N'2', N'编辑用户，username： asdd', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-29 10:42:04.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696352495767089153', N'1', N'用户名: 管理员,退出成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-29 10:42:06.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696352532404334594', N'1', N'用户名: asdd,登录成功！', NULL, N'asdd', N'asdd', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-29 10:42:15.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696352758850613249', N'1', N'用户名: asdd,退出成功！', NULL, N'asdd', N'asdd', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-29 10:43:09.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696352784574279682', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-29 10:43:15.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1696352812625784833', N'2', N'批量删除用户， ids： 1696352284919427073', N'3', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-08-29 10:43:22.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703032012082479106', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-09-16 21:04:07.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703032629278507010', N'2', N'修改角色ID: f6817f48af4fb3af11b9e8bf182f618b 的权限配置，操作人： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-09-16 21:06:34.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703032643883073537', N'1', N'用户名: 管理员,退出成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-09-16 21:06:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703032663445307394', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-09-16 21:06:42.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703037267209854977', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-09-16 21:25:00.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703037387296972801', N'2', N'online列表加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'130', NULL, N'2023-09-16 21:25:29.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703037387447967746', N'2', N'online表单加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'162', NULL, N'2023-09-16 21:25:29.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703037387447967747', N'2', N'online表单加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'151', NULL, N'2023-09-16 21:25:29.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703037606302556162', N'2', N'online表单加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'25', NULL, N'2023-09-16 21:26:21.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703037606302556163', N'2', N'online表单加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'29', NULL, N'2023-09-16 21:26:21.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703037836947333121', N'2', N'online列表加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'55016', NULL, N'2023-09-16 21:27:16.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703037837148659713', N'2', N'online表单加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'24', NULL, N'2023-09-16 21:27:16.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703037837148659714', N'2', N'online表单加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'24', NULL, N'2023-09-16 21:27:16.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703037837324820482', N'2', N'online列表加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'66', NULL, N'2023-09-16 21:27:16.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703037870317215745', N'2', N'online表单加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'53', NULL, N'2023-09-16 21:27:24.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703037870321410050', N'2', N'online表单加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'53', NULL, N'2023-09-16 21:27:24.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703037870631788545', N'2', N'online列表加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'130', NULL, N'2023-09-16 21:27:24.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703037877070045185', N'2', N'online表单加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'27', NULL, N'2023-09-16 21:27:25.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703037877070045186', N'2', N'online表单加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'27', NULL, N'2023-09-16 21:27:25.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703037877300731905', N'2', N'online列表加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'82', NULL, N'2023-09-16 21:27:26.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703038130083049473', N'2', N'online表单加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'61', NULL, N'2023-09-16 21:28:26.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703038130083049474', N'2', N'online表单加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'61', NULL, N'2023-09-16 21:28:26.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1703038130489896961', N'2', N'online列表加载,表名:test_demo,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'163', NULL, N'2023-09-16 21:28:26.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316140899684354', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@17f35b33', NULL, N'95', NULL, N'2023-09-20 10:06:47.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316141725962241', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=总经理, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@204fa228', NULL, N'37', NULL, N'2023-09-20 10:06:48.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316150148124674', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@5775b5ec', NULL, N'19', NULL, N'2023-09-20 10:06:50.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316150735327233', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=总经理, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@518d68ea', NULL, N'18', NULL, N'2023-09-20 10:06:50.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316154401148929', N'2', N'编辑用户，username： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-09-20 10:06:51.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316207043858433', N'2', N'online列表加载,表名:ccccccc,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'139', NULL, N'2023-09-20 10:07:03.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316207173881857', N'2', N'online表单加载,表名:ccccccc,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'168', NULL, N'2023-09-20 10:07:03.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316207173881858', N'2', N'online表单加载,表名:ccccccc,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'168', NULL, N'2023-09-20 10:07:03.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316215214362625', N'2', N'online表单数据查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.b()', NULL, N'', NULL, N'38', NULL, N'2023-09-20 10:07:05.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316219161202690', N'2', N'online修改数据,表名:ccccccc,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["bd021e8443714004800267fad1cbcb05",{"aa":"121","dd":"2023-08-05","ee":"2023-08-10 16:39:38","nn":"2222","ddc":"<p>23232323</p>","update_time":"2023-09-20 10:07:05","jeecg_row_key":"1694630556740595713","id":"1694630556740595713","update_by":"admin"}]', NULL, N'88', NULL, N'2023-09-20 10:07:06.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316338573037569', N'2', N'多数据源管理-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysDataSourceController.queryPageList()', NULL, N'  sysDataSource: SysDataSource(id=null, code=null, name=null, remark=null, dbType=null, dbDriver=null, dbUrl=null, dbName=null, dbUsername=null, dbPassword=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@53b3fe0b', NULL, N'66', NULL, N'2023-09-20 10:07:34.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316343358738434', N'2', N'多数据源管理-通过id查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysDataSourceController.queryById()', NULL, N'  id: 1209779538310004737', NULL, N'59', NULL, N'2023-09-20 10:07:36.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316353328599041', N'2', N'多数据源管理-编辑', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysDataSourceController.edit()', NULL, N'[{"code":"local_mysql","dbDriver":"com.mysql.jdbc.Driver","dbPassword":"f5b6775e8d1749483f2320627de0e706","dbType":"1","dbUrl":"jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false","dbUsername":"root","id":"1209779538310004737","name":"MySQL5.7","remark":"本地数据库MySQL5.7","updateBy":"admin","updateTime":1695175657929}]', NULL, N'35', NULL, N'2023-09-20 10:07:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316353609617410', N'2', N'多数据源管理-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysDataSourceController.queryPageList()', NULL, N'  sysDataSource: SysDataSource(id=null, code=null, name=null, remark=null, dbType=null, dbDriver=null, dbUrl=null, dbName=null, dbUsername=null, dbPassword=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@52c871a1', NULL, N'16', NULL, N'2023-09-20 10:07:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316430604455937', N'2', N'多数据源管理-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysDataSourceController.queryPageList()', NULL, N'  sysDataSource: SysDataSource(id=null, code=null, name=null, remark=null, dbType=null, dbDriver=null, dbUrl=null, dbName=null, dbUsername=null, dbPassword=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@4a0eb25a', NULL, N'11', NULL, N'2023-09-20 10:07:56.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316437697024002', N'2', N'多数据源管理-通过id查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysDataSourceController.queryById()', NULL, N'  id: 1209779538310004737', NULL, N'6', NULL, N'2023-09-20 10:07:58.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316489328906241', N'2', N'多数据源管理-编辑', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysDataSourceController.edit()', NULL, N'[{"code":"local_mysql","dbDriver":"com.mysql.jdbc.Driver","dbPassword":"46adf742bc8bb85506753ab21a5dc0ad","dbType":"1","dbUrl":"jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false","dbUsername":"root","id":"1209779538310004737","name":"本地测试库","remark":"本地数据库MySQL5.7","updateBy":"admin","updateTime":1695175690361}]', NULL, N'30', NULL, N'2023-09-20 10:08:10.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316489580564482', N'2', N'多数据源管理-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysDataSourceController.queryPageList()', NULL, N'  sysDataSource: SysDataSource(id=null, code=null, name=null, remark=null, dbType=null, dbDriver=null, dbUrl=null, dbName=null, dbUsername=null, dbPassword=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@3060bf9d', NULL, N'11', NULL, N'2023-09-20 10:08:10.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316520517750785', N'2', N'多数据源管理-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysDataSourceController.queryPageList()', NULL, N'  sysDataSource: SysDataSource(id=null, code=null, name=null, remark=null, dbType=null, dbDriver=null, dbUrl=null, dbName=null, dbUsername=null, dbPassword=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@10f9a690', NULL, N'12', NULL, N'2023-09-20 10:08:18.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316525991317506', N'2', N'多数据源管理-通过id查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysDataSourceController.queryById()', NULL, N'  id: 1209779538310004737', NULL, N'5', NULL, N'2023-09-20 10:08:19.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316540696547330', N'2', N'多数据源管理-编辑', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysDataSourceController.edit()', NULL, N'[{"code":"local_mysql","dbDriver":"com.mysql.jdbc.Driver","dbPassword":"f5b6775e8d1749483f2320627de0e706","dbType":"1","dbUrl":"jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false","dbUsername":"root","id":"1209779538310004737","name":"本地测试库","remark":"本地数据库MySQL5.7","updateBy":"admin","updateTime":1695175702628}]', NULL, N'10', NULL, N'2023-09-20 10:08:23.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316540973371393', N'2', N'多数据源管理-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysDataSourceController.queryPageList()', NULL, N'  sysDataSource: SysDataSource(id=null, code=null, name=null, remark=null, dbType=null, dbDriver=null, dbUrl=null, dbName=null, dbUsername=null, dbPassword=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@a84821b', NULL, N'11', NULL, N'2023-09-20 10:08:23.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316550821597186', N'2', N'多数据源管理-通过id查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysDataSourceController.queryById()', NULL, N'  id: 1209779538310004737', NULL, N'6', NULL, N'2023-09-20 10:08:25.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316561416409090', N'2', N'多数据源管理-编辑', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysDataSourceController.edit()', NULL, N'[{"code":"local_mysql","dbDriver":"com.mysql.jdbc.Driver","dbPassword":"f5b6775e8d1749483f2320627de0e706","dbType":"1","dbUrl":"jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false","dbUsername":"root","id":"1209779538310004737","name":"本地测试库","remark":"本地数据库MySQL5.7","updateBy":"admin","updateTime":1695175707550}]', NULL, N'26', NULL, N'2023-09-20 10:08:28.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704316561689038850', N'2', N'多数据源管理-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysDataSourceController.queryPageList()', NULL, N'  sysDataSource: SysDataSource(id=null, code=null, name=null, remark=null, dbType=null, dbDriver=null, dbUrl=null, dbName=null, dbUsername=null, dbPassword=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@3d44d11e', NULL, N'12', NULL, N'2023-09-20 10:08:28.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704374739583823874', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-09-20 13:59:38.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704374964725673985', N'2', N'填值规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysFillRuleController.queryPageList()', NULL, N'  sysFillRule: SysFillRule(id=null, ruleName=null, ruleCode=null, ruleClass=null, ruleParams=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@27b9301b', NULL, N'49', NULL, N'2023-09-20 14:00:32.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704374968693485569', N'2', N'编码校验规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysCheckRuleController.queryPageList()', NULL, N'  sysCheckRule: SysCheckRule(id=null, ruleName=null, ruleCode=null, ruleJson=null, ruleDescription=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  request: org.apache.shiro.web.servlet.ShiroHttpServletRequest@20bad1bd', NULL, N'63', NULL, N'2023-09-20 14:00:33.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704375701933322241', N'2', N'填值规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysFillRuleController.queryPageList()', NULL, N'  sysFillRule: SysFillRule(id=null, ruleName=null, ruleCode=null, ruleClass=null, ruleParams=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@5894b22d', NULL, N'8', NULL, N'2023-09-20 14:03:28.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704375704403767298', N'2', N'编码校验规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysCheckRuleController.queryPageList()', NULL, N'  sysCheckRule: SysCheckRule(id=null, ruleName=null, ruleCode=null, ruleJson=null, ruleDescription=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  request: org.apache.shiro.web.servlet.ShiroHttpServletRequest@509fc24c', NULL, N'10', NULL, N'2023-09-20 14:03:28.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704375764755607554', N'2', N'填值规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysFillRuleController.queryPageList()', NULL, N'  sysFillRule: SysFillRule(id=null, ruleName=null, ruleCode=null, ruleClass=null, ruleParams=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@630fe7e1', NULL, N'8', NULL, N'2023-09-20 14:03:43.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704375767939084289', N'2', N'编码校验规则-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysCheckRuleController.queryPageList()', NULL, N'  sysCheckRule: SysCheckRule(id=null, ruleName=null, ruleCode=null, ruleJson=null, ruleDescription=null, updateBy=null, updateTime=null, createBy=null, createTime=null)  pageNo: 1  pageSize: 10  request: org.apache.shiro.web.servlet.ShiroHttpServletRequest@e7a48ba', NULL, N'8', NULL, N'2023-09-20 14:03:44.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704375810184114178', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@7c949278', NULL, N'26', NULL, N'2023-09-20 14:03:54.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704375816597204994', N'2', N'职务表-通过id查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryById()', NULL, N'  id: 1256485574212153345', NULL, N'6', NULL, N'2023-09-20 14:03:55.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704375820061700097', N'2', N'职务表-编辑', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.edit()', NULL, N'[{"id":"1256485574212153345","name":"laozong","updateBy":"admin","updateTime":1695189835902}]', NULL, N'27', NULL, N'2023-09-20 14:03:56.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704375820279803905', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@52bc945f', NULL, N'12', NULL, N'2023-09-20 14:03:56.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704379601738461185', N'2', N'修改角色ID: f6817f48af4fb3af11b9e8bf182f618b 的权限配置，操作人： admin', N'2', N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-09-20 14:18:58.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704380222797443073', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 99999  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@7ae0132d', NULL, N'15', NULL, N'2023-09-20 14:21:26.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704384721977069570', N'2', N'online列表加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'99', NULL, N'2023-09-20 14:39:18.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704384722119675906', N'2', N'online表单加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'142', NULL, N'2023-09-20 14:39:18.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704384722123870209', N'2', N'online表单加载,表名:test_v3_hello,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'144', NULL, N'2023-09-20 14:39:18.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704384728289497089', N'2', N'online列表加载,表名:test_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'109', NULL, N'2023-09-20 14:39:20.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704384728289497090', N'2', N'online列表加载,表名:test_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'', NULL, N'109', NULL, N'2023-09-20 14:39:20.0000000', NULL, NULL, NULL)
-GO
-
-INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704384728520183810', N'2', N'online表单加载,表名:test_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'164', NULL, N'2023-09-20 14:39:20.0000000', NULL, NULL, NULL)
-GO
-
 INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704384728536961026', N'2', N'online表单加载,表名:test_note,操作成功', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.c()', NULL, N'', NULL, N'159', NULL, N'2023-09-20 14:39:20.0000000', NULL, NULL, NULL)
 GO
 
@@ -21254,6 +19970,36 @@ INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [u
 GO
 
 INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704384783759167489', N'2', N'online修改数据,表名:test_v3_hello,修改成功！', N'3', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.online.cgform.c.a.a()', NULL, N'["9ab817fd4c2e4e7ba6652c4fa46af389",{"birthday":"2023-09-13","cc":"","rel_user_dictText":"zhangsan","update_time":"2023-09-20 14:39:33","jeecg_row_key":"1704384768789696513","sex":"1","name":"22","rel_user":"1580543046964621313","id":"1704384768789696513","update_by":"admin","age":22,"rel_filed":"22"}]', NULL, N'47', NULL, N'2023-09-20 14:39:33.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704483939651670018', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-09-20 21:13:34.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704492335817793537', N'1', N'用户名: admin,登录成功！', NULL, N'admin', N'管理员', N'127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, N'2023-09-20 21:46:55.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704493689898508289', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@44ce6b23', NULL, N'57', NULL, N'2023-09-20 21:52:18.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704493701705474050', N'2', N'职务表-分页列表查询', N'1', N'admin', N'管理员', N'127.0.0.1', N'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, N'  sysPosition: SysPosition(id=null, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 99999  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@71284a4c', NULL, N'24', NULL, N'2023-09-20 21:52:21.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704670627631927298', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'22', NULL, N'2023-09-21 09:35:24.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704670708699435010', N'2', N'数据源表-添加', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'[{"connectTimes":0,"createBy":"admin","createTime":1695260142817,"dbDriver":"com.mysql.jdbc.Driver","dbPassword":"@JimuReportSMy3f94QGFM=","dbType":"MYSQL5.5","dbUrl":"jdbc:mysql://127.0.0.1:3306/jimureport?characterEncoding=UTF-8&useUnicode=true&useSSL=false","dbUsername":"root","id":"864649614879424512","name":"1","type":"drag"},null]', NULL, N'63', NULL, N'2023-09-21 09:35:43.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704670708963676161', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'8', NULL, N'2023-09-21 09:35:43.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704670733940756482', N'2', N'数据源表-通过id删除', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'20', NULL, N'2023-09-21 09:35:49.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704670734070779906', N'2', N'数据源表-分页列表查询', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.d.a()', NULL, N'', NULL, N'6', NULL, N'2023-09-21 09:35:49.0000000', NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[sys_log] ([id], [log_type], [log_content], [operate_type], [userid], [username], [ip], [method], [request_url], [request_param], [request_type], [cost_time], [create_by], [create_time], [update_by], [update_time], [tenant_id]) VALUES (N'1704670778513625089', N'2', N'数据集分组-添加', N'1', N'admin', N'管理员', N'0:0:0:0:0:0:0:1', N'org.jeecg.modules.drag.b.e.a()', NULL, N'[{"createBy":"admin","createTime":1695260159478,"id":"864649684727169024","name":"222"}]', NULL, N'47', NULL, N'2023-09-21 09:36:00.0000000', NULL, NULL, NULL)
 GO
 
 
@@ -22157,10 +20903,10 @@ GO
 INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1580835899477483522', N'1447763172274495489', N'积木报表例子', N'/jmreport/view/961455b47c0b86dc961e90b5893bff05', N'{{ window._CONFIG[''domianURL''] }}/jmreport/view/961455b47c0b86dc961e90b5893bff05?token=${token}', N'1', N'', NULL, N'1', NULL, N'0', N'5', N'0', NULL, N'1', N'0', N'0', N'0', NULL, N'admin', N'2022-10-14 16:20:24.0000000', N'admin', N'2022-10-14 16:20:51.0000000', N'0', N'0', NULL, N'0')
 GO
 
-INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1580877743141933058', N'1447763172274495489', N'生产销售监控大屏', N'/test/bigScreen1', N'{{ window._CONFIG[''domianURL''] }}/test/bigScreen/templat/index1', N'1', N'', NULL, N'1', NULL, N'0', N'6', N'0', NULL, N'1', N'0', N'0', N'0', NULL, N'admin', N'2022-10-14 19:06:40.0000000', N'admin', N'2022-10-14 19:08:25.0000000', N'0', N'0', NULL, N'0')
+INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1580877743141933058', N'1447763172274495489', N'生产销售监控大屏', N'/test/bigScreen/templat/index1', N'{{ window._CONFIG[''domianURL''] }}/test/bigScreen/templat/index1', N'1', N'', NULL, N'1', NULL, N'0', N'6', N'0', NULL, N'1', N'0', N'0', N'0', NULL, N'admin', N'2022-10-14 19:06:40.0000000', N'admin', N'2023-09-20 21:15:55.0000000', N'0', N'0', NULL, N'0')
 GO
 
-INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1580877931331964929', N'1447763172274495489', N'智慧物流监控大屏', N'/test/bigScreen2', N'{{ window._CONFIG[''domianURL''] }}/test/bigScreen/templat/index2', N'1', N'', NULL, N'1', NULL, N'0', N'7', N'0', NULL, N'1', N'0', N'0', N'0', NULL, N'admin', N'2022-10-14 19:07:25.0000000', N'admin', N'2022-10-14 19:08:15.0000000', N'0', N'0', NULL, N'0')
+INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1580877931331964929', N'1447763172274495489', N'智慧物流监控大屏', N'/test/bigScreen/templat/index2', N'{{ window._CONFIG[''domianURL''] }}/test/bigScreen/templat/index2', N'1', N'', NULL, N'1', NULL, N'0', N'7', N'0', NULL, N'1', N'0', N'0', N'0', NULL, N'admin', N'2022-10-14 19:07:25.0000000', N'admin', N'2023-09-20 21:16:03.0000000', N'0', N'0', NULL, N'0')
 GO
 
 INSERT INTO [dbo].[sys_permission] ([id], [parent_id], [name], [url], [component], [is_route], [component_name], [redirect], [menu_type], [perms], [perms_type], [sort_no], [always_show], [icon], [is_leaf], [keep_alive], [hidden], [hide_tab], [description], [create_by], [create_time], [update_by], [update_time], [del_flag], [rule_flag], [status], [internal_or_external]) VALUES (N'1580878668472504321', N'1447763172274495489', N'积木大屏案例', N'/test/jmbigscreen2', N'https://cloud.jimureport.com/bigscreen/#/view/bs_1394991793166094338', N'1', N'', NULL, N'1', NULL, N'0', N'9', N'0', NULL, N'1', N'0', N'0', N'0', NULL, N'admin', N'2022-10-14 19:10:21.0000000', N'admin', N'2022-10-28 10:18:19.0000000', N'0', N'0', NULL, N'0')
@@ -29510,7 +28256,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table ceshi_note
 -- ----------------------------
-ALTER TABLE [dbo].[ceshi_note] ADD CONSTRAINT [PK__ceshi_no__3213E83FF918297D] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[ceshi_note] ADD CONSTRAINT [PK__ceshi_no__3213E83F4F903BF3] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29519,7 +28265,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table demo
 -- ----------------------------
-ALTER TABLE [dbo].[demo] ADD CONSTRAINT [PK__demo__3213E83FC2A635C4] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[demo] ADD CONSTRAINT [PK__demo__3213E83F084476AA] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29528,7 +28274,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table demo_field_def_val_main
 -- ----------------------------
-ALTER TABLE [dbo].[demo_field_def_val_main] ADD CONSTRAINT [PK__demo_fie__3213E83F42337EBF] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[demo_field_def_val_main] ADD CONSTRAINT [PK__demo_fie__3213E83F8E207EF0] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29537,7 +28283,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table demo_field_def_val_sub
 -- ----------------------------
-ALTER TABLE [dbo].[demo_field_def_val_sub] ADD CONSTRAINT [PK__demo_fie__3213E83F20F3A797] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[demo_field_def_val_sub] ADD CONSTRAINT [PK__demo_fie__3213E83F17781ECD] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29546,7 +28292,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_monthly_growth_analysis
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_monthly_growth_analysis] ADD CONSTRAINT [PK__jeecg_mo__3213E83FE3965910] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_monthly_growth_analysis] ADD CONSTRAINT [PK__jeecg_mo__3213E83FF33DE64B] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29555,7 +28301,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_order_customer
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_order_customer] ADD CONSTRAINT [PK__jeecg_or__3213E83FB1887299] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_order_customer] ADD CONSTRAINT [PK__jeecg_or__3213E83F80880BE6] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29564,7 +28310,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_order_main
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_order_main] ADD CONSTRAINT [PK__jeecg_or__3213E83FE6DCBD3B] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_order_main] ADD CONSTRAINT [PK__jeecg_or__3213E83F4A888A0A] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29573,7 +28319,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_order_ticket
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_order_ticket] ADD CONSTRAINT [PK__jeecg_or__3213E83F8882FA1D] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_order_ticket] ADD CONSTRAINT [PK__jeecg_or__3213E83F0DE795A2] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29582,7 +28328,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jeecg_project_nature_income
 -- ----------------------------
-ALTER TABLE [dbo].[jeecg_project_nature_income] ADD CONSTRAINT [PK__jeecg_pr__3213E83F66404BCD] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jeecg_project_nature_income] ADD CONSTRAINT [PK__jeecg_pr__3213E83F7278AA70] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29601,7 +28347,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_dict
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_dict] ADD CONSTRAINT [PK__jimu_dic__3213E83FCB80E86B] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_dict] ADD CONSTRAINT [PK__jimu_dic__3213E83F44136D52] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29639,7 +28385,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_dict_item
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_dict_item] ADD CONSTRAINT [PK__jimu_dic__3213E83FAD686841] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_dict_item] ADD CONSTRAINT [PK__jimu_dic__3213E83FAA7BAF00] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29670,7 +28416,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_report
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_report] ADD CONSTRAINT [PK__jimu_rep__3213E83FC528B075] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_report] ADD CONSTRAINT [PK__jimu_rep__3213E83FC7A2C7C1] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29695,7 +28441,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_report_data_source
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_report_data_source] ADD CONSTRAINT [PK__jimu_rep__3213E83F23F6E4C6] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_report_data_source] ADD CONSTRAINT [PK__jimu_rep__3213E83F093C869D] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29726,7 +28472,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_report_db
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_report_db] ADD CONSTRAINT [PK__jimu_rep__3213E83FC60DE884] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_report_db] ADD CONSTRAINT [PK__jimu_rep__3213E83FEE0588F0] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29751,7 +28497,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_report_db_field
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_report_db_field] ADD CONSTRAINT [PK__jimu_rep__3213E83FE565D73E] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_report_db_field] ADD CONSTRAINT [PK__jimu_rep__3213E83F33A03CF2] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29770,7 +28516,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_report_db_param
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_report_db_param] ADD CONSTRAINT [PK__jimu_rep__3213E83F5F85C1EE] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_report_db_param] ADD CONSTRAINT [PK__jimu_rep__3213E83FBF095087] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29789,7 +28535,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_report_link
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_report_link] ADD CONSTRAINT [PK__jimu_rep__3213E83FC8FCD22F] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_report_link] ADD CONSTRAINT [PK__jimu_rep__3213E83FEB77C425] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29808,16 +28554,26 @@ GO
 -- ----------------------------
 -- Primary Key structure for table jimu_report_map
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_report_map] ADD CONSTRAINT [PK__jimu_rep__3213E83FF7E57A64] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_report_map] ADD CONSTRAINT [PK__jimu_rep__3213E83F29D540B2] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
 
 
 -- ----------------------------
+-- Indexes structure for table jimu_report_share
+-- ----------------------------
+CREATE UNIQUE NONCLUSTERED INDEX [uniq_report_id]
+ON [dbo].[jimu_report_share] (
+  [report_id] ASC
+)
+GO
+
+
+-- ----------------------------
 -- Primary Key structure for table jimu_report_share
 -- ----------------------------
-ALTER TABLE [dbo].[jimu_report_share] ADD CONSTRAINT [PK__jimu_rep__3213E83FA6FDDA70] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[jimu_report_share] ADD CONSTRAINT [PK__jimu_rep__3213E83F1E5F8413] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29826,7 +28582,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_auth_data
 -- ----------------------------
-ALTER TABLE [dbo].[onl_auth_data] ADD CONSTRAINT [PK__onl_auth__3213E83FBAE7D28A] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_auth_data] ADD CONSTRAINT [PK__onl_auth__3213E83F062FE7A7] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29835,7 +28591,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_auth_page
 -- ----------------------------
-ALTER TABLE [dbo].[onl_auth_page] ADD CONSTRAINT [PK__onl_auth__3213E83FC65F6905] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_auth_page] ADD CONSTRAINT [PK__onl_auth__3213E83F4743B088] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29844,7 +28600,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_auth_relation
 -- ----------------------------
-ALTER TABLE [dbo].[onl_auth_relation] ADD CONSTRAINT [PK__onl_auth__3213E83F9632FA15] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_auth_relation] ADD CONSTRAINT [PK__onl_auth__3213E83F4F34F484] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29881,7 +28637,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_button
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_button] ADD CONSTRAINT [PK__onl_cgfo__3214EC273834C43E] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[onl_cgform_button] ADD CONSTRAINT [PK__onl_cgfo__3214EC2706E515AA] PRIMARY KEY CLUSTERED ([ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29912,7 +28668,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_enhance_java
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_enhance_java] ADD CONSTRAINT [PK__onl_cgfo__3214EC27FC71174C] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[onl_cgform_enhance_java] ADD CONSTRAINT [PK__onl_cgfo__3214EC271EACBF1E] PRIMARY KEY CLUSTERED ([ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29937,7 +28693,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_enhance_js
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_enhance_js] ADD CONSTRAINT [PK__onl_cgfo__3214EC27F6D76308] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[onl_cgform_enhance_js] ADD CONSTRAINT [PK__onl_cgfo__3214EC273E67965D] PRIMARY KEY CLUSTERED ([ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29956,7 +28712,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_enhance_sql
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_enhance_sql] ADD CONSTRAINT [PK__onl_cgfo__3214EC2738D4215E] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[onl_cgform_enhance_sql] ADD CONSTRAINT [PK__onl_cgfo__3214EC27200D9077] PRIMARY KEY CLUSTERED ([ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -29975,7 +28731,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_field
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_field] ADD CONSTRAINT [PK__onl_cgfo__3213E83F56C4DC83] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgform_field] ADD CONSTRAINT [PK__onl_cgfo__3213E83FC8DD5574] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30012,7 +28768,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_head
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_head] ADD CONSTRAINT [PK__onl_cgfo__3213E83F7DE39348] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgform_head] ADD CONSTRAINT [PK__onl_cgfo__3213E83F1A997C5F] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30031,7 +28787,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgform_index
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgform_index] ADD CONSTRAINT [PK__onl_cgfo__3213E83F7A8A0EB1] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgform_index] ADD CONSTRAINT [PK__onl_cgfo__3213E83F8A8CA82D] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30046,17 +28802,11 @@ ON [dbo].[onl_cgreport_head] (
 )
 GO
 
-CREATE NONCLUSTERED INDEX [idx_och_code]
-ON [dbo].[onl_cgreport_head] (
-  [code] ASC
-)
-GO
-
 
 -- ----------------------------
 -- Primary Key structure for table onl_cgreport_head
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgreport_head] ADD CONSTRAINT [PK__onl_cgre__3213E83F0F655F0E] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgreport_head] ADD CONSTRAINT [PK__onl_cgre__3213E83FE561FCE3] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30087,7 +28837,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgreport_item
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgreport_item] ADD CONSTRAINT [PK__onl_cgre__3213E83FD8016921] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgreport_item] ADD CONSTRAINT [PK__onl_cgre__3213E83FC015A44D] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30106,7 +28856,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_cgreport_param
 -- ----------------------------
-ALTER TABLE [dbo].[onl_cgreport_param] ADD CONSTRAINT [PK__onl_cgre__3213E83F096FCD20] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_cgreport_param] ADD CONSTRAINT [PK__onl_cgre__3213E83FB38AF3BD] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30115,7 +28865,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_drag_comp
 -- ----------------------------
-ALTER TABLE [dbo].[onl_drag_comp] ADD CONSTRAINT [PK__onl_drag__3213E83F17052F3D] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_drag_comp] ADD CONSTRAINT [PK__onl_drag__3213E83FE32D9F55] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30124,7 +28874,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_drag_dataset_head
 -- ----------------------------
-ALTER TABLE [dbo].[onl_drag_dataset_head] ADD CONSTRAINT [PK__onl_drag__3213E83F75405835] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_drag_dataset_head] ADD CONSTRAINT [PK__onl_drag__3213E83F316C793D] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30143,7 +28893,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_drag_dataset_item
 -- ----------------------------
-ALTER TABLE [dbo].[onl_drag_dataset_item] ADD CONSTRAINT [PK__onl_drag__3213E83FFC0AAEDA] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_drag_dataset_item] ADD CONSTRAINT [PK__onl_drag__3213E83F7B90011E] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30162,7 +28912,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_drag_dataset_param
 -- ----------------------------
-ALTER TABLE [dbo].[onl_drag_dataset_param] ADD CONSTRAINT [PK__onl_drag__3213E83FA64FA875] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_drag_dataset_param] ADD CONSTRAINT [PK__onl_drag__3213E83F9B408C67] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30171,7 +28921,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_drag_page
 -- ----------------------------
-ALTER TABLE [dbo].[onl_drag_page] ADD CONSTRAINT [PK__onl_drag__3213E83F2F2F24C8] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_drag_page] ADD CONSTRAINT [PK__onl_drag__3213E83F953ECEEF] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30180,7 +28930,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table onl_drag_page_comp
 -- ----------------------------
-ALTER TABLE [dbo].[onl_drag_page_comp] ADD CONSTRAINT [PK__onl_drag__3213E83FCCA9DE72] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[onl_drag_page_comp] ADD CONSTRAINT [PK__onl_drag__3213E83F835C9B38] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30189,118 +28939,97 @@ GO
 -- ----------------------------
 -- Primary Key structure for table oss_file
 -- ----------------------------
-ALTER TABLE [dbo].[oss_file] ADD CONSTRAINT [PK__oss_file__3213E83F1F9E4A79] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[oss_file] ADD CONSTRAINT [PK__oss_file__3213E83F05FCD160] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
 
 
 -- ----------------------------
--- Primary Key structure for table qrtz_blob_triggers
+-- Primary Key structure for table QRTZ_CALENDARS
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_blob_triggers] ADD CONSTRAINT [PK__qrtz_blo__20F4F101710D237B] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[QRTZ_CALENDARS] ADD CONSTRAINT [PK_QRTZ_CALENDARS] PRIMARY KEY CLUSTERED ([SCHED_NAME], [CALENDAR_NAME])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
 
 
 -- ----------------------------
--- Primary Key structure for table qrtz_calendars
+-- Primary Key structure for table QRTZ_CRON_TRIGGERS
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_calendars] ADD CONSTRAINT [PK__qrtz_cal__DEBD34E0789A7799] PRIMARY KEY CLUSTERED ([SCHED_NAME], [CALENDAR_NAME])
+ALTER TABLE [dbo].[QRTZ_CRON_TRIGGERS] ADD CONSTRAINT [PK_QRTZ_CRON_TRIGGERS] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
 
 
 -- ----------------------------
--- Primary Key structure for table qrtz_cron_triggers
+-- Primary Key structure for table QRTZ_FIRED_TRIGGERS
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_cron_triggers] ADD CONSTRAINT [PK__qrtz_cro__20F4F101069F665B] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[QRTZ_FIRED_TRIGGERS] ADD CONSTRAINT [PK_QRTZ_FIRED_TRIGGERS] PRIMARY KEY CLUSTERED ([SCHED_NAME], [ENTRY_ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
 
 
 -- ----------------------------
--- Primary Key structure for table qrtz_fired_triggers
+-- Primary Key structure for table QRTZ_JOB_DETAILS
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_fired_triggers] ADD CONSTRAINT [PK__qrtz_fir__7793D06D393CCF76] PRIMARY KEY CLUSTERED ([SCHED_NAME], [ENTRY_ID])
+ALTER TABLE [dbo].[QRTZ_JOB_DETAILS] ADD CONSTRAINT [PK_QRTZ_JOB_DETAILS] PRIMARY KEY CLUSTERED ([SCHED_NAME], [JOB_NAME], [JOB_GROUP])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
 
 
 -- ----------------------------
--- Primary Key structure for table qrtz_job_details
+-- Primary Key structure for table QRTZ_LOCKS
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_job_details] ADD CONSTRAINT [PK__qrtz_job__E0CAAB8A988993B6] PRIMARY KEY CLUSTERED ([SCHED_NAME], [JOB_NAME], [JOB_GROUP])
+ALTER TABLE [dbo].[QRTZ_LOCKS] ADD CONSTRAINT [PK_QRTZ_LOCKS] PRIMARY KEY CLUSTERED ([SCHED_NAME], [LOCK_NAME])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
 
 
 -- ----------------------------
--- Primary Key structure for table qrtz_locks
+-- Primary Key structure for table QRTZ_PAUSED_TRIGGER_GRPS
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_locks] ADD CONSTRAINT [PK__qrtz_loc__7D2E9A03FE6823FB] PRIMARY KEY CLUSTERED ([SCHED_NAME], [LOCK_NAME])
+ALTER TABLE [dbo].[QRTZ_PAUSED_TRIGGER_GRPS] ADD CONSTRAINT [PK_QRTZ_PAUSED_TRIGGER_GRPS] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_GROUP])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
 
 
 -- ----------------------------
--- Primary Key structure for table qrtz_paused_trigger_grps
+-- Primary Key structure for table QRTZ_SCHEDULER_STATE
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_paused_trigger_grps] ADD CONSTRAINT [PK__qrtz_pau__696155E947852861] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[QRTZ_SCHEDULER_STATE] ADD CONSTRAINT [PK_QRTZ_SCHEDULER_STATE] PRIMARY KEY CLUSTERED ([SCHED_NAME], [INSTANCE_NAME])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
 
 
 -- ----------------------------
--- Primary Key structure for table qrtz_scheduler_state
+-- Primary Key structure for table QRTZ_SIMPLE_TRIGGERS
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_scheduler_state] ADD CONSTRAINT [PK__qrtz_sch__C8C3A19E86BDA2BB] PRIMARY KEY CLUSTERED ([SCHED_NAME], [INSTANCE_NAME])
+ALTER TABLE [dbo].[QRTZ_SIMPLE_TRIGGERS] ADD CONSTRAINT [PK_QRTZ_SIMPLE_TRIGGERS] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
 
 
 -- ----------------------------
--- Primary Key structure for table qrtz_simple_triggers
+-- Primary Key structure for table QRTZ_SIMPROP_TRIGGERS
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_simple_triggers] ADD CONSTRAINT [PK__qrtz_sim__20F4F101A0625174] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[QRTZ_SIMPROP_TRIGGERS] ADD CONSTRAINT [PK_QRTZ_SIMPROP_TRIGGERS] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
 
 
 -- ----------------------------
--- Primary Key structure for table qrtz_simprop_triggers
+-- Primary Key structure for table QRTZ_TRIGGERS
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_simprop_triggers] ADD CONSTRAINT [PK__qrtz_sim__20F4F101C9B78D3D] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
-WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
-ON [PRIMARY]
-GO
-
-
--- ----------------------------
--- Indexes structure for table qrtz_triggers
--- ----------------------------
-CREATE NONCLUSTERED INDEX [SCHED_NAME]
-ON [dbo].[qrtz_triggers] (
-  [SCHED_NAME] ASC,
-  [JOB_NAME] ASC,
-  [JOB_GROUP] ASC
-)
-GO
-
-
--- ----------------------------
--- Primary Key structure for table qrtz_triggers
--- ----------------------------
-ALTER TABLE [dbo].[qrtz_triggers] ADD CONSTRAINT [PK__qrtz_tri__20F4F10172E0A622] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
+ALTER TABLE [dbo].[QRTZ_TRIGGERS] ADD CONSTRAINT [PK_QRTZ_TRIGGERS] PRIMARY KEY CLUSTERED ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30309,7 +29038,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table rep_demo_dxtj
 -- ----------------------------
-ALTER TABLE [dbo].[rep_demo_dxtj] ADD CONSTRAINT [PK__rep_demo__3213E83F48CB76C6] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[rep_demo_dxtj] ADD CONSTRAINT [PK__rep_demo__3213E83F3FA23718] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30318,7 +29047,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table rep_demo_employee
 -- ----------------------------
-ALTER TABLE [dbo].[rep_demo_employee] ADD CONSTRAINT [PK__rep_demo__3213E83F9CD3D5F9] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[rep_demo_employee] ADD CONSTRAINT [PK__rep_demo__3213E83FB25B4916] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30327,7 +29056,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table rep_demo_gongsi
 -- ----------------------------
-ALTER TABLE [dbo].[rep_demo_gongsi] ADD CONSTRAINT [PK__rep_demo__3213E83FCD806F8C] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[rep_demo_gongsi] ADD CONSTRAINT [PK__rep_demo__3213E83F46499F94] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30336,7 +29065,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table rep_demo_jianpiao
 -- ----------------------------
-ALTER TABLE [dbo].[rep_demo_jianpiao] ADD CONSTRAINT [PK__rep_demo__3213E83FE5787E3C] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[rep_demo_jianpiao] ADD CONSTRAINT [PK__rep_demo__3213E83F87EC95E3] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30397,7 +29126,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_announcement
 -- ----------------------------
-ALTER TABLE [dbo].[sys_announcement] ADD CONSTRAINT [PK__sys_anno__3213E83F2C935614] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_announcement] ADD CONSTRAINT [PK__sys_anno__3213E83F22A1816D] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30432,19 +29161,9 @@ GO
 
 
 -- ----------------------------
--- Indexes structure for table sys_category
--- ----------------------------
-CREATE NONCLUSTERED INDEX [idx_sc_code]
-ON [dbo].[sys_category] (
-  [code] ASC
-)
-GO
-
-
--- ----------------------------
 -- Primary Key structure for table sys_category
 -- ----------------------------
-ALTER TABLE [dbo].[sys_category] ADD CONSTRAINT [PK__sys_cate__3213E83F0A559AA6] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_category] ADD CONSTRAINT [PK__sys_cate__3213E83FF687A5CB] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30463,7 +29182,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_check_rule
 -- ----------------------------
-ALTER TABLE [dbo].[sys_check_rule] ADD CONSTRAINT [PK__sys_chec__3213E83FBAF6A859] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_check_rule] ADD CONSTRAINT [PK__sys_chec__3213E83F35F926ED] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30483,7 +29202,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_comment
 -- ----------------------------
-ALTER TABLE [dbo].[sys_comment] ADD CONSTRAINT [PK__sys_comm__3213E83FE007922D] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_comment] ADD CONSTRAINT [PK__sys_comm__3213E83FBD93B561] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30503,7 +29222,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_data_log
 -- ----------------------------
-ALTER TABLE [dbo].[sys_data_log] ADD CONSTRAINT [PK__sys_data__3213E83FE7B7D445] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_data_log] ADD CONSTRAINT [PK__sys_data__3213E83FDA268CD0] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30522,7 +29241,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_data_source
 -- ----------------------------
-ALTER TABLE [dbo].[sys_data_source] ADD CONSTRAINT [PK__sys_data__3213E83FF84470D6] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_data_source] ADD CONSTRAINT [PK__sys_data__3213E83F5A94F3FD] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30553,7 +29272,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_depart
 -- ----------------------------
-ALTER TABLE [dbo].[sys_depart] ADD CONSTRAINT [PK__sys_depa__3213E83F4CE435D1] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_depart] ADD CONSTRAINT [PK__sys_depa__3213E83F8FDA5914] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30562,7 +29281,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_depart_permission
 -- ----------------------------
-ALTER TABLE [dbo].[sys_depart_permission] ADD CONSTRAINT [PK__sys_depa__3213E83F5BDCEA84] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_depart_permission] ADD CONSTRAINT [PK__sys_depa__3213E83FBE83F40C] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30571,7 +29290,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_depart_role
 -- ----------------------------
-ALTER TABLE [dbo].[sys_depart_role] ADD CONSTRAINT [PK__sys_depa__3213E83FBA5F0465] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_depart_role] ADD CONSTRAINT [PK__sys_depa__3213E83FC8DC293A] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30603,7 +29322,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_depart_role_permission
 -- ----------------------------
-ALTER TABLE [dbo].[sys_depart_role_permission] ADD CONSTRAINT [PK__sys_depa__3213E83F6E755F3A] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_depart_role_permission] ADD CONSTRAINT [PK__sys_depa__3213E83F8435B260] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30612,7 +29331,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_depart_role_user
 -- ----------------------------
-ALTER TABLE [dbo].[sys_depart_role_user] ADD CONSTRAINT [PK__sys_depa__3213E83F48BF9871] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_depart_role_user] ADD CONSTRAINT [PK__sys_depa__3213E83FCD041E86] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30631,7 +29350,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_dict
 -- ----------------------------
-ALTER TABLE [dbo].[sys_dict] ADD CONSTRAINT [PK__sys_dict__3213E83F303A148A] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_dict] ADD CONSTRAINT [PK__sys_dict__3213E83F21ADBFC3] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30640,25 +29359,25 @@ GO
 -- ----------------------------
 -- Indexes structure for table sys_dict_item
 -- ----------------------------
-CREATE NONCLUSTERED INDEX [idx_sdi_role_dict_id]
+CREATE NONCLUSTERED INDEX [idx_sditem_role_dict_id]
 ON [dbo].[sys_dict_item] (
   [dict_id] ASC
 )
 GO
 
-CREATE NONCLUSTERED INDEX [idx_sdi_role_sort_order]
+CREATE NONCLUSTERED INDEX [idx_sditem_role_sort_order]
 ON [dbo].[sys_dict_item] (
   [sort_order] ASC
 )
 GO
 
-CREATE NONCLUSTERED INDEX [idx_sdi_status]
+CREATE NONCLUSTERED INDEX [idx_sditem_status]
 ON [dbo].[sys_dict_item] (
   [status] ASC
 )
 GO
 
-CREATE NONCLUSTERED INDEX [idx_sdi_dict_val]
+CREATE NONCLUSTERED INDEX [idx_sditem_dict_val]
 ON [dbo].[sys_dict_item] (
   [dict_id] ASC,
   [item_value] ASC
@@ -30669,7 +29388,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_dict_item
 -- ----------------------------
-ALTER TABLE [dbo].[sys_dict_item] ADD CONSTRAINT [PK__sys_dict__3213E83F5D86328D] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_dict_item] ADD CONSTRAINT [PK__sys_dict__3213E83F46C3E7C6] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30694,7 +29413,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_files
 -- ----------------------------
-ALTER TABLE [dbo].[sys_files] ADD CONSTRAINT [PK__sys_file__3213E83FD73C0667] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_files] ADD CONSTRAINT [PK__sys_file__3213E83F3E2392CC] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30713,7 +29432,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_fill_rule
 -- ----------------------------
-ALTER TABLE [dbo].[sys_fill_rule] ADD CONSTRAINT [PK__sys_fill__3213E83F6EA8E609] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_fill_rule] ADD CONSTRAINT [PK__sys_fill__3213E83FB9CA1A3A] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30739,7 +29458,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_form_file
 -- ----------------------------
-ALTER TABLE [dbo].[sys_form_file] ADD CONSTRAINT [PK__sys_form__3213E83F34AA73D9] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_form_file] ADD CONSTRAINT [PK__sys_form__3213E83F28ADDA9F] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30748,7 +29467,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_gateway_route
 -- ----------------------------
-ALTER TABLE [dbo].[sys_gateway_route] ADD CONSTRAINT [PK__sys_gate__3213E83FD170F7CF] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_gateway_route] ADD CONSTRAINT [PK__sys_gate__3213E83FA345363A] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30785,7 +29504,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_log
 -- ----------------------------
-ALTER TABLE [dbo].[sys_log] ADD CONSTRAINT [PK__sys_log__3213E83F097C0235] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_log] ADD CONSTRAINT [PK__sys_log__3213E83F6189B2E0] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30816,7 +29535,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_permission
 -- ----------------------------
-ALTER TABLE [dbo].[sys_permission] ADD CONSTRAINT [PK__sys_perm__3213E83FBED4DEE0] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_permission] ADD CONSTRAINT [PK__sys_perm__3213E83FFC939BFE] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30835,7 +29554,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_permission_data_rule
 -- ----------------------------
-ALTER TABLE [dbo].[sys_permission_data_rule] ADD CONSTRAINT [PK__sys_perm__3213E83F06152DBC] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_permission_data_rule] ADD CONSTRAINT [PK__sys_perm__3213E83FCF6D75F3] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30896,7 +29615,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_permission_v2
 -- ----------------------------
-ALTER TABLE [dbo].[sys_permission_v2] ADD CONSTRAINT [PK__sys_perm__3213E83FF4E8ED04] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_permission_v2] ADD CONSTRAINT [PK__sys_perm__3213E83FF8DC0B1D] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30915,7 +29634,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_position
 -- ----------------------------
-ALTER TABLE [dbo].[sys_position] ADD CONSTRAINT [PK__sys_posi__3213E83F1AC296F0] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_position] ADD CONSTRAINT [PK__sys_posi__3213E83F42230B0B] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30924,7 +29643,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_quartz_job
 -- ----------------------------
-ALTER TABLE [dbo].[sys_quartz_job] ADD CONSTRAINT [PK__sys_quar__3213E83FCB1900CB] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_quartz_job] ADD CONSTRAINT [PK__sys_quar__3213E83F3FA511ED] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30943,7 +29662,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_role
 -- ----------------------------
-ALTER TABLE [dbo].[sys_role] ADD CONSTRAINT [PK__sys_role__3213E83F1AB05B7D] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_role] ADD CONSTRAINT [PK__sys_role__3213E83F6531AB55] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30952,7 +29671,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_role_index
 -- ----------------------------
-ALTER TABLE [dbo].[sys_role_index] ADD CONSTRAINT [PK__sys_role__3213E83FA41AF214] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_role_index] ADD CONSTRAINT [PK__sys_role__3213E83F21355462] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -30984,7 +29703,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_role_permission
 -- ----------------------------
-ALTER TABLE [dbo].[sys_role_permission] ADD CONSTRAINT [PK__sys_role__3213E83FDEFEED01] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_role_permission] ADD CONSTRAINT [PK__sys_role__3213E83F52F12EB4] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31021,7 +29740,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_sms
 -- ----------------------------
-ALTER TABLE [dbo].[sys_sms] ADD CONSTRAINT [PK__sys_sms__3213E83F16914BD1] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_sms] ADD CONSTRAINT [PK__sys_sms__3213E83FCE10485F] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31040,7 +29759,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_sms_template
 -- ----------------------------
-ALTER TABLE [dbo].[sys_sms_template] ADD CONSTRAINT [PK__sys_sms___3213E83F9EBB2ADA] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_sms_template] ADD CONSTRAINT [PK__sys_sms___3213E83FC4AA1B1D] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31049,7 +29768,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_tenant
 -- ----------------------------
-ALTER TABLE [dbo].[sys_tenant] ADD CONSTRAINT [PK__sys_tena__3213E83FA961CDFD] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_tenant] ADD CONSTRAINT [PK__sys_tena__3213E83F5998385E] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31058,7 +29777,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_tenant_pack
 -- ----------------------------
-ALTER TABLE [dbo].[sys_tenant_pack] ADD CONSTRAINT [PK__sys_tena__3213E83F57235534] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_tenant_pack] ADD CONSTRAINT [PK__sys_tena__3213E83FACAC1BBE] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31067,7 +29786,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_tenant_pack_perms
 -- ----------------------------
-ALTER TABLE [dbo].[sys_tenant_pack_perms] ADD CONSTRAINT [PK__sys_tena__3213E83F2079B48C] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_tenant_pack_perms] ADD CONSTRAINT [PK__sys_tena__3213E83F1E32C375] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31076,7 +29795,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_tenant_pack_user
 -- ----------------------------
-ALTER TABLE [dbo].[sys_tenant_pack_user] ADD CONSTRAINT [PK__sys_tena__3213E83F126464A2] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_tenant_pack_user] ADD CONSTRAINT [PK__sys_tena__3213E83F274C1E6F] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31085,7 +29804,7 @@ GO
 -- ----------------------------
 -- Indexes structure for table sys_third_account
 -- ----------------------------
-CREATE UNIQUE NONCLUSTERED INDEX [uniq_sys_third_account_third_type_third_user_id]
+CREATE UNIQUE NONCLUSTERED INDEX [uniq_stat_third_type_user_id]
 ON [dbo].[sys_third_account] (
   [third_type] ASC,
   [third_user_id] ASC
@@ -31096,7 +29815,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_third_account
 -- ----------------------------
-ALTER TABLE [dbo].[sys_third_account] ADD CONSTRAINT [PK__sys_thir__3213E83F4CAEC3FF] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_third_account] ADD CONSTRAINT [PK__sys_thir__3213E83F97447373] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31145,7 +29864,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user] ADD CONSTRAINT [PK__sys_user__3213E83FD2317BD2] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_user] ADD CONSTRAINT [PK__sys_user__3213E83FDAF6BA57] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31182,7 +29901,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user_agent
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user_agent] ADD CONSTRAINT [PK__sys_user__3213E83F4B9D681B] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_user_agent] ADD CONSTRAINT [PK__sys_user__3213E83FECB73D60] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31214,7 +29933,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user_depart
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user_depart] ADD CONSTRAINT [PK__sys_user__3214EC27C94ECDC3] PRIMARY KEY CLUSTERED ([ID])
+ALTER TABLE [dbo].[sys_user_depart] ADD CONSTRAINT [PK__sys_user__3214EC2772BCAD53] PRIMARY KEY CLUSTERED ([ID])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31246,7 +29965,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user_role
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user_role] ADD CONSTRAINT [PK__sys_user__3213E83F020BA946] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_user_role] ADD CONSTRAINT [PK__sys_user__3213E83F247277DD] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31278,7 +29997,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table sys_user_tenant
 -- ----------------------------
-ALTER TABLE [dbo].[sys_user_tenant] ADD CONSTRAINT [PK__sys_user__3213E83FA673448F] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[sys_user_tenant] ADD CONSTRAINT [PK__sys_user__3213E83F1DACDAD5] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31287,7 +30006,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_demo
 -- ----------------------------
-ALTER TABLE [dbo].[test_demo] ADD CONSTRAINT [PK__test_dem__3213E83FBB74B5B6] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_demo] ADD CONSTRAINT [PK__test_dem__3213E83FBBC50EE5] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31296,7 +30015,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_enhance_select
 -- ----------------------------
-ALTER TABLE [dbo].[test_enhance_select] ADD CONSTRAINT [PK__test_enh__3213E83F1623973F] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_enhance_select] ADD CONSTRAINT [PK__test_enh__3213E83FEE43F4E6] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31305,7 +30024,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_note
 -- ----------------------------
-ALTER TABLE [dbo].[test_note] ADD CONSTRAINT [PK__test_not__3213E83F90F150A3] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_note] ADD CONSTRAINT [PK__test_not__3213E83FDB158E20] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31314,7 +30033,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_order_customer
 -- ----------------------------
-ALTER TABLE [dbo].[test_order_customer] ADD CONSTRAINT [PK__test_ord__3213E83F5A49C138] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_order_customer] ADD CONSTRAINT [PK__test_ord__3213E83FD1241C4F] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31323,7 +30042,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_order_main
 -- ----------------------------
-ALTER TABLE [dbo].[test_order_main] ADD CONSTRAINT [PK__test_ord__3213E83FEB25BDA7] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_order_main] ADD CONSTRAINT [PK__test_ord__3213E83FA9F4AF30] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31332,7 +30051,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_order_product
 -- ----------------------------
-ALTER TABLE [dbo].[test_order_product] ADD CONSTRAINT [PK__test_ord__3213E83F41DB9B24] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_order_product] ADD CONSTRAINT [PK__test_ord__3213E83F3D407B94] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31341,7 +30060,7 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_shoptype_tree
 -- ----------------------------
-ALTER TABLE [dbo].[test_shoptype_tree] ADD CONSTRAINT [PK__test_sho__3213E83FBE0EF4EE] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_shoptype_tree] ADD CONSTRAINT [PK__test_sho__3213E83F970B1D8D] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -31350,43 +30069,36 @@ GO
 -- ----------------------------
 -- Primary Key structure for table test_v3_hello
 -- ----------------------------
-ALTER TABLE [dbo].[test_v3_hello] ADD CONSTRAINT [PK__test_v3___3213E83FEF592AA3] PRIMARY KEY CLUSTERED ([id])
+ALTER TABLE [dbo].[test_v3_hello] ADD CONSTRAINT [PK__test_v3___3213E83F1C2B8715] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
 
 
 -- ----------------------------
--- Foreign Keys structure for table qrtz_blob_triggers
+-- Foreign Keys structure for table QRTZ_CRON_TRIGGERS
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_blob_triggers] ADD CONSTRAINT [qrtz_blob_triggers_ibfk_1] FOREIGN KEY ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) REFERENCES [dbo].[qrtz_triggers] ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE [dbo].[QRTZ_CRON_TRIGGERS] ADD CONSTRAINT [FK_QRTZ_CRON_TRIGGERS_QRTZ_TRIGGERS] FOREIGN KEY ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) REFERENCES [dbo].[QRTZ_TRIGGERS] ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) ON DELETE CASCADE ON UPDATE NO ACTION
 GO
 
 
 -- ----------------------------
--- Foreign Keys structure for table qrtz_cron_triggers
+-- Foreign Keys structure for table QRTZ_SIMPLE_TRIGGERS
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_cron_triggers] ADD CONSTRAINT [qrtz_cron_triggers_ibfk_1] FOREIGN KEY ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) REFERENCES [dbo].[qrtz_triggers] ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE [dbo].[QRTZ_SIMPLE_TRIGGERS] ADD CONSTRAINT [FK_QRTZ_SIMPLE_TRIGGERS_QRTZ_TRIGGERS] FOREIGN KEY ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) REFERENCES [dbo].[QRTZ_TRIGGERS] ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) ON DELETE CASCADE ON UPDATE NO ACTION
 GO
 
 
 -- ----------------------------
--- Foreign Keys structure for table qrtz_simple_triggers
+-- Foreign Keys structure for table QRTZ_SIMPROP_TRIGGERS
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_simple_triggers] ADD CONSTRAINT [qrtz_simple_triggers_ibfk_1] FOREIGN KEY ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) REFERENCES [dbo].[qrtz_triggers] ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE [dbo].[QRTZ_SIMPROP_TRIGGERS] ADD CONSTRAINT [FK_QRTZ_SIMPROP_TRIGGERS_QRTZ_TRIGGERS] FOREIGN KEY ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) REFERENCES [dbo].[QRTZ_TRIGGERS] ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) ON DELETE CASCADE ON UPDATE NO ACTION
 GO
 
 
 -- ----------------------------
--- Foreign Keys structure for table qrtz_simprop_triggers
+-- Foreign Keys structure for table QRTZ_TRIGGERS
 -- ----------------------------
-ALTER TABLE [dbo].[qrtz_simprop_triggers] ADD CONSTRAINT [qrtz_simprop_triggers_ibfk_1] FOREIGN KEY ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) REFERENCES [dbo].[qrtz_triggers] ([SCHED_NAME], [TRIGGER_NAME], [TRIGGER_GROUP]) ON DELETE NO ACTION ON UPDATE NO ACTION
-GO
-
-
--- ----------------------------
--- Foreign Keys structure for table qrtz_triggers
--- ----------------------------
-ALTER TABLE [dbo].[qrtz_triggers] ADD CONSTRAINT [qrtz_triggers_ibfk_1] FOREIGN KEY ([SCHED_NAME], [JOB_NAME], [JOB_GROUP]) REFERENCES [dbo].[qrtz_job_details] ([SCHED_NAME], [JOB_NAME], [JOB_GROUP]) ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE [dbo].[QRTZ_TRIGGERS] ADD CONSTRAINT [FK_QRTZ_TRIGGERS_QRTZ_JOB_DETAILS] FOREIGN KEY ([SCHED_NAME], [JOB_NAME], [JOB_GROUP]) REFERENCES [dbo].[QRTZ_JOB_DETAILS] ([SCHED_NAME], [JOB_NAME], [JOB_GROUP]) ON DELETE NO ACTION ON UPDATE NO ACTION
 GO
 
