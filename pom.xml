@@ -8,7 +8,7 @@
 
 	<developers>
 		<developer>
-			<name>北京敲敲云科技有限公司</name>
+			<name>北京国炬信息技术有限公司</name>
 			<email>jeecgos@163.com</email>
 		</developer>
 	</developers>
@@ -50,12 +50,12 @@
 
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.3.1</mybatis-plus.version>
-		<dynamic-datasource-spring-boot-starter.version>3.5.2</dynamic-datasource-spring-boot-starter.version>
-		<druid.version>1.2.15</druid.version>
+		<dynamic-datasource-spring-boot-starter.version>4.1.3</dynamic-datasource-spring-boot-starter.version>
+		<druid.version>1.2.19</druid.version>
 		<minidao.version>1.9.4</minidao.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.6.2</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.6.3</jimureport-spring-boot-starter.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.11.2</aliyun.oss.version>
