@@ -327,4 +327,11 @@
             #{invoiceNumber}
         </foreach>);
     </update>
+    <select id="searchSkuPrice" resultType="org.jeecg.modules.business.entity.SkuPrice">
+        SELECT * FROM sku_price
+        WHERE sku_id IN
+        <foreach collection="skuIds" separator="," open="(" close=")" index="index" item="skuId">
+            #{skuId}
+        </foreach>;
+    </select>
 </mapper>

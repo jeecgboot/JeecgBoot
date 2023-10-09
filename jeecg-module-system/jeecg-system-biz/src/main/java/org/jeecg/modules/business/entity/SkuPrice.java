@@ -60,6 +60,7 @@ public class SkuPrice implements Serializable {
      */
     @Dict(dictTable = "sku", dicText = "erp_code", dicCode = "id")
     @ApiModelProperty(value = "SKU ID")
+    @Getter
     private String skuId;
     /**
      * 价格

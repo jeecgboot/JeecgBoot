@@ -484,7 +484,7 @@ public class ShippingInvoiceFactory {
         }
     }
 
-    private void calculateFees(Map<String, LogisticChannel> logisticChannelMap, Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent,
+    private Map<String, List<String>> calculateFees(Map<String, LogisticChannel> logisticChannelMap, Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent,
                                Map<LogisticChannel, List<LogisticChannelPrice>> channelPriceMap,
                                List<Country> countryList,
                                Map<String, BigDecimal> skuRealWeights,
@@ -495,10 +495,11 @@ public class ShippingInvoiceFactory {
                                Map<String, BigDecimal> shopPackageMatFeeMap,
                                String invoiceCode
     ) throws UserException {
+        Map<String, List<String>> platformOrderIdsWithPb = new HashMap<>();
         // find logistic channel price for each order based on its content
         for (PlatformOrder uninvoicedOrder : orderAndContent.keySet()) {
             List<PlatformOrderContent> contents = orderAndContent.get(uninvoicedOrder);
-            if (contents.size() == 0) {
+            if (contents.isEmpty()) {
                 throw new UserException("Order: {} doesn't have content", uninvoicedOrder.getPlatformOrderId());
             }
             log.info("Calculating price for {} of order {}", contents, uninvoicedOrder);
@@ -513,12 +514,24 @@ public class ShippingInvoiceFactory {
             }
 
             // calculate weight of an order
-            BigDecimal contentWeight = platformOrderContentService.calculateWeight(
+            Pair<BigDecimal, List<String>> contentWeightResult = platformOrderContentService.calculateWeight(
                     contentMap,
                     skuRealWeights
             );
-            Pair<LogisticChannel, LogisticChannelPrice> logisticChannelPair = findAppropriatePrice(countryList, logisticChannelMap,
-                    channelPriceMap, uninvoicedOrder, contentWeight);
+            if(!contentWeightResult.getValue().isEmpty()) {
+                platformOrderIdsWithPb.put(uninvoicedOrder.getPlatformOrderId(), contentWeightResult.getValue());
+                continue;
+            }
+            BigDecimal contentWeight = contentWeightResult.getKey();
+            Pair<LogisticChannel, LogisticChannelPrice> logisticChannelPair;
+            try {
+                logisticChannelPair = findAppropriatePrice(countryList, logisticChannelMap,
+                        channelPriceMap, uninvoicedOrder, contentWeight);
+            }
+            catch (UserException e) {
+                platformOrderIdsWithPb.put(uninvoicedOrder.getPlatformOrderId(), Collections.singletonList(e.getMessage()));
+                continue;
+            }
             LogisticChannelPrice price = logisticChannelPair.getRight();
             // update attributes of orders and theirs content
             BigDecimal packageMatFee = shopPackageMatFeeMap.get(uninvoicedOrder.getShopId());
@@ -557,6 +570,7 @@ public class ShippingInvoiceFactory {
                         vatApplicable, pickingFeePerItem, content, remainingShippingFee);
             }
         }
+        return platformOrderIdsWithPb;
     }
 
     private void updateOrdersAndContentsInDb(Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent) {
@@ -710,6 +724,8 @@ public class ShippingInvoiceFactory {
                     + ", delivered at " + uninvoicedOrder.getShippingTime().toString();
             log.error(msg);
             throw new UserException(msg);
+        } catch (UserException e) {
+            throw new RuntimeException(e);
         }
         return Pair.of(channel, price);
     }
@@ -782,18 +798,22 @@ public class ShippingInvoiceFactory {
                 shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee());
                 Map<PlatformOrder, List<PlatformOrderContent>> orders = uninvoicedOrdersByShopId.get(shop.getId());
                 try {
-                    calculateFees(logisticChannelMap, orders, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
+                    Map<String, List<String>> orderIdErrorMap = calculateFees(logisticChannelMap, orders, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
                             latestDeclaredValues, client, shopServiceFeeMap,shopPackageMatFeeMap, null);
+                    if(!orderIdErrorMap.isEmpty()) {
+                        Map.Entry<String, List<String>> errorEntry = orderIdErrorMap.entrySet().iterator().next();
+                        throw new UserException(errorEntry.getValue().toString());
+                    }
                     BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
                     ShippingInvoice invoice = new ShippingInvoice(client, "", "", orders, null, eurToUsd);
                     // Calculate total amounts
                     invoice.tableData();
                     estimations.add(new ShippingFeesEstimation(
-                            client.getInternalCode(), shop.getErpCode(), 0, orders.entrySet().size(), invoice.getTotalAmount(), client.getIsCompleteInvoice(), ""));
+                            client.getInternalCode(), shop.getErpCode(), 0, orders.entrySet().size(), invoice.getTotalAmount(), client.getIsCompleteInvoice(), "", new ArrayList<>()));
                 } catch (UserException e) {
                     log.error("Couldn't calculate all fees for shop {} for following reason {}", shop.getErpCode(), e.getMessage());
                     estimations.add(new ShippingFeesEstimation(
-                            client.getInternalCode(), shop.getErpCode(), 0, orders.entrySet().size(), BigDecimal.ZERO, client.getIsCompleteInvoice(), e.getMessage()));
+                            client.getInternalCode(), shop.getErpCode(), 0, orders.entrySet().size(), BigDecimal.ZERO, client.getIsCompleteInvoice(), e.getMessage(), new ArrayList<>()));
                     errorMessages.add(e.getMessage());
                 }
             }
@@ -840,14 +860,31 @@ public class ShippingInvoiceFactory {
             shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee());
             Map<PlatformOrder, List<PlatformOrderContent>> orders = uninvoicedOrdersByShopId.get(shop.getId());
             try {
-                calculateFees(logisticChannelMap, orders, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
+                Map<PlatformOrder, List<PlatformOrderContent>> ordersCopy = new HashMap<>(orders);
+                Map<String, List<String>> platformOrderIdErrorMap = calculateFees(logisticChannelMap, orders, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
                         latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, null);
+                System.out.println("Error List : " + platformOrderIdErrorMap);
+                for(Map.Entry<PlatformOrder,List<PlatformOrderContent>> entry : orders.entrySet()) {
+                    for(Map.Entry<String, List<String>> errorEntry: platformOrderIdErrorMap.entrySet()) {
+                        if(entry.getKey().getPlatformOrderId().equals(errorEntry.getKey())) {
+                            errorMessages.addAll(errorEntry.getValue());
+                            System.out.println("Error List size before : " + platformOrderIdErrorMap.size());
+                            System.out.println("Platform Order Id to remove : " + errorEntry.getKey());
+                            ordersCopy.remove(entry.getKey());
+                            platformOrderIdErrorMap.remove(errorEntry.getKey());
+                            System.out.println("Error List size after : " + platformOrderIdErrorMap.size());
+                            break;
+                        }
+                    }
+                }
+                orders = ordersCopy;
+                List<String> estimationsOrderIds = orders.keySet().stream().map(PlatformOrder::getId).collect(Collectors.toList());
                 BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
                 ShippingInvoice invoice = new ShippingInvoice(client, "", "", orders, null, eurToUsd);
                 // Calculate total amounts
                 invoice.tableData();
                 estimations.add(new ShippingFeesEstimation(
-                        client.getInternalCode(), shop.getErpCode(), 0, orders.entrySet().size(), invoice.getTotalAmount(), client.getIsCompleteInvoice(), ""));
+                        client.getInternalCode(), shop.getErpCode(), 0, orders.entrySet().size(), invoice.getTotalAmount(), client.getIsCompleteInvoice(), "", estimationsOrderIds));
             } catch (UserException e) {
                 log.error("Couldn't calculate all fees for shop {} for following reason {}", shop.getErpCode(), e.getMessage());
                 errorMessages.add(e.getMessage());

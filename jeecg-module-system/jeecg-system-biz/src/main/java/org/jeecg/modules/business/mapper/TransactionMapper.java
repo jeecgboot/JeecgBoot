@@ -12,4 +12,5 @@ public interface TransactionMapper extends BaseMapper<Transaction> {
     List<Transaction> list();
 
     List<Transaction> listByClientId(@Param("clientId") String clientId);
+    List<Transaction> listByClientIdAndCurrency(@Param("clientId") String clientId, @Param("currency") String currency);
 }

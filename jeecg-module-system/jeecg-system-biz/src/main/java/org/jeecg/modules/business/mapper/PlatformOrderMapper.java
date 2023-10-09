@@ -188,4 +188,6 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     void cancelBatchInvoice(@Param("invoiceNumbers") List<String> invoiceNumbers);
 
     List<PlatformOrder> findUninvoicedOrdersByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses);
+
+    List<PlatformOrder> fetchEmptyLogisticChannelOrders(@Param("startDate") String startDate,@Param("endDate") String endDate);
 }

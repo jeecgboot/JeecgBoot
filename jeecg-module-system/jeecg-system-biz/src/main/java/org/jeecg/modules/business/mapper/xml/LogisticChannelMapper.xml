@@ -2,5 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.business.mapper.LogisticChannelMapper">
     <select id="getAll" resultType="org.jeecg.modules.business.entity.LogisticChannel">
-        SELECT * FROM logistic_channel </select>
+        SELECT * FROM logistic_channel
+    </select>
+
+    <select id="listByIdAndZhName" resultType="org.jeecg.modules.business.entity.LogisticChannel">
+        SELECT id, zh_name
+        FROM logistic_channel;
+    </select>
 </mapper>

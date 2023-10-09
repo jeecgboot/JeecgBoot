@@ -1,66 +1,67 @@
 package org.jeecg.modules.business.entity;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
+import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
+import org.jeecg.common.aspect.annotation.Dict;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * @Description: 国家
+ * @Description: sensitive_attribute
  * @Author: jeecg-boot
- * @Date:   2023-10-06
+ * @Date:   2023-10-03
  * @Version: V1.0
  */
 @Data
-@TableName("country")
+@TableName("sensitive_attribute")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="country对象", description="国家")
-public class Country implements Serializable {
+@ApiModel(value="sensitive_attribute对象", description="sensitive_attribute")
+public class SensitiveAttribute implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /**主键*/
+    /**id*/
     @TableId(type = IdType.ASSIGN_ID)
-    @ApiModelProperty(value = "主键")
+    @ApiModelProperty(value = "id")
     private java.lang.String id;
+    /**中文描述*/
+    @Excel(name = "中文描述", width = 15)
+    @ApiModelProperty(value = "中文描述")
+    private java.lang.String zhName;
+    /**英文描述*/
+    @Excel(name = "英文描述", width = 15)
+    @ApiModelProperty(value = "英文描述")
+    private java.lang.String enName;
     /**创建人*/
     @ApiModelProperty(value = "创建人")
     private java.lang.String createBy;
     /**创建日期*/
-    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     @ApiModelProperty(value = "创建日期")
     private java.util.Date createTime;
     /**更新人*/
     @ApiModelProperty(value = "更新人")
     private java.lang.String updateBy;
     /**更新日期*/
-    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     @ApiModelProperty(value = "更新日期")
     private java.util.Date updateTime;
-    /**英语全名*/
-    @Excel(name = "英语全名", width = 15)
-    @ApiModelProperty(value = "英语全名")
-    private java.lang.String nameEn;
-    /**中文全名*/
-    @Excel(name = "中文全名", width = 15)
-    @ApiModelProperty(value = "中文全名")
-    private java.lang.String nameZh;
-    /**ISO 3166 代码*/
-    @Excel(name = "ISO 3166 代码", width = 15)
-    @ApiModelProperty(value = "ISO 3166 代码")
-    private java.lang.String code;
-    /**特殊名称（匹配马帮用）*/
-    @Excel(name = "特殊名称（匹配马帮用）", width = 15)
-    @ApiModelProperty(value = "特殊名称（匹配马帮用）")
-    private java.lang.String specialName;
+    /**priority*/
+    @Excel(name = "priority", width = 15)
+    @ApiModelProperty(value = "priority")
+    private java.lang.Integer priority;
 }

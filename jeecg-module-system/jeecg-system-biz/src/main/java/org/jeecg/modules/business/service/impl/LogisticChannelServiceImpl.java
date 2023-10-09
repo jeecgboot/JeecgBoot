@@ -109,4 +109,10 @@ public class LogisticChannelServiceImpl extends ServiceImpl<LogisticChannelMappe
                 .sorted(Comparator.comparing(CostTrialCalculation::getTotalCost))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<LogisticChannel> listByIdAndZhName() {
+        return logisticChannelMapper.listByIdAndZhName();
+    }
+
 }

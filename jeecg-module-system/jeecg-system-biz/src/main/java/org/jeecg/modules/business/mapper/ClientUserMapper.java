@@ -6,6 +6,8 @@ import org.jeecg.modules.business.entity.Client;
 import org.jeecg.modules.business.entity.UserClient;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @Description: 客户 登录账户 关系
  * @Author: jeecg-boot
@@ -21,4 +23,10 @@ public interface ClientUserMapper extends BaseMapper<UserClient> {
      * @return client entity or null in case that current user is not a client
      */
     Client selectClientByUserId(@Param("userId") String userId);
+
+    /**
+     * List all clients registered in wia_app
+     * @return list of clients
+     */
+    List<Client> listClients();
 }

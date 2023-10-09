@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,31 +36,35 @@ public class UserClientController {
     private IShopService shopService;
     @Autowired
     private IPlatformOrderService platformOrderService;
-
     /**
-     * Checks if the user is a client and then lists orders of erp_status 1
-     * @return
+     * Checks if the user is a client or internal user
+     * @return the client's info OR a list of clients
      */
     @GetMapping(value = "/getClient")
     public Result<?> getClientByUserId() {
         LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String userId = loginUser.getId();
-        userId = "1698676211346821122";
+        userId = "1708866308713140225";
         Client client = userClientService.getClientByUserId(userId);
         if(client == null) {
             List<SysRole> sysRoles = sysUserRoleService.getUserRole(userId);
             boolean isAllowed = false;
             for(SysRole sysRole: sysRoles) {
-                if(sysRole.getRoleCode().equals("admin") || sysRole.getRoleCode().equals("dev")) {
+                if(sysRole.getRoleCode().equals("admin") || sysRole.getRoleCode().equals("dev") || sysRole.getRoleCode().equals("Sales")){
                     isAllowed = true;
                     break;
                 }
             }
-            if(isAllowed)
-                return Result.OK("Permission Granted", "admin");
+            if(isAllowed) {
+                Map<String, List<Client>> internalClientList = new HashMap<>();
+                internalClientList.put("internal", userClientService.listClients());
+                return Result.OK("internal usage", internalClientList);
+            }
             else
                 return Result.error(403, "Access Denied.");
         }
-        return Result.ok(client);
+        Map<String, Client> clientMap = new HashMap<>();
+        clientMap.put("client", client);
+        return Result.ok(clientMap);
     }
 }

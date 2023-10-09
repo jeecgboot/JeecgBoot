@@ -18,4 +18,5 @@ public interface LogisticChannelMapper extends BaseMapper<LogisticChannel> {
 
     List<LogisticChannel> getAll();
 
+    List<LogisticChannel> listByIdAndZhName();
 }

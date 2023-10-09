@@ -90,6 +90,14 @@ public class Transaction implements Serializable {
 	@Excel(name = "invoice number", width = 15)
     @ApiModelProperty(value = "invoice number")
     private java.lang.String invoiceNumber;
+	/**shipping fee*/
+	@Excel(name = "shipping fee", width = 15)
+    @ApiModelProperty(value = "shippingFee")
+    private java.math.BigDecimal shippingFee;
+	/**purchase fee*/
+	@Excel(name = "purchase fee", width = 15)
+    @ApiModelProperty(value = "purchaseFee")
+    private java.math.BigDecimal purchaseFee;
 	/**amount*/
 	@Excel(name = "amount", width = 15)
     @ApiModelProperty(value = "amount")

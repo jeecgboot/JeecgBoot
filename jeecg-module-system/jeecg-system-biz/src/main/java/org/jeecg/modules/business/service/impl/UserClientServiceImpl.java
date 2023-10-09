@@ -8,6 +8,8 @@ import org.jeecg.modules.business.service.IUserClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserClientServiceImpl  extends ServiceImpl<ClientUserMapper, UserClient> implements IUserClientService {
     @Autowired
@@ -15,5 +17,10 @@ public class UserClientServiceImpl  extends ServiceImpl<ClientUserMapper, UserCl
     @Override
     public Client getClientByUserId(String userId) {
         return clientUserMapper.selectClientByUserId(userId);
+    }
+
+    @Override
+    public List<Client> listClients() {
+        return clientUserMapper.listClients();
     }
 }

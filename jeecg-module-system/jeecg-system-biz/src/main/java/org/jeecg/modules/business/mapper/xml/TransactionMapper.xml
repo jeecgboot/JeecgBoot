@@ -10,4 +10,11 @@
         WHERE client_id = #{clientId}
         ORDER BY create_time;
     </select>
+    <select id="listByClientIdAndCurrency" resultType="org.jeecg.modules.business.entity.Transaction">
+        SELECT *
+            FROM transaction
+        WHERE client_id = #{clientId}
+            AND currency = #{currency}
+        ORDER BY create_time;
+    </select>
 </mapper>

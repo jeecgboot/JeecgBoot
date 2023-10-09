@@ -184,4 +184,12 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * @return list of orders
      */
     List<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses);
+
+    /**
+     * Find all order with empty logistic_channel_name and invoice_logistic_channel_name
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    List<PlatformOrder> fetchEmptyLogisticChannelOrders(String startDate, String endDate);
 }

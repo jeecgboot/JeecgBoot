@@ -1,6 +1,7 @@
 package org.jeecg.modules.business.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.Country;
 import org.jeecg.modules.business.vo.CountryCodeAlias;
 import org.springframework.stereotype.Repository;
@@ -27,6 +28,7 @@ public interface CountryMapper extends BaseMapper<Country> {
      * @return list of countries
      */
     Country findByEnName(String en_name);
+    List<Country> findIdByEnName(@Param("countries") List<String> countries);
 
     /**
      * Find countries by their chinese name.

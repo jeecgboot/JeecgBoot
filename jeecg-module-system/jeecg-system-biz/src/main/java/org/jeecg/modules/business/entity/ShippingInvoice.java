@@ -93,6 +93,13 @@ public class ShippingInvoice implements Serializable {
     @Excel(name = "已付金额", width = 15)
     @ApiModelProperty(value = "已付金额")
     private java.math.BigDecimal paidAmount;
+    /**
+     * currency ID
+     * */
+    @Dict(dictTable = "currency", dicText = "code", dicCode = "id")
+    @Excel(name = "currencyID", width = 15)
+    @ApiModelProperty(value = "currency ID")
+    private java.lang.String currencyId;
 
     public void setID(String id) {
         this.id = id;
