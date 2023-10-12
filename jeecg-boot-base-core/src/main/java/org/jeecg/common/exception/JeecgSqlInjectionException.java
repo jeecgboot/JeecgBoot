@@ -20,4 +20,9 @@ public class JeecgSqlInjectionException extends RuntimeException {
 	{
 		super(message,cause);
 	}
+
+	public JeecgSqlInjectionException(String code, String message, Throwable cause)
+	{
+		super(message,cause);
+	}
 }
