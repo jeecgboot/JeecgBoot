@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.controller.client;
 
+import cn.hutool.core.date.DateTime;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
@@ -80,6 +81,10 @@ public class TransactionController {
         List<String> errorMessages = new ArrayList<>();
         List<String> shopIds = shopService.listIdByClient(clientId);
         List<PlatformOrder> orders = platformOrderService.findUninvoicedOrdersByShopForClient(shopIds, Arrays.asList(1,2,3));
+        if(orders.isEmpty())
+            return Result.OK("No order to invoice.");
+        Date startDate = orders.stream().map(PlatformOrder::getOrderTime).min(Date::compareTo).get();
+        Date endDate = orders.stream().map(PlatformOrder::getOrderTime).max(Date::compareTo).get();
         List<String> orderIds = orders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
         System.out.println("Orders size : " + orderIds.size());
         System.out.println("Orders : " + orderIds);
@@ -88,6 +93,8 @@ public class TransactionController {
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
                 purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService);
         List<ShippingFeesEstimation> shippingFeesEstimations = factory.getEstimations(clientId, orderIds, errorMessages);
+        if(shippingFeesEstimations.isEmpty())
+            return Result.OK("No estimation found.");
         System.out.println("Estimation size : " + shippingFeesEstimations.size());
         for(ShippingFeesEstimation estimation: shippingFeesEstimations) {
             System.out.println("estimation : " + estimation.getDueForProcessedOrders());
@@ -105,6 +112,11 @@ public class TransactionController {
         List<SkuPrice> skuPrices = platformOrderContentMapper.searchSkuPrice(skuIds);
         BigDecimal exchangeRateEurToRmb = exchangeRatesMapper.getLatestExchangeRate("EUR", "RMB");
         BigDecimal purchaseEstimation = BigDecimal.ZERO;
+        boolean isCompleteInvoiceReady = true;
+        if(skuPrices.size() != skuIds.size()) {
+            isCompleteInvoiceReady = false;
+            errorMessages.add("Some sku prices are missing.");
+        }
         for(PlatformOrderContent content : orderContents){
             for (SkuPrice skuPrice : skuPrices) {
                 if(content.getSkuId().equals(skuPrice.getSkuId())) {
@@ -124,6 +136,6 @@ public class TransactionController {
             System.out.println("Purchase Fee " + currency + " : " + purchaseEstimation);
             System.out.println("Shipping Fee " + currency + " : " + shippingFeesEstimation);
         }
-        return Result.ok(new Estimation(shippingFeesEstimation, purchaseEstimation, currency, errorMessages));
+        return Result.ok(new Estimation(shippingFeesEstimation, purchaseEstimation, currency, errorMessages, shopIds, new DateTime(startDate).toString(), new DateTime(endDate).toString(), isCompleteInvoiceReady));
     }
 }

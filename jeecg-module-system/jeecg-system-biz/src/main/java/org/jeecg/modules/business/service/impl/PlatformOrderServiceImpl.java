@@ -282,6 +282,7 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     @Override
     public Map<String, Map<PlatformOrder, List<PlatformOrderContent>>> findUninvoicedOrders() {
         List<PlatformOrder> orderList = platformOrderMap.findUninvoicedShippedOrders();
+        System.out.println("orderList size : " + orderList.size());
         List<PlatformOrderContent> orderContents = platformOrderContentMap.findUninvoicedShippedOrderContents();
         Map<String, PlatformOrder> orderMap = orderList.stream().collect(toMap(PlatformOrder::getId, Function.identity()));
         Map<String, String> orderMapByShopId = orderList.stream().collect(toMap(PlatformOrder::getId, PlatformOrder::getShopId));

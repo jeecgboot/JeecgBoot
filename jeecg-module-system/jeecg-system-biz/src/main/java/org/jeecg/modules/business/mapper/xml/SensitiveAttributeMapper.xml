@@ -30,7 +30,7 @@
     ORDER BY sa.priority DESC LIMIT 1;
 </select>
     <select id="listIdAndPriority" resultType="org.jeecg.modules.business.entity.SensitiveAttribute">
-        SELECT id, priority
+        SELECT id, priority, zh_name
         FROM wia_app.sensitive_attribute
     </select>
 </mapper>

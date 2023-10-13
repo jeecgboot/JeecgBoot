@@ -7,6 +7,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.service.*;
+import org.jeecg.modules.business.vo.LogisticChannelChoiceError;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -50,6 +51,8 @@ public class LogisticChannelChoiceJob implements Job {
     private IPlatformOrderContentService platformOrderContentService;
     @Autowired
     private ISensitiveAttributeService sensitiveAttributeService;
+    @Autowired
+    private  IShopService shopService;
     @Autowired
     private PlatformOrderContentMapper platformOrderContentMapper;
     @Autowired
@@ -138,14 +141,19 @@ public class LogisticChannelChoiceJob implements Job {
                 }
             }
             System.gc();
+            List<Shop> shops = orderMapByShopAndCountry.keySet().stream().map(shopId -> shopService.getById(shopId)).collect(Collectors.toList());
             List<String> countries = platformOrders.stream().map(PlatformOrder::getCountry).distinct().collect(Collectors.toList());
 
             List<Country> countryList = countryService.findIdByEnName(countries);
             Map<String, String> countryNameToIdMap = countryList.stream().collect(toMap(Country::getNameEn, Country::getId));
 
+            System.out.println("Country name to id map : ");
+            countryNameToIdMap.keySet().forEach(System.out::println);
+
             Map<String, String> logisticChannelIdToNameMap = logisticChannelService.listByIdAndZhName().stream().collect(toMap(LogisticChannel::getId, LogisticChannel::getZhName));
 
-            Map<String, Integer> attributeIdToPriorityMap = sensitiveAttributeService.listIdAndPriority().stream().collect(toMap(SensitiveAttribute::getId, SensitiveAttribute::getPriority));
+            List<SensitiveAttribute> sensitiveAttributes = sensitiveAttributeService.listIdAndPriority();
+            Map<String, Integer> attributeIdToPriorityMap = sensitiveAttributes.stream().collect(toMap(SensitiveAttribute::getId, SensitiveAttribute::getPriority));
             Map<String, Integer> sortedAttributeIdToPriorityMap = attributeIdToPriorityMap.entrySet()
                     .stream()
                     .sorted(Map.Entry.comparingByValue())
@@ -159,7 +167,7 @@ public class LogisticChannelChoiceJob implements Job {
             List<LogisticChannelChoice> logisticChannelChoiceList = logisticChannelChoiceService.fetchByShopId(platformOrders.stream().map(PlatformOrder::getShopId).collect(Collectors.toList()));
 
             List<PlatformOrder> ordersToUpdate = new ArrayList<>();
-            List<String> logisticChoiceErrorList = new ArrayList<>();
+            List<LogisticChannelChoiceError> logisticChoiceErrorList = new ArrayList<>();
             for( Map.Entry<String, Map<String, List<PlatformOrder>>> entry: orderMapByShopAndCountry.entrySet()) {
                 String shopId = entry.getKey();
                 System.out.println("\nShop => " + shopId);
@@ -174,9 +182,15 @@ public class LogisticChannelChoiceJob implements Job {
 //                        for(Map.Entry<String, Integer> attributeEntry: sortedAttributeIdToPriorityMap.entrySet()) {
                         String orderAttributeId = sensitiveAttributeService.getHighestPriorityAttributeId(order.getId());
                         Integer orderAttributePriority = sortedAttributeIdToPriorityMap.get(orderAttributeId);
+                        if(order.getPlatformOrderId().equals("5709926760777")) {
+                            System.out.println("===> 5709926760777");
+                            System.out.println("===> order attribute" + orderAttributeId);
+                            System.out.println("===> order attribute priority" + orderAttributePriority);
+                        }
                         if(orderMapByAttribute.get(orderAttributeId) == null || orderAttributeId == null) {
                             continue;
                         }
+                        //todo : what is happening to EP4 Reunion 5709926760777
                         List<LogisticChannelChoice> choices = logisticChannelChoiceList.stream().filter(
                                 c -> c.getShopId().equals(shopId) && c.getCountryId().equals(countryNameToIdMap.get(countryName)) && c.getSensitiveAttributeId().equals(orderAttributeId))
                                 .collect(Collectors.toList());
@@ -217,10 +231,14 @@ public class LogisticChannelChoiceJob implements Job {
                                     break;
                                 }
                             }
-//                            throw new JobExecutionException("No logistic channel choice found for shop : " + shopId + ", country : " + countryName + ", attribute : " + orderAttributeId);
-                            //Send email to admin
                             log.info("No logistic channel choice found for shop : " + shopId + ", country : " + countryName + ", attribute : " + orderAttributeId);
-                            logisticChoiceErrorList.add("No logistic channel choice found for shop : " + shopId + ", country : " + countryName + ", attribute : " + orderAttributeId);
+                            List<Shop> shop = shops.stream().filter(s -> (s != null && s.getId().equals(shopId))).collect(Collectors.toList());
+                            logisticChoiceErrorList.add(new LogisticChannelChoiceError(
+                                    shop.isEmpty() ? shopId : shop.get(0).getErpCode(),
+                                    order.getPlatformOrderId(),
+                                    countryName,
+                                    sensitiveAttributes.stream().filter(attribute -> attribute.getId().equals(orderAttributeId)).collect(Collectors.toList()).get(0).getZhName()
+                                    ));
                         }
                         else {
                             System.out.println("Trouvé");

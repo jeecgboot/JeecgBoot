@@ -16,21 +16,23 @@
     <select id="findIdByEnName" resultType="org.jeecg.modules.business.entity.Country">
         SELECT id,
             CASE
-                WHEN c.name_en IN
+                WHEN c.name_en collate utf8mb4_bin IN
                     <foreach collection="countries" separator="," open="(" close=")" item="country">
                         #{country}
-                    </foreach> THEN c.name_en
-                WHEN c.special_name IN
+                    </foreach>
+                    THEN c.name_en
+                WHEN c.special_name collate utf8mb4_bin IN
                     <foreach collection="countries" separator="," open="(" close=")" item="country">
                         #{country}
-                    </foreach> THEN c.special_name
+                    </foreach>
+                    THEN c.special_name
             END as name_en
         FROM country as c
-        WHERE c.name_en IN
+        WHERE c.name_en collate utf8mb4_bin IN
         <foreach collection="countries" separator="," open="(" close=")" item="country">
             #{country}
         </foreach>
-        OR c.special_name IN
+        OR c.special_name collate utf8mb4_bin IN
         <foreach collection="countries" separator="," open="(" close=")" item="country">
             #{country}
         </foreach>

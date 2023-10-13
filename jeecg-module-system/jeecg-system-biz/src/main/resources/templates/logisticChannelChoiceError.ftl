@@ -30,13 +30,28 @@
                                         </#if>
                                     </td>
                                 </tr>
-                                <#list errors as error>
-                                    <tr>
-                                        <td style="padding:10px 0;">
-                                            Error: ${error}
-                                        </td>
-                                    </tr>
-                                </#list>
+                                <tr>
+                                    <table style="border: 1px solid #bbb; text-align: center;">
+                                        <thead>
+                                            <tr>
+                                                <th>Shop</th>
+                                                <th>Order ID</th>
+                                                <th>Country</th>
+                                                <th>Sensitive Attribute</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <#list errors as error>
+                                                <tr>
+                                                    <td>${error.shop}</td>
+                                                    <td>${error.orderId}</td>
+                                                    <td>${error.country}</td>
+                                                    <td>${error.sensitiveAttribute}</td>
+                                                </tr>
+                                            </#list>
+                                        </tbody>
+                                    </table>
+                                </tr>
                                 <tr>
                                  <td style="padding:35px 0 5px 0;">Merci d’utiliser nos services.</td>
                                 </tr>

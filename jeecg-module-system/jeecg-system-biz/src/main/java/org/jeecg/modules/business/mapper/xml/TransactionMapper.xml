@@ -15,6 +15,6 @@
             FROM transaction
         WHERE client_id = #{clientId}
             AND currency = #{currency}
-        ORDER BY create_time;
+        ORDER BY create_time DESC;
     </select>
 </mapper>

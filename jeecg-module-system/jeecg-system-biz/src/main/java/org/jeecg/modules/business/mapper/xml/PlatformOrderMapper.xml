@@ -647,7 +647,7 @@
         </foreach>;
     </update>
     <select id="fetchEmptyLogisticChannelOrders" resultType="org.jeecg.modules.business.entity.PlatformOrder">
-        SELECT id, shop_id, country
+        SELECT id, shop_id, country, platform_order_id
         FROM platform_order po
         WHERE logistic_channel_name = ''
         AND invoice_logistic_channel_name IS NULL

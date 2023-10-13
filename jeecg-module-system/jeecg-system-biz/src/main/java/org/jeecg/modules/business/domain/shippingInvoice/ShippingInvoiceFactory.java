@@ -763,7 +763,11 @@ public class ShippingInvoiceFactory {
     public List<ShippingFeesEstimation> getEstimations(List<String> errorMessages) {
         List<ShippingFeesEstimation> estimations = new ArrayList<>();
         Map<String, Map<PlatformOrder, List<PlatformOrderContent>>> uninvoicedOrdersByShopId = platformOrderService.findUninvoicedOrders();
+        if(uninvoicedOrdersByShopId.isEmpty()) {
+            return estimations;
+        }
         Set<String> shopIds = uninvoicedOrdersByShopId.keySet();
+        System.out.println(shopIds);
         Set<String> clientIds = new HashSet<>();
         List<Shop> shops = shopMapper.selectBatchIds(shopIds);
         shops.forEach(shop -> clientIds.add(clientMapper.selectById(shop.getOwnerId()).getId()));
@@ -826,7 +830,12 @@ public class ShippingInvoiceFactory {
     public List<ShippingFeesEstimation> getEstimations(String clientId, List<String> orderIds, List<String> errorMessages) {
         List<ShippingFeesEstimation> estimations = new ArrayList<>();
         Map<PlatformOrder, List<PlatformOrderContent>> ordersMap = platformOrderService.fetchOrderData(orderIds);
+        if(ordersMap.isEmpty()) {
+            return estimations;
+        }
         Set<PlatformOrder> orderSet = ordersMap.keySet();
+        System.out.println("orderSet : ");
+        orderSet.forEach(System.out::println);
         Map<String, PlatformOrder> orderMap = orderSet.stream().collect(toMap(PlatformOrder::getId, Function.identity()));
         Map<String, String> orderMapByShopId = orderSet.stream().collect(toMap(PlatformOrder::getId, PlatformOrder::getShopId));
         List<PlatformOrderContent> orderContents = ordersMap.values().stream().flatMap(Collection::stream).collect(toList());
@@ -838,6 +847,7 @@ public class ShippingInvoiceFactory {
                         )
                 );
         Collection<String> shopIds = orderMapByShopId.values();
+        System.out.println("shopIds : " + shopIds);
         Client client = clientMapper.selectById(clientId);
         List<Shop> shops = shopMapper.selectBatchIds(shopIds);
 
