@@ -63,6 +63,10 @@ public class SysTenantPack implements Serializable {
     @DateTimeFormat(pattern="yyyy-MM-dd")
     @ApiModelProperty(value = "更新时间")
     private Date updateTime;
+    /**产品包类型(default 默认产品包 custom 自定义产品包)*/
+    @Excel(name = "产品包类型", width = 15)
+    @ApiModelProperty(value = "产品包类型")
+	private String packType;
     
     /**菜单id 临时字段用于新增编辑菜单id传递*/
     @TableField(exist = false)

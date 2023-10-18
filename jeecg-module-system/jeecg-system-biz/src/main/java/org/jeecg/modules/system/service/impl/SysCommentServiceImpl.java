@@ -1,9 +1,11 @@
 package org.jeecg.modules.system.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.common.api.dto.message.MessageDTO;
+import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.constant.enums.FileTypeEnum;
@@ -117,36 +119,106 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveOneFileComment(HttpServletRequest request) {
-        String savePath = "";
-        String bizPath = request.getParameter("biz");
-        //LOWCOD-2580 sys/common/upload接口存在任意文件上传漏洞
-        if (oConvertUtils.isNotEmpty(bizPath)) {
-            if (bizPath.contains(SymbolConstant.SPOT_SINGLE_SLASH) || bizPath.contains(SymbolConstant.SPOT_DOUBLE_BACKSLASH)) {
-                throw new JeecgBootException("上传目录bizPath，格式非法！");
+        
+        //update-begin-author:taoyan date:2023-6-12 for: QQYUN-4310【文件】从文件库选择文件功能未做
+        String existFileId = request.getParameter("fileId");
+        if(oConvertUtils.isEmpty(existFileId)){
+            String savePath = "";
+            String bizPath = request.getParameter("biz");
+            //LOWCOD-2580 sys/common/upload接口存在任意文件上传漏洞
+            if (oConvertUtils.isNotEmpty(bizPath)) {
+                if (bizPath.contains(SymbolConstant.SPOT_SINGLE_SLASH) || bizPath.contains(SymbolConstant.SPOT_DOUBLE_BACKSLASH)) {
+                    throw new JeecgBootException("上传目录bizPath，格式非法！");
+                }
             }
-        }
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-        // 获取上传文件对象
-        MultipartFile file = multipartRequest.getFile("file");
-        if (oConvertUtils.isEmpty(bizPath)) {
-            if (CommonConstant.UPLOAD_TYPE_OSS.equals(uploadType)) {
-                //未指定目录，则用阿里云默认目录 upload
-                bizPath = "upload";
+            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+            // 获取上传文件对象
+            MultipartFile file = multipartRequest.getFile("file");
+            if (oConvertUtils.isEmpty(bizPath)) {
+                if (CommonConstant.UPLOAD_TYPE_OSS.equals(uploadType)) {
+                    //未指定目录，则用阿里云默认目录 upload
+                    bizPath = "upload";
+                } else {
+                    bizPath = "";
+                }
+            }
+            if (CommonConstant.UPLOAD_TYPE_LOCAL.equals(uploadType)) {
+                savePath = this.uploadLocal(file, bizPath);
             } else {
-                bizPath = "";
+                savePath = CommonUtils.upload(file, bizPath, uploadType);
+            }
+
+            String orgName = file.getOriginalFilename();
+            // 获取文件名
+            orgName = CommonUtils.getFileName(orgName);
+            //文件大小
+            long size = file.getSize();
+            //文件类型
+            String type = orgName.substring(orgName.lastIndexOf("."), orgName.length());
+            FileTypeEnum fileType = FileTypeEnum.getByType(type);
+
+            //保存至 SysFiles
+            SysFiles sysFiles = new SysFiles();
+            sysFiles.setFileName(orgName);
+            sysFiles.setUrl(savePath);
+            sysFiles.setFileType(fileType.getValue());
+            sysFiles.setStoreType("temp");
+            if (size > 0) {
+                sysFiles.setFileSize(Double.parseDouble(String.valueOf(size)));
+            }
+            String defaultValue = "0";
+            sysFiles.setIzStar(defaultValue);
+            sysFiles.setIzFolder(defaultValue);
+            sysFiles.setIzRootFolder(defaultValue);
+            sysFiles.setDelFlag(defaultValue);
+            String fileId = String.valueOf(IdWorker.getId());
+            sysFiles.setId(fileId);
+            String tenantId = oConvertUtils.getString(TenantContext.getTenant());
+            sysFiles.setTenantId(tenantId);
+            sysFilesMapper.insert(sysFiles);
+
+            //保存至 SysFormFile
+            String tableName = SYS_FORM_FILE_TABLE_NAME;
+            String tableDataId = request.getParameter("commentId");
+            SysFormFile sysFormFile = new SysFormFile();
+            sysFormFile.setTableName(tableName);
+            sysFormFile.setFileType(fileType.getValue());
+            sysFormFile.setTableDataId(tableDataId);
+            sysFormFile.setFileId(fileId);
+            sysFormFileMapper.insert(sysFormFile);
+
+        }else{
+            SysFiles sysFiles = sysFilesMapper.selectById(existFileId);
+            if(sysFiles!=null){
+                //保存至 SysFormFile
+                String tableName = SYS_FORM_FILE_TABLE_NAME;
+                String tableDataId = request.getParameter("commentId");
+                SysFormFile sysFormFile = new SysFormFile();
+                sysFormFile.setTableName(tableName);
+                sysFormFile.setFileType(sysFiles.getFileType());
+                sysFormFile.setTableDataId(tableDataId);
+                sysFormFile.setFileId(existFileId);
+                sysFormFileMapper.insert(sysFormFile);
             }
         }
-        if (CommonConstant.UPLOAD_TYPE_LOCAL.equals(uploadType)) {
-            savePath = this.uploadLocal(file, bizPath);
-        } else {
-            savePath = CommonUtils.upload(file, bizPath, uploadType);
-        }
+        //update-end-author:taoyan date:2023-6-12 for: QQYUN-4310【文件】从文件库选择文件功能未做
+    }
 
-        String orgName = file.getOriginalFilename();
+    /**
+     * app端回复评论保存文件
+     * @param request
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void appSaveOneFileComment(HttpServletRequest request) {
+
+        String orgName = request.getParameter("fileName");
+        String fileSize = request.getParameter("fileSize");
+        String savePath = request.getParameter("savePath");
         // 获取文件名
         orgName = CommonUtils.getFileName(orgName);
         //文件大小
-        long size = file.getSize();
+        long size = Long.valueOf(fileSize);
         //文件类型
         String type = orgName.substring(orgName.lastIndexOf("."), orgName.length());
         FileTypeEnum fileType = FileTypeEnum.getByType(type);
@@ -167,6 +239,8 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
         sysFiles.setDelFlag(defaultValue);
         String fileId = String.valueOf(IdWorker.getId());
         sysFiles.setId(fileId);
+        String tenantId = oConvertUtils.getString(TenantContext.getTenant());
+        sysFiles.setTenantId(tenantId);
         sysFilesMapper.insert(sysFiles);
 
         //保存至 SysFormFile
@@ -203,6 +277,22 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
                 md.setToUser(users);
                 md.setFromUser("system");
                 md.setType(MessageTypeEnum.XT.getType());
+
+                // update-begin-author:taoyan date:2023-5-10 for: QQYUN-4744【系统通知】6、系统通知@人后，对方看不到是哪个表单@的，没有超链接
+                String tableName = sysComment.getTableName();
+                String prefix = "desform:";
+                if(tableName!=null && tableName.startsWith(prefix)){
+                    Map<String, Object> data = new HashMap<>();
+                    data.put(CommonConstant.NOTICE_MSG_BUS_TYPE, "comment");
+                    JSONObject params = new JSONObject();
+                    params.put("code", tableName.substring(prefix.length()));
+                    params.put("dataId", sysComment.getTableDataId());
+                    params.put("type", "designForm");
+                    data.put(CommonConstant.NOTICE_MSG_SUMMARY, params);
+                    md.setData(data);
+                }
+                // update-end-author:taoyan date:2023-5-10 for: QQYUN-4744【系统通知】6、系统通知@人后，对方看不到是哪个表单@的，没有超链接
+                
                 sysBaseApi.sendTemplateMessage(md);
             }
         }

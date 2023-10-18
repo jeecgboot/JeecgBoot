@@ -216,7 +216,7 @@ public interface ISysDictService extends IService<SysDict> {
 	 * @return
 	 */
 	@Deprecated
-	List<TreeSelectModel> queryTreeList(Map<String, String> query, String table, String text, String code, String pidField, String pid, String hasChildField, int converIsLeafVal);
+	List<TreeSelectModel> queryTreeList(Map<String, String> query,String table, String text, String code, String pidField,String pid,String hasChildField,int converIsLeafVal);
 
 	/**
 	 * 真实删除
@@ -245,7 +245,7 @@ public interface ISysDictService extends IService<SysDict> {
 	 * @return
 	 */
 	@Deprecated
-	public List<DictModel> queryDictTablePageList(DictQuery query, int pageSize, int pageNo);
+	public List<DictModel> queryDictTablePageList(DictQuery query,int pageSize, int pageNo);
 
     /**
      * 获取字典数据
@@ -277,7 +277,7 @@ public interface ISysDictService extends IService<SysDict> {
 	 * 创建字典
 	 * @param sysDictVo
 	 */
-	void addDictByLowAppId(SysDictVo sysDictVo);
+	String addDictByLowAppId(SysDictVo sysDictVo);
 
 	/**
 	 * 编辑字典

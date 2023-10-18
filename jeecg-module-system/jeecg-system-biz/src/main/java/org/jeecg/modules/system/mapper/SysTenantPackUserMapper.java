@@ -1,7 +1,11 @@
 package org.jeecg.modules.system.mapper;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.system.entity.SysTenantPackUser;
+
+import java.util.List;
 
 /**
  * @Description: 租户产品包用户关系
@@ -10,5 +14,15 @@ import org.jeecg.modules.system.entity.SysTenantPackUser;
  * @Version: V1.0
  */
 public interface SysTenantPackUserMapper extends BaseMapper<SysTenantPackUser> {
+
+
+    /**
+     * 查询租户下 特定角色的人员列表
+     * @param tenantId
+     * @param packCodeList
+     * @return
+     */
+    @InterceptorIgnore(tenantLine = "true")
+    List<String> queryTenantPackUserNameList(@Param("tenantId") Integer tenantId, @Param("packCodeList") List<String> packCodeList); 
 
 }

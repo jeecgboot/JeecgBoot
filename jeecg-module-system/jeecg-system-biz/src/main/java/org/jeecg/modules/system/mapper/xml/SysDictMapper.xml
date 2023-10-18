@@ -4,25 +4,26 @@
 
 	<!-- 通过字典code获取字典数据 -->
 	<select id="queryDictItemsByCode" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
-		   select s.item_value as "value",s.item_text as "text" from sys_dict_item s
+		   select s.item_value as "value",s.item_text as "text",s.item_color as color from sys_dict_item s
 		   where dict_id = (select id from sys_dict where dict_code = #{code})
 		   order by s.sort_order asc, s.create_time DESC;
 	</select>
 
 	<!-- 通过字典code获取有效的字典数据项 -->
 	<select id="queryEnableDictItemsByCode" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
-		   select s.item_value as "value",s.item_text as "text" from sys_dict_item s
+		   select s.item_value as "value",s.item_text as "text", s.item_color as "color" from sys_dict_item s
 		   where dict_id = (select id from sys_dict where dict_code = #{code})
 		   and s.status = 1
 		   order by s.sort_order asc, s.create_time DESC;
 	</select>
 
 	<!-- 通过多个字典code获取字典数据 -->
-	<select id="queryDictItemsByCodeList" parameterType="String" resultType="org.jeecg.common.system.vo.DictModelMany">
+	<select id="queryDictItemsByCodeList" parameterType="java.util.List" resultType="org.jeecg.common.system.vo.DictModelMany">
 		SELECT
 			dict.dict_code,
 			item.item_text AS "text",
-			item.item_value AS "value"
+			item.item_value AS "value",
+			item.item_color AS "color"
 		FROM
 			sys_dict_item item
 		INNER JOIN sys_dict dict ON dict.id = item.dict_id
@@ -46,7 +47,8 @@
 		SELECT
 			dict.dict_code,
 			item.item_text AS "text",
-			item.item_value AS "value"
+			item.item_value AS "value",
+			item.item_color AS "color"
 		FROM
 			sys_dict_item item
 		INNER JOIN sys_dict dict ON dict.id = item.dict_id

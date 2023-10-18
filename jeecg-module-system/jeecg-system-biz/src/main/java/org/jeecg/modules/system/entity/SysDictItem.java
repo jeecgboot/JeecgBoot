@@ -78,5 +78,9 @@ public class SysDictItem implements Serializable {
 
     private Date updateTime;
 
+    /**
+     * 字典项颜色 
+     */
+    private String itemColor;
 
 }

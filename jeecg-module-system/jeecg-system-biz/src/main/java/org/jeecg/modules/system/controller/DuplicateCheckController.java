@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 public class DuplicateCheckController {
 
 	@Autowired
-    ISysDictService sysDictService;
+	ISysDictService sysDictService;
 
 	/**
 	 * 校验数据是否在系统中是否存在
@@ -59,5 +59,6 @@ public class DuplicateCheckController {
 			return Result.error("该值不可用，系统中已存在！");
 		}
 	}
-	
+
+
 }

@@ -16,13 +16,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ISysAnnouncementSendService extends IService<SysAnnouncementSend> {
 
-    /**
-     * 通过用户id查询用户通告阅读标记
-     * @param userId 用户id
-     * @return
-     */
-	public List<String> queryByUserId(String userId);
-	
 	/**
 	 * 获取我的消息
 	 * @param announcementSendModel

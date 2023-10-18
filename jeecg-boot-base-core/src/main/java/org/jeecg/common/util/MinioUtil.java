@@ -4,7 +4,7 @@ import io.minio.*;
 import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.SymbolConstant;
-import org.jeecg.common.util.filter.FileTypeFilter;
+import org.jeecg.common.util.filter.SsrfFileTypeFilter;
 import org.jeecg.common.util.filter.StrAttackFilter;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -60,7 +60,7 @@ public class MinioUtil {
         //update-end-author:wangshuai date:20201012 for: 过滤上传文件夹名特殊字符，防止攻击
 
         //update-begin-author:liusq date:20210809 for: 过滤上传文件类型
-        FileTypeFilter.fileTypeFilter(file);
+        SsrfFileTypeFilter.checkUploadFileType(file);
         //update-end-author:liusq date:20210809 for: 过滤上传文件类型
 
         String newBucket = bucketName;

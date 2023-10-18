@@ -116,4 +116,8 @@ public class SymbolConstant {
      */
     public static final String SQUARE_BRACKETS_RIGHT = "]";
 
+    /**
+     * 拼接字符串符号 分号 ;
+     */
+    public static final String SEMICOLON = ";";
 }

@@ -25,12 +25,19 @@ public enum QueryRuleEnum {
     IN("IN","in","包含"),
     /**查询规则 全模糊*/
     LIKE("LIKE","like","全模糊"),
+    /**查询规则 不模糊包含*/
+    NOT_LIKE("NOT_LIKE","not_like","不模糊包含"),
     /**查询规则 左模糊*/
     LEFT_LIKE("LEFT_LIKE","left_like","左模糊"),
     /**查询规则 右模糊*/
     RIGHT_LIKE("RIGHT_LIKE","right_like","右模糊"),
     /**查询规则 带加号等于*/
     EQ_WITH_ADD("EQWITHADD","eq_with_add","带加号等于"),
+    /**查询规则 多词模糊匹配*/
+    LIKE_WITH_AND("LIKEWITHAND","like_with_and","多词模糊匹配————暂时未用上"),
+    /**查询规则 自定义SQL片段*/
+    SQL_RULES("USE_SQL_RULES","ext","自定义SQL片段"),
+    
     // ------- 当前表单设计器内专用 -------
     /** 值为空 */
     EMPTY("EMPTY","empty","值为空"),
@@ -38,15 +45,12 @@ public enum QueryRuleEnum {
     NOT_EMPTY("NOT_EMPTY","not_empty","值不为空"),
     /**查询规则 不包含*/
     NOT_IN("NOT_IN","not_in","不包含"),
-    // ------- 当前表单设计器内专用 -------
-    /**查询规则 多词模糊匹配*/
-    LIKE_WITH_AND("LIKEWITHAND","like_with_and","多词模糊匹配————暂时未用上"),
-    /**查询规则 自定义SQL片段*/
-    SQL_RULES("USE_SQL_RULES","ext","自定义SQL片段"),
     /**查询规则 多词匹配*/
     ELE_MATCH("ELE_MATCH","elemMatch","多词匹配"),
     /**查询规则 范围查询*/
-    RANGE("RANGE","range","范围查询");
+    RANGE("RANGE","range","范围查询"),
+    NOT_RANGE("NOT_RANGE","not_range","不在范围查询");
+    // ------- 当前表单设计器内专用 -------
 
     private String value;
     
@@ -89,7 +93,7 @@ public enum QueryRuleEnum {
     		return null;
     	}
         for(QueryRuleEnum val :values()){
-            if (val.getValue().equals(value) || val.getCondition().equals(value)){
+            if (val.getValue().equals(value) || val.getCondition().equalsIgnoreCase(value)){
                 return val;
             }
         }

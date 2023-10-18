@@ -8,19 +8,25 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.SysAnnouncement;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.system.mapper.SysAnnouncementMapper;
 import org.jeecg.modules.system.mapper.SysAnnouncementSendMapper;
+import org.jeecg.modules.system.mapper.SysUserMapper;
+import org.jeecg.modules.system.service.ISysAnnouncementSendService;
 import org.jeecg.modules.system.service.ISysAnnouncementService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Description: 系统通告表
@@ -31,12 +37,19 @@ import java.util.List;
 @Service
 @Slf4j
 public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMapper, SysAnnouncement> implements ISysAnnouncementService {
-
-	@Resource
-	private SysAnnouncementMapper sysAnnouncementMapper;
+	/**
+	 * 补数据改成后台模式
+	 */
+	public static ExecutorService completeNoteThreadPool = new ThreadPoolExecutor(0, 1024, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
 	
 	@Resource
+	private SysAnnouncementMapper sysAnnouncementMapper;
+	@Resource
+	private SysUserMapper sysUserMapper;
+	@Resource
 	private SysAnnouncementSendMapper sysAnnouncementSendMapper;
+	@Autowired
+	private ISysAnnouncementSendService sysAnnouncementSendService;
 	
 	@Transactional(rollbackFor = Exception.class)
 	@Override
@@ -132,50 +145,58 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 	public void completeAnnouncementSendInfo() {
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		String userId = sysUser.getId();
-		// 1.将系统消息补充到用户通告阅读标记表中
-		LambdaQueryWrapper<SysAnnouncement> querySaWrapper = new LambdaQueryWrapper<SysAnnouncement>();
-		//全部人员
-		querySaWrapper.eq(SysAnnouncement::getMsgType, CommonConstant.MSG_TYPE_ALL);
-		//未删除
-		querySaWrapper.eq(SysAnnouncement::getDelFlag, CommonConstant.DEL_FLAG_0.toString());
-		//已发布
-		querySaWrapper.eq(SysAnnouncement::getSendStatus, CommonConstant.HAS_SEND);
-		//新注册用户不看结束通知
-		querySaWrapper.ge(SysAnnouncement::getEndTime, sysUser.getCreateTime());
-		//update-begin--Author:liusq  Date:20210108 for：[JT-424] 【开源issue】bug处理--------------------
-		querySaWrapper.notInSql(SysAnnouncement::getId,"select annt_id from sys_announcement_send where user_id='"+userId+"'");
-		//update-begin--Author:liusq  Date:20210108  for： [JT-424] 【开源issue】bug处理--------------------
-		List<SysAnnouncement> announcements = this.list(querySaWrapper);
-		if(announcements.size()>0) {
-			for(int i=0;i<announcements.size();i++) {
-				//update-begin--Author:wangshuai  Date:20200803  for： 通知公告消息重复LOWCOD-759--------------------
-				//因为websocket没有判断是否存在这个用户，要是判断会出现问题，故在此判断逻辑
-				LambdaQueryWrapper<SysAnnouncementSend> query = new LambdaQueryWrapper<>();
-				query.eq(SysAnnouncementSend::getAnntId,announcements.get(i).getId());
-				query.eq(SysAnnouncementSend::getUserId,userId);
-				SysAnnouncementSend one = sysAnnouncementSendMapper.selectOne(query);
-				if(null==one){
-					SysAnnouncementSend announcementSend = new SysAnnouncementSend();
-					announcementSend.setAnntId(announcements.get(i).getId());
-					announcementSend.setUserId(userId);
-					announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
-					sysAnnouncementSendMapper.insert(announcementSend);
-					log.info("announcementSend.toString()",announcementSend.toString());
-				}
-				//update-end--Author:wangshuai  Date:20200803  for： 通知公告消息重复LOWCOD-759------------
+		List<String> announcementIds = this.getNotSendedAnnouncementlist(userId);
+		List<SysAnnouncementSend> sysAnnouncementSendList = new ArrayList<>();
+		if (!CollectionUtils.isEmpty(announcementIds)) {
+			for (String commentId : announcementIds) {
+				SysAnnouncementSend announcementSend = new SysAnnouncementSend();
+				announcementSend.setAnntId(commentId);
+				announcementSend.setUserId(userId);
+				announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
+				sysAnnouncementSendList.add(announcementSend);
 			}
 		}
+		if (!CollectionUtils.isEmpty(sysAnnouncementSendList)) {
+			sysAnnouncementSendService.saveBatch(sysAnnouncementSendList);
+		}
+	}
+
+	@Override
+	public void batchInsertSysAnnouncementSend(String commentId, Integer tenantId) {
+		if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && oConvertUtils.isNotEmpty(tenantId)) {
+			log.info("补全公告与用户的关系数据，租户ID = {}", tenantId);
+		} else {
+			tenantId = null;
+		}
 		
+		List<String> userIdList = sysUserMapper.getTenantUserIdList(tenantId);
+		List<SysAnnouncementSend> sysAnnouncementSendList = new ArrayList<>();
+		if (!CollectionUtils.isEmpty(userIdList)) {
+			for (String userId : userIdList) {
+				SysAnnouncementSend announcementSend = new SysAnnouncementSend();
+				announcementSend.setAnntId(commentId);
+				announcementSend.setUserId(userId);
+				announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
+				sysAnnouncementSendList.add(announcementSend);
+			}
+		}
+		if (!CollectionUtils.isEmpty(sysAnnouncementSendList)) {
+			log.info("补全公告与用户的关系数据，sysAnnouncementSendList size = {}", sysAnnouncementSendList.size());
+			sysAnnouncementSendService.saveBatch(sysAnnouncementSendList);
+		}
 	}
 
 	@Override
 	public List<SysAnnouncement> querySysMessageList(int pageSize, int pageNo, String fromUser, String starFlag, Date beginDate, Date endDate) {
-		//1. 补全send表的数据
-		completeAnnouncementSendInfo();
+//		//1. 补全send表的数据
+//		completeNoteThreadPool.execute(()->{
+//			completeAnnouncementSendInfo();
+//		});
+		
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		log.info(" 获取登录人 LoginUser id: {}", sysUser.getId());
 		Page<SysAnnouncement> page = new Page<SysAnnouncement>(pageNo,pageSize);
-		// 2. 查询消息数据
-		List<SysAnnouncement> list = baseMapper.queryMessageList(page, sysUser.getId(), fromUser, starFlag, beginDate, endDate);
+		List<SysAnnouncement> list = baseMapper.queryAllMessageList(page, sysUser.getId(), fromUser, starFlag, beginDate, endDate);
 		return list;
 	}
 
@@ -183,6 +204,23 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 	public void updateReaded(List<String> annoceIdList) {
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		sysAnnouncementSendMapper.updateReaded(sysUser.getId(), annoceIdList);
+	}
+
+	@Override
+	public void clearAllUnReadMessage() {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		sysAnnouncementSendMapper.clearAllUnReadMessage(sysUser.getId());
+	}
+
+	/**
+	 * 查询用户未读的通知公告，防止SQL注入写法调整
+	 * @param userId
+	 * @return
+	 */
+
+	@Override
+	public List<String> getNotSendedAnnouncementlist(String userId) {
+		return sysAnnouncementMapper.getNotSendedAnnouncementlist(new Date(), userId);
 	}
 
 }

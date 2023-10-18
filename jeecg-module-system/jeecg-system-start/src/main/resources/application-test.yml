@@ -169,11 +169,15 @@ mybatis-plus:
 minidao:
   base-package: org.jeecg.modules.jmreport.*,org.jeecg.modules.drag.*
 jeecg:
-  # 是否启用安全模式
-  safeMode: false
+  # 平台上线安全配置
+  firewall:
+    # 数据源安全 (开启后，Online报表和图表的数据源为必填)
+    dataSourceSafe: false
+    # 低代码模式（dev:开发模式，prod:发布模式——关闭所有在线开发配置能力）
+    lowCodeMode: dev
   # 签名密钥串(前后端要一致，正式发布请自行修改)
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
-  # 签名拦截接口
+  #签名拦截接口
   signUrls: /sys/dict/getDictItems/*,/sys/dict/loadDict/*,/sys/dict/loadDictOrderByValue/*,/sys/dict/loadDictItem/*,/sys/dict/loadTreeData,/sys/api/queryTableDictItemsByCode,/sys/api/queryFilterTableDictInfo,/sys/api/queryTableDictByKeys,/sys/api/translateDictFromTable,/sys/api/translateDictFromTableByKeys
   # local\minio\alioss
   uploadType: local
@@ -187,7 +191,7 @@ jeecg:
     #webapp文件路径
     webapp: D://opt//webapp
   shiro:
-    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**
+    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/jmreport/bigscreen2/**
   #阿里云oss存储和大鱼短信秘钥配置
   oss:
     accessKey: ??
@@ -198,7 +202,7 @@ jeecg:
   # ElasticSearch 设置
   elasticsearch:
     cluster-name: jeecg-ES
-    cluster-nodes: 81.70.47.128:9200
+    cluster-nodes: 192.168.1.188:9200
     check-enabled: false
   # 在线预览文件服务器地址配置
   file-view-domain: http://127.0.0.1:8012
@@ -277,26 +281,3 @@ justauth:
     type: default
     prefix: 'demo::'
     timeout: 1h
-#第三方APP对接
-third-app:
-  enabled: false
-  type:
-    #企业微信
-    WECHAT_ENTERPRISE:
-      enabled: false
-      #CORP_ID
-      client-id: ??
-      #SECRET
-      client-secret: ??
-      #自建应用id
-      agent-id: ??
-      #自建应用秘钥（新版企微需要配置）
-      # agent-app-secret: ??
-    #钉钉
-    DINGTALK:
-      enabled: false
-      # appKey
-      client-id: ??
-      # appSecret
-      client-secret: ??
-      agent-id: ??

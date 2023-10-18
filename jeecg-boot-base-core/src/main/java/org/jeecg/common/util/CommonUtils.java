@@ -11,7 +11,8 @@ import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.constant.ServiceNameConstants;
 import org.jeecg.common.constant.SymbolConstant;
-import org.jeecg.common.util.filter.FileTypeFilter;
+import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.common.util.filter.SsrfFileTypeFilter;
 import org.jeecg.common.util.oss.OssBootUtil;
 import org.jeecgframework.poi.util.PoiPublicUtil;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -27,8 +28,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -138,6 +138,7 @@ public class CommonUtils {
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            throw new JeecgBootException(e.getMessage());
         }
         return url;
     }
@@ -147,10 +148,10 @@ public class CommonUtils {
      * @param bizPath  自定义路径
      * @return
      */
-    public static String uploadLocal(MultipartFile mf, String bizPath, String uploadpath){
+    public static String uploadLocal(MultipartFile mf,String bizPath,String uploadpath){
         try {
             //update-begin-author:liusq date:20210809 for: 过滤上传文件类型
-            FileTypeFilter.fileTypeFilter(mf);
+            SsrfFileTypeFilter.checkUploadFileType(mf);
             //update-end-author:liusq date:20210809 for: 过滤上传文件类型
             String fileName = null;
             File file = new File(uploadpath + File.separator + bizPath + File.separator );
@@ -274,7 +275,7 @@ public class CommonUtils {
         if(db==null){
             return null;
         }
-        DriverManagerDataSource ds = new DriverManagerDataSource();
+        DriverManagerDataSource ds = new DriverManagerDataSource ();
         ds.setDriverClassName(db.getDriverClassName());
         ds.setUrl(db.getUrl());
         ds.setUsername(db.getUsername());
@@ -414,6 +415,10 @@ public class CommonUtils {
      * @return name = '1212'
      */
     public static String getFilterSqlByTableSql(String tableSql) {
+        if(oConvertUtils.isEmpty(tableSql)){
+            return null;
+        }
+        
         if (tableSql.toLowerCase().indexOf(DataBaseConstant.SQL_WHERE) > 0) {
             String[] arr = tableSql.split(" (?i)where ");
             if (arr != null && oConvertUtils.isNotEmpty(arr[1])) {
@@ -430,11 +435,36 @@ public class CommonUtils {
      * @return sys_user
      */
     public static String getTableNameByTableSql(String tableSql) {
+        if(oConvertUtils.isEmpty(tableSql)){
+            return null;
+        }
+        
         if (tableSql.toLowerCase().indexOf(DataBaseConstant.SQL_WHERE) > 0) {
             String[] arr = tableSql.split(" (?i)where ");
             return arr[0].trim();
         } else {
             return tableSql;
         }
+    }
+
+    /**
+     * 判断两个数组是否存在交集
+     * @param set1
+     * @param arr2
+     * @return
+     */
+    public static boolean hasIntersection(Set<String> set1, String[] arr2) {
+        if (set1 == null) {
+            return false;
+        }
+        
+        if(set1.size()>0){
+            for (String str : arr2) {
+                if (set1.contains(str)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

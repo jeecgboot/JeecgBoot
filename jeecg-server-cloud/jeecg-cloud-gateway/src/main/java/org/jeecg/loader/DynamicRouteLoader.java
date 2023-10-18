@@ -205,23 +205,23 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
             }
             Object predicates = obj.get("predicates");
             if (predicates != null) {
-                
+                //update-begin-author:liusq---date:2023-10-15--for: [issues/5331]网关路由配置问题
                 List<PredicatesVo> list = JSON.parseArray(predicates.toString(), PredicatesVo.class);
+                //获取合并后的Predicates，防止配置多个path导致路径失效的问题
                 Map<String, List<String>> groupedPredicates = new HashMap<>();
-
                 for (PredicatesVo predicatesVo : list) {
                     String name = predicatesVo.getName();
                     List<String> args = predicatesVo.getArgs();
                     groupedPredicates.computeIfAbsent(name, k -> new ArrayList<>()).addAll(args);
                 }
-
+                //合并后的list
                 list = new ArrayList<>();
                 for (Map.Entry<String, List<String>> entry : groupedPredicates.entrySet()) {
                     String name = entry.getKey();
                     List<String> args = entry.getValue();
                     list.add(new PredicatesVo(name, args));
                 }
-                
+                //update-end-author:liusq---date:2023-10-15--for:[issues/5331]网关路由配置问题
                 List<PredicateDefinition> predicateDefinitionList = new ArrayList<>();
                 for (Object map : list) {
                     JSONObject json = JSON.parseObject(JSON.toJSONString(map));

@@ -2,6 +2,7 @@ package org.jeecg.modules.system.mapper;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -73,4 +74,11 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
 	 * @return
 	 */
 	List<SysPermission> queryDepartPermissionList(@Param("departId") String departId);
+
+	/**
+	 * 根据用户名称和test角色id查询权限
+	 * @return
+	 */
+	@InterceptorIgnore(tenantLine = "true")
+    List<SysPermission> queryPermissionByTestRoleId();
 }

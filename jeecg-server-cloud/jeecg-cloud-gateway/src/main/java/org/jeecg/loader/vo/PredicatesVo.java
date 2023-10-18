@@ -6,7 +6,11 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-
+/**
+ * 路由配置VO
+ * @author lsq
+ * @Date 2023/10/15
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

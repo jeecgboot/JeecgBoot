@@ -1,9 +1,6 @@
 package org.jeecg.modules.system.service.impl;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 
@@ -11,6 +8,7 @@ import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.entity.SysPermissionDataRule;
 import org.jeecg.modules.system.mapper.SysDepartPermissionMapper;
@@ -225,7 +223,24 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 
 	@Override
 	public List<SysPermission> queryByUser(String username) {
-		return this.sysPermissionMapper.queryByUser(username);
+		List<SysPermission> permissionList = this.sysPermissionMapper.queryByUser(username);
+		//================= begin 开启租户的时候 如果没有test角色，默认加入test角色================
+		if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+			if (permissionList == null) {
+				permissionList = new ArrayList<>();
+			}
+			List<SysPermission> testRoleList = sysPermissionMapper.queryPermissionByTestRoleId();
+			//update-begin-author:liusq date:20230427 for: [QQYUN-5168]【vue3】为什么出现两个菜单 菜单根据id去重
+			for (SysPermission permission: testRoleList) {
+				boolean hasPerm = permissionList.stream().anyMatch(a->a.getId().equals(permission.getId()));
+				if(!hasPerm){
+					permissionList.add(permission);
+				}
+			}
+			//update-end-author:liusq date:20230427 for: [QQYUN-5168]【vue3】为什么出现两个菜单 菜单根据id去重
+		}
+		//================= end 开启租户的时候 如果没有test角色，默认加入test角色================
+		return permissionList;
 	}
 
 	/**

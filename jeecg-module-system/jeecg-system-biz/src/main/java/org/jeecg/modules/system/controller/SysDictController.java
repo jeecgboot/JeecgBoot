@@ -24,7 +24,6 @@ import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.model.SysDictTree;
 import org.jeecg.modules.system.model.TreeSelectModel;
-import org.jeecg.modules.system.security.DictQueryBlackListHandler;
 import org.jeecg.modules.system.service.ISysDictItemService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.vo.SysDictPage;
@@ -43,7 +42,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
@@ -69,8 +67,6 @@ public class SysDictController {
 	private ISysDictItemService sysDictItemService;
 	@Autowired
 	public RedisTemplate<String, Object> redisTemplate;
-	@Autowired
-	private DictQueryBlackListHandler dictQueryBlackListHandler;
 	@Autowired
 	private RedisUtil redisUtil;
 
@@ -171,11 +167,6 @@ public class SysDictController {
 	public Result<List<DictModel>> getDictItems(@PathVariable("dictCode") String dictCode, @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
 		log.info(" dictCode : "+ dictCode);
 		Result<List<DictModel>> result = new Result<List<DictModel>>();
-		//update-begin-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
-		if(!dictQueryBlackListHandler.isPass(dictCode)){
-			return result.error500(dictQueryBlackListHandler.getError());
-		}
-		//update-end-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
 		try {
 			List<DictModel> ls = sysDictService.getDictItems(dictCode);
 			if (ls == null) {
@@ -202,9 +193,9 @@ public class SysDictController {
 	 */
 	@RequestMapping(value = "/loadDict/{dictCode}", method = RequestMethod.GET)
 	public Result<List<DictModel>> loadDict(@PathVariable("dictCode") String dictCode,
-											@RequestParam(name="keyword",required = false) String keyword,
-											@RequestParam(value = "sign",required = false) String sign,
-											@RequestParam(value = "pageSize", required = false) Integer pageSize) {
+			@RequestParam(name="keyword",required = false) String keyword,
+			@RequestParam(value = "sign",required = false) String sign,
+			@RequestParam(value = "pageSize", required = false) Integer pageSize) {
 		
 		//update-begin-author:taoyan date:2023-5-22 for: /issues/4905 因为中括号(%5)的问题导致的 表单生成器字段配置时，选择关联字段，在进行高级配置时，无法加载数据库列表，提示 Sgin签名校验错误！ #4905 RouteToRequestUrlFilter
 		if(keyword!=null && keyword.indexOf("%5")>=0){
@@ -218,11 +209,6 @@ public class SysDictController {
 		
 		log.info(" 加载字典表数据,加载关键字: "+ keyword);
 		Result<List<DictModel>> result = new Result<List<DictModel>>();
-		//update-begin-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
-		if(!dictQueryBlackListHandler.isPass(dictCode)){
-			return result.error500(dictQueryBlackListHandler.getError());
-		}
-		//update-end-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
 		try {
 			List<DictModel> ls = sysDictService.loadDict(dictCode, keyword, pageSize);
 			if (ls == null) {
@@ -235,7 +221,7 @@ public class SysDictController {
 			return result;
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
-			result.error500("操作失败");
+			result.error500("操作失败：" + e.getMessage());
 			return result;
 		}
 	}
@@ -294,11 +280,6 @@ public class SysDictController {
 	@RequestMapping(value = "/loadDictItem/{dictCode}", method = RequestMethod.GET)
 	public Result<List<String>> loadDictItem(@PathVariable("dictCode") String dictCode,@RequestParam(name="key") String keys, @RequestParam(value = "sign",required = false) String sign,@RequestParam(value = "delNotExist",required = false,defaultValue = "true") boolean delNotExist,HttpServletRequest request) {
 		Result<List<String>> result = new Result<>();
-		//update-begin-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
-		if(!dictQueryBlackListHandler.isPass(dictCode)){
-			return result.error500(dictQueryBlackListHandler.getError());
-		}
-		//update-end-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
 		try {
 			if(dictCode.indexOf(SymbolConstant.COMMA)!=-1) {
 				String[] params = dictCode.split(SymbolConstant.COMMA);
@@ -328,11 +309,16 @@ public class SysDictController {
 	 * 根据表名——显示字段-存储字段 pid 加载树形数据
 	 * @param hasChildField 是否叶子节点字段
 	 * @param converIsLeafVal 是否需要系统转换 是否叶子节点的值 (0标识不转换、1标准系统自动转换)
+	 * @param tableName 表名
+	 * @param text label字段
+	 * @param code value 字段
+	 * @param condition  查询条件  ？
+	 *            
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/loadTreeData", method = RequestMethod.GET)
 	public Result<List<TreeSelectModel>> loadTreeData(@RequestParam(name="pid",required = false) String pid,@RequestParam(name="pidField") String pidField,
-												  @RequestParam(name="tableName") String tbname,
+												  @RequestParam(name="tableName") String tableName,
 												  @RequestParam(name="text") String text,
 												  @RequestParam(name="code") String code,
 												  @RequestParam(name="hasChildField") String hasChildField,
@@ -340,19 +326,14 @@ public class SysDictController {
 												  @RequestParam(name="condition") String condition,
 												  @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
 		Result<List<TreeSelectModel>> result = new Result<List<TreeSelectModel>>();
+		// 1.获取查询条件参数
 		Map<String, String> query = null;
 		if(oConvertUtils.isNotEmpty(condition)) {
 			query = JSON.parseObject(condition, Map.class);
 		}
-		// SQL注入漏洞 sign签名校验(表名,label字段,val字段,条件)
-		String dictCode = tbname+","+text+","+code+","+condition;
-        SqlInjectionUtil.filterContent(dictCode);
-		//update-begin-author:scott date:20230723 for:【issues/5173】SQL注入
-		if(!dictQueryBlackListHandler.isPass(dictCode)){
-			return result.error500(dictQueryBlackListHandler.getError());
-		}
-		//update-end-author:scott date:20230723 for:【issues/5173】SQL注入
-		List<TreeSelectModel> ls = sysDictService.queryTreeList(query,tbname, text, code, pidField, pid,hasChildField,converIsLeafVal);
+		
+		// 2.返回查询结果
+		List<TreeSelectModel> ls = sysDictService.queryTreeList(query,tableName, text, code, pidField, pid,hasChildField,converIsLeafVal);
 		result.setSuccess(true);
 		result.setResult(ls);
 		return result;
@@ -372,14 +353,6 @@ public class SysDictController {
 												  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
 												  @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request){
 		Result<List<DictModel>> res = new Result<List<DictModel>>();
-		// SQL注入漏洞 sign签名校验
-		String dictCode = query.getTable()+","+query.getText()+","+query.getCode();
-		SqlInjectionUtil.filterContent(dictCode);
-		//update-begin-author:taoyan date:2022-11-4 for: issues/4128 sql injection
-		if(!dictQueryBlackListHandler.isPass(dictCode)){
-			return res.error500(dictQueryBlackListHandler.getError());
-		}
-		//update-end-author:taoyan date:2022-11-4 for: issues/4128 sql injection
 		List<DictModel> ls = this.sysDictService.queryDictTablePageList(query,pageSize,pageNo);
 		res.setResult(ls);
 		res.setSuccess(true);
@@ -690,7 +663,7 @@ public class SysDictController {
 	 */
 	@GetMapping("/getDictListByLowAppId")
 	public Result<List<SysDictVo>> getDictListByLowAppId(HttpServletRequest request){
-		String lowAppId = oConvertUtils.getString(TokenUtils.getLowAppIdByRequest(request),"0");
+		String lowAppId = oConvertUtils.getString(TokenUtils.getLowAppIdByRequest(request));
 		List<SysDictVo> list = sysDictService.getDictListByLowAppId(lowAppId);
 		return Result.ok(list);
 	}
@@ -703,15 +676,17 @@ public class SysDictController {
 	 */
 	@PostMapping("/addDictByLowAppId")
 	public Result<String> addDictByLowAppId(@RequestBody SysDictVo sysDictVo,HttpServletRequest request){
-		String lowAppId = oConvertUtils.getString(TokenUtils.getLowAppIdByRequest(request),"0");
+		String lowAppId = oConvertUtils.getString(TokenUtils.getLowAppIdByRequest(request));
+		String tenantId = oConvertUtils.getString(TokenUtils.getTenantIdByRequest(request));
 		sysDictVo.setLowAppId(lowAppId);
+		sysDictVo.setTenantId(oConvertUtils.getInteger(tenantId, null));
 		sysDictService.addDictByLowAppId(sysDictVo);
 		return Result.ok("添加成功");
 	}
 
 	@PutMapping("/editDictByLowAppId")
 	public Result<String> editDictByLowAppId(@RequestBody SysDictVo sysDictVo,HttpServletRequest request){
-		String lowAppId = oConvertUtils.getString(TokenUtils.getLowAppIdByRequest(request),"0");
+		String lowAppId = oConvertUtils.getString(TokenUtils.getLowAppIdByRequest(request));
 		sysDictVo.setLowAppId(lowAppId);
 		sysDictService.editDictByLowAppId(sysDictVo);
 		return Result.ok("编辑成功");

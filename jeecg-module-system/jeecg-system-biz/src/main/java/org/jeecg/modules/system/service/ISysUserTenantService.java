@@ -2,6 +2,7 @@ package org.jeecg.modules.system.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserTenant;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -86,4 +87,37 @@ public interface ISysUserTenantService extends IService<SysUserTenant> {
      * @return
      */
     Integer userTenantIzExist(String userId, Integer tenantId);
+
+    /**
+     * 根据用户id获取我的租户
+     *
+     * @param page
+     * @param userId
+     * @param userTenantStatus
+     * @param sysUserTenantVo
+     * @return
+     */
+    IPage<SysTenant> getTenantPageListByUserId(Page<SysTenant> page, String userId, List<String> userTenantStatus,SysUserTenantVo sysUserTenantVo);
+
+    /**
+     * 同意加入租户
+     * @param userId
+     * @param tenantId
+     */
+    void agreeJoinTenant(String userId, Integer tenantId);
+
+    /**
+     * 拒绝加入租户
+     * @param userId
+     * @param tenantId
+     */
+    void refuseJoinTenant(String userId, Integer tenantId);
+
+    /**
+     * 根据用户id和租户id获取用户租户中间表信息
+     * @param userId
+     * @param tenantId
+     * @return
+     */
+    SysUserTenant getUserTenantByTenantId(String userId, Integer tenantId);
 }

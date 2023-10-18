@@ -2,4 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.system.mapper.SysPositionMapper">
 
+    <!--通过用户id获取职位数据-->
+    <select id="getPositionList" resultType="org.jeecg.modules.system.entity.SysPosition">
+        SELECT sp.name,sp.id FROM sys_position sp
+        INNER JOIN sys_user_position sup on sp.id = sup.position_id
+        WHERE
+        sup.user_id = #{userId}
+    </select>
+
+    <!--通过职位id获取职位名称-->
+    <select id="getPositionName" resultType="org.jeecg.modules.system.entity.SysPosition">
+        SELECT name FROM sys_position
+        WHERE
+        id IN
+        <foreach collection="postList" index="index" item="positionId" open="(" separator="," close=")">
+            #{positionId}
+        </foreach>
+    </select>
 </mapper>

@@ -102,12 +102,12 @@ public interface CommonAPI {
 
     /**
      * 13获取表数据字典
-     * @param table
+     * @param tableFilterSql
      * @param text
      * @param code
      * @return
      */
-    List<DictModel> queryTableDictItemsByCode(String table, String text, String code);
+    List<DictModel> queryTableDictItemsByCode(String tableFilterSql, String text, String code);
 
     /**
      * 14 普通字典的翻译，根据多个dictCode和多条数据，多个以逗号分割

@@ -41,6 +41,7 @@ import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -51,6 +52,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.jeecg.common.constant.CommonConstant.ANNOUNCEMENT_SEND_STATUS_1;
@@ -83,6 +88,12 @@ public class SysAnnouncementController {
 	private RedisUtil redisUtil;
 
 	/**
+	 * QQYUN-5072【性能优化】线上通知消息打开有点慢
+	 */
+	public static ExecutorService cachedThreadPool = new ThreadPoolExecutor(0, 1024,60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+	public static ExecutorService completeNoteThreadPool = new ThreadPoolExecutor(0, 1024,60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+
+	/**
 	  * 分页列表查询
 	 * @param sysAnnouncement
 	 * @param pageNo
@@ -105,19 +116,6 @@ public class SysAnnouncementController {
 		sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
 		QueryWrapper<SysAnnouncement> queryWrapper = QueryGenerator.initQueryWrapper(sysAnnouncement, req.getParameterMap());
 		Page<SysAnnouncement> page = new Page<SysAnnouncement>(pageNo,pageSize);
-
-		//update-begin-author:lvdandan date:20211229 for: sqlserver mssql-jdbc 8.2.2.jre8版本下系统公告列表查询报错 查询SQL中生成了两个create_time DESC；故注释此段代码
-		//排序逻辑 处理
-//		String column = req.getParameter("column");
-//		String order = req.getParameter("order");
-//		if(oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
-//			if("asc".equals(order)) {
-//				queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));
-//			}else {
-//				queryWrapper.orderByDesc(oConvertUtils.camelToUnderline(column));
-//			}
-//		}
-		//update-end-author:lvdandan date:20211229 for: sqlserver mssql-jdbc 8.2.2.jre8版本下系统公告列表查询报错 查询SQL中生成了两个create_time DESC；故注释此段代码
 		IPage<SysAnnouncement> pageList = sysAnnouncementService.page(page, queryWrapper);
 		result.setSuccess(true);
 		result.setResult(pageList);
@@ -256,8 +254,12 @@ public class SysAnnouncementController {
 			sysAnnouncement.setSender(currentUserName);
 			boolean ok = sysAnnouncementService.updateById(sysAnnouncement);
 			if(ok) {
-				result.success("该系统通知发布成功");
+				result.success("系统通知推送成功");
 				if(sysAnnouncement.getMsgType().equals(CommonConstant.MSG_TYPE_ALL)) {
+					// 补全公告和用户之前的关系
+					sysAnnouncementService.batchInsertSysAnnouncementSend(sysAnnouncement.getId(), sysAnnouncement.getTenantId());
+					
+					// 推送websocket通知
 					JSONObject obj = new JSONObject();
 			    	obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_TOPIC);
 					obj.put(WebsocketConst.MSG_ID, sysAnnouncement.getId());
@@ -277,7 +279,7 @@ public class SysAnnouncementController {
 				}
 				try {
 					// 同步企业微信、钉钉的消息通知
-					Response<String> dtResponse = dingtalkService.sendActionCardMessage(sysAnnouncement, true);
+					Response<String> dtResponse = dingtalkService.sendActionCardMessage(sysAnnouncement, null, true);
 					wechatEnterpriseService.sendTextCardMessage(sysAnnouncement, true);
 
 					if (dtResponse != null && dtResponse.isSuccess()) {
@@ -332,54 +334,28 @@ public class SysAnnouncementController {
 	@RequestMapping(value = "/listByUser", method = RequestMethod.GET)
 	public Result<Map<String, Object>> listByUser(@RequestParam(required = false, defaultValue = "5") Integer pageSize) {
 		Result<Map<String,Object>> result = new Result<Map<String,Object>>();
+		Map<String,Object> sysMsgMap = new HashMap(5);
 		LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
 		String userId = sysUser.getId();
-		// 1.将系统消息补充到用户通告阅读标记表中
-		LambdaQueryWrapper<SysAnnouncement> querySaWrapper = new LambdaQueryWrapper<SysAnnouncement>();
-        //全部人员
-		querySaWrapper.eq(SysAnnouncement::getMsgType,CommonConstant.MSG_TYPE_ALL);
-        //未删除
-		querySaWrapper.eq(SysAnnouncement::getDelFlag,CommonConstant.DEL_FLAG_0.toString());
-        //已发布
-		querySaWrapper.eq(SysAnnouncement::getSendStatus, CommonConstant.HAS_SEND);
-        //新注册用户不看结束通知
-		querySaWrapper.ge(SysAnnouncement::getEndTime, sysUser.getCreateTime());
-		//update-begin--Author:liusq  Date:20210108 for：[JT-424] 【开源issue】bug处理--------------------
-		querySaWrapper.notInSql(SysAnnouncement::getId,"select annt_id from sys_announcement_send where user_id='"+userId+"'");
-		//update-begin--Author:liusq  Date:20210108  for： [JT-424] 【开源issue】bug处理--------------------
-		List<SysAnnouncement> announcements = sysAnnouncementService.list(querySaWrapper);
-		if(announcements.size()>0) {
-			for(int i=0;i<announcements.size();i++) {
-				//update-begin--Author:wangshuai  Date:20200803  for： 通知公告消息重复LOWCOD-759--------------------
-				//因为websocket没有判断是否存在这个用户，要是判断会出现问题，故在此判断逻辑
-				LambdaQueryWrapper<SysAnnouncementSend> query = new LambdaQueryWrapper<>();
-				query.eq(SysAnnouncementSend::getAnntId,announcements.get(i).getId());
-				query.eq(SysAnnouncementSend::getUserId,userId);
-				SysAnnouncementSend one = sysAnnouncementSendService.getOne(query);
-				if(null==one){
-					log.info("listByUser接口新增了SysAnnouncementSend：pageSize{}："+pageSize);
-					SysAnnouncementSend announcementSend = new SysAnnouncementSend();
-					announcementSend.setAnntId(announcements.get(i).getId());
-					announcementSend.setUserId(userId);
-					announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
-					sysAnnouncementSendService.save(announcementSend);
-					log.info("announcementSend.toString()",announcementSend.toString());
-				}
-				//update-end--Author:wangshuai  Date:20200803  for： 通知公告消息重复LOWCOD-759------------
-			}
-		}
+		
+//		//补推送数据（用户和通知的关系表）
+//		completeNoteThreadPool.execute(()->{
+//			sysAnnouncementService.completeAnnouncementSendInfo();
+//		});
+		
 		// 2.查询用户未读的系统消息
 		Page<SysAnnouncement> anntMsgList = new Page<SysAnnouncement>(0, pageSize);
         //通知公告消息
 		anntMsgList = sysAnnouncementService.querySysCementPageByUserId(anntMsgList,userId,"1");
-		Page<SysAnnouncement> sysMsgList = new Page<SysAnnouncement>(0, pageSize);
-        //系统消息
-		sysMsgList = sysAnnouncementService.querySysCementPageByUserId(sysMsgList,userId,"2");
-		Map<String,Object> sysMsgMap = new HashMap(5);
-		sysMsgMap.put("sysMsgList", sysMsgList.getRecords());
-		sysMsgMap.put("sysMsgTotal", sysMsgList.getTotal());
 		sysMsgMap.put("anntMsgList", anntMsgList.getRecords());
 		sysMsgMap.put("anntMsgTotal", anntMsgList.getTotal());
+		
+        //系统消息
+		Page<SysAnnouncement> sysMsgList = new Page<SysAnnouncement>(0, pageSize);
+		sysMsgList = sysAnnouncementService.querySysCementPageByUserId(sysMsgList,userId,"2");
+		sysMsgMap.put("sysMsgList", sysMsgList.getRecords());
+		sysMsgMap.put("sysMsgTotal", sysMsgList.getTotal());
+		
 		result.setSuccess(true);
 		result.setResult(sysMsgMap);
 		return result;
@@ -528,39 +504,56 @@ public class SysAnnouncementController {
 	public Result<List<SysAnnouncement>> vue3List(@RequestParam(name="fromUser", required = false) String fromUser,
 												  @RequestParam(name="starFlag", required = false) String starFlag,
                                                   @RequestParam(name="rangeDateKey", required = false) String rangeDateKey,
-                                                  @RequestParam(name="beginDate", required = false) String beginDate, @RequestParam(name="endDate", required = false) String endDate,
-                                                  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo, @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
-		// 后台获取开始时间/结束时间
-		Date bd=null, ed=null;
-		if(RangeDateEnum.ZDY.getKey().equals(rangeDateKey)){
-			if(oConvertUtils.isNotEmpty(beginDate)){
-				bd = DateUtils.parseDatetime(beginDate);
+                                                  @RequestParam(name="beginDate", required = false) String beginDate, 
+												  @RequestParam(name="endDate", required = false) String endDate,
+												  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo, 
+												  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
+		long calStartTime = System.currentTimeMillis(); // 记录开始时间
+		
+		// 1、获取日期查询条件，开始时间和结束时间
+		Date beginTime = null, endTime = null;
+		if (RangeDateEnum.ZDY.getKey().equals(rangeDateKey)) {
+			// 自定义日期范围查询
+			if (oConvertUtils.isNotEmpty(beginDate)) {
+				beginTime = DateUtils.parseDatetime(beginDate);
 			}
-			if(oConvertUtils.isNotEmpty(endDate)){
-				ed = DateUtils.parseDatetime(endDate);
+			if (oConvertUtils.isNotEmpty(endDate)) {
+				endTime = DateUtils.parseDatetime(endDate);
 			}
-		}else{
+		} else {
+			// 日期段落查询
 			Date[] arr = RangeDateEnum.getRangeArray(rangeDateKey);
-			if(arr!=null){
-				bd = arr[0];
-				ed = arr[1];
+			if (arr != null) {
+				beginTime = arr[0];
+				endTime = arr[1];	
 			}
 		}
-		List<SysAnnouncement> ls = this.sysAnnouncementService.querySysMessageList(pageSize, pageNo, fromUser, starFlag, bd, ed);
-		//查询出来的消息全部设置为已读
-		if(ls!=null && ls.size()>0){
+		
+		// 2、根据条件查询用户的通知消息
+		List<SysAnnouncement> ls = this.sysAnnouncementService.querySysMessageList(pageSize, pageNo, fromUser, starFlag, beginTime, endTime);
+
+		// 3、设置当前页的消息为已读
+		if (!CollectionUtils.isEmpty(ls)) {
+			// 设置已读
 			String readed = "1";
-			List<String> annoceIdList = ls.stream().filter(item->!readed.equals(item.getReadFlag())).map(item->item.getId()).collect(Collectors.toList());
-			if(annoceIdList!=null && annoceIdList.size()>0){
-				sysAnnouncementService.updateReaded(annoceIdList);
+			List<String> annoceIdList = ls.stream().filter(item -> !readed.equals(item.getReadFlag())).map(item -> item.getId()).collect(Collectors.toList());
+			if (!CollectionUtils.isEmpty(annoceIdList)) {
+				cachedThreadPool.execute(() -> {
+					sysAnnouncementService.updateReaded(annoceIdList);
+				});
 			}
 		}
-		//update-begin-author:taoyan date:2022-9-25 for: VUEN-2261【移动端 系统消息】通知公告显示7条消息，点进去查看后，仍然显示7条；其他地方已读后，未读条数减少
+		
 		JSONObject obj = new JSONObject();
 		obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		webSocket.sendMessage(sysUser.getId(), obj.toJSONString());
-		//update-end-author:taoyan date:2022-9-25 for: VUEN-2261【移动端 系统消息】通知公告显示7条消息，点进去查看后，仍然显示7条；其他地方已读后，未读条数减少
+
+		// 4、性能统计耗时
+		long calEndTime = System.currentTimeMillis(); // 记录结束时间
+		long duration = calEndTime - calStartTime; // 计算耗时
+		System.out.println("耗时：" + duration + " 毫秒");
+		
 		return Result.ok(ls);
 	}
 
@@ -583,4 +576,14 @@ public class SysAnnouncementController {
         result.setResult(pageList);
         return result;
     }
+
+	/**
+	 * 清除当前用户所有未读消息
+	 * @return
+	 */
+	@PostMapping("/clearAllUnReadMessage")
+    public Result<String> clearAllUnReadMessage(){
+		sysAnnouncementService.clearAllUnReadMessage();
+		return Result.ok("清除未读消息成功");
+	}
 }
