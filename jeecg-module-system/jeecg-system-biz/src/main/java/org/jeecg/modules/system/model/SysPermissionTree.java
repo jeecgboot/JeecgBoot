@@ -1,11 +1,10 @@
 package org.jeecg.modules.system.model;
 
-import org.jeecg.modules.system.entity.SysPermission;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.jeecg.modules.system.entity.SysPermission;
 
 /**
  * @Description: 菜单树，封装树结构
@@ -130,7 +129,7 @@ public class SysPermissionTree implements Serializable {
     private boolean hidden;
     
     /**按钮权限状态(0无效1有效)*/
-	private String status;
+	private java.lang.String status;
 
 	/*update_begin author:wuxianquan date:20190908 for:model增加字段 */
 	/** 外链菜单打开方式 0/内部打开 1/外部打开 */
@@ -402,11 +401,11 @@ public class SysPermissionTree implements Serializable {
 		this.permsType = permsType;
 	}
 
-	public String getStatus() {
+	public java.lang.String getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(java.lang.String status) {
 		this.status = status;
 	}
 

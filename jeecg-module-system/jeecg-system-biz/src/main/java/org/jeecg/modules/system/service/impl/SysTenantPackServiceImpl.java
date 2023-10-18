@@ -1,7 +1,6 @@
 package org.jeecg.modules.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.constant.TenantConstant;
@@ -10,16 +9,22 @@ import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.aop.TenantLog;
 import org.jeecg.modules.system.entity.SysPackPermission;
+import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysTenantPack;
 import org.jeecg.modules.system.entity.SysTenantPackUser;
 import org.jeecg.modules.system.mapper.SysPackPermissionMapper;
+import org.jeecg.modules.system.mapper.SysRoleMapper;
 import org.jeecg.modules.system.mapper.SysTenantPackMapper;
 import org.jeecg.modules.system.mapper.SysTenantPackUserMapper;
 import org.jeecg.modules.system.service.ISysTenantPackService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,6 +46,9 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
 
     @Autowired
     private SysPackPermissionMapper sysPackPermissionMapper;
+
+    @Autowired
+    private SysRoleMapper sysRoleMapper;
 
     @Override
     public void addPackPermission(SysTenantPack sysTenantPack) {
@@ -198,4 +206,27 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
         }
         sysPackPermissionMapper.delete(query);
     }
+
+    @Override
+    public void addTenantDefaultPack(Integer tenantId) {
+        LambdaQueryWrapper<SysTenantPack> query = new LambdaQueryWrapper<>();
+        query.eq(SysTenantPack::getPackType,"default");
+        List<SysTenantPack> sysTenantPacks = sysTenantPackMapper.selectList(query);
+        for (SysTenantPack sysTenantPack: sysTenantPacks) {
+            SysTenantPack pack = new SysTenantPack();
+            BeanUtils.copyProperties(sysTenantPack,pack);
+            pack.setTenantId(tenantId);
+            pack.setPackType("custom");
+            pack.setId("");
+            sysTenantPackMapper.insert(pack);
+            List<String> permissionsByPackId = sysPackPermissionMapper.getPermissionsByPackId(sysTenantPack.getId());
+            for (String permission:permissionsByPackId) {
+                SysPackPermission packPermission = new SysPackPermission();
+                packPermission.setPackId(pack.getId());
+                packPermission.setPermissionId(permission);
+                sysPackPermissionMapper.insert(packPermission);
+            }   
+        }
+    }
+
 }

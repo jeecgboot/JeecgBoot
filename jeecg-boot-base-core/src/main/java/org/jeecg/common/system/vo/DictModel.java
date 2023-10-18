@@ -2,6 +2,7 @@ package org.jeecg.common.system.vo;
 
 import java.io.Serializable;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
@@ -26,7 +27,13 @@ public class DictModel implements Serializable{
 		this.value = value;
 		this.text = text;
 	}
-	
+
+	public DictModel(String value, String text, String color) {
+		this.value = value;
+		this.text = text;
+		this.color = color;
+	}
+
 	/**
 	 * 字典value
 	 */
@@ -35,6 +42,10 @@ public class DictModel implements Serializable{
 	 * 字典文本
 	 */
 	private String text;
+	/**
+	 * 字典颜色
+	 */
+	private String color;
 
 	/**
 	 * 特殊用途： JgEditableTable
@@ -49,5 +60,12 @@ public class DictModel implements Serializable{
 	public String getLabel() {
 		return this.text;
 	}
+
+
+	/**
+	 * 用于表单设计器 关联记录表数据存储
+	 * QQYUN-5595【表单设计器】他表字段 导入没有翻译
+	 */
+	private JSONObject jsonObject;
 
 }

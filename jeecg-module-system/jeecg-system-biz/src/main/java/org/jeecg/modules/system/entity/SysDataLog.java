@@ -1,17 +1,18 @@
 package org.jeecg.modules.system.entity;
 
-import java.io.Serializable;
-import java.util.Date;
-
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.system.vo.LoginUser;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @Description: 系统数据日志
@@ -20,6 +21,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
+@Slf4j
 public class SysDataLog implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -33,6 +35,11 @@ public class SysDataLog implements Serializable {
      * 创建人登录名称
      */
 	private String createBy;
+
+    /**
+     * 创建人真实名称
+     */
+	private String createName;
 
     /**
      * 创建日期
@@ -80,4 +87,17 @@ public class SysDataLog implements Serializable {
      */
     private String type;
     //update-end-author:taoyan date:2022-7-26 for: 用于表单评论记录日志 区分数据
+
+    /**
+     * 通过 loginUser 设置 createName
+     */
+    public void autoSetCreateName() {
+        try {
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            this.setCreateName(sysUser.getRealname());
+        } catch (Exception e) {
+            log.warn("SecurityUtils.getSubject() 获取用户信息异常：" + e.getMessage());
+        }
+    }
+
 }

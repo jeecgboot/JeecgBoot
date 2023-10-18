@@ -34,6 +34,21 @@ public class TokenUtils {
         }
         return token;
     }
+    
+    /**
+     * 获取 request 里传递的 token
+     * @return
+     */
+    public static String getTokenByRequest() {
+        String token = null;
+        try {
+            HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
+            token = TokenUtils.getTokenByRequest(request);
+        } catch (Exception e) {
+            //e.printStackTrace();
+        }
+        return token;
+    }
 
     /**
      * 获取 request 里传递的 tenantId (租户ID)

@@ -28,16 +28,16 @@ public interface IThirdAppService {
      */
     SyncInfoVo syncLocalDepartmentToThirdApp(String ids);
 
-    /**
-     * 将第三方App部门同步到本地<br>
-     * 同步方向：第三方APP --> 本地
-     * 同步逻辑：<br>
-     * 1. 先判断是否同步过，有则修改，无则创建；<br>
-     * 2. 本地没有但第三方App里有则删除第三方App里的。
-     * @param ids
-     * @return 成功返回true
-     */
-    SyncInfoVo syncThirdAppDepartmentToLocal(String ids);
+//    /**
+//     * 将第三方App部门同步到本地<br>
+//     * 同步方向：第三方APP --> 本地
+//     * 同步逻辑：<br>
+//     * 1. 先判断是否同步过，有则修改，无则创建；<br>
+//     * 2. 本地没有但第三方App里有则删除第三方App里的。
+//     * @param ids
+//     * @return 成功返回true
+//     */
+//    SyncInfoVo syncThirdAppDepartmentToLocal(String ids);
 
     /**
      * 将本地用户同步到第三方App<br>
@@ -52,15 +52,15 @@ public interface IThirdAppService {
      */
     SyncInfoVo syncLocalUserToThirdApp(String ids);
 
-    /**
-     * 将第三方App用户同步到本地<br>
-     * 同步方向：第三方APP --> 本地 <br>
-     * 同步逻辑：先判断是否同步过，有则修改、无则创建<br>
-     * 注意：同步人员的状态，比如离职、禁用、逻辑删除等。
-     *
-     * @return 成功返回空数组，失败返回错误信息
-     */
-    SyncInfoVo syncThirdAppUserToLocal();
+//    /**
+//     * 将第三方App用户同步到本地<br>
+//     * 同步方向：第三方APP --> 本地 <br>
+//     * 同步逻辑：先判断是否同步过，有则修改、无则创建<br>
+//     * 注意：同步人员的状态，比如离职、禁用、逻辑删除等。
+//     *
+//     * @return 成功返回空数组，失败返回错误信息
+//     */
+//    SyncInfoVo syncThirdAppUserToLocal();
 
     /**
      * 根据本地用户ID，删除第三方APP的用户

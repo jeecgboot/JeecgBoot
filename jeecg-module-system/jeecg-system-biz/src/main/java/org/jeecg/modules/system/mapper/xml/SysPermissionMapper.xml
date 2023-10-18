@@ -129,5 +129,17 @@
 		)
 		order by sort_no ASC 
 	</select>
+	
+	<!--根据用户名称和test角色id查询权限-->
+	<select id="queryPermissionByTestRoleId" resultType="org.jeecg.modules.system.entity.SysPermission">
+		SELECT p.*
+		FROM  sys_permission p
+		WHERE exists(
+				   select a.id from sys_role_permission a
+				   join sys_role b on a.role_id = b.id
+				   where p.id = a.permission_id AND b.id= 'ee8626f80f7c2619917b6236f3a7f02b'
+			   )
+		  and p.del_flag = 0
+	</select>
 
 </mapper>

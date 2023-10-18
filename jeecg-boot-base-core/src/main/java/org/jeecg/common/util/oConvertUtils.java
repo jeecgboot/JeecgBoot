@@ -168,6 +168,17 @@ public class oConvertUtils {
 		}
 	}
 	
+	public static Integer getInteger(Object object, Integer defval) {
+		if (isEmpty(object)) {
+			return (defval);
+		}
+		try {
+			return (Integer.parseInt(object.toString()));
+		} catch (NumberFormatException e) {
+			return (defval);
+		}
+	}
+	
 	public static Integer getInt(Object object) {
 		if (isEmpty(object)) {
 			return null;
@@ -702,9 +713,20 @@ public class oConvertUtils {
 			if (isArray(oldVal)) {
 				return equalityOfArrays((Object[]) oldVal, (Object[]) newVal);
 			}else if(oldVal instanceof JSONArray){
-				return equalityOfJSONArray((JSONArray) oldVal, (JSONArray) newVal);
+				if(newVal instanceof JSONArray){
+					return equalityOfJSONArray((JSONArray) oldVal, (JSONArray) newVal);
+				}else{
+					if (isEmpty(newVal) && (oldVal == null || ((JSONArray) oldVal).size() == 0)) {
+						return true;
+					}
+					List<Object> arrayStr = Arrays.asList(newVal.toString().split(","));
+					JSONArray newValArray = new JSONArray(arrayStr);
+					return equalityOfJSONArray((JSONArray) oldVal, newValArray);
+				}
+			}else{
+				return oldVal.equals(newVal);
 			}
-			return oldVal.equals(newVal);
+			
 		} else {
 			if (oldVal == null && newVal == null) {
 				return true;
@@ -742,7 +764,7 @@ public class oConvertUtils {
 			Object[] newValArray = newVal.toArray();
 			return equalityOfArrays(oldValArray,newValArray);
 		} else {
-			if (oldVal == null && newVal == null) {
+			if ((oldVal == null || oldVal.size() == 0) && (newVal == null || newVal.size() == 0)) {
 				return true;
 			} else {
 				return false;
@@ -750,6 +772,38 @@ public class oConvertUtils {
 		}
 	}
 
+	/**
+	 * 比较带逗号的字符串
+	 * QQYUN-5212【简流】按日期触发 多选 人员组件 选择顺序不一致时 不触发，应该是统一问题 包括多选部门组件
+	 * @param oldVal
+	 * @param newVal
+	 * @return
+	 */
+	public static boolean equalityOfStringArrays(String oldVal, String newVal) {
+		if(oldVal.equals(newVal)){
+			return true;
+		}
+		if(oldVal.indexOf(",")>=0 && newVal.indexOf(",")>=0){
+			String[] arr1 = oldVal.split(",");
+			String[] arr2 = newVal.split(",");
+			if(arr1.length == arr2.length){
+				boolean flag = true;
+				Map<String, Integer> map = new HashMap<>();
+				for(String s1: arr1){
+					map.put(s1, 1);
+				}
+				for(String s2: arr2){
+					if(map.get(s2) == null){
+						flag = false;
+						break;
+					}
+				}
+				return flag;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * 判断两个数组是否相等（数组元素不分顺序）
 	 *
@@ -763,7 +817,7 @@ public class oConvertUtils {
 			Arrays.sort(newVal);
 			return Arrays.equals(oldVal, newVal);
 		} else {
-			if (oldVal == null && newVal == null) {
+			if ((oldVal == null || oldVal.length == 0) && (newVal == null || newVal.length == 0)) {
 				return true;
 			} else {
 				return false;
@@ -807,4 +861,85 @@ public class oConvertUtils {
 		}
 		return json;
 	}
+
+	/**
+	 * 将List 转成 JSONArray
+	 * @return
+	 */
+	public static JSONArray list2JSONArray(List<String> list){
+		if(list==null || list.size()==0){
+			return null;
+		}
+		JSONArray array = new JSONArray();
+		for(String str: list){
+			array.add(str);
+		}
+		return array;
+	}
+
+	/**
+	 * 判断两个list中的元素是否完全一致
+	 * QQYUN-5326【简流】获取组织人员 单/多 筛选条件 没有部门筛选
+	 * @return
+	 */
+	public static boolean isEqList(List<String> list1, List<String> list2){
+		if(list1.size() != list2.size()){
+			return false;
+		}
+		for(String str1: list1){
+			boolean flag = false;
+			for(String str2: list2){
+				if(str1.equals(str2)){
+					flag = true;
+					break;
+				}
+			}
+			if(!flag){
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+	/**
+	 * 判断 list1中的元素是否在list2中出现
+	 * QQYUN-5326【简流】获取组织人员 单/多 筛选条件 没有部门筛选
+	 * @param list1
+	 * @param list2
+	 * @return
+	 */
+	public static boolean isInList(List<String> list1, List<String> list2){
+		for(String str1: list1){
+			boolean flag = false;
+			for(String str2: list2){
+				if(str1.equals(str2)){
+					flag = true;
+					break;
+				}
+			}
+			if(flag){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 计算文件大小转成MB
+	 * @param uploadCount
+	 * @return
+	 */
+	public static Double calculateFileSizeToMb(Long uploadCount){
+		double count = 0.0;
+		if(uploadCount>0) {
+			BigDecimal bigDecimal = new BigDecimal(uploadCount);
+			//换算成MB
+			BigDecimal divide = bigDecimal.divide(new BigDecimal(1048576));
+			count = divide.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+			return count;
+		}
+		return count;
+	}
+	
 }

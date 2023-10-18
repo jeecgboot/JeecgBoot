@@ -49,6 +49,7 @@ public class SysUserTenantVo {
     /**
      * 职位
      */
+    @Dict(dictTable ="sys_position",dicText = "name",dicCode = "id")
     private String post;
 
     /**

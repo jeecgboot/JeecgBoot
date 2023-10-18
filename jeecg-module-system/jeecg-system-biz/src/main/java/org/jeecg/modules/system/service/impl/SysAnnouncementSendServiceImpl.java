@@ -26,11 +26,6 @@ public class SysAnnouncementSendServiceImpl extends ServiceImpl<SysAnnouncementS
 	private SysAnnouncementSendMapper sysAnnouncementSendMapper;
 	
 	@Override
-	public List<String> queryByUserId(String userId) {
-		return sysAnnouncementSendMapper.queryByUserId(userId);
-	}
-
-	@Override
 	public Page<AnnouncementSendModel> getMyAnnouncementSendPage(Page<AnnouncementSendModel> page,
 			AnnouncementSendModel announcementSendModel) {
 		 return page.setRecords(sysAnnouncementSendMapper.getMyAnnouncementSendList(page, announcementSendModel));

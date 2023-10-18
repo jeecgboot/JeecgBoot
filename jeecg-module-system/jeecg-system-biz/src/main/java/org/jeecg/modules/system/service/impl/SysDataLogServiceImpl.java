@@ -31,6 +31,7 @@ public class SysDataLogServiceImpl extends ServiceImpl<SysDataLogMapper,SysDataL
 		log.setDataId(dataId);
 		log.setDataContent(dataContent);
 		log.setDataVersion(versionNumber);
+		log.autoSetCreateName();
 		this.save(log);
 	}
 

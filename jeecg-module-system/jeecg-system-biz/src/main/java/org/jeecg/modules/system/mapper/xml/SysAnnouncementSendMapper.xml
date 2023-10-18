@@ -18,11 +18,6 @@
 		<result column="open_page" property="openPage" jdbcType="VARCHAR"/>
 	</resultMap>
 	
-	<select id="queryByUserId" parameterType="String"  resultType="String">
-	   select sas.annt_id from sys_announcement_send sas 
-	   where sas.user_id = #{userId}
-	</select>
-	
 	<select id="getMyAnnouncementSendList" parameterType="Object"  resultMap="AnnouncementSendModel">
 	   select
 	   		sas.id,
@@ -51,7 +46,7 @@
 	   <if test="announcementSendModel.sender !=null and announcementSendModel.sender != ''">
 	   		and sa.sender LIKE concat(concat('%',#{announcementSendModel.sender}),'%')
 	   </if>
-	   <if test="announcementSendModel.readFlag !=null and announcementSendModel.readFlag != ''">
+	   <if test="announcementSendModel.readFlag !=null">
 	   		and sas.read_flag = #{announcementSendModel.readFlag}
 	   </if>
 	   <if test="announcementSendModel.busType !=null and announcementSendModel.busType != ''">
@@ -95,7 +90,7 @@
 
 	<!-- 修改为已读消息 -->
 	<update id="updateReaded">
-		update sys_announcement_send set read_flag = '1'
+		update sys_announcement_send set read_flag = 1
 		 where user_id = #{userId} 
 			and annt_id in
 		<foreach collection="annoceIdList" index="index" item="id" open="(" separator="," close=")">
@@ -103,5 +98,11 @@
 		</foreach>
 	</update>
 	
+	
+	<!--清除所有未读消息-->
+	<update id="clearAllUnReadMessage">
+		update sys_announcement_send set read_flag = 1
+		where user_id = #{userId} and read_flag = 0
+	</update>
 
 </mapper>

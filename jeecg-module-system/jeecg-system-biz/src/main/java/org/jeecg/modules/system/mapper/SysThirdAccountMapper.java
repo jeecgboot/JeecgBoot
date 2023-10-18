@@ -21,6 +21,6 @@ public interface SysThirdAccountMapper extends BaseMapper<SysThirdAccount> {
      * @param thirdType       第三方类型
      * @return
      */
-    List<SysThirdAccount> selectThirdIdsByUsername(@Param("sysUsernameArr") String[] sysUsernameArr, @Param("thirdType") String thirdType);
+    List<SysThirdAccount> selectThirdIdsByUsername(@Param("sysUsernameArr") String[] sysUsernameArr, @Param("thirdType") String thirdType, @Param("tenantId") Integer tenantId);
 
 }

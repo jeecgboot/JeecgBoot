@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
+import org.jeecg.common.constant.enums.EmailTemplateEnum;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.*;
 
@@ -91,7 +92,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public List<DictModel> queryTableDictItemsByCode(String table, String text, String code) {
+    public List<DictModel> queryTableDictItemsByCode(String tableFilterSql, String text, String code) {
         return null;
     }
 
@@ -163,7 +164,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public List<LoginUser> queryAllUserByIds(String[] userIds) {
+    public List<UserAccountInfo> queryAllUserByIds(String[] userIds) {
         return null;
     }
 
@@ -173,7 +174,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public List<LoginUser> queryUserByNames(String[] userNames) {
+    public List<UserAccountInfo> queryUserByNames(String[] userNames) {
         return null;
     }
 
@@ -299,6 +300,11 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
+    public void sendHtmlTemplateEmail(String email, String title, EmailTemplateEnum emailTemplateEnum, JSONObject params) {
+
+    }
+
+    @Override
     public List<Map> getDeptUserByOrgCode(String orgCode) {
         return null;
     }
@@ -315,6 +321,11 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
 
     @Override
     public List<String> loadDictItem(String dictCode, String keys) {
+        return null;
+    }
+
+    @Override
+    public Map<String, String> copyLowAppDict(String originalAppId, String appId, String tenantId) {
         return null;
     }
 
@@ -351,4 +362,75 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     public void sendAppChatSocket(String userId) {
         
     }
+
+    @Override
+    public String getRoleCodeById(String id) {
+        return null;
+    }
+
+    @Override
+    public List<DictModel> queryRoleDictByCode(String roleCodes) {
+        return null;
+    }
+
+    @Override
+    public List<JSONObject> queryUserBySuperQuery(String superQuery, String matchType) {
+        return null;
+    }
+
+    @Override
+    public JSONObject queryUserById(String id) {
+        return null;
+    }
+
+    @Override
+    public List<JSONObject> queryDeptBySuperQuery(String superQuery, String matchType) {
+        return null;
+    }
+
+    @Override
+    public List<JSONObject> queryRoleBySuperQuery(String superQuery, String matchType) {
+        return null;
+    }
+
+    @Override
+    public List<String> selectUserIdByTenantId(String tenantId) {
+        return null;
+    }
+
+    @Override
+    public List<String> queryUserIdsByDeptIds(List<String> deptIds) {
+        return null;
+    }
+
+    @Override
+    public List<String> queryUserAccountsByDeptIds(List<String> deptIds) {
+        return null;
+    }
+
+    @Override
+    public List<String> queryUserIdsByRoleds(List<String> roleCodes) {
+        return null;
+    }
+
+    @Override
+    public List<String> queryUserIdsByPositionIds(List<String> positionIds) {
+        return null;
+    }
+
+    @Override
+    public List<String> getUserAccountsByDepCode(String orgCode) {
+        return null;
+    }
+
+    @Override
+    public boolean dictTableWhiteListCheckBySql(String selectSql) {
+        return false;
+    }
+
+    @Override
+    public boolean dictTableWhiteListCheckByDict(String tableOrDictCode, String[] fields) {
+        return false;
+    }
+
 }

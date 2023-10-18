@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysAnnouncement;
@@ -47,10 +48,19 @@ public interface ISysAnnouncementService extends IService<SysAnnouncement> {
 
     /**
      *  补全当前登录用户的消息阅读记录 
+     * @作废无用 2023-09-19
      */
+    @Deprecated
 	void completeAnnouncementSendInfo();
 
-
+    /**
+     * 补全所有用户的推送公告关系数据
+     *
+     * @param commentId
+     * @param tenantId
+     */
+    void batchInsertSysAnnouncementSend(String commentId, Integer tenantId);
+    
     /**
      * 分页查询当前登录用户的消息， 并且标记哪些是未读消息
      */
@@ -62,4 +72,15 @@ public interface ISysAnnouncementService extends IService<SysAnnouncement> {
     void updateReaded(List<String> annoceIdList);
 
 
+    /**
+     * 清除所有未读消息
+     */
+    void clearAllUnReadMessage();
+
+    /**
+     * 查询用户未阅读的通知公告
+     * @param userId
+     * @return
+     */
+    public List<String> getNotSendedAnnouncementlist(String userId);
 }

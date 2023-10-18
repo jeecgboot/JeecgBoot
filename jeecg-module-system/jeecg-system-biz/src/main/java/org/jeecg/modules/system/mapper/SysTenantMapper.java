@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.mapper;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -22,7 +23,7 @@ public interface SysTenantMapper extends BaseMapper<SysTenant> {
      * 获取最大值id
      */
     @Select("select MAX(id) id FROM sys_tenant")
-    int getMaxTenantId();
+    Integer getMaxTenantId();
     
     /**
      * 获取租户回收站的数据假删除
@@ -101,4 +102,22 @@ public interface SysTenantMapper extends BaseMapper<SysTenant> {
      * @return
      */
     List<TenantPackUser> queryTenantPackUserList(@Param("page") Page<TenantPackUser> page, @Param("tenantId") String tenantId, @Param("packId") String packId, @Param("status") Integer status);
+
+
+    /**
+     * 根据租户ID 查询租户
+     * @param id
+     * @return
+     */
+    @Select("select * from sys_tenant where id = #{id}")
+    SysTenant querySysTenant(@Param("id") Integer id);
+
+    /**
+     * 查看是否已经申请过了超级管理员
+     * @param userId
+     * @param tenantId
+     * @return
+     */
+    Long getApplySuperAdminCount(@Param("userId") String userId, @Param("tenantId") Integer tenantId);
+    
 }

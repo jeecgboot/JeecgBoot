@@ -6,9 +6,8 @@ import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.desensitization.util.SensitiveInfoUtil;
 import org.jeecg.common.system.vo.*;
-import org.jeecg.common.util.SqlInjectionUtil;
-import org.jeecg.modules.system.security.DictQueryBlackListHandler;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +31,6 @@ public class SystemApiController {
     private SysBaseApiImpl sysBaseApi;
     @Autowired
     private ISysUserService sysUserService;
-
-    @Autowired
-    private DictQueryBlackListHandler dictQueryBlackListHandler;
-
 
     /**
      * 发送系统消息
@@ -98,7 +93,14 @@ public class SystemApiController {
      */
     @GetMapping("/getUserByName")
     public LoginUser getUserByName(@RequestParam("username") String username){
-        return sysBaseApi.getUserByName(username);
+        LoginUser loginUser = sysBaseApi.getUserByName(username);
+        //用户信息加密
+        try {
+            SensitiveInfoUtil.handlerObject(loginUser, true);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return loginUser;
     }
 
     /**
@@ -108,7 +110,14 @@ public class SystemApiController {
      */
     @GetMapping("/getUserById")
     LoginUser getUserById(@RequestParam("id") String id){
-        return sysBaseApi.getUserById(id);
+        LoginUser loginUser = sysBaseApi.getUserById(id);
+        //用户信息加密
+        try {
+            SensitiveInfoUtil.handlerObject(loginUser, true);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return loginUser;
     }
 
     /**
@@ -300,7 +309,7 @@ public class SystemApiController {
      * @return
      */
     @GetMapping("/queryAllUserByIds")
-    public List<LoginUser> queryAllUserByIds(@RequestParam("userIds") String[] userIds){
+    public List<UserAccountInfo> queryAllUserByIds(@RequestParam("userIds") String[] userIds){
         return sysBaseApi.queryAllUserByIds(userIds);
     }
 
@@ -341,7 +350,7 @@ public class SystemApiController {
      * @return
      */
     @GetMapping("/queryUserByNames")
-    public List<LoginUser> queryUserByNames(@RequestParam("userNames")String[] userNames){
+    public List<UserAccountInfo> queryUserByNames(@RequestParam("userNames")String[] userNames){
         return sysBaseApi.queryUserByNames(userNames);
     }
 
@@ -527,13 +536,22 @@ public class SystemApiController {
      */
     @GetMapping("/loadDictItem")
     public List<String> loadDictItem(@RequestParam("dictCode") String dictCode, @RequestParam("keys") String keys) {
-        if(!dictQueryBlackListHandler.isPass(dictCode)){
-            log.error(dictQueryBlackListHandler.getError());
-            return null;
-        }
         return sysBaseApi.loadDictItem(dictCode, keys);
     }
 
+    /**
+     * 复制应用下的所有字典配置到新的租户下
+     *
+     * @param originalAppId 原始低代码应用ID
+     * @param appId         新的低代码应用ID
+     * @param tenantId      新的租户ID
+     * @return Map<String, String>  Map<原字典编码, 新字典编码>
+     */
+    @GetMapping("/sys/api/copyLowAppDict")
+    Map<String, String> copyLowAppDict(@RequestParam("originalAppId") String originalAppId, @RequestParam("appId") String appId, @RequestParam("tenantId") String tenantId) {
+        return sysBaseApi.copyLowAppDict(originalAppId, appId, tenantId);
+    }
+    
     /**
      * 根据字典code查询字典项
      *
@@ -543,10 +561,6 @@ public class SystemApiController {
      */
     @GetMapping("/getDictItems")
     public List<DictModel> getDictItems(@RequestParam("dictCode") String dictCode) {
-        if(!dictQueryBlackListHandler.isPass(dictCode)){
-            log.error(dictQueryBlackListHandler.getError());
-            return null;
-        }
         return sysBaseApi.getDictItems(dictCode);
     }
 
@@ -571,10 +585,6 @@ public class SystemApiController {
      */
     @GetMapping("/loadDictItemByKeyword")
     public List<DictModel> loadDictItemByKeyword(@RequestParam("dictCode") String dictCode, @RequestParam("keyword") String keyword, @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        if(!dictQueryBlackListHandler.isPass(dictCode)){
-            log.error(dictQueryBlackListHandler.getError());
-            return null;
-        }
         return sysBaseApi.loadDictItemByKeyword(dictCode, keyword, pageSize);
     }
 
@@ -592,19 +602,14 @@ public class SystemApiController {
 
     /**
      * 获取表数据字典 【接口签名验证】
-     * @param table
+     * @param tableFilterSql 表名可以带where条件
      * @param text
      * @param code
      * @return
      */
     @GetMapping("/queryTableDictItemsByCode")
-    List<DictModel> queryTableDictItemsByCode(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code){
-        String str = table+","+text+","+code;
-        if(!dictQueryBlackListHandler.isPass(str)){
-            log.error(dictQueryBlackListHandler.getError());
-            return null;
-        }
-        return sysBaseApi.queryTableDictItemsByCode(table, text, code);
+    List<DictModel> queryTableDictItemsByCode(@RequestParam("tableFilterSql") String tableFilterSql, @RequestParam("text") String text, @RequestParam("code") String code){
+        return sysBaseApi.queryTableDictItemsByCode(tableFilterSql, text, code);
     }
 
     /**
@@ -617,14 +622,6 @@ public class SystemApiController {
      */
     @GetMapping("/queryFilterTableDictInfo")
     List<DictModel> queryFilterTableDictInfo(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("filterSql") String filterSql){
-        String str = table+","+text+","+code;
-        if(!dictQueryBlackListHandler.isPass(str)){
-            log.error(dictQueryBlackListHandler.getError());
-            return null;
-        }
-        String[] arr = new String[]{table, text, code};
-        SqlInjectionUtil.filterContent(arr);
-        SqlInjectionUtil.specialFilterContentForDictSql(filterSql);
         return sysBaseApi.queryFilterTableDictInfo(table, text, code, filterSql);
     }
 
@@ -640,11 +637,6 @@ public class SystemApiController {
     @Deprecated
     @GetMapping("/queryTableDictByKeys")
     public List<String> queryTableDictByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keyArray") String[] keyArray){
-        String str = table+","+text+","+code;
-        if(!dictQueryBlackListHandler.isPass(str)){
-            log.error(dictQueryBlackListHandler.getError());
-            return null;
-        }
         return sysBaseApi.queryTableDictByKeys(table, text, code, keyArray);
     }
 
@@ -659,13 +651,6 @@ public class SystemApiController {
      */
     @GetMapping("/translateDictFromTable")
     public String translateDictFromTable(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("key") String key){
-        String str = table+","+text+","+code;
-        if(!dictQueryBlackListHandler.isPass(str)){
-            log.error(dictQueryBlackListHandler.getError());
-            return null;
-        }
-        String[] arr = new String[]{table, text, code, key};
-        SqlInjectionUtil.filterContent(arr);
         return sysBaseApi.translateDictFromTable(table, text, code, key);
     }
 
@@ -682,11 +667,6 @@ public class SystemApiController {
      */
     @GetMapping("/translateDictFromTableByKeys")
     public List<DictModel> translateDictFromTableByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keys") String keys) {
-        String str = table+","+text+","+code;
-        if(!dictQueryBlackListHandler.isPass(str)){
-            log.error(dictQueryBlackListHandler.getError());
-            return null;
-        }
         return this.sysBaseApi.translateDictFromTableByKeys(table, text, code, keys);
     }
 
@@ -746,7 +726,27 @@ public class SystemApiController {
         this.sysBaseApi.sendAppChatSocket(userId);
     }
 
+    /**
+     * 根据roleCode查询角色信息，可逗号分隔多个
+     *
+     * @param roleCodes
+     * @return
+     */
+    @GetMapping("/queryRoleDictByCode")
+    public List<DictModel> queryRoleDictByCode(@RequestParam(name = "roleCodes") String roleCodes) {
+        return this.sysBaseApi.queryRoleDictByCode(roleCodes);
+    }
 
+    /**
+     * 获取消息模板内容
+     * @param id
+     * @return
+     */
+    @GetMapping("/getRoleCode")
+    public String getRoleCode(@RequestParam("id") String id){
+        return this.sysBaseApi.getRoleCodeById(id);
+    }
+    
     /**
      * VUEN-2584【issue】平台sql注入漏洞几个问题
      * 部分特殊函数 可以将查询结果混夹在错误信息中，导致数据库的信息暴露
@@ -763,5 +763,138 @@ public class SystemApiController {
         }
         return Result.error("校验失败，sql解析异常！" + msg);
     }
+
+    /**
+     * 根据高级查询条件查询用户
+     * @param superQuery
+     * @param matchType
+     * @return
+     */
+    @GetMapping("/queryUserBySuperQuery")
+    public List<JSONObject> queryUserBySuperQuery(@RequestParam("superQuery")  String superQuery, @RequestParam("matchType") String matchType) {
+        return sysBaseApi.queryUserBySuperQuery(superQuery,matchType);
+    }
+
+    /**
+     * 根据id条件查询用户
+     * @param id
+     * @return
+     */
+    @GetMapping("/queryUserById")
+    public JSONObject queryUserById(@RequestParam("id")  String id) {
+        return sysBaseApi.queryUserById(id);
+    }
+
+    /**
+     * 根据高级查询条件查询部门
+     * @param superQuery
+     * @param matchType
+     * @return
+     */
+    @GetMapping("/queryDeptBySuperQuery")
+    public List<JSONObject> queryDeptBySuperQuery(@RequestParam("superQuery")  String superQuery, @RequestParam("matchType") String matchType) {
+        return sysBaseApi.queryDeptBySuperQuery(superQuery,matchType);
+    }
+
+    /**
+     * 根据高级查询条件查询角色
+     * @param superQuery
+     * @param matchType
+     * @return
+     */
+    @GetMapping("/queryRoleBySuperQuery")
+    public List<JSONObject> queryRoleBySuperQuery(@RequestParam("superQuery")  String superQuery, @RequestParam("matchType") String matchType) {
+        return sysBaseApi.queryRoleBySuperQuery(superQuery,matchType);
+    }
+
+
+    /**
+     * 根据租户ID查询用户ID
+     * @param tenantId 租户ID
+     * @return List<String>
+     */
+    @GetMapping("/selectUserIdByTenantId")
+    public List<String> selectUserIdByTenantId(@RequestParam("tenantId")  String tenantId) {
+        return sysBaseApi.selectUserIdByTenantId(tenantId);
+    }
+
+
+    /**
+     * 根据部门ID查询用户ID
+     * @param deptIds
+     * @return
+     */
+    @GetMapping("/sys/api/queryUserIdsByDeptIds")
+    public List<String> queryUserIdsByDeptIds(@RequestParam("deptIds") List<String> deptIds){
+        return sysBaseApi.queryUserIdsByDeptIds(deptIds);
+    }
     
+    /**
+     * 根据部门ID查询用户ID
+     * @param deptIds
+     * @return
+     */
+    @GetMapping("/sys/api/queryUserAccountsByDeptIds")
+    public List<String> queryUserAccountsByDeptIds(@RequestParam("deptIds") List<String> deptIds){
+        return sysBaseApi.queryUserAccountsByDeptIds(deptIds);
+    }
+
+    /**
+     * 根据角色编码 查询用户ID
+     * @param roleCodes
+     * @return
+     */
+    @GetMapping("/sys/api/queryUserIdsByRoleds")
+    public List<String> queryUserIdsByRoleds(@RequestParam("roleCodes")  List<String> roleCodes){
+        return sysBaseApi.queryUserIdsByRoleds(roleCodes);
+    }
+
+    /**
+     * 根据职务ID查询用户ID
+     * @param positionIds
+     * @return
+     */
+    @GetMapping("/sys/api/queryUserIdsByPositionIds")
+    public List<String> queryUserIdsByPositionIds(@RequestParam("positionIds") List<String> positionIds){
+        return sysBaseApi.queryUserIdsByPositionIds(positionIds);
+    }
+
+
+    /**
+     * 根据部门和子部门下的所有用户账号
+     *
+     * @param orgCode 部门编码
+     * @return
+     */
+    @GetMapping("/sys/api/getUserAccountsByDepCode")
+    public List<String> getUserAccountsByDepCode(String orgCode){
+        return sysBaseApi.getUserAccountsByDepCode(orgCode);
+    }
+
+    /**
+     * 检查查询sql的表和字段是否在白名单中
+     *
+     * @param selectSql
+     * @return
+     */
+    @GetMapping("/sys/api/dictTableWhiteListCheckBySql")
+    public boolean dictTableWhiteListCheckBySql(@RequestParam("selectSql") String selectSql) {
+        return sysBaseApi.dictTableWhiteListCheckBySql(selectSql);
+    }
+
+    /**
+     * 根据字典表或者字典编码，校验是否在白名单中
+     *
+     * @param tableOrDictCode 表名或dictCode
+     * @param fields          如果传的是dictCode，则该参数必须传null
+     * @return
+     */
+    @GetMapping("/sys/api/dictTableWhiteListCheckByDict")
+    public boolean dictTableWhiteListCheckByDict(
+            @RequestParam("tableOrDictCode") String tableOrDictCode,
+            @RequestParam(value = "fields", required = false) String[] fields
+    ) {
+        return sysBaseApi.dictTableWhiteListCheckByDict(tableOrDictCode, fields);
+    }
+
 }

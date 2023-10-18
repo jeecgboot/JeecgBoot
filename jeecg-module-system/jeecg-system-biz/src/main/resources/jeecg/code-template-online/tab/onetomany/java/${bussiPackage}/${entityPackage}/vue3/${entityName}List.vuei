@@ -43,16 +43,26 @@
         <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)"/>
       </template>
       <!--字段回显插槽-->
-      <template #htmlSlot="{text}">
-         <div v-html="text"></div>
-      </template>
-      <!--省市区字段回显插槽-->
-      <template #pcaSlot="{text}">
-         {{ getAreaTextByCode(text) }}
-      </template>
-      <template #fileSlot="{text}">
-         <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-         <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
+      <template v-slot:bodyCell="{ column, record, index, text }">
+      <#list columns as po>
+        <#if po.classType=='umeditor' || po.classType=='pca' || po.classType=='file'>
+        <template v-if="column.dataIndex==='${po.fieldName}'">
+        <#if po.classType=='umeditor'>
+          <!--富文本件字段回显插槽-->
+          <div v-html="text"></div>
+        </#if>
+        <#if po.classType=='pca'>
+          <!--省市区字段回显插槽-->
+          {{ getAreaTextByCode(text) }}
+        </#if>
+        <#if po.classType=='file'>
+          <!--文件字段回显插槽-->
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+          <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
+        </#if>
+        </template>
+        </#if>
+      </#list>
       </template>
     </BasicTable>
     <!-- 表单区域 -->
@@ -69,6 +79,7 @@
   import {columns, searchFormSchema} from './${entityName}.data';
   import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName}.api';
   import {downloadFile} from '/@/utils/common/renderUtils';
+  import { useUserStore } from '/@/store/modules/user';
 <#if list_need_pca>
   import { getAreaTextByCode } from '/@/components/Form/src/utils/Area';
 </#if>
@@ -80,6 +91,7 @@
   <#if bpm_flag==true>
   import { startProcess } from '/@/api/common/api';
   </#if>
+  const userStore = useUserStore();
   const checkedKeys = ref<Array<string | number>>([]);
   //注册model
   const [registerModal, {openModal}] = useModal();
@@ -265,11 +277,10 @@
        <#if po.classType=='cat_tree' && list_need_category==true>
        loadCategoryData({code:'${po.dictField?default("")}'}).then((res) => {
          if (res) {
-             let allDictDate = getAuthCache(DB_DICT_DATA_KEY);
-             if(!allDictDate['${po.dictField?default("")}']){
-               Object.assign(allDictDate,{'${po.dictField?default("")}':res})
-             }
-             setAuthCache(DB_DICT_DATA_KEY,allDictDate)
+           const allDictDate = userStore.getAllDictItems;
+           if(!allDictDate['${po.dictField?default("")}']){
+             userStore.setAllDictItems({...allDictDate,'${po.dictField?default("")}':res});
+           }
          }
        })
        </#if>

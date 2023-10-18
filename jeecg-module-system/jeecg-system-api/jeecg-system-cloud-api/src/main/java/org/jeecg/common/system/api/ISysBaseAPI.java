@@ -6,6 +6,8 @@ import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.constant.ServiceNameConstants;
+import org.jeecg.common.constant.enums.EmailTemplateEnum;
+import org.jeecg.common.desensitization.annotation.SensitiveDecode;
 import org.jeecg.common.system.api.factory.SysBaseAPIFallbackFactory;
 import org.jeecg.common.system.vo.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
@@ -72,6 +74,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param id
      * @return
      */
+    @SensitiveDecode
     @GetMapping("/sys/api/getUserById")
     LoginUser getUserById(@RequestParam("id") String id);
 
@@ -132,14 +135,14 @@ public interface ISysBaseAPI extends CommonAPI {
 
     /**
      * 13获取表数据字典
-     * @param table
+     * @param tableFilterSql
      * @param text
      * @param code
      * @return
      */
     @Override
     @GetMapping("/sys/api/queryTableDictItemsByCode")
-    List<DictModel> queryTableDictItemsByCode(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code);
+    List<DictModel> queryTableDictItemsByCode(@RequestParam("tableFilterSql") String tableFilterSql, @RequestParam("text") String text, @RequestParam("code") String code);
 
     /**
      * 14查询所有部门 作为字典信息 id -->value,departName -->text
@@ -258,7 +261,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryAllUserByIds")
-    public List<LoginUser> queryAllUserByIds(@RequestParam("userIds") String[] userIds);
+    public List<UserAccountInfo> queryAllUserByIds(@RequestParam("userIds") String[] userIds);
 
     /**
      * 28将会议签到信息推动到预览
@@ -275,7 +278,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryUserByNames")
-    List<LoginUser> queryUserByNames(@RequestParam("userNames")String[] userNames);
+    List<UserAccountInfo> queryUserByNames(@RequestParam("userNames")String[] userNames);
 
 
     /**
@@ -365,6 +368,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return LoginUser 用户信息
      */
     @Override
+    @SensitiveDecode
     @GetMapping("/sys/api/getUserByName")
     LoginUser getUserByName(@RequestParam("username") String username);
 
@@ -450,6 +454,17 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     @GetMapping("/sys/api/sendEmailMsg")
     void sendEmailMsg(@RequestParam("email")String email,@RequestParam("title")String title,@RequestParam("content")String content);
+
+    /**
+     * 发送html模版邮件消息
+     *
+     * @param email
+     * @param title
+     * @param emailTemplateEnum 邮件模版枚举
+     * @param params            模版参数
+     */
+    @GetMapping("/sys/api/sendHtmlTemplateEmail")
+    void sendHtmlTemplateEmail(@RequestParam("email") String email, @RequestParam("title") String title, @RequestParam("emailEnum") EmailTemplateEnum emailTemplateEnum, @RequestParam("params") JSONObject params);
     /**
      * 41 获取公司下级部门和公司下所有用户id
      * @param orgCode 部门编号
@@ -476,6 +491,17 @@ public interface ISysBaseAPI extends CommonAPI {
     @GetMapping("/sys/api/loadDictItem")
     List<String> loadDictItem(@RequestParam("dictCode") String dictCode, @RequestParam("keys") String keys);
 
+    /**
+     * 复制应用下的所有字典配置到新的租户下
+     *
+     * @param originalAppId  原始低代码应用ID
+     * @param appId   新的低代码应用ID
+     * @param tenantId  新的租户ID
+     * @return  Map<String, String>  Map<原字典编码, 新字典编码> 
+     */
+    @GetMapping("/sys/api/copyLowAppDict")
+    Map<String, String> copyLowAppDict(@RequestParam("originalAppId") String originalAppId, @RequestParam("appId") String appId, @RequestParam("tenantId") String tenantId);
+    
     /**
      * 44 根据字典code查询字典项
      *
@@ -577,9 +603,138 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param loginUser
      * @return
      */
-    @PutMapping("/updateAvatar")
+    @PutMapping("/sys/api/updateAvatar")
     void updateAvatar(@RequestBody LoginUser loginUser);
 
-    @GetMapping("/sendAppChatSocket")
+    @GetMapping("/sys/api/sendAppChatSocket")
     void sendAppChatSocket(@RequestParam(name="userId") String userId);
+
+    /**
+     * 根据角色id查询角色code
+     * @param id
+     * @return
+     */
+    @GetMapping("/sys/api/getRoleCode")
+    String getRoleCodeById(String id);
+
+    /**
+     * 根据roleCode查询角色信息，可逗号分隔多个
+     *
+     * @param roleCodes
+     * @return
+     */
+    @GetMapping("/sys/api/queryRoleDictByCode")
+    List<DictModel> queryRoleDictByCode(@RequestParam(name = "roleCodes") String roleCodes);
+
+
+    /**
+     * 根据高级查询条件查询用户
+     * @param superQuery
+     * @param matchType
+     * @return
+     */
+    @GetMapping("/sys/api/queryUserBySuperQuery")
+    List<JSONObject> queryUserBySuperQuery(@RequestParam(name="superQuery")String superQuery,@RequestParam(name="matchType")String matchType);
+
+
+    /**
+     * 根据ID条件查询用户
+     * @param id
+     * @return JSONObject
+     */
+    @GetMapping("/sys/api/queryUserById")
+    JSONObject queryUserById(String id);
+
+
+    /**
+     * 根据高级查询条件查询部门
+     * @param superQuery
+     * @param matchType
+     * @return
+     */
+    @GetMapping("/sys/api/queryDeptBySuperQuery")
+    List<JSONObject> queryDeptBySuperQuery(@RequestParam(name="superQuery")String superQuery,@RequestParam(name="matchType")String matchType);
+
+    /**
+     * 根据高级查询条件查询角色
+     * @param superQuery
+     * @param matchType
+     * @return
+     */
+    @GetMapping("/sys/api/queryRoleBySuperQuery")
+    List<JSONObject> queryRoleBySuperQuery(@RequestParam(name="superQuery")String superQuery,@RequestParam(name="matchType")String matchType);
+
+
+    /**
+     * 根据租户ID查询用户ID
+     * @param tenantId 租户ID
+     * @return List<String>
+     */
+    @GetMapping("/sys/api/selectUserIdByTenantId")
+    List<String> selectUserIdByTenantId(@RequestParam("tenantId")String tenantId);
+
+
+    /**
+     * 根据部门ID查询用户ID
+     * @param deptIds
+     * @return
+     */
+    @GetMapping("/sys/api/queryUserIdsByDeptIds")
+    List<String> queryUserIdsByDeptIds(List<String> deptIds);
+
+    /**
+     * 根据部门ID查询用户账号
+     * @param deptIds
+     * @return
+     */
+    @GetMapping("/sys/api/queryUserAccountsByDeptIds")
+    List<String> queryUserAccountsByDeptIds(List<String> deptIds);
+    
+    /**
+     * 根据角色编码 查询用户ID
+     * @param roleCodes
+     * @return
+     */
+    @GetMapping("/sys/api/queryUserIdsByRoleds")
+    List<String> queryUserIdsByRoleds(List<String> roleCodes);
+
+    /**
+     * 根据职务ID查询用户ID
+     * @param positionIds
+     * @return
+     */
+    @GetMapping("/sys/api/queryUserIdsByPositionIds")
+    List<String> queryUserIdsByPositionIds(List<String> positionIds);
+
+    /**
+     * 根据部门和子部门下的所有用户账号
+     *
+     * @param orgCode 部门编码
+     * @return
+     */
+    @GetMapping("/sys/api/getUserAccountsByDepCode")
+    public List<String> getUserAccountsByDepCode(@RequestParam("orgCode")String orgCode);
+
+    /**
+     * 检查查询sql的表和字段是否在白名单中
+     *
+     * @param selectSql
+     * @return
+     */
+    @GetMapping("/sys/api/dictTableWhiteListCheckBySql")
+    boolean dictTableWhiteListCheckBySql(@RequestParam("selectSql") String selectSql);
+
+    /**
+     * 根据字典表或者字典编码，校验是否在白名单中
+     *
+     * @param tableOrDictCode 表名或dictCode
+     * @param fields          如果传的是dictCode，则该参数必须传null
+     * @return
+     */
+    @GetMapping("/sys/api/dictTableWhiteListCheckByDict")
+    boolean dictTableWhiteListCheckByDict(
+            @RequestParam("tableOrDictCode") String tableOrDictCode,
+            @RequestParam(value = "fields", required = false) String[] fields
+    );
+
 }
