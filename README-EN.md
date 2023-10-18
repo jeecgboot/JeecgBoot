@@ -46,10 +46,10 @@ Download the source code
 -----------------------------------
 项目源码
 -----------------------------------
-| Source |Front-end source (Vue3 version) | Front-end source (Vue2 version) | The background source |
+| Source |Front-end source (Vue3 version) | The background source |
 |-|-|-|-|
-| Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)  | [ant-design-vue-jeecg](https://github.com/jeecgboot/ant-design-vue-jeecg) | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) |
-| Gitee | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)  | [ant-design-vue-jeecg](https://gitee.com/jeecg/ant-design-vue-jeecg)  | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
+| Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)  | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) |
+| Gitee | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)    | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
 
 ##### Project description
 
@@ -57,7 +57,6 @@ Download the source code
 |--------------------|------------------------|
 | `jeecg-boot`    | SpringBoot background source code (support microservices)      |
 | `jeecgboot-vue3` | Vue3+TS new front-end source code|
-| `ant-design-vue-jeecg`  |Vue2 version front-end source code     |
 | `jeecg-uniapp` | [APP development framework, a code multi terminal adaptation, and support APP, small program, H5](https://github.com/jeecgboot/jeecg-uniapp) |
 | `jeecg-boot-starter` | [Stater relies on the project to be maintained separately. Click Download](https://gitee.com/jeecg/jeecg-boot-starter) |
 | `More` | [Download more source code](http://jeecg.com/download) |
@@ -96,7 +95,8 @@ Technical documentation
 
 
 
-##### Star charts
+Star charts
+-----------------------------------
 
 [![Star History Chart](https://api.star-history.com/svg?repos=jeecgboot/jeecg-boot&type=Date)](https://star-history.com/#jeecgboot/jeecg-boot)
 
