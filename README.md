@@ -44,19 +44,18 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 项目源码
 -----------------------------------
-| 仓库 |前端 Vue3版 | 前端 Vue2版 | 后端源码 |
+| 仓库 |前端源码 Vue3版 | 后端JAVA源码 |
 |-|-|-|-|
-| Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)  | [ant-design-vue-jeecg](https://github.com/jeecgboot/ant-design-vue-jeecg) | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) |
-| 码云 | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)  | [ant-design-vue-jeecg](https://gitee.com/jeecg/ant-design-vue-jeecg)  | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
+| Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)   | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) |
+| 码云 | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)   | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
 
 
 #### 项目说明
 
 | 项目名                | 说明                     | 
 |--------------------|------------------------|
-| `jeecg-boot`    | SpringBoot后台源码（支持微服务）        |
-| `jeecgboot-vue3` | Vue3+TS 新版前端源码 |
-| `ant-design-vue-jeecg`  |Vue2版前端源码     |
+| `jeecg-boot`    | JAVA后台源码（支持微服务）        |
+| `jeecgboot-vue3` | 前端源码 (Vue3版本) |
 | `jeecg-uniapp` | [APP开发框架，一份代码多终端适配，同时支持APP、小程序、H5](https://github.com/jeecgboot/jeecg-uniapp) |
 | `jeecg-boot-starter` | [Stater依赖项目单独维护，点击下载](https://gitee.com/jeecg/jeecg-boot-starter) |
 | `更多开源项目` | [更多源码下载](http://jeecg.com/download) |
@@ -105,17 +104,19 @@ Docker快速启动项目
 
 
 
-=======【VUE2版本专题介绍】============================================
+
 
 VUE2版本专题介绍
 -----------------------------------
 #### 项目介绍 
 - 项目名称：ant-design-vue-jeecg
 - 说明：JeecgBoot前端提供两套解决方案，一套VUE2和一套VUE3版本，目前vue2版本最新代码只支持到jeecgboot 3.4.3版本，一定注意。
-- 更多介绍：[Vue2版演示](http://boot.jeecg.com) |[开发文档](http://doc.jeecg.com) 
-- [快速启动——Vue2前端](http://doc.jeecg.com/2678320)
-- [Docker启动——Vue2前端](http://doc.jeecg.com/3043612)
 
+#### 源码下载
+| 源码                | 源码地址                     | 
+|--------------------|------------------------|
+| 后端JAVA源码 `Vue2版`  |https://gitee.com/jeecg/jeecg-boot/tree/v3.4.3last    |
+| 前端vue2源码 `Vue2版`  |https://gitee.com/jeecg/ant-design-vue-jeecg    |
 
 #### Vue2与Vue3版本区别
 > - VUE3版本彻底抛弃IE兼容，不兼容IE和低版本浏览器，只适配高版本谷歌和Edge
@@ -123,21 +124,14 @@ VUE2版本专题介绍
 > - 所以如果对浏览器有要求的项目，请选择VUE2版本。
 > - VUE3版是全新的技术栈，紧跟主流（前端重写），各个功能都做了优化，拥有更好的体验效果
 
-
-#### 源码下载
-| 源码                | 源码地址                     | 
-|--------------------|------------------------|
-| 后端源码 `Vue2版`  |https://gitee.com/jeecg/jeecg-boot/tree/v3.4.3last    |
-| 前端源码 `Vue2版`  |https://gitee.com/jeecg/ant-design-vue-jeecg    |
-
-=========【VUE2版本专题介绍】=========================================
+#### 技术文档
+- 在线演示：[Vue2版演示](http://boot.jeecg.com) 
+- 开发文档：| [开发文档](http://doc.jeecg.com)  | [Vue2前端快速启动](http://doc.jeecg.com/2678320) |  [Vue2前端采用Docker启动](http://doc.jeecg.com/3043612)
 
 
 
-
-
-
-##### Star走势图
+Star走势图
+-----------------------------------
 
 [![Star History Chart](https://api.star-history.com/svg?repos=jeecgboot/jeecg-boot&type=Date)](https://star-history.com/#jeecgboot/jeecg-boot)
 
