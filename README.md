@@ -45,7 +45,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 项目源码
 -----------------------------------
 | 仓库 |前端源码 Vue3版 | 后端JAVA源码 |
-|-|-|-|-|
+|-|-|-|
 | Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)   | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) |
 | 码云 | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)   | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
 
