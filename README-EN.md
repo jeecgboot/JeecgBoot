@@ -47,7 +47,7 @@ Download the source code
 项目源码
 -----------------------------------
 | Source |Front-end source (Vue3 version) | The background source |
-|-|-|-|-|
+|-|-|-|
 | Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)  | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) |
 | Gitee | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)    | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
 
