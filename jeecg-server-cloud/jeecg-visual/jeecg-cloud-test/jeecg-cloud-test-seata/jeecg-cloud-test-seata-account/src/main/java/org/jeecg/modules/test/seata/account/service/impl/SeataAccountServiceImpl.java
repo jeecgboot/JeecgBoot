@@ -2,6 +2,7 @@ package org.jeecg.modules.test.seata.account.service.impl;
 
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import io.seata.core.context.RootContext;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.modules.test.seata.account.entity.SeataAccount;
@@ -34,6 +35,7 @@ public class SeataAccountServiceImpl implements SeataAccountService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW,rollbackFor = Exception.class)
     public void reduceBalance(Long userId, BigDecimal amount) {
+        log.info("xid:"+ RootContext.getXID());
         log.info("=============ACCOUNT START=================");
         SeataAccount account = accountMapper.selectById(userId);
         Assert.notNull(account, "用户不存在");
