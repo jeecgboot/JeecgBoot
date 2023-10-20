@@ -20,8 +20,7 @@
 <#assign need_image_upload = false>
 <#assign need_editor = false>
 <#assign need_checkbox = false>
-<#assign pidFieldName = "">
-<#assign hasOnlyValidate = false>
+<#assign hasOnlyValidate = false> 
 <#assign form_span = 24>
 <#if tableVo.fieldRowNum==2>
 <#assign form_span = 12>
@@ -33,27 +32,10 @@
 <#list columns as po>
 <#if po.fieldDbName=='bpm_status'>
   <#assign bpm_flag=true>
-</#if>
+</#if>        
 <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
-  <#assign hasOnlyValidate = true>
+      <#assign hasOnlyValidate = true>
 </#if>
-			<#if po.fieldDbName == tableVo.extendParams.pidField>
-						<#assign pidFieldName = po.fieldName>
-						<#assign need_select_tree = true>
-        <a-col :span="${form_span}">
-          <a-form-item label="父级节点" v-bind="validateInfos.${autoStringSuffixForModel(po)}">
-            <j-tree-select
-              placeholder="请选择${po.filedComment}"
-              v-model:value="formData.${po.fieldName}"
-              dict="${tableVo.tableName},${tableVo.extendParams.textField},id"
-              pidField="${tableVo.extendParams.pidField}"
-              pidValue="0"
-              hasChildField="${tableVo.extendParams.hasChildren}"
-              <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if>>
-            </j-tree-select>
-          </a-form-item>
-        </a-col>
-      </#if>    
   <#include "/common/form/native/vue3NativeForm.ftl">
 </#list>
         <#if bpm_flag>
@@ -67,28 +49,27 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, defineExpose, nextTick, unref, defineProps, computed, onMounted } from 'vue';
+  import { ref, reactive, defineExpose, nextTick, defineProps, computed, onMounted } from 'vue';
   import { defHttp } from '/@/utils/http/axios';
   import { useMessage } from '/@/hooks/web/useMessage';
   <#include "/common/form/native/vue3NativeImport.ftl">
   import { getValueType } from '/@/utils';
-  import {loadTreeData, saveOrUpdateDict} from '../${entityName}.api';
+  import { saveOrUpdate } from '../${entityName}.api';
   import { Form } from 'ant-design-vue';
   <#if hasOnlyValidate == true>
   import { duplicateValidate } from '/@/utils/helper/validator'
   </#if>
   
+  const props = defineProps({
+    formDisabled: { type: Boolean, default: false },
+    formData: { type: Object, default: ()=>{} },
+    formBpm: { type: Boolean, default: true }
+  });
   const useForm = Form.useForm;
-  const formRef = ref();
-  const isUpdate = ref(true);
-  const expandedRowKeys = ref([]);
-  const treeData = ref([]);
-  const pidField = ref<string>('pid');
   const emit = defineEmits(['register', 'ok']);
-  let model: Nullable<Recordable> = null;
   const formData = reactive<Record<string, any>>({
     id: '',
-    <#include "/common/init/native/vue3NativeInitValue.ftl">
+    <#include "/common/init/native/vue3NativeMainInitValue.ftl">
   });
   const { createMessage } = useMessage();
   const labelCol = ref<any>({ xs: { span: 24 }, sm: { span: 5 } });
@@ -99,12 +80,7 @@
   <#include "/common/validatorRulesTemplate/native/vue3MainNative.ftl">
   };
   const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: true });
-  const props = defineProps({
-    formDisabled: { type: Boolean, default: false },
-    formData: { type: Object, default: ()=>{} },
-    formBpm: { type: Boolean, default: true }
-  });
-
+  const formRef = ref();
   // 表单禁用
   const disabled = computed(()=>{
     if(props.formBpm === true){
@@ -145,40 +121,19 @@
   /**
    * 新增
    */
-  function add(obj = {}) {
-    edit(obj);
+  function add() {
+    edit({});
   }
 
   /**
    * 编辑
    */
   function edit(record) {
-    nextTick(async () => {
+    nextTick(() => {
       resetFields();
-      expandedRowKeys.value = [];
-      treeData.value = await loadTreeData({ async: false, pcode: '' });
       //赋值
       Object.assign(formData, record);
-      model = record
     });
-  }
-
-  /**
-   * 根据pid获取展开的节点
-   * @param pid
-   * @param arr
-   */
-  function getExpandKeysByPid(pid, arr) {
-    if (pid && arr && arr.length > 0) {
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i].key == pid && unref(expandedRowKeys).indexOf(pid) < 0) {
-          expandedRowKeys.value.push(arr[i].key);
-          getExpandKeysByPid(arr[i]['parentId'], unref(treeData));
-        } else {
-          getExpandKeysByPid(pid, arr[i].children);
-        }
-      }
-    }
   }
 
   /**
@@ -190,32 +145,26 @@
     confirmLoading.value = true;
     const isUpdate = ref<boolean>(false);
     //时间格式化
-    if (formData.id) {
+    let model = formData;
+    if (model.id) {
       isUpdate.value = true;
     }
     //循环数据
-    for (let data in formData) {
+    for (let data in model) {
       //如果该数据是数组并且是字符串类型
-      if (formData[data] instanceof Array) {
+      if (model[data] instanceof Array) {
         let valueType = getValueType(formRef.value.getProps, data);
         //如果是字符串类型的需要变成以逗号分割的字符串
         if (valueType === 'string') {
-          formData[data] = formData[data].join(',');
+          model[data] = model[data].join(',');
         }
       }
     }
-    await saveOrUpdateDict(formData, isUpdate.value)
-      .then(async (res) => {
+    await saveOrUpdate(model, isUpdate.value)
+      .then((res) => {
         if (res.success) {
-          await getExpandKeysByPid(formData['${pidFieldName}'], unref(treeData));
-          emit('ok', {
-            isUpdate: unref(isUpdate),
-            values: { ...formData },
-            expandedArr: unref(expandedRowKeys).reverse(),
-            // 是否更改了父级节点
-            changeParent: model != null && model['${pidFieldName}'] != formData['${pidFieldName}'],
-          });
           createMessage.success(res.message);
+          emit('ok');
         } else {
           createMessage.warning(res.message);
         }
@@ -246,8 +195,7 @@
     formData[key] = value;
   }
   </#if>
-
-  <#list columns as po>
+ <#list columns as po>
   <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
   async function ${po.fieldName}Duplicatevalidate(_r, value) {
     return duplicateValidate('${tableName}', '${po.fieldDbName}', value, formData.id || '')

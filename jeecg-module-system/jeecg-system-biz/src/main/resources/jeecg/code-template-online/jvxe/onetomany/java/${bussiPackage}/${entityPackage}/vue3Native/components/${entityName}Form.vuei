@@ -147,11 +147,7 @@
       const activeKey = ref('${subTabActiveKey}');
       const formData = reactive<Record<string, any>>({
         id: '',
-      <#list columns as po>
-      <#if po.isShow == 'Y'>
-        ${po.fieldName}: '',
-      </#if>
-      </#list>
+        <#include "/common/init/native/vue3NativeMainInitValue.ftl">
       });
 
       //表单验证
