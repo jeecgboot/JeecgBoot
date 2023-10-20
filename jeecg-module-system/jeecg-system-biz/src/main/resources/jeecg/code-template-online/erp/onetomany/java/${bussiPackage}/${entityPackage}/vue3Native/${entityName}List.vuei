@@ -86,67 +86,73 @@
     </div>
 <#-- 结束循环 -->
     <!--引用表格-->
-   <BasicTable @register="registerTable" :rowSelection="rowSelection">
-     <!--插槽:table标题-->
+    <BasicTable @register="registerTable" :rowSelection="rowSelection">
+      <!--插槽:table标题-->
       <template #tableTitle>
-          <a-button type="primary" @click="handleAdd" preIcon="ant-design:plus-outlined"> 新增</a-button>
-          <a-button  type="primary" preIcon="ant-design:export-outlined" @click="onExportXls"> 导出</a-button>
-          <j-upload-button  type="primary" preIcon="ant-design:import-outlined" @click="onImportXls">导入</j-upload-button>
-          <a-dropdown v-if="selectedRowKeys.length > 0">
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item key="1" @click="batchHandleDelete">
-                    <Icon icon="ant-design:delete-outlined"></Icon>
-                    删除
-                  </a-menu-item>
-                </a-menu>
-              </template>
-              <a-button>批量操作
-                <Icon icon="mdi:chevron-down"></Icon>
-              </a-button>
+        <a-button type="primary" @click="handleAdd" preIcon="ant-design:plus-outlined"> 新增</a-button>
+        <a-button type="primary" preIcon="ant-design:export-outlined" @click="onExportXls"> 导出</a-button>
+        <j-upload-button type="primary" preIcon="ant-design:import-outlined" @click="onImportXls">导入</j-upload-button>
+        <a-dropdown v-if="selectedRowKeys.length > 0">
+          <template #overlay>
+            <a-menu>
+              <a-menu-item key="1" @click="batchHandleDelete">
+                <Icon icon="ant-design:delete-outlined"></Icon>
+                删除
+              </a-menu-item>
+            </a-menu>
+          </template>
+          <a-button
+            >批量操作
+            <Icon icon="mdi:chevron-down"></Icon>
+          </a-button>
         </a-dropdown>
       </template>
-       <!--操作栏-->
+      <!--操作栏-->
       <template #action="{ record }">
-        <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)"/>
+        <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)" />
       </template>
       <!--字段回显插槽-->
       <template v-slot:bodyCell="{ column, record, index, text }">
-      <#list columns as po>
+       <#list columns as po>
         <#if po.classType=='umeditor' || po.classType=='pca' || po.classType=='file'>
         <template v-if="column.dataIndex==='${po.fieldName}'">
-        <#if po.classType=='umeditor'>
+         <#if po.classType=='umeditor'>
           <!--富文本件字段回显插槽-->
           <div v-html="text"></div>
-        </#if>
-        <#if po.classType=='pca'>
-          <!--省市区字段回显插槽-->
-          {{ getAreaTextByCode(text) }}
-        </#if>
-        <#if po.classType=='file'>
+         </#if>
+         <#if po.classType=='file'>
           <!--文件字段回显插槽-->
           <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
           <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
-        </#if>
+         </#if>
         </template>
         </#if>
-      </#list>
+       </#list>
       </template>
     </BasicTable>
+    <!--子表表格tab-->
+    <a-tabs defaultActiveKey="1">
+      <#assign sub_seq=1>
+      <#list subTables as sub>
+      <a-tab-pane tab="${sub.ftlDescription}" key="${sub_seq}" <#if sub_seq gt 1>forceRender</#if>>
+        <${sub.entityName}List />
+      </a-tab-pane>
+      <#assign sub_seq=sub_seq+1>
+      </#list>
+     </a-tabs>
     <!-- 表单区域 -->
-    <${entityName}Modal @register="registerModal" @success="handleSuccess"></${entityName}Modal>
+    <${entityName}Modal ref="registerModal" @success="handleSuccess" />
   </div>
 </template>
 
 <script lang="ts" name="${entityPackage}-${entityName?uncap_first}" setup>
-  import {ref, reactive, computed, unref} from 'vue';
-  import {BasicTable, useTable, TableAction} from '/@/components/Table';
+  import { ref, reactive, computed, unref, provide } from 'vue';
+  import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { useListPage } from '/@/hooks/system/useListPage'
-  import {useModal} from '/@/components/Modal';
   import ${entityName}Modal from './components/${entityName}Modal.vue'
-  import {columns, searchFormSchema} from './${entityName}.data';
-  import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName}.api';
-  import {downloadFile} from '/@/utils/common/renderUtils';
+  import { columns, searchFormSchema } from './${entityName}.data';
+  import { list, deleteOne, batchDelete, getImportUrl,getExportUrl } from './${entityName}.api';
+  import { downloadFile } from '/@/utils/common/renderUtils';
   <#include "/common/form/native/vue3NativeImport.ftl">
 <#if need_pca>
   import { getAreaTextByCode } from '/@/components/Form/src/utils/Area';
@@ -159,142 +165,149 @@
   <#if bpm_flag==true>
   import { startProcess } from '/@/api/common/api';
   </#if>
+  <#list subTables as sub>
+  import ${sub.entityName}List from './${sub.entityName}List.vue'
+  </#list>
   import { useUserStore } from '/@/store/modules/user';
+  
   const formRef = ref();
   const queryParam = reactive<any>({});
   const checkedKeys = ref<Array<string | number>>([]);
-  //注册model
-  const [registerModal, {openModal}] = useModal();
+  const registerModal = ref();
   const userStore = useUserStore();
    //注册table数据
   const { prefixCls,tableContext,onExportXls,onImportXls } = useListPage({
-      tableProps:{
-           title: '${tableVo.ftlDescription}',
-           api: list,
-           columns,
-           canResize:false,
-           useSearchForm: false,
-           actionColumn: {
-               width: 120,
-               fixed:'right'
-           },
-           beforeFetch: (params) => {
-             return Object.assign(params, queryParam);
-           },
-        },
-        exportConfig: {
-            name:"${tableVo.ftlDescription}",
-            url: getExportUrl,
-            params: queryParam,
-        },
-        importConfig: {
-            url: getImportUrl,
-            success: handleSuccess
-        },
+    tableProps:{
+      title: '${tableVo.ftlDescription}',
+      api: list,
+      columns,
+      canResize:false,
+      useSearchForm: false,
+      rowSelection: {type: 'radio'},
+      actionColumn: {
+        width: 120,
+        fixed:'right'
+      },
+      beforeFetch: (params) => {
+        return Object.assign(params, queryParam);
+      },
+    },
+    exportConfig: {
+      name:"${tableVo.ftlDescription}",
+      url: getExportUrl,
+      params: queryParam,
+    },
+    importConfig: {
+      url: getImportUrl,
+      success: handleSuccess,
+    },
     })
 
-  const [registerTable, {reload},{ rowSelection, selectedRowKeys }] = tableContext
-
-   /**
-    * 新增事件
-    */
+  const [registerTable, { reload },{ rowSelection, selectedRowKeys }] = tableContext
+  const mainId = computed(() => (unref(selectedRowKeys).length > 0 ? unref(selectedRowKeys)[0] : ''));
+  //下发 mainId,子组件接收
+  provide('mainId', mainId);
+  
+  /**
+   * 新增事件
+   */
   function handleAdd() {
-     openModal(true, {
-       isUpdate: false,
-       showFooter: true,
-     });
+    registerModal.value.disableSubmit = false;
+    registerModal.value.add();
   }
-   /**
-    * 编辑事件
-    */
+  
+  /**
+   * 编辑事件
+   */
   function handleEdit(record: Recordable) {
-     openModal(true, {
-       record,
-       isUpdate: true,
-       showFooter: true,
-     });
-   }
-   /**
-    * 详情
+     registerModal.value.disableSubmit = false;
+     registerModal.value.edit(record);
+  }
+  
+  /**
+   * 详情事件
    */
   function handleDetail(record: Recordable) {
-     openModal(true, {
-       record,
-       isUpdate: true,
-       showFooter: false,
-     });
-   }
-   /**
-    * 删除事件
-    */
+    registerModal.value.disableSubmit = true;
+    registerModal.value.edit(record);
+  }
+  
+  /**
+   * 删除事件
+   */
   async function handleDelete(record) {
-     await deleteOne({id: record.id}, handleSuccess);
-   }
-   /**
-    * 批量删除事件
-    */
+    await deleteOne({id: record.id}, handleSuccess);
+  }
+  
+  /**
+   * 批量删除事件
+   */
   async function batchHandleDelete() {
-     await batchDelete({ids: selectedRowKeys.value},handleSuccess);
-   }
-   /**
-    * 成功回调
-    */
+    await batchDelete({ids: selectedRowKeys.value},handleSuccess);
+  }
+  
+  /**
+   * 成功回调
+   */
   function handleSuccess() {
-      (selectedRowKeys.value = []) && reload();
-   }
-   /**
-      * 操作栏
-      */
-  function getTableAction(record){
-       return [
-         {
-           label: '编辑',
-           onClick: handleEdit.bind(null, record),
-         }
-       ]
-   }
-     /**
-        * 下拉操作栏
-        */
+    (selectedRowKeys.value = []) && reload();
+  }
+  
+  /**
+   * 操作栏
+   */
+  function getTableAction(record) {
+    return [
+      {
+        label: '编辑',
+        onClick: handleEdit.bind(null, record),
+      },
+    ];
+  }
+  
+  /**
+   * 下拉操作栏
+   */
   function getDropDownAction(record){
-       <#if bpm_flag==true>
-       let dropDownAction = [
-         {
-           label: '详情',
-           onClick: handleDetail.bind(null, record),
-         }, {
-           label: '删除',
-           popConfirm: {
-             title: '是否确认删除',
-             confirm: handleDelete.bind(null, record),
-           }
+    <#if bpm_flag==true>
+    let dropDownAction = [
+      {
+        label: '详情',
+        onClick: handleDetail.bind(null, record),
+      }, {
+        label: '删除',
+        popConfirm: {
+          title: '是否确认删除',
+          confirm: handleDelete.bind(null, record),
+        }
+      }
+    ];
+    if(record.bpmStatus == '1' || !record.bpmStatus){
+      dropDownAction.push({
+        label: '发起流程',
+         popConfirm: {
+           title: '确认提交流程吗？',
+           confirm: handleProcess.bind(null, record),
          }
-       ];
-       if(record.bpmStatus == '1' || !record.bpmStatus){
-         dropDownAction.push({
-           label: '发起流程',
-           popConfirm: {
-             title: '确认提交流程吗？',
-             confirm: handleProcess.bind(null, record),
-           }
-         })
-       }
-       return dropDownAction;
-       <#else>
-       return [
-         {
-           label: '详情',
-           onClick: handleDetail.bind(null, record),
-         }, {
-           label: '删除',
-           popConfirm: {
-             title: '是否确认删除',
-             confirm: handleDelete.bind(null, record),
-           }
-         }
-       ]
-       </#if>
-   }
+      })
+    }
+    return dropDownAction;
+    <#else>
+    return [
+      {
+        label: '详情',
+        onClick: handleDetail.bind(null, record),
+      },
+      {
+        label: '删除',
+        popConfirm: {
+          title: '是否确认删除',
+          confirm: handleDelete.bind(null, record),
+        },
+      },
+    ];
+   </#if>
+  }
 
   <#if bpm_flag==true>
   /**
@@ -312,7 +325,7 @@
   }
   </#if>
   
-    <#if need_category>
+  <#if need_category>
   /**
    * form点击事件
    * @param value
@@ -320,27 +333,28 @@
   function handleFormChange(key, value) {
     queryParam[key] = value;
   }
-   /**
-    * 初始化字典配置
+  
+  /**
+   * 初始化字典配置
    */
-    function initDictConfig(){
-     <#list columns as po>
-     <#if (po.isQuery=='Y' || po.isShowList=='Y') && po.classType!='popup'>
-       <#if po.classType=='cat_tree' && need_category==true>
-       loadCategoryData({code:'${po.dictField?default("")}'}).then((res) => {
-         if (res) {
-            const allDictDate = userStore.getAllDictItems;
-            if(!allDictDate['${po.dictField?default("")}']){
-              userStore.setAllDictItems({...allDictDate,'${po.dictField?default("")}':res});
-            }
-         }
-       })
-       </#if>
-     </#if>
-     </#list>
-   }
-   initDictConfig();
+  function initDictConfig(){
+  <#list columns as po>
+   <#if (po.isQuery=='Y' || po.isShowList=='Y') && po.classType!='popup'>
+    <#if po.classType=='cat_tree' && need_category==true>
+    loadCategoryData({code:'${po.dictField?default("")}'}).then((res) => {
+      if (res) {
+        const allDictDate = userStore.getAllDictItems;
+        if(!allDictDate['${po.dictField?default("")}']){
+          userStore.setAllDictItems({...allDictDate,'${po.dictField?default("")}':res});
+        }
+      }
+    })
     </#if>
+   </#if>
+  </#list>
+  }
+  initDictConfig();
+ </#if>
 
   /* ----------------------以下为原生查询需要添加的-------------------------- */
   const toggleSearchStatus = ref<boolean>(false);
@@ -354,6 +368,7 @@
     xs: 24,
     sm: 20,
   });
+  
   /**
    * 重置
    */
@@ -363,6 +378,7 @@
     //刷新数据
     reload();
   }
+  
   <#if need_popup>
   /**
    *  popup组件值改变事件
@@ -388,19 +404,19 @@
 <style lang="less" scoped>
   .jeecg-basic-table-form-container {
     padding: 0;
-  .table-page-search-submitButtons {
-    display: block;
-    margin-bottom: 24px;
-    white-space: nowrap;
-  }
-  .query-group-cust{
-    width: calc(50% - 15px);
-    min-width: 100px !important;
-  }
-  .query-group-split-cust{
-    width: 30px;
-    display: inline-block;
-    text-align: center
-  }
+    .table-page-search-submitButtons {
+      display: block;
+      margin-bottom: 24px;
+      white-space: nowrap;
+    }
+    .query-group-cust{
+      width: calc(50% - 15px);
+      min-width: 100px !important;
+    }
+    .query-group-split-cust{
+      width: 30px;
+      display: inline-block;
+      text-align: center
+    }
   }
 </style>

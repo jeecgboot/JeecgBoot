@@ -28,7 +28,7 @@ public enum CgformEnum {
     /**
      * 多表 (erp风格)
      */
-    ERP(2, "erp", "/jeecg/code-template-online", "erp.onetomany", "ERP风格" ,new String[]{"vue3","vue"}),
+    ERP(2, "erp", "/jeecg/code-template-online", "erp.onetomany", "ERP风格" ,new String[]{"vue3","vue","vue3Native"}),
     /**
      * 多表（内嵌子表风格）
      */

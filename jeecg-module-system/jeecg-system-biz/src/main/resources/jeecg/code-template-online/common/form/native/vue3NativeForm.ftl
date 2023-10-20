@@ -50,7 +50,7 @@
 	          <#assign need_dept_user = true>
 	          <j-select-user-by-dept v-model:value="formData.${po.fieldName}" <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if>/>
 			<#elseif po.classType =='textarea'>
-	          <a-textarea v-model:value="formData.${autoStringSuffixForModel(po)}" rows="4" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if>/>
+	          <a-textarea v-model:value="formData.${autoStringSuffixForModel(po)}" :rows="4" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if>/>
 			<#elseif po.classType=='radio'>
 			 <#assign need_select_tag = true>
             <j-dict-select-tag type='radio' v-model:value="formData.${po.fieldName}" dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}" <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if>/>

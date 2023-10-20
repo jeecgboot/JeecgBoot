@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="p-2">
 <#assign query_field_no=0>  
 <#assign need_category = false>
 <#assign need_pca = false>
@@ -188,12 +188,14 @@
   });
   const [registerTable, { reload, collapseAll, updateTableDataRecord, findTableDataRecord, getDataSource }, { rowSelection, selectedRowKeys }] = tableContext;
   const labelCol = reactive({
-    xs: { span: 24 },
-    sm: { span: 7 },
+    xs:24,
+    sm:4,
+    xl:6,
+    xxl:4
   });
   const wrapperCol = reactive({
-    xs: { span: 24 },
-    sm: { span: 16 },
+    xs: 24,
+    sm: 20,
   });
 
   /**
@@ -385,6 +387,7 @@
 
 <style lang="less" scoped>
   .jeecg-basic-table-form-container {
+    padding: 0;
     .table-page-search-submitButtons {
       display: block;
       margin-bottom: 24px;
