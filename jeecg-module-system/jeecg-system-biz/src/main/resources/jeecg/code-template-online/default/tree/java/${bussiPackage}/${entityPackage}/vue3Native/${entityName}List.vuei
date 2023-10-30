@@ -419,6 +419,7 @@
         popConfirm: {
           title: '确定删除吗?',
           confirm: handleDelete.bind(null, record),
+          placement: 'topLeft',
         },
       },
     ];
@@ -428,6 +429,7 @@
         popConfirm: {
           title: '确认提交流程吗？',
           confirm: handleProcess.bind(null, record),
+          placement: 'topLeft',
         }
       })
     }
@@ -447,6 +449,7 @@
         popConfirm: {
           title: '确定删除吗?',
           confirm: handleDelete.bind(null, record),
+          placement: 'topLeft',
         },
       },
     ];
