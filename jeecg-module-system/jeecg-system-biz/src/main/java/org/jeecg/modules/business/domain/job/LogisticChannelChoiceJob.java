@@ -48,13 +48,9 @@ public class LogisticChannelChoiceJob implements Job {
     @Autowired
     private IPlatformOrderService platformOrderService;
     @Autowired
-    private IPlatformOrderContentService platformOrderContentService;
-    @Autowired
     private ISensitiveAttributeService sensitiveAttributeService;
     @Autowired
     private  IShopService shopService;
-    @Autowired
-    private PlatformOrderContentMapper platformOrderContentMapper;
     @Autowired
     Environment env;
     @Autowired
@@ -115,15 +111,6 @@ public class LogisticChannelChoiceJob implements Job {
                 }
                 tempPlatformOrders.remove(orderToAdd);
             }
-            System.out.println("Attributes in orders : ");
-            for(Map.Entry<String, List<PlatformOrder>> entry : orderMapByAttribute.entrySet()) {
-                System.out.println("attribute : " + entry.getKey());
-                if(entry.getKey() != null) {
-                    for(PlatformOrder order : entry.getValue()) {
-                        System.out.println(order.getId());
-                    }
-                }
-            }
             System.gc();
             Map<String, Map<String, List<PlatformOrder>>> orderMapByShopAndCountry = new HashMap<>();
             for (PlatformOrder platformOrder : platformOrders) {
@@ -147,9 +134,6 @@ public class LogisticChannelChoiceJob implements Job {
             List<Country> countryList = countryService.findIdByEnName(countries);
             Map<String, String> countryNameToIdMap = countryList.stream().collect(toMap(Country::getNameEn, Country::getId));
 
-            System.out.println("Country name to id map : ");
-            countryNameToIdMap.keySet().forEach(System.out::println);
-
             Map<String, String> logisticChannelIdToNameMap = logisticChannelService.listByIdAndZhName().stream().collect(toMap(LogisticChannel::getId, LogisticChannel::getZhName));
 
             List<SensitiveAttribute> sensitiveAttributes = sensitiveAttributeService.listIdAndPriority();
@@ -170,27 +154,18 @@ public class LogisticChannelChoiceJob implements Job {
             List<LogisticChannelChoiceError> logisticChoiceErrorList = new ArrayList<>();
             for( Map.Entry<String, Map<String, List<PlatformOrder>>> entry: orderMapByShopAndCountry.entrySet()) {
                 String shopId = entry.getKey();
-                System.out.println("\nShop => " + shopId);
                 Map<String, List<PlatformOrder>> orderMapByCountry = entry.getValue();
                 for(Map.Entry<String, List<PlatformOrder>> countryMapEntry: orderMapByCountry.entrySet()) {
                     String countryName = countryMapEntry.getKey();
                     List<PlatformOrder> orders = countryMapEntry.getValue();
-                    System.out.println("---- Country : " + countryName + ", Order number : " + orders.size());
                     for(PlatformOrder order: orders) {
                         // reset iterator
                         attributeMapIterator = new LinkedList(sortedAttributeIdToPriorityMap.entrySet()).listIterator();
-//                        for(Map.Entry<String, Integer> attributeEntry: sortedAttributeIdToPriorityMap.entrySet()) {
                         String orderAttributeId = sensitiveAttributeService.getHighestPriorityAttributeId(order.getId());
                         Integer orderAttributePriority = sortedAttributeIdToPriorityMap.get(orderAttributeId);
-                        if(order.getPlatformOrderId().equals("5709926760777")) {
-                            System.out.println("===> 5709926760777");
-                            System.out.println("===> order attribute" + orderAttributeId);
-                            System.out.println("===> order attribute priority" + orderAttributePriority);
-                        }
                         if(orderMapByAttribute.get(orderAttributeId) == null || orderAttributeId == null) {
                             continue;
                         }
-                        //todo : what is happening to EP4 Reunion 5709926760777
                         List<LogisticChannelChoice> choices = logisticChannelChoiceList.stream().filter(
                                 c -> c.getShopId().equals(shopId) && c.getCountryId().equals(countryNameToIdMap.get(countryName)) && c.getSensitiveAttributeId().equals(orderAttributeId))
                                 .collect(Collectors.toList());
@@ -208,7 +183,7 @@ public class LogisticChannelChoiceJob implements Job {
                                     orderToAdd.setId(order.getId());
                                     orderToAdd.setInvoiceLogisticChannelName(logisticChannelIdToNameMap.get(choice.getLogisticChannelId()));
                                     ordersToUpdate.add(orderToAdd);
-                                    System.out.println("La ligne " + choice.getLogisticChannelId() + " a été attribué à commande : " + order.getId());
+                                    log.info("La ligne " + choice.getLogisticChannelId() + " a été attribué à commande : " + order.getId());
                                     break;
                                 }
                                 //reset search to prepare for lower priority search
@@ -226,7 +201,7 @@ public class LogisticChannelChoiceJob implements Job {
                                     PlatformOrder orderToAdd = new PlatformOrder();
                                     orderToAdd.setId(order.getId());
                                     orderToAdd.setInvoiceLogisticChannelName(logisticChannelIdToNameMap.get(choice.getLogisticChannelId()));
-                                    System.out.println("La ligne " + choice.getLogisticChannelId() + " a été attribué à commande : " + order.getId());
+                                    log.info("La ligne " + choice.getLogisticChannelId() + " a été attribué à commande : " + order.getId());
                                     ordersToUpdate.add(orderToAdd);
                                     break;
                                 }
@@ -241,20 +216,19 @@ public class LogisticChannelChoiceJob implements Job {
                                     ));
                         }
                         else {
-                            System.out.println("Trouvé");
                             PlatformOrder orderToAdd = new PlatformOrder();
                             orderToAdd.setId(order.getId());
                             orderToAdd.setInvoiceLogisticChannelName(logisticChannelIdToNameMap.get(choices.get(0).getLogisticChannelId()));
                             ordersToUpdate.add(orderToAdd);
-                            System.out.println("La ligne " + choices.get(0).getLogisticChannelId() + " a été attribué à commande : " + order.getId());
+                            log.info("La ligne " + choices.get(0).getLogisticChannelId() + " a été attribué à commande : " + order.getId());
                             continue;
                         }
                     } // end for orders
                 } // end for in orderMapByCountry
             } // end for orderMapByShopAndCountry
-            System.out.println("Orders to Update => ");
+            log.info("Orders to Update => ");
             for(PlatformOrder order : ordersToUpdate) {
-                System.out.println(order.getId());
+                log.info(order.getId());
             }
             platformOrderService.updateBatchById(ordersToUpdate);
             if(!logisticChoiceErrorList.isEmpty()) {
@@ -286,10 +260,8 @@ public class LogisticChannelChoiceJob implements Job {
     private LogisticChannelChoice getHigherLogisticChannelChoice(String shopId, String countryName, Integer priority,
                                                            List<LogisticChannelChoice> logisticChannelChoiceList, ListIterator<Map.Entry<String, Integer>> attributeMapIterator,
                                                            Map<String, String> countryNameToIdMap) throws JobExecutionException {
-        System.out.println("On se rabat sur une priorité plus élevée");
+        log.info("On se rabat sur une priorité plus élevée");
         Map.Entry<String, Integer> nextEntry = attributeMapIterator.next();
-        System.out.println(nextEntry.getValue() + " ? " + priority);
-        System.out.println(nextEntry.getKey());
         List<LogisticChannelChoice> logisticChannelChoices;
         LogisticChannelChoice logisticChannelChoice;
         if(nextEntry.getValue() > priority) {
@@ -309,10 +281,8 @@ public class LogisticChannelChoiceJob implements Job {
     private LogisticChannelChoice getLowerLogisticChannelChoice(String shopId, String countryName, Integer priority,
                                                            List<LogisticChannelChoice> logisticChannelChoiceList, ListIterator<Map.Entry<String, Integer>> attributeMapIterator,
                                                            Map<String, String> countryNameToIdMap) throws JobExecutionException {
-        System.out.println("On se rabat sur une priorité plus faible");
+        log.info("On se rabat sur une priorité plus faible");
         Map.Entry<String, Integer> previousEntry = attributeMapIterator.previous();
-        System.out.println(previousEntry.getValue() + " ? " + priority);
-        System.out.println(previousEntry.getKey());
         List<LogisticChannelChoice> logisticChannelChoices;
         LogisticChannelChoice logisticChannelChoice;
         if(previousEntry.getValue() <= priority) {

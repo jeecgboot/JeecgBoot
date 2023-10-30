@@ -179,11 +179,18 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     /**
      * Find all order that can be invoiced by small clients (type 2) themselves.
-     * Invoices of erp_status 1
      * @param shopIds list of shop id
+     * @param erpStatuses list of erp_status
      * @return list of orders
      */
     List<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses);
+    /**
+     * Get ids of all order that can be invoiced by small clients (type 2) themselves.
+     * @param shopIds list of shop id
+     * @param erpStatuses list of erp_status
+     * @return list of orders
+     */
+    List<String> findUninvoicedOrderIdsByShopForClient(List<String> shopIds, List<Integer> erpStatuses);
 
     /**
      * Find all order with empty logistic_channel_name and invoice_logistic_channel_name

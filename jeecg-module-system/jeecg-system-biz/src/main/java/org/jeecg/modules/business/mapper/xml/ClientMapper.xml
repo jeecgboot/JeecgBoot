@@ -19,4 +19,12 @@
     FROM client
         WHERE internal_code = #{code}
 </select>
+    <select id="getClientByType" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT c.*
+        FROM client c
+        JOIN client_category cc
+            ON c.client_category_id = cc.id
+        WHERE cc.name = #{type}
+        AND c.active = 1;
+    </select>
 </mapper>

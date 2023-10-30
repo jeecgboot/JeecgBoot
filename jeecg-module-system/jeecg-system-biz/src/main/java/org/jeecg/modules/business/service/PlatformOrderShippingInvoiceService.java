@@ -3,6 +3,7 @@ package org.jeecg.modules.business.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.domain.excel.SheetManager;
@@ -41,9 +42,13 @@ import java.util.zip.ZipOutputStream;
 public class PlatformOrderShippingInvoiceService {
 
     @Autowired
+    ICurrencyService currencyService;
+    @Autowired
     ShippingInvoiceMapper shippingInvoiceMapper;
     @Autowired
     PlatformOrderMapper platformOrderMapper;
+    @Autowired
+    IBalanceService balanceService;
     @Autowired
     ClientMapper clientMapper;
     @Autowired
@@ -165,7 +170,14 @@ public class PlatformOrderShippingInvoiceService {
                 platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
                 purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService);
-        String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
+        Subject subject = null;
+        try {
+            subject = SecurityUtils.getSubject();
+        }
+        catch (Exception e) {
+            log.error("Error while getting subject", e);
+        }
+        String username = subject == null ? "admin" : ((LoginUser) subject.getPrincipal()).getUsername();
         // Creates invoice by factory
         ShippingInvoice invoice = factory.createInvoice(param.clientID(),
                 param.shopIDs(),
@@ -278,6 +290,7 @@ public class PlatformOrderShippingInvoiceService {
         Path out = Paths.get(INVOICE_DIR, filename);
         Files.copy(src, out, StandardCopyOption.REPLACE_EXISTING);
         invoice.toExcelFile(out);
+        String currencyId = currencyService.getIdByCode(invoice.client().getCurrency());
         // save to DB
         org.jeecg.modules.business.entity.ShippingInvoice shippingInvoiceEntity = org.jeecg.modules.business.entity.ShippingInvoice.of(
                 username,
@@ -285,7 +298,8 @@ public class PlatformOrderShippingInvoiceService {
                 invoice.code(),
                 invoice.getTotalAmount(),
                 invoice.reducedAmount(),
-                invoice.paidAmount()
+                invoice.paidAmount(),
+                currencyId
         );
         shippingInvoiceMapper.insert(shippingInvoiceEntity);
         return new InvoiceMetaData(filename, invoice.code(), invoice.client().getInternalCode(), invoice.client().getInvoiceEntity(), "");
@@ -455,6 +469,11 @@ public class PlatformOrderShippingInvoiceService {
         }
         for(Map.Entry<String, List<String>> entry: clientShopIDsMap.entrySet()) {
             Period period = getValidPeriod(entry.getValue());
+            if(!period.isValid()) {
+                String internalCode = clientMapper.selectById(entry.getKey()).getInternalCode();
+                invoiceList.add(new InvoiceMetaData("", "error", internalCode, entry.getKey(), "No order to invoice."));
+                continue;
+            }
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(period.start());
             String start = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH)+1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH));
@@ -466,13 +485,18 @@ public class PlatformOrderShippingInvoiceService {
             try {
                 ShippingInvoiceParam param = new ShippingInvoiceParam(entry.getKey(), entry.getValue(), start, end, Collections.singletonList(3), Arrays.asList("0", "1"));
                 InvoiceMetaData metaData;
-                if(invoiceType == 0)
+                if(invoiceType == 0) {
                     metaData = makeInvoice(param);
-                else
+                    balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), "shipping");
+                }
+                else {
                     metaData = makeCompleteInvoicePostShipping(param, "post");
+                    balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), "complete");
+                }
                 invoiceList.add(metaData);
             } catch (UserException | IOException | ParseException e) {
-                invoiceList.add(new InvoiceMetaData("", "error", "", entry.getKey(), e.getMessage()));
+                String internalCode = clientMapper.selectById(entry.getKey()).getInternalCode();
+                invoiceList.add(new InvoiceMetaData("", "error", internalCode, entry.getKey(), e.getMessage()));
                 log.error(e.getMessage());
             }
             System.gc();

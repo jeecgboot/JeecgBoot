@@ -1,14 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.business.mapper.BalanceMapper">
-<select id="getBalanceByClientIdAndCurrency" resultType="java.math.BigDecimal">
-    SELECT amount
-    FROM balance b
-    JOIN currency c
-        ON b.currency_id = c.id
-    WHERE client_id = #{clientId}
-    AND c.code = #{currency}
-    ORDER BY b.create_time DESC
-    LIMIT 1
-</select>
+    <select id="getBalanceByClientIdAndCurrency" resultType="java.math.BigDecimal">
+        SELECT amount
+        FROM balance b
+        JOIN currency c
+            ON b.currency_id = c.id
+        WHERE client_id = #{clientId}
+        AND c.code = #{currency}
+        ORDER BY b.create_time DESC
+        LIMIT 1
+    </select>
+    <delete id="deleteBalance">
+        DELETE
+        FROM balance
+        WHERE operation_id = #{operationId}
+        AND operation_type = #{operationType}
+    </delete>
+    <delete id="deleteBatchBalance">
+        DELETE
+        FROM balance
+        WHERE operation_id IN
+        <foreach collection="operationIds" item="operationId" open="(" separator="," close=")">
+            #{operationId}
+        </foreach>
+        AND operation_type = #{operationType}
+    </delete>
+    <update id="editBalance">
+        UPDATE balance
+        SET amount = #{amount},
+            update_by = #{username},
+            update_time = NOW(),
+            currency_id = #{currencyId},
+            client_id = #{clientId}
+        WHERE operation_id = #{operationId}
+            AND operation_type = #{operationType}
+    </update>
 </mapper>

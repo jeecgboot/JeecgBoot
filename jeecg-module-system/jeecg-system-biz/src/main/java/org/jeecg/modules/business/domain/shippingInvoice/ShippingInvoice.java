@@ -66,7 +66,6 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
             BigDecimal countryPickingFeesPerSKU = BigDecimal.ZERO;
             BigDecimal countryPackageMatFeePerOrder = BigDecimal.ZERO;
             for (PlatformOrder po : orders) {
-                System.out.println(po.getId());
                 countryFretFees = countryFretFees.add(po.getFretFee());
                 countryServiceFeesPerOrder = countryServiceFeesPerOrder.add(po.getOrderServiceFee());
                 countryPickingFeesPerOrder = countryPickingFeesPerOrder.add(po.getPickingFee());

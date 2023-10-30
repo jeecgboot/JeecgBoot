@@ -15,6 +15,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderStatus;
 import org.jeecg.modules.business.entity.*;
+import org.jeecg.modules.business.entity.Currency;
 import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.service.*;
@@ -24,6 +25,7 @@ import org.jeecg.modules.quartz.service.IQuartzJobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
@@ -36,6 +38,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,7 +56,11 @@ import static org.jeecg.modules.business.entity.TaskHistory.TaskStatus.*;
 @Slf4j
 public class InvoiceController {
     @Autowired
+    private IBalanceService balanceService;
+    @Autowired
     private IClientService clientService;
+    @Autowired
+    private ICurrencyService currencyService;
     @Autowired
     private IShopService shopService;
     @Autowired
@@ -197,9 +204,11 @@ public class InvoiceController {
      * in case of success, data will contain filename.
      */
     @PostMapping(value = "/make")
+    @Transactional
     public Result<?> makeInvoice(@RequestBody ShippingInvoiceParam param) {
         try {
             InvoiceMetaData metaData = shippingInvoiceService.makeInvoice(param);
+            balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), "shipping");
             return Result.OK(metaData);
         } catch (UserException e) {
             return Result.error(e.getMessage());
@@ -213,11 +222,13 @@ public class InvoiceController {
      * @param param ClientID, shopIDs[], startDate, endDate, erpStatuses[], warehouses[]
      * @return
      */
+    @Transactional
     @PostMapping(value = "/makeComplete")
     public Result<?> makeCompleteShippingInvoice(@RequestBody ShippingInvoiceParam param) {
         try {
             String method = param.getErpStatuses().toString().equals("[3]") ? "post" : param.getErpStatuses().toString().equals("[1, 2]") ? "pre-shipping" : "all";
             InvoiceMetaData metaData = shippingInvoiceService.makeCompleteInvoicePostShipping(param, method);
+            balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), "complete");
             return Result.OK(metaData);
         } catch (UserException e) {
             return Result.error(e.getMessage());
@@ -234,10 +245,12 @@ public class InvoiceController {
      * @return Result of the generation, in case of error, message will be contained,
      * in case of success, data will contain filename.
      */
+    @Transactional
     @PostMapping(value = "/makeManualInvoice")
     public Result<?> makeManualShippingInvoice(@RequestBody ShippingInvoiceOrderParam param) {
         try {
             InvoiceMetaData metaData = shippingInvoiceService.makeInvoice(param);
+            balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), "shipping");
             return Result.OK(metaData);
         } catch (UserException e) {
             return Result.error(e.getMessage());
@@ -255,10 +268,12 @@ public class InvoiceController {
      * @return Result of the generation, in case of error, message will be contained,
      * in case of success, data will contain filename.
      */
+    @Transactional
     @PostMapping(value = "/makeManualComplete")
     public Result<?> makeManualCompleteInvoice(@RequestBody ShippingInvoiceOrderParam param) {
         try {
             InvoiceMetaData metaData = shippingInvoiceService.makeCompleteInvoice(param);
+            balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), "complete");
             return Result.OK(metaData);
         } catch (UserException e) {
             return Result.error(e.getMessage());
@@ -509,7 +524,7 @@ public class InvoiceController {
             log.info("Generating detail files ...{}/{}", cpt++, invoiceList.size());
         }
         String zipFilename = shippingInvoiceService.zipInvoices(filenameList);
-        String subject = "Invoices generated from Breakdown Page";
+        String subject = "[" + LocalDate.now() + "] Invoices generated from Breakdown Page";
         String destEmail = sysUser.getEmail() == null ? env.getProperty("spring.mail.username") : sysUser.getEmail();
         Properties prop = emailService.getMailSender();
         Map <String, Object> templateModel = new HashMap<>();

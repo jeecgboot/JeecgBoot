@@ -2,8 +2,10 @@ package org.jeecg.modules.business.service;
 
 import org.jeecg.modules.business.entity.Balance;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.business.vo.InvoiceMetaData;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @Description: balance
@@ -14,4 +16,25 @@ import java.math.BigDecimal;
 public interface IBalanceService extends IService<Balance> {
 
     BigDecimal getBalanceByClientIdAndCurrency(String clientId, String currency);
+    void updateBalance(String clientId, String invoiceCode, String invoiceType);
+    void updateBalance(String clientId, String CreditId, BigDecimal amount, String currencyId);
+
+    /**
+     * Delete balance record
+     * @param operationId operation id : invoice id or credit id
+     * @param operationType operation type : invoice or credit
+     */
+    void deleteBalance(String operationId, String operationType);
+
+    /**
+     * Edit balance record
+     * @param operationId operation id : invoice id or credit id
+     * @param operationType operation type : invoice or credit
+     * @param clientId
+     * @param amount
+     * @param currencyId
+     */
+    void editBalance(String operationId, String operationType, String clientId, BigDecimal amount, String currencyId);
+
+    void deleteBatchBalance(List<String> operationIds, String operationType);
 }

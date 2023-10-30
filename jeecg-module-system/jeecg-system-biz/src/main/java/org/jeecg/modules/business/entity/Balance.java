@@ -1,6 +1,9 @@
 package org.jeecg.modules.business.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -67,4 +70,38 @@ public class Balance implements Serializable {
 	@Excel(name = "balance amount", width = 15)
     @ApiModelProperty(value = "balance amount")
     private java.math.BigDecimal amount;
+
+    public Balance() {
+
+    }
+
+    public Balance(String id,
+                   String createBy,
+                   Date createTime,
+                   String updateBy,
+                   Date updateTime,
+                   String clientId,
+                   String currencyId,
+                   String operationType,
+                   String operationId,
+                   BigDecimal amount) {
+        this.id = id;
+        this.createBy = createBy;
+        this.createTime = createTime;
+        this.updateBy = updateBy;
+        this.updateTime = updateTime;
+        this.clientId = clientId;
+        this.currencyId = currencyId;
+        this.operationType = operationType;
+        this.operationId = operationId;
+        this.amount = amount;
+    }
+    public static Balance of (String username,
+                              String clientId,
+                              String currencyId,
+                              String operationType,
+                              String operationId,
+                              BigDecimal amount) {
+        return new Balance(null, username, new Date(), null, null, clientId, currencyId, operationType, operationId, amount);
+    }
 }

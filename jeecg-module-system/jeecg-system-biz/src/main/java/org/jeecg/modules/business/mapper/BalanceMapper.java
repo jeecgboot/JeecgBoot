@@ -18,4 +18,15 @@ import org.springframework.stereotype.Repository;
 public interface BalanceMapper extends BaseMapper<Balance> {
 
     BigDecimal getBalanceByClientIdAndCurrency(@Param("clientId")String clientId, @Param("currency")String currency);
+
+    void deleteBalance(@Param("operationId") String operationId, @Param("operationType") String operationType);
+
+    void deleteBatchBalance(@Param("operationIds") List<String> operationIds, @Param("operationType") String operationType);
+
+    void editBalance(@Param("operationId") String operationId,
+                     @Param("operationType") String operationType,
+                     @Param("username") String username,
+                     @Param("clientId") String clientId,
+                     @Param("amount") BigDecimal amount,
+                     @Param("currencyId") String currencyId);
 }

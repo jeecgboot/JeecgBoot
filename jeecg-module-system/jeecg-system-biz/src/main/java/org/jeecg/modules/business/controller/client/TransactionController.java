@@ -95,10 +95,6 @@ public class TransactionController {
         List<ShippingFeesEstimation> shippingFeesEstimations = factory.getEstimations(clientId, orderIds, errorMessages);
         if(shippingFeesEstimations.isEmpty())
             return Result.OK("No estimation found.");
-        System.out.println("Estimation size : " + shippingFeesEstimations.size());
-        for(ShippingFeesEstimation estimation: shippingFeesEstimations) {
-            System.out.println("estimation : " + estimation.getDueForProcessedOrders());
-        }
         // purchase estimation
         List<String> estimationOrderIds = new ArrayList<>();
         BigDecimal shippingFeesEstimation = BigDecimal.ZERO;
@@ -106,7 +102,6 @@ public class TransactionController {
             estimationOrderIds.addAll(estimation.getOrderIds());
             shippingFeesEstimation = shippingFeesEstimation.add(estimation.getDueForProcessedOrders());
         }
-        System.out.println("Estimation order ids : " + estimationOrderIds);
         List<PlatformOrderContent> orderContents = platformOrderContentMapper.fetchOrderContent(estimationOrderIds);
         List<String> skuIds = orderContents.stream().map(PlatformOrderContent::getSkuId).collect(Collectors.toList());
         List<SkuPrice> skuPrices = platformOrderContentMapper.searchSkuPrice(skuIds);

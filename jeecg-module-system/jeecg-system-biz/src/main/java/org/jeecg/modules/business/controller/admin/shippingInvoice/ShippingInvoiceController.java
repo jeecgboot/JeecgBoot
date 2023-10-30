@@ -66,6 +66,8 @@ import java.util.stream.Stream;
 @Slf4j
 public class ShippingInvoiceController {
     @Autowired
+    private IBalanceService balanceService;
+    @Autowired
     private IClientService clientService;
     @Autowired
     private IPlatformOrderContentService platformOrderContentService;
@@ -509,6 +511,8 @@ public class ShippingInvoiceController {
         platformOrderService.cancelInvoice(invoiceNumber);
         savRefundService.cancelInvoice(invoiceNumber);
         shippingInvoiceService.delMain(id);
+        log.info("Updating balance ...");
+        balanceService.deleteBalance(id, "Debit");
         log.info("Deleting invoice files ...");
         String invoiceEntity = clientService.getClientEntity(clientId);
         List<Path> invoicePathList = getPath(INVOICE_LOCATION, invoiceNumber, invoiceEntity);
@@ -569,7 +573,9 @@ public class ShippingInvoiceController {
         platformOrderContentService.cancelBatchInvoice(invoiceNumbers);
         platformOrderService.cancelBatchInvoice(invoiceNumbers);
         savRefundService.cancelBatchInvoice(invoiceNumbers);
-        shippingInvoiceService.delBatchMain(ids);
+        shippingInvoiceService.delBatchMain(ids);;
+        log.info("Updating balances ...");
+        balanceService.deleteBatchBalance(ids, "Debit");
         log.info("Deleting invoice files ...");
 
         for(int i = 0; i < ids.size(); i++) {

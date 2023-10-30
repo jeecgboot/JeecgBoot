@@ -53,6 +53,7 @@ public class ShippingInvoice implements Serializable {
     /**
      * 客户 ID
      */
+    @Dict(dictTable = "client", dicText = "internal_code", dicCode = "id")
     @Excel(name = "客户", width = 15)
     @ApiModelProperty(value = "客户")
     private String clientId;
@@ -156,7 +157,8 @@ public class ShippingInvoice implements Serializable {
                                  BigDecimal totalAmount,
                                  BigDecimal discountAmount,
                                  BigDecimal finalAmount,
-                                 BigDecimal paidAmount) {
+                                 BigDecimal paidAmount,
+                           String currencyId) {
         this.id = id;
         this.createBy = createBy;
         this.createTime = createTime;
@@ -168,6 +170,7 @@ public class ShippingInvoice implements Serializable {
         this.discountAmount = discountAmount;
         this.finalAmount = finalAmount;
         this.paidAmount = paidAmount;
+        this.currencyId = currencyId;
     }
     public static ShippingInvoice of(
             String username,
@@ -175,9 +178,10 @@ public class ShippingInvoice implements Serializable {
             String invoiceNumber,
             BigDecimal totalAmount,
             BigDecimal discountAmount,
-            BigDecimal paidAmount
+            BigDecimal paidAmount,
+            String currencyId
     ) {
         return new ShippingInvoice(null, username, new Date(), username, new Date(), clientId,
-                invoiceNumber, totalAmount, discountAmount, totalAmount.subtract(discountAmount), paidAmount);
+                invoiceNumber, totalAmount, discountAmount, totalAmount.subtract(discountAmount), paidAmount, currencyId);
     }
 }

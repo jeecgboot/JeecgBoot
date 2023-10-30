@@ -119,6 +119,11 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     }
 
     @Override
+    public List<Client> getClientsByType(String type) {
+        return clientMapper.getClientByType(type);
+    }
+
+    @Override
     public String getClientEntity(String id) {
         return clientMapper.getClientEntity(id);
     }

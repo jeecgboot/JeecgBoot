@@ -47,4 +47,5 @@ public interface IClientService extends IService<Client> {
 	 */
 	Client getCurrentClient();
 
+    List<Client> getClientsByType(String type);
 }
