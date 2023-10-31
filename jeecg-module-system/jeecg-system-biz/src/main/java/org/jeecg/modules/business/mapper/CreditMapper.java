@@ -15,5 +15,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface CreditMapper extends BaseMapper<Credit> {
-
+    Credit getLastCredit(@Param("currencyId") String currencyId);
 }

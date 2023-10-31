@@ -29,4 +29,6 @@ public interface BalanceMapper extends BaseMapper<Balance> {
                      @Param("clientId") String clientId,
                      @Param("amount") BigDecimal amount,
                      @Param("currencyId") String currencyId);
+
+    Balance getBalanceByOperation(@Param("operationId")String operationId, @Param("operationType") String operationType);
 }

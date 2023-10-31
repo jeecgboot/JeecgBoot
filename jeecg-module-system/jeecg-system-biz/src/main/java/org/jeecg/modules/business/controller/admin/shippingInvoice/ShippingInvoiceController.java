@@ -54,6 +54,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.jeecg.modules.business.entity.Balance.OperationType;
 /**
  * @Description: 物流发票
  * @Author: jeecg-boot
@@ -512,7 +513,7 @@ public class ShippingInvoiceController {
         savRefundService.cancelInvoice(invoiceNumber);
         shippingInvoiceService.delMain(id);
         log.info("Updating balance ...");
-        balanceService.deleteBalance(id, "Debit");
+        balanceService.deleteBalance(id, OperationType.Debit.name());
         log.info("Deleting invoice files ...");
         String invoiceEntity = clientService.getClientEntity(clientId);
         List<Path> invoicePathList = getPath(INVOICE_LOCATION, invoiceNumber, invoiceEntity);
@@ -575,7 +576,7 @@ public class ShippingInvoiceController {
         savRefundService.cancelBatchInvoice(invoiceNumbers);
         shippingInvoiceService.delBatchMain(ids);;
         log.info("Updating balances ...");
-        balanceService.deleteBatchBalance(ids, "Debit");
+        balanceService.deleteBatchBalance(ids, OperationType.Debit.name());
         log.info("Deleting invoice files ...");
 
         for(int i = 0; i < ids.size(); i++) {

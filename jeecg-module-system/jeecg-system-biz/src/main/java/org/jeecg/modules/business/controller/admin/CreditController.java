@@ -24,6 +24,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
 
+import static org.jeecg.modules.business.entity.Balance.OperationType;
  /**
  * @Description: credit
  * @Author: jeecg-boot
@@ -88,9 +89,31 @@ public class CreditController extends JeecgController<Credit, ICreditService> {
 	@Transactional
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<String> edit(@RequestBody Credit credit) {
+		log.info("editing credit");
+		Credit lastCredit = creditService.getLastCredit(credit.getCurrencyId());
+		boolean isAmountUpdated = true;
+		// if the last credit is not the one being edited, then the amount cannot be edited
+		if(!lastCredit.getId().equals(credit.getId())) {
+			isAmountUpdated = false;
+			Credit creditToEdit = creditService.getById(credit.getId());
+			if(creditToEdit.getAmount().compareTo(credit.getAmount()) != 0) {
+				log.error("Credit amount cannot be edited ! Only the last record can be edited !");
+				return Result.error("Credit amount cannot be edited ! Only the last record can be edited !");
+			}
+		}
 		creditService.updateById(credit);
-		balanceService.editBalance(credit.getId(), "Credit", credit.getClientId() ,credit.getAmount(), credit.getCurrencyId());
-		return Result.OK("编辑成功!");
+		log.info("credit edited successfully !");
+		if(isAmountUpdated) {
+			try {
+				balanceService.editBalance(credit.getId(), OperationType.Credit.name(), credit.getClientId(), credit.getAmount(), credit.getCurrencyId());
+
+			}
+			catch (Exception e) {
+				log.error("Error while editing balance : " + e.getMessage());
+				return Result.error("Error while editing balance : " + e.getMessage());
+			}
+		}
+		return Result.OK("Credit edited successfully !");
 	}
 	
 	/**
@@ -105,7 +128,7 @@ public class CreditController extends JeecgController<Credit, ICreditService> {
 	@DeleteMapping(value = "/delete")
 	public Result<String> delete(@RequestParam(name="id") String id) {
 		creditService.removeById(id);
-		balanceService.deleteBalance(id, "Credit");
+		balanceService.deleteBalance(id, OperationType.Credit.name());
 		return Result.OK("删除成功!");
 	}
 	
@@ -122,7 +145,7 @@ public class CreditController extends JeecgController<Credit, ICreditService> {
 	public Result<String> deleteBatch(@RequestParam(name="ids") String ids) {
 		List<String> idList = Arrays.asList(ids.split(","));
 		creditService.removeByIds(idList);
-		balanceService.deleteBatchBalance(idList, "Credit");
+		balanceService.deleteBatchBalance(idList,OperationType.Credit.name());
 		return Result.OK("批量删除成功!");
 	}
 	

@@ -11,6 +11,12 @@
         ORDER BY b.create_time DESC
         LIMIT 1
     </select>
+    <select id="getBalanceByOperation" resultType="org.jeecg.modules.business.entity.Balance">
+        SELECT id
+        FROM balance b
+        WHERE operation_id = #{operationId}
+            AND operation_type = #{operationType}
+    </select>
     <delete id="deleteBalance">
         DELETE
         FROM balance

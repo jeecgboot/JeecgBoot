@@ -71,6 +71,11 @@ public class Balance implements Serializable {
     @ApiModelProperty(value = "balance amount")
     private java.math.BigDecimal amount;
 
+    public enum OperationType {
+        Credit,
+        Debit,
+        Init,
+    }
     public Balance() {
 
     }

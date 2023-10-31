@@ -1,6 +1,6 @@
 package org.jeecg.modules.business.service.impl;
 
-import org.checkerframework.checker.units.qual.A;
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.entity.Balance;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderContent;
@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
  * @Version: V1.0
  */
 @Service
+@Slf4j
 public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> implements IBalanceService {
     @Autowired
     private BalanceMapper balanceMapper;
@@ -62,7 +63,7 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
             currentBalance = currentBalance.add(purchaseFees);
         }
         SysUser sysUser = new SysUser();
-        Balance balance = Balance.of(sysUser.getUsername(), clientId, invoice.getCurrencyId(), "Debit", invoice.getId(), currentBalance);
+        Balance balance = Balance.of(sysUser.getUsername(), clientId, invoice.getCurrencyId(), Balance.OperationType.Debit.name(), invoice.getId(), currentBalance);
         balanceMapper.insert(balance);
     }
 
@@ -72,7 +73,7 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
         BigDecimal previousBalance = getBalanceByClientIdAndCurrency(clientId, currency);
         BigDecimal currentBalance = previousBalance.add(amount);
         SysUser sysUser = new SysUser();
-        Balance balance = Balance.of(sysUser.getUsername(), clientId, currencyId, "Credit", CreditId, currentBalance);
+        Balance balance = Balance.of(sysUser.getUsername(), clientId, currencyId, Balance.OperationType.Credit.name(), CreditId, currentBalance);
         balanceMapper.insert(balance);
     }
 
@@ -86,9 +87,22 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
         balanceMapper.deleteBatchBalance(operationIds, operationType);
     }
     @Override
-    public void editBalance(String operationId, String operationType, String clientId, BigDecimal amount, String currencyId) {
+    public void editBalance(String operationId, String operationType, String clientId, BigDecimal amount, String currencyId) throws Exception {
+        log.info("editing balance");
         SysUser sysUser = new SysUser();
-        balanceMapper.editBalance(operationId, operationType, sysUser.getUsername(), clientId, amount, currencyId);
+        String currency = currencyService.getCodeById(currencyId);
+        Balance balance = balanceMapper.getBalanceByOperation(operationId, operationType);
+        System.out.println("balance exist ? : " + balance);
+        if(balance == null) {
+            throw new Exception("Balance not found !");
+        }
+        balanceMapper.deleteBalance(operationId, operationType);
+        BigDecimal currentBalance = balanceMapper.getBalanceByClientIdAndCurrency(clientId, currency);
+        System.out.println("current balance : " + currentBalance);
+        BigDecimal finalBalance = operationType.equals(Balance.OperationType.Credit.name()) ? currentBalance.add(amount) : currentBalance.subtract(amount);
+        System.out.println("final balance : " + finalBalance);
+        Balance newBalance = Balance.of(sysUser.getUsername(), clientId, currencyId, operationType, operationId, finalBalance);
+        balanceMapper.insert(newBalance);
     }
 
 }

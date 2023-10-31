@@ -34,7 +34,7 @@ public interface IBalanceService extends IService<Balance> {
      * @param amount
      * @param currencyId
      */
-    void editBalance(String operationId, String operationType, String clientId, BigDecimal amount, String currencyId);
+    void editBalance(String operationId, String operationType, String clientId, BigDecimal amount, String currencyId) throws Exception;
 
     void deleteBatchBalance(List<String> operationIds, String operationType);
 }
