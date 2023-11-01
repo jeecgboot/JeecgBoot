@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.ParamMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.Param">
+        <id column="id" property="id" />
+           <result column="name" property="name" />
+           <result column="value" property="value" />
+           <result column="info" property="info" />
+           <result column="ts_create" property="tsCreate" />
+       </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, value, info, ts_create
+    </sql>
+
+    <select id="pagination" resultType="org.jeecg.modules.im.entity.Param">
+        SELECT * FROM im_param
+        <where>1=1
+            <if test="q.name!=null and q.name !=''">
+                and name like concat("%",#{q.name},"%")
+            </if>
+            <if test="q.info!=null and q.info !=''">
+                and info like concat("%",#{q.info},"%")
+            </if>
+            <if test="q.ts_create!=null">
+                and ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+
+    <select id="findAll" resultType="org.jeecg.modules.im.entity.Param">
+        select * from im_param
+    </select>
+
+    <select id="findByName" resultType="org.jeecg.modules.im.entity.Param">
+        select * from im_param where name = #{name}
+    </select>
+
+</mapper>

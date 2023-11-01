@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.TagMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.Tag">
+          <id column="id" property="id" />
+           <result column="user_id" property="userId" />
+           <result column="name" property="name" />
+           <result column="count" property="count" />
+           <result column="ts_create" property="tsCreate" />
+           <result column="friend_ids" property="friendIds" />
+        <collection property="friendList" ofType="org.jeecg.modules.im.entity.Friend">
+            <id column="f_id" property="id"/>
+            <result column="f_user_id" property="userId"/>
+            <result column="f_to_userId" property="toUserId"/>
+            <result column="f_is_star" property="isStar"/>
+            <result column="f_remark" property="remark"/>
+        </collection>
+       </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, name, count, ts_create,friendIds
+    </sql>
+
+    <select id="findAllOfUser" resultMap="BaseResultMap">
+        select
+        t.id,t.user_id,t.name,t.count,t.ts_create,t.friend_ids,
+        f.id f_id,f.user_id f_user_id,f.to_user_id f_to_user_id,
+        f.is_star f_is_star,f.remark f_remark
+        from im_tag  t
+        LEFT JOIN im_friend f ON  FIND_IN_SET(f.id,t.friend_ids)
+        where t.user_id = #{userId}
+    </select>
+
+    <select id="findByNameOfUser" resultMap="BaseResultMap">
+        select * from im_tag where name = #{name} and user_id = #{userId}
+    </select>
+
+    <select id="findByFriendIdOfUser" resultMap="BaseResultMap">
+        select * from im_tag where user_id = #{userId} and friend_ids like #{friendId}
+    </select>
+
+</mapper>

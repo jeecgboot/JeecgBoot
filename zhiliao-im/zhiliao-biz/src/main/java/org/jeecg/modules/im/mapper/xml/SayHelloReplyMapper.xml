@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.SayHelloReplyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.SayHelloReply">
+        <id column="id" property="id"/>
+        <result column="hello_id" property="helloId"/>
+        <result column="msg" property="msg"/>
+        <result column="is_send" property="isSend"/>
+        <result column="ts_create" property="tsCreate"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, hello_id, msg, is_send, ts_create
+    </sql>
+
+    <select id="findByHelloId" resultMap="BaseResultMap">
+        select * from im_say_hello_reply where hello_id = #{helloId}
+        <if test="isSend!=null">
+            and is_send =#{isSend}
+        </if>
+        order by ts_create desc
+    </select>
+    <select id="pagination" resultMap="BaseResultMap">
+        select * from im_say_hello_reply where hello_id = #{q.helloId}
+        order by ts_create desc
+    </select>
+
+</mapper>

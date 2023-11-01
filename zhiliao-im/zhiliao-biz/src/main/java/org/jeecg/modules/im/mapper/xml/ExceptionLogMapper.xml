@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.ExceptionLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.ExceptionLog">
+        <id column="id" property="id"/>
+        <result column="ip" property="ip"/>
+        <result column="ip_info" property="ipInfo"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="uri" property="uri"/>
+        <result column="method" property="method"/>
+        <result column="req_param" property="reqParam"/>
+        <result column="res_data" property="resData"/>
+        <result column="version" property="version"/>
+        <result column="exc_name" property="excName"/>
+        <result column="exc_message" property="excMessage"/>
+        <result column="ts_create" property="tsCreate"/>
+        <association property="user" javaType="org.jeecg.modules.im.entity.User">
+            <result column="u_id" property="id"/>
+            <result column="u_nickname" property="nickname"/>
+            <result column="u_account" property="account"/>
+            <result column="u_small_avatar" property="smallAvatar"/>
+            <result column="u_is_online" property="isOnline"/>
+            <result column="u_ts_create" property="tsCreate"/>
+            <association property="info" javaType="org.jeecg.modules.im.entity.UserInfo">
+                <id column="i_id" property="id" />
+                <result column="i_province" property="province" />
+                <result column="i_city" property="city" />
+                <result column="i_district" property="district" />
+                <result column="i_country" property="country" />
+                <result column="i_gender" property="gender" />
+            </association>
+        </association>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        l.ip, l.ip_info, uri, method, req_param,  exc_name,exc_message,l.ts_create
+    </sql>
+    <select id="pagination" resultMap="BaseResultMap">
+        SELECT
+        l.id,<include refid="Base_Column_List"/>,
+        u.id u_id,u.nickname u_nickname,u.account u_account,u.small_avatar u_small_avatar,u.is_online u_is_online,u.ts_create u_ts_create,
+        i.id i_id,i.province i_province,i.city i_city,i.country i_country,i.district i_district,i.gender i_gender
+        FROM im_exception_log l
+        left join im_user u on u.id = l.user_id
+        left join im_user_info i on i.user_id = u.id
+        <where> 1=1
+            <if test="q.ts_create!=null">
+                and l.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+</mapper>

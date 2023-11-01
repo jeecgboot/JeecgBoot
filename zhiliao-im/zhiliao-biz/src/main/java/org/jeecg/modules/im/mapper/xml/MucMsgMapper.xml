@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.MucMsgMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.MucMsg">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="muc_id" property="mucId"/>
+        <result column="type" property="type"/>
+        <result column="stanza_id" property="stanzaId"/>
+        <result column="content" property="content"/>
+        <result column="body" property="body"/>
+        <result column="is_encrypt" property="isEncrypt"/>
+        <result column="is_spam" property="isSpam"/>
+        <result column="is_send" property="isSend"/>
+        <result column="ts_pin" property="tsPin"/>
+        <result column="ts_send" property="tsSend"/>
+        <result column="ts_delete" property="tsDelete"/>
+        <result column="read_count" property="readCount"/>
+        <result column="ts_revoke" property="tsRevoke"/>
+        <result column="revoker_id" property="revokerId"/>
+        <association property="sender" javaType="org.jeecg.modules.im.entity.MucMember">
+            <id column="sender_id" property="id"/>
+            <result column="sender_nickname" property="nickname"/>
+            <association property="user" javaType="org.jeecg.modules.im.entity.User">
+                <id column="user_id" property="id"/>
+                <result column="user_nickname" property="nickname"/>
+                <result column="user_account" property="account"/>
+                <result column="user_smallAvatar" property="smallAvatar"/>
+            </association>
+        </association>
+        <association property="muc" javaType="org.jeecg.modules.im.entity.Muc">
+            <id column="muc_id" property="id"/>
+            <result column="muc_name" property="name"/>
+            <result column="muc_info" property="info"/>
+            <result column="muc_small_avatar" property="smallAvatar"/>
+        </association>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, muc_id, type, stanza_id, content,body,is_encrypt,ts_send,ts_pin,ts_delete,is_spam,read_count,ts_revoke,revoker_id
+    </sql>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        select
+            m.id,m.content,m.body,stanza_id,m.type,m.is_encrypt,m.is_spam,m.ts_send,m.ts_pin,m.read_count,m.ts_delete,
+            r.id muc_id,r.name muc_name,r.info muc_info,r.small_avatar muc_small_avatar,
+            sender.id sender_id,sender.nickname sender_nickname,
+            user.id user_id,user.nickname user_nickname,user.account user_account,user.small_avatar user_smallAvatar
+        from im_muc_msg m
+        left join im_muc r on r.id = m.muc_id
+        left join im_user user on user.id = m.user_id
+        left join im_muc_member sender on sender.user_id = user.id and m.muc_id = sender.muc_id
+        <where>1=1
+            <choose>
+                <when test="q.isDelete!=null and q.isDelete==true">
+                    and m.ts_delete >0
+                </when>
+                <otherwise>
+                    and m.ts_delete = 0
+                </otherwise>
+            </choose>
+            <if test="q.content!=null and q.content!=''">
+                and m.content like concat("%",#{q.content},"%")
+            </if>
+            <if test="q.type!=null and q.type !=''">
+                and m.type = #{q.type}
+            </if>
+            <if test="q.isSpam!=null">
+                and m.is_spam = #{q.isSpam}
+            </if>
+            <choose>
+                <when test="q.isTop!=null and q.isTop==true">
+                    and m.ts_pin >0
+                </when>
+                <otherwise>
+                    and m.ts_pin = 0
+                </otherwise>
+            </choose>
+            <if test="q.mucId!=null and q.mucId!=''">
+                and m.muc_id = #{q.mucId}
+            </if>
+            <if test="q.sendStartTime!=null and q.sendStartTime!=''">
+                and ts_send &gt;= #{q.sendStartTime}
+            </if>
+            <if test="q.sendEndTime!=null and q.sendEndTime!=''">
+                and ts_send &lt;= #{q.sendEndTime}
+            </if>
+            <if test="q.s!=null and q.s !=''">
+                and (sender.nickname like concat("%",#{q.s},"%") or user.account = #{q.s} or user.mobile = #{q.s} or user.username = #{q.s} or user.id = #{q.s})
+            </if>
+            <if test="q.r!=null and q.r !=''">
+                and (r.name = #{q.r} or r.id = #{q.r})
+            </if>
+            <if test="q.ts_create!=null">
+                and m.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+
+    <select id="pageApi" resultMap="BaseResultMap">
+        select a.* from(
+        select case
+        when m.user_id =#{q.userId} then true
+        when m.user_id !=#{q.userId} then false
+        end as is_send,
+        m.id,m.content,m.muc_id,stanza_id,m.body,m.type,m.is_encrypt,m.is_spam,m.ts_send,m.ts_pin,m.read_count,
+        sender.id sender_id,sender.nickname sender_nickname,
+        user.id user_id,user.nickname user_nickname,user.small_avatar user_smallAvatar
+
+        from im_muc_msg m
+        left join im_user user on user.id = m.user_id
+        left join im_muc_member sender on sender.user_id = user.id and m.muc_id = sender.muc_id
+        <where>
+            m.muc_id = #{q.mucId} and m.ts_delete = 0
+            <if test="q.tsSend!=null and q.tsSend!=''">
+                <choose>
+                    <when test="q.after==false">
+                        and m.ts_send &lt; #{q.tsSend}
+                    </when>
+                    <otherwise>
+                        and m.ts_send &gt;= #{q.tsSend}
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        order by m.ts_send desc limit #{q.pageSize}
+        )a
+    </select>
+
+</mapper>

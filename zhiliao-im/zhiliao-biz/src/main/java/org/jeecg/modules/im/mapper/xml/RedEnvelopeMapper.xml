@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.RedPackMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.RedPack">
+        <id column="id" property="id" />
+           <result column="user_id" property="userId" />
+           <result column="to_user_id" property="toUserId" />
+           <result column="type" property="type" />
+           <result column="words" property="words" />
+           <result column="count" property="count" />
+           <result column="amount" property="amount" />
+           <result column="open_count" property="openCount" />
+           <result column="left_amount" property="leftAmount" />
+           <result column="status" property="status" />
+           <result column="muc_id" property="mucId" />
+           <result column="ts_create" property="tsCreate" />
+           <result column="ts_valid" property="tsValid" />
+           <association  property="user" column="user" javaType="org.jeecg.modules.im.entity.User">
+               <id column="u_id" property="id" />
+               <result column="u_nickname" property="nickname" />
+               <result column="u_account" property="account" />
+               <result column="u_small_avatar" property="smallAvatar" />
+               <result column="u_mobile" property="mobile" />
+           </association >
+
+            <association  property="toUser" column="toUser" javaType="org.jeecg.modules.im.entity.User">
+                <id column="tId" property="id" />
+                <result column="t_nickname" property="nickname" />
+                <result column="t_account" property="account" />
+                <result column="t_small_avatar" property="smallAvatar" />
+                <result column="t_mobile" property="mobile" />
+            </association >
+
+           <association property="muc" column="muc" javaType="org.jeecg.modules.im.entity.Muc">
+               <id column="r_id" property="id" />
+               <result column="r_name" property="name" />
+           </association>
+       </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, to_user_id, type, words, count, amount, open_count, left_amount, status, muc_id, is_muc, ts_create, ts_valid
+    </sql>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        SELECT
+           p.id,p.user_id,p.to_user_id,p.type,p.words,p.count,p.amount,p.open_count,p.left_amount,p.status,p.muc_id,p.is_muc,p.ts_create,p.ts_valid,
+           u.id u_id , u.nickname u_nickname,u.account u_account,u.small_avatar u_small_avatar,u.mobile u_mobile,
+           t.id,t.nickname t_nickname,t.account t_account,t.mobile t_mobile,
+           r.id r_id,r.name r_name
+        from im_red_pack p
+        LEFT join im_user u  ON p.user_id = u.id
+        LEFT join im_muc r  ON p.muc_id = r.id
+        LEFT join im_user t  ON p.to_user_id = t.id
+        <where>1=1
+            <if test="q.userId!=null and q.userId!=''">
+                and user_id=#{q.userId}
+            </if>
+            <if test="q.toUserId!=null and q.toUserId!=''">
+                and to_user_id=#{q.toUserId}
+            </if>
+            <if test="q.type!=null and q.type != '' ">
+                and type = #{q.type}
+            </if>
+            <if test="q.status!=null and q.status != '' ">
+                and status = #{q.status}
+            </if>
+            <if test="q.mucId!=null and q.mucId != '' ">
+                and muc_id = #{q.mucId}
+            </if>
+            <choose>
+                <when test="q.isMuc==true">
+                    and muc_id > 0
+                </when>
+                <when test="q.isMuc==false">
+                    and muc_id = 0
+                </when>
+            </choose>
+            <if test="q.ts_create!=null">
+                and p.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        order by ts_create desc
+    </select>
+
+
+</mapper>

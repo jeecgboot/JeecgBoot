@@ -1,0 +1,31 @@
+server:
+  port: 7003
+spring:
+  application:
+    name: zhiliao-app
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
+  cloud:
+    nacos:
+      config:
+        server-addr: @config.server-addr@
+      discovery:
+        server-addr: ${spring.cloud.nacos.config.server-addr}
+  config:
+    import:
+      - optional:nacos:jeecg.yaml
+      - optional:nacos:jeecg-@profile.name@.yaml
+  profiles:
+    active: test
+  messages:
+    basename: i18n.messages
+    encoding: UTF-8
+#  datasource:
+#    dynamic:
+#      datasource:
+#        zhiliao:
+#          url: jdbc:mysql://${MYSQL-HOST:jeecg-boot-mysql}:${MYSQL-PORT:3306}/zhiliao_im?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+#          username: root
+#          password: root
+#          driver-class-name: com.mysql.cj.jdbc.Driver

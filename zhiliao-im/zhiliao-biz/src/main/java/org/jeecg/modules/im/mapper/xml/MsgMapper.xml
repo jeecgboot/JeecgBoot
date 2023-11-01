@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.MsgMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.Msg">
+        <id column="id" property="id"/>
+        <result column="origin_id" property="originId"/>
+        <result column="user_id" property="userId"/>
+        <result column="to_user_id" property="toUserId"/>
+        <result column="content" property="content"/>
+        <result column="stanza_id" property="stanzaId"/>
+        <result column="type" property="type"/>
+        <result column="body" property="body"/>
+        <result column="is_encrypt" property="isEncrypt"/>
+        <result column="ts_delete" property="tsDelete"/>
+        <result column="ts_send" property="tsSend"/>
+        <result column="ts_read" property="tsRead"/>
+        <result column="is_read_del" property="isReadDel"/>
+        <result column="is_spam" property="isSpam"/>
+        <result column="ts_pin" property="tsPin"/>
+        <result column="ts_revoke" property="tsRevoke"/>
+        <result column="revoke_type" property="revokeType"/>
+        <result column="is_send" property="isSend"/>
+        <association property="fromUser" javaType="org.jeecg.modules.im.entity.User">
+            <id column="fu_id" property="id"/>
+            <result column="fu_nickname" property="nickname"/>
+            <result column="fu_account" property="account"/>
+            <result column="fu_small_avatar" property="smallAvatar"/>
+            <result column="fu_is_online" property="isOnline"/>
+            <result column="fu_ts_create" property="tsCreate"/>
+            <association property="info" javaType="org.jeecg.modules.im.entity.UserInfo">
+                <id column="fi_id" property="id" />
+                <result column="fi_province" property="province" />
+                <result column="fi_city" property="city" />
+                <result column="fi_district" property="district" />
+                <result column="fi_country" property="country" />
+                <result column="fi_gender" property="gender" />
+            </association>
+        </association>
+        <association property="toUser" javaType="org.jeecg.modules.im.entity.User">
+            <id column="tu_id" property="id"/>
+            <result column="tu_nickname" property="nickname"/>
+            <result column="tu_account" property="account"/>
+            <result column="tu_small_avatar" property="smallAvatar"/>
+            <result column="tu_is_online" property="isOnline"/>
+            <result column="tu_ts_create" property="tsCreate"/>
+            <association property="info" javaType="org.jeecg.modules.im.entity.UserInfo">
+                <id column="ti_id" property="id" />
+                <result column="ti_province" property="province" />
+                <result column="ti_city" property="city" />
+                <result column="ti_district" property="district" />
+                <result column="ti_country" property="country" />
+                <result column="ti_gender" property="gender" />
+            </association>
+        </association>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, origin_id,user_id, to_user_id, content,body, stanza_id, type,is_encrypt,ts_pin,is_send,ts_delete,ts_send,ts_read,is_read_del,is_spam,ts_revoke,revoke_type,
+    </sql>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        select
+           m.id, m.origin_id,m.content,m.body, m.type,m.stanza_id,m.is_encrypt,m.ts_delete,m.ts_send,m.ts_read,m.is_spam,m.ts_pin,m.ts_revoke,m.revoke_type,
+        fu.id fu_id,fu.nickname fu_nickname,fu.account fu_account,fu.small_avatar fu_small_avatar,fu.is_online fu_is_online,fu.ts_create fu_ts_create,
+        fi.id fi_id,fi.province fi_province,fi.city fi_city,fi.country fi_country,fi.district fi_district,fi.gender fi_gender,
+        tu.id tu_id,tu.nickname tu_nickname,tu.account tu_account,tu.small_avatar tu_small_avatar,tu.is_online tu_is_online,tu.ts_create tu_ts_create,
+        ti.id ti_id,ti.province ti_province,ti.city ti_city,ti.country ti_country,ti.district ti_district,ti.gender ti_gender
+        from im_msg m
+        left join im_user fu on fu.id = m.user_id
+        left join im_user_info fi on fi.user_id = fu.id
+        left join im_user tu on tu.id = m.to_user_id
+        left join im_user_info ti on ti.user_id = tu.id
+        <where> is_send is true
+            <if test="q.isDelete==true">
+                and m.ts_delete > 0
+            </if>
+            <if test="q.type!=null and q.type !=''">
+                and m.type = #{q.type}
+            </if>
+            <if test="q.content!=null and q.content!=''">
+                and m.content like concat("%",#{q.content},"%")
+            </if>
+            <if test="q.isSpam!=null">
+                and m.is_spam = #{q.isSpam}
+            </if>
+            <choose>
+                <when test="q.isTop!=null and q.isTop==true">
+                    and m.ts_pin >0
+                </when>
+                <otherwise>
+                    and m.ts_pin = 0
+                </otherwise>
+            </choose>
+            <if test="q.sendStartTime!=null and q.sendStartTime!=''">
+                and ts_send &gt;= #{q.sendStartTime}
+            </if>
+            <if test="q.sendEndTime!=null and q.sendEndTime!=''">
+                and ts_send &lt;= #{q.sendEndTime}
+            </if>
+            <if test="q.sender!=null and q.sender !=''">
+                and (fu.account = #{q.sender} or fu.mobile = #{q.sender} or fu.username = #{q.sender} or fu.nickname like concat("%",#{q.sender},"%") or fu.id = #{q.sender})
+            </if>
+            <if test="q.receiver!=null and q.receiver !=''">
+                and (tu.account = #{q.receiver} or tu.mobile = #{q.receiver} or tu.username = #{q.receiver} or tu.nickname like concat("%",#{q.receiver},"%") or tu.id = #{q.receiver})
+            </if>
+            <if test="q.ts_create!=null">
+                and m.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+
+    <select id="paginationApi" resultMap="BaseResultMap">
+        select a.* from(
+            select
+            m.id,m.origin_id,m.content,m.body,stanza_id,m.type,m.is_encrypt,m.is_spam,m.ts_send,m.ts_read,m.is_send,m.is_read_del,m.ts_revoke,m.revoke_type,m.ts_pin,
+            fu.id fu_id,fu.nickname fu_nickname,fu.account fu_account,fu.small_avatar fu_small_avatar,
+            tu.id tu_id,tu.nickname tu_nickname,tu.account tu_account,tu.small_avatar tu_small_avatar
+            from im_msg m
+            left join im_user fu on fu.id = m.user_id
+            left join im_user tu on tu.id = m.to_user_id
+            left join im_friend f on f.user_id = fu.id and f.to_user_id = tu.id
+            <where>ts_delete = 0 and
+                ((m.user_id = #{q.userId} and m.to_user_id = #{q.toUserId} and is_send is true)or (m.to_user_id = #{q.userId} and m.user_id = #{q.toUserId} and is_send is false))
+                <if test="q.tsSend!=null and q.tsSend!=''">
+                    <choose>
+                        <when test="q.after==false">
+                            and m.ts_send &lt; #{q.tsSend}
+                        </when>
+                        <otherwise>
+                            and m.ts_send &gt;= #{q.tsSend}
+                        </otherwise>
+                    </choose>
+                </if>
+            </where>
+            order by m.ts_send desc limit #{q.pageSize}
+        )a
+    </select>
+
+    <update id="deleteLogic">
+        update im_msg set ts_delete = #{tsDelete}
+        where (user_id = #{userId} and to_user_id = #{toUserId} and is_send is true)or (to_user_id = #{userId} and user_id = #{toUserId} and is_send is false) and ts_delete = 0
+    </update>
+    <update id="deleteLogicBoth">
+        update im_msg set ts_delete = #{tsDelete}
+        where (user_id = #{userId} and to_user_id = #{toUserId} and is_send is true)or (to_user_id = #{userId} and user_id = #{toUserId} and is_send is false) and ts_delete = 0
+    </update>
+
+    <update id="deleteLogicWithIds">
+        update im_msg set ts_delete = #{tsDelete}
+            <choose>
+                <when test="type==1">
+                    where id in (#{ids})
+                </when>
+                <when test="type==2">
+                    where id in (#{ids}) or origin_id in (#{ids})
+                </when>
+            </choose>
+    </update>
+    <update id="readAllReceive">
+        update im_msg set ts_read = #{tsRead} where user_id = #{toUserId} and to_user_id = #{userId}
+    </update>
+
+    <select id="findByStanzaId" resultMap="BaseResultMap">
+        select * from im_msg where stanza_id = #{stanzaId}
+    </select>
+    <select id="findByStanzaIdOfSend" resultMap="BaseResultMap">
+        select * from im_msg where stanza_id = #{stanzaId} and is_send = #{isSend}
+    </select>
+
+</mapper>

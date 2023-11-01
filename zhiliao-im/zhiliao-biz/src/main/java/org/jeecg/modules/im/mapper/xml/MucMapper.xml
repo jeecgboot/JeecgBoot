@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.MucMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.Muc">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="master_id" property="masterId"/>
+        <result column="name" property="name"/>
+        <result column="info" property="info"/>
+        <result column="avatar" property="avatar"/>
+        <result column="small_avatar" property="smallAvatar"/>
+        <result column="qr_code" property="qrCode"/>
+        <result column="account" property="account"/>
+        <result column="subject" property="subject"/>
+        <result column="member_count" property="memberCount"/>
+        <result column="fake_member" property="fakeMember"/>
+        <result column="fake_online" property="fakeOnline"/>
+        <result column="ts_locked" property="tsLocked"/>
+        <result column="ts_mute" property="tsMute"/>
+        <result column="ts_last_talk" property="tsLastTalk"/>
+        <result column="ts_update" property="tsUpdate"/>
+        <result column="ts_create" property="tsCreate"/>
+        <result column="ts_delete" property="tsDelete"/>
+        <result column="role" property="role"/>
+        <association property="mucConfig" javaType="org.jeecg.modules.im.entity.MucConfig">
+            <result column="muc_id" property="mucId" />
+            <result column="max_member_count" property="maxMemberCount" />
+            <result column="mute_notice" property="muteNotice" />
+            <result column="kick_notice" property="kickNotice" />
+            <result column="quit_notice" property="quitNotice" />
+            <result column="revoke_notice" property="revokeNotice" />
+            <result column="revoke_duration" property="revokeDuration" />
+            <result column="is_public" property="isPublic" />
+            <result column="is_show_read" property="isShowRead" />
+            <result column="is_show_nickname" property="isShowNickname" />
+            <result column="is_allow_talk_after_join" property="isAllowTalkAfterJoin" />
+            <result column="is_show_msg_before_join" property="isShowMsgBeforeJoin" />
+            <result column="is_default_join" property="isDefaultJoin" />
+            <result column="is_revoke_all_when_kicked" property="isRevokeAllWhenKicked" />
+            <result column="is_join_verify" property="isJoinVerify" />
+            <result column="is_show_member_list" property="isShowMemberList" />
+            <result column="is_update_nickname_notify" property="isUpdateNicknameNotify" />
+            <result column="rc_welcomes" property="welcomes" />
+            <result column="view_member" property="viewMember" />
+            <result column="show_member_count" property="showMemberCount" />
+            <result column="show_online_count" property="showOnlineCount" />
+            <result column="invite" property="invite" />
+            <result column="modify_nickname" property="modifyNickname" />
+            <result column="pin" property="pin" />
+            <result column="capture" property="capture" />
+            <result column="msg_rate" property="msgRate" />
+            <result column="msg_count" property="msgCount" />
+            <result column="send_image" property="sendImage" />
+            <result column="send_video" property="sendVideo" />
+            <result column="send_gif" property="sendGif" />
+            <result column="send_sticker" property="sendSticker" />
+            <result column="send_voice" property="sendVoice" />
+            <result column="send_location" property="sendLocation" />
+            <result column="send_red_pack" property="sendRedPack" />
+            <result column="send_link" property="sendLink" />
+            <result column="send_card" property="sendCard" />
+            <result column="send_file" property="sendFile" />
+        </association>
+        <association property="mucPermission" javaType="org.jeecg.modules.im.entity.MucPermission">
+            <id column="mp_id" property="id" />
+            <result column="mp_muc_id" property="mucId" />
+            <result column="mp_manager_id" property="managerId" />
+            <result column="mp_modify_info" property="modifyInfo" />
+            <result column="mp_modify_notice" property="modifyNotice" />
+            <result column="mp_msg_pin" property="msgPin" />
+            <result column="mp_add_member" property="addMember" />
+            <result column="mp_del_member" property="delMember" />
+            <result column="mp_mute_member" property="muteMember" />
+            <result column="mp_add_manager" property="addManager" />
+            <result column="mp_revoke_manager" property="revokeManager" />
+            <result column="mp_is_validation_tip" property="isValidationTip" />
+            <result column="mp_is_anonymous" property="isAnonymous" />
+        </association>
+        <association property="member" javaType="org.jeecg.modules.im.entity.MucMember">
+            <id column="member_id" property="id"/>
+            <result column="member_user_id" property="userId"/>
+            <result column="muc_id" property="mucId"/>
+            <result column="nickname" property="nickname"/>
+            <result column="title" property="title"/>
+            <result column="back_img" property="backImg"/>
+            <result column="is_msg_archive" property="isMsgArchive"/>
+            <result column="ts_msg_visible" property="tsMsgVisible"/>
+            <result column="ts_join" property="tsJoin"/>
+            <result column="ts_pin" property="tsPin"/>
+            <result column="ts_update" property="tsUpdate"/>
+            <result column="is_no_disturb" property="isNoDisturb"/>
+            <result column="is_hide" property="isHide"/>
+            <result column="is_read_del" property="isReadDel"/>
+            <result column="is_unread" property="isUnread"/>
+            <result column="role" property="role"/>
+            <result column="unread_count" property="unreadCount"/>
+            <result column="join_type" property="joinType"/>
+            <result column="level_id" property="levelId"/>
+            <result column="coin" property="coin"/>
+            <result column="m_ts_mute" property="tsMute"/>
+            <result column="m_ts_mute_begin" property="tsMuteBegin"/>
+            <result column="m_mute_type" property="muteType"/>
+            <result column="status" property="status"/>
+            <result column="kicker" property="kicker"/>
+            <result column="ts_quit" property="tsQuit"/>
+            <association property="user" javaType="org.jeecg.modules.im.entity.User">
+                <id column="user_id" property="id"/>
+                <result column="user_nickname" property="nickname"/>
+                <result column="user_account" property="account"/>
+                <result column="user_small_avatar" property="smallAvatar"/>
+            </association>
+            <association property="permission" javaType="org.jeecg.modules.im.entity.MucPermission">
+                <id column="p_id" property="id" />
+                <result column="p_muc_id" property="mucId" />
+                <result column="p_manager_id" property="managerId" />
+                <result column="p_modify_info" property="modifyInfo" />
+                <result column="p_modify_notice" property="modifyNotice" />
+                <result column="p_msg_pin" property="msgPin" />
+                <result column="p_add_member" property="addMember" />
+                <result column="p_del_member" property="delMember" />
+                <result column="p_mute_member" property="muteMember" />
+                <result column="p_add_manager" property="addManager" />
+                <result column="p_revoke_manager" property="revokeManager" />
+                <result column="p_is_validation_tip" property="isValidationTip" />
+                <result column="p_is_anonymous" property="isAnonymous" />
+            </association>
+        </association>
+        <association property="master" javaType="org.jeecg.modules.im.entity.MucMember">
+            <id column="master_id" property="id"/>
+            <result column="master_nickname" property="nickname"/>
+            <association property="user" javaType="org.jeecg.modules.im.entity.User">
+                <id column="master_user_id" property="id"/>
+                <result column="master_user_nickname" property="nickname"/>
+                <result column="master_user_account" property="account"/>
+                <result column="master_user_small_avatar" property="smallAvatar"/>
+            </association>
+        </association>
+        <association property="user" javaType="org.jeecg.modules.im.entity.User">
+            <id column="creator_id" property="id"/>
+            <result column="creator_nickname" property="nickname"/>
+            <result column="creator_account" property="account"/>
+            <result column="creator_small_avatar" property="smallAvatar"/>
+        </association>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name,info, avatar, small_avatar,user_id,admin_id,master_id,qr_code,account, subject,member_count,fake_member,fake_online, ts_locked, ts_mute, ts_last_talk, ts_update, ts_create,ts_delete
+    </sql>
+
+    <select id="findByName" resultType="org.jeecg.modules.im.entity.Muc">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from im_muc where name = #{name} and ts_delete = 0
+    </select>
+    <select id="findByAccount" resultType="org.jeecg.modules.im.entity.Muc">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from im_muc where account = #{account} and ts_delete = 0
+    </select>
+
+    <select id="findMyAll" resultMap="BaseResultMap">
+        SELECT
+            r.id, r.user_id,r.name,r.info, r.avatar, r.small_avatar,master_id,r.qr_code,r.account, subject,member_count,fake_member,fake_online, r.ts_locked, r.ts_mute, ts_last_talk, r.ts_create,
+            max_member_count, kick_notice,mute_notice, quit_notice,revoke_notice,revoke_duration, is_public, is_show_read, is_show_nickname, is_allow_talk_after_join,is_revoke_all_when_kicked, is_show_msg_before_join, is_default_join, is_join_verify, is_show_member_list,is_update_nickname_notify,
+            view_member,show_member_count,show_online_count,invite,modify_nickname,pin,capture,msg_rate,msg_count,send_image,send_video,send_gif,send_sticker,send_voice,send_location,send_red_pack,send_link,send_card,send_file,rc.welcomes rc_welcomes,
+            m.id member_id,m.nickname, m.user_id member_user_id,m.title,m.back_img,m.is_msg_archive,m.ts_msg_visible, m.ts_join,m.ts_update, m.ts_pin,
+            m.is_no_disturb,m.is_unread,m.is_hide,m.is_read_del, m.unread_count,m.role, m.level_id, m.coin,m.ts_mute m_ts_mute,m.ts_mute_begin m_ts_mute_begin,m.mute_type m_mute_type,m.status,m.join_type,
+            user.small_avatar user_small_avatar,user.nickname user_nickname,
+            p.id p_id, p.muc_id p_muc_id,p.manager_id p_manager_id, p.modify_info p_modify_info, p.modify_notice p_modify_notice, p.msg_pin p_msg_pin, p.add_member p_add_member, p.del_member p_del_member, p.mute_member p_mute_member, p.add_manager p_add_manager, p.revoke_manager p_revoke_manager, p.is_validation_tip p_is_validation_tip,p.is_anonymous p_is_anonymous,
+            mp.id mp_id, mp.muc_id mp_muc_id,mp.manager_id mp_manager_id, mp.modify_info mp_modify_info, mp.modify_notice mp_modify_notice,
+            mp.msg_pin mp_msg_pin, mp.add_member mp_add_member, mp.del_member mp_del_member, mp.mute_member mp_mute_member,
+            mp.add_manager mp_add_manager, mp.revoke_manager mp_revoke_manager, mp.is_validation_tip mp_is_validation_tip,mp.is_anonymous mp_is_anonymous
+        from im_muc r
+            left join im_muc_config rc on r.id = rc.muc_id
+            left join im_muc_permission mp on mp.muc_id = r.id AND mp.manager_id = 0
+            left join im_muc_member m on m.muc_id = r.id and m.user_id = #{userId}
+            left join im_user user on user.id = m.user_id
+            left join im_muc_permission p on p.manager_id = m.id
+        where m.user_id = #{userId} and m.role!=#{role} and m.status = #{status} and r.ts_delete = 0
+    </select>
+    <select id="findByIdOfUser" resultMap="BaseResultMap">
+        SELECT
+            r.id, r.user_id,r.name,r.info, r.avatar, r.small_avatar,master_id,r.qr_code,r.account, subject,member_count,fake_member,fake_online, r.ts_locked, r.ts_mute, ts_last_talk, r.ts_create,
+            max_member_count, kick_notice,mute_notice, quit_notice,revoke_notice,revoke_duration, is_public, is_show_read, is_show_nickname, is_allow_talk_after_join,is_revoke_all_when_kicked, is_show_msg_before_join, is_default_join, is_join_verify, is_show_member_list,is_update_nickname_notify,
+            view_member,show_member_count,show_online_count,invite,modify_nickname,pin,capture,msg_rate,msg_count,send_image,send_video,send_gif,send_sticker,send_voice,send_location,send_red_pack,send_link,send_card,send_file, rc.welcomes rc_welcomes,
+            m.id member_id,m.nickname, m.user_id member_user_id,m.title,m.back_img,m.is_msg_archive,m.ts_msg_visible, m.ts_join,m.ts_update, m.ts_pin,
+            m.is_no_disturb,m.is_unread,m.is_hide,m.is_read_del, m.unread_count,m.role, m.level_id, m.coin,m.ts_mute m_ts_mute,m.ts_mute_begin m_ts_mute_begin,m.mute_type m_mute_type,m.status,m.join_type,
+            user.small_avatar user_small_avatar,user.nickname user_nickname,
+            p.id p_id, p.muc_id p_muc_id, p.manager_id p_manager_id, p.modify_info p_modify_info, p.modify_notice p_modify_notice, p.msg_pin p_msg_pin, p.add_member p_add_member, p.del_member p_del_member, p.mute_member p_mute_member, p.add_manager p_add_manager, p.revoke_manager p_revoke_manager, p.is_validation_tip p_is_validation_tip,p.is_anonymous p_is_anonymous,
+            mp.id mp_id, mp.muc_id mp_muc_id,mp.manager_id mp_manager_id, mp.modify_info mp_modify_info, mp.modify_notice mp_modify_notice,
+            mp.msg_pin mp_msg_pin, mp.add_member mp_add_member, mp.del_member mp_del_member, mp.mute_member mp_mute_member,
+            mp.add_manager mp_add_manager, mp.revoke_manager mp_revoke_manager, mp.is_validation_tip mp_is_validation_tip,mp.is_anonymous mp_is_anonymous
+        from im_muc r
+            left join im_muc_config rc on r.id = rc.muc_id
+            left join im_muc_permission mp on mp.muc_id = r.id AND mp.manager_id = 0
+            left join im_muc_member m on m.muc_id = r.id and m.user_id = #{userId}
+            left join im_user user on user.id = m.user_id
+            left join im_muc_permission p on p.manager_id = m.id
+        where m.user_id = #{userId} and r.ts_delete = 0 and r.id = #{id}
+    </select>
+    <select id="getCountOfRole" resultType="java.lang.Integer">
+        select count(*) from(SELECT
+            r.id, r.user_id,r.name,r.info, r.avatar, r.small_avatar,master_id,r.qr_code,r.account, subject,member_count,fake_member,fake_online, r.ts_locked, r.ts_mute, ts_last_talk, r.ts_create,
+            m.nickname, m.user_id member_user_id,m.title,m.back_img,m.is_msg_archive,m.ts_msg_visible, m.ts_join,m.ts_update, m.ts_pin,
+            m.is_no_disturb,m.is_unread,m.is_hide,m.is_read_del, m.unread_count,m.role, m.level_id, m.coin,m.ts_mute m_ts_mute,m.ts_mute_begin m_ts_mute_begin,m.mute_type m_mute_type,m.status,m.join_type,
+            user.small_avatar user_small_avatar
+        from im_muc r
+            left join im_muc_member m on m.muc_id = r.id and m.user_id = #{userId}
+            left join im_user user on user.id = m.user_id
+        where m.user_id = #{userId} and m.role =#{role} and r.ts_delete = 0)a
+    </select>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        select
+        r.id, r.name,r.info, r.avatar,r.small_avatar,r.master_id, r.qr_code,r.account,subject, r.member_count,fake_member,fake_online, r.ts_locked,r.ts_mute,r.ts_create,ts_last_talk,r.ts_update,ts_delete,is_default_join,
+        creator.id creator_id,creator.nickname creator_nickname,creator.account creator_account,creator.small_avatar creator_small_avatar,
+        master.id master_id,master.nickname master_nickname,
+        master_user.id master_user_id,master_user.nickname master_user_nickname,master_user.account master_user_account,master_user.small_avatar master_user_small_avatar
+        from im_muc r
+        left join im_user creator on creator.id = r.user_id
+        left join im_muc_member master on master.id = r.master_id
+        left join im_user master_user on master_user.id = master.user_id
+        left join im_muc_config rc on r.id = rc.muc_id
+        <where>1=1
+            <if test="q.ids != null and q.ids != ''">
+                and r.id in(${q.ids})
+            </if>
+            <if test="q.name!=null and q.name !=''">
+                and r.name = #{q.name}
+            </if>
+            <if test="q.account!=null and q.account !=''">
+                and r.account = #{q.account}
+            </if>
+            <if test="q.isDefaultJoin!=null">
+                and rc.is_default_join = #{q.isDefaultJoin}
+            </if>
+            <if test="q.userAccount!=null and q.userAccount !=''">
+                and user.account = #{q.userAccount}
+            </if>
+            <if test="q.masterAccount!=null and q.masterAccount !=''">
+                and master_user.account = #{q.masterAccount}
+            </if>
+            <if test="q.tsLocked!=null">
+                <choose>
+                    <when test="q.tsLocked==0">
+                        and r.ts_locked = #{q.tsLocked}
+                    </when>
+                    <otherwise>
+                        and r.ts_locked >= #{q.tsLocked}
+                    </otherwise>
+                </choose>
+            </if>
+            <choose>
+                <when test="q.isDelete==true">
+                    and r.ts_delete > 0
+                </when>
+                <otherwise>
+                    and r.ts_delete = 0
+                </otherwise>
+            </choose>
+
+            <if test="q.ts_create!=null">
+                and r.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+    </select>
+
+    <select id="getByIds" resultMap="BaseResultMap">
+        select * from im_muc WHERE id IN (#{ids})
+    </select>
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.jeecgframework.boot</groupId>
+        <artifactId>jeecg-boot-parent</artifactId>
+        <version>3.6.0</version>
+    </parent>
+    <version>1.0.0</version>
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+    <artifactId>zhiliao-im</artifactId>
+    <description>知了IM业务</description>
+
+    <properties>
+        <openfire.version>4.7.4</openfire.version>
+    </properties>
+
+    <!--项目子模块-->
+    <modules>
+        <module>zhiliao-api</module>
+        <module>zhiliao-base</module>
+        <module>zhiliao-biz</module>
+        <module>zhiliao-cloud-start-app</module>
+        <module>zhiliao-cloud-start-dashboard</module>
+        <module>zhiliao-cloud-start-upload</module>
+        <module>zhiliao-cloud-start-botz</module>
+    </modules>
+</project>

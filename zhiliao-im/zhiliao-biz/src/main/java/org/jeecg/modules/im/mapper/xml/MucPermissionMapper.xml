@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.MucPermissionMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.MucPermission">
+        <id column="id" property="id" />
+        <result column="member_id" property="memberId" />
+        <result column="modify_info" property="modifyInfo" />
+        <result column="modify_notice" property="modifyNotice" />
+        <result column="msg_pin" property="msgPin" />
+        <result column="add_member" property="addMember" />
+        <result column="del_member" property="delMember" />
+        <result column="mute_member" property="muteMember" />
+        <result column="add_manager" property="addManager" />
+        <result column="revoke_manager" property="revokeManager" />
+        <result column="is_validation_tip" property="isValidationTip" />
+        <result column="is_anonymous" property="isAnonymous" />
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, member_id, modify_info, modify_notice, msg_pin, add_member, del_member, mute_member, add_manager, revoke_manager, is_validation_tip,is_anonymous
+    </sql>
+
+    <select id="findByManager" resultMap="BaseResultMap">
+        select * from im_muc_permission where manager_id = #{managerId}
+    </select>
+    <select id="findDefaultOfMuc" resultMap="BaseResultMap">
+        select * from im_muc_permission where muc_id = #{mucId} and manager_id = 0
+    </select>
+    <delete id="deleteOne">
+        delete from im_muc_permission where muc_id = #{mucId} and manager_id = #{managerId}
+    </delete>
+
+</mapper>

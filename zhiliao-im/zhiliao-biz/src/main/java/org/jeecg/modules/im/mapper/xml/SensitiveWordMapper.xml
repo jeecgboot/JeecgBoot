@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.SensitiveWordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.SensitiveWord">
+        <id column="id" property="id" />
+           <result column="content" property="content" />
+           <result column="type" property="type" />
+           <result column="source" property="source" />
+           <result column="ts_create" property="tsCreate" />
+       </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, content, source,type,ts_create
+    </sql>
+    <select id="pagination" resultType="org.jeecg.modules.im.entity.SensitiveWord">
+        SELECT <include refid="Base_Column_List" /> from im_sensitive_word
+        <where>1=1
+            <if test="q.content!=null and q.content !=''">
+                and content like concat("%",#{q.content},"%")
+            </if>
+            <if test="q.type!=null and q.type !=''">
+                and type like concat("%",#{q.type},"%")
+            </if>
+            <if test="q.source!=null and q.source !=''">
+                and source = #{q.source}
+            </if>
+            <if test="q.ts_create!=null">
+                and ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> from im_sensitive_word
+    </select>
+</mapper>

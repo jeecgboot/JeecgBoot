@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.UserSettingMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.UserSetting">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="is_nickname_can_modify" property="isNicknameCanModify"/>
+        <result column="max_muc_create" property="maxMucCreate"/>
+        <result column="max_muc_join" property="maxMucJoin"/>
+        <result column="max_muc_manage" property="maxMucManage"/>
+        <result column="max_friend" property="maxFriend"/>
+        <result column="max_friend_per_day" property="maxFriendPerDay"/>
+        <result column="mobile_search" property="mobileSearch"/>
+        <result column="account_search" property="accountSearch"/>
+        <result column="username_search" property="usernameSearch"/>
+        <result column="nickname_search" property="nicknameSearch"/>
+        <result column="nickname_add" property="nicknameAdd"/>
+        <result column="mobile_add" property="mobileAdd"/>
+        <result column="account_add" property="accountAdd"/>
+        <result column="username_add" property="usernameAdd"/>
+        <result column="card_add" property="cardAdd"/>
+        <result column="muc_add" property="mucAdd"/>
+        <result column="scan_add" property="scanAdd"/>
+        <result column="is_no_add_friend" property="isNoAddFriend"/>
+        <result column="is_no_be_add_friend" property="isNoBeAddFriend"/>
+        <result column="is_no_join_muc" property="isNoJoinMuc"/>
+        <result column="allow_send_red_pack" property="allowSendRedPack"/>
+        <result column="allow_transfer" property="allowTransfer"/>
+        <result column="enable_video_call" property="enableVideoCall"/>
+        <result column="msg_notify" property="msgNotify"/>
+        <result column="msg_preview" property="msgPreview"/>
+        <result column="msg_sound" property="msgSound"/>
+        <result column="muc_msg_notify" property="mucMsgNotify"/>
+        <result column="muc_msg_preview" property="mucMsgPreview"/>
+        <result column="muc_msg_sound" property="mucMsgSound"/>
+        <result column="app_inner_alert" property="appInnerAlert"/>
+        <result column="app_inner_vibration" property="appInnerVibration"/>
+        <result column="app_inner_preview" property="appInnerPreview"/>
+        <result column="online_visibility" property="onlineVisibility"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, is_nickname_can_modify, mobile_search, account_search, username_search, nickname_search, is_no_add_friend,
+        max_muc_create,max_muc_join,max_muc_manage,max_friend,max_friend_per_day,
+        nickname_add,mobile_add,account_add,username_add,card_add,muc_add,scan_add,
+        is_no_be_add_friend, is_no_join_muc,allow_send_red_pack,allow_transfer,enable_video_call,enable_voice_call,
+        msg_notify,msg_preview,msg_sound,muc_msg_notify,muc_msg_preview,muc_msg_sound,app_inner_alert,app_inner_vibration,app_inner_preview,
+online_visibility
+    </sql>
+
+    <select id="findByUserId" resultMap="BaseResultMap">
+        select * from im_user_setting where user_id = #{userId}
+    </select>
+
+</mapper>

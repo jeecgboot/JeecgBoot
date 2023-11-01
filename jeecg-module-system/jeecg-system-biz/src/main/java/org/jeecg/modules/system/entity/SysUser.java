@@ -211,4 +211,9 @@ public class SysUser implements Serializable {
      */
     @TableField(exist = false)
     private boolean izBindThird;
+
+    /**
+     * 谷歌密钥
+     */
+    private String googleCode;
 }

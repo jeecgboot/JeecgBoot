@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.StickerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.Sticker">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="name" property="name"/>
+        <result column="info" property="info"/>
+        <result column="zip" property="zip"/>
+        <result column="is_locked" property="isLocked"/>
+        <result column="add_times" property="addTimes"/>
+        <result column="ts_create" property="tsCreate"/>
+        <result column="is_hot" property="isHot"/>
+        <result column="add_times" property="addTimes"/>
+        <result column="is_animated" property="isAnimated"/>
+        <result column="is_big_emoji" property="isBigEmoji"/>
+        <result column="is_emoji" property="isEmoji"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="counts" property="counts"/>
+        <result column="total_send_times" property="totalSendTimes"/>
+        <association property="user" javaType="org.jeecg.modules.im.entity.User">
+            <id column="user_id" property="id"/>
+            <result column="user_nickname" property="nickname"/>
+            <result column="user_account" property="account"/>
+            <result column="user_small_avatar" property="smallAvatar"/>
+        </association>
+        <collection property="items" ofType="org.jeecg.modules.im.entity.StickerItem">
+            <id column="i_id" property="id"/>
+            <result column="i_emoji" property="emoji"/>
+            <result column="i_emoji_code" property="emojiCode"/>
+            <result column="i_keyword" property="keyword"/>
+            <result column="i_origin" property="origin"/>
+            <result column="i_thumb" property="thumb"/>
+            <result column="i_lottie" property="lottie"/>
+            <result column="i_zip_name" property="zipName"/>
+            <result column="i_order_no" property="orderNo"/>
+            <result column="i_send_times" property="sendTimes"/>
+            <result column="i_ts_create" property="tsCreate"/>
+            <result column="i_sticker_id" property="stickerId"/>
+            <association property="sendRecord" javaType="org.jeecg.modules.im.entity.StickerSend">
+                <id column="ss_id" property="id" />
+                <result column="ss_sticker_item_id" property="stickerItemId" />
+                <result column="ss_ts_last_send" property="tsLastSend" />
+                <result column="ss_user_id" property="userId" />
+                <result column="ss_times" property="times" />
+            </association>
+        </collection>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, admin_id,name,zip,info,is_animated,is_big_emoji,is_emoji,add_times,is_locked,ts_create,is_hot,order_no
+    </sql>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        select
+        s.id, s.name,s.info,s.zip,s.ts_create,s.add_times,s.is_locked,s.is_animated,s.is_big_emoji,s.is_emoji,s.is_hot,s.order_no,
+        user.id user_id,user.nickname user_nickname,user.account user_account,user.small_avatar user_small_avatar,
+        count(i.id) counts,sum(i.send_times) total_send_times,
+        i.id i_id, emoji i_emoji, emoji_code i_emoji_code,origin i_origin,thumb i_thumb, keyword i_keyword,i.order_no i_order_no, i.ts_create i_ts_create,zip_name i_zip_name,lottie i_lottie,send_times i_send_times
+        from im_sticker s
+        left join im_user user on user.id = s.user_id
+        left join im_sticker_item i on i.sticker_id = s.id
+        <where>1=1
+            <if test="q.isAnimated!=null">
+                and s.is_animated = #{q.isAnimated}
+            </if>
+            <if test="q.isBigEmoji!=null">
+                and s.is_big_emoji = #{q.isBigEmoji}
+            </if>
+            <if test="q.isEmoji!=null">
+                and s.is_emoji = #{q.isEmoji}
+            </if>
+            <if test="q.name!=null and q.name !=''">
+                and s.name = #{q.name}
+            </if>
+            <if test="q.userAccount!=null and q.userAccount !=''">
+                and user.account = #{q.userAccount}
+            </if>
+            <if test="q.addTimes!=null and q.addTimes !=''">
+                and s.add_times >= #{q.addTimes}
+            </if>
+            <if test="q.isLocked!=null">
+                and s.is_locked >= #{q.isLocked}
+            </if>
+            <if test="q.ts_create!=null">
+                and s.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        group by s.id
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+    <select id="paginationApi" resultMap="BaseResultMap">
+        select
+        s.id, s.name,s.info,s.zip,s.add_times,s.is_locked, s.ts_create,s.is_animated,s.is_big_emoji,s.is_emoji,s.is_hot,s.order_no,
+        user.id user_id,user.nickname user_nickname,user.account user_account,user.small_avatar user_small_avatar,
+        i.id i_id, emoji i_emoji, emoji_code i_emoji_code,origin i_origin,thumb i_thumb, keyword i_keyword,i.order_no i_order_no, i.ts_create i_ts_create,zip_name i_zip_name,lottie i_lottie,sticker_id i_sticker_id,
+        a.* from im_sticker s
+        left join im_user user on user.id = s.user_id
+        left join im_sticker_item i on i.sticker_id = s.id
+        left join (
+            select ss.id ss_id,ss.sticker_item_id ss_sticker_item_id,ss.ts_last_send ss_ts_last_send,ss.user_id ss_user_id,ss.times ss_times
+            from im_sticker_send ss
+            left join im_user u on u.id = ss.user_id
+        <where>1=1
+            <if test="q.senderId!=null and q.senderId !=''">
+                and ss.user_id = #{q.senderId}
+            </if>
+        </where>
+        )a on a.ss_sticker_item_id = i.id
+        <where>1=1
+            <if test="q.search!=null and q.search !=''">
+                and (
+                s.name like concat("%",#{q.search},"%")
+                or s.info like concat("%",#{q.search},"%")
+                or i.emoji like concat("%",#{q.search},"%")
+                or i.emoji_code like concat("%",#{q.search},"%")
+                )
+            </if>
+        </where>
+        order by s.is_hot is true desc,s.order_no desc,s.ts_create desc
+    </select>
+    <select id="findById" resultMap="BaseResultMap">
+        select
+        s.id, s.name,s.info,s.zip,s.add_times,s.is_locked, s.ts_create,s.is_animated,s.is_big_emoji,s.is_emoji,s.is_hot,s.order_no,
+        i.id i_id, emoji i_emoji, emoji_code i_emoji_code,origin i_origin,thumb i_thumb, keyword i_keyword,i.order_no i_order_no, i.ts_create i_ts_create,zip_name i_zip_name,lottie i_lottie,sticker_id i_sticker_id
+        from im_sticker s
+        left join im_sticker_item i on i.sticker_id = s.id where s.id = #{id}
+    </select>
+    <select id="getBigEmoji" resultMap="BaseResultMap">
+        select
+        s.id, s.name,s.info,s.zip,s.add_times,s.is_locked, s.ts_create,s.is_animated,s.is_big_emoji,s.is_emoji,s.is_hot,s.order_no,
+        i.id i_id, emoji i_emoji, emoji_code i_emoji_code,origin i_origin,thumb i_thumb, keyword i_keyword,i.order_no i_order_no, i.ts_create i_ts_create,zip_name i_zip_name,lottie i_lottie,sticker_id i_sticker_id
+        from im_sticker s
+        left join im_sticker_item i on i.sticker_id = s.id where s.is_big_emoji is true
+    </select>
+    <select id="getHot" resultMap="BaseResultMap">
+        select
+        s.id, s.name,s.info,s.zip,s.add_times,s.is_locked, s.ts_create,s.is_animated,s.is_big_emoji,s.is_emoji,s.is_hot,s.order_no,
+        i.id i_id, emoji i_emoji, emoji_code i_emoji_code,origin i_origin,thumb i_thumb, keyword i_keyword,i.order_no i_order_no, i.ts_create i_ts_create,zip_name i_zip_name,lottie i_lottie,sticker_id i_sticker_id
+        from im_sticker s
+        left join im_sticker_item i on i.sticker_id = s.id where s.is_hot is true order by order_no desc,add_times desc,ts_create desc
+    </select>
+    <select id="getEmojis" resultMap="BaseResultMap">
+        select
+        s.id, s.name,s.info,s.zip,s.add_times,s.is_locked, s.ts_create,s.is_animated,s.is_big_emoji,s.is_emoji,s.is_hot,s.order_no,
+        i.id i_id, emoji i_emoji, emoji_code i_emoji_code,origin i_origin,thumb i_thumb, keyword i_keyword,i.order_no i_order_no, i.ts_create i_ts_create,zip_name i_zip_name,lottie i_lottie,sticker_id i_sticker_id
+        from im_sticker s
+        left join im_sticker_item i on i.sticker_id = s.id where is_emoji is true order by order_no desc,is_hot is true desc,add_times desc,ts_create desc
+    </select>
+    <select id="findByName" resultMap="BaseResultMap">
+        select * from im_sticker where name = #{name}
+    </select>
+
+</mapper>

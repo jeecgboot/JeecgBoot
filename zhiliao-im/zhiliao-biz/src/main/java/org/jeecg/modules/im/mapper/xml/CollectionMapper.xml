@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.CollectionMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.Collection">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="ts_create" property="tsCreate" />
+        <result column="msg_id" property="msgId" />
+        <result column="is_muc" property="isMuc" />
+        <association property="msg" javaType="org.jeecg.modules.im.entity.Msg">
+        </association>
+        <association property="mucMsg" javaType="org.jeecg.modules.im.entity.MucMsg">
+        </association>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, ts_create, msg_id, is_muc
+    </sql>
+    <select id="pagination" resultMap="BaseResultMap">
+        select id, user_id, ts_create, msg_id, is_muc
+    </select>
+
+    <select id="paginationApi" resultMap="BaseResultMap">
+        SELECT c.id, c.user_id, c.ts_create, c.msg_id, c.is_muc FROM im_collection c
+        left join im_msg m on is_muc is false and msg_id = m.id
+        left join im_muc_msg mm on is_muc is true and msg_id = mm.id
+        <where>
+            user_id = #{userId}
+        </where>
+        order by c.ts_create
+    </select>
+
+</mapper>

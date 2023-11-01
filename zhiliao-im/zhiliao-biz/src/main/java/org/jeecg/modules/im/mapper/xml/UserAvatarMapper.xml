@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.UserAvatarMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.UserAvatar">
+        <id column="id" property="id" />
+        <result column="origin" property="origin" />
+        <result column="thumb" property="thumb" />
+        <result column="ts_create" property="tsCreate" />
+        <result column="ts_audit" property="tsAudit" />
+        <result column="user_id" property="userId" />
+        <association property="user" javaType="org.jeecg.modules.im.entity.User">
+            <result column="u_id" property="id"/>
+            <result column="u_nickname" property="nickname"/>
+            <result column="u_account" property="account"/>
+            <result column="u_small_avatar" property="smallAvatar"/>
+            <result column="u_is_online" property="isOnline"/>
+            <result column="u_ts_create" property="tsCreate"/>
+            <association property="info" javaType="org.jeecg.modules.im.entity.UserInfo">
+                <id column="i_id" property="id" />
+                <result column="i_province" property="province" />
+                <result column="i_city" property="city" />
+                <result column="i_district" property="district" />
+                <result column="i_country" property="country" />
+                <result column="i_gender" property="gender" />
+            </association>
+        </association>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, origin, thumb, ts_create, user_id
+    </sql>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        SELECT a.id,a.user_id,a.ts_create,a.origin,a.thumb,ts_audit,
+        u.id u_id,u.nickname u_nickname,u.account u_account,u.small_avatar u_small_avatar,u.is_online u_is_online,u.ts_create u_ts_create,
+        i.id i_id,i.province i_province,i.city i_city,i.country i_country,i.district i_district,i.gender i_gender
+        from im_user_avatar a
+        left join im_user u on u.id = a.user_id
+        left join im_user_info i on i.user_id = u.id
+        <where>
+            1=1
+            <if test="q.userSearch!=null and q.userSearch!=''">
+                and(u.nickname like concat('%',#{q.userSearch},'%') or u.account like concat('%',#{q.userSearch},'%') or u.username like concat('%',#{q.userSearch},'%') or u.mobile like concat('%',#{q.userSearch},'%'))
+            </if>
+            <if test="q.userId!=null and q.userId!=''">
+                and user_id=#{q.userId}
+            </if>
+            <if test="q.ts_create!=null">
+                and a.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+
+    <select id="findAll" >
+        select * from im_user_avatar where user_id = #{userId} order by ts_create desc
+    </select>
+
+</mapper>

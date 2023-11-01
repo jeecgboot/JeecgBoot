@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.BlockIpMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.BlockIp">
+        <id column="id" property="id" />
+           <result column="ip" property="ip" />
+           <result column="num1" property="num1" />
+           <result column="num2" property="num2" />
+           <result column="info" property="info" />
+           <result column="comment" property="comment" />
+           <result column="type" property="type" />
+           <result column="ts_create" property="tsCreate" />
+       </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, ip, num1, num2, info, comment, type, ts_create
+    </sql>
+    <select id="pagination" resultMap="BaseResultMap">
+        SELECT * from im_block_ip
+        <where>1=1
+            <if test="q.ip!=null and q.ip !=''">
+                and ip like concat("%",#{q.ip},"%")
+            </if>
+            <if test="q.type!=null and q.type !=''">
+                and type = #{q.type}
+            </if>
+            <if test="q.info!=null and q.info !=''">
+                and info like concat("%",#{q.info},"%")
+            </if>
+            <if test="q.comment!=null and q.comment !=''">
+                and comment like concat("%",#{q.comment},"%")
+            </if>
+            <if test="q.ts_create!=null">
+                and ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+
+    <select id="findByIp" resultMap="BaseResultMap">
+        select * from im_block_ip where ip = #{ip} and type=1
+    </select>
+    <select id="findByIp2" resultMap="BaseResultMap">
+        select * from im_block_ip
+        <where>
+            num1 &lt;= #{ip} and #{ip} &lt;= num2 and type=2 order by id desc
+        </where>
+    </select>
+    <select id="findByIp3" resultMap="BaseResultMap">
+        select * from im_block_ip where ip like concat(#{ip}, '%') and type = 3 order by id desc
+    </select>
+    <select id="findByIp4" resultMap="BaseResultMap">
+        select * from im_block_ip where type = #{country}
+    </select>
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.MucMemberLevelMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.query_helper.QMucMemberLevel">
+        <id column="id" property="id" />
+           <result column="level_ctg_id" property="levelCtgId" />
+           <result column="name" property="name" />
+           <result column="level" property="level" />
+
+
+            <association property="memberLevelCtg" column="memberLevelCtg" javaType="org.jeecg.modules.im.entity.MucMemberLevelCtg">
+                <id column="cId" property="id" />
+                <result column="cName" property="name" />
+                <result column="cOrderNo" property="orderNo" />
+                <result column="cCover" property="cover" />
+            </association>
+
+       </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, level_ctg_id, name, level
+    </sql>
+    <select id="pagination" resultMap="BaseResultMap">
+        SELECT
+          l.id,l.name,l.level_ctg_id,l.level,
+          c.id cId,c.name cName,c.order_no cOrderNo,c.cover cCover
+        from im_muc_member_level l
+        LEFT join im_muc_member_level_ctg c
+        ON l.level_ctg_id = c.id
+        <where>1=1
+            <if test="q.levelCtgId!=null and q.levelCtgId!=''">
+                and l.level_ctg_id = #{q.levelCtgId}
+            </if>
+        </where>
+    </select>
+
+
+
+
+</mapper>

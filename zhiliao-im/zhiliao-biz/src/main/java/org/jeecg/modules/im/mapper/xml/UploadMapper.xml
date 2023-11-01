@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.UploadMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.Upload">
+        <id column="id" property="id" />
+           <result column="md5" property="md5" />
+           <result column="type" property="type" />
+           <result column="content_type" property="contentType" />
+           <result column="name" property="name" />
+           <result column="source_name" property="sourceName" />
+           <result column="suffix" property="suffix" />
+           <result column="path" property="path" />
+           <result column="storage_type" property="storageType" />
+           <result column="href" property="href" />
+           <result column="size" property="size" />
+           <result column="admin_id" property="adminId" />
+           <result column="user_id" property="userId" />
+           <result column="is_temp" property="isTemp" />
+           <result column="ts_create" property="tsCreate" />
+           <result column="ts_delete" property="tsDelete" />
+           <result column="status" property="status" />
+       </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, md5, type, content_type, name, source_name, suffix, path, storage_type, href, size, admin_id, user_id, is_temp, ts_create,ts_delete,status
+    </sql>
+
+    <select id="findByHref" resultMap="BaseResultMap">
+        select * from im_upload where href = #{href}
+    </select>
+
+</mapper>

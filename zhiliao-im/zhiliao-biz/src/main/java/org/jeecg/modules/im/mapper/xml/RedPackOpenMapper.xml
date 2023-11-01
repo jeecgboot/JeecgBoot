@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.RedPackOpenMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.RedPackOpen">
+           <result column="sender_id" property="senderId" />
+           <result column="pack_id" property="packId" />
+           <result column="user_id" property="userId" />
+           <result column="amount" property="amount" />
+           <result column="comment" property="comment" />
+           <result column="ts_create" property="tsCreate" />
+
+            <association  property="user" javaType="org.jeecg.modules.im.entity.User">
+                <id column="u_id" property="id" />
+                <result column="u_nickname" property="nickname" />
+                <result column="u_account" property="account" />
+                <result column="u_avatar" property="avatar" />
+            </association >
+
+            <association  property="redPack" javaType="org.jeecg.modules.im.entity.RedPack">
+                <id column="r_id" property="id" />
+                <result column="r_amount" property="amount" />
+                <result column="r_leftAmount" property="leftAmount" />
+                <result column="r_count" property="count" />
+                <result column="r_open_count" property="openCount" />
+                <result column="r_status" property="status" />
+                <result column="r_type" property="type" />
+                <association  property="sender" javaType="org.jeecg.modules.im.entity.User">
+                    <id column="sender_id" property="id" />
+                    <result column="sender_nickname" property="nickname" />
+                    <result column="sender_account" property="account" />
+                    <result column="sender_avatar" property="avatar" />
+                </association >
+            </association >
+
+
+       </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sender_id, packet_id, user_id, amount, comment, ts_create
+    </sql>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        select ro.id,ro.sender_id,ro.pack_id,ro.user_id,ro.amount,ro.comment,ro.ts_create,
+        sender.id as sender_id,sender.nickname as sender_nickname,sender.account as sender_account,sender.avatar as sender_avatar,
+        u.id as u_id,u.nickname as u_nickname,u.account as u_account,u.avatar as u_avatar,
+        r.id as r_id,r.amount as r_amount,r.left_amount as r_left_amount,r.count as r_count,r.open_count as r_open_count,r.status as r_status ,r.type as r_type
+        from im_red_pack_open ro
+        LEFT join im_user sender ON sender.id = ro.sender_id
+        LEFT join im_user u ON u.id = ro.user_id
+        LEFT join im_red_pack r ON r.id = ro.pack_id
+        <where>1=1
+            <if test="q.senderId!=null and q.senderId!=''">
+                and sender_id=#{q.senderId}
+            </if>
+            <if test="q.userId!=null and q.userId!=''">
+                and user_id=#{q.userId}
+            </if>
+            <if test="q.ts_create!=null">
+                and ro.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        order by ts_create desc
+
+    </select>
+
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.StatisticMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.Statistic">
+        <id column="id" property="id" />
+        <result column="date" property="date" />
+        <result column="ts_create" property="tsCreate" />
+        <result column="ts_update" property="tsUpdate" />
+        <result column="user_register" property="userRegister" />
+        <result column="user_login" property="userLogin" />
+        <result column="friend_add" property="friendAdd" />
+        <result column="muc_create" property="mucCreate" />
+        <result column="msg_send" property="msgSend" />
+        <result column="activity" property="activity" />
+        <result column="muc_msg_send" property="mucMsgSend" />
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, date, ts_create, ts_update, user_register, user_login, friend_add, muc_create, msg_send, activity, muc_msg_send
+    </sql>
+
+</mapper>

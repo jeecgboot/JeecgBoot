@@ -1,0 +1,3 @@
+logging:
+  level:
+    org.jeecg.modules.im.mapper: debug

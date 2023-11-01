@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.ChannelMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.Channel">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="info" property="info" />
+        <result column="avatar" property="avatar" />
+        <result column="small_avatar" property="smallAvatar" />
+        <result column="muc_id" property="mucId" />
+        <result column="user_id" property="userId" />
+        <result column="is_public" property="isPublic" />
+        <result column="is_msg_sign" property="isMsgSign" />
+        <result column="follower_count" property="followerCount" />
+        <result column="ts_create" property="tsCreate" />
+        <result column="ts_locked" property="tsLocked"/>
+        <result column="public_account" property="publicAccount" />
+        <association property="user" javaType="org.jeecg.modules.im.entity.User">
+            <id column="user_id" property="id"/>
+            <result column="user_nickname" property="nickname"/>
+            <result column="user_account" property="account"/>
+            <result column="user_small_avatar" property="smallAvatar"/>
+        </association>
+        <association property="muc" javaType="org.jeecg.modules.im.entity.Muc">
+            <id column="muc_id" property="id"/>
+            <result column="muc_name" property="name"/>
+            <result column="muc_small_avatar" property="smallAvatar"/>
+        </association>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, info, avatar, small_avatar, muc_id,user_id, is_public, is_msg_sign, follower_count, ts_create,ts_locked, public_account
+    </sql>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        select
+        c.id,c.name,c.info,c.avatar,c.small_avatar,c.is_public,c.is_msg_sign,c.follower_count,c.public_account,c.ts_create,c.ts_locked,
+        user.id user_id,user.nickname user_nickname,user.account user_account,user.small_avatar user_small_avatar,
+        muc.id muc_id,muc.name muc_name,muc.small_avatar muc_small_avatar
+        from im_channel c
+        left join im_user user on user.id = c.user_id
+        left join im_muc muc on muc.id = c.muc_id
+        <where>1=1
+            <if test="q.name!=null and q.name !=''">
+                and c.name = #{q.name}
+            </if>
+            <if test="q.isMsgSign!=null">
+                and c.is_msg_sign = #{q.isMsgSign}
+            </if>
+            <if test="q.userAccount!=null and q.userAccount !=''">
+                and user.account = #{q.userAccount}
+            </if>
+            <if test="q.mucName!=null and q.mucName !=''">
+                and muc.name = #{q.mucName}
+            </if>
+            <if test="q.isPublic!=null">
+                <choose>
+                    <when test="q.isPublic==0">
+                        and c.is_public = #{q.isPublic}
+                    </when>
+                    <otherwise>
+                        and c.is_public >= #{q.isPublic}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="q.isMsgSign!=null">
+                <choose>
+                    <when test="q.isMsgSign==0">
+                        and c.is_msg_sign = #{q.isMsgSign}
+                    </when>
+                    <otherwise>
+                        and c.is_msg_sign >= #{q.isMsgSign}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="q.tsLocked!=null">
+                <choose>
+                    <when test="q.tsLocked==0">
+                        and c.ts_locked = #{q.tsLocked}
+                    </when>
+                    <otherwise>
+                        and c.ts_locked >= #{q.tsLocked}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="q.ts_create!=null">
+                and c.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+    </select>
+
+</mapper>

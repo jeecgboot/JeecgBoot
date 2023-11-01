@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.StickerItemMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.StickerItem">
+        <id column="id" property="id"/>
+        <result column="emoji" property="emoji"/>
+        <result column="emoji_code" property="emojiCode"/>
+        <result column="origin" property="origin"/>
+        <result column="thumb" property="thumb"/>
+        <result column="lottie" property="lottie"/>
+        <result column="zip_name" property="zipName"/>
+        <result column="keyword" property="keyword"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="ts_create" property="tsCreate"/>
+        <result column="send_times" property="sendTimes"/>
+        <result column="sticker_id" property="stickerId"/>
+        <result column="is_locked" property="isLocked"/>
+        <association property="sendRecord" javaType="org.jeecg.modules.im.entity.StickerSend">
+            <id column="ss_id" property="id" />
+            <result column="ss_sticker_item_id" property="stickerItemId" />
+            <result column="ss_ts_last_send" property="tsLastSend" />
+            <result column="ss_user_id" property="userId" />
+            <result column="ss_times" property="times" />
+        </association>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, emoji, emoji_code,origin,thumb, keyword,order_no, ts_create,zip_name,lottie,send_times,sticker_id,is_locked
+    </sql>
+    <select id="pagination" resultMap="BaseResultMap">
+        select
+            si.id, si.emoji,si.emoji_code,si.origin,si.thumb, si.keyword,si.order_no, si.ts_create,zip_name,lottie,sticker_id,send_times,is_locked,
+               ss.id ss_id,ss.sticker_item_id ss_sticker_item_id,ss.ts_last_send ss_ts_last_send,ss.user_id ss_user_id,ss.times ss_times
+        from im_sticker_item si
+        left join im_sticker_send ss on ss.sticker_item_id = si.id
+        left join im_user u on u.id = ss.user_id
+        <where>sticker_id = #{q.stickerId}
+            <if test="q.userId!=null and q.userId !=''">
+                and ss.user_id like concat("%",#{q.userId},"%")
+            </if>
+            <if test="q.emojiCode!=null and q.emojiCode !=''">
+                and si.emoji_code like concat("%",#{q.emojiCode},"%")
+            </if>
+            <if test="q.keyword!=null and q.keyword !=''">
+                and si.keyword like concat("%",#{q.keyword},"%")
+            </if>
+            <if test="q.ts_create!=null">
+                and ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+</mapper>

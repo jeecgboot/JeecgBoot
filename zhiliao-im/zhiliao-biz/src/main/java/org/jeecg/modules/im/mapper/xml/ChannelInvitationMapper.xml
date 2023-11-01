@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.ChannelInvitationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.ChannelInvitation">
+        <id column="id" property="id" />
+        <result column="channel_id" property="channelId" />
+        <result column="member_id" property="memberId" />
+        <result column="code" property="code" />
+        <result column="name" property="name" />
+        <result column="valid_hours" property="validHours" />
+        <result column="max_times" property="maxTimes" />
+        <result column="is_revoked" property="isRevoked" />
+        <result column="is_public" property="isPublic" />
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, channel_id, member_id, code, name, valid_hours, max_times, is_revoked,is_public
+    </sql>
+
+</mapper>

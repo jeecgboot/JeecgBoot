@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.ClientConfigMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.ClientConfig">
+        <id column="id" property="id"/>
+        <result column="allow_common_user_create_muc" property="allowCommonUserCreateMuc"/>
+        <result column="allow_common_user_create_channel" property="allowCommonUserCreateChannel"/>
+        <result column="muc_name_unique" property="mucNameUnique"/>
+        <result column="channel_name_unique" property="channelNameUnique"/>
+        <result column="max_muc_create" property="maxMucCreate"/>
+        <result column="max_muc_join" property="maxMucJoin"/>
+        <result column="max_muc_manage" property="maxMucManage"/>
+        <result column="max_friend" property="maxFriend"/>
+        <result column="max_friend_per_day" property="maxFriendPerDay"/>
+        <result column="default_password" property="defaultPassword"/>
+        <result column="invite_code_type" property="inviteCodeType"/>
+        <result column="auto_add_inviter" property="autoAddInviter"/>
+        <result column="enable_common_user_invite" property="enableCommonUserInvite"/>
+        <result column="nickname_search" property="nicknameSearch"/>
+        <result column="nickname_search_exact" property="nicknameSearchExact"/>
+        <result column="mobile_search" property="mobileSearch"/>
+        <result column="account_search" property="accountSearch"/>
+        <result column="username_search" property="usernameSearch"/>
+        <result column="nickname_add" property="nicknameAdd"/>
+        <result column="mobile_add" property="mobileAdd"/>
+        <result column="account_add" property="accountAdd"/>
+        <result column="username_add" property="usernameAdd"/>
+        <result column="card_add" property="cardAdd"/>
+        <result column="muc_add" property="mucAdd"/>
+        <result column="scan_add" property="scanAdd"/>
+        <result column="multi_device" property="multiDevice"/>
+        <result column="same_platform_multi_device" property="samePlatformMultiDevice"/>
+        <result column="location" property="location"/>
+        <result column="gd_android_key" property="gdAndroidKey"/>
+        <result column="gd_ios_key" property="gdIosKey"/>
+        <result column="gd_web_key" property="gdWebKey"/>
+        <result column="wallet" property="wallet"/>
+        <result column="withdraw_fee" property="withdrawFee"/>
+        <result column="min_withdraw_amount" property="minWithdrawAmount"/>
+        <result column="max_withdraw_amount" property="maxWithdrawAmount"/>
+        <result column="min_recharge_amount" property="minRechargeAmount"/>
+        <result column="max_recharge_amount" property="maxRechargeAmount"/>
+        <result column="sign_in" property="signIn"/>
+        <result column="sign_in_reward" property="signInReward"/>
+        <result column="sign_in_continue_day" property="signInContinueDay"/>
+        <result column="sign_in_max_day" property="signInMaxDay"/>
+        <result column="sms" property="sms"/>
+        <result column="allow_register" property="allowRegister"/>
+        <result column="mobile_register" property="mobileRegister"/>
+        <result column="username_register" property="usernameRegister"/>
+        <result column="nickname_unique" property="nicknameUnique"/>
+        <result column="email_register" property="emailRegister"/>
+        <result column="register_present" property="registerPresent"/>
+        <result column="allow_red_pack" property="allowRedPack"/>
+        <result column="red_pack_max" property="redPackMax"/>
+        <result column="allow_transfer" property="allowTransfer"/>
+        <result column="transfer_max" property="transferMax"/>
+        <result column="mobile_sms_login" property="mobileSmsLogin"/>
+        <result column="email_code_login" property="emailCodeLogin"/>
+        <result column="qq_login" property="qqLogin"/>
+        <result column="qq_app_id" property="qqAppId"/>
+        <result column="wechat_login" property="wechatLogin"/>
+        <result column="wechat_app_id" property="wechatAppId"/>
+        <result column="wechat_app_key" property="wechatAppKey"/>
+        <result column="login_failed_locked_times" property="loginFailedLockedTimes"/>
+        <result column="login_failed_locked_duration" property="loginFailedLockedDuration"/>
+        <result column="login_valid_day" property="loginValidDay"/>
+        <result column="user_avatar_need_audit" property="userAvatarNeedAudit"/>
+        <result column="limit_ip_duration" property="limitIpDuration"/>
+        <result column="limit_ip_count" property="limitIpCount"/>
+        <result column="limit_device_duration" property="limitDeviceDuration"/>
+        <result column="limit_device_count" property="limitDeviceCount"/>
+        <result column="limit_msg_duration" property="limitMsgDuration"/>
+        <result column="limit_msg_count" property="limitMsgCount"/>
+        <result column="dial_codes" property="dialCodes"/>
+        <result column="activity" property="activity"/>
+        <result column="dial_history" property="dialHistory"/>
+    </resultMap>
+
+    <select id="get" resultMap="BaseResultMap">
+        select * from im_client_config limit 1
+    </select>
+
+</mapper>

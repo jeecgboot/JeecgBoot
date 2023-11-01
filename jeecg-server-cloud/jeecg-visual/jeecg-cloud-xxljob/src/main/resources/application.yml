@@ -7,7 +7,7 @@ spring:
   datasource:
     url: jdbc:mysql://jeecg-boot-mysql:3306/xxl_job?Unicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: ${MYSQL-USER:root}
-    password: ${MYSQL-PWD:root}
+    password: ${MYSQL-PWD:CGfTn7SRcTYZcwYy}
     driver-class-name: com.mysql.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
@@ -39,8 +39,9 @@ spring:
     servlet:
       load-on-startup: 0
     static-path-pattern: /static/**
-  resources:
-    static-locations: classpath:/static/
+  web:
+    resources:
+      static-locations: classpath:/static/
   #freemarker配置
   freemarker:
     templateLoaderPath=classpath: /templates/
@@ -74,4 +75,4 @@ xxl:
         max: 200
       slow:
         max: 100
-    logretentiondays: 30
+    logretentiondays: 3

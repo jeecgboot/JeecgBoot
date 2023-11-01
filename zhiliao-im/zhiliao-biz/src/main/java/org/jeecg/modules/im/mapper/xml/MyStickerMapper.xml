@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.MyStickerMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.MySticker">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="sticker_id" property="stickerId"/>
+        <result column="ts_create" property="tsCreate"/>
+        <association property="sticker" javaType="org.jeecg.modules.im.entity.Sticker">
+            <id column="sticker_id" property="id"/>
+            <result column="s_user_id" property="userId"/>
+            <result column="s_name" property="name"/>
+            <result column="s_add_times" property="addTimes"/>
+            <result column="s_is_locked" property="isLocked"/>
+            <result column="s_ts_create" property="tsCreate"/>
+            <result column="s_is_animated" property="isAnimated"/>
+            <result column="s_is_big_emoji" property="isBigEmoji"/>
+            <result column="s_is_hot" property="isHot"/>
+            <result column="s_order_no" property="orderNo"/>
+            <collection property="items" ofType="org.jeecg.modules.im.entity.StickerItem">
+                <id column="i_id" property="id"/>
+                <result column="sticker_id" property="stickerId"/>
+                <result column="i_emoji" property="emoji"/>
+                <result column="i_origin" property="origin"/>
+                <result column="i_thumb" property="thumb"/>
+                <result column="i_order_no" property="orderNo"/>
+                <result column="i_ts_create" property="tsCreate"/>
+            </collection>
+        </association>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, sticker_id, ts_create
+    </sql>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        select
+               ms.id,ms.sticker_id,ms.user_id,ms.ts_create,s.id, s.name s_name,s.info s_info,s.add_times s_add_times,s.is_locked s_is_locked, s.ts_create s_ts_create,s.is_animated s_is_animated,s.is_big_emoji s_is_big_emoji,s.is_hot s_is_hot,s.order_no s_order_no,
+               i.id i_id,i.emoji i_emoji,i.origin i_origin,i.thumb i_t_origin,i.order_no i_order_no,i.ts_create i_ts_create
+        from im_my_sticker ms
+            left join im_sticker s on s.id = ms.sticker_id
+            left join im_sticker_item i on i.sticker_id = s.id
+        where ms.user_id = #{userId} order by ms.ts_create desc
+    </select>
+    <select id="findByIdOfUser" resultMap="BaseResultMap">
+        select ms.id,sticker_id,s.id, s.name s_name,s.info s_info,s.add_times s_add_times,s.is_locked s_is_locked, s.ts_create s_ts_create,s.is_animated s_is_animated,s.is_big_emoji s_is_big_emoji,s.is_hot s_is_hot,s.order_no s_order_no
+        from im_my_sticker ms left join im_sticker s on s.id = ms.sticker_id
+        where ms.user_id = #{userId} and sticker_id = #{stickerId}
+    </select>
+</mapper>

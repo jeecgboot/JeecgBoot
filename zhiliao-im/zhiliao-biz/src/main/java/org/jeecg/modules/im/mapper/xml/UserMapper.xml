@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.User">
+        <id column="id" property="id"/>
+        <result column="nickname" property="nickname"/>
+        <result column="account" property="account"/>
+        <result column="username" property="username"/>
+        <result column="email" property="email" />
+        <result column="password" property="password"/>
+        <result column="password_is_init" property="passwordIsInit"/>
+        <result column="salt" property="salt"/>
+        <result column="ts_create" property="tsCreate"/>
+        <result column="avatar" property="avatar"/>
+        <result column="small_avatar" property="smallAvatar"/>
+        <result column="home_bg" property="homeBg"/>
+        <result column="ts_locked" property="tsLocked"/>
+        <result column="mobile" property="mobile"/>
+        <result column="qr_code" property="qrCode"/>
+        <result column="google_code" property="googleCode"/>
+        <result column="enable_google_code" property="enableGoogleCode"/>
+        <result column="pay_salt" property="paySalt"/>
+        <result column="pay_password" property="payPassword"/>
+        <result column="is_online" property="isOnline"/>
+        <result column="type" property="type"/>
+        <result column="ts_online" property="tsOnline"/>
+        <result column="ts_offline" property="tsOffline"/>
+        <result column="ts_mute" property="tsMute"/>
+        <result column="ts_mute_begin" property="tsMuteBegin"/>
+        <result column="mute_type" property="muteType"/>
+        <result column="ts_no_connect" property="tsNoConnect"/>
+        <result column="is_default_friend" property="isDefaultFriend"/>
+        <result column="welcomes" property="welcomes"/>
+        <result column="reg_no" property="regNo"/>
+        <result column="resource" property="resource"/>
+        <result column="match_type" property="matchType"/>
+
+        <association property="friend" javaType="org.jeecg.modules.im.entity.Friend">
+            <result column="friend_id" property="id"/>
+            <result column="friend_status" property="status"/>
+            <result column="friend_ts_black" property="tsBlack"/>
+            <result column="friend_ts_been_black" property="tsBeenBlack"/>
+        </association>
+        <association property="info" javaType="org.jeecg.modules.im.entity.UserInfo">
+            <id column="info_id" property="id" />
+            <result column="province" property="province" />
+            <result column="city" property="city" />
+            <result column="district" property="district" />
+            <result column="country" property="country" />
+            <result column="gender" property="gender" />
+            <result column="signature" property="signature" />
+            <result column="balance" property="balance" />
+            <result column="balance_freeze" property="balanceFreeze" />
+            <result column="continue_sign_in_day" property="continueSignInDay" />
+            <result column="sign_in_day" property="signInDay" />
+            <result column="state" property="state" />
+            <result column="friendCount" property="friendCount" />
+            <result column="deviceCount" property="deviceCount" />
+            <result column="contactCount" property="contactCount" />
+        </association>
+        <association property="userSetting" javaType="org.jeecg.modules.im.entity.UserSetting">
+            <id column="setting_id" property="id"/>
+            <result column="is_nickname_can_modify" property="isNicknameCanModify"/>
+            <result column="max_muc_create" property="maxMucCreate"/>
+            <result column="max_muc_join" property="maxMucJoin"/>
+            <result column="max_muc_manage" property="maxMucManage"/>
+            <result column="max_friend" property="maxFriend"/>
+            <result column="max_friend_per_day" property="maxFriendPerDay"/>
+            <result column="mobile_search" property="mobileSearch"/>
+            <result column="account_search" property="accountSearch"/>
+            <result column="username_search" property="usernameSearch"/>
+            <result column="nickname_search" property="nicknameSearch"/>
+            <result column="nickname_add" property="nicknameAdd"/>
+            <result column="mobile_add" property="mobileAdd"/>
+            <result column="account_add" property="accountAdd"/>
+            <result column="username_add" property="usernameAdd"/>
+            <result column="card_add" property="cardAdd"/>
+            <result column="muc_add" property="mucAdd"/>
+            <result column="scan_add" property="scanAdd"/>
+            <result column="is_no_add_friend" property="isNoAddFriend"/>
+            <result column="is_no_be_add_friend" property="isNoBeAddFriend"/>
+            <result column="is_no_join_muc" property="isNoJoinMuc"/>
+            <result column="allow_send_red_pack" property="allowSendRedPack"/>
+            <result column="allow_transfer" property="allowTransfer"/>
+            <result column="enable_video_call" property="enableVideoCall"/>
+            <result column="msg_notify" property="msgNotify"/>
+            <result column="msg_preview" property="msgPreview"/>
+            <result column="msg_sound" property="msgSound"/>
+            <result column="muc_msg_notify" property="mucMsgNotify"/>
+            <result column="muc_msg_preview" property="mucMsgPreview"/>
+            <result column="muc_msg_sound" property="mucMsgSound"/>
+            <result column="app_inner_alert" property="appInnerAlert"/>
+            <result column="app_inner_vibration" property="appInnerVibration"/>
+            <result column="app_inner_preview" property="appInnerPreview"/>
+        </association>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        nickname, account,username, email,home_bg,password, password_is_init,salt, u.ts_create, small_avatar,avatar,qr_code,pay_salt,pay_password,u.is_online,u.ts_locked,u.mobile,
+        u.ts_online,u.ts_offline,ts_mute,ts_mute_begin,mute_type,ts_no_connect,type,enable_google_code,google_code,resource,is_default_friend
+    </sql>
+    <sql id="UserInfo_Column_List">
+        province, city, district, welcomes,country, gender, signature,  balance, balance_freeze, continue_sign_in_day, sign_in_day, state
+    </sql>
+    <sql id="Setting_Column_List">
+        is_nickname_can_modify, mobile_search, account_search, username_search, nickname_search, is_no_add_friend,
+        max_muc_create,max_muc_join,max_muc_manage,max_friend,max_friend_per_day,
+        nickname_add,mobile_add,account_add,username_add,card_add,muc_add,scan_add,
+        is_no_be_add_friend, is_no_join_muc,allow_send_red_pack,allow_transfer,enable_video_call,enable_voice_call,
+        msg_notify,msg_preview,msg_sound,muc_msg_notify,muc_msg_preview,muc_msg_sound,app_inner_alert,app_inner_vibration,app_inner_preview
+    </sql>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        SELECT u.id,<include refid="Base_Column_List" />,<include refid="UserInfo_Column_List" />,<include refid="Setting_Column_List" />,
+               count(f.id) as friendCount,count(d.id) as deviceCount,count(c.id) as contactCount
+        from im_user u
+            left join im_user_setting setting on u.id = setting.user_id
+            left join im_user_info info on u.id = info.user_id
+            left join im_friend f on u.id = f.user_id
+            left join im_device d on u.id = d.user_id
+            left join im_contact c on u.id = c.user_id
+        <where>1=1
+            <if test="q.ids != null and q.ids != ''">
+                and u.id in(${q.ids})
+            </if>
+            <if test="q.account != null and q.account != ''">
+                and account=#{q.account}
+            </if>
+            <if test="q.username != null and q.username != ''">
+                and (username=#{q.username} or username in (${q.username}))
+            </if>
+            <if test="q.mobile != null and q.mobile != ''">
+                and mobile=#{q.mobile}
+            </if>
+            <if test="q.email != null and q.email != ''">
+                and email=#{q.email}
+            </if>
+            <if test="q.tsLocked!=null">
+                <choose>
+                    <when test="q.tsLocked==0">
+                        and ts_locked = #{q.tsLocked}
+                    </when>
+                    <otherwise>
+                        and ts_locked >= #{q.tsLocked}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="q.tsMute!=null">
+                <choose>
+                    <when test="q.tsMute==0">
+                        and ts_mute = #{q.tsMute}
+                    </when>
+                    <otherwise>
+                        and ts_mute >= #{q.tsMute}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="q.tsMuteBegin!=null">
+                <choose>
+                    <when test="q.tsMuteBegin==0">
+                        and ts_mute_begin = #{q.tsMuteBegin}
+                    </when>
+                    <otherwise>
+                        and ts_mute_begin >= #{q.tsMuteBegin}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="q.muteType!=null">
+                and mute_type = #{q.muteType}
+            </if>
+            <if test="q.tsNoConnect!=null">
+                <choose>
+                    <when test="q.tsNoConnect==0">
+                        and ts_no_connect = #{q.tsNoConnect}
+                    </when>
+                    <otherwise>
+                        and ts_no_connect >= #{q.tsNoConnect}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="q.isOnline!=null">
+                and is_online=#{q.isOnline}
+            </if>
+            <if test="q.isDefaultFriend!=null">
+                and is_default_friend=#{q.isDefaultFriend}
+            </if>
+            <if test="q.resource!=null">
+                and resource=#{q.resource}
+            </if>
+            <if test="q.regStartTime!=null and q.regStartTime!=''">
+                and ts_create &gt;= #{q.regStartTime}
+            </if>
+            <if test="q.regEndTime!=null and q.regEndTime!=''">
+                and ts_create &lt;= #{q.regEndTime}
+            </if>
+            <if test="q.nickname != null and q.nickname != ''">
+                and nickname like concat("%",#{q.nickname},"%")
+            </if>
+            <choose>
+                <when test="q.type != null">
+                and type = #{q.type}
+                </when>
+                <otherwise>
+                    and type in (0,1)
+                </otherwise>
+            </choose>
+            <if test="q.excludeIds != null and q.excludeIds != ''">
+                and u.id not in (${q.excludeIds})
+            </if>
+            <if test="q.userSearch !=null and q.userSearch !=''">
+                and(u.nickname like concat('%',#{q.userSearch},'%') or u.account like concat('%',#{q.userSearch},'%') or u.username like concat('%',#{q.userSearch},'%') or u.mobile like concat('%',#{q.userSearch},'%'))
+            </if>
+            <if test="q.ts_create!=null">
+                and u.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        group by u.id
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+
+    <select id="findByIdWithInfo" resultMap="BaseResultMap">
+        SELECT u.id,<include refid="Base_Column_List" />,<include refid="UserInfo_Column_List" />
+        from im_user u left join im_user_info ui on u.id = ui.user_id
+        WHERE u.id = #{id}
+    </select>
+    <select id="getByIds" resultMap="BaseResultMap">
+        select * from im_user WHERE id IN (#{ids})
+    </select>
+
+    <select id="findByQrCode" resultType="org.jeecg.modules.im.entity.User">
+        SELECT *
+        from im_user
+        WHERE qr_code = #{qrCode}
+    </select>
+    <select id="findByAccount" resultType="org.jeecg.modules.im.entity.User">
+        SELECT *
+        from im_user
+        WHERE account = #{account}
+    </select>
+
+    <select id="findByUsername" resultType="org.jeecg.modules.im.entity.User">
+        SELECT *
+        from im_user
+        WHERE username = #{username}
+    </select>
+
+    <select id="findByMobile" resultType="org.jeecg.modules.im.entity.User">
+        SELECT * from im_user WHERE mobile = #{mobile}
+    </select>
+    <select id="findByEmail" resultType="org.jeecg.modules.im.entity.User">
+        SELECT * from im_user WHERE email = #{email}
+    </select>
+    <select id="findSysUser" resultType="org.jeecg.modules.im.entity.User">
+        SELECT * from im_user WHERE type = #{type}
+    </select>
+
+    <select id="getIdsByMucId" resultType="java.lang.Integer">
+        SELECT id from im_user WHERE id in(select user_id from im_muc_member where muc_id = #{mucId}  )
+    </select>
+
+
+    <select id="search" resultMap="BaseResultMap">
+        SELECT * from(
+            SELECT
+               case
+                   when #{accountSearch} is true and s.account_search is true and account = #{keyword} then 'account'
+                    when #{mobileSearch} is true and s.mobile_search is true and mobile = #{keyword} then 'mobile'
+                    when #{usernameSearch} is true and s.username_search is true and username = #{keyword} then 'username'
+                    when #{nicknameSearch} is true and s.nickname_search is true
+                    <choose>
+                        <when test="nicknameSearchExact == true">
+                            and nickname = #{keyword}
+                        </when>
+                        <otherwise>
+                            and nickname like concat("%",#{keyword},"%")
+                        </otherwise>
+                    </choose>
+                    then 'nickname'
+                end as match_type,
+            u.id,nickname,account,avatar,small_avatar,gender,country,province,city,signature,
+           mobile_search, account_search, username_search, nickname_search,
+           f.id friend_id,f.status friend_status,f.ts_black friend_ts_black,f.ts_been_black friend_ts_been_black
+            from im_user u
+            left join im_friend f on u.id = f.to_user_id and f.user_id = #{userId}
+            left join im_user_setting s on u.id = s.user_id
+            left join im_user_info info on u.id = info.user_id
+           where type &lt;= #{type} and ts_locked = 0)a
+        WHERE a.match_type IS NOT null and id != #{userId}
+    </select>
+
+    <select id="getOnlineCount" resultType="java.lang.Integer">
+        select count(*) from im_user where is_online is true and type = 0
+    </select>
+
+    <select id="getTotalUser" resultType="java.lang.Integer">
+        select count(*) from im_user where type = 0
+    </select>
+    <select id="getPassword" resultType="java.lang.String">
+        select password from im_user where id = #{id}
+    </select>
+
+    <select id="getCountOfNickname" resultType="java.lang.Integer">
+        select count(*) from im_user
+        <where>
+            nickname = #{q.nickname}
+            <if test="q.id!=null and q.id !=''">
+                and id!=#{q.id}
+            </if>
+        </where>
+    </select>
+
+</mapper>

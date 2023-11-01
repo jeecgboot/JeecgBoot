@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.CustomerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.Customer">
+        <id column="id" property="id" />
+        <result column="server_id" property="serverId" />
+        <result column="name" property="name" />
+        <result column="api_url" property="apiUrl" />
+        <result column="ts_create" property="tsCreate" />
+        <result column="enable" property="enable" />
+        <result column="ts_stop_date" property="tsStopDate" />
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, server_id, name, api_url, ts_create, enable, ts_stop_date
+    </sql>
+
+    <select id="findByServerId" resultMap="BaseResultMap">
+        select * from im_customer where server_id = #{serverId} and enable is true
+    </select>
+
+</mapper>

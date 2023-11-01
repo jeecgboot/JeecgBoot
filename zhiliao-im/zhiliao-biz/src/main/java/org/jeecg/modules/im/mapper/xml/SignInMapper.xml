@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.SignInMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.SignIn">
+        <id column="id" property="id" />
+       <result column="user_id" property="userId" />
+       <result column="reward" property="reward" />
+       <result column="ts_create" property="tsCreate" />
+        <association property="user" javaType="org.jeecg.modules.im.entity.User">
+            <id column="user_id" property="id"/>
+            <result column="user_nickname" property="nickname"/>
+            <result column="user_account" property="account"/>
+            <result column="user_small_avatar" property="smallAvatar"/>
+        </association>
+   </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, reward, ts_create
+    </sql>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        SELECT
+        s.id, s.user_id, s.reward,s.ts_create,
+        u.id u_id,u.nickname u_nickname,u.account u_account,u.small_avatar u_small_avatar
+        from im_sign_in s
+        left join im_user u on u.id = s.user_id
+        <where>
+            1=1
+            <if test="q.userSearch!=null and q.userSearch!=''">
+                and(u.nickname like concat('%',#{q.userSearch},'%') or u.account like concat('%',#{q.userSearch},'%') or u.username like concat('%',#{q.userSearch},'%') or u.mobile like concat('%',#{q.userSearch},'%'))
+            </if>
+            <if test="q.userId!=null and q.userId!=''">
+                and user_id=#{q.userId}
+            </if>
+            <if test="q.ts_create!=null">
+                and s.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+
+    <select id="findByDateOfUser" resultMap="BaseResultMap">
+        select * from im_sign_in where user_id = #{userId} and ts_create &gt;= #{dateBegin} and ts_create &lt; #{dateEnd}
+    </select>
+
+</mapper>

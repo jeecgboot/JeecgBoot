@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.ContactMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.Contact">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="name" property="name"/>
+        <result column="mobile" property="mobile"/>
+        <result column="capital" property="capital"/>
+        <result column="ts_create" property="tsCreate"/>
+        <association property="friend" javaType="org.jeecg.modules.im.entity.Friend">
+            <id column="f_id" property="id"/>
+            <result column="f_status" property="status"/>
+        </association>
+        <association property="user" javaType="org.jeecg.modules.im.entity.User">
+            <id column="u_id" property="id"/>
+            <result column="u_account" property="account"/>
+            <result column="u_small_avatar" property="smallAvatar"/>
+            <result column="u_nickname" property="nickname"/>
+        </association>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, name, mobile, capital, ts_create
+    </sql>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        select t.id,t.name,t.user_id,t.mobile,t.capital,
+        u.id u_id,u.small_avatar u_small_avatar,u.account u_account,u.nickname u_nickname,f.id f_id,f.status f_status
+        from im_contact t
+        left join im_user u on u.mobile=t.mobile
+        left join im_friend f on u.id = f.to_user_id
+        <where>
+            1=1
+            <if test="q.userId!=null and q.userId !=''">
+                and t.user_id = #{q.userId}
+            </if>
+            <if test="q.ts_create!=null">
+                and t.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllOfUser" resultMap="BaseResultMap">
+        select t.id,t.user_id,t.mobile,t.capital,
+        u.id u_id,u.small_avatar u_small_avatar,u.account u_account,u.nickname u_nickname,f.id f_id,f.status f_status
+        from im_contact t
+        left join im_user u on u.mobile=t.mobile
+        left join im_friend f on u.id = f.to_user_id
+        where t.user_id = #{userId}
+    </select>
+
+</mapper>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.SayHelloMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.SayHello">
+        <id column="id" property="id"/>
+        <result column="from_id" property="fromId"/>
+        <result column="to_id" property="toId"/>
+        <result column="msg" property="msg"/>
+        <result column="resource" property="resource"/>
+        <result column="is_valid" property="isValid"/>
+        <result column="status" property="status"/>
+        <result column="ts_create" property="tsCreate"/>
+        <result column="ts_deal" property="tsDeal"/>
+        <result column="type" property="type"/>
+        <association property="fromUser" javaType="org.jeecg.modules.im.entity.User">
+            <id column="from_user_id" property="id"/>
+            <result column="from_user_account" property="account"/>
+            <result column="from_user_nickname" property="nickname"/>
+            <result column="from_user_small_avatar" property="smallAvatar"/>
+            <association property="info"  javaType="org.jeecg.modules.im.entity.UserInfo">
+                <result column="from_user_province" property="province"/>
+                <result column="from_user_city" property="city"/>
+                <result column="from_user_gender" property="gender"/>
+                <result column="from_user_signature" property="signature"/>
+            </association>
+        </association>
+        <association property="toUser" javaType="org.jeecg.modules.im.entity.User">
+            <id column="to_user_id" property="id"/>
+            <result column="to_user_account" property="account"/>
+            <result column="to_user_nickname" property="nickname"/>
+            <result column="to_user_small_avatar" property="smallAvatar"/>
+            <association property="info"  javaType="org.jeecg.modules.im.entity.UserInfo">
+                <result column="to_user_province" property="province"/>
+                <result column="to_user_city" property="city"/>
+                <result column="to_user_gender" property="gender"/>
+                <result column="to_user_signature" property="signature"/>
+            </association>
+        </association>
+        <collection property="replies" ofType="org.jeecg.modules.im.entity.SayHelloReply">
+            <id column="r_id" property="id" />
+            <result column="r_msg" property="msg" />
+            <result column="r_is_send" property="isSend" />
+            <result column="r_ts_create" property="tsCreate" />
+        </collection>
+    </resultMap>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        select s.id, from_id, to_id, msg, s.resource,s.ts_create,is_valid,status,ts_deal,
+        t.id to_user_id,t.account to_user_account,t.nickname to_user_nickname,t.username to_user_username,t.small_avatar to_user_small_avatar,t.avatar to_user_avatar,
+        f.id from_user_id,f.account from_user_account,f.nickname from_user_nickname,f.username from_user_username,f.small_avatar from_user_small_avatar,f.avatar from_user_avatar
+        from im_say_hello s
+        left join im_user f on f.id = s.from_id
+        left join im_user t on t.id = s.to_id
+        <where>
+            1=1
+            <if test="q.fromId !=null and q.fromId !=''">
+                and s.from_id = #{q.fromId}
+            </if>
+            <if test="q.toId !=null and q.toId !=''">
+                and s.to_id = #{q.toId}
+            </if>
+            <if test="q.resource !=null">
+                and s.resource = #{q.resource}
+            </if>
+            <if test="q.status !=null">
+                and s.status = #{q.status}
+            </if>
+            <if test="q.fromUserSearch !=null and q.fromUserSearch !=''">
+                and(f.nickname like concat('%',#{q.fromUserSearch},'%') or f.account like concat('%',#{q.fromUserSearch},'%') or f.username like concat('%',#{q.fromUserSearch},'%') or f.mobile like concat('%',#{q.fromUserSearch},'%'))
+            </if>
+            <if test="q.toUserSearch !=null and q.toUserSearch !=''">
+                and(t.nickname like concat('%',#{q.toUserSearch},'%') or t.account like concat('%',#{q.toUserSearch},'%') or t.username like concat('%',#{q.toUserSearch},'%') or t.mobile like concat('%',#{q.toUserSearch},'%'))
+            </if>
+            <if test="q.isValid !=null">
+                and s.is_valid = #{q.isValid}
+            </if>
+            <if test="q.ts_create!=null">
+                and s.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+            <if test="q.ts_deal!=null">
+                and s.ts_deal &lt;= UNIX_TIMESTAMP(#{q.ts_deal})*1000
+            </if>
+        </where>
+        order by s.ts_create desc
+    </select>
+
+    <select id="findAllSend" resultMap="BaseResultMap">
+        select sh.id,to_id,from_id,sh.msg,sh.resource,sh.ts_create,sh.ts_deal,sh.status,sh.is_valid,
+           toUser.id to_user_id,toUser.account to_user_account,toUser.nickname to_user_nickname,toUser.small_avatar to_user_small_avatar,
+           info.province to_user_province,info.city to_user_city,info.gender to_user_gender,info.signature to_user_signature,
+           r.id r_id,r.is_send r_is_send,r.msg r_msg,r.ts_create r_ts_create
+        from im_say_hello sh
+        left join im_user toUser on toUser.id = sh.to_id
+        left join im_user_info info on toUser.id = info.user_id
+        left join im_say_hello_reply r on r.hello_id = sh.id
+        where sh.from_id = #{userId} and sh.type = 0 order by sh.id desc,r.ts_create asc
+    </select>
+
+    <select id="findAllReceive" resultMap="BaseResultMap">
+        select sh.id,to_id,from_id,sh.msg,sh.resource,sh.ts_create,sh.ts_deal,sh.status,sh.is_valid,
+            fromUser.id from_user_id,fromUser.account from_user_account,fromUser.nickname from_user_nickname,fromUser.small_avatar from_user_small_avatar,
+            info.province from_user_province,info.city from_user_city,info.gender from_user_gender,info.signature from_user_signature,
+            r.id r_id,r.is_send r_is_send,r.msg r_msg,r.ts_create r_ts_create
+        from im_say_hello sh
+        left join im_user fromUser on fromUser.id = sh.from_id
+        left join im_user_info info on fromUser.id = info.user_id
+        left join im_say_hello_reply r on r.hello_id = sh.id
+        where sh.to_id = #{userId}  and sh.type = 0 order by sh.id desc,r.ts_create asc
+    </select>
+
+    <select id="findLatest" resultMap="BaseResultMap">
+        select * from im_say_hello where from_id = #{userId} and to_id = #{toUserId} order by id desc LIMIT 1
+    </select>
+
+</mapper>

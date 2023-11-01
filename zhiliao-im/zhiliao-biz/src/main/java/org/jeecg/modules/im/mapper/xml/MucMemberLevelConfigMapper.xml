@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.MucMemberLevelConfigMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.MucMemberLevelConfig">
+        <id column="id" property="id" />
+           <result column="level" property="level" />
+           <result column="word_count" property="wordCount" />
+           <result column="chat_count" property="chatCount" />
+           <result column="online_days" property="onlineDays" />
+       </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, level, word_count, chat_count, online_days
+    </sql>
+    <select id="pagination" resultType="org.jeecg.modules.im.entity.MucMemberLevelConfig">
+        SELECT <include refid="Base_Column_List" /> from im_muc_member_level_config
+    </select>
+</mapper>

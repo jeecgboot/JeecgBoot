@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.GifMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.Gif">
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="origin" property="origin"/>
+        <result column="thumb" property="thumb"/>
+        <result column="keyword" property="keyword"/>
+        <result column="emoji" property="emoji"/>
+        <result column="emoji_code" property="emojiCode"/>
+        <result column="md5" property="md5"/>
+        <result column="ts_create" property="tsCreate"/>
+        <result column="album_id" property="albumId"/>
+        <result column="add_times" property="addTimes"/>
+        <result column="send_times" property="sendTimes"/>
+        <result column="is_locked" property="isLocked"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, origin, thumb, keyword,emoji, emoji_code, md5, ts_create, album_id,add_times,send_times,is_locked
+    </sql>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        select * from im_gif
+        <where>album_id = #{q.albumId}
+            <if test="q.emojiCode!=null and q.emojiCode !=''">
+                and emoji_code like concat("%",#{q.emojiCode},"%")
+            </if>
+            <if test="q.keyword!=null and q.keyword !=''">
+                and keyword like concat("%",#{q.keyword},"%")
+            </if>
+            <if test="q.ts_create!=null">
+                and ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+
+    <select id="paginationApi" resultMap="BaseResultMap">
+        select * from im_gif
+        <where>is_locked is false
+            <if test="q.search!=null and q.search !=''">
+                and (emoji_code like concat("%",#{q.emojiCode},"%") or keyword like concat("%",#{q.keyword},"%"))
+            </if>
+        </where>
+        order by send_times desc,order_no desc,ts_create desc
+    </select>
+
+    <select id="findByMd5" resultMap="BaseResultMap">
+        select * from im_gif where md5 = #{md5} limit 1
+    </select>
+    <select id="findHotEmojis" resultType="java.lang.String">
+        SELECT emoji FROM(
+             SELECT emoji,emoji_code,send_times FROM im_gif WHERE send_times >0 AND emoji_code IS NOT NULL
+         )a GROUP BY emoji_code
+    </select>
+</mapper>

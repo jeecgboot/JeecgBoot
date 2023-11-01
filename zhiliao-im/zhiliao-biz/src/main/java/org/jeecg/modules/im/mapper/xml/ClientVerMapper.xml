@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.ClientVerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.ClientVer">
+        <id column="id" property="id" />
+           <result column="platform" property="platform" />
+           <result column="version" property="version" />
+           <result column="download_url" property="downloadUrl" />
+           <result column="type" property="type" />
+           <result column="info" property="info" />
+           <result column="is_on" property="isOn" />
+           <result column="is_all" property="isAll" />
+           <result column="ts_create" property="tsCreate" />
+       </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, platform, version, download_url, type, info, is_on, is_all,  ts_create
+    </sql>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        SELECT
+            v.id, v.platform, v.version, v.download_url, v.type, v.info, v.is_on, v.is_all, v.ts_create
+        from im_client_ver v
+        <where>1=1
+            <if test="q.platform!=null and q.platform !=''">
+                and v.platform = #{q.platform}
+            </if>
+            <if test="q.type!=null">
+                and v.type = #{q.type}
+            </if>
+            <if test="q.isOn!=null and q.isOn !=''">
+                and v.is_on = #{q.isOn}
+            </if>
+            <if test="q.isAll!=null and q.isAll !=''">
+                and v.is_all = #{q.isAll}
+            </if>
+            <if test="q.ts_create!=null">
+                and ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+
+    <select id="findLatestByPlatform" resultType="org.jeecg.modules.im.entity.ClientVer">
+        select * from im_client_ver where platform = #{platform} order by ts_create desc limit 1
+    </select>
+
+    <select id="findLatestOfAll" resultType="org.jeecg.modules.im.entity.ClientVer">
+        SELECT * from im_client_ver a where ts_create in (SELECT max(ts_create) from im_client_ver b where a.platform=b.platform AND is_on IS true)
+    </select>
+</mapper>

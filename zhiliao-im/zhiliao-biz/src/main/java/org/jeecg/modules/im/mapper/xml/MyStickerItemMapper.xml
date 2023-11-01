@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.MyStickerItemMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.MyStickerItem">
+        <id column="id" property="id" />
+        <result column="sticker_item_id" property="stickerItemId" />
+        <result column="sticker_id" property="stickerId" />
+        <result column="user_id" property="userId" />
+        <result column="ts_create" property="tsCreate" />
+        <result column="origin" property="origin"/>
+        <result column="thumb" property="thumb"/>
+        <result column="lottie" property="lottie"/>
+        <result column="is_locked" property="isLocked"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sticker_item_id, sticker_id,user_id, ts_create,origin,thumb,lottie,is_locked
+    </sql>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        select msi.id,user_id, msi.thumb, msi.origin, msi.ts_create,sticker_item_id,msi.sticker_id,si.is_locked
+        from im_my_sticker_item msi
+            right join im_sticker_item si on msi.sticker_item_id = si.id
+        where user_id = #{q.userId}
+        order by msi.ts_create desc
+    </select>
+</mapper>

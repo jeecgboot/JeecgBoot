@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.GifAlbumMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.GifAlbum">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="order_no" property="orderNo" />
+        <result column="add_times" property="addTimes" />
+        <result column="ts_create" property="tsCreate" />
+        <result column="counts" property="counts" />
+        <result column="send_times" property="sendTimes" />
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, add_times,order_no,ts_create
+    </sql>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        select ga.id, name, ga.add_times,ga.order_no,ga.ts_create,
+        count(g.id) counts
+        from im_gif_album ga
+        left join im_gif g on g.album_id = ga.id
+        <where>1=1
+            <if test="q.name!=null and q.name !=''">
+                and ga.name = #{q.name}
+            </if>
+            <if test="q.addTimes!=null and q.addTimes !=''">
+                and ga.add_times >= #{q.addTimes}
+            </if>
+            <if test="q.ts_create!=null">
+                and ga.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        group by ga.id
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+    <select id="findUngroup" resultMap="BaseResultMap">
+        select * from im_gif_album where id = 0
+    </select>
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT a.id,a.name,a.counts,a.send_times,a.ts_create FROM (
+            SELECT ga.id,ga.name,sum(send_times) send_times,SUM(g.add_times) add_times,COUNT(g.id) counts,ga.ts_create FROM im_gif_album ga RIGHT JOIN im_gif g ON ga.id = g.album_id GROUP BY ga.id ORDER BY send_times desc,add_times desc,ga.order_no desc
+        )a
+    </select>
+
+</mapper>

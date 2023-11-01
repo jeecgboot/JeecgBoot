@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.CustomEmojiMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.CustomEmoji">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="origin" property="origin" />
+        <result column="thumb" property="thumb" />
+        <result column="ts_create" property="tsCreate" />
+        <result column="ts_send" property="tsSend" />
+        <result column="ts_locked" property="tsLocked" />
+        <result column="keyword" property="keyword" />
+        <result column="ts_pin" property="tsPin" />
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, origin, thumb, ts_create,ts_send,ts_pin,keyword,ts_locked
+    </sql>
+
+    <select id="paginationApi" resultMap="BaseResultMap">
+        select * from im_custom_emoji
+        <where>ts_locked = 0
+            <if test="q.keyword!=null and q.keyword !=''">
+                and keyword like concat("%",#{q.keyword},"%")
+            </if>
+        </where>
+        order by ts_pin desc,ts_send desc,ts_create desc
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        select * from im_custom_emoji where user_id = #{userId}
+        order by ts_pin desc,ts_send desc,ts_create desc
+    </select>
+
+</mapper>

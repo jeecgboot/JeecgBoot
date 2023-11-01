@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.FriendMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.Friend">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="to_user_id" property="toUserId"/>
+        <result column="is_star" property="isStar"/>
+        <result column="is_no_disturb" property="isNoDisturb"/>
+        <result column="is_msg_archive" property="isMsgArchive"/>
+        <result column="remark" property="remark"/>
+        <result column="phone" property="phone"/>
+        <result column="info" property="info"/>
+        <result column="tag_ids" property="tagIds"/>
+        <result column="tag_names" property="tagNames"/>
+        <result column="tr" property="tr"/>
+        <result column="add_type" property="addType"/>
+        <result column="status" property="status"/>
+        <result column="privilege" property="privilege"/>
+        <result column="ts_create" property="tsCreate"/>
+        <result column="ts_friend" property="tsFriend"/>
+        <result column="ts_pin" property="tsPin"/>
+        <result column="ts_update" property="tsUpdate"/>
+        <result column="ts_last_talk" property="tsLastTalk"/>
+        <result column="ts_msg_visible" property="tsMsgVisible"/>
+        <result column="ts_black" property="tsBlack"/>
+        <result column="ts_been_black" property="tsBeenBlack"/>
+        <result column="is_hide" property="isHide"/>
+        <result column="is_unread" property="isUnread"/>
+        <result column="is_read_del" property="isReadDel"/>
+        <result column="last_ack_id" property="lastAckId"/>
+        <association property="toUser" javaType="org.jeecg.modules.im.entity.User">
+            <id column="t_id" property="id"/>
+            <result column="t_account" property="account"/>
+            <result column="t_username" property="username"/>
+            <result column="t_nickname" property="nickname"/>
+            <result column="t_small_avatar" property="smallAvatar"/>
+            <result column="t_avatar" property="avatar"/>
+            <result column="t_is_online" property="isOnline"/>
+            <result column="t_type" property="type"/>
+            <result column="t_ts_online" property="tsOnline"/>
+            <result column="t_ts_offline" property="tsOffline"/>
+            <association property="info"  javaType="org.jeecg.modules.im.entity.UserInfo">
+                <result column="t_gender" property="gender"/>
+                <result column="t_country" property="country"/>
+                <result column="t_province" property="province"/>
+                <result column="t_city" property="city"/>
+                <result column="t_signature" property="signature"/>
+                <result column="t_state" property="state"/>
+            </association>
+            <association property="userSetting"  javaType="org.jeecg.modules.im.entity.UserSetting">
+                <result column="online_visibility" property="onlineVisibility"/>
+            </association>
+        </association>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, to_user_id, phone,is_star,is_no_disturb, remark, info, tag_ids, add_type, status, privilege, ts_create,ts_friend,ts_pin, ts_update, ts_last_t,is_unread,is_read_del,last_ack_id
+    </sql>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        select
+            f.id,f.user_id,f.to_user_id,f.is_star,is_no_disturb,is_msg_archive,remark,phone,info,tag_ids,tag_names,tr, add_type, f.status, privilege, f.ts_create,f.ts_friend,f.ts_pin, f.ts_update, f.ts_last_talk,f.ts_msg_visible,f.ts_black,f.ts_been_black,f.is_hide,f.is_unread,f.is_read_del,f.last_ack_id,
+            t.id t_id,t.account t_account,t.nickname t_nickname,t.username t_username,t.type t_type,t.is_online t_is_online,t.small_avatar t_small_avatar,t.avatar t_avatar,
+            info.gender t_gender,info.country t_country,info.province t_province,info.city t_city,info.signature t_signature,info.state t_state
+        from im_friend f
+        left join im_user t on t.id = f.to_user_id
+        left join im_user_info info on info.user_id = t.id
+        <where>
+            1=1
+            <if test="q.userId !=null and q.userId !=''">
+                and f.user_id = #{q.userId}
+            </if>
+            <if test="q.addType !=null and q.addType !=''">
+                and f.add_type = #{q.addType}
+            </if>
+            <if test="q.remark !=null and q.remark !=''">
+                and f.remark = #{q.remark}
+            </if>
+            <if test="q.userSearch !=null and q.userSearch !=''">
+                and(t.nickname like concat('%',#{q.userSearch},'%') or t.account like concat('%',#{q.userSearch},'%') or t.username like concat('%',#{q.userSearch},'%') or t.mobile like concat('%',#{q.userSearch},'%'))
+            </if>
+            <if test="q.isStar !=null">
+                and f.is_star = #{q.isStar}
+            </if>
+            <if test="q.ts_create!=null">
+                and f.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        order by f.ts_create desc
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        select
+            f.id,f.user_id,f.to_user_id,f.is_star,is_no_disturb,is_msg_archive,remark,phone,info,tag_ids,tag_names,tr, add_type, f.status, privilege, f.ts_create,f.ts_friend,f.ts_pin, f.ts_update, f.ts_last_talk,f.ts_msg_visible,f.ts_black,f.ts_been_black,f.is_hide,f.is_unread,f.is_read_del,f.last_ack_id,
+            t.id t_id,t.account t_account,t.nickname t_nickname,t.username t_username,t.type t_type,t.small_avatar t_small_avatar,t.avatar t_avatar,t.ts_online t_ts_online,t.ts_offline t_ts_offline,t.is_online t_is_online,
+            info.gender t_gender,info.country t_country,info.province t_province,info.city t_city,info.signature t_signature,info.state t_state,setting.online_visibility
+        from im_friend f
+        left join im_user t on t.id = f.to_user_id
+        left join im_user_info info on info.user_id = t.id
+        left join im_user_setting setting on setting.user_id = t.id
+        <where>
+            f.user_id = #{userId}
+            <if test="toUserId !=null and toUserId !=''">
+                and to_user_id = #{toUserId}
+            </if>
+        </where>
+        order by f.ts_create desc
+    </select>
+
+    <select id="findByIdOfUser" resultMap="BaseResultMap">
+        select * from im_friend f where user_id = #{userId} and id = #{id}
+    </select>
+    <select id="findOne" resultMap="BaseResultMap">
+        select
+            f.id,f.user_id,f.to_user_id,f.is_star,is_no_disturb,is_msg_archive,remark,phone,info,tag_ids,tag_names,tr,add_type, f.status, privilege, f.ts_create,ts_friend,f.ts_pin, f.ts_update, f.ts_last_talk,f.ts_msg_visible,f.ts_black,f.ts_been_black,f.is_hide,f.is_unread,f.is_read_del,f.last_ack_id,
+            t.id t_id,t.account t_account,t.nickname t_nickname,t.username t_username,t.type t_type,t.small_avatar t_small_avatar,t.avatar t_avatar,t.ts_online t_ts_online,t.ts_offline t_ts_offline,t.is_online t_is_online,
+            info.gender t_gender,info.country t_country,info.province t_province,info.city t_city,info.signature t_signature,info.state t_state,setting.online_visibility
+        from im_friend f
+        left join im_user t on t.id = f.to_user_id
+        left join im_user_info info on info.user_id = t.id
+        left join im_user_setting setting on setting.user_id = t.id
+        <where>
+            f.user_id = #{userId} and f.to_user_id = #{toUserId}
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.VerifyCodeMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.VerifyCode">
+        <id column="id" property="id" />
+            <result column="user_id" property="userId" />
+           <result column="prefix" property="prefix" />
+           <result column="suffix" property="suffix" />
+           <result column="mobile" property="mobile" />
+           <result column="code" property="code" />
+           <result column="way" property="way" />
+           <result column="type" property="type" />
+           <result column="ts_create" property="tsCreate" />
+            <association property="user" javaType="org.jeecg.modules.im.entity.User">
+                <result column="u_id" property="id"/>
+                <result column="u_nickname" property="nickname"/>
+                <result column="u_account" property="account"/>
+                <result column="u_small_avatar" property="smallAvatar"/>
+                <result column="u_is_online" property="isOnline"/>
+                <result column="u_ts_create" property="tsCreate"/>
+                <association property="info" javaType="org.jeecg.modules.im.entity.UserInfo">
+                    <id column="i_id" property="id" />
+                    <result column="i_province" property="province" />
+                    <result column="i_city" property="city" />
+                    <result column="i_district" property="district" />
+                    <result column="i_country" property="country" />
+                    <result column="i_gender" property="gender" />
+                </association>
+            </association>
+       </resultMap>
+
+    <select id="findLatestByMobileAndType" resultType="org.jeecg.modules.im.entity.VerifyCode">
+        select * from im_verify_code where mobile = #{mobile} and type = #{type} order by ts_create desc limit 1
+    </select>
+    <select id="findLatestByEmailAndType" resultType="org.jeecg.modules.im.entity.VerifyCode">
+        select * from im_verify_code where email = #{email} and type = #{type} order by ts_create desc limit 1
+    </select>
+
+    <select id="pagination" resultType="org.jeecg.modules.im.entity.VerifyCode">
+        SELECT s.id,s.user_id,s.ts_create,s.type,s.mobile,s.email,code,way,
+            u.is_online u_is_online,u.ts_create u_ts_create,
+            i.id i_id,i.province i_province,i.city i_city,i.country i_country,i.district i_district,i.gender i_gender
+        from im_verify_code s
+        left join im_user u on u.id = s.user_id
+        left join im_user_info i on i.user_id = u.id
+        <where>1=1
+            <if test="q.userId!=null and q.userId!=''">
+                and s.user_id=#{q.userId}
+            </if>
+            <if test="q.mobile!=null and q.mobile!=''">
+                and s.mobile=#{q.mobile}
+            </if>
+            <if test="q.email!=null and q.email!=''">
+                and s.email=#{q.email}
+            </if>
+            <if test="q.type!=null and q.type!=''">
+                and s.type=#{q.type}
+            </if>
+            <if test="q.ts_create!=null">
+                and s.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+
+</mapper>

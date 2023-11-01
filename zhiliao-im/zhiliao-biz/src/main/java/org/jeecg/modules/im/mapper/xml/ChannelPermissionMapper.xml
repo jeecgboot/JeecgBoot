@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.ChannelPermissionMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.ChannelPermission">
+        <id column="id" property="id" />
+        <result column="channel_id" property="channelId" />
+        <result column="member_id" property="memberId" />
+        <result column="modify_info" property="modifyInfo" />
+        <result column="publish_news" property="publishNews" />
+        <result column="edit_others_publish" property="editOthersPublish" />
+        <result column="delete_others_publish" property="deleteOthersPublish" />
+        <result column="add_member" property="addMember" />
+        <result column="manage_live" property="manageLive" />
+        <result column="add_admin" property="addAdmin" />
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, channel_id, member_id, modify_info, publish_news, edit_others_publish, delete_others_publish, add_member, manage_live, add_admin
+    </sql>
+
+
+    <select id="findDefault" resultType="org.jeecg.modules.im.entity.ChannelPermission">
+        select * from im_channel_permission where channel_id is null order by id asc limit 1
+    </select>
+</mapper>

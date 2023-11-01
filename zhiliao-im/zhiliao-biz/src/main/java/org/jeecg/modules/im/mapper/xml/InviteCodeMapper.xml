@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.InviteCodeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.InviteCode">
+        <id column="id" property="id" />
+        <result column="code" property="code" />
+        <result column="user_to_add" property="userToAdd" />
+        <result column="muc_to_join" property="mucToJoin" />
+        <result column="ts_last" property="tsLast" />
+        <result column="ts_create" property="tsCreate" />
+        <result column="max_times" property="maxTimes" />
+        <result column="is_enable" property="isEnable" />
+        <result column="times" property="times" />
+    </resultMap>
+
+    <select id="findByCode" resultType="org.jeecg.modules.im.entity.InviteCode">
+        select * from im_invite_code where code = #{code}
+    </select>
+
+
+    <select id="pagination" resultMap="BaseResultMap">
+        select * from im_invite_code i
+        <where>1=1
+            <if test="q.code!=null and q.code !=''">
+                and code = #{q.code}
+            </if>
+            <if test="q.isEnable!=null">
+                and is_enable = #{q.isEnable}
+            </if>
+            <if test="q.ts_create!=null">
+                and ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+
+</mapper>

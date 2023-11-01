@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.SysConfigMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.SysConfig">
+        <id column="id" property="id"/>
+        <result column="maintenance" property="maintenance"/>
+        <result column="coin_rate" property="coinRate"/>
+        <result column="xmpp_host" property="xmppHost"/>
+        <result column="xmpp_domain" property="xmppDomain"/>
+        <result column="xmpp_port" property="xmppPort"/>
+        <result column="xmpp_timeout" property="xmppTimeout"/>
+        <result column="save_sg_msg" property="saveSgMsg"/>
+        <result column="save_muc_msg" property="saveMucMsg"/>
+        <result column="keyword_filter" property="keywordFilter"/>
+        <result column="email_host" property="emailHost"/>
+        <result column="email_port" property="emailPort"/>
+        <result column="email_username" property="emailUsername"/>
+        <result column="email_account" property="emailAccount"/>
+        <result column="email_password" property="emailPassword"/>
+        <result column="storage_type" property="storageType"/>
+        <result column="cdn_domain" property="cdnDomain"/>
+        <result column="oss_base_path" property="ossBasePath"/>
+        <result column="oss_aliyun_bucket_name" property="ossAliyunBucketName"/>
+        <result column="oss_aliyun_endpoint" property="ossAliyunEndpoint"/>
+        <result column="oss_aliyun_access_key_id" property="ossAliyunAccessKeyId"/>
+        <result column="oss_aliyun_access_key_secret" property="ossAliyunAccessKeySecret"/>
+        <result column="resource_domain" property="resourceDomain"/>
+        <result column="upload_url" property="uploadUrl"/>
+        <result column="enable_video_call" property="enableVideoCall"/>
+        <result column="agora_app_id" property="agoraAppId"/>
+        <result column="agora_app_certificate" property="agoraAppCertificate"/>
+    </resultMap>
+
+    <select id="get" resultMap="BaseResultMap">
+        select * from im_sys_config limit 1
+    </select>
+
+</mapper>

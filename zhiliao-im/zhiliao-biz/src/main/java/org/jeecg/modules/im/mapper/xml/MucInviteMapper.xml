@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.MucInviteMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.MucInvite">
+        <id column="id" property="id"/>
+        <result column="muc_id" property="mucId"/>
+        <result column="inviter" property="inviter"/>
+        <result column="invitee" property="invitee"/>
+        <result column="comment" property="comment"/>
+        <result column="handler" property="handler"/>
+        <result column="ts_create" property="tsCreate"/>
+        <result column="status" property="status"/>
+        <result column="is_valid" property="isValid"/>
+        <result column="is_need_verify" property="isNeedVerify"/>
+        <result column="ts_deal" property="tsDeal"/>
+        <association property="inviterMember" javaType="org.jeecg.modules.im.entity.MucMember">
+            <id column="irm_id" property="id"/>
+            <result column="irm_nickname" property="nickname"/>
+            <association property="user" javaType="org.jeecg.modules.im.entity.User">
+                <id column="irmu_id" property="id"/>
+                <result column="irmu_nickname" property="nickname"/>
+                <result column="irmu_small_avatar" property="smallAvatar"/>
+            </association>
+        </association>
+        <association property="inviteeUser" javaType="org.jeecg.modules.im.entity.User">
+            <id column="ie_id" property="id"/>
+            <result column="ie_nickname" property="nickname"/>
+            <result column="ie_small_avatar" property="smallAvatar"/>
+        </association>
+        <association property="handlerMember" javaType="org.jeecg.modules.im.entity.MucMember">
+            <id column="ih_id" property="id"/>
+            <result column="ih_nickname" property="nickname"/>
+            <association property="user" javaType="org.jeecg.modules.im.entity.User">
+                <id column="ihu_id" property="id"/>
+                <result column="ihu_nickname" property="nickname"/>
+                <result column="ihu_small_avatar" property="smallAvatar"/>
+            </association>
+        </association>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, muc_id, inviter,invitee,handler, comment, ts_create, status, is_valid,is_need_verify, ts_deal
+    </sql>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        select
+            i.id, i.muc_id, inviter,invitee,handler, i.comment, i.ts_create, i.status, i.is_valid,i.is_need_verify, i.ts_deal,
+            irm.id irm_id,irm.nickname irm_nickname,
+            irmu.small_avatar irmu_small_avatar,irmu.nickname irmu_nickname,
+            ie.small_avatar ie_small_avatar,ie.nickname ie_nickname,
+            ih.id ih_id,ih.nickname ih_nickname,
+            ihu.small_avatar ihu_small_avatar,ihu.nickname ihu_nickname
+        from im_muc_invite i
+        left join im_muc_member irm on irm.id = i.inviter
+        left join im_user irmu on irmu.id = irm.user_id
+        left join im_user ie on ie.id = i.invitee
+        left join im_muc_member ih on ih.id = i.handler
+        left join im_user ihu on ihu.id = ih.user_id
+        <where>
+            <if test="q.mucId!=null">
+                and i.muc_id = #{q.mucId}
+            </if>
+            <if test="q.isValid!=null">
+                and i.is_valid = #{q.isValid}
+            </if>
+            <if test="q.isNeedVerify!=null">
+                and i.is_need_verify = #{q.isNeedVerify}
+            </if>
+            <if test="q.status!=null">
+                and i.status = #{q.status}
+            </if>
+            <if test="q.inviter!=null">
+                and i.inviter = #{q.inviter}
+            </if>
+            <if test="q.invitee!=null">
+                and i.invitee = #{q.invitee}
+            </if>
+            <if test="q.handler!=null">
+                and i.handler = #{q.handler}
+            </if>
+        </where>
+
+    </select>
+    <select id="findLatestUnDeal" resultMap="BaseResultMap">
+        select *
+        from im_muc_invite
+        where inviter = #{inviter}
+          and muc_id = #{mucId}
+          and invitee = #{invitee}
+          and is_valid is true
+          and ts_deal = 0
+    </select>
+
+    <update id="invalidOfUserByMuc">
+        update im_muc_invite
+        set is_valid = false
+        where invitee = #{invitee}
+          and muc_id = #{mucId}
+    </update>
+</mapper>

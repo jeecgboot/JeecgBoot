@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.DeviceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.Device">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="is_online" property="isOnline"/>
+        <result column="platform" property="platform"/>
+        <result column="no" property="no"/>
+        <result column="name" property="name"/>
+        <result column="sys_ver" property="sysVer"/>
+        <result column="detail" property="detail"/>
+        <result column="client_ver" property="clientVer"/>
+        <result column="token" property="token"/>
+        <result column="ts_create" property="tsCreate"/>
+        <result column="ts_online" property="tsOnline"/>
+        <result column="ts_offline" property="tsOffline"/>
+        <result column="login_times" property="loginTimes"/>
+        <result column="ts_disabled" property="tsDisabled"/>
+        <result column="jpush_id" property="jpushId"/>
+        <association property="loginLog">
+            <id column="l_id" property="id"/>
+            <result column="l_ip" property="ip"/>
+            <result column="l_ip_info" property="ipInfo"/>
+            <result column="l_ts_create" property="tsCreate"/>
+        </association>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, platform, token,is_online,no,name,sys_ver,detail,client_ver,ts_create,ts_offline,ts_online,ts_disabled,jpush_id
+    </sql>
+
+    <select id="pagination" resultMap="BaseResultMap">
+        select d.id,d.user_id,d.platform,d.token,d.is_online,d.no,d.name,d.sys_ver,d.detail,d.client_ver,d.ts_create,d.ts_online,d.ts_offline,count(l.id) login_times,d.ts_disabled,jpush_id
+        from im_device d left join im_login_log l on d.id = l.device_id
+        <where> 1=1
+            <if test="q.name!=null and q.name !=''">
+                and d.name = #{q.name}
+            </if>
+            <if test="q.platform!=null and q.platform !=''">
+                and d.platform = #{q.platform}
+            </if>
+            <if test="q.no!=null and q.no !=''">
+                and d.no = #{q.no}
+            </if>
+            <if test="q.clientVer!=null and q.clientVer !=''">
+                and d.client_ver = #{q.clientVer}
+            </if>
+            <if test="q.userId!=null and q.userId !=''">
+                and d.user_id = #{q.userId}
+            </if>
+            <if test="q.isOnline!=null">
+                and is_online = #{q.isOnline}
+            </if>
+            <if test="q.ts_create!=null">
+                and d.ts_create &lt;= UNIX_TIMESTAMP(#{q.ts_create})*1000
+            </if>
+        </where>
+        group by d.id
+        <if test="q.column !=null and q.column!='' and q.order!=null and q.order!=''">
+            order by ${q.column} ${q.order}
+        </if>
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        select d.id,d.user_id,d.platform,d.is_online,d.no,d.name,d.sys_ver,d.client_ver,d.ts_create,d.ts_online,d.ts_offline,d.token
+        from im_device d
+        where d.user_id = #{userId}  AND client_ver !=0 and ts_disabled = 0
+    </select>
+    <select id="findCanOfflinePush" resultMap="BaseResultMap">
+        select * from im_device where user_id = #{userId} and token is not null and jpush_id is not null
+    </select>
+    <select id="getJPushIds" resultType="java.lang.String">
+        select jpush_id from im_device where user_id = #{userId} and token is not null and jpush_id is not null
+        <if test="platform!=null">
+            and platform = #{platform}
+        </if>
+    </select>
+    <select id="findByPlatform" resultMap="BaseResultMap">
+        select * from im_device where user_id = #{userId} and platform = #{platform} and no = #{no}
+    </select>
+    <select id="findByDetail" resultMap="BaseResultMap">
+        select * from im_device where user_id = #{userId} and detail =#{detail}
+    </select>
+    <select id="getCountOfUser" resultType="java.lang.Integer">
+        select count(*) from im_device where user_id = #{userId}
+    </select>
+    <select id="getOnlineCountOfUser" resultType="java.lang.Integer">
+        select count(*) from im_device where user_id = #{userId} and is_online is true
+    </select>
+
+
+    <select id="getOnlineCount" resultType="java.lang.Integer">
+        select count(*) from im_device where is_online is true
+    </select>
+
+    <select id="getTotal" resultType="java.lang.Integer">
+        select count(*) from im_device
+    </select>
+
+    <update id="clearToken">
+        update im_device set token = null where id != #{exceptId} and user_id = #{userId}
+    </update>
+
+    <update id="cleanJpushId">
+        update im_device set jpush_id = null where id != #{id}
+    </update>
+    <update id="clearAllTokenOfUser">
+        update im_device set token = null where user_id = #{userId}
+    </update>
+</mapper>

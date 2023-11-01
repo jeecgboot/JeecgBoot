@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.FeedbackMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.Feedback">
+        <id column="id" property="id" />
+        <result column="type_id" property="typeId" />
+        <result column="user_id" property="userId" />
+        <result column="ts_create" property="tsCreate" />
+        <result column="img_url" property="imgUrl" />
+        <result column="message" property="message" />
+        <result column="contact" property="contact" />
+        <result column="ts_deal" property="tsDeal" />
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, type_id, user_id, ts_create, img_url, message, contact, ts_deal
+    </sql>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        select * from im_feedback
+    </select>
+</mapper>

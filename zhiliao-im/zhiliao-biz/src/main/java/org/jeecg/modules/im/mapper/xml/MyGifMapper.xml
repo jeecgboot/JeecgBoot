@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.im.mapper.MyGifMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.jeecg.modules.im.entity.MyGif">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="thumb" property="thumb" />
+        <result column="origin" property="origin" />
+        <result column="order_no" property="orderNo" />
+        <result column="ts_create" property="tsCreate" />
+        <result column="ts_last_send" property="tsLastSend" />
+        <result column="gif_id" property="gifId" />
+        <result column="is_locked" property="isLocked"/>
+        <result column="emoji" property="emoji"/>
+        <result column="emoji_code" property="emojiCode"/>
+        <result column="ts_last_send" property="tsLastSend"/>
+        <result column="ts_pin" property="tsPin"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        user_id, thumb, origin, order_no, ts_create,gif_id,ts_last_send,ts_pin
+    </sql>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        select mg.id,user_id, mg.thumb, mg.origin, mg.order_no, mg.ts_create,mg.ts_last_send,mg.ts_pin,gif_id,g.is_locked,g.emoji,g.emoji_code
+        from im_my_gif mg
+        right join im_gif g on mg.gif_id = g.id
+        where user_id = #{q.userId}
+        order by ts_pin desc,ts_last_send desc,mg.order_no desc,mg.ts_create desc
+    </select>
+    <select id="findByGifId" resultMap="BaseResultMap">
+        select * from im_my_gif where user_id = #{userId} and gif_id = #{gifId}
+    </select>
+
+</mapper>
