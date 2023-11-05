@@ -929,7 +929,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 relation.setUserId(userId);
                 relation.setTenantId(Integer.valueOf(tenantId));
                 relation.setStatus(CommonConstant.STATUS_1);
-                relationMapper.insert(relation);
+                
+				LambdaQueryWrapper sysUserTenantQueryWrapper = new LambdaQueryWrapper<SysUserTenant>()
+						.eq(SysUserTenant::getUserId, userId)
+						.eq(SysUserTenant::getTenantId,Integer.valueOf(tenantId));
+				SysUserTenant tenantPresent = relationMapper.selectOne(sysUserTenantQueryWrapper);
+				if (tenantPresent != null) {
+					tenantPresent.setStatus(CommonConstant.STATUS_1);
+					relationMapper.updateById(tenantPresent);
+				}else{
+					relationMapper.insert(relation);
+				}
             }
         }else{
 			//是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
@@ -960,7 +970,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         LambdaQueryWrapper<SysUserTenant> query = new LambdaQueryWrapper<>();
         query.eq(SysUserTenant::getUserId, userId);
         //数据库的租户id
-		List<Integer> oldTenantIds = relationMapper.getTenantIdsNoStatus(userId);
+		List<Integer> oldTenantIds = relationMapper.getTenantIdsByUserId(userId);
         //如果传过来的租户id为空，那么就删除租户
         if (oConvertUtils.isEmpty(relTenantIds) && CollectionUtils.isNotEmpty(oldTenantIds)) {
             this.deleteTenantByUserId(userId, null);
