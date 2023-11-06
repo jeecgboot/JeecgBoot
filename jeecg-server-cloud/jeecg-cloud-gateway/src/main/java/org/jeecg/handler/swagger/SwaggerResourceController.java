@@ -9,7 +9,7 @@
 //
 //import java.util.List;
 //
-///**
+///** 已使用knife4j-gateway支持该功能
 // * swagger聚合接口，三个接口都是 doc.html需要访问的接口
 // * @author zyf
 // * @date: 2022/4/21 10:55
