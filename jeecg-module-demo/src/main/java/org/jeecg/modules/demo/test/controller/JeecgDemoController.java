@@ -4,13 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.DefaultSecurityManager;
@@ -30,8 +29,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import reactor.core.publisher.Mono;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -44,7 +41,7 @@ import java.util.List;
  * @Version:V2.0
  */
 @Slf4j
-@Api(tags = "单表DEMO")
+@Tag(name = "单表DEMO")
 @RestController
 @RequestMapping("/test/jeecgDemo")
 public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoService> {
@@ -63,7 +60,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      * @param req
      * @return
      */
-    @ApiOperation(value = "获取Demo数据列表", notes = "获取所有Demo数据列表")
+    @Operation(summary = "获取所有Demo数据列表")
     @GetMapping(value = "/list")
     @PermissionData(pageComponent = "jeecg/JeecgDemoList")
     public Result<?> list(JeecgDemo jeecgDemo, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
@@ -88,7 +85,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      */
     @PostMapping(value = "/add")
     @AutoLog(value = "添加测试DEMO")
-    @ApiOperation(value = "添加DEMO", notes = "添加DEMO")
+    @Operation(summary = "添加DEMO")
     public Result<?> add(@RequestBody JeecgDemo jeecgDemo) {
         jeecgDemoService.save(jeecgDemo);
         return Result.OK("添加成功！");
@@ -101,7 +98,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      * @return
      */
     @AutoLog(value = "编辑DEMO", operateType = CommonConstant.OPERATE_TYPE_3)
-    @ApiOperation(value = "编辑DEMO", notes = "编辑DEMO")
+    @Operation(summary = "编辑DEMO")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
     public Result<?> edit(@RequestBody JeecgDemo jeecgDemo) {
         jeecgDemoService.updateById(jeecgDemo);
@@ -116,7 +113,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      */
     @AutoLog(value = "删除测试DEMO")
     @DeleteMapping(value = "/delete")
-    @ApiOperation(value = "通过ID删除DEMO", notes = "通过ID删除DEMO")
+    @Operation(summary = "通过ID删除DEMO")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         jeecgDemoService.removeById(id);
         return Result.OK("删除成功!");
@@ -129,7 +126,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      * @return
      */
     @DeleteMapping(value = "/deleteBatch")
-    @ApiOperation(value = "批量删除DEMO", notes = "批量删除DEMO")
+    @Operation(summary = "批量删除DEMO")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
         this.jeecgDemoService.removeByIds(Arrays.asList(ids.split(",")));
         return Result.OK("批量删除成功！");
@@ -142,8 +139,8 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      * @return
      */
     @GetMapping(value = "/queryById")
-    @ApiOperation(value = "通过ID查询DEMO", notes = "通过ID查询DEMO")
-    public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
+    @Operation(summary = "通过ID查询DEMO")
+    public Result<?> queryById(/*@ApiParam(name = "id", value = "示例id", required = true)*/ @RequestParam(name = "id", required = true) String id) {
         JeecgDemo jeecgDemo = jeecgDemoService.getById(id);
         return Result.OK(jeecgDemo);
     }
@@ -475,7 +472,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      * 测试Mono对象
      * @return
      */
-    @ApiOperation("Mono测试")
+    @Operation(summary = "Mono测试")
     @GetMapping(value ="/test")
     public Mono<String> test() {
         //解决shiro报错No SecurityManager accessible to the calling code, either bound to the org.apache.shiro

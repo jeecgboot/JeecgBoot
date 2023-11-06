@@ -12,7 +12,7 @@ import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.apache.shiro.mgt.SecurityManager;
 import org.springframework.beans.factory.BeanInitializationException;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 import java.util.Map;
 
 /**

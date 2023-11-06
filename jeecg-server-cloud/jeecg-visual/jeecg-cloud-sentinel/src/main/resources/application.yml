@@ -12,7 +12,7 @@ spring:
   mvc:
     #Spring Boot 2.6+\u540E\u6620\u5C04\u5339\u914D\u7684\u9ED8\u8BA4\u7B56\u7565\u5DF2\u4ECEAntPathMatcher\u66F4\u6539\u4E3APathPatternParser,\u9700\u8981\u624B\u52A8\u6307\u5B9A\u4E3Aant-path-matcher
     pathmatch:
-      matching-strategy: ant-path-matcher
+      matching-strategy: ant_path_matcher
 #auth settings
 auth:
   filter:
@@ -31,7 +31,7 @@ logging:
     name: ${user.home}/logs/csp/sentinel-dashboard.log
 nacos:
   server:
-    ip: @config.server-addr@
+    ip: localhost:8848
 sentinel:
   dashboard:
     version: 1.8.2

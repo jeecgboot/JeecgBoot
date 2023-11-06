@@ -3,7 +3,7 @@ package org.jeecg.modules.system.controller;
 import java.util.Arrays;
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;

@@ -13,8 +13,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecg.common.aspect.annotation.Dict;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * @Description: ${tableVo.ftlDescription}
@@ -22,7 +21,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
-@ApiModel(value="${tableName}对象", description="${tableVo.ftlDescription}")
+@Schema(description="${tableVo.ftlDescription}")
 @Data
 @TableName("${tableName}")
 public class ${entityName} implements Serializable {

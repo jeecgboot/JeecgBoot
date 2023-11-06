@@ -2,7 +2,7 @@ package org.jeecg.modules.system.service.impl;
 
 import java.util.List;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.system.mapper.SysAnnouncementSendMapper;
