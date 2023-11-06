@@ -3,10 +3,9 @@ package org.jeecg.modules.system.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.util.oConvertUtils;
@@ -23,7 +22,7 @@ import java.util.List;
  * @Date: 2020-05-26
  * @Version: V1.0
  */
-@Api(tags = "gateway路由管理")
+@Tag(name = "gateway路由管理")
 @RestController
 @RequestMapping("/sys/gatewayRoute")
 @Slf4j

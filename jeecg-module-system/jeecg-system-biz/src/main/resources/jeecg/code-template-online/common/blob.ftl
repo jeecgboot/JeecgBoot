@@ -27,7 +27,7 @@
         return "";
     }
 <#else>
-    @ApiModelProperty(value = "${po.filedComment}")
+    @Schema(value = "${po.filedComment}")
   <#if po.fieldDbName == 'del_flag'>
     @TableLogic
   </#if>

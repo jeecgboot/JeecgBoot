@@ -19,10 +19,10 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>hibernate-re</artifactId>
-		</dependency>
+		</dependency>-->
 
 		<!-- 企业微信/钉钉 api -->
 		<dependency>

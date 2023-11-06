@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 
 /**
@@ -19,7 +20,7 @@ public class SeataProductController {
     private SeataProductService seataProductService;
 
     @PostMapping("/reduceStock")
-    public BigDecimal reduceStock(Long productId, Integer count) {
+    public BigDecimal reduceStock(Long productId, Integer count, HttpServletRequest request) {
         return seataProductService.reduceStock(productId, count);
     }
 }
