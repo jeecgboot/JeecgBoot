@@ -6,8 +6,9 @@ jeecg:
       group: DEFAULT_GROUP
       data-id: jeecg-gateway-router
 spring:
-  redis:
-    database: 0
-    host: jeecg-boot-redis
-    port: 6379
-    password:
+  data:
+    redis:
+      database: 0
+      host: jeecg-boot-redis
+      port: 6379
+      password:

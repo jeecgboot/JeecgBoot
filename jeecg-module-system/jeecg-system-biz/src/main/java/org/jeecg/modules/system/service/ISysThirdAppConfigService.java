@@ -1,7 +1,6 @@
 package org.jeecg.modules.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import io.swagger.models.auth.In;
 import org.jeecg.modules.system.entity.SysThirdAppConfig;
 
 import java.util.List;

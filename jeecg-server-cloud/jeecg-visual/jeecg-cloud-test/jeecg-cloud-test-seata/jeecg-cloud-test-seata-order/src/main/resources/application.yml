@@ -1,12 +1,21 @@
 server:
   port: 5001
 spring:
+  data:
+    redis:
+      ##redis 单机环境配置
+      host: localhost
+      port: 6379
+      database: 0
+      password:
+      ssl:
+        enabled: false
   application:
     name: seata-order
   main:
     allow-bean-definition-overriding: true
   autoconfigure:
-    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+    exclude: com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure
   datasource:
     dynamic:
       primary: order
@@ -19,6 +28,11 @@ spring:
           username: root
           password: root
           schema: classpath:sql/schema-order.sql
+  cloud:
+    nacos:
+      config:
+        import-check:
+          enabled: false
 seata:
   enable-auto-data-source-proxy: false
   service:

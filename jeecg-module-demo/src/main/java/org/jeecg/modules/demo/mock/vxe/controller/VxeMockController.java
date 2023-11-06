@@ -18,7 +18,7 @@ import org.jeecg.modules.demo.mock.vxe.entity.MockEntity;
 import org.jeecg.modules.demo.mock.vxe.websocket.VxeSocket;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;

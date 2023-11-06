@@ -255,6 +255,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		code = SqlInjectionUtil.getSqlInjectField(code);
 		
 		//return sysDictMapper.queryTableDictItemsByCode(tableFilterSql,text,code);
+		table = table.toLowerCase();
 		return sysDictMapper.queryTableDictWithFilter(table,text,code,filterSql);
 	}
 
@@ -280,7 +281,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		table = SqlInjectionUtil.getSqlInjectTableName(table);
 		text = SqlInjectionUtil.getSqlInjectField(text);
 		code = SqlInjectionUtil.getSqlInjectField(code);
-		
+		table = table.toLowerCase();
 		return sysDictMapper.queryTableDictWithFilter(table,text,code,filterSql);
 	}
 	

@@ -28,8 +28,8 @@ import org.springframework.util.StringUtils;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 
-import javax.annotation.Resource;
-import javax.servlet.Filter;
+import jakarta.annotation.Resource;
+import jakarta.servlet.Filter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -120,10 +120,10 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/swagger-ui.html", "anon");
         filterChainDefinitionMap.put("/swagger**/**", "anon");
         filterChainDefinitionMap.put("/webjars/**", "anon");
-        filterChainDefinitionMap.put("/v2/**", "anon");
+        filterChainDefinitionMap.put("/v3/**", "anon");
         // 企业微信证书排除
         filterChainDefinitionMap.put("/WW_verify*", "anon");
-        
+
         filterChainDefinitionMap.put("/sys/annountCement/show/**", "anon");
 
         //积木报表排除

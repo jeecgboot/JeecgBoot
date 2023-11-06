@@ -23,24 +23,24 @@
   	<parent>
 	    <groupId>org.springframework.boot</groupId>
 	    <artifactId>spring-boot-starter-parent</artifactId>
-	    <version>2.7.10</version>
+	    <version>3.1.5</version>
 	    <relativePath/>
 	</parent>
 
 	<properties>
 		<jeecgboot.version>3.6.1</jeecgboot.version>
-		<java.version>1.8</java.version>
+		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- 微服务 -->
-		<spring-cloud.version>2021.0.3</spring-cloud.version>
-        <spring-cloud-alibaba.version>2021.0.1.0</spring-cloud-alibaba.version>
+		<spring-cloud.version>2022.0.4</spring-cloud.version>
+        <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
 		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
 
 		<xxl-job-core.version>2.2.0</xxl-job-core.version>
         <fastjson.version>1.2.83</fastjson.version>
 		<pegdown.version>1.6.0</pegdown.version>
-		<knife4j-spring-boot-starter.version>3.0.3</knife4j-spring-boot-starter.version>
+		<knife4j-spring-boot-starter.version>4.3.0</knife4j-spring-boot-starter.version>
 		<knife4j-spring-ui.version>2.0.9</knife4j-spring-ui.version>
 		<!-- 数据库驱动 -->
 		<postgresql.version>42.2.25</postgresql.version>
@@ -52,7 +52,7 @@
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.3.1</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>4.1.3</dynamic-datasource-spring-boot-starter.version>
-		<druid.version>1.2.19</druid.version>
+		<druid.version>1.2.20</druid.version>
 		<minidao.version>1.9.5</minidao.version>
 
 		<!-- 积木报表-->
@@ -71,10 +71,8 @@
 		<dom4j.version>1.6.1</dom4j.version>
 		<qiniu-java-sdk.version>7.4.0</qiniu-java-sdk.version>
 		<!-- Log4j2爆雷漏洞 -->
-		<log4j2.version>2.17.0</log4j2.version>
-		<logback.version>1.2.9</logback.version>
-		<!-- seata -->
-		<seata.version>1.5.2</seata.version>
+		<!--<log4j2.version>2.17.0</log4j2.version>
+		<logback.version>1.2.9</logback.version>-->
 	</properties>
 
 	<modules>
@@ -160,12 +158,6 @@
                 <version>${spring-cloud-alibaba.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>io.seata</groupId>
-				<artifactId>seata-spring-boot-starter</artifactId>
-				<version>${seata.version}</version>
 			</dependency>
 
 			<!-- system 模块-->
@@ -399,8 +391,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>17</source>
+                    <target>17</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>

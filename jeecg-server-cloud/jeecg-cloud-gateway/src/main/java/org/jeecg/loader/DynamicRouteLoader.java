@@ -9,10 +9,7 @@ import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.util.RedisUtil;
@@ -32,6 +29,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -109,7 +108,7 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
      * @return
      */
     private void loadRoutesByNacos() {
-        List<RouteDefinition> routes = Lists.newArrayList();
+        List<RouteDefinition> routes = Collections.emptyList();
         configService = createConfigService();
         if (configService == null) {
             log.warn("initConfigService fail");
@@ -118,7 +117,7 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
             log.info("jeecg.route.config.data-id = {}", gatewayRoutersConfig.getDataId());
             log.info("nacos.config.group = {}", gatewayRoutersConfig.getRouteGroup());
             String configInfo = configService.getConfig(gatewayRoutersConfig.getDataId(), gatewayRoutersConfig.getRouteGroup(), DEFAULT_TIMEOUT);
-            if (StringUtils.isNotBlank(configInfo)) {
+            if (StringUtils.hasText(configInfo)) {
                 log.info("获取网关当前配置:\r\n{}", configInfo);
                 routes = JSON.parseArray(configInfo, RouteDefinition.class);
             }else{
@@ -143,7 +142,7 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
      * @return
      */
     private void loadRoutesByRedis(BaseMap baseMap) {
-        List<MyRouteDefinition> routes = Lists.newArrayList();
+        List<MyRouteDefinition> routes = Collections.emptyList();
         configService = createConfigService();
         if (configService == null) {
             log.warn("initConfigService fail");
@@ -170,9 +169,9 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
                 dynamicRouteService.add(definition);
             }
         }
-        if(ObjectUtils.isNotEmpty(baseMap)){
+        if(!ObjectUtils.isEmpty(baseMap)){
             String delRouterId = baseMap.get("delRouterId");
-            if (ObjectUtils.isNotEmpty(delRouterId)) {
+            if (!ObjectUtils.isEmpty(delRouterId)) {
                 dynamicRouteService.delete(delRouterId);
             }
         }
@@ -360,13 +359,13 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
         try {
             Properties properties = new Properties();
             properties.setProperty("serverAddr", gatewayRoutersConfig.getServerAddr());
-            if(StringUtils.isNotBlank(gatewayRoutersConfig.getNamespace())){
+            if(StringUtils.hasText(gatewayRoutersConfig.getNamespace())){
                 properties.setProperty("namespace", gatewayRoutersConfig.getNamespace());
             }
-            if(StringUtils.isNotBlank( gatewayRoutersConfig.getUsername())){
+            if(StringUtils.hasText( gatewayRoutersConfig.getUsername())){
                 properties.setProperty("username", gatewayRoutersConfig.getUsername());
             }
-            if(StringUtils.isNotBlank(gatewayRoutersConfig.getPassword())){
+            if(StringUtils.hasText(gatewayRoutersConfig.getPassword())){
                 properties.setProperty("password", gatewayRoutersConfig.getPassword());
             }
             return configService = NacosFactory.createConfigService(properties);

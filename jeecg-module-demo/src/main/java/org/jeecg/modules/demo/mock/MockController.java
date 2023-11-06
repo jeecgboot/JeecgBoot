@@ -6,8 +6,8 @@ import org.apache.commons.io.IOUtils;
 import org.jeecg.common.api.vo.Result;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.io.IOException;
