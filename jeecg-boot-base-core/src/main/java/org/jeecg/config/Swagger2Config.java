@@ -1,6 +1,6 @@
 //package org.jeecg.config;
 //
-//
+// 已使用swagger3config平替
 //import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
 //import io.swagger.annotations.ApiOperation;
 //import org.jeecg.common.constant.CommonConstant;

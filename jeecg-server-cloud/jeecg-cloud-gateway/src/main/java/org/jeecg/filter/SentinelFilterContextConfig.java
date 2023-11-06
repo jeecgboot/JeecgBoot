@@ -5,7 +5,7 @@
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
 //
-///**
+///** 升级spring boot 3后，无法找到平替
 // * @author: zyf
 // * @date: 20210715
 // */

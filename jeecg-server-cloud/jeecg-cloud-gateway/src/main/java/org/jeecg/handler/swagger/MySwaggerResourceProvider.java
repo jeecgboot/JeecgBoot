@@ -17,7 +17,7 @@
 //
 //import java.util.*;
 //
-///**
+///** 已使用knife4j-gateway支持该功能
 // * 聚合各个服务的swagger接口
 // * @author zyf
 // * @date: 2022/4/21 10:55

@@ -46,7 +46,7 @@ public class JeecgGatewayApplication  implements CommandLineRunner {
 
     /**
      * 接口地址（通过9999端口直接访问）
-     *
+     * 已使用knife4j-gateway支持该功能
      * @param indexHtml
      * @return
      */
