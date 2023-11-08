@@ -5,7 +5,6 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.common.util.security.AbstractQueryBlackListHandler;
 import org.springframework.stereotype.Component;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ public class DictQueryBlackListHandler extends AbstractQueryBlackListHandler {
             if (dictCodeString.contains("%")) {
                 dictCodeString = URLDecoder.decode(dictCodeString, "UTF-8");
             }
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             //e.printStackTrace();
         }
         dictCodeString = dictCodeString.trim();
@@ -41,10 +40,14 @@ public class DictQueryBlackListHandler extends AbstractQueryBlackListHandler {
             if (arr.length != 3 && arr.length != 4) {
                 return null;
             }
+            
+            //获取表名
             String tableName = getTableName(arr[0]);
             QueryTable table = new QueryTable(tableName, "");
             // 无论什么场景 第二、三个元素一定是表的字段，直接add
+            //参数字段1
             table.addField(arr[1].trim());
+            //参数字段2
             String filed = arr[2].trim();
             if (oConvertUtils.isNotEmpty(filed)) {
                 table.addField(filed);

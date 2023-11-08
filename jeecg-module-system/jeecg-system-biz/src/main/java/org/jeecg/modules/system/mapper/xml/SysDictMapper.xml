@@ -4,25 +4,26 @@
 
 	<!-- 通过字典code获取字典数据 -->
 	<select id="queryDictItemsByCode" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
-		   select s.item_value as "value",s.item_text as "text" from sys_dict_item s
+		   select s.item_value as "value",s.item_text as "text",s.item_color as color from sys_dict_item s
 		   where dict_id = (select id from sys_dict where dict_code = #{code})
 		   order by s.sort_order asc, s.create_time DESC;
 	</select>
 
 	<!-- 通过字典code获取有效的字典数据项 -->
 	<select id="queryEnableDictItemsByCode" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
-		   select s.item_value as "value",s.item_text as "text" from sys_dict_item s
+		   select s.item_value as "value",s.item_text as "text", s.item_color as "color" from sys_dict_item s
 		   where dict_id = (select id from sys_dict where dict_code = #{code})
 		   and s.status = 1
 		   order by s.sort_order asc, s.create_time DESC;
 	</select>
 
 	<!-- 通过多个字典code获取字典数据 -->
-	<select id="queryDictItemsByCodeList" parameterType="String" resultType="org.jeecg.common.system.vo.DictModelMany">
+	<select id="queryDictItemsByCodeList" parameterType="java.util.List" resultType="org.jeecg.common.system.vo.DictModelMany">
 		SELECT
 			dict.dict_code,
 			item.item_text AS "text",
-			item.item_value AS "value"
+			item.item_value AS "value",
+			item.item_color AS "color"
 		FROM
 			sys_dict_item item
 		INNER JOIN sys_dict dict ON dict.id = item.dict_id
@@ -46,7 +47,8 @@
 		SELECT
 			dict.dict_code,
 			item.item_text AS "text",
-			item.item_value AS "value"
+			item.item_value AS "value",
+			item.item_color AS "color"
 		FROM
 			sys_dict_item item
 		INNER JOIN sys_dict dict ON dict.id = item.dict_id
@@ -62,71 +64,35 @@
 		)
 	</select>
 
-	<!--通过查询指定table的 text code 获取字典-->
-	<select id="queryTableDictItemsByCode" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
-		   select ${text} as "text",${code} as "value" from ${table}
-	</select>
-	
-	<!--通过查询指定table的 text code 获取字典（指定查询条件）-->
-	<select id="queryTableDictItemsByCodeAndFilter" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
-		   select ${text} as "text",${code} as "value" from ${table}
-		<if test="filterSql != null and filterSql != ''">
-			where ${filterSql}
-		</if>
-	</select>
-	
-	<!--通过查询指定table的 text code key 获取字典值-->
-	<select id="queryTableDictTextByKey" parameterType="String" resultType="String">
-		   select ${text} as "text" from ${table} where ${code}= #{key}
-	</select>
-
-	<!--通过查询指定table的 text code key 获取字典值，可批量查询
-	<select id="queryTableDictTextByKeys" parameterType="String" resultType="org.jeecg.common.system.vo.DictModel">
-		select ${text} as "text", ${code} as "value" from ${table} where ${code} IN (
-			<foreach item="key" collection="keys" separator=",">
-				#{key}
-			</foreach>
-		)
-	</select>-->
-
-	<!--通过查询指定table的 text code key 获取字典值，包含value
-	<select id="queryTableDictByKeys" parameterType="String" resultType="org.jeecg.common.system.vo.DictModel">
-		select ${text} as "text", ${code} as "value" from ${table} where ${code} in
-		<foreach item="key" collection="keyArray" open="(" separator="," close=")">
-			#{key}
-		</foreach>
-	</select>-->
-
-	<!-- 重复校验 sql语句 -->
-	<select id="duplicateCheckCountSql" resultType="Long" parameterType="org.jeecg.modules.system.model.DuplicateCheckVo">
-		SELECT COUNT(*) FROM ${tableName} WHERE ${fieldName} = #{fieldVal} and id &lt;&gt; #{dataId}
-	</select>
-	
-	<!-- 重复校验 sql语句 -->
-	<select id="duplicateCheckCountSqlNoDataId" resultType="Long" parameterType="org.jeecg.modules.system.model.DuplicateCheckVo">
-		SELECT COUNT(*) FROM ${tableName} WHERE ${fieldName} = #{fieldVal}
-	</select>
-		
 	<!-- 查询部门信息 作为字典数据 -->
 	<select id="queryAllDepartBackDictModel" resultType="org.jeecg.common.system.vo.DictModel">
 		select id as "value",depart_name as "text" from sys_depart where del_flag = '0'
 	</select>
-	
-		<!-- 查询用户信息 作为字典数据 -->
+
+	<!-- 查询用户信息 作为字典数据 -->
 	<select id="queryAllUserBackDictModel" resultType="org.jeecg.common.system.vo.DictModel">
 		select username as "value",realname as "text" from sys_user where del_flag = '0'
 	</select>
 	
-	<!--通过查询指定table的 text code 获取字典数据，且支持关键字查询
-	<select id="queryTableDictItems" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
-		select ${text} as "text",${code} as "value" from ${table} where ${text} like #{keyword}
-	</select> -->
 	
-	<!-- 根据表名、显示字段名、存储字段名、父ID查询树 -->
+	<!-- *****************以下方法写法存在SQL注入风险***************** -->
+
+	<!-- 重复校验 sql语句【已加入SQL注入check】 -->
+	<sql id="checkDuplicateCountSqlFragment">
+		SELECT COUNT(1) FROM ${tableName} WHERE ${fieldName} = #{fieldVal}
+	</sql>
+	<select id="duplicateCheckCountSql" resultType="Long" parameterType="org.jeecg.modules.system.model.DuplicateCheckVo">
+		<include refid="checkDuplicateCountSqlFragment"></include>
+		 AND id &lt;&gt; #{dataId}
+	</select>
+	<select id="duplicateCheckCountSqlNoDataId" resultType="Long" parameterType="org.jeecg.modules.system.model.DuplicateCheckVo">
+		<include refid="checkDuplicateCountSqlFragment"></include>
+	</select>
+		
+	<!-- 根据表名、显示字段名、存储字段名、父ID查询树   【已加入SQL注入check】 -->
 	<select id="queryTreeList" parameterType="Object" resultType="org.jeecg.modules.system.model.TreeSelectModel">
 		select ${text} as "title",
 			   ${code} as "key",
-				<!-- udapte-begin-author:taoyan date:20211115 for: 自定义树控件只显示父节点，子节点无法展开 (此处还原不可再改) /issues/I4HZAL -->
 			   <if test="hasChildField != null and hasChildField != ''">
 				   <choose>
 					   <when test="converIsLeafVal!=null and converIsLeafVal==1">
@@ -137,11 +103,10 @@
 					   </otherwise>
 				   </choose>
 			   </if>
-				<!-- udapte-end-author:taoyan date:20211115 for: 自定义树控件只显示父节点，子节点无法展开 (此处还原不可再改) /issues/I4HZAL -->
 			   ${pidField} as parentId
 			   from ${table}
 			   where
-			   <!-- udapte-begin-author:sunjianlei date:20220110 for: 【JTC-597】自定义树查询条件查不出数据 -->
+		       <!-- 父ID条件 -->
 			   <if test="query == null">
 				   <choose>
 					   <when test="pid != null and pid != ''">
@@ -152,6 +117,7 @@
 					   </otherwise>
 				   </choose>
 			   </if>
+			   <!-- 查询条件组装 -->
 			   <if test="query!= null">
 			       1 = 1
 				   <foreach collection="query.entrySet()" item="value"  index="key" >
@@ -164,7 +130,7 @@
 						   </otherwise>
 					   </choose>
 				   </foreach>
-					 <!-- udapte-end-author:sunjianlei date:20220615 for: 【issues/3709】自定义树查询条件没有处理父ID，没有树状结构了 -->
+					 <!-- 【issues/3709】自定义树查询条件没有处理父ID，没有树状结构了 -->
 					 <choose>
 						 <when test="pid != null and pid != ''">
 							 and ${pidField} = #{pid}
@@ -173,45 +139,42 @@
 							 and (${pidField} = '' OR ${pidField} IS NULL)
 						 </otherwise>
 					 </choose>
-			   	 <!-- udapte-end-author:sunjianlei date:20220615 for: 【issues/3709】自定义树查询条件没有处理父ID，没有树状结构了 -->
 			   </if>
-			   <!-- udapte-end-author:sunjianlei date:20220110 for: 【JTC-597】自定义树查询条件查不出数据 -->
 	</select>
 
-
-	<!-- 分页查询字典表数据 -->
+	<!-- 分页查询字典表数据，支持text或code模糊查询匹配【已加入SQL注入check】 -->
 	<select id="queryDictTablePageList" parameterType="Object" resultType="org.jeecg.common.system.vo.DictModel">
-		select ${query.text} as "text",${query.code} as "value" from ${query.table}
-		where 1 = 1
+		select ${query.text} as "text", ${query.code} as "value" from ${query.table}
+		where
 		<if test="query.keyword != null and query.keyword != ''">
 			<bind name="bindKeyword" value="'%'+query.keyword+'%'"/>
-			and (${query.text} like #{bindKeyword} or ${query.code} like #{bindKeyword})
+			 (${query.text} like #{bindKeyword} or ${query.code} like #{bindKeyword})
 		</if>
 		<if test="query.codeValue != null and query.codeValue != ''">
-			and ${query.code} = #{query.codeValue}
+			 ${query.code} = #{query.codeValue}
 		</if>
 	</select>
-
-	<!--通过查询指定table的 text code 获取字典数据，且支持关键字和自定义查询条件查询 分页-->
+	
+	<!--查询表字典数据，支持关键字和自定义查询条件【已加入SQL注入check】 -->
+	<sql id="queryTableDictWithFilterSqlFragment">
+		select ${text} as "text", ${code} as "value" from ${table}
+		<if test="filterSql != null and filterSql != ''">
+			where ${filterSql}
+		</if>
+	</sql>
+	<!--查询表字典数据，分页返回-->
+	<select id="queryPageTableDictWithFilter" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		<include refid="queryTableDictWithFilterSqlFragment"></include>
+	</select>
+	<!--查询表字典数据，不分页返回-->
 	<select id="queryTableDictWithFilter" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
-		select ${text} as "text", ${code} as "value" from ${table}
-		<if test="filterSql != null and filterSql != ''">
-			${filterSql}
-		</if>
+		<include refid="queryTableDictWithFilterSqlFragment"></include>
 	</select>
 
-	<!--通过查询指定table的 text code 获取字典数据，且支持关键字和自定义查询条件查询 获取所有 -->
-	<select id="queryAllTableDictItems" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
-		select ${text} as "text", ${code} as "value" from ${table}
-		<if test="filterSql != null and filterSql != ''">
-			${filterSql}
-		</if>
-	</select>
-
-
-	<!-- 查询字典表的数据 支持设置过滤条件、设置存储值作为in查询条件 -->
+	<!-- 查询表字典的数据, 支持设置过滤条件和code值 精确匹配查询【已加入SQL注入check】 -->
 	<select id="queryTableDictByKeysAndFilterSql" parameterType="String" resultType="org.jeecg.common.system.vo.DictModel">
-		select ${text} as "text", ${code} as "value" from ${table} where ${code} IN (
+		select ${text} as "text", ${code} as "value" from ${table} 
+		where ${code} IN (
 		<foreach item="key" collection="codeValues" separator=",">
 			#{key}
 		</foreach>
@@ -221,6 +184,8 @@
 		</if>
 	</select>
 
+	<!-- *****************以上方法写法存在SQL注入风险***************** -->
+	
 	<!--根据应用id获取字典列表和详情-->
 	<select id="getDictListByLowAppId" resultType="org.jeecg.modules.system.entity.SysDict">
 		select id,dict_name,dict_code from sys_dict

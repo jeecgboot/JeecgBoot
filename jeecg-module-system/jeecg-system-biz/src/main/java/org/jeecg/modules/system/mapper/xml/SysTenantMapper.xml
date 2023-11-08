@@ -121,5 +121,14 @@
             and a.id = #{packId}
         </if>
     </select>
+    
+    <!--查看是否已经申请过了超级管理员-->
+    <select id="getApplySuperAdminCount" resultType="java.lang.Long">
+        SELECT count(*) FROM sys_tenant_pack a
+        join sys_tenant_pack_user b on a.id = b.pack_id
+        where a.pack_code = 'superAdmin'
+        and a.tenant_id = #{tenantId}
+        and b.user_id = #{userId}
+    </select>
 
 </mapper>

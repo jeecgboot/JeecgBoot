@@ -2,6 +2,7 @@ package org.jeecg.common.util.security;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.jeecg.common.exception.JeecgSqlInjectionException;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -80,6 +81,12 @@ public abstract class AbstractQueryBlackListHandler {
                 }
 
             }
+        }
+
+        // 返回黑名单校验结果（不合法直接抛出异常）
+        if(!flag){
+            log.error(this.getError());
+            throw new JeecgSqlInjectionException(this.getError());
         }
         return flag;
     }

@@ -11,7 +11,7 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.util.CommonUtils;
-import org.jeecg.common.util.filter.FileTypeFilter;
+import org.jeecg.common.util.filter.SsrfFileTypeFilter;
 import org.jeecg.common.util.filter.StrAttackFilter;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -98,7 +98,7 @@ public class OssBootUtil {
      */
     public static String upload(MultipartFile file, String fileDir,String customBucket) throws Exception {
         //update-begin-author:liusq date:20210809 for: 过滤上传文件类型
-        FileTypeFilter.fileTypeFilter(file);
+        SsrfFileTypeFilter.checkUploadFileType(file);
         //update-end-author:liusq date:20210809 for: 过滤上传文件类型
 
         String filePath = null;

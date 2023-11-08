@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysThirdAppConfigMapper">
+
+    <!--根据租户id获取钉钉/企业微信配置-->
+    <select id="getThirdConfigListByThirdType" resultType="org.jeecg.modules.system.entity.SysThirdAppConfig">
+        select * from sys_third_app_config
+        where tenant_id = #{tenantId}
+        and status = 1
+    </select>
+    
+    <!--根据租户id和第三方类别获取第三方配置-->
+    <select id="getThirdConfigByThirdType" resultType="org.jeecg.modules.system.entity.SysThirdAppConfig">
+        select * from sys_third_app_config
+        where tenant_id = #{tenantId}
+        and third_type = #{thirdType}
+        and status = 1
+    </select>
+</mapper>

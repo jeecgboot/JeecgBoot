@@ -169,7 +169,7 @@ public class FreemarkerParseFactory {
         //"where and"
         String whereAnd = DataBaseConstant.SQL_WHERE+" and";
         //", where"
-        String commaWhere = SymbolConstant.COMMA+" "+ DataBaseConstant.SQL_WHERE;
+        String commaWhere = SymbolConstant.COMMA+" "+DataBaseConstant.SQL_WHERE;
         //", "
         String commaSpace = SymbolConstant.COMMA + " ";
         if (sql.endsWith(DataBaseConstant.SQL_WHERE) || sql.endsWith(whereSpace)) {

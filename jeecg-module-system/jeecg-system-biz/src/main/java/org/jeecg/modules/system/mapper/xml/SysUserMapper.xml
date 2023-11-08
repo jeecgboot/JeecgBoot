@@ -15,6 +15,14 @@
 		</if>
 	</select>
 
+	<!-- 查询部门和子部门下的所有用户账号 -->
+	<select id="getUserAccountsByDepCode" resultType="String">
+		<if test="orgCode != null">
+			<bind name="bindOrgCode" value="orgCode+'%'"/>
+		</if>
+		select username from sys_user where del_flag = 0 and id in (select user_id from sys_user_depart where dep_id in (select id from sys_depart where org_code LIKE #{bindOrgCode}))
+	</select>
+
 	<!-- 查询用户的所属部门名称信息 -->
 	<select id="getDepNamesByUserIds" resultType="org.jeecg.modules.system.vo.SysUserDepVo">
 		select d.depart_name,ud.user_id from sys_user_depart ud,sys_depart d where d.id = ud.dep_id and ud.user_id in
@@ -106,7 +114,6 @@
 			sys_user.sex AS sex,
 			sys_user.birthday AS birthday,
 			sys_user.work_no AS workNo,
-			sys_user.post AS post,
 			sys_user.telephone AS telephone,
 			sys_user.email AS email,
 			sys_user.phone AS phone,
@@ -197,11 +204,11 @@
 	<!--根据角色查询用户-->
 	<select id="selectUserListByRoleId" resultType="org.jeecg.modules.system.entity.SysUser">
 		select DISTINCT a.* from sys_user a
-		left join sys_user_role ur on ur.user_id = a.id
+		left join sys_user_role sur on sur.user_id = a.id
 		where
 		a.del_flag = 0 and a.status = 1
 		and a.username!='_reserve_user_external'
-		and ur.role_id=#{roleId}
+		and sur.role_id=#{roleId}
 		<if test="keyword!=null and keyword!=''">
 			<bind name="bindKeyword" value="'%'+keyword+'%'"/>
 			and (a.username like #{bindKeyword} or a.realname like #{bindKeyword})
@@ -216,7 +223,7 @@
 
 	<!--获取租户下的用户离职列表信息-->
 	<select id="getTenantQuitList" resultType="org.jeecg.modules.system.entity.SysUser">
-		select su.id,su.username,su.realname,su.sex from sys_user su
+		select su.id,su.username,su.realname,su.sex,su.avatar from sys_user su
 		join sys_user_tenant sut on sut.user_id = su.id and sut.status = '2'
 		where
 		su.status = 1
@@ -224,6 +231,25 @@
 		<if test="tenantId != 0">
 			and sut.tenant_id = #{tenantId}
 		</if>
+	</select>
+
+	<!--获取租户下的有效用户ids信息-->
+	<select id="getTenantUserIdList" resultType="java.lang.String" parameterType="java.lang.Integer">
+		SELECT DISTINCT( su.id ) id
+		FROM sys_user su
+		<choose>
+			<when test="tenantId!=null and tenantId != 0">
+				JOIN sys_user_tenant sut ON sut.user_id = su.id
+				AND sut.STATUS = '1'
+				AND sut.tenant_id = #{tenantId}
+				AND su.STATUS = 1
+				AND su.del_flag = 0
+			</when>
+			<otherwise>
+				WHERE su.STATUS = 1
+				AND su.del_flag = 0
+			</otherwise>
+		</choose>
 	</select>
 	
   <!--更新刪除状态和离职状态-->
@@ -242,4 +268,21 @@
       #{userId}
     </foreach>
   </update>
+
+	<!--根据部门id获取用户数据-->
+	<select id="getUserByDepartsTenantId" resultType="org.jeecg.modules.system.entity.SysUser">
+		select su.* from sys_user su
+		join sys_user_tenant sut on su.id = sut.user_id
+		where su.del_flag = 0
+		<if test="departIds!=null  and departIds.size()>0">
+			and su.id in (select user_id from sys_user_depart
+			where dep_id in
+			<foreach collection="departIds" index="index" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+			)
+		</if>
+		and sut.tenant_id=#{tenantId}
+        and sut.status = '1'
+	</select>
 </mapper>

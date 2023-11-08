@@ -1,6 +1,6 @@
 <#include "/common/utils.ftl">
 <template>
-  <div>
+  <div class="p-2">
 <#assign pidFieldName = "">
 <#assign hasChildrenField = "">
 <#list originalColumns as po>
@@ -117,16 +117,26 @@
         <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)" />
       </template>
       <!--字段回显插槽-->
-      <template #htmlSlot="{ text }">
-        <div v-html="text"></div>
-      </template>
-      <!--省市区字段回显插槽-->
-      <template #pcaSlot="{ text }">
-        {{ getAreaTextByCode(text) }}
-      </template>
-      <template #fileSlot="{ text }">
-        <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
-        <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
+      <template v-slot:bodyCell="{ column, record, index, text }">
+      <#list columns as po>
+        <#if po.classType=='umeditor' || po.classType=='pca' || po.classType=='file'>
+        <template v-if="column.dataIndex==='${po.fieldName}'">
+        <#if po.classType=='umeditor'>
+          <!--富文本件字段回显插槽-->
+          <div v-html="text"></div>
+        </#if>
+        <#if po.classType=='pca'>
+          <!--省市区字段回显插槽-->
+          {{ getAreaTextByCode(text) }}
+        </#if>
+        <#if po.classType=='file'>
+          <!--文件字段回显插槽-->
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+          <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
+        </#if>
+        </template>
+        </#if>
+      </#list>
       </template>
     </BasicTable>
     <!-- 表单区域 -->
@@ -167,6 +177,7 @@
       columns,
       canResize:false,
       useSearchForm: false,
+      isTreeTable: true,
       actionColumn: {
         width: 120,
         fixed: 'right',
@@ -186,12 +197,14 @@
   });
   const [registerTable, {reload, collapseAll, updateTableDataRecord, findTableDataRecord,getDataSource},{ rowSelection, selectedRowKeys }] = tableContext
   const labelCol = reactive({
-    xs: { span: 24 },
-    sm: { span: 7 },
+    xs:24,
+    sm:4,
+    xl:6,
+    xxl:4
   });
   const wrapperCol = reactive({
-    xs: { span: 24 },
-    sm: { span: 16 },
+    xs: 24,
+    sm: 20,
   });
 
   /**
@@ -406,6 +419,7 @@
         popConfirm: {
           title: '确定删除吗?',
           confirm: handleDelete.bind(null, record),
+          placement: 'topLeft',
         },
       },
     ];
@@ -415,6 +429,7 @@
         popConfirm: {
           title: '确认提交流程吗？',
           confirm: handleProcess.bind(null, record),
+          placement: 'topLeft',
         }
       })
     }
@@ -434,6 +449,7 @@
         popConfirm: {
           title: '确定删除吗?',
           confirm: handleDelete.bind(null, record),
+          placement: 'topLeft',
         },
       },
     ];
@@ -531,6 +547,7 @@
 
 <style lang="less" scoped>
   .jeecg-basic-table-form-container {
+    padding: 0;
     .table-page-search-submitButtons {
       display: block;
       margin-bottom: 24px;

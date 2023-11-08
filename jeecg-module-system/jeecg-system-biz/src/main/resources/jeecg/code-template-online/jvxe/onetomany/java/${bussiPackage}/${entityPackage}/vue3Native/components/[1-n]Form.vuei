@@ -75,11 +75,7 @@
       const loading = ref(false);
       const formData = reactive<Record<string, any>>({
         id: '',
-    <#list sub.colums as po>
-    <#if po.isShow == 'Y'>
-        ${po.fieldName}: '',
-    </#if>
-    </#list>
+        <#include "/common/init/native/vue3NativeSubInitValue.ftl">
       });
       //表单验证
       const validatorRules = reactive({

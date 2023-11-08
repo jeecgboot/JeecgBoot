@@ -3,7 +3,11 @@ package org.jeecg.modules.system.mapper;
 import java.util.List;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserTenant;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -96,4 +100,53 @@ public interface SysUserTenantMapper extends BaseMapper<SysUserTenant> {
      * @param tenantId
      */
     Integer userTenantIzExist(@Param("userId") String userId, @Param("tenantId") int tenantId);
+
+    /**
+     * 查询未被注销的租户
+     * @param userId
+     * @return
+     */
+    List<SysTenant> getTenantNoCancel(@Param("userId") String userId);
+
+    /**
+     * 根据用户id获取我的租户
+     * @param page
+     * @param userId
+     * @param userTenantStatus
+     * @return
+     */
+    List<SysTenant> getTenantPageListByUserId(@Param("page") Page<SysTenant> page, @Param("userId") String userId, @Param("userTenantStatus") List<String> userTenantStatus,@Param("sysUserTenantVo") SysUserTenantVo sysUserTenantVo);
+
+    /**
+     * 同意加入租户
+     * @param userId
+     * @param tenantId
+     */
+    @Update("update sys_user_tenant set status = '1' where user_id = #{userId} and tenant_id = #{tenantId}")
+    void agreeJoinTenant(@Param("userId") String userId, @Param("tenantId") Integer tenantId);
+
+    /**
+     * 拒绝加入租户
+     * @param userId
+     * @param tenantId
+     */
+    @Delete("delete from sys_user_tenant where user_id = #{userId} and tenant_id = #{tenantId}")
+    void refuseJoinTenant(@Param("userId") String userId, @Param("tenantId") Integer tenantId);
+
+    /**
+     * 根据用户id和租户id获取用户租户中间表信息
+     *
+     * @param userId
+     * @param tenantId
+     * @return
+     */
+    @Select("select id,user_id,tenant_id,create_by,status from sys_user_tenant where user_id = #{userId} and tenant_id = #{tenantId}")
+    SysUserTenant getUserTenantByTenantId(@Param("userId") String userId, @Param("tenantId") Integer tenantId);
+
+    /**
+     * 删除租户下的用户
+     *
+     * @param tenantIds
+     */
+    void deleteUserByTenantId(@Param("tenantIds") List<Integer> tenantIds);
 }

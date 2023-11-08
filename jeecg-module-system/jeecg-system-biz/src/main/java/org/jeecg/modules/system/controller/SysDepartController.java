@@ -25,6 +25,7 @@ import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserDepartService;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.jeecg.modules.system.vo.lowapp.ExportDepartVo;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -137,6 +138,8 @@ public class SysDepartController {
 			result.setSuccess(true);
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
+			result.setSuccess(false);
+			result.setMessage("查询失败");
 		}
 		return result;
 	}
@@ -415,6 +418,8 @@ public class SysDepartController {
                 		SysDepart parentDept = sysDepartService.getOne(queryWrapper);
                 		if(!parentDept.equals(null)) {
 							sysDepart.setParentId(parentDept.getId());
+							//更新父级部门不是叶子结点
+							sysDepartService.updateIzLeaf(parentDept.getId(),CommonConstant.NOT_LEAF);
 						} else {
 							sysDepart.setParentId("");
 						}
@@ -574,4 +579,80 @@ public class SysDepartController {
 		}
 		return result;
 	}
+
+	/**
+	 * 通过部门id和租户id获取用户 【低代码应用: 用于选择部门负责人】
+	 * @param departId
+	 * @return
+	 */
+	@GetMapping("/getUsersByDepartTenantId")
+	public Result<List<SysUser>> getUsersByDepartTenantId(@RequestParam("departId") String departId){
+		int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
+		List<SysUser> sysUserList = sysUserDepartService.getUsersByDepartTenantId(departId,tenantId);
+		return Result.ok(sysUserList);
+	}
+
+	/**
+	 * 导出excel【低代码应用: 用于导出部门】
+	 *
+	 * @param request
+	 */
+	@RequestMapping(value = "/appExportXls")
+	public ModelAndView appExportXls(SysDepart sysDepart,HttpServletRequest request) {
+		// Step.1 组装查询条件
+		int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		List<ExportDepartVo> pageList = sysDepartService.getExcelDepart(tenantId);
+		//Step.2 AutoPoi 导出Excel
+		//导出文件名称
+		mv.addObject(NormalExcelConstants.FILE_NAME, "部门列表");
+		mv.addObject(NormalExcelConstants.CLASS, ExportDepartVo.class);
+		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("部门列表数据", "导出人:"+user.getRealname(), "导出信息"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
+		return mv;
+	}
+
+	/**
+	 * 导入excel【低代码应用: 用于导出部门】
+	 *
+	 * @param request
+	 */
+	@RequestMapping(value = "/appImportExcel", method = RequestMethod.POST)
+	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
+	public Result<?> appImportExcel(HttpServletRequest request, HttpServletResponse response) {
+		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+		List<String> errorMessageList = new ArrayList<>();
+		List<ExportDepartVo> listSysDeparts = null;
+		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+		for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+			// 获取上传文件对象
+			MultipartFile file = entity.getValue();
+			ImportParams params = new ImportParams();
+			params.setTitleRows(2);
+			params.setHeadRows(1);
+			params.setNeedSave(true);
+			try {
+				listSysDeparts = ExcelImportUtil.importExcel(file.getInputStream(), ExportDepartVo.class, params);
+				sysDepartService.importExcel(listSysDeparts,errorMessageList);
+				//清空部门缓存
+				Set keys3 = redisTemplate.keys(CacheConstant.SYS_DEPARTS_CACHE + "*");
+				Set keys4 = redisTemplate.keys(CacheConstant.SYS_DEPART_IDS_CACHE + "*");
+				redisTemplate.delete(keys3);
+				redisTemplate.delete(keys4);
+				return ImportExcelUtil.imporReturnRes(errorMessageList.size(), listSysDeparts.size() - errorMessageList.size(), errorMessageList);
+			} catch (Exception e) {
+				log.error(e.getMessage(),e);
+				return Result.error("文件导入失败:"+e.getMessage());
+			} finally {
+				try {
+					file.getInputStream().close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return Result.error("文件导入失败！");
+	}
+	
 }

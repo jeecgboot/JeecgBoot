@@ -38,6 +38,14 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	IPage<SysUser> getUserByDepId(Page page, @Param("departId") String departId, @Param("username") String username);
 
 	/**
+	 * 根据部门和子部门下的所有用户账号
+	 *
+	 * @param orgCode 部门编码
+	 * @return
+	 */
+	List<String> getUserAccountsByDepCode(@Param("orgCode") String orgCode);
+
+	/**
 	 *  根据用户Ids,查询用户所属部门名称信息
 	 * @param userIds
 	 * @return
@@ -181,4 +189,19 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 * @return
 	 */
 	List<SysUser> getTenantQuitList(@Param("tenantId") Integer tenantId);
+	
+	/**
+	 * 获取租户下的有效用户ids
+	 * @param tenantId
+	 * @return
+	 */
+	List<String> getTenantUserIdList(@Param("tenantId") Integer tenantId);
+	
+	/**
+	 * 根据部门id和租户id获取用户数据 
+	 * @param departIds
+	 * @param tenantId
+	 * @return
+	 */
+	List<SysUser> getUserByDepartsTenantId(@Param("departIds") List<String> departIds,@Param("tenantId") Integer tenantId);
 }

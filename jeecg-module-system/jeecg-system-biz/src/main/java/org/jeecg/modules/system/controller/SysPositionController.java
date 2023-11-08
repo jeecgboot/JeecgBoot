@@ -19,7 +19,9 @@ import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.SysPosition;
+import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysPositionService;
+import org.jeecg.modules.system.service.ISysUserPositionService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -57,6 +59,9 @@ public class SysPositionController {
 
     @Autowired
     private ISysPositionService sysPositionService;
+
+    @Autowired
+    private ISysUserPositionService userPositionService;
 
     @Autowired
     private ISysUserService userService;
@@ -157,6 +162,8 @@ public class SysPositionController {
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         try {
             sysPositionService.removeById(id);
+            //删除用户职位关系表
+            userPositionService.removeByPositionId(id);
         } catch (Exception e) {
             log.error("删除失败", e.getMessage());
             return Result.error("删除失败!");
@@ -305,5 +312,84 @@ public class SysPositionController {
             result.setSuccess(true);
         }
         return result;
+    }
+
+
+    /**
+     * 通过多个ID查询
+     *
+     * @param ids
+     * @return
+     */
+    @AutoLog(value = "职务表-通过多个查询")
+    @ApiOperation(value = "职务表-通过多个id查询", notes = "职务表-通过多个id查询")
+    @GetMapping(value = "/queryByIds")
+    public Result<List<SysPosition>> queryByIds(@RequestParam(name = "ids") String ids) {
+        Result<List<SysPosition>> result = new Result<>();
+        QueryWrapper<SysPosition> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in(true,"id",ids.split(","));
+        List<SysPosition> list = sysPositionService.list(queryWrapper);
+        if (list == null) {
+            result.error500("未找到对应实体");
+        } else {
+            result.setResult(list);
+            result.setSuccess(true);
+        }
+        return result;
+    }
+
+
+
+    /**
+     * 获取职位用户列表
+     *
+     * @param pageNo
+     * @param pageSize
+     * @param positionId
+     * @return
+     */
+    @GetMapping("/getPositionUserList")
+    public Result<IPage<SysUser>> getPositionUserList(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                      @RequestParam(name = "positionId") String positionId) {
+
+        Page<SysUser> page = new Page<>(pageNo, pageSize);
+        IPage<SysUser> pageList = userPositionService.getPositionUserList(page, positionId);
+        List<String> userIds = pageList.getRecords().stream().map(SysUser::getId).collect(Collectors.toList());
+        if (null != userIds && userIds.size() > 0) {
+            Map<String, String> useDepNames = userService.getDepNamesByUserIds(userIds);
+            pageList.getRecords().forEach(item -> {
+                item.setOrgCodeTxt(useDepNames.get(item.getId()));
+            });
+        }
+        return Result.ok(pageList);
+    }
+
+    /**
+     * 添加成员到用户职位关系表
+     *
+     * @param userIds
+     * @param positionId
+     * @return
+     */
+    @PostMapping("/savePositionUser")
+    public Result<String> saveUserPosition(@RequestParam(name = "userIds") String userIds,
+                                           @RequestParam(name = "positionId") String positionId) {
+        userPositionService.saveUserPosition(userIds, positionId);
+        return Result.ok("添加成功");
+    }
+
+    /**
+     * 职位列表移除成员
+     *
+     * @param userIds
+     * @param positionId
+     * @return
+     */
+    @DeleteMapping("/removePositionUser")
+    public Result<String> removeUserPosition(@RequestParam(name = "userIds") String userIds,
+                                             @RequestParam(name = "positionId") String positionId) {
+        userPositionService.removePositionUser(userIds, positionId);
+        return Result.OK("移除成员成功");
     }
 }

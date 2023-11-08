@@ -13,8 +13,9 @@
 	    <#assign query_field_dictCode="${po.dictField}">
 	</#if>
 	<#if po.queryMode=='single'>
-          <#if query_field_no gt 1>  </#if><a-col :lg="8">
-            <#if query_field_no gt 1>  </#if><a-form-item label="${po.filedComment}" name="${po.fieldName}">
+          <#if query_field_no gt 1>  </#if><a-col :lg="6">
+            <#if query_field_no gt 1>  </#if><a-form-item name="${po.fieldName}">
+              <#if query_field_no gt 1>  </#if><template #label><span title="${po.filedComment}"><#if po.filedComment?default("")?trim?length gt 4>${po.filedComment?substring(0,4)}<#else>${po.filedComment}</#if></span></template>
             <#if po.classType=='sel_search'>
               <#if query_field_no gt 1>  </#if><j-search-select placeholder="请选择${po.filedComment}" v-model:value="queryParam.${po.fieldName}" dict="${po.dictTable},${po.dictText},${po.dictField}" />
             <#elseif po.classType=='sel_user'>
@@ -64,8 +65,9 @@
             <#if query_field_no gt 1>  </#if></a-form-item>
           <#if query_field_no gt 1>  </#if></a-col>
 	<#else>
-          <#if query_field_no gt 1>  </#if><a-col :lg="8">
-            <#if query_field_no gt 1>  </#if><a-form-item label="${po.filedComment}">
+          <#if query_field_no gt 1>  </#if><a-col :lg="6">
+            <#if query_field_no gt 1>  </#if><a-form-item>
+               <#if query_field_no gt 1>  </#if><template #label><span title="${po.filedComment}"><#if po.filedComment?default("")?trim?length gt 4>${po.filedComment?substring(0,4)}<#else>${po.filedComment}</#if></span></template>
       <#if po.classType=='date'>
                <#if query_field_no gt 1>  </#if><a-date-picker value-format="YYYY-MM-DD" placeholder="请选择开始时间" v-model:value="queryParam.${po.fieldName}_begin" class="query-group-cust"/>
                <#if query_field_no gt 1>  </#if><span class="query-group-split-cust">~</span>

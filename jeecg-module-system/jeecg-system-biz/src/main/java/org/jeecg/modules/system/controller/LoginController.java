@@ -14,6 +14,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.constant.enums.DySmsEnum;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
@@ -37,6 +38,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author scott
@@ -60,12 +62,9 @@ public class LoginController {
 	@Autowired
     private ISysDepartService sysDepartService;
 	@Autowired
-	private ISysTenantService sysTenantService;
-	@Autowired
     private ISysDictService sysDictService;
 	@Resource
 	private BaseCommonService baseCommonService;
-
 	@Autowired
 	private JeecgBaseConfig jeecgBaseConfig;
 
@@ -286,6 +285,7 @@ public class LoginController {
 		String orgCode= user.getOrgCode();
 		//获取登录租户
 		Integer tenantId = user.getLoginTenantId();
+		//设置用户登录部门和登录租户
 		this.sysUserService.updateUserDepart(username, orgCode,tenantId);
 		SysUser sysUser = sysUserService.getUserByName(username);
 		JSONObject obj = new JSONObject();
@@ -727,8 +727,8 @@ public class LoginController {
 		if(failTime!=null){
 			val = Integer.parseInt(failTime.toString());
 		}
-		// 1小时
-		redisUtil.set(key, ++val, 3600);
+		// 10分钟
+		redisUtil.set(key, ++val, 10);
 	}
 
 }

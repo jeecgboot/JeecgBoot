@@ -300,7 +300,8 @@ public class SysPermissionController {
 			json.put("auth", authjsonArray);
 			//全部权限配置集合（按钮权限，访问权限）
 			json.put("allAuth", allauthjsonArray);
-			json.put("sysSafeMode", jeecgBaseConfig.getSafeMode());
+			//数据源安全模式
+			json.put("sysSafeMode", jeecgBaseConfig.getFirewall()!=null? jeecgBaseConfig.getFirewall().getDataSourceSafe(): false);
 			result.setResult(json);
 		} catch (Exception e) {
 			result.error500("查询失败:" + e.getMessage());  
@@ -346,8 +347,8 @@ public class SysPermissionController {
 			result.put("auth", authArray);
 			//全部权限配置集合（按钮权限，访问权限）
 			result.put("allAuth", allAuthArray);
-            // 系统安全模式
-			result.put("sysSafeMode", jeecgBaseConfig.getSafeMode());
+            //数据源安全模式
+			result.put("sysSafeMode", jeecgBaseConfig.getFirewall()!=null? jeecgBaseConfig.getFirewall().getDataSourceSafe(): null);
             return Result.OK(result);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -548,8 +549,8 @@ public class SysPermissionController {
 	 *
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:saveRole")
 	@RequestMapping(value = "/saveRolePermission", method = RequestMethod.POST)
+    @RequiresPermissions("system:permission:saveRole")
 	public Result<String> saveRolePermission(@RequestBody JSONObject json) {
 		long start = System.currentTimeMillis();
 		Result<String> result = new Result<>();

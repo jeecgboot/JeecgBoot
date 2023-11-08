@@ -65,8 +65,8 @@ public class SysFiles {
 	@Excel(name = "文档类型（folder:文件夹 excel:excel doc:word pp:ppt image:图片  archive:其他文档 video:视频）", width = 15)
     @ApiModelProperty(value = "文档类型（folder:文件夹 excel:excel doc:word pp:ppt image:图片  archive:其他文档 video:视频）")
 	private String fileType;
-	/**文件上传类型(temp/本地上传(临时文件) manage/知识库)*/
-	@Excel(name = "文件上传类型(temp/本地上传(临时文件) manage/知识库)", width = 15)
+	/**文件上传类型(temp/本地上传(临时文件) manage/知识库 comment)*/
+	@Excel(name = "文件上传类型(temp/本地上传(临时文件) manage/知识库 common(通用上传))", width = 15)
     @ApiModelProperty(value = "文件上传类型(temp/本地上传(临时文件) manage/知识库)")
 	private String storeType;
 	/**父级id*/

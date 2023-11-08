@@ -88,17 +88,7 @@
   let model: Nullable<Recordable> = null;
   const formData = reactive<Record<string, any>>({
     id: '',
-<#list columns as po>
- <#if po.isShow == 'Y'>
-  <#if po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
-    ${po.fieldName}: undefined,
-  <#elseif po.fieldDbType=='Blob'>
-    ${po.fieldName}String: '',
-  <#else>
-    ${po.fieldName}: '',   
-  </#if>
- </#if>
-</#list>
+    <#include "/common/init/native/vue3NativeInitValue.ftl">
   });
   const { createMessage } = useMessage();
   const labelCol = ref<any>({ xs: { span: 24 }, sm: { span: 5 } });

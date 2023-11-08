@@ -22,13 +22,10 @@ export const columns: BasicColumn[] = [
     dataIndex: '${po.fieldName}String'
     <#elseif po.classType=='umeditor'>
     dataIndex: '${po.fieldName}',
-    slots: { customRender: 'htmlSlot' },
     <#elseif po.classType=='pca'>
     dataIndex: '${po.fieldName}',
-    slots: { customRender: 'pcaSlot' },
    <#elseif po.classType=='file'>
     dataIndex: '${po.fieldName}',
-    slots: { customRender: 'fileSlot' },
    <#elseif po.classType=='image'>
     dataIndex: '${po.fieldName}',
     customRender:render.renderImage,
@@ -147,7 +144,7 @@ export const searchFormSchema: FormSchema[] = [
 <#else>
       component: 'Input',
 </#if>
-      colProps: {span: 6},
+      //colProps: {span: 6},
  	},
 <#else>
      {
@@ -169,7 +166,7 @@ export const searchFormSchema: FormSchema[] = [
 <#else>
       component: 'Input', //TODO 范围查询
 </#if>
-      colProps: {span: 6},
+      //colProps: {span: 6},
 	},
 </#if>
 </#if>

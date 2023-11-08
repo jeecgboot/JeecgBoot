@@ -56,5 +56,10 @@ public interface ISysCommentService extends IService<SysComment> {
      * @return
      */
     List<SysCommentFileVo> queryFormFileList(String tableName, String formDataId);
-
+    /**
+     * app端 保存文件+评论
+     *
+     * @param request
+     */
+    void appSaveOneFileComment(HttpServletRequest request);
 }

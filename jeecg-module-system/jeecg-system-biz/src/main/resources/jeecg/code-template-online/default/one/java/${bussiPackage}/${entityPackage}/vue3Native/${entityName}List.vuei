@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="p-2">
 <#assign query_field_no=0>  
 <#assign need_category = false>
 <#assign need_pca = false>
@@ -106,17 +106,26 @@
       <template #action="{ record }">
         <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)"/>
       </template>
-      <!--字段回显插槽-->
-      <template #htmlSlot="{text}">
-        <div v-html="text"></div>
-      </template>
-      <!--省市区字段回显插槽-->
-      <template #pcaSlot="{text}">
-        {{ getAreaTextByCode(text) }}
-      </template>
-      <template #fileSlot="{text}">
-        <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-        <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
+      <template v-slot:bodyCell="{ column, record, index, text }">
+      <#list columns as po>
+        <#if po.classType=='umeditor' || po.classType=='pca' || po.classType=='file'>
+        <template v-if="column.dataIndex==='${po.fieldName}'">
+        <#if po.classType=='umeditor'>
+          <!--富文本件字段回显插槽-->
+          <div v-html="text"></div>
+        </#if>
+        <#if po.classType=='pca'>
+          <!--省市区字段回显插槽-->
+          {{ getAreaTextByCode(text) }}
+        </#if>
+        <#if po.classType=='file'>
+          <!--文件字段回显插槽-->
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+          <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
+        </#if>
+        </template>
+        </#if>
+      </#list>
       </template>
     </BasicTable>
     <!-- 表单区域 -->
@@ -132,6 +141,7 @@
   import { list, deleteOne, batchDelete, getImportUrl, getExportUrl } from './${entityName}.api';
   import { downloadFile } from '/@/utils/common/renderUtils';
   import ${entityName}Modal from './components/${entityName}Modal.vue'
+  import { useUserStore } from '/@/store/modules/user';
   <#include "/common/form/native/vue3NativeImport.ftl">
 <#if need_category>
   import { loadCategoryData } from '/@/api/common/api';
@@ -149,6 +159,7 @@
   const queryParam = reactive<any>({});
   const toggleSearchStatus = ref<boolean>(false);
   const registerModal = ref();
+  const userStore = useUserStore();
   //注册table数据
   const { prefixCls, tableContext, onExportXls, onImportXls } = useListPage({
     tableProps: {
@@ -177,12 +188,14 @@
   });
   const [registerTable, { reload, collapseAll, updateTableDataRecord, findTableDataRecord, getDataSource }, { rowSelection, selectedRowKeys }] = tableContext;
   const labelCol = reactive({
-    xs: { span: 24 },
-    sm: { span: 7 },
+    xs:24,
+    sm:4,
+    xl:6,
+    xxl:4
   });
   const wrapperCol = reactive({
-    xs: { span: 24 },
-    sm: { span: 16 },
+    xs: 24,
+    sm: 20,
   });
 
   /**
@@ -256,6 +269,7 @@
         popConfirm: {
           title: '是否确认删除',
           confirm: handleDelete.bind(null, record),
+          placement: 'topLeft',
         }
       }
     ];
@@ -265,6 +279,7 @@
         popConfirm: {
           title: '确认提交流程吗？',
           confirm: handleProcess.bind(null, record),
+          placement: 'topLeft',
         }
       })
     }
@@ -279,6 +294,7 @@
         popConfirm: {
           title: '是否确认删除',
           confirm: handleDelete.bind(null, record),
+          placement: 'topLeft',
         }
       }
     ]
@@ -358,11 +374,10 @@
     <#if po.classType=='cat_tree' && need_category==true>
     loadCategoryData({code:'${po.dictField?default("")}'}).then((res) => {
       if (res) {
-        let allDictDate = getAuthCache(DB_DICT_DATA_KEY);
+        const allDictDate = userStore.getAllDictItems;
         if(!allDictDate['${po.dictField?default("")}']){
-          Object.assign(allDictDate,{'${po.dictField?default("")}':res})
+          userStore.setAllDictItems({...allDictDate,'${po.dictField?default("")}':res});
         }
-        setAuthCache(DB_DICT_DATA_KEY,allDictDate)
       }
     });
      </#if>
@@ -375,6 +390,7 @@
 
 <style lang="less" scoped>
   .jeecg-basic-table-form-container {
+    padding: 0;
     .table-page-search-submitButtons {
       display: block;
       margin-bottom: 24px;
