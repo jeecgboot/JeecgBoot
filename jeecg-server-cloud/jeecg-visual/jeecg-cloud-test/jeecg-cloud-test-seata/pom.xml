@@ -18,12 +18,12 @@
     <dependencies>
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-cloud</artifactId>
+            <artifactId>jeecg-boot-starter3-cloud</artifactId>
             <version>${jeecgboot.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-seata</artifactId>
+            <artifactId>jeecg-boot-starter3-seata</artifactId>
             <version>${jeecgboot.version}</version>
         </dependency>
     </dependencies>

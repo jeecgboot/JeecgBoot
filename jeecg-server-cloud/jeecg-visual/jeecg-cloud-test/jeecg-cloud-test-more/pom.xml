@@ -15,7 +15,7 @@
         <!-- 引入jeecg-boot-starter-cloud依赖 -->
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-cloud</artifactId>
+            <artifactId>jeecg-boot-starter3-cloud</artifactId>
             <!--system模块需要排除jeecg-system-cloud-api-->
             <exclusions>
                 <exclusion>
@@ -27,17 +27,17 @@
         <!--定时任务-->
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-job</artifactId>
+            <artifactId>jeecg-boot-starter3-job</artifactId>
         </dependency>
         <!--rabbitmq消息队列-->
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-rabbitmq</artifactId>
+            <artifactId>jeecg-boot-starter3-rabbitmq</artifactId>
         </dependency>
         <!-- 分布式锁依赖 -->
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-lock</artifactId>
+            <artifactId>jeecg-boot-starter3-lock</artifactId>
         </dependency>
     </dependencies>
 

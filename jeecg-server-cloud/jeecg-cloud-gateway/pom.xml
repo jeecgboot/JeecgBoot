@@ -14,7 +14,7 @@
         <!-- jeecg 微服务基础依赖-->
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-cloud</artifactId>
+            <artifactId>jeecg-boot-starter3-cloud</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>org.jeecgframework.boot</groupId>
