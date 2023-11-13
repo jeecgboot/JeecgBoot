@@ -15,7 +15,7 @@
         <!--rabbitmq消息队列-->
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-rabbitmq</artifactId>
+            <artifactId>jeecg-boot-starter3-rabbitmq</artifactId>
         </dependency>
     </dependencies>
 
