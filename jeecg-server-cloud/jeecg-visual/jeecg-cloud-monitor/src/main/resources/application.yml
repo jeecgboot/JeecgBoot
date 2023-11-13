@@ -19,7 +19,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
+        server-addr: @config.server-addr@
         metadata:
           user.name: ${spring.security.user.name}
           user.password: ${spring.security.user.password}
