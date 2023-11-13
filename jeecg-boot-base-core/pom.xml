@@ -47,7 +47,7 @@
 		<!--jeecg-tools-->
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
-			<artifactId>jeecg-boot-common</artifactId>
+			<artifactId>jeecg-boot-common3</artifactId>
 		</dependency>
 		<!--集成springmvc框架并实现自动配置 -->
 		<dependency>
