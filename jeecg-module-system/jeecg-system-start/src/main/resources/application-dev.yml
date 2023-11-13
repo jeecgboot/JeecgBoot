@@ -133,9 +133,9 @@ spring:
           slow-sql-millis: 5000
       datasource:
         master:
-          url: jdbc:mysql://172.16.10.227:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: root
-          password: root@2023
+          password: root
           driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
@@ -147,9 +147,9 @@ spring:
   data:
     redis:
       database: 0
-      host: 172.16.10.227
+      host: 127.0.0.1
       port: 6379
-      password: Whdsj@redis0523
+      password: 
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:org/jeecg/modules/**/xml/*Mapper.xml
@@ -235,8 +235,8 @@ jeecg:
     logRetentionDays: 30
   #分布式锁配置
   redisson:
-    address: 172.16.10.227:6379
-    password: Whdsj@redis0523
+    address: 127.0.0.1:6379
+    password: 
     type: STANDALONE
     enabled: true
 #cas单点登录
