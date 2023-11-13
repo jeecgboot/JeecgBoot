@@ -5,7 +5,7 @@ import org.jeecg.modules.system.entity.SysComment;
 import org.jeecg.modules.system.vo.SysCommentFileVo;
 import org.jeecg.modules.system.vo.SysCommentVO;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**

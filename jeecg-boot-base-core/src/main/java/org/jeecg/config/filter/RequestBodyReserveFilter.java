@@ -3,8 +3,8 @@ package org.jeecg.config.filter;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.config.sign.util.BodyReaderHttpServletRequestWrapper;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**

@@ -3,15 +3,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>jeecg-visual</artifactId>
-        <groupId>org.jeecgframework.boot</groupId>
-        <version>3.6.0</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.10</version>
+        <relativePath/>
     </parent>
     <artifactId>jeecg-cloud-sentinel</artifactId>
     <name>jeecg-cloud-sentinel</name>
     <description>sentinel启动模块</description>
 
     <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.jeecgframework.cloud</groupId>
             <artifactId>sentinel-dashboard</artifactId>

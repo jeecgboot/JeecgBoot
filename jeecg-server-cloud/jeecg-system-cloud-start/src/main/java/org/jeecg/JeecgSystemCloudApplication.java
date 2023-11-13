@@ -1,5 +1,6 @@
 package org.jeecg;
 
+import com.xkcoding.justauth.autoconfigure.JustAuthAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.constant.GlobalConstants;
@@ -7,6 +8,7 @@ import org.jeecg.common.util.oConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -29,6 +31,7 @@ import java.net.UnknownHostException;
 @SpringBootApplication
 @EnableFeignClients(basePackages = {"org.jeecg"})
 @EnableScheduling
+@ImportAutoConfiguration(JustAuthAutoConfiguration.class)  // spring boot 3.x justauth 兼容性处理
 public class JeecgSystemCloudApplication extends SpringBootServletInitializer implements CommandLineRunner {
 
     @Autowired

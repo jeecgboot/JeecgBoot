@@ -2,7 +2,7 @@ package org.jeecg.modules.system.service.impl;
 
 import java.util.*;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;

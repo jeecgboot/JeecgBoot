@@ -1,8 +1,11 @@
 package org.jeecg.modules.system.controller;
 
 import java.util.Arrays;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -22,8 +25,6 @@ import org.jeecg.common.system.base.controller.JeecgController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 
 /**
  * @Description: 角色首页配置
@@ -32,7 +33,7 @@ import io.swagger.annotations.ApiOperation;
  * @Version: V1.0
  */
 @Slf4j
-@Api(tags = "角色首页配置")
+@Tag(name = "角色首页配置")
 @RestController
 @RequestMapping("/sys/sysRoleIndex")
 public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRoleIndexService> {
@@ -49,7 +50,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      * @return
      */
     @AutoLog(value = "角色首页配置-分页列表查询")
-    @ApiOperation(value = "角色首页配置-分页列表查询", notes = "角色首页配置-分页列表查询")
+    @Operation(summary = "角色首页配置-分页列表查询")
     @GetMapping(value = "/list")
     public Result<?> queryPageList(SysRoleIndex sysRoleIndex,
                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
@@ -69,7 +70,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      */
     @RequiresPermissions("system:roleindex:add")
     @AutoLog(value = "角色首页配置-添加")
-    @ApiOperation(value = "角色首页配置-添加", notes = "角色首页配置-添加")
+    @Operation(summary = "角色首页配置-添加")
     @PostMapping(value = "/add")
     //@DynamicTable(value = DynamicTableConstant.SYS_ROLE_INDEX)
     public Result<?> add(@RequestBody SysRoleIndex sysRoleIndex,HttpServletRequest request) {
@@ -85,7 +86,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      */
     @RequiresPermissions("system:roleindex:edit")
     @AutoLog(value = "角色首页配置-编辑")
-    @ApiOperation(value = "角色首页配置-编辑", notes = "角色首页配置-编辑")
+    @Operation(summary = "角色首页配置-编辑")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})
     //@DynamicTable(value = DynamicTableConstant.SYS_ROLE_INDEX)
     public Result<?> edit(@RequestBody SysRoleIndex sysRoleIndex,HttpServletRequest request) {
@@ -100,7 +101,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      * @return
      */
     @AutoLog(value = "角色首页配置-通过id删除")
-    @ApiOperation(value = "角色首页配置-通过id删除", notes = "角色首页配置-通过id删除")
+    @Operation(summary = "角色首页配置-通过id删除")
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         sysRoleIndexService.removeById(id);
@@ -114,7 +115,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      * @return
      */
     @AutoLog(value = "角色首页配置-批量删除")
-    @ApiOperation(value = "角色首页配置-批量删除", notes = "角色首页配置-批量删除")
+    @Operation(summary = "角色首页配置-批量删除")
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
         this.sysRoleIndexService.removeByIds(Arrays.asList(ids.split(",")));
@@ -128,7 +129,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      * @return
      */
     @AutoLog(value = "角色首页配置-通过id查询")
-    @ApiOperation(value = "角色首页配置-通过id查询", notes = "角色首页配置-通过id查询")
+    @Operation(summary = "角色首页配置-通过id查询")
     @GetMapping(value = "/queryById")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
         SysRoleIndex sysRoleIndex = sysRoleIndexService.getById(id);
@@ -165,7 +166,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      * @return
      */
     @AutoLog(value = "角色首页配置-通过code查询")
-    @ApiOperation(value = "角色首页配置-通过code查询", notes = "角色首页配置-通过code查询")
+    @Operation(summary = "角色首页配置-通过code查询")
     @GetMapping(value = "/queryByCode")
     //@DynamicTable(value = DynamicTableConstant.SYS_ROLE_INDEX)
     public Result<?> queryByCode(@RequestParam(name = "roleCode", required = true) String roleCode,HttpServletRequest request) {

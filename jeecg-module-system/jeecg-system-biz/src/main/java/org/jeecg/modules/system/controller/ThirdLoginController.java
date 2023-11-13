@@ -5,7 +5,7 @@ import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xkcoding.justauth.AuthRequestFactory;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
@@ -32,8 +32,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -270,7 +270,7 @@ public class ThirdLoginController {
 	 * @param jsonObject
 	 * @return
 	 */
-	@ApiOperation("手机号登录接口")
+	@Operation(summary ="手机号登录接口")
 	@PostMapping("/bindingThirdPhone")
 	@ResponseBody
 	public Result<String> bindingThirdPhone(@RequestBody JSONObject jsonObject) {

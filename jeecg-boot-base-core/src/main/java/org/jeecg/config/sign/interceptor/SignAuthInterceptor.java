@@ -4,8 +4,8 @@ package org.jeecg.config.sign.interceptor;
 import java.io.PrintWriter;
 import java.util.SortedMap;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;

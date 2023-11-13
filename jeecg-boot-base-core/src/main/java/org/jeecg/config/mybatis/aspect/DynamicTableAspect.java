@@ -11,7 +11,7 @@ import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.config.mybatis.ThreadLocalDataHelper;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 
 /**

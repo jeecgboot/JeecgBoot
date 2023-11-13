@@ -9,8 +9,7 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * @Description: ${tableVo.ftlDescription}
@@ -20,7 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @Data
 @TableName("${tableName}")
-@ApiModel(value="${tableName}对象", description="${tableVo.ftlDescription}")
+@Schema(description="${tableVo.ftlDescription}")
 public class ${entityName} implements Serializable {
     private static final long serialVersionUID = 1L;
     
@@ -43,7 +42,7 @@ public class ${entityName} implements Serializable {
     @Excel(name = "${po.filedComment}", width = 15)
     </#if>
   </#if>
-	@ApiModelProperty(value = "${po.filedComment}")
+	@Schema(description = "${po.filedComment}")
 	private <#if po.fieldType=='java.sql.Blob'>byte[]<#else>${po.fieldType}</#if> ${po.fieldName};
 	</#list>
 }

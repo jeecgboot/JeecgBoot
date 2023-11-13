@@ -29,8 +29,8 @@ import org.springframework.util.StringUtils;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 
-import javax.annotation.Resource;
-import javax.servlet.Filter;
+import jakarta.annotation.Resource;
+import jakarta.servlet.Filter;
 import java.util.*;
 
 /**
@@ -118,7 +118,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/swagger-ui.html", "anon");
         filterChainDefinitionMap.put("/swagger**/**", "anon");
         filterChainDefinitionMap.put("/webjars/**", "anon");
-        filterChainDefinitionMap.put("/v2/**", "anon");
+        filterChainDefinitionMap.put("/v3/**", "anon");
         
         filterChainDefinitionMap.put("/sys/annountCement/show/**", "anon");
 

@@ -30,11 +30,12 @@ spring:
           username: root
           password: root
           driver-class-name: com.mysql.cj.jdbc.Driver
-  redis:
-    database: 0
-    host: jeecg-boot-redis
-    password:
-    port: 6379
+  data:
+    redis:
+      database: 0
+      host: jeecg-boot-redis
+      password:
+      port: 6379
   rabbitmq:
     host: jeecg-boot-rabbitmq
     username: guest

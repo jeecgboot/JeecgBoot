@@ -19,7 +19,7 @@ import org.jeecg.modules.system.mapper.SysAnnouncementSendMapper;
 import org.jeecg.modules.system.mapper.SysUserMapper;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.Date;
 import java.util.Map;
 
