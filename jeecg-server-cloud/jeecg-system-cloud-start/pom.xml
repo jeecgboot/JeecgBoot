@@ -15,7 +15,7 @@
         <!-- 引入jeecg-boot-starter-cloud依赖 -->
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-cloud</artifactId>
+            <artifactId>jeecg-boot-starter3-cloud</artifactId>
             <!-- 3.2版本号后，可选择是否排除jeecg-system-cloud-api，不排除会优先通过fegin调用接口
             <exclusions>
                 <exclusion>

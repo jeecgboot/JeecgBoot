@@ -171,7 +171,7 @@
 			<!-- jeecg tools -->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-common</artifactId>
+				<artifactId>jeecg-boot-common3</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!-- jeecg core -->
@@ -196,31 +196,31 @@
             <!--微服务启动依赖-->
             <dependency>
                 <groupId>org.jeecgframework.boot</groupId>
-                <artifactId>jeecg-boot-starter-cloud</artifactId>
+                <artifactId>jeecg-boot-starter3-cloud</artifactId>
                 <version>${jeecgboot.version}</version>
             </dependency>
 			<!--xxl-job定时任务-->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter-job</artifactId>
+				<artifactId>jeecg-boot-starter3-job</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--redis分布式锁-->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter-lock</artifactId>
+				<artifactId>jeecg-boot-starter3-lock</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--rabbitmq消息队列-->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter-rabbitmq</artifactId>
+				<artifactId>jeecg-boot-starter3-rabbitmq</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--分库分表shardingsphere-->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter-shardingsphere</artifactId>
+				<artifactId>jeecg-boot-starter3-shardingsphere</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<dependency>
@@ -243,7 +243,7 @@
 			<!--mongon db-->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter-mongon</artifactId>
+				<artifactId>jeecg-boot-starter3-mongon</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--人大金仓驱动 版本号V008R006C005B0013 -->

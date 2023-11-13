@@ -16,7 +16,7 @@
         <!--引入微服务启动依赖 starter-->
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-cloud</artifactId>
+            <artifactId>jeecg-boot-starter3-cloud</artifactId>
         </dependency>
         <!--system cloud api-->
         <dependency>
@@ -26,7 +26,7 @@
         
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-job</artifactId>
+            <artifactId>jeecg-boot-starter3-job</artifactId>
         </dependency>
 
         <!-- 引入demo模块 -->
