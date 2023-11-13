@@ -7,14 +7,18 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: localhost:8848
-      #        username: @config.username@
-      #        password: @config.password@
+        server-addr: @config.server-addr@
+        group: @config.group@
+        namespace: @config.namespace@
+        username: @config.username@
+        password: @config.password@
       discovery:
         server-addr: ${spring.cloud.nacos.config.server-addr}
-  #        username: @config.username@
-  #        password: @config.password@
+        group: @config.group@
+        namespace: @config.namespace@
+        username: @config.username@
+        password: @config.password@
   config:
     import:
       - optional:nacos:jeecg.yaml
-      - optional:nacos:jeecg-dev.yaml
+      - optional:nacos:jeecg-@profile.name@.yaml
