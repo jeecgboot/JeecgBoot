@@ -252,7 +252,11 @@ public class AddPortraitTubeJob implements Job {
                 }
             } else {
                 if (totalRemainderCount > 1) {
-                    tube40MultipleCount++;
+                    if (canvas40RemainderCount > 0) {
+                        tube40MultipleCount++;
+                    } else {
+                        tube30SingleDoubleCount++;
+                    }
                 } else {
                     if (canvas40RemainderCount > 0) {
                         tube40SingleCount++;
@@ -265,18 +269,23 @@ public class AddPortraitTubeJob implements Job {
             // When remaining 4 to 6 canvases, one 50cm canvas imposes one 50cm multiple tube
             if (canvas50RemainderCount > 0) {
                 tube50MultipleCount++;
-                // If we have two 50cm canvases and a total of 5 of 6 canvases, then we have to use 2 50cm multiple tubes
-                if (totalRemainderCount > 4) {
-                    tube50MultipleCount++;
-                } else {
-                    // There's one remaining canvas, an adequate single tube suffices
-                    if (canvas50RemainderCount > 1) {
-                        tube50SingleCount++;
-                    } else if (canvas40RemainderCount > 0) {
-                        tube40SingleCount++;
-                    } else if (canvas30RemainderCount > 0){
-                        tube30SingleDoubleCount++;
+                if (canvas50RemainderCount > 1) {
+                    // If we have two 50cm canvases and a total of 5 of 6 canvases
+                    if (totalRemainderCount > 4) {
+                        if (canvas40RemainderCount > 1) {
+                            tube40MultipleCount++;
+                        } else {
+                            tube30SingleDoubleCount++;
+                        }
+                    } else {
+                        if (canvas40RemainderCount > 1) {
+                            tube40SingleCount++;
+                        } else {
+                            tube30SingleDoubleCount++;
+                        }
                     }
+                } else {
+                    tube30SingleDoubleCount++;
                 }
             } else {
                 // No 50cm canvases means only one combination possible: two 40cm canvases and two 30cm canvases
@@ -304,111 +313,86 @@ public class AddPortraitTubeJob implements Job {
     }
 
     public static void main(String[] args) {
-        List<OrderItem> orderItems = buildOrderItems(1, 0);
+        List<OrderItem> orderItems = buildOrderItems(0,0,0);
         compare(orderItems);
 
-        orderItems = buildOrderItems(0, 1);
+        orderItems = buildOrderItems(0,0,1);
         compare(orderItems);
 
-        orderItems = buildOrderItems(1, 1);
+        orderItems = buildOrderItems(0,0,2);
         compare(orderItems);
 
-        orderItems = buildOrderItems(2, 0);
+        orderItems = buildOrderItems(0,1,0);
         compare(orderItems);
 
-        orderItems = buildOrderItems(0, 2);
+        orderItems = buildOrderItems(0,1,1);
         compare(orderItems);
 
-        orderItems = buildOrderItems(2, 1);
+        orderItems = buildOrderItems(0,1,2);
         compare(orderItems);
 
-        orderItems = buildOrderItems(1, 2);
+        orderItems = buildOrderItems(0,2,0);
         compare(orderItems);
 
-        orderItems = buildOrderItems(2, 2);
+        orderItems = buildOrderItems(0,2,1);
         compare(orderItems);
 
-        orderItems = buildOrderItems(3, 0);
+        orderItems = buildOrderItems(0,2,2);
         compare(orderItems);
 
-        orderItems = buildOrderItems(0, 3);
+        orderItems = buildOrderItems(1,0,0);
         compare(orderItems);
 
-        orderItems = buildOrderItems(3, 1);
+        orderItems = buildOrderItems(1,0,1);
         compare(orderItems);
 
-        orderItems = buildOrderItems(1, 3);
+        orderItems = buildOrderItems(1,0,2);
         compare(orderItems);
 
-        orderItems = buildOrderItems(3, 2);
+        orderItems = buildOrderItems(1,1,0);
         compare(orderItems);
 
-        orderItems = buildOrderItems(2, 3);
+        orderItems = buildOrderItems(1,1,1);
         compare(orderItems);
 
-        orderItems = buildOrderItems(3, 3);
+        orderItems = buildOrderItems(1,1,2);
         compare(orderItems);
 
-        orderItems = buildOrderItems(4, 0);
+        orderItems = buildOrderItems(1,2,0);
         compare(orderItems);
 
-        orderItems = buildOrderItems(0, 4);
+        orderItems = buildOrderItems(1,2,1);
         compare(orderItems);
 
-        orderItems = buildOrderItems(4, 1);
+        orderItems = buildOrderItems(1,2,2);
         compare(orderItems);
 
-        orderItems = buildOrderItems(1, 4);
+        orderItems = buildOrderItems(2,0,0);
         compare(orderItems);
 
-        orderItems = buildOrderItems(4, 2);
+        orderItems = buildOrderItems(2,0,1);
         compare(orderItems);
 
-        orderItems = buildOrderItems(2, 4);
+        orderItems = buildOrderItems(2,0,2);
         compare(orderItems);
 
-        orderItems = buildOrderItems(4, 3);
+        orderItems = buildOrderItems(2,1,0);
         compare(orderItems);
 
-        orderItems = buildOrderItems(3, 4);
+        orderItems = buildOrderItems(2,1,1);
         compare(orderItems);
 
-        orderItems = buildOrderItems(4, 4);
+        orderItems = buildOrderItems(2,1,2);
         compare(orderItems);
 
-        orderItems = buildOrderItems(5, 0);
+        orderItems = buildOrderItems(2,2,0);
         compare(orderItems);
 
-        orderItems = buildOrderItems(0, 5);
+        orderItems = buildOrderItems(2,2,1);
         compare(orderItems);
 
-        orderItems = buildOrderItems(5, 1);
+        orderItems = buildOrderItems(2,2,2);
         compare(orderItems);
-
-        orderItems = buildOrderItems(1, 5);
-        compare(orderItems);
-
-        orderItems = buildOrderItems(5, 2);
-        compare(orderItems);
-
-        orderItems = buildOrderItems(2, 5);
-        compare(orderItems);
-
-        orderItems = buildOrderItems(5, 3);
-        compare(orderItems);
-
-        orderItems = buildOrderItems(3, 5);
-        compare(orderItems);
-
-        orderItems = buildOrderItems(5, 4);
-        compare(orderItems);
-
-        orderItems = buildOrderItems(4, 5);
-        compare(orderItems);
-
-        orderItems = buildOrderItems(5, 5);
-        compare(orderItems);
-
     }
 
     private static void compare(List<OrderItem> orderItems) {
@@ -419,14 +403,18 @@ public class AddPortraitTubeJob implements Job {
         System.out.println(tubesOldWay.containsAll(tubesNewWay) && tubesNewWay.containsAll(tubesOldWay) ? "we're good" : "shit");
     }
 
-    private static List<OrderItem> buildOrderItems(Integer canvas40q, Integer canvas50q) {
+    private static List<OrderItem> buildOrderItems(Integer canvas30q, Integer canvas40q, Integer canvas50q) {
         List<OrderItem> orderItems = new ArrayList<>();
+        if (canvas30q != null) {
+            orderItems.add(buildOrderItem(PREFIX_30_CANVAS, canvas30q));
+        }
         if (canvas40q != null) {
             orderItems.add(buildOrderItem(PREFIX_40_CANVAS, canvas40q));
         }
         if (canvas50q != null) {
             orderItems.add(buildOrderItem(PREFIX_50_CANVAS, canvas50q));
         }
+        System.out.println(canvas30q + " x 30cm " + canvas40q + " x 40cm " + canvas50q + " x 50cm");
         return orderItems;
     }
 
