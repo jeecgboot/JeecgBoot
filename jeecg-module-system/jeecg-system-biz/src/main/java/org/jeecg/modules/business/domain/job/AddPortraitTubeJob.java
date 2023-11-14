@@ -35,12 +35,13 @@ public class AddPortraitTubeJob implements Job {
 
     private static final List<String> DEFAULT_SHOPS = Arrays.asList("JCH3", "JCH4", "JCH5");
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 10;
+    private static final String TUBE_30_SKU_SINGLE_DOUBLE = "PJ95310032-WIA";
     private static final String TUBE_40_SKU_SINGLE = "PJ95430032-WIA";
     private static final String TUBE_40_SKU_MULTIPLE = "PJ95430040-WIA";
     private static final String TUBE_50_SKU_SINGLE = "PJ95530032-WIA";
     private static final String TUBE_50_SKU_MULTIPLE = "PJ95530040-WIA";
-    private static final List<String> TUBE_SKUS = Arrays.asList(TUBE_50_SKU_MULTIPLE, TUBE_50_SKU_SINGLE,
-            TUBE_40_SKU_MULTIPLE, TUBE_40_SKU_SINGLE);
+    private static final List<String> TUBE_SKUS = Arrays.asList(TUBE_30_SKU_SINGLE_DOUBLE, TUBE_50_SKU_MULTIPLE,
+            TUBE_50_SKU_SINGLE, TUBE_40_SKU_MULTIPLE, TUBE_40_SKU_SINGLE);
     private static final String PREFIX_50_CANVAS = "JJ2501";
     private static final String PREFIX_40_CANVAS = "JJ2500";
     private static final String PREFIX_30_CANVAS = "JJ2502";
@@ -154,6 +155,7 @@ public class AddPortraitTubeJob implements Job {
      * @return Set of pairs
      */
     private Pair<HashSet<Pair<String, Integer>>, HashSet<Pair<String, Integer>>> findCurrentAndAdequateTubes(List<OrderItem> orderItems) {
+        int canvas30Count = 0;
         int canvas40Count = 0;
         int canvas50Count = 0;
         HashSet<Pair<String, Integer>> currentTubes = new HashSet<>();
@@ -168,32 +170,74 @@ public class AddPortraitTubeJob implements Job {
             } else if (sku.startsWith(PREFIX_40_CANVAS)) {
                 canvas40Count += quantity;
             } else if (sku.startsWith(PREFIX_30_CANVAS)) {
-                canvas40Count += quantity;
+                canvas30Count += quantity;
             }
         }
 
+        int canvas30RemainderCount = canvas30Count % MAXIMUM_CANVAS_IN_TUBE.intValue();
         int canvas40RemainderCount = canvas40Count % MAXIMUM_CANVAS_IN_TUBE.intValue();
         int canvas50RemainderCount = canvas50Count % MAXIMUM_CANVAS_IN_TUBE.intValue();
+        int totalRemainderCount = canvas30RemainderCount + canvas40RemainderCount + canvas50RemainderCount;
         int tube50SingleCount = 0;
         int tube50MultipleCount = (int) Math.floor(canvas50Count / MAXIMUM_CANVAS_IN_TUBE);
         int tube40SingleCount = 0;
         int tube40MultipleCount = (int) Math.floor(canvas40Count / MAXIMUM_CANVAS_IN_TUBE);
-        if (canvas50RemainderCount > 0 && canvas40RemainderCount > 0) {
-            tube50MultipleCount++;
-            if (canvas50RemainderCount == 2 && canvas40RemainderCount == 2) {
-                tube50SingleCount++;
+        int tube30SingleDoubleCount = 0;
+        // 3 canvas of 30cm also go into 40 multiple tubes
+        tube40MultipleCount += (int) Math.floor(canvas30Count / MAXIMUM_CANVAS_IN_TUBE);
+        // When remaining 1 to 3 canvases
+        if (totalRemainderCount > 0 && totalRemainderCount < 4) {
+            if (canvas50RemainderCount > 0) {
+                // It only takes one 50cm canvas with any other canvas to impose the use of 50cm multiple tube
+                if (totalRemainderCount > 1) {
+                    tube50MultipleCount++;
+                } else {
+                    tube50SingleCount++;
+                }
+            } else {
+                if (totalRemainderCount > 1) {
+                    if (canvas40RemainderCount > 0) {
+                        tube40MultipleCount++;
+                    } else {
+                        tube30SingleDoubleCount++;
+                    }
+                } else {
+                    if (canvas40RemainderCount > 0) {
+                        tube40SingleCount++;
+                    } else if (canvas30RemainderCount > 0){
+                        tube30SingleDoubleCount++;
+                    }
+                }
             }
-        } else {
-            if (canvas40RemainderCount == 1) {
-                tube40SingleCount++;
-            } else if (canvas40RemainderCount == 2) {
-                tube40MultipleCount++;
-            } else if (canvas50RemainderCount == 1) {
-                tube50SingleCount++;
-            } else if (canvas50RemainderCount == 2) {
+        } else if (totalRemainderCount >= 4) {
+            // When remaining 4 to 6 canvases, one 50cm canvas imposes one 50cm multiple tube
+            if (canvas50RemainderCount > 0) {
                 tube50MultipleCount++;
+                if (canvas50RemainderCount > 1) {
+                    // If we have two 50cm canvases and a total of 5 of 6 canvases
+                    if (totalRemainderCount > 4) {
+                        if (canvas40RemainderCount > 1) {
+                            tube40MultipleCount++;
+                        } else {
+                            tube30SingleDoubleCount++;
+                        }
+                    } else {
+                        if (canvas40RemainderCount > 1) {
+                            tube40SingleCount++;
+                        } else {
+                            tube30SingleDoubleCount++;
+                        }
+                    }
+                } else {
+                    tube30SingleDoubleCount++;
+                }
+            } else {
+                // No 50cm canvases means only one combination possible: two 40cm canvases and two 30cm canvases
+                tube40MultipleCount++;
+                tube30SingleDoubleCount++;
             }
         }
+
         if (tube50SingleCount > 0) {
             adequateTubes.add(Pair.of(TUBE_50_SKU_SINGLE, tube50SingleCount));
         }
@@ -205,6 +249,9 @@ public class AddPortraitTubeJob implements Job {
         }
         if (tube40MultipleCount > 0) {
             adequateTubes.add(Pair.of(TUBE_40_SKU_MULTIPLE, tube40MultipleCount));
+        }
+        if (tube30SingleDoubleCount > 0) {
+            adequateTubes.add(Pair.of(TUBE_30_SKU_SINGLE_DOUBLE, tube30SingleDoubleCount));
         }
         return Pair.of(currentTubes, adequateTubes);
     }
