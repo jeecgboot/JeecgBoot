@@ -208,6 +208,7 @@
       .then(async (res) => {
         if (res.success) {
           await getExpandKeysByPid(formData['${pidFieldName}'], unref(treeData));
+          delete formData['children'];
           emit('ok', {
             isUpdate: unref(isUpdate),
             values: { ...formData },
@@ -263,8 +264,8 @@
 
 <style lang="less" scoped>
   .antd-modal-form {
-    min-height: 500px !important;
+    height: 500px !important;
     overflow-y: auto;
-    padding: 24px 24px 24px 24px;
+    padding: 14px;
   }
 </style>
