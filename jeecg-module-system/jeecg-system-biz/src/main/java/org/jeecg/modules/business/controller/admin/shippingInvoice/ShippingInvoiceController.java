@@ -75,6 +75,8 @@ public class ShippingInvoiceController {
     @Autowired
     private IPlatformOrderService platformOrderService;
     @Autowired
+    private IPurchaseOrderService purchaseOrderService;
+    @Autowired
     private ISavRefundService savRefundService;
     @Autowired
     private IShippingInvoiceService shippingInvoiceService;
@@ -510,6 +512,7 @@ public class ShippingInvoiceController {
         log.info("Cancelling invoice number : {}", invoiceNumber);
         platformOrderContentService.cancelInvoice(invoiceNumber);
         platformOrderService.cancelInvoice(invoiceNumber);
+        purchaseOrderService.cancelInvoice(invoiceNumber);
         savRefundService.cancelInvoice(invoiceNumber);
         shippingInvoiceService.delMain(id);
         log.info("Updating balance ...");
@@ -571,6 +574,7 @@ public class ShippingInvoiceController {
     public Result<?> cancelBatchInvoice(@RequestParam("ids") List<String> ids, @RequestParam("invoiceNumbers") List<String> invoiceNumbers, @RequestParam("clientIds") List<String> clientIds) {
 
         log.info("Cancelling invoices : {}", invoiceNumbers);
+        purchaseOrderService.cancelBatchInvoice(invoiceNumbers);
         platformOrderContentService.cancelBatchInvoice(invoiceNumbers);
         platformOrderService.cancelBatchInvoice(invoiceNumbers);
         savRefundService.cancelBatchInvoice(invoiceNumbers);

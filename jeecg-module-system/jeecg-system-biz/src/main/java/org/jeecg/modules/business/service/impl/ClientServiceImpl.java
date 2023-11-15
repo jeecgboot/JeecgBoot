@@ -133,7 +133,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     }
 
     @Override
-    public String getClientByInternalCode(String code) {
-        return clientMapper.getClientByInternalCode(code);
+    public String getClientIdByCode(String code) {
+        return clientMapper.getClientIdByCode(code);
     }
 }

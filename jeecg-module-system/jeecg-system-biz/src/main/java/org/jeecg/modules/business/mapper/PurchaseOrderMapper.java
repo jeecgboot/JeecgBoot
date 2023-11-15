@@ -91,4 +91,9 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
     String getInvoiceNumber(@Param("purchaseID") String purchaseID);
 
 
+    BigDecimal getPurchaseFeesByInvoiceCode(@Param("invoiceCode") String invoiceCode);
+
+    void deleteInvoice(@Param("invoiceNumber") String invoiceNumber);
+
+    void deleteBatchInvoice(@Param("invoiceNumbers") List<String> invoiceNumbers);
 }

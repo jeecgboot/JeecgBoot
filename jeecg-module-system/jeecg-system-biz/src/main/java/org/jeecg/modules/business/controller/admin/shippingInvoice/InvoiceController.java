@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import javax.mail.Authenticator;
+import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.servlet.http.HttpServletRequest;
@@ -235,6 +236,8 @@ public class InvoiceController {
         } catch (IOException | ParseException e) {
             log.error(e.getMessage());
             return Result.error("Sorry, server error, please try later");
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -280,6 +283,8 @@ public class InvoiceController {
         } catch (IOException | ParseException e) {
             log.error(e.getMessage());
             return Result.error("Sorry, server error, please try later");
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -411,7 +416,7 @@ public class InvoiceController {
                 clientId = clientIDCodeMap.get(estimation.getCode());
             }
             else {
-                clientId = clientService.getClientByInternalCode(estimation.getCode());
+                clientId = clientService.getClientIdByCode(estimation.getCode());
                 clientIDCodeMap.put(estimation.getCode(), clientId);
             }
             if (estimation.getIsCompleteInvoice().equals("1")) {
@@ -453,7 +458,7 @@ public class InvoiceController {
         });
         for(Map.Entry<String, List<ShippingFeesEstimation>> entry : estimationClientMap.entrySet()) {
             String code = entry.getKey();
-            String clientId = clientService.getClientByInternalCode(code);
+            String clientId = clientService.getClientIdByCode(code);
             List<String> shops = new ArrayList<>();
             int ordersToProcess = 0;
             int processedOrders = 0;

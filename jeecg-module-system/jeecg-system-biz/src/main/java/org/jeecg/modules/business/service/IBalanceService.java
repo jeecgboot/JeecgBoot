@@ -1,7 +1,10 @@
 package org.jeecg.modules.business.service;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jeecg.modules.business.entity.Balance;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.business.entity.Client;
+import org.jeecg.modules.business.vo.BalanceData;
 import org.jeecg.modules.business.vo.InvoiceMetaData;
 
 import java.math.BigDecimal;
@@ -37,4 +40,11 @@ public interface IBalanceService extends IService<Balance> {
     void editBalance(String operationId, String operationType, String clientId, BigDecimal amount, String currencyId) throws Exception;
 
     void deleteBatchBalance(List<String> operationIds, String operationType);
+
+    /**
+     * Get low balance clients from client list
+     * @param metaDataList list of meta data
+     * @return
+     */
+    List<BalanceData> getLowBalanceClients(List<InvoiceMetaData> metaDataList);
 }

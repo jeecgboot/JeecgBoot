@@ -2,6 +2,7 @@ package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.vo.PlatformOrderQuantity;
 import org.jeecg.modules.business.vo.SkuQuantity;
@@ -54,19 +55,19 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     void processedPlatformOrderPage(IPage<ClientPlatformOrderPage> page);
 
-    OrdersStatisticData getPlatformOrdersStatisticData(List<String> orderIds);
+    OrdersStatisticData getPlatformOrdersStatisticData(List<String> orderIds) throws UserException;
 
     List<PlatformOrderContent> selectByMainId(String mainId);
 
     List<ClientPlatformOrderContent> selectClientVersionByMainId(String mainId);
 
-    PurchaseConfirmation confirmPurchaseByPlatformOrder(List<String> platformOrderIdList);
+    PurchaseConfirmation confirmPurchaseByPlatformOrder(List<String> platformOrderIdList) throws UserException;
 
-    PurchaseConfirmation confirmPurchaseBySkuQuantity(List<SkuQuantity> skuIDQuantityMap);
+    PurchaseConfirmation confirmPurchaseBySkuQuantity(List<SkuQuantity> skuIDQuantityMap) throws UserException;
 
-    PurchaseConfirmation confirmPurchaseBySkuQuantity(ClientInfo clientInfo, List<SkuQuantity> skuIDQuantityMap);
+    PurchaseConfirmation confirmPurchaseBySkuQuantity(ClientInfo clientInfo, List<SkuQuantity> skuIDQuantityMap) throws UserException;
 
-    List<OrderContentDetail> searchPurchaseOrderDetail(List<SkuQuantity> skuQuantities);
+    List<OrderContentDetail> searchPurchaseOrderDetail(List<SkuQuantity> skuQuantities) throws UserException;
 
     OrderQuantity queryOrderQuantities();
 
@@ -199,4 +200,5 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * @return
      */
     List<PlatformOrder> fetchEmptyLogisticChannelOrders(String startDate, String endDate);
+
 }

@@ -176,7 +176,7 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
                                                              @Param("shops") List<String> shops,
                                                              @Param("warehouses") List<String> warehouses);
 
-    List<PlatformOrder> fetchUninvoicedShippedOrderIDInShopsAndOrderTime(@Param("startDate") String startDate,
+    List<PlatformOrder> fetchUninvoicedOrderIDInShopsAndOrderTime(@Param("startDate") String startDate,
                                                                          @Param("endDate") String endDate,
                                                                          @Param("shops") List<String> shops,
                                                                          @Param("erpStatuses") List<Integer> erpStatuses,
@@ -191,5 +191,7 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<String> findUninvoicedOrderIdsByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses);
 
     List<PlatformOrder> fetchEmptyLogisticChannelOrders(@Param("startDate") String startDate,@Param("endDate") String endDate);
+
+    void updateErpStatusByCode(@Param("invoiceCode") String invoiceCode, @Param("erpStatus") int erpStatus);
 
 }

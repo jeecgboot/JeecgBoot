@@ -13,6 +13,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.domain.purchase.invoice.InvoiceData;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.service.*;
@@ -421,7 +422,7 @@ public class PurchaseOrderController {
      */
     @AutoLog(value = "商品采购清单-通过客户id查询")
     @RequestMapping(value = "/admin/loadInventory")
-    public Result<?> loadInventory(@RequestParam(name = "id") String clientId) {
+    public Result<?> loadInventory(@RequestParam(name = "id") String clientId) throws UserException {
         Client client = clientService.getById(clientId);
         ClientInfo clientInfo = new ClientInfo(client);
         List<ImportedInventory> importedInventories = importedInventoryService.selectByClientId(clientId);

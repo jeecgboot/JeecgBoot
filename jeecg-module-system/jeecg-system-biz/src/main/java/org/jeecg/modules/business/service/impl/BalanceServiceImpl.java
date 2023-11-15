@@ -1,15 +1,14 @@
 package org.jeecg.modules.business.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jeecg.modules.business.entity.Balance;
-import org.jeecg.modules.business.entity.PlatformOrder;
-import org.jeecg.modules.business.entity.PlatformOrderContent;
-import org.jeecg.modules.business.entity.ShippingInvoice;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.BalanceMapper;
-import org.jeecg.modules.business.service.IBalanceService;
-import org.jeecg.modules.business.service.ICurrencyService;
-import org.jeecg.modules.business.service.IPlatformOrderService;
-import org.jeecg.modules.business.service.IShippingInvoiceService;
+import org.jeecg.modules.business.mapper.ClientCategoryMapper;
+import org.jeecg.modules.business.mapper.ClientMapper;
+import org.jeecg.modules.business.service.*;
+import org.jeecg.modules.business.vo.BalanceData;
+import org.jeecg.modules.business.vo.InvoiceMetaData;
 import org.jeecg.modules.system.entity.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,11 +33,17 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
     @Autowired
     private BalanceMapper balanceMapper;
     @Autowired
+    private ClientCategoryMapper clientCategoryMapper;
+    @Autowired
+    private ClientMapper clientMapper;
+    @Autowired
     private ICurrencyService currencyService;
     @Autowired
     private IPlatformOrderService platformOrderService;
     @Autowired
-    IShippingInvoiceService iShippingInvoiceService;
+    private IPurchaseOrderService purchaseOrderService;
+    @Autowired
+    IShippingInvoiceService shippingInvoiceService;
     @Override
     public BigDecimal getBalanceByClientIdAndCurrency(String clientId, String currency) {
         return balanceMapper.getBalanceByClientIdAndCurrency(clientId, currency);
@@ -47,20 +53,13 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
     public void updateBalance(String clientId, String invoiceCode, String invoiceType) {
 
         // balance update
-        ShippingInvoice invoice = iShippingInvoiceService.getShippingInvoice(invoiceCode);
+        ShippingInvoice invoice = shippingInvoiceService.getShippingInvoice(invoiceCode);
         String currency = currencyService.getCodeById(invoice.getCurrencyId());
         BigDecimal previousBalance = getBalanceByClientIdAndCurrency(clientId, currency);
         BigDecimal currentBalance = previousBalance.subtract(invoice.getFinalAmount());
         if(invoiceType.equals("complete")) {
-            List<String> orderIds = iShippingInvoiceService.getPlatformOrder(invoiceCode).stream().map(PlatformOrder::getId).collect(Collectors.toList());
-            Map<PlatformOrder, List<PlatformOrderContent>> orderMap = platformOrderService.fetchOrderData(orderIds);
-            BigDecimal purchaseFees = BigDecimal.ZERO;
-            for(Map.Entry<PlatformOrder, List<PlatformOrderContent>> entry : orderMap.entrySet()) {
-                for(PlatformOrderContent content : entry.getValue()) {
-                    purchaseFees = purchaseFees.add(content.getPurchaseFee());
-                }
-            }
-            currentBalance = currentBalance.add(purchaseFees);
+            BigDecimal purchaseFees = purchaseOrderService.getPurchaseFeesByInvoiceCode(invoiceCode);
+            currentBalance = currentBalance.subtract(purchaseFees);
         }
         SysUser sysUser = new SysUser();
         Balance balance = Balance.of(sysUser.getUsername(), clientId, invoice.getCurrencyId(), Balance.OperationType.Debit.name(), invoice.getId(), currentBalance);
@@ -86,6 +85,7 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
     public void deleteBatchBalance(List<String> operationIds, String operationType) {
         balanceMapper.deleteBatchBalance(operationIds, operationType);
     }
+
     @Override
     public void editBalance(String operationId, String operationType, String clientId, BigDecimal amount, String currencyId) throws Exception {
         log.info("editing balance");
@@ -103,6 +103,22 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
         System.out.println("final balance : " + finalBalance);
         Balance newBalance = Balance.of(sysUser.getUsername(), clientId, currencyId, operationType, operationId, finalBalance);
         balanceMapper.insert(newBalance);
+    }
+
+    @Override
+    public List<BalanceData> getLowBalanceClients(List<InvoiceMetaData> metaDataList) {
+        List<BalanceData> lowBalanceDataList = new ArrayList<>();
+        for(InvoiceMetaData metaData : metaDataList) {
+            Client client = clientMapper.getClientByCode(metaData.getInternalCode());
+            Currency currency = shippingInvoiceService.getInvoiceCurrencyByCode(metaData.getInvoiceCode());
+            BigDecimal balance = getBalanceByClientIdAndCurrency(client.getId(), currency.getCode());
+            BigDecimal balanceThreshold = client.getBalanceThreshold() == null ?
+                    clientCategoryMapper.getBalanceThresholdByCategoryId(client.getClientCategoryId()) : client.getBalanceThreshold();
+            if(balance.compareTo(balanceThreshold) < 0) {
+                lowBalanceDataList.add(new BalanceData(client, currency.getCode(), balance));
+            }
+        }
+        return lowBalanceDataList;
     }
 
 }

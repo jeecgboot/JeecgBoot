@@ -2,6 +2,7 @@ package org.jeecg.modules.business.service.impl.purchase;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.domain.codeGeneration.PurchaseInvoiceCodeRule;
 import org.jeecg.modules.business.domain.purchase.invoice.InvoiceData;
 import org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoice;
@@ -212,7 +213,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
      * @return the purchase order's identifier (UUID)
      */
     @Override
-    public String addPurchase(List<SkuQuantity> skuQuantities) {
+    public String addPurchase(List<SkuQuantity> skuQuantities) throws UserException {
         return addPurchase(skuQuantities, Collections.emptyList());
     }
 
@@ -228,7 +229,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
      */
     @Override
     @Transactional
-    public String addPurchase(List<SkuQuantity> skuQuantities, List<String> platformOrderIDs) {
+    public String addPurchase(List<SkuQuantity> skuQuantities, List<String> platformOrderIDs) throws UserException {
         Objects.requireNonNull(platformOrderIDs);
 
         Client client = clientService.getCurrentClient();
@@ -318,7 +319,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     @Override
     @Transactional
     public String addPurchase(String username, Client client, String invoiceNumber, List<SkuQuantity> skuQuantities,
-                              Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent) {
+                              Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent) throws UserException {
         Objects.requireNonNull(orderAndContent);
 
         List<OrderContentDetail> details = platformOrderService.searchPurchaseOrderDetail(skuQuantities);
@@ -469,5 +470,20 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     public byte[] getInvoiceByte(String invoiceCode) throws IOException {
         Path invoice = Paths.get(INVOICE_DIR, invoiceCode + ".xlsx");
         return Files.readAllBytes(invoice);
+    }
+
+    @Override
+    public BigDecimal getPurchaseFeesByInvoiceCode(String invoiceCode) {
+        return purchaseOrderMapper.getPurchaseFeesByInvoiceCode(invoiceCode);
+    }
+
+    @Override
+    public void cancelInvoice(String invoiceNumber) {
+        purchaseOrderMapper.deleteInvoice(invoiceNumber);
+    }
+
+    @Override
+    public void cancelBatchInvoice(List<String> invoiceNumbers) {
+        purchaseOrderMapper.deleteBatchInvoice(invoiceNumbers);
     }
 }

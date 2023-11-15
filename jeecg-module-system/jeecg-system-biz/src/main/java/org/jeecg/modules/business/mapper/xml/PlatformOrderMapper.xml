@@ -88,6 +88,14 @@
         WHERE id = #{orderID}
     </update>
 
+    <update id="updateErpStatusByCode">
+        UPDATE platform_order po, platform_order_content poc
+        SET po.erp_status = #{erpStatus},
+            poc.erp_status = #{erpStatus}
+        WHERE po.shipping_invoice_number = #{invoiceCode}
+            AND poc.platform_order_id = po.id;
+    </update>
+
     <update id="batchUpdateStatus">
         UPDATE platform_order
         SET status = #{status}
@@ -488,7 +496,7 @@
         AND po.shipping_time between #{startDate} AND #{endDate}
         AND po.erp_status = 3;
     </select>
-    <select id="fetchUninvoicedShippedOrderIDInShopsAndOrderTime" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+    <select id="fetchUninvoicedOrderIDInShopsAndOrderTime" resultType="org.jeecg.modules.business.entity.PlatformOrder">
         SELECT po.id
         FROM platform_order po
         JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
@@ -643,15 +651,17 @@
     </insert>
 
     <update id="cancelInvoice">
-        UPDATE platform_order
+        UPDATE platform_order po
+        JOIN shipping_invoice si ON po.shipping_invoice_number = si.invoice_number
         SET fret_fee                = NULL,
             order_service_fee       = NULL,
             shipping_invoice_number = NULL,
             picking_fee = 0.0,
             packaging_material_fee = 0.0,
             erp_status =
-                CASE erp_status
-                    WHEN '4' THEN '3'
+                CASE
+                    WHEN erp_status = '4' THEN '3'
+                    WHEN erp_status = '2' AND si.create_by = 'system' THEN '1'
                 ELSE erp_status
                 END
         WHERE shipping_invoice_number = #{invoiceNumber};

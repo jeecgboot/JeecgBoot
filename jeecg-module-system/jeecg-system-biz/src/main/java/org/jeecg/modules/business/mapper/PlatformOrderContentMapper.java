@@ -81,4 +81,5 @@ public interface PlatformOrderContentMapper extends BaseMapper<PlatformOrderCont
     List<SkuPrice> searchSkuPrice(@Param("skuIds") List<String> skuIds);
 
     void fetchHighestPriorityAttribute(PlatformOrderContent content);
+
 }

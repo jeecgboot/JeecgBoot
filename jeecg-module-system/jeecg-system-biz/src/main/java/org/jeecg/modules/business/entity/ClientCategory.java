@@ -60,4 +60,8 @@ public class ClientCategory implements Serializable {
 	@Excel(name = "description", width = 15)
     @ApiModelProperty(value = "description")
     private java.lang.String description;
+    /**balance threshold before alert*/
+    @Excel(name = "balance threshold before alert", width = 15)
+    @ApiModelProperty(value = "balance threshold before alert")
+    private java.math.BigDecimal balanceThreshold;
 }

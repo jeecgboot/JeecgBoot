@@ -63,4 +63,22 @@
         FROM purchase_order
         WHERE id = #{purchaseID}
     </select>
+    <select id="getPurchaseFeesByInvoiceCode" resultType="java.math.BigDecimal">
+        SELECT final_amount
+        FROM purchase_order
+        WHERE invoice_number = #{invoiceCode};
+    </select>
+    <delete id="deleteInvoice">
+        DELETE
+        FROM purchase_order
+        WHERE invoice_number = #{invoiceNumber}
+    </delete>
+    <delete id="deleteBatchInvoice">
+        DELETE
+        FROM purchase_order
+        WHERE invoice_number IN
+        <foreach collection="invoiceNumbers" item="invoiceNumber" index="index" open="(" separator="," close=")">
+            #{invoiceNumber}
+        </foreach>
+    </delete>
 </mapper>

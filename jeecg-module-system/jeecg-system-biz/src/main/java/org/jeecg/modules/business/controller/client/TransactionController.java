@@ -3,7 +3,9 @@ package org.jeecg.modules.business.controller.client;
 import cn.hutool.core.date.DateTime;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.api.dto.message.TemplateMessageDTO;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoiceFactory;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderContent;
@@ -13,6 +15,7 @@ import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.Estimation;
 import org.jeecg.modules.business.vo.ShippingFeesEstimation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,6 +31,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/transaction")
 @Slf4j
 public class TransactionController {
+    @Autowired
+    private EmailService emailService;
     @Autowired
     private TransactionMapper transactionMapper;
     @Autowired
@@ -68,6 +73,13 @@ public class TransactionController {
     ISavRefundWithDetailService savRefundWithDetailService;
     @Autowired
     ISavRefundService savRefundService;
+    @Autowired
+    private ISysBaseAPI ISysBaseApi;
+    @Autowired
+    Environment env;
+
+    private final String SECTION_START = "<section><ul>";
+    private final String SECTION_END = "</ul></section>";
     @GetMapping(value="/list")
     public Result<?> list() {
         return Result.ok(transactionMapper.list());
@@ -91,7 +103,7 @@ public class TransactionController {
         ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
                 platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
-                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService);
+                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
         List<ShippingFeesEstimation> shippingFeesEstimations = factory.getEstimations(clientId, orderIds, errorMessages);
         if(shippingFeesEstimations.isEmpty())
             return Result.OK("No estimation found.");
@@ -130,6 +142,28 @@ public class TransactionController {
 
             System.out.println("Purchase Fee " + currency + " : " + purchaseEstimation);
             System.out.println("Shipping Fee " + currency + " : " + shippingFeesEstimation);
+        }
+        // system notification
+        String errors = SECTION_START;
+        int max_entries = 100;
+        int current_page = 0;
+        int total_page = (int) Math.ceil((double) errorMessages.size() /max_entries);
+        for(int i = 1; i <= errorMessages.size(); i++) {
+            if(i%max_entries == 1) {
+                errors = SECTION_START;
+                current_page++;
+            }
+            errors = errors.concat("<li>" + i + " : " + errorMessages.get(i-1) +"</li>");
+            if(i%max_entries==0 || i == errorMessages.size()) {
+                errors = errors.concat(SECTION_END);
+                Map<String, String> param = new HashMap<>();
+                param.put("nb_entries", String.valueOf(errorMessages.size()));
+                param.put("errors", errors);
+                param.put("current_page", String.valueOf(current_page));
+                param.put("total_page", String.valueOf(total_page));
+                TemplateMessageDTO message = new TemplateMessageDTO("admin", "Gauthier", "Expenses Overview Errors", param, "expenses_overview_errors");
+                ISysBaseApi.sendTemplateAnnouncement(message);
+            }
         }
         return Result.ok(new Estimation(shippingFeesEstimation, purchaseEstimation, currency, errorMessages, shopIds, new DateTime(startDate).toString(), new DateTime(endDate).toString(), isCompleteInvoiceReady));
     }

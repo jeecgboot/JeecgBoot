@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.ExchangeRatesMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
@@ -13,6 +14,7 @@ import org.jeecg.modules.business.service.IClientService;
 import org.jeecg.modules.business.service.IPlatformOrderService;
 import org.jeecg.modules.business.service.IShippingFeesWaiverProductService;
 import org.jeecg.modules.business.vo.PlatformOrderQuantity;
+import org.jeecg.modules.business.vo.SkuDetail;
 import org.jeecg.modules.business.vo.SkuQuantity;
 import org.jeecg.modules.business.vo.SkuShippingFeesWaiver;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
@@ -182,7 +184,7 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
 
     @Override
-    public OrdersStatisticData getPlatformOrdersStatisticData(List<String> orderIds) {
+    public OrdersStatisticData getPlatformOrdersStatisticData(List<String> orderIds) throws UserException {
         List<SkuQuantity> skuIDQuantityMap = platformOrderContentMap.searchOrderContent(orderIds);
         List<OrderContentDetail> data = searchPurchaseOrderDetail(skuIDQuantityMap);
         return OrdersStatisticData.makeData(data, null);
@@ -200,14 +202,14 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
 
     @Override
-    public PurchaseConfirmation confirmPurchaseByPlatformOrder(List<String> platformOrderIdList) {
+    public PurchaseConfirmation confirmPurchaseByPlatformOrder(List<String> platformOrderIdList) throws UserException {
         List<SkuQuantity> skuIDQuantityMap = platformOrderContentMap.searchOrderContent(platformOrderIdList);
         return confirmPurchaseBySkuQuantity(skuIDQuantityMap);
     }
 
 
     @Override
-    public PurchaseConfirmation confirmPurchaseBySkuQuantity(List<SkuQuantity> skuIDQuantityMap) {
+    public PurchaseConfirmation confirmPurchaseBySkuQuantity(List<SkuQuantity> skuIDQuantityMap) throws UserException {
         Client client = clientService.getCurrentClient();
         ClientInfo clientInfo = new ClientInfo(client);
         return new PurchaseConfirmation(clientInfo, searchPurchaseOrderDetail(skuIDQuantityMap),
@@ -215,13 +217,13 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
 
     @Override
-    public PurchaseConfirmation confirmPurchaseBySkuQuantity(ClientInfo clientInfo, List<SkuQuantity> skuIDQuantityMap) {
+    public PurchaseConfirmation confirmPurchaseBySkuQuantity(ClientInfo clientInfo, List<SkuQuantity> skuIDQuantityMap) throws UserException {
         return new PurchaseConfirmation(clientInfo, searchPurchaseOrderDetail(skuIDQuantityMap),
                 getShippingFeesWaiverMap(skuIDQuantityMap.stream().map(SkuQuantity::getID).collect(toList())));
     }
 
     @Override
-    public List<OrderContentDetail> searchPurchaseOrderDetail(List<SkuQuantity> skuQuantities) {
+    public List<OrderContentDetail> searchPurchaseOrderDetail(List<SkuQuantity> skuQuantities) throws UserException {
         BigDecimal eurToRmb = exchangeRatesMapper.getLatestExchangeRate("EUR", "RMB");
         // convert list of (ID, quantity) to map between ID and quantity
         Map<String, Integer> skuQuantity =
@@ -236,7 +238,14 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         // Get list of sku ID
         List<String> skuList = new ArrayList<>(skuQuantity.keySet());
 
-        List<OrderContentDetail> details = platformOrderContentMap.searchSkuDetail(skuList).stream()
+        List<SkuDetail> skuDetails = platformOrderContentMap.searchSkuDetail(skuList);
+        for(SkuDetail detail : skuDetails) {
+            if(detail.getPrice().getId() == null || detail.getPrice().getPrice() == null) {
+                throw new UserException("SKU " + detail.getSkuId() + " has no price or price id");
+            }
+        }
+        System.out.println("Breakpoint");
+        List<OrderContentDetail> details = skuDetails.stream()
                 .map(
                         skuDetail -> new OrderContentDetail(
                                 skuDetail,

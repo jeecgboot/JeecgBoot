@@ -29,4 +29,10 @@
         FROM platform_order_content p
         WHERE p.platform_order_id = #{platformOrderId}
     </select>
+    <select id="fetchInvoiceCurrencyByCode" resultType="org.jeecg.modules.business.entity.Currency">
+        SELECT c.id, c.code
+        FROM shipping_invoice s
+            JOIN currency c ON s.currency_id = c.id
+        WHERE invoice_number = #{invoiceNumber}
+    </select>
 </mapper>

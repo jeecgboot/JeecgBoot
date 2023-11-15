@@ -2,10 +2,7 @@ package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.jeecg.modules.business.entity.Client;
-import org.jeecg.modules.business.entity.PlatformOrder;
-import org.jeecg.modules.business.entity.PlatformOrderContent;
-import org.jeecg.modules.business.entity.ShippingInvoice;
+import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.ShippingInvoiceMapper;
 import org.jeecg.modules.business.service.IShippingInvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +65,11 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
     @Transactional
     public Client getShopOwnerFromInvoiceNumber(String invoiceNumber) {
         return shippingInvoiceMapper.fetchShopOwnerFromInvoiceNumber(invoiceNumber);
+    }
+
+    @Override
+    public Currency getInvoiceCurrencyByCode(String invoiceCode) {
+        return shippingInvoiceMapper.fetchInvoiceCurrencyByCode(invoiceCode);
     }
 
     @Override
