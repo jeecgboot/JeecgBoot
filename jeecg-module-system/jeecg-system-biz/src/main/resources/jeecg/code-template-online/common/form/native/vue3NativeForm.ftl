@@ -40,7 +40,7 @@
 	          <j-switch v-model:value="formData.${po.fieldName}" <#if po.dictField != 'is_open'>:options="${po.dictField}"</#if> <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if>></j-switch>
 			<#elseif po.classType =='pca'>
 	          <#assign need_pca = true>
-	          <j-area-linkage v-model:value="formData.${po.fieldName}" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if> />
+	          <j-area-select v-model:value="formData.${po.fieldName}" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if> />
 			<#elseif po.classType =='markdown'>
 	          <#assign need_markdown = true>
 	          <j-markdown-editor v-model:value="formData.${autoStringSuffixForModel(po)}" id="${po.fieldName}" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if>></j-markdown-editor>
