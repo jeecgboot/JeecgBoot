@@ -35,7 +35,7 @@
             <#elseif po.classType=='time'>
               <#if query_field_no gt 1>  </#if><time-picker valueFormat="HH:mm:ss" placeholder="请选择${po.filedComment}" v-model:value="queryParam.${po.fieldName}" />
             <#elseif po.classType=='pca'>
-              <#if query_field_no gt 1>  </#if><j-area-linkage v-model:value="queryParam.${po.fieldName}" placeholder="请选择${po.filedComment}" @change="(value) => handleFormJoinChange('${po.fieldName}', value)" /> 
+              <#if query_field_no gt 1>  </#if><j-area-select v-model:value="queryParam.${po.fieldName}" placeholder="请选择${po.filedComment}" /> 
             <#elseif po.classType=='sel_tree'>
               <#if query_field_no gt 1>  </#if><j-tree-select v-model:value="queryParam.${po.fieldName}" placeholder="请选择${po.filedComment}" <#if po.dictText??><#if po.dictText?split(',')[2]?? && po.dictText?split(',')[0]??>dict="${po.dictTable},${po.dictText?split(',')[2]},${po.dictText?split(',')[0]}" <#elseif po.dictText?split(',')[1]??>pidField:"${po.dictText?split(',')[1]}", <#elseif po.dictText?split(',')[3]??>hasChildField:"${po.dictText?split(',')[3]}"</#if> </#if>pidValue="${po.dictField}" />
             <#elseif po.classType=='popup'>
