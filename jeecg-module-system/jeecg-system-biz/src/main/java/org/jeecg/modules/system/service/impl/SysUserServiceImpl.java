@@ -1,13 +1,11 @@
 package org.jeecg.modules.system.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -28,7 +26,6 @@ import org.jeecg.common.constant.enums.MessageTypeEnum;
 import org.jeecg.common.constant.enums.RoleIndexConfigEnum;
 import org.jeecg.common.desensitization.annotation.SensitiveEncode;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.*;
@@ -43,9 +40,9 @@ import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.vo.SysUserDepVo;
 import org.jeecg.modules.system.vo.SysUserPositionVo;
 import org.jeecg.modules.system.vo.UserAvatar;
+import org.jeecg.modules.system.vo.lowapp.AppExportUserVo;
 import org.jeecg.modules.system.vo.lowapp.DepartAndUserInfo;
 import org.jeecg.modules.system.vo.lowapp.DepartInfo;
-import org.jeecg.modules.system.vo.lowapp.AppExportUserVo;
 import org.jeecg.modules.system.vo.lowapp.UpdateDepartInfo;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -103,13 +100,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	@Autowired
 	private SysThirdAccountMapper sysThirdAccountMapper;
 	@Autowired
-	ThirdAppWechatEnterpriseServiceImpl wechatEnterpriseService;
+    ThirdAppWechatEnterpriseServiceImpl wechatEnterpriseService;
 	@Autowired
-	ThirdAppDingtalkServiceImpl dingtalkService;
+    ThirdAppDingtalkServiceImpl dingtalkService;
 	@Autowired
-	SysRoleIndexMapper sysRoleIndexMapper;
+    SysRoleIndexMapper sysRoleIndexMapper;
 	@Autowired
-	SysTenantMapper sysTenantMapper;
+    SysTenantMapper sysTenantMapper;
 	@Autowired
     private SysUserTenantMapper relationMapper;
 	@Autowired
@@ -178,8 +175,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 				} else {
 					item.setRelTenantIds("");
 				}
+				Integer posTenantId = null;
+				if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+					posTenantId = tenantId;		
+				}
 				//查询用户职位关系表(获取租户下面的)
-				List<String> positionList =  sysUserPositionMapper.getPositionIdByUserTenantId(item.getId(),tenantId);
+				//update-begin---author:wangshuai---date:2023-11-15---for:【QQYUN-7028】用户职务保存后未回显---
+				List<String> positionList =  sysUserPositionMapper.getPositionIdByUserTenantId(item.getId(),posTenantId);
+				//update-end---author:wangshuai---date:2023-11-15---for:【QQYUN-7028】用户职务保存后未回显---
 				//update-end---author:wangshuai ---date:20230228  for：[QQYUN-4354]加入更多字段：当前加入时间应该取当前租户的/职位也是当前租户下的------------
 				item.setPost(CommonUtils.getSplitText(positionList,SymbolConstant.COMMA));
 				
