@@ -35,6 +35,8 @@ public class HLJob implements Job {
     @Autowired
     private IPlatformOrderService platformOrderService;
 
+    private final static String URL = "http://www.antugj.com:8082/selectTrack.htm";
+
     private static final Integer DEFAULT_NUMBER_OF_DAYS = 15;
     private static final Integer DEFAULT_MAXIMUM_NUMBER_OF_PARCELS_PER_TRANSACTION = 800;
     private static final List<String> DEFAULT_TRANSPORTERS = Arrays.asList("法国专线普货");
@@ -91,7 +93,7 @@ public class HLJob implements Job {
         List<HLResponseItem> parcelTraces = new ArrayList<>();
         List<HLRequest> hlRequests = new ArrayList<>();
         billCodeLists.forEach(billcodeList -> {
-            HLRequest hlRequest = new HLRequest(billcodeList);
+            HLRequest hlRequest = new HLRequest(URL, billcodeList);
             hlRequests.add(hlRequest);
         });
         List<Boolean> results = new ArrayList<>();
