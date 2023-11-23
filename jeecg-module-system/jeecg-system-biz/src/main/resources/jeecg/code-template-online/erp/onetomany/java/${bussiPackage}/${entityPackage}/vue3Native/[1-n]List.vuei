@@ -42,6 +42,10 @@
           <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
           <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
          </#if>
+         <#if po.classType=='pca'>
+           <!--省市区字段回显插槽-->
+           {{ getAreaTextByCode(text) }}
+         </#if>
         </template>
         </#if>
        </#list>
@@ -138,7 +142,7 @@
    */
   async function handleEdit(record: Recordable) {
     registerModal.value.disableSubmit = false;
-    registerModal.value.edit();
+    registerModal.value.edit(record);
   }
 
   /**
@@ -227,7 +231,6 @@
       white-space: nowrap;
     }
     .query-group-cust{
-      width: calc(50% - 15px);
       min-width: 100px !important;
     }
     .query-group-split-cust{

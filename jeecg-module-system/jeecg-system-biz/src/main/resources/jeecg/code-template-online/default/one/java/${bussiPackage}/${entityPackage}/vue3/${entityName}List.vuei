@@ -133,7 +133,7 @@
               ],
             },
            actionColumn: {
-               width: 150,
+               width: 120,
                fixed:'right'
             },
       },
@@ -221,6 +221,7 @@
            popConfirm: {
              title: '是否确认删除',
              confirm: handleDelete.bind(null, record),
+             placement: 'topLeft',
            }
          }
        ];
@@ -230,6 +231,7 @@
            popConfirm: {
              title: '确认提交流程吗？',
              confirm: handleProcess.bind(null, record),
+             placement: 'topLeft',
            }
          })
        }
@@ -244,6 +246,7 @@
            popConfirm: {
              title: '是否确认删除',
              confirm: handleDelete.bind(null, record),
+             placement: 'topLeft',
            }
          }
        ]
