@@ -125,6 +125,10 @@
           <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
           <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
          </#if>
+         <#if po.classType=='pca'>
+           <!--省市区字段回显插槽-->
+           {{ getAreaTextByCode(text) }}
+         </#if>
         </template>
         </#if>
        </#list>
@@ -279,6 +283,7 @@
         popConfirm: {
           title: '是否确认删除',
           confirm: handleDelete.bind(null, record),
+          placement: 'topLeft',
         }
       }
     ];
@@ -288,6 +293,7 @@
          popConfirm: {
            title: '确认提交流程吗？',
            confirm: handleProcess.bind(null, record),
+           placement: 'topLeft',
          }
       })
     }
@@ -303,6 +309,7 @@
         popConfirm: {
           title: '是否确认删除',
           confirm: handleDelete.bind(null, record),
+          placement: 'topLeft',
         },
       },
     ];
@@ -390,13 +397,13 @@
   }
   </#if>
 
-  <#if need_pca>
+  <#if need_pca || need_dept_user>
   /**
-   * 省市区点击事件
+   * form点击事件(以逗号分割)
    * @param key
    * @param value
    */
-  function handleAreaChange(key, value) {
+  function handleFormJoinChange(key, value) {
     queryParam[key] = value.join(',');
   }
   </#if>
@@ -410,7 +417,6 @@
       white-space: nowrap;
     }
     .query-group-cust{
-      width: calc(50% - 15px);
       min-width: 100px !important;
     }
     .query-group-split-cust{
