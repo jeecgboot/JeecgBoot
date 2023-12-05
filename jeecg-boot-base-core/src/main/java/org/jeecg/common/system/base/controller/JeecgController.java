@@ -42,7 +42,7 @@ public class JeecgController<T, S extends IService<T>> {
     protected S service;
     @Resource
     private JeecgBaseConfig jeecgBaseConfig;
-
+    
     /**
      * 导出excel
      *
