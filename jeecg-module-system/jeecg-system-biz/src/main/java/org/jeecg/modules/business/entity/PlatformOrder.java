@@ -16,10 +16,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * @Description: 平台订单表
+ * @Description: 平台订单
  * @Author: jeecg-boot
- * @Date: 2023-02-10
- * @Version: V1.6
+ * @Date: 2023-11-29
+ * @Version: V1.7
  */
 @ApiModel(value = "platform_order对象", description = "平台订单表")
 @Data
@@ -222,4 +222,10 @@ public class PlatformOrder implements Serializable {
     @Excel(name = "包材费", width = 15)
     @ApiModelProperty(value = "包材费")
     private java.math.BigDecimal packagingMaterialFee;
+    /**
+     * 收件人城市
+     */
+    @Excel(name = "收件人城市", width = 15)
+    @ApiModelProperty(value = "收件人城市")
+    private java.lang.String city;
 }
