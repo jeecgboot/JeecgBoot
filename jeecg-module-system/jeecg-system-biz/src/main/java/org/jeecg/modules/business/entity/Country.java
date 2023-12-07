@@ -17,4 +17,11 @@ public class Country {
         this.code = code;
         this.specialName = specialName;
     }
+
+    public String getMabangName() {
+        if (specialName == null || specialName.isEmpty()) {
+            return nameEn;
+        }
+        return specialName;
+    }
 }
