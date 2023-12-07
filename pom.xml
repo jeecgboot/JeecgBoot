@@ -55,7 +55,7 @@
 		<minidao.version>1.9.5</minidao.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.6.4</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.6.6</jimureport-spring-boot-starter.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.11.2</aliyun.oss.version>
@@ -64,7 +64,7 @@
 		<java-jwt.version>3.11.0</java-jwt.version>
 		<shiro-redis.version>3.2.2</shiro-redis.version>
 		<codegenerate.version>1.4.4</codegenerate.version>
-		<autopoi-web.version>1.4.6</autopoi-web.version>
+		<autopoi-web.version>1.4.7</autopoi-web.version>
 		<minio.version>8.0.3</minio.version>
 		<justauth-spring-boot-starter.version>1.3.4</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
@@ -243,7 +243,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.5.3</version>
+				<version>3.6.0-beta</version>
 			</dependency>
 
 			<!--mongon db-->
