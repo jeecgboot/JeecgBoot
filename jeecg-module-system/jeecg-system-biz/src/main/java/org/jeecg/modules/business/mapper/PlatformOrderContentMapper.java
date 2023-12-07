@@ -5,6 +5,7 @@ import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.ClientPlatformOrderContent;
 import org.jeecg.modules.business.entity.PlatformOrderContent;
+import org.jeecg.modules.business.entity.ShoumanOrderContent;
 import org.jeecg.modules.business.vo.SkuDetail;
 import org.jeecg.modules.business.vo.SkuQuantity;
 import org.jeecg.modules.business.vo.SkuWeightDiscountServiceFees;
@@ -75,4 +76,6 @@ public interface PlatformOrderContentMapper extends BaseMapper<PlatformOrderCont
     void insertPlatformOrderContentsArchives(@Param("orderContents") List<PlatformOrderContent> platformOrderContents);
     void cancelInvoice(@Param("invoiceNumber") String invoiceNumber);
     void cancelBatchInvoice(@Param("invoiceNumbers") List<String> invoiceNumbers);
+
+    List<ShoumanOrderContent> searchShoumanOrderContent();
 }

@@ -313,4 +313,48 @@
             #{invoiceNumber}
         </foreach>);
     </update>
+
+    <select id="searchShoumanOrderContent"
+            resultType="org.jeecg.modules.business.entity.ShoumanOrderContent">
+        select po.platform_order_id,
+               po.platform_order_number,
+               po.postcode,
+               po.recipient,
+               po.city,
+               po.country,
+               poc.id as platform_order_content_id,
+               poc.customization_data,
+               poc.quantity,
+               sc.product_name,
+               ssr.remark,
+               sc.content_rec_regex,
+               sc.content_ext_regex,
+               sc.price,
+               sc.image_url,
+               sc.sku
+        from platform_order_content poc
+                 join platform_order po on poc.platform_order_id = po.id
+                 join sku s on poc.sku_id = s.id
+                 join shouman_sku_relation ssr on s.id = ssr.sku_id
+                 join shouman_category sc on ssr.shouman_category_id = sc.id;
+    </select>
+
+    <resultMap id="shoumanOrderContentResultMap" type="org.jeecg.modules.business.entity.ShoumanOrderContent">
+        <id property="platformOrderContentId" column="platform_order_content_id" javaType="string"/>
+        <result property="platformOrderId" column="platform_order_id" javaType="string"/>
+        <result property="platformOrderNumber" column="platform_order_number" javaType="string"/>
+        <result property="postcode" column="postcode" javaType="string"/>
+        <result property="recipient" column="recipient" javaType="string"/>
+        <result property="city" column="city" javaType="string"/>
+        <result property="country" column="country" javaType="string"/>
+        <result property="customizationData" column="customization_data" javaType="string"/>
+        <result property="quantity" column="quantity"/>
+        <result property="productName" column="product_name" javaType="string"/>
+        <result property="remark" column="remark" javaType="string"/>
+        <result property="contentRecRegex" column="content_rec_regex" javaType="string"/>
+        <result property="contentExtRegex" column="content_ext_regex" javaType="string"/>
+        <result property="price" column="price"/>
+        <result property="imageUrl" column="image_url" javaType="string"/>
+        <result property="sku" column="sku" javaType="string"/>
+    </resultMap>
 </mapper>
