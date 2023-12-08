@@ -133,16 +133,13 @@ public class TransactionController {
         }
         if(!currency.equals("EUR")) {
             BigDecimal exchangeRate = exchangeRatesMapper.getLatestExchangeRate("EUR", currency);
-            System.out.println("Exchange rate : " + exchangeRate);
-            System.out.println("Purchase Fee : " + purchaseEstimation);
-            System.out.println("Shipping Fee : " + shippingFeesEstimation);
 
             purchaseEstimation = purchaseEstimation.multiply(exchangeRate).setScale(2, RoundingMode.CEILING);
             shippingFeesEstimation = shippingFeesEstimation.multiply(exchangeRate).setScale(2, RoundingMode.CEILING);
 
-            System.out.println("Purchase Fee " + currency + " : " + purchaseEstimation);
-            System.out.println("Shipping Fee " + currency + " : " + shippingFeesEstimation);
         }
+        log.info("Purchase Fee " + currency + " : " + purchaseEstimation);
+        log.info("Shipping Fee " + currency + " : " + shippingFeesEstimation);
         // system notification
         String errors = SECTION_START;
         int max_entries = 100;

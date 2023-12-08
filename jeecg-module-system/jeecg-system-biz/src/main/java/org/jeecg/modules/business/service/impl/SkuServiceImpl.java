@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -386,5 +387,24 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     @Override
     public List<Sku> selectByErpCode(Collection<String> erpCodes) {
         return skuMapper.selectByErpCode(erpCodes);
+    }
+
+    @Override
+    public String searchFirstMissingPriceSku(List<String> skuIds) {
+        return skuMapper.searchFirstMissingPriceSku(skuIds);
+    }
+
+    @Override
+    public List<String> listErpCodesByIds(List<String> skuIds) {
+        return skuMapper.listErpCodesByIds(skuIds);
+    }
+    @Override
+    public List<Sku> findMissingSkusInNotShippedOrders(LocalDateTime start) {
+        return skuMapper.findMissingSkusInNotShippedOrders(start);
+    }
+
+    @Override
+    public List<SkuQuantity> getSkuQuantitiesFromOrderIds(List<String> orderIds) {
+        return skuMapper.getSkuQuantitiesFromOrderIds(orderIds);
     }
 }

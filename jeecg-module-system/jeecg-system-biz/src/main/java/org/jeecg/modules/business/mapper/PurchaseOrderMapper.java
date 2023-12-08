@@ -27,6 +27,7 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
      */
     void addPurchase(
             @Param("ID") String ID, @Param("creator") String creator,
+            @Param("currencyID") String currencyID,
             @Param("clientID") String clientID,
             @Param("totalAmount") BigDecimal totalAmount,
             @Param("discount") BigDecimal discount,

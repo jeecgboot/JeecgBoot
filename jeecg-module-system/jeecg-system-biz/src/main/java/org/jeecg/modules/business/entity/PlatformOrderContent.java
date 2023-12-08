@@ -18,8 +18,8 @@ import java.util.Objects;
 /**
  * @Description: 平台订单内容
  * @Author: jeecg-boot
- * @Date: 2023-02-09
- * @Version: V1.3
+ * @Date: 2023-11-28
+ * @Version: V1.4
  */
 @ApiModel(value = "platform_order对象", description = "平台订单表")
 @Data
@@ -121,6 +121,12 @@ public class PlatformOrderContent implements Serializable {
     @Excel(name = "有货（1=有，0=没有）", width = 15)
     @ApiModelProperty(value = "有货（1=有，0=没有）")
     private String productAvailable;
+    /**
+     * 有货（1=有，0=没有）
+     * */
+    @Excel(name = "有货（1=有，0=没有）", width = 15)
+    @ApiModelProperty(value = "有货（1=有，0=没有）")
+    private java.lang.String virtualProductAvailable;
     /**
      * 海外仓操作费
      */

@@ -75,7 +75,7 @@ public class CreditController extends JeecgController<Credit, ICreditService> {
 	public Result<String> add(@RequestBody Credit credit) {
 		creditService.save(credit);
 		balanceService.updateBalance(credit.getClientId(), credit.getId(), credit.getAmount(), credit.getCurrencyId());
-		return Result.OK("添加成功！");
+		return Result.OK("sys.api.entryAddSuccess");
 	}
 	
 	/**
@@ -113,7 +113,7 @@ public class CreditController extends JeecgController<Credit, ICreditService> {
 				return Result.error("Error while editing balance : " + e.getMessage());
 			}
 		}
-		return Result.OK("Credit edited successfully !");
+		return Result.OK("sys.api.entryEditSuccess");
 	}
 	
 	/**
@@ -129,7 +129,7 @@ public class CreditController extends JeecgController<Credit, ICreditService> {
 	public Result<String> delete(@RequestParam(name="id") String id) {
 		creditService.removeById(id);
 		balanceService.deleteBalance(id, OperationType.Credit.name());
-		return Result.OK("删除成功!");
+		return Result.OK("sys.api.entryDeleteSuccess");
 	}
 	
 	/**
@@ -146,7 +146,7 @@ public class CreditController extends JeecgController<Credit, ICreditService> {
 		List<String> idList = Arrays.asList(ids.split(","));
 		creditService.removeByIds(idList);
 		balanceService.deleteBatchBalance(idList,OperationType.Credit.name());
-		return Result.OK("批量删除成功!");
+		return Result.OK("sys.api.entryBatchDeleteSuccess");
 	}
 	
 	/**

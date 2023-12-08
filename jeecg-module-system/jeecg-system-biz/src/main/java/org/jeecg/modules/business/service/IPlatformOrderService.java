@@ -179,7 +179,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     void cancelBatchInvoice(List<String> invoiceNumbers);
 
     /**
-     * Find all order that can be invoiced by small clients (type 2) themselves.
+     * Find all order that can be invoiced themselves.
      * @param shopIds list of shop id
      * @param erpStatuses list of erp_status
      * @return list of orders
@@ -201,4 +201,11 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      */
     List<PlatformOrder> fetchEmptyLogisticChannelOrders(String startDate, String endDate);
 
+    Map<PlatformOrder, List<PlatformOrderContent>> fetchOrdersWithProductAvailable();
+
+    List<PlatformOrder> fetchOrdersWithMissingStock(LocalDateTime start);
+
+    List<PlatformOrder> selectByPlatformOrderIds(List<String> platformOrderIds);
+
+    void removePurchaseInvoiceNumber(String purchaseInvoiceNumber);
 }

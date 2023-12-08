@@ -244,7 +244,6 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
                 throw new UserException("SKU " + detail.getSkuId() + " has no price or price id");
             }
         }
-        System.out.println("Breakpoint");
         List<OrderContentDetail> details = skuDetails.stream()
                 .map(
                         skuDetail -> new OrderContentDetail(
@@ -417,5 +416,29 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     @Override
     public List<PlatformOrder> fetchEmptyLogisticChannelOrders(String startDate, String endDate) {
         return platformOrderMap.fetchEmptyLogisticChannelOrders(startDate, endDate);
+    }
+
+    @Override
+    public Map<PlatformOrder, List<PlatformOrderContent>> fetchOrdersWithProductAvailable() {
+        List<PlatformOrder> orderList = platformOrderMap.fetchOrdersWithProductAvailable();
+        List<String> orderIdsWithProductAvailable = orderList.stream().map(PlatformOrder::getId).collect(toList());
+        List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContent(orderIdsWithProductAvailable);
+        Map<String, PlatformOrder> orderMap = orderList.stream().collect(toMap(PlatformOrder::getId, Function.identity()));
+        return orderContents.stream().collect(groupingBy(platformOrderContent -> orderMap.get(platformOrderContent.getPlatformOrderId())));
+    }
+
+    @Override
+    public List<PlatformOrder> fetchOrdersWithMissingStock(LocalDateTime start) {
+        return platformOrderMap.fetchOrdersWithMissingStock(start);
+    }
+
+    @Override
+    public List<PlatformOrder> selectByPlatformOrderIds(List<String> platformOrderIds) {
+        return platformOrderMap.selectByPlatformOrderIds(platformOrderIds);
+    }
+
+    @Override
+    public void removePurchaseInvoiceNumber(String purchaseInvoiceNumber) {
+        platformOrderMap.removePurchaseInvoiceNumber(purchaseInvoiceNumber);
     }
 }

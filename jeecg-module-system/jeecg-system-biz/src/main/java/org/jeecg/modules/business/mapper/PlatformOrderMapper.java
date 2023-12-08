@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
 import org.jeecg.modules.business.entity.PlatformOrder;
-import org.jeecg.modules.business.entity.PlatformOrderContent;
 import org.jeecg.modules.business.entity.PlatformOrderShopSync;
-import org.jeecg.modules.business.entity.Shop;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrderQuantity;
 import org.springframework.stereotype.Repository;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Description: 平台订单表
@@ -194,4 +191,13 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
 
     void updateErpStatusByCode(@Param("invoiceCode") String invoiceCode, @Param("erpStatus") int erpStatus);
 
+    List<PlatformOrder> fetchByIds(@Param("orderIds") List<String> orderNumbers);
+
+    List<PlatformOrder> fetchOrdersWithProductAvailable();
+
+    List<PlatformOrder> fetchOrdersWithMissingStock(@Param("start") LocalDateTime start);
+
+    List<PlatformOrder> selectByPlatformOrderIds(@Param("platformOrderIds") List<String> platformOrderIds);
+
+    void removePurchaseInvoiceNumber(@Param("invoiceNumber") String purchaseInvoiceNumber);
 }

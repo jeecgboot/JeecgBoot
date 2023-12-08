@@ -11,4 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IClientCategoryService extends IService<ClientCategory> {
 
+    String getClientCategoryByClientId(String clientId);
 }

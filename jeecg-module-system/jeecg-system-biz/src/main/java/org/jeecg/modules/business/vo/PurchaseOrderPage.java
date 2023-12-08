@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.vo;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import org.jeecg.modules.business.entity.PurchaseOrder;
 import org.jeecg.modules.business.entity.PurchaseOrderSku;
@@ -53,6 +54,11 @@ public class PurchaseOrderPage {
     @Dict(dictTable = "client", dicText = "internal_code", dicCode = "id")
 	@ApiModelProperty(value = "客户ID")
     private String clientId;
+	/**货币*/
+	@Excel(name = "货币ID", width = 15, dictTable = "currency", dicText = "code", dicCode = "id")
+	@Dict(dictTable = "currency", dicText = "code", dicCode = "id")
+	@ApiModelProperty(value = "货币ID")
+	private java.lang.String currencyId;
 	/**应付金额*/
 	@ApiModelProperty(value = "应付金额")
     private java.math.BigDecimal totalAmount;
@@ -62,10 +68,82 @@ public class PurchaseOrderPage {
 	/**最终金额*/
 	@ApiModelProperty(value = "最终金额")
     private java.math.BigDecimal finalAmount;
+	/**Purchase status*/
+	@Excel(name = "status", width = 15)
+	@ApiModelProperty(value = "status")
+	private String status;
+
+	/**
+	 * Payment document
+	 */
+	@Excel(name = "payment document", width = 15)
+	private transient java.lang.String paymentDocumentString;
+
+	private byte[] paymentDocument;
+
+	public byte[] getPaymentDocument(){
+		if(paymentDocumentString==null){
+			return null;
+		}
+		try {
+			return paymentDocumentString.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String getPaymentDocumentString(){
+		if(paymentDocument==null || paymentDocument.length==0){
+			return "";
+		}
+		try {
+			return new String(paymentDocument,"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+	/**
+	 * Inventory sheet
+	 */
+	@Excel(name = "inventory sheet", width = 15)
+	private transient java.lang.String inventoryDocumentString;
+
+	private byte[] inventoryDocument;
+
+	public byte[] getInventoryDocument(){
+		if(inventoryDocumentString==null){
+			return null;
+		}
+		try {
+			return inventoryDocumentString.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String getInventoryDocumentString(){
+		if(inventoryDocument==null || inventoryDocument.length==0){
+			return "";
+		}
+		try {
+			return new String(inventoryDocument,"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
 
 	@ExcelCollection(name="商品采购订单SKU")
 	@ApiModelProperty(value = "商品采购订单SKU")
 	private List<PurchaseOrderSku> purchaseOrderSkuList;
+
+	/**平台订单ID*/
+	@Excel(name = "平台订单ID", width = 15)
+	@ApiModelProperty(value = "平台订单ID")
+	private String platformOrderId;
 //	@ExcelCollection(name="SKU采购折扣历史")
 //	@ApiModelProperty(value = "SKU采购折扣历史")
 //	private List<SkuPromotionHistory> skuPromotionHistoryList;

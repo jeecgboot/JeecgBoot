@@ -3,10 +3,12 @@ package org.jeecg.modules.business.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.Sku;
+import org.jeecg.modules.business.vo.SkuQuantity;
 import org.jeecg.modules.business.vo.SkuUpdate;
 import org.jeecg.modules.business.vo.inventory.InventoryRecord;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -42,4 +44,12 @@ public interface SkuMapper extends BaseMapper<Sku> {
     void batchUpdateStock(@Param("list") List<SkuUpdate> list);
 
     List<Sku> selectByErpCode(Collection<String> erpCodes);
+
+    String searchFirstMissingPriceSku(@Param("skuIds") List<String> skuIds);
+
+    List<String> listErpCodesByIds(@Param("skuIds") List<String> skuIds);
+
+    List<Sku> findMissingSkusInNotShippedOrders(@Param("start") LocalDateTime start);
+
+    List<SkuQuantity> getSkuQuantitiesFromOrderIds(@Param("orderIds") List<String> orderIds);
 }

@@ -1,8 +1,11 @@
 package org.jeecg.modules.business.domain.purchase.invoice;
 
+import lombok.Getter;
+
 /**
  * DTO for purchase invoice data between service and controller
  */
+@Getter
 public class InvoiceData {
     private final String entity;
 
@@ -13,11 +16,4 @@ public class InvoiceData {
         this.code = code;
     }
 
-    public String getEntity() {
-        return entity;
-    }
-
-    public String getCode() {
-        return code;
-    }
 }

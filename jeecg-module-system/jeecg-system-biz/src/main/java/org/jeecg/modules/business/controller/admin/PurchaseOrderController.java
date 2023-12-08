@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -30,6 +31,7 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -50,7 +52,7 @@ import java.util.stream.Collectors;
  */
 @Api(tags = "Administrator side purchase order API")
 @RestController
-@RequestMapping("/business/purchaseOrder")
+@RequestMapping("/purchaseOrder")
 @Slf4j
 public class PurchaseOrderController {
     private final IPurchaseOrderService purchaseOrderService;
@@ -96,25 +98,127 @@ public class PurchaseOrderController {
         IPage<PurchaseOrder> pageList = purchaseOrderService.page(page, queryWrapper);
         return Result.OK(pageList);
     }
-
     /**
-     * 编辑
+     *   添加
+     *
+     * @param purchaseOrder
+     * @return
+     */
+    @AutoLog(value = "商品采购订单-添加")
+    @ApiOperation(value="商品采购订单-添加", notes="商品采购订单-添加")
+    @PostMapping(value = "/add")
+    public Result<String> add(@RequestBody PurchaseOrder purchaseOrder) {
+        purchaseOrderService.save(purchaseOrder);
+        return Result.OK("sys.api.entryAddSuccess");
+    }
+    /**
+     *   添加
      *
      * @param purchaseOrderPage
      * @return
      */
-    @AutoLog(value = "商品采购订单-编辑")
-    @ApiOperation(value = "商品采购订单-编辑", notes = "商品采购订单-编辑")
-    @PutMapping(value = "/edit")
-    public Result<?> edit(@RequestBody PurchaseOrderPage purchaseOrderPage) {
+    @Transactional
+    @AutoLog(value = "商品采购订单-添加")
+    @ApiOperation(value="商品采购订单-添加", notes="商品采购订单-添加")
+    @PostMapping(value = "/addPurchaseAndOrder")
+    public Result<?> addPurchaseAndOrder(@RequestBody PurchaseOrderPage purchaseOrderPage) {
         PurchaseOrder purchaseOrder = new PurchaseOrder();
         BeanUtils.copyProperties(purchaseOrderPage, purchaseOrder);
-        PurchaseOrder purchaseOrderEntity = purchaseOrderService.getById(purchaseOrder.getId());
-        if (purchaseOrderEntity == null) {
-            return Result.error("未找到对应数据");
+        List<String> platformOrderIds = new ArrayList<>(Arrays.asList(purchaseOrderPage.getPlatformOrderId().split(",")));
+        log.info("Creating new purchase order and attributing it to orders: {}", platformOrderIds);
+        // test 5757661446491 & 5757658267995 poId
+        List<PlatformOrder> platformOrders = platformOrderService.selectByPlatformOrderIds(platformOrderIds);
+        Map<String, List<String>> platformOrderIdUpdateMap = new HashMap<>();
+        if(!platformOrders.isEmpty()) {
+            log.info("Platform orders found for attribution: {}", platformOrders.stream().map(PlatformOrder::getPlatformOrderId).collect(Collectors.toList()));
+            for(PlatformOrder po : platformOrders) {
+                po.setPurchaseInvoiceNumber(purchaseOrder.getInvoiceNumber());
+                platformOrderIds.remove(po.getPlatformOrderId());
+                if(platformOrderIdUpdateMap.get("success") != null)
+                    platformOrderIdUpdateMap.get("success").add(po.getPlatformOrderId());
+                else
+                    platformOrderIdUpdateMap.put("success", new ArrayList<>(Collections.singletonList(po.getPlatformOrderId())));
+            }
+            platformOrderService.updateBatchById(platformOrders);
         }
-        purchaseOrderService.updateMain(purchaseOrder, purchaseOrderPage.getPurchaseOrderSkuList(), null);
-        return Result.OK("编辑成功!");
+        if(!platformOrderIds.isEmpty()) {
+            log.error("Platform orders not found: {}", platformOrderIds);
+            platformOrderIdUpdateMap.put("fail", platformOrderIds);
+        }
+
+        purchaseOrderService.save(purchaseOrder);
+        return Result.OK("sys.api.entryAddSuccess", platformOrderIdUpdateMap);
+    }
+//    /**
+//     * 编辑
+//     *
+//     * @param purchaseOrderPage
+//     * @return
+//     */
+//    @AutoLog(value = "商品采购订单-编辑")
+//    @ApiOperation(value = "商品采购订单-编辑", notes = "商品采购订单-编辑")
+//    @PostMapping(value = "/edit")
+//    public Result<?> edit(@RequestBody PurchaseOrderPage purchaseOrderPage) {
+//        PurchaseOrder purchaseOrder = new PurchaseOrder();
+//        BeanUtils.copyProperties(purchaseOrderPage, purchaseOrder);
+//        PurchaseOrder purchaseOrderEntity = purchaseOrderService.getById(purchaseOrder.getId());
+//        if (purchaseOrderEntity == null) {
+//            return Result.error("未找到对应数据");
+//        }
+//        purchaseOrderService.updateMain(purchaseOrder, purchaseOrderPage.getPurchaseOrderSkuList(), null);
+//        return Result.OK("编辑成功!");
+//    }
+    /**
+     *  编辑
+     *
+     * @param purchaseOrder
+     * @return
+     */
+    @AutoLog(value = "purchase_order-编辑")
+    @ApiOperation(value="purchase_order-编辑", notes="purchase_order-编辑")
+    @RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
+    public Result<String> edit(@RequestBody PurchaseOrder purchaseOrder) {
+        purchaseOrderService.updateById(purchaseOrder);
+        return Result.OK("sys.api.entryEditSuccess");
+    }
+    /**
+     *  编辑
+     *
+     * @param purchaseOrderPage
+     * @return
+     */
+    @AutoLog(value = "purchase_order-编辑")
+    @ApiOperation(value="purchase_order-编辑", notes="purchase_order-编辑")
+    @RequestMapping(value = "/editPurchaseAndOrder", method = {RequestMethod.PUT,RequestMethod.POST})
+    public Result<?> editPurchaseAndOrder(@RequestBody PurchaseOrderPage purchaseOrderPage) {
+        PurchaseOrder purchaseOrder = new PurchaseOrder();
+        BeanUtils.copyProperties(purchaseOrderPage, purchaseOrder);
+        List<String> platformOrderIds = new ArrayList<>(Arrays.asList(purchaseOrderPage.getPlatformOrderId().split(",")));
+        log.info("Editing purchase order and attributing it to orders : {}", platformOrderIds);
+        log.info("Removing previous attribution to orders");
+        platformOrderService.removePurchaseInvoiceNumber(purchaseOrder.getInvoiceNumber());
+        // test 5757661446491 & 5757658267995 poId
+        List<PlatformOrder> platformOrders = platformOrderService.selectByPlatformOrderIds(platformOrderIds);
+        log.info("Platform orders found for attribution : {}", platformOrders.stream().map(PlatformOrder::getPlatformOrderId).collect(Collectors.toList()));
+        Map<String, List<String>> platformOrderIdUpdateMap = new HashMap<>();
+        if(!platformOrders.isEmpty()) {
+            for(PlatformOrder po : platformOrders) {
+                po.setPurchaseInvoiceNumber(purchaseOrder.getInvoiceNumber());
+                platformOrderIds.remove(po.getPlatformOrderId());
+                if(platformOrderIdUpdateMap.get("success") != null)
+                    platformOrderIdUpdateMap.get("success").add(po.getPlatformOrderId());
+                else
+                    platformOrderIdUpdateMap.put("success", new ArrayList<>(Collections.singletonList(po.getPlatformOrderId())));
+            }
+            platformOrderService.updateBatchById(platformOrders);
+        }
+        if(!platformOrderIds.isEmpty()) {
+            log.error("Platform orders not found: {}", platformOrderIds);
+            platformOrderIdUpdateMap.put("fail", platformOrderIds);
+        }
+
+        purchaseOrderService.updateById(purchaseOrder);
+        return Result.OK("sys.api.entryEditSuccess", platformOrderIdUpdateMap);
     }
 
     /**
@@ -128,7 +232,7 @@ public class PurchaseOrderController {
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         purchaseOrderService.delMain(id);
-        return Result.OK("删除成功!");
+        return Result.OK("sys.api.entryDeleteSuccess");
     }
 
     /**
@@ -142,7 +246,7 @@ public class PurchaseOrderController {
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
         this.purchaseOrderService.delBatchMain(Arrays.asList(ids.split(",")));
-        return Result.OK("批量删除成功！");
+        return Result.OK("sys.api.entryBatchDeleteSuccess");
     }
 
     /**

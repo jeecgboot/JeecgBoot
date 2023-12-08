@@ -23,4 +23,9 @@ public class UserClientServiceImpl  extends ServiceImpl<ClientUserMapper, UserCl
     public List<Client> listClients() {
         return clientUserMapper.listClients();
     }
+
+    @Override
+    public Client getClientMinInfoByUserId(String userId) {
+        return clientUserMapper.getClientMinInfoByUserId(userId);
+    }
 }

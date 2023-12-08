@@ -10,4 +10,6 @@ public interface IUserClientService extends IService<UserClient> {
     Client getClientByUserId(String userId);
 
     List<Client> listClients();
+
+    Client getClientMinInfoByUserId(String userId);
 }

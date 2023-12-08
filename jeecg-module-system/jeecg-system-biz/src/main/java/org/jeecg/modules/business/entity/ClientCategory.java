@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecg.common.aspect.annotation.Dict;
@@ -64,4 +65,17 @@ public class ClientCategory implements Serializable {
     @Excel(name = "balance threshold before alert", width = 15)
     @ApiModelProperty(value = "balance threshold before alert")
     private java.math.BigDecimal balanceThreshold;
+
+    @Getter
+    public enum CategoryName {
+        SELF_SERVICE("self_service"),
+        CONFIRMED ("confirmed"),
+        VIP("vip");
+
+        private final String name;
+
+        CategoryName(String name) {
+            this.name = name;
+        }
+    }
 }

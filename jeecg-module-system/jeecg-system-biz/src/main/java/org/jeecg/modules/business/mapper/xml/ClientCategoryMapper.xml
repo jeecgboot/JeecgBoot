@@ -6,4 +6,11 @@
     FROM client_category
     WHERE id = #{id}
 </select>
+    <select id="getClientCategoryByClientId" resultType="java.lang.String">
+        SELECT name
+        FROM client_category cc
+        JOIN client c
+            ON c.client_category_id = cc.id
+        WHERE c.id = #{clientId};
+    </select>
 </mapper>

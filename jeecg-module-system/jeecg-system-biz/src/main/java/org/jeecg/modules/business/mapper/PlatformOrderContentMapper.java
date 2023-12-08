@@ -82,4 +82,7 @@ public interface PlatformOrderContentMapper extends BaseMapper<PlatformOrderCont
 
     void fetchHighestPriorityAttribute(PlatformOrderContent content);
 
+    List<PlatformOrderContent> findOrderContentsWithMissingStock(@Param("orderIds") List<String> orderIds);
+
+    List<PlatformOrderContent> findOrderContentsWithStock(@Param("orderIds") List<String> orderIds);
 }

@@ -71,4 +71,19 @@ public class PlatformOrderContentServiceImpl extends ServiceImpl<PlatformOrderCo
     public void cancelBatchInvoice(List<String> invoiceNumbers) {
         platformOrderContentMapper.cancelBatchInvoice(invoiceNumbers);
     }
+
+    @Override
+    public List<PlatformOrderContent> findOrderContentsWithMissingStock(List<String> orderIds) {
+        return platformOrderContentMapper.findOrderContentsWithMissingStock(orderIds);
+    }
+
+    @Override
+    public List<PlatformOrderContent> fetchOrderContent(List<String> orderIds) {
+        return platformOrderContentMapper.fetchOrderContent(orderIds);
+    }
+
+    @Override
+    public List<PlatformOrderContent> findOrderContentsWithStock(List<String> orderIds) {
+        return platformOrderContentMapper.findOrderContentsWithStock(orderIds);
+    }
 }

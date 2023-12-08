@@ -575,33 +575,6 @@
             #{shopId}
         </foreach>;
     </select>
-    <select id="findUninvoicedOrdersByShopForClient" resultType="org.jeecg.modules.business.entity.PlatformOrder">
-        SELECT id
-        FROM platform_order
-        WHERE erp_status IN
-        <foreach
-                collection="erpStatuses"
-                separator=","
-                open="("
-                close=")"
-                index="index"
-                item="erpStatus"
-        >
-            #{erpStatus}
-        </foreach>
-        AND shipping_invoice_number IS NULL
-        AND shop_id IN
-        <foreach
-                collection="shopIds"
-                separator=","
-                open="("
-                close=")"
-                index="index"
-                item="shopId"
-        >
-            #{shopId}
-        </foreach>;
-    </select>
     <insert id="insertPlatformOrdersArchives" parameterType="list">
         INSERT INTO platform_order_delete(id, create_by,
                                           create_time, update_by,
@@ -690,4 +663,50 @@
         AND invoice_logistic_channel_name IS NULL
         AND create_time BETWEEN #{startDate} AND #{endDate};
     </select>
+    <select id="fetchByIds" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT id, shop_id, product_available
+        FROM platform_order
+        WHERE id IN
+        <foreach collection="orderIds" separator="," open="(" close=")" index="index" item="orderId">
+            #{orderId}
+        </foreach>;
+    </select>
+    <select id="fetchOrdersWithProductAvailable" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT po.*
+        FROM platform_order po
+        JOIN shop s ON po.shop_id = s.id
+        JOIN client c ON s.owner_id = c.id
+        JOIN client_category cc ON c.client_category_id = cc.id
+        WHERE po.product_available = 1
+            OR po.virtual_product_available = 1
+            AND cc.name = 'self-service'
+            AND po.erp_status IN ('1', '2')
+        ORDER BY po.order_time;
+    </select>
+    <select id="fetchOrdersWithMissingStock" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT po.*
+        FROM platform_order po
+        JOIN shop s ON po.shop_id = s.id
+        JOIN client c ON s.owner_id = c.id
+        JOIN client_category cc ON c.client_category_id = cc.id
+        WHERE po.product_available = 0
+            AND po.virtual_product_available = 0
+            AND cc.name = 'self-service'
+            AND po.erp_status IN ('1', '2')
+            AND po.order_time &gt;= #{start}
+        ORDER BY po.order_time;
+    </select>
+    <select id="selectByPlatformOrderIds" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
+        FROM platform_order
+        WHERE platform_order_id IN
+        <foreach collection="platformOrderIds" separator="," open="(" close=")" index="index" item="platformOrderId">
+            #{platformOrderId}
+        </foreach>;
+    </select>
+    <update id="removePurchaseInvoiceNumber">
+        UPDATE platform_order
+        SET purchase_invoice_number = NULL
+        WHERE purchase_invoice_number = #{invoiceNumber}
+    </update>
 </mapper>
