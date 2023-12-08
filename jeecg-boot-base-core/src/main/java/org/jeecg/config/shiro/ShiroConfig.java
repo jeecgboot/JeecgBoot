@@ -119,6 +119,8 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/swagger**/**", "anon");
         filterChainDefinitionMap.put("/webjars/**", "anon");
         filterChainDefinitionMap.put("/v2/**", "anon");
+        // 企业微信证书排除
+        filterChainDefinitionMap.put("/WW_verify*", "anon");
         
         filterChainDefinitionMap.put("/sys/annountCement/show/**", "anon");
 
