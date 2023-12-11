@@ -253,7 +253,24 @@
 				<artifactId>jeecg-boot-starter-mongon</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
-
+			<!--人大金仓驱动 版本号V008R006C005B0013 -->
+			<dependency>
+				<groupId>org.jeecgframework</groupId>
+				<artifactId>kingbase8</artifactId>
+				<version>9.0.0</version>
+				<scope>runtime</scope>
+			</dependency>
+			<!--达梦8数据库最新驱动 版本号1-3-26-2023.07.26-197096-20046-ENT -->
+			<dependency>
+				<groupId>com.dameng</groupId>
+				<artifactId>Dm8JdbcDriver18</artifactId>
+				<version>8.1.1.49</version>
+			</dependency>
+			<dependency>
+				<groupId>com.dameng</groupId>
+				<artifactId>DmDialect-for-hibernate5.0</artifactId>
+				<version>8.1.1.49</version>
+			</dependency>
 			<!-- 七牛云SDK -->
 			<dependency>
 				<groupId>com.qiniu</groupId>
