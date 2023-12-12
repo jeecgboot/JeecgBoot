@@ -8,6 +8,8 @@ services:
       - 8848:8848
     container_name: jeecg-boot-nacos
     hostname: jeecg-boot-nacos
+    networks:
+      - jeecg-boot
 
   jeecg-boot-system:
     depends_on:
@@ -19,6 +21,8 @@ services:
     restart: on-failure
     environment:
       - TZ=Asia/Shanghai
+    networks:
+      - jeecg-boot
 
   jeecg-boot-demo:
     depends_on:
@@ -30,6 +34,8 @@ services:
     restart: on-failure
     environment:
       - TZ=Asia/Shanghai
+    networks:
+      - jeecg-boot
 
   jeecg-boot-gateway:
     restart: on-failure
@@ -42,6 +48,12 @@ services:
       - jeecg-boot-system
     container_name: jeecg-boot-gateway
     hostname: jeecg-boot-gateway
+    networks:
+      - jeecg-boot
+
+networks:
+  jeecg-boot:
+    name: jeecg_boot
 
 #  jeecg-boot-sentinel:
 #    restart: on-failure
