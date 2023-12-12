@@ -100,8 +100,8 @@ public class DictTableWhiteListHandlerImpl implements IDictTableWhiteListHandler
             // 针对转义字符进行解码
             dictCodeString = URLDecoder.decode(dictCodeString, "UTF-8");
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            this.throwException("字典code解码失败，可能是使用了非法字符，请检查！");
+            log.warn(e.getMessage());
+            //this.throwException("字典code解码失败，可能是使用了非法字符，请检查！");
         }
         dictCodeString = dictCodeString.trim();
         String[] arr = dictCodeString.split(SymbolConstant.COMMA);
