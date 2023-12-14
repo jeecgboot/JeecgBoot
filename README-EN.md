@@ -98,8 +98,8 @@ SpringBoot3(JDK17)
 -----------------------------------
 The SpringBoot 3 branch has been officially launched, and it is not yet complete
 
-Branch： https://github.com/jeecgboot/jeecg-boot/tree/springboot3
-UpgradeBlog： https://blog.csdn.net/zhangdaiscott/article/details/134805602
+- Branch： https://github.com/jeecgboot/jeecg-boot/tree/springboot3
+- UpgradeBlog： https://blog.csdn.net/zhangdaiscott/article/details/134805602
 
 
 
