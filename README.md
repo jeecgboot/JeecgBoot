@@ -58,7 +58,9 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 | `jeecgboot-vue3` | 前端源码 (Vue3版本) |
 | `jeecg-uniapp` | [APP开发框架，一份代码多终端适配，同时支持APP、小程序、H5](https://github.com/jeecgboot/jeecg-uniapp) |
 | `jeecg-boot-starter` | [Stater依赖项目单独维护，点击下载](https://gitee.com/jeecg/jeecg-boot-starter) |
+| `SpringBoot3+JDK17分支`    | [分支源码](https://github.com/jeecgboot/jeecg-boot/tree/springboot3)  [升级博客](https://blog.csdn.net/zhangdaiscott/article/details/134805602)        |
 | `更多开源项目` | [更多源码下载](http://jeecg.com/download) |
+
 
 
 快速搭建开发环境
@@ -102,15 +104,6 @@ Docker快速启动项目
 关闭gitee的issue通道，使用中遇到问题或者BUG可以在 [Github上提Issues](https://github.com/jeecgboot/jeecg-boot/issues/new)
 
 官方支持： [http://jeecg.com/doc/help](http://jeecg.com/doc/help)
-
-
-
-SpringBoot3(JDK17)版本介绍
------------------------------------
-总有人问 JeecgBoot 何时支持 jdk17 和 springboot3，目前官方已经推出了 SpringBoot 3 分支，目前还不完善
-
-- 分支地址：https://github.com/jeecgboot/jeecg-boot/tree/springboot3
-- 升级参考博客：https://blog.csdn.net/zhangdaiscott/article/details/134805602
 
 
 
