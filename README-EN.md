@@ -58,10 +58,8 @@ Download the source code
 | `jeecg-boot`    | SpringBoot background source code (support microservices)      |
 | `jeecgboot-vue3` | Vue3+TS new front-end source code|
 | `jeecg-uniapp` | [APP development framework, a code multi terminal adaptation, and support APP, small program, H5](https://github.com/jeecgboot/jeecg-uniapp) |
-| `jeecg-boot-starter` | [Stater relies on the project to be maintained separately. Click Download](https://gitee.com/jeecg/jeecg-boot-starter) |
 | `SpringBoot3+JDK17`    | [BranchSourceCode](https://github.com/jeecgboot/jeecg-boot/tree/springboot3)  [UpgradeBlog](https://blog.csdn.net/zhangdaiscott/article/details/134805602)        |
 | `More` | [Download more source code](http://jeecg.com/download) |
-
 
 
 
