@@ -59,6 +59,7 @@ Download the source code
 | `jeecgboot-vue3` | Vue3+TS new front-end source code|
 | `jeecg-uniapp` | [APP development framework, a code multi terminal adaptation, and support APP, small program, H5](https://github.com/jeecgboot/jeecg-uniapp) |
 | `jeecg-boot-starter` | [Stater relies on the project to be maintained separately. Click Download](https://gitee.com/jeecg/jeecg-boot-starter) |
+| `SpringBoot3+JDK17`    | [BranchSourceCode](https://github.com/jeecgboot/jeecg-boot/tree/springboot3)  [UpgradeBlog](https://blog.csdn.net/zhangdaiscott/article/details/134805602)        |
 | `More` | [Download more source code](http://jeecg.com/download) |
 
 
@@ -91,15 +92,6 @@ Technical documentation
 - QQ group ： ⑧825232878、⑦791696430、⑥730954414(full)、683903138(full)、⑤860162132(full)、④774126647(full)、③816531124(full)、②769925425(full)、①284271917(full)
 - Demo ： [Vue3](http://boot3.jeecg.com) | [Vue2](http://boot.jeecg.com)  | [APP](http://jeecg.com/appIndex)
 > [please click obtain account password to obtain](http://jeecg.com/doc/demo) 
-
-
-
-SpringBoot3(JDK17)
------------------------------------
-The SpringBoot 3 branch has been officially launched, and it is not yet complete
-
-- Branch： https://github.com/jeecgboot/jeecg-boot/tree/springboot3
-- UpgradeBlog： https://blog.csdn.net/zhangdaiscott/article/details/134805602
 
 
 
