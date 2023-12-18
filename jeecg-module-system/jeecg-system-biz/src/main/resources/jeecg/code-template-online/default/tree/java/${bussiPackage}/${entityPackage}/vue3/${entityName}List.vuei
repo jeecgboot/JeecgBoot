@@ -102,6 +102,7 @@
          title: '${tableVo.ftlDescription}',
          columns,
          canResize:false,
+         isTreeTable: true,
          formConfig: {
            //labelWidth: 120,
            schemas: searchFormSchema,
