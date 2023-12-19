@@ -55,7 +55,7 @@
 		<minidao.version>1.9.5</minidao.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.6.4</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.6.6-beta2</jimureport-spring-boot-starter.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.11.2</aliyun.oss.version>
@@ -331,15 +331,15 @@
 				</exclusions>
 			</dependency>
 			<!-- minidao -->
-			<dependency>
+			<!--<dependency>
 				<groupId>org.jeecgframework</groupId>
 				<artifactId>minidao-spring-boot-starter</artifactId>
 				<version>${minidao.version}</version>
-			</dependency>
+			</dependency>-->
 			<!-- 积木报表-->
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
-				<artifactId>jimureport-spring-boot-starter</artifactId>
+				<artifactId>jimureport-spring-boot3-starter</artifactId>
 				<version>${jimureport-spring-boot-starter.version}</version>
 				<exclusions>
 					<exclusion>
