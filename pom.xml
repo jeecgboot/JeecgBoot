@@ -331,11 +331,11 @@
 				</exclusions>
 			</dependency>
 			<!-- minidao -->
-			<!--<dependency>
-				<groupId>org.jeecgframework</groupId>
+			<dependency>
+				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>minidao-spring-boot-starter</artifactId>
 				<version>${minidao.version}</version>
-			</dependency>-->
+			</dependency>
 			<!-- 积木报表-->
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
