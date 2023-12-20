@@ -471,7 +471,6 @@ Star走势图
 
 JeecgBoot企业版本默认集成了activiti和flowable两套方案，大家在使用本开源项目时，如果想进一步集成流程引擎，推荐结合贺波老师的书 [《深入Activiti流程引擎：核心原理与高阶实战》](https://item.m.jd.com/product/13928958.html?gx=RnAomTM2bmCImZxDqYAkVCoIHuIYVqc)
 
-![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/tuijian20231220161656.png)
 <img src="https://jeecgos.oss-cn-beijing.aliyuncs.com/files/tuijian20231220161656.png" width="25%" height="auto">
 
 
