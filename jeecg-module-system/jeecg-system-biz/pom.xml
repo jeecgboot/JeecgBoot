@@ -30,20 +30,20 @@
 			<artifactId>jeewx-api</artifactId>
 		</dependency>
 		<!-- 积木报表 -->
-		<!--<dependency>
+		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
-			<artifactId>jimureport-spring-boot-starter</artifactId>
-		</dependency>-->
+			<artifactId>jimureport-spring-boot3-starter</artifactId>
+		</dependency>
 		<!--<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>drag-free</artifactId>
 			<version>1.0.2</version>
 		</dependency>-->
-		<!-- 积木报表 mongo redis 支持包 
+		<!-- 积木报表 mongo redis 支持包 -->
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-nosql-starter</artifactId>
-		</dependency>-->
+		</dependency>
 	</dependencies>
 	
 </project>
