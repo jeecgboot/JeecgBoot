@@ -368,7 +368,7 @@
 			</dependency>
 			<!-- minidao -->
 			<dependency>
-				<groupId>org.jeecgframework</groupId>
+				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>minidao-spring-boot-starter</artifactId>
 				<version>${minidao.version}</version>
 			</dependency>
