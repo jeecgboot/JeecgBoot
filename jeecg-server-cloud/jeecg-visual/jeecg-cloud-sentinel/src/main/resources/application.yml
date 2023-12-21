@@ -18,8 +18,6 @@ auth:
   filter:
     exclude-url-suffixes: htm,html,js,css,map,ico,ttf,woff,png
     exclude-urls: /,/auth/login,/auth/logout,/registry/machine,/version
-  password: sentinel
-  username: sentinel
 logging:
   level:
     org:
@@ -35,3 +33,6 @@ nacos:
 sentinel:
   dashboard:
     version: 1.8.2
+    auth:
+      username: sentinel
+      password: sentinel

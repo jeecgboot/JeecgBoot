@@ -1,15 +1,16 @@
 package org.jeecg.modules.system.mapper;
 
-import java.util.List;
-
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserPosition;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.system.vo.SysUserPositionVo;
+
+import java.util.List;
 
 /**
  * @Description: 用户职位关系表
@@ -64,7 +65,8 @@ public interface SysUserPositionMapper extends BaseMapper<SysUserPosition> {
      * @param tenantId
      * @return
      */
-    List<String> getPositionIdByUserTenantId(@Param("userId")String userId, @Param("tenantId")Integer tenantId);
+    @InterceptorIgnore(tenantLine = "true")
+    List<String> getPositionIdByUserTenantId(@Param("userId") String userId, @Param("tenantId") Integer tenantId);
 
     /**
      * 根据用户id获取用户职位

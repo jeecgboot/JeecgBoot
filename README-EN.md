@@ -7,13 +7,13 @@
 JEECG BOOT Low Code Development Platform
 ===============
 
-当前最新版本： 3.6.0（发布日期：2023-10-23） 
+当前最新版本： 3.6.1（发布日期：2023-12-11） 
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-guojusoft-orange.svg)](http://www.jeecg.com)
 [![](https://img.shields.io/badge/Blog-blog-blue.svg)](https://jeecg.blog.csdn.net)
-[![](https://img.shields.io/badge/version-3.6.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-3.6.1-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -58,9 +58,8 @@ Download the source code
 | `jeecg-boot`    | SpringBoot background source code (support microservices)      |
 | `jeecgboot-vue3` | Vue3+TS new front-end source code|
 | `jeecg-uniapp` | [APP development framework, a code multi terminal adaptation, and support APP, small program, H5](https://github.com/jeecgboot/jeecg-uniapp) |
-| `jeecg-boot-starter` | [Stater relies on the project to be maintained separately. Click Download](https://gitee.com/jeecg/jeecg-boot-starter) |
+| `SpringBoot3+JDK17`    | [BranchSourceCode](https://github.com/jeecgboot/jeecg-boot/tree/springboot3)  [UpgradeBlog](https://blog.csdn.net/zhangdaiscott/article/details/134805602)        |
 | `More` | [Download more source code](http://jeecg.com/download) |
-
 
 
 
@@ -93,6 +92,11 @@ Technical documentation
 > [please click obtain account password to obtain](http://jeecg.com/doc/demo) 
 
 
+
+Thinking
+-----------------------------------
+> We are pursuing the goal of implementing complex business systems without writing code! That has been done so far
+- https://www.qiaoqiaoyun.com
 
 
 Star charts

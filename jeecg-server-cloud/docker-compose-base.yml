@@ -18,6 +18,8 @@ services:
       --default-authentication-plugin=caching_sha2_password
     ports:
       - 3306:3306
+    networks:
+      - jeecg-boot
 
   jeecg-boot-redis:
     image: redis:5.0
@@ -26,6 +28,13 @@ services:
     restart: always
     container_name: jeecg-boot-redis
     hostname: jeecg-boot-redis
+    networks:
+      - jeecg-boot
+
+
+networks:
+  jeecg-boot:
+    name: jeecg_boot
 
 #  jeecg-boot-rabbitmq:
 #    image: rabbitmq:3.7.7-management
