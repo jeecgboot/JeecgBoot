@@ -242,7 +242,7 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>org.jeecgframework.boot</groupId>
+				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>hibernate-re</artifactId>
 				<version>3.6.1-RC</version>
 			</dependency>
