@@ -189,9 +189,14 @@
 					<artifactId>checkstyle</artifactId>
 					<groupId>com.puppycrawl.tools</groupId>
 				</exclusion>
+				<!-- TODO shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
+				<exclusion>
+					<artifactId>jedis</artifactId>
+					<groupId>redis.clients</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
+		<!-- TODO shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
