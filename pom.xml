@@ -38,7 +38,7 @@
 		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
 
 		<xxl-job-core.version>2.2.0</xxl-job-core.version>
-        <fastjson.version>1.2.83</fastjson.version>
+        <fastjson.version>2.0.43</fastjson.version>
 		<pegdown.version>1.6.0</pegdown.version>
 		<knife4j-spring-boot-starter.version>4.3.0</knife4j-spring-boot-starter.version>
 		<knife4j-spring-ui.version>2.0.9</knife4j-spring-ui.version>
