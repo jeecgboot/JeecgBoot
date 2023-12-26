@@ -61,14 +61,14 @@
 		<jimureport-spring-boot-starter.version>1.6.6-beta2</jimureport-spring-boot-starter.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
-		<aliyun.oss.version>3.11.2</aliyun.oss.version>
+		<aliyun.oss.version>3.17.3</aliyun.oss.version>
 		<!-- shiro -->
 		<shiro.version>1.12.0</shiro.version>
 		<java-jwt.version>3.11.0</java-jwt.version>
 		<shiro-redis.version>3.2.2</shiro-redis.version>
 		<codegenerate.version>1.4.4</codegenerate.version>
 		<autopoi-web.version>1.4.7</autopoi-web.version>
-		<minio.version>8.0.3</minio.version>
+		<minio.version>8.5.7</minio.version>
 		<justauth-spring-boot-starter.version>1.3.4</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<qiniu-java-sdk.version>7.4.0</qiniu-java-sdk.version>
@@ -142,6 +142,12 @@
 			<groupId>org.pegdown</groupId>
 			<artifactId>pegdown</artifactId>
 			<version>${pegdown.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>asm</artifactId>
+					<groupId>org.ow2.asm</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
