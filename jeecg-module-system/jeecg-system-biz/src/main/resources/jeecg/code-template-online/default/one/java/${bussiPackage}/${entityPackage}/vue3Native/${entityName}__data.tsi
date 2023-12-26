@@ -366,3 +366,12 @@ export const formSchema: FormSchema[] = [
   },
 </#if>
 ];
+
+// 高级查询数据
+export const superQuerySchema = {
+  <#list columns as po>
+  <#if po.isShowList =='Y' && po.fieldName !='id'>
+  ${superQueryFieldListForVue3(po,po_index)},
+  </#if>
+  </#list>
+};

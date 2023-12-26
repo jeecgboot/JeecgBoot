@@ -105,6 +105,8 @@
                 <Icon icon="mdi:chevron-down"></Icon>
               </a-button>
         </a-dropdown>
+        <!-- 高级查询 -->
+        <super-query :config="superQueryConfig" @search="handleSuperQuery" />
       </template>
        <!--操作栏-->
       <template #action="{ record }">
@@ -144,7 +146,7 @@
   import { useListPage } from '/@/hooks/system/useListPage'
   import {useModal} from '/@/components/Modal';
   import ${entityName}Modal from './components/${entityName}Modal.vue'
-  import {columns, searchFormSchema} from './${entityName}.data';
+  import {columns, searchFormSchema, superQuerySchema} from './${entityName}.data';
   import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName}.api';
   import {downloadFile} from '/@/utils/common/renderUtils';
   <#include "/common/form/native/vue3NativeImport.ftl">
@@ -194,6 +196,19 @@
     })
 
   const [registerTable, {reload},{ rowSelection, selectedRowKeys }] = tableContext
+
+  // 高级查询配置
+  const superQueryConfig = reactive(superQuerySchema);
+
+  /**
+   * 高级查询事件
+   */
+  function handleSuperQuery(params) {
+    Object.keys(params).map((k) => {
+      queryParam[k] = params[k];
+    });
+    reload();
+  }
 
    /**
     * 新增事件

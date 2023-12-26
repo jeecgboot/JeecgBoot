@@ -132,6 +132,56 @@
   </#if>
 </#function>
 
+<#-- ** 高级查询生成(Vue3 * -->
+<#function superQueryFieldListForVue3(po,order)>
+    <#-- 字段展示/DB类型 -->
+    <#assign baseAttrs="view: '${po.classType}', type: 'string',">
+    <#if po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+        <#assign baseAttrs="view: 'number', type: 'number',">
+    </#if>
+
+    <#-- 特殊类型控件扩展字段 -->
+    <#assign extAttrs="">
+    <#assign dictCode="">
+    <#if po.dictTable?default('')?trim?length gt 1 && po.dictText?default('')?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
+        <#assign dictCode="dictTable: '${po.dictTable}', dictCode: '${po.dictField}', dictText: '${po.dictText}'">
+    <#elseif po.dictField?default("")?trim?length gt 1>
+        <#assign dictCode="dictCode: '${po.dictField}'">
+    </#if>
+
+    <#if po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='checkbox'>
+        <#assign extAttrs="${dictCode},">
+    <#elseif po.classType=='cat_tree'>
+        <#-- 分类字典树 -->
+        <#assign extAttrs="pcode: '${po.dictField}',">
+    <#elseif po.classType=='sel_tree'>
+        <#-- 自定义树 -->
+        <#if po.dictText??>
+            <#-- dictText示例:id,pid,name,has_child -->
+            <#if po.dictText?split(',')[2]?? && po.dictText?split(',')[0]??>
+                <#assign extAttrs="dict: '${po.dictTable},${po.dictText?split(',')[2]},${po.dictText?split(',')[0]}'">
+            <#elseif po.dictText?split(',')[1]??>
+                <#assign extAttrs="pidField: '${po.dictText?split(',')[1]}'">
+            <#elseif po.dictText?split(',')[3]??>
+                <#assign extAttrs="hasChildField: '${po.dictText?split(',')[3]}'">
+            </#if>
+        </#if>
+        <#assign extAttrs="${extAttrs}, pidValue: '${po.dictField}',">
+    <#elseif po.classType=='popup'>
+        <#-- popup -->
+        <#if po.dictText?default("")?trim?length gt 1 && po.dictText?index_of(',') gt 0>
+        <#-- 如果有多个回填字段,找到popup字段对应的来源字段 -->
+            <#assign orgFieldIx=po.dictText?split(',')?seq_index_of(po.fieldDbName)>
+            <#assign orgField=po.dictField?split(',')[orgFieldIx]>
+        <#else>
+            <#assign orgField=po.dictField?default("")>
+        </#if>
+        <#assign extAttrs="code: '${po.dictTable?default('')}', orgFields: '${orgField}', destFields: '${po.fieldName}', popupMulti: false,">
+    </#if>
+
+    <#return "${po.fieldName}: {title: '${po.filedComment}',order: ${order},${baseAttrs}${extAttrs}}" >
+</#function>
+
 
 <#-- vue3 获取表单modal的宽度-->
 <#function getModalWidth fieldRowNum>
