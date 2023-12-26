@@ -247,8 +247,13 @@ export const formSchema: FormSchema[] = [
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
-    <#elseif po.classType=='list_multi' || po.classType=='checkbox'>
+    <#elseif po.classType=='list_multi'>
     component: 'JSelectMultiple',
+    componentProps:{
+        dictCode:"${form_field_dictCode}"
+     },
+    <#elseif po.classType=='checkbox'>
+    component: 'JCheckbox',
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
