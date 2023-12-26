@@ -6,10 +6,6 @@ import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFa
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.stereotype.Component;
 
-/**
- * @author EightMonth
- * @date 2023/12/26 14:36
- */
 @Component
 public class UndertowCustomizer implements WebServerFactoryCustomizer<UndertowServletWebServerFactory> {
     @Override
