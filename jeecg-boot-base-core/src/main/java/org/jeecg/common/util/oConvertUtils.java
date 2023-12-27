@@ -413,7 +413,7 @@ public class oConvertUtils {
 			return false;
 		}
 
-		String[] childs = childArray.toArray(new String[]{});
+		String[] childs = (String[]) childArray.toArray();
 		for (String v : childs) {
 			if (!isIn(v, all)) {
 				return false;

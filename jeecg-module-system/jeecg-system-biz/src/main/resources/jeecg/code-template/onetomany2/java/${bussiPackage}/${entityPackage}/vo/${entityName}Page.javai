@@ -10,8 +10,8 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecgframework.poi.excel.annotation.ExcelCollection;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 
 /**
  * @Description: ${tableVo.ftlDescription}
@@ -20,7 +20,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @Version: V1.0
  */
 @Data
-@ApiModel(value="${tableName}Page对象", description="${tableVo.ftlDescription}")
+@Schema(description="${tableVo.ftlDescription}")
 public class ${entityName}Page {
 
     <#list originalColumns as po>
@@ -46,7 +46,7 @@ public class ${entityName}Page {
 
 	<#list subTables as sub>
 	@ExcelCollection(name="${sub.ftlDescription}")
-	@ApiModelProperty(value = "${sub.ftlDescription}")
+	@Schema(description = "${sub.ftlDescription}")
 	private List<${sub.entityName}> ${sub.entityName?uncap_first}List;
 	</#list>
 	
