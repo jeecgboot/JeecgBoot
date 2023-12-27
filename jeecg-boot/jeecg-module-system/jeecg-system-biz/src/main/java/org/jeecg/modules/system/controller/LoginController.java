@@ -5,8 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.exceptions.ClientException;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/sys")
-@Api(tags="用户登录")
+@Tag(name="用户登录")
 @Slf4j
 public class LoginController {
 	@Autowired
@@ -70,7 +70,7 @@ public class LoginController {
 
 	private final String BASE_CHECK_CODES = "qwertyuiplkjhgfdsazxcvbnmQWERTYUPLKJHGFDSAZXCVBNM1234567890";
 
-	@ApiOperation("登录接口")
+	@Operation(summary = "登录接口")
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel, HttpServletRequest request){
 		Result<JSONObject> result = new Result<JSONObject>();
@@ -404,7 +404,7 @@ public class LoginController {
 	 * @param jsonObject
 	 * @return
 	 */
-	@ApiOperation("手机号登录接口")
+	@Operation(summary = "手机号登录接口")
 	@PostMapping("/phoneLogin")
 	public Result<JSONObject> phoneLogin(@RequestBody JSONObject jsonObject, HttpServletRequest request) {
 		Result<JSONObject> result = new Result<JSONObject>();
@@ -523,7 +523,7 @@ public class LoginController {
 	 * @param response
 	 * @param key
 	 */
-	@ApiOperation("获取验证码")
+	@Operation(summary = "获取验证码")
 	@GetMapping(value = "/randomImage/{key}")
 	public Result<String> randomImage(HttpServletResponse response,@PathVariable("key") String key){
 		Result<String> res = new Result<String>();
@@ -668,7 +668,7 @@ public class LoginController {
 	/**
 	 * 登录二维码
 	 */
-	@ApiOperation(value = "登录二维码", notes = "登录二维码")
+	@Operation(summary = "登录二维码")
 	@GetMapping("/getLoginQrcode")
 	public Result<?>  getLoginQrcode() {
 		String qrcodeId = CommonConstant.LOGIN_QRCODE_PRE+IdWorker.getIdStr();
@@ -682,7 +682,7 @@ public class LoginController {
 	/**
 	 * 扫码二维码
 	 */
-	@ApiOperation(value = "扫码登录二维码", notes = "扫码登录二维码")
+	@Operation(summary = "扫码登录二维码")
 	@PostMapping("/scanLoginQrcode")
 	public Result<?> scanLoginQrcode(@RequestParam String qrcodeId, @RequestParam String token) {
 		Object check = redisUtil.get(CommonConstant.LOGIN_QRCODE + qrcodeId);
@@ -699,7 +699,7 @@ public class LoginController {
 	/**
 	 * 获取用户扫码后保存的token
 	 */
-	@ApiOperation(value = "获取用户扫码后保存的token", notes = "获取用户扫码后保存的token")
+	@Operation(summary = "获取用户扫码后保存的token")
 	@GetMapping("/getQrcodeToken")
 	public Result getQrcodeToken(@RequestParam String qrcodeId) {
 		Object token = redisUtil.get(CommonConstant.LOGIN_QRCODE_TOKEN + qrcodeId);

@@ -7,8 +7,8 @@ import com.baomidou.dynamic.datasource.DynamicRoutingDataSource;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -43,7 +43,7 @@ import java.util.List;
  * @Version: V1.0
  */
 @Slf4j
-@Api(tags = "多数据源管理")
+@Tag(name = "多数据源管理")
 @RestController
 @RequestMapping("/sys/dataSource")
 public class SysDataSourceController extends JeecgController<SysDataSource, ISysDataSourceService> {
@@ -62,7 +62,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
      * @return
      */
     @AutoLog(value = "多数据源管理-分页列表查询")
-    @ApiOperation(value = "多数据源管理-分页列表查询", notes = "多数据源管理-分页列表查询")
+    @Operation(summary = "多数据源管理-分页列表查询")
     @RequiresPermissions("system:datasource:list")
     @GetMapping(value = "/list")
     public Result<?> queryPageList(
@@ -111,7 +111,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
      * @return
      */
     @AutoLog(value = "多数据源管理-添加")
-    @ApiOperation(value = "多数据源管理-添加", notes = "多数据源管理-添加")
+    @Operation(summary = "多数据源管理-添加")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody SysDataSource sysDataSource) {
         //update-begin-author:taoyan date:2022-8-10 for: jdbc连接地址漏洞问题
@@ -132,7 +132,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
      * @return
      */
     @AutoLog(value = "多数据源管理-编辑")
-    @ApiOperation(value = "多数据源管理-编辑", notes = "多数据源管理-编辑")
+    @Operation(summary = "多数据源管理-编辑")
     @RequestMapping(value = "/edit", method ={RequestMethod.PUT, RequestMethod.POST})
     public Result<?> edit(@RequestBody SysDataSource sysDataSource) {
         //update-begin-author:taoyan date:2022-8-10 for: jdbc连接地址漏洞问题
@@ -153,7 +153,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
      * @return
      */
     @AutoLog(value = "多数据源管理-通过id删除")
-    @ApiOperation(value = "多数据源管理-通过id删除", notes = "多数据源管理-通过id删除")
+    @Operation(summary = "多数据源管理-通过id删除")
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id") String id) {
         return sysDataSourceService.deleteDataSource(id);
@@ -166,7 +166,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
      * @return
      */
     @AutoLog(value = "多数据源管理-批量删除")
-    @ApiOperation(value = "多数据源管理-批量删除", notes = "多数据源管理-批量删除")
+    @Operation(summary = "多数据源管理-批量删除")
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name = "ids") String ids) {
         List<String> idList = Arrays.asList(ids.split(","));
@@ -185,7 +185,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
      * @return
      */
     @AutoLog(value = "多数据源管理-通过id查询")
-    @ApiOperation(value = "多数据源管理-通过id查询", notes = "多数据源管理-通过id查询")
+    @Operation(summary = "多数据源管理-通过id查询")
     @GetMapping(value = "/queryById")
     public Result<?> queryById(@RequestParam(name = "id") String id) throws InterruptedException {
         SysDataSource sysDataSource = sysDataSourceService.getById(id);
