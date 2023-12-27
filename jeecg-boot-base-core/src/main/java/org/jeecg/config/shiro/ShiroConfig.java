@@ -125,7 +125,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/swagger-ui.html", "anon");
         filterChainDefinitionMap.put("/swagger**/**", "anon");
         filterChainDefinitionMap.put("/webjars/**", "anon");
-        filterChainDefinitionMap.put("/v2/**", "anon");
+        filterChainDefinitionMap.put("/v3/**", "anon");
 
         // update-begin--Author:sunjianlei Date:20210510 for：排除消息通告查看详情页面（用于第三方APP）
         filterChainDefinitionMap.put("/sys/annountCement/show/**", "anon");
@@ -270,7 +270,7 @@ public class ShiroConfig {
 
             return sentinelManager;
         }
-        
+
         // redis 单机支持，在集群为空，或者集群无机器时候使用 add by jzyadmin@163.com
         if (lettuceConnectionFactory.getClusterConfiguration() == null || lettuceConnectionFactory.getClusterConfiguration().getClusterNodes().isEmpty()) {
             RedisManager redisManager = new RedisManager();
