@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -25,7 +25,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 @TableName("${tableName}")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="${tableName}对象", description="${tableVo.ftlDescription}")
+@Schema(description="${tableVo.ftlDescription}")
 public class ${entityName} {
     
     <#list originalColumns as po>
@@ -47,7 +47,7 @@ public class ${entityName} {
 	@Excel(name = "${po.filedComment}", width = 15)
   </#if>
   </#if>
-    @ApiModelProperty(value = "${po.filedComment}")
+    @Schema(description = "${po.filedComment}")
 	private <#if po.fieldType=='java.sql.Blob'>byte[]<#else>${po.fieldType}</#if> ${po.fieldName};
 	</#list>
 }

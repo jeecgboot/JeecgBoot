@@ -41,8 +41,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import com.alibaba.fastjson.JSON;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.jeecg.common.aspect.annotation.AutoLog;
 
  /**
@@ -51,7 +51,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
-@Api(tags="${tableVo.ftlDescription}")
+@Tag(name="${tableVo.ftlDescription}")
 @RestController
 @RequestMapping("/${entityPackage}/${entityName?uncap_first}")
 @Slf4j
@@ -73,7 +73,7 @@ public class ${entityName}Controller {
 	 * @return
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-分页列表查询")
-	@ApiOperation(value="${tableVo.ftlDescription}-分页列表查询", notes="${tableVo.ftlDescription}-分页列表查询")
+	@Operation(summary = "${tableVo.ftlDescription}-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(${entityName} ${entityName?uncap_first},
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -92,7 +92,7 @@ public class ${entityName}Controller {
 	 * @return
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-添加")
-	@ApiOperation(value="${tableVo.ftlDescription}-添加", notes="${tableVo.ftlDescription}-添加")
+	@Operation(summary = "${tableVo.ftlDescription}-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody ${entityName}Page ${entityName?uncap_first}Page) {
 		${entityName} ${entityName?uncap_first} = new ${entityName}();
@@ -108,7 +108,7 @@ public class ${entityName}Controller {
 	 * @return
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-编辑")
-	@ApiOperation(value="${tableVo.ftlDescription}-编辑", notes="${tableVo.ftlDescription}-编辑")
+	@Operation(summary = "${tableVo.ftlDescription}-编辑")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<?> edit(@RequestBody ${entityName}Page ${entityName?uncap_first}Page) {
 		${entityName} ${entityName?uncap_first} = new ${entityName}();
@@ -124,7 +124,7 @@ public class ${entityName}Controller {
 	 * @return
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-通过id删除")
-	@ApiOperation(value="${tableVo.ftlDescription}-通过id删除", notes="${tableVo.ftlDescription}-通过id删除")
+	@Operation(summary = "${tableVo.ftlDescription}-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 	    ${entityName?uncap_first}Service.delMain(id);
@@ -138,7 +138,7 @@ public class ${entityName}Controller {
 	 * @return
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-批量删除")
-	@ApiOperation(value="${tableVo.ftlDescription}-批量删除", notes="${tableVo.ftlDescription}-批量删除")
+	@Operation(summary = "${tableVo.ftlDescription}-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.${entityName?uncap_first}Service.delBatchMain(Arrays.asList(ids.split(",")));
@@ -152,7 +152,7 @@ public class ${entityName}Controller {
 	 * @return
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-通过id查询")
-	@ApiOperation(value="${tableVo.ftlDescription}-通过id查询", notes="${tableVo.ftlDescription}-通过id查询")
+	@Operation(summary = "${tableVo.ftlDescription}-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		${entityName} ${entityName?uncap_first} = ${entityName?uncap_first}Service.getById(id);
@@ -167,7 +167,7 @@ public class ${entityName}Controller {
 	 * @return
 	 */
 	@AutoLog(value = "${sub.ftlDescription}-通过主表ID查询")
-	@ApiOperation(value="${sub.ftlDescription}-通过主表ID查询", notes="${tableVo.ftlDescription}-通过主表ID查询")
+	@Operation(summary = "${tableVo.ftlDescription}-通过主表ID查询")
 	@GetMapping(value = "/query${sub.entityName}ByMainId")
 	public Result<?> query${sub.entityName}ListByMainId(@RequestParam(name="id",required=true) String id) {
 		List<${sub.entityName}> ${sub.entityName?uncap_first}List = ${sub.entityName?uncap_first}Service.selectByMainId(id);

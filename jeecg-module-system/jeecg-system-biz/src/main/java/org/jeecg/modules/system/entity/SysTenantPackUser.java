@@ -4,8 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -24,41 +23,41 @@ import java.io.Serializable;
 @TableName("sys_tenant_pack_user")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="sys_tenant_pack_user对象", description="租户产品包用户关系表")
+@Schema(description="租户产品包用户关系表")
 public class SysTenantPackUser implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**id*/
     @TableId(type = IdType.ASSIGN_ID)
-    @ApiModelProperty(value = "id")
+    @Schema(description = "id")
     private java.lang.String id;
     /**租户产品包ID*/
     @Excel(name = "租户产品包ID", width = 15)
-    @ApiModelProperty(value = "租户产品包ID")
+    @Schema(description = "租户产品包ID")
     private java.lang.String packId;
     /**用户ID*/
     @Excel(name = "用户ID", width = 15)
-    @ApiModelProperty(value = "用户ID")
+    @Schema(description = "用户ID")
     private java.lang.String userId;
     /**租户ID*/
     @Excel(name = "租户ID", width = 15)
-    @ApiModelProperty(value = "租户ID")
+    @Schema(description = "租户ID")
     private java.lang.Integer tenantId;
     /**创建人*/
-    @ApiModelProperty(value = "创建人")
+    @Schema(description = "创建人")
     private java.lang.String createBy;
     /**创建时间*/
     @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
-    @ApiModelProperty(value = "创建时间")
+    @Schema(description = "创建时间")
     private java.util.Date createTime;
     /**更新人*/
-    @ApiModelProperty(value = "更新人")
+    @Schema(description = "更新人")
     private java.lang.String updateBy;
     /**更新时间*/
     @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
-    @ApiModelProperty(value = "更新时间")
+    @Schema(description = "更新时间")
     private java.util.Date updateTime;
 
     private transient String realname;

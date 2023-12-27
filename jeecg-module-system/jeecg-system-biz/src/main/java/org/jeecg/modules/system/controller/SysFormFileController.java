@@ -3,8 +3,8 @@ package org.jeecg.modules.system.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -27,7 +27,7 @@ import java.util.Arrays;
  * @Version: V1.0
  */
 @Slf4j
-@Api(tags = "表单评论文件")
+@Tag(name = "表单评论文件")
 @RestController
 @RequestMapping("/sys/formFile")
 public class SysFormFileController extends JeecgController<SysFormFile, ISysFormFileService> {
@@ -44,7 +44,7 @@ public class SysFormFileController extends JeecgController<SysFormFile, ISysForm
      * @return
      */
     @AutoLog(value = "表单评论文件-分页列表查询")
-    @ApiOperation(value = "表单评论文件-分页列表查询", notes = "表单评论文件-分页列表查询")
+    @Operation(summary = "表单评论文件-分页列表查询")
     @GetMapping(value = "/list")
     public Result<?> queryPageList(SysFormFile sysFormFile,
                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
@@ -63,7 +63,7 @@ public class SysFormFileController extends JeecgController<SysFormFile, ISysForm
      * @return
      */
     @AutoLog(value = "表单评论文件-添加")
-    @ApiOperation(value = "表单评论文件-添加", notes = "表单评论文件-添加")
+    @Operation(summary = "表单评论文件-添加")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody SysFormFile sysFormFile) {
         sysFormFileService.save(sysFormFile);
@@ -77,7 +77,7 @@ public class SysFormFileController extends JeecgController<SysFormFile, ISysForm
      * @return
      */
     @AutoLog(value = "表单评论文件-编辑")
-    @ApiOperation(value = "表单评论文件-编辑", notes = "表单评论文件-编辑")
+    @Operation(summary = "表单评论文件-编辑")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})
     public Result<?> edit(@RequestBody SysFormFile sysFormFile) {
         sysFormFileService.updateById(sysFormFile);
@@ -91,7 +91,7 @@ public class SysFormFileController extends JeecgController<SysFormFile, ISysForm
      * @return
      */
     @AutoLog(value = "表单评论文件-通过id删除")
-    @ApiOperation(value = "表单评论文件-通过id删除", notes = "表单评论文件-通过id删除")
+    @Operation(summary = "表单评论文件-通过id删除")
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         sysFormFileService.removeById(id);
@@ -105,7 +105,7 @@ public class SysFormFileController extends JeecgController<SysFormFile, ISysForm
      * @return
      */
     @AutoLog(value = "表单评论文件-批量删除")
-    @ApiOperation(value = "表单评论文件-批量删除", notes = "表单评论文件-批量删除")
+    @Operation(summary = "表单评论文件-批量删除")
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
         this.sysFormFileService.removeByIds(Arrays.asList(ids.split(",")));
@@ -119,7 +119,7 @@ public class SysFormFileController extends JeecgController<SysFormFile, ISysForm
      * @return
      */
     @AutoLog(value = "表单评论文件-通过id查询")
-    @ApiOperation(value = "表单评论文件-通过id查询", notes = "表单评论文件-通过id查询")
+    @Operation(summary = "表单评论文件-通过id查询")
     @GetMapping(value = "/queryById")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
         SysFormFile sysFormFile = sysFormFileService.getById(id);

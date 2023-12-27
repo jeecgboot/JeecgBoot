@@ -1,7 +1,7 @@
 package org.jeecg.modules.system.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 @RestController
 @RequestMapping("/sys/duplicate")
-@Api(tags="重复校验")
+@Tag(name="重复校验")
 public class DuplicateCheckController {
 
 	@Autowired
@@ -36,7 +36,7 @@ public class DuplicateCheckController {
 	 * @return
 	 */
 	@RequestMapping(value = "/check", method = RequestMethod.GET)
-	@ApiOperation("重复校验接口")
+	@Operation(summary ="重复校验接口")
 	public Result<String> doDuplicateCheck(DuplicateCheckVo duplicateCheckVo, HttpServletRequest request) {
 		log.debug("----duplicate check------："+ duplicateCheckVo.toString());
 		

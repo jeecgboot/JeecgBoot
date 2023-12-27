@@ -3,8 +3,8 @@ package org.jeecg.modules.system.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.dto.DataLogDTO;
@@ -34,7 +34,7 @@ import java.util.List;
  * @Date: 2022-07-19
  * @Version: V1.0
  */
-@Api(tags = "系统评论回复表")
+@Tag(name = "系统评论回复表")
 @RestController
 @RequestMapping("/sys/comment")
 @Slf4j
@@ -59,7 +59,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @param sysComment
      * @return
      */
-    @ApiOperation(value = "系统评论回复表-列表查询", notes = "系统评论回复表-列表查询")
+    @Operation(summary = "系统评论回复表-列表查询")
     @GetMapping(value = "/listByForm")
     public Result<IPage<SysCommentVO>> queryListByForm(SysComment sysComment) {
         List<SysCommentVO> list = sysCommentService.queryFormCommentInfo(sysComment);
@@ -74,7 +74,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @param sysComment
      * @return
      */
-    @ApiOperation(value = "系统评论回复表-列表查询", notes = "系统评论回复表-列表查询")
+    @Operation(summary = "系统评论回复表-列表查询")
     @GetMapping(value = "/fileList")
     public Result<IPage<SysCommentFileVo>> queryFileList(SysComment sysComment) {
         List<SysCommentFileVo> list = sysCommentService.queryFormFileList(sysComment.getTableName(), sysComment.getTableDataId());
@@ -83,14 +83,14 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
         return Result.OK(pageList);
     }
 
-    @ApiOperation(value = "系统评论表-添加文本", notes = "系统评论表-添加文本")
+    @Operation(summary = "系统评论表-添加文本")
     @PostMapping(value = "/addText")
     public Result<String> addText(@RequestBody SysComment sysComment) {
         String commentId = sysCommentService.saveOne(sysComment);
         return Result.OK(commentId);
     }
 
-    @ApiOperation(value = "系统评论表-添加文件", notes = "系统评论表-添加文件")
+    @Operation(summary = "系统评论表-添加文件")
     @PostMapping(value = "/addFile")
     public Result<String> addFile(HttpServletRequest request) {
         try {
@@ -107,7 +107,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @param request
      * @return
      */
-    @ApiOperation(value = "系统评论表-添加文件", notes = "系统评论表-添加文件")
+    @Operation(summary = "系统评论表-添加文件")
     @PostMapping(value = "/appAddFile")
     public Result<String> appAddFile(HttpServletRequest request) {
         try {
@@ -119,7 +119,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
         }
     }
 
-    @ApiOperation(value = "系统评论回复表-通过id删除", notes = "系统评论回复表-通过id删除")
+    @Operation(summary = "系统评论回复表-通过id删除")
     @DeleteMapping(value = "/deleteOne")
     public Result<String> deleteOne(@RequestParam(name = "id", required = true) String id) {
         SysComment comment = sysCommentService.getById(id);
@@ -162,7 +162,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @return
      */
     //@AutoLog(value = "系统评论回复表-分页列表查询")
-    @ApiOperation(value = "系统评论回复表-分页列表查询", notes = "系统评论回复表-分页列表查询")
+    @Operation(summary = "系统评论回复表-分页列表查询")
     @GetMapping(value = "/list")
     public Result<IPage<SysComment>> queryPageList(SysComment sysComment,
                                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
@@ -181,7 +181,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @param sysComment
      * @return
      */
-    @ApiOperation(value = "系统评论回复表-添加", notes = "系统评论回复表-添加")
+    @Operation(summary = "系统评论回复表-添加")
     //@RequiresPermissions("org.jeecg.modules.demo:sys_comment:add")
     @PostMapping(value = "/add")
     public Result<String> add(@RequestBody SysComment sysComment) {
@@ -196,7 +196,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @return
      */
     //@AutoLog(value = "系统评论回复表-编辑")
-    @ApiOperation(value = "系统评论回复表-编辑", notes = "系统评论回复表-编辑")
+    @Operation(summary = "系统评论回复表-编辑")
     //@RequiresPermissions("org.jeecg.modules.demo:sys_comment:edit")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})
     public Result<String> edit(@RequestBody SysComment sysComment) {
@@ -211,7 +211,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @return
      */
     //@AutoLog(value = "系统评论回复表-通过id删除")
-    @ApiOperation(value = "系统评论回复表-通过id删除", notes = "系统评论回复表-通过id删除")
+    @Operation(summary = "系统评论回复表-通过id删除")
     //@RequiresPermissions("org.jeecg.modules.demo:sys_comment:delete")
     @DeleteMapping(value = "/delete")
     public Result<String> delete(@RequestParam(name = "id", required = true) String id) {
@@ -226,7 +226,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @return
      */
     //@AutoLog(value = "系统评论回复表-批量删除")
-    @ApiOperation(value = "系统评论回复表-批量删除", notes = "系统评论回复表-批量删除")
+    @Operation(summary = "系统评论回复表-批量删除")
     //@RequiresPermissions("org.jeecg.modules.demo:sys_comment:deleteBatch")
     @DeleteMapping(value = "/deleteBatch")
     public Result<String> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
@@ -241,7 +241,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @return
      */
     //@AutoLog(value = "系统评论回复表-通过id查询")
-    @ApiOperation(value = "系统评论回复表-通过id查询", notes = "系统评论回复表-通过id查询")
+    @Operation(summary = "系统评论回复表-通过id查询")
     @GetMapping(value = "/queryById")
     public Result<SysComment> queryById(@RequestParam(name = "id", required = true) String id) {
         SysComment sysComment = sysCommentService.getById(id);
