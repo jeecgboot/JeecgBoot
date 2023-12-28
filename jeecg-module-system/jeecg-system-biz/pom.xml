@@ -32,7 +32,7 @@
 		<!-- 积木报表 -->
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
-			<artifactId>jimureport-spring-boot3-starter</artifactId>
+			<artifactId>jimureport-spring-boot3-starter-fastjson2</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.jeecgframework.boot3</groupId>
