@@ -37,8 +37,10 @@
                 <Icon icon="mdi:chevron-down"></Icon>
               </a-button>
         </a-dropdown>
+        <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
         <!-- 高级查询 -->
         <super-query :config="superQueryConfig" @search="handleSuperQuery" />
+        <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
       </template>
        <!--操作栏-->
       <template #action="{ record }">
@@ -156,6 +158,7 @@
 
   const [registerTable, {reload},{ rowSelection, selectedRowKeys }] = tableContext
 
+<#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
   // 高级查询配置
   const superQueryConfig = reactive(superQuerySchema);
 
@@ -168,7 +171,7 @@
     });
     reload();
   }
-
+<#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
    /**
     * 新增事件
     */

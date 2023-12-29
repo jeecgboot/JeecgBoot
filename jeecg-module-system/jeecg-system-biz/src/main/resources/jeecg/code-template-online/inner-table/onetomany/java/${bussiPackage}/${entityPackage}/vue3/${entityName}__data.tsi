@@ -243,6 +243,7 @@ export const formSchema: FormSchema[] = [
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
+     <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
     <#elseif po.classType=='list_multi'>
     component: 'JSelectMultiple',
     componentProps:{
@@ -253,6 +254,7 @@ export const formSchema: FormSchema[] = [
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
+     <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
     <#elseif po.classType=='sel_search'>
     component: 'JSearchSelect',
     componentProps:{
@@ -513,6 +515,7 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
+     <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
     <#elseif po.classType=='list_multi'>
     component: 'JSelectMultiple',
     componentProps:{
@@ -523,6 +526,7 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
+     <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
     <#elseif po.classType=='sel_search'>
     component: 'JSearchSelect',
     componentProps:{
@@ -804,6 +808,7 @@ export const ${sub.entityName?uncap_first}JVxeColumns: JVxeColumn[] = [
 </#if>
 </#list>
 
+<#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
 // 高级查询数据
 export const superQuerySchema = {
   <#list columns as po>
@@ -826,6 +831,7 @@ export const superQuerySchema = {
   },
   </#list>
 };
+<#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
 
 /**
 * 流程表单调用这个方法获取formSchema
