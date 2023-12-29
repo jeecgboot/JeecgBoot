@@ -120,4 +120,12 @@ public interface ISysUserTenantService extends IService<SysUserTenant> {
      * @return
      */
     SysUserTenant getUserTenantByTenantId(String userId, Integer tenantId);
+
+    /**
+     * 获取租户下的成员数量
+     * @param tenantId
+     * @param tenantStatus
+     * @return
+     */
+    Long getUserCount(Integer tenantId, String tenantStatus);
 }

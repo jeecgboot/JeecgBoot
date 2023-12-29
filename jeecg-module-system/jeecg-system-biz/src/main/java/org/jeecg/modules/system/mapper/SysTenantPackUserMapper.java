@@ -25,4 +25,11 @@ public interface SysTenantPackUserMapper extends BaseMapper<SysTenantPackUser> {
     @InterceptorIgnore(tenantLine = "true")
     List<String> queryTenantPackUserNameList(@Param("tenantId") Integer tenantId, @Param("packCodeList") List<String> packCodeList); 
 
+    /**
+     * 判断当前用户在该租户下是否拥有管理员的权限
+     * @param userId
+     * @param tenantId
+     * @return
+     */
+    Long izHaveBuyAuth(@Param("userId") String userId, @Param("tenantId") String tenantId);
 }

@@ -17,12 +17,12 @@ import org.jeecg.config.shiro.filters.CustomShiroFilterFactoryBean;
 import org.jeecg.config.shiro.filters.JwtFilter;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import redis.clients.jedis.HostAndPort;
@@ -31,7 +31,6 @@ import redis.clients.jedis.JedisCluster;
 import javax.annotation.Resource;
 import javax.servlet.Filter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author: Scott
@@ -76,6 +75,7 @@ public class ShiroConfig {
                 }
             }
         }
+
         // 配置不会被拦截的链接 顺序判断
         filterChainDefinitionMap.put("/sys/cas/client/validateLogin", "anon"); //cas验证登录
         filterChainDefinitionMap.put("/sys/randomImage/**", "anon"); //登录验证码接口排除
@@ -94,6 +94,9 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/auth/2step-code", "anon");//登录验证码
         filterChainDefinitionMap.put("/sys/common/static/**", "anon");//图片预览 &下载文件不限制token
         filterChainDefinitionMap.put("/sys/common/pdf/**", "anon");//pdf预览
+
+        //filterChainDefinitionMap.put("/sys/common/view/**", "anon");//图片预览不限制token
+        //filterChainDefinitionMap.put("/sys/common/download/**", "anon");//文件下载不限制token
         filterChainDefinitionMap.put("/generic/**", "anon");//pdf预览需要文件
 
         filterChainDefinitionMap.put("/sys/getLoginQrcode/**", "anon"); //登录二维码
@@ -101,6 +104,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/sys/checkAuth", "anon"); //授权接口排除
 
 
+        //update-begin--Author:scott Date:20221116 for：排除静态资源后缀
         filterChainDefinitionMap.put("/", "anon");
         filterChainDefinitionMap.put("/doc.html", "anon");
         filterChainDefinitionMap.put("/**/*.js", "anon");
@@ -115,16 +119,17 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/**/*.ttf", "anon");
         filterChainDefinitionMap.put("/**/*.woff", "anon");
         filterChainDefinitionMap.put("/**/*.woff2", "anon");
+        //update-end--Author:scott Date:20221116 for：排除静态资源后缀
 
         filterChainDefinitionMap.put("/druid/**", "anon");
         filterChainDefinitionMap.put("/swagger-ui.html", "anon");
         filterChainDefinitionMap.put("/swagger**/**", "anon");
         filterChainDefinitionMap.put("/webjars/**", "anon");
         filterChainDefinitionMap.put("/v2/**", "anon");
-        // 企业微信证书排除
-        filterChainDefinitionMap.put("/WW_verify*", "anon");
-        
+
+        // update-begin--Author:sunjianlei Date:20210510 for：排除消息通告查看详情页面（用于第三方APP）
         filterChainDefinitionMap.put("/sys/annountCement/show/**", "anon");
+        // update-end--Author:sunjianlei Date:20210510 for：排除消息通告查看详情页面（用于第三方APP）
 
         //积木报表排除
         filterChainDefinitionMap.put("/jmreport/**", "anon");
@@ -155,10 +160,10 @@ public class ShiroConfig {
         //测试模块排除
         filterChainDefinitionMap.put("/test/seata/**", "anon");
 
-        // update-begin--author:liusq Date:20230522 for：[issues/4829]访问不存在的url时会提示Token失效，请重新登录呢
         //错误路径排除
         filterChainDefinitionMap.put("/error", "anon");
-        // update-end--author:liusq Date:20230522 for：[issues/4829]访问不存在的url时会提示Token失效，请重新登录呢
+        // 企业微信证书排除
+        filterChainDefinitionMap.put("/WW_verify*", "anon");
 
         // 添加自己的过滤器并且取名为jwt
         Map<String, Filter> filterMap = new HashMap<String, Filter>(1);
@@ -253,8 +258,7 @@ public class ShiroConfig {
     public IRedisManager redisManager() {
         log.info("===============(2)创建RedisManager,连接Redis..");
         IRedisManager manager;
-
-        // sentinel cluster redis
+        // sentinel cluster redis（【issues/5569】shiro集成 redis 不支持 sentinel 方式部署的redis集群 #5569）
         if (Objects.nonNull(redisProperties)
                 && Objects.nonNull(redisProperties.getSentinel())
                 && !CollectionUtils.isEmpty(redisProperties.getSentinel().getNodes())) {
@@ -266,6 +270,7 @@ public class ShiroConfig {
 
             return sentinelManager;
         }
+        
         // redis 单机支持，在集群为空，或者集群无机器时候使用 add by jzyadmin@163.com
         if (lettuceConnectionFactory.getClusterConfiguration() == null || lettuceConnectionFactory.getClusterConfiguration().getClusterNodes().isEmpty()) {
             RedisManager redisManager = new RedisManager();

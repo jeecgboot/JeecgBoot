@@ -858,16 +858,19 @@ public class SysTenantController {
     @GetMapping("/getTenantCount")
     public Result<Map<String,Long>> getTenantCount(HttpServletRequest request){
         Map<String,Long> map = new HashMap<>();
-        Integer tenantId = oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(request),0);
-        LambdaQueryWrapper<SysUserTenant> userTenantQuery = new LambdaQueryWrapper<>();
-        userTenantQuery.eq(SysUserTenant::getTenantId,tenantId);
-        userTenantQuery.eq(SysUserTenant::getStatus,CommonConstant.USER_TENANT_NORMAL);
-        long userCount = relationService.count(userTenantQuery);
+        //update-begin---author:wangshuai---date:2023-11-24---for:【QQYUN-7177】用户数量显示不正确---
+        if(oConvertUtils.isEmpty(TokenUtils.getTenantIdByRequest(request))){
+            return Result.error("当前租户为空，禁止访问！");
+        }
+        Integer tenantId = oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(request));
+        Long userCount = relationService.getUserCount(tenantId,CommonConstant.USER_TENANT_NORMAL);
+        //update-end---author:wangshuai---date:2023-11-24---for:【QQYUN-7177】用户数量显示不正确---
         map.put("userCount",userCount);
         LambdaQueryWrapper<SysDepart> departQuery = new LambdaQueryWrapper<>();
         departQuery.eq(SysDepart::getDelFlag,String.valueOf(CommonConstant.DEL_FLAG_0));
         departQuery.eq(SysDepart::getTenantId,tenantId);
-        departQuery.eq(SysDepart::getStatus,CommonConstant.STATUS_1);
+        //部门状态暂时没用，先注释掉
+        //departQuery.eq(SysDepart::getStatus,CommonConstant.STATUS_1);
         long departCount = sysDepartService.count(departQuery);
         map.put("departCount",departCount);
         return Result.ok(map);

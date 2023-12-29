@@ -9,6 +9,8 @@ import org.jeecgframework.codegenerate.generate.pojo.onetomany.SubTableVo;
 
 /**
  * 代码生成器入口【一对多】
+ * 
+ * 【 GUI模式功能弱一些，请优先使用Online代码生成 】
  * @Author 张代浩
  * @site www.jeecg.com
  * 

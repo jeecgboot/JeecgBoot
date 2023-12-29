@@ -141,6 +141,26 @@ public class SystemApiController {
     }
 
     /**
+     * 通过用户账号查询部门父ID集合
+     * @param username
+     * @return 部门 id
+     */
+    @GetMapping("/getDepartParentIdsByUsername")
+    Set<String>  getDepartParentIdsByUsername(@RequestParam("username") String username){
+        return sysBaseApi.getDepartParentIdsByUsername(username);
+    }
+
+    /**
+     * 查询部门父ID集合
+     * @param depIds
+     * @return 部门 id
+     */
+    @GetMapping("/getDepartParentIdsByDepIds")
+    Set<String> getDepartParentIdsByDepIds(@RequestParam("depIds") Set depIds){
+        return sysBaseApi.getDepartParentIdsByDepIds(depIds);
+    }
+
+    /**
      * 通过用户账号查询部门 name
      * @param username
      * @return 部门 name
@@ -528,6 +548,17 @@ public class SystemApiController {
     }
 
     /**
+     * 反向翻译分类字典，用于导入
+     *
+     * @param names 名称，逗号分割
+     * @return
+     */
+    @GetMapping("/loadCategoryDictItemByNames")
+    List<String> loadCategoryDictItemByNames(@RequestParam("names") String names, @RequestParam("delNotExist") boolean delNotExist) {
+        return sysBaseApi.loadCategoryDictItemByNames(names, delNotExist);
+    }
+
+    /**
      * 根据字典code加载字典text
      *
      * @param dictCode 顺序：tableName,text,code
@@ -655,6 +686,7 @@ public class SystemApiController {
     }
 
 
+    //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
     /**
      * 【接口签名验证】
      * 49 字典表的 翻译，可批量
@@ -663,12 +695,14 @@ public class SystemApiController {
      * @param text
      * @param code
      * @param keys  多个用逗号分割
+     * @param ds 数据源
      * @return
      */
     @GetMapping("/translateDictFromTableByKeys")
-    public List<DictModel> translateDictFromTableByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keys") String keys) {
-        return this.sysBaseApi.translateDictFromTableByKeys(table, text, code, keys);
+    public List<DictModel> translateDictFromTableByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keys") String keys, @RequestParam("ds")  String ds) {
+        return this.sysBaseApi.translateDictFromTableByKeys(table, text, code, keys, ds);
     }
+    //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
     /**
      * 发送模板信息

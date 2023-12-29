@@ -89,4 +89,13 @@ public interface ISysCategoryService extends IService<SysCategory> {
 	 */
 	List<String> loadDictItem(String ids, boolean delNotExist);
 
+	/**
+	 * 【仅导入使用】分类字典控件反向翻译
+	 *
+	 * @param names
+	 * @param delNotExist 是否移除不存在的项，设为false如果某个key不存在数据库中，则直接返回key本身
+	 * @return
+	 */
+	List<String> loadDictItemByNames(String names, boolean delNotExist);
+
 }

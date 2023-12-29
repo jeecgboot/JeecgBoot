@@ -26,7 +26,7 @@ spring:
       max-request-size: 10MB
   mail:
     host: smtp.163.com
-    username: ??
+    username: jeecgos@163.com
     password: ??
     properties:
       mail:
@@ -191,7 +191,7 @@ jeecg:
     #webapp文件路径
     webapp: /opt/jeecg-boot/webapp
   shiro:
-    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/jmreport/bigscreen2/**,/api/getUserInfo
+    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/bigscreen/category/**,/bigscreen/visual/**,/bigscreen/map/**,/jmreport/bigscreen2/**,/api/getUserInfo
   #阿里云oss存储和大鱼短信秘钥配置
   oss:
     accessKey: ??
