@@ -43,6 +43,8 @@
             <Icon icon="ant-design:down-outlined"></Icon>
           </a-button>
         </a-dropdown>
+        <!-- 高级查询 -->
+        <super-query :config="superQueryConfig" @search="handleSuperQuery" />
       </template>
       <!--操作栏-->
       <template #action="{ record }">
@@ -78,12 +80,12 @@
 
 <script lang="ts" name="${entityPackage}-${entityName?uncap_first}" setup>
   //ts语法
-  import {ref, computed, unref, toRaw, nextTick} from 'vue';
+  import {ref, reactive, computed, unref, toRaw, nextTick} from 'vue';
   import {BasicTable, TableAction} from '/@/components/Table';
   import {useModal} from '/@/components/Modal';
   import { useListPage } from '/@/hooks/system/useListPage'
   import ${entityName}Modal from './components/${entityName}Modal.vue';
-  import {columns,searchFormSchema} from './${entityName}.data';
+  import {columns, searchFormSchema, superQuerySchema} from './${entityName}.data';
   import { downloadFile } from '/@/utils/common/renderUtils';
   import {list, delete${entityName}, batchDelete${entityName}, getExportUrl,getImportUrl, getChildList,getChildListBatch} from './${entityName}.api';
   <#if list_need_pca>
@@ -92,6 +94,7 @@
   <#if bpm_flag==true>
   import { startProcess } from '/@/api/common/api';
   </#if>
+  const queryParam = reactive<any>({});
   const expandedRowKeys = ref([]);
   //字典model
   const [registerModal, {openModal}] = useModal();
@@ -137,10 +140,14 @@
            width: 240,
            fixed:'right'
          },
+         beforeFetch: (params) => {
+           return Object.assign(params, queryParam);
+         },
     },
      exportConfig: {
           name:"${tableVo.ftlDescription}",
           url: getExportUrl,
+          params: queryParam,
         },
         importConfig: {
           url: getImportUrl,
@@ -149,6 +156,19 @@
     })
 
   const [registerTable, {reload, collapseAll, updateTableDataRecord, findTableDataRecord,getDataSource},{ rowSelection, selectedRowKeys }] = tableContext
+
+  // 高级查询配置
+  const superQueryConfig = reactive(superQuerySchema);
+
+  /**
+   * 高级查询事件
+   */
+  function handleSuperQuery(params) {
+    Object.keys(params).map((k) => {
+      queryParam[k] = params[k];
+    });
+    reload();
+  }
 
   /**
    * 新增事件

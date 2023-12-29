@@ -37,6 +37,8 @@
                 <Icon icon="mdi:chevron-down"></Icon>
               </a-button>
         </a-dropdown>
+        <!-- 高级查询 -->
+        <super-query :config="superQueryConfig" @search="handleSuperQuery" />
       </template>
        <!--操作栏-->
       <template #action="{ record }">
@@ -71,12 +73,12 @@
 </template>
 
 <script lang="ts" name="${entityPackage}-${entityName?uncap_first}" setup>
-  import {ref, computed, unref} from 'vue';
+  import {ref, reactive, computed, unref} from 'vue';
   import {BasicTable, useTable, TableAction} from '/@/components/Table';
   import { useListPage } from '/@/hooks/system/useListPage'
   import {useModal} from '/@/components/Modal';
   import ${entityName}Modal from './components/${entityName}Modal.vue'
-  import {columns, searchFormSchema} from './${entityName}.data';
+  import {columns, searchFormSchema, superQuerySchema} from './${entityName}.data';
   import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName}.api';
   import {downloadFile} from '/@/utils/common/renderUtils';
   import { useUserStore } from '/@/store/modules/user';
@@ -91,6 +93,7 @@
   <#if bpm_flag==true>
   import { startProcess } from '/@/api/common/api';
   </#if>
+  const queryParam = reactive<any>({});
   const checkedKeys = ref<Array<string | number>>([]);
   const userStore = useUserStore();
   //注册model
@@ -136,10 +139,14 @@
                width: 120,
                fixed:'right'
            },
+           beforeFetch: (params) => {
+             return Object.assign(params, queryParam);
+           },
         },
         exportConfig: {
             name:"${tableVo.ftlDescription}",
             url: getExportUrl,
+            params: queryParam,
         },
         importConfig: {
             url: getImportUrl,
@@ -148,6 +155,19 @@
     })
 
   const [registerTable, {reload},{ rowSelection, selectedRowKeys }] = tableContext
+
+  // 高级查询配置
+  const superQueryConfig = reactive(superQuerySchema);
+
+  /**
+   * 高级查询事件
+   */
+  function handleSuperQuery(params) {
+    Object.keys(params).map((k) => {
+      queryParam[k] = params[k];
+    });
+    reload();
+  }
 
    /**
     * 新增事件
