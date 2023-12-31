@@ -35,9 +35,9 @@
 			<artifactId>jimureport-spring-boot-starter</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jeecgframework.boot</groupId>
-			<artifactId>drag-free</artifactId>
-			<version>1.0.2</version>
+			<groupId>org.jeecgframework.jimureport</groupId>
+			<artifactId>jimureport-drag</artifactId>
+			<version>2.0.1</version>
 		</dependency>
 		<!-- 积木报表 mongo redis 支持包 
 		<dependency>
