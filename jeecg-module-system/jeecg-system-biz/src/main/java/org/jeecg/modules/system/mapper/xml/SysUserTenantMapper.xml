@@ -39,10 +39,9 @@
 
     <!--通过用户id获取租户列表-->
     <select id="getTenantListByUserId" resultType="org.jeecg.modules.system.vo.SysUserTenantVo">
-        SELECT st.id as tenantUserId,st.name,st.trade,st.house_number,st.create_by,sut.status as userTenantStatus,svm.member_type,sut.user_id as id
+        SELECT st.id as tenantUserId,st.name,st.trade,st.house_number,st.create_by,sut.status as userTenantStatus,sut.user_id as id
         FROM sys_user_tenant sut
         LEFT JOIN sys_tenant st ON sut.tenant_id = st.id
-        LEFT JOIN sys_vip_membership svm ON sut.tenant_id = svm.tenant_id
         WHERE st.status = 1
         AND st.del_flag = 0
         AND sut.user_id = #{userId}
