@@ -27,7 +27,7 @@
         return "";
     }
 <#else>
-    @Schema(value = "${po.filedComment}")
+    @Schema(description = "${po.filedComment}")
   <#if po.fieldDbName == 'del_flag'>
     @TableLogic
   </#if>
