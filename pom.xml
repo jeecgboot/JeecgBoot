@@ -168,6 +168,13 @@
 				<version>${jeecgboot.version}</version>
 			</dependency>
 
+			<!-- shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
+			<dependency>
+				<groupId>redis.clients</groupId>
+				<artifactId>jedis</artifactId>
+				<version>2.9.0</version>
+			</dependency>
+
 			<!-- jeecg tools -->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
