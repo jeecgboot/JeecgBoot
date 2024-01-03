@@ -83,7 +83,7 @@ Docker快速启动项目
 -----------------------------------
 
 - 项目官网：  [http://www.jeecg.com](http://www.jeecg.com)
-- 开发文档：  [http://help.jeecg.com](http://help.jeecg.com)
+- 开发文档：  [https://help.jeecg.com](https://help.jeecg.com)
 - 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)  |   [常见问题 ](http://www.jeecg.com/doc/qa) |  [视频教程](https://space.bilibili.com/454617261/channel/series)  |  [1分钟低代码体验](https://my.oschina.net/jeecg/blog/3083313) 
 
 - 在线演示 ：  [Vue3演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex) |  [敲敲云零代码](https://qiaoqiaoyun.com)
