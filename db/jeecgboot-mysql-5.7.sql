@@ -1,6 +1,3 @@
-CREATE database if NOT EXISTS `jeecg-boot` default character set utf8mb4 collate utf8mb4_general_ci;
-USE `jeecg-boot`;
-
 /*
  Navicat Premium Data Transfer
 
@@ -14,7 +11,7 @@ USE `jeecg-boot`;
  Target Server Version : 50738
  File Encoding         : 65001
 
- Date: 03/01/2024 13:34:55
+ Date: 03/01/2024 22:06:31
 */
 
 SET NAMES utf8mb4;
@@ -140,6 +137,31 @@ INSERT INTO `demo_field_def_val_sub` VALUES ('15884194974080425602', '133', '管
 INSERT INTO `demo_field_def_val_sub` VALUES ('15884194979201535108', '1144', '管理员', '2020-05-02', '1256548579457114114', 'admin', '2020-05-03 01:02:51', NULL, NULL, 'A01');
 INSERT INTO `demo_field_def_val_sub` VALUES ('1597149069167026177', '${order_num_rule_param}', '管理员', '2022-11-28', '1580543461659652098', 'admin', '2022-11-28 16:43:06', NULL, NULL, 'A01');
 INSERT INTO `demo_field_def_val_sub` VALUES ('1683074492983365633', '${order_num_rule_param}', '管理员', '2023-07-23', '1580543461659652098', 'admin', '2023-07-23 19:20:03', NULL, NULL, 'A01');
+
+-- ----------------------------
+-- Table structure for flyway_schema_history
+-- ----------------------------
+DROP TABLE IF EXISTS `flyway_schema_history`;
+CREATE TABLE `flyway_schema_history`  (
+  `installed_rank` int(11) NOT NULL,
+  `version` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `description` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `script` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `checksum` int(11) NULL DEFAULT NULL,
+  `installed_by` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `installed_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `execution_time` int(11) NOT NULL,
+  `success` tinyint(1) NOT NULL,
+  PRIMARY KEY (`installed_rank`) USING BTREE,
+  INDEX `flyway_schema_history_s_idx`(`success`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of flyway_schema_history
+-- ----------------------------
+INSERT INTO `flyway_schema_history` VALUES (1, '1', '<< Flyway Baseline >>', 'BASELINE', '<< Flyway Baseline >>', NULL, 'root', '2024-01-03 21:58:35', 0, 1);
+INSERT INTO `flyway_schema_history` VALUES (2, '3.6.2', 'all upgrade', 'SQL', 'V3.6.2__all_upgrade.sql', 146217576, 'root', '2024-01-03 21:58:35', 168, 1);
 
 -- ----------------------------
 -- Table structure for jeecg_monthly_growth_analysis
@@ -3624,7 +3646,7 @@ CREATE TABLE `qrtz_scheduler_state`  (
 -- ----------------------------
 -- Records of qrtz_scheduler_state
 -- ----------------------------
-INSERT INTO `qrtz_scheduler_state` VALUES ('MyScheduler', 'qin1704250486956', 1704260092282, 15000);
+INSERT INTO `qrtz_scheduler_state` VALUES ('MyScheduler', 'qin1704290735200', 1704290772490, 15000);
 
 -- ----------------------------
 -- Table structure for qrtz_simple_triggers
