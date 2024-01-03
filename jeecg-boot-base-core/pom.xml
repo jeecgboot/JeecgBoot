@@ -267,7 +267,7 @@
 
 		<!-- AutoPoi Excel工具类-->
 		<dependency>
-			<groupId>org.jeecgframework</groupId>
+			<groupId>org.jeecgframework.boot3</groupId>
 			<artifactId>autopoi-web</artifactId>
 			<version>${autopoi-web.version}</version>
 			<exclusions>
