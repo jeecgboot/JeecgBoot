@@ -156,28 +156,49 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
         // if the number of rows of data is greater than the available space in the default template
         // we shift down the rows after the table and we clone the row in the table
         int dataRowNumber = LAST_ROW - FIRST_ROW;
-        int additionalRowNum = data.size() - dataRowNumber - 1;
-        TOTAL_ROW = LAST_ROW+additionalRowNum;
-
+        int additionalRowNum = Math.max(data.size() - dataRowNumber - 1, 0);
+        TOTAL_ROW = LAST_ROW + additionalRowNum;
         Sheet sheet = factory.getWorkbook().getSheetAt(0);
         org.apache.poi.ss.usermodel.Row sourceRow = sheet.getRow(FIRST_ROW);
-        if(data.size() > dataRowNumber)
+        int footerRow = TOTAL_ROW + 1; // la ligne à laquelle le footer commence (1 ligne avant le total)
+        int imgShift = additionalRowNum; // le nombre de ligne qu'on va décaler les images (signatures et tampon)
+        if(data.size() > dataRowNumber + 1)
         {
             int startRow = LAST_ROW+1;
             int fileLastRow = sheet.getLastRowNum();
             // shifting the footer of the file, to X rows below
             // making sure the whole footer is in the same page (13 lines) and we fill the end of page with blank data lines
-            if(additionalRowNum%PAGE_ROW_MAX <= 13) {
-                TOTAL_ROW = PAGE_ROW_MAX-2;
-                sheet.shiftRows(startRow, fileLastRow, PAGE_ROW_MAX - LAST_ROW, true, false);
+            
+            // si le nombre de lignes de data rentre dans 1 page A4
+             if(data.size() < 44) {
+                if(TOTAL_ROW > LAST_ROW + 3) { // s'il ne reste pas assez de place pour le footer
+                    // on shift le footer à la page suivante (total + signature etc..)
+                    sheet.shiftRows(startRow, fileLastRow, PAGE_ROW_MAX - LAST_ROW - 1, true, false);
+                    footerRow = PAGE_ROW_MAX - LAST_ROW + 1;
+                    imgShift = PAGE_ROW_MAX - LAST_ROW + 1;
+                    TOTAL_ROW = PAGE_ROW_MAX;
+                }
+                else {
+                    sheet.shiftRows(startRow, fileLastRow, additionalRowNum, true, false);
+                    footerRow = additionalRowNum + 1;
+                    TOTAL_ROW = LAST_ROW + additionalRowNum+1;
+                }
             }
-            else {
-                // +6 because if we use US template there's one more row
-                sheet.shiftRows(startRow, fileLastRow, additionalRowNum, true, false);
+            else {// on dépasse forcément le format A4 d'un PDF
+                if(((TOTAL_ROW - 44) % 63) < 13) {
+                    sheet.shiftRows(startRow, fileLastRow, TOTAL_ROW - LAST_ROW + ((TOTAL_ROW-44)%63), true, false);
+                    footerRow = additionalRowNum + ((TOTAL_ROW-44)%63) + 1;
+                    imgShift = TOTAL_ROW-44 + ((TOTAL_ROW-44)%63) -1;
+                    TOTAL_ROW += ((TOTAL_ROW-44)%63) + 1;
+                }
+                else {
+                    sheet.shiftRows(startRow, fileLastRow, TOTAL_ROW - LAST_ROW, true, false);
+                    footerRow = TOTAL_ROW - LAST_ROW +1;
+                }
             }
 
             // inserting new rows after row 42
-            for(int i = 0; i < (data.size() - dataRowNumber - 1 <= 13 ? PAGE_ROW_MAX-LAST_ROW+1 : additionalRowNum+1); i++) {
+            for(int i = 0; i < footerRow; i++) {
                 sheet.createRow(startRow-1 + i);
                 org.apache.poi.ss.usermodel.Row newRow = sheet.getRow(startRow-1 + i);
                 newRow.setHeight(sourceRow.getHeight());
@@ -192,7 +213,7 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
                         cellStyle.setBorderLeft(BorderStyle.DOUBLE);
                         cell.setCellStyle(cellStyle);
                     }
-                    if(startRow + i < PAGE_ROW_MAX-2) {
+                    if((startRow + i <= TOTAL_ROW && data.size() >= 44) || (startRow + i <= PAGE_ROW_MAX - 1 && data.size() < 44)) {
                         if (j >= 2 && j <= 7) {
                             middleCellStyle.setBorderLeft(BorderStyle.THIN);
                             middleCellStyle.setBorderRight(BorderStyle.THIN);
@@ -209,10 +230,13 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
                     XSSFPicture picture = (XSSFPicture)shape;
                     XSSFClientAnchor anchor = picture.getClientAnchor();
 
-                    anchor.setRow1(data.size() - dataRowNumber - 1 <= 13 ? anchor.getRow1() + PAGE_ROW_MAX-LAST_ROW :  anchor.getRow1() + additionalRowNum);
-                    anchor.setRow2(data.size() - dataRowNumber - 1 <= 13 ? anchor.getRow2() + PAGE_ROW_MAX-LAST_ROW :  anchor.getRow2() + additionalRowNum);
+                    anchor.setRow1(anchor.getRow1() + imgShift);
+                    anchor.setRow2(anchor.getRow2() + imgShift);
                 }
             }
+        }
+        else {
+            TOTAL_ROW = LAST_ROW + additionalRowNum + 1;
         }
         // table section
         for (int i = 0; i < data.size(); i++) {
@@ -298,16 +322,16 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
             totalDueCellStyle.setBorderTop(BorderStyle.THIN);
             totalDueCellStyle.setFont(arialBold);
 
-            if(additionalRowNum%PAGE_ROW_MAX <= 13) {
-                totalDueRow = sheet.getRow(PAGE_ROW_MAX + 2);
+            if(((LAST_ROW+additionalRowNum - 44) % 63) < 13 && ((LAST_ROW+additionalRowNum - 44) % 63) > 0) {
+                totalDueRow = sheet.getRow( data.size() < 44 ? PAGE_ROW_MAX + 1 : TOTAL_ROW + 1);
                 Cell totalDueCell = totalDueRow.createCell(7);
-                totalDueCell.setCellFormula("H" + (PAGE_ROW_MAX - 2) + "-G" + (PAGE_ROW_MAX - 2));
+                totalDueCell.setCellFormula("H" + (TOTAL_ROW) + "-G" + (TOTAL_ROW));
                 totalDueCell.setCellStyle(totalDueCellStyle);
             }
             else {
-                totalDueRow = sheet.getRow(TOTAL_ROW + 2);
+                totalDueRow = sheet.getRow(data.size() < 44 ? TOTAL_ROW + 1 : TOTAL_ROW + 2);
                 Cell totalDueCell = totalDueRow.createCell(7);
-                totalDueCell.setCellFormula("H" + (TOTAL_ROW+1) + "-G" + (TOTAL_ROW+1));
+                totalDueCell.setCellFormula("H" + (data.size() < 44 ? TOTAL_ROW : TOTAL_ROW + 1) + "-G" + (data.size() < 44 ? TOTAL_ROW : TOTAL_ROW + 1));
                 totalDueCell.setCellStyle(totalDueCellStyle);
             }
         }
@@ -315,13 +339,13 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
         if (targetClient.getCurrency().equals("USD")) {
             org.apache.poi.ss.usermodel.Row dollarRow;
             String formula;
-            if (additionalRowNum % PAGE_ROW_MAX <= 13) {
-                dollarRow = sheet.getRow(TOTAL_ROW + 5);
-                formula = "H"+ (TOTAL_ROW+5) +" *" + exchangeRate;
+            if ((((LAST_ROW + additionalRowNum - 44) % 63) < 13) && ((LAST_ROW + additionalRowNum - 44) % 63) > 0) {
+                dollarRow = sheet.getRow(TOTAL_ROW + 2);
+                formula = "H"+ (TOTAL_ROW + 2) +" *" + exchangeRate;
             }
             else {
-                dollarRow = sheet.getRow(TOTAL_ROW + 3);
-                formula = "H" + (TOTAL_ROW + 3) + " *" + exchangeRate;
+                dollarRow = sheet.getRow(data.size() >= 44 ? TOTAL_ROW + 3 : TOTAL_ROW + 2);
+                formula = "H" + (data.size() >= 44 ? TOTAL_ROW + 3 : TOTAL_ROW + 2) + " *" + exchangeRate;
             }
             Cell dollarCell = dollarRow.createCell(7); // column H
             CellStyle cellStyle = factory.getWorkbook().createCellStyle();

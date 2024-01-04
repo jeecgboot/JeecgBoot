@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.service.impl;
 
+import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
@@ -118,11 +119,9 @@ public class EmailServiceImpl implements EmailService {
     }
     @Override
     @Transactional
-    public FreeMarkerConfigurer freemarkerClassLoaderConfig() throws IOException {
+    public FreeMarkerConfigurer freemarkerClassLoaderConfig() {
         Configuration configuration = new Configuration(Configuration.VERSION_2_3_31);
-        TemplateLoader templateLoader = new FileTemplateLoader(new File(env.getProperty("jeecg.path.emailTemplateDir"))) {
-        };
-        configuration.setTemplateLoader(templateLoader);
+        configuration.setTemplateLoader(new ClassTemplateLoader(getClass(), "/templates"));
         FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
         freeMarkerConfigurer.setConfiguration(configuration);
         return freeMarkerConfigurer;

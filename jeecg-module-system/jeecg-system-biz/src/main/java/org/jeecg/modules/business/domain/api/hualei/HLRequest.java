@@ -21,12 +21,13 @@ import java.util.List;
  */
 @Slf4j
 public class HLRequest {
-    private final static String URL = "http://www.antugj.com:8082/selectTrack.htm";
     private static final RequestConfig REQUEST_CONFIG = RequestConfig.custom().build();
+    private final String url;
 
     private final List<String> billCodes;
 
-    public HLRequest(List<String> billCodes) {
+    public HLRequest(String url, List<String> billCodes) {
+        this.url = url;
         this.billCodes = billCodes;
     }
 
@@ -40,7 +41,7 @@ public class HLRequest {
         while (attempts++ < 5) {
             try {
                 HttpClient httpClient = HttpClientBuilder.create().setDefaultRequestConfig(REQUEST_CONFIG).build();
-                HttpPost request = new HttpPost(URL);
+                HttpPost request = new HttpPost(url);
 
                 // adding the form data
                 request.setEntity(new UrlEncodedFormEntity(generateFormData(), "UTF-8"));

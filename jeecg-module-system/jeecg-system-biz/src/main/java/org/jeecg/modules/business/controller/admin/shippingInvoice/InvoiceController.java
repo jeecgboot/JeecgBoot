@@ -121,6 +121,8 @@ public class InvoiceController {
 
     @Value("${jeecg.path.shippingInvoiceDetailDir}")
     private String INVOICE_DETAIL_DIR;
+    @Value("${jeecg.path.shippingInvoicePdfDir}")
+    private String INVOICE_PDF_DIR;
 
     private final String SECTION_START = "<section><ul>";
     private final String SECTION_END = "</ul></section>";

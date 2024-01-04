@@ -28,18 +28,18 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-public class HLJob implements Job {
+public class YPJob implements Job {
 
     @Autowired
     private IParcelService parcelService;
     @Autowired
     private IPlatformOrderService platformOrderService;
 
-    private final static String URL = "http://www.antugj.com:8082/selectTrack.htm";
+    private final static String URL = "http://www.yuanpeng56.com:8082/selectTrack.htm";
 
     private static final Integer DEFAULT_NUMBER_OF_DAYS = 15;
     private static final Integer DEFAULT_MAXIMUM_NUMBER_OF_PARCELS_PER_TRANSACTION = 800;
-    private static final List<String> DEFAULT_TRANSPORTERS = Arrays.asList("法国专线普货");
+    private static final List<String> DEFAULT_TRANSPORTERS = Arrays.asList("法国普货小包专线");
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {

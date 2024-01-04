@@ -44,8 +44,8 @@ public class CWJob implements Job {
     private static final Integer DEFAULT_MAXIMUM_NUMBER_OF_PARCELS_PER_TRANSACTION = 800;
     private static final List<String> DEFAULT_TRANSPORTERS = Arrays.asList("诚稳法邮普货" , "诚稳法邮膏体");
 
-    private final static String APP_TOKEN = "yhidp1u86us23hx79xx2t8b7h47wa9usv";
-    private final static String APP_KEY = "ymk3899nifsjw4d9igkyk58sfl6u48869ahr749axjtnq2kn07n4y6izn1ywcptkh";
+    private final static String APP_TOKEN = "y7j1p5o4obncsdhbk1zgasunb2erpyzvh";
+    private final static String APP_KEY = "ym27kj0wy5wgx69f58pgd7crm60w07p0l15flj1bacrf5n0e38vqjtrjkkvosd61p";
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {

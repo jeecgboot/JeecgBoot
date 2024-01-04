@@ -1,7 +1,5 @@
 package org.jeecg.modules.business.controller.admin.shippingInvoice;
 
-import com.aspose.cells.SaveFormat;
-import com.aspose.cells.Workbook;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -49,8 +47,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,6 +73,8 @@ public class ShippingInvoiceController {
     @Autowired
     private IPurchaseOrderService purchaseOrderService;
     @Autowired
+    private PlatformOrderShippingInvoiceService platformOrderShippingInvoiceService;
+    @Autowired
     private ISavRefundService savRefundService;
     @Autowired
     private IShippingInvoiceService shippingInvoiceService;
@@ -88,10 +86,6 @@ public class ShippingInvoiceController {
     private String INVOICE_LOCATION;
     @Value("${jeecg.path.shippingInvoiceDetailDir}")
     private String INVOICE_DETAIL_LOCATION;
-    @Value("${jeecg.path.shippingInvoicePdfDir}")
-    private String INVOICE_PDF_LOCATION;
-    @Value("${jeecg.path.shippingInvoiceDetailPdfDir}")
-    private String INVOICE_DETAIL_PDF_LOCAION;
 
     @Autowired
     Environment env;
@@ -280,8 +274,6 @@ public class ShippingInvoiceController {
         return Result.OK("文件导入失败！");
     }
 
-
-
     /**
      * Downloads the invoice and returns it in form of bytearray
      * @param invoiceNumber the invoice we want to download
@@ -354,7 +346,7 @@ public class ShippingInvoiceController {
      */
     @GetMapping(value = "/downloadPdf")
     public ResponseEntity<?> downloadPdf(@RequestParam("invoiceNumber") String invoiceNumber) throws Exception {
-        String pdfFilePath = convertToPdf(invoiceNumber, "invoice");
+        String pdfFilePath = platformOrderShippingInvoiceService.convertToPdf(invoiceNumber, "invoice");
         if(!pdfFilePath.equals("ERROR")) {
             File file = new File(pdfFilePath);
             HttpHeaders header = new HttpHeaders();

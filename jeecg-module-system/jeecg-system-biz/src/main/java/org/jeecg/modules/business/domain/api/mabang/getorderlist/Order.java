@@ -126,14 +126,14 @@ public class Order {
     private String phone1;
 
     public void setTrackingNumber(String trackingNumber) {
-        if (trackingNumber != null && trackingNumber.length() == 0) {
+        if (trackingNumber != null && trackingNumber.isEmpty()) {
             this.trackingNumber = null;
         } else
             this.trackingNumber = trackingNumber;
     }
 
     public void setTrackingNumber1(String trackingNumber) {
-        if (trackingNumber != null && trackingNumber.length() == 0) {
+        if (trackingNumber != null && trackingNumber.isEmpty()) {
             this.trackingNumber1 = null;
         } else
             this.trackingNumber1 = trackingNumber;
@@ -164,7 +164,7 @@ public class Order {
     }
 
     public void setShippingTime(String shippingTime) {
-        if (shippingTime != null && shippingTime.length() == 0) {
+        if (shippingTime != null && shippingTime.isEmpty()) {
             this.shippingTime = null;
         } else
             this.shippingTime = shippingTime;
