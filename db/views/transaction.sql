@@ -1,54 +1,71 @@
 CREATE VIEW transaction as
-SELECT id, create_by, create_time, update_by, update_time,
-       type, client_id, payment_proof, invoice_number, shipping_fee, purchase_fee, amount, currency
-FROM
-    (
-        SELECT id as id,
-               create_by,
-               create_time,
-               update_by,
-               update_time,
-               'Credit' as type,
-               client_id,
-               payment_proof,
-               NULL as invoice_number,
-               NULL as shipping_fee,
-               NULL as purchase_fee,
-               amount as amount,
-               (SELECT code FROM currency WHERE credit.currency_id = id) as currency
-        FROM credit
-        UNION ALL
-        SELECT id                                                                   as id,
-               create_by,
-               create_time,
-               update_by,
-               update_time,
-               'Debit'                                                              as type,
-               client_id,
-               NULL                                                                 as payment_proof,
-               invoice_number,
-               total_amount                                                         as shipping_fee,
-               IF(invoice_number LIKE '%%%%-%%-7%%%',
-                  purchase_total(invoice_number),
-                  NULL)                                                            as purchase_fee,
-               IF(invoice_number LIKE '%%%%-%%-7%%%',
-                  total_amount + (purchase_total(invoice_number)),
-                  total_amount)                                                    as amount,
-               (SELECT code FROM currency WHERE shipping_invoice.currency_id = id)  as currency
-        FROM shipping_invoice
-        WHERE client_id IS NOT NULL
-          AND shipping_invoice.currency_id IS NOT NULL
-          AND shipping_invoice.currency_id <> ''
-    ) as id;
-
--- Function that computes the total of purchase by order
-CREATE FUNCTION purchase_total( invoice_number varchar(12)) RETURNS decimal(10, 2)
-BEGIN
-    RETURN (
-        SELECT SUM(poc.purchase_fee) as total
-        FROM platform_order_content as poc
-                 JOIN platform_order po
-                      ON po.id = poc.platform_order_id
-        WHERE po.shipping_invoice_number = invoice_number
-    );
-END;
+SELECT id                                                                           AS id,
+       create_by                                                                    AS create_by,
+       create_time                                                                  AS create_time,
+       update_by                                                                    AS update_by,
+       update_time                                                                  AS update_time,
+       type                                                                         AS type,
+       client_id                                                                    AS client_id,
+       payment_proof                                                                AS payment_proof,
+       invoice_number                                                               AS invoice_number,
+       shipping_fee                                                                 AS shipping_fee,
+       purchase_fee                                                                 AS purchase_fee,
+       amount                                                                       AS amount,
+       currency                                                                     AS currency
+FROM (
+         SELECT id                                                                     AS id,
+                create_by                                                              AS create_by,
+                create_time                                                            AS create_time,
+                update_by                                                              AS update_by,
+                update_time                                                            AS update_time,
+                'Credit'                                                               AS type,
+                client_id                                                              AS client_id,
+                payment_proof                                                          AS payment_proof,
+                NULL                                                                   AS invoice_number,
+                NULL                                                                   AS shipping_fee,
+                NULL                                                                   AS purchase_fee,
+                amount                                                                 AS amount,
+                (SELECT code FROM currency WHERE credit.currency_id = id)              AS currency
+         FROM credit
+         UNION ALL
+         SELECT id                                                                     AS id,
+                create_by                                                              AS create_by,
+                create_time                                                            AS create_time,
+                update_by                                                              AS update_by,
+                update_time                                                            AS update_time,
+                'Debit'                                                                AS type,
+                client_id                                                              AS client_id,
+                NULL                                                                   AS payment_proof,
+                invoice_number                                                         AS invoice_number,
+                total_amount                                                           AS shipping_fee,
+                if((invoice_number like '%%%%-%%-7%%%'),
+                   purchase_total(invoice_number), NULL)                  AS purchase_fee,
+                if((invoice_number like '%%%%-%%-7%%%'),
+                   (total_amount +
+                    purchase_total(invoice_number)),
+                   total_amount)                                                       AS amount,
+                (SELECT code FROM currency WHERE shipping_invoice.currency_id = id)    AS currency
+         FROM shipping_invoice
+         WHERE client_id IS NOT NULL
+           AND currency_id IS NOT NULL
+           AND currency_id <> ''
+         UNION ALL
+         SELECT id                                                                     AS id,
+                create_by                                                              as create_by,
+                create_time                                                            as create_time,
+                update_by                                                              as update_by,
+                update_time                                                            as update_time,
+                'Debit'                                                                AS type,
+                client_id                                                              AS client_id,
+                payment_document                                                       AS payment_proof,
+                invoice_number                                                         AS invoice_number,
+                NULL                                                                   AS shipping_fee,
+                final_amount                                                           AS purchase_fee,
+                final_amount                                                           AS amount,
+                (SELECT code FROM currency WHERE purchase_order.currency_id = id)      AS currency
+         FROM purchase_order
+         WHERE invoice_number LIKE '%%%%-%%-1%%%'
+           AND client_id IS NOT NULL
+           AND currency_id IS NOT NULL
+           AND currency_id <> ''
+     ) as id;
