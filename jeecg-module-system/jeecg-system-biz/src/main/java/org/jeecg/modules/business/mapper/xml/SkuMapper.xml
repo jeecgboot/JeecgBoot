@@ -146,6 +146,9 @@
         <foreach collection="orderIds" separator="," open="(" close=")" index="index" item="orderId">
             #{orderId}
         </foreach>
+        AND erp_status IN ('1','2', '3')
+        AND product_available = 0
+        AND virtual_product_available = 0
         GROUP BY sku_id;
     </select>
 </mapper>

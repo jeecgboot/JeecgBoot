@@ -22,4 +22,9 @@ public interface ClientMapper extends BaseMapper<Client> {
     String getClientIdByCode(@Param("code") String code);
     List<Client> getClientByType(@Param("type") String type);
     Client getClientByCode(@Param("code") String internalCode);
+    Client getClientFromOrder(@Param("orderId")String orderId);
+
+    Client getClientFromPurchase(@Param("purchaseId") String purchaseId);
+
+    List<String> getClientsFromPurchases(@Param("purchaseIds") List<String> purchaseIds);
 }

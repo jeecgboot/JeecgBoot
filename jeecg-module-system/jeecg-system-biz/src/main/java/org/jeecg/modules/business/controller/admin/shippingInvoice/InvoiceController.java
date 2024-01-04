@@ -1,12 +1,12 @@
 package org.jeecg.modules.business.controller.admin.shippingInvoice;
 
-import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alibaba.fastjson.JSONObject;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.MutableTriple;
@@ -18,11 +18,12 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderStatus;
-import org.jeecg.modules.business.domain.purchase.invoice.InvoiceData;
+import org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoiceEntry;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.ExchangeRatesMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderMapper;
+import org.jeecg.modules.business.mapper.PurchaseOrderContentMapper;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.quartz.entity.QuartzJob;
@@ -44,6 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.StandardSocketOptions;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -89,6 +91,8 @@ public class InvoiceController {
     private IProductService productService;
     @Autowired
     private IPurchaseOrderService purchaseOrderService;
+    @Autowired
+    private PurchaseOrderContentMapper purchaseOrderContentMapper;
     @Autowired
     private IShippingInvoiceService iShippingInvoiceService;
     @Autowired
@@ -280,17 +284,40 @@ public class InvoiceController {
             if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
                 balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), "shipping");
             }
+            if(clientCategory.equals(ClientCategory.CategoryName.SELF_SERVICE.getName())) {
+                String subject = "Self-service shipping invoice";
+                String destEmail = env.getProperty("spring.mail.username");
+                Properties prop = emailService.getMailSender();
+                Map<String, Object> templateModel = new HashMap<>();
+                templateModel.put("invoiceType", "shipping invoice");
+                templateModel.put("invoiceEntity", clientService.getById(param.clientID()).getInternalCode());
+                templateModel.put("invoiceNumber", metaData.getInvoiceCode());
+
+                Session session = Session.getInstance(prop, new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(env.getProperty("spring.mail.username"), env.getProperty("spring.mail.password"));
+                    }
+                });
+                freemarkerConfigurer = emailService.freemarkerClassLoaderConfig();
+                Template template = freemarkerConfigurer.getConfiguration().getTemplate("admin/invoiceNotification.ftl");
+                String htmlBody = FreeMarkerTemplateUtils.processTemplateIntoString(template, templateModel);
+                emailService.sendSimpleMessage(destEmail, subject, htmlBody, session);
+                log.info("Mail sent successfully");
+            }
             return Result.OK(metaData);
         } catch (UserException e) {
             return Result.error(e.getMessage());
         } catch (IOException | ParseException e) {
             log.error(e.getMessage());
             return Result.error("Sorry, server error, please try later");
+        } catch (TemplateException | MessagingException e) {
+            throw new RuntimeException(e);
         }
     }
     /**
-     * Make invoice for specified orders and type
-     *
+     * Make purchase invoice for specified orders and type
+     * used by self-service clients
      * @param param Parameters for creating an invoice
      * @return Result of the generation, in case of error, message will be contained,
      * in case of success, data will contain filename.
@@ -298,26 +325,45 @@ public class InvoiceController {
     @Transactional
     @PostMapping(value = "/makeManualPurchaseInvoice")
     public Result<?> makeManualPurchaseInvoice(@RequestBody ShippingInvoiceOrderParam param) {
+        InvoiceMetaData metaData;
         try {
-            // todo : au final on facture les sku directement sans checker s'il y en aura trop
-            String currency = clientService.getById(param.clientID()).getCurrency();
-            List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContent(param.orderIds());
-            List<String> skuIds = orderContents.stream().map(PlatformOrderContent::getSkuId).collect(Collectors.toList());
-
             List<SkuQuantity> skuQuantities = skuService.getSkuQuantitiesFromOrderIds(param.orderIds());
             String purchaseId = purchaseOrderService.addPurchase(skuQuantities ,param.orderIds());
+            metaData = purchaseOrderService.makeInvoice(purchaseId);
+            platformOrderService.updatePurchaseInvoiceNumber(param.orderIds(), metaData.getInvoiceCode());
+
             String clientCategory = clientCategoryService.getClientCategoryByClientId(param.clientID());
-            InvoiceData metaData = purchaseOrderService.makeInvoice(purchaseId);
-            if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
-                balanceService.updateBalance(param.clientID(), metaData.getCode(), "shipping");
+//            if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
+//                balanceService.updateBalance(param.clientID(), metaData.getCode(), "purchase");
+//            }
+            if(clientCategory.equals(ClientCategory.CategoryName.SELF_SERVICE.getName())) {
+                String subject = "Self-service purchase invoice";
+                String destEmail = env.getProperty("spring.mail.username");
+                Properties prop = emailService.getMailSender();
+                Map<String, Object> templateModel = new HashMap<>();
+                templateModel.put("invoiceType", "purchase invoice");
+                templateModel.put("invoiceEntity", clientService.getById(param.clientID()).getInternalCode());
+                templateModel.put("invoiceNumber", metaData.getInvoiceCode());
+
+                Session session = Session.getInstance(prop, new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(env.getProperty("spring.mail.username"), env.getProperty("spring.mail.password"));
+                    }
+                });
+                freemarkerConfigurer = emailService.freemarkerClassLoaderConfig();
+                Template template = freemarkerConfigurer.getConfiguration().getTemplate("admin/invoiceNotification.ftl");
+                String htmlBody = FreeMarkerTemplateUtils.processTemplateIntoString(template, templateModel);
+                emailService.sendSimpleMessage(destEmail, subject, htmlBody, session);
+                log.info("Mail sent successfully");
             }
-            return Result.OK();
+            return Result.OK(metaData);
         } catch (UserException e) {
             return Result.error(e.getMessage());
         } catch (IOException e) {
             log.error(e.getMessage());
             return Result.error("Sorry, server error, please try later");
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException | MessagingException | TemplateException e) {
             throw new RuntimeException(e);
         }
     }
@@ -337,7 +383,28 @@ public class InvoiceController {
             InvoiceMetaData metaData = shippingInvoiceService.makeCompleteInvoice(param);
             String clientCategory = clientCategoryService.getClientCategoryByClientId(param.clientID());
             if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
-            balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), "complete");
+                balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), "complete");
+            }
+            if(clientCategory.equals(ClientCategory.CategoryName.SELF_SERVICE.getName())) {
+                String subject = "Self-service complete invoice";
+                String destEmail = env.getProperty("spring.mail.username");
+                Properties prop = emailService.getMailSender();
+                Map<String, Object> templateModel = new HashMap<>();
+                templateModel.put("invoiceType", "complete invoice");
+                templateModel.put("invoiceEntity", clientService.getById(param.clientID()).getInternalCode());
+                templateModel.put("invoiceNumber", metaData.getInvoiceCode());
+
+                Session session = Session.getInstance(prop, new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(env.getProperty("spring.mail.username"), env.getProperty("spring.mail.password"));
+                    }
+                });
+                freemarkerConfigurer = emailService.freemarkerClassLoaderConfig();
+                Template template = freemarkerConfigurer.getConfiguration().getTemplate("admin/invoiceNotification.ftl");
+                String htmlBody = FreeMarkerTemplateUtils.processTemplateIntoString(template, templateModel);
+                emailService.sendSimpleMessage(destEmail, subject, htmlBody, session);
+                log.info("Mail sent successfully");
             }
             return Result.OK(metaData);
         } catch (UserException e) {
@@ -345,7 +412,7 @@ public class InvoiceController {
         } catch (IOException | ParseException e) {
             log.error(e.getMessage());
             return Result.error("Sorry, server error, please try later");
-        } catch (MessagingException e) {
+        } catch (MessagingException | TemplateException e) {
             throw new RuntimeException(e);
         }
     }
@@ -356,7 +423,6 @@ public class InvoiceController {
                 " and erpStatuses : " + erpStatuses.toString());
         Period period = shippingInvoiceService.getValidOrderTimePeriod(shopIDs, erpStatuses);
         if (period.isValid()) {
-            System.out.println("start : " + period.start() + "; end : " + period.end());
             return Result.OK(period);
         }
         return Result.error("No package in the selected period");
@@ -489,7 +555,8 @@ public class InvoiceController {
                 errorMessages.add(orderAndStatus.getRight());
             }
         }
-
+        // sorting by order time ascending
+        finalOrderAndStatus = finalOrderAndStatus.stream().sorted(Comparator.comparing(o -> o.getLeft().getOrderTime())).collect(Collectors.toList());
         // system notification
         String errors = SECTION_START;
         int max_entries = 100;
@@ -508,7 +575,7 @@ public class InvoiceController {
                 templateParam.put("errors", errors);
                 templateParam.put("current_page", String.valueOf(current_page));
                 templateParam.put("total_page", String.valueOf(total_page));
-                TemplateMessageDTO message = new TemplateMessageDTO("admin", "Gauthier", "Self Service invoicing estimation Errors", templateParam, "expenses_overview_errors");
+                TemplateMessageDTO message = new TemplateMessageDTO("admin", "admin", "Self Service invoicing estimation Errors", templateParam, "expenses_overview_errors");
                 ISysBaseApi.sendTemplateAnnouncement(message);
             }
         }
@@ -554,10 +621,11 @@ public class InvoiceController {
      * @return byte array, in case of error, an empty array will be returned.
      */
     @GetMapping(value = "/download")
-    public byte[] downloadInvoice(@RequestParam("filename") String filename) {
+    public byte[] downloadInvoice(@RequestParam("filename") String filename, @RequestParam(value = "type", required = false) String type) {
         log.info("request for downloading shipping invoice");
+        String invoiceType = type == null ? "shipping" : type;
         try {
-            return shippingInvoiceService.getInvoiceBinary(filename);
+            return shippingInvoiceService.getInvoiceBinary(filename, invoiceType);
         } catch (IOException e) {
             log.error(e.getMessage());
             return new byte[0];
@@ -761,22 +829,9 @@ public class InvoiceController {
     public Result<?> getPurchaseFeesEstimateByOrders(@RequestBody ShippingInvoiceOrderParam param) {
         String currency = clientService.getById(param.clientID()).getCurrency();
         List<PlatformOrder> orders = platformOrderMapper.fetchByIds(param.orderIds());
-        Map<String, List<PlatformOrder>> orderIdsMapByShop = new HashMap<>();
-        for(PlatformOrder order : orders) {
-            String shopId = order.getShopId();
-            System.out.println("Adding order " + order.getId() + " to shop " + shopId);
-            if(orderIdsMapByShop.containsKey(shopId)) {
-                System.out.println(orderIdsMapByShop.get(shopId));
-                orderIdsMapByShop.get(shopId).add(order);
-            }
-            else {
-                List<PlatformOrder> orderIds = new ArrayList<>();
-                orderIds.add(order);
-                orderIdsMapByShop.put(shopId, orderIds);
-            }
-        }
+        Map<String, List<PlatformOrder>> ordersMapByShop = orders.stream().collect(Collectors.groupingBy(PlatformOrder::getShopId));
         Map<String, Estimation> estimationsByShop = new HashMap<>();
-        for(Map.Entry<String, List<PlatformOrder>> entry : orderIdsMapByShop.entrySet()) {
+        for(Map.Entry<String, List<PlatformOrder>> entry : ordersMapByShop.entrySet()) {
             String shopId = entry.getKey();
             List<String> orderIds = entry.getValue().stream().map(PlatformOrder::getId).collect(Collectors.toList());
             ShippingInvoiceOrderParam finalParam = new ShippingInvoiceOrderParam(param.clientID(), orderIds, param.getType());
@@ -787,8 +842,13 @@ public class InvoiceController {
                 return Result.OK("No estimation found.");
 
             // purchase estimation
-            // only calculate purchase estimation if products are not available, else it's already been paid
-            List<String> orderIdsWithProductUnavailable = entry.getValue().stream().filter(order -> order.getProductAvailable().equals("0")).map(PlatformOrder::getId).collect(Collectors.toList());
+            // only calculate purchase estimation if products are not available and purchaseInvoiceNumber is null, else it's already been paid
+            List<String> orderIdsWithProductUnavailable = entry.getValue().stream()
+                    .filter(
+                        order -> order.getProductAvailable().equals("0")
+                                && order.getPurchaseInvoiceNumber() == null
+                                && order.getVirtualProductAvailable().equals("0"))
+                    .map(PlatformOrder::getId).collect(Collectors.toList());
             BigDecimal shippingFeesEstimation = BigDecimal.ZERO;
             BigDecimal purchaseEstimation = BigDecimal.ZERO;
             boolean isCompleteInvoiceReady = true;
@@ -829,21 +889,33 @@ public class InvoiceController {
     }
 
     @GetMapping(value = "/checkInvoiceValidity")
-    public Result<?> checkInvoiceValidity(@RequestParam("invoiceNumber") String invoiceNumber, @RequestParam("email") String email, @RequestParam("orgCode") String orgCode) {
+    public Result<?> checkInvoiceValidity(@RequestParam("invoiceNumber") String invoiceNumber) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String orgCode = sysUser.getOrgCode();
+        String email = sysUser.getEmail();
         String invoiceID;
         String customerFullName;
-        invoiceID = iShippingInvoiceService.getShippingInvoiceId(invoiceNumber);
+        boolean isShippingInvoice = invoiceNumber.charAt(8) == '7' || invoiceNumber.charAt(8) == '2';
+        if(isShippingInvoice)
+            invoiceID = iShippingInvoiceService.getShippingInvoiceId(invoiceNumber);
+        else
+            invoiceID = purchaseOrderService.getInvoiceId(invoiceNumber);
         // if invoice exists
         if (invoiceID == null) {
-            return Result.error("Error 404 page not found.");
+            return Result.error(404,"Error 404 page not found.");
         }
         // if user is a customer, we check if he's the owner of the shops
-        Client client = iShippingInvoiceService.getShopOwnerFromInvoiceNumber(invoiceNumber);
+        Client client;
+        if(isShippingInvoice)
+            client = iShippingInvoiceService.getShopOwnerFromInvoiceNumber(invoiceNumber);
+        else
+            client = clientService.getClientFromPurchase(invoiceID);
         customerFullName = client.fullName();
         String destEmail;
         if(orgCode.contains("A04")) {
+            System.out.println(email + " - " + client.getEmail());
             if(!client.getEmail().equals(email)) {
-                return Result.error("Not authorized to view this page.");
+                return Result.error(403,"Not authorized to view this page.");
             }
             else {
                 destEmail = client.getEmail();
@@ -943,6 +1015,67 @@ public class InvoiceController {
 
         return Result.OK(invoiceDatas);
     }
+    @GetMapping(value = "/purchaseInvoiceData")
+    public Result<?> getPurchaseInvoiceData(@RequestParam("invoiceNumber") String invoiceNumber,
+                                    @RequestParam("originalCurrency") String originalCurrency,
+                                    @RequestParam("targetCurrency") String targetCurrency
+    ){
+        InvoiceDatas invoiceDatas = new InvoiceDatas();
+
+        List<PurchaseOrder> invoices = purchaseOrderService.getPurchasesByInvoiceNumber(invoiceNumber);
+        if(invoices == null) {
+            return Result.error("No data for product found.");
+        }
+        List<PurchaseInvoiceEntry> invoiceData = new ArrayList<>();
+        for(PurchaseOrder order : invoices) {
+            invoiceData.addAll(purchaseOrderContentMapper.selectInvoiceDataByID(order.getId()));
+        }
+        List<BigDecimal> refundList = iSavRefundService.getRefundAmount(invoiceNumber);
+        Map<String, Map.Entry<Integer, BigDecimal>> feeAndQtyPerSku = new HashMap<>(); // it maps number of order and purchase fee per item : <France,<250, 50.30>>, <UK, <10, 2.15>>
+        BigDecimal refund = BigDecimal.ZERO;
+
+        // on parcours toutes les commandes pour récupérer : country, purchaseFee
+        for(PurchaseInvoiceEntry data : invoiceData) {
+            String sku = data.getSku_en_name();
+            BigDecimal purchaseFeePerSku = data.getTotalAmount();
+            Integer qty = data.getQuantity();
+            // On vérifie si on a déjà ce pays dans la map
+            // si oui on additionne la "qty" et "purchase fee"
+            // sinon on ajoute juste à la map
+            if(!feeAndQtyPerSku.containsKey(sku)) {
+                feeAndQtyPerSku.put(sku, new AbstractMap.SimpleEntry<>(qty, purchaseFeePerSku));
+            }
+            else {
+                BigDecimal existingGlobalFee = feeAndQtyPerSku.get(sku).getValue();
+                Integer existingOrderQuantity = feeAndQtyPerSku.get(sku).getKey();
+                existingOrderQuantity += qty;
+                existingGlobalFee = existingGlobalFee.add(purchaseFeePerSku);
+                feeAndQtyPerSku.remove(sku);
+                feeAndQtyPerSku.put(sku, new AbstractMap.SimpleEntry<>(existingOrderQuantity, existingGlobalFee));
+            }
+        }
+        // on fait la somme des remboursements
+        if(!refundList.isEmpty()) {
+            for (BigDecimal amount : refundList) {
+                refund = refund.add(amount);
+            }
+        }
+
+        // si la monnaie utilisé par le client n'est pas l'euro on calcul le total dans sa monnaie
+        if(!targetCurrency.equals(originalCurrency)) {
+            BigDecimal exchangeRate = iExchangeRatesService.getExchangeRate(originalCurrency,targetCurrency);
+            BigDecimal finalAmount = invoices.stream().map(PurchaseOrder::getFinalAmount).reduce(BigDecimal.ZERO, BigDecimal::add).multiply(exchangeRate);
+            finalAmount = finalAmount.setScale(2, RoundingMode.DOWN);
+            invoiceDatas.setFinalAmount(finalAmount);
+        }
+        invoiceDatas.setInvoiceNumber(invoiceNumber);
+        invoiceDatas.setDiscount(invoices.stream().map(PurchaseOrder::getDiscountAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
+        invoiceDatas.setRefund(refund);
+        invoiceDatas.setFinalAmountEur(invoices.stream().map(PurchaseOrder::getFinalAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
+        invoiceDatas.setFeeAndQtyPerSku(feeAndQtyPerSku);
+
+        return Result.OK(invoiceDatas);
+    }
     public String countryNameFormatting(String country) {
         Pattern p = Pattern.compile("(\\w*)", Pattern.UNICODE_CHARACTER_CLASS);
         Matcher m = p.matcher(country);
@@ -978,5 +1111,16 @@ public class InvoiceController {
             return Result.error("sys.api.executionFailed");
         }
         return Result.OK().success("sys.api.syncRequestSubmitted");
+    }
+    @GetMapping(value = "/duplicateInvoiceNumberCheck")
+    public Result<?> duplicateInvoiceNumberCheck(@RequestParam("invoiceNumber") String invoiceNumber) {
+        if(iShippingInvoiceService.getShippingInvoice(invoiceNumber) != null
+                || purchaseOrderService.getInvoiceId(invoiceNumber) != null
+                || !platformOrderService.getPlatformOrdersByInvoiceNumber(invoiceNumber).isEmpty()) {
+            return Result.error("Invoice number already exists.");
+        }
+        else {
+            return Result.OK("Invoice number is available.");
+        }
     }
 }

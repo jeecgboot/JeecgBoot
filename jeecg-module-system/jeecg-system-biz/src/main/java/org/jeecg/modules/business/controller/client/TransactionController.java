@@ -98,8 +98,7 @@ public class TransactionController {
         Date startDate = orders.stream().map(PlatformOrder::getOrderTime).min(Date::compareTo).get();
         Date endDate = orders.stream().map(PlatformOrder::getOrderTime).max(Date::compareTo).get();
         List<String> orderIds = orders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
-        System.out.println("Orders size : " + orderIds.size());
-        System.out.println("Orders : " + orderIds);
+        log.info("{} Orders to be estimated", orderIds.size());
         ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
                 platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
@@ -158,7 +157,7 @@ public class TransactionController {
                 param.put("errors", errors);
                 param.put("current_page", String.valueOf(current_page));
                 param.put("total_page", String.valueOf(total_page));
-                TemplateMessageDTO message = new TemplateMessageDTO("admin", "Gauthier", "Expenses Overview Errors", param, "expenses_overview_errors");
+                TemplateMessageDTO message = new TemplateMessageDTO("admin", "admin", "Expenses Overview Errors", param, "expenses_overview_errors");
                 ISysBaseApi.sendTemplateAnnouncement(message);
             }
         }

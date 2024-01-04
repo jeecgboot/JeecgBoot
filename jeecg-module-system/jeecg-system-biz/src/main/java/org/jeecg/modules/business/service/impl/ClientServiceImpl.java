@@ -124,6 +124,21 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     }
 
     @Override
+    public Client getClientFromOrder(String orderId) {
+        return clientMapper.getClientFromOrder(orderId);
+    }
+
+    @Override
+    public Client getClientFromPurchase(String purchaseId) {
+        return clientMapper.getClientFromPurchase(purchaseId);
+    }
+
+    @Override
+    public List<String> getClientsFromPurchases(List<String> purchaseIds) {
+        return clientMapper.getClientsFromPurchases(purchaseIds);
+    }
+
+    @Override
     public String getClientEntity(String id) {
         return clientMapper.getClientEntity(id);
     }

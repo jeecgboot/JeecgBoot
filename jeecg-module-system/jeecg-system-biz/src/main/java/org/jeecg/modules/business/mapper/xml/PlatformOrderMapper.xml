@@ -664,7 +664,7 @@
         AND create_time BETWEEN #{startDate} AND #{endDate};
     </select>
     <select id="fetchByIds" resultType="org.jeecg.modules.business.entity.PlatformOrder">
-        SELECT id, shop_id, product_available
+        SELECT id, shop_id, product_available, virtual_product_available, purchase_invoice_number
         FROM platform_order
         WHERE id IN
         <foreach collection="orderIds" separator="," open="(" close=")" index="index" item="orderId">
@@ -709,4 +709,35 @@
         SET purchase_invoice_number = NULL
         WHERE purchase_invoice_number = #{invoiceNumber}
     </update>
+    <update id="removePurchaseInvoiceNumbers">
+        UPDATE platform_order
+        SET purchase_invoice_number = NULL
+        WHERE purchase_invoice_number IN
+        <foreach collection="invoiceNumbers" separator="," open="(" close=")" index="index" item="invoiceNumber">
+            #{invoiceNumber}
+        </foreach>;
+    </update>
+    <update id="updatePurchaseInvoiceNumber">
+        UPDATE platform_order
+        SET purchase_invoice_number = #{invoiceNumber}
+        WHERE id IN
+        <foreach collection="orderIds" separator="," open="(" close=")" index="index" item="orderId">
+            #{orderId}
+        </foreach>
+    </update>
+    <select id="fetchShippingFeeBillableOrders" resultType="org.jeecg.modules.business.vo.ShippingFeeBillableOrders">
+        SELECT CONCAT(c.first_name, ' ', c.surname) as full_name, c.email, po.platform_order_number as order_number
+        FROM platform_order po
+        JOIN shop s ON po.shop_id = s.id
+        JOIN client c ON s.owner_id = c.id
+        WHERE po.shipping_invoice_number IS NULL
+            AND po.purchase_invoice_number IS NOT NULL
+            AND po.erp_status IN (1,2)
+            AND po.product_available = 1
+    </select>
+    <select id="getPlatformOrdersByInvoiceNumber" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
+        FROM platform_order
+        WHERE shipping_invoice_number = #{invoiceNumber};
+    </select>
 </mapper>

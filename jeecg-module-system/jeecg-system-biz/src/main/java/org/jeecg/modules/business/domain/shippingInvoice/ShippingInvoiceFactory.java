@@ -370,14 +370,11 @@ public class ShippingInvoiceFactory {
             emailService.newSendSimpleMessage(destEmail, emailSubject, templateName, templateModel);
         }
         // removing orders that can't be invoiced
-        System.out.println("Orders and content size BEFORE : " + orderAndContent.size());
-        System.out.println("Orders to remove size : " + ordersToRemove.size());
         for(Map.Entry<String, List<String>> entry : ordersToRemove.entrySet()) {
             for(String platformOrderId : entry.getValue()) {
                 orderAndContent.keySet().removeIf(order -> order.getPlatformOrderId().equals(platformOrderId));
             }
         }
-        System.out.println("Orders and content size AFTER : " + orderAndContent.size());
 
         BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
         if(orderAndContent.isEmpty()) {
@@ -635,11 +632,9 @@ public class ShippingInvoiceFactory {
         shops.forEach(shop -> shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee()));
         String invoiceCode = generateInvoiceCode();
         log.info("New invoice code: {}", invoiceCode);
-        System.out.println("Order and content size BEFORE : " + orderAndContent.size());
         Map<String, List<String>> ordersWithPB = calculateFees(balance, logisticChannelMap, orderAndContent, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
                 latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode);
         orderAndContent.entrySet().removeIf(entries -> ordersWithPB.containsKey(entries.getKey().getId()));
-        System.out.println("Order and content size AFTER : " + orderAndContent.size());
         if(orderAndContent.isEmpty()) {
             log.error("No order was invoiced for customer {} because : {}", client.getInternalCode(), ordersWithPB);
             throw new UserException("Customer " + customerId + " errors : " + ordersWithPB);
@@ -730,9 +725,6 @@ public class ShippingInvoiceFactory {
         // find logistic channel price for each order based on its content
         for (PlatformOrder uninvoicedOrder : orderContentMap.keySet()) {
             if(skip) {
-                if(client.getInternalCode().equals("FT")) {
-                    System.out.println("uninvoicedOrder order time : " + uninvoicedOrder.getOrderTime());
-                }
                 platformOrderIdsWithPb.put(uninvoicedOrder.getId(), Collections.singletonList("Skipped"));
                 continue;
             }
@@ -847,7 +839,6 @@ public class ShippingInvoiceFactory {
         }
         // removing orders that can't be invoiced
         log.info("Number of orders with problem for client {} : {}", client.getInternalCode(), platformOrderIdsWithPb.size());
-        platformOrderIdsWithPb.keySet().forEach(System.out::println);
         return platformOrderIdsWithPb;
     }
 

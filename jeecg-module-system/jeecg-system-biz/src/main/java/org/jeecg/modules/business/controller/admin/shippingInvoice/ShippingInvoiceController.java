@@ -84,7 +84,6 @@ public class ShippingInvoiceController {
     private FreeMarkerConfigurer freemarkerConfigurer;
     @Autowired
     private EmailService emailService;
-    private static final String EXTENSION = ".xlsx";
     @Value("${jeecg.path.shippingInvoiceDir}")
     private String INVOICE_LOCATION;
     @Value("${jeecg.path.shippingInvoiceDetailDir}")
@@ -281,81 +280,7 @@ public class ShippingInvoiceController {
         return Result.OK("文件导入失败！");
     }
 
-    /** Finds the absolute path of invoice file by recursively walking the directory and it's subdirectories
-     *
-     * @param dirPath
-     * @param invoiceNumber
-     * @return List of paths for the file but should only find one result
-     */
-    public List<Path> getPath(String dirPath, String invoiceNumber) {
-        List<Path> pathList = new ArrayList<>();
-        //Recursively list all files
-        //The walk() method returns a Stream by walking the file tree beginning with a given starting file/directory in a depth-first manner.
-        try (Stream<Path> stream = Files.walk(Paths.get(dirPath))) {
-            pathList = stream.map(Path::normalize)
-                    .filter(Files::isRegularFile) // directories, hidden files and files without extension are not included
-                    .filter(path -> path.getFileName().toString().contains(invoiceNumber))
-                    .filter(path -> path.getFileName().toString().endsWith(EXTENSION))
-                    .collect(Collectors.toList());
-        }
-        catch(IOException e) {
-            e.printStackTrace();
-        }
-        return pathList;
-    }
 
-    /** Finds the absolute path of invoice file by recursively walking the directory and it's subdirectories
-     *
-     * @param dirPath
-     * @param invoiceNumber
-     * @return List of paths for the file but should only find one result
-     */
-    public List<Path> getPath(String dirPath, String invoiceNumber, String invoiceEntity) {
-        List<Path> pathList = new ArrayList<>();
-        //Recursively list all files
-        //The walk() method returns a Stream by walking the file tree beginning with a given starting file/directory in a depth-first manner.
-        try (Stream<Path> stream = Files.walk(Paths.get(dirPath))) {
-            pathList = stream.map(Path::normalize)
-                    .filter(Files::isRegularFile) // directories, hidden files and files without extension are not included
-                    .filter(path -> path.getFileName().toString().contains(invoiceNumber))
-                    .filter(path -> path.getFileName().toString().contains(invoiceEntity))
-                    .filter(path -> path.getFileName().toString().endsWith(EXTENSION))
-                    .collect(Collectors.toList());
-        }
-        catch(IOException e) {
-            e.printStackTrace();
-        }
-        return pathList;
-    }
-
-    /**
-     *  Finds the absolute path of invoice file and return the path
-     * @param invoiceNumber
-     * @param filetype if it's an invoice or invoice detail
-     * @return String returns the path of the invoice file
-     */
-    public String getInvoiceList(String invoiceNumber, String filetype) {
-        log.info("Invoice number : " + invoiceNumber);
-        List<Path> pathList = new ArrayList<>();
-        if(filetype.equals("invoice")) {
-            log.info("File asked is of type invoice");
-            pathList = getPath(INVOICE_LOCATION, invoiceNumber);
-        }
-        if(filetype.equals("detail")) {
-            log.info("File asked is of type invoice detail");
-            pathList = getPath(INVOICE_DETAIL_LOCATION, invoiceNumber);
-        }
-        if(pathList.isEmpty()) {
-            log.error("NO INVOICE FILE FOUND : " + invoiceNumber);
-            return "ERROR";
-        }
-        else {
-            for (Path path : pathList) {
-                log.info(path.toString());
-            }
-            return pathList.get(0).toString();
-        }
-    }
 
     /**
      * Downloads the invoice and returns it in form of bytearray
@@ -366,7 +291,7 @@ public class ShippingInvoiceController {
      */
     @GetMapping(value = "/downloadCompleteInvoiceExcel")
     public ResponseEntity<?> download(@RequestParam("invoiceNumber") String invoiceNumber, @RequestParam("filetype") String filetype) throws IOException {
-        String filename = getInvoiceList(invoiceNumber, filetype);
+        String filename = shippingInvoiceService.getInvoiceList(invoiceNumber, filetype);
         if(!filename.equals("ERROR")) {
             File file = new File(filename);
 
@@ -398,7 +323,7 @@ public class ShippingInvoiceController {
     }
 
     public String convertToPdf(String invoiceNumber, String fileType) throws Exception {
-        String excelFilePath = getInvoiceList(invoiceNumber, fileType);// (C:\PATH\filename.xlsx)
+        String excelFilePath = shippingInvoiceService.getInvoiceList(invoiceNumber, fileType);// (C:\PATH\filename.xlsx)
 
         if(!excelFilePath.equals("ERROR")) {
             String pdfFilePath= INVOICE_PDF_LOCATION + "/" + invoiceNumber + ".pdf";
@@ -457,7 +382,7 @@ public class ShippingInvoiceController {
     public Result<?> sendDetailsByEmail(@RequestParam("invoiceNumber") String invoiceNumber,
                                         @RequestParam("email") String email,
                                         @RequestParam("invoiceEntity") String invoiceEntity) throws Exception {
-        String filePath = getInvoiceList(invoiceNumber, "detail");
+        String filePath = shippingInvoiceService.getInvoiceList(invoiceNumber, "detail");
         String fileType = "Détails de facture";
         String subject = "Détails de facture N°" + invoiceNumber;
         Properties prop = emailService.getMailSender();
@@ -519,8 +444,8 @@ public class ShippingInvoiceController {
         balanceService.deleteBalance(id, OperationType.Debit.name());
         log.info("Deleting invoice files ...");
         String invoiceEntity = clientService.getClientEntity(clientId);
-        List<Path> invoicePathList = getPath(INVOICE_LOCATION, invoiceNumber, invoiceEntity);
-        List<Path> detailPathList = getPath(INVOICE_DETAIL_LOCATION, invoiceNumber, invoiceEntity);
+        List<Path> invoicePathList = shippingInvoiceService.getPath(INVOICE_LOCATION, invoiceNumber, invoiceEntity);
+        List<Path> detailPathList = shippingInvoiceService.getPath(INVOICE_DETAIL_LOCATION, invoiceNumber, invoiceEntity);
         boolean invoiceDeleted = false, detailDeleted = false;
 
         if(invoicePathList.isEmpty()) {
@@ -586,8 +511,8 @@ public class ShippingInvoiceController {
         for(int i = 0; i < ids.size(); i++) {
             String invoiceNumber = invoiceNumbers.get(i);
             String invoiceEntity = clientService.getClientEntity(clientIds.get(i));
-            List<Path> invoicePathList = getPath(INVOICE_LOCATION, invoiceNumber, invoiceEntity);
-            List<Path> detailPathList = getPath(INVOICE_DETAIL_LOCATION, invoiceNumber, invoiceEntity);
+            List<Path> invoicePathList = shippingInvoiceService.getPath(INVOICE_LOCATION, invoiceNumber, invoiceEntity);
+            List<Path> detailPathList = shippingInvoiceService.getPath(INVOICE_DETAIL_LOCATION, invoiceNumber, invoiceEntity);
 
             if(invoicePathList.isEmpty()) {
                 log.error("FILE NOT FOUND : " + invoiceNumber + ", " +  invoiceEntity);

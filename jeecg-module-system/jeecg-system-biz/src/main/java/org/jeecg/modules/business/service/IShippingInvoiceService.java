@@ -4,6 +4,7 @@ import org.jeecg.modules.business.entity.*;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.io.Serializable;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 
@@ -40,4 +41,10 @@ public interface IShippingInvoiceService extends IService<ShippingInvoice> {
     public List<PlatformOrderContent> getPlatformOrderContent(String platformOrderId);
     public Client getShopOwnerFromInvoiceNumber(String invoiceNumber);
     Currency getInvoiceCurrencyByCode(String invoiceCode);
+
+    // Utils
+    public List<Path> getPath(String dirPath, String invoiceNumber);
+    public List<Path> getPath(String dirPath, String invoiceNumber, String invoiceEntity);
+    public String getInvoiceList(String invoiceNumber, String filetype);
+    boolean deleteAttachmentFile(String filename);
 }

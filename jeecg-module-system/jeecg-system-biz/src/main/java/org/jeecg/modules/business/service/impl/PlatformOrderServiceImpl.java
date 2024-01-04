@@ -13,10 +13,7 @@ import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.service.IClientService;
 import org.jeecg.modules.business.service.IPlatformOrderService;
 import org.jeecg.modules.business.service.IShippingFeesWaiverProductService;
-import org.jeecg.modules.business.vo.PlatformOrderQuantity;
-import org.jeecg.modules.business.vo.SkuDetail;
-import org.jeecg.modules.business.vo.SkuQuantity;
-import org.jeecg.modules.business.vo.SkuShippingFeesWaiver;
+import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
 import org.jeecg.modules.business.vo.clientPlatformOrder.PurchaseConfirmation;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.ClientInfo;
@@ -290,7 +287,6 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     @Override
     public Map<String, Map<PlatformOrder, List<PlatformOrderContent>>> findUninvoicedOrders() {
         List<PlatformOrder> orderList = platformOrderMap.findUninvoicedShippedOrders();
-        System.out.println("orderList size : " + orderList.size());
         List<PlatformOrderContent> orderContents = platformOrderContentMap.findUninvoicedShippedOrderContents();
         Map<String, PlatformOrder> orderMap = orderList.stream().collect(toMap(PlatformOrder::getId, Function.identity()));
         Map<String, String> orderMapByShopId = orderList.stream().collect(toMap(PlatformOrder::getId, PlatformOrder::getShopId));
@@ -440,5 +436,25 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     @Override
     public void removePurchaseInvoiceNumber(String purchaseInvoiceNumber) {
         platformOrderMap.removePurchaseInvoiceNumber(purchaseInvoiceNumber);
+    }
+
+    @Override
+    public void removePurchaseInvoiceNumbers(List<String> invoiceNumbers) {
+        platformOrderMap.removePurchaseInvoiceNumbers(invoiceNumbers);
+    }
+
+    @Override
+    public void updatePurchaseInvoiceNumber(List<String> orderIds, String invoiceCode) {
+        platformOrderMap.updatePurchaseInvoiceNumber(orderIds, invoiceCode);
+    }
+
+    @Override
+    public List<ShippingFeeBillableOrders> fetchShippingFeeBillableOrders() {
+        return platformOrderMap.fetchShippingFeeBillableOrders();
+    }
+
+    @Override
+    public List<PlatformOrder> getPlatformOrdersByInvoiceNumber(String invoiceNumber) {
+        return platformOrderMap.getPlatformOrdersByInvoiceNumber(invoiceNumber);
     }
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.vo.PlatformOrderQuantity;
+import org.jeecg.modules.business.vo.ShippingFeeBillableOrders;
 import org.jeecg.modules.business.vo.SkuQuantity;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
 import org.jeecg.modules.business.vo.clientPlatformOrder.PurchaseConfirmation;
@@ -208,4 +209,14 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     List<PlatformOrder> selectByPlatformOrderIds(List<String> platformOrderIds);
 
     void removePurchaseInvoiceNumber(String purchaseInvoiceNumber);
+    void removePurchaseInvoiceNumbers(List<String> invoiceNumbers);
+
+    void updatePurchaseInvoiceNumber(List<String> orderIds, String invoiceCode);
+
+    /**
+     * Fetch all orders with productAvailable = 1, purchaseInvoiceNumber NOT NULL, invoiceNumber NULL and erp_status IN (1,2)
+     * @return
+     */
+    List<ShippingFeeBillableOrders> fetchShippingFeeBillableOrders();
+    List<PlatformOrder> getPlatformOrdersByInvoiceNumber(String invoiceNumber);
 }

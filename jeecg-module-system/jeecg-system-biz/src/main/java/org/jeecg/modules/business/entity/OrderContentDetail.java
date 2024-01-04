@@ -38,9 +38,6 @@ public class OrderContentDetail {
      */
     public BigDecimal totalPrice() {
         BigDecimal unit = skuDetail.getPrice().getPrice(quantity, exchangeRate);
-        if(unit == null) {
-            System.out.println("Unit is null : " + skuDetail.getSkuId() + "sku price: " + skuDetail.getPrice() + "quantity: " + quantity);
-        }
         BigDecimal total = unit.multiply(new BigDecimal(quantity));
         log.info("unit: {}", unit);
         log.info("total: {}", total);

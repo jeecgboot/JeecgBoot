@@ -3,7 +3,6 @@ package org.jeecg.modules.business.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.domain.excel.SheetManager;
@@ -101,6 +100,9 @@ public class PlatformOrderShippingInvoiceService {
 
     @Value("${jeecg.path.shippingInvoiceDir}")
     private String INVOICE_DIR;
+
+    @Value("${jeecg.path.purchaseInvoiceDir}")
+    private String PURCHASE_INVOICE_DIR;
 
     @Value("${jeecg.path.shippingInvoiceDetailDir}")
     private String INVOICE_DETAIL_DIR;
@@ -343,8 +345,9 @@ public class PlatformOrderShippingInvoiceService {
      * @return byte array of the file
      * @throws IOException error when reading file
      */
-    public byte[] getInvoiceBinary(String filename) throws IOException {
-        Path out = Paths.get(INVOICE_DIR, filename);
+    public byte[] getInvoiceBinary(String filename, String type) throws IOException {
+        String path = type.equals("shipping") ? INVOICE_DIR : PURCHASE_INVOICE_DIR;
+        Path out = Paths.get(path, filename);
         return Files.readAllBytes(out);
     }
 
@@ -529,7 +532,6 @@ public class PlatformOrderShippingInvoiceService {
                 invoiceList.add(new InvoiceMetaData("", "error", internalCode, clientId, "No order to invoice."));
                 continue;
             }
-            System.out.println("Period: [" + period.start() + " - " + period.end() + "]");
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(period.start());
             String start = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH)+1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH));

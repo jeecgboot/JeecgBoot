@@ -140,10 +140,6 @@ public class SkuShippingQtyJob implements Job {
                 }
                 skuData.setStockAfterDistribution(skuData.getStockQuantity() - content.getQuantity());
                 skuData.calculateVirtualQuantity();
-                if(skuData.getStockAfterDistribution() < 0) {
-                    System.out.println("===================== ERRRRRRRRRRRRRRRROOOOOOOOOOOOOOOOOORRR ======================");
-                    System.out.println("Order : " + orderMapEntry.getKey().getPlatformOrderId() + " --- Sku : " + skuIdToErpCodeMap.get(content.getSkuId()) + " --- Stock : " + skuData.getStockQuantity() + " --- Stock after subtracting : " + skuData.getStockAfterDistribution() + " --- Virtual Stock : " + skuData.getVirtualQuantity() + " --- Shipping Quantity : " + skuData.getShippingQuantity());
-                }
             }
         }
         log.info("Sku Shipping Quantity after subtracting the quantity from orders with product available");
@@ -164,14 +160,12 @@ public class SkuShippingQtyJob implements Job {
         List<PlatformOrderContent> orderContentsToUpdate = new ArrayList<>();
         // Subtract the virtual stock quantity from the orders with missing stock, then update stock availability
         for (Map.Entry<PlatformOrder, List<PlatformOrderContent>> orderMapEntry : orderMapWithMissingStock.entrySet()) {
-            System.out.println("Order time : " + orderMapEntry.getKey().getOrderTime());
             boolean allContentsHaveStock = true;
             for(PlatformOrderContent content : orderMapEntry.getValue()) {
                 // subtract the quantity from skuShippingQtyDataMap, if enough stock, set virtualProductAvailable to 1
                 SkuShippingQtyData skuData = skuShippingQtyDataMap.get(skuIdToErpCodeMap.get(content.getSkuId()));
                 if(skuData == null) {
-                    System.out.println("SKU DATA IS NULL for Sku : " + skuIdToErpCodeMap.get(content.getSkuId()));
-                    System.out.println("Sku ID : " + content.getSkuId());
+                    log.info("SKU data is null for Sku erpCode : {} - Sku ID : {}", skuIdToErpCodeMap.get(content.getSkuId()), content.getSkuId());
                     allContentsHaveStock = false;
                     continue;
                 }
@@ -197,7 +191,6 @@ public class SkuShippingQtyJob implements Job {
         // Update the database
         if(!ordersToUpdate.isEmpty()) {
             platformOrderService.updateBatchById(ordersToUpdate);
-            // TODO : send email to client and ask him to pay for shipping fees
         }
         if(!orderContentsToUpdate.isEmpty()) {
             platformOrderContentService.updateBatchById(orderContentsToUpdate);

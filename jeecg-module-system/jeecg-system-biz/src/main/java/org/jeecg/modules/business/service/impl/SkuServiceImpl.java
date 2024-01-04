@@ -181,7 +181,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     public void addInventory(List<SkuQuantity> skuQuantities, List<String> platformOrderIDs) {
         Objects.requireNonNull(skuQuantities);
         Objects.requireNonNull(platformOrderIDs);
-
         Map<String, Integer> quantityPurchased = skuQuantities.stream()
                 .collect(
                         Collectors.toMap(
@@ -189,11 +188,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
                                 SkuQuantity::getQuantity
                         )
                 );
-
         // Add surplus of purchased quantity to SKU's "purchasing amount"
         if (!platformOrderIDs.isEmpty()) {
             List<SkuQuantity> used = platformOrderContentMapper.searchOrderContent(platformOrderIDs);
             for (SkuQuantity sq : used) {
+                if(!quantityPurchased.containsKey(sq.getID())) {
+                    break;
+                }
                 int quantity = quantityPurchased.get(sq.getID());
                 quantityPurchased.put(sq.getID(), quantity - sq.getQuantity());
             }

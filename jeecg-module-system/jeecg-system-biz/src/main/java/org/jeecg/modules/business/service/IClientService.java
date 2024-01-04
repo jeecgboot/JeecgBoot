@@ -48,4 +48,10 @@ public interface IClientService extends IService<Client> {
 	Client getCurrentClient();
 
     List<Client> getClientsByType(String type);
+
+    Client getClientFromOrder(String orderId);
+
+    Client getClientFromPurchase(String purchaseId);
+
+    List<String> getClientsFromPurchases(List<String> purchaseIds);
 }

@@ -68,7 +68,7 @@ public class ClientCategory implements Serializable {
 
     @Getter
     public enum CategoryName {
-        SELF_SERVICE("self_service"),
+        SELF_SERVICE("self-service"),
         CONFIRMED ("confirmed"),
         VIP("vip");
 

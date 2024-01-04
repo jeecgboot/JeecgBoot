@@ -1,7 +1,6 @@
 package org.jeecg.modules.business.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.BalanceMapper;
 import org.jeecg.modules.business.mapper.ClientCategoryMapper;
@@ -18,8 +17,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @Description: balance
@@ -92,15 +89,12 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
         SysUser sysUser = new SysUser();
         String currency = currencyService.getCodeById(currencyId);
         Balance balance = balanceMapper.getBalanceByOperation(operationId, operationType);
-        System.out.println("balance exist ? : " + balance);
         if(balance == null) {
             throw new Exception("Balance not found !");
         }
         balanceMapper.deleteBalance(operationId, operationType);
         BigDecimal currentBalance = balanceMapper.getBalanceByClientIdAndCurrency(clientId, currency);
-        System.out.println("current balance : " + currentBalance);
         BigDecimal finalBalance = operationType.equals(Balance.OperationType.Credit.name()) ? currentBalance.add(amount) : currentBalance.subtract(amount);
-        System.out.println("final balance : " + finalBalance);
         Balance newBalance = Balance.of(sysUser.getUsername(), clientId, currencyId, operationType, operationId, finalBalance);
         balanceMapper.insert(newBalance);
     }

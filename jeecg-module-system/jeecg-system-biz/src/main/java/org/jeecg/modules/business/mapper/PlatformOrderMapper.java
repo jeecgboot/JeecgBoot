@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderShopSync;
+import org.jeecg.modules.business.vo.ShippingFeeBillableOrders;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrderQuantity;
 import org.springframework.stereotype.Repository;
@@ -200,4 +201,12 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<PlatformOrder> selectByPlatformOrderIds(@Param("platformOrderIds") List<String> platformOrderIds);
 
     void removePurchaseInvoiceNumber(@Param("invoiceNumber") String purchaseInvoiceNumber);
+
+    void removePurchaseInvoiceNumbers(@Param("invoiceNumbers") List<String> invoiceNumbers);
+
+    void updatePurchaseInvoiceNumber(@Param("orderIds") List<String> orderIds, @Param("invoiceNumber") String invoiceNumber);
+
+    List<ShippingFeeBillableOrders> fetchShippingFeeBillableOrders();
+
+    List<PlatformOrder> getPlatformOrdersByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
 }

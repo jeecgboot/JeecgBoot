@@ -35,10 +35,6 @@ public class UserClientController {
     public Result<?> getClientByUserId() {
         LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String userId = loginUser.getId();
-//        userId = "1708866308713140225"; //EP
-//        userId = "1724445090933100545"; //ND
-//        userId = "1730541854207422465"; // OV
-        userId = "1731689285213171713"; // JW
         Client client = userClientService.getClientMinInfoByUserId(userId);
         if(client == null) {
             List<SysRole> sysRoles = sysUserRoleService.getUserRole(userId);
