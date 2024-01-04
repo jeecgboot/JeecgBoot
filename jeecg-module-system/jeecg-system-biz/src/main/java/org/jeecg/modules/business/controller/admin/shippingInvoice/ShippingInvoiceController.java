@@ -495,7 +495,7 @@ public class ShippingInvoiceController {
         platformOrderContentService.cancelBatchInvoice(invoiceNumbers);
         platformOrderService.cancelBatchInvoice(invoiceNumbers);
         savRefundService.cancelBatchInvoice(invoiceNumbers);
-        shippingInvoiceService.delBatchMain(ids);;
+        shippingInvoiceService.delBatchMain(ids);
         log.info("Updating balances ...");
         balanceService.deleteBatchBalance(ids, OperationType.Debit.name());
         log.info("Deleting invoice files ...");
