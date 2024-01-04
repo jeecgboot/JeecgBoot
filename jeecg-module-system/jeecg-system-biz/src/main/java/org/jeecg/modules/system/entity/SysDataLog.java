@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.entity;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -93,7 +95,7 @@ public class SysDataLog implements Serializable {
      */
     public void autoSetCreateName() {
         try {
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
             this.setCreateName(sysUser.getRealname());
         } catch (Exception e) {
             log.warn("SecurityUtils.getSubject() 获取用户信息异常：" + e.getMessage());

@@ -1,5 +1,6 @@
 package org.jeecg.modules.aop;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -12,6 +13,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.SysTenantPack;
 import org.jeecg.modules.system.entity.SysTenantPackUser;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.Resource;
@@ -78,7 +80,7 @@ public class TenantPackUserLogAspect {
                 dto.setOperateType(opType);
                 dto.setTenantId(tenantId);
                 //获取登录用户信息
-                LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+                LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
                 if(sysUser!=null){
                     dto.setUserid(sysUser.getUsername());
                     dto.setUsername(sysUser.getRealname());

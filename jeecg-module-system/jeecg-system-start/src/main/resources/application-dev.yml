@@ -3,10 +3,10 @@ server:
   undertow:
     # 平替 tomcat server.tomcat.max-swallow-siz， undertow该值默认为-1
     #    max-http-post-size: 10MB
-    worker-threads: 16 # 4核CPU标准配置
-    buffers:
-      websocket: 8192 # WebSocket缓冲 以字节为单位，这里设置为8 KB
-      io: 16384 # IO操作缓冲 以字节为单位，这里设置为16 KB
+    threads:
+      io: 16 # 4核CPU标准配置
+      worker: 256
+    buffer-size: 8192 # 以字节为单位，这里设置为8 KB
   error:
     include-exception: true
     include-stacktrace: ALWAYS

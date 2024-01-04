@@ -2,6 +2,7 @@ package org.jeecg.modules.system.controller;
 
 
 import cn.hutool.core.util.RandomUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -33,6 +34,7 @@ import org.jeecg.modules.system.vo.tenant.TenantPackModel;
 import org.jeecg.modules.system.vo.tenant.TenantPackUser;
 import org.jeecg.modules.system.vo.tenant.TenantPackUserCount;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -182,7 +184,7 @@ public class SysTenantController {
         //如果是saas隔离的情况下，判断当前租户id是否是当前租户下的
         if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
             //获取当前用户
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
             SysTenant sysTenant = sysTenantService.getById(id);
 
             String username = "admin";
@@ -218,7 +220,7 @@ public class SysTenantController {
                 //如果是saas隔离的情况下，判断当前租户id是否是当前租户下的
                 if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
                     //获取当前用户
-                    LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+                    LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
                     SysTenant sysTenant = sysTenantService.getById(id);
 
                     String username = "admin";
@@ -253,7 +255,7 @@ public class SysTenantController {
         }
         //------------------------------------------------------------------------------------------------
         //获取登录用户信息
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】, admin给特权可以管理所有租户
         if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && !"admin".equals(sysUser.getUsername())){
             Integer loginSessionTenant = oConvertUtils.getInt(TenantContext.getTenant());
@@ -369,7 +371,7 @@ public class SysTenantController {
     public Result<Map<String,Object>> getCurrentUserTenant() {
         Result<Map<String,Object>> result = new Result<Map<String,Object>>();
         try {
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
             //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
             List<Integer> tenantIdList = relationService.getTenantIdsByUserId(sysUser.getId());
             Map<String,Object> map = new HashMap(5);
@@ -436,7 +438,7 @@ public class SysTenantController {
                                       @RequestParam("tenantId") String tenantId){
         Result<String> result = new Result<>();
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
         if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && !"admin".equals(sysUser.getUsername())){
             Integer loginSessionTenant = oConvertUtils.getInt(TenantContext.getTenant());
             if(loginSessionTenant!=null && !loginSessionTenant.equals(Integer.valueOf(tenantId))){
@@ -482,7 +484,7 @@ public class SysTenantController {
     @PostMapping("/saveTenantJoinUser")
     public Result<Integer> saveTenantJoinUser(@RequestBody SysTenant sysTenant){
         Result<Integer> result = new Result<>();
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
         Integer tenantId = sysTenantService.saveTenantJoinUser(sysTenant, sysUser.getId());
         result.setSuccess(true);
         result.setMessage("创建成功");
@@ -496,7 +498,7 @@ public class SysTenantController {
      */
     @PostMapping("/joinTenantByHouseNumber")
     public Result<Integer> joinTenantByHouseNumber(@RequestBody SysTenant sysTenant){
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
         Integer tenantId = sysTenantService.joinTenantByHouseNumber(sysTenant, sysUser.getId());
         Result<Integer> result = new Result<>();
         if(tenantId != 0){
@@ -531,7 +533,7 @@ public class SysTenantController {
                                                                 SysUser user,
                                                                 HttpServletRequest req) {
         Page<SysUserTenantVo> page = new Page<SysUserTenantVo>(pageNo, pageSize);
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
         String tenantId = oConvertUtils.getString(TenantContext.getTenant(), "0");
         IPage<SysUserTenantVo> list = relationService.getUserTenantPageList(page, Arrays.asList(userTenantStatus.split(SymbolConstant.COMMA)), user, Integer.valueOf(tenantId));
         return Result.ok(list);
@@ -546,7 +548,7 @@ public class SysTenantController {
     @GetMapping("/getTenantListByUserId")
     //@RequiresPermissions("system:tenant:getTenantListByUserId")
     public Result<List<SysUserTenantVo>> getTenantListByUserId(@RequestParam(name = "userTenantStatus", required = false) String userTenantStatus) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
         List<String> list = null;
         if (oConvertUtils.isNotEmpty(userTenantStatus)) {
             list = Arrays.asList(userTenantStatus.split(SymbolConstant.COMMA));
@@ -579,7 +581,7 @@ public class SysTenantController {
     @PutMapping("/cancelTenant")
     //@RequiresPermissions("system:tenant:cancelTenant")
     public Result<String> cancelTenant(@RequestBody SysTenant sysTenant,HttpServletRequest request) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
         SysTenant tenant = sysTenantService.getById(sysTenant.getId());
         if (null == tenant) {
             return Result.error("未找到当前租户信息");
@@ -622,7 +624,7 @@ public class SysTenantController {
      */
     @PutMapping("/cancelApplyTenant")
     public Result<String> cancelApplyTenant(@RequestParam("tenantId") String tenantId){
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
         sysTenantService.leaveTenant(sysUser.getId(),tenantId);
         return Result.ok("取消申请成功");
     }
@@ -661,7 +663,7 @@ public class SysTenantController {
      */
     @DeleteMapping("/exitUserTenant")
     public Result<String> exitUserTenant(@RequestBody SysTenant sysTenant,HttpServletRequest request){
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
         //验证用户是否已存在
         Integer count = relationService.userTenantIzExist(sysUser.getId(),sysTenant.getId());
         if (count == 0) {
@@ -886,7 +888,7 @@ public class SysTenantController {
     public Result<IPage<SysTenant>> getTenantPageListByUserId(SysUserTenantVo sysUserTenantVo,
                                                               @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
                                                               @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
         List<String> list = null;
         String userTenantStatus = sysUserTenantVo.getUserTenantStatus();
         if (oConvertUtils.isNotEmpty(userTenantStatus)) {
@@ -904,7 +906,7 @@ public class SysTenantController {
     public Result<String> agreeOrRefuseJoinTenant(@RequestParam("tenantId") Integer tenantId, 
                                                   @RequestParam("status") String status){
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
         String userId = sysUser.getId();
         SysTenant tenant = sysTenantService.getById(tenantId);
         if(null == tenant){

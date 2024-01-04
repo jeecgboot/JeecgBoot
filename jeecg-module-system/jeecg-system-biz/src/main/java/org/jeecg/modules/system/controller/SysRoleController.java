@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -34,6 +35,7 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -182,7 +184,7 @@ public class SysRoleController {
 			//如果是saas隔离的情况下，判断当前租户id是否是当前租户下的
 			if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
 				//获取当前用户
-				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+				LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
 				Integer tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
 				String username = "admin";
 				if (!tenantId.equals(role.getTenantId()) && !username.equals(sysUser.getUsername())) {
@@ -211,7 +213,7 @@ public class SysRoleController {
     	//如果是saas隔离的情况下，判断当前租户id是否是当前租户下的
     	if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
 			//获取当前用户
-			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
 			int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
 			Long getRoleCount = sysRoleService.getRoleCountByTenantId(id, tenantId);
 			String username = "admin";

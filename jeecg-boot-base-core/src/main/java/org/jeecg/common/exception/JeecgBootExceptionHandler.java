@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import javax.naming.AuthenticationException;
+
 /**
  * 异常处理器
  * 
@@ -26,6 +28,23 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestControllerAdvice
 @Slf4j
 public class JeecgBootExceptionHandler {
+
+	/**
+	 * 验证码错误异常
+	 */
+
+	@ExceptionHandler(JeecgCaptchaException.class)
+	public Result<?> handleJeecgCaptchaException(JeecgCaptchaException e) {
+		log.error(e.getMessage(), e);
+		return Result.error(e.getCode(), e.getMessage());
+	}
+
+	@ExceptionHandler(AuthenticationException.class)
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	public Result<?> handleJeecgCaptchaException(AuthenticationException e) {
+		log.error(e.getMessage(), e);
+		return Result.error(401, e.getMessage());
+	}
 
 	/**
 	 * 处理自定义异常

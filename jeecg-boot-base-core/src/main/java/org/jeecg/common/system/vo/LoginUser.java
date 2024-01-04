@@ -7,6 +7,8 @@ import lombok.experimental.Accessors;
 import org.jeecg.common.desensitization.annotation.SensitiveField;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -20,8 +22,10 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class LoginUser {
+public class LoginUser implements Serializable {
 
+
+	private static final long serialVersionUID = -7143159031677245866L;
 	/**
 	 * 登录人id
 	 */
@@ -127,4 +131,32 @@ public class LoginUser {
 	/**设备id uniapp推送用*/
 	private String clientId;
 
+	@SensitiveField
+	private String salt;
+
+	@Override
+	public String toString() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return "{" +
+				"\"id\":\"" + id + '"' +
+				", \"username\":\"" + username + '"' +
+				", \"realname\":\"" + realname + '"' +
+				", \"password\":\"'" + password + '"' +
+				", \"orgCode\":\"" + orgCode + '"' +
+				", \"avatar\":\"" + avatar + '"' +
+				", \"sex\":" + sex +
+				", \"email\":\"" + email  + '"' +
+				", \"phone\":\"" + phone  + '"' +
+				", \"status\":" + status +
+				", \"delFlag\":" + delFlag +
+				", \"activitiSync\":" + activitiSync +
+				", \"userIdentity\":" + userIdentity +
+				", \"departIds\":\"" + departIds + '"' +
+				", \"post\":\"" + post  + '"' +
+				", \"telephone\":\"" + telephone  + '"' +
+				", \"relTenantIds\":\"" + relTenantIds  + '"' +
+				", \"clientId\":\"" + clientId  + '"' +
+				", \"salt\":\"" + salt  + '"' +
+				'}';
+	}
 }

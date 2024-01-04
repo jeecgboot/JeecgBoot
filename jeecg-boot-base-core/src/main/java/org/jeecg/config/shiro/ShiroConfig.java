@@ -39,7 +39,7 @@ import java.util.*;
  */
 
 @Slf4j
-@Configuration
+//@Configuration
 public class ShiroConfig {
 
     @Resource

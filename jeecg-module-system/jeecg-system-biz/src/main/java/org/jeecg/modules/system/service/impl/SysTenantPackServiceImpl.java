@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.SymbolConstant;
@@ -19,6 +20,7 @@ import org.jeecg.modules.system.mapper.SysTenantPackUserMapper;
 import org.jeecg.modules.system.service.ISysTenantPackService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -141,7 +143,7 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
         }else{
             packId = sysTenantPackSuperAdmin.getId();
         }
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);
         SysTenantPackUser packUser = new SysTenantPackUser(tenantId, packId, sysUser.getId());
         packUser.setRealname(sysUser.getRealname());
         packUser.setPackName(superAdminPack.getPackName());
@@ -155,10 +157,10 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
             SysTenantPack accountAdminPack = new SysTenantPack(tenantId, "组织账户管理员", TenantConstant.ACCOUNT_ADMIN);
             currentService.saveOne(accountAdminPack);
         }
-        
+
         query.eq(SysTenantPack::getPackCode, TenantConstant.APP_ADMIN);
         SysTenantPack sysTenantPackAppAdmin = currentService.getOne(query);
-        
+
         if(null == sysTenantPackAppAdmin){
             // 创建超级管理员
             SysTenantPack appAdminPack = new SysTenantPack(tenantId, "组织应用管理员", TenantConstant.APP_ADMIN);

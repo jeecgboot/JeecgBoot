@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -18,6 +19,7 @@ import org.jeecg.modules.system.mapper.SysUserMapper;
 import org.jeecg.modules.system.service.ISysAnnouncementSendService;
 import org.jeecg.modules.system.service.ISysAnnouncementService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -149,7 +151,7 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 
 	@Override
 	public void completeAnnouncementSendInfo() {
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
 		String userId = sysUser.getId();
 		List<String> announcementIds = this.getNotSendedAnnouncementlist(userId);
 		List<SysAnnouncementSend> sysAnnouncementSendList = new ArrayList<>();
@@ -199,7 +201,7 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 //			completeAnnouncementSendInfo();
 //		});
 		
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
 		log.info(" 获取登录人 LoginUser id: {}", sysUser.getId());
 		Page<SysAnnouncement> page = new Page<SysAnnouncement>(pageNo,pageSize);
 		List<SysAnnouncement> list = baseMapper.queryAllMessageList(page, sysUser.getId(), fromUser, starFlag, beginDate, endDate);
@@ -208,13 +210,13 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 
 	@Override
 	public void updateReaded(List<String> annoceIdList) {
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
 		sysAnnouncementSendMapper.updateReaded(sysUser.getId(), annoceIdList);
 	}
 
 	@Override
 	public void clearAllUnReadMessage() {
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
 		sysAnnouncementSendMapper.clearAllUnReadMessage(sysUser.getId());
 	}
 
