@@ -245,6 +245,13 @@
 				<artifactId>hibernate-re</artifactId>
 				<version>3.6.1-beta</version>
 			</dependency>
+			<!-- update-begin-author:chenrui -date:20240104  for：[issue/5723]指定jaxb-runtime版本 -->
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-runtime</artifactId>
+				<version>2.3.3</version>
+			</dependency>
+			<!-- update-end-author:chenrui -date:20240104  for：[issue/5723]指定jaxb-runtime版本 -->
 
 			<!--mongon db-->
 			<dependency>
