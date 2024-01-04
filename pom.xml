@@ -70,6 +70,7 @@
 		<justauth-spring-boot-starter.version>1.3.4</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<qiniu-java-sdk.version>7.4.0</qiniu-java-sdk.version>
+		<jedis.version>2.9.0</jedis.version>
 		<!-- Log4j2爆雷漏洞 -->
 		<!-- spring boot 3 不支持下列两个版本-->
 		<!--<log4j2.version>2.17.0</log4j2.version>
