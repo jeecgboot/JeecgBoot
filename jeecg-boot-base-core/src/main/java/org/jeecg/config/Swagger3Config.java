@@ -1,5 +1,6 @@
 package org.jeecg.config;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Paths;
@@ -15,10 +16,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * @author kezhijie@wuhandsj.com
- * @date 2023/11/2 14:19
- */
 @Configuration
 public class Swagger3Config implements WebMvcConfigurer {
         /**
@@ -39,6 +36,10 @@ public class Swagger3Config implements WebMvcConfigurer {
         return GroupedOpenApi.builder()
                 .group("default")
                 .packagesToScan("org.jeecg")
+                // 剔除以下几个包路径的接口生成文档
+                .packagesToExclude("org.jeecg.modules.drag", "org.jeecg.modules.online", "org.jeecg.modules.jmreport")
+                // 加了Operation注解的方法，才生成接口文档
+                .addOpenApiMethodFilter(method -> method.isAnnotationPresent(Operation.class))
                 .build();
     }
 

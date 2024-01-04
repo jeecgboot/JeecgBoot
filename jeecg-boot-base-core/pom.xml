@@ -53,6 +53,16 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-undertow</artifactId>
 		</dependency>
 		<!-- websocket -->
 		<dependency>
@@ -189,9 +199,14 @@
 					<artifactId>checkstyle</artifactId>
 					<groupId>com.puppycrawl.tools</groupId>
 				</exclusion>
+				<!-- TODO shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
+				<exclusion>
+					<artifactId>jedis</artifactId>
+					<groupId>redis.clients</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
+		<!-- TODO shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
@@ -252,7 +267,7 @@
 
 		<!-- AutoPoi Excel工具类-->
 		<dependency>
-			<groupId>org.jeecgframework</groupId>
+			<groupId>org.jeecgframework.boot3</groupId>
 			<artifactId>autopoi-web</artifactId>
 			<version>${autopoi-web.version}</version>
 			<exclusions>
