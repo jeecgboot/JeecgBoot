@@ -1,5 +1,7 @@
 package org.jeecg.modules.business.service;
 
+import com.aspose.cells.SaveFormat;
+import com.aspose.cells.Workbook;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -34,7 +36,10 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -106,6 +111,11 @@ public class PlatformOrderShippingInvoiceService {
 
     @Value("${jeecg.path.shippingInvoiceDetailDir}")
     private String INVOICE_DETAIL_DIR;
+    @Value("${jeecg.path.shippingInvoicePdfDir}")
+    private String INVOICE_PDF_DIR;
+    @Value("${jeecg.path.shippingInvoiceDetailPdfDir}")
+    private String INVOICE_DETAIL_PDF_DIR;
+    private static final String EXTENSION = ".xlsx";
 
     private final static String[] DETAILS_TITLES = {
             "Boutique",
@@ -563,6 +573,107 @@ public class PlatformOrderShippingInvoiceService {
         return invoiceList;
     }
 
+
+    /** Finds the absolute path of invoice file by recursively walking the directory and it's subdirectories
+     *
+     * @param dirPath
+     * @param invoiceNumber
+     * @return List of paths for the file but should only find one result
+     */
+    public List<Path> getPath(String dirPath, String invoiceNumber) {
+        List<Path> pathList = new ArrayList<>();
+        //Recursively list all files
+        //The walk() method returns a Stream by walking the file tree beginning with a given starting file/directory in a depth-first manner.
+        try (Stream<Path> stream = Files.walk(Paths.get(dirPath))) {
+            pathList = stream.map(Path::normalize)
+                    .filter(Files::isRegularFile) // directories, hidden files and files without extension are not included
+                    .filter(path -> path.getFileName().toString().contains(invoiceNumber))
+                    .filter(path -> path.getFileName().toString().endsWith(EXTENSION))
+                    .collect(Collectors.toList());
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+        return pathList;
+    }
+
+    /** Finds the absolute path of invoice file by recursively walking the directory and it's subdirectories
+     *
+     * @param dirPath
+     * @param invoiceNumber
+     * @return List of paths for the file but should only find one result
+     */
+    public List<Path> getPath(String dirPath, String invoiceNumber, String invoiceEntity) {
+        List<Path> pathList = new ArrayList<>();
+        //Recursively list all files
+        //The walk() method returns a Stream by walking the file tree beginning with a given starting file/directory in a depth-first manner.
+        try (Stream<Path> stream = Files.walk(Paths.get(dirPath))) {
+            pathList = stream.map(Path::normalize)
+                    .filter(Files::isRegularFile) // directories, hidden files and files without extension are not included
+                    .filter(path -> path.getFileName().toString().contains(invoiceNumber))
+                    .filter(path -> path.getFileName().toString().contains(invoiceEntity))
+                    .filter(path -> path.getFileName().toString().endsWith(EXTENSION))
+                    .collect(Collectors.toList());
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+        return pathList;
+    }
+
+    /**
+     *  Finds the absolute path of invoice file and return the path
+     * @param invoiceNumber
+     * @param filetype if it's an invoice or invoice detail
+     * @return String returns the path of the invoice file
+     */
+    public String getInvoiceList(String invoiceNumber, String filetype) {
+        log.info("Invoice number : " + invoiceNumber);
+        List<Path> pathList = new ArrayList<>();
+        if(filetype.equals("invoice")) {
+            log.info("File asked is of type invoice");
+            pathList = getPath(INVOICE_DIR, invoiceNumber);
+        }
+        if(filetype.equals("detail")) {
+            log.info("File asked is of type invoice detail");
+            pathList = getPath(INVOICE_DETAIL_DIR, invoiceNumber);
+        }
+        if(pathList.isEmpty()) {
+            log.error("NO INVOICE FILE FOUND : " + invoiceNumber);
+            return "ERROR";
+        }
+        else {
+            for (Path path : pathList) {
+                log.info(path.toString());
+            }
+            return pathList.get(0).toString();
+        }
+    }
+    public String convertToPdf(String invoiceNumber, String fileType) throws Exception {
+        String excelFilePath = getInvoiceList(invoiceNumber, fileType);// (C:\PATH\filename.xlsx)
+
+        if(!excelFilePath.equals("ERROR")) {
+            String pdfFilePath= INVOICE_PDF_DIR + "/" + invoiceNumber + ".pdf";
+            if(fileType.equals("invoice")){
+                pdfFilePath = INVOICE_PDF_DIR + "/Invoice N°" + invoiceNumber + ".pdf";
+            }
+            if(fileType.equals("detail")) {
+                pdfFilePath = INVOICE_DETAIL_PDF_DIR + "/Détail_calcul_de_facture_" + invoiceNumber + ".pdf";
+            }
+
+            Pattern p = Pattern.compile("^(.*)[\\/\\\\](.*)(\\.[a-z]+)"); //group(1): "C:\PATH" , group(2) : "filename", group(3): ".xlsx"
+            Matcher m = p.matcher(excelFilePath);
+            if (m.matches()) {
+                pdfFilePath = INVOICE_PDF_DIR + "/" + m.group(2) + ".pdf";
+            }
+            // Créé un classeur pour charger le fichier Excel
+            Workbook workbook = new Workbook(excelFilePath);
+            // On enregistre le document au format PDF
+            workbook.save(pdfFilePath, SaveFormat.PDF);
+            return pdfFilePath;
+        }
+        return "ERROR";
+    }
     @Transactional
     public String zipInvoices(List<String> invoiceList) throws IOException {
         log.info("Zipping Invoices ...");
