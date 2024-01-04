@@ -62,6 +62,8 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
         //修改第三方登录账户表使其进行添加用户id
         LambdaQueryWrapper<SysThirdAccount> query = new LambdaQueryWrapper<>();
         query.eq(SysThirdAccount::getThirdUserUuid,thirdUserUuid);
+        //扫码登录更新用户创建的时候存的是默认租户，更新的时候也需要根据默认租户来查询，同一个公司下UUID是一样的，不同应用需要区分租户。
+        query.eq(SysThirdAccount::getTenantId,CommonConstant.TENANT_ID_DEFAULT_VALUE);
         SysThirdAccount account = sysThirdAccountMapper.selectOne(query);
         SysThirdAccount sysThirdAccount = new SysThirdAccount();
         sysThirdAccount.setSysUserId(sysUser.getId());
@@ -189,7 +191,7 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
         //获取当前登录用户
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //当前第三方用户已被其他用户所绑定
-        SysThirdAccount oneByThirdUserId = this.getOneByUuidAndThirdType(thirdUserUuid, thirdType,CommonConstant.TENANT_ID_DEFAULT_VALUE);
+        SysThirdAccount oneByThirdUserId = this.getOneByUuidAndThirdType(thirdUserUuid, thirdType,CommonConstant.TENANT_ID_DEFAULT_VALUE, null);
         if(null != oneByThirdUserId){
             //如果不为空，并且第三方表和当前登录的用户一致，直接返回
             if(oConvertUtils.isNotEmpty(oneByThirdUserId.getSysUserId()) && oneByThirdUserId.getSysUserId().equals(sysUser.getId())){
@@ -210,10 +212,16 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
     }
 
     @Override
-    public SysThirdAccount getOneByUuidAndThirdType(String unionid, String thirdType,Integer tenantId) {
+    public SysThirdAccount getOneByUuidAndThirdType(String unionid, String thirdType,Integer tenantId,String thirdUserId) {
         LambdaQueryWrapper<SysThirdAccount> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SysThirdAccount::getThirdUserUuid, unionid);
         queryWrapper.eq(SysThirdAccount::getThirdType, thirdType);
+        //update-begin---author:wangshuai---date:2023-12-04---for: 如果第三方用户id为空那么就不走第三方用户查询逻辑，因为扫码登录third_user_id是唯一的，没有重复的情况---
+        if(oConvertUtils.isNotEmpty(thirdUserId)){
+            queryWrapper.and((wrapper) ->wrapper.eq(SysThirdAccount::getThirdUserUuid,unionid).or().eq(SysThirdAccount::getThirdUserId,thirdUserId));
+        }else{
+            queryWrapper.eq(SysThirdAccount::getThirdUserUuid, unionid);
+        }
+        //update-end---author:wangshuai---date:2023-12-04---for:如果第三方用户id为空那么就不走第三方用户查询逻辑，因为扫码登录third_user_id是唯一的，没有重复的情况---
         queryWrapper.eq(SysThirdAccount::getTenantId, tenantId);
         return super.getOne(queryWrapper);
     }

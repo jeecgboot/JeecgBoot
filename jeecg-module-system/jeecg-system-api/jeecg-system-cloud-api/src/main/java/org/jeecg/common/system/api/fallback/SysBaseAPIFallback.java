@@ -66,6 +66,16 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
+    public Set<String> getDepartParentIdsByUsername(String username) {
+        return null;
+    }
+
+    @Override
+    public Set<String> getDepartParentIdsByDepIds(Set depIds) {
+        return null;
+    }
+
+    @Override
     public List<String> getDepartNamesByUsername(String username) {
         return null;
     }
@@ -275,10 +285,12 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
         return null;
     }
 
+    //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
     @Override
-    public List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys) {
+    public List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys, String dataSource) {
         return null;
     }
+    //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
     @Override
     public void sendTemplateMessage(MessageDTO message) {
@@ -316,6 +328,11 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
 
     @Override
     public List<String> loadCategoryDictItem(String ids) {
+        return null;
+    }
+
+    @Override
+    public List<String> loadCategoryDictItemByNames(String names, boolean delNotExist) {
         return null;
     }
 

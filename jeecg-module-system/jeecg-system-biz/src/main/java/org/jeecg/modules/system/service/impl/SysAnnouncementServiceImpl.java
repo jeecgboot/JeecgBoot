@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.LoginUser;
@@ -61,7 +62,12 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 			sysAnnouncementMapper.insert(sysAnnouncement);
 			// 2.插入用户通告阅读标记表记录
 			String userId = sysAnnouncement.getUserIds();
-			String[] userIds = userId.substring(0, (userId.length()-1)).split(",");
+            //update-begin-author:liusq---date:2023-10-31--for:[issues/5503]【公告】通知无法接收
+			if(StringUtils.isNotBlank(userId) && userId.endsWith(",")){
+				userId = userId.substring(0, (userId.length()-1));
+			}
+			String[] userIds = userId.split(",");
+            //update-end-author:liusq---date:2023-10-31--for:[issues/5503]【公告】通知无法接收
 			String anntId = sysAnnouncement.getId();
 			Date refDate = new Date();
 			for(int i=0;i<userIds.length;i++) {

@@ -156,7 +156,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         sysTenantPackService.addDefaultTenantPack(tenantId);
         
         //添加租户到关系表
-        return this.saveTenantRelation(sysTenant.getId(), userId);
+        return tenantId;
     }
 
     @Override
@@ -164,6 +164,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         //获取租户id
         sysTenant.setId(this.tenantIdGenerate());
         sysTenant.setHouseNumber(RandomUtil.randomStringUpper(6));
+        sysTenant.setDelFlag(CommonConstant.DEL_FLAG_0);
         this.save(sysTenant);
         //update-begin---author:wangshuai ---date:20230710  for：【QQYUN-5723】1、把当前创建人加入到租户关系里面------------
         //当前登录人的id
@@ -680,6 +681,9 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         messageDTO.setData(data);
         messageDTO.setContent(title);
         messageDTO.setType("system");
+        //update-begin---author:wangshuai---date:2023-11-24---for:【QQYUN-7168】邀请成员时，会报错，但实际已经邀请成功了---
+        messageDTO.setCategory(CommonConstant.MSG_CATEGORY_1);
+        //update-end---author:wangshuai---date:2023-11-24---for:【QQYUN-7168】邀请成员时，会报错，但实际已经邀请成功了---
         //update-begin---author:wangshuai ---date:20230721  for：【QQYUN-5726】邀请加入租户加个按钮直接跳转过去------------
         messageDTO.setBusType(SysAnnmentTypeEnum.TENANT_INVITE.getType());
         sysBaseApi.sendBusAnnouncement(messageDTO);

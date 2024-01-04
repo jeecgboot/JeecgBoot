@@ -102,4 +102,14 @@ public class SysUserTenantVo {
      * 门牌号
      */
     private String houseNumber;
+
+    /**
+     * 是否为会员
+     */
+    private String memberType;
+
+    /**
+     * 是否为租户管理员
+     */
+    private Boolean tenantAdmin = false;
 }

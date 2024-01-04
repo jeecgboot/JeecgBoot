@@ -37,6 +37,10 @@
                 <Icon icon="mdi:chevron-down"></Icon>
               </a-button>
         </a-dropdown>
+        <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+        <!-- 高级查询 -->
+        <super-query :config="superQueryConfig" @search="handleSuperQuery" />
+        <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
       </template>
        <!--操作栏-->
       <template #action="{ record }">
@@ -81,7 +85,7 @@
 </template>
 
 <script lang="ts" name="${entityPackage}-${entityName?uncap_first}" setup>
-  import {ref, computed, unref,provide} from 'vue';
+  import {ref, reactive, computed, unref,provide} from 'vue';
   import {BasicTable, useTable, TableAction} from '/@/components/Table';
   import { useListPage } from '/@/hooks/system/useListPage'
   import {useModal} from '/@/components/Modal';
@@ -90,7 +94,7 @@
 <#list subTables as sub>
   import ${sub.entityName}List from './${sub.entityName}List.vue'
 </#list>
-  import {columns, searchFormSchema} from './${entityName}.data';
+  import {columns, searchFormSchema, superQuerySchema} from './${entityName}.data';
   import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName}.api';
   import {downloadFile} from '/@/utils/common/renderUtils';
  <#if list_need_pca>
@@ -104,6 +108,7 @@
   <#if bpm_flag==true>
   import { startProcess } from '/@/api/common/api';
   </#if>
+  const queryParam = reactive<any>({});
   //注册model
   const [registerModal, {openModal}] = useModal();
    //注册table数据
@@ -145,6 +150,9 @@
                width: 120,
                fixed:'right'
            },
+           beforeFetch: (params) => {
+             return Object.assign(params, queryParam);
+           },
            pagination:{
                current: 1,
                pageSize: 5,
@@ -154,6 +162,7 @@
         exportConfig: {
             name:"${tableVo.ftlDescription}",
             url: getExportUrl,
+            params: queryParam,
         },
         importConfig: {
             url: getImportUrl,
@@ -166,6 +175,22 @@
   const mainId = computed(() => (unref(selectedRowKeys).length > 0 ? unref(selectedRowKeys)[0] : ''));
   //下发 mainId,子组件接收
   provide('mainId', mainId);
+
+<#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+    // 高级查询配置
+    const superQueryConfig = reactive(superQuerySchema);
+
+  /**
+   * 高级查询事件
+   */
+  function handleSuperQuery(params) {
+    Object.keys(params).map((k) => {
+      queryParam[k] = params[k];
+    });
+    reload();
+  }
+<#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+
    /**
     * 新增事件
     */

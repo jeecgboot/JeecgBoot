@@ -437,12 +437,13 @@ public class SysUserController {
             @RequestParam(name = "departId", required = false) String departId,
             @RequestParam(name="realname",required=false) String realname,
             @RequestParam(name="username",required=false) String username,
+            @RequestParam(name="isMultiTranslate",required=false) String isMultiTranslate,
             @RequestParam(name="id",required = false) String id) {
         //update-begin-author:taoyan date:2022-7-14 for: VUEN-1702【禁止问题】sql注入漏洞
         String[] arr = new String[]{departId, realname, username, id};
         SqlInjectionUtil.filterContent(arr, SymbolConstant.SINGLE_QUOTATION_MARK);
         //update-end-author:taoyan date:2022-7-14 for: VUEN-1702【禁止问题】sql注入漏洞
-        IPage<SysUser> pageList = sysUserDepartService.queryDepartUserPageList(departId, username, realname, pageSize, pageNo,id);
+        IPage<SysUser> pageList = sysUserDepartService.queryDepartUserPageList(departId, username, realname, pageSize, pageNo,id,isMultiTranslate);
         return Result.OK(pageList);
     }
 
@@ -568,7 +569,7 @@ public class SysUserController {
 	 * @return
 	 */
 	@RequestMapping(value = "/queryByIds", method = RequestMethod.GET)
-	public Result<Collection<SysUser>> queryByIds(@RequestParam String userIds) {
+	public Result<Collection<SysUser>> queryByIds(@RequestParam(name = "userIds") String userIds) {
 		Result<Collection<SysUser>> result = new Result<>();
 		String[] userId = userIds.split(",");
 		Collection<String> idList = Arrays.asList(userId);
@@ -585,7 +586,7 @@ public class SysUserController {
      * @return
      */
     @RequestMapping(value = "/queryByNames", method = RequestMethod.GET)
-    public Result<Collection<SysUser>> queryByNames(@RequestParam String userNames) {
+    public Result<Collection<SysUser>> queryByNames(@RequestParam(name = "userNames") String userNames) {
         Result<Collection<SysUser>> result = new Result<>();
         String[] names = userNames.split(",");
         QueryWrapper<SysUser> queryWrapper=new QueryWrapper();

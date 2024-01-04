@@ -51,6 +51,10 @@
                 <Icon icon="mdi:chevron-down"></Icon>
               </a-button>
         </a-dropdown>
+        <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+        <!-- 高级查询 -->
+        <super-query :config="superQueryConfig" @search="handleSuperQuery" />
+        <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
       </template>
        <!--操作栏-->
       <template #action="{ record }">
@@ -85,7 +89,7 @@
 </template>
 
 <script lang="ts" name="${entityPackage}-${entityName?uncap_first}" setup>
-  import {ref, computed, unref} from 'vue';
+  import {ref, reactive, computed, unref} from 'vue';
   import {BasicTable, useTable, TableAction} from '/@/components/Table';
   import { useListPage } from '/@/hooks/system/useListPage'
   import {useModal} from '/@/components/Modal';
@@ -93,7 +97,7 @@
   <#list subTables as sub>
   import ${sub.entityName}SubTable from './subTables/${sub.entityName}SubTable.vue'
   </#list>
-  import {columns, searchFormSchema} from './${entityName}.data';
+  import {columns, searchFormSchema, superQuerySchema} from './${entityName}.data';
   import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName}.api';
   import {downloadFile} from '/@/utils/common/renderUtils';
   <#if list_need_pca>
@@ -108,6 +112,7 @@
   import { startProcess } from '/@/api/common/api';
   </#if>
   import { useUserStore } from '/@/store/modules/user';
+  const queryParam = reactive<any>({});
    // 展开key
   const expandedRowKeys = ref<any[]>([]);
   //注册model
@@ -154,10 +159,14 @@
                width: 120,
                fixed:'right'
            },
+           beforeFetch: (params) => {
+             return Object.assign(params, queryParam);
+           },
         },
         exportConfig: {
             name:"${tableVo.ftlDescription}",
             url: getExportUrl,
+            params: queryParam,
         },
         importConfig: {
             url: getImportUrl,
@@ -166,6 +175,22 @@
     })
 
   const [registerTable, {reload},{ rowSelection, selectedRowKeys }] = tableContext
+
+   <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+   // 高级查询配置
+   const superQueryConfig = reactive(superQuerySchema);
+
+   /**
+   * 高级查询事件
+   */
+   function handleSuperQuery(params) {
+     Object.keys(params).map((k) => {
+       queryParam[k] = params[k];
+     });
+     reload();
+   }
+   <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+
    /**
      * 展开事件
      * */

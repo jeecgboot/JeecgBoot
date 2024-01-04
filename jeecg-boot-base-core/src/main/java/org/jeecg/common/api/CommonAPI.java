@@ -117,14 +117,17 @@ public interface CommonAPI {
      */
     Map<String, List<DictModel>> translateManyDict(String dictCodes, String keys);
 
+    //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
     /**
      * 15 字典表的 翻译，可批量
      * @param table
      * @param text
      * @param code
      * @param keys 多个用逗号分割
+     * @param dataSource 数据源
      * @return
      */
-    List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys);
+    List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys, String dataSource);
+    //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
 }

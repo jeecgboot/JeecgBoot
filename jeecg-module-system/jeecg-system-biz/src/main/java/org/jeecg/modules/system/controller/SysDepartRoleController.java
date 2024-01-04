@@ -79,8 +79,8 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 								   HttpServletRequest req) {
 		QueryWrapper<SysDepartRole> queryWrapper = QueryGenerator.initQueryWrapper(sysDepartRole, req.getParameterMap());
 		Page<SysDepartRole> page = new Page<SysDepartRole>(pageNo, pageSize);
-		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		List<String> deptIds = null;
+//		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+//		List<String> deptIds = null;
 //		if(oConvertUtils.isEmpty(deptId)){
 //			if(oConvertUtils.isNotEmpty(user.getUserIdentity()) && user.getUserIdentity().equals(CommonConstant.USER_IDENTITY_2) ){
 //				deptIds = sysDepartService.getMySubDepIdsByDepId(user.getDepartIds());
@@ -93,7 +93,10 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 //		queryWrapper.in("depart_id",deptIds);
 
 		//我的部门，选中部门只能看当前部门下的角色
-		queryWrapper.eq("depart_id",deptId);
+		if(oConvertUtils.isNotEmpty(deptId)){
+			queryWrapper.eq("depart_id",deptId);
+		}
+		
 		IPage<SysDepartRole> pageList = sysDepartRoleService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}

@@ -2,14 +2,15 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.6.0</version>
+  <version>3.6.2</version>
   <packaging>pom</packaging>
-  <name>JEECG BOOT ${project.version} </name>
+  <name>JEECG BOOT ${project.version}</name>
 
 	<developers>
 		<developer>
 			<name>北京国炬信息技术有限公司</name>
 			<email>jeecgos@163.com</email>
+			<url>http://www.guojusoft.com</url>
 		</developer>
 	</developers>
 
@@ -27,7 +28,7 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.6.0</jeecgboot.version>
+		<jeecgboot.version>3.6.2</jeecgboot.version>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -46,8 +47,10 @@
 		<ojdbc6.version>11.2.0.3</ojdbc6.version>
 		<sqljdbc4.version>4.0</sqljdbc4.version>
 		<mysql-connector-java.version>8.0.27</mysql-connector-java.version>
-		<hutool.version>5.3.8</hutool.version>
-
+		<hutool.version>5.8.23</hutool.version>
+		<!-- 国产数据库驱动 -->
+		<dm8.version>8.1.1.49</dm8.version>
+		
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.3.1</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>4.1.3</dynamic-datasource-spring-boot-starter.version>
@@ -55,7 +58,7 @@
 		<minidao.version>1.9.5</minidao.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.6.4</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.6.6</jimureport-spring-boot-starter.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.11.2</aliyun.oss.version>
@@ -64,7 +67,7 @@
 		<java-jwt.version>3.11.0</java-jwt.version>
 		<shiro-redis.version>3.2.2</shiro-redis.version>
 		<codegenerate.version>1.4.4</codegenerate.version>
-		<autopoi-web.version>1.4.6</autopoi-web.version>
+		<autopoi-web.version>1.4.7</autopoi-web.version>
 		<minio.version>8.0.3</minio.version>
 		<justauth-spring-boot-starter.version>1.3.4</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
@@ -160,7 +163,6 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-
 			<dependency>
 				<groupId>io.seata</groupId>
 				<artifactId>seata-spring-boot-starter</artifactId>
@@ -243,7 +245,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.5.3</version>
+				<version>3.6.1-RC</version>
 			</dependency>
 
 			<!--mongon db-->
@@ -252,7 +254,24 @@
 				<artifactId>jeecg-boot-starter-mongon</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
-
+			<!--人大金仓驱动 版本号V008R006C005B0013 -->
+			<dependency>
+				<groupId>org.jeecgframework</groupId>
+				<artifactId>kingbase8</artifactId>
+				<version>9.0.0</version>
+				<scope>runtime</scope>
+			</dependency>
+			<!--达梦8数据库最新驱动 版本号1-3-26-2023.07.26-197096-20046-ENT -->
+			<dependency>
+				<groupId>com.dameng</groupId>
+				<artifactId>Dm8JdbcDriver18</artifactId>
+				<version>8.1.1.49</version>
+			</dependency>
+			<dependency>
+				<groupId>com.dameng</groupId>
+				<artifactId>DmDialect-for-hibernate5.0</artifactId>
+				<version>8.1.1.49</version>
+			</dependency>
 			<!-- 七牛云SDK -->
 			<dependency>
 				<groupId>com.qiniu</groupId>
@@ -304,6 +323,17 @@
 				<groupId>com.squareup.okhttp3</groupId>
 				<artifactId>okhttp</artifactId>
 				<version>4.4.1</version>
+			</dependency>
+			<!-- hutool工具类-->
+			<dependency>
+				<groupId>cn.hutool</groupId>
+				<artifactId>hutool-core</artifactId>
+				<version>${hutool.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.hutool</groupId>
+				<artifactId>hutool-crypto</artifactId>
+				<version>${hutool.version}</version>
 			</dependency>
 			<!--minio-->
 			<dependency>
@@ -370,8 +400,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>

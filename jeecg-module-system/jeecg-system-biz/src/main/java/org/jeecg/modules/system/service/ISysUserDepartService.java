@@ -51,9 +51,10 @@ public interface ISysUserDepartService extends IService<SysUserDepart> {
 	 * @param pageNo
      * @param realname
      * @param id
+     * @param isMultiTranslate 是否多字段翻译
 	 * @return
 	 */
-	IPage<SysUser> queryDepartUserPageList(String departId, String username, String realname, int pageSize, int pageNo,String id);
+	IPage<SysUser> queryDepartUserPageList(String departId, String username, String realname, int pageSize, int pageNo,String id,String isMultiTranslate);
 
     /**
      * 获取用户信息

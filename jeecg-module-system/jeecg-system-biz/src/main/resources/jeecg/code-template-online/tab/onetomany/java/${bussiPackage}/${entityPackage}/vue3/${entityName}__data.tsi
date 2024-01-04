@@ -240,11 +240,18 @@ export const formSchema: FormSchema[] = [
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
-    <#elseif po.classType=='list_multi' || po.classType=='checkbox'>
+     <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
+    <#elseif po.classType=='list_multi'>
     component: 'JSelectMultiple',
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
+    <#elseif po.classType=='checkbox'>
+    component: 'JCheckbox',
+    componentProps:{
+        dictCode:"${form_field_dictCode}"
+     },
+     <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
     <#elseif po.classType=='sel_search'>
     component: 'JSearchSelect',
     componentProps:{
@@ -442,11 +449,18 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
-    <#elseif po.classType=='list_multi' || po.classType=='checkbox'>
+     <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
+    <#elseif po.classType=='list_multi'>
     component: 'JSelectMultiple',
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
+    <#elseif po.classType=='checkbox'>
+    component: 'JCheckbox',
+    componentProps:{
+        dictCode:"${form_field_dictCode}"
+     },
+     <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选----------- -->
     <#elseif po.classType=='sel_search'>
     component: 'JSearchSelect',
     componentProps:{
@@ -727,3 +741,28 @@ export const ${sub.entityName?uncap_first}Columns: JVxeColumn[] = [
   ]
 </#if>
 </#list>
+
+<#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+// 高级查询数据
+export const superQuerySchema = {
+  <#list columns as po>
+  <#if po.isShowList =='Y' && po.fieldName !='id'>
+  ${superQueryFieldListForVue3(po,po_index)},
+  </#if>
+  </#list>
+  //子表高级查询
+  <#list subTables as sub>
+  ${sub.entityName?uncap_first}: {
+    title: '${sub.ftlDescription}',
+    view: 'table',
+    fields: {
+      <#list sub.colums as subCol>
+        <#if subCol.isShowList =='Y' && subCol.fieldName !='id'>
+        ${superQueryFieldListForVue3(subCol,subCol_index)},
+        </#if>
+      </#list>
+    }
+  },
+  </#list>
+};
+<#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
