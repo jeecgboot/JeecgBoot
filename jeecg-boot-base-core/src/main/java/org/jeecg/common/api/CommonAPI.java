@@ -127,4 +127,24 @@ public interface CommonAPI {
      */
     List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys);
 
+    /**
+     * 登录加载系统字典
+     * @return
+     */
+    Map<String,List<DictModel>> queryAllDictItems();
+
+    /**
+     * 查询SysDepart集合
+     * @param userId
+     * @return
+     */
+    List<SysDepartModel> queryUserDeparts(String userId);
+
+    /**
+     * 根据用户名设置部门ID
+     * @param username
+     * @param orgCode
+     */
+    void updateUserDepart(String username,String orgCode,Integer loginTenantId);
+
 }

@@ -1,5 +1,7 @@
 package org.jeecg.common.system.util;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -29,6 +31,7 @@ import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * @Author Scott
@@ -95,7 +98,8 @@ public class JwtUtil {
 	public static String getUsername(String token) {
 		try {
 			DecodedJWT jwt = JWT.decode(token);
-			return jwt.getClaim("username").asString();
+			LoginUser loginUser = JSONObject.parseObject(jwt.getClaim("sub").asString(), LoginUser.class);
+			return loginUser.getUsername();
 		} catch (JWTDecodeException e) {
 			return null;
 		}
@@ -177,7 +181,7 @@ public class JwtUtil {
 		//2.通过shiro获取登录用户信息
 		LoginUser sysUser = null;
 		try {
-			sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
 		} catch (Exception e) {
 			log.warn("SecurityUtils.getSubject() 获取用户信息异常：" + e.getMessage());
 		}

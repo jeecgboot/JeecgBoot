@@ -3,6 +3,7 @@ package org.jeecg.modules.system.controller;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.alibaba.fastjson.JSON;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -30,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.system.base.controller.JeecgController;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -80,7 +82,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 								   HttpServletRequest req) {
 		QueryWrapper<SysDepartRole> queryWrapper = QueryGenerator.initQueryWrapper(sysDepartRole, req.getParameterMap());
 		Page<SysDepartRole> page = new Page<SysDepartRole>(pageNo, pageSize);
-		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser user = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
 		List<String> deptIds = null;
 //		if(oConvertUtils.isEmpty(deptId)){
 //			if(oConvertUtils.isNotEmpty(user.getUserIdentity()) && user.getUserIdentity().equals(CommonConstant.USER_IDENTITY_2) ){
@@ -198,7 +200,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 		 String userId = json.getString("userId");
 		 departRoleUserService.deptRoleUserAdd(userId,newRoleId,oldRoleId);
          //update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]部门角色分配添加敏感日志------------
-         LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+         LoginUser loginUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
          baseCommonService.addLog("给部门用户ID："+userId+"分配角色，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
          //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]部门角色分配添加敏感日志------------
          return Result.ok("添加成功！");

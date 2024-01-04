@@ -433,4 +433,18 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
         return false;
     }
 
+    @Override
+    public Map<String, List<DictModel>> queryAllDictItems() {
+        return null;
+    }
+
+    @Override
+    public List<SysDepartModel> queryUserDeparts(String userId) {
+        return null;
+    }
+
+    @Override
+    public void updateUserDepart(String username, String orgCode, Integer loginTenantId) {
+
+    }
 }

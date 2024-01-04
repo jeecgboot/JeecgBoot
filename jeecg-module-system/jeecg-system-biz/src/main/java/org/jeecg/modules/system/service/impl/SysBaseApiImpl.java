@@ -54,6 +54,7 @@ import org.jeecg.modules.system.vo.lowapp.SysDictVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.util.AntPathMatcher;
@@ -584,7 +585,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public void updateSysAnnounReadFlag(String busType, String busId) {
 		SysAnnouncement announcement = sysAnnouncementMapper.selectOne(new QueryWrapper<SysAnnouncement>().eq("bus_type",busType).eq("bus_id",busId));
 		if(announcement != null){
-			LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+			LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
 			String userId = sysUser.getId();
 			LambdaUpdateWrapper<SysAnnouncementSend> updateWrapper = new UpdateWrapper().lambda();
 			updateWrapper.set(SysAnnouncementSend::getReadFlag, CommonConstant.HAS_READ_FLAG);
@@ -1467,6 +1468,27 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	@Override
 	public List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys) {
 		return sysDictService.queryTableDictTextByKeys(table, text, code, Arrays.asList(keys.split(",")));
+	}
+
+	@Override
+	public Map<String, List<DictModel>> queryAllDictItems() {
+		return sysDictService.queryAllDictItems();
+	}
+
+	@Override
+	public List<SysDepartModel> queryUserDeparts(String userId) {
+		List<SysDepartModel> list = new ArrayList<>();
+		for (SysDepart sysDepartService: sysDepartService.queryUserDeparts(userId)) {
+			SysDepartModel model = new SysDepartModel();
+			BeanUtils.copyProperties(sysDepartService, model);
+			list.add(model);
+		}
+		return list;
+	}
+
+	@Override
+	public void updateUserDepart(String username, String orgCode, Integer loginTenantId) {
+		sysUserService.updateUserDepart(username, orgCode,null);
 	}
 
 	//-------------------------------------流程节点发送模板消息-----------------------------------------------

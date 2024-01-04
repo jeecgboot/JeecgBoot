@@ -1,5 +1,6 @@
 package org.jeecg.common.aspect;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.PropertyFilter;
 import org.apache.shiro.SecurityUtils;
@@ -21,6 +22,7 @@ import org.jeecg.common.util.IpUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -100,7 +102,7 @@ public class AutoLogAspect {
         //设置IP地址
         dto.setIp(IpUtils.getIpAddr(request));
         //获取登录用户信息
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
         if(sysUser!=null){
             dto.setUserid(sysUser.getUsername());
             dto.setUsername(sysUser.getRealname());

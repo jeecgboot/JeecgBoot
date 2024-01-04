@@ -32,7 +32,7 @@ import java.util.Set;
  * @Date: 2019-4-23 8:13
  * @Version: 1.1
  */
-@Component
+//@Component
 @Slf4j
 public class ShiroRealm extends AuthorizingRealm {
 	@Lazy

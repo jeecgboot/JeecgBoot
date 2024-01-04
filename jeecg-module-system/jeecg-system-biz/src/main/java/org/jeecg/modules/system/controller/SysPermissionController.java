@@ -1,15 +1,14 @@
 package org.jeecg.modules.system.controller;
 
-import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
@@ -25,9 +24,9 @@ import org.jeecg.modules.system.model.TreeModel;
 import org.jeecg.modules.system.service.*;
 import org.jeecg.modules.system.util.PermissionDataUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -242,7 +241,7 @@ public class SysPermissionController {
 		Result<JSONObject> result = new Result<JSONObject>();
 		try {
 			//直接获取当前用户不适用前端token
-			LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			LoginUser loginUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);
 			if (oConvertUtils.isEmpty(loginUser)) {
 				return Result.error("请登录系统！");
 			}
@@ -320,7 +319,7 @@ public class SysPermissionController {
 	public Result<?> getPermCode() {
 		try {
 			// 直接获取当前用户
-			LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			LoginUser loginUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
 			if (oConvertUtils.isEmpty(loginUser)) {
 				return Result.error("请登录系统！");
 			}
@@ -560,7 +559,7 @@ public class SysPermissionController {
 			String lastPermissionIds = json.getString("lastpermissionIds");
 			this.sysRolePermissionService.saveRolePermission(roleId, permissionIds, lastPermissionIds);
 			//update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]用户管理角色授权添加敏感日志------------
-            LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            LoginUser loginUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
 			baseCommonService.addLog("修改角色ID: "+roleId+" 的权限配置，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
             //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]用户管理角色授权添加敏感日志------------
 			result.success("保存成功！");

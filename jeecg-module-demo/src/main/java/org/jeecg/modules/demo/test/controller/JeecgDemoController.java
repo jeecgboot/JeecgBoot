@@ -477,8 +477,8 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
     public Mono<String> test() {
         //解决shiro报错No SecurityManager accessible to the calling code, either bound to the org.apache.shiro
         // https://blog.csdn.net/Japhet_jiu/article/details/131177210
-        DefaultSecurityManager securityManager = new DefaultSecurityManager();
-        SecurityUtils.setSecurityManager(securityManager);
+//        DefaultSecurityManager securityManager = new DefaultSecurityManager();
+//        SecurityUtils.setSecurityManager(securityManager);
         
         return Mono.just("测试");
     }

@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -35,6 +36,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -167,7 +169,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         this.save(sysTenant);
         //update-begin---author:wangshuai ---date:20230710  for：【QQYUN-5723】1、把当前创建人加入到租户关系里面------------
         //当前登录人的id
-        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser loginUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
         this.saveTenantRelation(sysTenant.getId(),loginUser.getId());
         //update-end---author:wangshuai ---date:20230710  for：【QQYUN-5723】1、把当前创建人加入到租户关系里面------------
     }
@@ -363,7 +365,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     @Override
     public Result<String> invitationUser(String phone, String departId) {
         Result<String> result = new Result<>();
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
 
         //1、查询用户信息,判断用户是否存在
         SysUser userByPhone = userService.getUserByPhone(phone);
@@ -427,7 +429,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         }
 
         TenantDepartAuthInfo info = new TenantDepartAuthInfo();
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
         String userId = sysUser.getId();
         boolean superAdmin = false;
         // 查询pack表
@@ -617,7 +619,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         // 发消息
         SysUser user = userService.getById(sysTenantPackUser.getUserId());
         SysTenant sysTenant = this.baseMapper.querySysTenant(sysTenantPackUser.getTenantId());
-        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser loginUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
         MessageDTO messageDTO = new MessageDTO();
         messageDTO.setToAll(false);
         messageDTO.setToUser(user.getUsername());
@@ -786,7 +788,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     
     @Override
     public Long getApplySuperAdminCount() {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
         int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
         return baseMapper.getApplySuperAdminCount(sysUser.getId(),tenantId);
     }
