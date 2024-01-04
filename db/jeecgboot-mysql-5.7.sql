@@ -1,3 +1,6 @@
+CREATE database if NOT EXISTS `jeecg-boot` default character set utf8mb4 collate utf8mb4_general_ci;
+USE `jeecg-boot`;
+
 /*
  Navicat Premium Data Transfer
 
