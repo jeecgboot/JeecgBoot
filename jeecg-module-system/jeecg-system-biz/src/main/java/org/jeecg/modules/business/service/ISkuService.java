@@ -8,6 +8,7 @@ import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.inventory.InventoryRecord;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -80,4 +81,16 @@ public interface ISkuService extends IService<Sku> {
     List<SkuChannelHistory> findHistoryBySkuIdsAndCountryCode(List<String> skuIds, String countryCode) throws UserException;
 
     List<Sku> selectByErpCode(Collection<String> erpCodes);
+
+    String searchFirstMissingPriceSku(List<String> skuIds);
+
+    List<String> listErpCodesByIds(List<String> skuIds);
+
+    /**
+     * Find all sku with missing stock in not shipped orders from self-service clients
+     * @return
+     */
+    List<Sku> findMissingSkusInNotShippedOrders(LocalDateTime start);
+
+    List<SkuQuantity> getSkuQuantitiesFromOrderIds(List<String> orderIds);
 }

@@ -66,6 +66,13 @@ public class PurchaseOrder implements Serializable {
     @ApiModelProperty(value = "客户ID")
     private String clientId;
     /**
+     * 货币
+     */
+    @Excel(name = "货币ID", width = 15, dictTable = "currency", dicText = "code", dicCode = "id")
+    @Dict(dictTable = "currency", dicText = "code", dicCode = "id")
+    @ApiModelProperty(value = "货币ID")
+    private java.lang.String currencyId;
+    /**
      * 应付金额
      */
     @Excel(name = "应付金额", width = 15)
@@ -94,11 +101,70 @@ public class PurchaseOrder implements Serializable {
     /**
      * Purchase status
      */
+    @Excel(name = "status", width = 15)
+    @ApiModelProperty(value = "status")
     private String status;
 
     /**
      * Payment document
      */
-    @ApiModelProperty(value = "Payment document")
-    private String paymentDocument;
+    @Excel(name = "payment document", width = 15)
+    private transient java.lang.String paymentDocumentString;
+
+    private byte[] paymentDocument;
+
+    public byte[] getPaymentDocument(){
+        if(paymentDocumentString==null){
+            return null;
+        }
+        try {
+            return paymentDocumentString.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getPaymentDocumentString(){
+        if(paymentDocument==null || paymentDocument.length==0){
+            return "";
+        }
+        try {
+            return new String(paymentDocument,"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+    /**
+     * Inventory sheet
+     */
+    @Excel(name = "inventory sheet", width = 15)
+    private transient java.lang.String inventoryDocumentString;
+
+    private byte[] inventoryDocument;
+
+    public byte[] getInventoryDocument(){
+        if(inventoryDocumentString==null){
+            return null;
+        }
+        try {
+            return inventoryDocumentString.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getInventoryDocumentString(){
+        if(inventoryDocument==null || inventoryDocument.length==0){
+            return "";
+        }
+        try {
+            return new String(inventoryDocument,"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 }

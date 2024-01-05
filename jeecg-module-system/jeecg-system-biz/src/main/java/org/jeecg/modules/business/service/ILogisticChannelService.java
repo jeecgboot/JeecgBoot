@@ -51,5 +51,7 @@ public interface ILogisticChannelService extends IService<LogisticChannel> {
 
 
     List<CostTrialCalculation> logisticChannelTrial(int weight, int volume, List<String> countryList);
+    List<LogisticChannel> listByIdAndZhName();
 
+    List<LogisticChannel> getFromZhName(List<String> zhNames);
 }

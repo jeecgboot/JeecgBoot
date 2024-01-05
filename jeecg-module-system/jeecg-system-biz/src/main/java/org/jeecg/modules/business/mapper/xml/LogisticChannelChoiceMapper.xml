@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.LogisticChannelChoiceMapper">
+    <select id="fetchByShopId" resultType="org.jeecg.modules.business.entity.LogisticChannelChoice">
+        SELECT * FROM logistic_channel_choice
+        WHERE shop_id IN
+        <foreach collection="shopIds" separator="," open="(" close=")" item="shopId">
+            #{shopId}
+        </foreach>;
+    </select>
+    <update id="updateLogisticChannelBetweenDate">
+        UPDATE platform_order
+        SET update_time = NOW(),
+        invoice_logistic_channel_name = CASE shop_id
+        <foreach collection="products" separator=" " open="" close="" index="index" item="item">
+            WHEN #{item.shop_id} THEN #{item.weight}
+        </foreach>
+        END
+        WHERE invoice_logistic_channel_name IS NULL
+
+
+    </update>
+</mapper>

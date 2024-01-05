@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderShopSync;
+import org.jeecg.modules.business.vo.ShippingFeeBillableOrders;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrderQuantity;
 import org.springframework.stereotype.Repository;
@@ -173,7 +174,7 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
                                                              @Param("shops") List<String> shops,
                                                              @Param("warehouses") List<String> warehouses);
 
-    List<PlatformOrder> fetchUninvoicedShippedOrderIDInShopsAndOrderTime(@Param("startDate") String startDate,
+    List<PlatformOrder> fetchUninvoicedOrderIDInShopsAndOrderTime(@Param("startDate") String startDate,
                                                                          @Param("endDate") String endDate,
                                                                          @Param("shops") List<String> shops,
                                                                          @Param("erpStatuses") List<Integer> erpStatuses,
@@ -183,4 +184,29 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     void insertPlatformOrdersArchives(@Param("orders") List<PlatformOrder> platformOrders);
     void cancelInvoice(@Param("invoiceNumber") String invoiceNumber);
     void cancelBatchInvoice(@Param("invoiceNumbers") List<String> invoiceNumbers);
+
+    List<PlatformOrder> findUninvoicedOrdersByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses);
+    List<String> findUninvoicedOrderIdsByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses);
+
+    List<PlatformOrder> fetchEmptyLogisticChannelOrders(@Param("startDate") String startDate,@Param("endDate") String endDate);
+
+    void updateErpStatusByCode(@Param("invoiceCode") String invoiceCode, @Param("erpStatus") int erpStatus);
+
+    List<PlatformOrder> fetchByIds(@Param("orderIds") List<String> orderNumbers);
+
+    List<PlatformOrder> fetchOrdersWithProductAvailable();
+
+    List<PlatformOrder> fetchOrdersWithMissingStock(@Param("start") LocalDateTime start);
+
+    List<PlatformOrder> selectByPlatformOrderIds(@Param("platformOrderIds") List<String> platformOrderIds);
+
+    void removePurchaseInvoiceNumber(@Param("invoiceNumber") String purchaseInvoiceNumber);
+
+    void removePurchaseInvoiceNumbers(@Param("invoiceNumbers") List<String> invoiceNumbers);
+
+    void updatePurchaseInvoiceNumber(@Param("orderIds") List<String> orderIds, @Param("invoiceNumber") String invoiceNumber);
+
+    List<ShippingFeeBillableOrders> fetchShippingFeeBillableOrders();
+
+    List<PlatformOrder> getPlatformOrdersByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
 }

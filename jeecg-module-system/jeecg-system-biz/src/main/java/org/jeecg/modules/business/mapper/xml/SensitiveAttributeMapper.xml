@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.SensitiveAttributeMapper">
+<select id="getHighestPriorityAttribute" resultType="org.jeecg.modules.business.entity.SensitiveAttribute">
+    SELECT sa.en_name, sa.priority
+    FROM sensitive_attribute sa
+             JOIN product p
+                  ON sa.id = p.sensitive_attribute_id
+             JOIN sku s
+                  ON p.id = s.product_id
+             JOIN platform_order_content poc
+                  ON s.id = poc.sku_id
+             JOIN platform_order po
+                  ON poc.platform_order_id = po.id
+    WHERE po.id = #{orderId}
+    ORDER BY sa.priority DESC LIMIT 1;
+</select>
+<select id="getHighestPriorityAttributeId" resultType="java.lang.String">
+    SELECT sa.id
+    FROM sensitive_attribute sa
+             JOIN product p
+                  ON sa.id = p.sensitive_attribute_id
+             JOIN sku s
+                  ON p.id = s.product_id
+             JOIN platform_order_content poc
+                  ON s.id = poc.sku_id
+             JOIN platform_order po
+                  ON poc.platform_order_id = po.id
+    WHERE po.id = #{orderId}
+    ORDER BY sa.priority DESC LIMIT 1;
+</select>
+    <select id="listIdAndPriority" resultType="org.jeecg.modules.business.entity.SensitiveAttribute">
+        SELECT id, priority, zh_name
+        FROM wia_app.sensitive_attribute
+    </select>
+</mapper>

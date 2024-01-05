@@ -9,13 +9,13 @@
             JOIN platform_order po on s.id = po.shop_id
         WHERE po.shipping_invoice_number = #{invoiceNumber}
     </select>
-    <select id="fetchShippingInvoiceNumber" resultType="java.lang.String">
-        SELECT invoice_number
-        FROM shipping_invoice s
-        WHERE s.id = #{invoiceID}
+    <select id="fetchShippingInvoiceId" resultType="java.lang.String">
+        SELECT id
+        FROM shipping_invoice
+        WHERE invoice_number = #{invoiceNumber}
     </select>
     <select id="fetchShippingInvoice" resultType="org.jeecg.modules.business.entity.ShippingInvoice">
-        SELECT total_amount, discount_amount, final_amount, paid_amount
+        SELECT id, total_amount, discount_amount, final_amount, paid_amount, currency_id
         FROM shipping_invoice s
         WHERE s.invoice_number = #{invoiceNumber}
     </select>
@@ -28,5 +28,11 @@
         SELECT quantity, service_fee, vat, shipping_fee
         FROM platform_order_content p
         WHERE p.platform_order_id = #{platformOrderId}
+    </select>
+    <select id="fetchInvoiceCurrencyByCode" resultType="org.jeecg.modules.business.entity.Currency">
+        SELECT c.id, c.code
+        FROM shipping_invoice s
+            JOIN currency c ON s.currency_id = c.id
+        WHERE invoice_number = #{invoiceNumber}
     </select>
 </mapper>

@@ -1,6 +1,7 @@
 package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.LogisticChannelPrice;
 import org.jeecg.modules.business.entity.PlatformOrder;
@@ -80,10 +81,11 @@ public class LogisticChannelPriceServiceImpl extends ServiceImpl<LogisticChannel
 
         String logisticChannelName = order.getInvoiceLogisticChannelName() == null ?
                 order.getLogisticChannelName() : order.getInvoiceLogisticChannelName();
-        BigDecimal weight = platformOrderContentService.calculateWeight(
+        Pair<BigDecimal, List<String>> calculateWeightRes = platformOrderContentService.calculateWeight(
                 contentMap,
                 skuRealWeights
         );
+        BigDecimal weight = calculateWeightRes.getKey();
 
 
         String countryCode = countryService.findByEnName(order.getCountry()).getCode();

@@ -249,6 +249,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
 
         final String electroMagSensitiveAttributeId = skuListMabangMapper.searchSensitiveAttributeId("Electro-magnetic");
         final String electricSensitiveAttributeId = skuListMabangMapper.searchSensitiveAttributeId("Electronic/Electric");
+        final String normalSensitiveAttributeId = skuListMabangMapper.searchSensitiveAttributeId("Normal goods");
         // In NameCN field on top of the product name we also get the customer code in the beginning of the string : "XX Description of the product"
         final Pattern cnNamePattern = Pattern.compile("^([a-zA-Z]{2,5})\\s(.*)$");
         // IN saleRemark sometimes not only the product weight provided, we can get extra information such as service_fee (eg : "15每件服务费0.2")
@@ -289,7 +290,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
                     if (sku.getMagnetic() == 1)
                         p.setSensitiveAttributeId(electroMagSensitiveAttributeId);
                     else
-                        p.setSensitiveAttributeId("");
+                        p.setSensitiveAttributeId(normalSensitiveAttributeId);
                 }
                 p.setInvoiceName(sku.getNameEN());
                 if (sku.getSaleRemark() != null && !sku.getSaleRemark().equals("")) {

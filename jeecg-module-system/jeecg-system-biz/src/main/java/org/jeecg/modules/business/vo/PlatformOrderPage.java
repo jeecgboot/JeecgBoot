@@ -20,8 +20,8 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @Description: 平台订单表
  * @Author: jeecg-boot
- * @Date:   2022-12-23
- * @Version: V1.5
+ * @Date:   2023-11-28
+ * @Version: V1.6
  */
 @Data
 @ApiModel(value = "platform_orderPage对象", description = "平台订单表")
@@ -148,6 +148,12 @@ public class PlatformOrderPage {
     @ApiModelProperty(value = "物流发票号")
     private String shippingInvoiceNumber;
     /**
+     * 采购发票号
+     */
+    @Excel(name = "采购发票号", width = 15)
+    @ApiModelProperty(value = "采购发票号")
+    private java.lang.String purchaseInvoiceNumber;
+    /**
      * 采购状态
      */
     @Excel(name = "采购状态", width = 15)
@@ -183,6 +189,13 @@ public class PlatformOrderPage {
     @Excel(name = "有货（1=有，0=没有）", width = 15)
     @ApiModelProperty(value = "有货（1=有，0=没有）")
     private String productAvailable;
+
+    /**
+     * 有货（1=有，0=没有）
+     */
+    @Excel(name = "有货（1=有，0=没有）", width = 15)
+    @ApiModelProperty(value = "有货（1=有，0=没有）")
+    private java.lang.String virtualProductAvailable;
 
     @ExcelCollection(name = "平台订单内容")
     @ApiModelProperty(value = "平台订单内容")

@@ -48,6 +48,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.jeecg.modules.business.entity.Balance.OperationType;
 /**
  * @Description: 物流发票
  * @Author: jeecg-boot
@@ -60,11 +63,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ShippingInvoiceController {
     @Autowired
+    private IBalanceService balanceService;
+    @Autowired
     private IClientService clientService;
     @Autowired
     private IPlatformOrderContentService platformOrderContentService;
     @Autowired
     private IPlatformOrderService platformOrderService;
+    @Autowired
+    private IPurchaseOrderService purchaseOrderService;
     @Autowired
     private PlatformOrderShippingInvoiceService platformOrderShippingInvoiceService;
     @Autowired
@@ -276,7 +283,7 @@ public class ShippingInvoiceController {
      */
     @GetMapping(value = "/downloadCompleteInvoiceExcel")
     public ResponseEntity<?> download(@RequestParam("invoiceNumber") String invoiceNumber, @RequestParam("filetype") String filetype) throws IOException {
-        String filename = platformOrderShippingInvoiceService.getInvoiceList(invoiceNumber, filetype);
+        String filename = shippingInvoiceService.getInvoiceList(invoiceNumber, filetype);
         if(!filename.equals("ERROR")) {
             File file = new File(filename);
 
@@ -306,6 +313,7 @@ public class ShippingInvoiceController {
                     .body("Couldn't find the invoice file for : " + invoiceNumber);
         }
     }
+
     /**
      *
      * @param invoiceNumber
@@ -339,17 +347,15 @@ public class ShippingInvoiceController {
 
     @GetMapping(value = "/sendDetailsByEmail")
     public Result<?> sendDetailsByEmail(@RequestParam("invoiceNumber") String invoiceNumber,
-                                        @RequestParam("invoiceID") String invoiceID,
                                         @RequestParam("email") String email,
                                         @RequestParam("invoiceEntity") String invoiceEntity) throws Exception {
-        String filePath = platformOrderShippingInvoiceService.getInvoiceList(invoiceNumber, "detail");
+        String filePath = shippingInvoiceService.getInvoiceList(invoiceNumber, "detail");
         String fileType = "Détails de facture";
         String subject = "Détails de facture N°" + invoiceNumber;
         Properties prop = emailService.getMailSender();
         Map <String, Object> templateModel = new HashMap<>();
         templateModel.put("fileType", fileType);
         templateModel.put("invoiceEntity", invoiceEntity);
-        templateModel.put("invoiceID", invoiceID);
         templateModel.put("invoiceNumber", invoiceNumber);
 
         Session session = Session.getInstance(prop, new Authenticator() {
@@ -398,12 +404,15 @@ public class ShippingInvoiceController {
         log.info("Cancelling invoice number : {}", invoiceNumber);
         platformOrderContentService.cancelInvoice(invoiceNumber);
         platformOrderService.cancelInvoice(invoiceNumber);
+        purchaseOrderService.cancelInvoice(invoiceNumber);
         savRefundService.cancelInvoice(invoiceNumber);
         shippingInvoiceService.delMain(id);
+        log.info("Updating balance ...");
+        balanceService.deleteBalance(id, OperationType.Debit.name());
         log.info("Deleting invoice files ...");
         String invoiceEntity = clientService.getClientEntity(clientId);
-        List<Path> invoicePathList = platformOrderShippingInvoiceService.getPath(INVOICE_LOCATION, invoiceNumber, invoiceEntity);
-        List<Path> detailPathList = platformOrderShippingInvoiceService.getPath(INVOICE_DETAIL_LOCATION, invoiceNumber, invoiceEntity);
+        List<Path> invoicePathList = shippingInvoiceService.getPath(INVOICE_LOCATION, invoiceNumber, invoiceEntity);
+        List<Path> detailPathList = shippingInvoiceService.getPath(INVOICE_DETAIL_LOCATION, invoiceNumber, invoiceEntity);
         boolean invoiceDeleted = false, detailDeleted = false;
 
         if(invoicePathList.isEmpty()) {
@@ -457,17 +466,20 @@ public class ShippingInvoiceController {
     public Result<?> cancelBatchInvoice(@RequestParam("ids") List<String> ids, @RequestParam("invoiceNumbers") List<String> invoiceNumbers, @RequestParam("clientIds") List<String> clientIds) {
 
         log.info("Cancelling invoices : {}", invoiceNumbers);
+        purchaseOrderService.cancelBatchInvoice(invoiceNumbers);
         platformOrderContentService.cancelBatchInvoice(invoiceNumbers);
         platformOrderService.cancelBatchInvoice(invoiceNumbers);
         savRefundService.cancelBatchInvoice(invoiceNumbers);
         shippingInvoiceService.delBatchMain(ids);
+        log.info("Updating balances ...");
+        balanceService.deleteBatchBalance(ids, OperationType.Debit.name());
         log.info("Deleting invoice files ...");
 
         for(int i = 0; i < ids.size(); i++) {
             String invoiceNumber = invoiceNumbers.get(i);
             String invoiceEntity = clientService.getClientEntity(clientIds.get(i));
-            List<Path> invoicePathList = platformOrderShippingInvoiceService.getPath(INVOICE_LOCATION, invoiceNumber, invoiceEntity);
-            List<Path> detailPathList = platformOrderShippingInvoiceService.getPath(INVOICE_DETAIL_LOCATION, invoiceNumber, invoiceEntity);
+            List<Path> invoicePathList = shippingInvoiceService.getPath(INVOICE_LOCATION, invoiceNumber, invoiceEntity);
+            List<Path> detailPathList = shippingInvoiceService.getPath(INVOICE_DETAIL_LOCATION, invoiceNumber, invoiceEntity);
 
             if(invoicePathList.isEmpty()) {
                 log.error("FILE NOT FOUND : " + invoiceNumber + ", " +  invoiceEntity);

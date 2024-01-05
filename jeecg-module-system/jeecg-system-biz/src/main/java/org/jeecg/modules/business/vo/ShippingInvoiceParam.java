@@ -1,16 +1,18 @@
 package org.jeecg.modules.business.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
+@Data
 public class ShippingInvoiceParam {
 
     private final String clientID;
+    private final BigDecimal balance;
     private final List<String> shopIDs;
     private final String start;
     private final String end;
@@ -19,12 +21,14 @@ public class ShippingInvoiceParam {
     private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
     public ShippingInvoiceParam(@JsonProperty("clientID") String clientID,
+                                @JsonProperty("balance") BigDecimal balance,
                                 @JsonProperty("shopIDs") List<String> shopIDs,
                                 @JsonProperty("start") String start,
                                 @JsonProperty("end") String end,
                                 @JsonProperty("erpStatuses") List<Integer> erpStatuses,
                                 @JsonProperty("warehouses") List<String> warehouses) {
         this.clientID = clientID;
+        this.balance = balance;
         this.shopIDs = shopIDs;
         this.start = start;
         this.end = end;
@@ -46,16 +50,6 @@ public class ShippingInvoiceParam {
 
     public Date end() throws ParseException {
         return format.parse(end);
-    }
-    public String getStart() {
-        return this.start;
-    }
-    public String getEnd() {
-        return this.end;
-    }
-    public List<Integer> getErpStatuses() { return erpStatuses; }
-    public List<String> getWarehouses() {
-        return warehouses;
     }
     @Override
     public String toString() {
