@@ -56,6 +56,8 @@ public class HLParcelTraceDetail {
     private static final String SORTING_CENTER_PROCESSING = "[Fenggang Town] Processing at sorting center";
     private static final String ORDER_RECEIVED = "货物电子信息已经收到";
     private static final String ORDER_RECEIVED_EN = "Order received by logistics company";
+    private static final String OPERATION_CENTER_DEPARTURE_CN = "货物离开操作中心";
+    private static final String OPERATION_CENTER_DEPARTURE_EN = "Departed from operation center";
 
 
     public HLParcelTraceDetail() {
@@ -122,6 +124,10 @@ public class HLParcelTraceDetail {
                 break;
             case TRANSPORT_HUB_ARRIVAL:
             case SORTING_CENTER_DEPARTURE:
+                setScanType(FACILITY_DEPARTURE.getDesc());
+                break;
+            case OPERATION_CENTER_DEPARTURE_CN:
+                setDescriptionEn(OPERATION_CENTER_DEPARTURE_EN);
                 setScanType(FACILITY_DEPARTURE.getDesc());
                 break;
             case SORTING_CENTER_PROCESSING:
