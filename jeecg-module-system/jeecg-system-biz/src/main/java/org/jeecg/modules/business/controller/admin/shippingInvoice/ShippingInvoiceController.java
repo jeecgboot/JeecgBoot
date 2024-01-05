@@ -314,31 +314,6 @@ public class ShippingInvoiceController {
         }
     }
 
-    public String convertToPdf(String invoiceNumber, String fileType) throws Exception {
-        String excelFilePath = shippingInvoiceService.getInvoiceList(invoiceNumber, fileType);// (C:\PATH\filename.xlsx)
-
-        if(!excelFilePath.equals("ERROR")) {
-            String pdfFilePath= INVOICE_PDF_LOCATION + "/" + invoiceNumber + ".pdf";
-            if(fileType.equals("invoice")){
-                pdfFilePath = INVOICE_PDF_LOCATION + "/Invoice N°" + invoiceNumber + ".pdf";
-            }
-            if(fileType.equals("detail")) {
-                pdfFilePath = INVOICE_DETAIL_PDF_LOCAION + "/Détail_calcul_de_facture_" + invoiceNumber + ".pdf";
-            }
-
-            Pattern p = Pattern.compile("^(.*)[\\/\\\\](.*)(\\.[a-z]+)"); //group(1): "C:\PATH" , group(2) : "filename", group(3): ".xlsx"
-            Matcher m = p.matcher(excelFilePath);
-            if (m.matches()) {
-                pdfFilePath = INVOICE_PDF_LOCATION + "/" + m.group(2) + ".pdf";
-            }
-            // Créé un classeur pour charger le fichier Excel
-            Workbook workbook = new Workbook(excelFilePath);
-            // On enregistre le document au format PDF
-            workbook.save(pdfFilePath, SaveFormat.PDF);
-            return pdfFilePath;
-        }
-        return "ERROR";
-    }
     /**
      *
      * @param invoiceNumber
