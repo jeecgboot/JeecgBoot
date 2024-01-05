@@ -19,4 +19,20 @@
             #{item.id}
         </foreach>
     </update>
+    <select id="searchFirstEmptyWeightProduct" resultType="java.lang.String">
+        SELECT p.id
+        FROM product p
+        JOIN sku
+            ON p.id = sku.product_id
+        WHERE p.weight IS NULL
+        AND p.id IN (
+            SELECT DISTINCT product_id
+            FROM sku
+            WHERE sku.id IN
+            <foreach collection="skuIds" separator="," open="(" close=")" index="index" item="id">
+                #{id}
+            </foreach>
+        )
+        LIMIT 1;
+    </select>
 </mapper>

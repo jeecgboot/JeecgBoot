@@ -156,12 +156,6 @@ public class Client implements Serializable {
     @ApiModelProperty(value = "公司识别码数值")
     private String companyIdValue;
     /**
-     * 账户余额
-     */
-    @Excel(name = "账户余额", width = 15)
-    @ApiModelProperty(value = "账户余额")
-    private BigDecimal balance;
-    /**
      * IOSS号码
      */
     @Excel(name = "IOSS号码", width = 15)
@@ -180,10 +174,32 @@ public class Client implements Serializable {
     @Dict(dicCode = "yn")
     @ApiModelProperty(value = "是否活跃")
     private String active;
+    /**
+     * 物流发票是否包含采购
+     * */
+    @Excel(name = "物流发票是否包含采购", width = 15)
+    @ApiModelProperty(value = "物流发票是否包含采购")
+    private java.lang.String isCompleteInvoice;
+    /**
+     * category id
+     * */
+    @Excel(name = "category id", width = 15, dictTable = "client_category", dicText = "name", dicCode = "id")
+    @Dict(dictTable = "client_category", dicText = "name", dicCode = "id")
+    @ApiModelProperty(value = "category id")
+    private java.lang.String clientCategoryId;
+    /**
+     * balance threshold before alert
+     * */
+    @Excel(name = "balance threshold before alert", width = 15)
+    @ApiModelProperty(value = "balance threshold before alert")
+    private java.math.BigDecimal balanceThreshold;
+    /**
+     * invoice in chronological order or first can invoice
+     * */
+    @Excel(name = "invoice in chronological order or first can invoice", width = 15)
+    @ApiModelProperty(value = "invoice in chronological order or first can invoice")
+    private java.lang.String isChronologicalOrder;
 
-    @Excel(name = "是否完整发票", width = 15)
-    @ApiModelProperty(value = "完整发票")
-    private String isCompleteInvoice;
     public String fullName() {
         return firstName + " " + surname;
     }

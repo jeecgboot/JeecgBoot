@@ -60,6 +60,7 @@ public class SkuPrice implements Serializable {
      */
     @Dict(dictTable = "sku", dicText = "erp_code", dicCode = "id")
     @ApiModelProperty(value = "SKU ID")
+    @Getter
     private String skuId;
     /**
      * 价格
@@ -120,7 +121,7 @@ public class SkuPrice implements Serializable {
             priceCandidate = priceRmb.divide(eurToRmb, RoundingMode.HALF_UP);
             discountedPriceCandidate = discountedPriceRmb == null ? priceCandidate : discountedPriceRmb.divide(eurToRmb, RoundingMode.HALF_UP);
         }
-        if (quantity >= threshold) {
+        if (threshold != null && quantity >= threshold) {
             return discountedPriceCandidate;
         }
         return priceCandidate;

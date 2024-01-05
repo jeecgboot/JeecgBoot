@@ -1,20 +1,27 @@
 package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.jeecg.modules.business.entity.Client;
-import org.jeecg.modules.business.entity.PlatformOrder;
-import org.jeecg.modules.business.entity.PlatformOrderContent;
-import org.jeecg.modules.business.entity.ShippingInvoice;
+import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.ShippingInvoiceMapper;
 import org.jeecg.modules.business.service.IShippingInvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @Description: 物流发票
@@ -28,7 +35,31 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
 
     @Autowired
     private ShippingInvoiceMapper shippingInvoiceMapper;
+    private static enum EXTENSION {
+        XLSX(".xlsx"),
+        XLS(".xls"),
+        CSV(".csv"),
+        PDF(".pdf"),
+        JPG(".jpg"),
+        PNG(".png"),
+        JPEG(".jpeg");
+        @Getter
+        private final String extension;
 
+        EXTENSION(String extension) {
+            this.extension = extension;
+        }
+    }
+    @Value("${jeecg.path.shippingInvoiceDir}")
+    private String INVOICE_LOCATION;
+    @Value("${jeecg.path.shippingInvoiceDetailDir}")
+    private String INVOICE_DETAIL_LOCATION;
+    @Value("${jeecg.path.shippingInvoicePdfDir}")
+    private String INVOICE_PDF_LOCATION;
+    @Value("${jeecg.path.shippingInvoiceDetailPdfDir}")
+    private String INVOICE_DETAIL_PDF_LOCAION;
+    @Value("${jeecg.path.upload}")
+    private String UPLOAD_DIR;
     @Autowired
     public ShippingInvoiceServiceImpl(ShippingInvoiceMapper shippingInvoiceMapper) {
         this.shippingInvoiceMapper = shippingInvoiceMapper;
@@ -71,9 +102,14 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
     }
 
     @Override
+    public Currency getInvoiceCurrencyByCode(String invoiceCode) {
+        return shippingInvoiceMapper.fetchInvoiceCurrencyByCode(invoiceCode);
+    }
+
+    @Override
     @Transactional
-    public String getShippingInvoiceNumber(String invoiceID) {
-        return shippingInvoiceMapper.fetchShippingInvoiceNumber(invoiceID);
+    public String getShippingInvoiceId(String invoiceNumber) {
+        return shippingInvoiceMapper.fetchShippingInvoiceId(invoiceNumber);
     }
     @Override
     @Transactional
@@ -93,4 +129,132 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
         return shippingInvoiceMapper.fetchPlatformOrderContent(platformOrderId);
     }
 
+    /** Finds the absolute path of invoice file by recursively walking the directory and it's subdirectories
+     *
+     * @param dirPath
+     * @param invoiceNumber
+     * @return List of paths for the file but should only find one result
+     */
+    public List<Path> getPath(String dirPath, String invoiceNumber) {
+        List<Path> pathList = new ArrayList<>();
+        //Recursively list all files
+        //The walk() method returns a Stream by walking the file tree beginning with a given starting file/directory in a depth-first manner.
+        try (Stream<Path> stream = Files.walk(Paths.get(dirPath))) {
+            pathList = stream.map(Path::normalize)
+                    .filter(Files::isRegularFile) // directories, hidden files and files without extension are not included
+                    .filter(path -> path.getFileName().toString().contains(invoiceNumber))
+                    .filter(path -> path.getFileName().toString().endsWith(EXTENSION.XLSX.getExtension()))
+                    .collect(Collectors.toList());
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+        return pathList;
+    }
+
+    /** Finds the absolute path of invoice file by recursively walking the directory and it's subdirectories
+     *
+     * @param dirPath
+     * @param invoiceNumber
+     * @return List of paths for the file but should only find one result
+     */
+    public List<Path> getPath(String dirPath, String invoiceNumber, String invoiceEntity) {
+        List<Path> pathList = new ArrayList<>();
+        //Recursively list all files
+        //The walk() method returns a Stream by walking the file tree beginning with a given starting file/directory in a depth-first manner.
+        try (Stream<Path> stream = Files.walk(Paths.get(dirPath))) {
+            pathList = stream.map(Path::normalize)
+                    .filter(Files::isRegularFile) // directories, hidden files and files without extension are not included
+                    .filter(path -> path.getFileName().toString().contains(invoiceNumber))
+                    .filter(path -> path.getFileName().toString().contains(invoiceEntity))
+                    .filter(path -> path.getFileName().toString().endsWith(EXTENSION.XLSX.getExtension()))
+                    .collect(Collectors.toList());
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+        return pathList;
+    }
+    /** Finds the absolute path of any file by recursively walking the directory and it's subdirectories
+     *
+     * @param dirPath
+     * @param filename
+     * @param extension
+     * @return List of paths for the file but should only find one result
+     */
+    public List<Path> getAttachementPath(String dirPath, String filename, String extension) {
+        List<Path> pathList = new ArrayList<>();
+        //Recursively list all files
+        //The walk() method returns a Stream by walking the file tree beginning with a given starting file/directory in a depth-first manner.
+        try (Stream<Path> stream = Files.walk(Paths.get(dirPath))) {
+            pathList = stream.map(Path::normalize)
+                    .filter(Files::isRegularFile) // directories, hidden files and files without extension are not included
+                    .filter(path -> path.getFileName().toString().contains(filename))
+                    .filter(path -> path.getFileName().toString().endsWith(extension))
+                    .collect(Collectors.toList());
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+        return pathList;
+    }
+
+    /**
+     *  Finds the absolute path of invoice file and return the path
+     * @param invoiceNumber
+     * @param filetype if it's an invoice or invoice detail
+     * @return String returns the path of the invoice file
+     */
+    public String getInvoiceList(String invoiceNumber, String filetype) {
+        log.info("Invoice number : " + invoiceNumber);
+        List<Path> pathList = new ArrayList<>();
+        if(filetype.equals("invoice")) {
+            log.info("File asked is of type invoice");
+            pathList = getPath(INVOICE_LOCATION, invoiceNumber);
+        }
+        if(filetype.equals("detail")) {
+            log.info("File asked is of type invoice detail");
+            pathList = getPath(INVOICE_DETAIL_LOCATION, invoiceNumber);
+        }
+        if(pathList.isEmpty()) {
+            log.error("NO INVOICE FILE FOUND : " + invoiceNumber);
+            return "ERROR";
+        }
+        else {
+            for (Path path : pathList) {
+                log.info(path.toString());
+            }
+            return pathList.get(0).toString();
+        }
+    }
+
+    @Override
+    public boolean deleteAttachmentFile(String filepath) {
+        String filename = filepath.substring(filepath.lastIndexOf("/")+1, filepath.lastIndexOf("."));
+        System.out.println(filename);
+        String extension = filepath.substring(filepath.lastIndexOf("."));
+
+        List<Path> attachmentPathList = getAttachementPath(UPLOAD_DIR, filename, extension);
+        boolean isFileDeleted = false;
+
+        if(attachmentPathList.isEmpty()) {
+            log.error("FILE NOT FOUND : " + filepath);
+        } else {
+            for (Path path : attachmentPathList) {
+                log.info(path.toString());
+            }
+            try {
+                File attachmentFile = new File(attachmentPathList.get(0).toString());
+                if(attachmentFile.delete()) {
+                    log.info("Attachment file {} delete successful.", attachmentPathList.get(0).toString());
+                    isFileDeleted = true;
+                } else {
+                    log.error("Attachment file delete fail.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return isFileDeleted;
+    }
 }

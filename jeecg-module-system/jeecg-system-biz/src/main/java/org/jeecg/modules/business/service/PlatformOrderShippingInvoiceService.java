@@ -18,9 +18,11 @@ import org.jeecg.modules.business.vo.*;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -46,11 +48,17 @@ import java.util.zip.ZipOutputStream;
 public class PlatformOrderShippingInvoiceService {
 
     @Autowired
+    ICurrencyService currencyService;
+    @Autowired
     ShippingInvoiceMapper shippingInvoiceMapper;
     @Autowired
     PlatformOrderMapper platformOrderMapper;
     @Autowired
+    IBalanceService balanceService;
+    @Autowired
     ClientMapper clientMapper;
+    @Autowired
+    EmailService emailService;
     @Autowired
     ShopMapper shopMapper;
     @Autowired
@@ -81,7 +89,8 @@ public class PlatformOrderShippingInvoiceService {
     ISavRefundWithDetailService savRefundWithDetailService;
     @Autowired
     ISavRefundService savRefundService;
-
+    @Autowired
+    Environment env;
     @Value("${jeecg.path.shippingTemplatePath_EU}")
     private String SHIPPING_INVOICE_TEMPLATE_EU;
 
@@ -96,6 +105,10 @@ public class PlatformOrderShippingInvoiceService {
 
     @Value("${jeecg.path.shippingInvoiceDir}")
     private String INVOICE_DIR;
+
+    @Value("${jeecg.path.purchaseInvoiceDir}")
+    private String PURCHASE_INVOICE_DIR;
+
     @Value("${jeecg.path.shippingInvoiceDetailDir}")
     private String INVOICE_DETAIL_DIR;
     @Value("${jeecg.path.shippingInvoicePdfDir}")
@@ -144,6 +157,8 @@ public class PlatformOrderShippingInvoiceService {
     }
     public Period getValidOrderTimePeriod(List<String> shopIDs, List<Integer> erpStatuses) {
         Date begin = platformOrderMapper.findEarliestUninvoicedPlatformOrderTime(shopIDs, erpStatuses);
+        if(begin == null)
+            return null;
         ZoneId shanghai = ZoneId.of("Asia/Shanghai");
         ZoneId paris = ZoneId.of("Europe/Paris");
         LocalDateTime ldt = LocalDateTime.ofInstant(begin.toInstant(), shanghai);
@@ -168,20 +183,21 @@ public class PlatformOrderShippingInvoiceService {
      * @throws IOException    exception related to invoice file IO.
      */
     @Transactional
-    public InvoiceMetaData makeInvoice(ShippingInvoiceParam param) throws UserException, ParseException, IOException {
+    public InvoiceMetaData makeInvoice(ShippingInvoiceParam param, String ... user) throws UserException, ParseException, IOException {
         // Creates factory
         ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
                 platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
-                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService);
-        String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
+                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
+        String username = user.length > 0 ? user[0] : ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         // Creates invoice by factory
         ShippingInvoice invoice = factory.createInvoice(param.clientID(),
                 param.shopIDs(),
                 param.start(),
                 param.end(),
                 param.getErpStatuses(),
-                param.getWarehouses()
+                param.getWarehouses(),
+                param.getBalance()
         );
         // Chooses invoice template based on client's preference on currency
         return getInvoiceMetaData(username, invoice);
@@ -203,7 +219,7 @@ public class PlatformOrderShippingInvoiceService {
         ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
                 platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
-                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService);
+                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
         String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         // Creates invoice by factory
         ShippingInvoice invoice = factory.createShippingInvoice(param.clientID(), param.orderIds(), param.getType(), param.getStart(), param.getEnd());
@@ -221,15 +237,15 @@ public class PlatformOrderShippingInvoiceService {
      * @throws IOException    exception related to invoice file IO.
      */
     @Transactional
-    public InvoiceMetaData makeCompleteInvoice(ShippingInvoiceOrderParam param) throws UserException, ParseException, IOException {
+    public InvoiceMetaData makeCompleteInvoice(ShippingInvoiceOrderParam param) throws UserException, ParseException, IOException, MessagingException {
         // Creates factory
         ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
                 platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
-                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService);
+                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
         String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         // Creates invoice by factory
-        CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.clientID(), param.orderIds(), param.getType(), param.getStart(), param.getEnd());
+        CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.clientID(), null, param.orderIds(), param.getType(), param.getStart(), param.getEnd());
         return getInvoiceMetaData(username, invoice);
     }
 
@@ -243,25 +259,25 @@ public class PlatformOrderShippingInvoiceService {
      * @throws IOException
      */
     @Transactional
-    public InvoiceMetaData makeCompleteInvoicePostShipping(ShippingInvoiceParam param, String method) throws UserException, ParseException, IOException {
+    public InvoiceMetaData makeCompleteInvoicePostShipping(ShippingInvoiceParam param, String method, String ... user) throws UserException, ParseException, IOException, MessagingException {
         // Creates factory
         ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
                 platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
-                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService);
-        String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
+                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
+        String username = user.length > 0 ? user[0] : ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         List<PlatformOrder> platformOrderList;
         if(method.equals("post")) {
             //On récupère les commandes entre 2 dates d'expédition avec un status 3
             platformOrderList = platformOrderMapper.fetchUninvoicedShippedOrderIDInShops(param.getStart(), param.getEnd(), param.shopIDs(), param.getWarehouses());
         } else {
             // On récupère les commandes entre 2 dates de commandes avec un status (1,2) ou (1,2,3)
-            platformOrderList = platformOrderMapper.fetchUninvoicedShippedOrderIDInShopsAndOrderTime(param.getStart(), param.getEnd(), param.shopIDs(), param.getErpStatuses(), param.getWarehouses());
+            platformOrderList = platformOrderMapper.fetchUninvoicedOrderIDInShopsAndOrderTime(param.getStart(), param.getEnd(), param.shopIDs(), param.getErpStatuses(), param.getWarehouses());
         }
         // on récupère seulement les ID des commandes
         List<String> orderIds = platformOrderList.stream().map(PlatformOrder::getId).collect(Collectors.toList());
         // Creates invoice by factory
-        CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.clientID(), orderIds, method, param.getStart(), param.getEnd());
+        CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.clientID(), param.getBalance() ,orderIds, method, param.getStart(), param.getEnd());
         return getInvoiceMetaData(username, invoice);
     }
     @NotNull
@@ -287,6 +303,7 @@ public class PlatformOrderShippingInvoiceService {
         Path out = Paths.get(INVOICE_DIR, filename);
         Files.copy(src, out, StandardCopyOption.REPLACE_EXISTING);
         invoice.toExcelFile(out);
+        String currencyId = currencyService.getIdByCode(invoice.client().getCurrency());
         // save to DB
         org.jeecg.modules.business.entity.ShippingInvoice shippingInvoiceEntity = org.jeecg.modules.business.entity.ShippingInvoice.of(
                 username,
@@ -294,10 +311,11 @@ public class PlatformOrderShippingInvoiceService {
                 invoice.code(),
                 invoice.getTotalAmount(),
                 invoice.reducedAmount(),
-                invoice.paidAmount()
+                invoice.paidAmount(),
+                currencyId
         );
         shippingInvoiceMapper.insert(shippingInvoiceEntity);
-        return new InvoiceMetaData(filename, invoice.code(), invoice.client().getInvoiceEntity(), "");
+        return new InvoiceMetaData(filename, invoice.code(), invoice.client().getInternalCode(), invoice.client().getInvoiceEntity(), "");
     }
 
     /**
@@ -311,7 +329,7 @@ public class PlatformOrderShippingInvoiceService {
         ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
                 platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
-                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService);
+                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
         return factory.getEstimations(errorMessages);
     }
 
@@ -326,7 +344,7 @@ public class PlatformOrderShippingInvoiceService {
         ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
                 platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
-                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService);
+                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
         return factory.getEstimations(clientId, orderIds, errorMessages);
     }
 
@@ -337,8 +355,9 @@ public class PlatformOrderShippingInvoiceService {
      * @return byte array of the file
      * @throws IOException error when reading file
      */
-    public byte[] getInvoiceBinary(String filename) throws IOException {
-        Path out = Paths.get(INVOICE_DIR, filename);
+    public byte[] getInvoiceBinary(String filename, String type) throws IOException {
+        String path = type.equals("shipping") ? INVOICE_DIR : PURCHASE_INVOICE_DIR;
+        Path out = Paths.get(path, filename);
         return Files.readAllBytes(out);
     }
 
@@ -350,7 +369,7 @@ public class PlatformOrderShippingInvoiceService {
         return factureDetailMapper.selectList(queryWrapper);
     }
 
-    public byte[] exportToExcel(List<FactureDetail> details, List<SavRefundWithDetail> refunds, String invoiceNumber, String invoiceEntity) throws IOException {
+    public byte[] exportToExcel(List<FactureDetail> details, List<SavRefundWithDetail> refunds, String invoiceNumber, String invoiceEntity, String internalCode) throws IOException {
         SheetManager sheetManager = SheetManager.createXLSX();
         sheetManager.startDetailsSheet();
         for (String title : DETAILS_TITLES) {
@@ -435,10 +454,10 @@ public class PlatformOrderShippingInvoiceService {
             sheetManager.nextRow();
         }
 
-        Path target = Paths.get(INVOICE_DETAIL_DIR, "Détail_calcul_de_facture_" + invoiceNumber + "_(" + invoiceEntity + ").xlsx");
+        Path target = Paths.get(INVOICE_DETAIL_DIR, internalCode + "_(" + invoiceEntity + ")_" + invoiceNumber + "_Détail_calcul_de_facture.xlsx");
         int i = 2;
         while (Files.exists(target)) {
-            target = Paths.get(INVOICE_DETAIL_DIR, "Détail_calcul_de_facture_" + invoiceNumber + "_(" + invoiceEntity + ")_" + i + ".xlsx");
+            target = Paths.get(INVOICE_DETAIL_DIR, internalCode + "_(" + invoiceEntity + ")_" + invoiceNumber + "_Détail_calcul_de_facture_(" + i + ").xlsx");
             i++;
         }
         Files.createFile(target);
@@ -464,6 +483,11 @@ public class PlatformOrderShippingInvoiceService {
         }
         for(Map.Entry<String, List<String>> entry: clientShopIDsMap.entrySet()) {
             Period period = getValidPeriod(entry.getValue());
+            if(!period.isValid()) {
+                String internalCode = clientMapper.selectById(entry.getKey()).getInternalCode();
+                invoiceList.add(new InvoiceMetaData("", "error", internalCode, entry.getKey(), "No order to invoice."));
+                continue;
+            }
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(period.start());
             String start = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH)+1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH));
@@ -473,17 +497,75 @@ public class PlatformOrderShippingInvoiceService {
                     "\nclient : " + entry.getKey() +
                     "\nbetween dates : [" + start + "] --- [" + end + "]");
             try {
-                ShippingInvoiceParam param = new ShippingInvoiceParam(entry.getKey(), entry.getValue(), start, end, Collections.singletonList(3), Arrays.asList("0", "1"));
+                ShippingInvoiceParam param = new ShippingInvoiceParam(entry.getKey(), null, entry.getValue(), start, end, Collections.singletonList(3), Arrays.asList("0", "1"));
                 InvoiceMetaData metaData;
-                if(invoiceType == 0)
+                if(invoiceType == 0) {
                     metaData = makeInvoice(param);
-                else
+                    balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), "shipping");
+                }
+                else {
                     metaData = makeCompleteInvoicePostShipping(param, "post");
-
-                convertToPdf(metaData.getInvoiceCode(), "invoice");
+                    balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), "complete");
+                }
                 invoiceList.add(metaData);
-            } catch (Exception e) {
-                invoiceList.add(new InvoiceMetaData("", "error", entry.getKey(), e.getMessage()));
+            } catch (UserException | IOException | ParseException e) {
+                String internalCode = clientMapper.selectById(entry.getKey()).getInternalCode();
+                invoiceList.add(new InvoiceMetaData("", "error", internalCode, entry.getKey(), e.getMessage()));
+                log.error(e.getMessage());
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+            System.gc();
+        }
+        return invoiceList;
+    }
+
+    /**
+     * make shipping invoice by client and type (shipping or complete) and invoice only if client has sufficient balance
+     * @param balanceDataList list of balance data with client info, balance and currency
+     * @param invoiceType shipping invoice or complete invoice
+     * @return list of filename (invoices and details)
+     */
+    @Transactional
+    public List<InvoiceMetaData> breakdownInvoiceClientByTypeAndBalance(List<BalanceData> balanceDataList, int invoiceType) {
+        Map<BalanceData, List<String>> clientShopIDsMap = new HashMap<>();
+        List<InvoiceMetaData> invoiceList = new ArrayList<>();
+        for(BalanceData data: balanceDataList) {
+            String id = data.getClient().getId();
+            clientShopIDsMap.put(data, shopService.listIdByClient(id));
+        }
+        for(Map.Entry<BalanceData, List<String>> entry: clientShopIDsMap.entrySet()) {
+            String clientId = entry.getKey().getClient().getId();
+            Period period = getValidOrderTimePeriod(entry.getValue(), Collections.singletonList(1));
+            if(period == null || !period.isValid()) {
+                String internalCode = entry.getKey().getClient().getInternalCode();
+                invoiceList.add(new InvoiceMetaData("", "error", internalCode, clientId, "No order to invoice."));
+                continue;
+            }
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(period.start());
+            String start = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH)+1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH));
+            calendar.setTime(period.end());
+            String end = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH)+1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH)+1 < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH)+1);
+            log.info( "Invoicing : " + (invoiceType == 0 ? "Shipping Invoice" : "Complete Shipping Invoice") +
+                    "\nclient : " + entry.getKey() +
+                    "\nbetween dates : [" + start + "] --- [" + end + "]");
+            try {
+                ShippingInvoiceParam param = new ShippingInvoiceParam(clientId, entry.getKey().getBalance(), entry.getValue(), start, end, Collections.singletonList(1), Arrays.asList("0", "1"));
+                InvoiceMetaData metaData;
+                if(invoiceType == 0) {
+                    metaData = makeInvoice(param, "system");
+                    balanceService.updateBalance(clientId, metaData.getInvoiceCode(), "shipping");
+                }
+                else {
+                    metaData = makeCompleteInvoicePostShipping(param, "pre-shipping", "system");
+                    balanceService.updateBalance(clientId, metaData.getInvoiceCode(), "complete");
+                }
+                platformOrderMapper.updateErpStatusByCode(metaData.getInvoiceCode(), 2);
+                invoiceList.add(metaData);
+            } catch (UserException | IOException | ParseException | MessagingException e) {
+                String internalCode = entry.getKey().getClient().getInternalCode();
+                invoiceList.add(new InvoiceMetaData("", "error", internalCode, clientId, e.getMessage()));
                 log.error(e.getMessage());
             }
             System.gc();

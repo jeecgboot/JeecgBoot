@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PurchaseOrder;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.springframework.stereotype.Repository;
@@ -27,6 +28,7 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
      */
     void addPurchase(
             @Param("ID") String ID, @Param("creator") String creator,
+            @Param("currencyID") String currencyID,
             @Param("clientID") String clientID,
             @Param("totalAmount") BigDecimal totalAmount,
             @Param("discount") BigDecimal discount,
@@ -91,4 +93,15 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
     String getInvoiceNumber(@Param("purchaseID") String purchaseID);
 
 
+    BigDecimal getPurchaseFeesByInvoiceCode(@Param("invoiceCode") String invoiceCode);
+
+    void deleteInvoice(@Param("invoiceNumber") String invoiceNumber);
+
+    void deleteBatchInvoice(@Param("invoiceNumbers") List<String> invoiceNumbers);
+
+    String getInvoiceId(@Param("invoiceNumber") String invoiceNumber);
+
+    List<PurchaseOrder> getPurchasesByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
+
+    List<PlatformOrder> getPlatformOrder(@Param("invoiceNumber") String invoiceNumber);
 }

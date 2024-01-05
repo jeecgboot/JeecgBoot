@@ -22,4 +22,17 @@
         FROM shop
         WHERE owner_id = #{clientID} AND active = '1'
     </select>
+    <select id="getShopIdsByClientAndType" resultType="org.jeecg.modules.business.entity.Shop">
+        SELECT s.id
+        FROM shop s
+        JOIN client c
+            ON s.owner_id = c.id
+        JOIN client_category cc
+            ON c.client_category_id = cc.id
+        WHERE c.id IN
+              <foreach collection="clientIds" item="clientId" open="(" separator="," close=")">
+                #{clientId}
+              </foreach>
+          AND cc.name = #{type}
+    </select>
 </mapper>

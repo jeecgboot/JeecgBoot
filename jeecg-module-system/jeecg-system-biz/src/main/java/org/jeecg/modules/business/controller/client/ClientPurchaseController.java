@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.controller.client.requestParams.PurchaseRequest;
 import org.jeecg.modules.business.entity.PurchaseOrder;
 import org.jeecg.modules.business.service.IPurchaseOrderService;
@@ -64,7 +65,7 @@ public class ClientPurchaseController {
     @AutoLog(value = "商品采购订单-添加")
     @ApiOperation(value = "商品采购订单-添加", notes = "商品采购订单-添加")
     @PostMapping(value = "/add")
-    public Result<String> addPurchaseOrder(@RequestBody PurchaseRequest purchaseRequest) {
+    public Result<String> addPurchaseOrder(@RequestBody PurchaseRequest purchaseRequest) throws UserException {
         String id = purchaseOrderService.addPurchase(
                 purchaseRequest.getSkuQuantity(),
                 purchaseRequest.getPlatformOrderIDList()

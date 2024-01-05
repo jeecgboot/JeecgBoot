@@ -2,14 +2,16 @@ package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.jeecg.modules.business.domain.purchase.invoice.InvoiceData;
+import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.*;
+import org.jeecg.modules.business.vo.InvoiceMetaData;
 import org.jeecg.modules.business.vo.SkuQuantity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
@@ -42,6 +44,12 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
      */
     public void delBatchMain(Collection<? extends Serializable> idList);
 
+    @Transactional
+    void cancelInvoice(String purchaseId, String invoiceNumber);
+
+    @Transactional
+    void cancelBatchInvoice(String ids);
+
     /**
      * Set purchase orders to the page indicated by argument.
      *
@@ -49,7 +57,7 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
      */
     void setPageForCurrentClient(IPage<PurchaseOrder> page);
 
-    String addPurchase(List<SkuQuantity> skuQuantities);
+    String addPurchase(List<SkuQuantity> skuQuantities) throws UserException;
 
     /**
      * Add a new purchase. The purchase contains sku and its quantity indicated by
@@ -65,10 +73,10 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
      * @return the new purchase order identifier
      */
     @Transactional
-    String addPurchase(List<SkuQuantity> SkuQuantity, List<String> orderIDs);
+    String addPurchase(List<SkuQuantity> SkuQuantity, List<String> orderIDs) throws UserException;
 
     @Transactional
-    String addPurchase(String username, Client client, String invoiceNumber, List<SkuQuantity> skuQuantities, Map<PlatformOrder, List<PlatformOrderContent>> platformOrderIDs);
+    String addPurchase(String username, Client client, String invoiceNumber, List<SkuQuantity> skuQuantities, Map<PlatformOrder, List<PlatformOrderContent>> platformOrderIDs) throws UserException;
 
     void savePaymentDocumentForPurchase(String purchaseID, MultipartFile in) throws IOException;
 
@@ -102,7 +110,19 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
      * @return the file in binary
      * @throws IOException IO error while reading the file.
      */
-    InvoiceData makeInvoice(String purchaseID) throws IOException, URISyntaxException;
+    InvoiceMetaData makeInvoice(String purchaseID) throws IOException, URISyntaxException;
 
     byte[] getInvoiceByte(String invoiceCode) throws IOException;
+
+    BigDecimal getPurchaseFeesByInvoiceCode(String invoiceCode);
+
+    void cancelInvoice(String invoiceNumber);
+
+    void cancelBatchInvoice(List<String> invoiceNumbers);
+
+    String getInvoiceId(String invoiceNumber);
+
+    List<PurchaseOrder> getPurchasesByInvoiceNumber(String invoiceNumber);
+
+    List<PlatformOrder> getPlatformOrder(String invoiceNumber);
 }

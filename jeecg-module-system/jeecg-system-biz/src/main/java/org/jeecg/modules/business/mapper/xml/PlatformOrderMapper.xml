@@ -88,6 +88,14 @@
         WHERE id = #{orderID}
     </update>
 
+    <update id="updateErpStatusByCode">
+        UPDATE platform_order po, platform_order_content poc
+        SET po.erp_status = #{erpStatus},
+            poc.erp_status = #{erpStatus}
+        WHERE po.shipping_invoice_number = #{invoiceCode}
+            AND poc.platform_order_id = po.id;
+    </update>
+
     <update id="batchUpdateStatus">
         UPDATE platform_order
         SET status = #{status}
@@ -488,7 +496,7 @@
         AND po.shipping_time between #{startDate} AND #{endDate}
         AND po.erp_status = 3;
     </select>
-    <select id="fetchUninvoicedShippedOrderIDInShopsAndOrderTime" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+    <select id="fetchUninvoicedOrderIDInShopsAndOrderTime" resultType="org.jeecg.modules.business.entity.PlatformOrder">
         SELECT po.id
         FROM platform_order po
         JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
@@ -540,6 +548,33 @@
         WHERE erp_status IN (4,5)
         AND order_time &lt; #{endDate};
     </select>
+    <select id="findUninvoicedOrdersByShopForClient" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
+        FROM platform_order
+        WHERE erp_status IN
+        <foreach
+                collection="erpStatuses"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="erpStatus"
+        >
+            #{erpStatus}
+        </foreach>
+        AND shipping_invoice_number IS NULL
+        AND shop_id IN
+        <foreach
+                collection="shopIds"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="shopId"
+        >
+            #{shopId}
+        </foreach>;
+    </select>
     <insert id="insertPlatformOrdersArchives" parameterType="list">
         INSERT INTO platform_order_delete(id, create_by,
                                           create_time, update_by,
@@ -589,15 +624,17 @@
     </insert>
 
     <update id="cancelInvoice">
-        UPDATE platform_order
+        UPDATE platform_order po
+        JOIN shipping_invoice si ON po.shipping_invoice_number = si.invoice_number
         SET fret_fee                = NULL,
             order_service_fee       = NULL,
             shipping_invoice_number = NULL,
             picking_fee = 0.0,
             packaging_material_fee = 0.0,
             erp_status =
-                CASE erp_status
-                    WHEN '4' THEN '3'
+                CASE
+                    WHEN erp_status = '4' THEN '3'
+                    WHEN erp_status = '2' AND si.create_by = 'system' THEN '1'
                 ELSE erp_status
                 END
         WHERE shipping_invoice_number = #{invoiceNumber};
@@ -619,4 +656,88 @@
             #{invoiceNumber}
         </foreach>;
     </update>
+    <select id="fetchEmptyLogisticChannelOrders" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT id, shop_id, country, platform_order_id
+        FROM platform_order po
+        WHERE logistic_channel_name = ''
+        AND invoice_logistic_channel_name IS NULL
+        AND create_time BETWEEN #{startDate} AND #{endDate};
+    </select>
+    <select id="fetchByIds" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT id, shop_id, product_available, virtual_product_available, purchase_invoice_number
+        FROM platform_order
+        WHERE id IN
+        <foreach collection="orderIds" separator="," open="(" close=")" index="index" item="orderId">
+            #{orderId}
+        </foreach>;
+    </select>
+    <select id="fetchOrdersWithProductAvailable" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT po.*
+        FROM platform_order po
+        JOIN shop s ON po.shop_id = s.id
+        JOIN client c ON s.owner_id = c.id
+        JOIN client_category cc ON c.client_category_id = cc.id
+        WHERE po.product_available = 1
+            OR po.virtual_product_available = 1
+            AND cc.name = 'self-service'
+            AND po.erp_status IN ('1', '2')
+        ORDER BY po.order_time;
+    </select>
+    <select id="fetchOrdersWithMissingStock" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT po.*
+        FROM platform_order po
+        JOIN shop s ON po.shop_id = s.id
+        JOIN client c ON s.owner_id = c.id
+        JOIN client_category cc ON c.client_category_id = cc.id
+        WHERE po.product_available = 0
+            AND po.virtual_product_available = 0
+            AND cc.name = 'self-service'
+            AND po.erp_status IN ('1', '2')
+            AND po.order_time &gt;= #{start}
+        ORDER BY po.order_time;
+    </select>
+    <select id="selectByPlatformOrderIds" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
+        FROM platform_order
+        WHERE platform_order_id IN
+        <foreach collection="platformOrderIds" separator="," open="(" close=")" index="index" item="platformOrderId">
+            #{platformOrderId}
+        </foreach>;
+    </select>
+    <update id="removePurchaseInvoiceNumber">
+        UPDATE platform_order
+        SET purchase_invoice_number = NULL
+        WHERE purchase_invoice_number = #{invoiceNumber}
+    </update>
+    <update id="removePurchaseInvoiceNumbers">
+        UPDATE platform_order
+        SET purchase_invoice_number = NULL
+        WHERE purchase_invoice_number IN
+        <foreach collection="invoiceNumbers" separator="," open="(" close=")" index="index" item="invoiceNumber">
+            #{invoiceNumber}
+        </foreach>;
+    </update>
+    <update id="updatePurchaseInvoiceNumber">
+        UPDATE platform_order
+        SET purchase_invoice_number = #{invoiceNumber}
+        WHERE id IN
+        <foreach collection="orderIds" separator="," open="(" close=")" index="index" item="orderId">
+            #{orderId}
+        </foreach>
+    </update>
+    <select id="fetchShippingFeeBillableOrders" resultType="org.jeecg.modules.business.vo.ShippingFeeBillableOrders">
+        SELECT CONCAT(c.first_name, ' ', c.surname) as full_name, c.email, po.platform_order_number as order_number
+        FROM platform_order po
+        JOIN shop s ON po.shop_id = s.id
+        JOIN client c ON s.owner_id = c.id
+        WHERE po.shipping_invoice_number IS NULL
+            AND po.purchase_invoice_number IS NOT NULL
+            AND po.erp_status IN (1,2)
+            AND po.product_available = 1
+    </select>
+    <select id="getPlatformOrdersByInvoiceNumber" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
+        FROM platform_order
+        WHERE shipping_invoice_number = #{invoiceNumber};
+    </select>
 </mapper>

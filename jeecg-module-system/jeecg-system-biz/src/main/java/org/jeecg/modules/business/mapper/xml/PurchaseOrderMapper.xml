@@ -3,9 +3,9 @@
 <mapper namespace="org.jeecg.modules.business.mapper.PurchaseOrderMapper">
     <insert id="addPurchase">
         INSERT INTO purchase_order(id, create_by, create_time, update_by,
-                                   update_time, client_id, total_amount,
+                                   update_time, client_id, currency_id, total_amount,
                                    discount_amount, final_amount, invoice_number)
-        VALUES (#{ID}, #{creator}, NOW(), #{creator}, NOW(), #{clientID},
+        VALUES (#{ID}, #{creator}, NOW(), #{creator}, NOW(), #{clientID}, #{currencyID},
                 #{totalAmount}, #{discount}, #{finalAmount},
                 #{invoiceNumber});
     </insert>
@@ -62,5 +62,38 @@
         SELECT invoice_number
         FROM purchase_order
         WHERE id = #{purchaseID}
+    </select>
+    <select id="getPurchaseFeesByInvoiceCode" resultType="java.math.BigDecimal">
+        SELECT final_amount
+        FROM purchase_order
+        WHERE invoice_number = #{invoiceCode};
+    </select>
+    <delete id="deleteInvoice">
+        DELETE
+        FROM purchase_order
+        WHERE invoice_number = #{invoiceNumber}
+    </delete>
+    <delete id="deleteBatchInvoice">
+        DELETE
+        FROM purchase_order
+        WHERE invoice_number IN
+        <foreach collection="invoiceNumbers" item="invoiceNumber" index="index" open="(" separator="," close=")">
+            #{invoiceNumber}
+        </foreach>
+    </delete>
+    <select id="getInvoiceId" resultType="java.lang.String">
+        SELECT id
+        FROM purchase_order
+        WHERE invoice_number = #{invoiceNumber}
+    </select>
+    <select id="getPurchasesByInvoiceNumber" resultType="org.jeecg.modules.business.entity.PurchaseOrder">
+        SELECT *
+        FROM purchase_order
+        WHERE invoice_number = #{invoiceNumber}
+    </select>
+    <select id="getPlatformOrder" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
+        FROM platform_order
+        WHERE shipping_invoice_number = #{invoiceNumber}
     </select>
 </mapper>

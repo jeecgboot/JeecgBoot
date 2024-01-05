@@ -18,8 +18,8 @@ import java.util.Date;
 /**
  * @Description: 平台订单表
  * @Author: jeecg-boot
- * @Date: 2023-02-10
- * @Version: V1.6
+ * @Date: 2023-11-28
+ * @Version: V1.7
  */
 @ApiModel(value = "platform_order对象", description = "平台订单表")
 @Data
@@ -161,6 +161,12 @@ public class PlatformOrder implements Serializable {
     @ApiModelProperty(value = "物流发票号")
     private String shippingInvoiceNumber;
     /**
+     * 采购发票号
+     * */
+    @Excel(name = "采购发票号", width = 15)
+    @ApiModelProperty(value = "采购发票号")
+    private java.lang.String purchaseInvoiceNumber;
+    /**
      * 采购状态
      */
     @Excel(name = "采购状态", width = 15, dictTable = "sku_status", dicText = "status_text", dicCode = "status_code")
@@ -197,6 +203,12 @@ public class PlatformOrder implements Serializable {
     @Excel(name = "有货（1=有，0=没有）", width = 15)
     @ApiModelProperty(value = "有货（1=有，0=没有）")
     private String productAvailable;
+    /**
+     * 有货（1=有，0=没有）
+     * */
+    @Excel(name = "有货（1=有，0=没有）", width = 15)
+    @ApiModelProperty(value = "有货（1=有，0=没有）")
+    private java.lang.String virtualProductAvailable;
     /**
      * 可以同步Shopify（1=可以，0=不可以）
      */

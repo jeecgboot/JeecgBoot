@@ -40,11 +40,18 @@ public interface IClientService extends IService<Client> {
 	public void delBatchMain (Collection<? extends Serializable> idList);
 	public String getClientEntity(String id);
 	public Map<String, String> getClientsEntity(List<String> ids);
-	public String getClientByInternalCode(String code);
+	public String getClientIdByCode(String code);
 	/**
 	 * Get current user's client information
 	 * @return client or null if current user's role is not client
 	 */
 	Client getCurrentClient();
 
+    List<Client> getClientsByType(String type);
+
+    Client getClientFromOrder(String orderId);
+
+    Client getClientFromPurchase(String purchaseId);
+
+    List<String> getClientsFromPurchases(List<String> purchaseIds);
 }
