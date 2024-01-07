@@ -108,7 +108,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return 部门 parentIds
      */
     @GetMapping("/sys/api/getDepartParentIdsByDepIds")
-    Set<String> getDepartParentIdsByDepIds(@RequestParam("depIds") Set depIds);
+    Set<String> getDepartParentIdsByDepIds(@RequestParam("depIds") Set<String> depIds);
     
     /**
      * 9通过用户账号查询部门 name
@@ -213,7 +213,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryAllUser")
-    public JSONObject queryAllUser(@RequestParam(name="userIds",required=false)String userIds, @RequestParam(name="pageNo",required=false) Integer pageNo,@RequestParam(name="pageSize",required=false) int pageSize);
+    public JSONObject queryAllUser(@RequestParam(name="userIds",required=false)String userIds, @RequestParam(name="pageNo",required=false) Integer pageNo,@RequestParam(name="pageSize",required=false) Integer pageSize);
 
 
     /**
@@ -761,7 +761,7 @@ public interface ISysBaseAPI extends CommonAPI {
     @GetMapping("/sys/api/dictTableWhiteListCheckByDict")
     boolean dictTableWhiteListCheckByDict(
             @RequestParam("tableOrDictCode") String tableOrDictCode,
-            @RequestParam(value = "fields", required = false) String[] fields
+            @RequestParam(value = "fields", required = false) String... fields
     );
 
 }

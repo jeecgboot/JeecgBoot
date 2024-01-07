@@ -1428,7 +1428,7 @@ public class SysUserController {
         //------------------------------------------------------------------------------------------------
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
         if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
-            String tenantId = TokenUtils.getTenantIdByRequest(request);
+            String tenantId = oConvertUtils.getString(TokenUtils.getTenantIdByRequest(request),"-1");
             //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
             List<String> userIds = userTenantService.getUserIdsByTenantId(Integer.valueOf(tenantId));
             if (oConvertUtils.listIsNotEmpty(userIds)) {

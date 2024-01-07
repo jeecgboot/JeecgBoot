@@ -133,7 +133,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public JSONObject queryAllUser(String userIds, Integer pageNo, int pageSize) {
+    public JSONObject queryAllUser(String userIds, Integer pageNo, Integer pageSize) {
         return null;
     }
 
@@ -446,7 +446,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public boolean dictTableWhiteListCheckByDict(String tableOrDictCode, String[] fields) {
+    public boolean dictTableWhiteListCheckByDict(String tableOrDictCode, String... fields) {
         return false;
     }
 
