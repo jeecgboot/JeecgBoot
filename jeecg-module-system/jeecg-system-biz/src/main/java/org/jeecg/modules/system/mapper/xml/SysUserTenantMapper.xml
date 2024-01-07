@@ -169,7 +169,7 @@
     <select id="getUserCount" resultType="java.lang.Long">
         SELECT count(1) FROM sys_user_tenant sut JOIN sys_user su on sut.user_id = su.id and su.del_flag = 0 and su.status = 1
         WHERE sut.status = #{tenantStatus} 
-        AND tenant_id = #{tenantId}
+        AND sut.tenant_id = #{tenantId}
     </select>
 
     <!--根据租户id和名称获取用户数据-->
