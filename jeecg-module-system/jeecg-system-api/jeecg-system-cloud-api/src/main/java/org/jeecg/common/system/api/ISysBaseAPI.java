@@ -95,6 +95,22 @@ public interface ISysBaseAPI extends CommonAPI {
     List<String> getDepartIdsByUsername(@RequestParam("username") String username);
 
     /**
+     * 8.2 通过用户账号查询部门父ID集合
+     * @param username
+     * @return 部门 parentIds
+     */
+    @GetMapping("/sys/api/getDepartParentIdsByUsername")
+    Set<String> getDepartParentIdsByUsername(@RequestParam("username")String username);
+
+    /**
+     * 8.3 查询部门父ID集合
+     * @param depIds
+     * @return 部门 parentIds
+     */
+    @GetMapping("/sys/api/getDepartParentIdsByDepIds")
+    Set<String> getDepartParentIdsByDepIds(@RequestParam("depIds") Set depIds);
+    
+    /**
      * 9通过用户账号查询部门 name
      * @param username
      * @return 部门 name
@@ -482,6 +498,14 @@ public interface ISysBaseAPI extends CommonAPI {
     List<String> loadCategoryDictItem(@RequestParam("ids") String ids);
 
     /**
+     * 44 反向翻译分类字典，用于导入
+     *
+     * @param names 名称，逗号分割
+     */
+    @GetMapping("/sys/api/loadCategoryDictItemByNames")
+    List<String> loadCategoryDictItemByNames(@RequestParam("names") String names, @RequestParam("delNotExist") boolean delNotExist);
+
+    /**
      * 43 根据字典code加载字典text
      *
      * @param dictCode 顺序：tableName,text,code
@@ -551,17 +575,20 @@ public interface ISysBaseAPI extends CommonAPI {
     @GetMapping("/sys/api/translateManyDict")
     Map<String, List<DictModel>> translateManyDict(@RequestParam("dictCodes") String dictCodes, @RequestParam("keys") String keys);
 
+    //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
     /**
      * 49 字典表的 翻译，可批量
      * @param table
      * @param text
      * @param code
      * @param keys 多个用逗号分割
+     * @param ds
      * @return
      */
     @Override
     @GetMapping("/sys/api/translateDictFromTableByKeys")
-    List<DictModel> translateDictFromTableByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keys") String keys);
+    List<DictModel> translateDictFromTableByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keys") String keys, @RequestParam("ds") String ds);
+    //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
     /**
      * 发送模板消息

@@ -12,6 +12,7 @@ import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserTenant;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.system.vo.SysUserTenantVo;
+import org.jeecg.modules.system.vo.thirdapp.JwUserDepartVo;
 
 /**
  * @Description: sys_user_tenant_relation
@@ -149,4 +150,20 @@ public interface SysUserTenantMapper extends BaseMapper<SysUserTenant> {
      * @param tenantIds
      */
     void deleteUserByTenantId(@Param("tenantIds") List<Integer> tenantIds);
+
+    /**
+     * 获取租户下的成员数量
+     *
+     * @param tenantId
+     * @param tenantStatus
+     * @return
+     */
+    Long getUserCount(Integer tenantId, String tenantStatus);
+    
+    /**
+     * 根据租户id和名称获取用户数据
+     * @param tenantId
+     * @return
+     */
+    List<JwUserDepartVo> getUsersByTenantIdAndName(@Param("tenantId") Integer tenantId);
 }

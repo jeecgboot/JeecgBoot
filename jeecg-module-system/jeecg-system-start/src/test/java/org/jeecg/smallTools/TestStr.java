@@ -44,5 +44,12 @@ public class TestStr {
         valArray.add("qwe");
         System.out.println("值: " + StringUtils.join(valArray, ","));
     }
+    
+    @Test
+    public void testSql() {
+        String sql = "select * from sys_user where sex = ${sex}";
+        sql = sql.replaceAll("'?\\$\\{sex}'?","1");
+        System.out.println(sql);
+    }
 
 }

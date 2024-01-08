@@ -33,7 +33,7 @@
 	
 	
 	<select id="querySysCementListByUserId" parameterType="String"  resultMap="SysAnnouncement">
-	   select * from sys_announcement 
+	   select id,titile,create_time,priority,bus_id,open_type,open_page,sender,send_time,msg_content from sys_announcement 
 	   where send_status = '1' 
 	   and del_flag = '0' 
 	   and msg_category = #{msgCategory} 

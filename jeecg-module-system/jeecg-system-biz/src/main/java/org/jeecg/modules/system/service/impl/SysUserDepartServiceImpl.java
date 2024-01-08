@@ -143,8 +143,19 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 
 	}
 
+	/**
+	 *
+	 * @param departId
+	 * @param username
+	 * @param realname
+	 * @param pageSize
+	 * @param pageNo
+	 * @param id
+	 * @param isMultiTranslate 是否多字段翻译
+	 * @return
+	 */
 	@Override
-	public IPage<SysUser> queryDepartUserPageList(String departId, String username, String realname, int pageSize, int pageNo,String id) {
+	public IPage<SysUser> queryDepartUserPageList(String departId, String username, String realname, int pageSize, int pageNo,String id,String isMultiTranslate) {
 		IPage<SysUser> pageList = null;
 		// 部门ID不存在 直接查询用户表即可
 		Page<SysUser> page = new Page<SysUser>(pageNo, pageSize);
@@ -153,9 +164,17 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
             //update-begin---author:wangshuai ---date:20220104  for：[JTC-297]已冻结用户仍可设置为代理人------------
             query.eq(SysUser::getStatus,Integer.parseInt(CommonConstant.STATUS_1));
             //update-end---author:wangshuai ---date:20220104  for：[JTC-297]已冻结用户仍可设置为代理人------------
+			//update-begin---author:liusq ---date:20231215  for：逗号分割多个用户翻译问题------------
 			if(oConvertUtils.isNotEmpty(username)){
-				query.like(SysUser::getUsername, username);
+				String COMMA = ",";
+				if(oConvertUtils.isNotEmpty(isMultiTranslate) && username.contains(COMMA)){
+					String[] usernameArr = username.split(COMMA);
+					query.in(SysUser::getUsername,usernameArr);
+				}else {
+					query.like(SysUser::getUsername, username);
+				}
 			}
+			//update-end---author:liusq ---date:20231215  for：逗号分割多个用户翻译问题------------
             //update-begin---author:wangshuai ---date:20220608  for：[VUEN-1238]邮箱回复时，发送到显示的为用户id------------
             if(oConvertUtils.isNotEmpty(id)){
                 query.eq(SysUser::getId, id);

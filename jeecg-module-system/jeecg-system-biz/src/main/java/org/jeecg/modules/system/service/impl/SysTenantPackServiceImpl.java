@@ -128,11 +128,19 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
 
     @Override
     public void addDefaultTenantPack(Integer tenantId) {
+        LambdaQueryWrapper<SysTenantPack> query = new LambdaQueryWrapper<>();
+        query.eq(SysTenantPack::getTenantId,tenantId);
         // 创建超级管理员
         SysTenantPack superAdminPack = new SysTenantPack(tenantId, "超级管理员", TenantConstant.SUPER_ADMIN);
         ISysTenantPackService currentService = SpringContextUtils.getApplicationContext().getBean(ISysTenantPackService.class);
-        String packId = currentService.saveOne(superAdminPack);
-
+        query.eq(SysTenantPack::getPackCode, TenantConstant.SUPER_ADMIN);
+        SysTenantPack sysTenantPackSuperAdmin = currentService.getOne(query);
+        String packId = "";
+        if(null == sysTenantPackSuperAdmin){
+            packId = currentService.saveOne(superAdminPack);
+        }else{
+            packId = sysTenantPackSuperAdmin.getId();
+        }
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         SysTenantPackUser packUser = new SysTenantPackUser(tenantId, packId, sysUser.getId());
         packUser.setRealname(sysUser.getRealname());
@@ -140,13 +148,22 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
         //添加人员和管理员的关系数据
         currentService.savePackUser(packUser);
 
-        // 创建超级管理员
-        SysTenantPack accountAdminPack = new SysTenantPack(tenantId, "组织账户管理员", TenantConstant.ACCOUNT_ADMIN);
-        currentService.saveOne(accountAdminPack);
-
-        // 创建超级管理员
-        SysTenantPack appAdminPack = new SysTenantPack(tenantId, "组织应用管理员", TenantConstant.APP_ADMIN);
-        currentService.saveOne(appAdminPack);
+        query.eq(SysTenantPack::getPackCode, TenantConstant.ACCOUNT_ADMIN);
+        SysTenantPack sysTenantPackAccountAdmin = currentService.getOne(query);
+        if(null == sysTenantPackAccountAdmin){
+            // 创建超级管理员
+            SysTenantPack accountAdminPack = new SysTenantPack(tenantId, "组织账户管理员", TenantConstant.ACCOUNT_ADMIN);
+            currentService.saveOne(accountAdminPack);
+        }
+        
+        query.eq(SysTenantPack::getPackCode, TenantConstant.APP_ADMIN);
+        SysTenantPack sysTenantPackAppAdmin = currentService.getOne(query);
+        
+        if(null == sysTenantPackAppAdmin){
+            // 创建超级管理员
+            SysTenantPack appAdminPack = new SysTenantPack(tenantId, "组织应用管理员", TenantConstant.APP_ADMIN);
+            currentService.saveOne(appAdminPack);
+        }
         
     }
 

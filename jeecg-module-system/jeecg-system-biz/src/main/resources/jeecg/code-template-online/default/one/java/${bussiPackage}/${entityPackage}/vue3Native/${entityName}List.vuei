@@ -101,6 +101,10 @@
             <Icon icon="mdi:chevron-down"></Icon>
           </a-button>
         </a-dropdown>
+        <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+        <!-- 高级查询 -->
+        <super-query :config="superQueryConfig" @search="handleSuperQuery" />
+        <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
       </template>
       <!--操作栏-->
       <template #action="{ record }">
@@ -137,7 +141,7 @@
   import { ref, reactive } from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { useListPage } from '/@/hooks/system/useListPage';
-  import { columns } from './${entityName}.data';
+  import { columns, superQuerySchema } from './${entityName}.data';
   import { list, deleteOne, batchDelete, getImportUrl, getExportUrl } from './${entityName}.api';
   import { downloadFile } from '/@/utils/common/renderUtils';
   import ${entityName}Modal from './components/${entityName}Modal.vue'
@@ -197,6 +201,21 @@
     xs: 24,
     sm: 20,
   });
+
+<#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+  // 高级查询配置
+  const superQueryConfig = reactive(superQuerySchema);
+
+  /**
+   * 高级查询事件
+   */
+  function handleSuperQuery(params) {
+    Object.keys(params).map((k) => {
+      queryParam[k] = params[k];
+    });
+    searchQuery();
+  }
+<#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
 
   /**
    * 新增事件

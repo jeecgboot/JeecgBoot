@@ -123,9 +123,13 @@ public class SysRoleController {
 												@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 												HttpServletRequest req) {
 		Result<IPage<SysRole>> result = new Result<IPage<SysRole>>();
-		//------------------------------------------------------------------------------------------------
-		//此接口必须通过租户来隔离查询
-		role.setTenantId(oConvertUtils.getInt(!"0".equals(TenantContext.getTenant()) ? TenantContext.getTenant() : "", -1));
+
+		//update-begin---author:wangshuai---date:2023-11-20---for:【QQYUN-7089】低代码模式 选择组织角色没有数据 在租户角色中添加数据后，列表也无数据展示---
+		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+			//此接口必须通过租户来隔离查询
+			role.setTenantId(oConvertUtils.getInt(!"0".equals(TenantContext.getTenant()) ? TenantContext.getTenant() : "", -1));
+		}
+		//update-end---author:wangshuai---date:2023-11-20---for:【QQYUN-7089】低代码模式 选择组织角色没有数据 在租户角色中添加数据后，列表也无数据展示---
 		
 		QueryWrapper<SysRole> queryWrapper = QueryGenerator.initQueryWrapper(role, req.getParameterMap());
 		Page<SysRole> page = new Page<SysRole>(pageNo, pageSize);
@@ -527,7 +531,6 @@ public class SysRoleController {
 	}
 
     /**
-     * TODO 权限未完成（敲敲云接口，租户应用）
      * 分页获取全部角色列表（包含每个角色的数量）
      * @return
      */

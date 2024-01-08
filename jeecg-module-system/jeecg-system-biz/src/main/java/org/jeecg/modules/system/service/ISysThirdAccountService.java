@@ -75,7 +75,8 @@ public interface ISysThirdAccountService extends IService<SysThirdAccount> {
      * @param unionid
      * @param thirdType
      * @param tenantId
+     * @param thirdUserId
      * @return
      */
-    SysThirdAccount getOneByUuidAndThirdType(String unionid, String thirdType,Integer tenantId);
+    SysThirdAccount getOneByUuidAndThirdType(String unionid, String thirdType,Integer tenantId,String thirdUserId);
 }

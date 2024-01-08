@@ -424,10 +424,6 @@ public class ThirdAppController {
     @GetMapping("/getThirdConfigByTenantId")
     public Result<SysThirdAppConfig> getThirdAppByTenantId(@RequestParam(name = "tenantId", required = false) Integer tenantId,
                                                            @RequestParam(name = "thirdType") String thirdType) {
-        Result<SysThirdAppConfig> result = new Result<>();
-        LambdaQueryWrapper<SysThirdAppConfig> query = new LambdaQueryWrapper<>();
-        query.eq(SysThirdAppConfig::getThirdType,thirdType);
-
         if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
             if (tenantId == null) {
                 return Result.error("开启多租户模式，租户ID参数不允许为空！");
@@ -438,7 +434,9 @@ public class ThirdAppController {
                 tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
             }
         }
-        
+        Result<SysThirdAppConfig> result = new Result<>();
+        LambdaQueryWrapper<SysThirdAppConfig> query = new LambdaQueryWrapper<>();
+        query.eq(SysThirdAppConfig::getThirdType,thirdType);
         query.eq(SysThirdAppConfig::getTenantId,tenantId);
         SysThirdAppConfig sysThirdAppConfig = appConfigService.getOne(query);
         result.setSuccess(true);

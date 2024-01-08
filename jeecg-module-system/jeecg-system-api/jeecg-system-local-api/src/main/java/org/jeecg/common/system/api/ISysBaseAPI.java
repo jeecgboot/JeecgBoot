@@ -90,6 +90,20 @@ public interface ISysBaseAPI extends CommonAPI {
     List<String> getDepartIdsByUsername(String username);
 
     /**
+     * 8.2 通过用户账号查询部门父ID集合
+     * @param username
+     * @return 部门 parentIds
+     */
+    Set<String> getDepartParentIdsByUsername(String username);
+
+    /**
+     * 8.2 查询部门父ID集合
+     * @param depIds
+     * @return 部门 parentIds
+     */
+    Set<String> getDepartParentIdsByDepIds(Set depIds);
+
+    /**
      * 9通过用户账号查询部门 name
      * @param username
      * @return 部门 name
@@ -372,6 +386,13 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return List<String>
      */
     List<String> loadCategoryDictItem(String ids);
+
+    /**
+     * 反向翻译分类字典，用于导入
+     *
+     * @param names 名称，逗号分割
+     */
+    List<String> loadCategoryDictItemByNames(String names, boolean delNotExist);
 
     /**
      * 根据字典code加载字典text

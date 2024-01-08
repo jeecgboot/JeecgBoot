@@ -2,9 +2,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.6.1</version>
+  <version>3.6.2</version>
   <packaging>pom</packaging>
-  <name>JEECG BOOT ${project.version} </name>
+  <name>JEECG BOOT ${project.version}</name>
 
 	<developers>
 		<developer>
@@ -28,7 +28,7 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.6.1</jeecgboot.version>
+		<jeecgboot.version>3.6.2</jeecgboot.version>
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -48,6 +48,8 @@
 		<sqljdbc4.version>4.0</sqljdbc4.version>
 		<mysql-connector-java.version>8.0.27</mysql-connector-java.version>
 		<hutool.version>5.8.23</hutool.version>
+		<!-- 国产数据库驱动 -->
+		<dm8.version>8.1.1.49</dm8.version>
 
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.3.1</mybatis-plus.version>
@@ -406,8 +408,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>

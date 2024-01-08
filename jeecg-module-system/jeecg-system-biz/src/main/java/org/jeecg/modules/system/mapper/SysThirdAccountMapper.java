@@ -3,6 +3,7 @@ package org.jeecg.modules.system.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.system.entity.SysThirdAccount;
+import org.jeecg.modules.system.vo.thirdapp.JwUserDepartVo;
 
 import java.util.List;
 
@@ -22,5 +23,12 @@ public interface SysThirdAccountMapper extends BaseMapper<SysThirdAccount> {
      * @return
      */
     List<SysThirdAccount> selectThirdIdsByUsername(@Param("sysUsernameArr") String[] sysUsernameArr, @Param("thirdType") String thirdType, @Param("tenantId") Integer tenantId);
-
+    
+    /**
+     * 查询被绑定的用户
+     * @param tenantId
+     * @param thirdType
+     * @return
+     */
+    List<JwUserDepartVo> getThirdUserBindByWechat(@Param("tenantId") int tenantId, @Param("thirdType") String thirdType);
 }
