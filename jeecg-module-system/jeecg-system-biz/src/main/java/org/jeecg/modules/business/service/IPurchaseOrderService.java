@@ -122,6 +122,8 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
 
     String getInvoiceId(String invoiceNumber);
 
+    PurchaseOrder getPurchaseByInvoiceNumber(String invoiceNumber);
+
     List<PurchaseOrder> getPurchasesByInvoiceNumber(String invoiceNumber);
 
     List<PlatformOrder> getPlatformOrder(String invoiceNumber);

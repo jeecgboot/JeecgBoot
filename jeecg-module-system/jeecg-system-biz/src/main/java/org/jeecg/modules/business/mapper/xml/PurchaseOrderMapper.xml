@@ -86,6 +86,13 @@
         FROM purchase_order
         WHERE invoice_number = #{invoiceNumber}
     </select>
+    <select id="getPurchaseByInvoiceNumber" resultType="org.jeecg.modules.business.entity.PurchaseOrder">
+        SELECT *
+        FROM purchase_order
+        WHERE invoice_number = #{invoiceNumber}
+        ORDER BY create_time DESC
+        LIMIT 1;
+    </select>
     <select id="getPurchasesByInvoiceNumber" resultType="org.jeecg.modules.business.entity.PurchaseOrder">
         SELECT *
         FROM purchase_order

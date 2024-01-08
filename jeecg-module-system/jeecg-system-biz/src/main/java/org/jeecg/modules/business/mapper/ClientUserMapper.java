@@ -31,4 +31,6 @@ public interface ClientUserMapper extends BaseMapper<UserClient> {
     List<Client> listClients();
 
     Client getClientMinInfoByUserId(@Param("userId") String userId);
+
+    List<Client> getClientsByCategory(@Param("category") String categoryName);
 }

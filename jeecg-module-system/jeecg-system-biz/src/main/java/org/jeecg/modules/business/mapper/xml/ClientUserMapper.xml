@@ -25,4 +25,13 @@
             JOIN client c
                 ON c.id = user_client.client_id
     </select>
+    <select id="getClientsByCategory" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT c.*
+        FROM user_client
+            JOIN client c
+                ON c.id = user_client.client_id
+            JOIN client_category cc
+                ON cc.id = c.client_category_id
+        WHERE cc.name = #{category};
+    </select>
 </mapper>

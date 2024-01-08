@@ -12,4 +12,6 @@ public interface IUserClientService extends IService<UserClient> {
     List<Client> listClients();
 
     Client getClientMinInfoByUserId(String userId);
+
+    List<Client> getClientsByCategory(String categoryName);
 }
