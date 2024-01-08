@@ -6,9 +6,8 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.entity.Client;
+import org.jeecg.modules.business.entity.ClientCategory;
 import org.jeecg.modules.business.service.IUserClientService;
-import org.jeecg.modules.system.entity.SysRole;
-import org.jeecg.modules.system.service.ISysUserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,8 +24,6 @@ import java.util.Map;
 public class UserClientController {
     @Autowired
     private IUserClientService userClientService;
-    @Autowired
-    private ISysUserRoleService sysUserRoleService;
     /**
      * Checks if the user is a client or internal user
      * @return the client's info OR a list of clients
@@ -37,15 +34,7 @@ public class UserClientController {
         String userId = loginUser.getId();
         Client client = userClientService.getClientMinInfoByUserId(userId);
         if(client == null) {
-            List<SysRole> sysRoles = sysUserRoleService.getUserRole(userId);
-            boolean isAllowed = false;
-            for(SysRole sysRole: sysRoles) {
-                if(sysRole.getRoleCode().equals("admin") || sysRole.getRoleCode().equals("dev") || sysRole.getRoleCode().equals("Sales")){
-                    isAllowed = true;
-                    break;
-                }
-            }
-            if(isAllowed) {
+            if(loginUser.getOrgCode().contains("A01") || loginUser.getOrgCode().contains("A03")) {
                 Map<String, List<Client>> internalClientList = new HashMap<>();
                 internalClientList.put("internal", userClientService.listClients());
                 return Result.OK("internal usage", internalClientList);
@@ -56,5 +45,9 @@ public class UserClientController {
         Map<String, Client> clientMap = new HashMap<>();
         clientMap.put("client", client);
         return Result.ok(clientMap);
+    }
+    @GetMapping(value = "/getSelfServiceClients")
+    public Result<?> getSelfServiceClients() {
+        return Result.ok(userClientService.getClientsByCategory(ClientCategory.CategoryName.SELF_SERVICE.getName()));
     }
 }

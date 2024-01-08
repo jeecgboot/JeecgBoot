@@ -358,7 +358,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         Client client = clientService.getCurrentClient();
         if(client == null) {
             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-            if(sysUser.getUsername().equals("admin")) {
+            if(sysUser.getOrgCode().contains("A01") || sysUser.getOrgCode().contains("A03")) {
                 String poId = platformOrderIDs.get(0);
                 client = clientService.getClientFromOrder(poId);
             }
@@ -584,7 +584,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         Client client = clientService.getCurrentClient();
         if(client == null) {
             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-            if (sysUser.getUsername().equals("admin")) {
+            if (sysUser.getOrgCode().contains("A01") || sysUser.getOrgCode().contains("A03")) {
                 client = clientService.getClientFromPurchase(purchaseID);
             }
         }
@@ -631,6 +631,10 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         return purchaseOrderMapper.getInvoiceId(invoiceNumber);
     }
 
+    @Override
+    public PurchaseOrder getPurchaseByInvoiceNumber(String invoiceNumber) {
+        return purchaseOrderMapper.getPurchaseByInvoiceNumber(invoiceNumber);
+    }
     @Override
     public List<PurchaseOrder> getPurchasesByInvoiceNumber(String invoiceNumber) {
         return purchaseOrderMapper.getPurchasesByInvoiceNumber(invoiceNumber);
