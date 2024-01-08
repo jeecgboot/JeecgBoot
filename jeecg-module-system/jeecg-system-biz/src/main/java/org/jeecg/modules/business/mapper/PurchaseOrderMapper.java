@@ -101,6 +101,7 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
 
     String getInvoiceId(@Param("invoiceNumber") String invoiceNumber);
 
+    PurchaseOrder getPurchaseByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
     List<PurchaseOrder> getPurchasesByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
 
     List<PlatformOrder> getPlatformOrder(@Param("invoiceNumber") String invoiceNumber);

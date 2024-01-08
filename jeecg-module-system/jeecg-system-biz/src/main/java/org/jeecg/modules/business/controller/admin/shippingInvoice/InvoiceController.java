@@ -544,6 +544,13 @@ public class InvoiceController {
 
             if(entry.getKey().getProductAvailable().equals("0") && entry.getKey().getVirtualProductAvailable().equals("1"))
                 entry.getKey().setProductAvailable("2");
+            if(entry.getKey().getPurchaseInvoiceNumber() != null) {
+                PurchaseOrder purchase =  purchaseOrderService.getPurchaseByInvoiceNumber(entry.getKey().getPurchaseInvoiceNumber());
+                if(purchase.getStatus().equals("1"))
+                    entry.getKey().setProductAvailable("3");
+                else
+                    entry.getKey().setProductAvailable("4");
+            }
             BeanUtils.copyProperties(entry.getKey(), orderFront);
             finalOrderAndStatus.add(MutableTriple.of(orderFront, ordersAndStatus.get(ordersAndStatus.size() - 1).getMiddle(), ordersAndStatus.get(ordersAndStatus.size() - 1).getRight()));
         }
@@ -1115,14 +1122,30 @@ public class InvoiceController {
         return Result.OK().success("sys.api.syncRequestSubmitted");
     }
     @GetMapping(value = "/duplicateInvoiceNumberCheck")
-    public Result<?> duplicateInvoiceNumberCheck(@RequestParam("invoiceNumber") String invoiceNumber) {
-        if(iShippingInvoiceService.getShippingInvoice(invoiceNumber) != null
-                || purchaseOrderService.getInvoiceId(invoiceNumber) != null
-                || !platformOrderService.getPlatformOrdersByInvoiceNumber(invoiceNumber).isEmpty()) {
-            return Result.error("Invoice number already exists.");
+    public Result<?> duplicateInvoiceNumberCheck(@RequestParam(value = "id", required = false) String invoiceId,
+                                                 @RequestParam("invoiceNumber") String invoiceNumber,
+                                                 @RequestParam("invoiceType") String invoiceType) {
+        if(invoiceType.equals("purchase")) {
+            if(purchaseOrderService.getInvoiceId(invoiceNumber) != null) {
+                if(invoiceId != null && purchaseOrderService.getInvoiceId(invoiceNumber).equals(invoiceId))
+                    return Result.OK("Invoice number not changed.");
+                else
+                    return Result.error("Invoice number already exists.");
+            }
+            else {
+                return Result.OK("Invoice number is available.");
+            }
         }
         else {
-            return Result.OK("Invoice number is available.");
+            if(iShippingInvoiceService.getShippingInvoice(invoiceNumber) != null) {
+                if(invoiceId != null && iShippingInvoiceService.getShippingInvoice(invoiceNumber).getId().equals(invoiceId))
+                    return Result.OK("Invoice number not changed.");
+                else 
+                    return Result.error("Invoice number already exists.");
+            }
+            else {
+                return Result.OK("Invoice number is available.");
+            }
         }
     }
 }
