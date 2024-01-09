@@ -145,7 +145,7 @@
 			<version>${postgresql.version}</version>
 			<scope>runtime</scope>
 		</dependency>
-
+      
 		<!-- Quartz定时任务 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -24,13 +24,13 @@
             <artifactId>jeecg-module-demo</artifactId>
             <version>${jeecgboot.version}</version>
         </dependency>
-        <!--人大金仓-->
+        <!--人大金仓
         <dependency>
             <groupId>org.jeecgframework</groupId>
             <artifactId>kingbase8</artifactId>
             <version>9.0.0</version>
             <scope>runtime</scope>
-        </dependency>
+        </dependency>-->
         <!--达梦数据库 -->
         <dependency>
             <groupId>com.dameng</groupId>
