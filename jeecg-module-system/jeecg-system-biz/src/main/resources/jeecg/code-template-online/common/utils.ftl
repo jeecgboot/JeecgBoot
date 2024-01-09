@@ -153,7 +153,9 @@
         <#assign extAttrs="${dictCode},">
     <#elseif po.classType=='cat_tree'>
     <#-- 分类字典树 -->
-        <#assign extAttrs="pcode: '${po.dictField}',">
+        <#-- update-begin---author:chenrui ---date:20240109  for：[issue/5787]增加非空判断防止代码生成时空指针异常---------- -->
+        <#assign extAttrs="pcode: '${po.dictField?default('')}',">
+        <#-- update-end---author:chenrui ---date:20240109  for：[issue/5787]增加非空判断防止代码生成时空指针异常---------- -->
     <#elseif po.classType=='sel_tree'>
     <#-- 自定义树 -->
         <#if po.dictText??>
@@ -166,10 +168,14 @@
                 <#assign extAttrs="hasChildField: '${po.dictText?split(',')[3]}'">
             </#if>
         </#if>
-        <#assign extAttrs="${extAttrs}, pidValue: '${po.dictField}',">
+        <#-- update-begin---author:chenrui ---date:20240109  for：[issue/5787]增加非空判断防止代码生成时空指针异常---------- -->
+        <#assign extAttrs="${extAttrs}, pidValue: '${po.dictField?default('')}',">
+        <#-- update-end---author:chenrui ---date:20240109  for：[issue/5787]增加非空判断防止代码生成时空指针异常---------- -->
     <#elseif po.classType=='popup'>
     <#-- popup -->
-        <#if po.dictText?default("")?trim?length gt 1 && po.dictText?index_of(',') gt 0>
+        <#-- update-begin---author:chenrui ---date:20240109  for：[issue/5787]增加非空判断防止代码生成时空指针异常---------- -->
+        <#if po.dictText?default("")?trim?length gt 1 && po.dictText?index_of(',') gt 0 && po.dictField?default("")?trim?length gt 1>
+        <#-- update-begin---author:chenrui ---date:20240109  for：[issue/5787]增加非空判断防止代码生成时空指针异常---------- -->
         <#-- 如果有多个回填字段,找到popup字段对应的来源字段 -->
             <#assign orgFieldIx=po.dictText?split(',')?seq_index_of(po.fieldDbName)>
             <#assign orgField=po.dictField?split(',')[orgFieldIx]>
