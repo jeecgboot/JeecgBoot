@@ -605,7 +605,7 @@ public class InvoiceController {
                 templateParam.put("errors", errors);
                 templateParam.put("current_page", String.valueOf(current_page));
                 templateParam.put("total_page", String.valueOf(total_page));
-                TemplateMessageDTO message = new TemplateMessageDTO("admin", "Gauthier", "Self Service invoicing estimation Errors", templateParam, "expenses_overview_errors");
+                TemplateMessageDTO message = new TemplateMessageDTO("admin", "admin", "Self Service invoicing estimation Errors", templateParam, "expenses_overview_errors");
                 ISysBaseApi.sendTemplateAnnouncement(message);
             }
         }
