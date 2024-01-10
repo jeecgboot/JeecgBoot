@@ -185,6 +185,7 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     void cancelInvoice(@Param("invoiceNumber") String invoiceNumber);
     void cancelBatchInvoice(@Param("invoiceNumbers") List<String> invoiceNumbers);
 
+    List<PlatformOrder> findUninvoicedShippingOrdersByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses);
     List<PlatformOrder> findUninvoicedOrdersByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses);
     List<String> findUninvoicedOrderIdsByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses);
 
@@ -209,4 +210,5 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<ShippingFeeBillableOrders> fetchShippingFeeBillableOrders();
 
     List<PlatformOrder> getPlatformOrdersByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
+
 }

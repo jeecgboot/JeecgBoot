@@ -92,7 +92,7 @@ public class TransactionController {
     public Result<?> debit(@RequestParam("clientId") String clientId, @RequestParam("currency") String currency) {
         List<String> errorMessages = new ArrayList<>();
         List<String> shopIds = shopService.listIdByClient(clientId);
-        List<PlatformOrder> orders = platformOrderService.findUninvoicedOrdersByShopForClient(shopIds, Arrays.asList(1,2,3));
+        List<PlatformOrder> orders = platformOrderService.findUninvoicedShippingOrdersByShopForClient(shopIds, Arrays.asList(1,2,3));
         if(orders.isEmpty())
             return Result.OK("No order to invoice.");
         Date startDate = orders.stream().map(PlatformOrder::getOrderTime).min(Date::compareTo).get();

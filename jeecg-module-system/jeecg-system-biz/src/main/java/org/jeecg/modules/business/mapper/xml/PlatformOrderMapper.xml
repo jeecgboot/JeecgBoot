@@ -548,7 +548,7 @@
         WHERE erp_status IN (4,5)
         AND order_time &lt; #{endDate};
     </select>
-    <select id="findUninvoicedOrdersByShopForClient" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+    <select id="findUninvoicedShippingOrdersByShopForClient" resultType="org.jeecg.modules.business.entity.PlatformOrder">
         SELECT *
         FROM platform_order
         WHERE erp_status IN
@@ -563,6 +563,35 @@
             #{erpStatus}
         </foreach>
         AND shipping_invoice_number IS NULL
+        AND shop_id IN
+        <foreach
+                collection="shopIds"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="shopId"
+        >
+            #{shopId}
+        </foreach>;
+    </select>
+    <select id="findUninvoicedOrdersByShopForClient" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
+        FROM platform_order
+        WHERE erp_status IN
+        <foreach
+                collection="erpStatuses"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="erpStatus"
+        >
+            #{erpStatus}
+        </foreach>
+        AND (shipping_invoice_number IS NULL
+            OR (shipping_invoice_number LIKE '%%%%-%%-2%%%'
+                AND purchase_invoice_number IS NULL))
         AND shop_id IN
         <foreach
                 collection="shopIds"
