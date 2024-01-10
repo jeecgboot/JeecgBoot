@@ -279,7 +279,7 @@ knife4j:
   basic:
     enable: true
     username: jeecg
-    password: jeecg1314
+    password:
 #第三方登录
 justauth:
   enabled: true

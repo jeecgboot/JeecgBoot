@@ -277,8 +277,8 @@ knife4j:
   production: false
   basic:
     enable: true
-    username: jeecg
-    password: jeecg1314
+    username: gtnes
+    password: yanjiaqing
 #第三方登录
 justauth:
   enabled: true
