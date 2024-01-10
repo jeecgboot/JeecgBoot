@@ -180,10 +180,18 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     void cancelBatchInvoice(List<String> invoiceNumbers);
 
     /**
-     * Find all order that can be invoiced themselves.
+     * Find all order that can be invoiced (shipping only).
      * @param shopIds list of shop id
      * @param erpStatuses list of erp_status
      * @return list of orders
+     */
+    List<PlatformOrder> findUninvoicedShippingOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses);
+
+    /**
+     * Find all order that can be invoiced (shipping and purchase).
+     * @param shopIds
+     * @param erpStatuses
+     * @return
      */
     List<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses);
     /**
@@ -219,4 +227,5 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      */
     List<ShippingFeeBillableOrders> fetchShippingFeeBillableOrders();
     List<PlatformOrder> getPlatformOrdersByInvoiceNumber(String invoiceNumber);
+
 }

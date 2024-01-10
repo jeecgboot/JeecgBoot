@@ -93,4 +93,40 @@ public class PlatformOrderFront {
     @Excel(name = "有货（1=有，0=没有）", width = 15)
     @ApiModelProperty(value = "有货（1=有，0=没有）")
     private String productAvailable;
+    /**
+     * 可开物流票（0=不可，1=可）
+     */
+    @Excel(name = "可开物流票（0=不可，1=可）", width = 15)
+    @ApiModelProperty(value = "可开物流票（0=不可，1=可）")
+    private String shippingAvailable;
+    /**
+     * 可开采购票（0=不可，1=可）
+     */
+    @Excel(name = "可开采购票（0=不可，1=可）", width = 15)
+    @ApiModelProperty(value = "可开采购票（0=不可，1=可）")
+    private String purchaseAvailable;
+
+    public enum invoiceStatus {
+        Unavailable("-1"),
+        Available("0"),
+        Invoiced("1"),
+        Paid("2");
+
+        public final String code;
+
+        invoiceStatus(String code) {
+            this.code = code;
+        }
+    }
+    public enum productStatus {
+        Unavailable("0"),
+        Available("1"),
+        Ordered("2");
+
+        public final String code;
+
+        productStatus(String code) {
+            this.code = code;
+        }
+    }
 }
