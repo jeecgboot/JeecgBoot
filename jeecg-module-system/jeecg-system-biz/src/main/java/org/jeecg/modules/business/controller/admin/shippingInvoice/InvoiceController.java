@@ -486,7 +486,6 @@ public class InvoiceController {
         log.info("User : {} is requesting uninvoiced orders for shops : [{}]",
                 ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername(),
                 shopIds);
-        // list of orders and their status : <order, shipping status, purchase status>
 
         // checking shipping data availability
         List<String> shopIdList = Arrays.asList(shopIds.split(","));
@@ -508,8 +507,8 @@ public class InvoiceController {
             //rename shop id by shop name to prevent it to leak in front
             orderFront.setShopId(shops.get(orderFront.getShopId()));
             // set default value of shipping and purchase availability
-            orderFront.setShippingAvailable("0");
-            orderFront.setPurchaseAvailable("0");
+            orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Available.code);
+            orderFront.setPurchaseAvailable(PlatformOrderFront.invoiceStatus.Available.code);
             List<String> skuIds = entry.getValue().stream().map(PlatformOrderContent::getSkuId).distinct().collect(Collectors.toList());
             // finds the first sku that isn't in db
             List<Sku> skuIdsFound = skuService.listByIds(skuIds);
@@ -519,8 +518,8 @@ public class InvoiceController {
                 else
                     errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and missing one or more sku in db");
 
-                orderFront.setShippingAvailable("-1");
-                orderFront.setPurchaseAvailable("-1");
+                orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
+                orderFront.setPurchaseAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
             }
 
             if(entry.getKey().getShippingInvoiceNumber() == null) {
@@ -530,7 +529,7 @@ public class InvoiceController {
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : Missing logistic channel for order : " + entry.getKey().getPlatformOrderId());
                     else
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and missing logistic channel");
-                    orderFront.setShippingAvailable("-1");
+                    orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
                 }
                 // finds the first product with missing weight
                 String missingWeightProductId = productService.searchFirstEmptyWeightProduct(skuIds);
@@ -539,7 +538,7 @@ public class InvoiceController {
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : Missing one or more weight for order : " + entry.getKey().getPlatformOrderId());
                     else
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and missing weight");
-                    orderFront.setShippingAvailable("-1");
+                    orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
                 }
             }
             if(entry.getKey().getPurchaseInvoiceNumber() == null) {
@@ -550,32 +549,35 @@ public class InvoiceController {
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : Missing one or more sku price for order : " + entry.getKey().getPlatformOrderId());
                     else
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and missing one or more sku price");
-                    orderFront.setPurchaseAvailable("-1");
+                    orderFront.setPurchaseAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
                 }
             }
 
             // set purchase order status (-1 = unavailable, 0 = available, 1 = invoiced, 2 = paid)
             if(entry.getKey().getProductAvailable() == null) {
-                orderFront.setProductAvailable("0");
-                entry.getKey().setProductAvailable("0");
+                orderFront.setProductAvailable(PlatformOrderFront.productStatus.Unavailable.code);
+                entry.getKey().setProductAvailable(PlatformOrderFront.productStatus.Unavailable.code);
             }
-            if(entry.getKey().getProductAvailable().equals("0") && entry.getKey().getVirtualProductAvailable().equals("1") && entry.getKey().getPurchaseInvoiceNumber() == null)
-                orderFront.setProductAvailable("2");
+            if(entry.getKey().getProductAvailable().equals(PlatformOrderFront.productStatus.Unavailable.code)
+                    && entry.getKey().getVirtualProductAvailable().equals(PlatformOrderFront.productStatus.Available.code)
+                    && entry.getKey().getPurchaseInvoiceNumber() == null
+            )
+                orderFront.setProductAvailable(PlatformOrderFront.productStatus.Ordered.code);
             if(entry.getKey().getPurchaseInvoiceNumber() != null) {
                 PurchaseOrder purchase =  purchaseOrderService.getPurchaseByInvoiceNumber(entry.getKey().getPurchaseInvoiceNumber());
                 if(purchase.getPaidAmount().compareTo(BigDecimal.ZERO) == 0)
-                    orderFront.setPurchaseAvailable("1");// invoiced
+                    orderFront.setPurchaseAvailable(PlatformOrderFront.invoiceStatus.Invoiced.code);// invoiced
                 else
-                    orderFront.setPurchaseAvailable("2");// paid
+                    orderFront.setPurchaseAvailable(PlatformOrderFront.invoiceStatus.Paid.code);// paid
             }
             // set shipping order status (-1 = unavailable, 0 = available, 1 = invoiced, 2 = paid)
             if(entry.getKey().getShippingInvoiceNumber() != null) {
                 ShippingInvoice shippingInvoice = iShippingInvoiceService.getShippingInvoice(entry.getKey().getShippingInvoiceNumber());
                 if(shippingInvoice.getPaidAmount().compareTo(BigDecimal.ZERO) == 0) {
-                    orderFront.setShippingAvailable("1"); // invoiced
+                    orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Invoiced.code); // invoiced
                 }
                 else {
-                    orderFront.setShippingAvailable("2"); // paid
+                    orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Paid.code); // paid
                 }
             }
             orderFronts.add(orderFront);

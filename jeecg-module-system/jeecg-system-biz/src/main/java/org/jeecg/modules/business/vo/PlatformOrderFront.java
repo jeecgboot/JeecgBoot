@@ -105,4 +105,28 @@ public class PlatformOrderFront {
     @Excel(name = "可开采购票（0=不可，1=可）", width = 15)
     @ApiModelProperty(value = "可开采购票（0=不可，1=可）")
     private String purchaseAvailable;
+
+    public enum invoiceStatus {
+        Unavailable("-1"),
+        Available("0"),
+        Invoiced("1"),
+        Paid("2");
+
+        public final String code;
+
+        invoiceStatus(String code) {
+            this.code = code;
+        }
+    }
+    public enum productStatus {
+        Unavailable("0"),
+        Available("1"),
+        Ordered("2");
+
+        public final String code;
+
+        productStatus(String code) {
+            this.code = code;
+        }
+    }
 }
