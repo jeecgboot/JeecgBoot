@@ -6,8 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.modules.business.entity.Client;
 import org.jeecg.modules.business.entity.Credit;
 import org.jeecg.modules.business.service.IBalanceService;
+import org.jeecg.modules.business.service.IClientService;
 import org.jeecg.modules.business.service.ICreditService;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -40,6 +42,8 @@ public class CreditController extends JeecgController<Credit, ICreditService> {
 	private ICreditService creditService;
 	@Autowired
 	private IBalanceService balanceService;
+	@Autowired
+	private IClientService clientService;
 	
 	/**
 	 * 分页列表查询
@@ -74,7 +78,13 @@ public class CreditController extends JeecgController<Credit, ICreditService> {
 	@PostMapping(value = "/add")
 	public Result<String> add(@RequestBody Credit credit) {
 		creditService.save(credit);
-		balanceService.updateBalance(credit.getClientId(), credit.getId(), credit.getAmount(), credit.getCurrencyId());
+		try {
+			balanceService.updateBalance(credit.getClientId(), credit.getId(), credit.getAmount(), credit.getCurrencyId());
+		}
+		catch (RuntimeException e) {
+			Client client = clientService.getById(credit.getClientId());
+			return Result.error("Error while updating " + client.fullName() + "'s balance  : " + e.getMessage());
+		}
 		return Result.OK("sys.api.entryAddSuccess");
 	}
 	
