@@ -67,6 +67,10 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
     public void updateBalance(String clientId, String CreditId, BigDecimal amount, String currencyId) {
         String currency = currencyService.getCodeById(currencyId);
         BigDecimal previousBalance = getBalanceByClientIdAndCurrency(clientId, currency);
+
+        if(previousBalance == null) {
+            throw new RuntimeException("Please initialize balance first !");
+        }
         BigDecimal currentBalance = previousBalance.add(amount);
         SysUser sysUser = new SysUser();
         Balance balance = Balance.of(sysUser.getUsername(), clientId, currencyId, Balance.OperationType.Credit.name(), CreditId, currentBalance);
