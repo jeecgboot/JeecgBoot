@@ -575,7 +575,7 @@
             #{shopId}
         </foreach>;
     </select>
-    <select id="fetchUninvoicedPurchaseOrdersByShopFroClient" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+    <select id="fetchUninvoicedPurchaseOrdersByShopForClient" resultType="org.jeecg.modules.business.entity.PlatformOrder">
         SELECT *
         FROM platform_order
         WHERE IF(shipping_invoice_number IS NOT NULL, shipping_invoice_number LIKE '%%%%-%%-2%%%',

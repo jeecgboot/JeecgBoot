@@ -113,7 +113,7 @@ public class TransactionController {
         }
 
         // purchase estimation
-        List<PlatformOrder> purchaseOrders = platformOrderService.fetchUninvoicedPurchaseOrdersByShopFroClient(shopIds, Arrays.asList(1,2,3));
+        List<PlatformOrder> purchaseOrders = platformOrderService.fetchUninvoicedPurchaseOrdersByShopForClient(shopIds, Arrays.asList(1,2,3));
         BigDecimal purchaseEstimation = BigDecimal.ZERO;
 
         if(shippingOrders.isEmpty() && purchaseOrders.isEmpty()) {

@@ -193,7 +193,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * @param erpStatuses
      * @return
      */
-    List<PlatformOrder> fetchUninvoicedPurchaseOrdersByShopFroClient(List<String> shopIds, List<Integer> erpStatuses);
+    List<PlatformOrder> fetchUninvoicedPurchaseOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses);
 
     /**
      * Find all order that can be invoiced (shipping and purchase).
