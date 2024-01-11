@@ -92,43 +92,66 @@ public class TransactionController {
     public Result<?> debit(@RequestParam("clientId") String clientId, @RequestParam("currency") String currency) {
         List<String> errorMessages = new ArrayList<>();
         List<String> shopIds = shopService.listIdByClient(clientId);
-        List<PlatformOrder> orders = platformOrderService.findUninvoicedShippingOrdersByShopForClient(shopIds, Arrays.asList(1,2,3));
-        if(orders.isEmpty())
-            return Result.OK("No order to invoice.");
-        Date startDate = orders.stream().map(PlatformOrder::getOrderTime).min(Date::compareTo).get();
-        Date endDate = orders.stream().map(PlatformOrder::getOrderTime).max(Date::compareTo).get();
-        List<String> orderIds = orders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
-        log.info("{} Orders to be estimated", orderIds.size());
-        ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
-                platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
-                platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
-                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
-        List<ShippingFeesEstimation> shippingFeesEstimations = factory.getEstimations(clientId, orderIds, errorMessages);
-        if(shippingFeesEstimations.isEmpty())
-            return Result.OK("No estimation found.");
-        // purchase estimation
-        List<String> estimationOrderIds = new ArrayList<>();
+        List<PlatformOrder> shippingOrders = platformOrderService.findUninvoicedShippingOrdersByShopForClient(shopIds, Arrays.asList(1,2,3));
+        Date startDate = null;
+        Date endDate = null;
+        List<ShippingFeesEstimation> shippingFeesEstimations;
         BigDecimal shippingFeesEstimation = BigDecimal.ZERO;
-        for(ShippingFeesEstimation estimation: shippingFeesEstimations) {
-            estimationOrderIds.addAll(estimation.getOrderIds());
-            shippingFeesEstimation = shippingFeesEstimation.add(estimation.getDueForProcessedOrders());
+        if(!shippingOrders.isEmpty()) {
+            startDate = shippingOrders.stream().map(PlatformOrder::getOrderTime).min(Date::compareTo).get();
+            endDate = shippingOrders.stream().map(PlatformOrder::getOrderTime).max(Date::compareTo).get();
+            List<String> shippingOrderIds = shippingOrders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
+            log.info("Estimating shipping fees for {}", shippingOrderIds.size());
+            ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
+                    platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
+                    platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
+                    purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
+            shippingFeesEstimations = factory.getEstimations(clientId, shippingOrderIds, errorMessages);
+            for (ShippingFeesEstimation estimation : shippingFeesEstimations) {
+                shippingFeesEstimation = shippingFeesEstimation.add(estimation.getDueForProcessedOrders());
+            }
         }
-        List<PlatformOrderContent> orderContents = platformOrderContentMapper.fetchOrderContent(estimationOrderIds);
-        List<String> skuIds = orderContents.stream().map(PlatformOrderContent::getSkuId).collect(Collectors.toList());
-        List<SkuPrice> skuPrices = platformOrderContentMapper.searchSkuPrice(skuIds);
-        BigDecimal exchangeRateEurToRmb = exchangeRatesMapper.getLatestExchangeRate("EUR", "RMB");
+
+        // purchase estimation
+        List<PlatformOrder> purchaseOrders = platformOrderService.fetchUninvoicedPurchaseOrdersByShopFroClient(shopIds, Arrays.asList(1,2,3));
         BigDecimal purchaseEstimation = BigDecimal.ZERO;
-        boolean isCompleteInvoiceReady = true;
-        if(skuPrices.size() != skuIds.size()) {
-            isCompleteInvoiceReady = false;
-            errorMessages.add("Some sku prices are missing.");
+
+        if(shippingOrders.isEmpty() && purchaseOrders.isEmpty()) {
+            return Result.OK("No order to invoice.");
         }
-        for(PlatformOrderContent content : orderContents){
-            for (SkuPrice skuPrice : skuPrices) {
-                if(content.getSkuId().equals(skuPrice.getSkuId())) {
-                    purchaseEstimation = purchaseEstimation.add(skuPrice.getPrice(content.getQuantity(), exchangeRateEurToRmb));
+
+        boolean isCompleteInvoiceReady = true;
+        if(!purchaseOrders.isEmpty()) {
+            Date purchaseStartDate = purchaseOrders.stream().map(PlatformOrder::getOrderTime).min(Date::compareTo).get();
+            Date purchaseEndDate = purchaseOrders.stream().map(PlatformOrder::getOrderTime).max(Date::compareTo).get();
+            if(startDate == null)
+                startDate = purchaseStartDate;
+            else
+                startDate = startDate.before(purchaseStartDate) ? startDate : purchaseStartDate;
+            if(endDate == null)
+                endDate = purchaseEndDate;
+            else
+                endDate = endDate.after(purchaseEndDate) ? endDate : purchaseEndDate;
+
+            List<String> purchaseOrderIds = purchaseOrders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
+            List<PlatformOrderContent> orderContents = platformOrderContentMapper.fetchOrderContent(purchaseOrderIds);
+            List<String> skuIds = orderContents.stream().map(PlatformOrderContent::getSkuId).collect(Collectors.toList());
+            List<SkuPrice> skuPrices = platformOrderContentMapper.searchSkuPrice(skuIds);
+            BigDecimal exchangeRateEurToRmb = exchangeRatesMapper.getLatestExchangeRate("EUR", "RMB");
+            if (skuPrices.size() != skuIds.size()) {
+                isCompleteInvoiceReady = false;
+                errorMessages.add("Some sku prices are missing.");
+            }
+            for (PlatformOrderContent content : orderContents) {
+                for (SkuPrice skuPrice : skuPrices) {
+                    if (content.getSkuId().equals(skuPrice.getSkuId())) {
+                        purchaseEstimation = purchaseEstimation.add(skuPrice.getPrice(content.getQuantity(), exchangeRateEurToRmb));
+                    }
                 }
             }
+        }
+        if(shippingFeesEstimation.compareTo(BigDecimal.ZERO) == 0 && purchaseEstimation.compareTo(BigDecimal.ZERO) == 0) {
+            return Result.OK("No estimation found.");
         }
         if(!currency.equals("EUR")) {
             BigDecimal exchangeRate = exchangeRatesMapper.getLatestExchangeRate("EUR", currency);

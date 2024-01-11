@@ -405,6 +405,11 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
 
     @Override
+    public List<PlatformOrder> fetchUninvoicedPurchaseOrdersByShopFroClient(List<String> shopIds, List<Integer> erpStatuses) {
+        return platformOrderMap.fetchUninvoicedPurchaseOrdersByShopFroClient(shopIds, erpStatuses);
+    }
+
+    @Override
     public List<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses) {
         return platformOrderMap.findUninvoicedOrdersByShopForClient(shopIds, erpStatuses);
     }
