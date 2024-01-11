@@ -88,5 +88,67 @@
         WHERE erp_code IN
         <foreach collection="erpCodes" index="erpCode" item="quantity" open="(" close=")" separator=",">
             #{erpCode}
-        </foreach>    </select>
+        </foreach>
+    </select>
+    <select id="searchFirstMissingPriceSku" resultType="java.lang.String">
+        SELECT s.id
+        FROM sku s
+        LEFT JOIN sku_price sp
+            ON s.id = sp.sku_id
+        WHERE sp.id IS NULL
+        AND s.id IN
+        <foreach collection="skuIds" separator="," open="(" close=")" index="index" item="id">
+            #{id}
+        </foreach>
+        LIMIT 1;
+    </select>
+    <select id="listErpCodesByIds" resultType="java.lang.String">
+        SELECT erp_code
+        FROM sku
+        WHERE id IN
+        <foreach collection="skuIds" separator="," open="(" close=")" index="index" item="skuId">
+            #{skuId}
+        </foreach>;
+    </select>
+
+    <select id="findMissingSkusInNotShippedOrders" resultType="org.jeecg.modules.business.entity.Sku">
+        WITH notShippedOrders AS (
+            SELECT po.id
+            FROM platform_order po
+                     JOIN shop s ON po.shop_id = s.id
+                     JOIN client c ON s.owner_id = c.id
+                     JOIN client_category cc ON c.client_category_id = cc.id
+            WHERE po.erp_status IN (1,2)
+                AND cc.name = 'self-service'
+                AND po.order_time &gt;= #{start}
+            ORDER BY po.order_time
+        ),
+             contentWithMissingSku AS (
+                 SELECT *
+                 FROM platform_order_content
+                 WHERE platform_order_id IN (SELECT id FROM notShippedOrders)
+                   AND erp_status IN ('1','2')
+                   AND product_available = 0
+                   AND virtual_product_available = 0
+             ),
+             missingSkuIds AS (
+                 SELECT DISTINCT sku_id FROM contentWithMissingSku
+             )
+        SELECT id, erp_code
+        FROM sku
+                 JOIN missingSkuIds ON sku.id = missingSkuIds.sku_id;
+    </select>
+
+    <select id="getSkuQuantitiesFromOrderIds" resultType="org.jeecg.modules.business.vo.SkuQuantity">
+        SELECT sku_id as ID, SUM(quantity) AS quantity
+        FROM platform_order_content
+        WHERE platform_order_id IN
+        <foreach collection="orderIds" separator="," open="(" close=")" index="index" item="orderId">
+            #{orderId}
+        </foreach>
+        AND erp_status IN ('1','2', '3')
+        AND product_available = 0
+        AND virtual_product_available = 0
+        GROUP BY sku_id;
+    </select>
 </mapper>

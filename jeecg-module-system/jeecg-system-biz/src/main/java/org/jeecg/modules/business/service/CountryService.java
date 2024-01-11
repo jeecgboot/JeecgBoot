@@ -16,6 +16,9 @@ public class CountryService {
     public Country findByEnName(String en_name) {
         return countryMapper.findByEnName(en_name);
     }
+    public List<Country> findIdByEnName(List<String> countries) {
+        return countryMapper.findIdByEnName(countries);
+    }
 
     public List<Country> findAll() {
         return countryMapper.findAll();

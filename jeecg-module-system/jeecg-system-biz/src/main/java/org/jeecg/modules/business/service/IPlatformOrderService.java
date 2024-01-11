@@ -2,8 +2,10 @@ package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.vo.PlatformOrderQuantity;
+import org.jeecg.modules.business.vo.ShippingFeeBillableOrders;
 import org.jeecg.modules.business.vo.SkuQuantity;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
 import org.jeecg.modules.business.vo.clientPlatformOrder.PurchaseConfirmation;
@@ -54,19 +56,19 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     void processedPlatformOrderPage(IPage<ClientPlatformOrderPage> page);
 
-    OrdersStatisticData getPlatformOrdersStatisticData(List<String> orderIds);
+    OrdersStatisticData getPlatformOrdersStatisticData(List<String> orderIds) throws UserException;
 
     List<PlatformOrderContent> selectByMainId(String mainId);
 
     List<ClientPlatformOrderContent> selectClientVersionByMainId(String mainId);
 
-    PurchaseConfirmation confirmPurchaseByPlatformOrder(List<String> platformOrderIdList);
+    PurchaseConfirmation confirmPurchaseByPlatformOrder(List<String> platformOrderIdList) throws UserException;
 
-    PurchaseConfirmation confirmPurchaseBySkuQuantity(List<SkuQuantity> skuIDQuantityMap);
+    PurchaseConfirmation confirmPurchaseBySkuQuantity(List<SkuQuantity> skuIDQuantityMap) throws UserException;
 
-    PurchaseConfirmation confirmPurchaseBySkuQuantity(ClientInfo clientInfo, List<SkuQuantity> skuIDQuantityMap);
+    PurchaseConfirmation confirmPurchaseBySkuQuantity(ClientInfo clientInfo, List<SkuQuantity> skuIDQuantityMap) throws UserException;
 
-    List<OrderContentDetail> searchPurchaseOrderDetail(List<SkuQuantity> skuQuantities);
+    List<OrderContentDetail> searchPurchaseOrderDetail(List<SkuQuantity> skuQuantities) throws UserException;
 
     OrderQuantity queryOrderQuantities();
 
@@ -176,4 +178,62 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * @param invoiceNumbers
      */
     void cancelBatchInvoice(List<String> invoiceNumbers);
+
+    /**
+     * Find all order that can be invoiced (shipping only).
+     * @param shopIds list of shop id
+     * @param erpStatuses list of erp_status
+     * @return list of orders
+     */
+    List<PlatformOrder> findUninvoicedShippingOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses);
+
+    /**
+     * Find all orders that can be invoiced (purchase only).
+     * @param shopIds
+     * @param erpStatuses
+     * @return
+     */
+    List<PlatformOrder> fetchUninvoicedPurchaseOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses);
+
+    /**
+     * Find all order that can be invoiced (shipping and purchase).
+     * @param shopIds
+     * @param erpStatuses
+     * @return
+     */
+    List<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses);
+    /**
+     * Get ids of all order that can be invoiced by small clients (type 2) themselves.
+     * @param shopIds list of shop id
+     * @param erpStatuses list of erp_status
+     * @return list of orders
+     */
+    List<String> findUninvoicedOrderIdsByShopForClient(List<String> shopIds, List<Integer> erpStatuses);
+
+    /**
+     * Find all order with empty logistic_channel_name and invoice_logistic_channel_name
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    List<PlatformOrder> fetchEmptyLogisticChannelOrders(String startDate, String endDate);
+
+    Map<PlatformOrder, List<PlatformOrderContent>> fetchOrdersWithProductAvailable();
+
+    List<PlatformOrder> fetchOrdersWithMissingStock(LocalDateTime start);
+
+    List<PlatformOrder> selectByPlatformOrderIds(List<String> platformOrderIds);
+
+    void removePurchaseInvoiceNumber(String purchaseInvoiceNumber);
+    void removePurchaseInvoiceNumbers(List<String> invoiceNumbers);
+
+    void updatePurchaseInvoiceNumber(List<String> orderIds, String invoiceCode);
+
+    /**
+     * Fetch all orders with productAvailable = 1, purchaseInvoiceNumber NOT NULL, invoiceNumber NULL and erp_status IN (1,2)
+     * @return
+     */
+    List<ShippingFeeBillableOrders> fetchShippingFeeBillableOrders();
+    List<PlatformOrder> getPlatformOrdersByInvoiceNumber(String invoiceNumber);
+
 }

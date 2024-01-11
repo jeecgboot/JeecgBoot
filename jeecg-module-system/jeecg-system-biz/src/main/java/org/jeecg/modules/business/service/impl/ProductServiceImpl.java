@@ -79,4 +79,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 	public void updateWeightBatch (List<Product> productList) {
 		productMapper.updateWeightBatch(productList);
 	}
+
+	@Override
+	public String searchFirstEmptyWeightProduct(List<String> skuIds) {
+		return productMapper.searchFirstEmptyWeightProduct(skuIds);
+	}
 }

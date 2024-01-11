@@ -1,7 +1,9 @@
 package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jeecg.modules.business.controller.UserException;
+import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderContent;
 import org.jeecg.modules.business.vo.SkuQuantity;
 import org.jeecg.modules.business.vo.SkuWeightDiscountServiceFees;
@@ -25,7 +27,7 @@ public interface IPlatformOrderContentService extends IService<PlatformOrderCont
      * @param skuRealWeights All SKU's real weights
      * @return weight
      */
-    BigDecimal calculateWeight(Map<String, Integer> contentMap, Map<String, BigDecimal> skuRealWeights) throws UserException;
+    Pair<BigDecimal, List<String>> calculateWeight(Map<String, Integer> contentMap, Map<String, BigDecimal> skuRealWeights) throws UserException;
 
     /**
      * Retrieve all SKU weights and discounts
@@ -53,4 +55,18 @@ public interface IPlatformOrderContentService extends IService<PlatformOrderCont
      * @param invoiceNumbers
      */
     void cancelBatchInvoice(List<String> invoiceNumbers);
+
+    /**
+     * Find order contents <b>without</b> product stock from uninvoiced orders with missing stock
+     * @return
+     */
+    List<PlatformOrderContent> findOrderContentsWithMissingStock(List<String> orderIds);
+    /**
+     * Find order contents <b>with</b> product stock from uninvoiced orders with missing stock
+     * @return
+     */
+    List<PlatformOrderContent> findOrderContentsWithStock(List<String> orderIds);
+
+    List<PlatformOrderContent> fetchOrderContent(List<String> orderIds);
+
 }

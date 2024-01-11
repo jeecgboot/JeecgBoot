@@ -12,6 +12,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.ClientPlatformOrderContent;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderContent;
@@ -192,7 +193,7 @@ public class ClientPlatformOrderController {
             notes = "Compute order statistic data of platform orders indicated by its identifier."
     )
     @PostMapping(value = "/computeInfo", consumes = "application/json", produces = "application/json")
-    public Result<OrdersStatisticData> queryOrdersStatisticInfo(@RequestBody List<String> orderIds) {
+    public Result<OrdersStatisticData> queryOrdersStatisticInfo(@RequestBody List<String> orderIds) throws UserException {
         log.info("Calculating statistic information for orders: {}", orderIds);
         OrdersStatisticData ordersData = platformOrderService.getPlatformOrdersStatisticData(orderIds);
         log.info("Got statistic information: {}", ordersData);
@@ -212,7 +213,7 @@ public class ClientPlatformOrderController {
                     "client confirm information."
     )
     @PostMapping(value = "/placeOrder", consumes = "application/json", produces = "application/json")
-    public Result<PurchaseConfirmation> placeOrder(@RequestBody List<String> orderIds) {
+    public Result<PurchaseConfirmation> placeOrder(@RequestBody List<String> orderIds) throws UserException {
         log.info("One client place a purchase order");
         PurchaseConfirmation d = platformOrderService.confirmPurchaseByPlatformOrder(orderIds);
         log.info(d.toString());
@@ -226,7 +227,7 @@ public class ClientPlatformOrderController {
      * @return confirmation.
      */
     @PostMapping(value = "/adjustOrder", consumes = "application/json", produces = "application/json")
-    public Result<PurchaseConfirmation> adjustOrder(@RequestBody List<SkuQuantity> skuQuantities) {
+    public Result<PurchaseConfirmation> adjustOrder(@RequestBody List<SkuQuantity> skuQuantities) throws UserException {
         log.info("One client adjust its purchase order");
         log.info("Content: {}", skuQuantities);
         PurchaseConfirmation d = platformOrderService.confirmPurchaseBySkuQuantity(skuQuantities);

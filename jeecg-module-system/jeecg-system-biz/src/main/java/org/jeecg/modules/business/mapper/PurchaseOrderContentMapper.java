@@ -25,4 +25,6 @@ public interface PurchaseOrderContentMapper extends BaseMapper<PurchaseOrderSku>
     void addAll(@Param("creator") String creator, @Param("purchaseID") String purchaseID, @Param("data") List<OrderContentEntry> orderContent);
 
     List<PurchaseInvoiceEntry> selectInvoiceDataByID(@Param("purchaseID") String purchaseID);
+
+    void deleteFromPurchaseIds(@Param("purchaseIds") List<String> purchaseIds);
 }

@@ -19,6 +19,17 @@
         JOIN product p on s.product_id = p.id
         WHERE purchase_order_id = #{purchaseID}
     </select>
+    <select id="selectInvoicesDataByID" resultType="org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoiceEntry">
+        SELECT s.erp_code, p.en_name, SUM(pos.quantity) as quantity, SUM(pos.total_amount) as total_amount
+        FROM purchase_order_sku pos
+        JOIN sku s on pos.sku_id = s.id
+        JOIN product p on s.product_id = p.id
+        WHERE purchase_order_id IN
+        <foreach collection="purchaseIds" item="purchaseId" index="i" open="(" close=")" separator=",">
+            #{purchaseId}
+        </foreach>
+        GROUP BY s.erp_code
+    </select>
 
     <insert id="addAll">
         INSERT INTO purchase_order_sku(id, create_by, create_time, update_by, update_time, purchase_order_id, quantity,
@@ -29,4 +40,12 @@
             #{item.skuID})
         </foreach>
     </insert>
+    <delete id="deleteFromPurchaseIds">
+        DELETE
+        FROM purchase_order_sku
+        WHERE purchase_order_id IN
+        <foreach collection="purchaseIds" item="purchaseId" index="i" open="(" close=")" separator=",">
+            #{purchaseId}
+        </foreach>
+    </delete>
 </mapper>

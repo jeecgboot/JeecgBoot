@@ -1,12 +1,10 @@
 package org.jeecg.modules.business.service;
 
-import org.jeecg.modules.business.entity.Client;
-import org.jeecg.modules.business.entity.PlatformOrder;
-import org.jeecg.modules.business.entity.PlatformOrderContent;
-import org.jeecg.modules.business.entity.ShippingInvoice;
+import org.jeecg.modules.business.entity.*;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.io.Serializable;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,9 +35,16 @@ public interface IShippingInvoiceService extends IService<ShippingInvoice> {
      * 批量删除一对多
      */
     public void delBatchMain(Collection<? extends Serializable> idList);
-    public String getShippingInvoiceNumber(String invoiceID);
+    public String getShippingInvoiceId(String invoiceNumber);
     public ShippingInvoice getShippingInvoice(String invoiceNumber);
     public List<PlatformOrder> getPlatformOrder(String invoiceNumber);
     public List<PlatformOrderContent> getPlatformOrderContent(String platformOrderId);
     public Client getShopOwnerFromInvoiceNumber(String invoiceNumber);
+    Currency getInvoiceCurrencyByCode(String invoiceCode);
+
+    // Utils
+    public List<Path> getPath(String dirPath, String invoiceNumber);
+    public List<Path> getPath(String dirPath, String invoiceNumber, String invoiceEntity);
+    public String getInvoiceList(String invoiceNumber, String filetype);
+    boolean deleteAttachmentFile(String filename);
 }

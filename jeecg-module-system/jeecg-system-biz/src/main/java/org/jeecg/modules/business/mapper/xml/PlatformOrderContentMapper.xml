@@ -128,6 +128,20 @@
         AND po.shipping_invoice_number IS NULL
         AND poc.erp_status = 3
     </select>
+    <select id="findUninvoicedOrderContents" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
+        SELECT poc.*
+        FROM platform_order_content poc
+        WHERE platform_order_id IN
+        <foreach
+                collection="orderIds"
+                index="index"
+                item="orderId"
+                open="("
+                close=")"
+                separator=",">
+            #{orderId}
+        </foreach>
+    </select>
     <select id="findUninvoicedOrderContentsForShopsAndStatus" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
         SELECT poc.*
         FROM platform_order_content poc
@@ -281,18 +295,21 @@
         </foreach>;
     </insert>
     <update id="cancelInvoice">
-        UPDATE platform_order_content
-        SET picking_fee  = 0.0,
-            shipping_fee = NULL,
-            service_fee  = NULL,
-            vat          = NULL,
-            purchase_fee = 0.0,
-            erp_status =
-                CASE erp_status
-                    WHEN '4' THEN '3'
-                ELSE erp_status
+        UPDATE platform_order_content poc
+        JOIN platform_order po ON poc.platform_order_id = po.id
+        JOIN shipping_invoice si ON po.shipping_invoice_number = si.invoice_number
+        SET poc.picking_fee  = 0.0,
+            poc.shipping_fee = NULL,
+            poc.service_fee  = NULL,
+            poc.vat          = NULL,
+            poc.purchase_fee = 0.0,
+            poc.erp_status =
+                CASE
+                    WHEN poc.erp_status = '4' THEN '3'
+                    WHEN poc.erp_status = '2' AND si.create_by = 'system' THEN '1'
+                ELSE poc.erp_status
                 END
-        WHERE platform_order_id IN (SELECT id FROM platform_order WHERE shipping_invoice_number = #{invoiceNumber});
+        WHERE po.shipping_invoice_number = #{invoiceNumber};
     </update>
     <update id="cancelBatchInvoice">
         UPDATE platform_order_content
@@ -313,6 +330,35 @@
             #{invoiceNumber}
         </foreach>);
     </update>
+    <select id="searchSkuPrice" resultType="org.jeecg.modules.business.entity.SkuPrice">
+        SELECT * FROM sku_price
+        WHERE sku_id IN
+        <foreach collection="skuIds" separator="," open="(" close=")" index="index" item="skuId">
+            #{skuId}
+        </foreach>;
+    </select>
+    <select id="findOrderContentsWithMissingStock" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
+        SELECT *
+        FROM platform_order_content
+        WHERE platform_order_id IN
+            <foreach collection="orderIds" separator="," open="(" close=")" index="index" item="orderId">
+                #{orderId}
+            </foreach>
+            AND erp_status IN ('1','2')
+            AND product_available = 0
+            AND virtual_product_available = 0;
+    </select>
+    <select id="findOrderContentsWithStock" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
+        SELECT *
+        FROM platform_order_content
+        WHERE platform_order_id IN
+            <foreach collection="orderIds" separator="," open="(" close=")" index="index" item="orderId">
+                #{orderId}
+            </foreach>
+            AND erp_status IN ('1','2')
+            AND product_available = 1
+            OR virtual_product_available = 1;
+    </select>
 
     <select id="searchShoumanOrderContent"
             resultType="org.jeecg.modules.business.entity.ShoumanOrderContent">

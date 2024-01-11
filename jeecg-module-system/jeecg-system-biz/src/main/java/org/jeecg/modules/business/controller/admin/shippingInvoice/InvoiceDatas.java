@@ -10,6 +10,8 @@ import java.util.Map;
 public class InvoiceDatas {
     @JSONField(name = "invoiceNumber")
     private String invoiceNumber;
+    @JSONField(name = "feeAndQtyPerSku")
+    private Map<String, Map.Entry<Integer, BigDecimal>> feeAndQtyPerSku;
     @JSONField(name = "feeAndQtyPerCountry")
     private Map<String, Map.Entry<Integer, BigDecimal>> feeAndQtyPerCountry;
     @JSONField(name = "vat")

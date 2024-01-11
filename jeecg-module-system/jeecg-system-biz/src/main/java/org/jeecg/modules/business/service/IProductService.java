@@ -38,4 +38,6 @@ public interface IProductService extends IService<Product> {
 	public void delBatchMain (Collection<? extends Serializable> idList);
 
 	public void updateWeightBatch (List<Product> productList);
+
+    String searchFirstEmptyWeightProduct(List<String> skuIds);
 }

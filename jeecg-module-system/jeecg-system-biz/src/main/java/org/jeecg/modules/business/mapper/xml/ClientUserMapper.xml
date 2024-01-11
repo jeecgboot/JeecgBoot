@@ -7,5 +7,31 @@
         FROM user_client
             JOIN client c
                 ON c.id = user_client.client_id
-        WHERE user_id = #{userId}    </select>
+        WHERE user_id = #{userId}
+    </select>
+    <select id="getClientMinInfoByUserId" parameterType="java.lang.String"
+            resultType="org.jeecg.modules.business.entity.Client">
+        SELECT c.id, c.surname, c.first_name, c.internal_code, c.invoice_entity, c.currency, cc.name as client_category_id
+        FROM user_client
+            JOIN client c
+                ON c.id = user_client.client_id
+            JOIN client_category cc
+                ON cc.id = c.client_category_id
+        WHERE user_id = #{userId}
+    </select>
+    <select id="listClients" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT c.*
+        FROM user_client
+            JOIN client c
+                ON c.id = user_client.client_id
+    </select>
+    <select id="getClientsByCategory" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT c.*
+        FROM user_client
+            JOIN client c
+                ON c.id = user_client.client_id
+            JOIN client_category cc
+                ON cc.id = c.client_category_id
+        WHERE cc.name = #{category};
+    </select>
 </mapper>

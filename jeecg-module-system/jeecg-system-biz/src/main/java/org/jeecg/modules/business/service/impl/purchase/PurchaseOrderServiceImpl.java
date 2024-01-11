@@ -2,17 +2,17 @@ package org.jeecg.modules.business.service.impl.purchase;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.domain.codeGeneration.PurchaseInvoiceCodeRule;
-import org.jeecg.modules.business.domain.purchase.invoice.InvoiceData;
 import org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoice;
 import org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoiceEntry;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.*;
 import org.jeecg.modules.business.service.*;
-import org.jeecg.modules.business.vo.OrderContentEntry;
-import org.jeecg.modules.business.vo.PromotionDetail;
-import org.jeecg.modules.business.vo.PromotionHistoryEntry;
-import org.jeecg.modules.business.vo.SkuQuantity;
+import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrdersStatisticData;
 import org.jeecg.modules.message.handle.enums.SendMsgTypeEnum;
 import org.jeecg.modules.message.util.PushMsgUtil;
@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
  * @Date: 2021-04-03
  * @Version: V1.0
  */
+@Slf4j
 @Service
 public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, PurchaseOrder> implements IPurchaseOrderService {
     private final PurchaseOrderMapper purchaseOrderMapper;
@@ -54,7 +55,9 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     private final IPlatformOrderService platformOrderService;
     private final PlatformOrderMapper platformOrderMapper;
     private final IPlatformOrderContentService platformOrderContentService;
+    private final IShippingInvoiceService shippingInvoiceService;
     private final ISkuService skuService;
+    private final ICurrencyService currencyService;
 
     /**
      * Directory where payment documents are put
@@ -67,6 +70,12 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
 
     @Value("${jeecg.path.purchaseInvoiceDir}")
     private String INVOICE_DIR;
+    @Value("${jeecg.path.shippingInvoiceDetailDir}")
+    private String INVOICE_DETAIL_DIR;
+    @Value("${jeecg.path.shippingInvoicePdfDir}")
+    private String INVOICE_PDF_DIR;
+    @Value("${jeecg.path.shippingInvoiceDetailPdfDir}")
+    private String INVOICE_DETAIL_PDF_DIR;
 
     @Autowired
     private PushMsgUtil pushMsgUtil;
@@ -76,7 +85,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
                                     SkuPromotionHistoryMapper skuPromotionHistoryMapper, IClientService clientService,
                                     IPlatformOrderService platformOrderService, PlatformOrderMapper platformOrderMapper,
                                     IPlatformOrderContentService platformOrderContentService, ISkuService skuService,
-                                    ExchangeRatesMapper exchangeRatesMapper) {
+                                    ExchangeRatesMapper exchangeRatesMapper, IShippingInvoiceService shippingInvoiceService, ICurrencyService currencyService) {
         this.purchaseOrderMapper = purchaseOrderMapper;
         this.purchaseOrderContentMapper = purchaseOrderContentMapper;
         this.skuPromotionHistoryMapper = skuPromotionHistoryMapper;
@@ -86,6 +95,8 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         this.platformOrderContentService = platformOrderContentService;
         this.skuService = skuService;
         this.exchangeRatesMapper = exchangeRatesMapper;
+        this.shippingInvoiceService = shippingInvoiceService;
+        this.currencyService = currencyService;
     }
 
     @Override
@@ -137,18 +148,23 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     @Override
     @Transactional
     public void delMain(String id) {
+        String invoiceNumber = purchaseOrderMapper.getInvoiceNumber(id);
         purchaseOrderContentMapper.deleteByMainId(id);
         skuPromotionHistoryMapper.deleteByMainId(id);
         purchaseOrderMapper.deleteById(id);
+        platformOrderService.removePurchaseInvoiceNumber(invoiceNumber);
+
     }
 
     @Override
     @Transactional
     public void delBatchMain(Collection<? extends Serializable> idList) {
         for (Serializable id : idList) {
+            String invoiceNumber = purchaseOrderMapper.getInvoiceNumber(id.toString());
             purchaseOrderContentMapper.deleteByMainId(id.toString());
             skuPromotionHistoryMapper.deleteByMainId(id.toString());
             purchaseOrderMapper.deleteById(id);
+            platformOrderService.removePurchaseInvoiceNumber(invoiceNumber);
         }
     }
 
@@ -164,6 +180,114 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         page.setTotal(total);
     }
 
+    @Override
+    @Transactional
+    public void cancelInvoice(String purchaseId, String invoiceNumber) {
+        String invoiceEntity = clientService.getClientFromPurchase(purchaseId).getInvoiceEntity();
+        platformOrderService.removePurchaseInvoiceNumber(invoiceNumber);
+        purchaseOrderMapper.deleteInvoice(invoiceNumber);
+
+        List<Path> invoicePathList = shippingInvoiceService.getPath(INVOICE_DIR, invoiceNumber, invoiceEntity);
+        List<Path> detailPathList = shippingInvoiceService.getPath(INVOICE_DETAIL_DIR, invoiceNumber, invoiceEntity);
+        boolean invoiceDeleted = false, detailDeleted = false;
+
+        if(invoicePathList.isEmpty()) {
+            log.error("FILE NOT FOUND : " + invoiceNumber);
+        } else {
+            for (Path path : invoicePathList) {
+                log.info(path.toString());
+            }
+            try {
+                File invoiceFile = new File(invoicePathList.get(0).toString());
+                if(invoiceFile.delete()) {
+                    log.info("Invoice file {} delete successful.", invoicePathList.get(0).toString());
+                    invoiceDeleted = true;
+                } else {
+                    log.error("Invoice file delete fail.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if(detailPathList.isEmpty()) {
+            log.error("DETAIL FILE NOT FOUND : " + invoiceNumber);
+        } else {
+            for (Path path : detailPathList) {
+                log.info(path.toString());
+            }
+            try {
+                File detailFile = new File(detailPathList.get(0).toString());
+                if(detailFile.delete()) {
+                    log.info("Detail file {} delete successful.", detailPathList.get(0).toString());
+                    detailDeleted = true;
+                } else {
+                    log.error("Detail file delete fail.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        log.info("Invoice cancel successful." + (invoiceDeleted ? "" : " Failed to delete invoice file.") + (detailDeleted ? "" : " Failed to delete detail file."));
+    }
+
+    @Transactional
+    @Override
+    public void cancelBatchInvoice(String purchaseIds) {
+        List<String> purchaseIdList = Arrays.asList(purchaseIds.split(","));
+        List<PurchaseOrder> purchaseOrders = purchaseOrderMapper.selectBatchIds(purchaseIdList);
+        List<String> invoiceNumbers = purchaseOrders.stream().map(PurchaseOrder::getInvoiceNumber).collect(Collectors.toList());
+        log.info("Cancelling invoices : {}", invoiceNumbers);
+        platformOrderService.removePurchaseInvoiceNumbers(invoiceNumbers);
+        cancelBatchInvoice(invoiceNumbers);
+        purchaseOrderContentMapper.deleteFromPurchaseIds(purchaseIdList);
+
+        log.info("Deleting invoice files ...");
+        for(PurchaseOrder purchaseOrder : purchaseOrders) {
+            if(purchaseOrder.getInvoiceNumber() == null)
+                continue;
+            String invoiceNumber = purchaseOrder.getInvoiceNumber();
+            String invoiceEntity = clientService.getClientEntity(purchaseOrder.getClientId());
+            List<Path> invoicePathList = shippingInvoiceService.getPath(INVOICE_DIR, invoiceNumber, invoiceEntity);
+            List<Path> detailPathList = shippingInvoiceService.getPath(INVOICE_DETAIL_DIR, invoiceNumber, invoiceEntity);
+
+            if(invoicePathList.isEmpty()) {
+                log.error("FILE NOT FOUND : " + invoiceNumber + ", " +  invoiceEntity);
+            } else {
+                for (Path path : invoicePathList) {
+                    log.info(path.toString());
+                }
+                try {
+                    File invoiceFile = new File(invoicePathList.get(0).toString());
+                    if(invoiceFile.delete()) {
+                        log.info("Invoice file {} delete successful.", invoicePathList.get(0).toString());
+                    } else {
+                        log.error("Invoice file delete fail.");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if(detailPathList.isEmpty()) {
+                log.error("DETAIL FILE NOT FOUND : " + invoiceNumber + ", " +  invoiceEntity);
+            } else {
+                for (Path path : detailPathList) {
+                    log.info(path.toString());
+                }
+                try {
+                    File detailFile = new File(detailPathList.get(0).toString());
+                    if(detailFile.delete()) {
+                        log.info("Detail file {} delete successful.", detailPathList.get(0).toString());
+                    } else {
+                        log.error("Detail file {} delete fail.", detailPathList.get(0).toString());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            System.gc();
+        }
+        log.info("End of invoice files deletion.");
+    }
     @Transactional
     @Override
     public void confirmPayment(String purchaseID) {
@@ -212,7 +336,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
      * @return the purchase order's identifier (UUID)
      */
     @Override
-    public String addPurchase(List<SkuQuantity> skuQuantities) {
+    public String addPurchase(List<SkuQuantity> skuQuantities) throws UserException {
         return addPurchase(skuQuantities, Collections.emptyList());
     }
 
@@ -228,11 +352,20 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
      */
     @Override
     @Transactional
-    public String addPurchase(List<SkuQuantity> skuQuantities, List<String> platformOrderIDs) {
+    public String addPurchase(List<SkuQuantity> skuQuantities, List<String> platformOrderIDs) throws UserException {
         Objects.requireNonNull(platformOrderIDs);
 
         Client client = clientService.getCurrentClient();
-
+        if(client == null) {
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            if(sysUser.getOrgCode().contains("A01") || sysUser.getOrgCode().contains("A03")) {
+                String poId = platformOrderIDs.get(0);
+                client = clientService.getClientFromOrder(poId);
+            }
+            else
+                throw new UserException("User is not a client");
+        }
+        String currencyId = currencyService.getIdByCode(client.getCurrency());
         List<OrderContentDetail> details = platformOrderService.searchPurchaseOrderDetail(skuQuantities);
         OrdersStatisticData data = OrdersStatisticData.makeData(details, null);
 
@@ -244,6 +377,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         purchaseOrderMapper.addPurchase(
                 purchaseID,
                 client.fullName(),
+                currencyId,
                 client.getId(),
                 data.getEstimatedTotalPrice(),
                 data.getReducedAmount(),
@@ -273,7 +407,6 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
                 .filter(orderContentDetail -> orderContentDetail.getSkuDetail().getPromotion() != Promotion.ZERO_PROMOTION)
                 .map(orderContentDetail -> {
                     String promotion = orderContentDetail.getSkuDetail().getPromotion().getId();
-                    System.out.println(promotion);
                     int count = orderContentDetail.promotionCount();
                     return new PromotionHistoryEntry(promotion, count);
                 }).collect(Collectors.toList());
@@ -318,18 +451,19 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     @Override
     @Transactional
     public String addPurchase(String username, Client client, String invoiceNumber, List<SkuQuantity> skuQuantities,
-                              Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent) {
+                              Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent) throws UserException {
         Objects.requireNonNull(orderAndContent);
 
         List<OrderContentDetail> details = platformOrderService.searchPurchaseOrderDetail(skuQuantities);
         OrdersStatisticData data = OrdersStatisticData.makeData(details, null);
 
         String purchaseID = UUID.randomUUID().toString();
-
+        String currencyId = currencyService.getIdByCode(client.getCurrency());
         // 1. save purchase itself
         purchaseOrderMapper.addPurchase(
                 purchaseID,
                 username,
+                currencyId,
                 client.getId(),
                 data.getEstimatedTotalPrice(),
                 data.getReducedAmount(),
@@ -359,7 +493,6 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
                 .filter(orderContentDetail -> orderContentDetail.getSkuDetail().getPromotion() != Promotion.ZERO_PROMOTION)
                 .map(orderContentDetail -> {
                     String promotion = orderContentDetail.getSkuDetail().getPromotion().getId();
-                    System.out.println(promotion);
                     int count = orderContentDetail.promotionCount();
                     return new PromotionHistoryEntry(promotion, count);
                 }).collect(Collectors.toList());
@@ -447,27 +580,68 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     }
 
     @Override
-    public InvoiceData makeInvoice(String purchaseID) throws IOException, URISyntaxException {
+    public InvoiceMetaData makeInvoice(String purchaseID) throws IOException, URISyntaxException {
         Client client = clientService.getCurrentClient();
+        if(client == null) {
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            if (sysUser.getOrgCode().contains("A01") || sysUser.getOrgCode().contains("A03")) {
+                client = clientService.getClientFromPurchase(purchaseID);
+            }
+        }
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
         List<PromotionDetail> promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseID);
         String invoiceCode = purchaseOrderMapper.selectById(purchaseID).getInvoiceNumber();
         BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
 
+        String filename = "Invoice N°" + invoiceCode + " (" + client.getInvoiceEntity() + ").xlsx";
         Path template = Paths.get(INVOICE_TEMPLATE);
-        Path newInvoice = Paths.get(INVOICE_DIR, invoiceCode + ".xlsx");
+        Path newInvoice = Paths.get(INVOICE_DIR, filename);
         if (Files.notExists(newInvoice)) {
             Files.copy(template, newInvoice);
             PurchaseInvoice pv = new PurchaseInvoice(client, invoiceCode, "Purchase Invoice", purchaseOrderSkuList, promotionDetails, eurToUsd);
             pv.toExcelFile(newInvoice);
-            return new InvoiceData(pv.client().getInvoiceEntity(), invoiceCode);
+            return new InvoiceMetaData(filename,invoiceCode, pv.client().getInternalCode(), pv.client().getInvoiceEntity(), "");
         }
-        return new InvoiceData(client.getInvoiceEntity(), invoiceCode);
+        return new InvoiceMetaData(filename, invoiceCode, client.getInternalCode(), client.getInvoiceEntity(), "");
     }
 
     @Override
     public byte[] getInvoiceByte(String invoiceCode) throws IOException {
         Path invoice = Paths.get(INVOICE_DIR, invoiceCode + ".xlsx");
         return Files.readAllBytes(invoice);
+    }
+
+    @Override
+    public BigDecimal getPurchaseFeesByInvoiceCode(String invoiceCode) {
+        return purchaseOrderMapper.getPurchaseFeesByInvoiceCode(invoiceCode);
+    }
+
+    @Override
+    public void cancelInvoice(String invoiceNumber) {
+        purchaseOrderMapper.deleteInvoice(invoiceNumber);
+    }
+
+    @Override
+    public void cancelBatchInvoice(List<String> invoiceNumbers) {
+        purchaseOrderMapper.deleteBatchInvoice(invoiceNumbers);
+    }
+
+    @Override
+    public String getInvoiceId(String invoiceNumber) {
+        return purchaseOrderMapper.getInvoiceId(invoiceNumber);
+    }
+
+    @Override
+    public PurchaseOrder getPurchaseByInvoiceNumber(String invoiceNumber) {
+        return purchaseOrderMapper.getPurchaseByInvoiceNumber(invoiceNumber);
+    }
+    @Override
+    public List<PurchaseOrder> getPurchasesByInvoiceNumber(String invoiceNumber) {
+        return purchaseOrderMapper.getPurchasesByInvoiceNumber(invoiceNumber);
+    }
+
+    @Override
+    public List<PlatformOrder> getPlatformOrder(String invoiceNumber) {
+        return purchaseOrderMapper.getPlatformOrder(invoiceNumber);
     }
 }

@@ -14,9 +14,48 @@
             #{id}
         </foreach>;
 </select>
-<select id="getClientByInternalCode" parameterType="java.lang.String" resultType="java.lang.String">
+<select id="getClientIdByCode" parameterType="java.lang.String" resultType="java.lang.String">
     SELECT id
     FROM client
         WHERE internal_code = #{code}
 </select>
+<select id="getClientByCode" parameterType="java.lang.String" resultType="org.jeecg.modules.business.entity.Client">
+    SELECT *
+    FROM client
+        WHERE internal_code = #{code}
+</select>
+    <select id="getClientByType" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT c.*
+        FROM client c
+        JOIN client_category cc
+            ON c.client_category_id = cc.id
+        WHERE cc.name = #{type}
+        AND c.active = 1;
+    </select>
+    <select id="getClientFromOrder" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT c.*
+        FROM client c
+        JOIN shop s
+            ON c.id = s.owner_id
+        JOIN platform_order po
+            ON s.id = po.shop_id
+        WHERE po.id = #{orderId};
+    </select>
+    <select id="getClientFromPurchase" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT c.*
+        FROM client c
+        JOIN purchase_order po
+            ON c.id = po.client_id
+        WHERE po.id = #{purchaseId};
+    </select>
+    <select id="getClientsFromPurchases" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT c.*
+        FROM client c
+        JOIN purchase_order po
+            ON c.id = po.client_id
+        WHERE po.id IN
+        <foreach collection="purchaseIds" separator="," open="(" close=")" index="index" item="purchaseId">
+            #{purchaseId}
+        </foreach>;
+    </select>
 </mapper>
