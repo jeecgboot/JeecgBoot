@@ -1,5 +1,6 @@
 package org.jeecg.modules.quartz.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -15,6 +16,7 @@ import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.ImportExcelUtil;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -25,6 +27,8 @@ import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -80,7 +84,7 @@ public class QuartzJobController {
 	 * @return
 	 */
 	//@RequiresRoles("admin")
-    @RequiresPermissions("system:quartzJob:add")
+	@PreAuthorize("@jps.requiresPermissions('system:quartzJob:add')")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<?> add(@RequestBody QuartzJob quartzJob) {
 		quartzJobService.saveAndScheduleJob(quartzJob);
@@ -94,7 +98,7 @@ public class QuartzJobController {
 	 * @return
 	 */
 	//@RequiresRoles("admin")
-    @RequiresPermissions("system:quartzJob:edit")
+	@PreAuthorize("@jps.requiresPermissions('system:quartzJob:edit')")
 	@RequestMapping(value = "/edit", method ={RequestMethod.PUT, RequestMethod.POST})
 	public Result<?> eidt(@RequestBody QuartzJob quartzJob) {
 		try {
@@ -113,7 +117,7 @@ public class QuartzJobController {
 	 * @return
 	 */
 	//@RequiresRoles("admin")
-    @RequiresPermissions("system:quartzJob:delete")
+	@PreAuthorize("@jps.requiresPermissions('system:quartzJob:delete')")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
 		QuartzJob quartzJob = quartzJobService.getById(id);
@@ -132,7 +136,7 @@ public class QuartzJobController {
 	 * @return
 	 */
 	//@RequiresRoles("admin")
-    @RequiresPermissions("system:quartzJob:deleteBatch")
+	@PreAuthorize("@jps.requiresPermissions('system:quartzJob:deleteBatch')")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 		if (ids == null || "".equals(ids.trim())) {
@@ -152,7 +156,7 @@ public class QuartzJobController {
 	 * @return
 	 */
 	//@RequiresRoles("admin")
-    @RequiresPermissions("system:quartzJob:pause")
+	@PreAuthorize("@jps.requiresPermissions('system:quartzJob:pause')")
 	@GetMapping(value = "/pause")
 	@Operation(summary = "停止定时任务")
 	public Result<Object> pauseJob(@RequestParam(name = "id") String id) {
@@ -171,7 +175,7 @@ public class QuartzJobController {
 	 * @return
 	 */
 	//@RequiresRoles("admin")
-    @RequiresPermissions("system:quartzJob:resume")
+	@PreAuthorize("@jps.requiresPermissions('system:quartzJob:resume')")
 	@GetMapping(value = "/resume")
 	@Operation(summary = "启动定时任务")
 	public Result<Object> resumeJob(@RequestParam(name = "id") String id) {
@@ -214,7 +218,7 @@ public class QuartzJobController {
 		mv.addObject(NormalExcelConstants.CLASS, QuartzJob.class);
         //获取当前登录用户
         //update-begin---author:wangshuai ---date:20211227  for：[JTC-116]导出人写死了------------
-        LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser user = SecureUtil.currentUser();
 		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("定时任务列表数据", "导出人:"+user.getRealname(), "导出信息"));
         //update-end---author:wangshuai ---date:20211227  for：[JTC-116]导出人写死了------------
         mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
@@ -272,7 +276,7 @@ public class QuartzJobController {
 	 * @return
 	 */
 	//@RequiresRoles("admin")
-    @RequiresPermissions("system:quartzJob:execute")
+	@PreAuthorize("@jps.requiresPermissions('system:quartzJob:execute')")
 	@GetMapping("/execute")
 	public Result<?> execute(@RequestParam(name = "id", required = true) String id) {
 		QuartzJob quartzJob = quartzJobService.getById(id);

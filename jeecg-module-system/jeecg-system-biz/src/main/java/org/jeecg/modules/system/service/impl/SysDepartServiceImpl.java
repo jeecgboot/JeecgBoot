@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -22,6 +23,7 @@ import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.common.util.YouBianCodeUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.model.DepartIdModel;
@@ -31,6 +33,7 @@ import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
 import org.jeecg.modules.system.vo.lowapp.ExportDepartVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -834,7 +837,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
      */
     @Override
     public List<SysDepart> getMyDepartList() {
-        LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser user = SecureUtil.currentUser();
         String userId = user.getId();
         //字典code集合
         List<String> list = new ArrayList<>();

@@ -1,15 +1,13 @@
 package org.jeecg.modules.system.controller;
 
-import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
@@ -18,6 +16,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.Md5Util;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.JeecgBaseConfig;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.model.SysPermissionTree;
@@ -25,9 +24,10 @@ import org.jeecg.modules.system.model.TreeModel;
 import org.jeecg.modules.system.service.*;
 import org.jeecg.modules.system.util.PermissionDataUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -242,7 +242,7 @@ public class SysPermissionController {
 		Result<JSONObject> result = new Result<JSONObject>();
 		try {
 			//直接获取当前用户不适用前端token
-			LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			LoginUser loginUser = SecureUtil.currentUser();
 			if (oConvertUtils.isEmpty(loginUser)) {
 				return Result.error("请登录系统！");
 			}
@@ -320,7 +320,7 @@ public class SysPermissionController {
 	public Result<?> getPermCode() {
 		try {
 			// 直接获取当前用户
-			LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			LoginUser loginUser = SecureUtil.currentUser();
 			if (oConvertUtils.isEmpty(loginUser)) {
 				return Result.error("请登录系统！");
 			}
@@ -361,7 +361,7 @@ public class SysPermissionController {
 	 * @param permission
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:add")
+	@PreAuthorize("@jps.requiresPermissions('system:permission:add')")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysPermission> add(@RequestBody SysPermission permission) {
 		Result<SysPermission> result = new Result<SysPermission>();
@@ -381,7 +381,7 @@ public class SysPermissionController {
 	 * @param permission
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:edit")
+	@PreAuthorize("@jps.requiresPermissions('system:permission:edit')")
 	@RequestMapping(value = "/edit", method = { RequestMethod.PUT, RequestMethod.POST })
 	public Result<SysPermission> edit(@RequestBody SysPermission permission) {
 		Result<SysPermission> result = new Result<>();
@@ -423,7 +423,7 @@ public class SysPermissionController {
 	 * @param id
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:delete")
+	@PreAuthorize("@jps.requiresPermissions('system:permission:delete')")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<SysPermission> delete(@RequestParam(name = "id", required = true) String id) {
 		Result<SysPermission> result = new Result<>();
@@ -442,7 +442,7 @@ public class SysPermissionController {
 	 * @param ids
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:deleteBatch")
+	@PreAuthorize("@jps.requiresPermissions('system:permission:deleteBatch')")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysPermission> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 		Result<SysPermission> result = new Result<>();
@@ -550,7 +550,7 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequestMapping(value = "/saveRolePermission", method = RequestMethod.POST)
-    @RequiresPermissions("system:permission:saveRole")
+	@PreAuthorize("@jps.requiresPermissions('system:permission:saveRole')")
 	public Result<String> saveRolePermission(@RequestBody JSONObject json) {
 		long start = System.currentTimeMillis();
 		Result<String> result = new Result<>();
@@ -560,7 +560,7 @@ public class SysPermissionController {
 			String lastPermissionIds = json.getString("lastpermissionIds");
 			this.sysRolePermissionService.saveRolePermission(roleId, permissionIds, lastPermissionIds);
 			//update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]用户管理角色授权添加敏感日志------------
-            LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            LoginUser loginUser = SecureUtil.currentUser();
 			baseCommonService.addLog("修改角色ID: "+roleId+" 的权限配置，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
             //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]用户管理角色授权添加敏感日志------------
 			result.success("保存成功！");
@@ -878,7 +878,7 @@ public class SysPermissionController {
 	 * @param sysPermissionDataRule
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:addRule")
+	@PreAuthorize("@jps.requiresPermissions('system:permission:addRule')")
 	@RequestMapping(value = "/addPermissionRule", method = RequestMethod.POST)
 	public Result<SysPermissionDataRule> addPermissionRule(@RequestBody SysPermissionDataRule sysPermissionDataRule) {
 		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
@@ -893,7 +893,7 @@ public class SysPermissionController {
 		return result;
 	}
 
-    @RequiresPermissions("system:permission:editRule")
+	@PreAuthorize("@jps.requiresPermissions('system:permission:editRule')")
 	@RequestMapping(value = "/editPermissionRule", method = { RequestMethod.PUT, RequestMethod.POST })
 	public Result<SysPermissionDataRule> editPermissionRule(@RequestBody SysPermissionDataRule sysPermissionDataRule) {
 		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
@@ -913,7 +913,7 @@ public class SysPermissionController {
 	 * @param id
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:deleteRule")
+	@PreAuthorize("@jps.requiresPermissions('system:permission:deleteRule')")
 	@RequestMapping(value = "/deletePermissionRule", method = RequestMethod.DELETE)
 	public Result<SysPermissionDataRule> deletePermissionRule(@RequestParam(name = "id", required = true) String id) {
 		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
@@ -970,7 +970,7 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequestMapping(value = "/saveDepartPermission", method = RequestMethod.POST)
-    @RequiresPermissions("system:permission:saveDepart")
+	@PreAuthorize("@jps.requiresPermissions('system:permission:saveDepart')")
 	public Result<String> saveDepartPermission(@RequestBody JSONObject json) {
 		long start = System.currentTimeMillis();
 		Result<String> result = new Result<>();

@@ -20,7 +20,6 @@ import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,7 +31,7 @@ import java.util.Set;
  * @Date: 2019-4-23 8:13
  * @Version: 1.1
  */
-@Component
+//@Component
 @Slf4j
 public class ShiroRealm extends AuthorizingRealm {
 	@Lazy

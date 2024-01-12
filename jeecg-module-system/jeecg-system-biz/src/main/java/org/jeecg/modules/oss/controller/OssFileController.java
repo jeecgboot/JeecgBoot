@@ -9,6 +9,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.oss.entity.OssFile;
 import org.jeecg.modules.oss.service.IOssFileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,7 +49,7 @@ public class OssFileController {
 	@ResponseBody
 	@PostMapping("/upload")
 	//@RequiresRoles("admin")
-    @RequiresPermissions("system:ossFile:upload")
+	@PreAuthorize("@jps.requiresPermissions('system:ossFile:upload')")
 	public Result upload(@RequestParam("file") MultipartFile multipartFile) {
 		Result result = new Result();
 		try {

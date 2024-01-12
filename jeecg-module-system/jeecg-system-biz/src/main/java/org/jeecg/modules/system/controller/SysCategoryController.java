@@ -18,6 +18,7 @@ import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.common.util.ReflectHelper;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.system.entity.SysCategory;
 import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecg.modules.system.service.ISysCategoryService;
@@ -27,6 +28,7 @@ import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -237,7 +239,7 @@ public class SysCategoryController {
       //导出文件名称
       mv.addObject(NormalExcelConstants.FILE_NAME, "分类字典列表");
       mv.addObject(NormalExcelConstants.CLASS, SysCategory.class);
-      LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+      LoginUser user = SecureUtil.currentUser();
       mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("分类字典列表数据", "导出人:"+user.getRealname(), "导出信息"));
       return mv;
   }

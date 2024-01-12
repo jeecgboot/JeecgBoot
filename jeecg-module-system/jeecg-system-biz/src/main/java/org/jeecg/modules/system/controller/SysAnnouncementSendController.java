@@ -3,6 +3,7 @@ package org.jeecg.modules.system.controller;
 import java.util.Arrays;
 import java.util.Date;
 
+import com.alibaba.fastjson.JSON;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.shiro.SecurityUtils;
@@ -13,11 +14,13 @@ import org.jeecg.common.constant.WebsocketConst;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.message.websocket.WebSocket;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.system.model.AnnouncementSendModel;
 import org.jeecg.modules.system.service.ISysAnnouncementSendService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -194,7 +197,7 @@ public class SysAnnouncementSendController {
 	public Result<SysAnnouncementSend> editById(@RequestBody JSONObject json) {
 		Result<SysAnnouncementSend> result = new Result<SysAnnouncementSend>();
 		String anntId = json.getString("anntId");
-		LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+		LoginUser sysUser = SecureUtil.currentUser();
 		String userId = sysUser.getId();
 		LambdaUpdateWrapper<SysAnnouncementSend> updateWrapper = new UpdateWrapper().lambda();
 		updateWrapper.set(SysAnnouncementSend::getReadFlag, CommonConstant.HAS_READ_FLAG);
@@ -219,7 +222,7 @@ public class SysAnnouncementSendController {
 			@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 			  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
 		Result<IPage<AnnouncementSendModel>> result = new Result<IPage<AnnouncementSendModel>>();
-		LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+		LoginUser sysUser = SecureUtil.currentUser();
 		String userId = sysUser.getId();
 		announcementSendModel.setUserId(userId);
 		announcementSendModel.setPageNo((pageNo-1)*pageSize);
@@ -238,7 +241,7 @@ public class SysAnnouncementSendController {
 	@PutMapping(value = "/readAll")
 	public Result<SysAnnouncementSend> readAll() {
 		Result<SysAnnouncementSend> result = new Result<SysAnnouncementSend>();
-		LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+		LoginUser sysUser = SecureUtil.currentUser();
 		String userId = sysUser.getId();
 		LambdaUpdateWrapper<SysAnnouncementSend> updateWrapper = new UpdateWrapper().lambda();
 		updateWrapper.set(SysAnnouncementSend::getReadFlag, CommonConstant.HAS_READ_FLAG);

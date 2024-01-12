@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.jeecg.dingtalk.api.core.response.Response;
@@ -16,6 +17,7 @@ import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.system.entity.SysThirdAccount;
 import org.jeecg.modules.system.entity.SysThirdAppConfig;
 import org.jeecg.modules.system.service.ISysThirdAccountService;
@@ -24,6 +26,7 @@ import org.jeecg.modules.system.service.impl.ThirdAppDingtalkServiceImpl;
 import org.jeecg.modules.system.service.impl.ThirdAppWechatEnterpriseServiceImpl;
 import org.jeecg.modules.system.vo.thirdapp.SyncInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -477,7 +480,7 @@ public class ThirdAppController {
      */
     @GetMapping("/getThirdAccountByUserId")
     public Result<List<SysThirdAccount>> getThirdAccountByUserId(@RequestParam(name="thirdType") String thirdType){
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = SecureUtil.currentUser();
         LambdaQueryWrapper<SysThirdAccount> query = new LambdaQueryWrapper<>();
         //根据id查询
         query.eq(SysThirdAccount::getSysUserId,sysUser.getId());
@@ -508,7 +511,7 @@ public class ThirdAppController {
      */
     @DeleteMapping("/deleteThirdAccount")
     public Result<String> deleteThirdAccountById(@RequestBody SysThirdAccount sysThirdAccount){
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = SecureUtil.currentUser();
         if(!sysUser.getId().equals(sysThirdAccount.getSysUserId())){
             return Result.error("无权修改他人信息");
         }

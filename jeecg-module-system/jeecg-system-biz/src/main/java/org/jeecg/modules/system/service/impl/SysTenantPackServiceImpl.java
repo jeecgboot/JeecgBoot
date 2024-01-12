@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.SymbolConstant;
@@ -7,6 +8,7 @@ import org.jeecg.common.constant.TenantConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.aop.TenantLog;
 import org.jeecg.modules.system.entity.SysPackPermission;
 import org.jeecg.modules.system.entity.SysTenant;
@@ -19,6 +21,7 @@ import org.jeecg.modules.system.mapper.SysTenantPackUserMapper;
 import org.jeecg.modules.system.service.ISysTenantPackService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -133,7 +136,7 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
         ISysTenantPackService currentService = SpringContextUtils.getApplicationContext().getBean(ISysTenantPackService.class);
         String packId = currentService.saveOne(superAdminPack);
 
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = SecureUtil.currentUser();
         SysTenantPackUser packUser = new SysTenantPackUser(tenantId, packId, sysUser.getId());
         packUser.setRealname(sysUser.getRealname());
         packUser.setPackName(superAdminPack.getPackName());

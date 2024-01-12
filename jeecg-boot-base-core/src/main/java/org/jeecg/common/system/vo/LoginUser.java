@@ -1,13 +1,18 @@
 package org.jeecg.common.system.vo;
 
+import com.alibaba.fastjson2.JSON;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.jeecg.common.desensitization.annotation.SensitiveField;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * <p>
@@ -20,8 +25,10 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class LoginUser {
+public class LoginUser implements Serializable {
 
+
+	private static final long serialVersionUID = -7143159031677245866L;
 	/**
 	 * 登录人id
 	 */
@@ -127,4 +134,29 @@ public class LoginUser {
 	/**设备id uniapp推送用*/
 	private String clientId;
 
+	@SensitiveField
+	private String salt;
+
+	@Override
+	public String toString() {
+		// 重新构建对象过滤一些敏感字段
+		LoginUser loginUser = new LoginUser();
+		loginUser.setId(id);
+		loginUser.setUsername(username);
+		loginUser.setRealname(realname);
+		loginUser.setOrgCode(orgCode);
+		loginUser.setSex(sex);
+		loginUser.setEmail(email);
+		loginUser.setPhone(phone);
+		loginUser.setDelFlag(delFlag);
+		loginUser.setStatus(status);
+		loginUser.setActivitiSync(activitiSync);
+		loginUser.setUserIdentity(userIdentity);
+		loginUser.setDepartIds(departIds);
+		loginUser.setPost(post);
+		loginUser.setTelephone(telephone);
+		loginUser.setRelTenantIds(relTenantIds);
+		loginUser.setClientId(clientId);
+		return JSON.toJSONString(loginUser);
+	}
 }

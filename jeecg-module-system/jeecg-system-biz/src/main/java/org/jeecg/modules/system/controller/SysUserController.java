@@ -7,7 +7,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +40,7 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -138,7 +138,7 @@ public class SysUserController {
      * @param req
      * @return
      */
-    @RequiresPermissions("system:user:listAll")
+    @PreAuthorize("@jps.requiresPermissions('system:user:listAll')")
     @RequestMapping(value = "/listAll", method = RequestMethod.GET)
     public Result<IPage<SysUser>> queryAllPageList(SysUser user, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
@@ -146,7 +146,7 @@ public class SysUserController {
         return sysUserService.queryPageList(req, queryWrapper, pageSize, pageNo);
     }
 
-    @RequiresPermissions("system:user:add")
+    @PreAuthorize("@jps.requiresPermissions('system:user:add')")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysUser> add(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -176,7 +176,7 @@ public class SysUserController {
 		return result;
 	}
 
-    @RequiresPermissions("system:user:edit")
+    @PreAuthorize("@jps.requiresPermissions('system:user:edit')")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<SysUser> edit(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -214,7 +214,7 @@ public class SysUserController {
 	/**
 	 * 删除用户
 	 */
-    @RequiresPermissions("system:user:delete")
+    @PreAuthorize("@jps.requiresPermissions('system:user:delete')")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		baseCommonService.addLog("删除用户，id： " +id ,CommonConstant.LOG_TYPE_2, 3);
@@ -225,7 +225,7 @@ public class SysUserController {
 	/**
 	 * 批量删除用户
 	 */
-    @RequiresPermissions("system:user:deleteBatch")
+    @PreAuthorize("@jps.requiresPermissions('system:user:deleteBatch')")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		baseCommonService.addLog("批量删除用户， ids： " +ids ,CommonConstant.LOG_TYPE_2, 3);
@@ -238,7 +238,7 @@ public class SysUserController {
 	 * @param jsonObject
 	 * @return
 	 */
-    @RequiresPermissions("system:user:frozenBatch")
+    @PreAuthorize("@jps.requiresPermissions('system:user:frozenBatch')")
 	@RequestMapping(value = "/frozenBatch", method = RequestMethod.PUT)
 	public Result<SysUser> frozenBatch(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -262,7 +262,7 @@ public class SysUserController {
 
     }
 
-    @RequiresPermissions("system:user:queryById")
+    @PreAuthorize("@jps.requiresPermissions('system:user:queryById')")
     @RequestMapping(value = "/queryById", method = RequestMethod.GET)
     public Result<SysUser> queryById(@RequestParam(name = "id", required = true) String id) {
         Result<SysUser> result = new Result<SysUser>();
@@ -276,7 +276,7 @@ public class SysUserController {
         return result;
     }
 
-    @RequiresPermissions("system:user:queryUserRole")
+    @PreAuthorize("@jps.requiresPermissions('system:user:queryUserRole')")
     @RequestMapping(value = "/queryUserRole", method = RequestMethod.GET)
     public Result<List<String>> queryUserRole(@RequestParam(name = "userid", required = true) String userid) {
         Result<List<String>> result = new Result<>();
@@ -329,7 +329,7 @@ public class SysUserController {
     /**
      * 修改密码
      */
-    @RequiresPermissions("system:user:changepwd")
+    @PreAuthorize("@jps.requiresPermissions('system:user:changepwd')")
     @RequestMapping(value = "/changePassword", method = RequestMethod.PUT)
     public Result<?> changePassword(@RequestBody SysUser sysUser) {
         SysUser u = this.sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, sysUser.getUsername()));
@@ -452,7 +452,7 @@ public class SysUserController {
      * @param request
      * @param sysUser
      */
-    @RequiresPermissions("system:user:export")
+    @PreAuthorize("@jps.requiresPermissions('system:user:export')")
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(SysUser sysUser,HttpServletRequest request) {
         // Step.1 组装查询条件
@@ -485,7 +485,7 @@ public class SysUserController {
      * @param response
      * @return
      */
-    @RequiresPermissions("system:user:import")
+    @PreAuthorize("@jps.requiresPermissions('system:user:import')")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response)throws IOException {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -599,7 +599,7 @@ public class SysUserController {
 	/**
 	 * 首页用户重置密码
 	 */
-    @RequiresPermissions("system:user:updatepwd")
+    @PreAuthorize("@jps.requiresPermissions('system:user:updatepwd')")
     @RequestMapping(value = "/updatePassword", method = RequestMethod.PUT)
 	public Result<?> updatePassword(@RequestBody JSONObject json) {
 		String username = json.getString("username");
@@ -640,7 +640,7 @@ public class SysUserController {
      * @param
      * @return
      */
-    @RequiresPermissions("system:user:addUserRole")
+    @PreAuthorize("@jps.requiresPermissions('system:user:addUserRole')")
     @RequestMapping(value = "/addSysUserRole", method = RequestMethod.POST)
     public Result<String> addSysUserRole(@RequestBody SysUserRoleVO sysUserRoleVO) {
         Result<String> result = new Result<String>();
@@ -672,7 +672,7 @@ public class SysUserController {
      * @param
      * @return
      */
-    @RequiresPermissions("system:user:deleteRole")
+    @PreAuthorize("@jps.requiresPermissions('system:user:deleteRole')")
     @RequestMapping(value = "/deleteUserRole", method = RequestMethod.DELETE)
     public Result<SysUserRole> deleteUserRole(@RequestParam(name="roleId") String roleId,
                                                     @RequestParam(name="userId",required=true) String userId
@@ -696,7 +696,7 @@ public class SysUserController {
      * @param
      * @return
      */
-    @RequiresPermissions("system:user:deleteRoleBatch")
+    @PreAuthorize("@jps.requiresPermissions('system:user:deleteRoleBatch')")
     @RequestMapping(value = "/deleteUserRoleBatch", method = RequestMethod.DELETE)
     public Result<SysUserRole> deleteUserRoleBatch(
             @RequestParam(name="roleId") String roleId,
@@ -827,7 +827,7 @@ public class SysUserController {
     /**
      * 给指定部门添加对应的用户
      */
-    @RequiresPermissions("system:user:editDepartWithUser")
+    @PreAuthorize("@jps.requiresPermissions('system:user:editDepartWithUser')")
     @RequestMapping(value = "/editSysDepartWithUser", method = RequestMethod.POST)
     public Result<String> editSysDepartWithUser(@RequestBody SysDepartUsersVO sysDepartUsersVO) {
         Result<String> result = new Result<String>();
@@ -856,7 +856,7 @@ public class SysUserController {
     /**
      *   删除指定机构的用户关系
      */
-    @RequiresPermissions("system:user:deleteUserInDepart")
+    @PreAuthorize("@jps.requiresPermissions('system:user:deleteUserInDepart')")
     @RequestMapping(value = "/deleteUserInDepart", method = RequestMethod.DELETE)
     public Result<SysUserDepart> deleteUserInDepart(@RequestParam(name="depId") String depId,
                                                     @RequestParam(name="userId",required=true) String userId
@@ -888,7 +888,7 @@ public class SysUserController {
     /**
      * 批量删除指定机构的用户关系
      */
-    @RequiresPermissions("system:user:deleteUserInDepartBatch")
+    @PreAuthorize("@jps.requiresPermissions('system:user:deleteUserInDepartBatch')")
     @RequestMapping(value = "/deleteUserInDepartBatch", method = RequestMethod.DELETE)
     public Result<SysUserDepart> deleteUserInDepartBatch(
             @RequestParam(name="depId") String depId,
@@ -1263,7 +1263,7 @@ public class SysUserController {
      * @param userIds 被删除的用户ID，多个id用半角逗号分割
      * @return
      */
-    @RequiresPermissions("system:user:deleteRecycleBin")
+    @PreAuthorize("@jps.requiresPermissions('system:user:deleteRecycleBin')")
     @RequestMapping(value = "/deleteRecycleBin", method = RequestMethod.DELETE)
     public Result deleteRecycleBin(@RequestParam("userIds") String userIds) {
         if (StringUtils.isNotBlank(userIds)) {
@@ -1278,7 +1278,7 @@ public class SysUserController {
      * @param jsonObject
      * @return
      */
-    @RequiresRoles({"admin"})
+    @PreAuthorize("@jps.requiresRoles('admin')")
     @RequestMapping(value = "/appEdit", method = {RequestMethod.PUT,RequestMethod.POST})
     public Result<SysUser> appEdit(HttpServletRequest request,@RequestBody JSONObject jsonObject) {
         Result<SysUser> result = new Result<SysUser>();
@@ -1668,7 +1668,7 @@ public class SysUserController {
      * @return
      */
     @PostMapping("/login/setting/userEdit")
-    @RequiresPermissions("system:user:setting:edit")
+    @PreAuthorize("@jps.requiresPermissions('system:user:setting:edit')")
     public Result<String> userEdit(@RequestBody SysUser sysUser, HttpServletRequest request) {
         String username = JwtUtil.getUserNameByToken(request);
         SysUser user = sysUserService.getById(sysUser.getId());

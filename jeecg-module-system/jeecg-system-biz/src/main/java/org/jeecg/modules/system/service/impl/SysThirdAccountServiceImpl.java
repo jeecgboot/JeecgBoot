@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jeecg.dingtalk.api.base.JdtBaseAPI;
@@ -15,6 +16,7 @@ import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.UUIDGenerator;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.system.entity.SysRole;
 import org.jeecg.modules.system.entity.SysThirdAccount;
 import org.jeecg.modules.system.entity.SysUser;
@@ -27,6 +29,7 @@ import org.jeecg.modules.system.model.ThirdLoginModel;
 import org.jeecg.modules.system.service.ISysThirdAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -187,7 +190,7 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
         String thirdUserUuid = sysThirdAccount.getThirdUserUuid();
         String thirdType = sysThirdAccount.getThirdType();
         //获取当前登录用户
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = SecureUtil.currentUser();
         //当前第三方用户已被其他用户所绑定
         SysThirdAccount oneByThirdUserId = this.getOneByUuidAndThirdType(thirdUserUuid, thirdType,CommonConstant.TENANT_ID_DEFAULT_VALUE);
         if(null != oneByThirdUserId){

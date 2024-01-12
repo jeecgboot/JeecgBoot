@@ -1,8 +1,8 @@
 package org.jeecg.common.aspect;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.PropertyFilter;
-import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -15,12 +15,14 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.enums.ModuleType;
 import org.jeecg.common.constant.enums.OperateTypeEnum;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.IpUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -100,7 +102,7 @@ public class AutoLogAspect {
         //设置IP地址
         dto.setIp(IpUtils.getIpAddr(request));
         //获取登录用户信息
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = SecureUtil.currentUser();
         if(sysUser!=null){
             dto.setUserid(sysUser.getUsername());
             dto.setUsername(sysUser.getRealname());

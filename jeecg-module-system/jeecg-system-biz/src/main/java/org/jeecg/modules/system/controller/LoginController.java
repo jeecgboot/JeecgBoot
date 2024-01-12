@@ -1,6 +1,8 @@
 package org.jeecg.modules.system.controller;
 
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.exceptions.ClientException;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -20,10 +22,10 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
 import org.jeecg.common.util.encryption.EncryptedString;
 import org.jeecg.config.JeecgBaseConfig;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysRoleIndex;
-import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysLoginModel;
 import org.jeecg.modules.system.service.*;
@@ -31,14 +33,23 @@ import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.jeecg.modules.system.util.RandImageUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.event.LogoutSuccessEvent;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @Author scott
@@ -67,9 +78,19 @@ public class LoginController {
 	private BaseCommonService baseCommonService;
 	@Autowired
 	private JeecgBaseConfig jeecgBaseConfig;
+	@Autowired
+	private OAuth2AuthorizationService authorizationService;
+	@Autowired
+	private CacheManager cacheManager;
 
 	private final String BASE_CHECK_CODES = "qwertyuiplkjhgfdsazxcvbnmQWERTYUPLKJHGFDSAZXCVBNM1234567890";
 
+	/**
+	 * 使用spring authorization server提供的各类登录接口
+	 * @param sysLoginModel
+	 * @return
+	 */
+	@Deprecated
 	@Operation(summary = "登录接口")
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel){
@@ -207,7 +228,15 @@ public class LoginController {
 			//清空用户的缓存信息（包括部门信息），例如sys:cache:user::<username>
 			redisUtil.del(String.format("%s::%s", CacheConstant.SYS_USERS_CACHE, sysUser.getUsername()));
 			//调用shiro的logout
-			SecurityUtils.getSubject().logout();
+//			SecurityUtils.getSubject().logout();
+
+			OAuth2Authorization authorization = authorizationService.findByToken(token, OAuth2TokenType.ACCESS_TOKEN);
+
+			// 清空用户信息
+			cacheManager.getCache("user_details").evict(authorization.getPrincipalName());
+			// 清空access token
+			authorizationService.remove(authorization);
+
 	    	return Result.ok("退出登录成功！");
 	    }else {
 	    	return Result.error("Token无效!");
@@ -277,7 +306,7 @@ public class LoginController {
 		Result<JSONObject> result = new Result<JSONObject>();
 		String username = user.getUsername();
 		if(oConvertUtils.isEmpty(username)) {
-			LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+			LoginUser sysUser = SecureUtil.currentUser();
 			username = sysUser.getUsername();
 		}
 		
@@ -540,7 +569,7 @@ public class LoginController {
 	/**
 	 * 切换菜单表为vue3的表
 	 */
-	@RequiresRoles({"admin"})
+	@PreAuthorize("@jps.requiresRoles('admin')")
 	@GetMapping(value = "/switchVue3Menu")
 	public Result<String> switchVue3Menu(HttpServletResponse response) {
 		Result<String> res = new Result<String>();

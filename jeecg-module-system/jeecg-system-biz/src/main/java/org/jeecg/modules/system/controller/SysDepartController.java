@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -18,6 +19,7 @@ import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.common.util.YouBianCodeUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.DepartIdModel;
@@ -34,6 +36,8 @@ import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -72,7 +76,7 @@ public class SysDepartController {
 	@RequestMapping(value = "/queryMyDeptTreeList", method = RequestMethod.GET)
 	public Result<List<SysDepartTreeModel>> queryMyDeptTreeList() {
 		Result<List<SysDepartTreeModel>> result = new Result<>();
-		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser user = SecureUtil.currentUser();
 		try {
 			if(oConvertUtils.isNotEmpty(user.getUserIdentity()) && user.getUserIdentity().equals( CommonConstant.USER_IDENTITY_2 )){
 				//update-begin--Author:liusq  Date:20210624  for:部门查询ids为空后的前端显示问题 issues/I3UD06
@@ -176,7 +180,7 @@ public class SysDepartController {
 	 * @param sysDepart
 	 * @return
 	 */
-    @RequiresPermissions("system:depart:add")
+	@PreAuthorize("@jps.requiresPermissions('system:depart:add')")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> add(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
@@ -202,7 +206,7 @@ public class SysDepartController {
 	 * @param sysDepart
 	 * @return
 	 */
-    @RequiresPermissions("system:depart:edit")
+	@PreAuthorize("@jps.requiresPermissions('system:depart:edit')")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> edit(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
@@ -230,7 +234,7 @@ public class SysDepartController {
     * @param id
     * @return
     */
-    @RequiresPermissions("system:depart:delete")
+	@PreAuthorize("@jps.requiresPermissions('system:depart:delete')")
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
    public Result<SysDepart> delete(@RequestParam(name="id",required=true) String id) {
@@ -256,7 +260,7 @@ public class SysDepartController {
 	 * @param ids
 	 * @return
 	 */
-    @RequiresPermissions("system:depart:deleteBatch")
+	@PreAuthorize("@jps.requiresPermissions('system:depart:deleteBatch')")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
@@ -320,7 +324,7 @@ public class SysDepartController {
 	public Result<List<SysDepartTreeModel>> searchBy(@RequestParam(name = "keyWord", required = true) String keyWord,@RequestParam(name = "myDeptSearch", required = false) String myDeptSearch) {
 		Result<List<SysDepartTreeModel>> result = new Result<List<SysDepartTreeModel>>();
 		//部门查询，myDeptSearch为1时为我的部门查询，登录用户为上级时查只查负责部门下数据
-		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser user = SecureUtil.currentUser();
 		String departIds = null;
 		if(oConvertUtils.isNotEmpty(user.getUserIdentity()) && user.getUserIdentity().equals( CommonConstant.USER_IDENTITY_2 )){
 			departIds = user.getDepartIds();
@@ -380,7 +384,7 @@ public class SysDepartController {
      * @param response
      * @return
      */
-    @RequiresPermissions("system:depart:importExcel")
+	@PreAuthorize("@jps.requiresPermissions('system:depart:importExcel')")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
