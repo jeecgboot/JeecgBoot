@@ -1,4 +1,4 @@
-package org.jeecg.config.security.password;
+package org.jeecg.config.security.phone;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.CommonAPI;
@@ -12,6 +12,7 @@ import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.JeecgBaseConfig;
+import org.jeecg.config.security.password.PasswordGrantAuthenticationToken;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,8 +20,6 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.core.*;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
@@ -45,7 +44,7 @@ import java.util.stream.Stream;
  * @date 2024/1/1
  */
 @Slf4j
-public class PasswordGrantAuthenticationProvider implements AuthenticationProvider {
+public class PhoneGrantAuthenticationProvider implements AuthenticationProvider {
 
     private static final String ERROR_URI = "https://datatracker.ietf.org/doc/html/rfc6749#section-5.2";
 
@@ -60,7 +59,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
     @Autowired
     private BaseCommonService baseCommonService;
 
-    public PasswordGrantAuthenticationProvider(OAuth2AuthorizationService authorizationService, OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator) {
+    public PhoneGrantAuthenticationProvider(OAuth2AuthorizationService authorizationService, OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator) {
         Assert.notNull(authorizationService, "authorizationService cannot be null");
         Assert.notNull(tokenGenerator, "tokenGenerator cannot be null");
         this.authorizationService = authorizationService;
@@ -74,36 +73,33 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
 
         // 授权类型
         AuthorizationGrantType authorizationGrantType = passwordGrantAuthenticationToken.getGrantType();
-        // 用户名
-        String username = (String) additionalParameter.get(OAuth2ParameterNames.USERNAME);
-        // 密码
-        String password = (String) additionalParameter.get(OAuth2ParameterNames.PASSWORD);
+        // 手机号
+        String phone = (String) additionalParameter.get("mobile");
+
+        if(isLoginFailOvertimes(phone)){
+            throw new JeecgBootException("该用户登录失败次数过多，请于10分钟后再次登录！");
+        }
+
         //请求参数权限范围
         String requestScopesStr = (String)additionalParameter.getOrDefault(OAuth2ParameterNames.SCOPE, "*");
         //请求参数权限范围专场集合
         Set<String> requestScopeSet = Stream.of(requestScopesStr.split(" ")).collect(Collectors.toSet());
         // 验证码
         String captcha = (String) additionalParameter.get("captcha");
-        String checkKey = (String) additionalParameter.get("checkKey");
+
+        LoginUser loginUser = commonAPI.getUserByPhone(phone);
+        // 检查用户可行性
+        checkUserIsEffective(loginUser);
 
 
-        if(isLoginFailOvertimes(username)){
-            throw new JeecgBootException("该用户登录失败次数过多，请于10分钟后再次登录！");
-        }
+        String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+phone;
+        Object code = redisUtil.get(redisKey);
 
-        if(captcha==null){
-            throw new JeecgBootException("验证码无效");
-        }
-        String lowerCaseCaptcha = captcha.toLowerCase();
-        // 加入密钥作为混淆，避免简单的拼接，被外部利用，用户自定义该密钥即可
-        String origin = lowerCaseCaptcha+checkKey+jeecgBaseConfig.getSignatureSecret();
-        String realKey = Md5Util.md5Encode(origin, "utf-8");
-        Object checkCode = redisUtil.get(realKey);
-        //当进入登录页时，有一定几率出现验证码错误 #1714
-        if(checkCode==null || !checkCode.toString().equals(lowerCaseCaptcha)) {
-            log.warn("验证码错误，key= {} , Ui checkCode= {}, Redis checkCode = {}", checkKey, lowerCaseCaptcha, checkCode);
-            // 改成特殊的code 便于前端判断
-            throw new JeecgCaptchaException(HttpStatus.PRECONDITION_FAILED.value(), "验证码错误");
+        if (!captcha.equals(code)) {
+            //update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
+            addLoginFailOvertimes(phone);
+            //update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
+            throw new JeecgBootException("手机验证码错误");
         }
 
         OAuth2ClientAuthenticationToken clientPrincipal = getAuthenticatedClientElseThrowInvalidClient(passwordGrantAuthenticationToken);
@@ -111,17 +107,6 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
 
         if (!registeredClient.getAuthorizationGrantTypes().contains(authorizationGrantType)) {
             throw new JeecgBootException("非法登录");
-        }
-
-        LoginUser loginUser = commonAPI.getUserByName(username);
-        // 检查用户可行性
-        checkUserIsEffective(loginUser);
-
-        // 不使用spring security passwordEncoder针对密码进行匹配，使用自有加密匹配，针对 spring security使用noop传输
-        password = PasswordUtil.encrypt(username, password, loginUser.getSalt());
-        if (!password.equals(loginUser.getPassword())) {
-            addLoginFailOvertimes(username);
-            throw new JeecgBootException("用户名或密码不正确");
         }
 
         //由于在上面已验证过用户名、密码，现在构建一个已认证的对象UsernamePasswordAuthenticationToken
@@ -138,7 +123,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization.withRegisteredClient(registeredClient)
                 .principalName(clientPrincipal.getName())
                 .authorizedScopes(requestScopeSet)
-                .attribute(Principal.class.getName(), username)
+                .attribute(Principal.class.getName(), loginUser.getUsername())
                 .authorizationGrantType(authorizationGrantType);
 
 
@@ -183,10 +168,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
 
         authorizationService.save(authorization);
 
-        // 登录成功，删除redis中的验证码
-        redisUtil.del(realKey);
-        redisUtil.del(CommonConstant.LOGIN_FAIL + username);
-        baseCommonService.addLog("用户名: " + username + ",登录成功！", CommonConstant.LOG_TYPE_1, null,loginUser);
+        baseCommonService.addLog("用户名: " + loginUser.getUsername() + ",登录成功！", CommonConstant.LOG_TYPE_1, null,loginUser);
 
         Map<String, Object> addition = new HashMap<>();
         // 设置登录用户信息
@@ -198,12 +180,12 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         if (departs == null || departs.size() == 0) {
             addition.put("multi_depart", 0);
         } else if (departs.size() == 1) {
-            commonAPI.updateUserDepart(username, departs.get(0).getOrgCode(),null);
+            commonAPI.updateUserDepart(loginUser.getUsername(), departs.get(0).getOrgCode(),null);
             addition.put("multi_depart", 1);
         } else {
             //查询当前是否有登录部门
             if(oConvertUtils.isEmpty(loginUser.getOrgCode())){
-                commonAPI.updateUserDepart(username, departs.get(0).getOrgCode(),null);
+                commonAPI.updateUserDepart(loginUser.getUsername(), departs.get(0).getOrgCode(),null);
             }
             addition.put("multi_depart", 2);
         }

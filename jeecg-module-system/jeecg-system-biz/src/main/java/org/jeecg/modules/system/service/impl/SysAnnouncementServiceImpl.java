@@ -10,6 +10,7 @@ import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.system.entity.SysAnnouncement;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.system.mapper.SysAnnouncementMapper;
@@ -145,7 +146,7 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 
 	@Override
 	public void completeAnnouncementSendInfo() {
-		LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+		LoginUser sysUser = SecureUtil.currentUser();
 		String userId = sysUser.getId();
 		List<String> announcementIds = this.getNotSendedAnnouncementlist(userId);
 		List<SysAnnouncementSend> sysAnnouncementSendList = new ArrayList<>();
@@ -195,7 +196,7 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 //			completeAnnouncementSendInfo();
 //		});
 		
-		LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+		LoginUser sysUser = SecureUtil.currentUser();
 		log.info(" 获取登录人 LoginUser id: {}", sysUser.getId());
 		Page<SysAnnouncement> page = new Page<SysAnnouncement>(pageNo,pageSize);
 		List<SysAnnouncement> list = baseMapper.queryAllMessageList(page, sysUser.getId(), fromUser, starFlag, beginDate, endDate);
@@ -204,13 +205,13 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 
 	@Override
 	public void updateReaded(List<String> annoceIdList) {
-		LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+		LoginUser sysUser = SecureUtil.currentUser();
 		sysAnnouncementSendMapper.updateReaded(sysUser.getId(), annoceIdList);
 	}
 
 	@Override
 	public void clearAllUnReadMessage() {
-		LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+		LoginUser sysUser = SecureUtil.currentUser();
 		sysAnnouncementSendMapper.clearAllUnReadMessage(sysUser.getId());
 	}
 

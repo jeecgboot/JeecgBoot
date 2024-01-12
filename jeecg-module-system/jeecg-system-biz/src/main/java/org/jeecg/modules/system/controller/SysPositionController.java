@@ -18,6 +18,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.system.entity.SysPosition;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysPositionService;
@@ -243,7 +244,7 @@ public class SysPositionController {
         //Step.2 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
         List<SysPosition> pageList = sysPositionService.list(queryWrapper);
-        LoginUser user = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+        LoginUser user = SecureUtil.currentUser();
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "职务表列表");
         mv.addObject(NormalExcelConstants.CLASS, SysPosition.class);

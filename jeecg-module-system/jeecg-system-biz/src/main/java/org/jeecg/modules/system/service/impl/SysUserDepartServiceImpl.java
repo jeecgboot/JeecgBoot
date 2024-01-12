@@ -13,6 +13,7 @@ import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserDepart;
@@ -211,7 +212,7 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
         IPage<SysUser> pageList = null;
         // 部门ID不存在 直接查询用户表即可
         Page<SysUser> page = new Page<>(pageNo, pageSize);
-        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+        LoginUser sysUser = SecureUtil.currentUser();
         if(oConvertUtils.isEmpty(departId)){
             LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
             query.eq(SysUser::getStatus,Integer.parseInt(CommonConstant.STATUS_1));
@@ -249,7 +250,7 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 		IPage<SysUser> pageList = null;
 		// 部门ID不存在 直接查询用户表即可
 		Page<SysUser> page = new Page<>(pageNo, pageSize);
-		LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+		LoginUser sysUser = SecureUtil.currentUser();
 		if(oConvertUtils.isNotEmpty(departId)){
 			// 有部门ID 需要走自定义sql
 			SysDepart sysDepart = sysDepartService.getById(departId);

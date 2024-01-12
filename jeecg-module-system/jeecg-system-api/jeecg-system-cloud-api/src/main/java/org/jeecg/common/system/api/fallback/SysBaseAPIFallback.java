@@ -447,4 +447,9 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     public void updateUserDepart(String username, String orgCode, Integer loginTenantId) {
 
     }
+
+    @Override
+    public LoginUser getUserByPhone(String phone) {
+        return null;
+    }
 }

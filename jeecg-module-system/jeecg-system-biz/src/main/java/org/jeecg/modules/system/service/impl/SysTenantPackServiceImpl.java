@@ -8,6 +8,7 @@ import org.jeecg.common.constant.TenantConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.aop.TenantLog;
 import org.jeecg.modules.system.entity.SysPackPermission;
 import org.jeecg.modules.system.entity.SysTenant;
@@ -135,7 +136,7 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
         ISysTenantPackService currentService = SpringContextUtils.getApplicationContext().getBean(ISysTenantPackService.class);
         String packId = currentService.saveOne(superAdminPack);
 
-        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+        LoginUser sysUser = SecureUtil.currentUser();
         SysTenantPackUser packUser = new SysTenantPackUser(tenantId, packId, sysUser.getId());
         packUser.setRealname(sysUser.getRealname());
         packUser.setPackName(superAdminPack.getPackName());

@@ -1,11 +1,10 @@
-package org.jeecg.config.security.password;
+package org.jeecg.config.security.phone;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.jeecg.common.constant.CommonConstant;
+import lombok.AllArgsConstructor;
 import org.jeecg.config.security.LoginType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.web.authentication.AuthenticationConverter;
@@ -20,12 +19,13 @@ import java.util.Map;
  * @author EightMonth
  * @date 2024/1/1
  */
-public class PasswordGrantAuthenticationConvert implements AuthenticationConverter {
+@AllArgsConstructor
+public class PhoneGrantAuthenticationConvert implements AuthenticationConverter {
     @Override
     public Authentication convert(HttpServletRequest request) {
 
         String grantType = request.getParameter(OAuth2ParameterNames.GRANT_TYPE);
-        if (!LoginType.PASSWORD.equals(grantType)) {
+        if (!LoginType.PHONE.equals(grantType)) {
             return null;
         }
 
@@ -34,20 +34,15 @@ public class PasswordGrantAuthenticationConvert implements AuthenticationConvert
         //从request中提取请求参数，然后存入MultiValueMap<String, String>
         MultiValueMap<String, String> parameters = getParameters(request);
 
-        // username (REQUIRED)
-        String username = parameters.getFirst(OAuth2ParameterNames.USERNAME);
-        if (!StringUtils.hasText(username) ||
+        // 验证码
+        String captcha = parameters.getFirst("captcha");
+        if (!StringUtils.hasText(captcha) ||
                 parameters.get(OAuth2ParameterNames.USERNAME).size() != 1) {
-            throw new OAuth2AuthenticationException("无效请求，用户名不能为空！");
-        }
-        String password = parameters.getFirst(OAuth2ParameterNames.PASSWORD);
-        if (!StringUtils.hasText(password) ||
-                parameters.get(OAuth2ParameterNames.PASSWORD).size() != 1) {
-            throw new OAuth2AuthenticationException("无效请求，密码不能为空！");
+            throw new OAuth2AuthenticationException("无效请求，验证码不能为空！");
         }
 
-        //收集要传入PasswordGrantAuthenticationToken构造方法的参数，
-        //该参数接下来在PasswordGrantAuthenticationProvider中使用
+        //收集要传入PhoneGrantAuthenticationToken构造方法的参数，
+        //该参数接下来在PhoneGrantAuthenticationProvider中使用
         Map<String, Object> additionalParameters = new HashMap<>();
         //遍历从request中提取的参数，排除掉grant_type、client_id、code等字段参数，其他参数收集到additionalParameters中
         parameters.forEach((key, value) -> {
@@ -58,8 +53,8 @@ public class PasswordGrantAuthenticationConvert implements AuthenticationConvert
             }
         });
 
-        //返回自定义的PasswordGrantAuthenticationToken对象
-        return new PasswordGrantAuthenticationToken(clientPrincipal, additionalParameters);
+        //返回自定义的PhoneGrantAuthenticationToken对象
+        return new PhoneGrantAuthenticationToken(clientPrincipal, additionalParameters);
 
     }
 
@@ -78,4 +73,5 @@ public class PasswordGrantAuthenticationConvert implements AuthenticationConvert
         });
         return parameters;
     }
+
 }

@@ -20,6 +20,7 @@ import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.service.ISysDictItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -74,7 +75,7 @@ public class SysDictItemController {
 	 * @功能：新增
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:item:add")
+	@PreAuthorize("@jps.requiresPermissions('system:dict:item:add')")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	@CacheEvict(value= {CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDictItem> add(@RequestBody SysDictItem sysDictItem) {
@@ -95,7 +96,7 @@ public class SysDictItemController {
 	 * @param sysDictItem
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:item:edit")
+	@PreAuthorize("@jps.requiresPermissions('system:dict:item:edit')")
 	@RequestMapping(value = "/edit",  method = { RequestMethod.PUT,RequestMethod.POST })
 	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDictItem> edit(@RequestBody SysDictItem sysDictItem) {
@@ -119,7 +120,7 @@ public class SysDictItemController {
 	 * @param id
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:item:delete")
+	@PreAuthorize("@jps.requiresPermissions('system:dict:item:delete')")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDictItem> delete(@RequestParam(name="id",required=true) String id) {
@@ -141,7 +142,7 @@ public class SysDictItemController {
 	 * @param ids
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:item:deleteBatch")
+	@PreAuthorize("@jps.requiresPermissions('system:dict:item:deleteBatch')")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDictItem> deleteBatch(@RequestParam(name="ids",required=true) String ids) {

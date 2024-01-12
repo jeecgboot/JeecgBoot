@@ -1,15 +1,18 @@
 package org.jeecg.common.system.vo;
 
+import com.alibaba.fastjson2.JSON;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.jeecg.common.desensitization.annotation.SensitiveField;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * <p>
@@ -136,27 +139,24 @@ public class LoginUser implements Serializable {
 
 	@Override
 	public String toString() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		return "{" +
-				"\"id\":\"" + id + '"' +
-				", \"username\":\"" + username + '"' +
-				", \"realname\":\"" + realname + '"' +
-				", \"password\":\"'" + password + '"' +
-				", \"orgCode\":\"" + orgCode + '"' +
-				", \"avatar\":\"" + avatar + '"' +
-				", \"sex\":" + sex +
-				", \"email\":\"" + email  + '"' +
-				", \"phone\":\"" + phone  + '"' +
-				", \"status\":" + status +
-				", \"delFlag\":" + delFlag +
-				", \"activitiSync\":" + activitiSync +
-				", \"userIdentity\":" + userIdentity +
-				", \"departIds\":\"" + departIds + '"' +
-				", \"post\":\"" + post  + '"' +
-				", \"telephone\":\"" + telephone  + '"' +
-				", \"relTenantIds\":\"" + relTenantIds  + '"' +
-				", \"clientId\":\"" + clientId  + '"' +
-				", \"salt\":\"" + salt  + '"' +
-				'}';
+		// 重新构建对象过滤一些敏感字段
+		LoginUser loginUser = new LoginUser();
+		loginUser.setId(id);
+		loginUser.setUsername(username);
+		loginUser.setRealname(realname);
+		loginUser.setOrgCode(orgCode);
+		loginUser.setSex(sex);
+		loginUser.setEmail(email);
+		loginUser.setPhone(phone);
+		loginUser.setDelFlag(delFlag);
+		loginUser.setStatus(status);
+		loginUser.setActivitiSync(activitiSync);
+		loginUser.setUserIdentity(userIdentity);
+		loginUser.setDepartIds(departIds);
+		loginUser.setPost(post);
+		loginUser.setTelephone(telephone);
+		loginUser.setRelTenantIds(relTenantIds);
+		loginUser.setClientId(clientId);
+		return JSON.toJSONString(loginUser);
 	}
 }

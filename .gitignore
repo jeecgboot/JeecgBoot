@@ -10,3 +10,5 @@ rebel.xml
 ## front
 **/*.lock
 os_del.cmd
+
+*.log

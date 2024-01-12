@@ -13,6 +13,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.JeecgBaseConfig;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -53,7 +54,7 @@ public class JeecgController<T, S extends IService<T>> {
     protected ModelAndView exportXls(HttpServletRequest request, T object, Class<T> clazz, String title) {
         // Step.1 组装查询条件
         QueryWrapper<T> queryWrapper = QueryGenerator.initQueryWrapper(object, request.getParameterMap());
-        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+        LoginUser sysUser = SecureUtil.currentUser();
 
         // 过滤选中数据
         String selections = request.getParameter("selections");
@@ -91,7 +92,7 @@ public class JeecgController<T, S extends IService<T>> {
     protected ModelAndView exportXlsSheet(HttpServletRequest request, T object, Class<T> clazz, String title,String exportFields,Integer pageNum) {
         // Step.1 组装查询条件
         QueryWrapper<T> queryWrapper = QueryGenerator.initQueryWrapper(object, request.getParameterMap());
-        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+        LoginUser sysUser = SecureUtil.currentUser();
         // Step.2 计算分页sheet数据
         double total = service.count();
         int count = (int)Math.ceil(total/pageNum);

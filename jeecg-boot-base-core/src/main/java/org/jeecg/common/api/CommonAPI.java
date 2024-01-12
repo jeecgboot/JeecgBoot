@@ -50,6 +50,13 @@ public interface CommonAPI {
      */
     public LoginUser getUserByName(String username);
 
+    /**
+     * 5根据用户手机号查询用户信息
+     * @param username
+     * @return
+     */
+    public LoginUser getUserByPhone(String phone);
+
 
     /**
      * 6字典表的 翻译

@@ -24,6 +24,7 @@ import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.message.enums.RangeDateEnum;
 import org.jeecg.modules.message.websocket.WebSocket;
 import org.jeecg.modules.system.entity.SysAnnouncement;
@@ -337,7 +338,7 @@ public class SysAnnouncementController {
 	public Result<Map<String, Object>> listByUser(@RequestParam(required = false, defaultValue = "5") Integer pageSize) {
 		Result<Map<String,Object>> result = new Result<Map<String,Object>>();
 		Map<String,Object> sysMsgMap = new HashMap(5);
-		LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+		LoginUser sysUser = SecureUtil.currentUser();
 		String userId = sysUser.getId();
 		
 //		//补推送数据（用户和通知的关系表）
@@ -380,7 +381,7 @@ public class SysAnnouncementController {
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "系统通告列表");
         mv.addObject(NormalExcelConstants.CLASS, SysAnnouncement.class);
-        LoginUser user = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+        LoginUser user = SecureUtil.currentUser();
         mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("系统通告列表数据", "导出人:"+user.getRealname(), "导出信息"));
         mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
         return mv;
@@ -548,7 +549,7 @@ public class SysAnnouncementController {
 		
 		JSONObject obj = new JSONObject();
 		obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
-		LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+		LoginUser sysUser = SecureUtil.currentUser();
 		webSocket.sendMessage(sysUser.getId(), obj.toJSONString());
 
 		// 4、性能统计耗时

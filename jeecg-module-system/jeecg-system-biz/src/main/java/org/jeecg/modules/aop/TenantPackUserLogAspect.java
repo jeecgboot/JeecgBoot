@@ -1,7 +1,6 @@
 package org.jeecg.modules.aop;
 
 import com.alibaba.fastjson.JSON;
-import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
@@ -10,6 +9,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.jeecg.common.api.dto.LogDTO;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.SysTenantPack;
 import org.jeecg.modules.system.entity.SysTenantPackUser;
@@ -80,7 +80,7 @@ public class TenantPackUserLogAspect {
                 dto.setOperateType(opType);
                 dto.setTenantId(tenantId);
                 //获取登录用户信息
-                LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+                LoginUser sysUser = SecureUtil.currentUser();
                 if(sysUser!=null){
                     dto.setUserid(sysUser.getUsername());
                     dto.setUsername(sysUser.getRealname());
