@@ -182,7 +182,7 @@ public class MabangSkuJob implements Job {
             param.put("total_page", String.valueOf(messageContentList.size()));
             TemplateMessageDTO message = new TemplateMessageDTO("admin", "admin", "SKU导入任务", param, "sku_mabang_job_result");
             ISysBaseApi.sendTemplateAnnouncement(message);
-            message = new TemplateMessageDTO("admin", "Alice", "SKU导入任务", param, "sku_mabang_job_result");
+//            message = new TemplateMessageDTO("admin", "Alice", "SKU导入任务", param, "sku_mabang_job_result");
             ISysBaseApi.sendTemplateAnnouncement(message);
             message = new TemplateMessageDTO("admin", "Jessyca", "SKU导入任务", param, "sku_mabang_job_result");
             ISysBaseApi.sendTemplateAnnouncement(message);

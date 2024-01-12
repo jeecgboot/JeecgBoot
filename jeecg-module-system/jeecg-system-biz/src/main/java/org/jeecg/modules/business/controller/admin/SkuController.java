@@ -16,10 +16,7 @@ import org.jeecg.modules.business.entity.ShippingDiscount;
 import org.jeecg.modules.business.entity.Sku;
 import org.jeecg.modules.business.entity.SkuDeclaredValue;
 import org.jeecg.modules.business.entity.SkuPrice;
-import org.jeecg.modules.business.service.IShippingDiscountService;
-import org.jeecg.modules.business.service.ISkuDeclaredValueService;
-import org.jeecg.modules.business.service.ISkuPriceService;
-import org.jeecg.modules.business.service.ISkuService;
+import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.SkuName;
 import org.jeecg.modules.business.vo.SkuPage;
 import org.jeecg.modules.business.vo.SkuUpdate;
@@ -350,4 +347,12 @@ public class SkuController {
         );
     }
 
+    @GetMapping("/skusByClient")
+    public Result<?> skusByClient(@RequestParam String clientId) {
+        List<Sku> skus = skuService.fetchSkusByClient(clientId);
+        IPage<Sku> page = new Page<>();
+        page.setRecords(skus);
+        page.setTotal(skus.size());
+        return Result.OK(page);
+    }
 }

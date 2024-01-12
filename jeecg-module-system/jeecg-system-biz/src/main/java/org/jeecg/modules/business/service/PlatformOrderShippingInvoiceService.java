@@ -11,6 +11,8 @@ import org.jeecg.modules.business.domain.excel.SheetManager;
 import org.jeecg.modules.business.domain.shippingInvoice.CompleteInvoice;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoice;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoiceFactory;
+import org.jeecg.modules.business.entity.Client;
+import org.jeecg.modules.business.entity.ClientCategory.CategoryName;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.SavRefundWithDetail;
 import org.jeecg.modules.business.mapper.*;
@@ -57,6 +59,8 @@ public class PlatformOrderShippingInvoiceService {
     IBalanceService balanceService;
     @Autowired
     ClientMapper clientMapper;
+    @Autowired
+    IClientCategoryService clientCategoryService;
     @Autowired
     EmailService emailService;
     @Autowired
@@ -482,9 +486,10 @@ public class PlatformOrderShippingInvoiceService {
             clientShopIDsMap.put(id, shopService.listIdByClient(id));
         }
         for(Map.Entry<String, List<String>> entry: clientShopIDsMap.entrySet()) {
+            Client client = clientMapper.selectById(entry.getKey());
             Period period = getValidPeriod(entry.getValue());
             if(!period.isValid()) {
-                String internalCode = clientMapper.selectById(entry.getKey()).getInternalCode();
+                String internalCode = client.getInternalCode();
                 invoiceList.add(new InvoiceMetaData("", "error", internalCode, entry.getKey(), "No order to invoice."));
                 continue;
             }
@@ -501,18 +506,23 @@ public class PlatformOrderShippingInvoiceService {
                 InvoiceMetaData metaData;
                 if(invoiceType == 0) {
                     metaData = makeInvoice(param);
-                    balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), "shipping");
+                    if(client.getClientCategoryId().equals(clientCategoryService.getIdByCode(CategoryName.VIP.getName()))
+                        || client.getClientCategoryId().equals(clientCategoryService.getIdByCode(CategoryName.CONFIRMED.getName())))
+                        balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), "shipping");
                 }
                 else {
                     metaData = makeCompleteInvoicePostShipping(param, "post");
-                    balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), "complete");
+                    if(client.getClientCategoryId().equals(clientCategoryService.getIdByCode(CategoryName.VIP.getName()))
+                            || client.getClientCategoryId().equals(clientCategoryService.getIdByCode(CategoryName.CONFIRMED.getName())))
+                        balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), "complete");
                 }
+                convertToPdf(metaData.getInvoiceCode(), "invoice");
                 invoiceList.add(metaData);
             } catch (UserException | IOException | ParseException e) {
                 String internalCode = clientMapper.selectById(entry.getKey()).getInternalCode();
                 invoiceList.add(new InvoiceMetaData("", "error", internalCode, entry.getKey(), e.getMessage()));
                 log.error(e.getMessage());
-            } catch (MessagingException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             System.gc();

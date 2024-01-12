@@ -1,6 +1,7 @@
 package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import freemarker.template.Template;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuList.SkuData;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuList.SkuListRequestErrorException;
@@ -11,9 +12,15 @@ import org.jeecg.modules.business.entity.SkuPrice;
 import org.jeecg.modules.business.mapper.SkuListMabangMapper;
 import org.jeecg.modules.business.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -28,21 +35,25 @@ import static java.util.stream.Collectors.toList;
 @Service
 @Slf4j
 public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, SkuData> implements ISkuListMabangService {
-    private final SkuListMabangMapper skuListMabangMapper;
-    private final IProductService productService;
-    private final ISkuService skuService;
-    private final ISkuPriceService skuPriceService;
-    private final ISkuDeclaredValueService skuDeclaredValueService;
-
     @Autowired
-    public SkuListMabangServiceImpl(SkuListMabangMapper skuListMabangMapper, IProductService productService,
-                                    ISkuService skuService, ISkuPriceService skuPriceService, ISkuDeclaredValueService skuDeclaredValueService) {
-        this.skuListMabangMapper = skuListMabangMapper;
-        this.productService = productService;
-        this.skuService = skuService;
-        this.skuPriceService = skuPriceService;
-        this.skuDeclaredValueService = skuDeclaredValueService;
-    }
+    private SkuListMabangMapper skuListMabangMapper;
+    @Autowired
+    private IProductService productService;
+    @Autowired
+    private ISkuService skuService;
+    @Autowired
+    private ISkuPriceService skuPriceService;
+    @Autowired
+    private ISkuDeclaredValueService skuDeclaredValueService;
+    @Autowired
+    private IClientSkuService clientSkuService;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private FreeMarkerConfigurer freemarkerConfigurer;
+    @Autowired
+    Environment env;
+
 
     /**
      * Save skus to DB from mabang api.
@@ -96,6 +107,35 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
                 //create a new sku for each sku data
                 newSkus = createSkus(newSkuDatas);
                 skuService.saveBatch(newSkus);
+
+                // attributing sku to client
+                List<String> unknownClientSkus = clientSkuService.saveClientSku(newSkus);
+
+                // send email for manual check
+                if(!unknownClientSkus.isEmpty()) {
+                    log.info("Sending email for manual check.");
+                    Properties prop = emailService.getMailSender();
+                    Session session = Session.getInstance(prop, new Authenticator() {
+                        @Override
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(env.getProperty("spring.mail.username"), env.getProperty("spring.mail.password"));
+                        }
+                    });
+
+                    String subject = "Association of Sku to Client failed while creating new Sku";
+                    String destEmail = env.getProperty("spring.mail.username");
+                    Map<String, Object> templateModel = new HashMap<>();
+                    templateModel.put("skus", unknownClientSkus);
+                    try {
+                        freemarkerConfigurer = emailService.freemarkerClassLoaderConfig();
+                        Template template = freemarkerConfigurer.getConfiguration().getTemplate("admin/unknownClientForSku.ftl");
+                        String htmlBody = FreeMarkerTemplateUtils.processTemplateIntoString(template, templateModel);
+                        emailService.sendSimpleMessage(destEmail, subject, htmlBody, session);
+                        log.info("Mail sent successfully");
+                    } catch (Exception e) {
+                        log.error("Error sending mail: " + e.getMessage());
+                    }
+                }
 
                 // adding the additional information to List and pairing it to a sku with the associated product code
                 List<String> productIdInMap = new ArrayList<>();
