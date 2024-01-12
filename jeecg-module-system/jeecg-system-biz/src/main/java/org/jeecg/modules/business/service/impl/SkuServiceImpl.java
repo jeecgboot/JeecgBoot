@@ -2,6 +2,7 @@ package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.controller.UserException;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
  * @Date: 2021-06-28
  * @Version: V1.1
  */
+@Slf4j
 @Service
 public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuService {
 
@@ -407,5 +409,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     @Override
     public List<SkuQuantity> getSkuQuantitiesFromOrderIds(List<String> orderIds) {
         return skuMapper.getSkuQuantitiesFromOrderIds(orderIds);
+    }
+
+    @Override
+    public List<Sku> fetchSkusByClient(String clientId) {
+        return skuMapper.fetchSkusByClient(clientId);
     }
 }

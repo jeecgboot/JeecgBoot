@@ -792,6 +792,7 @@ public class InvoiceController {
                 metaDataErrorList.add(metaData);
             }
             else {
+                filenameList.add(INVOICE_PDF_DIR + "//" + "Invoice N°" + metaData.getInvoiceCode() + " (" + metaData.getInvoiceEntity() + ").pdf");
                 filenameList.add(INVOICE_DIR + "//" + metaData.getFilename());
                 List<FactureDetail> factureDetails = shippingInvoiceService.getInvoiceDetail(metaData.getInvoiceCode());
                 List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(metaData.getInvoiceCode());
