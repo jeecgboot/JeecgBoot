@@ -12,3 +12,6 @@ rebel.xml
 os_del.cmd
 os_del_doc.cmd
 .svn
+
+
+*.log

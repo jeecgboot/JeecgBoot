@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.dto.message.BusMessageDTO;
 import org.jeecg.common.api.dto.message.MessageDTO;
 import org.jeecg.common.api.vo.Result;
@@ -21,6 +20,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.constant.enums.SysAnnmentTypeEnum;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.aop.TenantLog;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.SysTenantMapper;
@@ -31,11 +31,8 @@ import org.jeecg.modules.system.service.ISysTenantPackService;
 import org.jeecg.modules.system.service.ISysTenantService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.vo.tenant.*;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -170,7 +167,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         this.save(sysTenant);
         //update-begin---author:wangshuai ---date:20230710  for：【QQYUN-5723】1、把当前创建人加入到租户关系里面------------
         //当前登录人的id
-        LoginUser loginUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+        LoginUser loginUser = SecureUtil.currentUser();
         this.saveTenantRelation(sysTenant.getId(),loginUser.getId());
         //update-end---author:wangshuai ---date:20230710  for：【QQYUN-5723】1、把当前创建人加入到租户关系里面------------
     }
@@ -366,7 +363,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     @Override
     public Result<String> invitationUser(String phone, String departId) {
         Result<String> result = new Result<>();
-        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+        LoginUser sysUser = SecureUtil.currentUser();
 
         //1、查询用户信息,判断用户是否存在
         SysUser userByPhone = userService.getUserByPhone(phone);
@@ -430,7 +427,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         }
 
         TenantDepartAuthInfo info = new TenantDepartAuthInfo();
-        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+        LoginUser sysUser = SecureUtil.currentUser();
         String userId = sysUser.getId();
         boolean superAdmin = false;
         // 查询pack表
@@ -620,7 +617,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         // 发消息
         SysUser user = userService.getById(sysTenantPackUser.getUserId());
         SysTenant sysTenant = this.baseMapper.querySysTenant(sysTenantPackUser.getTenantId());
-        LoginUser loginUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+        LoginUser loginUser = SecureUtil.currentUser();
         MessageDTO messageDTO = new MessageDTO();
         messageDTO.setToAll(false);
         messageDTO.setToUser(user.getUsername());
@@ -792,7 +789,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     
     @Override
     public Long getApplySuperAdminCount() {
-        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+        LoginUser sysUser = SecureUtil.currentUser();
         int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
         return baseMapper.getApplySuperAdminCount(sysUser.getId(),tenantId);
     }

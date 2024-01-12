@@ -16,19 +16,21 @@ spring:
     allow-circular-references: true
   config:
     import:
-      - optional:nacos:jeecg-gateway-dev.yaml
+      - optional:nacos:${spring.application.name}-@profile.name@.yaml
   cloud:
     nacos:
       config:
-        server-addr: localhost:8848
-        namespace: public
-      #        username: @config.username@
-      #        password: @config.password@
+        server-addr: @config.server-addr@
+        group: @config.group@
+        namespace: @config.namespace@
+        username: @config.username@
+        password: @config.password@
       discovery:
         server-addr: ${spring.cloud.nacos.config.server-addr}
-        namespace: public
-    #        username: @config.username@
-    #        password: @config.password@
+        group: @config.group@
+        namespace: @config.namespace@
+        username: @config.username@
+        password: @config.password@
     gateway:
       discovery:
         locator:
@@ -56,7 +58,7 @@ spring:
         flow:  # 指定数据源名称
           # 指定nacos数据源
           nacos:
-            server-addr: ${spring.cloud.nacos.config.server-addr}
+            server-addr: @config.server-addr@
             # 指定配置文件
             dataId: ${spring.application.name}-flow-rules
             # 指定分组
@@ -68,7 +70,7 @@ spring:
         #降级规则
         degrade:
           nacos:
-            server-addr: ${spring.cloud.nacos.config.server-addr}
+            server-addr: @config.server-addr@
             dataId: ${spring.application.name}-degrade-rules
             groupId: SENTINEL_GROUP
             rule-type: degrade
@@ -76,7 +78,7 @@ spring:
         #系统规则
         system:
           nacos:
-            server-addr: ${spring.cloud.nacos.config.server-addr}
+            server-addr: @config.server-addr@
             dataId: ${spring.application.name}-system-rules
             groupId: SENTINEL_GROUP
             rule-type: system
@@ -84,7 +86,7 @@ spring:
         #授权规则
         authority:
           nacos:
-            server-addr: ${spring.cloud.nacos.config.server-addr}
+            server-addr: @config.server-addr@
             dataId: ${spring.application.name}-authority-rules
             groupId: SENTINEL_GROUP
             rule-type: authority
@@ -92,7 +94,7 @@ spring:
         #热点参数
         param-flow:
           nacos:
-            server-addr: ${spring.cloud.nacos.config.server-addr}
+            server-addr: @config.server-addr@
             dataId: ${spring.application.name}-param-rules
             groupId: SENTINEL_GROUP
             rule-type: param-flow
@@ -100,7 +102,7 @@ spring:
         #网关流控规则
         gw-flow:
           nacos:
-            server-addr: ${spring.cloud.nacos.config.server-addr}
+            server-addr: @config.server-addr@
             dataId: ${spring.application.name}-flow-rules
             groupId: SENTINEL_GROUP
             rule-type: gw-flow
@@ -108,7 +110,7 @@ spring:
         #API流控规则
         gw-api-group:
           nacos:
-            server-addr: ${spring.cloud.nacos.config.server-addr}
+            server-addr: @config.server-addr@
             dataId: ${spring.application.name}-api-rules
             groupId: SENTINEL_GROUP
             rule-type: gw-api-group

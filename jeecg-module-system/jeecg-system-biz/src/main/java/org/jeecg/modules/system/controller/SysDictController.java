@@ -20,6 +20,7 @@ import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.model.SysDictTree;
@@ -38,6 +39,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -365,7 +367,7 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:add")
+	@PreAuthorize("@jps.requiresPermissions('system:dict:add')")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysDict> add(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -386,7 +388,7 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:edit")
+	@PreAuthorize("@jps.requiresPermissions('system:dict:edit')")
 	@RequestMapping(value = "/edit", method = { RequestMethod.PUT,RequestMethod.POST })
 	public Result<SysDict> edit(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -408,7 +410,7 @@ public class SysDictController {
 	 * @param id
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:delete")
+	@PreAuthorize("@jps.requiresPermissions('system:dict:delete')")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDict> delete(@RequestParam(name="id",required=true) String id) {
@@ -427,7 +429,7 @@ public class SysDictController {
 	 * @param ids
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:deleteBatch")
+	@PreAuthorize("@jps.requiresPermissions('system:dict:deleteBatch')")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value= {CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDict> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
@@ -514,7 +516,7 @@ public class SysDictController {
 		// 注解对象Class
 		mv.addObject(NormalExcelConstants.CLASS, SysDictPage.class);
 		// 自定义表格参数
-		LoginUser user = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+		LoginUser user = SecureUtil.currentUser();
 		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("数据字典列表", "导出人:"+user.getRealname(), "数据字典"));
 		// 导出数据列表
 		mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
@@ -528,7 +530,7 @@ public class SysDictController {
 	 * @param
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:importExcel")
+	@PreAuthorize("@jps.requiresPermissions('system:dict:importExcel')")
 	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
 	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
  		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;

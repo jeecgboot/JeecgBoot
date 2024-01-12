@@ -1,11 +1,10 @@
-package org.jeecg.config.security.password;
+package org.jeecg.config.security.app;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.config.security.LoginType;
+import org.jeecg.config.security.password.PasswordGrantAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.web.authentication.AuthenticationConverter;
@@ -20,12 +19,12 @@ import java.util.Map;
  * @author EightMonth
  * @date 2024/1/1
  */
-public class PasswordGrantAuthenticationConvert implements AuthenticationConverter {
+public class AppGrantAuthenticationConvert implements AuthenticationConverter {
     @Override
     public Authentication convert(HttpServletRequest request) {
 
         String grantType = request.getParameter(OAuth2ParameterNames.GRANT_TYPE);
-        if (!LoginType.PASSWORD.equals(grantType)) {
+        if (!LoginType.APP.equals(grantType)) {
             return null;
         }
 

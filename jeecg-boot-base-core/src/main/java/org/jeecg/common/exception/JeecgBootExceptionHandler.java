@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.connection.PoolException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -88,6 +89,12 @@ public class JeecgBootExceptionHandler {
 
 	@ExceptionHandler({UnauthorizedException.class, AuthorizationException.class})
 	public Result<?> handleAuthorizationException(AuthorizationException e){
+		log.error(e.getMessage(), e);
+		return Result.noauth("没有权限，请联系管理员授权");
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	public Result<?> handleAuthorizationException(AccessDeniedException e){
 		log.error(e.getMessage(), e);
 		return Result.noauth("没有权限，请联系管理员授权");
 	}

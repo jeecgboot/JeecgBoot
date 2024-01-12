@@ -1,4 +1,4 @@
-package org.jeecg.config.security.password;
+package org.jeecg.config.security.phone;
 
 import org.jeecg.config.security.LoginType;
 import org.springframework.security.core.Authentication;
@@ -11,10 +11,10 @@ import java.util.Map;
  * @author EightMonth
  * @date 2024/1/1
  */
-public class PasswordGrantAuthenticationToken extends OAuth2AuthorizationGrantAuthenticationToken {
+public class PhoneGrantAuthenticationToken extends OAuth2AuthorizationGrantAuthenticationToken {
 
-    public PasswordGrantAuthenticationToken(Authentication clientPrincipal, Map<String, Object> additionalParameters) {
-        super(new AuthorizationGrantType(LoginType.PASSWORD), clientPrincipal, additionalParameters);
+    public PhoneGrantAuthenticationToken(Authentication clientPrincipal, Map<String, Object> additionalParameters) {
+        super(new AuthorizationGrantType(LoginType.PHONE), clientPrincipal, additionalParameters);
     }
 
 }

@@ -17,7 +17,6 @@ import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
@@ -40,6 +39,7 @@ import org.jeecg.common.util.dynamic.db.FreemarkerParseFactory;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.firewall.SqlInjection.IDictTableWhiteListHandler;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.message.entity.SysMessageTemplate;
 import org.jeecg.modules.message.handle.impl.DdSendMsgHandle;
 import org.jeecg.modules.message.handle.impl.EmailSendMsgHandle;
@@ -159,6 +159,19 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		}
 
 		return user;
+	}
+
+	@Override
+	public LoginUser getUserByPhone(String phone) {
+		if (oConvertUtils.isEmpty(phone)) {
+			return null;
+		}
+
+		LoginUser loginUser = new LoginUser();
+		SysUser sysUser = sysUserService.getUserByPhone(phone);
+
+		BeanUtils.copyProperties(sysUser, loginUser);
+		return loginUser;
 	}
 
 	@Override
@@ -611,7 +624,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public void updateSysAnnounReadFlag(String busType, String busId) {
 		SysAnnouncement announcement = sysAnnouncementMapper.selectOne(new QueryWrapper<SysAnnouncement>().eq("bus_type",busType).eq("bus_id",busId));
 		if(announcement != null){
-			LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+			LoginUser sysUser = SecureUtil.currentUser();
 			String userId = sysUser.getId();
 			LambdaUpdateWrapper<SysAnnouncementSend> updateWrapper = new UpdateWrapper().lambda();
 			updateWrapper.set(SysAnnouncementSend::getReadFlag, CommonConstant.HAS_READ_FLAG);

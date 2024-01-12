@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.system.base.controller.JeecgController;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -68,7 +69,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      * @param sysRoleIndex
      * @return
      */
-    @RequiresPermissions("system:roleindex:add")
+    @PreAuthorize("@jps.requiresPermissions('system:roleindex:add')")
     @AutoLog(value = "角色首页配置-添加")
     @Operation(summary = "角色首页配置-添加")
     @PostMapping(value = "/add")
@@ -84,7 +85,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      * @param sysRoleIndex
      * @return
      */
-    @RequiresPermissions("system:roleindex:edit")
+    @PreAuthorize("@jps.requiresPermissions('system:roleindex:edit')")
     @AutoLog(value = "角色首页配置-编辑")
     @Operation(summary = "角色首页配置-编辑")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})

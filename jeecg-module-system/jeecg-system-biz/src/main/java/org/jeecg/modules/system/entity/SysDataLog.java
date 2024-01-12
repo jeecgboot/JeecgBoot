@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -95,7 +96,7 @@ public class SysDataLog implements Serializable {
      */
     public void autoSetCreateName() {
         try {
-            LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+            LoginUser sysUser = SecureUtil.currentUser();
             this.setCreateName(sysUser.getRealname());
         } catch (Exception e) {
             log.warn("SecurityUtils.getSubject() 获取用户信息异常：" + e.getMessage());

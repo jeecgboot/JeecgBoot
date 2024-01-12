@@ -6,36 +6,22 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.AllArgsConstructor;
-import org.jeecg.common.api.CommonAPI;
-import org.jeecg.common.util.RedisUtil;
-import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.config.security.password.PasswordGrantAuthenticationConvert;
 import org.jeecg.config.security.password.PasswordGrantAuthenticationProvider;
-import org.jeecg.modules.base.service.BaseCommonService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
-import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
-import org.springframework.security.oauth2.jwt.JwsHeader;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.oauth2.server.authorization.*;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
@@ -52,9 +38,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -69,10 +53,6 @@ public class SecurityConfig {
 
     private JdbcTemplate jdbcTemplate;
     private OAuth2AuthorizationService authorizationService;
-    private final CommonAPI commonAPI;
-    private final RedisUtil redisUtil;
-    private final JeecgBaseConfig jeecgBaseConfig;
-    private final BaseCommonService baseCommonService;
 
     @Bean
     @Order(1)
@@ -81,7 +61,7 @@ public class SecurityConfig {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
                 .tokenEndpoint(tokenEndpoint -> tokenEndpoint.accessTokenRequestConverter(new PasswordGrantAuthenticationConvert())
-                        .authenticationProvider(new PasswordGrantAuthenticationProvider(jwtCustomizer(), authorizationService, tokenGenerator(), commonAPI, redisUtil, jeecgBaseConfig, baseCommonService)))
+                        .authenticationProvider(new PasswordGrantAuthenticationProvider(authorizationService, tokenGenerator())))
                 //开启OpenID Connect 1.0（其中oidc为OpenID Connect的缩写）。 访问 /.well-known/openid-configuration即可获取认证信息
                 .oidc(Customizer.withDefaults());	// Enable OpenID Connect 1.0
         http
@@ -249,23 +229,6 @@ public class SecurityConfig {
         OAuth2RefreshTokenGenerator refreshTokenGenerator = new OAuth2RefreshTokenGenerator();
         return new DelegatingOAuth2TokenGenerator(
                 jwtGenerator, accessTokenGenerator, refreshTokenGenerator);
-    }
-
-    @Bean
-    public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
-        return context -> {
-            JwsHeader.Builder headers = context.getJwsHeader();
-            JwtClaimsSet.Builder claims = context.getClaims();
-            if (context.getTokenType().equals(OAuth2TokenType.ACCESS_TOKEN)) {
-                // 自定义 access_token headers/claims
-                claims.claim("username", context.getPrincipal().getName());
-
-            } else if (context.getTokenType().getValue().equals(OidcParameterNames.ID_TOKEN)) {
-                // 自定义 id_token headers/claims for
-                claims.claim(IdTokenClaimNames.AUTH_TIME, Date.from(Instant.now()));
-
-            }
-        };
     }
 
 }

@@ -12,6 +12,7 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysGatewayRoute;
 import org.jeecg.modules.system.service.ISysGatewayRouteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -67,7 +68,7 @@ public class SysGatewayRouteController extends JeecgController<SysGatewayRoute, 
      * @param id
      * @return
      */
-    @RequiresPermissions("system:getway:delete")
+	@PreAuthorize("@jps.requiresPermissions('system:getway:delete')")
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         sysGatewayRouteService.deleteById(id);

@@ -17,6 +17,7 @@ import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.system.entity.SysThirdAccount;
 import org.jeecg.modules.system.entity.SysThirdAppConfig;
 import org.jeecg.modules.system.service.ISysThirdAccountService;
@@ -477,7 +478,7 @@ public class ThirdAppController {
      */
     @GetMapping("/getThirdAccountByUserId")
     public Result<List<SysThirdAccount>> getThirdAccountByUserId(@RequestParam(name="thirdType") String thirdType){
-        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+        LoginUser sysUser = SecureUtil.currentUser();
         LambdaQueryWrapper<SysThirdAccount> query = new LambdaQueryWrapper<>();
         //根据id查询
         query.eq(SysThirdAccount::getSysUserId,sysUser.getId());
@@ -508,7 +509,7 @@ public class ThirdAppController {
      */
     @DeleteMapping("/deleteThirdAccount")
     public Result<String> deleteThirdAccountById(@RequestBody SysThirdAccount sysThirdAccount){
-        LoginUser sysUser = JSON.parseObject(SecurityContextHolder.getContext().getAuthentication().getName(), LoginUser.class);;
+        LoginUser sysUser = SecureUtil.currentUser();
         if(!sysUser.getId().equals(sysThirdAccount.getSysUserId())){
             return Result.error("无权修改他人信息");
         }
