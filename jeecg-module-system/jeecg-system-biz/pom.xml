@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>org.jeecgframework.boot3</groupId>
 			<artifactId>jimureport-drag</artifactId>
-			<version>2.0.1</version>
+			<version>2.0.2</version>
 		</dependency>
 		<!-- 积木报表 mongo redis 支持包 
 		<dependency>
