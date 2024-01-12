@@ -19,4 +19,6 @@ public interface ClientCategoryMapper extends BaseMapper<ClientCategory> {
     BigDecimal getBalanceThresholdByCategoryId(@Param("id") String id);
 
     String getClientCategoryByClientId(@Param("clientId") String clientId);
+
+    String getIdByCode(@Param("name") String categoryName);
 }

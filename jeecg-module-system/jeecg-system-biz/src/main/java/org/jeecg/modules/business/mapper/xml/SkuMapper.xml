@@ -151,4 +151,11 @@
         AND virtual_product_available = 0
         GROUP BY sku_id;
     </select>
+    <select id="fetchSkusByClient" resultType="org.jeecg.modules.business.entity.Sku">
+        SELECT s.id, s.erp_code, CONCAT(p.code, '(', p.zh_name,')') as product_id ,s.purchasing_amount, s.available_amount, s.image_source, s.shipping_discount, s.service_fee
+        FROM sku s
+            JOIN client_sku cs ON s.id = cs.sku_id
+            JOIN product p ON s.product_id = p.id
+        WHERE cs.client_id = #{clientId};
+    </select>
 </mapper>

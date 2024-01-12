@@ -93,4 +93,6 @@ public interface ISkuService extends IService<Sku> {
     List<Sku> findMissingSkusInNotShippedOrders(LocalDateTime start);
 
     List<SkuQuantity> getSkuQuantitiesFromOrderIds(List<String> orderIds);
+
+    List<Sku> fetchSkusByClient(String clientId);
 }
