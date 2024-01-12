@@ -13,4 +13,9 @@
             ON c.client_category_id = cc.id
         WHERE c.id = #{clientId};
     </select>
+    <select id="getIdByCode" resultType="java.lang.String">
+        SELECT id
+        FROM client_category
+        WHERE name = #{name};
+    </select>
 </mapper>

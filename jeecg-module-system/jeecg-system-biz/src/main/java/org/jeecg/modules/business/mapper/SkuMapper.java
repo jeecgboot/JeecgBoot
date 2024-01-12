@@ -52,4 +52,6 @@ public interface SkuMapper extends BaseMapper<Sku> {
     List<Sku> findMissingSkusInNotShippedOrders(@Param("start") LocalDateTime start);
 
     List<SkuQuantity> getSkuQuantitiesFromOrderIds(@Param("orderIds") List<String> orderIds);
+
+    List<Sku> fetchSkusByClient(@Param("clientId") String clientId);
 }

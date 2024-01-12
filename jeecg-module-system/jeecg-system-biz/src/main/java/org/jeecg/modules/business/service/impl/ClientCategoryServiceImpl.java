@@ -22,4 +22,9 @@ public class ClientCategoryServiceImpl extends ServiceImpl<ClientCategoryMapper,
     public String getClientCategoryByClientId(String clientId) {
         return clientCategoryMapper.getClientCategoryByClientId(clientId);
     }
+
+    @Override
+    public String getIdByCode(String categoryName) {
+        return clientCategoryMapper.getIdByCode(categoryName);
+    }
 }
