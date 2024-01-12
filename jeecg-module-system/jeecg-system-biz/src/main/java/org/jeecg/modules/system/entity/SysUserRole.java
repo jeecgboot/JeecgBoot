@@ -48,6 +48,4 @@ public class SysUserRole implements Serializable {
 		this.roleId = roleId;
 	}
 
-    
-
 }

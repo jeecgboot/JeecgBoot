@@ -39,4 +39,16 @@ public @interface Dict {
      * @return 返回类型： String
      */
     String dictTable() default "";
+
+
+    //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
+    /**
+     * 方法描述: 数据字典表所在数据源名称
+     * 作    者： chenrui
+     * 日    期： 2023年12月20日-下午4:58
+     *
+     * @return 返回类型： String
+     */
+    String ds() default "";
+    //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 }

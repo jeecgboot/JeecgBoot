@@ -26,6 +26,7 @@ import org.jeecg.common.constant.enums.MessageTypeEnum;
 import org.jeecg.common.constant.enums.RoleIndexConfigEnum;
 import org.jeecg.common.desensitization.annotation.SensitiveEncode;
 import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.*;
@@ -40,9 +41,9 @@ import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.vo.SysUserDepVo;
 import org.jeecg.modules.system.vo.SysUserPositionVo;
 import org.jeecg.modules.system.vo.UserAvatar;
-import org.jeecg.modules.system.vo.lowapp.AppExportUserVo;
 import org.jeecg.modules.system.vo.lowapp.DepartAndUserInfo;
 import org.jeecg.modules.system.vo.lowapp.DepartInfo;
+import org.jeecg.modules.system.vo.lowapp.AppExportUserVo;
 import org.jeecg.modules.system.vo.lowapp.UpdateDepartInfo;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -100,13 +101,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	@Autowired
 	private SysThirdAccountMapper sysThirdAccountMapper;
 	@Autowired
-    ThirdAppWechatEnterpriseServiceImpl wechatEnterpriseService;
+	ThirdAppWechatEnterpriseServiceImpl wechatEnterpriseService;
 	@Autowired
-    ThirdAppDingtalkServiceImpl dingtalkService;
+	ThirdAppDingtalkServiceImpl dingtalkService;
 	@Autowired
-    SysRoleIndexMapper sysRoleIndexMapper;
+	SysRoleIndexMapper sysRoleIndexMapper;
 	@Autowired
-    SysTenantMapper sysTenantMapper;
+	SysTenantMapper sysTenantMapper;
 	@Autowired
     private SysUserTenantMapper relationMapper;
 	@Autowired
@@ -117,6 +118,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	private SysPositionMapper sysPositionMapper;
 	@Autowired
 	private SystemSendMsgHandle systemSendMsgHandle;
+	
 	@Autowired
 	private ISysThirdAccountService sysThirdAccountService;
 	
@@ -831,6 +833,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		SysUserTenant userTenant = new SysUserTenant();
 		userTenant.setStatus(CommonConstant.USER_TENANT_QUIT);
 		userTenantMapper.update(userTenant,query);
+		//update-end---author:wangshuai ---date:20230111  for：[QQYUN-3951]租户用户离职重构------------
     }
 
     @Override

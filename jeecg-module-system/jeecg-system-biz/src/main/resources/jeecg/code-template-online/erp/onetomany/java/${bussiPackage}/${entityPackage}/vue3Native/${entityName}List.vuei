@@ -106,6 +106,10 @@
             <Icon icon="mdi:chevron-down"></Icon>
           </a-button>
         </a-dropdown>
+        <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+        <!-- 高级查询 -->
+        <super-query :config="superQueryConfig" @search="handleSuperQuery" />
+        <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
       </template>
       <!--操作栏-->
       <template #action="{ record }">
@@ -154,7 +158,7 @@
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { useListPage } from '/@/hooks/system/useListPage'
   import ${entityName}Modal from './components/${entityName}Modal.vue'
-  import { columns, searchFormSchema } from './${entityName}.data';
+  import { columns, searchFormSchema, superQuerySchema } from './${entityName}.data';
   import { list, deleteOne, batchDelete, getImportUrl,getExportUrl } from './${entityName}.api';
   import { downloadFile } from '/@/utils/common/renderUtils';
   <#include "/common/form/native/vue3NativeImport.ftl">
@@ -173,7 +177,7 @@
   import ${sub.entityName}List from './${sub.entityName}List.vue'
   </#list>
   import { useUserStore } from '/@/store/modules/user';
-  
+
   const formRef = ref();
   const queryParam = reactive<any>({});
   const checkedKeys = ref<Array<string | number>>([]);
@@ -211,7 +215,22 @@
   const mainId = computed(() => (unref(selectedRowKeys).length > 0 ? unref(selectedRowKeys)[0] : ''));
   //下发 mainId,子组件接收
   provide('mainId', mainId);
-  
+
+<#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+  // 高级查询配置
+  const superQueryConfig = reactive(superQuerySchema);
+
+  /**
+   * 高级查询事件
+   */
+  function handleSuperQuery(params) {
+    Object.keys(params).map((k) => {
+      queryParam[k] = params[k];
+    });
+    reload();
+  }
+<#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+
   /**
    * 新增事件
    */

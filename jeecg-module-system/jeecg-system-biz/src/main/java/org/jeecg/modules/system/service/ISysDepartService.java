@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.entity.SysUserDepart;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
+import org.jeecg.modules.system.vo.SysDepartExportVo;
 import org.jeecg.modules.system.vo.lowapp.ExportDepartVo;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -215,5 +217,18 @@ public interface ISysDepartService extends IService<SysDepart>{
     List<ExportDepartVo> getExcelDepart(int tenantId);
 
     void importExcel(List<ExportDepartVo> listSysDeparts, List<String> errorMessageList);
-    
+
+    /**
+     * 根据租户id导出部门
+     * @param tenantId
+     * @return
+     */
+    List<SysDepartExportVo> getExportDepart(int tenantId);
+
+    /**
+     * 导出系统部门excel
+     * @param listSysDeparts
+     * @param errorMessageList
+     */
+    void importSysDepart(List<SysDepartExportVo> listSysDeparts, List<String> errorMessageList);
 }

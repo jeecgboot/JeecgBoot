@@ -140,11 +140,15 @@ public class DictAspect {
                             String code = field.getAnnotation(Dict.class).dicCode();
                             String text = field.getAnnotation(Dict.class).dicText();
                             String table = field.getAnnotation(Dict.class).dictTable();
-
+                            //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
+                            String dataSource = field.getAnnotation(Dict.class).ds();
+                            //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
                             List<String> dataList;
                             String dictCode = code;
                             if (!StringUtils.isEmpty(table)) {
-                                dictCode = String.format("%s,%s,%s", table, text, code);
+                                //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
+                                dictCode = String.format("%s,%s,%s,%s", table, text, code, dataSource);
+                                //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
                             }
                             dataList = dataListMap.computeIfAbsent(dictCode, k -> new ArrayList<>());
                             this.listAddAllDeduplicate(dataList, Arrays.asList(value.split(",")));
@@ -169,10 +173,15 @@ public class DictAspect {
                         String code = field.getAnnotation(Dict.class).dicCode();
                         String text = field.getAnnotation(Dict.class).dicText();
                         String table = field.getAnnotation(Dict.class).dictTable();
-
+                        //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
+                        // 自定义的字典表数据源
+                        String dataSource = field.getAnnotation(Dict.class).ds();
+                        //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
                         String fieldDictCode = code;
                         if (!StringUtils.isEmpty(table)) {
-                            fieldDictCode = String.format("%s,%s,%s", table, text, code);
+                            //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
+                            fieldDictCode = String.format("%s,%s,%s,%s", table, text, code, dataSource);
+                            //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
                         }
 
                         String value = record.getString(field.getName());
@@ -274,9 +283,18 @@ public class DictAspect {
                 String[] arr = dictCode.split(",");
                 String table = arr[0], text = arr[1], code = arr[2];
                 String values = String.join(",", needTranslDataTable);
+                //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
+                // 自定义的数据源
+                String dataSource = null;
+                if (arr.length > 3) {
+                    dataSource = arr[3];
+                }
+                //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
                 log.debug("translateDictFromTableByKeys.dictCode:" + dictCode);
                 log.debug("translateDictFromTableByKeys.values:" + values);
-                List<DictModel> texts = commonApi.translateDictFromTableByKeys(table, text, code, values);
+                //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
+                List<DictModel> texts = commonApi.translateDictFromTableByKeys(table, text, code, values, dataSource);
+                //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
                 log.debug("translateDictFromTableByKeys.result:" + texts);
                 List<DictModel> list = translText.computeIfAbsent(dictCode, k -> new ArrayList<>());
                 list.addAll(texts);

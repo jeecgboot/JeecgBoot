@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
+import com.baomidou.dynamic.datasource.toolkit.DynamicDataSourceContextHolder;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -327,15 +328,22 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	}
 
 	@Override
-	public List<DictModel> queryTableDictTextByKeys(String table, String text, String code, List<String> codeValues) {
+	public List<DictModel> queryTableDictTextByKeys(String table, String text, String code, List<String> codeValues, String dataSource) {
 		String str = table+","+text+","+code;
-		// 【QQYUN-6533】表字典白名单check
-		sysBaseAPI.dictTableWhiteListCheckByDict(table, text, code);
-		// 1.表字典黑名单check
-		if(!dictQueryBlackListHandler.isPass(str)){
-			log.error(dictQueryBlackListHandler.getError());
-			return null;
+		//update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
+		// 是否自定义数据源
+		boolean isCustomDataSource = oConvertUtils.isNotEmpty(dataSource);
+		// 如果是自定义数据源就不检查表字典白名单
+		if (!isCustomDataSource) {
+			// 【QQYUN-6533】表字典白名单check
+			sysBaseAPI.dictTableWhiteListCheckByDict(table, text, code);
+			// 1.表字典黑名单check
+			if (!dictQueryBlackListHandler.isPass(str)) {
+				log.error(dictQueryBlackListHandler.getError());
+				return null;
+			}
 		}
+		//update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
 		// 2.分割SQL获取表名和条件
 		String filterSql = null;
@@ -353,8 +361,19 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		table = SqlInjectionUtil.getSqlInjectTableName(table);
 		text = SqlInjectionUtil.getSqlInjectField(text);
 		code = SqlInjectionUtil.getSqlInjectField(code);
-		
-		return sysDictMapper.queryTableDictByKeysAndFilterSql(table, text, code, filterSql, codeValues);
+
+		//update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
+        // 切换为字典表的数据源
+        if (isCustomDataSource) {
+            DynamicDataSourceContextHolder.push(dataSource);
+        }
+		List<DictModel> restData = sysDictMapper.queryTableDictByKeysAndFilterSql(table, text, code, filterSql, codeValues);
+		// 清理自定义的数据源
+		if (isCustomDataSource) {
+			DynamicDataSourceContextHolder.clear();
+		}
+		return restData;
+		//update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 		//update-end-author:taoyan date:20220113 for: @dict注解支持 dicttable 设置where条件
 	}
 

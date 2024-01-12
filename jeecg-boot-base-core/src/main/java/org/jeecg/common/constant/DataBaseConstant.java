@@ -17,6 +17,9 @@ public interface DataBaseConstant {
 
     /**postgreSQL达梦数据库*/
 	public static final String DB_TYPE_POSTGRESQL = "POSTGRESQL";
+	
+    /**人大金仓数据库*/
+	public static final String DB_TYPE_KINGBASEES = "KINGBASEES";
 
     /**sqlserver数据库*/
 	public static final String DB_TYPE_SQLSERVER = "SQLSERVER";

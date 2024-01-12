@@ -24,7 +24,7 @@ public class JcloudDemoProviderController {
     private JcloudDemoService jcloudDemoService;
 
     @GetMapping("/getMessage")
-    public String getMessage(@RequestParam String name) {
+    public String getMessage(@RequestParam(name = "name") String name) {
         String msg = jcloudDemoService.getMessage(name);
         log.info(" 微服务被调用：{} ",msg);
         return msg;

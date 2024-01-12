@@ -79,7 +79,7 @@ public class QuartzJobController {
 	 * @param quartzJob
 	 * @return
 	 */
-	//@RequiresRoles("admin")
+	@RequiresRoles("admin")
     @RequiresPermissions("system:quartzJob:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<?> add(@RequestBody QuartzJob quartzJob) {
@@ -93,7 +93,7 @@ public class QuartzJobController {
 	 * @param quartzJob
 	 * @return
 	 */
-	//@RequiresRoles("admin")
+	@RequiresRoles("admin")
     @RequiresPermissions("system:quartzJob:edit")
 	@RequestMapping(value = "/edit", method ={RequestMethod.PUT, RequestMethod.POST})
 	public Result<?> eidt(@RequestBody QuartzJob quartzJob) {
@@ -112,7 +112,7 @@ public class QuartzJobController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles("admin")
+	@RequiresRoles("admin")
     @RequiresPermissions("system:quartzJob:delete")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
@@ -131,7 +131,7 @@ public class QuartzJobController {
 	 * @param ids
 	 * @return
 	 */
-	//@RequiresRoles("admin")
+	@RequiresRoles("admin")
     @RequiresPermissions("system:quartzJob:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
@@ -151,7 +151,7 @@ public class QuartzJobController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles("admin")
+	@RequiresRoles("admin")
     @RequiresPermissions("system:quartzJob:pause")
 	@GetMapping(value = "/pause")
 	@Operation(summary = "停止定时任务")
@@ -170,7 +170,7 @@ public class QuartzJobController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles("admin")
+	@RequiresRoles("admin")
     @RequiresPermissions("system:quartzJob:resume")
 	@GetMapping(value = "/resume")
 	@Operation(summary = "启动定时任务")
@@ -271,7 +271,7 @@ public class QuartzJobController {
 	 * @param id
 	 * @return
 	 */
-	//@RequiresRoles("admin")
+	@RequiresRoles("admin")
     @RequiresPermissions("system:quartzJob:execute")
 	@GetMapping("/execute")
 	public Result<?> execute(@RequestParam(name = "id", required = true) String id) {
