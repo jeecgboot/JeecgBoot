@@ -68,11 +68,11 @@ public class AppGrantAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        PasswordGrantAuthenticationToken passwordGrantAuthenticationToken =  (PasswordGrantAuthenticationToken) authentication;
-        Map<String, Object> additionalParameter = passwordGrantAuthenticationToken.getAdditionalParameters();
+        AppGrantAuthenticationToken appGrantAuthenticationToken =  (AppGrantAuthenticationToken) authentication;
+        Map<String, Object> additionalParameter = appGrantAuthenticationToken.getAdditionalParameters();
 
         // 授权类型
-        AuthorizationGrantType authorizationGrantType = passwordGrantAuthenticationToken.getGrantType();
+        AuthorizationGrantType authorizationGrantType = appGrantAuthenticationToken.getGrantType();
         // 用户名
         String username = (String) additionalParameter.get(OAuth2ParameterNames.USERNAME);
         // 密码
@@ -105,7 +105,7 @@ public class AppGrantAuthenticationProvider implements AuthenticationProvider {
             throw new JeecgCaptchaException(HttpStatus.PRECONDITION_FAILED.value(), "验证码错误");
         }
 
-        OAuth2ClientAuthenticationToken clientPrincipal = getAuthenticatedClientElseThrowInvalidClient(passwordGrantAuthenticationToken);
+        OAuth2ClientAuthenticationToken clientPrincipal = getAuthenticatedClientElseThrowInvalidClient(appGrantAuthenticationToken);
         RegisteredClient registeredClient = clientPrincipal.getRegisteredClient();
 
         if (!registeredClient.getAuthorizationGrantTypes().contains(authorizationGrantType)) {
@@ -132,7 +132,7 @@ public class AppGrantAuthenticationProvider implements AuthenticationProvider {
                 .authorizationServerContext(AuthorizationServerContextHolder.getContext())
                 .authorizationGrantType(authorizationGrantType)
                 .authorizedScopes(requestScopeSet)
-                .authorizationGrant(passwordGrantAuthenticationToken);
+                .authorizationGrant(appGrantAuthenticationToken);
 
         OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization.withRegisteredClient(registeredClient)
                 .principalName(clientPrincipal.getName())
@@ -212,7 +212,7 @@ public class AppGrantAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return PasswordGrantAuthenticationToken.class.isAssignableFrom(authentication);
+        return AppGrantAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
     private static OAuth2ClientAuthenticationToken getAuthenticatedClientElseThrowInvalidClient(Authentication authentication) {
