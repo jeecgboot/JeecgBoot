@@ -28,4 +28,9 @@ public class LoginType {
      * 扫码登录
      */
     public static final String SCAN = "scan";
+
+    /**
+     * 所有联合登录，比如github\钉钉\企业微信\微信
+     */
+    public static final String SOCIAL = "social";
 }

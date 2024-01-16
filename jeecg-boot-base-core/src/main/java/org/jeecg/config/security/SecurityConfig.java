@@ -6,8 +6,14 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.AllArgsConstructor;
+import org.jeecg.config.security.app.AppGrantAuthenticationConvert;
+import org.jeecg.config.security.app.AppGrantAuthenticationProvider;
 import org.jeecg.config.security.password.PasswordGrantAuthenticationConvert;
 import org.jeecg.config.security.password.PasswordGrantAuthenticationProvider;
+import org.jeecg.config.security.phone.PhoneGrantAuthenticationConvert;
+import org.jeecg.config.security.phone.PhoneGrantAuthenticationProvider;
+import org.jeecg.config.security.social.SocialGrantAuthenticationConvert;
+import org.jeecg.config.security.social.SocialGrantAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -17,6 +23,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -47,7 +54,7 @@ import java.util.UUID;
  */
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(jsr250Enabled = true, securedEnabled = true)
+@EnableMethodSecurity
 @AllArgsConstructor
 public class SecurityConfig {
 
@@ -62,6 +69,12 @@ public class SecurityConfig {
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
                 .tokenEndpoint(tokenEndpoint -> tokenEndpoint.accessTokenRequestConverter(new PasswordGrantAuthenticationConvert())
                         .authenticationProvider(new PasswordGrantAuthenticationProvider(authorizationService, tokenGenerator())))
+                .tokenEndpoint(tokenEndpoint -> tokenEndpoint.accessTokenRequestConverter(new PhoneGrantAuthenticationConvert())
+                        .authenticationProvider(new PhoneGrantAuthenticationProvider(authorizationService, tokenGenerator())))
+                .tokenEndpoint(tokenEndpoint -> tokenEndpoint.accessTokenRequestConverter(new AppGrantAuthenticationConvert())
+                        .authenticationProvider(new AppGrantAuthenticationProvider(authorizationService, tokenGenerator())))
+                .tokenEndpoint(tokenEndpoint -> tokenEndpoint.accessTokenRequestConverter(new SocialGrantAuthenticationConvert())
+                        .authenticationProvider(new SocialGrantAuthenticationProvider(authorizationService, tokenGenerator())))
                 //开启OpenID Connect 1.0（其中oidc为OpenID Connect的缩写）。 访问 /.well-known/openid-configuration即可获取认证信息
                 .oidc(Customizer.withDefaults());	// Enable OpenID Connect 1.0
         http
@@ -153,6 +166,7 @@ public class SecurityConfig {
                             config.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
                             return config;
                         }))
+                .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
         return http.build();
     }
