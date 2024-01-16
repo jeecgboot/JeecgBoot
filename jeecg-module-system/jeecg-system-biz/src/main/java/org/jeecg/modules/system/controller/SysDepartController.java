@@ -6,8 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CacheConstant;
@@ -373,7 +371,7 @@ public class SysDepartController {
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "部门列表");
         mv.addObject(NormalExcelConstants.CLASS, SysDepartExportVo.class);
-        LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser user = SecureUtil.currentUser();
         mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("导入规则：\n" +
 				"1、标题为第三行，部门路径和部门名称的标题不允许修改，否则会匹配失败；第四行为数据填写范围;\n" +
 				"2、部门路径用英文字符/分割，部门名称为部门路径的最后一位;\n" +
@@ -381,7 +379,7 @@ public class SysDepartController {
 				"4、自定义的部门编码需要满足规则才能导入。如一级部门编码为A01,那么子部门为A01A01,同级子部门为A01A02,编码固定为三位，首字母为A-Z,后两位为数字0-99，依次递增;", "导出人:"+user.getRealname(), "导出信息"));
         mv.addObject(NormalExcelConstants.DATA_LIST, sysDepartExportVos);
 		//update-end---author:wangshuai---date:2023-10-19---for:【QQYUN-5482】系统的部门导入导出也可以改成敲敲云模式的部门路径---
-        
+
 		return mv;
     }
 
@@ -458,12 +456,12 @@ public class SysDepartController {
 //					num++;
 //                }
 				//update-end---author:wangshuai---date:2023-10-20---for: 注释掉原来的导入部门的逻辑---
-				
+
 				//update-begin---author:wangshuai---date:2023-10-19---for:【QQYUN-5482】系统的部门导入导出也可以改成敲敲云模式的部门路径---
 				listSysDeparts = ExcelImportUtil.importExcel(file.getInputStream(), SysDepartExportVo.class, params);
 				sysDepartService.importSysDepart(listSysDeparts,errorMessageList);
 				//update-end---author:wangshuai---date:2023-10-19---for:【QQYUN-5482】系统的部门导入导出也可以改成敲敲云模式的部门路径---
-				
+
 				//清空部门缓存
 				Set keys3 = redisTemplate.keys(CacheConstant.SYS_DEPARTS_CACHE + "*");
 				Set keys4 = redisTemplate.keys(CacheConstant.SYS_DEPART_IDS_CACHE + "*");
@@ -630,7 +628,7 @@ public class SysDepartController {
 		//导出文件名称
 		mv.addObject(NormalExcelConstants.FILE_NAME, "部门列表");
 		mv.addObject(NormalExcelConstants.CLASS, ExportDepartVo.class);
-		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser user = SecureUtil.currentUser();
 		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("部门列表数据", "导出人:"+user.getRealname(), "导出信息"));
 		mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
 		return mv;

@@ -2,8 +2,6 @@ package org.jeecg.common.exception;
 
 import cn.hutool.core.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authz.AuthorizationException;
-import org.apache.shiro.authz.UnauthorizedException;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.enums.SentinelErrorInfoEnum;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -85,12 +83,6 @@ public class JeecgBootExceptionHandler {
 	public Result<?> handleDuplicateKeyException(DuplicateKeyException e){
 		log.error(e.getMessage(), e);
 		return Result.error("数据库中已存在该记录");
-	}
-
-	@ExceptionHandler({UnauthorizedException.class, AuthorizationException.class})
-	public Result<?> handleAuthorizationException(AuthorizationException e){
-		log.error(e.getMessage(), e);
-		return Result.noauth("没有权限，请联系管理员授权");
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)

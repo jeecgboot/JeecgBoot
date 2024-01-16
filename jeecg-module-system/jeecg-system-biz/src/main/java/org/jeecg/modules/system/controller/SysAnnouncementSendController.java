@@ -6,7 +6,6 @@ import java.util.Date;
 import com.alibaba.fastjson.JSON;
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;

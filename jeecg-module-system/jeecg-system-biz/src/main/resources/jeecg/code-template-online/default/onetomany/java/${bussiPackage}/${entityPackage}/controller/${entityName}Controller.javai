@@ -18,7 +18,7 @@ import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.jeecg.common.system.vo.LoginUser;
-import org.apache.shiro.SecurityUtils;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
@@ -45,7 +45,7 @@ import com.alibaba.fastjson.JSON;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.jeecg.common.aspect.annotation.AutoLog;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.security.access.prepost.PreAuthorize;
 <#assign bpm_flag=false>
 <#list originalColumns as po>
 <#if po.fieldDbName=='bpm_status'>
@@ -209,7 +209,7 @@ public class ${entityName}Controller {
     public ModelAndView exportXls(HttpServletRequest request, ${entityName} ${entityName?uncap_first}) {
       // Step.1 组装查询条件查询数据
       QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, request.getParameterMap());
-      LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+      LoginUser sysUser = SecureUtil.currentUser();
 
       //配置选中数据查询条件
       String selections = request.getParameter("selections");

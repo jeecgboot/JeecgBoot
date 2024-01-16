@@ -11,7 +11,7 @@ import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jeecg.common.system.vo.LoginUser;
-import org.apache.shiro.SecurityUtils;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -185,7 +185,7 @@ public class ${entityName}Controller {
   public ModelAndView exportXls(HttpServletRequest request, ${entityName} ${entityName?uncap_first}) {
       // Step.1 组装查询条件
       QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, request.getParameterMap());
-      LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+      LoginUser sysUser = SecureUtil.currentUser();
 
       //Step.2 获取导出数据
       List<${entityName}Page> pageList = new ArrayList<${entityName}Page>();

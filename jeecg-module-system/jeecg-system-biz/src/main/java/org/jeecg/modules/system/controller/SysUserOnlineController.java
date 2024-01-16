@@ -3,7 +3,6 @@ package org.jeecg.modules.system.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
@@ -17,7 +16,11 @@ import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.jeecg.modules.system.vo.SysUserOnlineVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
@@ -48,6 +51,10 @@ public class SysUserOnlineController {
 
     @Resource
     private BaseCommonService baseCommonService;
+    @Autowired
+    private OAuth2AuthorizationService authorizationService;
+    @Autowired
+    private CacheManager cacheManager;
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public Result<Page<SysUserOnlineVO>> list(@RequestParam(name="username", required=false) String username,
@@ -120,8 +127,13 @@ public class SysUserOnlineController {
             redisUtil.del(CommonConstant.PREFIX_USER_SHIRO_CACHE + sysUser.getId());
             //清空用户的缓存信息（包括部门信息），例如sys:cache:user::<username>
             redisUtil.del(String.format("%s::%s", CacheConstant.SYS_USERS_CACHE, sysUser.getUsername()));
-            //调用shiro的logout
-            SecurityUtils.getSubject().logout();
+            //调用logout
+            OAuth2Authorization authorization = authorizationService.findByToken(online.getToken(), OAuth2TokenType.ACCESS_TOKEN);
+
+            // 清空用户信息
+            cacheManager.getCache("user_details").evict(authorization.getPrincipalName());
+            // 清空access token
+            authorizationService.remove(authorization);
             return Result.ok("退出登录成功！");
         }else {
             return Result.error("Token无效!");

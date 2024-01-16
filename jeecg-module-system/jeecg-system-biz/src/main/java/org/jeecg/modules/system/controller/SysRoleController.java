@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
@@ -48,7 +47,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.jeecg.common.system.vo.LoginUser;
-import org.apache.shiro.SecurityUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -243,7 +241,7 @@ public class SysRoleController {
 			if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
 				int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
 				String[] roleIds = ids.split(SymbolConstant.COMMA);
-				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+				LoginUser sysUser = SecureUtil.currentUser();
 				String username = "admin";
 				for (String id:roleIds) {
 					Long getRoleCount = sysRoleService.getRoleCountByTenantId(id, tenantId);
@@ -384,7 +382,7 @@ public class SysRoleController {
 		//导出文件名称
 		mv.addObject(NormalExcelConstants.FILE_NAME,"角色列表");
 		mv.addObject(NormalExcelConstants.CLASS,SysRole.class);
-		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser user = SecureUtil.currentUser();
 		mv.addObject(NormalExcelConstants.PARAMS,new ExportParams("角色列表数据","导出人:"+user.getRealname(),"导出信息"));
 		mv.addObject(NormalExcelConstants.DATA_LIST,pageList);
 		return mv;
