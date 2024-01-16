@@ -2,7 +2,6 @@ package org.jeecg.modules.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.constant.TenantConstant;
 import org.jeecg.common.system.vo.LoginUser;

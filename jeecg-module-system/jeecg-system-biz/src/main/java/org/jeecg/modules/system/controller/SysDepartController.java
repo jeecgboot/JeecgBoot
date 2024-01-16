@@ -6,8 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CacheConstant;
@@ -369,7 +367,7 @@ public class SysDepartController {
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "部门列表");
         mv.addObject(NormalExcelConstants.CLASS, SysDepart.class);
-        LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser user = SecureUtil.currentUser();
         mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("部门列表数据", "导出人:"+user.getRealname(), "导出信息"));
         mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
         return mv;
@@ -611,7 +609,7 @@ public class SysDepartController {
 		//导出文件名称
 		mv.addObject(NormalExcelConstants.FILE_NAME, "部门列表");
 		mv.addObject(NormalExcelConstants.CLASS, ExportDepartVo.class);
-		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser user = SecureUtil.currentUser();
 		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("部门列表数据", "导出人:"+user.getRealname(), "导出信息"));
 		mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
 		return mv;

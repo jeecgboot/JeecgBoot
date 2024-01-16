@@ -60,10 +60,7 @@
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.17.3</aliyun.oss.version>
-		<!-- shiro -->
-		<shiro.version>1.12.0</shiro.version>
 		<java-jwt.version>3.11.0</java-jwt.version>
-		<shiro-redis.version>3.2.2</shiro-redis.version>
 		<codegenerate.version>1.4.4</codegenerate.version>
 		<autopoi-web.version>1.4.7</autopoi-web.version>
 		<minio.version>8.5.7</minio.version>

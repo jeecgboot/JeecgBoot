@@ -8,7 +8,6 @@ import com.jeecg.dingtalk.api.core.response.Response;
 import com.jeecg.dingtalk.api.core.vo.AccessToken;
 import com.jeecg.dingtalk.api.user.JdtUserAPI;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.LoginUser;

@@ -63,8 +63,6 @@ jeecg:
   path:
     upload: /opt/upFiles
     webapp: /opt/webapp
-  shiro:
-    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**
   oss:
     endpoint: oss-cn-beijing.aliyuncs.com
     accessKey: ??
@@ -145,3 +143,14 @@ third-app:
       client-id: ??
       client-secret: ??
       agent-id: ??
+
+security:
+  oauth2:
+    client:
+      ignore-urls:
+        - /test/jeecgDemo/demo3
+        - /test/jeecgDemo/redisDemo/**
+        - /category/**
+        - /visual/**
+        - /map/**
+        - /jmreport/bigscreen2/**
