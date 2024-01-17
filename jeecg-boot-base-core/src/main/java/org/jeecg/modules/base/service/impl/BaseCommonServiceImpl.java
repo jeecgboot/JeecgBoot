@@ -2,8 +2,8 @@ package org.jeecg.modules.base.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.dto.LogDTO;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.base.mapper.BaseCommonMapper;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.system.vo.LoginUser;
@@ -61,7 +61,7 @@ public class BaseCommonServiceImpl implements BaseCommonService {
         //获取登录用户信息
         if(user==null){
             try {
-                user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+                user = SecureUtil.currentUser();
             } catch (Exception e) {
                 //e.printStackTrace();
             }

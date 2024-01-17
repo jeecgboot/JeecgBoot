@@ -35,7 +35,7 @@ import com.alibaba.fastjson.JSON;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.jeecg.common.aspect.annotation.AutoLog;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.security.access.prepost.PreAuthorize;
 <#assign bpm_flag=false>
 <#list originalColumns as po>
 <#if po.fieldDbName=='bpm_status'>

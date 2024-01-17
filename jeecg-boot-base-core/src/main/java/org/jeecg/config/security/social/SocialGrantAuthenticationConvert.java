@@ -1,4 +1,4 @@
-package org.jeecg.config.security.phone;
+package org.jeecg.config.security.social;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
@@ -20,12 +20,12 @@ import java.util.Map;
  * @date 2024/1/1
  */
 @AllArgsConstructor
-public class PhoneGrantAuthenticationConvert implements AuthenticationConverter {
+public class SocialGrantAuthenticationConvert implements AuthenticationConverter {
     @Override
     public Authentication convert(HttpServletRequest request) {
 
         String grantType = request.getParameter(OAuth2ParameterNames.GRANT_TYPE);
-        if (!LoginType.PHONE.equals(grantType)) {
+        if (!LoginType.SOCIAL.equals(grantType)) {
             return null;
         }
 
@@ -34,10 +34,14 @@ public class PhoneGrantAuthenticationConvert implements AuthenticationConverter 
         //从request中提取请求参数，然后存入MultiValueMap<String, String>
         MultiValueMap<String, String> parameters = getParameters(request);
 
-        // 验证码
-        String captcha = parameters.getFirst("captcha");
-        if (!StringUtils.hasText(captcha)) {
-            throw new OAuth2AuthenticationException("无效请求，验证码不能为空！");
+        String token = parameters.getFirst("token");
+        if (!StringUtils.hasText(token)) {
+            throw new OAuth2AuthenticationException("无效请求，三方token不能为空！");
+        }
+
+        String source = parameters.getFirst("thirdType");
+        if (!StringUtils.hasText(source)) {
+            throw new OAuth2AuthenticationException("无效请求，三方来源不能为空！");
         }
 
         //收集要传入PhoneGrantAuthenticationToken构造方法的参数，
@@ -53,7 +57,7 @@ public class PhoneGrantAuthenticationConvert implements AuthenticationConverter 
         });
 
         //返回自定义的PhoneGrantAuthenticationToken对象
-        return new PhoneGrantAuthenticationToken(clientPrincipal, additionalParameters);
+        return new SocialGrantAuthenticationToken(clientPrincipal, additionalParameters);
 
     }
 

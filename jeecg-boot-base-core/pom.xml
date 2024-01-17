@@ -173,63 +173,6 @@
 			<version>${java-jwt.version}</version>
 		</dependency>
 
-		<!--shiro-->
-		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-spring-boot-starter</artifactId>
-			<version>${shiro.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.shiro</groupId>
-					<artifactId>shiro-spring</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- shiro-redis -->
-		<dependency>
-			<groupId>org.crazycake</groupId>
-			<artifactId>shiro-redis</artifactId>
-			<version>${shiro-redis.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.shiro</groupId>
-					<artifactId>shiro-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>checkstyle</artifactId>
-					<groupId>com.puppycrawl.tools</groupId>
-				</exclusion>
-				<!-- TODO shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
-				<exclusion>
-					<artifactId>jedis</artifactId>
-					<groupId>redis.clients</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- TODO shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-			<version>2.9.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-spring</artifactId>
-			<classifier>jakarta</classifier>
-			<version>${shiro.version}</version>
-			<!-- 排除仍使用了javax.servlet的依赖 -->
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.shiro</groupId>
-					<artifactId>shiro-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.shiro</groupId>
-					<artifactId>shiro-web</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -243,25 +186,6 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-cas</artifactId>
-		</dependency>
-		<!-- 引入适配jakarta的依赖包 -->
-		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-core</artifactId>
-			<classifier>jakarta</classifier>
-			<version>${shiro.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-web</artifactId>
-			<classifier>jakarta</classifier>
-			<version>${shiro.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.shiro</groupId>
-					<artifactId>shiro-core</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<!-- knife4j -->

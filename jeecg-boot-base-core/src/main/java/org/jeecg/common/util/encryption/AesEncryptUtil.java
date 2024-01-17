@@ -1,10 +1,9 @@
 package org.jeecg.common.util.encryption;
 
-import org.apache.shiro.codec.Base64;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
 
 /**
  * @Description: AES 加密
@@ -49,7 +48,7 @@ public class AesEncryptUtil {
             cipher.init(Cipher.ENCRYPT_MODE, keyspec, ivspec);
             byte[] encrypted = cipher.doFinal(plaintext);
 
-            return Base64.encodeToString(encrypted);
+            return Base64.getEncoder().encodeToString(encrypted);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,7 +66,7 @@ public class AesEncryptUtil {
      */
     public static String desEncrypt(String data, String key, String iv) throws Exception {
         //update-begin-author:taoyan date:2022-5-23 for:VUEN-1084 【vue3】online表单测试发现的新问题 6、解密报错 ---解码失败应该把异常抛出去，在外面处理
-        byte[] encrypted1 = Base64.decode(data);
+        byte[] encrypted1 = Base64.getDecoder().decode(data);
 
         Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
         SecretKeySpec keyspec = new SecretKeySpec(key.getBytes(), "AES");

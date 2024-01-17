@@ -6,11 +6,11 @@ import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.plugin.*;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.TenantConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -173,7 +173,7 @@ public class MybatisInterceptor implements Interceptor {
 	private LoginUser getLoginUser() {
 		LoginUser sysUser = null;
 		try {
-			sysUser = SecurityUtils.getSubject().getPrincipal() != null ? (LoginUser) SecurityUtils.getSubject().getPrincipal() : null;
+			sysUser = SecureUtil.currentUser() != null ? SecureUtil.currentUser() : null;
 		} catch (Exception e) {
 			//e.printStackTrace();
 			sysUser = null;

@@ -11,15 +11,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
@@ -338,7 +336,7 @@ public class SysUserController {
         }
         sysUser.setId(u.getId());
         //update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]修改密码添加敏感日志------------
-        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser loginUser = SecureUtil.currentUser();
         baseCommonService.addLog("修改用户 "+sysUser.getUsername()+" 的密码，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
         //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]修改密码添加敏感日志------------
         return sysUserService.changePassword(sysUser);
@@ -470,7 +468,7 @@ public class SysUserController {
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "用户列表");
         mv.addObject(NormalExcelConstants.CLASS, SysUser.class);
-		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser user = SecureUtil.currentUser();
         ExportParams exportParams = new ExportParams("用户列表数据", "导出人:"+user.getRealname(), "导出信息");
         exportParams.setImageBasePath(upLoadPath);
         mv.addObject(NormalExcelConstants.PARAMS, exportParams);
@@ -606,7 +604,7 @@ public class SysUserController {
 		String oldpassword = json.getString("oldpassword");
 		String password = json.getString("password");
 		String confirmpassword = json.getString("confirmpassword");
-        LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = SecureUtil.currentUser();
         if(!sysUser.getUsername().equals(username)){
             return Result.error("只允许修改自己的密码！");
         }
@@ -615,7 +613,7 @@ public class SysUserController {
 			return Result.error("用户不存在！");
 		}
         //update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]修改密码添加敏感日志------------
-        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser loginUser = SecureUtil.currentUser();
         baseCommonService.addLog("修改密码，username： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
         //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]修改密码添加敏感日志------------
 		return sysUserService.resetPassword(username,oldpassword,password,confirmpassword);
@@ -728,7 +726,7 @@ public class SysUserController {
         List<String> subDepids = new ArrayList<>();
         //部门id为空时，查询我的部门下所有用户
         if(oConvertUtils.isEmpty(depId)){
-            LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            LoginUser user = SecureUtil.currentUser();
             int userIdentity = user.getUserIdentity() != null?user.getUserIdentity():CommonConstant.USER_IDENTITY_1;
             if(oConvertUtils.isNotEmpty(userIdentity) && userIdentity == CommonConstant.USER_IDENTITY_2 ){
                 subDepids = sysDepartService.getMySubDepIdsByDepId(user.getDepartIds());
@@ -917,7 +915,7 @@ public class SysUserController {
     public Result<Map<String,Object>> getCurrentUserDeparts() {
         Result<Map<String,Object>> result = new Result<Map<String,Object>>();
         try {
-        	LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+        	LoginUser sysUser = SecureUtil.currentUser();
             List<SysDepart> list = this.sysDepartService.queryUserDeparts(sysUser.getId());
             Map<String,Object> map = new HashMap(5);
             map.put("list", list);
@@ -1780,7 +1778,7 @@ public class SysUserController {
     public Result<?> changeLoginTenantId(@RequestBody SysUser sysUser){
         Result<String> result = new Result<>();
         Integer tenantId = sysUser.getLoginTenantId();
-        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser loginUser = SecureUtil.currentUser();
         String userId = loginUser.getId();
         
         // 判断 指定的租户ID是不是当前登录用户的租户

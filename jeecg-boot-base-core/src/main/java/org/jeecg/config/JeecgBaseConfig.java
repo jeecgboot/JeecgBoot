@@ -33,10 +33,6 @@ public class JeecgBaseConfig {
     private Firewall firewall;
     
     /**
-     * shiro拦截排除
-     */
-    private Shiro shiro;
-    /**
      * 上传文件配置
      */
     private Path path;
@@ -86,14 +82,6 @@ public class JeecgBaseConfig {
 
     public void setSignatureSecret(String signatureSecret) {
         this.signatureSecret = signatureSecret;
-    }
-
-    public Shiro getShiro() {
-        return shiro;
-    }
-
-    public void setShiro(Shiro shiro) {
-        this.shiro = shiro;
     }
 
     public Path getPath() {

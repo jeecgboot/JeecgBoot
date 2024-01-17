@@ -1,21 +1,19 @@
-package org.jeecg.config.security.phone;
+package org.jeecg.config.security.social;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.exception.JeecgCaptchaException;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysDepartModel;
-import org.jeecg.common.util.Md5Util;
-import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.config.security.password.PasswordGrantAuthenticationToken;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -44,7 +42,7 @@ import java.util.stream.Stream;
  * @date 2024/1/1
  */
 @Slf4j
-public class PhoneGrantAuthenticationProvider implements AuthenticationProvider {
+public class SocialGrantAuthenticationProvider implements AuthenticationProvider {
 
     private static final String ERROR_URI = "https://datatracker.ietf.org/doc/html/rfc6749#section-5.2";
 
@@ -59,7 +57,7 @@ public class PhoneGrantAuthenticationProvider implements AuthenticationProvider 
     @Autowired
     private BaseCommonService baseCommonService;
 
-    public PhoneGrantAuthenticationProvider(OAuth2AuthorizationService authorizationService, OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator) {
+    public SocialGrantAuthenticationProvider(OAuth2AuthorizationService authorizationService, OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator) {
         Assert.notNull(authorizationService, "authorizationService cannot be null");
         Assert.notNull(tokenGenerator, "tokenGenerator cannot be null");
         this.authorizationService = authorizationService;
@@ -68,41 +66,29 @@ public class PhoneGrantAuthenticationProvider implements AuthenticationProvider 
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        PhoneGrantAuthenticationToken phoneGrantAuthenticationToken =  (PhoneGrantAuthenticationToken) authentication;
-        Map<String, Object> additionalParameter = phoneGrantAuthenticationToken.getAdditionalParameters();
+        SocialGrantAuthenticationToken socialGrantAuthenticationToken =  (SocialGrantAuthenticationToken) authentication;
+        Map<String, Object> additionalParameter = socialGrantAuthenticationToken.getAdditionalParameters();
 
         // 授权类型
-        AuthorizationGrantType authorizationGrantType = phoneGrantAuthenticationToken.getGrantType();
-        // 手机号
-        String phone = (String) additionalParameter.get("mobile");
-
-        if(isLoginFailOvertimes(phone)){
-            throw new JeecgBootException("该用户登录失败次数过多，请于10分钟后再次登录！");
-        }
+        AuthorizationGrantType authorizationGrantType = socialGrantAuthenticationToken.getGrantType();
+        // 三方token
+        String token = (String) additionalParameter.get("token");
+        // 三方来源
+        String source = (String) additionalParameter.get("thirdType");
 
         //请求参数权限范围
         String requestScopesStr = (String)additionalParameter.getOrDefault(OAuth2ParameterNames.SCOPE, "*");
         //请求参数权限范围专场集合
         Set<String> requestScopeSet = Stream.of(requestScopesStr.split(" ")).collect(Collectors.toSet());
-        // 验证码
-        String captcha = (String) additionalParameter.get("captcha");
 
-        LoginUser loginUser = commonAPI.getUserByPhone(phone);
+        DecodedJWT jwt = JWT.decode(token);
+        String username = jwt.getClaim("username").asString();
+
+        LoginUser loginUser = commonAPI.getUserByName(username);
         // 检查用户可行性
         checkUserIsEffective(loginUser);
 
-
-        String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+phone;
-        Object code = redisUtil.get(redisKey);
-
-        if (!captcha.equals(code)) {
-            //update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
-            addLoginFailOvertimes(phone);
-            //update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
-            throw new JeecgBootException("手机验证码错误");
-        }
-
-        OAuth2ClientAuthenticationToken clientPrincipal = getAuthenticatedClientElseThrowInvalidClient(phoneGrantAuthenticationToken);
+        OAuth2ClientAuthenticationToken clientPrincipal = getAuthenticatedClientElseThrowInvalidClient(socialGrantAuthenticationToken);
         RegisteredClient registeredClient = clientPrincipal.getRegisteredClient();
 
         if (!registeredClient.getAuthorizationGrantTypes().contains(authorizationGrantType)) {
@@ -118,7 +104,7 @@ public class PhoneGrantAuthenticationProvider implements AuthenticationProvider 
                 .authorizationServerContext(AuthorizationServerContextHolder.getContext())
                 .authorizationGrantType(authorizationGrantType)
                 .authorizedScopes(requestScopeSet)
-                .authorizationGrant(phoneGrantAuthenticationToken);
+                .authorizationGrant(socialGrantAuthenticationToken);
 
         OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization.withRegisteredClient(registeredClient)
                 .principalName(clientPrincipal.getName())
@@ -195,7 +181,7 @@ public class PhoneGrantAuthenticationProvider implements AuthenticationProvider 
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return PhoneGrantAuthenticationToken.class.isAssignableFrom(authentication);
+        return SocialGrantAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
     private static OAuth2ClientAuthenticationToken getAuthenticatedClientElseThrowInvalidClient(Authentication authentication) {
