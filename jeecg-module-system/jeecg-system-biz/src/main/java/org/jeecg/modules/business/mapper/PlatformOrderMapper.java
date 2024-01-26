@@ -168,6 +168,8 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
                                                       @Param("excludedTrackingNumbersRegex") String excludedTrackingNumbersRegex);
 
     List<PlatformOrderShopSync> fetchOrderInShopsReadyForShopifySync(@Param("shops") List<String> shopCodes);
+    List<PlatformOrderShopSync> fetchOrderInShopsWithoutShopifyNote(@Param("shops") List<String> shopCodes);
+    List<PlatformOrder> fetchOrderInShopsReadyForAbnNumberJob(@Param("shops") List<String> shopCodes);
 
     List<PlatformOrder> fetchUninvoicedShippedOrderIDInShops(@Param("startDate") String startDate,
                                                              @Param("endDate") String endDate,
