@@ -485,6 +485,26 @@
         ORDER BY order_time;
     </select>
 
+    <select id="fetchOrderInShopsReadyForAbnNumberJob" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT po.*
+        FROM platform_order po join shop s ON po.shop_id = s.id
+        WHERE erp_code IN
+        <foreach
+                collection="shops"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="shop"
+        >
+            #{shop}
+        </foreach>
+        AND erp_status &lt;&gt; 5
+        AND shopify_note IS NOT NULL
+        AND (tax_number IS NULL OR tax_number = '')
+        ORDER BY order_time;
+    </select>
+
     <select id="fetchUninvoicedShippedOrderIDInShops" resultType="org.jeecg.modules.business.entity.PlatformOrder">
         SELECT po.id
         FROM platform_order po

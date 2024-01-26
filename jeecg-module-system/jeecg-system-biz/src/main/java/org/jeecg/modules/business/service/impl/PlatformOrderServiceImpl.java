@@ -380,6 +380,11 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
 
     @Override
+    public List<PlatformOrder> fetchOrderInShopsReadyForAbnNumberJob(List<String> shopCodes) {
+        return platformOrderMap.fetchOrderInShopsReadyForAbnNumberJob(shopCodes);
+    }
+
+    @Override
     public List<PlatformOrder> fetchUninvoicedShippedOrderIDInShops(String startDate, String endDate, List<String> shops, List<String> warehouses) {
         return platformOrderMap.fetchUninvoicedShippedOrderIDInShops(startDate, endDate, shops, warehouses);
     }
