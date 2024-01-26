@@ -22,6 +22,8 @@ public class OrderListRequestBody implements RequestBody {
     private String cursor = "";
     private Integer page = 1;
     private boolean hasNext = true;
+    // 1.Orders of any status 2.Default value, must set status
+    private final static String ALL = "1";
 
     @Override
     public String api() {
@@ -31,7 +33,11 @@ public class OrderListRequestBody implements RequestBody {
     @Override
     public JSONObject parameters() {
         JSONObject json = new JSONObject();
-        putNonNull(json, "status", status, OrderStatus::getCode);
+        if (platformOrderIds != null) {
+            putNonNull(json, "allstatus", ALL);
+        } else {
+            putNonNull(json, "status", status, OrderStatus::getCode);
+        }
         putNonNull(json, "platformOrderIds", platformOrderIds, (ids) -> String.join(",", ids));
         if(datetimeType != null && platformOrderIds == null){
             putNonNull(json, datetimeType.text() + "Start", startDate, formatter::format);
