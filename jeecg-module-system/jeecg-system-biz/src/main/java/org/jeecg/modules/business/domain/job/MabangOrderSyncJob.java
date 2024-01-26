@@ -58,10 +58,7 @@ public class MabangOrderSyncJob implements Job {
         List<List<String>> platformOrderIdLists = Lists.partition(platformOrderIds, 10);
         List<OrderListRequestBody> requests = new ArrayList<>();
         for (List<String> platformOrderIdList : platformOrderIdLists) {
-            // There's no other way to sync orders of all statuses, so we duplicate requests to make sure
-            // that we get all orders
-            requests.add(new OrderListRequestBody().setPlatformOrderIds(platformOrderIdList).setStatus(OrderStatus.AllUnshipped));
-            requests.add(new OrderListRequestBody().setPlatformOrderIds(platformOrderIdList).setStatus(OrderStatus.AllNonUnshipped));
+            requests.add(new OrderListRequestBody().setPlatformOrderIds(platformOrderIdList));
         }
         List<Order> mabangOrders = new ArrayList<>();
         ExecutorService executor = Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS);
