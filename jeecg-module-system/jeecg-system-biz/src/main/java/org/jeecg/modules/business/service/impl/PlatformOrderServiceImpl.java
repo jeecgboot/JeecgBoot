@@ -375,6 +375,11 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
 
     @Override
+    public List<PlatformOrderShopSync> fetchOrderInShopsWithoutShopifyNote(List<String> shopCodes) {
+        return platformOrderMap.fetchOrderInShopsWithoutShopifyNote(shopCodes);
+    }
+
+    @Override
     public List<PlatformOrder> fetchUninvoicedShippedOrderIDInShops(String startDate, String endDate, List<String> shops, List<String> warehouses) {
         return platformOrderMap.fetchUninvoicedShippedOrderIDInShops(startDate, endDate, shops, warehouses);
     }

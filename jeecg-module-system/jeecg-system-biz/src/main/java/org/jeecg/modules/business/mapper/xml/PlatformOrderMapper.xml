@@ -466,6 +466,25 @@
         ORDER BY shipping_time;
     </select>
 
+    <select id="fetchOrderInShopsWithoutShopifyNote" resultType="org.jeecg.modules.business.entity.PlatformOrderShopSync">
+        SELECT po.platform_order_id, po.tracking_number, s.shopify_prefix, s.shopify_token, po.postcode
+        FROM platform_order po join shop s ON po.shop_id = s.id
+        WHERE erp_code IN
+        <foreach
+                collection="shops"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="shop"
+        >
+            #{shop}
+        </foreach>
+        AND erp_status &lt;&gt; 5
+        AND shopify_note IS NULL
+        ORDER BY order_time;
+    </select>
+
     <select id="fetchUninvoicedShippedOrderIDInShops" resultType="org.jeecg.modules.business.entity.PlatformOrder">
         SELECT po.id
         FROM platform_order po
