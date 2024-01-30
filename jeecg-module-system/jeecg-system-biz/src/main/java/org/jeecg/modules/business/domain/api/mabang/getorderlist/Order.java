@@ -89,6 +89,11 @@ public class Order {
      */
     @JSONField(name = "postCode")
     private String postcode;
+    /**
+     * 税号
+     */
+    @JSONField(name = "abnnumber")
+    private String taxNumber;
 
     /**
      * 状态

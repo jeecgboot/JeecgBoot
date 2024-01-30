@@ -142,6 +142,9 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     List<PlatformOrderShopSync> fetchOrderInShopsReadyForShopifySync(List<String> shopCodes);
 
+    List<PlatformOrderShopSync> fetchOrderInShopsWithoutShopifyNote(List<String> shopCodes);
+    List<PlatformOrder> fetchOrderInShopsReadyForAbnNumberJob(List<String> shopCodes);
+
     List<PlatformOrder> fetchUninvoicedShippedOrderIDInShops(String startDate, String endDate, List<String> shops, List<String> warehouses);
 
     /**
