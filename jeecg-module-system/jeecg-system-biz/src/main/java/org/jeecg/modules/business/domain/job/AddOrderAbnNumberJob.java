@@ -122,8 +122,8 @@ public class AddOrderAbnNumberJob implements Job {
                 .map(addOrderAbnNumberRequestBody -> CompletableFuture.supplyAsync(() -> {
                     boolean success = false;
                     try {
-                        AddOrderAbnNumberRequest archiveOrderRequest = new AddOrderAbnNumberRequest(addOrderAbnNumberRequestBody);
-                        ChangeOrderResponse response = archiveOrderRequest.send();
+                        AddOrderAbnNumberRequest addOrderAbnNumberRequest = new AddOrderAbnNumberRequest(addOrderAbnNumberRequestBody);
+                        ChangeOrderResponse response = addOrderAbnNumberRequest.send();
                         success = response.success();
                     } catch (RuntimeException e) {
                         log.error("Error communicating with MabangAPI", e);
