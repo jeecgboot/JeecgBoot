@@ -27,4 +27,6 @@ public interface ClientMapper extends BaseMapper<Client> {
     Client getClientFromPurchase(@Param("purchaseId") String purchaseId);
 
     List<String> getClientsFromPurchases(@Param("purchaseIds") List<String> purchaseIds);
+
+    Client getClientBySku(@Param("skuId") String skuId);
 }

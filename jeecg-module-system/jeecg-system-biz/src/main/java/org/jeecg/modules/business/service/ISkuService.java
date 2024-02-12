@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: SKU表
@@ -94,5 +95,9 @@ public interface ISkuService extends IService<Sku> {
 
     List<SkuQuantity> getSkuQuantitiesFromOrderIds(List<String> orderIds);
 
-    List<Sku> fetchSkusByClient(String clientId);
+    List<SkuOrderPage> fetchSkusByClient(String clientId);
+
+    void addSkuQuantity(Map<String, Integer> quantityPurchased);
+
+    String getIdFromErpCode(String erpCode);
 }
