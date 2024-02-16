@@ -139,6 +139,11 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     }
 
     @Override
+    public Client getClientBySku(String skuId) {
+        return clientMapper.getClientBySku(skuId);
+    }
+
+    @Override
     public String getClientEntity(String id) {
         return clientMapper.getClientEntity(id);
     }

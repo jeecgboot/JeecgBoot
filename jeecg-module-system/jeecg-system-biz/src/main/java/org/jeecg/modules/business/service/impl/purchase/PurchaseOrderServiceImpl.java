@@ -329,19 +329,6 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     }
 
     /**
-     * Generated a purchase order based on sku quantity, and
-     * these quantities are recorded to client's inventory.
-     *
-     * @param skuQuantities a list of platform orders
-     * @return the purchase order's identifier (UUID)
-     */
-    @Override
-    public String addPurchase(List<SkuQuantity> skuQuantities) throws UserException {
-        return addPurchase(skuQuantities, Collections.emptyList());
-    }
-
-
-    /**
      * Generated a purchase order based on sku quantity, these sku are bought
      * for some platform orders, their quantity may higher than those in platform
      * orders. In case of higher, extra quantity are recorded to client's inventory.
@@ -430,6 +417,93 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         if (!platformOrderIDs.isEmpty()) {
             platformOrderMapper.batchUpdateStatus(platformOrderIDs, PlatformOrder.Status.Purchasing.code);
         }
+
+        // 4. return purchase id
+        return purchaseID;
+    }
+    /**
+     * Generated a purchase order based on sku quantity, hand-picked by sales
+     * @param skuQuantities    a list of platform orders
+     * @return the purchase order's identifier (UUID)
+     */
+    @Override
+    @Transactional
+    public String addPurchase(List<SkuQuantity> skuQuantities) throws UserException {
+
+        Client client = clientService.getCurrentClient();
+        if(client == null) {
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            if(sysUser.getOrgCode().contains("A01") || sysUser.getOrgCode().contains("A03")) {
+                client = clientService.getClientBySku(skuQuantities.get(0).getID());
+            }
+            else
+                throw new UserException("User is not a client");
+        }
+        String currencyId = currencyService.getIdByCode(client.getCurrency());
+        List<OrderContentDetail> details = platformOrderService.searchPurchaseOrderDetail(skuQuantities);
+        OrdersStatisticData data = OrdersStatisticData.makeData(details, null);
+
+        String purchaseID = UUID.randomUUID().toString();
+
+        String lastInvoiceNumber = purchaseOrderMapper.lastInvoiceNumber();
+        String invoiceNumber = new PurchaseInvoiceCodeRule().next(lastInvoiceNumber);
+        // 1. save purchase itself
+        purchaseOrderMapper.addPurchase(
+                purchaseID,
+                client.fullName(),
+                currencyId,
+                client.getId(),
+                data.getEstimatedTotalPrice(),
+                data.getReducedAmount(),
+                data.finalAmount(),
+                invoiceNumber
+        );
+
+        // 2. save purchase's content
+        List<OrderContentEntry> entries = details.stream()
+                .map(
+                        d -> (
+                                new OrderContentEntry(
+                                        d.getQuantity(),
+                                        d.totalPrice(),
+                                        d.getSkuDetail().getSkuId()
+                                )
+                        )
+                )
+                .collect(Collectors.toList());
+        purchaseOrderContentMapper.addAll(client.fullName(), purchaseID, entries);
+        Map<String, Integer> quantityPurchased = skuQuantities.stream()
+                .collect(
+                        Collectors.toMap(
+                                SkuQuantity::getID,
+                                SkuQuantity::getQuantity
+                        )
+                );
+        skuService.addSkuQuantity(quantityPurchased);
+
+        // 3. save the application of promotion information
+        List<PromotionHistoryEntry> promotionHistoryEntries = details.stream()
+                .filter(orderContentDetail -> orderContentDetail.getSkuDetail().getPromotion() != Promotion.ZERO_PROMOTION)
+                .map(orderContentDetail -> {
+                    String promotion = orderContentDetail.getSkuDetail().getPromotion().getId();
+                    int count = orderContentDetail.promotionCount();
+                    return new PromotionHistoryEntry(promotion, count);
+                }).collect(Collectors.toList());
+        if (!promotionHistoryEntries.isEmpty()) {
+            skuPromotionHistoryMapper.addAll(client.fullName(), promotionHistoryEntries, purchaseID);
+        }
+
+        // TODO use real client address
+        // send email to client
+        Map<String, String> map = new HashMap<>();
+        map.put("client", client.getFirstName());
+        map.put("order_number", invoiceNumber);
+        pushMsgUtil.sendMessage(
+                SendMsgTypeEnum.EMAIL.getType(),
+                "purchase_order_confirmation",
+                map,
+                "service@wia-sourcing.com"
+        );
 
         // 4. return purchase id
         return purchaseID;

@@ -418,7 +418,27 @@ public class InvoiceController {
             throw new RuntimeException(e);
         }
     }
-
+    @PostMapping("/makeManualSkuPurchaseInvoice")
+    public Result<?> createOrder(@RequestBody Map<String, Integer> payload) {
+        InvoiceMetaData metaData;
+        List<SkuQuantity>  skuQuantities = new ArrayList<>();
+        for(Map.Entry<String, Integer> entry : payload.entrySet()) {
+            String skuId = skuService.getIdFromErpCode(entry.getKey());
+            skuQuantities.add(new SkuQuantity(skuId, entry.getValue()));
+        }
+        try {
+            String purchaseId = purchaseOrderService.addPurchase(skuQuantities);
+            metaData = purchaseOrderService.makeInvoice(purchaseId);
+            return Result.OK(metaData);
+        } catch (UserException e) {
+            return Result.error(e.getMessage());
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return Result.error("Sorry, server error, please try later");
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
     @GetMapping(value = "/preShipping/orderTime")
     public Result<?> getValidOrderTimePeriod(@RequestParam("shopIds[]") List<String> shopIDs, @RequestParam("erpStatuses[]") List<Integer> erpStatuses) {
         log.info("Request for valid order time period for shops: " + shopIDs.toString() +
