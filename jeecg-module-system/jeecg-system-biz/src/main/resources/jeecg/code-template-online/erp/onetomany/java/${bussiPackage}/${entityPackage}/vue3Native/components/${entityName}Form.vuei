@@ -79,7 +79,7 @@
   const validatorRules = {
   <#include "/common/validatorRulesTemplate/native/vue3MainNative.ftl">
   };
-  const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: true });
+  const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: false });
   const formRef = ref();
   // 表单禁用
   const disabled = computed(()=>{

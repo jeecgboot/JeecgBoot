@@ -144,7 +144,9 @@
     <#assign extAttrs="">
     <#assign dictCode="">
     <#if po.dictTable?default('')?trim?length gt 1 && po.dictText?default('')?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
-        <#assign dictCode="dictTable: '${po.dictTable}', dictCode: '${po.dictField}', dictText: '${po.dictText}'">
+        <#-- update-begin---author:chenrui ---date:20231228  for:fix 带条件字典存在单引号导致js编译错误---------- -->
+        <#assign dictCode="dictTable: \"${po.dictTable}\", dictCode: '${po.dictField}', dictText: '${po.dictText}'">
+        <#-- update-begin---author:chenrui ---date:20231228  for:fix 带条件字典存在单引号导致js编译错误---------- -->
     <#elseif po.dictField?default("")?trim?length gt 1>
         <#assign dictCode="dictCode: '${po.dictField}'">
     </#if>

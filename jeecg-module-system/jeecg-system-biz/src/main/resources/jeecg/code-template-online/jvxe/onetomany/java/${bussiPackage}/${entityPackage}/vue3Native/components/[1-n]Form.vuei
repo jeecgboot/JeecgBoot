@@ -85,7 +85,7 @@
     </#if>
     </#list>
       })
-      const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, {immediate: true});
+      const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, {immediate: false});
       const formItemLayout = {
         labelCol: { xs: { span: 24 }, sm: { span: 5 } },
         wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },

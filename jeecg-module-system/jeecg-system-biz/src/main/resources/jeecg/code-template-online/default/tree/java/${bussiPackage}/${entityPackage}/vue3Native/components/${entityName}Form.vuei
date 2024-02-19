@@ -98,7 +98,7 @@
   const validatorRules = {
   <#include "/common/validatorRulesTemplate/native/vue3MainNative.ftl">
   };
-  const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: true });
+  const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: false });
   const props = defineProps({
     formDisabled: { type: Boolean, default: false },
     formData: { type: Object, default: ()=>{} },
