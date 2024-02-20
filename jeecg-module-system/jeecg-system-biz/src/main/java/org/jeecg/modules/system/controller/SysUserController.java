@@ -1742,4 +1742,11 @@ public class SysUserController {
         sysUserService.editTenantUser(sysUser,tenantId,departs,roles);
         return Result.ok("修改成功");
     }
+    @GetMapping(value = "/getMabangUsername")
+    public Result<?> getMabangUsername() {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if(sysUser.getMabangUsername() == null || sysUser.getMabangUsername().isEmpty())
+            return Result.error("Mabang username not found");
+        return Result.ok(sysUser.getMabangUsername());
+    }
 }

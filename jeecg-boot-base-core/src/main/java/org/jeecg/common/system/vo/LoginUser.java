@@ -126,5 +126,7 @@ public class LoginUser {
 
 	/**设备id uniapp推送用*/
 	private String clientId;
+	/**Mabang username*/
+	private String mabangUsername;
 
 }
