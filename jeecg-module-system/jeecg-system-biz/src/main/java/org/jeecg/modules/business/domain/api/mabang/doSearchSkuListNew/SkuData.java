@@ -1,4 +1,4 @@
-package org.jeecg.modules.business.domain.api.mabang.doSearchSkuList;
+package org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -47,6 +47,9 @@ public class SkuData {
     /**最新采购价*/
     @JSONField(name="purchasePrice")
     private BigDecimal purchasePrice;
+    /**默认供应商名称,接口参数传showProvider才返回*/
+    @JSONField(name="provider")
+    private String provider;
     /**
      * if stockPicture is empty, we use it
      */

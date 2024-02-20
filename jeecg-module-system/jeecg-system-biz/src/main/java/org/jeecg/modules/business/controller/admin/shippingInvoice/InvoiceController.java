@@ -25,6 +25,7 @@ import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.mapper.PurchaseOrderContentMapper;
 import org.jeecg.modules.business.service.*;
+import org.jeecg.modules.business.service.impl.ProviderMabangServiceImpl;
 import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
@@ -90,6 +91,8 @@ public class InvoiceController {
     @Autowired
     private IProductService productService;
     @Autowired
+    private ProviderMabangServiceImpl providerMabangService;
+    @Autowired
     private IPurchaseOrderService purchaseOrderService;
     @Autowired
     private PurchaseOrderContentMapper purchaseOrderContentMapper;
@@ -126,7 +129,6 @@ public class InvoiceController {
 
     private final String SECTION_START = "<section><ul>";
     private final String SECTION_END = "</ul></section>";
-
 
     @GetMapping(value = "/shopsByClient")
     public Result<List<Shop>> getShopsByClient(@RequestParam("clientID") String clientID) {
@@ -421,7 +423,7 @@ public class InvoiceController {
     @PostMapping("/makeManualSkuPurchaseInvoice")
     public Result<?> createOrder(@RequestBody Map<String, Integer> payload) {
         InvoiceMetaData metaData;
-        List<SkuQuantity>  skuQuantities = new ArrayList<>();
+        List<SkuQuantity> skuQuantities = new ArrayList<>();
         for(Map.Entry<String, Integer> entry : payload.entrySet()) {
             String skuId = skuService.getIdFromErpCode(entry.getKey());
             skuQuantities.add(new SkuQuantity(skuId, entry.getValue()));
@@ -429,6 +431,7 @@ public class InvoiceController {
         try {
             String purchaseId = purchaseOrderService.addPurchase(skuQuantities);
             metaData = purchaseOrderService.makeInvoice(purchaseId);
+            providerMabangService.addPurchaseOrderToMabang(payload, metaData);
             return Result.OK(metaData);
         } catch (UserException e) {
             return Result.error(e.getMessage());
