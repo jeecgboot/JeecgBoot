@@ -72,7 +72,7 @@ public class SkuListRawStream implements NetworkDataStream<SkuListResponse> {
         if (!hasNext())
             throw new NoSuchElementException();
 
-        log.info("Sending request for page {}/{}.", toSend.getPage(), toSend.getTotalPages());
+        log.info("Sending request for page {}/{}.", toSend.getPage(), toSend.getTotal() == null ? "?" : toSend.getTotalPages());
         this.currentResponse = new SkuListRequest(toSend).send();
         toSend.nextPage();
         return this.currentResponse;
