@@ -32,6 +32,7 @@ public class AddPurchaseOrderRequestBody implements RequestBody {
         putNonNull(json, "warehouseName", DEFAULT_WAREHOUSE_NAME);
         putNonNull(json, "providerName", providerName);
         putNonNull(json, "employeeName", employeeName);
+        putNonNull(json, "content", content);
         JSONArray stockDataArray = new JSONArray();
         if (!stockData.isEmpty()) {
             for (SkuStockData s : stockData) {
