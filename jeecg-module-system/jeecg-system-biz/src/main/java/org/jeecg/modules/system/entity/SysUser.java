@@ -61,7 +61,7 @@ public class SysUser implements Serializable {
     /**
      * md5密码盐
      */
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String salt;
 
     /**

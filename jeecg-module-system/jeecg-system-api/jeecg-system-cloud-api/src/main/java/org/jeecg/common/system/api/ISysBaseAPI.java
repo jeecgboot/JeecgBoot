@@ -764,4 +764,16 @@ public interface ISysBaseAPI extends CommonAPI {
             @RequestParam(value = "fields", required = false) String[] fields
     );
 
+    @GetMapping("/sys/api/getUserByPhone")
+    public LoginUser getUserByPhone(@RequestParam("phone") String phone);
+
+    @GetMapping("/sys/api/queryAllDictItems")
+    Map<String,List<DictModel>> queryAllDictItems();
+
+    @GetMapping("/sys/api/queryUserDeparts")
+    List<SysDepartModel> queryUserDeparts(@RequestParam("userId") String userId);
+
+    @PostMapping("/sys/api/updateUserDepart")
+    void updateUserDepart(@RequestParam("username") String username,@RequestParam("orgCode") String orgCode,@RequestParam("loginTenantId") Integer loginTenantId);
+
 }
