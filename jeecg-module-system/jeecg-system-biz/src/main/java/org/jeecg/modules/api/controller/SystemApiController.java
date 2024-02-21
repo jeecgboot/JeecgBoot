@@ -897,4 +897,24 @@ public class SystemApiController {
         return sysBaseApi.dictTableWhiteListCheckByDict(tableOrDictCode, fields);
     }
 
+    @GetMapping("/sys/api/getUserByPhone")
+    public LoginUser getUserByPhone(String phone) {
+        return sysBaseApi.getUserByPhone(phone);
+    }
+
+    @GetMapping("/sys/api/queryAllDictItems")
+    public Map<String,List<DictModel>> queryAllDictItems() {
+        return sysBaseApi.queryAllDictItems();
+    }
+
+    @GetMapping("/sys/api/queryUserDeparts")
+    public List<SysDepartModel> queryUserDeparts(@RequestParam("userId") String userId) {
+        return sysBaseApi.queryUserDeparts(userId);
+    }
+
+    @PostMapping("/sys/api/updateUserDepart")
+    public void updateUserDepart(@RequestParam("username") String username,@RequestParam("orgCode") String orgCode,@RequestParam("loginTenantId") Integer loginTenantId) {
+        sysBaseApi.updateUserDepart(username, orgCode, loginTenantId);
+    }
+
 }
