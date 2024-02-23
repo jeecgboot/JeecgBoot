@@ -241,9 +241,14 @@
 
       async function queryMainData(id) {
         const row = await queryDataById(id);
-        Object.keys(row).map(k => {
-          formData[k] = row[k];
-        });
+        const tmpData = {};
+        Object.keys(formData).forEach((key) => {
+          if(row.hasOwnProperty(key)){
+            tmpData[key] = row[key]
+          }
+        })
+        //赋值
+        Object.assign(formData,tmpData);
       }
 
       const {getSubFormAndTableData, transformData} = useValidateAntFormAndTable(activeKey, {
