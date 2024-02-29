@@ -16,8 +16,8 @@ import java.io.Serializable;
 /**
  * @Description: 店铺
  * @Author: jeecg-boot
- * @Date: 2021-08-11
- * @Version: V1.1
+ * @Date: 2024-01-25
+ * @Version: V1.2
  */
 @ApiModel(value = "Shop对象", description = "店铺")
 @Data
@@ -91,10 +91,29 @@ public class Shop implements Serializable {
     @Excel(name = "订单服务费", width = 15)
     @ApiModelProperty(value = "订单服务费")
     private java.math.BigDecimal orderServiceFee;
+
     /**
-     * 包材费
+     * 是否活跃
      */
-    @Excel(name = "包材费", width = 15)
-    @ApiModelProperty(value = "包材费")
+    @Excel(name = "是否活跃", width = 15, dicCode = "yn")
+    @ApiModelProperty(value = "是否活跃")
+    private java.lang.String active;
+    /**
+     * Shopify前缀
+     */
+    @Excel(name = "Shopify前缀", width = 15)
+    @ApiModelProperty(value = "Shopify前缀")
+    private java.lang.String shopifyPrefix;
+    /**
+     * Shopify API Token
+     */
+    @Excel(name = "Shopify API Token", width = 15)
+    @ApiModelProperty(value = "Shopify API Token")
+    private java.lang.String shopifyToken;
+    /**
+     * 海外仓包材费
+     */
+    @Excel(name = "海外仓包材费", width = 15)
+    @ApiModelProperty(value = "海外仓包材费")
     private java.math.BigDecimal packagingMaterialFee;
 }

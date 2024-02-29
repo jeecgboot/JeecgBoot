@@ -101,6 +101,11 @@
             when #{item.id} then #{item.postcode}
         </foreach>
         end,
+        tax_number = case id
+        <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
+            when #{item.id} then #{item.taxNumber}
+        </foreach>
+        end,
         erp_status = case id
         <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
             when #{item.id} then #{item.status}
@@ -162,7 +167,7 @@
         update_time, shop_id, logistic_channel_name,
         platform_order_id, platform_order_number, erp_order_id,
         tracking_number, internal_tracking_number, order_time, shipping_time, recipient,
-        country, city, postcode, erp_status, product_available, can_send)
+        country, city, postcode, tax_number, erp_status, product_available, can_send)
         VALUES
         <foreach collection="orders" separator="," open="" close="" item="order" index="index">
             (
@@ -184,6 +189,7 @@
             #{order.country},
             #{order.city},
             #{order.postcode},
+            #{order.taxNumber},
             #{order.status},
             #{order.productAvailable},
             #{order.canSend}
