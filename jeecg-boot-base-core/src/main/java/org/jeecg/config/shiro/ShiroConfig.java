@@ -328,7 +328,7 @@ public class ShiroConfig {
         Map<String, Object> controllers = context.getBeansWithAnnotation(RestController.class);
         for (Object bean : controllers.values()) {
             if (!(bean instanceof Advised)) {
-                return null;
+                continue;
             }
             Class<?> beanClass = ((Advised) bean).getTargetSource().getTarget().getClass();
             RequestMapping base = beanClass.getAnnotation(RequestMapping.class);
