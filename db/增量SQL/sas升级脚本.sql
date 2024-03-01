@@ -13,7 +13,7 @@ CREATE TABLE `oauth2_registered_client` (
   `client_settings` varchar(2000) NOT NULL,
   `token_settings` varchar(2000) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `oauth2_registered_client`
 (`id`,

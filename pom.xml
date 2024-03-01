@@ -475,7 +475,7 @@
                 <!--Nacos服务地址-->
                 <config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
 				<!--Nacos配置中心命名空间,用于支持多环境.这里必须使用ID，不能使用名称,默认为空-->
-				<config.namespace></config.namespace>
+				<config.namespace>efc4e412-b1a1-498f-ba01-b31807649a9a</config.namespace>
 				<!--Nacos配置分组名称-->
 				<config.group>DEFAULT_GROUP</config.group>
 				<!--Nacos用户名-->
@@ -505,7 +505,7 @@
                 <!--Nacos服务地址-->
                 <config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
 				<!--Nacos配置中心命名空间,用于支持多环境.这里必须使用ID，不能使用名称,默认为空-->
-				<config.namespace></config.namespace>
+				<config.namespace>efc4e412-b1a1-498f-ba01-b31807649a9a</config.namespace>
 				<!--Nacos配置分组名称-->
 				<config.group>DEFAULT_GROUP</config.group>
 				<!--Nacos用户名-->
@@ -523,7 +523,7 @@
                 <!--Nacos服务地址-->
                 <config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
 				<!--Nacos配置中心命名空间,用于支持多环境.这里必须使用ID，不能使用名称,默认为空-->
-				<config.namespace></config.namespace>
+				<config.namespace>efc4e412-b1a1-498f-ba01-b31807649a9a</config.namespace>
 				<!--Nacos配置分组名称-->
 				<config.group>DEFAULT_GROUP</config.group>
 				<!--Nacos用户名-->
