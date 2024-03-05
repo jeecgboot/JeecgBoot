@@ -10,8 +10,6 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Data
 public class OrderCreationRequestBody implements RequestBody {
@@ -25,6 +23,7 @@ public class OrderCreationRequestBody implements RequestBody {
     private final static String CUSTOM = "定制";
     private final static String QUOTE = ":";
     private final static String WIA = "维亚智通";
+    private final static String TRANSACTION_NUMBER = "交易号";
 
     public OrderCreationRequestBody(List<ShoumanOrderContent> orderContents, Map<String, Country> countryMap) {
         this.orderContents = orderContents;
@@ -41,13 +40,14 @@ public class OrderCreationRequestBody implements RequestBody {
         JSONObject json = new JSONObject();
         // TODO: 2023/11/29 Change to real address
         ShoumanOrderContent anyContent = orderContents.get(0);
-        putNonNull(json, "address", anyContent.getPostcode());
-        putNonNull(json, "addressee", anyContent.getRecipient());
-        putNonNull(json, "city", anyContent.getCity());
+        putNonNull(json, "address", "收货人：王生 收货地址： 广东省东镇芦莞市寮步溪二路40号汇元佳科技园二栋10楼公司前台 手机：17633551138");
+        putNonNull(json, "addressee", "王生");
+        putNonNull(json, "city", "东莞市");
         String countryName = anyContent.getCountry();
         Country country = countryMap.get(countryName);
-        putNonNull(json, "country", country.getNameZh());
-        putNonNull(json, "countryCode", country.getCode());
+        putNonNull(json, "country", "CHINA");
+        putNonNull(json, "countryCode", "CN");
+        // TODO: 2023/11/29 Change to real address
         putNonNull(json, "orderId", anyContent.getPlatformOrderId());
         JSONArray outboundInfos = new JSONArray();
         BigDecimal totalPrice = BigDecimal.ZERO;
@@ -60,7 +60,7 @@ public class OrderCreationRequestBody implements RequestBody {
             totalPrice = totalPrice.add(price);
             putNonNull(contentJson, "theImagePath", content.getImageUrl());
             putNonNull(contentJson, "comment", generateRemark(content.getRemark(), content.getCustomizationData(),
-                    content.getContentRecRegex(), content.getContentExtRegex()));
+                    content.getContentRecRegex(), content.getContentExtRegex(), content.getPlatformOrderNumber()));
             putNonNull(contentJson, "sku", content.getSku());
             putNonNull(contentJson, "outboundNumder", content.getQuantity()); // Typo intended
             outboundInfos.add(contentJson);
@@ -70,7 +70,8 @@ public class OrderCreationRequestBody implements RequestBody {
         return json;
     }
 
-    private String generateRemark(String baseRemark, String customizationData, String contentRecRegex, String contentExtRegex) {
+    private String generateRemark(String baseRemark, String customizationData, String contentRecRegex, String contentExtRegex,
+                                  String platformOrderNumber) {
         StringBuilder sb = new StringBuilder();
         String[] baseRemarks = baseRemark.split(DEFAULT_SPLIT);
         for (String remark : baseRemarks) {
@@ -91,6 +92,9 @@ public class OrderCreationRequestBody implements RequestBody {
                         .append(LINE_BREAK);
             }
         }
+        sb.append(TRANSACTION_NUMBER)
+                .append(platformOrderNumber)
+                .append(LINE_BREAK);
         Calendar instance = Calendar.getInstance();
         // Add date (format MM-dd) and company name at the end
         sb.append(WIA)
