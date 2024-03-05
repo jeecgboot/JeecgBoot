@@ -382,7 +382,8 @@
                  join platform_order po on poc.platform_order_id = po.id
                  join sku s on poc.sku_id = s.id
                  join shouman_sku_relation ssr on s.id = ssr.sku_id
-                 join shouman_category sc on ssr.shouman_category_id = sc.id;
+                 join shouman_category sc on ssr.shouman_category_id = sc.id
+        where poc.erp_status = 1;
     </select>
 
     <resultMap id="shoumanOrderContentResultMap" type="org.jeecg.modules.business.entity.ShoumanOrderContent">
