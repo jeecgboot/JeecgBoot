@@ -7,7 +7,7 @@ import org.jeecg.common.modules.redis.listener.JeecgRedisListener;
 import org.jeecg.loader.DynamicRouteLoader;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 /**
  * 路由刷新监听（实现方式：redis监听handler）

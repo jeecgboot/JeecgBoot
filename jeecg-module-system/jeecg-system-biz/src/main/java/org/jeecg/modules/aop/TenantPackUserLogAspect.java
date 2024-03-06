@@ -14,7 +14,7 @@ import org.jeecg.modules.system.entity.SysTenantPack;
 import org.jeecg.modules.system.entity.SysTenantPackUser;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.lang.reflect.Method;
 import java.util.Date;
 

@@ -9,6 +9,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jeecg-boot-base-core</artifactId>
 
+	<properties>
+		<spring-boot.version>3.1.5</spring-boot.version>
+	</properties>
+
 	<repositories>
 		<repository>
 			<id>aliyun</id>
@@ -43,12 +47,22 @@
 		<!--jeecg-tools-->
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
-			<artifactId>jeecg-boot-common</artifactId>
+			<artifactId>jeecg-boot-common3</artifactId>
 		</dependency>
 		<!--集成springmvc框架并实现自动配置 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-undertow</artifactId>
 		</dependency>
 		<!-- websocket -->
 		<dependency>
@@ -105,14 +119,14 @@
 		<!-- druid -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
-			<artifactId>druid-spring-boot-starter</artifactId>
+			<artifactId>druid-spring-boot-3-starter</artifactId>
 			<version>${druid.version}</version>
 		</dependency>
 
 		<!-- 动态数据源 -->
 		<dependency>
 			<groupId>com.baomidou</groupId>
-			<artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+			<artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
 			<version>${dynamic-datasource-spring-boot-starter.version}</version>
 		</dependency>
 
@@ -164,6 +178,12 @@
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-spring-boot-starter</artifactId>
 			<version>${shiro.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.shiro</groupId>
+					<artifactId>shiro-spring</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- shiro-redis -->
 		<dependency>
@@ -179,13 +199,61 @@
 					<artifactId>checkstyle</artifactId>
 					<groupId>com.puppycrawl.tools</groupId>
 				</exclusion>
+				<!-- TODO shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
+				<exclusion>
+					<artifactId>jedis</artifactId>
+					<groupId>redis.clients</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- TODO shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>${jedis.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-spring</artifactId>
+			<classifier>jakarta</classifier>
+			<version>${shiro.version}</version>
+			<!-- 排除仍使用了javax.servlet的依赖 -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.shiro</groupId>
+					<artifactId>shiro-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.shiro</groupId>
+					<artifactId>shiro-web</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- 引入适配jakarta的依赖包 -->
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-core</artifactId>
+			<classifier>jakarta</classifier>
+			<version>${shiro.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-web</artifactId>
+			<classifier>jakarta</classifier>
+			<version>${shiro.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.shiro</groupId>
+					<artifactId>shiro-core</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
 		<!-- knife4j -->
 		<dependency>
 			<groupId>com.github.xiaoymin</groupId>
-			<artifactId>knife4j-spring-boot-starter</artifactId>
+			<artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
 			<version>${knife4j-spring-boot-starter.version}</version>
 		</dependency>
 
@@ -199,7 +267,7 @@
 
 		<!-- AutoPoi Excel工具类-->
 		<dependency>
-			<groupId>org.jeecgframework</groupId>
+			<groupId>org.jeecgframework.boot3</groupId>
 			<artifactId>autopoi-web</artifactId>
 			<version>${autopoi-web.version}</version>
 			<exclusions>
@@ -242,6 +310,16 @@
 		<dependency>
 			<groupId>com.xkcoding.justauth</groupId>
 			<artifactId>justauth-spring-boot-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-autoconfigure</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-configuration-processor</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>

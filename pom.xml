@@ -23,24 +23,24 @@
   	<parent>
 	    <groupId>org.springframework.boot</groupId>
 	    <artifactId>spring-boot-starter-parent</artifactId>
-	    <version>2.7.10</version>
+	    <version>3.1.5</version>
 	    <relativePath/>
 	</parent>
 
 	<properties>
 		<jeecgboot.version>3.6.2</jeecgboot.version>
-		<java.version>1.8</java.version>
+		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- 微服务 -->
-		<spring-cloud.version>2021.0.3</spring-cloud.version>
-        <spring-cloud-alibaba.version>2021.0.1.0</spring-cloud-alibaba.version>
+		<spring-cloud.version>2022.0.4</spring-cloud.version>
+        <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
 		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
 
 		<xxl-job-core.version>2.2.0</xxl-job-core.version>
-        <fastjson.version>1.2.83</fastjson.version>
+        <fastjson.version>2.0.43</fastjson.version>
 		<pegdown.version>1.6.0</pegdown.version>
-		<knife4j-spring-boot-starter.version>3.0.3</knife4j-spring-boot-starter.version>
+		<knife4j-spring-boot-starter.version>4.3.0</knife4j-spring-boot-starter.version>
 		<knife4j-spring-ui.version>2.0.9</knife4j-spring-ui.version>
 		<!-- 数据库驱动 -->
 		<postgresql.version>42.2.25</postgresql.version>
@@ -50,33 +50,33 @@
 		<hutool.version>5.8.23</hutool.version>
 		<!-- 国产数据库驱动 -->
 		<dm8.version>8.1.1.49</dm8.version>
-		
+
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.3.1</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>4.1.3</dynamic-datasource-spring-boot-starter.version>
-		<druid.version>1.2.19</druid.version>
+		<druid.version>1.2.20</druid.version>
 		<minidao.version>1.9.5</minidao.version>
 
 		<!-- 积木报表-->
 		<jimureport-spring-boot-starter.version>1.6.6</jimureport-spring-boot-starter.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
-		<aliyun.oss.version>3.11.2</aliyun.oss.version>
+		<aliyun.oss.version>3.17.3</aliyun.oss.version>
 		<!-- shiro -->
 		<shiro.version>1.12.0</shiro.version>
 		<java-jwt.version>3.11.0</java-jwt.version>
 		<shiro-redis.version>3.2.2</shiro-redis.version>
 		<codegenerate.version>1.4.4</codegenerate.version>
 		<autopoi-web.version>1.4.7</autopoi-web.version>
-		<minio.version>8.0.3</minio.version>
+		<minio.version>8.5.7</minio.version>
 		<justauth-spring-boot-starter.version>1.3.4</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<qiniu-java-sdk.version>7.4.0</qiniu-java-sdk.version>
+		<jedis.version>3.8.0</jedis.version>
 		<!-- Log4j2爆雷漏洞 -->
-		<log4j2.version>2.17.0</log4j2.version>
-		<logback.version>1.2.9</logback.version>
-		<!-- seata -->
-		<seata.version>1.5.2</seata.version>
+		<!-- spring boot 3 不支持下列两个版本-->
+		<!--<log4j2.version>2.17.0</log4j2.version>
+		<logback.version>1.2.9</logback.version>-->
 	</properties>
 
 	<modules>
@@ -142,6 +142,12 @@
 			<groupId>org.pegdown</groupId>
 			<artifactId>pegdown</artifactId>
 			<version>${pegdown.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>asm</artifactId>
+					<groupId>org.ow2.asm</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
@@ -163,11 +169,6 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<dependency>
-				<groupId>io.seata</groupId>
-				<artifactId>seata-spring-boot-starter</artifactId>
-				<version>${seata.version}</version>
-			</dependency>
 
 			<!-- system 模块-->
 			<dependency>
@@ -179,7 +180,7 @@
 			<!-- jeecg tools -->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-common</artifactId>
+				<artifactId>jeecg-boot-common3</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!-- jeecg core -->
@@ -204,31 +205,31 @@
             <!--微服务启动依赖-->
             <dependency>
                 <groupId>org.jeecgframework.boot</groupId>
-                <artifactId>jeecg-boot-starter-cloud</artifactId>
+                <artifactId>jeecg-boot-starter3-cloud</artifactId>
                 <version>${jeecgboot.version}</version>
             </dependency>
 			<!--xxl-job定时任务-->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter-job</artifactId>
+				<artifactId>jeecg-boot-starter3-job</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--redis分布式锁-->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter-lock</artifactId>
+				<artifactId>jeecg-boot-starter3-lock</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--rabbitmq消息队列-->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter-rabbitmq</artifactId>
+				<artifactId>jeecg-boot-starter3-rabbitmq</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--分库分表shardingsphere-->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter-shardingsphere</artifactId>
+				<artifactId>jeecg-boot-starter3-shardingsphere</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<dependency>
@@ -243,15 +244,22 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>org.jeecgframework.boot</groupId>
+				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.6.1-RC</version>
+				<version>3.6.1-beta</version>
 			</dependency>
+			<!-- update-begin-author:chenrui -date:20240104  for：[issue/5723]指定jaxb-runtime版本 -->
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-runtime</artifactId>
+				<version>2.3.3</version>
+			</dependency>
+			<!-- update-end-author:chenrui -date:20240104  for：[issue/5723]指定jaxb-runtime版本 -->
 
 			<!--mongon db-->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter-mongon</artifactId>
+				<artifactId>jeecg-boot-starter3-mongon</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--人大金仓驱动 版本号V008R006C005B0013 -->
@@ -369,14 +377,14 @@
 			</dependency>
 			<!-- minidao -->
 			<dependency>
-				<groupId>org.jeecgframework</groupId>
+				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>minidao-spring-boot-starter</artifactId>
 				<version>${minidao.version}</version>
 			</dependency>
 			<!-- 积木报表-->
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
-				<artifactId>jimureport-spring-boot-starter</artifactId>
+				<artifactId>jimureport-spring-boot3-starter-fastjson2</artifactId>
 				<version>${jimureport-spring-boot-starter.version}</version>
 				<exclusions>
 					<exclusion>
@@ -473,7 +481,7 @@
                 <!--Nacos服务地址-->
                 <config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
 				<!--Nacos配置中心命名空间,用于支持多环境.这里必须使用ID，不能使用名称,默认为空-->
-				<config.namespace></config.namespace>
+				<config.namespace>efc4e412-b1a1-498f-ba01-b31807649a9a</config.namespace>
 				<!--Nacos配置分组名称-->
 				<config.group>DEFAULT_GROUP</config.group>
 				<!--Nacos用户名-->
@@ -503,7 +511,7 @@
                 <!--Nacos服务地址-->
                 <config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
 				<!--Nacos配置中心命名空间,用于支持多环境.这里必须使用ID，不能使用名称,默认为空-->
-				<config.namespace></config.namespace>
+				<config.namespace>efc4e412-b1a1-498f-ba01-b31807649a9a</config.namespace>
 				<!--Nacos配置分组名称-->
 				<config.group>DEFAULT_GROUP</config.group>
 				<!--Nacos用户名-->
@@ -521,7 +529,7 @@
                 <!--Nacos服务地址-->
                 <config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
 				<!--Nacos配置中心命名空间,用于支持多环境.这里必须使用ID，不能使用名称,默认为空-->
-				<config.namespace></config.namespace>
+				<config.namespace>efc4e412-b1a1-498f-ba01-b31807649a9a</config.namespace>
 				<!--Nacos配置分组名称-->
 				<config.group>DEFAULT_GROUP</config.group>
 				<!--Nacos用户名-->

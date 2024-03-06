@@ -1,6 +1,15 @@
 server:
   port: 5003
 spring:
+  data:
+    redis:
+      ##redis 单机环境配置
+      host: localhost
+      port: 6379
+      database: 0
+      password:
+      ssl:
+        enabled: false
   application:
     name: seata-product
   main:
@@ -18,6 +27,11 @@ spring:
           username: root
           password: root
           schema: classpath:sql/schema-product.sql
+  cloud:
+    nacos:
+      config:
+        import-check:
+          enabled: false
 seata:
   enable-auto-data-source-proxy: false
   service:

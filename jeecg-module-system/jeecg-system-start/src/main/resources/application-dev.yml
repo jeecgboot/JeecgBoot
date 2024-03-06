@@ -1,7 +1,12 @@
 server:
   port: 8080
-  tomcat:
-    max-swallow-size: -1
+  undertow:
+    # 平替 tomcat server.tomcat.max-swallow-siz， undertow该值默认为-1
+    #    max-http-post-size: 10MB
+    worker-threads: 16 # 4核CPU标准配置
+    buffers:
+      websocket: 8192 # WebSocket缓冲 以字节为单位，这里设置为8 KB
+      io: 16384 # IO操作缓冲 以字节为单位，这里设置为16 KB
   error:
     include-exception: true
     include-stacktrace: ALWAYS
@@ -118,7 +123,7 @@ spring:
   resource:
     static-locations: classpath:/static/,classpath:/public/
   autoconfigure:
-    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+    exclude: com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure
   datasource:
     druid:
       stat-view-servlet:
@@ -168,11 +173,20 @@ spring:
           #password: root
           #driver-class-name: com.mysql.cj.jdbc.Driver
   #redis 配置
+<<<<<<< HEAD
   redis:
     database: 4
     host: 39.105.108.80
     port: 6379
     password: '6969'
+=======
+  data:
+    redis:
+      database: 0
+      host: 127.0.0.1
+      port: 6379
+      password: 
+>>>>>>> springboot3
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:org/jeecg/modules/**/xml/*Mapper.xml
@@ -259,7 +273,7 @@ jeecg:
   #分布式锁配置
   redisson:
     address: 127.0.0.1:6379
-    password:
+    password: 
     type: STANDALONE
     enabled: true
 #cas单点登录

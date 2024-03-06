@@ -11,7 +11,7 @@ import org.jeecg.common.exception.JeecgBoot401Exception;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @Author scott

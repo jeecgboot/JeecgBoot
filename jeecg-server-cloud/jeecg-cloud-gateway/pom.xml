@@ -14,7 +14,7 @@
         <!-- jeecg 微服务基础依赖-->
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-cloud</artifactId>
+            <artifactId>jeecg-boot-starter3-cloud</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>org.jeecgframework.boot</groupId>
@@ -28,8 +28,8 @@
             <artifactId>spring-cloud-starter-gateway</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
         <!-- redis方式限流 -->
         <dependency>
@@ -58,10 +58,10 @@
             <artifactId>sentinel-datasource-nacos</artifactId>
         </dependency>
         <!--- sentinel流控链路不生效 -->
-        <dependency>
+        <!--<dependency>
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-web-servlet</artifactId>
-        </dependency>
+        </dependency>-->
 
 
         <!--健康监控-->
@@ -73,7 +73,7 @@
         <!-- Swagger API文档 -->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-spring-boot-starter</artifactId>
+            <artifactId>knife4j-gateway-spring-boot-starter</artifactId>
             <version>${knife4j-spring-boot-starter.version}</version>
         </dependency>
     </dependencies>

@@ -1,6 +1,14 @@
 server:
   port: 9999
 
+knife4j:
+  gateway:
+    enabled: true
+    discover:
+      excluded-services: ${spring.application.name}
+      enabled: true
+    strategy: discover
+
 spring:
   application:
     name: jeecg-gateway

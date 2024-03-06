@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-shardingsphere</artifactId>
+            <artifactId>jeecg-boot-starter3-shardingsphere</artifactId>
         </dependency>
     </dependencies>
 
