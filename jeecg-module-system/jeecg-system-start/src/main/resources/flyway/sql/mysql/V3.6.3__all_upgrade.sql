@@ -365,6 +365,10 @@ INSERT INTO onl_drag_dataset_item (id, head_id, field_name, field_txt, field_typ
 INSERT INTO onl_drag_dataset_item (id, head_id, field_name, field_txt, field_type, widget_type, dict_code, iz_show, iz_search, iz_total, search_mode, order_num, create_by, create_time, update_by, update_time) VALUES ('911889086197317632', '911889086163763200', 'name', 'name', 'String', NULL, NULL, 'Y', NULL, NULL, NULL, 0, 'admin', '2024-01-29 18:08:30', NULL, NULL);
 INSERT INTO onl_drag_dataset_item (id, head_id, field_name, field_txt, field_type, widget_type, dict_code, iz_show, iz_search, iz_total, search_mode, order_num, create_by, create_time, update_by, update_time) VALUES ('911889086230872064', '911889086163763200', 'value', 'value', 'String', NULL, NULL, 'Y', NULL, NULL, NULL, 1, 'admin', '2024-01-29 18:08:30', NULL, NULL);
 
+ALTER TABLE jimu_report_share
+    ADD COLUMN share_token varchar(50) NULL COMMENT '分享token' AFTER preview_lock_status,
+ADD UNIQUE INDEX uniq_jrs_share_token(share_token);
+
 -- 新增py支持方案，支持用户自定义脚本，合并接口处理数据等
 ALTER TABLE `jimu_report`
     ADD COLUMN `py_str` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL COMMENT 'py增强' AFTER `js_str`;
