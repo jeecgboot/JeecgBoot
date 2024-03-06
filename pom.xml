@@ -23,7 +23,7 @@
   	<parent>
 	    <groupId>org.springframework.boot</groupId>
 	    <artifactId>spring-boot-starter-parent</artifactId>
-	    <version>2.7.10</version>
+        <version>2.7.18</version>
 	    <relativePath/>
 	</parent>
 
@@ -47,7 +47,7 @@
 		<ojdbc6.version>11.2.0.3</ojdbc6.version>
 		<sqljdbc4.version>4.0</sqljdbc4.version>
 		<mysql-connector-java.version>8.0.27</mysql-connector-java.version>
-		<hutool.version>5.8.23</hutool.version>
+        <hutool.version>5.8.25</hutool.version>
 		<!-- 国产数据库驱动 -->
 		<dm8.version>8.1.1.49</dm8.version>
 		
@@ -58,7 +58,7 @@
 		<minidao.version>1.9.5</minidao.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.6.6</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.7.1</jimureport-spring-boot-starter.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.11.2</aliyun.oss.version>
@@ -389,6 +389,12 @@
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-nosql-starter</artifactId>
 				<version>1.6.0</version>
+			</dependency>
+			<!-- chatgpt -->
+			<dependency>
+				<groupId>org.jeecgframework.boot</groupId>
+				<artifactId>jeecg-boot-starter-chatgpt</artifactId>
+				<version>${jeecgboot.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

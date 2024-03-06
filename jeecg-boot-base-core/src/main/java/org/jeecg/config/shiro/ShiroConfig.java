@@ -17,6 +17,7 @@ import org.jeecg.config.shiro.filters.CustomShiroFilterFactoryBean;
 import org.jeecg.config.shiro.filters.JwtFilter;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -25,10 +26,12 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.filter.DelegatingFilterProxy;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 
 import javax.annotation.Resource;
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import java.util.*;
 
@@ -50,7 +53,7 @@ public class ShiroConfig {
     private JeecgBaseConfig jeecgBaseConfig;
     @Autowired(required = false)
     private RedisProperties redisProperties;
-
+    
     /**
      * Filter Chain定义说明
      *
@@ -180,6 +183,20 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
     }
+
+    //update-begin---author:chenrui ---date:20240126  for：【QQYUN-7932】AI助手------------
+    @Bean
+    public FilterRegistrationBean shiroFilterRegistration() {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        registration.setFilter(new DelegatingFilterProxy("shiroFilterFactoryBean"));
+        registration.setEnabled(true);
+        registration.addUrlPatterns("/*");
+        //支持异步
+        registration.setAsyncSupported(true);
+        registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
+        return registration;
+    }
+    //update-end---author:chenrui ---date:20240126  for：【QQYUN-7932】AI助手------------
 
     @Bean("securityManager")
     public DefaultWebSecurityManager securityManager(ShiroRealm myRealm) {
