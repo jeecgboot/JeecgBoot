@@ -238,7 +238,7 @@ public interface ISysDictService extends IService<SysDict> {
 	 * 查询被逻辑删除的数据
 	 * @return
 	 */
-	public List<SysDict> queryDeleteList();
+	public List<SysDict> queryDeleteList(String tenantId);
 
 	/**
 	 * 分页查询

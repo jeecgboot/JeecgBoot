@@ -35,7 +35,7 @@ public interface ISysUserTenantService extends IService<SysUserTenant> {
     List<SysUser> setUserTenantIds(List<SysUser> records);
 
     /**
-     * 获取用户id根据用户id
+     * 获取租户id获取用户ids
      * @param tenantId
      * @return
      */

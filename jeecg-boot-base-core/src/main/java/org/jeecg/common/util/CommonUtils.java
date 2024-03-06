@@ -28,7 +28,9 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -467,4 +469,19 @@ public class CommonUtils {
         }
         return false;
     }
+
+    /**
+     * 输出info日志，会捕获异常，防止因为日志问题导致程序异常
+     *
+     * @param msg
+     * @param objects
+     */
+    public static void logInfo(String msg, Object... objects) {
+        try {
+            log.info(msg, objects);
+        } catch (Exception e) {
+            log.warn("{} —— {}", msg, e.getMessage());
+        }
+    }
+
 }
