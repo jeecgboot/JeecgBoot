@@ -71,7 +71,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public Set<String> getDepartParentIdsByDepIds(Set depIds) {
+    public Set<String> getDepartParentIdsByDepIds(Set<String> depIds) {
         return null;
     }
 
@@ -194,7 +194,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public Set<String> getUserPermissionSet(String username) {
+    public Set<String> getUserPermissionSet(String userId) {
         return null;
     }
 
@@ -219,7 +219,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public Set<String> queryUserAuths(String username) {
+    public Set<String> queryUserAuths(String userId) {
         return null;
     }
 
@@ -358,17 +358,6 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
 
     @Override
     public List<DictModel> loadDictItemByKeyword(String dictCode, String keyword, Integer pageSize) {
-        return null;
-    }
-
-
-    @Override
-    public void addSysFiles(SysFilesModel sysFilesModel) {
-
-    }
-
-    @Override
-    public String getFileUrl(String fileId) {
         return null;
     }
 

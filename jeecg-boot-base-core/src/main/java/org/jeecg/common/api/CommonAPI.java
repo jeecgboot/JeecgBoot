@@ -22,10 +22,10 @@ public interface CommonAPI {
 
     /**
      * 2查询用户权限信息
-     * @param username
+     * @param userId
      * @return
      */
-    Set<String> queryUserAuths(String username);
+    Set<String> queryUserAuths(String userId);
 
     /**
      * 3根据 id 查询数据库中存储的 DynamicDataSourceModel

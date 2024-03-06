@@ -156,7 +156,7 @@ public class SystemApiController {
      * @return 部门 id
      */
     @GetMapping("/getDepartParentIdsByDepIds")
-    Set<String> getDepartParentIdsByDepIds(@RequestParam("depIds") Set depIds){
+    Set<String> getDepartParentIdsByDepIds(@RequestParam("depIds") Set<String> depIds){
         return sysBaseApi.getDepartParentIdsByDepIds(depIds);
     }
 
@@ -386,12 +386,12 @@ public class SystemApiController {
 
     /**
      * 获取用户的权限集合
-     * @param username
+     * @param userId 用户表ID
      * @return
      */
     @GetMapping("/getUserPermissionSet")
-    public Set<String> getUserPermissionSet(@RequestParam("username") String username){
-        return sysBaseApi.getUserPermissionSet(username);
+    public Set<String> getUserPermissionSet(@RequestParam("userId") String userId){
+        return sysBaseApi.getUserPermissionSet(userId);
     }
 
     //-----
@@ -419,12 +419,12 @@ public class SystemApiController {
 
     /**
      * 查询用户权限信息
-     * @param username
+     * @param userId
      * @return
      */
     @GetMapping("/queryUserAuths")
-    public Set<String> queryUserAuths(@RequestParam("username") String username){
-        return sysUserService.getUserPermissionsSet(username);
+    public Set<String> queryUserAuths(@RequestParam("userId") String userId){
+        return sysUserService.getUserPermissionsSet(userId);
     }
 
     /**
