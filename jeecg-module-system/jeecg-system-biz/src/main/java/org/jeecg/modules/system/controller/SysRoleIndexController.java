@@ -1,29 +1,26 @@
 package org.jeecg.modules.system.controller;
 
-import java.util.Arrays;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.aspect.annotation.AutoLog;
-import org.jeecg.modules.system.entity.SysRoleIndex;
-import org.jeecg.modules.system.service.ISysRoleIndexService;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
-
+import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.modules.system.entity.SysRoleIndex;
+import org.jeecg.modules.system.service.ISysRoleIndexService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 
 /**
  * @Description: 角色首页配置
@@ -172,4 +169,32 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
         SysRoleIndex sysRoleIndex = sysRoleIndexService.getOne(new LambdaQueryWrapper<SysRoleIndex>().eq(SysRoleIndex::getRoleCode, roleCode));
         return Result.OK(sysRoleIndex);
     }
+
+    /**
+     * 查询默认首页配置
+     */
+    @GetMapping("/queryDefIndex")
+    public Result<SysRoleIndex> queryDefIndex() {
+        SysRoleIndex defIndexCfg = sysRoleIndexService.queryDefaultIndex();
+        return Result.OK(defIndexCfg);
+    }
+
+    /**
+     * 更新默认首页配置
+     */
+    @RequiresPermissions("system:permission:setDefIndex")
+    @PutMapping("/updateDefIndex")
+    public Result<?> updateDefIndex(
+            @RequestParam("url") String url,
+            @RequestParam("component") String component,
+            @RequestParam("isRoute") Boolean isRoute
+    ) {
+        boolean success = sysRoleIndexService.updateDefaultIndex(url, component, isRoute);
+        if (success) {
+            return Result.OK("设置成功");
+        } else {
+            return Result.error("设置失败");
+        }
+    }
+
 }

@@ -377,6 +377,8 @@ public interface CommonConstant {
     /**前端vue3版本Header参数名*/
     String VERSION="X-Version";
 
+    String VERSION_V3 = "v3";
+
     /**存储在线程变量里的动态表名*/
     String DYNAMIC_TABLE_NAME="DYNAMIC_TABLE_NAME";
     /**
