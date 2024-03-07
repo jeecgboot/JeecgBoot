@@ -56,7 +56,7 @@
     </div>
     <div style="width: 600px; margin: 0 auto;  margin-top: 50px; font-size: 12px; -webkit-font-smoothing: subpixel-antialiased; text-size-adjust: 100%;">
         <p style="text-align: center; line-height: 20.4px; text-size-adjust: 100%; font-family: 'Microsoft YaHei'!important; padding: 0px !important; margin: 0px !important; color: #7e8890 !important;">
-            <span class="appleLinks">Copyright © 2023-2024 北京国炬科技股份有限公司. 保留所有权利。</span>
+            <span class="appleLinks">Copyright © 2023-2024 北京国炬信息技术有限公司. 保留所有权利。</span>
         </p>
         <p style="text-align: center;line-height: 20.4px; text-size-adjust: 100%; font-family: 'Microsoft YaHei'!important; padding: 0px !important; margin: 0px; color: #7e8890 !important; margin-top: 10px;">
             <span class="appleLinks">邮件由系统自动发送，请勿直接回复本邮件！</span>

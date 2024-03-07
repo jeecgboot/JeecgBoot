@@ -26,7 +26,9 @@
         LEFT JOIN sys_position sp ON sup.position_id = sp.id
         WHERE
         sup.user_id = #{userId}
-        AND sp.tenant_id = #{tenantId}
+       <if test="tenantId != null and tenantId != 0">
+           AND sp.tenant_id = #{tenantId}
+       </if>
     </select>
 
     <!--职位列表移除成员-->

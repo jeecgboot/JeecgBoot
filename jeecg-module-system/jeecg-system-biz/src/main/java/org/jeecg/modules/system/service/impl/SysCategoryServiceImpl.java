@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.FillRuleConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.exception.JeecgBootException;
@@ -18,10 +17,7 @@ import org.jeecg.modules.system.service.ISysCategoryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -233,6 +229,24 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 		}
 		// update-end--author:sunjianlei--date:20210514--for：新增delNotExist参数，设为false不删除数据库里不存在的key ----
 		return textList;
+	}
+
+	@Override
+	public List<String> loadDictItemByNames(String names, boolean delNotExist) {
+		List<String> nameList = Arrays.asList(names.split(SymbolConstant.COMMA));
+		LambdaQueryWrapper<SysCategory> query = new LambdaQueryWrapper<>();
+		query.select(SysCategory::getId, SysCategory::getName);
+		query.in(SysCategory::getName, nameList);
+		// 查询数据
+		List<SysCategory> list = super.list(query);
+		// 取出id并返回
+		return nameList.stream().map(name -> {
+			SysCategory res = list.stream().filter(i -> name.equals(i.getName())).findFirst().orElse(null);
+			if (res == null) {
+				return delNotExist ? null : name;
+			}
+			return res.getId();
+		}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
 }

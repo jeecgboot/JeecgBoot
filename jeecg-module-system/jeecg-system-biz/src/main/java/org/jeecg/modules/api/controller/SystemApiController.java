@@ -141,6 +141,26 @@ public class SystemApiController {
     }
 
     /**
+     * 通过用户账号查询部门父ID集合
+     * @param username
+     * @return 部门 id
+     */
+    @GetMapping("/getDepartParentIdsByUsername")
+    Set<String>  getDepartParentIdsByUsername(@RequestParam("username") String username){
+        return sysBaseApi.getDepartParentIdsByUsername(username);
+    }
+
+    /**
+     * 查询部门父ID集合
+     * @param depIds
+     * @return 部门 id
+     */
+    @GetMapping("/getDepartParentIdsByDepIds")
+    Set<String> getDepartParentIdsByDepIds(@RequestParam("depIds") Set<String> depIds){
+        return sysBaseApi.getDepartParentIdsByDepIds(depIds);
+    }
+
+    /**
      * 通过用户账号查询部门 name
      * @param username
      * @return 部门 name
@@ -327,7 +347,7 @@ public class SystemApiController {
      * @return
      */
     @GetMapping("/queryAllUser")
-    public JSONObject queryAllUser(@RequestParam(name="userIds",required=false)String userIds, @RequestParam(name="pageNo",required=false) Integer pageNo,@RequestParam(name="pageSize",required=false) int pageSize){
+    public JSONObject queryAllUser(@RequestParam(name="userIds",required=false)String userIds, @RequestParam(name="pageNo",required=false) Integer pageNo,@RequestParam(name="pageSize",required=false) Integer pageSize){
         return sysBaseApi.queryAllUser(userIds, pageNo, pageSize);
     }
 
@@ -366,12 +386,12 @@ public class SystemApiController {
 
     /**
      * 获取用户的权限集合
-     * @param username
+     * @param userId 用户表ID
      * @return
      */
     @GetMapping("/getUserPermissionSet")
-    public Set<String> getUserPermissionSet(@RequestParam("username") String username){
-        return sysBaseApi.getUserPermissionSet(username);
+    public Set<String> getUserPermissionSet(@RequestParam("userId") String userId){
+        return sysBaseApi.getUserPermissionSet(userId);
     }
 
     //-----
@@ -399,12 +419,12 @@ public class SystemApiController {
 
     /**
      * 查询用户权限信息
-     * @param username
+     * @param userId
      * @return
      */
     @GetMapping("/queryUserAuths")
-    public Set<String> queryUserAuths(@RequestParam("username") String username){
-        return sysUserService.getUserPermissionsSet(username);
+    public Set<String> queryUserAuths(@RequestParam("userId") String userId){
+        return sysUserService.getUserPermissionsSet(userId);
     }
 
     /**
@@ -528,6 +548,17 @@ public class SystemApiController {
     }
 
     /**
+     * 反向翻译分类字典，用于导入
+     *
+     * @param names 名称，逗号分割
+     * @return
+     */
+    @GetMapping("/loadCategoryDictItemByNames")
+    List<String> loadCategoryDictItemByNames(@RequestParam("names") String names, @RequestParam("delNotExist") boolean delNotExist) {
+        return sysBaseApi.loadCategoryDictItemByNames(names, delNotExist);
+    }
+
+    /**
      * 根据字典code加载字典text
      *
      * @param dictCode 顺序：tableName,text,code
@@ -547,7 +578,7 @@ public class SystemApiController {
      * @param tenantId      新的租户ID
      * @return Map<String, String>  Map<原字典编码, 新字典编码>
      */
-    @GetMapping("/sys/api/copyLowAppDict")
+    @GetMapping("/copyLowAppDict")
     Map<String, String> copyLowAppDict(@RequestParam("originalAppId") String originalAppId, @RequestParam("appId") String appId, @RequestParam("tenantId") String tenantId) {
         return sysBaseApi.copyLowAppDict(originalAppId, appId, tenantId);
     }
@@ -655,6 +686,7 @@ public class SystemApiController {
     }
 
 
+    //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
     /**
      * 【接口签名验证】
      * 49 字典表的 翻译，可批量
@@ -663,12 +695,14 @@ public class SystemApiController {
      * @param text
      * @param code
      * @param keys  多个用逗号分割
+     * @param ds 数据源
      * @return
      */
     @GetMapping("/translateDictFromTableByKeys")
-    public List<DictModel> translateDictFromTableByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keys") String keys) {
-        return this.sysBaseApi.translateDictFromTableByKeys(table, text, code, keys);
+    public List<DictModel> translateDictFromTableByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keys") String keys, @RequestParam("ds")  String ds) {
+        return this.sysBaseApi.translateDictFromTableByKeys(table, text, code, keys, ds);
     }
+    //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
     /**
      * 发送模板信息
@@ -696,14 +730,6 @@ public class SystemApiController {
     @PostMapping("/saveDataLog")
     public void saveDataLog(@RequestBody DataLogDTO dataLogDto){
         this.sysBaseApi.saveDataLog(dataLogDto);
-    }
-
-    @PostMapping("/addSysFiles")
-    public void addSysFiles(@RequestBody SysFilesModel sysFilesModel){this.sysBaseApi.addSysFiles(sysFilesModel);}
-
-    @GetMapping("/getFileUrl")
-    public String getFileUrl(@RequestParam(name="fileId") String fileId){
-        return this.sysBaseApi.getFileUrl(fileId);
     }
 
     /**
@@ -824,7 +850,7 @@ public class SystemApiController {
      * @param deptIds
      * @return
      */
-    @GetMapping("/sys/api/queryUserIdsByDeptIds")
+    @GetMapping("/queryUserIdsByDeptIds")
     public List<String> queryUserIdsByDeptIds(@RequestParam("deptIds") List<String> deptIds){
         return sysBaseApi.queryUserIdsByDeptIds(deptIds);
     }
@@ -834,7 +860,7 @@ public class SystemApiController {
      * @param deptIds
      * @return
      */
-    @GetMapping("/sys/api/queryUserAccountsByDeptIds")
+    @GetMapping("/queryUserAccountsByDeptIds")
     public List<String> queryUserAccountsByDeptIds(@RequestParam("deptIds") List<String> deptIds){
         return sysBaseApi.queryUserAccountsByDeptIds(deptIds);
     }
@@ -844,7 +870,7 @@ public class SystemApiController {
      * @param roleCodes
      * @return
      */
-    @GetMapping("/sys/api/queryUserIdsByRoleds")
+    @GetMapping("/queryUserIdsByRoleds")
     public List<String> queryUserIdsByRoleds(@RequestParam("roleCodes")  List<String> roleCodes){
         return sysBaseApi.queryUserIdsByRoleds(roleCodes);
     }
@@ -854,7 +880,7 @@ public class SystemApiController {
      * @param positionIds
      * @return
      */
-    @GetMapping("/sys/api/queryUserIdsByPositionIds")
+    @GetMapping("/queryUserIdsByPositionIds")
     public List<String> queryUserIdsByPositionIds(@RequestParam("positionIds") List<String> positionIds){
         return sysBaseApi.queryUserIdsByPositionIds(positionIds);
     }
@@ -866,7 +892,7 @@ public class SystemApiController {
      * @param orgCode 部门编码
      * @return
      */
-    @GetMapping("/sys/api/getUserAccountsByDepCode")
+    @GetMapping("/getUserAccountsByDepCode")
     public List<String> getUserAccountsByDepCode(String orgCode){
         return sysBaseApi.getUserAccountsByDepCode(orgCode);
     }
@@ -877,7 +903,7 @@ public class SystemApiController {
      * @param selectSql
      * @return
      */
-    @GetMapping("/sys/api/dictTableWhiteListCheckBySql")
+    @GetMapping("/dictTableWhiteListCheckBySql")
     public boolean dictTableWhiteListCheckBySql(@RequestParam("selectSql") String selectSql) {
         return sysBaseApi.dictTableWhiteListCheckBySql(selectSql);
     }
@@ -889,10 +915,10 @@ public class SystemApiController {
      * @param fields          如果传的是dictCode，则该参数必须传null
      * @return
      */
-    @GetMapping("/sys/api/dictTableWhiteListCheckByDict")
+    @GetMapping("/dictTableWhiteListCheckByDict")
     public boolean dictTableWhiteListCheckByDict(
             @RequestParam("tableOrDictCode") String tableOrDictCode,
-            @RequestParam(value = "fields", required = false) String[] fields
+            @RequestParam(value = "fields", required = false) String... fields
     ) {
         return sysBaseApi.dictTableWhiteListCheckByDict(tableOrDictCode, fields);
     }

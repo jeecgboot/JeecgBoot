@@ -123,7 +123,6 @@ public class SysRoleController {
 												@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 												HttpServletRequest req) {
 		Result<IPage<SysRole>> result = new Result<IPage<SysRole>>();
-		//------------------------------------------------------------------------------------------------
 		//此接口必须通过租户来隔离查询
 		role.setTenantId(oConvertUtils.getInt(!"0".equals(TenantContext.getTenant()) ? TenantContext.getTenant() : "", -1));
 		
@@ -216,6 +215,12 @@ public class SysRoleController {
 				return Result.error("删除角色失败,当前角色不在此租户中。");
 			}
 		}
+    	
+		//update-begin---author:wangshuai---date:2024-01-16---for:【QQYUN-7974】禁止删除 admin 角色---
+		//是否存在admin角色
+		sysRoleService.checkAdminRoleRejectDel(id);
+		//update-end---author:wangshuai---date:2024-01-16---for:【QQYUN-7974】禁止删除 admin 角色---
+    	
 		sysRoleService.deleteRole(id);
 		return Result.ok("删除角色成功");
 	}
@@ -248,6 +253,8 @@ public class SysRoleController {
 					}
 				}
 			}
+			//验证是否为admin角色
+			sysRoleService.checkAdminRoleRejectDel(ids);
 			sysRoleService.deleteBatchRole(ids.split(","));
 			result.success("删除角色成功!");
 		}
@@ -527,7 +534,6 @@ public class SysRoleController {
 	}
 
     /**
-     * TODO 权限未完成（敲敲云接口，租户应用）
      * 分页获取全部角色列表（包含每个角色的数量）
      * @return
      */

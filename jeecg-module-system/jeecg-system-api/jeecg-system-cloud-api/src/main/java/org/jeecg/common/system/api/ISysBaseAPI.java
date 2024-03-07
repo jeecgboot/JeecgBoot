@@ -95,6 +95,22 @@ public interface ISysBaseAPI extends CommonAPI {
     List<String> getDepartIdsByUsername(@RequestParam("username") String username);
 
     /**
+     * 8.2 通过用户账号查询部门父ID集合
+     * @param username
+     * @return 部门 parentIds
+     */
+    @GetMapping("/sys/api/getDepartParentIdsByUsername")
+    Set<String> getDepartParentIdsByUsername(@RequestParam("username")String username);
+
+    /**
+     * 8.3 查询部门父ID集合
+     * @param depIds
+     * @return 部门 parentIds
+     */
+    @GetMapping("/sys/api/getDepartParentIdsByDepIds")
+    Set<String> getDepartParentIdsByDepIds(@RequestParam("depIds") Set<String> depIds);
+    
+    /**
      * 9通过用户账号查询部门 name
      * @param username
      * @return 部门 name
@@ -197,7 +213,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryAllUser")
-    public JSONObject queryAllUser(@RequestParam(name="userIds",required=false)String userIds, @RequestParam(name="pageNo",required=false) Integer pageNo,@RequestParam(name="pageSize",required=false) int pageSize);
+    public JSONObject queryAllUser(@RequestParam(name="userIds",required=false)String userIds, @RequestParam(name="pageNo",required=false) Integer pageNo,@RequestParam(name="pageSize",required=false) Integer pageSize);
 
 
     /**
@@ -291,11 +307,11 @@ public interface ISysBaseAPI extends CommonAPI {
 
     /**
      * 31获取用户的权限集合
-     * @param username
+     * @param userId
      * @return
      */
     @GetMapping("/sys/api/getUserPermissionSet")
-    Set<String> getUserPermissionSet(@RequestParam("username") String username);
+    Set<String> getUserPermissionSet(@RequestParam("userId") String userId);
 
     /**
      * 32判断是否有online访问的权限
@@ -335,12 +351,12 @@ public interface ISysBaseAPI extends CommonAPI {
 
     /**
      * 36查询用户权限信息
-     * @param username
+     * @param userId
      * @return
      */
     @Override
     @GetMapping("/sys/api/queryUserAuths")
-    Set<String> queryUserAuths(@RequestParam("username")String username);
+    Set<String> queryUserAuths(@RequestParam("userId")String userId);
 
     /**
      * 37根据 id 查询数据库中存储的 DynamicDataSourceModel
@@ -482,6 +498,14 @@ public interface ISysBaseAPI extends CommonAPI {
     List<String> loadCategoryDictItem(@RequestParam("ids") String ids);
 
     /**
+     * 44 反向翻译分类字典，用于导入
+     *
+     * @param names 名称，逗号分割
+     */
+    @GetMapping("/sys/api/loadCategoryDictItemByNames")
+    List<String> loadCategoryDictItemByNames(@RequestParam("names") String names, @RequestParam("delNotExist") boolean delNotExist);
+
+    /**
      * 43 根据字典code加载字典text
      *
      * @param dictCode 顺序：tableName,text,code
@@ -551,17 +575,20 @@ public interface ISysBaseAPI extends CommonAPI {
     @GetMapping("/sys/api/translateManyDict")
     Map<String, List<DictModel>> translateManyDict(@RequestParam("dictCodes") String dictCodes, @RequestParam("keys") String keys);
 
+    //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
     /**
      * 49 字典表的 翻译，可批量
      * @param table
      * @param text
      * @param code
      * @param keys 多个用逗号分割
+     * @param ds
      * @return
      */
     @Override
     @GetMapping("/sys/api/translateDictFromTableByKeys")
-    List<DictModel> translateDictFromTableByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keys") String keys);
+    List<DictModel> translateDictFromTableByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keys") String keys, @RequestParam("ds") String ds);
+    //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
     /**
      * 发送模板消息
@@ -583,20 +610,6 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     @PostMapping("/sys/api/saveDataLog")
     void saveDataLog(DataLogDTO dataLogDto);
-
-    /**
-     * 添加文件到知识库
-     * @param sysFilesModel
-     */
-    @PostMapping("/sys/api/addSysFiles")
-    void addSysFiles(SysFilesModel sysFilesModel);
-
-    /**
-     * 通过文件路径获取文件id
-     * @param fileId
-     */
-    @GetMapping("/sys/api/getFileUrl")
-    String getFileUrl(@RequestParam(name="fileId") String fileId);
 
     /**
      * 更新头像
@@ -734,7 +747,7 @@ public interface ISysBaseAPI extends CommonAPI {
     @GetMapping("/sys/api/dictTableWhiteListCheckByDict")
     boolean dictTableWhiteListCheckByDict(
             @RequestParam("tableOrDictCode") String tableOrDictCode,
-            @RequestParam(value = "fields", required = false) String[] fields
+            @RequestParam(value = "fields", required = false) String... fields
     );
 
 }

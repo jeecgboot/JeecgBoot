@@ -30,6 +30,17 @@ public class SqlInjectionUtil {
 	 */
 	private static String specialDictSqlXssStr = "exec |peformance_schema|information_schema|extractvalue|updatexml|geohash|gtid_subset|gtid_subtract|insert |select |delete |update |drop |count |chr |mid |master |truncate |char |declare |;|+|--";
 	/**
+	 * 完整匹配的key，不需要考虑前空格
+	 */
+	private static List<String> FULL_MATCHING_KEYWRODS = new ArrayList<>();
+	static {
+		FULL_MATCHING_KEYWRODS.add(";");
+		FULL_MATCHING_KEYWRODS.add("+");
+		FULL_MATCHING_KEYWRODS.add("--");
+	}
+	
+	
+	/**
 	 * sql注入风险的 正则关键字
 	 *
 	 * 函数匹配，需要用正则模式
@@ -50,6 +61,8 @@ public class SqlInjectionUtil {
 	 * sql注释的正则
 	 */
 	private final static Pattern SQL_ANNOTATION = Pattern.compile("/\\*[\\s\\S]*\\*/");
+	private final static  String SQL_ANNOTATION2 = "--";
+	
 	/**
 	 * sql注入提示语
 	 */
@@ -128,7 +141,13 @@ public class SqlInjectionUtil {
 		if (sql.startsWith(keyword.trim())) {
 			return true;
 		} else if (sql.contains(keyword)) {
-			if (sql.contains(" " + keyword)) {
+			// 需要匹配的，sql注入关键词
+			String matchingText = " " + keyword;
+			if(FULL_MATCHING_KEYWRODS.contains(keyword)){
+				matchingText = keyword;
+			}
+			
+			if (sql.contains(matchingText)) {
 				return true;
 			} else {
 				String regularStr = "\\s+\\S+" + keyword;
@@ -244,6 +263,13 @@ public class SqlInjectionUtil {
 	 * @return
 	 */
 	public static void checkSqlAnnotation(String str){
+		if(str.contains(SQL_ANNOTATION2)){
+			String error = "请注意，SQL中不允许含注释，有安全风险！";
+			log.error(error);
+			throw new RuntimeException(error);
+		}
+
+		
 		Matcher matcher = SQL_ANNOTATION.matcher(str);
 		if(matcher.find()){
 			String error = "请注意，值可能存在SQL注入风险---> \\*.*\\";
@@ -260,7 +286,7 @@ public class SqlInjectionUtil {
 	 *
 	 * @param table
 	 */
-	private static Pattern tableNamePattern = Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]{0,63}$");
+	private static Pattern tableNamePattern = Pattern.compile("^[a-zA-Z][a-zA-Z0-9_\\$]{0,63}$");
 	public static String getSqlInjectTableName(String table) {
 		if(oConvertUtils.isEmpty(table)){
 			return table;

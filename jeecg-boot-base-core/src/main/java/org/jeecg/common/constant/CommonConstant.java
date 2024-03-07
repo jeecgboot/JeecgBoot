@@ -69,6 +69,8 @@ public interface CommonConstant {
 	
 	/** {@code 500 Server Error} (HTTP/1.0 - RFC 1945) */
     Integer SC_INTERNAL_SERVER_ERROR_500 = 500;
+    /** {@code 404 Not Found} (HTTP/1.0 - RFC 1945) */
+    Integer SC_INTERNAL_NOT_FOUND_404 = 404;
     /** {@code 200 OK} (HTTP/1.0 - RFC 1945) */
     Integer SC_OK_200 = 200;
     
@@ -374,6 +376,8 @@ public interface CommonConstant {
 
     /**前端vue3版本Header参数名*/
     String VERSION="X-Version";
+
+    String VERSION_V3 = "v3";
 
     /**存储在线程变量里的动态表名*/
     String DYNAMIC_TABLE_NAME="DYNAMIC_TABLE_NAME";

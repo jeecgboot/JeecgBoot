@@ -244,6 +244,7 @@ public class SysUserController {
 		Result<SysUser> result = new Result<SysUser>();
 		try {
 			String ids = jsonObject.getString("ids");
+			sysUserService.checkUserAdminRejectDel(ids);
 			String status = jsonObject.getString("status");
 			String[] arr = ids.split(",");
             for (String id : arr) {
@@ -437,12 +438,13 @@ public class SysUserController {
             @RequestParam(name = "departId", required = false) String departId,
             @RequestParam(name="realname",required=false) String realname,
             @RequestParam(name="username",required=false) String username,
+            @RequestParam(name="isMultiTranslate",required=false) String isMultiTranslate,
             @RequestParam(name="id",required = false) String id) {
         //update-begin-author:taoyan date:2022-7-14 for: VUEN-1702【禁止问题】sql注入漏洞
         String[] arr = new String[]{departId, realname, username, id};
         SqlInjectionUtil.filterContent(arr, SymbolConstant.SINGLE_QUOTATION_MARK);
         //update-end-author:taoyan date:2022-7-14 for: VUEN-1702【禁止问题】sql注入漏洞
-        IPage<SysUser> pageList = sysUserDepartService.queryDepartUserPageList(departId, username, realname, pageSize, pageNo,id);
+        IPage<SysUser> pageList = sysUserDepartService.queryDepartUserPageList(departId, username, realname, pageSize, pageNo,id,isMultiTranslate);
         return Result.OK(pageList);
     }
 
@@ -568,7 +570,7 @@ public class SysUserController {
 	 * @return
 	 */
 	@RequestMapping(value = "/queryByIds", method = RequestMethod.GET)
-	public Result<Collection<SysUser>> queryByIds(@RequestParam String userIds) {
+	public Result<Collection<SysUser>> queryByIds(@RequestParam(name = "userIds") String userIds) {
 		Result<Collection<SysUser>> result = new Result<>();
 		String[] userId = userIds.split(",");
 		Collection<String> idList = Arrays.asList(userId);
@@ -585,7 +587,7 @@ public class SysUserController {
      * @return
      */
     @RequestMapping(value = "/queryByNames", method = RequestMethod.GET)
-    public Result<Collection<SysUser>> queryByNames(@RequestParam String userNames) {
+    public Result<Collection<SysUser>> queryByNames(@RequestParam(name = "userNames") String userNames) {
         Result<Collection<SysUser>> result = new Result<>();
         String[] names = userNames.split(",");
         QueryWrapper<SysUser> queryWrapper=new QueryWrapper();
@@ -1427,7 +1429,7 @@ public class SysUserController {
         //------------------------------------------------------------------------------------------------
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
         if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
-            String tenantId = TokenUtils.getTenantIdByRequest(request);
+            String tenantId = oConvertUtils.getString(TokenUtils.getTenantIdByRequest(request),"-1");
             //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
             List<String> userIds = userTenantService.getUserIdsByTenantId(Integer.valueOf(tenantId));
             if (oConvertUtils.listIsNotEmpty(userIds)) {
@@ -1548,7 +1550,8 @@ public class SysUserController {
             @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
             @RequestParam(name = "departId", required = false) String departId,
             @RequestParam(name = "roleId", required = false) String roleId,
-            @RequestParam(name="keyword",required=false) String keyword) {
+            @RequestParam(name="keyword",required=false) String keyword,
+            @RequestParam(name="excludeUserIdList",required = false) String excludeUserIdList) {
         //------------------------------------------------------------------------------------------------
         Integer tenantId = null;
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
@@ -1559,7 +1562,7 @@ public class SysUserController {
             }
         }
         //------------------------------------------------------------------------------------------------
-        IPage<SysUser> pageList = sysUserDepartService.getUserInformation(tenantId, departId,roleId, keyword, pageSize, pageNo);
+        IPage<SysUser> pageList = sysUserDepartService.getUserInformation(tenantId, departId,roleId, keyword, pageSize, pageNo,excludeUserIdList);
         return Result.OK(pageList);
     }
 

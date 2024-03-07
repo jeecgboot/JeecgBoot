@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-boot-parent</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>3.6.0</version>
+        <version>3.6.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,6 +15,12 @@
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
             <artifactId>jeecg-boot-base-core</artifactId>
+        </dependency>
+
+        <!-- chatgpt -->
+        <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>jeecg-boot-starter-chatgpt</artifactId>
         </dependency>
     </dependencies>
 

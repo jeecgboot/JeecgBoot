@@ -1,5 +1,7 @@
 <#include "/common/utils.ftl">
-<#if po.isShow =='Y' && po.fieldName != 'id' && isNotPidField(tableVo, po.fieldDbName)>
+<#-- update-begin---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+<#if po.isShow =='Y' && po.fieldName != 'id' && po.fieldName !='delFlag' && isNotPidField(tableVo, po.fieldDbName)>
+<#-- update-end---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
 <#assign form_field_dictCode="">
 	<#if po.dictTable?default("")?trim?length gt 1 && po.dictText?default("")?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
 		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
@@ -40,7 +42,7 @@
 	          <j-switch v-model:value="formData.${po.fieldName}" <#if po.dictField != 'is_open'>:options="${po.dictField}"</#if> <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if>></j-switch>
 			<#elseif po.classType =='pca'>
 	          <#assign need_pca = true>
-	          <j-area-linkage v-model:value="formData.${po.fieldName}" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if> />
+	          <j-area-select v-model:value="formData.${po.fieldName}" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if> />
 			<#elseif po.classType =='markdown'>
 	          <#assign need_markdown = true>
 	          <j-markdown-editor v-model:value="formData.${autoStringSuffixForModel(po)}" id="${po.fieldName}" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if>></j-markdown-editor>
@@ -48,7 +50,9 @@
 	          <a-input-password v-model:value="formData.${po.fieldName}" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if>/>
 			<#elseif po.classType =='sel_user'>
 	          <#assign need_dept_user = true>
-	          <j-select-user-by-dept v-model:value="formData.${po.fieldName}" <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if>/>
+			  <#-- update-begin---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
+			  <j-select-user v-model:value="formData.${po.fieldName}" <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if>/>
+			  <#-- update-end---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
 			<#elseif po.classType =='textarea'>
 	          <a-textarea v-model:value="formData.${autoStringSuffixForModel(po)}" :rows="4" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if>/>
 			<#elseif po.classType=='radio'>

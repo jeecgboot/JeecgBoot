@@ -1,5 +1,7 @@
 package org.jeecg.modules.system.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -28,20 +30,21 @@ import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.constant.enums.MessageTypeEnum;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.RestUtil;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.JeecgBaseConfig;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.*;
-import org.jeecg.modules.system.mapper.SysAnnouncementSendMapper;
-import org.jeecg.modules.system.mapper.SysThirdAppConfigMapper;
-import org.jeecg.modules.system.mapper.SysUserMapper;
+import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
-import org.jeecg.modules.system.model.ThirdLoginModel;
 import org.jeecg.modules.system.service.*;
 import org.jeecg.modules.system.vo.thirdapp.JwDepartmentTreeVo;
+import org.jeecg.modules.system.vo.thirdapp.JwSysUserDepartVo;
+import org.jeecg.modules.system.vo.thirdapp.JwUserDepartVo;
 import org.jeecg.modules.system.vo.thirdapp.SyncInfoVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +53,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -76,7 +80,16 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
     private SysAnnouncementSendMapper sysAnnouncementSendMapper;
     @Autowired
     private SysThirdAppConfigMapper configMapper;
-
+    @Autowired
+    private SysTenantMapper sysTenantMapper;
+    @Autowired
+    private SysUserTenantMapper sysUserTenantMapper;
+    @Autowired
+    private SysThirdAccountMapper sysThirdAccountMapper;
+    @Autowired
+    private SysTenantMapper tenantMapper;
+    
+    
     /**
      * errcode
      */
@@ -235,82 +248,85 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
         }
     }
 
-//    @Override
-//    public SyncInfoVo syncThirdAppDepartmentToLocal(String ids) {
-//        SyncInfoVo syncInfo = new SyncInfoVo();
-//        String accessToken = this.getAccessToken();
-//        if (accessToken == null) {
-//            syncInfo.addFailInfo("accessToken获取失败！");
-//            return syncInfo;
-//        }
-//        // 获取企业微信所有的部门
-//        List<Department> departments = JwDepartmentAPI.getAllDepartment(accessToken);
-//        if (departments == null) {
-//            syncInfo.addFailInfo("企业微信部门信息获取失败！");
-//            return syncInfo;
-//        }
-//        String username = JwtUtil.getUserNameByToken(SpringContextUtils.getHttpServletRequest());
-//        // 将list转为tree
-//        List<JwDepartmentTreeVo> departmentTreeList = JwDepartmentTreeVo.listToTree(departments);
-//        // 递归同步部门
-//        this.syncDepartmentToLocalRecursion(departmentTreeList, null, username, syncInfo);
-//        return syncInfo;
-//    }
+    public SyncInfoVo syncThirdAppDepartmentToLocal(Integer tenantId, Map<String,String> map) {
+        SyncInfoVo syncInfo = new SyncInfoVo();
+        String accessToken = this.getAccessToken();
+        if (accessToken == null) {
+            syncInfo.addFailInfo("accessToken获取失败！");
+            return syncInfo;
+        }
+        // 获取企业微信所有的部门
+        List<Department> departments = JwDepartmentAPI.getAllDepartment(accessToken);
+        if (departments == null) {
+            syncInfo.addFailInfo("企业微信部门信息获取失败！");
+            return syncInfo;
+        }
+        String username = JwtUtil.getUserNameByToken(SpringContextUtils.getHttpServletRequest());
+        // 将list转为tree
+        List<JwDepartmentTreeVo> departmentTreeList = JwDepartmentTreeVo.listToTree(departments);
+        // 递归同步部门
+        this.syncDepartmentToLocalRecursion(departmentTreeList, null, username, syncInfo, tenantId, map);
+        return syncInfo;
+    }
 
-//    /**
-//     * 递归同步部门到本地
-//     */
-//    private void syncDepartmentToLocalRecursion(List<JwDepartmentTreeVo> departmentTreeList, String sysParentId, String username, SyncInfoVo syncInfo) {
-//        if (departmentTreeList != null && departmentTreeList.size() != 0) {
-//            for (JwDepartmentTreeVo departmentTree : departmentTreeList) {
-//                String depId = departmentTree.getId();
-//                LambdaQueryWrapper<SysDepart> queryWrapper = new LambdaQueryWrapper<>();
-//                // 根据 qywxIdentifier 字段查询
-//                queryWrapper.eq(SysDepart::getQywxIdentifier, depId);
-//                SysDepart sysDepart = sysDepartService.getOne(queryWrapper);
-//                if (sysDepart != null) {
-//                    //  执行更新操作
-//                    SysDepart updateSysDepart = this.qwDepartmentToSysDepart(departmentTree, sysDepart);
-//                    if (sysParentId != null) {
-//                        updateSysDepart.setParentId(sysParentId);
-//                    }
-//                    try {
-//                        sysDepartService.updateDepartDataById(updateSysDepart, username);
-//                        String str = String.format("部门 %s 更新成功！", updateSysDepart.getDepartName());
-//                        syncInfo.addSuccessInfo(str);
-//                    } catch (Exception e) {
-//                        this.syncDepartCollectErrInfo(e, departmentTree, syncInfo);
-//                    }
-//                    if (departmentTree.hasChildren()) {
-//                        // 紧接着同步子级
-//                        this.syncDepartmentToLocalRecursion(departmentTree.getChildren(), updateSysDepart.getId(), username, syncInfo);
-//                    }
-//                } else {
-//                    // 执行新增操作
-//                    SysDepart newSysDepart = this.qwDepartmentToSysDepart(departmentTree, null);
-//                    if (sysParentId != null) {
-//                        newSysDepart.setParentId(sysParentId);
-//                        // 2 = 组织机构
-//                        newSysDepart.setOrgCategory("2");
-//                    } else {
-//                        // 1 = 公司
-//                        newSysDepart.setOrgCategory("1");
-//                    }
-//                    try {
-//                        sysDepartService.saveDepartData(newSysDepart, username);
-//                        String str = String.format("部门 %s 创建成功！", newSysDepart.getDepartName());
-//                        syncInfo.addSuccessInfo(str);
-//                    } catch (Exception e) {
-//                        this.syncDepartCollectErrInfo(e, departmentTree, syncInfo);
-//                    }
-//                    // 紧接着同步子级
-//                    if (departmentTree.hasChildren()) {
-//                        this.syncDepartmentToLocalRecursion(departmentTree.getChildren(), newSysDepart.getId(), username, syncInfo);
-//                    }
-//                }
-//            }
-//        }
-//    }
+    /**
+     * 递归同步部门到本地
+     */
+    private void syncDepartmentToLocalRecursion(List<JwDepartmentTreeVo> departmentTreeList, String sysParentId, String username, SyncInfoVo syncInfo,Integer tenantId, Map<String,String> map) {
+        if (departmentTreeList != null && departmentTreeList.size() != 0) {
+            for (JwDepartmentTreeVo departmentTree : departmentTreeList) {
+                String depId = departmentTree.getId();
+                LambdaQueryWrapper<SysDepart> queryWrapper = new LambdaQueryWrapper<>();
+                // 根据 qywxIdentifier 字段和租户id查询，租户id默认为0
+                queryWrapper.eq(SysDepart::getQywxIdentifier, depId);
+                queryWrapper.eq(SysDepart::getTenantId, tenantId);
+                SysDepart sysDepart = sysDepartService.getOne(queryWrapper);
+                if (sysDepart != null) {
+                    //  执行更新操作
+                    SysDepart updateSysDepart = this.qwDepartmentToSysDepart(departmentTree, sysDepart);
+                    if (sysParentId != null) {
+                        updateSysDepart.setParentId(sysParentId);
+                    }
+                    try {
+                        sysDepartService.updateDepartDataById(updateSysDepart, username);
+                        String str = String.format("部门 %s 更新成功！", updateSysDepart.getDepartName());
+                        syncInfo.addSuccessInfo(str);
+                        map.put(depId,updateSysDepart.getId());
+                    } catch (Exception e) {
+                        this.syncDepartCollectErrInfo(e, departmentTree, syncInfo);
+                    }
+                    if (departmentTree.hasChildren()) {
+                        // 紧接着同步子级
+                        this.syncDepartmentToLocalRecursion(departmentTree.getChildren(), updateSysDepart.getId(), username, syncInfo, tenantId, map);
+                    }
+                } else {
+                    // 执行新增操作
+                    SysDepart newSysDepart = this.qwDepartmentToSysDepart(departmentTree, null);
+                    if (sysParentId != null) {
+                        newSysDepart.setParentId(sysParentId);
+                        // 2 = 组织机构
+                        newSysDepart.setOrgCategory("2");
+                    } else {
+                        // 1 = 公司
+                        newSysDepart.setOrgCategory("1");
+                    }
+                    newSysDepart.setTenantId(tenantId);
+                    try {
+                        sysDepartService.saveDepartData(newSysDepart, username);
+                        String str = String.format("部门 %s 创建成功！", newSysDepart.getDepartName());
+                        syncInfo.addSuccessInfo(str);
+                        map.put(depId,newSysDepart.getId());
+                    } catch (Exception e) {
+                        this.syncDepartCollectErrInfo(e, departmentTree, syncInfo);
+                    }
+                    // 紧接着同步子级
+                    if (departmentTree.hasChildren()) {
+                        this.syncDepartmentToLocalRecursion(departmentTree.getChildren(), newSysDepart.getId(), username, syncInfo, tenantId, map);
+                    }
+                }
+            }
+        }
+    }
 
     @Override
     public SyncInfoVo syncLocalUserToThirdApp(String ids) {
@@ -374,7 +390,7 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
                 int errCode = JwUserAPI.updateUser(qwUser, accessToken);
                 // 收集错误信息
                 this.syncUserCollectErrInfo(errCode, sysUser, syncInfo);
-                this.thirdAccountSaveOrUpdate(sysThirdAccount, sysUser.getId(), qwUser.getUserid());
+                this.thirdAccountSaveOrUpdate(sysThirdAccount, sysUser.getId(), qwUser.getUserid(),qwUser.getName());
                 // 更新完成，直接跳到下一次外部循环继续
                 continue for1;
             }
@@ -384,7 +400,7 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
             // 收集错误信息
             boolean apiSuccess = this.syncUserCollectErrInfo(errCode, sysUser, syncInfo);
             if (apiSuccess) {
-                this.thirdAccountSaveOrUpdate(sysThirdAccount, sysUser.getId(), qwUser.getUserid());
+                this.thirdAccountSaveOrUpdate(sysThirdAccount, sysUser.getId(), qwUser.getUserid(),qwUser.getName());
             }
         }
         return syncInfo;
@@ -453,8 +469,9 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
      * @param sysThirdAccount 第三方账户表对象，为null就新增数据，否则就修改
      * @param sysUserId       本地系统用户ID
      * @param qwUserId        企业微信用户ID
+     * @param wechatRealName  企业微信用户真实姓名
      */
-    private void thirdAccountSaveOrUpdate(SysThirdAccount sysThirdAccount, String sysUserId, String qwUserId) {
+    private void thirdAccountSaveOrUpdate(SysThirdAccount sysThirdAccount, String sysUserId, String qwUserId, String wechatRealName) {
         if (sysThirdAccount == null) {
             sysThirdAccount = new SysThirdAccount();
             sysThirdAccount.setSysUserId(sysUserId);
@@ -463,6 +480,8 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
             sysThirdAccount.setThirdType(THIRD_TYPE);
         }
         sysThirdAccount.setThirdUserId(qwUserId);
+        sysThirdAccount.setThirdUserUuid(qwUserId);
+        sysThirdAccount.setRealname(wechatRealName);
         sysThirdAccountService.saveOrUpdate(sysThirdAccount);
     }
 
@@ -919,6 +938,10 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
      * OAuth2登录，成功返回登录的SysUser，失败返回null
      */
     public SysUser oauth2Login(String code,Integer tenantId) {
+        Long count = tenantMapper.tenantIzExist(tenantId);
+        if(ObjectUtil.isEmpty(count) || 0 == count){
+            throw new JeecgBootException("租户不存在！");
+        }
         //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
         SysThirdAppConfig config = configMapper.getThirdConfigByThirdType(tenantId, MessageTypeEnum.QYWX.getType());
         String accessToken = this.getAppAccessToken(config);
@@ -933,19 +956,14 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
             String userTicket = map.get("userTicket");
             // 判断第三方用户表有没有这个人
             LambdaQueryWrapper<SysThirdAccount> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(SysThirdAccount::getThirdUserUuid, appUserId);
-            queryWrapper.or().eq(SysThirdAccount::getThirdUserId, appUserId);
+            queryWrapper.eq(SysThirdAccount::getThirdUserId, appUserId);
             queryWrapper.eq(SysThirdAccount::getThirdType, THIRD_TYPE);
             queryWrapper.eq(SysThirdAccount::getTenantId, tenantId);
             SysThirdAccount thirdAccount = sysThirdAccountService.getOne(queryWrapper);
             if (thirdAccount != null) {
                 return this.getSysUserByThird(thirdAccount, null, appUserId, accessToken, userTicket,tenantId);
             } else {
-                // 直接创建新账号
-                User appUser = this.getUserByUserTicket(userTicket, accessToken);
-                ThirdLoginModel tlm = new ThirdLoginModel(THIRD_TYPE, appUser.getUserid(), appUser.getName(), appUser.getAvatar());
-                thirdAccount = sysThirdAccountService.saveThirdUser(tlm,tenantId);
-                return this.getSysUserByThird(thirdAccount, appUser, null, null, userTicket,tenantId);
+                throw new JeecgBootException("该用户尚未同步，请同步后再次登录！");
             }
         }
         return null;
@@ -1032,4 +1050,242 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
         return null;
     }
 
+    /**
+     * 获取企业微信绑定的用户信息
+     * @return
+     */
+    public JwSysUserDepartVo getThirdUserByWechat(Integer tenantId) {
+        JwSysUserDepartVo sysUserDepartVo = new JwSysUserDepartVo();
+        //step1 获取用户id和部门id
+        String accessToken = this.getAccessToken();
+        if (accessToken == null) {
+            throw new JeecgBootException("accessToken获取失败！");
+        }
+        //获取当前租户下的用户
+        List<JwUserDepartVo> userList = sysUserTenantMapper.getUsersByTenantIdAndName(tenantId);
+        // 获取企业微信所有的用户（只能获取userid）
+        List<User> qwUsers = JwUserAPI.getUsersByDepartid("1","1",null,accessToken);
+        if(oConvertUtils.isEmpty(qwUsers)){
+            throw new JeecgBootException("企业微信下没查询到用户！");
+        }
+        List<String> userIds = new ArrayList<>();
+        List<JwUserDepartVo> userWechatList = new ArrayList<>();
+
+        for (int i = 0; i < qwUsers.size(); i++) {
+            User user = qwUsers.get(i);
+            String userId = qwUsers.get(i).getUserid();
+            //保证用户唯一
+            if(!userIds.contains(userId)){
+                //step2 查看是否已经同步过了,同步过的不做处理
+                SysThirdAccount oneBySysUserId = sysThirdAccountService.getOneByUuidAndThirdType(userId, THIRD_TYPE,tenantId, userId);
+                if(null != oneBySysUserId){
+                    userIds.add(qwUsers.get(i).getUserid());
+                    userList = userList.stream().filter(item -> !item.getUserId().equals(oneBySysUserId.getSysUserId())).collect(Collectors.toList());;
+                    continue;
+                }
+                AtomicBoolean excludeUser = new AtomicBoolean(false);
+                if(ObjectUtil.isNotEmpty(qwUsers)){
+                    //step3 通过名称匹配敲敲云
+                    userList.forEach(item ->{
+                        if(item.getRealName().equals(user.getName())){
+                            item.setWechatUserId(user.getUserid());
+                            item.setWechatRealName(user.getName());
+                            if(ObjectUtil.isNotEmpty(user.getDepartment())){
+                                item.setWechatDepartId(Arrays.toString(user.getDepartment()));
+                            }
+                            excludeUser.set(true);
+                        }
+                    });
+                    userIds.add(user.getUserid());
+                }
+                if(!excludeUser.get()){
+                    JwUserDepartVo userDepartVo = new JwUserDepartVo();
+                    userDepartVo.setWechatRealName(user.getName());
+                    userDepartVo.setWechatUserId(user.getUserid());
+                    if(ObjectUtil.isNotEmpty(user.getDepartment())){
+                        userDepartVo.setWechatDepartId(Arrays.toString(user.getDepartment()));
+                    }
+                    userWechatList.add(userDepartVo);
+                }
+            }
+        }
+        //step4 返回用户信息
+        sysUserDepartVo.setUserList(userWechatList);
+        sysUserDepartVo.setJwUserDepartVos(userList);
+        return sysUserDepartVo;
+    }
+
+    /**
+     * 同步企业微信和部门
+     * @param jwUserDepartJson
+     * @return
+     */
+    public SyncInfoVo syncWechatEnterpriseDepartAndUserToLocal(String jwUserDepartJson, Integer tenantId) {
+        //step 1 同步部门
+        //存放部门id的map
+        Map<String,String> idsMap = new HashMap<>();
+        SyncInfoVo syncInfoVo = this.syncThirdAppDepartmentToLocal(tenantId, idsMap);
+        //step 2 同步用户及用户部门
+        this.syncDepartAndUser(syncInfoVo, tenantId, idsMap, jwUserDepartJson);
+        //step 3 返回同步成功或者同步失败的消息
+        return syncInfoVo;
+    }
+
+    /**
+     * 同步用户和部门
+     *  @param syncInfoVo 存放错误信息的日志
+     * @param tenantId 租户id
+     * @param idsMap 部门id集合 key为企业微信的id value 为系统部门的id
+     * @param jwUserDepartJson
+     */
+    private void syncDepartAndUser(SyncInfoVo syncInfoVo, Integer tenantId, Map<String, String> idsMap, String jwUserDepartJson) {
+        if (oConvertUtils.isNotEmpty(jwUserDepartJson)) {
+            JSONArray jsonArray = JSONObject.parseArray(jwUserDepartJson);
+            for (Object object : jsonArray) {
+                JSONObject jsonObject = JSONObject.parseObject(object.toString());
+                Object userId = jsonObject.get("userId");
+                String wechatUserId = jsonObject.getString("wechatUserId");
+                String wechatRealName = jsonObject.getString("wechatRealName");
+                Object wechatDepartId = jsonObject.get("wechatDepartId");
+                String sysUserId = "";
+                //step 1 新建或更新用户
+                //用户id为空说明需要创建用户
+                if (null == userId) {
+                    SysTenant sysTenant = sysTenantMapper.selectById(tenantId);
+                    String houseNumber = "";
+                    //空说明没有租户直接用用户名
+                    if (null != sysTenant) {
+                        houseNumber = sysTenant.getHouseNumber();
+                    }
+                    //用户名和密码用门牌号+用户id的格式，避免用户名重复
+                    String username = houseNumber + wechatUserId;
+                    //新建用户
+                    sysUserId = this.saveUser(username, wechatRealName, syncInfoVo, wechatUserId);
+                } else {
+                    //根据id查询用户
+                    SysUser sysUser = userMapper.selectById(userId.toString());
+                    if (null != sysUser) {
+                        sysUserId = sysUser.getId();
+                        //如果真实姓名为空的情况下，才会改真实姓名
+                        if(oConvertUtils.isEmpty(sysUser.getRealname())){
+                            sysUser.setRealname(wechatRealName);
+                            //更新用户
+                            userMapper.updateById(sysUser);
+                        }
+                        String str = String.format("用户 %s(%s) 更新成功！", sysUser.getRealname(), sysUser.getUsername());
+                        syncInfoVo.addSuccessInfo(str);
+                    }else{
+                       syncInfoVo.addFailInfo("企业微信用户 "+wechatRealName+" 对应的组织用户没有匹配到！");
+                       continue; 
+                    }
+                }
+                if (oConvertUtils.isNotEmpty(sysUserId)) {
+                    //step 2 新增租户用户表
+                    this.createUserTenant(sysUserId,false,tenantId);
+                    //step 3 新建或更新第三方账号表
+                    SysThirdAccount sysThirdAccount = sysThirdAccountService.getOneByUuidAndThirdType(wechatUserId, THIRD_TYPE, tenantId, wechatUserId);
+                    this.thirdAccountSaveOrUpdate(sysThirdAccount,sysUserId,wechatUserId,wechatRealName);
+                    //step 4 新建或更新用户部门关系表
+                    if(oConvertUtils.isNotEmpty(wechatDepartId)){
+                        String wechatDepartIds = wechatDepartId.toString();
+                        String[] departIds = wechatDepartIds.substring(1, wechatDepartIds.length() - 1).split(",");
+                        this.userDepartSaveOrUpdate(idsMap,sysUserId,departIds);
+                    }
+                }
+            }
+        } else {
+            syncInfoVo.addFailInfo("用户同同步失败，请查看企业微信是否存在用户！");
+        }
+
+    }
+    
+    /**
+     * 保存用户
+     *
+     * @param username 用户名
+     * @param wechatRealName 企业微信用户真实姓名
+     * @param syncInfo 存放成功或失败的信息
+     * @param wechatUserId wechatUserId 企业微信对应的id
+     * @return
+     */
+    private String saveUser(String username, String wechatRealName, SyncInfoVo syncInfo, String wechatUserId) {
+        SysUser sysUser = new SysUser();
+        sysUser.setRealname(wechatRealName);
+        sysUser.setPassword(username);
+        sysUser.setUsername(username);
+        sysUser.setDelFlag(CommonConstant.DEL_FLAG_0);
+        //设置创建时间
+        sysUser.setCreateTime(new Date());
+        String salt = oConvertUtils.randomGen(8);
+        sysUser.setSalt(salt);
+        String passwordEncode = PasswordUtil.encrypt(sysUser.getUsername(), sysUser.getPassword(), salt);
+        sysUser.setPassword(passwordEncode);
+        sysUser.setStatus(1);
+        sysUser.setDelFlag(CommonConstant.DEL_FLAG_0);
+        //用户表字段org_code不能在这里设置他的值
+        sysUser.setOrgCode(null);
+        try {
+            userMapper.insert(sysUser);
+            String str = String.format("用户 %s(%s) 创建成功！", sysUser.getRealname(), sysUser.getUsername());
+            syncInfo.addSuccessInfo(str);
+            return sysUser.getId();
+        } catch (Exception e) {
+            User user = new User();
+            user.setUserid(wechatUserId);
+            user.setName(wechatRealName);
+            this.syncUserCollectErrInfo(e, user, syncInfo);
+        }
+
+        return "";
+    }
+
+    /**
+     * 新增用户租户
+     *
+     * @param userId
+     * @param isUpdate 是否是新增
+     * @param tenantId
+     */
+    private void createUserTenant(String userId, Boolean isUpdate, Integer tenantId) {
+        if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+            //判断当前用户是否已在该租户下面
+            Integer count = sysUserTenantMapper.userTenantIzExist(userId, tenantId);
+            //count 为0 新增租户用户,否则不用新增
+            if (count == 0) {
+                SysUserTenant userTenant = new SysUserTenant();
+                userTenant.setTenantId(tenantId);
+                userTenant.setUserId(userId);
+                userTenant.setStatus(isUpdate ? CommonConstant.USER_TENANT_UNDER_REVIEW : CommonConstant.USER_TENANT_NORMAL);
+                sysUserTenantMapper.insert(userTenant);
+            }
+        }
+    }
+
+    /**
+     * 新建或更新用户部门关系表
+     * @param idsMap 部门id集合 key为企业微信的id value 为系统部门的id
+     * @param sysUserId 系统对应的用户id
+     */
+    private void userDepartSaveOrUpdate(Map<String, String> idsMap, String sysUserId, String[] departIds) {
+        LambdaQueryWrapper<SysUserDepart> query = new LambdaQueryWrapper<>();
+        query.eq(SysUserDepart::getUserId,sysUserId);
+        for (String departId:departIds) {
+            departId = departId.trim();
+            if(idsMap.containsKey(departId)){
+                String value = idsMap.get(departId);
+                //查询用户是否在部门里面
+                query.eq(SysUserDepart::getDepId,value);
+                long count = sysUserDepartService.count(query);
+                if(count == 0){
+                    //不存在，则新增部门用户关系
+                    SysUserDepart sysUserDepart = new SysUserDepart(null,sysUserId,value);
+                    sysUserDepartService.save(sysUserDepart);
+                }
+            }    
+        }
+    }
+
+    public List<JwUserDepartVo> getThirdUserBindByWechat(int tenantId) {
+        return sysThirdAccountMapper.getThirdUserBindByWechat(tenantId,THIRD_TYPE);
+    }
 }

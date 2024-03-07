@@ -2,6 +2,7 @@ package org.jeecg.modules.system.mapper;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Select;
@@ -64,6 +65,7 @@ public interface SysUserPositionMapper extends BaseMapper<SysUserPosition> {
      * @param tenantId
      * @return
      */
+    @InterceptorIgnore(tenantLine = "true")
     List<String> getPositionIdByUserTenantId(@Param("userId")String userId, @Param("tenantId")Integer tenantId);
 
     /**

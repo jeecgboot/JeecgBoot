@@ -80,7 +80,7 @@
   const validatorRules = {
   <#include "/common/validatorRulesTemplate/native/vue3MainNative.ftl">
   };
-  const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: true });
+  const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: false });
 
   // 表单禁用
   const disabled = computed(()=>{
@@ -132,8 +132,14 @@
   function edit(record) {
     nextTick(() => {
       resetFields();
+      const tmpData = {};
+      Object.keys(formData).forEach((key) => {
+        if(record.hasOwnProperty(key)){
+          tmpData[key] = record[key]
+        }
+      })
       //赋值
-      Object.assign(formData, record);
+      Object.assign(formData, tmpData);
     });
   }
 
@@ -212,8 +218,8 @@
 
 <style lang="less" scoped>
   .antd-modal-form {
-    min-height: 500px !important;
+    height: 500px !important;
     overflow-y: auto;
-    padding: 24px 24px 24px 24px;
+    padding: 14px;
   }
 </style>

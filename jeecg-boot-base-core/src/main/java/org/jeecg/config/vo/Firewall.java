@@ -35,4 +35,5 @@ public class Firewall {
     public void setLowCodeMode(String lowCodeMode) {
         this.lowCodeMode = lowCodeMode;
     }
+
 }

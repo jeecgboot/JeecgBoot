@@ -27,10 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -143,8 +140,19 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 
 	}
 
+	/**
+	 *
+	 * @param departId
+	 * @param username
+	 * @param realname
+	 * @param pageSize
+	 * @param pageNo
+	 * @param id
+	 * @param isMultiTranslate 是否多字段翻译
+	 * @return
+	 */
 	@Override
-	public IPage<SysUser> queryDepartUserPageList(String departId, String username, String realname, int pageSize, int pageNo,String id) {
+	public IPage<SysUser> queryDepartUserPageList(String departId, String username, String realname, int pageSize, int pageNo,String id,String isMultiTranslate) {
 		IPage<SysUser> pageList = null;
 		// 部门ID不存在 直接查询用户表即可
 		Page<SysUser> page = new Page<SysUser>(pageNo, pageSize);
@@ -153,9 +161,17 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
             //update-begin---author:wangshuai ---date:20220104  for：[JTC-297]已冻结用户仍可设置为代理人------------
             query.eq(SysUser::getStatus,Integer.parseInt(CommonConstant.STATUS_1));
             //update-end---author:wangshuai ---date:20220104  for：[JTC-297]已冻结用户仍可设置为代理人------------
+			//update-begin---author:liusq ---date:20231215  for：逗号分割多个用户翻译问题------------
 			if(oConvertUtils.isNotEmpty(username)){
-				query.like(SysUser::getUsername, username);
+				String COMMA = ",";
+				if(oConvertUtils.isNotEmpty(isMultiTranslate) && username.contains(COMMA)){
+					String[] usernameArr = username.split(COMMA);
+					query.in(SysUser::getUsername,usernameArr);
+				}else {
+					query.like(SysUser::getUsername, username);
+				}
 			}
+			//update-end---author:liusq ---date:20231215  for：逗号分割多个用户翻译问题------------
             //update-begin---author:wangshuai ---date:20220608  for：[VUEN-1238]邮箱回复时，发送到显示的为用户id------------
             if(oConvertUtils.isNotEmpty(id)){
                 query.eq(SysUser::getId, id);
@@ -243,24 +259,38 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
     }
 
 	@Override
-	public IPage<SysUser> getUserInformation(Integer tenantId, String departId,String roleId, String keyword, Integer pageSize, Integer pageNo) {
+	public IPage<SysUser> getUserInformation(Integer tenantId, String departId,String roleId, String keyword, Integer pageSize, Integer pageNo, String excludeUserIdList) {
 		IPage<SysUser> pageList = null;
 		// 部门ID不存在 直接查询用户表即可
 		Page<SysUser> page = new Page<>(pageNo, pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		
+		List<String> userIdList = new ArrayList<>();
+		if(oConvertUtils.isNotEmpty(excludeUserIdList)){
+			userIdList = Arrays.asList(excludeUserIdList.split(SymbolConstant.COMMA));
+		}
 		if(oConvertUtils.isNotEmpty(departId)){
 			// 有部门ID 需要走自定义sql
 			SysDepart sysDepart = sysDepartService.getById(departId);
 			//update-begin-author:taoyan date:2023-1-3 for: 用户选择组件 加载用户需要根据租户ID过滤
-			pageList = this.baseMapper.getProcessUserList(page, sysDepart.getOrgCode(), keyword, tenantId);
+			//update-begin---author:wangshuai---date:2024-02-02---for:【QQYUN-8239】用户角色，添加用户 返回2页数据，实际只显示一页---
+			//update-begin---author:wangshuai---date:2024-02-02---for:【QQYUN-8239】用户角色，添加用户 返回2页数据，实际只显示一页---
+			pageList = this.baseMapper.getProcessUserList(page, sysDepart.getOrgCode(), keyword, tenantId, userIdList);
+			//update-end---author:wangshuai---date:2024-02-02---for:【QQYUN-8239】用户角色，添加用户 返回2页数据，实际只显示一页---
 		} else if (oConvertUtils.isNotEmpty(roleId)) {
-			pageList = this.sysUserMapper.selectUserListByRoleId(page, roleId, keyword, tenantId);
+			//update-begin---author:wangshuai---date:2024-02-02---for:【QQYUN-8239】用户角色，添加用户 返回2页数据，实际只显示一页---
+			pageList = this.sysUserMapper.selectUserListByRoleId(page, roleId, keyword, tenantId,userIdList);
+			//update-end---author:wangshuai---date:2024-02-02---for:【QQYUN-8239】用户角色，添加用户 返回2页数据，实际只显示一页---
 			//update-end-author:taoyan date:2023-1-3 for: 用户选择组件 加载用户需要根据租户ID过滤
 		} else{
 			LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
 			query.eq(SysUser::getStatus,Integer.parseInt(CommonConstant.STATUS_1));
 			query.ne(SysUser::getUsername,"_reserve_user_external");
-			
+			//update-begin---author:wangshuai---date:2024-02-02---for:【QQYUN-8239】用户角色，添加用户 返回2页数据，实际只显示一页---
+			if(oConvertUtils.isNotEmpty(excludeUserIdList)){
+				query.notIn(SysUser::getId,Arrays.asList(excludeUserIdList.split(SymbolConstant.COMMA)));
+			}
+			//update-end---author:wangshuai---date:2024-02-02---for:【QQYUN-8239】用户角色，添加用户 返回2页数据，实际只显示一页---
 			// 支持租户隔离
 			if (tenantId != null) {
 				List<String> userIds = userTenantMapper.getUserIdsByTenantId(tenantId);

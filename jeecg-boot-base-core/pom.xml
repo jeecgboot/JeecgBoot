@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-parent</artifactId>
-		<version>3.6.0</version>
+		<version>3.6.3</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jeecg-boot-base-core</artifactId>
@@ -145,7 +145,7 @@
 			<version>${postgresql.version}</version>
 			<scope>runtime</scope>
 		</dependency>
-
+      
 		<!-- Quartz定时任务 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -255,6 +255,15 @@
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
+		</dependency>
+		<!--加载hutool-->
+		<dependency>
+			<groupId>cn.hutool</groupId>
+			<artifactId>hutool-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.hutool</groupId>
+			<artifactId>hutool-crypto</artifactId>
 		</dependency>
 	</dependencies>
 
