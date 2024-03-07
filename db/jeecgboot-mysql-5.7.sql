@@ -1,6 +1,5 @@
 CREATE database if NOT EXISTS `jeecg-boot` default character set utf8mb4 collate utf8mb4_unicode_ci;
 USE `jeecg-boot`;
-
 /*
  Navicat Premium Data Transfer
 
@@ -14,7 +13,7 @@ USE `jeecg-boot`;
  Target Server Version : 50738
  File Encoding         : 65001
 
- Date: 06/03/2024 18:43:49
+ Date: 07/03/2024 11:30:03
 */
 
 SET NAMES utf8mb4;
@@ -194,7 +193,7 @@ CREATE TABLE `flyway_schema_history`  (
 -- ----------------------------
 INSERT INTO `flyway_schema_history` VALUES (1, '1', '<< Flyway Baseline >>', 'BASELINE', '<< Flyway Baseline >>', NULL, 'root', '2024-01-03 21:58:35', 0, 1);
 INSERT INTO `flyway_schema_history` VALUES (2, '3.6.2', 'all upgrade', 'SQL', 'V3.6.2__all_upgrade.sql', 146217576, 'root', '2024-01-03 21:58:35', 168, 1);
-INSERT INTO `flyway_schema_history` VALUES (3, '3.6.3', 'all upgrade', 'SQL', 'V3.6.3__all_upgrade.sql', 195354351, 'root', '2024-03-04 09:44:51', 81, 1);
+INSERT INTO `flyway_schema_history` VALUES (3, '3.6.3', 'all upgrade', 'SQL', 'V3.6.3__all_upgrade.sql', -98134889, 'root', '2024-03-07 11:28:10', 101, 1);
 
 -- ----------------------------
 -- Table structure for jeecg_monthly_growth_analysis
@@ -4117,7 +4116,7 @@ CREATE TABLE `qrtz_scheduler_state`  (
 -- ----------------------------
 -- Records of qrtz_scheduler_state
 -- ----------------------------
-INSERT INTO `qrtz_scheduler_state` VALUES ('MyScheduler', 'qin1709709185534', 1709715627608, 15000);
+INSERT INTO `qrtz_scheduler_state` VALUES ('MyScheduler', 'qin1709782110681', 1709782175907, 15000);
 
 -- ----------------------------
 -- Table structure for qrtz_simple_triggers
