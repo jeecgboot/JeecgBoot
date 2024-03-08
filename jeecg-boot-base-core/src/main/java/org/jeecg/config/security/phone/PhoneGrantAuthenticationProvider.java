@@ -1,5 +1,6 @@
 package org.jeecg.config.security.phone;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.constant.CommonConstant;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ * 手机号模式认证处理器，负责处理该认证模式下的核心逻辑
  * @author EightMonth
  * @date 2024/1/1
  */
@@ -87,6 +89,7 @@ public class PhoneGrantAuthenticationProvider implements AuthenticationProvider 
         // 验证码
         String captcha = (String) additionalParameter.get("captcha");
 
+        // 通过手机号获取用户信息
         LoginUser loginUser = commonAPI.getUserByPhone(phone);
         // 检查用户可行性
         checkUserIsEffective(loginUser);
@@ -166,11 +169,17 @@ public class PhoneGrantAuthenticationProvider implements AuthenticationProvider 
 
         OAuth2Authorization authorization = authorizationBuilder.build();
 
+        // 保存认证信息至redis
         authorizationService.save(authorization);
 
         baseCommonService.addLog("用户名: " + loginUser.getUsername() + ",登录成功！", CommonConstant.LOG_TYPE_1, null,loginUser);
 
-        Map<String, Object> addition = new HashMap<>();
+        JSONObject addition = new JSONObject(new LinkedHashMap<>());
+
+        // 设置租户
+        JSONObject jsonObject = commonAPI.setLoginTenant(loginUser.getUsername());
+        addition.putAll(jsonObject.getInnerMap());
+
         // 设置登录用户信息
         addition.put("userInfo", loginUser);
         addition.put("sysAllDictItems", commonAPI.queryAllDictItems());
@@ -190,6 +199,7 @@ public class PhoneGrantAuthenticationProvider implements AuthenticationProvider 
             addition.put("multi_depart", 2);
         }
 
+        // 返回access_token、refresh_token以及其它信息给到前端
         return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, accessToken, refreshToken, addition);
     }
 

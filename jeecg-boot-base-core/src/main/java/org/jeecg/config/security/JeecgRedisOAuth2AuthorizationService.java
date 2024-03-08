@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * spring authorization server自定义redis保存认证信息
  * @author EightMonth
  */
 @Component

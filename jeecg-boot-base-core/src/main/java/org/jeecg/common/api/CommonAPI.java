@@ -1,5 +1,6 @@
 package org.jeecg.common.api;
 
+import com.alibaba.fastjson.JSONObject;
 import org.jeecg.common.system.vo.*;
 
 import java.util.List;
@@ -153,5 +154,12 @@ public interface CommonAPI {
      * @param orgCode
      */
     void updateUserDepart(String username,String orgCode,Integer loginTenantId);
+
+    /**
+     * 设置登录租户
+     * @param username
+     * @return
+     */
+    JSONObject setLoginTenant(String username);
 
 }

@@ -9,6 +9,9 @@ import org.springframework.util.Assert;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * spring authorization server 自定义redis保存授权范围信息
+ */
 @Component
 @RequiredArgsConstructor
 public class JeecgRedisOAuth2AuthorizationConsentService implements OAuth2AuthorizationConsentService {

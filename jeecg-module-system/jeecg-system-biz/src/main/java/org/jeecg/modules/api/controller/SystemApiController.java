@@ -917,4 +917,9 @@ public class SystemApiController {
         sysBaseApi.updateUserDepart(username, orgCode, loginTenantId);
     }
 
+    @GetMapping("/sys/api/setLoginTenant")
+    public JSONObject setLoginTenant(@RequestParam("username") String username) {
+        return sysBaseApi.setLoginTenant(username);
+    }
+
 }

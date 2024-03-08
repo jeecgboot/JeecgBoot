@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 手机号模式认证转换器
  * @author EightMonth
  * @date 2024/1/1
  */

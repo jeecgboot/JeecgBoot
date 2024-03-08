@@ -12,13 +12,20 @@ import com.google.common.base.Joiner;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
@@ -31,7 +38,17 @@ import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.security.utils.SecureUtil;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.*;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.context.AuthorizationServerContextHolder;
+import org.springframework.security.oauth2.server.authorization.token.DefaultOAuth2TokenContext;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenContext;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 
 /**
  * @Author Scott
@@ -44,6 +61,8 @@ public class JwtUtil {
 	/**Token有效期为7天（Token在reids中缓存时间为两倍）*/
 	public static final long EXPIRE_TIME = (7 * 12) * 60 * 60 * 1000;
 	static final String WELL_NUMBER = SymbolConstant.WELL_NUMBER + SymbolConstant.LEFT_CURLY_BRACKET;
+
+	public static final String DEFAULT_CLIENT = "jeecg-client";
 
     /**
      *
@@ -80,10 +99,9 @@ public class JwtUtil {
 	public static boolean verify(String token, String username, String secret) {
 		try {
 			// 根据密码生成JWT效验器
-			Algorithm algorithm = Algorithm.HMAC256(secret);
-			JWTVerifier verifier = JWT.require(algorithm).withClaim("username", username).build();
+			JwtDecoder jwtDecoder = SpringContextUtils.getBean(JwtDecoder.class);
 			// 效验TOKEN
-			DecodedJWT jwt = verifier.verify(token);
+			jwtDecoder.decode(token);
 			return true;
 		} catch (Exception exception) {
 			return false;
@@ -98,7 +116,7 @@ public class JwtUtil {
 	public static String getUsername(String token) {
 		try {
 			DecodedJWT jwt = JWT.decode(token);
-			LoginUser loginUser = SecureUtil.currentUser();
+			LoginUser loginUser = JSONObject.parseObject(jwt.getClaim("sub").asString(), LoginUser.class);
 			return loginUser.getUsername();
 		} catch (JWTDecodeException e) {
 			return null;
@@ -106,7 +124,7 @@ public class JwtUtil {
 	}
 
 	/**
-	 * 生成签名,5min后过期
+	 * 生成签名,5min后过期（暂未实现）
 	 *
 	 * @param username 用户名
 	 * @param secret   用户的密码

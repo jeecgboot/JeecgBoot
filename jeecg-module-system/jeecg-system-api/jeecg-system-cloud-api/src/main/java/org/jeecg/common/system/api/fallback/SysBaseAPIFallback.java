@@ -452,4 +452,9 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     public LoginUser getUserByPhone(String phone) {
         return null;
     }
+
+    @Override
+    public JSONObject setLoginTenant(String username) {
+        return null;
+    }
 }

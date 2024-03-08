@@ -20,6 +20,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.UrlMatchEnum;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.*;
@@ -1780,4 +1781,11 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		}
 	}
 
+	@Override
+	public JSONObject setLoginTenant(String username) {
+		JSONObject obj = new JSONObject(new LinkedHashMap<>());
+		SysUser sysUser = sysUserService.getUserByName(username);
+		sysUserService.setLoginTenant(sysUser, obj, username, null);
+		return obj;
+	}
 }
