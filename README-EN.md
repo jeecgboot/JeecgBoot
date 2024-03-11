@@ -76,7 +76,7 @@ Docker starts the project
 - [Docker starts the monomer background](https://help.jeecg.com/java/setup/docker/up.html)
 - [Docker starts the Vue3 front-end](http://help.jeecg.com/publish/docker.html)
 - [Docker starts the micro-service background](https://help.jeecg.com/java/springcloud/docker.html)
-
+- [ChatGPT AI Config](https://help.jeecg.com/java/chatgpt.html)
 
 
 
@@ -440,6 +440,10 @@ Technical Architecture:
 
 
 ### Effect of system
+
+##### ChatGPT AI Dialog
+> Go to the JeecgBoot background home page and click "AI Assistant" in the middle of the right side of the home page. The AI Assistant dialog screen is displayed.
+![](https://oscimg.oschina.net/oscnet/up-7c6405641a40f56638999d52da0cb5b4343.png)
 
 
 ##### PC

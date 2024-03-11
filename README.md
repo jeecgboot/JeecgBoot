@@ -69,7 +69,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 - [通过IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup.html)
 - [Vue3前端项目快速启动](http://help.jeecg.com/setup/startup.html)
 - [单体快速切换为微服务版](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
-
+- [ChatGPT AI助手配置文档](https://help.jeecg.com/java/chatgpt.html)
 
 Docker快速启动项目
 -----------------------------------
@@ -476,6 +476,10 @@ JeecgBoot企业版本默认集成了activiti和flowable两套方案，大家在�
 
 ### 系统效果
 
+
+##### ChatGPT AI交互
+> 进入JeecgBoot后台首页，点击首页右侧中间“AI助手”，弹出AI助手对话界面。
+![](https://oscimg.oschina.net/oscnet/up-7c6405641a40f56638999d52da0cb5b4343.png)
 
 
 ##### PC端
