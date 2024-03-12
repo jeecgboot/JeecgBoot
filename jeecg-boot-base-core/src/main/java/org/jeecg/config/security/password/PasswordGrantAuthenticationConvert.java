@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 密码模式认证转换器
  * @author EightMonth
  * @date 2024/1/1
  */

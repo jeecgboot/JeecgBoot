@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 社交模式认证转换器，配合github、企业微信、钉钉、微信登录使用
  * @author EightMonth
  * @date 2024/1/1
  */

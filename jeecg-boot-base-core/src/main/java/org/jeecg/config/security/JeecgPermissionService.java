@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import java.util.Set;
 
 /**
+ * spring authorization server自定义权限处理，根据@PreAuthorize注解，判断当前用户是否具备权限
  * @author EightMonth
  * @date 2024/1/10 17:00
  */

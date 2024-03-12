@@ -749,4 +749,6 @@ public interface ISysBaseAPI extends CommonAPI {
     @PostMapping("/sys/api/updateUserDepart")
     void updateUserDepart(@RequestParam("username") String username,@RequestParam("orgCode") String orgCode,@RequestParam("loginTenantId") Integer loginTenantId);
 
+    @GetMapping("/sys/api/setLoginTenant")
+    JSONObject setLoginTenant(@RequestParam("username") String username);
 }

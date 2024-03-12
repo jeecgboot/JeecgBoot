@@ -37,6 +37,7 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -49,6 +50,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 /**
+ * spring authorization server核心配置
  * @author eightmonth@qq.com
  * @date 2024/1/2 9:29
  */
@@ -66,6 +68,7 @@ public class SecurityConfig {
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
             throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+        // 注册自定义登录类型
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
                 .tokenEndpoint(tokenEndpoint -> tokenEndpoint.accessTokenRequestConverter(new PasswordGrantAuthenticationConvert())
                         .authenticationProvider(new PasswordGrantAuthenticationProvider(authorizationService, tokenGenerator())))
@@ -172,7 +175,7 @@ public class SecurityConfig {
     }
 
     /**
-     * 注册客户端信息
+     * 数据库保存注册客户端信息
      */
     @Bean
     public RegisteredClientRepository registeredClientRepository() {

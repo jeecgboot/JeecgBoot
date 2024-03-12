@@ -1,5 +1,6 @@
 package org.jeecg.config.security.password;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.constant.CommonConstant;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ * 密码模式认证处理器，负责处理该认证模式下的核心逻辑
  * @author EightMonth
  * @date 2024/1/1
  */
@@ -86,7 +88,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         String captcha = (String) additionalParameter.get("captcha");
         String checkKey = (String) additionalParameter.get("checkKey");
 
-
+        // 检查登录失败次数
         if(isLoginFailOvertimes(username)){
             throw new JeecgBootException("该用户登录失败次数过多，请于10分钟后再次登录！");
         }
@@ -113,6 +115,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
             throw new JeecgBootException("非法登录");
         }
 
+        // 通过用户名获取用户信息
         LoginUser loginUser = commonAPI.getUserByName(username);
         // 检查用户可行性
         checkUserIsEffective(loginUser);
@@ -181,6 +184,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
 
         OAuth2Authorization authorization = authorizationBuilder.build();
 
+        // 保存认证信息至redis
         authorizationService.save(authorization);
 
         // 登录成功，删除redis中的验证码
@@ -188,7 +192,12 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         redisUtil.del(CommonConstant.LOGIN_FAIL + username);
         baseCommonService.addLog("用户名: " + username + ",登录成功！", CommonConstant.LOG_TYPE_1, null,loginUser);
 
-        Map<String, Object> addition = new HashMap<>();
+        JSONObject addition = new JSONObject(new LinkedHashMap<>());
+
+        // 设置租户
+        JSONObject jsonObject = commonAPI.setLoginTenant(username);
+        addition.putAll(jsonObject.getInnerMap());
+
         // 设置登录用户信息
         addition.put("userInfo", loginUser);
         addition.put("sysAllDictItems", commonAPI.queryAllDictItems());
@@ -208,6 +217,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
             addition.put("multi_depart", 2);
         }
 
+        // 返回access_token、refresh_token以及其它信息给到前端
         return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, accessToken, refreshToken, addition);
     }
 
