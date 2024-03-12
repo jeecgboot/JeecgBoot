@@ -15,5 +15,5 @@ public interface IProviderMabangService extends IService<ProviderData> {
      */
     void saveProviderFromMabang(List<ProviderData> providerDataList);
 
-    void addPurchaseOrderToMabang(Map<String, Integer> skuQuantities, InvoiceMetaData metaData);
+    boolean addPurchaseOrderToMabang(Map<String, Integer> skuQuantities, InvoiceMetaData metaData);
 }

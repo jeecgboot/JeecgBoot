@@ -103,6 +103,12 @@ public class PurchaseOrder implements Serializable {
     @ApiModelProperty(value = "订单发票号")
     private String invoiceNumber;
 
+    /**
+     * 订单是否下了单
+     */
+    @Excel(name = "订单是否下了单", width = 15)
+    @ApiModelProperty(value = "订单是否下了单")
+    private boolean ordered;
 
     /**
      * Payment document

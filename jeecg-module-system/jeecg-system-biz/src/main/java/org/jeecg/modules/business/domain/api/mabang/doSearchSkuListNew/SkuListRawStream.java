@@ -49,15 +49,15 @@ public class SkuListRawStream implements NetworkDataStream<SkuListResponse> {
         if (!began) {
             throw new IllegalStateException("Calling hasNext before begin");
         }
-        // still has page left, true
-        if (!currentResponse.getCursor().isEmpty() || currentResponse.getCursor().equals(toSend.getCursor())) {
-            log.info("page: {}, has next", toSend.getPage());
-            toSend.setCursor(currentResponse.getCursor());
-            return true;
-        }
         // no page left, false
-        log.info("No page left, end");
-        return false;
+        if(currentResponse.getCursor().isEmpty()) {
+            log.info("No page left, end");
+            return false;
+        }
+        // still has page left, true
+        log.info("page: {}, has next", toSend.getPage());
+        toSend.setCursor(currentResponse.getCursor());
+        return true;
     }
 
     /**

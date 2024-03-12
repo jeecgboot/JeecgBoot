@@ -7,6 +7,9 @@ import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PurchaseOrder;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.jeecg.modules.business.vo.InvoiceMetaData;
+import org.jeecg.modules.business.vo.PurchaseOrderPage;
+import org.jeecg.modules.business.vo.SkuQuantity;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -105,4 +108,14 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
     List<PurchaseOrder> getPurchasesByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
 
     List<PlatformOrder> getPlatformOrder(@Param("invoiceNumber") String invoiceNumber);
+
+    List<SkuQuantity> getSkuQuantityByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
+
+    InvoiceMetaData getMetaDataFromInvoiceNumbers(@Param("invoiceNumber") String invoiceNumber);
+
+    List<PurchaseOrderPage> getPage(@Param("offset") long offset, @Param("size") long size);
+
+    long countPurchaseOrders();
+
+    void updatePurchaseOrderStatus(@Param("invoiceNumber") String invoiceNumber, @Param("isOrdered") boolean isOrdered);
 }

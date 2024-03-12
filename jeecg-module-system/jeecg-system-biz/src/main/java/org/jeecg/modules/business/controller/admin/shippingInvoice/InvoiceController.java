@@ -322,6 +322,7 @@ public class InvoiceController {
     /**
      * Make purchase invoice for specified orders and type
      * used by self-service clients
+     * creates a purchase order in Mabang
      * @param param Parameters for creating an invoice
      * @return Result of the generation, in case of error, message will be contained,
      * in case of success, data will contain filename.
@@ -426,12 +427,11 @@ public class InvoiceController {
         List<SkuQuantity> skuQuantities = new ArrayList<>();
         for(Map.Entry<String, Integer> entry : payload.entrySet()) {
             String skuId = skuService.getIdFromErpCode(entry.getKey());
-            skuQuantities.add(new SkuQuantity(skuId, entry.getValue()));
+            skuQuantities.add(new SkuQuantity(skuId, entry.getKey(), entry.getValue()));
         }
         try {
             String purchaseId = purchaseOrderService.addPurchase(skuQuantities);
             metaData = purchaseOrderService.makeInvoice(purchaseId);
-            providerMabangService.addPurchaseOrderToMabang(payload, metaData);
             return Result.OK(metaData);
         } catch (UserException e) {
             return Result.error(e.getMessage());

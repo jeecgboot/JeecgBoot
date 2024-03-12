@@ -10,21 +10,27 @@ import org.jeecg.modules.business.domain.api.mabang.purDoAddPurchase.AddPurchase
 import org.jeecg.modules.business.domain.api.mabang.purDoAddPurchase.AddPurchaseOrderResponse;
 import org.jeecg.modules.business.domain.api.mabang.purDoAddPurchase.SkuStockData;
 import org.jeecg.modules.business.domain.api.mabang.purDoGetProvider.ProviderData;
-import org.jeecg.modules.business.domain.api.mabang.purDoGetProvider.ProviderRequestErrorException;
+import org.jeecg.modules.business.domain.job.ThrottlingExecutorService;
 import org.jeecg.modules.business.entity.Provider;
 import org.jeecg.modules.business.mapper.ProviderMabangMapper;
 import org.jeecg.modules.business.service.IProviderMabangService;
 import org.jeecg.modules.business.service.IProviderService;
+import org.jeecg.modules.business.service.IPurchaseOrderService;
 import org.jeecg.modules.business.service.ISkuService;
 import org.jeecg.modules.business.vo.InvoiceMetaData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +45,12 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
     @Autowired
     private IProviderService providerService;
     @Autowired
+    private IPurchaseOrderService purchaseOrderService;
+    @Autowired
     ISkuService skuService;
+
+    private static final Integer DEFAULT_NUMBER_OF_THREADS = 1;
+    private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
 
     @Override
     public void saveProviderFromMabang(List<ProviderData> providerDataList) {
@@ -56,15 +67,20 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
         }
     }
 
+    /**
+     * Add purchase order to Mabang.
+     * @param skuQuantities Quantities mapped to sku erpCodes
+     * @param metaData invoice meta data
+     */
     @Transactional
     @Override
-    public void addPurchaseOrderToMabang(Map<String, Integer> skuQuantities, InvoiceMetaData metaData) {
+    public boolean addPurchaseOrderToMabang(Map<String, Integer> skuQuantities, InvoiceMetaData metaData) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String mabangUsername = sysUser.getMabangUsername();
-        String content = metaData.getFilename().substring(0, metaData.getFilename().lastIndexOf("."));
+        String content = metaData.getFilename();
         List<String> stockSkuList = new ArrayList<>();
         String stockSkus;
-        log.info("Creating purchase order to Mabang : {} skus", skuQuantities.size());
+        log.info("Creating purchase order to Mabang {} : {} skus", metaData.getInvoiceCode(),skuQuantities.size());
         Map<String, SkuData> skuDataMap = new HashMap<>();
         List<SkuData> skuDataList = new ArrayList<>();
         log.info("Requesting SKU data from Mabang API.");
@@ -96,7 +112,8 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
             skuDataList.addAll(skuListStream.all());
         }
         if(skuDataList.isEmpty()) {
-            throw new SkuListRequestErrorException("Couldn't get SKU data from Mabang API.");
+            log.error("Couldn't get SKU data from Mabang API for invoice : {}", metaData.getInvoiceCode());
+            return false;
         }
 
         for(SkuData skuData : skuDataList) {
@@ -106,7 +123,7 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
         for(Map.Entry<String, SkuData> entry : skuDataMap.entrySet()) {
             SkuStockData stockData = new SkuStockData();
             stockData.setStockSku(entry.getKey());
-            stockData.setPrice(entry.getValue().getPurchasePrice());
+            stockData.setPrice(entry.getValue().getPurchasePrice().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ONE : entry.getValue().getPurchasePrice().setScale(2, RoundingMode.CEILING));
             stockData.setPurchaseNum(skuQuantities.get(entry.getKey()));
             stockData.setProvider(entry.getValue().getProvider());
             skuStockData.add(stockData);
@@ -122,21 +139,36 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
                 stockProviderMap.put(stockData.getProvider(), stockDataList);
             }
         }
-        log.info("Create {} purchase orders to Mabang.", stockProviderMap.size());
+        log.info("Creating {} purchase orders to Mabang - {}", stockProviderMap.size(), metaData.getInvoiceCode());
 
         // group id is the response from mabang API
+        ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
+                MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
+
         List<String> groupIds = new ArrayList<>();
-        for(Map.Entry<String, List<SkuStockData>> entry : stockProviderMap.entrySet()) {
-            String providerName = entry.getKey();
-            List<SkuStockData> stockDataList = entry.getValue();
-            AddPurchaseOrderRequestBody body = new AddPurchaseOrderRequestBody(mabangUsername, providerName, content, stockDataList);
-            AddPurchaseOrderRequest request = new AddPurchaseOrderRequest(body);
-            AddPurchaseOrderResponse response = request.send();
-            log.info("Response from Mabang Add purchase API : " + response.toString());
-            if(!response.success())
-                throw new ProviderRequestErrorException("Couldn't add purchase order to Mabang.");
-            groupIds.add(response.getGroupId());
-        }
-        log.info("Purchase orders created to Mabang, groupIds : {}", groupIds);
+        List<CompletableFuture<Boolean>> changeOrderFutures = stockProviderMap.entrySet().stream()
+                .map(entry -> CompletableFuture.supplyAsync(() -> {
+                    String providerName = entry.getKey();
+                    List<SkuStockData> stockDataList = entry.getValue();
+                    log.info("Creating purchase order to Mabang {} :\n -provider : {}\n-content : {}\n-stockDataList : {}",metaData.getInvoiceCode(), providerName, content , stockDataList);
+                    AddPurchaseOrderRequestBody body = new AddPurchaseOrderRequestBody(mabangUsername, providerName, content, stockDataList);
+                    AddPurchaseOrderRequest request = new AddPurchaseOrderRequest(body);
+                    AddPurchaseOrderResponse response = request.send();
+                    log.info("Mabang Add purchase API response | {} - {} : {}", metaData.getInvoiceCode(), providerName,response.toString());
+                    if(!response.success()) {
+                        log.error("Failed to create purchase order to Mabang for {} - {}", metaData.getInvoiceCode(), providerName);
+                        return false;
+                    }
+                    groupIds.add(response.getGroupId());
+                    return true;
+                }, throttlingExecutorService))
+                .collect(Collectors.toList());
+        List<Boolean> results = changeOrderFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        long nbSuccesses = results.stream().filter(b -> b).count();
+        log.info("{}/{} purchase orders created successfully on Mabang. {} : GroupIds : {}", nbSuccesses, stockProviderMap.size(), metaData.getInvoiceCode(),groupIds);
+
+        // change status of purchase order to 'ordered' = true
+        purchaseOrderService.updatePurchaseOrderStatus(metaData.getInvoiceCode(), true);
+        return true;
     }
 }
