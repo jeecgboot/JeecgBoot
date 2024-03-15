@@ -86,7 +86,6 @@ public class JeecgBootExceptionHandler {
 
 	@ExceptionHandler(AccessDeniedException.class)
 	public Result<?> handleAuthorizationException(AccessDeniedException e){
-		log.error(e.getMessage(), e);
 		return Result.noauth("没有权限，请联系管理员授权");
 	}
 
