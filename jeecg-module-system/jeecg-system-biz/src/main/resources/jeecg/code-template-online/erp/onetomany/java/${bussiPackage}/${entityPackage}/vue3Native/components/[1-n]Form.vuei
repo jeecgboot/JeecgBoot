@@ -100,8 +100,14 @@
   function edit(record) {
     nextTick(() => {
       resetFields();
+      const tmpData = {};
+      Object.keys(formData).forEach((key) => {
+        if(record.hasOwnProperty(key)){
+          tmpData[key] = record[key]
+        }
+      })
       //赋值
-      Object.assign(formData, record);
+      Object.assign(formData,tmpData);
     });
   }
 

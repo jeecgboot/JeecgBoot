@@ -333,6 +333,7 @@ public class SysAnnouncementController {
 	 */
 	@RequestMapping(value = "/listByUser", method = RequestMethod.GET)
 	public Result<Map<String, Object>> listByUser(@RequestParam(required = false, defaultValue = "5") Integer pageSize) {
+		long start = System.currentTimeMillis();
 		Result<Map<String,Object>> result = new Result<Map<String,Object>>();
 		Map<String,Object> sysMsgMap = new HashMap(5);
 		LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
@@ -349,12 +350,16 @@ public class SysAnnouncementController {
 		anntMsgList = sysAnnouncementService.querySysCementPageByUserId(anntMsgList,userId,"1");
 		sysMsgMap.put("anntMsgList", anntMsgList.getRecords());
 		sysMsgMap.put("anntMsgTotal", anntMsgList.getTotal());
+
+		log.info("begin 获取用户系统公告 (通知)" + (System.currentTimeMillis() - start) + "毫秒");
 		
         //系统消息
 		Page<SysAnnouncement> sysMsgList = new Page<SysAnnouncement>(0, pageSize);
 		sysMsgList = sysAnnouncementService.querySysCementPageByUserId(sysMsgList,userId,"2");
 		sysMsgMap.put("sysMsgList", sysMsgList.getRecords());
 		sysMsgMap.put("sysMsgTotal", sysMsgList.getTotal());
+
+		log.info("end 获取用户系统公告 (系统消息)" + (System.currentTimeMillis() - start) + "毫秒");
 		
 		result.setSuccess(true);
 		result.setResult(sysMsgMap);

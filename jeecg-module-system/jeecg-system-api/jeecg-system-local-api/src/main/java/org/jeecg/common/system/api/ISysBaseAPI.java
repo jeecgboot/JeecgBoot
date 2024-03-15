@@ -101,7 +101,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param depIds
      * @return 部门 parentIds
      */
-    Set<String> getDepartParentIdsByDepIds(Set depIds);
+    Set<String> getDepartParentIdsByDepIds(Set<String> depIds);
 
     /**
      * 9通过用户账号查询部门 name
@@ -302,10 +302,10 @@ public interface ISysBaseAPI extends CommonAPI {
 
     /**
      * 32获取用户的权限集合
-     * @param username
+     * @param userId
      * @return
      */
-    Set<String> getUserPermissionSet(String username);
+    Set<String> getUserPermissionSet(String userId);
 
     /**
      * 33判断是否有online访问的权限
@@ -445,19 +445,6 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param dataLogDto
      */
     void saveDataLog(DataLogDTO dataLogDto);
-
-    /**
-     * 添加文件到知识库
-     * @param sysFilesModel
-     */
-    void addSysFiles(SysFilesModel sysFilesModel);
-
-    /**
-     * 通过文件路径获取文件id
-     * @param fileId
-     */
-    String getFileUrl(String fileId);
-
     /**
      * 更新头像
      * @param loginUser

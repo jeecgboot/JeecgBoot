@@ -171,9 +171,10 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 * @param page
 	 * @param roleId
 	 * @param keyword
+	 * @param userIdList
 	 * @return
 	 */
-	IPage<SysUser> selectUserListByRoleId(Page<SysUser> page,  @Param("roleId") String roleId,  @Param("keyword") String keyword,  @Param("tenantId") Integer tenantId);
+	IPage<SysUser> selectUserListByRoleId(Page<SysUser> page,  @Param("roleId") String roleId,  @Param("keyword") String keyword,  @Param("tenantId") Integer tenantId, @Param("excludeUserIdList") List<String> excludeUserIdList);
 
     /**
      * 更新刪除状态和离职状态

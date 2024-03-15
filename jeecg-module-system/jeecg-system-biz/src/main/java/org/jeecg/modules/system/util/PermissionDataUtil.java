@@ -1,11 +1,14 @@
 package org.jeecg.modules.system.util;
 
-import java.util.List;
-
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysPermission;
+import org.jeecg.modules.system.entity.SysRoleIndex;
+import org.jeecg.modules.system.service.ISysRoleIndexService;
+
+import java.util.List;
 
 /**
  * @Author: scott
@@ -82,8 +85,9 @@ public class PermissionDataUtil {
 	 */
 	public static void addIndexPage(List<SysPermission> metaList) {
 		boolean hasIndexMenu = false;
+		SysRoleIndex defIndexCfg = PermissionDataUtil.getDefIndexConfig();
 		for (SysPermission sysPermission : metaList) {
-			if("首页".equals(sysPermission.getName())) {
+			if(defIndexCfg.getUrl().equals(sysPermission.getUrl())) {
 				hasIndexMenu = true;
 				break;
 			}
@@ -98,15 +102,38 @@ public class PermissionDataUtil {
 	 * @param metaList
 	 * @return
 	 */
-	public static boolean hasIndexPage(List<SysPermission> metaList){
+	public static boolean hasIndexPage(List<SysPermission> metaList, SysRoleIndex defIndexCfg){
 		boolean hasIndexMenu = false;
 		for (SysPermission sysPermission : metaList) {
-			if("首页".equals(sysPermission.getName())) {
+			if(defIndexCfg.getUrl().equals(sysPermission.getUrl())) {
 				hasIndexMenu = true;
 				break;
 			}
 		}
 		return hasIndexMenu;
 	}
-	
+
+	/**
+	 * 通过id判断是否授权某个页面
+	 *
+	 * @param metaList
+	 * @return
+	 */
+	public static boolean hasMenuById(List<SysPermission> metaList, String id) {
+		for (SysPermission sysPermission : metaList) {
+			if (id.equals(sysPermission.getId())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 获取默认首页配置
+	 */
+	public static SysRoleIndex getDefIndexConfig() {
+		ISysRoleIndexService sysRoleIndexService = SpringContextUtils.getBean(ISysRoleIndexService.class);
+		return sysRoleIndexService.queryDefaultIndex();
+	}
+
 }

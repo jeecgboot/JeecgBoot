@@ -7,13 +7,13 @@
 JEECG BOOT 低代码开发平台
 ===============
 
-当前最新版本： 3.6.2（发布日期：2024-01-08） 
+当前最新版本： 3.6.3（发布日期：2024-03-11） 
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://jeecg.com/aboutusIndex)
 [![](https://img.shields.io/badge/Blog-官方博客-blue.svg)](https://jeecg.blog.csdn.net)
-[![](https://img.shields.io/badge/version-3.6.2-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-3.6.3-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -69,7 +69,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 - [通过IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup.html)
 - [Vue3前端项目快速启动](http://help.jeecg.com/setup/startup.html)
 - [单体快速切换为微服务版](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
-
+- [ChatGPT AI助手配置文档](https://help.jeecg.com/java/chatgpt.html)
 
 Docker快速启动项目
 -----------------------------------
@@ -476,6 +476,10 @@ JeecgBoot企业版本默认集成了activiti和flowable两套方案，大家在�
 
 ### 系统效果
 
+
+##### ChatGPT AI交互
+> 进入JeecgBoot后台首页，点击首页右侧中间“AI助手”，弹出AI助手对话界面。
+![](https://oscimg.oschina.net/oscnet/up-7c6405641a40f56638999d52da0cb5b4343.png)
 
 
 ##### PC端
