@@ -24,6 +24,7 @@ public class OrderCreationRequestBody implements RequestBody {
     private final static String QUOTE = ":";
     private final static String WIA = "维亚智通";
     private final static String TRANSACTION_NUMBER = "交易号";
+    private final static String SHOP_CODE = "店铺名称";
 
     public OrderCreationRequestBody(List<ShoumanOrderContent> orderContents, Map<String, Country> countryMap) {
         this.orderContents = orderContents;
@@ -60,7 +61,8 @@ public class OrderCreationRequestBody implements RequestBody {
             totalPrice = totalPrice.add(price);
             putNonNull(contentJson, "theImagePath", content.getImageUrl());
             putNonNull(contentJson, "comment", generateRemark(content.getRemark(), content.getCustomizationData(),
-                    content.getContentRecRegex(), content.getContentExtRegex(), content.getPlatformOrderNumber()));
+                    content.getContentRecRegex(), content.getContentExtRegex(), content.getShopErpCode(),
+                    content.getPlatformOrderNumber()));
             putNonNull(contentJson, "sku", content.getSku());
             putNonNull(contentJson, "outboundNumder", content.getQuantity()); // Typo intended
             outboundInfos.add(contentJson);
@@ -71,7 +73,7 @@ public class OrderCreationRequestBody implements RequestBody {
     }
 
     private String generateRemark(String baseRemark, String customizationData, String contentRecRegex, String contentExtRegex,
-                                  String platformOrderNumber) {
+                                  String shopErpCode, String platformOrderNumber) {
         StringBuilder sb = new StringBuilder();
         String[] baseRemarks = baseRemark.split(DEFAULT_SPLIT);
         for (String remark : baseRemarks) {
@@ -92,6 +94,9 @@ public class OrderCreationRequestBody implements RequestBody {
                         .append(LINE_BREAK);
             }
         }
+        sb.append(SHOP_CODE)
+                .append(shopErpCode)
+                .append(LINE_BREAK);
         sb.append(TRANSACTION_NUMBER)
                 .append(platformOrderNumber)
                 .append(LINE_BREAK);

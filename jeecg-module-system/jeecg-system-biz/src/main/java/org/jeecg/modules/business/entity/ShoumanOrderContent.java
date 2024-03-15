@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 @Data
 public class ShoumanOrderContent {
 
+    private String shopErpCode;
     private String platformOrderId;
     private String platformOrderNumber;
     private String postcode;
@@ -24,10 +25,12 @@ public class ShoumanOrderContent {
     private String imageUrl;
     private String sku;
 
-    public ShoumanOrderContent(String platformOrderId, String platformOrderNumber, String postcode, String recipient,
-                               String city, String country, String platformOrderContentId, String customizationData,
-                               Integer quantity, String productName, String remark, String contentRecRegex,
-                               String contentExtRegex, BigDecimal price, String imageUrl, String sku) {
+    public ShoumanOrderContent(String shopErpCode, String platformOrderId, String platformOrderNumber, String postcode,
+                               String recipient, String city, String country, String platformOrderContentId,
+                               String customizationData, Integer quantity, String productName, String remark,
+                               String contentRecRegex, String contentExtRegex, BigDecimal price, String imageUrl,
+                               String sku) {
+        this.shopErpCode = shopErpCode;
         this.platformOrderId = platformOrderId;
         this.platformOrderNumber = platformOrderNumber;
         this.postcode = postcode;
@@ -49,6 +52,7 @@ public class ShoumanOrderContent {
     @Override
     public String toString() {
         return "ShoumanOrderContent{" +
+                "shopErpCode='" + shopErpCode + '\'' +
                 "platformOrderId='" + platformOrderId + '\'' +
                 "platformOrderNumber='" + platformOrderNumber + '\'' +
                 ", postcode='" + postcode + '\'' +

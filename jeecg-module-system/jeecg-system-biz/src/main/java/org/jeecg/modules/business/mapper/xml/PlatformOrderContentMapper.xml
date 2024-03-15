@@ -362,7 +362,8 @@
 
     <select id="searchShoumanOrderContent"
             resultType="org.jeecg.modules.business.entity.ShoumanOrderContent">
-        select po.platform_order_id,
+        select sh.erp_code,
+               po.platform_order_id,
                po.platform_order_number,
                po.postcode,
                po.recipient,
@@ -380,6 +381,7 @@
                sc.sku
         from platform_order_content poc
                  join platform_order po on poc.platform_order_id = po.id
+                 join shop sh on po.shop_id = sh.id
                  join sku s on poc.sku_id = s.id
                  join shouman_sku_relation ssr on s.id = ssr.sku_id
                  join shouman_category sc on ssr.shouman_category_id = sc.id
@@ -388,6 +390,7 @@
 
     <resultMap id="shoumanOrderContentResultMap" type="org.jeecg.modules.business.entity.ShoumanOrderContent">
         <id property="platformOrderContentId" column="platform_order_content_id" javaType="string"/>
+        <result property="shopErpCode" column="erp_code" javaType="string"/>
         <result property="platformOrderId" column="platform_order_id" javaType="string"/>
         <result property="platformOrderNumber" column="platform_order_number" javaType="string"/>
         <result property="postcode" column="postcode" javaType="string"/>
