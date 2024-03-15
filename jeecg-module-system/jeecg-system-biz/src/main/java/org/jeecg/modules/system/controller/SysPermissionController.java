@@ -15,6 +15,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.Md5Util;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.JeecgBaseConfig;
+import org.jeecg.config.security.JeecgPermissionService;
 import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.*;
@@ -66,6 +67,9 @@ public class SysPermissionController {
 
 	@Autowired
 	private ISysRoleIndexService sysRoleIndexService;
+
+	@Autowired
+	private JeecgPermissionService jeecgPermissionService;
 
     /**
      * 子菜单
@@ -562,6 +566,8 @@ public class SysPermissionController {
             LoginUser loginUser = SecureUtil.currentUser();
 			baseCommonService.addLog("修改角色ID: "+roleId+" 的权限配置，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
             //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]用户管理角色授权添加敏感日志------------
+			// 清除权限缓存
+			jeecgPermissionService.clearCache();
 			result.success("保存成功！");
 			log.info("======角色授权成功=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
 		} catch (Exception e) {
