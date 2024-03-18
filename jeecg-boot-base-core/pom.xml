@@ -82,7 +82,7 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>${commons.version}</version>
+			<version>${commons-io.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -183,9 +183,14 @@
 		</dependency>
 
 		<!-- knife4j -->
-		<dependency>
+<!--		<dependency>
 			<groupId>com.github.xiaoymin</groupId>
 			<artifactId>knife4j-spring-boot-starter</artifactId>
+			<version>3.0.3</version>
+		</dependency>-->
+		<dependency>
+			<groupId>com.github.xiaoymin</groupId>
+			<artifactId>knife4j-openapi2-spring-boot-starter</artifactId>
 			<version>${knife4j-spring-boot-starter.version}</version>
 		</dependency>
 
