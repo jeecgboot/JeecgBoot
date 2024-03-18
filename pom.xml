@@ -51,10 +51,10 @@
 		<dm8.version>8.1.1.49</dm8.version>
 		
 		<!-- 持久层 -->
-		<mybatis-plus.version>3.5.5</mybatis-plus.version>
+		<mybatis-plus.version>3.5.3.1</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>4.1.3</dynamic-datasource-spring-boot-starter.version>
 		<druid.version>1.2.19</druid.version>
-		<minidao.version>1.9.7</minidao.version>
+		<minidao.version>1.9.6</minidao.version>
 
 		<!-- 积木报表-->
 		<jimureport-spring-boot-starter.version>1.7.2-beta</jimureport-spring-boot-starter.version>
