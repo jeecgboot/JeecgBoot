@@ -43,11 +43,10 @@
             <version>${dm8.version}</version>
         </dependency>
 
-        <!--支持 mysql5.7、mysql8、MariaDB10.3.16-->
+        <!-- flyway支持 mysql5.7、mysql8、MariaDB10.3.16 -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>7.15.0</version>
         </dependency>
     </dependencies>
 

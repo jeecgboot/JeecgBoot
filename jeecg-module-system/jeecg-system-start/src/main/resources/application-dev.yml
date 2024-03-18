@@ -118,7 +118,9 @@ spring:
   resource:
     static-locations: classpath:/static/,classpath:/public/
   autoconfigure:
-    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+    exclude:
+      - com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+      - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
   datasource:
     druid:
       stat-view-servlet:
@@ -261,7 +263,7 @@ jeecg:
     password:
     type: STANDALONE
     enabled: true
-  # ChartGPT对接配置
+  # ai-chat
   ai-chat:
     # 是否开启；必须。
     enabled: false
