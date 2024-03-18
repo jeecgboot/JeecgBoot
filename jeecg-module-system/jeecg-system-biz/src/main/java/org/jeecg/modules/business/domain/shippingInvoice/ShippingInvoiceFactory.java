@@ -486,7 +486,6 @@ public class ShippingInvoiceFactory {
                     SUBJECT_FORMAT.format(begin),
                     SUBJECT_FORMAT.format(end)
             );
-            uninvoicedOrderToContent = platformOrderService.findUninvoicedOrders(shopIds, begin, end, warehouses);
         }
         else if (erpStatuses.toString().equals("[1, 2]") || erpStatuses.toString().equals("[1]")) {
             subject = String.format(
@@ -494,7 +493,6 @@ public class ShippingInvoiceFactory {
                     SUBJECT_FORMAT.format(begin),
                     SUBJECT_FORMAT.format(end)
             );
-            uninvoicedOrderToContent = platformOrderService.findUninvoicedOrderContentsForShopsAndStatus(shopIds, begin, end, erpStatuses, warehouses);
         }
         else {
             subject = String.format(
@@ -502,8 +500,8 @@ public class ShippingInvoiceFactory {
                     SUBJECT_FORMAT.format(begin),
                     SUBJECT_FORMAT.format(end)
             );
-            uninvoicedOrderToContent = platformOrderService.findUninvoicedOrderContentsForShopsAndStatus(shopIds, begin, end, erpStatuses, warehouses);
         }
+        uninvoicedOrderToContent = platformOrderService.findUninvoicedOrderContentsForShopsAndStatus(shopIds, begin, end, erpStatuses, warehouses);
         if(balance != null) {
             return createInvoiceWithBalance(customerId, balance, shopIds, uninvoicedOrderToContent, savRefunds, subject, false);
         }
@@ -565,8 +563,11 @@ public class ShippingInvoiceFactory {
         shops.forEach(shop -> shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee()));
         String invoiceCode = generateInvoiceCode();
         log.info("New invoice code: {}", invoiceCode);
-        calculateFees(null, logisticChannelMap, orderAndContent, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
+        Map<String, List<String>> errorMsg = calculateFees(null, logisticChannelMap, orderAndContent, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
                 latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode);
+        if(!errorMsg.isEmpty()) {
+            errorMsg.forEach((k, v) -> log.error("Couldn't invoice orders for reason : {} : {}", k, v));
+        }
         BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
         if (savRefunds != null) {
             updateSavRefundsInDb(savRefunds, invoiceCode);
