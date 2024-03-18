@@ -742,4 +742,9 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     public void updatePurchaseOrderStatus(String invoiceNumber, boolean isOrdered) {
         purchaseOrderMapper.updatePurchaseOrderStatus(invoiceNumber, isOrdered);
     }
+
+    @Override
+    public void setPaid(List<String> invoiceNumber) {
+        purchaseOrderMapper.setPaid(invoiceNumber);
+    }
 }

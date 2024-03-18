@@ -257,4 +257,9 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
         }
         return isFileDeleted;
     }
+
+    @Override
+    public void setPaid(List<String> invoiceNumbers) {
+        shippingInvoiceMapper.setPaid(invoiceNumbers);
+    }
 }

@@ -839,4 +839,22 @@
         FROM platform_order
         WHERE shipping_invoice_number = #{invoiceNumber};
     </select>
+    <select id="countPlatformOrders" resultType="org.jeecg.modules.business.vo.OrderKpi">
+        WITH processed AS (
+            SELECT COUNT(*) AS processed
+            FROM platform_order
+            WHERE erp_status = 4
+            AND shipping_invoice_number IS NOT NULL
+            AND order_time BETWEEN #{start} AND #{end}
+            AND IF(#{showAllData} = false, create_by = #{username}, true)
+        ), processing AS (
+            SELECT COUNT(*) AS processing
+            FROM platform_order
+            WHERE erp_status IN (1,2,3)
+            AND order_time BETWEEN #{start} AND #{end}
+            AND IF(#{showAllData} = false, create_by = #{username}, true)
+        )
+        SELECT processed, processing
+        FROM processed, processing;
+    </select>
 </mapper>

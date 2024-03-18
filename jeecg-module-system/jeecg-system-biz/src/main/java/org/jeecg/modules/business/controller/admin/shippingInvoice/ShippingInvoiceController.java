@@ -519,4 +519,25 @@ public class ShippingInvoiceController {
         log.info("End of invoice files deletion.");
         return Result.ok("Invoices cancellation finished.");
     }
+
+    @PostMapping(value = "/setPaid")
+    public Result<?> setPaid(@RequestBody List<String> invoiceNumbers) {
+        log.info("Setting invoice numbers : {} to paid.", invoiceNumbers);
+        System.out.println("Setting invoice numbers list : " + invoiceNumbers + " to paid.");
+        List<String> purchaseNumbers = invoiceNumbers.stream().filter(invoice -> invoice.charAt(8) == '1' || invoice.charAt(8) == '7').collect(Collectors.toList());
+        List<String> shippingNumbers = invoiceNumbers.stream().filter(invoice -> invoice.charAt(8) == '2' || invoice.charAt(8) == '7').collect(Collectors.toList());
+
+        System.out.println("Purchase numbers : " + purchaseNumbers);
+        System.out.println("Shipping numbers : " + shippingNumbers);
+
+        if(purchaseNumbers.isEmpty() && shippingNumbers.isEmpty()) {
+            return Result.error("No invoice numbers found.");
+        }
+
+        if(!purchaseNumbers.isEmpty())
+            purchaseOrderService.setPaid(purchaseNumbers);
+        if(!shippingNumbers.isEmpty())
+            shippingInvoiceService.setPaid(shippingNumbers);
+        return Result.ok("Invoice set to paid.");
+    }
 }

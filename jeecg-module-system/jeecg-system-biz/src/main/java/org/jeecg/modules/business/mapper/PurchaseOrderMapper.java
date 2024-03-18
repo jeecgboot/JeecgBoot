@@ -1,12 +1,15 @@
 package org.jeecg.modules.business.mapper;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PurchaseOrder;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.jeecg.modules.business.vo.InvoiceKpi;
 import org.jeecg.modules.business.vo.InvoiceMetaData;
 import org.jeecg.modules.business.vo.PurchaseOrderPage;
 import org.jeecg.modules.business.vo.SkuQuantity;
@@ -118,4 +121,7 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
     long countPurchaseOrders();
 
     void updatePurchaseOrderStatus(@Param("invoiceNumber") String invoiceNumber, @Param("isOrdered") boolean isOrdered);
+    InvoiceKpi countPurchaseInvoices(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("showAllData") boolean showAllData, @Param("username") String username);
+
+    void setPaid(@Param("invoiceNumbers") List<String> invoiceNumbers);
 }

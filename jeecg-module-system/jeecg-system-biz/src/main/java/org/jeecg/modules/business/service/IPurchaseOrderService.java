@@ -137,4 +137,6 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
     void setPageForList(Page<PurchaseOrderPage> page);
 
     void updatePurchaseOrderStatus(String invoiceNumber, boolean isOrdered);
+
+    void setPaid(List<String> invoiceNumbers);
 }
