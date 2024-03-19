@@ -37,17 +37,16 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.SecureRandom;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
-import java.util.UUID;
 
 /**
  * spring authorization server核心配置
@@ -193,7 +192,8 @@ public class SecurityConfig {
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
         RSAKey rsaKey = new RSAKey.Builder(publicKey)
                 .privateKey(privateKey)
-                .keyID(UUID.randomUUID().toString())
+                // 重要！生产环境需要修改！
+                .keyID("jeecg")
                 .build();
         JWKSet jwkSet = new JWKSet(rsaKey);
         return new ImmutableJWKSet<>(jwkSet);
@@ -211,7 +211,13 @@ public class SecurityConfig {
         KeyPair keyPair;
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(2048);
+
+            // 生产环境不应该设置secureRandom，seed如果被泄露，jwt容易被伪造
+            // 如果不设置secureRandom，会存在一个问题，当应用重启后，原有的token将会全部失效，因为重启的keyPair与之前已经不同
+            SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
+            // 重要！生产环境需要修改！
+            secureRandom.setSeed("jeecg".getBytes());
+            keyPairGenerator.initialize(2048, secureRandom);
             keyPair = keyPairGenerator.generateKeyPair();
         }
         catch (Exception ex) {
