@@ -348,8 +348,11 @@ public class CommonUtils {
 
         //返回 host domain
         String baseDomainPath = null;
-        int length = 80;
-        if(length == serverPort){
+        //update-begin---author:wangshuai---date:2024-03-15---for:【QQYUN-8561】企业微信登陆请求接口设置上下文不一致，导致接口404---
+        int httpPort = 80;
+        int httpsPort = 443;
+        if(httpPort == serverPort || httpsPort == serverPort){
+        //update-end---author:wangshuai---date:2024-03-15---for:【QQYUN-8561】企业微信登陆请求接口设置上下文不一致，导致接口404---~
             baseDomainPath = scheme + "://" + serverName  + contextPath ;
         }else{
             baseDomainPath = scheme + "://" + serverName + ":" + serverPort + contextPath ;
