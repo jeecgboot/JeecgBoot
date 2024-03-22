@@ -16,18 +16,18 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.config.shiro.filters.CustomShiroFilterFactoryBean;
 import org.jeecg.config.shiro.filters.JwtFilter;
-import org.springframework.aop.framework.Advised;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.Environment;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +39,6 @@ import javax.annotation.Resource;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import java.lang.reflect.Method;
-import java.time.Duration;
 import java.util.*;
 
 /**
@@ -60,9 +59,6 @@ public class ShiroConfig {
     private JeecgBaseConfig jeecgBaseConfig;
     @Autowired(required = false)
     private RedisProperties redisProperties;
-
-    @Autowired
-    private ApplicationContext ctx;
     /**
      * Filter Chain定义说明
      *
@@ -178,7 +174,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/WW_verify*", "anon");
 
         // 通过注解免登录url
-        List<String> ignoreAuthUrlList = collectIgnoreAuthUrl(ctx);
+        List<String> ignoreAuthUrlList = collectIgnoreAuthUrl();
         if (!CollectionUtils.isEmpty(ignoreAuthUrlList)) {
             for (String url : ignoreAuthUrlList) {
                 filterChainDefinitionMap.put(url, "anon");
@@ -339,20 +335,22 @@ public class ShiroConfig {
 
 
     @SneakyThrows
-    public List<String> collectIgnoreAuthUrl(ApplicationContext context) {
+    public List<String> collectIgnoreAuthUrl() {
         List<String> ignoreAuthUrls = new ArrayList<>();
-        Map<String, Object> controllers = context.getBeansWithAnnotation(RestController.class);
-        for (Object bean : controllers.values()) {
-            if (!(bean instanceof Advised)) {
-                continue;
-            }
-            Class<?> beanClass = ((Advised) bean).getTargetSource().getTarget().getClass();
-            RequestMapping base = beanClass.getAnnotation(RequestMapping.class);
+        ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
+        provider.addIncludeFilter(new AnnotationTypeFilter(RestController.class));
+
+        String basePackage = "org.jeecg"; // 替换为你的包路径
+        Set<BeanDefinition> components = provider.findCandidateComponents(basePackage);
+        for (BeanDefinition component : components) {
+            String beanClassName = component.getBeanClassName();
+            Class<?> clazz = Class.forName(beanClassName);
+            RequestMapping base = clazz.getAnnotation(RequestMapping.class);
             String[] baseUrl = {};
             if (Objects.nonNull(base)) {
                 baseUrl = base.value();
             }
-            Method[] methods = beanClass.getDeclaredMethods();
+            Method[] methods = clazz.getDeclaredMethods();
 
             for (Method method : methods) {
                 if (method.isAnnotationPresent(IgnoreAuth.class) && method.isAnnotationPresent(RequestMapping.class)) {
