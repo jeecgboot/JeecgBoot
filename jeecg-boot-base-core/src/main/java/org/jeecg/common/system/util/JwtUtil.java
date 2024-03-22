@@ -12,10 +12,7 @@ import com.google.common.base.Joiner;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,12 +34,16 @@ import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.security.self.SelfAuthenticationProvider;
+import org.jeecg.config.security.self.SelfAuthenticationToken;
 import org.jeecg.config.security.utils.SecureUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.*;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AccessTokenAuthenticationToken;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.context.AuthorizationServerContextHolder;
@@ -124,17 +125,25 @@ public class JwtUtil {
 	}
 
 	/**
-	 * 生成签名,5min后过期（暂未实现）
+	 * 生成token
 	 *
 	 * @param username 用户名
 	 * @param secret   用户的密码
 	 * @return 加密的token
 	 */
 	public static String sign(String username, String secret) {
-		Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
-		Algorithm algorithm = Algorithm.HMAC256(secret);
-		// 附带username信息
-		return JWT.create().withClaim("username", username).withExpiresAt(date).sign(algorithm);
+		Map<String, Object> additionalParameter = new HashMap<>();
+		additionalParameter.put("username", username);
+
+		RegisteredClientRepository registeredClientRepository = SpringContextUtils.getBean(RegisteredClientRepository.class);
+		SelfAuthenticationProvider selfAuthenticationProvider = SpringContextUtils.getBean(SelfAuthenticationProvider.class);
+
+		OAuth2ClientAuthenticationToken client = new OAuth2ClientAuthenticationToken(Objects.requireNonNull(registeredClientRepository.findByClientId("jeecg-client")), ClientAuthenticationMethod.CLIENT_SECRET_BASIC, null);
+		client.setAuthenticated(true);
+		SelfAuthenticationToken selfAuthenticationToken = new SelfAuthenticationToken(client, additionalParameter);
+		selfAuthenticationToken.setAuthenticated(true);
+		OAuth2AccessTokenAuthenticationToken accessToken = (OAuth2AccessTokenAuthenticationToken) selfAuthenticationProvider.authenticate(selfAuthenticationToken);
+		return accessToken.getAccessToken().getTokenValue();
 
 	}
 
