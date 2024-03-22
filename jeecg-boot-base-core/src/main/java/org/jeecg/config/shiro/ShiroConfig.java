@@ -173,6 +173,7 @@ public class ShiroConfig {
         // 企业微信证书排除
         filterChainDefinitionMap.put("/WW_verify*", "anon");
 
+
         // 通过注解免登录url
         List<String> ignoreAuthUrlList = collectIgnoreAuthUrl();
         if (!CollectionUtils.isEmpty(ignoreAuthUrlList)) {
@@ -180,6 +181,7 @@ public class ShiroConfig {
                 filterChainDefinitionMap.put(url, "anon");
             }
         }
+
 
         // 添加自己的过滤器并且取名为jwt
         Map<String, Filter> filterMap = new HashMap<String, Filter>(1);
