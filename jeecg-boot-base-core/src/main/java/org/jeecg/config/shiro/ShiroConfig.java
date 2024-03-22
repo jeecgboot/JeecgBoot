@@ -21,10 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.*;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -49,6 +47,8 @@ import java.util.*;
 
 @Slf4j
 @Configuration
+// 免认证注解 @IgnoreAuth 注解生效范围配置
+@ComponentScan(basePackages = {"org.jeecg"})
 public class ShiroConfig {
 
     @Resource
@@ -340,8 +340,13 @@ public class ShiroConfig {
         ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
         provider.addIncludeFilter(new AnnotationTypeFilter(RestController.class));
 
-        String basePackage = "org.jeecg"; // 替换为你的包路径
-        Set<BeanDefinition> components = provider.findCandidateComponents(basePackage);
+        // 获取当前类的扫描注解的配置
+        Set<BeanDefinition> components = new HashSet<>();
+        for (String basePackage : AnnotationUtils.getAnnotation(ShiroConfig.class, ComponentScan.class).basePackages()) {
+            components.addAll(provider.findCandidateComponents(basePackage));
+        }
+
+        // 逐个匹配获取免认证路径
         for (BeanDefinition component : components) {
             String beanClassName = component.getBeanClassName();
             Class<?> clazz = Class.forName(beanClassName);
