@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-module-system</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>3.6.2</version>
+        <version>3.6.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -43,7 +43,7 @@
             <version>${dm8.version}</version>
         </dependency>
 
-        <!--支持 mysql5.7、mysql8、MariaDB10.3.16
+        <!-- flyway支持 mysql5.7、mysql8、MariaDB10.3.16
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>

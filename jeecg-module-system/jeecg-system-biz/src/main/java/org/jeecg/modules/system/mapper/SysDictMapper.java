@@ -83,6 +83,12 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	List<DictModelMany> queryManyDictByKeys(@Param("dictCodeList") List<String> dictCodeList, @Param("keys") List<String> keys);
 
 	/**
+	 * 查询系统所有字典项
+	 * @return
+	 */
+	public List<DictModelMany> queryAllDictItems(List<Integer> tenantIdList);
+	
+	/**
 	 * 查询所有部门 作为字典信息 id -->value,departName -->text
 	 * @return
 	 */
@@ -187,4 +193,11 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 */
 	@InterceptorIgnore(tenantLine = "true")
     List<SysDict> getDictListByLowAppId(@Param("lowAppId") String lowAppId, @Param("tenantId") Integer tenantId);
+
+	/**
+	 * 查询被逻辑删除的数据（根据租户id）
+	 * @return
+	 */
+	@Select("select * from sys_dict where del_flag = 1 and tenant_id = #{tenantId}")
+	List<SysDict> queryDeleteListBtTenantId(@Param("tenantId") Integer tenantId);
 }

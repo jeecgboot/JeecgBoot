@@ -293,6 +293,13 @@ public class DictAspect {
                 log.debug("translateDictFromTableByKeys.dictCode:" + dictCode);
                 log.debug("translateDictFromTableByKeys.values:" + values);
                 //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
+                
+                //update-begin---author:wangshuai---date:2024-01-09---for:微服务下为空报错没有参数需要传递空字符串---
+                if(null == dataSource){
+                    dataSource = "";
+                }
+                //update-end---author:wangshuai---date:2024-01-09---for:微服务下为空报错没有参数需要传递空字符串---
+                
                 List<DictModel> texts = commonApi.translateDictFromTableByKeys(table, text, code, values, dataSource);
                 //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
                 log.debug("translateDictFromTableByKeys.result:" + texts);

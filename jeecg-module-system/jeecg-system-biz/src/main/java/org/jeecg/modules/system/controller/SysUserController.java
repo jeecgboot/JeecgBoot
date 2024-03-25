@@ -244,6 +244,7 @@ public class SysUserController {
 		Result<SysUser> result = new Result<SysUser>();
 		try {
 			String ids = jsonObject.getString("ids");
+			sysUserService.checkUserAdminRejectDel(ids);
 			String status = jsonObject.getString("status");
 			String[] arr = ids.split(",");
             for (String id : arr) {
@@ -1428,7 +1429,7 @@ public class SysUserController {
         //------------------------------------------------------------------------------------------------
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
         if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
-            String tenantId = TokenUtils.getTenantIdByRequest(request);
+            String tenantId = oConvertUtils.getString(TokenUtils.getTenantIdByRequest(request),"-1");
             //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
             List<String> userIds = userTenantService.getUserIdsByTenantId(Integer.valueOf(tenantId));
             if (oConvertUtils.listIsNotEmpty(userIds)) {
@@ -1549,7 +1550,8 @@ public class SysUserController {
             @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
             @RequestParam(name = "departId", required = false) String departId,
             @RequestParam(name = "roleId", required = false) String roleId,
-            @RequestParam(name="keyword",required=false) String keyword) {
+            @RequestParam(name="keyword",required=false) String keyword,
+            @RequestParam(name="excludeUserIdList",required = false) String excludeUserIdList) {
         //------------------------------------------------------------------------------------------------
         Integer tenantId = null;
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
@@ -1560,7 +1562,7 @@ public class SysUserController {
             }
         }
         //------------------------------------------------------------------------------------------------
-        IPage<SysUser> pageList = sysUserDepartService.getUserInformation(tenantId, departId,roleId, keyword, pageSize, pageNo);
+        IPage<SysUser> pageList = sysUserDepartService.getUserInformation(tenantId, departId,roleId, keyword, pageSize, pageNo,excludeUserIdList);
         return Result.OK(pageList);
     }
 

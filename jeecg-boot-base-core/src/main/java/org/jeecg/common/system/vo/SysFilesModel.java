@@ -19,6 +19,8 @@ public class SysFilesModel {
     private String storeType;
     /**文件大小（kb）*/
     private Double fileSize;
+    /**租户id*/
+    private String tenantId;
 
     public String getId() {
         return id;
@@ -66,5 +68,13 @@ public class SysFilesModel {
 
     public void setFileSize(Double fileSize) {
         this.fileSize = fileSize;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
     }
 }

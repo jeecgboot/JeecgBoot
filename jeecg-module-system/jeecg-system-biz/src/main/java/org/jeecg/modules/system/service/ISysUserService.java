@@ -190,10 +190,10 @@ public interface ISysUserService extends IService<SysUser> {
 	/**
 	 * 通过用户名获取用户权限集合
 	 *
-	 * @param username 用户名
+	 * @param userId 用户id
 	 * @return 权限集合
 	 */
-	Set<String> getUserPermissionsSet(String username);
+	Set<String> getUserPermissionsSet(String userId);
 	
 	/**
 	 * 根据用户名设置部门ID
@@ -411,4 +411,10 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @return
 	 */
 	Result<?> importAppUser(HttpServletRequest request);
+
+	/**
+	 * 验证用户是否为管理员
+	 * @param ids
+	 */
+	void checkUserAdminRejectDel(String ids);
 }

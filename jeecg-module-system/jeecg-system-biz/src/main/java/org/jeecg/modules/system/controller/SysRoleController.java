@@ -123,13 +123,8 @@ public class SysRoleController {
 												@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 												HttpServletRequest req) {
 		Result<IPage<SysRole>> result = new Result<IPage<SysRole>>();
-
-		//update-begin---author:wangshuai---date:2023-11-20---for:【QQYUN-7089】低代码模式 选择组织角色没有数据 在租户角色中添加数据后，列表也无数据展示---
-		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
-			//此接口必须通过租户来隔离查询
-			role.setTenantId(oConvertUtils.getInt(!"0".equals(TenantContext.getTenant()) ? TenantContext.getTenant() : "", -1));
-		}
-		//update-end---author:wangshuai---date:2023-11-20---for:【QQYUN-7089】低代码模式 选择组织角色没有数据 在租户角色中添加数据后，列表也无数据展示---
+		//此接口必须通过租户来隔离查询
+		role.setTenantId(oConvertUtils.getInt(!"0".equals(TenantContext.getTenant()) ? TenantContext.getTenant() : "", -1));
 		
 		QueryWrapper<SysRole> queryWrapper = QueryGenerator.initQueryWrapper(role, req.getParameterMap());
 		Page<SysRole> page = new Page<SysRole>(pageNo, pageSize);
@@ -220,6 +215,12 @@ public class SysRoleController {
 				return Result.error("删除角色失败,当前角色不在此租户中。");
 			}
 		}
+    	
+		//update-begin---author:wangshuai---date:2024-01-16---for:【QQYUN-7974】禁止删除 admin 角色---
+		//是否存在admin角色
+		sysRoleService.checkAdminRoleRejectDel(id);
+		//update-end---author:wangshuai---date:2024-01-16---for:【QQYUN-7974】禁止删除 admin 角色---
+    	
 		sysRoleService.deleteRole(id);
 		return Result.ok("删除角色成功");
 	}
@@ -252,6 +253,8 @@ public class SysRoleController {
 					}
 				}
 			}
+			//验证是否为admin角色
+			sysRoleService.checkAdminRoleRejectDel(ids);
 			sysRoleService.deleteBatchRole(ids.split(","));
 			result.success("删除角色成功!");
 		}

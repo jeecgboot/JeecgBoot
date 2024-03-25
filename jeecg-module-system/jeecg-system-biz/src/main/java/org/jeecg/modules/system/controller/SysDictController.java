@@ -600,9 +600,10 @@ public class SysDictController {
 	 * @return
 	 */
 	@RequestMapping(value = "/deleteList", method = RequestMethod.GET)
-	public Result<List<SysDict>> deleteList() {
+	public Result<List<SysDict>> deleteList(HttpServletRequest request) {
 		Result<List<SysDict>> result = new Result<List<SysDict>>();
-		List<SysDict> list = this.sysDictService.queryDeleteList();
+		String tenantId = TokenUtils.getTenantIdByRequest(request);
+		List<SysDict> list = this.sysDictService.queryDeleteList(tenantId);
 		result.setSuccess(true);
 		result.setResult(list);
 		return result;

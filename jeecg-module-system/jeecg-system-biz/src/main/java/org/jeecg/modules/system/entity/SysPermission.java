@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.jeecg.common.aspect.annotation.Dict;
-import org.jeecgframework.poi.excel.annotation.Excel;
+import org.jeecg.modules.system.constant.DefIndexConst;
 
 /**
  * <p>
@@ -166,11 +166,11 @@ public class SysPermission implements Serializable {
     }
     public SysPermission(boolean index) {
     	if(index) {
-    		this.id = "9502685863ab87f0ad1134142788a385";
-        	this.name="首页";
-        	this.component="dashboard/Analysis";
-        	this.componentName="dashboard-analysis";
-        	this.url="/dashboard/analysis";
+			this.id = "9502685863ab87f0ad1134142788a385";
+			this.name = DefIndexConst.DEF_INDEX_NAME;
+			this.component = DefIndexConst.DEF_INDEX_COMPONENT;
+			this.componentName = "dashboard-analysis";
+			this.url = DefIndexConst.DEF_INDEX_URL;
         	this.icon="home";
         	this.menuType=0;
         	this.sortNo=0.0;
