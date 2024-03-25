@@ -152,37 +152,36 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
 	@Override
 	public Map<String, List<DictModel>> queryAllDictItems() {
-		Map<String, List<DictModel>> res = new HashMap(5);
-		LambdaQueryWrapper<SysDict> sysDictQueryWrapper = new LambdaQueryWrapper<SysDict>();
+		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		long start = System.currentTimeMillis();
+		Map<String, List<DictModel>> sysAllDictItems = new HashMap(5);
+		List<Integer> tenantIds = null;
 		//------------------------------------------------------------------------------------------------
 		//是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
-		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
-			sysDictQueryWrapper.eq(SysDict::getTenantId, oConvertUtils.getInt(TenantContext.getTenant(), 0))
-					.or().eq(SysDict::getTenantId,0);
+		if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+			tenantIds = new ArrayList<>();
+			tenantIds.add(0);
+			if (TenantContext.getTenant() != null) {
+				tenantIds.add(oConvertUtils.getInt(TenantContext.getTenant()));
+			}
 		}
 		//------------------------------------------------------------------------------------------------
-		
-		List<SysDict> ls = sysDictMapper.selectList(sysDictQueryWrapper);
-		LambdaQueryWrapper<SysDictItem> queryWrapper = new LambdaQueryWrapper<SysDictItem>();
-		queryWrapper.eq(SysDictItem::getStatus, 1);
-		queryWrapper.orderByAsc(SysDictItem::getSortOrder);
-		List<SysDictItem> sysDictItemList = sysDictItemMapper.selectList(queryWrapper);
+		List<DictModelMany> sysDictItemList = sysDictMapper.queryAllDictItems(tenantIds);
+		// 使用groupingBy根据dictCode分组
+		sysAllDictItems = sysDictItemList.stream()
+				.collect(Collectors.groupingBy(DictModelMany::getDictCode,
+						Collectors.mapping(d -> new DictModel(d.getValue(), d.getText(), d.getColor()), Collectors.toList())));
+		log.info("      >>> 1 获取系统字典项耗时（SQL）：" + (System.currentTimeMillis() - start) + "毫秒");
 
-		for (SysDict d : ls) {
-			List<DictModel> dictModelList = sysDictItemList.stream().filter(s -> d.getId().equals(s.getDictId())).map(item -> {
-				DictModel dictModel = new DictModel();
-				dictModel.setText(item.getItemText());
-				dictModel.setValue(item.getItemValue());
-				return dictModel;
-			}).collect(Collectors.toList());
-			res.put(d.getDictCode(), dictModelList);
-		}
-		//update-begin-author:taoyan date:2022-7-8 for: 系统字典数据应该包括自定义的java类-枚举
 		Map<String, List<DictModel>> enumRes = ResourceUtil.getEnumDictData();
-		res.putAll(enumRes);
-		//update-end-author:taoyan date:2022-7-8 for: 系统字典数据应该包括自定义的java类-枚举
-		log.debug("-------登录加载系统字典-----" + res.toString());
-		return res;
+		sysAllDictItems.putAll(enumRes);
+		log.info("      >>> 2 获取系统字典项耗时（Enum）：" + (System.currentTimeMillis() - start) + "毫秒");
+		
+		log.info("      >>> end 获取系统字典库总耗时：" + (System.currentTimeMillis() - start) + "毫秒");
+		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+
+		//log.info("-------登录加载系统字典-----" + sysAllDictItems.toString());
+		return sysAllDictItems;
 	}
 
 	/**
@@ -532,10 +531,12 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		String filterSql = "";
 		String keywordSql = null;
 		String sqlWhere = "where ";
+		String sqlAnd = " and ";
 		
 		//【JTC-631】判断如果 table 携带了 where 条件，那么就使用 and 查询，防止报错
-        if (tableSql.toLowerCase().contains(sqlWhere)) {
-            sqlWhere = CommonUtils.getFilterSqlByTableSql(tableSql) + " and ";
+		boolean tableHasWhere = tableSql.toLowerCase().contains(sqlWhere);
+        if (tableHasWhere) {
+			sqlWhere = CommonUtils.getFilterSqlByTableSql(tableSql);
 		}
 
 		// 下拉搜索组件 支持传入排序信息 查询排序
@@ -566,11 +567,13 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		
 		//下拉搜索组件 支持传入排序信息 查询排序
 		if(oConvertUtils.isNotEmpty(condition) && oConvertUtils.isNotEmpty(keywordSql)){
-			filterSql+= sqlWhere + condition + " and " + keywordSql;
+			filterSql += sqlWhere + sqlAnd + condition + sqlAnd + keywordSql;
 		}else if(oConvertUtils.isNotEmpty(condition)){
-			filterSql+= sqlWhere + condition;
+			filterSql += sqlWhere + sqlAnd + condition;
 		}else if(oConvertUtils.isNotEmpty(keywordSql)){
-			filterSql+= sqlWhere + keywordSql;
+			filterSql += sqlWhere + sqlAnd + keywordSql;
+		} else if (tableHasWhere){
+			filterSql += sqlWhere; 
 		}
 		
 		// 增加排序逻辑
@@ -653,7 +656,15 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	}
 
 	@Override
-	public List<SysDict> queryDeleteList() {
+	public List<SysDict> queryDeleteList(String tenantId) {
+		//update-begin---author:wangshuai---date:2024-02-27---for:【QQYUN-8340】回收站查找软删除记录时，没有判断是否启用多租户，造成可以查找并回收其他租户的数据 #5907---
+		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+			if(oConvertUtils.isEmpty(tenantId)){
+				return new ArrayList<>();
+			}
+			return baseMapper.queryDeleteListBtTenantId(oConvertUtils.getInt(tenantId));
+		}
+		//update-end---author:wangshuai---date:2024-02-27---for:【QQYUN-8340】回收站查找软删除记录时，没有判断是否启用多租户，造成可以查找并回收其他租户的数据 #5907---
 		return baseMapper.queryDeleteList();
 	}
 

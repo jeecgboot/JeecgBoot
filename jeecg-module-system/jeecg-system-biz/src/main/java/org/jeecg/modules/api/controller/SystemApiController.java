@@ -156,7 +156,7 @@ public class SystemApiController {
      * @return 部门 id
      */
     @GetMapping("/getDepartParentIdsByDepIds")
-    Set<String> getDepartParentIdsByDepIds(@RequestParam("depIds") Set depIds){
+    Set<String> getDepartParentIdsByDepIds(@RequestParam("depIds") Set<String> depIds){
         return sysBaseApi.getDepartParentIdsByDepIds(depIds);
     }
 
@@ -347,7 +347,7 @@ public class SystemApiController {
      * @return
      */
     @GetMapping("/queryAllUser")
-    public JSONObject queryAllUser(@RequestParam(name="userIds",required=false)String userIds, @RequestParam(name="pageNo",required=false) Integer pageNo,@RequestParam(name="pageSize",required=false) int pageSize){
+    public JSONObject queryAllUser(@RequestParam(name="userIds",required=false)String userIds, @RequestParam(name="pageNo",required=false) Integer pageNo,@RequestParam(name="pageSize",required=false) Integer pageSize){
         return sysBaseApi.queryAllUser(userIds, pageNo, pageSize);
     }
 
@@ -386,12 +386,12 @@ public class SystemApiController {
 
     /**
      * 获取用户的权限集合
-     * @param username
+     * @param userId 用户表ID
      * @return
      */
     @GetMapping("/getUserPermissionSet")
-    public Set<String> getUserPermissionSet(@RequestParam("username") String username){
-        return sysBaseApi.getUserPermissionSet(username);
+    public Set<String> getUserPermissionSet(@RequestParam("userId") String userId){
+        return sysBaseApi.getUserPermissionSet(userId);
     }
 
     //-----
@@ -419,12 +419,12 @@ public class SystemApiController {
 
     /**
      * 查询用户权限信息
-     * @param username
+     * @param userId
      * @return
      */
     @GetMapping("/queryUserAuths")
-    public Set<String> queryUserAuths(@RequestParam("username") String username){
-        return sysUserService.getUserPermissionsSet(username);
+    public Set<String> queryUserAuths(@RequestParam("userId") String userId){
+        return sysUserService.getUserPermissionsSet(userId);
     }
 
     /**
@@ -578,7 +578,7 @@ public class SystemApiController {
      * @param tenantId      新的租户ID
      * @return Map<String, String>  Map<原字典编码, 新字典编码>
      */
-    @GetMapping("/sys/api/copyLowAppDict")
+    @GetMapping("/copyLowAppDict")
     Map<String, String> copyLowAppDict(@RequestParam("originalAppId") String originalAppId, @RequestParam("appId") String appId, @RequestParam("tenantId") String tenantId) {
         return sysBaseApi.copyLowAppDict(originalAppId, appId, tenantId);
     }
@@ -732,14 +732,6 @@ public class SystemApiController {
         this.sysBaseApi.saveDataLog(dataLogDto);
     }
 
-    @PostMapping("/addSysFiles")
-    public void addSysFiles(@RequestBody SysFilesModel sysFilesModel){this.sysBaseApi.addSysFiles(sysFilesModel);}
-
-    @GetMapping("/getFileUrl")
-    public String getFileUrl(@RequestParam(name="fileId") String fileId){
-        return this.sysBaseApi.getFileUrl(fileId);
-    }
-
     /**
      * 更新头像
      * @param loginUser
@@ -858,7 +850,7 @@ public class SystemApiController {
      * @param deptIds
      * @return
      */
-    @GetMapping("/sys/api/queryUserIdsByDeptIds")
+    @GetMapping("/queryUserIdsByDeptIds")
     public List<String> queryUserIdsByDeptIds(@RequestParam("deptIds") List<String> deptIds){
         return sysBaseApi.queryUserIdsByDeptIds(deptIds);
     }
@@ -868,7 +860,7 @@ public class SystemApiController {
      * @param deptIds
      * @return
      */
-    @GetMapping("/sys/api/queryUserAccountsByDeptIds")
+    @GetMapping("/queryUserAccountsByDeptIds")
     public List<String> queryUserAccountsByDeptIds(@RequestParam("deptIds") List<String> deptIds){
         return sysBaseApi.queryUserAccountsByDeptIds(deptIds);
     }
@@ -878,7 +870,7 @@ public class SystemApiController {
      * @param roleCodes
      * @return
      */
-    @GetMapping("/sys/api/queryUserIdsByRoleds")
+    @GetMapping("/queryUserIdsByRoleds")
     public List<String> queryUserIdsByRoleds(@RequestParam("roleCodes")  List<String> roleCodes){
         return sysBaseApi.queryUserIdsByRoleds(roleCodes);
     }
@@ -888,7 +880,7 @@ public class SystemApiController {
      * @param positionIds
      * @return
      */
-    @GetMapping("/sys/api/queryUserIdsByPositionIds")
+    @GetMapping("/queryUserIdsByPositionIds")
     public List<String> queryUserIdsByPositionIds(@RequestParam("positionIds") List<String> positionIds){
         return sysBaseApi.queryUserIdsByPositionIds(positionIds);
     }
@@ -900,7 +892,7 @@ public class SystemApiController {
      * @param orgCode 部门编码
      * @return
      */
-    @GetMapping("/sys/api/getUserAccountsByDepCode")
+    @GetMapping("/getUserAccountsByDepCode")
     public List<String> getUserAccountsByDepCode(String orgCode){
         return sysBaseApi.getUserAccountsByDepCode(orgCode);
     }
@@ -911,7 +903,7 @@ public class SystemApiController {
      * @param selectSql
      * @return
      */
-    @GetMapping("/sys/api/dictTableWhiteListCheckBySql")
+    @GetMapping("/dictTableWhiteListCheckBySql")
     public boolean dictTableWhiteListCheckBySql(@RequestParam("selectSql") String selectSql) {
         return sysBaseApi.dictTableWhiteListCheckBySql(selectSql);
     }
@@ -923,10 +915,10 @@ public class SystemApiController {
      * @param fields          如果传的是dictCode，则该参数必须传null
      * @return
      */
-    @GetMapping("/sys/api/dictTableWhiteListCheckByDict")
+    @GetMapping("/dictTableWhiteListCheckByDict")
     public boolean dictTableWhiteListCheckByDict(
             @RequestParam("tableOrDictCode") String tableOrDictCode,
-            @RequestParam(value = "fields", required = false) String[] fields
+            @RequestParam(value = "fields", required = false) String... fields
     ) {
         return sysBaseApi.dictTableWhiteListCheckByDict(tableOrDictCode, fields);
     }

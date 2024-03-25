@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.6.2</version>
+  <version>3.6.3</version>
   <packaging>pom</packaging>
   <name>JEECG BOOT ${project.version}</name>
 
@@ -28,7 +28,7 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.6.2</jeecgboot.version>
+		<jeecgboot.version>3.6.3</jeecgboot.version>
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -40,14 +40,13 @@
 		<xxl-job-core.version>2.2.0</xxl-job-core.version>
         <fastjson.version>2.0.43</fastjson.version>
 		<pegdown.version>1.6.0</pegdown.version>
-		<knife4j-spring-boot-starter.version>4.3.0</knife4j-spring-boot-starter.version>
-		<knife4j-spring-ui.version>2.0.9</knife4j-spring-ui.version>
+		<knife4j-spring-boot-starter.version>4.4.0</knife4j-spring-boot-starter.version>
 		<!-- 数据库驱动 -->
 		<postgresql.version>42.2.25</postgresql.version>
 		<ojdbc6.version>11.2.0.3</ojdbc6.version>
 		<sqljdbc4.version>4.0</sqljdbc4.version>
 		<mysql-connector-java.version>8.0.27</mysql-connector-java.version>
-		<hutool.version>5.8.23</hutool.version>
+        <hutool.version>5.8.25</hutool.version>
 		<!-- 国产数据库驱动 -->
 		<dm8.version>8.1.1.49</dm8.version>
 
@@ -58,7 +57,8 @@
 		<minidao.version>1.9.5</minidao.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.6.6</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.7.2-beta</jimureport-spring-boot-starter.version>
+		<commons-io.version>2.11.0</commons-io.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.17.3</aliyun.oss.version>
@@ -66,10 +66,10 @@
 		<shiro.version>1.12.0</shiro.version>
 		<java-jwt.version>3.11.0</java-jwt.version>
 		<shiro-redis.version>3.2.2</shiro-redis.version>
-		<codegenerate.version>1.4.4</codegenerate.version>
+		<codegenerate.version>1.4.7</codegenerate.version>
 		<autopoi-web.version>1.4.7</autopoi-web.version>
 		<minio.version>8.5.7</minio.version>
-		<justauth-spring-boot-starter.version>1.3.4</justauth-spring-boot-starter.version>
+		<justauth-spring-boot-starter.version>1.4.0</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<qiniu-java-sdk.version>7.4.0</qiniu-java-sdk.version>
 		<jedis.version>3.8.0</jedis.version>
@@ -373,6 +373,18 @@
 						<artifactId>commons-lang</artifactId>
 						<groupId>commons-lang</groupId>
 					</exclusion>
+					<exclusion>
+						<artifactId>commons-collections</artifactId>
+						<groupId>commons-collections</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>commons-logging</artifactId>
+						<groupId>commons-logging</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>commons-io</artifactId>
+						<groupId>commons-io</groupId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<!-- minidao -->
@@ -397,6 +409,20 @@
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-nosql-starter</artifactId>
 				<version>1.6.0</version>
+			</dependency>
+			<!-- chatgpt -->
+			<dependency>
+				<groupId>org.jeecgframework.boot</groupId>
+				<artifactId>jeecg-boot-starter-chatgpt</artifactId>
+                <version>${jeecgboot.version}</version>
+			</dependency>
+
+			<!--flyway 支持 mysql5.7+、MariaDB10.3.16-->
+			<!--mysql5.6，需要把版本号改成5.2.1-->
+			<dependency>
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-core</artifactId>
+				<version>7.15.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

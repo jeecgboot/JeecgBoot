@@ -85,7 +85,7 @@
     </#if>
     </#list>
       })
-      const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, {immediate: true});
+      const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, {immediate: false});
       const formItemLayout = {
         labelCol: { xs: { span: 24 }, sm: { span: 5 } },
         wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
@@ -93,15 +93,20 @@
 
       async function initFormData(mainId) {
         resetFields();
+        let tmpData = {}
         if(mainId){
           let list = await query${sub.entityName}ListByMainId(mainId);
           if(list && list.length>0){
             let temp = list[0];
-            Object.keys(temp).map(k=>{
-              formData[k] = temp[k];
+            Object.keys(formData).forEach((key) => {
+              if(temp.hasOwnProperty(key)){
+                tmpData[key] = temp[key]
+              }
             })
           }
         }
+        //赋值
+        Object.assign(formData,tmpData);
       }
 
       async function getFormData() {

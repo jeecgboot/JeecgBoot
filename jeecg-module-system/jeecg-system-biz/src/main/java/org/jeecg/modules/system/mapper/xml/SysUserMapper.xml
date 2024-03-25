@@ -219,6 +219,14 @@
 				select user_id from sys_user_tenant where tenant_id = #{tenantId} and status = '1'
 			)
 		</if>
+		  
+		<!--【QQYUN-8239】用户角色，添加用户 返回2页数据，实际只显示一页 需要将不符合的用户id排除-->
+		<if test="excludeUserIdList!=null and excludeUserIdList.size()>0">
+			and a.id not in
+			<foreach collection="excludeUserIdList" item="userId" open="(" close=")" separator=",">
+				#{userId}
+			</foreach>
+		</if>
 	</select>
 
 	<!--获取租户下的用户离职列表信息-->

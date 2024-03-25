@@ -1,11 +1,13 @@
 package org.jeecg.modules.system.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -1384,7 +1386,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	 * 保存用户职位
 	 *
 	 * @param userId
-	 * @param postIds
+	 * @param positionIds
 	 */
 	private void saveUserPosition(String userId, String positionIds) {
 		if (oConvertUtils.isNotEmpty(positionIds)) {
@@ -1802,5 +1804,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		//update-end---author:wangshuai ---date:20230710  for：【QQYUN-5731】导入用户时，没有提醒------------
 	}
 	//======================================= end 用户与部门 用户列表导入 =========================================
-	
+	@Override
+	public void checkUserAdminRejectDel(String userIds) {
+		LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
+		query.in(SysUser::getId,Arrays.asList(userIds.split(SymbolConstant.COMMA)));
+		query.eq(SysUser::getUsername,"admin");
+		Long adminRoleCount = this.baseMapper.selectCount(query);
+		//大于0说明存在管理员用户，不允许删除
+		if(adminRoleCount>0){
+			throw new JeecgBootException("admin用户，不允许删除！");
+		}
+	}
 }

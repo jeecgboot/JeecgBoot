@@ -22,7 +22,6 @@ import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.aspect.UrlMatchEnum;
-import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.*;
 import org.jeecg.common.constant.enums.EmailTemplateEnum;
 import org.jeecg.common.constant.enums.MessageTypeEnum;
@@ -124,8 +123,6 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	private ISysUserService sysUserService;
 	@Autowired
 	private ISysDataLogService sysDataLogService;
-	@Autowired
-	private ISysFilesService sysFilesService;
 	@Autowired
 	private ISysRoleService sysRoleService;
 	@Autowired
@@ -336,7 +333,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	}
 
 	@Override
-	public Set<String> getDepartParentIdsByDepIds(Set depIds) {
+	public Set<String> getDepartParentIdsByDepIds(Set<String> depIds) {
 		LambdaQueryWrapper<SysDepart> departQuery = new LambdaQueryWrapper<SysDepart>().in(SysDepart::getId, depIds);
 		List<SysDepart> departList = departMapper.selectList(departQuery);
 
@@ -1098,13 +1095,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	/**
 	 * 查询用户拥有的权限集合
-	 * @param username
+	 * @param userId
 	 * @return
 	 */
 	@Override
-	public Set<String> getUserPermissionSet(String username) {
+	public Set<String> getUserPermissionSet(String userId) {
 		Set<String> permissionSet = new HashSet<>();
-		List<SysPermission> permissionList = sysPermissionMapper.queryByUser(username);
+		List<SysPermission> permissionList = sysPermissionMapper.queryByUser(userId);
 		//================= begin 开启租户的时候 如果没有test角色，默认加入test角色================
 		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
 			if (permissionList == null) {
@@ -1123,7 +1120,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				permissionSet.add(po.getPerms());
 			}
 		}
-		log.info("-------通过数据库读取用户拥有的权限Perms------username： "+ username+",Perms size: "+ (permissionSet==null?0:permissionSet.size()) );
+		log.info("-------通过数据库读取用户拥有的权限Perms------userId： "+ userId+",Perms size: "+ (permissionSet==null?0:permissionSet.size()) );
 		return permissionSet;
 	}
 
@@ -1148,7 +1145,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			sysPermission.setUrl(onlineFormUrl);
 			int count = sysPermissionMapper.queryCountByUsername(username, sysPermission);
 			if(count<=0){
-				return false;
+				//update-begin---author:chenrui ---date:20240123  for：[QQYUN-7992]【online】工单申请下的online表单，未配置online表单开发菜单，操作报错无权限------------
+				sysPermission.setUrl(onlineAuthDTO.getOnlineWorkOrderUrl());
+				count = sysPermissionMapper.queryCountByUsername(username, sysPermission);
+				if(count<=0) {
+					return false;
+				}
+				//update-end---author:chenrui ---date:20240123  for：[QQYUN-7992]【online】工单申请下的online表单，未配置online表单开发菜单，操作报错无权限------------
 			}
 		} else {
 			//找到菜单了
@@ -1174,12 +1177,12 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	/**
 	 * 查询用户拥有的权限集合 common api 里面的接口实现
-	 * @param username
+	 * @param userId
 	 * @return
 	 */
 	@Override
-	public Set<String> queryUserAuths(String username) {
-		return getUserPermissionSet(username);
+	public Set<String> queryUserAuths(String userId) {
+		return getUserPermissionSet(userId);
 	}
 
 	/**
@@ -1591,29 +1594,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		entity.setDataContent(dataLogDto.getContent());
 		entity.setType(dataLogDto.getType());
 		entity.setDataVersion("1");
-		entity.autoSetCreateName();
+		if (oConvertUtils.isNotEmpty(dataLogDto.getCreateName())) {
+			entity.setCreateBy(dataLogDto.getCreateName());
+		} else {
+			entity.autoSetCreateName();
+		}
 		sysDataLogService.save(entity);
 	}
-
-    @Override
-    public void addSysFiles(SysFilesModel sysFilesModel) {
-        SysFiles sysFiles = new SysFiles();
-        BeanUtils.copyProperties(sysFilesModel,sysFiles);
-        String defaultValue = "0";
-        sysFiles.setIzStar(defaultValue);
-        sysFiles.setIzFolder(defaultValue);
-        sysFiles.setIzRootFolder(defaultValue);
-        sysFiles.setDelFlag(defaultValue);
-		String tenantId = oConvertUtils.getString(TenantContext.getTenant());
-		sysFiles.setTenantId(tenantId);
-        sysFilesService.save(sysFiles);
-    }
-
-    @Override
-    public String getFileUrl(String fileId) {
-        SysFiles sysFiles = sysFilesService.getById(fileId);
-        return sysFiles.getUrl();
-    }
 
     @Override
     public void updateAvatar(LoginUser loginUser) {
