@@ -2,8 +2,6 @@ package org.jeecg.config.flyway;
 
 import com.baomidou.dynamic.datasource.DynamicRoutingDataSource;
 import lombok.extern.slf4j.Slf4j;
-import org.flywaydb.core.Flyway;
-import org.flywaydb.core.api.FlywayException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -96,41 +94,41 @@ public class FlywayConfig {
     @Value("${spring.flyway.clean-disabled:true}")
     private Boolean cleanDisabled;
     
-    @Bean
-    public void migrate() {
-        if(!enabled){
-            return;
-        }
-        
-        DynamicRoutingDataSource ds = (DynamicRoutingDataSource) dataSource;
-        Map<String, DataSource> dataSources = ds.getDataSources();
-        dataSources.forEach((k, v) -> {
-            if("master".equals(k)){
-                String databaseType = environment.getProperty("spring.datasource.dynamic.datasource." + k + ".url");
-                if (databaseType != null && databaseType.contains("mysql")) {
-                    try {
-                            Flyway flyway = Flyway.configure()
-                                    .dataSource(v)
-                                    .locations(locations)
-                                    .encoding(encoding)
-                                    .sqlMigrationPrefix(sqlMigrationPrefix)
-                                    .sqlMigrationSeparator(sqlMigrationSeparator)
-                                    .placeholderPrefix(placeholderPrefix)
-                                    .placeholderSuffix(placeholderSuffix)
-                                    .sqlMigrationSuffixes(sqlMigrationSuffixes)
-                                    .validateOnMigrate(validateOnMigrate)
-                                    .baselineOnMigrate(baselineOnMigrate)
-                                    .cleanDisabled(cleanDisabled)
-                                    .load();
-                            flyway.migrate();
-                            log.info("【升级提示】平台集成了MySQL库的Flyway，数据库版本自动升级! ");
-                    } catch (FlywayException e) {
-                        log.error("【升级提示】flyway执行sql脚本失败", e);
-                    }
-                } else {
-                    log.warn("【升级提示】平台只集成了MySQL库的Flyway，实现了数据库版本自动升级! 其他类型的数据库，您可以考虑手工升级~");
-                }
-            }
-        });
-    }
+//    @Bean
+//    public void migrate() {
+//        if(!enabled){
+//            return;
+//        }
+//
+//        DynamicRoutingDataSource ds = (DynamicRoutingDataSource) dataSource;
+//        Map<String, DataSource> dataSources = ds.getDataSources();
+//        dataSources.forEach((k, v) -> {
+//            if("master".equals(k)){
+//                String databaseType = environment.getProperty("spring.datasource.dynamic.datasource." + k + ".url");
+//                if (databaseType != null && databaseType.contains("mysql")) {
+//                    try {
+//                            Flyway flyway = Flyway.configure()
+//                                    .dataSource(v)
+//                                    .locations(locations)
+//                                    .encoding(encoding)
+//                                    .sqlMigrationPrefix(sqlMigrationPrefix)
+//                                    .sqlMigrationSeparator(sqlMigrationSeparator)
+//                                    .placeholderPrefix(placeholderPrefix)
+//                                    .placeholderSuffix(placeholderSuffix)
+//                                    .sqlMigrationSuffixes(sqlMigrationSuffixes)
+//                                    .validateOnMigrate(validateOnMigrate)
+//                                    .baselineOnMigrate(baselineOnMigrate)
+//                                    .cleanDisabled(cleanDisabled)
+//                                    .load();
+//                            flyway.migrate();
+//                            log.info("【升级提示】平台集成了MySQL库的Flyway，数据库版本自动升级! ");
+//                    } catch (FlywayException e) {
+//                        log.error("【升级提示】flyway执行sql脚本失败", e);
+//                    }
+//                } else {
+//                    log.warn("【升级提示】平台只集成了MySQL库的Flyway，实现了数据库版本自动升级! 其他类型的数据库，您可以考虑手工升级~");
+//                }
+//            }
+//        });
+//    }
 }
