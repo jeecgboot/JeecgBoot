@@ -46,11 +46,22 @@ public class DashboardServiceImpl implements DashboardService {
         BigDecimal purchaseTotal = BigDecimal.valueOf(purchaseInvoices.getTotal().doubleValue());
         BigDecimal purchaseTotalLag = BigDecimal.valueOf(purchaseInvoicesLag.getTotal().doubleValue());
 
-        BigDecimal growthShippingInvoicesTotal = shipTotal.subtract(shipTotalLag).divide(shipTotalLag, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
-        BigDecimal growthShippingInvoicesQty = BigDecimal.valueOf(shippingInvoices.getQty()).subtract(BigDecimal.valueOf(shippingInvoicesLag.getQty())).divide(BigDecimal.valueOf(shippingInvoicesLag.getQty()), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
-        BigDecimal growthPurchaseInvoicesTotal = purchaseTotal.subtract(purchaseTotalLag).divide(purchaseTotalLag, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
-        BigDecimal growthPurchaseInvoicesQty = BigDecimal.valueOf(purchaseInvoices.getQty()).subtract(BigDecimal.valueOf(purchaseInvoicesLag.getQty())).divide(BigDecimal.valueOf(purchaseInvoicesLag.getQty()), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
-        BigDecimal growthPlatformOrders = BigDecimal.valueOf(platformOrders.getProcessed()).subtract(BigDecimal.valueOf(platformOrdersLag.getProcessed())).divide(BigDecimal.valueOf(platformOrdersLag.getProcessed()), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+        BigDecimal growthShippingInvoicesTotal = BigDecimal.ZERO;
+        BigDecimal growthShippingInvoicesQty = BigDecimal.ZERO;
+        BigDecimal growthPurchaseInvoicesTotal = BigDecimal.ZERO;
+        BigDecimal growthPurchaseInvoicesQty = BigDecimal.ZERO;
+        BigDecimal growthPlatformOrders = BigDecimal.ZERO;
+
+        if ((shipTotalLag.compareTo(BigDecimal.ZERO) > 0))
+            growthShippingInvoicesTotal = shipTotal.subtract(shipTotalLag).divide(shipTotalLag, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+        if ((shippingInvoicesLag.getQty() > 0))
+            growthShippingInvoicesQty = BigDecimal.valueOf(shippingInvoices.getQty()).subtract(BigDecimal.valueOf(shippingInvoicesLag.getQty())).divide(BigDecimal.valueOf(shippingInvoicesLag.getQty()), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+        if (!(purchaseTotalLag.compareTo(BigDecimal.ZERO) > 0))
+            growthPurchaseInvoicesTotal = purchaseTotal.subtract(purchaseTotalLag).divide(purchaseTotalLag, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+        if ((purchaseInvoicesLag.getQty() > 0))
+            growthPurchaseInvoicesQty = BigDecimal.valueOf(purchaseInvoices.getQty()).subtract(BigDecimal.valueOf(purchaseInvoicesLag.getQty())).divide(BigDecimal.valueOf(purchaseInvoicesLag.getQty()), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+        if ((platformOrdersLag.getProcessed() > 0))
+            growthPlatformOrders = BigDecimal.valueOf(platformOrders.getProcessed()).subtract(BigDecimal.valueOf(platformOrdersLag.getProcessed())).divide(BigDecimal.valueOf(platformOrdersLag.getProcessed()), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
 
         shippingInvoices.setGrowthTotal(growthShippingInvoicesTotal);
         shippingInvoices.setGrowthQty(growthShippingInvoicesQty);

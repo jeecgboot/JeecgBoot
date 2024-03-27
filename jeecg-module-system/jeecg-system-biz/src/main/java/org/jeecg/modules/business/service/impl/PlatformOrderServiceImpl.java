@@ -313,6 +313,15 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         Map<String, PlatformOrder> orderMap = orderList.stream().collect(toMap(PlatformOrder::getId, Function.identity()));
         return orderContents.stream().collect(groupingBy(platformOrderContent -> orderMap.get(platformOrderContent.getPlatformOrderId())));
     }
+    @Override
+    public Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderDataByInvoiceCode(String invoiceCode) {
+        List<PlatformOrder> orderList = platformOrderMap.getPlatformOrdersByInvoiceNumber(invoiceCode);
+        List<String> orderIds = orderList.stream().map(PlatformOrder::getId).collect(toList());
+        List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContent(orderIds);
+        Map<String, PlatformOrder> orderMap = orderList.stream().collect(toMap(PlatformOrder::getId, Function.identity()));
+        return orderContents.stream().collect(groupingBy(platformOrderContent -> orderMap.get(platformOrderContent.getPlatformOrderId())));
+
+    }
 
     @Override
     public String findPreviousInvoice() {
@@ -476,5 +485,10 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     @Override
     public List<PlatformOrder> getPlatformOrdersByInvoiceNumber(String invoiceNumber) {
         return platformOrderMap.getPlatformOrdersByInvoiceNumber(invoiceNumber);
+    }
+
+    @Override
+    public Map<String, String> fetchShippingPeriodAndType(String invoiceNumber) {
+        return platformOrderMap.fetchShippingPeriodAndType(invoiceNumber);
     }
 }

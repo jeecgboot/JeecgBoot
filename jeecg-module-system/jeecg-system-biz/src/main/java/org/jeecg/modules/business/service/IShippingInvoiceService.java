@@ -45,7 +45,6 @@ public interface IShippingInvoiceService extends IService<ShippingInvoice> {
     // Utils
     public List<Path> getPath(String dirPath, String invoiceNumber);
     public List<Path> getPath(String dirPath, String invoiceNumber, String invoiceEntity);
-    public String getInvoiceList(String invoiceNumber, String filetype);
     boolean deleteAttachmentFile(String filename);
 
     void setPaid(List<String> invoiceNumbers);

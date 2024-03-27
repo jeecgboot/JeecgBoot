@@ -65,4 +65,10 @@
                 #{invoiceNumber}
             </foreach>
     </update>
+    <select id="getClientByInvoiceNumber" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT c.*
+        FROM client c
+        JOIN shipping_invoice s ON s.client_id = c.id
+        WHERE s.invoice_number = #{invoiceNumber}
+    </select>
 </mapper>

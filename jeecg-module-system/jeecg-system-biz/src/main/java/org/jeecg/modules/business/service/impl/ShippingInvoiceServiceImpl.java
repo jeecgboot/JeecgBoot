@@ -50,8 +50,10 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
             this.extension = extension;
         }
     }
+    @Value("${jeecg.path.purchaseInvoiceDir}")
+    private String PURCHASE_INVOICE_LOCATION;
     @Value("${jeecg.path.shippingInvoiceDir}")
-    private String INVOICE_LOCATION;
+    private String SHIPPING_INVOICE_LOCATION;
     @Value("${jeecg.path.shippingInvoiceDetailDir}")
     private String INVOICE_DETAIL_LOCATION;
     @Value("${jeecg.path.shippingInvoicePdfDir}")
@@ -197,35 +199,6 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
             e.printStackTrace();
         }
         return pathList;
-    }
-
-    /**
-     *  Finds the absolute path of invoice file and return the path
-     * @param invoiceNumber
-     * @param filetype if it's an invoice or invoice detail
-     * @return String returns the path of the invoice file
-     */
-    public String getInvoiceList(String invoiceNumber, String filetype) {
-        log.info("Invoice number : " + invoiceNumber);
-        List<Path> pathList = new ArrayList<>();
-        if(filetype.equals("invoice")) {
-            log.info("File asked is of type invoice");
-            pathList = getPath(INVOICE_LOCATION, invoiceNumber);
-        }
-        if(filetype.equals("detail")) {
-            log.info("File asked is of type invoice detail");
-            pathList = getPath(INVOICE_DETAIL_LOCATION, invoiceNumber);
-        }
-        if(pathList.isEmpty()) {
-            log.error("NO INVOICE FILE FOUND : " + invoiceNumber);
-            return "ERROR";
-        }
-        else {
-            for (Path path : pathList) {
-                log.info(path.toString());
-            }
-            return pathList.get(0).toString();
-        }
     }
 
     @Override

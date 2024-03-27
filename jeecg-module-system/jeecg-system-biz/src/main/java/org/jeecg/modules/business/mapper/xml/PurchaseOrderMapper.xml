@@ -50,6 +50,7 @@
         FROM purchase_order
         WHERE MONTH(create_time) = MONTH(CURRENT_DATE())
           AND YEAR(create_time) = YEAR(CURRENT_DATE())
+          AND invoice_number LIKE '%%%%-%%-1%%%'
         ORDER BY create_time DESC
         LIMIT 1
     </select>
@@ -126,6 +127,7 @@
         FROM purchase_order po
         LEFT JOIN platform_order p
             ON p.purchase_invoice_number = po.invoice_number
+        WHERE IF(#{clientId} IS NOT NULL, po.client_id = #{clientId}, true)
         GROUP BY po.id, po.create_time
         ORDER BY po.create_time DESC
         LIMIT #{size} OFFSET #{offset}
@@ -140,7 +142,7 @@
         WHERE invoice_number = #{invoiceNumber}
     </update>
     <select id="countPurchaseInvoices" resultType="org.jeecg.modules.business.vo.InvoiceKpi">
-        WITH shippingEur AS (
+        WITH purchaseEur AS (
             SELECT IFNULL(count(*),0) as qty, IFNULL(sum(final_amount),0) as total
             FROM purchase_order
             WHERE create_time BETWEEN #{start} AND #{end}
@@ -151,15 +153,15 @@
             FROM exchange_rates
             WHERE original_currency = 'EUR' AND target_currency = 'USD'
             ORDER BY create_time DESC LIMIT 1
-        ),  shippingUsd AS (
+        ),  purchaseUsd AS (
             SELECT IFNULL(count(*),0) as qty, IFNULL(sum(final_amount/(SELECT rate FROM usdExchangeRate)),0) as total
-            FROM shipping_invoice
+            FROM purchase_order
             WHERE create_time BETWEEN #{start} AND #{end}
               AND currency_id = (SELECT id FROM currency WHERE code = 'USD')
               AND IF(#{showAllData} = false, create_by = #{username}, true)
         )
-        SELECT (shippingEur.qty + shippingUsd.qty) as qty, ROUND(shippingEur.total + shippingUsd.total, 2) as total
-        FROM shippingEur, usdExchangeRate, shippingUsd
+        SELECT (purchaseEur.qty + purchaseUsd.qty) as qty, ROUND(purchaseEur.total + purchaseUsd.total, 2) as total
+        FROM purchaseEur, usdExchangeRate, purchaseUsd
     </select>
     <update id="setPaid">
         UPDATE purchase_order
@@ -169,4 +171,18 @@
                 #{invoiceNumber}
             </foreach>
     </update>
+    <select id="getPurchaseByInvoiceNumberAndClientId" resultType="org.jeecg.modules.business.entity.PurchaseOrder">
+        SELECT *
+        FROM purchase_order
+        WHERE invoice_number = #{invoiceNumber}
+          AND client_id = #{clientId}
+    </select>
+    <select id="getPurchasesByInvoices" resultType="org.jeecg.modules.business.entity.PurchaseOrder">
+        SELECT *
+        FROM purchase_order
+        WHERE id IN
+        <foreach collection="invoices" item="invoice" index="index" open="(" separator="," close=")">
+            #{invoice.id}
+        </foreach>
+    </select>
 </mapper>

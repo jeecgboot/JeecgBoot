@@ -217,4 +217,6 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<PlatformOrder> getPlatformOrdersByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
 
     OrderKpi countPlatformOrders(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("showAllData") boolean showAllData, @Param("username") String username);
+
+    Map<String, String> fetchShippingPeriodAndType(@Param("invoiceNumber") String invoiceNumber);
 }

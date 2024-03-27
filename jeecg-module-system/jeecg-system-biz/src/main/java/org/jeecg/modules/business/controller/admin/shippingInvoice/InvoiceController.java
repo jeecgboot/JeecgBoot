@@ -431,6 +431,11 @@ public class InvoiceController {
         }
         try {
             String purchaseId = purchaseOrderService.addPurchase(skuQuantities);
+            PurchaseOrder purchaseOrder = purchaseOrderService.getById(purchaseId);
+            String clientCategory = clientCategoryService.getClientCategoryByClientId(purchaseOrder.getClientId());
+            if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
+                balanceService.updateBalance(purchaseOrder.getClientId(), purchaseOrder.getInvoiceNumber(), "purchase");
+            }
             metaData = purchaseOrderService.makeInvoice(purchaseId);
             return Result.OK(metaData);
         } catch (UserException e) {
@@ -690,6 +695,13 @@ public class InvoiceController {
         List<FactureDetail> factureDetails = shippingInvoiceService.getInvoiceDetail(invoiceNumber);
         List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceNumber);
         return shippingInvoiceService.exportToExcel(factureDetails, refunds, invoiceNumber, invoiceEntity, internalCode);
+    }
+    @GetMapping(value = "/downloadInventory")
+    public byte[] downloadInventory(@RequestParam("invoiceCode") String invoiceCode, @RequestParam("internalCode") String internalCode, @RequestParam("invoiceEntity") String invoiceEntity) throws IOException {
+        InvoiceMetaData metaData = new InvoiceMetaData("", invoiceCode, internalCode, invoiceEntity, "");
+        List<SkuOrderPage> skuOrderPages = skuService.getInventoryByInvoiceNumber(metaData.getInvoiceCode());
+        System.out.println(skuOrderPages);
+        return shippingInvoiceService.exportPurchaseInventoryToExcel(skuOrderPages, metaData);
     }
 
     /**

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.business.entity.Invoice;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PurchaseOrder;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -116,7 +117,7 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
 
     InvoiceMetaData getMetaDataFromInvoiceNumbers(@Param("invoiceNumber") String invoiceNumber);
 
-    List<PurchaseOrderPage> getPage(@Param("offset") long offset, @Param("size") long size);
+    List<PurchaseOrderPage> getPage(@Param("offset") long offset, @Param("size") long size, @Param("clientId") String clientId);
 
     long countPurchaseOrders();
 
@@ -124,4 +125,8 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
     InvoiceKpi countPurchaseInvoices(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("showAllData") boolean showAllData, @Param("username") String username);
 
     void setPaid(@Param("invoiceNumbers") List<String> invoiceNumbers);
+
+    PurchaseOrder getPurchaseByInvoiceNumberAndClientId(@Param("invoiceNumber") String invoiceNumber, @Param("clientId") String clientId);
+
+    List<PurchaseOrder> getPurchasesByInvoices(@Param("invoices") List<Invoice> invoices);
 }

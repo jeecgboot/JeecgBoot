@@ -9,10 +9,10 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecgframework.poi.excel.annotation.ExcelCollection;
 
 /**
- * @Description: SKU表
+ * @Description: SKU采购表
  * @Author: jeecg-boot
- * @Date: 2021-08-13
- * @Version: V1.2
+ * @Date: 2024-03-25
+ * @Version: V1.1
  */
 @Data
 @ApiModel(value = "skuOrderPage对象", description = "SKU表")
@@ -26,10 +26,15 @@ public class SkuOrderPage {
     /**
      * 商品ID
      */
-    @Excel(name = "商品ID", width = 15, dictTable = "product", dicText = "code", dicCode = "id")
-    @Dict(dictTable = "product", dicText = "code", dicCode = "id")
-    @ApiModelProperty(value = "商品ID")
+    @Excel(name = "商品", width = 15)
+    @ApiModelProperty(value = "商品")
     private String product;
+    /**
+     * 商品ID
+     */
+    @Excel(name = "商品英文", width = 15)
+    @ApiModelProperty(value = "商品英文")
+    private String productEn;
     /**
      * ERP中商品代码
      */
@@ -48,6 +53,12 @@ public class SkuOrderPage {
     @Excel(name = "在途数量", width = 15)
     @ApiModelProperty(value = "在途数量")
     private Integer purchasingAmount;
+    /**
+     * 采购中数量
+     */
+    @Excel(name = "采购中数量", width = 15)
+    @ApiModelProperty(value = "采购中数量")
+    private Integer qtyOrdered;
     /**
      * 未发货数量
      */

@@ -8,14 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.business.entity.Invoice;
-import org.jeecg.modules.business.service.InvoiceService;
+import org.jeecg.modules.business.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Api(tags = "发票")
 @RestController
@@ -32,5 +30,16 @@ public class InvoiceViewController {
         Page<Invoice> page = new Page<>(pageNo, pageSize);
         IPage<Invoice> pageList = invoiceService.page(page, queryWrapper);
         return Result.ok(pageList);
+    }
+    @DeleteMapping(value = "/cancelInvoice")
+    public Result<?> cancelInvoice(@RequestParam("id") String id, @RequestParam("invoiceNumber") String invoiceNumber, @RequestParam("clientId") String clientId) {
+        log.info("Cancelling invoice number : {}", invoiceNumber);
+        boolean invoiceCancelled = invoiceService.cancelInvoice(id, invoiceNumber, clientId);
+        return Result.ok(invoiceCancelled ? "sys.api.invoiceCancelSuccess" : "sys.api.invoiceCancelSuccessFileDeleteFail");
+    }
+    @DeleteMapping(value="/cancelBatchInvoice")
+    public Result<?> cancelBatchInvoice(@RequestBody List<Invoice> invoices) {
+        boolean invoicesCancelled = invoiceService.cancelBatchInvoice(invoices);
+        return Result.ok(invoicesCancelled ? "sys.api.invoiceCancelSuccess" : "sys.api.invoiceCancelSuccessFileDeleteFail");
     }
 }

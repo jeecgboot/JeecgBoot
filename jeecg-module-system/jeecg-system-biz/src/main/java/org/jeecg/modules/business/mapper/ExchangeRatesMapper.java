@@ -17,4 +17,6 @@ import java.math.BigDecimal;
 public interface ExchangeRatesMapper extends BaseMapper<ExchangeRates> {
 
     BigDecimal getLatestExchangeRate(@Param("original") String from, @Param("target") String to);
+
+    BigDecimal getExchangeRateFromDate(@Param("original") String from, @Param("target") String to, @Param("datetime") String dateTime);
 }

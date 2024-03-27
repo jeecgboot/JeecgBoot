@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +33,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +54,8 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
 
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 1;
     private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
+
+    private static final Integer SLEEP_TIME = 30000;
 
     @Override
     public void saveProviderFromMabang(List<ProviderData> providerDataList) {
@@ -74,7 +79,7 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
      */
     @Transactional
     @Override
-    public boolean addPurchaseOrderToMabang(Map<String, Integer> skuQuantities, InvoiceMetaData metaData) {
+    public boolean addPurchaseOrderToMabang(Map<String, Integer> skuQuantities, InvoiceMetaData metaData, AtomicReference<Map<String, LocalDateTime>> providersHistory) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String mabangUsername = sysUser.getMabangUsername();
         String content = metaData.getFilename();
@@ -145,10 +150,25 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
         ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
                 MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
 
-        List<String> groupIds = new ArrayList<>();
+
+        List<String> groupIds = new ArrayList<>(); // results from Mabang API
         List<CompletableFuture<Boolean>> changeOrderFutures = stockProviderMap.entrySet().stream()
                 .map(entry -> CompletableFuture.supplyAsync(() -> {
                     String providerName = entry.getKey();
+                    if(providersHistory.get().containsKey(providerName)) {
+                        log.info("Last processed provider : {} - {}", providerName, providersHistory.get().get(providerName));
+                        LocalDateTime lastProcessed = providersHistory.get().get(providerName);
+                        if(lastProcessed.isAfter(LocalDateTime.now().minusSeconds(10))) {
+                            log.info("Thread sleeping for {} seconds to avoid rate limit on Mabang API", SLEEP_TIME/1000);
+                            try {
+                                long sleepTime = SLEEP_TIME - (LocalDateTime.now().toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli() - lastProcessed.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli());
+                                System.out.println("======= SLEEP TIME : " + sleepTime);
+                                Thread.sleep(sleepTime);
+                            } catch (InterruptedException e) {
+                                log.error("Thread interrupted while sleeping", e);
+                            }
+                        }
+                    }
                     List<SkuStockData> stockDataList = entry.getValue();
                     log.info("Creating purchase order to Mabang {} :\n -provider : {}\n-content : {}\n-stockDataList : {}",metaData.getInvoiceCode(), providerName, content , stockDataList);
                     AddPurchaseOrderRequestBody body = new AddPurchaseOrderRequestBody(mabangUsername, providerName, content, stockDataList);
@@ -160,6 +180,7 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
                         return false;
                     }
                     groupIds.add(response.getGroupId());
+                    providersHistory.get().put(providerName, LocalDateTime.now());
                     return true;
                 }, throttlingExecutorService))
                 .collect(Collectors.toList());
@@ -168,7 +189,10 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
         log.info("{}/{} purchase orders created successfully on Mabang. {} : GroupIds : {}", nbSuccesses, stockProviderMap.size(), metaData.getInvoiceCode(),groupIds);
 
         // change status of purchase order to 'ordered' = true
-        purchaseOrderService.updatePurchaseOrderStatus(metaData.getInvoiceCode(), true);
-        return true;
+        if(nbSuccesses == stockProviderMap.size()) {
+            purchaseOrderService.updatePurchaseOrderStatus(metaData.getInvoiceCode(), true);
+            return true;
+        }
+        return false;
     }
 }

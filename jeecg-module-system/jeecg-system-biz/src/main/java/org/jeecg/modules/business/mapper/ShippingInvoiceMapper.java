@@ -26,6 +26,6 @@ public interface ShippingInvoiceMapper extends BaseMapper<ShippingInvoice> {
     Client fetchShopOwnerFromInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
     Currency fetchInvoiceCurrencyByCode(@Param("invoiceNumber") String invoiceCode);
     InvoiceKpi countShippingInvoices(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("showAllData") boolean showAllData, @Param("username") String username);
-
     void setPaid(@Param("invoiceNumbers") List<String> invoiceNumbers);
+    Client getClientByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
 }

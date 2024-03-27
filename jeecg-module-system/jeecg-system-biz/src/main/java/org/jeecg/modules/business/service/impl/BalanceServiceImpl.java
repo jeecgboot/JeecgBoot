@@ -48,19 +48,36 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
 
     @Override
     public void updateBalance(String clientId, String invoiceCode, String invoiceType) {
-
         // balance update
-        ShippingInvoice invoice = shippingInvoiceService.getShippingInvoice(invoiceCode);
-        String currency = currencyService.getCodeById(invoice.getCurrencyId());
-        BigDecimal previousBalance = getBalanceByClientIdAndCurrency(clientId, currency);
-        BigDecimal currentBalance = previousBalance.subtract(invoice.getFinalAmount());
+        if(invoiceType.equals("shipping")) {
+            ShippingInvoice invoice = shippingInvoiceService.getShippingInvoice(invoiceCode);
+            String currency = currencyService.getCodeById(invoice.getCurrencyId());
+            BigDecimal previousBalance = getBalanceByClientIdAndCurrency(clientId, currency);
+            BigDecimal currentBalance = previousBalance.subtract(invoice.getFinalAmount());
+            SysUser sysUser = new SysUser();
+            Balance balance = Balance.of(sysUser.getUsername(), clientId, invoice.getCurrencyId(), Balance.OperationType.Debit.name(), invoice.getId(), currentBalance);
+            balanceMapper.insert(balance);
+        }
         if(invoiceType.equals("complete")) {
+            ShippingInvoice invoice = shippingInvoiceService.getShippingInvoice(invoiceCode);
+            String currency = currencyService.getCodeById(invoice.getCurrencyId());
+            BigDecimal previousBalance = getBalanceByClientIdAndCurrency(clientId, currency);
+            BigDecimal currentBalance = previousBalance.subtract(invoice.getFinalAmount());
             BigDecimal purchaseFees = purchaseOrderService.getPurchaseFeesByInvoiceCode(invoiceCode);
             currentBalance = currentBalance.subtract(purchaseFees);
+            SysUser sysUser = new SysUser();
+            Balance balance = Balance.of(sysUser.getUsername(), clientId, invoice.getCurrencyId(), Balance.OperationType.Debit.name(), invoice.getId(), currentBalance);
+            balanceMapper.insert(balance);
         }
-        SysUser sysUser = new SysUser();
-        Balance balance = Balance.of(sysUser.getUsername(), clientId, invoice.getCurrencyId(), Balance.OperationType.Debit.name(), invoice.getId(), currentBalance);
-        balanceMapper.insert(balance);
+        if(invoiceType.equals("purchase")) {
+            PurchaseOrder invoice = purchaseOrderService.getPurchaseByInvoiceNumber(invoiceCode);
+            String currency = currencyService.getCodeById(invoice.getCurrencyId());
+            BigDecimal previousBalance = getBalanceByClientIdAndCurrency(clientId, currency);
+            BigDecimal currentBalance = previousBalance.subtract(invoice.getFinalAmount());
+            SysUser sysUser = new SysUser();
+            Balance balance = Balance.of(sysUser.getUsername(), clientId, invoice.getCurrencyId(), Balance.OperationType.Debit.name(), invoice.getId(), currentBalance);
+            balanceMapper.insert(balance);
+        }
     }
 
     @Override

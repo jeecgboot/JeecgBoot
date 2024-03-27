@@ -37,10 +37,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -54,6 +56,10 @@ import java.util.stream.Collectors;
 @RequestMapping("/purchaseOrder")
 @Slf4j
 public class PurchaseOrderController {
+    @Autowired
+    private IBalanceService balanceService;
+    @Autowired
+    private IClientCategoryService clientCategoryService;
     @Autowired
     private IPurchaseOrderService purchaseOrderService;
     @Autowired
@@ -85,9 +91,10 @@ public class PurchaseOrderController {
     @ApiOperation(value = "商品采购订单-分页列表查询", notes = "商品采购订单-分页列表查询")
     @GetMapping(value = "/list")
     public Result<?> queryPageList(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                   @RequestParam(name = "clientId", required = false) String clientId) {
         Page<PurchaseOrderPage> page = new Page<>(pageNo, pageSize);
-        purchaseOrderService.setPageForList(page);
+        purchaseOrderService.setPageForList(page, clientId);
         return Result.OK(page);
     }
     /**
@@ -114,6 +121,7 @@ public class PurchaseOrderController {
     @ApiOperation(value="商品采购订单-添加", notes="商品采购订单-添加")
     @PostMapping(value = "/addPurchaseAndOrder")
     public Result<?> addPurchaseAndOrder( @RequestBody PurchaseOrderPage purchaseOrderPage) {
+        Client client = clientService.getById(purchaseOrderPage.getClientId());
         PurchaseOrder purchaseOrder = new PurchaseOrder();
         BeanUtils.copyProperties(purchaseOrderPage, purchaseOrder);
         purchaseOrder.setPaymentDocumentString(new String(purchaseOrderPage.getPaymentDocument()));
@@ -121,13 +129,20 @@ public class PurchaseOrderController {
         String purchaseID = UUID.randomUUID().toString();
         purchaseOrder.setId(purchaseID);
         purchaseOrderService.save(purchaseOrder);
+
+        String clientCategory = clientCategoryService.getClientCategoryByClientId(client.getId());
+        if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
+            balanceService.updateBalance(purchaseOrder.getClientId(), purchaseOrder.getInvoiceNumber(), "purchase");
+        }
+
+        // No need to attribute purchase order to platform orders, probably just buying stock
         if(purchaseOrderPage.getPlatformOrderId() == null) {
             return Result.OK("sys.api.entryAddSuccess");
         }
         List<String> platformOrderIds = Arrays.stream(purchaseOrderPage.getPlatformOrderId().split(","))
                 .map(String::trim)
                 .collect(Collectors.toList());
-        log.info("Creating new purchase order and attributing it to orders: {}", platformOrderIds);
+        log.info("Attributing purchase order to platform orders: {}", platformOrderIds);
         List<PlatformOrder> platformOrders = platformOrderService.selectByPlatformOrderIds(platformOrderIds);
         Map<String, List<String>> platformOrderIdUpdateMap = new HashMap<>();
         if(!platformOrders.isEmpty()) {
@@ -263,45 +278,6 @@ public class PurchaseOrderController {
         }
         this.purchaseOrderService.delBatchMain(Arrays.asList(ids.split(",")));
         return Result.OK("sys.api.entryBatchDeleteSuccess");
-    }
-
-    /**
-     * Cancel a purchase order's invoice.
-     * @param purchaseId purchase ID
-     * @param invoiceNumber invoice number
-     * @return
-     */
-    @AutoLog(value = "商品采购订单-通过id删除")
-    @ApiOperation(value = "商品采购订单-通过id删除", notes = "商品采购订单-通过id删除")
-    @DeleteMapping(value = "/cancelInvoice")
-    public Result<?> cancelInvoice(@RequestParam("id") String purchaseId,
-                                   @RequestParam("invoiceNumber") String invoiceNumber) {
-        PurchaseOrder po = purchaseOrderService.getById(purchaseId);
-        if(po.getInventoryDocumentString() != null && !po.getInventoryDocumentString().isEmpty())
-            shippingInvoiceService.deleteAttachmentFile(po.getInventoryDocumentString());
-        if(po.getPaymentDocumentString() != null && !po.getPaymentDocumentString().isEmpty())
-            shippingInvoiceService.deleteAttachmentFile(po.getPaymentDocumentString());
-        purchaseOrderService.cancelInvoice(purchaseId, invoiceNumber);
-        return Result.OK("sys.api.entryDeleteSuccess");
-    }
-    /**
-     * Cancel multiple purchase order's invoice.
-     * @param purchaseIds list of purchase IDs
-     * @return
-     */
-    @AutoLog(value = "商品采购订单-批量删除")
-    @ApiOperation(value = "商品采购订单-批量删除", notes = "商品采购订单-批量删除")
-    @DeleteMapping(value = "/cancelBatchInvoice")
-    public Result<?> cancelBatchInvoice(@RequestParam("ids") String purchaseIds) {
-        List<PurchaseOrder> purchaseOrders = purchaseOrderService.listByIds(Arrays.asList(purchaseIds.split(",")));
-        for(PurchaseOrder po : purchaseOrders) {
-            if(po.getInventoryDocumentString() != null && !po.getInventoryDocumentString().isEmpty())
-                shippingInvoiceService.deleteAttachmentFile(po.getInventoryDocumentString());
-            if(po.getPaymentDocumentString() != null && !po.getPaymentDocumentString().isEmpty())
-                shippingInvoiceService.deleteAttachmentFile(po.getPaymentDocumentString());
-        }
-        purchaseOrderService.cancelBatchInvoice(purchaseIds);
-        return Result.OK("sys.api.entryDeleteSuccess");
     }
 
     /**
@@ -502,7 +478,7 @@ public class PurchaseOrderController {
      * @param purchaseID purchaseID
      */
     @RequestMapping(value = "/invoiceMeta", method = RequestMethod.GET)
-    public InvoiceMetaData getInvoiceMetaData(@RequestParam String purchaseID, HttpServletResponse response) throws IOException, URISyntaxException {
+    public InvoiceMetaData getInvoiceMetaData(@RequestParam String purchaseID, HttpServletResponse response) throws IOException, URISyntaxException, UserException {
         return purchaseOrderService.makeInvoice(purchaseID);
     }
 
@@ -594,29 +570,37 @@ public class PurchaseOrderController {
     }
 
     @GetMapping(value = "/createMabangPurchaseOrder")
-    public Result<?> createMabangPurchaseOrder(@RequestParam("invoiceNumbers") List<String> request) {
-        log.info("Creating purchase order to Mabang for invoices : {} ", request);
+    public Result<?> createMabangPurchaseOrder(@RequestParam("invoiceNumbers") List<String> invoiceNumbers) {
+        log.info("Creating purchase order to Mabang for invoices : {} ", invoiceNumbers);
         ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
                 MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
-        List<CompletableFuture<Boolean>> changeOrderFutures = request.stream()
+        // providersHistory lists the providers that have already been processed, if the current provider is in the list and has been processed within the last 10 seconds, the thread will sleep for 10 seconds
+        AtomicReference<Map<String, LocalDateTime>> providersHistory = new AtomicReference<>(new HashMap<>());
+        List<CompletableFuture<String>> future = invoiceNumbers.stream()
                 .map(invoiceNumber -> CompletableFuture.supplyAsync(() -> {
                     log.info("Invoice number : {}", invoiceNumber);
                     List<SkuQuantity> skuQuantities = purchaseOrderService.getSkuQuantityByInvoiceNumber(invoiceNumber);
                     if(skuQuantities.isEmpty()) {
-                        return false;
+                        return null;
                     }
                     Map<String, Integer> skuQuantityMap = skuQuantities.stream()
                             .collect(Collectors.toMap(SkuQuantity::getErpCode, SkuQuantity::getQuantity));
                     skuQuantityMap.forEach((s, integer) -> log.info("SKU: {} Quantity: {}", s, integer));
                     InvoiceMetaData metaData = purchaseOrderService.getMetaDataFromInvoiceNumbers(invoiceNumber);
-                    return providerMabangService.addPurchaseOrderToMabang(skuQuantityMap, metaData);
+                    boolean success = providerMabangService.addPurchaseOrderToMabang(skuQuantityMap, metaData, providersHistory);
+                    return success ? invoiceNumber : "failed";
                 },throttlingExecutorService))
                 .collect(Collectors.toList());
 
-        List<Boolean> results = changeOrderFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
-        long nbSuccesses = results.stream().filter(b -> b).count();
-        log.info("{}/{} purchase order requests have succeeded.", nbSuccesses, request.size());
+        List<String> results = future.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        long nbSuccesses = results.stream().filter(Objects::nonNull).count();
+        log.info("{}/{} purchase order requests have succeeded.", nbSuccesses, invoiceNumbers.size());
 
-        return Result.ok("data.noData");
+        Map<String, List<String>> data = new HashMap<>();
+        List<String> failedInvoices = results.stream().filter(s -> s.equals("failed")).collect(Collectors.toList());
+        List<String> successInvoices = results.stream().filter(s -> !s.equals("failed")).collect(Collectors.toList());
+        data.put("fail", failedInvoices);
+        data.put("success", successInvoices);
+        return Result.OK(data);
     }
 }
