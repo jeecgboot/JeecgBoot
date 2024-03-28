@@ -961,7 +961,7 @@ public class InvoiceController {
         String email = sysUser.getEmail();
         String invoiceID;
         String customerFullName;
-        boolean isShippingInvoice = invoiceNumber.charAt(8) == '7' || invoiceNumber.charAt(8) == '2';
+        boolean isShippingInvoice = Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.COMPLETE.name()) || Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.SHIPPING.name());
         if(isShippingInvoice)
             invoiceID = iShippingInvoiceService.getShippingInvoiceId(invoiceNumber);
         else

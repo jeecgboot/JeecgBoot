@@ -729,7 +729,7 @@ public class PlatformOrderShippingInvoiceService {
         List<Path> pathList = new ArrayList<>();
         if(filetype.equals("invoice")) {
             log.info("File asked is of type invoice");
-            if(invoiceNumber.charAt(8) == '1')
+            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.PURCHASE.name()))
                 pathList = getPath(PURCHASE_INVOICE_DIR, invoiceNumber);
             else
                 pathList = getPath(INVOICE_DIR, invoiceNumber);

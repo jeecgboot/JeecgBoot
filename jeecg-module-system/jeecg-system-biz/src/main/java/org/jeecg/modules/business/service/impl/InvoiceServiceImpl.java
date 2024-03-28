@@ -56,35 +56,32 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     @Override
     public boolean cancelInvoice(String id, String invoiceNumber, String clientId) {
         String invoiceEntity = clientService.getById(clientId).getInvoiceEntity();
-        switch (invoiceNumber.charAt(8)) {
-            case '1':
-                PurchaseOrder po = purchaseOrderService.getById(id);
-                if(po.getInventoryDocumentString() != null && !po.getInventoryDocumentString().isEmpty())
-                    shippingInvoiceService.deleteAttachmentFile(po.getInventoryDocumentString());
-                if(po.getPaymentDocumentString() != null && !po.getPaymentDocumentString().isEmpty())
-                    shippingInvoiceService.deleteAttachmentFile(po.getPaymentDocumentString());
-                platformOrderService.removePurchaseInvoiceNumber(invoiceNumber);
-                purchaseOrderService.deleteInvoice(invoiceNumber);
-                break;
-            case '2':
-                platformOrderContentService.cancelInvoice(invoiceNumber);
-                platformOrderService.cancelInvoice(invoiceNumber);
-                shippingInvoiceService.delMain(id);
-                break;
-            case '7':
-                platformOrderContentService.cancelInvoice(invoiceNumber);
-                platformOrderService.removePurchaseInvoiceNumber(invoiceNumber);
-                platformOrderService.cancelInvoice(invoiceNumber);
-                purchaseOrderService.cancelInvoice(invoiceNumber);
-                shippingInvoiceService.delMain(id);
-                PurchaseOrder purchase = purchaseOrderService.getPurchaseByInvoiceNumberAndClientId(invoiceNumber, clientId);
-                if(purchase.getInventoryDocumentString() != null && !purchase.getInventoryDocumentString().isEmpty())
-                    shippingInvoiceService.deleteAttachmentFile(purchase.getInventoryDocumentString());
-                if(purchase.getPaymentDocumentString() != null && !purchase.getPaymentDocumentString().isEmpty())
-                    shippingInvoiceService.deleteAttachmentFile(purchase.getPaymentDocumentString());
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid invoice number.");
+
+        if(Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.PURCHASE.name())) {
+            PurchaseOrder po = purchaseOrderService.getById(id);
+            if (po.getInventoryDocumentString() != null && !po.getInventoryDocumentString().isEmpty())
+                shippingInvoiceService.deleteAttachmentFile(po.getInventoryDocumentString());
+            if (po.getPaymentDocumentString() != null && !po.getPaymentDocumentString().isEmpty())
+                shippingInvoiceService.deleteAttachmentFile(po.getPaymentDocumentString());
+            platformOrderService.removePurchaseInvoiceNumber(invoiceNumber);
+            purchaseOrderService.deleteInvoice(invoiceNumber);
+        }
+        if(Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.SHIPPING.name())) {
+            platformOrderContentService.cancelInvoice(invoiceNumber);
+            platformOrderService.cancelInvoice(invoiceNumber);
+            shippingInvoiceService.delMain(id);
+        }
+        if(Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.COMPLETE.name())) {
+            platformOrderContentService.cancelInvoice(invoiceNumber);
+            platformOrderService.removePurchaseInvoiceNumber(invoiceNumber);
+            platformOrderService.cancelInvoice(invoiceNumber);
+            purchaseOrderService.cancelInvoice(invoiceNumber);
+            shippingInvoiceService.delMain(id);
+            PurchaseOrder purchase = purchaseOrderService.getPurchaseByInvoiceNumberAndClientId(invoiceNumber, clientId);
+            if(purchase.getInventoryDocumentString() != null && !purchase.getInventoryDocumentString().isEmpty())
+                shippingInvoiceService.deleteAttachmentFile(purchase.getInventoryDocumentString());
+            if(purchase.getPaymentDocumentString() != null && !purchase.getPaymentDocumentString().isEmpty())
+                shippingInvoiceService.deleteAttachmentFile(purchase.getPaymentDocumentString());
         }
         savRefundService.cancelInvoice(invoiceNumber);
 
@@ -99,15 +96,15 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
 
     @Override
     public boolean cancelBatchInvoice(List<Invoice> invoices) {
-        List<String> purchaseInvoiceNumbers = invoices.stream().map(Invoice::getInvoiceNumber).filter(invoiceNumber -> invoiceNumber.charAt(8) == '1').collect(Collectors.toList());
-        List<String> shippingInvoiceNumbers = invoices.stream().map(Invoice::getInvoiceNumber).filter(invoiceNumber -> invoiceNumber.charAt(8) == '2').collect(Collectors.toList());
-        List<String> completeInvoiceNumbers = invoices.stream().map(Invoice::getInvoiceNumber).filter(invoiceNumber -> invoiceNumber.charAt(8) == '7').collect(Collectors.toList());
+        List<String> purchaseInvoiceNumbers = invoices.stream().map(Invoice::getInvoiceNumber).filter(invoiceNumber -> Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.PURCHASE.name())).collect(Collectors.toList());
+        List<String> shippingInvoiceNumbers = invoices.stream().map(Invoice::getInvoiceNumber).filter(invoiceNumber -> Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.SHIPPING.name())).collect(Collectors.toList());
+        List<String> completeInvoiceNumbers = invoices.stream().map(Invoice::getInvoiceNumber).filter(invoiceNumber -> Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.COMPLETE.name())).collect(Collectors.toList());
         log.info("Cancelling {} purchase invoices : {}", purchaseInvoiceNumbers.size(), purchaseInvoiceNumbers);
         log.info("Cancelling {} shipping invoices : {}", shippingInvoiceNumbers.size(), shippingInvoiceNumbers);
         log.info("Cancelling {} complete invoices : {}", completeInvoiceNumbers.size(), completeInvoiceNumbers);
 
         if(!purchaseInvoiceNumbers.isEmpty()) {
-            List<Invoice> purchaseInvoices = invoices.stream().filter(invoice -> invoice.getInvoiceNumber().charAt(8) == '1').collect(Collectors.toList());
+            List<Invoice> purchaseInvoices = invoices.stream().filter(invoice -> Invoice.getType(invoice.getInvoiceNumber()).equalsIgnoreCase(Invoice.InvoiceType.PURCHASE.name())).collect(Collectors.toList());
             List<String> ids = purchaseInvoices.stream().map(Invoice::getId).collect(Collectors.toList());
             List<PurchaseOrder> purchaseOrders = purchaseOrderService.getPurchasesByInvoices(purchaseInvoices);
 
@@ -126,7 +123,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
 
         }
         if(!shippingInvoiceNumbers.isEmpty()) {
-            List<String> ids = invoices.stream().filter(invoice -> invoice.getInvoiceNumber().charAt(8) == '2').map(Invoice::getId).collect(Collectors.toList());
+            List<String> ids = invoices.stream().filter(invoice -> Invoice.getType(invoice.getInvoiceNumber()).equalsIgnoreCase(Invoice.InvoiceType.SHIPPING.name())).map(Invoice::getId).collect(Collectors.toList());
             platformOrderContentService.cancelBatchInvoice(shippingInvoiceNumbers);
             platformOrderService.cancelBatchInvoice(shippingInvoiceNumbers);
             savRefundService.cancelBatchInvoice(shippingInvoiceNumbers);
@@ -136,7 +133,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
 
         }
         if(!completeInvoiceNumbers.isEmpty()) {
-            List<Invoice> completeInvoices = invoices.stream().filter(invoice -> invoice.getInvoiceNumber().charAt(8) == '7').collect(Collectors.toList());
+            List<Invoice> completeInvoices = invoices.stream().filter(invoice -> Invoice.getType(invoice.getInvoiceNumber()).equalsIgnoreCase(Invoice.InvoiceType.COMPLETE.name())).collect(Collectors.toList());
             List<String> ids = completeInvoices.stream().map(Invoice::getId).collect(Collectors.toList());
             //shipping cancel
             platformOrderContentService.cancelBatchInvoice(completeInvoiceNumbers);
@@ -177,7 +174,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     public boolean deleteInvoice(String invoiceNumber, String invoiceEntity) {
         boolean invoiceDeleted = false, detailDeleted = false;
 
-        List<Path> invoicePathList = shippingInvoiceService.getPath(invoiceNumber.charAt(8) == '1' ? PURCHASE_INVOICE_LOCATION : SHIPPING_INVOICE_LOCATION, invoiceNumber, invoiceEntity);
+        List<Path> invoicePathList = shippingInvoiceService.getPath(Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.PURCHASE.name()) ? PURCHASE_INVOICE_LOCATION : SHIPPING_INVOICE_LOCATION, invoiceNumber, invoiceEntity);
         List<Path> detailPathList = shippingInvoiceService.getPath(SHIPPING_INVOICE_DETAIL_LOCATION, invoiceNumber, invoiceEntity);
 
         if(invoicePathList.isEmpty()) {
