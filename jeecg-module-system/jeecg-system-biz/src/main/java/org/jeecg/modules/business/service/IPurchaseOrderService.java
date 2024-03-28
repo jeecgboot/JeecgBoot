@@ -1,10 +1,12 @@
 package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.vo.InvoiceMetaData;
+import org.jeecg.modules.business.vo.PurchaseOrderPage;
 import org.jeecg.modules.business.vo.SkuQuantity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -127,4 +129,12 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
     List<PurchaseOrder> getPurchasesByInvoiceNumber(String invoiceNumber);
 
     List<PlatformOrder> getPlatformOrder(String invoiceNumber);
+
+    List<SkuQuantity> getSkuQuantityByInvoiceNumber(String invoiceNumber);
+
+    InvoiceMetaData getMetaDataFromInvoiceNumbers(String invoiceNumber);
+
+    void setPageForList(Page<PurchaseOrderPage> page);
+
+    void updatePurchaseOrderStatus(String invoiceNumber, boolean isOrdered);
 }

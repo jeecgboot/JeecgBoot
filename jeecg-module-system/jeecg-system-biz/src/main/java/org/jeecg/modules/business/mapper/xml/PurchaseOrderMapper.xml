@@ -103,4 +103,40 @@
         FROM platform_order
         WHERE shipping_invoice_number = #{invoiceNumber}
     </select>
+    <select id="getSkuQuantityByInvoiceNumber" resultType="org.jeecg.modules.business.vo.SkuQuantity">
+        SELECT pos.sku_id AS ID, sku.erp_code AS erp_code, SUM(pos.quantity) AS quantity
+        FROM purchase_order po
+            JOIN purchase_order_sku pos
+                ON po.id = pos.purchase_order_id
+            JOIN sku
+                ON pos.sku_id = sku.id
+        WHERE po.invoice_number = #{invoiceNumber}
+        GROUP BY pos.sku_id;
+
+    </select>
+    <select id="getMetaDataFromInvoiceNumbers" resultType="org.jeecg.modules.business.vo.InvoiceMetaData">
+        SELECT CONCAT('Invoice N°', po.invoice_number, ' (', c.invoice_entity ,')') as filename, po.invoice_number AS invoiceCode, c.invoice_entity AS invoiceEntity, c.internal_code AS internalCode, null as errorMsg
+        FROM purchase_order po
+        JOIN client c
+            ON po.client_id = c.id
+        WHERE po.invoice_number = #{invoiceNumber}
+    </select>
+    <select id="getPage" resultType="org.jeecg.modules.business.vo.PurchaseOrderPage">
+        SELECT po.*, GROUP_CONCAT(p.platform_order_id) as platformOrderId
+        FROM purchase_order po
+        LEFT JOIN platform_order p
+            ON p.purchase_invoice_number = po.invoice_number
+        GROUP BY po.id, po.create_time
+        ORDER BY po.create_time DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+    <select id="countPurchaseOrders" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM purchase_order
+    </select>
+    <update id="updatePurchaseOrderStatus">
+        UPDATE purchase_order
+        SET ordered = #{isOrdered}
+        WHERE invoice_number = #{invoiceNumber}
+    </update>
 </mapper>

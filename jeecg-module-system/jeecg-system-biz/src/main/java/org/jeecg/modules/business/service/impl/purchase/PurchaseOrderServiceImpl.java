@@ -1,6 +1,7 @@
 package org.jeecg.modules.business.service.impl.purchase;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -717,5 +718,28 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     @Override
     public List<PlatformOrder> getPlatformOrder(String invoiceNumber) {
         return purchaseOrderMapper.getPlatformOrder(invoiceNumber);
+    }
+
+    @Override
+    public List<SkuQuantity> getSkuQuantityByInvoiceNumber(String invoiceNumber) {
+        return purchaseOrderMapper.getSkuQuantityByInvoiceNumber(invoiceNumber);
+    }
+
+    @Override
+    public InvoiceMetaData getMetaDataFromInvoiceNumbers(String invoiceNumber) {
+        return purchaseOrderMapper.getMetaDataFromInvoiceNumbers(invoiceNumber);
+    }
+
+    @Override
+    public void setPageForList(Page<PurchaseOrderPage> page) {
+        System.out.println("Offset: " + page.offset() + ", Size: " + page.getSize());
+        List<PurchaseOrderPage> purchaseOrderPages = purchaseOrderMapper.getPage(page.offset(), page.getSize());
+        page.setRecords(purchaseOrderPages);
+        page.setTotal(purchaseOrderMapper.countPurchaseOrders());
+    }
+
+    @Override
+    public void updatePurchaseOrderStatus(String invoiceNumber, boolean isOrdered) {
+        purchaseOrderMapper.updatePurchaseOrderStatus(invoiceNumber, isOrdered);
     }
 }

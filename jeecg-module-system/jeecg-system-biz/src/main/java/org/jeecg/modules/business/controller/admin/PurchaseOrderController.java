@@ -14,6 +14,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.business.controller.UserException;
+import org.jeecg.modules.business.domain.job.ThrottlingExecutorService;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
@@ -37,6 +38,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -66,27 +70,25 @@ public class PurchaseOrderController {
     private IPlatformOrderService platformOrderService;
     @Autowired
     private IShippingInvoiceService shippingInvoiceService;
+    @Autowired private IProviderMabangService providerMabangService;
 
+    private static final Integer DEFAULT_NUMBER_OF_THREADS = 2;
+    private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
     /**
      * Page query for purchase order
      *
-     * @param purchaseOrder
      * @param pageNo
      * @param pageSize
-     * @param req
      * @return
      */
     @AutoLog(value = "商品采购订单-分页列表查询")
     @ApiOperation(value = "商品采购订单-分页列表查询", notes = "商品采购订单-分页列表查询")
     @GetMapping(value = "/list")
-    public Result<?> queryPageList(PurchaseOrder purchaseOrder,
-                                   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                   HttpServletRequest req) {
-        QueryWrapper<PurchaseOrder> queryWrapper = QueryGenerator.initQueryWrapper(purchaseOrder, req.getParameterMap());
-        Page<PurchaseOrder> page = new Page<>(pageNo, pageSize);
-        IPage<PurchaseOrder> pageList = purchaseOrderService.page(page, queryWrapper);
-        return Result.OK(pageList);
+    public Result<?> queryPageList(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        Page<PurchaseOrderPage> page = new Page<>(pageNo, pageSize);
+        purchaseOrderService.setPageForList(page);
+        return Result.OK(page);
     }
     /**
      *   添加
@@ -589,5 +591,32 @@ public class PurchaseOrderController {
         skuQuantitiesMap.forEach((s, integer) -> skuQuantities.add(new SkuQuantity(s, integer)));
         PurchaseConfirmation d = platformOrderService.confirmPurchaseBySkuQuantity(clientInfo, skuQuantities);
         return Result.OK(d);
+    }
+
+    @GetMapping(value = "/createMabangPurchaseOrder")
+    public Result<?> createMabangPurchaseOrder(@RequestParam("invoiceNumbers") List<String> request) {
+        log.info("Creating purchase order to Mabang for invoices : {} ", request);
+        ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
+                MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
+        List<CompletableFuture<Boolean>> changeOrderFutures = request.stream()
+                .map(invoiceNumber -> CompletableFuture.supplyAsync(() -> {
+                    log.info("Invoice number : {}", invoiceNumber);
+                    List<SkuQuantity> skuQuantities = purchaseOrderService.getSkuQuantityByInvoiceNumber(invoiceNumber);
+                    if(skuQuantities.isEmpty()) {
+                        return false;
+                    }
+                    Map<String, Integer> skuQuantityMap = skuQuantities.stream()
+                            .collect(Collectors.toMap(SkuQuantity::getErpCode, SkuQuantity::getQuantity));
+                    skuQuantityMap.forEach((s, integer) -> log.info("SKU: {} Quantity: {}", s, integer));
+                    InvoiceMetaData metaData = purchaseOrderService.getMetaDataFromInvoiceNumbers(invoiceNumber);
+                    return providerMabangService.addPurchaseOrderToMabang(skuQuantityMap, metaData);
+                },throttlingExecutorService))
+                .collect(Collectors.toList());
+
+        List<Boolean> results = changeOrderFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        long nbSuccesses = results.stream().filter(b -> b).count();
+        log.info("{}/{} purchase order requests have succeeded.", nbSuccesses, request.size());
+
+        return Result.ok("data.noData");
     }
 }
