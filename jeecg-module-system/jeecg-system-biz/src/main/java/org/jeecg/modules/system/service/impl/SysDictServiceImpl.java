@@ -21,6 +21,7 @@ import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictModelMany;
 import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.common.util.CommonUtils;
+import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
@@ -67,6 +68,9 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	@Lazy
 	@Autowired
 	private ISysBaseAPI sysBaseAPI;
+	@Lazy
+	@Autowired
+	private RedisUtil redisUtil;
 
 	@Override
 	public boolean duplicateCheckData(DuplicateCheckVo duplicateCheckVo) {
@@ -565,16 +569,17 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		}
 		
 		//下拉搜索组件 支持传入排序信息 查询排序
-		if(oConvertUtils.isNotEmpty(condition) && oConvertUtils.isNotEmpty(keywordSql)){
-			filterSql += sqlWhere + sqlAnd + condition + sqlAnd + keywordSql;
-		}else if(oConvertUtils.isNotEmpty(condition)){
-			filterSql += sqlWhere + sqlAnd + condition;
-		}else if(oConvertUtils.isNotEmpty(keywordSql)){
-			filterSql += sqlWhere + sqlAnd + keywordSql;
-		} else if (tableHasWhere){
-			filterSql += sqlWhere; 
-		}
-		
+		//update-begin---author:chenrui ---date:20240327  for：[QQYUN-8514]Online表单中 下拉搜索框 搜索时报sql错误，生成的SQL多了一个 “and" ------------
+        if (oConvertUtils.isNotEmpty(condition) && oConvertUtils.isNotEmpty(keywordSql)) {
+            filterSql += sqlWhere + (tableHasWhere ? sqlAnd : " ") + condition + sqlAnd + keywordSql;
+        } else if (oConvertUtils.isNotEmpty(condition)) {
+            filterSql += sqlWhere + (tableHasWhere ? sqlAnd : " ") + condition;
+        } else if (oConvertUtils.isNotEmpty(keywordSql)) {
+            filterSql += sqlWhere + (tableHasWhere ? sqlAnd : " ") + keywordSql;
+        } else if (tableHasWhere) {
+            filterSql += sqlWhere;
+        }
+		//update-end---author:chenrui ---date:20240327  for：[QQYUN-8514]Online表单中 下拉搜索框 搜索时报sql错误，生成的SQL多了一个 “and" ------------
 		// 增加排序逻辑
 		if (oConvertUtils.isNotEmpty(orderField)) {
 			filterSql += " order by " + orderField + " " + orderType;
@@ -818,6 +823,8 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		sysDict.setId(id);
 		baseMapper.updateById(sysDict);
 		this.updateDictItem(id,sysDictVo.getDictItemsList());
+		// 删除字典缓存
+		redisUtil.removeAll(CacheConstant.SYS_DICT_CACHE + "::" + dict.getDictCode());
 	}
 
 	/**
