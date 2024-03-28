@@ -44,6 +44,8 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
+
 @Service
 @Slf4j
 public class PlatformOrderShippingInvoiceService {
@@ -729,7 +731,7 @@ public class PlatformOrderShippingInvoiceService {
         List<Path> pathList = new ArrayList<>();
         if(filetype.equals("invoice")) {
             log.info("File asked is of type invoice");
-            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.PURCHASE.name()))
+            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(PURCHASE.name()))
                 pathList = getPath(PURCHASE_INVOICE_DIR, invoiceNumber);
             else
                 pathList = getPath(INVOICE_DIR, invoiceNumber);
@@ -813,13 +815,13 @@ public class PlatformOrderShippingInvoiceService {
                 purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
         Path out = null;
         if(filetype.equals("invoice")) {
-            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.PURCHASE.name())) {
+            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(PURCHASE.name())) {
                 PurchaseInvoice invoice = factory.buildExistingPurchaseInvoice(invoiceNumber);
                 InvoiceMetaData invoiceMetaData = getInvoiceMetaData(invoice);
                 String filename = "Invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ").xlsx";
                 out = Paths.get(PURCHASE_INVOICE_DIR, filename);
             }
-            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.SHIPPING.name())) {
+            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(SHIPPING.name())) {
                 Client client = shippingInvoiceMapper.getClientByInvoiceNumber(invoiceNumber);
                 Map<String, String> period = platformOrderService.fetchShippingPeriodAndType(invoiceNumber);
                 String clientId = client.getId();
@@ -829,7 +831,7 @@ public class PlatformOrderShippingInvoiceService {
                 String filename = "Invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ").xlsx";
                 out = Paths.get(INVOICE_DIR, filename);
             }
-            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.COMPLETE.name())) {
+            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(COMPLETE.name())) {
                 Client client = shippingInvoiceMapper.getClientByInvoiceNumber(invoiceNumber);
                 Map<String, String> period = platformOrderService.fetchShippingPeriodAndType(invoiceNumber);
                 String clientId = client.getId();

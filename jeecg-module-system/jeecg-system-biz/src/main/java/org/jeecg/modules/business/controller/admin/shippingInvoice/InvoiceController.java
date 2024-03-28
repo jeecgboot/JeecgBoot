@@ -55,6 +55,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
 import static org.jeecg.modules.business.entity.Task.TaskCode.SI_G;
 import static org.jeecg.modules.business.entity.TaskHistory.TaskStatus.*;
 
@@ -961,7 +962,7 @@ public class InvoiceController {
         String email = sysUser.getEmail();
         String invoiceID;
         String customerFullName;
-        boolean isShippingInvoice = Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.COMPLETE.name()) || Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.SHIPPING.name());
+        boolean isShippingInvoice = Invoice.getType(invoiceNumber).equalsIgnoreCase(COMPLETE.name()) || Invoice.getType(invoiceNumber).equalsIgnoreCase(SHIPPING.name());
         if(isShippingInvoice)
             invoiceID = iShippingInvoiceService.getShippingInvoiceId(invoiceNumber);
         else
