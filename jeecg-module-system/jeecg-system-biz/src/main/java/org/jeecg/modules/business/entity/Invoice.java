@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.Getter;
 import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -93,4 +94,25 @@ public class Invoice implements Serializable {
     @Excel(name = "type", width = 15)
     @ApiModelProperty(value = "type")
     private String type;
+
+    @Getter
+    public enum InvoiceType {
+        PURCHASE('1'),
+        SHIPPING('2'),
+        COMPLETE('7');
+
+        private final char type;
+
+        InvoiceType(char type) {
+            this.type = type;
+        }
+    }
+
+    public static String getType(String invoiceNumber) {
+        for(InvoiceType type : InvoiceType.values()) {
+            if(type.getType() == invoiceNumber.charAt(8))
+                return type.name();
+        }
+        throw new IllegalArgumentException("Incorrect invoice number : " + invoiceNumber);
+    }
 }

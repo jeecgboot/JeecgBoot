@@ -813,13 +813,13 @@ public class PlatformOrderShippingInvoiceService {
                 purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
         Path out = null;
         if(filetype.equals("invoice")) {
-            if(invoiceNumber.charAt(8) == '1') {
+            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.PURCHASE.name())) {
                 PurchaseInvoice invoice = factory.buildExistingPurchaseInvoice(invoiceNumber);
                 InvoiceMetaData invoiceMetaData = getInvoiceMetaData(invoice);
                 String filename = "Invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ").xlsx";
                 out = Paths.get(PURCHASE_INVOICE_DIR, filename);
             }
-            if(invoiceNumber.charAt(8) == '2') {
+            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.SHIPPING.name())) {
                 Client client = shippingInvoiceMapper.getClientByInvoiceNumber(invoiceNumber);
                 Map<String, String> period = platformOrderService.fetchShippingPeriodAndType(invoiceNumber);
                 String clientId = client.getId();
@@ -829,7 +829,7 @@ public class PlatformOrderShippingInvoiceService {
                 String filename = "Invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ").xlsx";
                 out = Paths.get(INVOICE_DIR, filename);
             }
-            if(invoiceNumber.charAt(8) == '7') {
+            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(Invoice.InvoiceType.COMPLETE.name())) {
                 Client client = shippingInvoiceMapper.getClientByInvoiceNumber(invoiceNumber);
                 Map<String, String> period = platformOrderService.fetchShippingPeriodAndType(invoiceNumber);
                 String clientId = client.getId();
