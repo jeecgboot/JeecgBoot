@@ -10,9 +10,13 @@ public class Period {
     @JsonProperty
     private final Date end;
 
-    public Period(Date start, Date end) {
+    @JsonProperty
+    private final String type;
+
+    public Period(Date start, Date end, String type) {
         this.start = start;
         this.end = end;
+        this.type = type;
     }
 
     public Date start() {

@@ -54,4 +54,6 @@ public interface IClientService extends IService<Client> {
     Client getClientFromPurchase(String purchaseId);
 
     List<String> getClientsFromPurchases(List<String> purchaseIds);
+
+    Client getClientBySku(String skuId);
 }

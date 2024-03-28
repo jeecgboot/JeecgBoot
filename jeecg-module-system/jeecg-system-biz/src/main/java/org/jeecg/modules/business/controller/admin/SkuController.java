@@ -12,14 +12,9 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.business.entity.ShippingDiscount;
-import org.jeecg.modules.business.entity.Sku;
-import org.jeecg.modules.business.entity.SkuDeclaredValue;
-import org.jeecg.modules.business.entity.SkuPrice;
+import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.service.*;
-import org.jeecg.modules.business.vo.SkuName;
-import org.jeecg.modules.business.vo.SkuPage;
-import org.jeecg.modules.business.vo.SkuUpdate;
+import org.jeecg.modules.business.vo.*;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -46,7 +41,7 @@ import java.util.stream.Collectors;
  */
 @Api(tags = "SKU表")
 @RestController
-@RequestMapping("/business/sku")
+@RequestMapping("/sku")
 @Slf4j
 public class SkuController {
     @Autowired
@@ -57,6 +52,8 @@ public class SkuController {
     private IShippingDiscountService shippingDiscountService;
     @Autowired
     private ISkuDeclaredValueService skuDeclaredValueService;
+    @Autowired
+    private IClientService clientService;
 
     /**
      * 分页列表查询
@@ -349,10 +346,10 @@ public class SkuController {
 
     @GetMapping("/skusByClient")
     public Result<?> skusByClient(@RequestParam String clientId) {
-        List<Sku> skus = skuService.fetchSkusByClient(clientId);
-        IPage<Sku> page = new Page<>();
-        page.setRecords(skus);
-        page.setTotal(skus.size());
+        List<SkuOrderPage> skuOrdersPage = skuService.fetchSkusByClient(clientId);
+        IPage<SkuOrderPage> page = new Page<>();
+        page.setRecords(skuOrdersPage);
+        page.setTotal(skuOrdersPage.size());
         return Result.OK(page);
     }
 }

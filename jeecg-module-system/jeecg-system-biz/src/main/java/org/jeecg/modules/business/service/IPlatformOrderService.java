@@ -106,6 +106,8 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * @return list of pre-shipping orders and their contents
      */
     Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderData(List<String> orderIds);
+    Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderDataByInvoiceCode(String invoiceCode);
+
 
     /**
      * Find previous invoice code
@@ -238,5 +240,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      */
     List<ShippingFeeBillableOrders> fetchShippingFeeBillableOrders();
     List<PlatformOrder> getPlatformOrdersByInvoiceNumber(String invoiceNumber);
+
+    Map<String, String> fetchShippingPeriodAndType(String invoiceNumber);
 
 }

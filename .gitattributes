@@ -3,3 +3,6 @@
 *.html linguist-language=Java
 *.vue linguist-language=Java
 *.sql linguist-language=Java
+
+*.java filter=javaignore
+*.yml filter=ymlignore

@@ -25,6 +25,7 @@ import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.mapper.PurchaseOrderContentMapper;
 import org.jeecg.modules.business.service.*;
+import org.jeecg.modules.business.service.impl.ProviderMabangServiceImpl;
 import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
@@ -54,6 +55,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
 import static org.jeecg.modules.business.entity.Task.TaskCode.SI_G;
 import static org.jeecg.modules.business.entity.TaskHistory.TaskStatus.*;
 
@@ -89,6 +91,8 @@ public class InvoiceController {
     private PlatformOrderContentMapper platformOrderContentMap;
     @Autowired
     private IProductService productService;
+    @Autowired
+    private ProviderMabangServiceImpl providerMabangService;
     @Autowired
     private IPurchaseOrderService purchaseOrderService;
     @Autowired
@@ -126,7 +130,6 @@ public class InvoiceController {
 
     private final String SECTION_START = "<section><ul>";
     private final String SECTION_END = "</ul></section>";
-
 
     @GetMapping(value = "/shopsByClient")
     public Result<List<Shop>> getShopsByClient(@RequestParam("clientID") String clientID) {
@@ -320,6 +323,7 @@ public class InvoiceController {
     /**
      * Make purchase invoice for specified orders and type
      * used by self-service clients
+     * creates a purchase order in Mabang
      * @param param Parameters for creating an invoice
      * @return Result of the generation, in case of error, message will be contained,
      * in case of success, data will contain filename.
@@ -418,7 +422,32 @@ public class InvoiceController {
             throw new RuntimeException(e);
         }
     }
-
+    @PostMapping("/makeManualSkuPurchaseInvoice")
+    public Result<?> createOrder(@RequestBody Map<String, Integer> payload) {
+        InvoiceMetaData metaData;
+        List<SkuQuantity> skuQuantities = new ArrayList<>();
+        for(Map.Entry<String, Integer> entry : payload.entrySet()) {
+            String skuId = skuService.getIdFromErpCode(entry.getKey());
+            skuQuantities.add(new SkuQuantity(skuId, entry.getKey(), entry.getValue()));
+        }
+        try {
+            String purchaseId = purchaseOrderService.addPurchase(skuQuantities);
+            PurchaseOrder purchaseOrder = purchaseOrderService.getById(purchaseId);
+            String clientCategory = clientCategoryService.getClientCategoryByClientId(purchaseOrder.getClientId());
+            if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
+                balanceService.updateBalance(purchaseOrder.getClientId(), purchaseOrder.getInvoiceNumber(), "purchase");
+            }
+            metaData = purchaseOrderService.makeInvoice(purchaseId);
+            return Result.OK(metaData);
+        } catch (UserException e) {
+            return Result.error(e.getMessage());
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return Result.error("Sorry, server error, please try later");
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
     @GetMapping(value = "/preShipping/orderTime")
     public Result<?> getValidOrderTimePeriod(@RequestParam("shopIds[]") List<String> shopIDs, @RequestParam("erpStatuses[]") List<Integer> erpStatuses) {
         log.info("Request for valid order time period for shops: " + shopIDs.toString() +
@@ -667,6 +696,13 @@ public class InvoiceController {
         List<FactureDetail> factureDetails = shippingInvoiceService.getInvoiceDetail(invoiceNumber);
         List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceNumber);
         return shippingInvoiceService.exportToExcel(factureDetails, refunds, invoiceNumber, invoiceEntity, internalCode);
+    }
+    @GetMapping(value = "/downloadInventory")
+    public byte[] downloadInventory(@RequestParam("invoiceCode") String invoiceCode, @RequestParam("internalCode") String internalCode, @RequestParam("invoiceEntity") String invoiceEntity) throws IOException {
+        InvoiceMetaData metaData = new InvoiceMetaData("", invoiceCode, internalCode, invoiceEntity, "");
+        List<SkuOrderPage> skuOrderPages = skuService.getInventoryByInvoiceNumber(metaData.getInvoiceCode());
+        System.out.println(skuOrderPages);
+        return shippingInvoiceService.exportPurchaseInventoryToExcel(skuOrderPages, metaData);
     }
 
     /**
@@ -926,7 +962,7 @@ public class InvoiceController {
         String email = sysUser.getEmail();
         String invoiceID;
         String customerFullName;
-        boolean isShippingInvoice = invoiceNumber.charAt(8) == '7' || invoiceNumber.charAt(8) == '2';
+        boolean isShippingInvoice = Invoice.getType(invoiceNumber).equalsIgnoreCase(COMPLETE.name()) || Invoice.getType(invoiceNumber).equalsIgnoreCase(SHIPPING.name());
         if(isShippingInvoice)
             invoiceID = iShippingInvoiceService.getShippingInvoiceId(invoiceNumber);
         else

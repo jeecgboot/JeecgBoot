@@ -3,6 +3,7 @@ package org.jeecg.modules.business.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.Sku;
+import org.jeecg.modules.business.vo.SkuOrderPage;
 import org.jeecg.modules.business.vo.SkuQuantity;
 import org.jeecg.modules.business.vo.SkuUpdate;
 import org.jeecg.modules.business.vo.inventory.InventoryRecord;
@@ -53,5 +54,15 @@ public interface SkuMapper extends BaseMapper<Sku> {
 
     List<SkuQuantity> getSkuQuantitiesFromOrderIds(@Param("orderIds") List<String> orderIds);
 
-    List<Sku> fetchSkusByClient(@Param("clientId") String clientId);
+    List<SkuOrderPage> fetchSkusByClient(@Param("clientId") String clientId);
+
+    String getIdFromErpCode(@Param("erpCode") String erpCode);
+
+    List<Sku> listSkus();
+
+    Sku getByErpCode(@Param("erpCode") String erpCode);
+
+    void updateBatchStockByIds(@Param("skus") List<Sku> skuToUpdate);
+
+    List<SkuOrderPage> getInventoryByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
 }

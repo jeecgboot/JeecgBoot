@@ -18,6 +18,12 @@
                  JOIN shop s ON po.shop_id = s.id
         WHERE s.erp_code LIKE #{shop}
         AND po.platform_order_id LIKE #{orderID}
+        AND (CASE
+            WHEN #{invoiceNumber} = 'null' THEN invoice_number IS NULL
+            WHEN #{invoiceNumber} = 'notNull' THEN invoice_number IS NOT NULL
+            WHEN #{invoiceNumber} = '%%' THEN true
+            ELSE invoice_number LIKE #{invoiceNumber}
+        END)
         ORDER BY ${column} ${order};
     </select>
 

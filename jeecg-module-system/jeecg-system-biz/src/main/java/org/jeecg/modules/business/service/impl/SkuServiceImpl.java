@@ -154,6 +154,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     }
 
     @Override
+    public List<Sku> listSkus() {
+        return skuMapper.listSkus();
+    }
+
+    @Override
     public List<Sku> selectByMainId(String mainId) {
         return skuMapper.selectByMainId(mainId);
     }
@@ -412,7 +417,33 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     }
 
     @Override
-    public List<Sku> fetchSkusByClient(String clientId) {
+    public List<SkuOrderPage> fetchSkusByClient(String clientId) {
         return skuMapper.fetchSkusByClient(clientId);
     }
+
+    @Override
+    public void addSkuQuantity(Map<String, Integer> quantityPurchased) {
+        skuMapper.addSkuQuantity(quantityPurchased);
+    }
+
+    @Override
+    public String getIdFromErpCode(String erpCode) {
+        return skuMapper.getIdFromErpCode(erpCode);
+    }
+
+    @Override
+    public Sku getByErpCode(String erpCode) {
+        return skuMapper.getByErpCode(erpCode);
+    }
+
+    @Override
+    public void updateBatchStockByIds(List<Sku> skuToUpdate) {
+        skuMapper.updateBatchStockByIds(skuToUpdate);
+    }
+
+    @Override
+    public List<SkuOrderPage> getInventoryByInvoiceNumber(String invoiceNumber) {
+        return skuMapper.getInventoryByInvoiceNumber(invoiceNumber);
+    }
+
 }
