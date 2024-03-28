@@ -163,6 +163,7 @@
         AND shipping_time >= #{begin}
         AND #{end} >= shipping_time
         AND shipping_invoice_number IS NULL
+        AND erp_status = 3;
     </select>
     <select id="findUninvoicedOrdersForShopsAndStatus" resultType="org.jeecg.modules.business.entity.PlatformOrder">
         SELECT *
@@ -837,6 +838,45 @@
     <select id="getPlatformOrdersByInvoiceNumber" resultType="org.jeecg.modules.business.entity.PlatformOrder">
         SELECT *
         FROM platform_order
+        WHERE shipping_invoice_number = #{invoiceNumber};
+    </select>
+    <select id="countPlatformOrders" resultType="org.jeecg.modules.business.vo.OrderKpi">
+        WITH processedByUser AS (
+            SELECT invoice_number
+            FROM shipping_invoice si
+            WHERE create_by = #{username}
+            UNION ALL
+            SELECT invoice_number
+            FROM purchase_order po
+            WHERE create_by = #{username}
+        ), processed AS (
+            SELECT COUNT(*) AS processed
+            FROM platform_order
+            WHERE erp_status = 4
+            AND IF(#{showAllData} = true,
+                   shipping_invoice_number IS NOT NULL,
+                   (shipping_invoice_number IN (SELECT invoice_number FROM processedByUser) OR purchase_invoice_number IN (SELECT invoice_number FROM processedByUser))
+                )
+            AND shipping_time BETWEEN #{start} AND #{end}
+        ), processing AS (
+            SELECT COUNT(*) AS processing
+            FROM platform_order
+            WHERE erp_status IN (1,2,3)
+            AND order_time &lt;= #{end}
+            AND IF(#{showAllData} = true,
+                   shipping_invoice_number IS NOT NULL,
+                   shipping_invoice_number IN (SELECT invoice_number FROM processedByUser) OR purchase_invoice_number IN (SELECT invoice_number FROM processedByUser)
+                )
+        )
+        SELECT processed, processing
+        FROM processed, processing;
+    </select>
+    <select id="fetchShippingPeriodAndType" resultType="java.util.Map">
+        SELECT DATE_FORMAT(IF(po.shipping_time &lt; s.create_time, MIN(po.shipping_time), MIN(po.order_time)),'%Y-%m-%d %T') AS startDate,
+               DATE_FORMAT(IF(po.shipping_time &lt; s.create_time, MAX(po.shipping_time), MAX(po.order_time)),'%Y-%m-%d %T') AS endDate,
+               IF(po.shipping_time &lt; s.create_time, 'post-shipping', 'pre-shipping') AS type
+        FROM platform_order po
+        JOIN shipping_invoice s ON po.shipping_invoice_number = s.invoice_number
         WHERE shipping_invoice_number = #{invoiceNumber};
     </select>
 </mapper>

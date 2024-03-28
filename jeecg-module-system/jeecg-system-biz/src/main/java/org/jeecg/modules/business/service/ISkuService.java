@@ -20,7 +20,7 @@ import java.util.Map;
  * @Version: V1.1
  */
 public interface ISkuService extends IService<Sku> {
-
+    List<Sku> listSkus();
     List<Sku> selectByMainId(String mainId);
 
     /**
@@ -100,4 +100,7 @@ public interface ISkuService extends IService<Sku> {
     void addSkuQuantity(Map<String, Integer> quantityPurchased);
 
     String getIdFromErpCode(String erpCode);
+    Sku getByErpCode(String erpCode);
+    void updateBatchStockByIds(List<Sku> skuToUpdate);
+    List<SkuOrderPage> getInventoryByInvoiceNumber(String invoiceNumber);
 }

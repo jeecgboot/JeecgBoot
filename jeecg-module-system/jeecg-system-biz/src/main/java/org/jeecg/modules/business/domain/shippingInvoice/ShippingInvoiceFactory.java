@@ -9,6 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.domain.codeGeneration.CompleteInvoiceCodeRule;
 import org.jeecg.modules.business.domain.codeGeneration.ShippingInvoiceCodeRule;
+import org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoice;
 import org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoiceEntry;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.*;
@@ -19,6 +20,7 @@ import org.jeecg.modules.business.vo.SkuQuantity;
 import org.jeecg.modules.business.vo.SkuWeightDiscountServiceFees;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrdersStatisticData;
 import org.jetbrains.annotations.NotNull;
+import org.simpleframework.xml.core.Complete;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -487,6 +489,7 @@ public class ShippingInvoiceFactory {
                     SUBJECT_FORMAT.format(end)
             );
             uninvoicedOrderToContent = platformOrderService.findUninvoicedOrders(shopIds, begin, end, warehouses);
+
         }
         else if (erpStatuses.toString().equals("[1, 2]") || erpStatuses.toString().equals("[1]")) {
             subject = String.format(
@@ -495,6 +498,7 @@ public class ShippingInvoiceFactory {
                     SUBJECT_FORMAT.format(end)
             );
             uninvoicedOrderToContent = platformOrderService.findUninvoicedOrderContentsForShopsAndStatus(shopIds, begin, end, erpStatuses, warehouses);
+
         }
         else {
             subject = String.format(
@@ -565,8 +569,11 @@ public class ShippingInvoiceFactory {
         shops.forEach(shop -> shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee()));
         String invoiceCode = generateInvoiceCode();
         log.info("New invoice code: {}", invoiceCode);
-        calculateFees(null, logisticChannelMap, orderAndContent, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
+        Map<String, List<String>> errorMsg = calculateFees(null, logisticChannelMap, orderAndContent, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
                 latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode);
+        if(!errorMsg.isEmpty()) {
+            errorMsg.forEach((k, v) -> log.error("Couldn't invoice orders for reason : {} : {}", k, v));
+        }
         BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
         if (savRefunds != null) {
             updateSavRefundsInDb(savRefunds, invoiceCode);
@@ -1291,5 +1298,52 @@ public class ShippingInvoiceFactory {
             }
         }
         return estimations;
+    }
+    @Transactional
+    public ShippingInvoice buildExistingShippingInvoice(String invoiceCode, String clientId, String start, String end, String filetype, String shippingMethod ) throws UserException {
+        log.info("Building existing shipping invoice : {} - Client ID : {}, ", invoiceCode, clientId);
+        Map<PlatformOrder, List<PlatformOrderContent>> ordersMapContent = platformOrderService.fetchOrderDataByInvoiceCode(invoiceCode);
+        List<SavRefundWithDetail> savRefunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceCode);
+        String subject;
+        if(shippingMethod.equals("post-shipping")) {
+            subject = String.format("Shipping fees from %s to %s", start, end);
+        }
+        else if(shippingMethod.equals("pre-shipping")) {
+            subject = String.format("Pre-Shipping fees, order time from %s to %s", start, end);
+        }
+        else
+            throw new UserException("Couldn't create shipping invoice of unknown type.");
+        Client client = clientMapper.selectById(clientId);
+        BigDecimal eurToUsd = exchangeRatesMapper.getExchangeRateFromDate("EUR", "USD", start);
+
+        return new ShippingInvoice(client, invoiceCode, subject, ordersMapContent, savRefunds, eurToUsd);
+    }
+    public PurchaseInvoice buildExistingPurchaseInvoice (String invoiceCode) {
+        PurchaseOrder order = purchaseOrderService.getPurchaseByInvoiceNumber(invoiceCode);
+        String purchaseId = order.getId();
+        Client client = clientMapper.getClientFromPurchase(purchaseId);
+        List<PurchaseInvoiceEntry> purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseId);
+        List<PromotionDetail> promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseId);
+        BigDecimal eurToUsd = exchangeRatesMapper.getExchangeRateFromDate("EUR", "USD", order.getCreateTime().toString());
+        return new PurchaseInvoice(client, invoiceCode, "Purchase Invoice", purchaseOrderSkuList, promotionDetails, eurToUsd);
+    }
+    public CompleteInvoice buildExistingCompleteInvoice(String invoiceCode, String clientId, String start, String end, String filetype, String shippingMethod) throws UserException {
+        log.info("Building existing complete invoice : {} - Client ID : {}, ", invoiceCode, clientId);
+        Map<PlatformOrder, List<PlatformOrderContent>> ordersMapContent = platformOrderService.fetchOrderDataByInvoiceCode(invoiceCode);
+        List<SavRefundWithDetail> savRefunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceCode);
+        String subject;
+        if(shippingMethod.equals("post-shipping"))
+            subject = String.format("Purchase and Shipping fees from %s to %s", start, end);
+        else if(shippingMethod.equals("pre-shipping"))
+            subject = String.format("Purchase and Pre-Shipping fees, order time from %s to %s", start, end);
+        else throw new UserException("Couldn't create complete invoice for unknown shipping method");
+        Client client = clientMapper.selectById(clientId);
+        BigDecimal eurToUsd = exchangeRatesMapper.getExchangeRateFromDate("EUR", "USD", start);
+        String purchaseID = purchaseOrderService.getInvoiceId(invoiceCode);
+        List<PurchaseInvoiceEntry> purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
+        List<PromotionDetail> promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseID);
+
+        return new CompleteInvoice(client, invoiceCode, subject, ordersMapContent, savRefunds,
+                purchaseOrderSkuList, promotionDetails, eurToUsd);
     }
 }

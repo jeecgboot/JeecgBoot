@@ -8,5 +8,15 @@
         WHERE original_currency = #{original}
           AND target_currency = #{target}
         ORDER BY effective_date DESC
-        LIMIT 1    </select>
+        LIMIT 1;
+    </select>
+    <select id="getExchangeRateFromDate" resultType="java.math.BigDecimal">
+        SELECT rate
+        FROM exchange_rates
+        WHERE original_currency = #{original}
+          AND target_currency = #{target}
+          AND effective_date &lt;= #{datetime}
+        ORDER BY effective_date DESC
+        LIMIT 1;
+    </select>
 </mapper>

@@ -13,6 +13,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.Client;
 import org.jeecg.modules.business.entity.ShippingInvoice;
 import org.jeecg.modules.business.service.*;
@@ -282,8 +283,8 @@ public class ShippingInvoiceController {
      * @throws IOException
      */
     @GetMapping(value = "/downloadCompleteInvoiceExcel")
-    public ResponseEntity<?> download(@RequestParam("invoiceNumber") String invoiceNumber, @RequestParam("filetype") String filetype) throws IOException {
-        String filename = shippingInvoiceService.getInvoiceList(invoiceNumber, filetype);
+    public ResponseEntity<?> download(@RequestParam("invoiceNumber") String invoiceNumber, @RequestParam("filetype") String filetype) throws IOException, UserException {
+        String filename = platformOrderShippingInvoiceService.getInvoiceList(invoiceNumber, filetype);
         if(!filename.equals("ERROR")) {
             File file = new File(filename);
 
@@ -349,7 +350,7 @@ public class ShippingInvoiceController {
     public Result<?> sendDetailsByEmail(@RequestParam("invoiceNumber") String invoiceNumber,
                                         @RequestParam("email") String email,
                                         @RequestParam("invoiceEntity") String invoiceEntity) throws Exception {
-        String filePath = shippingInvoiceService.getInvoiceList(invoiceNumber, "detail");
+        String filePath = platformOrderShippingInvoiceService.getInvoiceList(invoiceNumber, "detail");
         String fileType = "Détails de facture";
         String subject = "Détails de facture N°" + invoiceNumber;
         Properties prop = emailService.getMailSender();
@@ -394,129 +395,20 @@ public class ShippingInvoiceController {
         return Result.OK(client);
     }
 
-    /**
-     * Deletes an invoice
-     * @param invoiceNumber invoice number to cancel
-     * @return if update successful
-     */
-    @PostMapping(value = "/cancelInvoice")
-    public Result<?> cancelInvoice(@RequestParam("id") String id, @RequestParam("invoiceNumber") String invoiceNumber, @RequestParam("clientId") String clientId) {
-        log.info("Cancelling invoice number : {}", invoiceNumber);
-        platformOrderContentService.cancelInvoice(invoiceNumber);
-        platformOrderService.cancelInvoice(invoiceNumber);
-        purchaseOrderService.cancelInvoice(invoiceNumber);
-        savRefundService.cancelInvoice(invoiceNumber);
-        shippingInvoiceService.delMain(id);
-        log.info("Updating balance ...");
-        balanceService.deleteBalance(id, OperationType.Debit.name());
-        log.info("Deleting invoice files ...");
-        String invoiceEntity = clientService.getClientEntity(clientId);
-        List<Path> invoicePathList = shippingInvoiceService.getPath(INVOICE_LOCATION, invoiceNumber, invoiceEntity);
-        List<Path> detailPathList = shippingInvoiceService.getPath(INVOICE_DETAIL_LOCATION, invoiceNumber, invoiceEntity);
-        boolean invoiceDeleted = false, detailDeleted = false;
+    @PostMapping(value = "/setPaid")
+    public Result<?> setPaid(@RequestParam("shipping") List<String> shippingNumbers, @RequestParam("purchase") List<String> purchaseNumbers) {
+        log.info("Setting invoice numbers : \n" +
+                "    - shipping : {} to paid.\n" +
+                "    - purchase : {} to paid.", shippingNumbers, purchaseNumbers);
 
-        if(invoicePathList.isEmpty()) {
-            log.error("FILE NOT FOUND : " + invoiceNumber);
-        } else {
-            for (Path path : invoicePathList) {
-                log.info(path.toString());
-            }
-            try {
-                File invoiceFile = new File(invoicePathList.get(0).toString());
-                if(invoiceFile.delete()) {
-                    log.info("Invoice file {} delete successful.", invoicePathList.get(0).toString());
-                    invoiceDeleted = true;
-                } else {
-                    log.error("Invoice file delete fail.");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if(purchaseNumbers.isEmpty() && shippingNumbers.isEmpty()) {
+            return Result.error("No invoice numbers found.");
         }
-        if(detailPathList.isEmpty()) {
-            log.error("DETAIL FILE NOT FOUND : " + invoiceNumber);
-        } else {
-            for (Path path : detailPathList) {
-                log.info(path.toString());
-            }
-            try {
-                File detailFile = new File(detailPathList.get(0).toString());
-                if(detailFile.delete()) {
-                    log.info("Detail file {} delete successful.", detailPathList.get(0).toString());
-                    detailDeleted = true;
-                } else {
-                    log.error("Detail file delete fail.");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        log.info("Invoice files deleted.");
-        return Result.ok("Invoice cancel successful." + (invoiceDeleted ? "" : " Failed to delete invoice file.") + (detailDeleted ? "" : " Failed to delete detail file."));
-    }
 
-    /**
-     * Delete a batch of invoices
-     * @param ids list of invoice ids
-     * @param invoiceNumbers list of invoice numbers
-     * @param clientIds list of clients
-     * @return result
-     */
-    @PostMapping(value = "/cancelBatchInvoice")
-    public Result<?> cancelBatchInvoice(@RequestParam("ids") List<String> ids, @RequestParam("invoiceNumbers") List<String> invoiceNumbers, @RequestParam("clientIds") List<String> clientIds) {
-
-        log.info("Cancelling invoices : {}", invoiceNumbers);
-        purchaseOrderService.cancelBatchInvoice(invoiceNumbers);
-        platformOrderContentService.cancelBatchInvoice(invoiceNumbers);
-        platformOrderService.cancelBatchInvoice(invoiceNumbers);
-        savRefundService.cancelBatchInvoice(invoiceNumbers);
-        shippingInvoiceService.delBatchMain(ids);
-        log.info("Updating balances ...");
-        balanceService.deleteBatchBalance(ids, OperationType.Debit.name());
-        log.info("Deleting invoice files ...");
-
-        for(int i = 0; i < ids.size(); i++) {
-            String invoiceNumber = invoiceNumbers.get(i);
-            String invoiceEntity = clientService.getClientEntity(clientIds.get(i));
-            List<Path> invoicePathList = shippingInvoiceService.getPath(INVOICE_LOCATION, invoiceNumber, invoiceEntity);
-            List<Path> detailPathList = shippingInvoiceService.getPath(INVOICE_DETAIL_LOCATION, invoiceNumber, invoiceEntity);
-
-            if(invoicePathList.isEmpty()) {
-                log.error("FILE NOT FOUND : " + invoiceNumber + ", " +  invoiceEntity);
-            } else {
-                for (Path path : invoicePathList) {
-                    log.info(path.toString());
-                }
-                try {
-                    File invoiceFile = new File(invoicePathList.get(0).toString());
-                    if(invoiceFile.delete()) {
-                        log.info("Invoice file {} delete successful.", invoicePathList.get(0).toString());
-                    } else {
-                        log.error("Invoice file delete fail.");
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            if(detailPathList.isEmpty()) {
-                log.error("DETAIL FILE NOT FOUND : " + invoiceNumber + ", " +  invoiceEntity);
-            } else {
-                for (Path path : detailPathList) {
-                    log.info(path.toString());
-                }
-                try {
-                    File detailFile = new File(detailPathList.get(0).toString());
-                    if(detailFile.delete()) {
-                        log.info("Detail file {} delete successful.", detailPathList.get(0).toString());
-                    } else {
-                        log.error("Detail file {} delete fail.", detailPathList.get(0).toString());
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        log.info("End of invoice files deletion.");
-        return Result.ok("Invoices cancellation finished.");
+        if(!purchaseNumbers.isEmpty())
+            purchaseOrderService.setPaid(purchaseNumbers);
+        if(!shippingNumbers.isEmpty())
+            shippingInvoiceService.setPaid(shippingNumbers);
+        return Result.ok("Invoice set to paid.");
     }
 }

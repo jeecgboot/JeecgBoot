@@ -17,6 +17,6 @@ import java.util.List;
 @Repository
 public interface SavRefundWithDetailMapper extends BaseMapper<SavRefundWithDetail> {
     List<SavRefundWithDetail> findUnprocessedRefundsByClient(@Param("clientId") String clientId);
-    List<SavRefundWithDetail> fetchRefundsWhere(@Param("shop") String shop, @Param("orderID") String orderID, @Param("column") String column, @Param("order") String order);
+    List<SavRefundWithDetail> fetchRefundsWhere(@Param("shop") String shop, @Param("orderID") String orderID, @Param("invoiceNumber") String invoiceNumber, @Param("column") String column, @Param("order") String order);
     List<SavRefundWithDetail> getRefundsByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
 }

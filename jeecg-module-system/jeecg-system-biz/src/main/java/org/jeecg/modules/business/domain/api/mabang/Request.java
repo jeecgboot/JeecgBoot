@@ -47,6 +47,7 @@ public abstract class Request {
         headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
 
         String bodyString = generateJsonBodyString(body);
+        log.info("JSON SENT : " + bodyString);
         String signature = authorization(bodyString);
         headers.add("Authorization", signature);
         while (attempts++ < 5){

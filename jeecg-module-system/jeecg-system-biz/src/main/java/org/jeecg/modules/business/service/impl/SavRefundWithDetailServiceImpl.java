@@ -28,8 +28,14 @@ public class SavRefundWithDetailServiceImpl extends ServiceImpl<SavRefundWithDet
         return savRefundMapper.findUnprocessedRefundsByClient(clientId);
     }
     @Override
-    public List<SavRefundWithDetail> fetchRefundsWhere(String shop, String orderID, String column, String order) {
-        return savRefundMapper.fetchRefundsWhere(shop, orderID, column, order);
+    public List<SavRefundWithDetail> fetchRefundsWhere(String shop, String orderID, String invoiceNumber, String column, String order) {
+        String invoiceCode = invoiceNumber;
+        if(invoiceNumber.equals("%null%"))
+            invoiceCode = "null";
+        if(invoiceNumber.equals("%notNull%"))
+            invoiceCode = "notNull";
+        System.out.println("invoiceCode : "+invoiceCode);
+        return savRefundMapper.fetchRefundsWhere(shop, orderID, invoiceCode, column, order);
     }
 
     @Override

@@ -55,7 +55,7 @@ public class ClientSkuServiceImpl extends ServiceImpl<ClientSkuMapper, ClientSku
 				unknownSkuErpCode.add(erpCode);
 				continue;
 			}
-			log.info("Associating sku \"{}\" with client \"{}\". ", sku.getErpCode(), clientId);
+			log.info("Associating sku \"{}\" with client \"{}\" : \"{}\". ", sku.getErpCode(),internalCode, clientId);
 			addClientSku(clientId, sku.getId());
 		}
 		return unknownSkuErpCode;

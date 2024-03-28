@@ -1,4 +1,4 @@
-package org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew;
+package org.jeecg.modules.business.domain.api.mabang.stockGetStockQuantity;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.NetworkDataStream;
@@ -9,28 +9,28 @@ import java.util.NoSuchElementException;
  * This stream control reception of the response of the mabang order list API
  */
 @Slf4j
-public class SkuListRawStream implements NetworkDataStream<SkuListResponse> {
+public class SkuStockRawStream implements NetworkDataStream<SkuStockResponse> {
     /**
      * Instance's current request.
      */
-    private final SkuListRequestBody toSend;
+    private final SkuStockRequestBody toSend;
     /**
      * Response of last request.
      */
-    private SkuListResponse currentResponse;
+    private SkuStockResponse currentResponse;
 
     private boolean began;
 
-    public SkuListRawStream(SkuListRequestBody firstBody) {
+    public SkuStockRawStream(SkuStockRequestBody firstBody) {
         this.toSend = firstBody;
         this.currentResponse = null;
         began = false;
     }
 
     @Override
-    public SkuListResponse attempt() {
+    public SkuStockResponse attempt() {
         log.info("Begin the first request");
-        this.currentResponse = new SkuListRequest(toSend).send();
+        this.currentResponse = new SkuStockRequest(toSend).send();
         if (currentResponse.getData().isEmpty()) {
             return null;
         }
@@ -45,19 +45,13 @@ public class SkuListRawStream implements NetworkDataStream<SkuListResponse> {
      * @return true if there are, otherwise false.
      */
     @Override
-    public boolean hasNext() throws SkuListRequestErrorException {
+    public boolean hasNext() {
         if (!began) {
             throw new IllegalStateException("Calling hasNext before begin");
         }
         // no page left, false
-        if(currentResponse.getCursor().isEmpty() || toSend.getCursor().isEmpty()) {
-            log.info("No page left, end");
-            return false;
-        }
-        // still has page left, true
-        log.info("page: {}, has next", toSend.getPage());
-        toSend.setCursor(currentResponse.getCursor());
-        return true;
+        log.info("No page left, end");
+        return false;
     }
 
     /**
@@ -65,15 +59,14 @@ public class SkuListRawStream implements NetworkDataStream<SkuListResponse> {
      *
      * @return next order.
      * @throws NoSuchElementException         if data is already empty.
-     * @throws SkuListRequestErrorException if request format is not valid.
      */
     @Override
-    public SkuListResponse next() throws SkuListRequestErrorException {
+    public SkuStockResponse next() {
         if (!hasNext())
             throw new NoSuchElementException();
 
         log.info("Sending request for page {}/{}.", toSend.getPage(), toSend.getTotal() == null ? "?" : toSend.getTotalPages());
-        this.currentResponse = new SkuListRequest(toSend).send();
+        this.currentResponse = new SkuStockRequest(toSend).send();
         toSend.nextPage();
         return this.currentResponse;
     }

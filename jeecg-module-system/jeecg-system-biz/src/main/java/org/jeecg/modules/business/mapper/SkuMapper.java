@@ -57,4 +57,12 @@ public interface SkuMapper extends BaseMapper<Sku> {
     List<SkuOrderPage> fetchSkusByClient(@Param("clientId") String clientId);
 
     String getIdFromErpCode(@Param("erpCode") String erpCode);
+
+    List<Sku> listSkus();
+
+    Sku getByErpCode(@Param("erpCode") String erpCode);
+
+    void updateBatchStockByIds(@Param("skus") List<Sku> skuToUpdate);
+
+    List<SkuOrderPage> getInventoryByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
 }

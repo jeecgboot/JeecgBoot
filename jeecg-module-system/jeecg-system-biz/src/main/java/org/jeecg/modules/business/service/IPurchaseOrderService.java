@@ -46,12 +46,6 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
      */
     public void delBatchMain(Collection<? extends Serializable> idList);
 
-    @Transactional
-    void cancelInvoice(String purchaseId, String invoiceNumber);
-
-    @Transactional
-    void cancelBatchInvoice(String ids);
-
     /**
      * Set purchase orders to the page indicated by argument.
      *
@@ -112,7 +106,7 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
      * @return the file in binary
      * @throws IOException IO error while reading the file.
      */
-    InvoiceMetaData makeInvoice(String purchaseID) throws IOException, URISyntaxException;
+    InvoiceMetaData makeInvoice(String purchaseID) throws IOException, URISyntaxException, UserException;
 
     byte[] getInvoiceByte(String invoiceCode) throws IOException;
 
@@ -134,7 +128,15 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
 
     InvoiceMetaData getMetaDataFromInvoiceNumbers(String invoiceNumber);
 
-    void setPageForList(Page<PurchaseOrderPage> page);
+    void setPageForList(Page<PurchaseOrderPage> page, String clientId);
 
     void updatePurchaseOrderStatus(String invoiceNumber, boolean isOrdered);
+
+    void setPaid(List<String> invoiceNumbers);
+
+    void deleteInvoice(String invoiceNumber);
+
+    PurchaseOrder getPurchaseByInvoiceNumberAndClientId(String invoiceNumber, String clientId);
+
+    List<PurchaseOrder> getPurchasesByInvoices(List<Invoice> invoices);
 }

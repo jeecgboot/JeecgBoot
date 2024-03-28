@@ -55,6 +55,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
 import static org.jeecg.modules.business.entity.Task.TaskCode.SI_G;
 import static org.jeecg.modules.business.entity.TaskHistory.TaskStatus.*;
 
@@ -431,6 +432,11 @@ public class InvoiceController {
         }
         try {
             String purchaseId = purchaseOrderService.addPurchase(skuQuantities);
+            PurchaseOrder purchaseOrder = purchaseOrderService.getById(purchaseId);
+            String clientCategory = clientCategoryService.getClientCategoryByClientId(purchaseOrder.getClientId());
+            if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
+                balanceService.updateBalance(purchaseOrder.getClientId(), purchaseOrder.getInvoiceNumber(), "purchase");
+            }
             metaData = purchaseOrderService.makeInvoice(purchaseId);
             return Result.OK(metaData);
         } catch (UserException e) {
@@ -691,6 +697,13 @@ public class InvoiceController {
         List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceNumber);
         return shippingInvoiceService.exportToExcel(factureDetails, refunds, invoiceNumber, invoiceEntity, internalCode);
     }
+    @GetMapping(value = "/downloadInventory")
+    public byte[] downloadInventory(@RequestParam("invoiceCode") String invoiceCode, @RequestParam("internalCode") String internalCode, @RequestParam("invoiceEntity") String invoiceEntity) throws IOException {
+        InvoiceMetaData metaData = new InvoiceMetaData("", invoiceCode, internalCode, invoiceEntity, "");
+        List<SkuOrderPage> skuOrderPages = skuService.getInventoryByInvoiceNumber(metaData.getInvoiceCode());
+        System.out.println(skuOrderPages);
+        return shippingInvoiceService.exportPurchaseInventoryToExcel(skuOrderPages, metaData);
+    }
 
     /**
      * Returns a breakdown of all invoicable shops
@@ -949,7 +962,7 @@ public class InvoiceController {
         String email = sysUser.getEmail();
         String invoiceID;
         String customerFullName;
-        boolean isShippingInvoice = invoiceNumber.charAt(8) == '7' || invoiceNumber.charAt(8) == '2';
+        boolean isShippingInvoice = Invoice.getType(invoiceNumber).equalsIgnoreCase(COMPLETE.name()) || Invoice.getType(invoiceNumber).equalsIgnoreCase(SHIPPING.name());
         if(isShippingInvoice)
             invoiceID = iShippingInvoiceService.getShippingInvoiceId(invoiceNumber);
         else
