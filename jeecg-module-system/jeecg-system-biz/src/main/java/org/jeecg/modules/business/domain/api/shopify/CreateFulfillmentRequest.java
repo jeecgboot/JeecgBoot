@@ -43,7 +43,7 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
         POST_NL("https://postnl.post/", "PostNL International Mail", "LS[0-9]{9}NL"),
         COLI_COLI("https://www.colicoli.fr/trackings?id=%s", "Coli Coli", "CC[0-9]{14}[A-Z]*"),
         LUXEMBOURG_POST("https://www.post.lu/particuliers/colis-courrier/track-and-trace#/search", "Luxembourg Post", "LL[0-9]{9}LU"),
-        CJ_LOGISTICS("https://www.cjlogistics.com/ko/tool/parcel/tracking", "CJ대한통운", "57575[0-9]{7}"),
+        CJ_LOGISTICS("https://www.cjlogistics.com/ko/tool/parcel/tracking", "CJ대한통운", "57575[0-9]{7}|58476[0-9]{7}"),
         ;
 
         private final String trackingUrl;
