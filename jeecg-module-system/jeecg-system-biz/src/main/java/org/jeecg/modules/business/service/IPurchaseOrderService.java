@@ -1,10 +1,12 @@
 package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.vo.InvoiceMetaData;
+import org.jeecg.modules.business.vo.PurchaseOrderPage;
 import org.jeecg.modules.business.vo.SkuQuantity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,12 +45,6 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
      * 批量删除一对多
      */
     public void delBatchMain(Collection<? extends Serializable> idList);
-
-    @Transactional
-    void cancelInvoice(String purchaseId, String invoiceNumber);
-
-    @Transactional
-    void cancelBatchInvoice(String ids);
 
     /**
      * Set purchase orders to the page indicated by argument.
@@ -110,7 +106,7 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
      * @return the file in binary
      * @throws IOException IO error while reading the file.
      */
-    InvoiceMetaData makeInvoice(String purchaseID) throws IOException, URISyntaxException;
+    InvoiceMetaData makeInvoice(String purchaseID) throws IOException, URISyntaxException, UserException;
 
     byte[] getInvoiceByte(String invoiceCode) throws IOException;
 
@@ -127,4 +123,20 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
     List<PurchaseOrder> getPurchasesByInvoiceNumber(String invoiceNumber);
 
     List<PlatformOrder> getPlatformOrder(String invoiceNumber);
+
+    List<SkuQuantity> getSkuQuantityByInvoiceNumber(String invoiceNumber);
+
+    InvoiceMetaData getMetaDataFromInvoiceNumbers(String invoiceNumber);
+
+    void setPageForList(Page<PurchaseOrderPage> page, String clientId);
+
+    void updatePurchaseOrderStatus(String invoiceNumber, boolean isOrdered);
+
+    void setPaid(List<String> invoiceNumbers);
+
+    void deleteInvoice(String invoiceNumber);
+
+    PurchaseOrder getPurchaseByInvoiceNumberAndClientId(String invoiceNumber, String clientId);
+
+    List<PurchaseOrder> getPurchasesByInvoices(List<Invoice> invoices);
 }

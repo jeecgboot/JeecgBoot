@@ -44,6 +44,9 @@ public class SkuData {
     private BigDecimal salePrice;
     @JSONField(name="declareValue")
     private BigDecimal declareValue;
+    /**最新采购价*/
+    @JSONField(name="purchasePrice")
+    private BigDecimal purchasePrice;
     /**
      * if stockPicture is empty, we use it
      */

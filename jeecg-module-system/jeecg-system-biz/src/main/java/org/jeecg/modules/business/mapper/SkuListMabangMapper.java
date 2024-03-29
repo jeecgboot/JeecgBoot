@@ -2,12 +2,9 @@ package org.jeecg.modules.business.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.logging.log4j.util.ProcessIdUtil;
-import org.jeecg.modules.business.domain.api.mabang.doSearchSkuList.SkuData;
+import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuData;
 import org.jeecg.modules.business.entity.Product;
 import org.jeecg.modules.business.entity.Sku;
-import org.jeecg.modules.business.entity.SkuDeclaredValue;
-import org.jeecg.modules.business.entity.SkuPrice;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;

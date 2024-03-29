@@ -1,12 +1,19 @@
 package org.jeecg.modules.business.mapper;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.business.entity.Invoice;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PurchaseOrder;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.jeecg.modules.business.vo.InvoiceKpi;
+import org.jeecg.modules.business.vo.InvoiceMetaData;
+import org.jeecg.modules.business.vo.PurchaseOrderPage;
+import org.jeecg.modules.business.vo.SkuQuantity;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -105,4 +112,21 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
     List<PurchaseOrder> getPurchasesByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
 
     List<PlatformOrder> getPlatformOrder(@Param("invoiceNumber") String invoiceNumber);
+
+    List<SkuQuantity> getSkuQuantityByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
+
+    InvoiceMetaData getMetaDataFromInvoiceNumbers(@Param("invoiceNumber") String invoiceNumber);
+
+    List<PurchaseOrderPage> getPage(@Param("offset") long offset, @Param("size") long size, @Param("clientId") String clientId);
+
+    long countPurchaseOrders();
+
+    void updatePurchaseOrderStatus(@Param("invoiceNumber") String invoiceNumber, @Param("isOrdered") boolean isOrdered);
+    InvoiceKpi countPurchaseInvoices(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("showAllData") boolean showAllData, @Param("username") String username);
+
+    void setPaid(@Param("invoiceNumbers") List<String> invoiceNumbers);
+
+    PurchaseOrder getPurchaseByInvoiceNumberAndClientId(@Param("invoiceNumber") String invoiceNumber, @Param("clientId") String clientId);
+
+    List<PurchaseOrder> getPurchasesByInvoices(@Param("invoices") List<Invoice> invoices);
 }

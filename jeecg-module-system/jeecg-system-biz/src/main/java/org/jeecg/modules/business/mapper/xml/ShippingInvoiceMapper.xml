@@ -35,4 +35,40 @@
             JOIN currency c ON s.currency_id = c.id
         WHERE invoice_number = #{invoiceNumber}
     </select>
+    <select id="countShippingInvoices" resultType="org.jeecg.modules.business.vo.InvoiceKpi">
+        WITH shippingEur AS (
+            SELECT IFNULL(count(*),0) as qty, IFNULL(sum(final_amount),0) as total
+            FROM shipping_invoice
+            WHERE create_time BETWEEN #{start} AND #{end}
+                AND currency_id = (SELECT id FROM currency WHERE code = 'EUR')
+                AND IF(#{showAllData} = false, create_by = #{username}, true)
+        ),  usdExchangeRate AS (
+            SELECT rate
+            FROM exchange_rates
+            WHERE original_currency = 'EUR' AND target_currency = 'USD'
+                ORDER BY create_time DESC LIMIT 1
+        ),  shippingUsd AS (
+            SELECT IFNULL(count(*),0) as qty, IFNULL(sum(final_amount/(SELECT rate FROM usdExchangeRate)),0) as total
+            FROM shipping_invoice
+            WHERE create_time BETWEEN #{start} AND #{end}
+                AND currency_id = (SELECT id FROM currency WHERE code = 'USD')
+                AND IF(#{showAllData} = false, create_by = #{username}, true)
+        )
+        SELECT (shippingEur.qty + shippingUsd.qty) as qty, ROUND(shippingEur.total + shippingUsd.total, 2) as total
+        FROM shippingEur, usdExchangeRate, shippingUsd
+    </select>
+    <update id="setPaid">
+        UPDATE shipping_invoice
+        SET paid_amount = final_amount
+        WHERE invoice_number IN
+            <foreach collection="invoiceNumbers" item="invoiceNumber" open="(" separator="," close=")">
+                #{invoiceNumber}
+            </foreach>
+    </update>
+    <select id="getClientByInvoiceNumber" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT c.*
+        FROM client c
+        JOIN shipping_invoice s ON s.client_id = c.id
+        WHERE s.invoice_number = #{invoiceNumber}
+    </select>
 </mapper>

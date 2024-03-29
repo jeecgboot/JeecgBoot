@@ -187,6 +187,8 @@ public class SysUser implements Serializable {
 
     /**设备id uniapp推送用*/
     private String clientId;
+    /**Mabang username*/
+    private String mabangUsername;
 
     /**
      * 登录首页地址

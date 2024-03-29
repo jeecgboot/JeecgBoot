@@ -63,6 +63,7 @@ public class SavRefundController extends JeecgController<SavRefund, ISavRefundSe
     public Result<?> queryPageList(SavRefundWithDetail savRefund,
                                    @RequestParam(name = "shop", defaultValue = "") String shop,
                                    @RequestParam(name = "orderID", defaultValue = "") String platformOrderId,
+                                   @RequestParam(name = "invoiceNumber", defaultValue = "") String invoiceNumber,
                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                    @RequestParam(name = "column", defaultValue = "invoice_umber") String column,
@@ -78,10 +79,11 @@ public class SavRefundController extends JeecgController<SavRefund, ISavRefundSe
         }
         String parsedShop = "%"+shop.toUpperCase()+"%";
         String parsedPlatformOrderId = "%"+platformOrderId+"%";
+        String parsedInvoiceNumber = "%"+invoiceNumber+"%";
         if(!order.equalsIgnoreCase("ASC") && !order.equalsIgnoreCase("DESC")) {
             return Result.error("Error 400 Bad Request");
         }
-        List<SavRefundWithDetail> refundList = savRefundWithDetailService.fetchRefundsWhere(parsedShop, parsedPlatformOrderId, parsedColumn, order);
+        List<SavRefundWithDetail> refundList = savRefundWithDetailService.fetchRefundsWhere(parsedShop, parsedPlatformOrderId, parsedInvoiceNumber, parsedColumn, order);
         IPage<SavRefundWithDetail> pageList = new Page<>(pageNo, pageSize);
         pageList.setRecords(refundList);
         return Result.OK(pageList);

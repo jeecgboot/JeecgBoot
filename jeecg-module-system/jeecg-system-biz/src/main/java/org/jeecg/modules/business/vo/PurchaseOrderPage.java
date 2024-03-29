@@ -68,10 +68,14 @@ public class PurchaseOrderPage {
 	/**最终金额*/
 	@ApiModelProperty(value = "最终金额")
     private java.math.BigDecimal finalAmount;
-	/**Purchase status*/
-	@Excel(name = "status", width = 15)
-	@ApiModelProperty(value = "status")
-	private String status;
+	/**paid amount*/
+	@Excel(name = "已付金额", width = 15)
+	@ApiModelProperty(value = "已付金额")
+	private java.math.BigDecimal paidAmount;
+	/**订单是否下了单*/
+	@Excel(name = "订单是否下了单", width = 15)
+	@ApiModelProperty(value = "订单是否下了单")
+	private boolean ordered;
 
 	/**
 	 * Payment document

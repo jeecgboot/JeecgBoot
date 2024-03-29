@@ -13,6 +13,6 @@ import java.util.List;
  */
 public interface ISavRefundWithDetailService extends IService<SavRefundWithDetail> {
     List<SavRefundWithDetail> findUnprocessedRefundsByClient(String clientId);
-    List<SavRefundWithDetail> fetchRefundsWhere(String shop, String orderID, String column, String order);
+    List<SavRefundWithDetail> fetchRefundsWhere(String shop, String orderID, String invoiceNumber, String column, String order);
     List<SavRefundWithDetail> getRefundsByInvoiceNumber(String invoiceNumber);
 }

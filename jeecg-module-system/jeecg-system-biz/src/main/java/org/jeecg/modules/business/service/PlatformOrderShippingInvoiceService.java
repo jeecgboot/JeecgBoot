@@ -8,13 +8,12 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.domain.excel.SheetManager;
+import org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoice;
 import org.jeecg.modules.business.domain.shippingInvoice.CompleteInvoice;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoice;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoiceFactory;
-import org.jeecg.modules.business.entity.Client;
+import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.entity.ClientCategory.CategoryName;
-import org.jeecg.modules.business.entity.PlatformOrder;
-import org.jeecg.modules.business.entity.SavRefundWithDetail;
 import org.jeecg.modules.business.mapper.*;
 import org.jeecg.modules.business.vo.*;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +43,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
 
 @Service
 @Slf4j
@@ -107,11 +108,16 @@ public class PlatformOrderShippingInvoiceService {
     @Value("${jeecg.path.completeTemplatePath_US}")
     private String COMPLETE_INVOICE_TEMPLATE_US;
 
+    @Value("${jeecg.path.purchaseTemplatePath}")
+    private String PURCHASE_INVOICE_TEMPLATE;
+
     @Value("${jeecg.path.shippingInvoiceDir}")
     private String INVOICE_DIR;
 
     @Value("${jeecg.path.purchaseInvoiceDir}")
     private String PURCHASE_INVOICE_DIR;
+    @Value("${jeecg.path.purchaseInventoryDir}")
+    private String PURCHASE_INVENTORY_DIR;
 
     @Value("${jeecg.path.shippingInvoiceDetailDir}")
     private String INVOICE_DETAIL_DIR;
@@ -153,11 +159,25 @@ public class PlatformOrderShippingInvoiceService {
             "Montant total du remboursement",
             "N° de facture"
     };
+    private final static String[] PURCHASE_INVENTORY_TITLES = {
+            "SKU",
+            "Nom Anglais",
+            "Nom Chinois",
+            "Stock disponible",
+            "Achat WIA en cours",
+            "Cmd en cours",
+            "Stock " + (new SimpleDateFormat("dd/MM").format(new Date())),
+            "Quantité à acheter",
+            "Ventes 7j",
+            "Ventes 28j",
+            "Ventes 42j",
+            "Prix à l'unité",
+    };
 
     public Period getValidPeriod(List<String> shopIDs) {
         Date begin = platformOrderMapper.findEarliestUninvoicedPlatformOrder(shopIDs);
         Date end = platformOrderMapper.findLatestUninvoicedPlatformOrder(shopIDs);
-        return new Period(begin, end);
+        return new Period(begin, end, "");
     }
     public Period getValidOrderTimePeriod(List<String> shopIDs, List<Integer> erpStatuses) {
         Date begin = platformOrderMapper.findEarliestUninvoicedPlatformOrderTime(shopIDs, erpStatuses);
@@ -170,7 +190,7 @@ public class PlatformOrderShippingInvoiceService {
         Date end = platformOrderMapper.findLatestUninvoicedPlatformOrderTime(shopIDs, erpStatuses);
         ldt = LocalDateTime.ofInstant(end.toInstant(), shanghai);
         Date endZoned = Date.from(ldt.atZone(paris).toInstant());
-        return new Period(beginZoned, endZoned);
+        return new Period(beginZoned, endZoned, "");
     }
     public List<String> getShippingOrderIdBetweenDate(List<String> shops, String start, String end, List<String> wareHouses) {
         List<PlatformOrder> orders = platformOrderMapper.fetchUninvoicedShippedOrderIDInShops( start, end, shops, wareHouses);
@@ -204,7 +224,7 @@ public class PlatformOrderShippingInvoiceService {
                 param.getBalance()
         );
         // Chooses invoice template based on client's preference on currency
-        return getInvoiceMetaData(username, invoice);
+        return getInvoiceMetaDataAndInsert(username, invoice);
     }
 
     /**
@@ -227,7 +247,7 @@ public class PlatformOrderShippingInvoiceService {
         String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         // Creates invoice by factory
         ShippingInvoice invoice = factory.createShippingInvoice(param.clientID(), param.orderIds(), param.getType(), param.getStart(), param.getEnd());
-        return getInvoiceMetaData(username, invoice);
+        return getInvoiceMetaDataAndInsert(username, invoice);
     }
 
     /**
@@ -250,7 +270,7 @@ public class PlatformOrderShippingInvoiceService {
         String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         // Creates invoice by factory
         CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.clientID(), null, param.orderIds(), param.getType(), param.getStart(), param.getEnd());
-        return getInvoiceMetaData(username, invoice);
+        return getInvoiceMetaDataAndInsert(username, invoice);
     }
 
     /**
@@ -282,10 +302,27 @@ public class PlatformOrderShippingInvoiceService {
         List<String> orderIds = platformOrderList.stream().map(PlatformOrder::getId).collect(Collectors.toList());
         // Creates invoice by factory
         CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.clientID(), param.getBalance() ,orderIds, method, param.getStart(), param.getEnd());
-        return getInvoiceMetaData(username, invoice);
+        return getInvoiceMetaDataAndInsert(username, invoice);
     }
     @NotNull
-    private InvoiceMetaData getInvoiceMetaData(String username, ShippingInvoice invoice) throws IOException {
+    private InvoiceMetaData getInvoiceMetaDataAndInsert(String username, ShippingInvoice invoice) throws IOException {
+        InvoiceMetaData invoiceMetaData = getInvoiceMetaData(invoice);
+        String currencyId = currencyService.getIdByCode(invoice.client().getCurrency());
+        // save to DB
+        org.jeecg.modules.business.entity.ShippingInvoice shippingInvoiceEntity = org.jeecg.modules.business.entity.ShippingInvoice.of(
+                username,
+                invoice.client().getId(),
+                invoice.code(),
+                invoice.getTotalAmount(),
+                invoice.reducedAmount(),
+                invoice.paidAmount(),
+                currencyId
+        );
+        shippingInvoiceMapper.insert(shippingInvoiceEntity);
+        return invoiceMetaData;
+    }
+    @NotNull
+    private InvoiceMetaData getInvoiceMetaData(ShippingInvoice invoice) throws IOException {
         // Chooses invoice template based on client's preference on currency
         Path src;
         if (invoice instanceof CompleteInvoice) {
@@ -307,18 +344,20 @@ public class PlatformOrderShippingInvoiceService {
         Path out = Paths.get(INVOICE_DIR, filename);
         Files.copy(src, out, StandardCopyOption.REPLACE_EXISTING);
         invoice.toExcelFile(out);
-        String currencyId = currencyService.getIdByCode(invoice.client().getCurrency());
-        // save to DB
-        org.jeecg.modules.business.entity.ShippingInvoice shippingInvoiceEntity = org.jeecg.modules.business.entity.ShippingInvoice.of(
-                username,
-                invoice.client().getId(),
-                invoice.code(),
-                invoice.getTotalAmount(),
-                invoice.reducedAmount(),
-                invoice.paidAmount(),
-                currencyId
-        );
-        shippingInvoiceMapper.insert(shippingInvoiceEntity);
+
+        return new InvoiceMetaData(filename, invoice.code(), invoice.client().getInternalCode(), invoice.client().getInvoiceEntity(), "");
+    }
+    @NotNull
+    private InvoiceMetaData getInvoiceMetaData(PurchaseInvoice invoice) throws IOException {
+        // Chooses invoice template based on client's preference on currency
+        Path template = Paths.get(PURCHASE_INVOICE_TEMPLATE );
+
+        // Writes invoice content to a new excel file
+        String filename = "Invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ").xlsx";
+        Path out = Paths.get(PURCHASE_INVOICE_DIR, filename);
+        Files.copy(template, out, StandardCopyOption.REPLACE_EXISTING);
+        invoice.toExcelFile(out);
+
         return new InvoiceMetaData(filename, invoice.code(), invoice.client().getInternalCode(), invoice.client().getInvoiceEntity(), "");
     }
 
@@ -471,6 +510,56 @@ public class PlatformOrderShippingInvoiceService {
         return Files.readAllBytes(target);
     }
 
+    public byte[] exportPurchaseInventoryToExcel(List<SkuOrderPage> skuOrders, InvoiceMetaData metaData) throws IOException {
+        SheetManager sheetManager = SheetManager.createXLSX();
+        sheetManager.startDetailsSheet();
+        for (String title : PURCHASE_INVENTORY_TITLES) {
+            sheetManager.write(title);
+            sheetManager.nextCol();
+        }
+        sheetManager.moveCol(0);
+        sheetManager.nextRow();
+
+        for (SkuOrderPage skuPurchase : skuOrders) {
+            sheetManager.write(skuPurchase.getErpCode());
+            sheetManager.nextCol();
+            sheetManager.write(skuPurchase.getProductEn());
+            sheetManager.nextCol();
+            sheetManager.write(skuPurchase.getProduct());
+            sheetManager.nextCol();
+            sheetManager.write(skuPurchase.getAvailableAmount());
+            sheetManager.nextCol();
+            sheetManager.write(skuPurchase.getPurchasingAmount());
+            sheetManager.nextCol();
+            sheetManager.write(skuPurchase.getQtyInOrdersNotShipped());
+            sheetManager.nextCol();
+            sheetManager.write(skuPurchase.getStock());
+            sheetManager.nextCol();
+            sheetManager.write(skuPurchase.getQtyOrdered());
+            sheetManager.nextCol();
+            sheetManager.write(skuPurchase.getSalesLastWeek());
+            sheetManager.nextCol();
+            sheetManager.write(skuPurchase.getSalesFourWeeks());
+            sheetManager.nextCol();
+            sheetManager.write(skuPurchase.getSalesSixWeeks());
+            sheetManager.nextCol();
+            sheetManager.write(skuPurchase.getSkuPrice());
+            sheetManager.moveCol(0);
+            sheetManager.nextRow();
+        }
+
+        Path target = Paths.get(PURCHASE_INVENTORY_DIR, metaData.getInternalCode() + "_(" + metaData.getInvoiceEntity() + ")_" + metaData.getInvoiceCode() + "_Inventaire_SKU.xlsx");
+        int i = 2;
+        while (Files.exists(target)) {
+            target = Paths.get(PURCHASE_INVENTORY_DIR, metaData.getInternalCode() + "_(" + metaData.getInvoiceEntity() + ")_" + metaData.getInvoiceCode() + "_Inventaire_SKU_(" + i + ").xlsx");
+            i++;
+        }
+        Files.createFile(target);
+        sheetManager.export(target);
+        sheetManager.getWorkbook().close();
+        System.gc();
+        return Files.readAllBytes(target);
+    }
 
     /**
      * make shipping invoice by client and type (shipping or complete)
@@ -637,12 +726,15 @@ public class PlatformOrderShippingInvoiceService {
      * @param filetype if it's an invoice or invoice detail
      * @return String returns the path of the invoice file
      */
-    public String getInvoiceList(String invoiceNumber, String filetype) {
+    public String getInvoiceList(String invoiceNumber, String filetype) throws UserException, IOException {
         log.info("Invoice number : " + invoiceNumber);
         List<Path> pathList = new ArrayList<>();
         if(filetype.equals("invoice")) {
             log.info("File asked is of type invoice");
-            pathList = getPath(INVOICE_DIR, invoiceNumber);
+            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(PURCHASE.name()))
+                pathList = getPath(PURCHASE_INVOICE_DIR, invoiceNumber);
+            else
+                pathList = getPath(INVOICE_DIR, invoiceNumber);
         }
         if(filetype.equals("detail")) {
             log.info("File asked is of type invoice detail");
@@ -650,14 +742,17 @@ public class PlatformOrderShippingInvoiceService {
         }
         if(pathList.isEmpty()) {
             log.error("NO INVOICE FILE FOUND : " + invoiceNumber);
-            return "ERROR";
-        }
-        else {
-            for (Path path : pathList) {
-                log.info(path.toString());
+            log.info("Generating a new invoice file ...");
+            if(filetype.equals("invoice"))
+                pathList = generateInvoiceExcel(invoiceNumber, filetype);
+            else {
+                return "ERROR";
             }
-            return pathList.get(0).toString();
         }
+        for (Path path : pathList) {
+            log.info(path.toString());
+        }
+        return pathList.get(0).toString();
     }
     public String convertToPdf(String invoiceNumber, String fileType) throws Exception {
         String excelFilePath = getInvoiceList(invoiceNumber, fileType);// (C:\PATH\filename.xlsx)
@@ -711,5 +806,41 @@ public class PlatformOrderShippingInvoiceService {
         fos.close();
         log.info("Zipping done ...");
         return zipFilename;
+    }
+
+    public List<Path> generateInvoiceExcel(String invoiceNumber, String filetype) throws UserException, IOException {
+        ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
+                platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
+                platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
+                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
+        Path out = null;
+        if(filetype.equals("invoice")) {
+            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(PURCHASE.name())) {
+                PurchaseInvoice invoice = factory.buildExistingPurchaseInvoice(invoiceNumber);
+                InvoiceMetaData invoiceMetaData = getInvoiceMetaData(invoice);
+                String filename = "Invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ").xlsx";
+                out = Paths.get(PURCHASE_INVOICE_DIR, filename);
+            }
+            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(SHIPPING.name())) {
+                Client client = shippingInvoiceMapper.getClientByInvoiceNumber(invoiceNumber);
+                Map<String, String> period = platformOrderService.fetchShippingPeriodAndType(invoiceNumber);
+                String clientId = client.getId();
+
+                ShippingInvoice invoice = factory.buildExistingShippingInvoice(invoiceNumber, clientId, period.get("startDate"), period.get("endDate"), filetype, period.get("type"));
+                InvoiceMetaData invoiceMetaData = getInvoiceMetaData(invoice);
+                String filename = "Invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ").xlsx";
+                out = Paths.get(INVOICE_DIR, filename);
+            }
+            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(COMPLETE.name())) {
+                Client client = shippingInvoiceMapper.getClientByInvoiceNumber(invoiceNumber);
+                Map<String, String> period = platformOrderService.fetchShippingPeriodAndType(invoiceNumber);
+                String clientId = client.getId();
+                CompleteInvoice invoice = factory.buildExistingCompleteInvoice(invoiceNumber, clientId, period.get("startDate"), period.get("endDate"), filetype, period.get("type"));
+                InvoiceMetaData invoiceMetaData = getInvoiceMetaData(invoice);
+                String filename = "Invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ").xlsx";
+                out = Paths.get(INVOICE_DIR, filename);
+            }
+        }
+        return Collections.singletonList(out);
     }
 }
