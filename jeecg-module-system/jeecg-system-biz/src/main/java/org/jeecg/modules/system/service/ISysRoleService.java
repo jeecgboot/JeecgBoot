@@ -67,4 +67,11 @@ public interface ISysRoleService extends IService<SysRole> {
      * @return
      */
     Long getRoleCountByTenantId(String id, Integer tenantId);
+
+    /**
+     * 验证是否为admin角色
+     * 
+     * @param ids
+     */
+    void checkAdminRoleRejectDel(String ids);
 }

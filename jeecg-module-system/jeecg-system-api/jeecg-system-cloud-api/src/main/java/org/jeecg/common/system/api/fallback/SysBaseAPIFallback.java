@@ -71,7 +71,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public Set<String> getDepartParentIdsByDepIds(Set depIds) {
+    public Set<String> getDepartParentIdsByDepIds(Set<String> depIds) {
         return null;
     }
 
@@ -133,7 +133,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public JSONObject queryAllUser(String userIds, Integer pageNo, int pageSize) {
+    public JSONObject queryAllUser(String userIds, Integer pageNo, Integer pageSize) {
         return null;
     }
 
@@ -194,7 +194,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public Set<String> getUserPermissionSet(String username) {
+    public Set<String> getUserPermissionSet(String userId) {
         return null;
     }
 
@@ -219,7 +219,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public Set<String> queryUserAuths(String username) {
+    public Set<String> queryUserAuths(String userId) {
         return null;
     }
 
@@ -361,17 +361,6 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
         return null;
     }
 
-
-    @Override
-    public void addSysFiles(SysFilesModel sysFilesModel) {
-
-    }
-
-    @Override
-    public String getFileUrl(String fileId) {
-        return null;
-    }
-
     @Override
     public void updateAvatar(LoginUser loginUser) { }
 
@@ -446,7 +435,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public boolean dictTableWhiteListCheckByDict(String tableOrDictCode, String[] fields) {
+    public boolean dictTableWhiteListCheckByDict(String tableOrDictCode, String... fields) {
         return false;
     }
 
