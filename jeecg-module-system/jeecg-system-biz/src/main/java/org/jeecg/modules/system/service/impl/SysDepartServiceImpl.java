@@ -1220,7 +1220,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	 * @return
 	 */
 	@Override
-	public List<SysDepartExportVo> getExportDepart(int tenantId) {
+	public List<SysDepartExportVo> getExportDepart(Integer tenantId) {
 		//获取父级部门
 		List<SysDepartExportVo> parentDepart = departMapper.getSysDepartList("", tenantId);
 		//子部门
