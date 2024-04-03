@@ -25,7 +25,7 @@ public class PurchaseInvoiceEntry {
     }
 
     public BigDecimal unitPrice() {
-        return totalAmount.divide(BigDecimal.valueOf(quantity));
+        return quantity == 0 ? BigDecimal.ZERO : totalAmount.divide(BigDecimal.valueOf(quantity));
     }
 
 
