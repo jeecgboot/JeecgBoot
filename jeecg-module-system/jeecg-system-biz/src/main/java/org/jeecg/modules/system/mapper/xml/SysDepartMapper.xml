@@ -161,11 +161,6 @@
     <select id="getSysDepartList" resultType="org.jeecg.modules.system.vo.SysDepartExportVo">
         SELECT id,depart_name,parent_id,depart_name_en,depart_order,description,org_category,org_code,mobile,fax,address,memo FROM sys_depart
         WHERE
-        1=1
-        <if test="null != tenantId and 0 != tenantId">
-            AND tenant_id = #{tenantId}
-        </if>  
-        AND
         <choose>
             <when test="parentId != null and parentId != ''">
                 parent_id = #{parentId}
@@ -174,6 +169,9 @@
                 parent_id IS NULL OR parent_id=''
             </otherwise>
         </choose>
+        <if test="null != tenantId and 0 != tenantId">
+            AND tenant_id = #{tenantId}
+        </if>  
         ORDER BY depart_order DESC
     </select>
 </mapper>

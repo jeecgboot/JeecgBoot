@@ -28,15 +28,16 @@
                    ,icon
                    ,is_leaf
 		   FROM   sys_permission
-		   WHERE 1=1
-		    <choose>
-		   		<when test="parentId != null and parentId != ''">
-		   			AND parent_id =  #{parentId,jdbcType=VARCHAR}
-		   		</when>
-		   		<otherwise>
-		   			AND parent_id is null
-		   		</otherwise>
-		    </choose>
+		   <where>
+				<choose>
+					<when test="parentId != null and parentId != ''">
+						AND parent_id =  #{parentId,jdbcType=VARCHAR}
+					</when>
+					<otherwise>
+						AND parent_id is null
+					</otherwise>
+				</choose>
+		   </where>
 	</select>
 	
 	<!-- 获取登录用户拥有的权限 -->
