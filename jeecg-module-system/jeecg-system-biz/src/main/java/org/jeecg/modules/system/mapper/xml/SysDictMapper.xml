@@ -127,41 +127,41 @@
 			   </if>
 			   ${pidField} as parentId
 			   from ${table}
-			   <where>
-				   <!-- 父ID条件 -->
-				   <if test="query == null">
+			   where
+		       <!-- 父ID条件 -->
+			   <if test="query == null">
+				   <choose>
+					   <when test="pid != null and pid != ''">
+						   ${pidField} = #{pid}
+					   </when>
+					   <otherwise>
+						   (${pidField} = '' OR ${pidField} IS NULL)
+					   </otherwise>
+				   </choose>
+			   </if>
+			   <!-- 查询条件组装 -->
+			   <if test="query!= null">
+			       1 = 1
+				   <foreach collection="query.entrySet()" item="value"  index="key" >
 					   <choose>
-						   <when test="pid != null and pid != ''">
-							   ${pidField} = #{pid}
+						   <when test="key == 'tenant_id'">
+							   and tenant_id = #{value}
 						   </when>
 						   <otherwise>
-							   (${pidField} = '' OR ${pidField} IS NULL)
+							   and ${key} LIKE #{value}
 						   </otherwise>
 					   </choose>
-				   </if>
-				   <!-- 查询条件组装 -->
-				   <if test="query!= null">
-					   <foreach collection="query.entrySet()" item="value"  index="key" >
-						   <choose>
-							   <when test="key == 'tenant_id'">
-								   and tenant_id = #{value}
-							   </when>
-							   <otherwise>
-								   and ${key} LIKE #{value}
-							   </otherwise>
-						   </choose>
-					   </foreach>
-						 <!-- 【issues/3709】自定义树查询条件没有处理父ID，没有树状结构了 -->
-						 <choose>
-							 <when test="pid != null and pid != ''">
-								 and ${pidField} = #{pid}
-							 </when>
-							 <otherwise>
-								 and (${pidField} = '' OR ${pidField} IS NULL)
-							 </otherwise>
-						 </choose>
-				   </if>
-			   </where>
+				   </foreach>
+					 <!-- 【issues/3709】自定义树查询条件没有处理父ID，没有树状结构了 -->
+					 <choose>
+						 <when test="pid != null and pid != ''">
+							 and ${pidField} = #{pid}
+						 </when>
+						 <otherwise>
+							 and (${pidField} = '' OR ${pidField} IS NULL)
+						 </otherwise>
+					 </choose>
+			   </if>
 	</select>
 
 	<!-- 分页查询字典表数据，支持text或code模糊查询匹配【已加入SQL注入check】 -->
