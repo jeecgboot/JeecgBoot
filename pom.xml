@@ -56,7 +56,6 @@
 		<druid.version>1.2.22</druid.version>
 		<minidao.version>1.9.10</minidao.version>
 
-
 		<!-- 积木报表-->
 		<jimureport-spring-boot-starter.version>1.7.4</jimureport-spring-boot-starter.version>
 		<commons-io.version>2.11.0</commons-io.version>
