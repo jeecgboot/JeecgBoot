@@ -106,7 +106,7 @@ public class MabangSkuJob implements Job {
                 log.info("{} skus from {} to {} ({})to be inserted.", skusFromMabang.size(),
                         dayBeforeEndDateTime, endDateTime, dateType);
 
-                if (skusFromMabang.size() > 0) {
+                if (!skusFromMabang.isEmpty()) {
                     // we save the skuDatas in DB
                     newSkusMap.putAll(skuListMabangService.saveSkuFromMabang(skusFromMabang));
                 }
@@ -120,7 +120,7 @@ public class MabangSkuJob implements Job {
         log.info("SKU codes replaced by new created SKU IDs");
 
         // here we send system notification with the number and list of new skus saved in DB
-        if (newSkusMap.size() == 0) {
+        if (newSkusMap.isEmpty()) {
             return;
         }
         List<String> messageContentList = new ArrayList<>();
@@ -177,12 +177,10 @@ public class MabangSkuJob implements Job {
             Map<String, String> param = new HashMap<>();
             param.put("nb_of_entries", String.valueOf(newSkusMap.size()));
             param.put("sku_list", msg);
-            param.put("need_treatment", needTreatmentSkuMap.size() > 0 ? needTreatmentSku : "None");
+            param.put("need_treatment", !needTreatmentSkuMap.isEmpty() ? needTreatmentSku : "None");
             param.put("current_page", String.valueOf(page));
             param.put("total_page", String.valueOf(messageContentList.size()));
             TemplateMessageDTO message = new TemplateMessageDTO("admin", "admin", "SKU导入任务", param, "sku_mabang_job_result");
-            ISysBaseApi.sendTemplateAnnouncement(message);
-//            message = new TemplateMessageDTO("admin", "Alice", "SKU导入任务", param, "sku_mabang_job_result");
             ISysBaseApi.sendTemplateAnnouncement(message);
             message = new TemplateMessageDTO("admin", "Jessyca", "SKU导入任务", param, "sku_mabang_job_result");
             ISysBaseApi.sendTemplateAnnouncement(message);

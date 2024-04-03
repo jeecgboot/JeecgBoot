@@ -171,7 +171,7 @@
                s.purchasing_amount,
                s.available_amount,
                qtyInOrdersNotShipped.quantity                                          as qtyInOrdersNotShipped,
-               IF(s.available_amount IS NULL, 0, s.available_amount) + IF(s.purchasing_amount IS NULL, 0, s.purchasing_amount) - IF(qtyInOrdersNotShipped.quantity IS NULL, 0, qtyInOrdersNotShipped.quantity) as stock,
+               s.available_amount + s.purchasing_amount - IF(qtyInOrdersNotShipped.quantity IS NULL, 0, qtyInOrdersNotShipped.quantity) as stock,
                s.image_source,
                s.service_fee,
                IF(sp.price_rmb IS NULL, sp.price,
@@ -203,7 +203,7 @@
         FROM sku s
                  JOIN client_sku cs ON s.id = cs.sku_id
                  JOIN product p ON s.product_id = p.id
-                 LEFT JOIN sku_price sp ON s.id = sp.sku_id
+                 LEFT JOIN sku_current_price sp ON s.id = sp.sku_id
                  LEFT JOIN sales_28 s28 ON s.id = s28.sku_id
                  LEFT JOIN sales_42 s42 ON s.id = s42.sku_id
                  LEFT JOIN sales_7 s7 ON s.id = s7.sku_id
