@@ -131,7 +131,7 @@ spring:
         poolPreparedStatements: true
         maxPoolPreparedStatementPerConnectionSize: 20
         # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
-        filters: stat,wall,slf4j
+        filters: stat,slf4j
         # 打开mergeSql功能；慢SQL记录
         stat:
           merge-sql: true
