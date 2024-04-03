@@ -15,22 +15,22 @@ public class SkuListRequestBody implements RequestBody {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    private String stockSku = "";
+    private String stockSku = null;
     // 50 skus max
-    private String stockSkuList = "";
+    private String stockSkuList = null;
     private DateType datetimeType;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Integer page = 1;
     private Integer total;
-    private String cursor = "";
-    private Integer maxRows = 10;
-    private Integer showVirtualSku = 0;
-    private Integer showProvider = 0;
-    private Integer showWarehouse = 0;
-    private Integer showLabel = 0;
-    private Integer showAttributes = 0;
-    private Integer showMachining = 0;
+    private String cursor = "1";
+    private Integer maxRows = null;
+    private Integer showVirtualSku = null;
+    private Integer showProvider = null;
+    private Integer showWarehouse = null;
+    private Integer showLabel = null;
+    private Integer showAttributes = null;
+    private Integer showMachining = null;
 
     @Override
     public String api() {
