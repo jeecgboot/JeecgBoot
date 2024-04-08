@@ -74,16 +74,16 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             shippingInvoiceService.delMain(id);
         }
         if(Invoice.getType(invoiceNumber).equalsIgnoreCase(COMPLETE.name())) {
-            platformOrderContentService.cancelInvoice(invoiceNumber);
-            platformOrderService.removePurchaseInvoiceNumber(invoiceNumber);
-            platformOrderService.cancelInvoice(invoiceNumber);
-            purchaseOrderService.cancelInvoice(invoiceNumber);
-            shippingInvoiceService.delMain(id);
             PurchaseOrder purchase = purchaseOrderService.getPurchaseByInvoiceNumberAndClientId(invoiceNumber, clientId);
             if(purchase.getInventoryDocumentString() != null && !purchase.getInventoryDocumentString().isEmpty())
                 shippingInvoiceService.deleteAttachmentFile(purchase.getInventoryDocumentString());
             if(purchase.getPaymentDocumentString() != null && !purchase.getPaymentDocumentString().isEmpty())
                 shippingInvoiceService.deleteAttachmentFile(purchase.getPaymentDocumentString());
+            platformOrderContentService.cancelInvoice(invoiceNumber);
+            platformOrderService.removePurchaseInvoiceNumber(invoiceNumber);
+            platformOrderService.cancelInvoice(invoiceNumber);
+            purchaseOrderService.cancelInvoice(invoiceNumber);
+            shippingInvoiceService.delMain(id);
         }
         savRefundService.cancelInvoice(invoiceNumber);
 
