@@ -15,7 +15,7 @@ import java.util.Map;
  * @author eightmonth@qq.com
  * @date 2024/4/8 11:37
  */
-public class WallConfigRegister implements SpringApplicationRunListener {
+public class DruidWallConfigRegister implements SpringApplicationRunListener {
 
     public SpringApplication application;
 
@@ -27,7 +27,7 @@ public class WallConfigRegister implements SpringApplicationRunListener {
      * @param application
      * @param args
      */
-    public WallConfigRegister(SpringApplication application, String[] args) {
+    public DruidWallConfigRegister(SpringApplication application, String[] args) {
         this.application = application;
         this.args = args;
     }
