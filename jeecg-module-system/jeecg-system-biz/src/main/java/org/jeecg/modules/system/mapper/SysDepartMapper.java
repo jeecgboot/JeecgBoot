@@ -6,8 +6,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.model.TreeModel;
+import org.jeecg.modules.system.vo.SysDepartExportVo;
+import org.jeecg.modules.system.vo.SysUserDepVo;
+import org.jeecg.modules.system.vo.lowapp.ExportDepartVo;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -44,6 +48,13 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
      */
 	@Select("select id from sys_depart where org_code=#{orgCode}")
 	public String queryDepartIdByOrgCode(@Param("orgCode") String orgCode);
+	
+    /**
+     * 通过部门id，查询部门下的用户的账号
+     * @param departIds 部门ID集合
+     * @return String
+     */
+	public List<String> queryUserAccountByDepartIds(@Param("departIds") List<String> departIds);
 
     /**
      * 通过部门id 查询部门id,父id
@@ -118,4 +129,45 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 */
 	@Update("UPDATE sys_depart SET iz_leaf=#{leaf} WHERE id = #{id}")
 	int setMainLeaf(@Param("id") String id, @Param("leaf") Integer leaf);
+
+	/**
+	 * 获取租户id和部门父id获取的部门数据
+	 * @param tenantId
+	 * @param parentId
+	 * @return
+	 */
+    List<ExportDepartVo> getDepartList(@Param("parentId") String parentId, @Param("tenantId") Integer tenantId);
+
+	/**
+	 * 根据部门名称和租户id获取部门数据
+	 * @param departName
+	 * @param tenantId
+	 * @return
+	 */
+	List<SysDepart> getDepartByName(@Param("departName")String departName, @Param("tenantId")Integer tenantId,@Param("parentId") String parentId);
+
+	/**
+	 * 根据部门id获取用户id和部门名称
+	 * @param userList
+	 * @return
+	 */
+	List<SysUserDepVo> getUserDepartByTenantUserId(@Param("userList") List<SysUser> userList, @Param("tenantId") Integer tenantId);
+
+	/**
+	 * 根据部门名称和租户id获取分页部门数据
+	 * @param page
+	 * @param departName
+	 * @param tenantId
+	 * @param parentId
+	 * @return
+	 */
+	List<SysDepart> getDepartPageByName(@Param("page") Page<SysDepart> page, @Param("departName") String departName, @Param("tenantId") Integer tenantId, @Param("parentId") String parentId);
+
+	/**
+	 * 获取租户id和部门父id获取的部门数据
+	 * @param tenantId
+	 * @param parentId
+	 * @return
+	 */
+    List<SysDepartExportVo> getSysDepartList(@Param("parentId") String parentId,@Param("tenantId") Integer tenantId);
 }

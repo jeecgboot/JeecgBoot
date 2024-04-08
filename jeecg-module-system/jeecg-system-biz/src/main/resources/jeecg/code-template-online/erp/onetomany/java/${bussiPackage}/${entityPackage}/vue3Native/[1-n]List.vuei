@@ -1,0 +1,243 @@
+<#list subTables as sub>
+#segment#${sub.entityName}List.vue
+<template>
+ <div class="p-2">
+   <#-- 结束循环 -->
+    <!--引用表格-->
+    <BasicTable @register="registerTable" :rowSelection="rowSelection">
+      <!--插槽:table标题-->
+      <template #tableTitle>
+        <a-button type="primary" @click="handleAdd" preIcon="ant-design:plus-outlined"> 新增</a-button>
+        <a-button  type="primary" preIcon="ant-design:export-outlined" @click="onExportXls"> 导出</a-button>
+        <j-upload-button  type="primary" preIcon="ant-design:import-outlined" @click="onImportXls">导入</j-upload-button>
+        <a-dropdown v-if="selectedRowKeys.length > 0">
+          <template #overlay>
+            <a-menu>
+              <a-menu-item key="1" @click="batchHandleDelete">
+                <Icon icon="ant-design:delete-outlined"></Icon>
+                删除
+              </a-menu-item>
+            </a-menu>
+          </template>
+          <a-button>批量操作
+            <Icon icon="mdi:chevron-down"></Icon>
+          </a-button>
+        </a-dropdown>
+      </template>
+      <!--操作栏-->
+      <template #action="{ record }">
+        <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)"/>
+      </template>
+      <!--字段回显插槽-->
+      <template v-slot:bodyCell="{ column, record, index, text }">
+       <#list sub.originalColumns as po>
+        <#if po.classType=='umeditor' || po.classType=='pca' || po.classType=='file'>
+        <template v-if="column.dataIndex==='${po.fieldName}'">
+         <#if po.classType=='umeditor'>
+          <!--富文本件字段回显插槽-->
+          <div v-html="text"></div>
+         </#if>
+         <#if po.classType=='file'>
+          <!--文件字段回显插槽-->
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+          <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
+         </#if>
+         <#if po.classType=='pca'>
+           <!--省市区字段回显插槽-->
+           {{ getAreaTextByCode(text) }}
+         </#if>
+        </template>
+        </#if>
+       </#list>
+      </template>
+    </BasicTable>
+
+    <${sub.entityName}Modal ref="registerModal" @success="handleSuccess"/>
+   </div>
+</template>
+
+<script lang="ts" setup>
+  import { ref, reactive, unref, inject, watch } from 'vue';
+  import { BasicTable, useTable, TableAction } from '/@/components/Table';
+  import { useListPage } from '/@/hooks/system/useListPage'
+  import ${sub.entityName}Modal from './components/${sub.entityName}Modal.vue'
+  import { ${sub.entityName?uncap_first}Columns } from './${entityName}.data';
+  import { ${sub.entityName?uncap_first}List, ${sub.entityName?uncap_first}Delete, ${sub.entityName?uncap_first}DeleteBatch, ${sub.entityName?uncap_first}ExportXlsUrl, ${sub.entityName?uncap_first}ImportUrl } from './${entityName}.api';
+  import { isEmpty } from "/@/utils/is";
+  import { useMessage } from '/@/hooks/web/useMessage';
+  import { downloadFile } from '/@/utils/common/renderUtils';
+  
+  const toggleSearchStatus = ref<boolean>(false);
+  //接收主表id
+  const mainId = inject('mainId') || '';
+  //提示弹窗
+  const $message = useMessage()
+  const queryParam = {};
+  // 列表页面公共参数、方法
+  const { prefixCls, tableContext, onImportXls, onExportXls } = useListPage({
+    tableProps: {
+      api: ${sub.entityName?uncap_first}List,
+      columns: ${sub.entityName?uncap_first}Columns,
+      canResize: false,
+      useSearchForm: false,
+      actionColumn: {
+        width: 180,
+      },
+      beforeFetch: (params) => {
+        return Object.assign(params, queryParam);
+      },
+    },
+    exportConfig: {
+      name: '${sub.ftlDescription}',
+      url: ${sub.entityName?uncap_first}ExportXlsUrl,
+      params: {
+        <#list sub.foreignKeys as key>
+        '${key?uncap_first}': mainId
+         </#list>
+      }
+    },
+    importConfig: {
+      url: ()=>{
+        return ${sub.entityName?uncap_first}ImportUrl + '/' + unref(mainId)
+      }
+    }
+  });
+
+  //注册table数据
+  const [registerTable, { reload<#if sub.foreignRelationType =='1'>,getDataSource</#if>}, { rowSelection, selectedRowKeys }] = tableContext;
+  const registerModal = ref();
+  const formRef = ref();
+  const labelCol = reactive({
+    xs:24,
+    sm:4,
+    xl:6,
+    xxl:4
+  });
+  const wrapperCol = reactive({
+    xs: 24,
+    sm: 20,
+  });
+  
+  /**
+   * 新增事件
+   */
+  function handleAdd() {
+    if (isEmpty(unref(mainId))) {
+        $message.createMessage.warning('请选择一个主表信息')
+        return;
+    }
+    <#if sub.foreignRelationType =='1'>
+    let dataSource = getDataSource();
+    if(dataSource.length >= 1){
+      $message.createMessage.warning('一对一子表只能添加一条数据')
+      return;
+    }
+    </#if>
+    registerModal.value.disableSubmit = false;
+    registerModal.value.add();
+  }
+
+  /**
+   * 编辑事件
+   */
+  async function handleEdit(record: Recordable) {
+    registerModal.value.disableSubmit = false;
+    registerModal.value.edit(record);
+  }
+
+  /**
+   * 详情事件
+   */
+  function handleDetail(record: Recordable) {
+    registerModal.value.disableSubmit = true;
+    registerModal.value.edit(record);
+  }
+  
+  /**
+   * 删除事件
+   */
+  async function handleDelete(record) {
+    await ${sub.entityName?uncap_first}Delete({id: record.id}, handleSuccess);
+  }
+
+  /**
+   * 批量删除事件
+   */
+  async function batchHandleDelete() {
+    await ${sub.entityName?uncap_first}DeleteBatch({ids: selectedRowKeys.value}, handleSuccess);
+  }
+
+  /**
+   * 成功回调
+   */
+  function handleSuccess() {
+    (selectedRowKeys.value = []) && reload();
+  }
+
+  /**
+   * 操作栏
+   */
+  function getTableAction(record) {
+    return [
+      {
+        label: '编辑',
+        onClick: handleEdit.bind(null, record),
+      },
+    ]
+  }
+  
+  /**
+   * 下拉操作栏
+   */
+  function getDropDownAction(record){
+    return [
+      {
+        label: '详情',
+        onClick: handleDetail.bind(null, record),
+      },
+      {
+        label: '删除',
+        popConfirm: {
+          title: '是否确认删除',
+          confirm: handleDelete.bind(null, record),
+        },
+      },
+    ];
+  }
+  
+  /**
+   * 重置
+   */
+  function searchReset() {
+    formRef.value.resetFields();
+    selectedRowKeys.value = [];
+    //刷新数据
+    reload();
+  }
+  
+  watch(mainId, () => {
+    <#list sub.foreignKeys as key>
+    queryParam['${key?uncap_first}'] = unref(mainId);
+    </#list>
+    reload();
+  });
+</script>
+<style lang="less" scoped>
+  .jeecg-basic-table-form-container {
+    padding: 0;
+    .table-page-search-submitButtons {
+      display: block;
+      margin-bottom: 24px;
+      white-space: nowrap;
+    }
+    .query-group-cust{
+      min-width: 100px !important;
+    }
+    .query-group-split-cust{
+      width: 30px;
+      display: inline-block;
+      text-align: center
+    }
+  }
+</style>
+</#list>

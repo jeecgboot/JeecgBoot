@@ -2,32 +2,33 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>1.11.1</version>
+  <version>3.6.3</version>
   <packaging>pom</packaging>
-  <name>WIA APP ${project.version} </name>
+  <name>JEECG BOOT ${project.version}</name>
 
 	<developers>
 		<developer>
-			<name>北京敲敲云科技有限公司</name>
+			<name>北京国炬信息技术有限公司</name>
 			<email>jeecgos@163.com</email>
+			<url>http://www.guojusoft.com</url>
 		</developer>
 	</developers>
 
 	<scm>
 		<connection>http://www.jeecg.com</connection>
-		<developerConnection>https://qiaoqiaoyun.com</developerConnection>
+		<developerConnection>http://guojusoft.com</developerConnection>
 		<url>http://www.jeecg.com/vip</url>
 	</scm>
 	
   	<parent>
 	    <groupId>org.springframework.boot</groupId>
 	    <artifactId>spring-boot-starter-parent</artifactId>
-	    <version>2.6.14</version>
+        <version>2.7.18</version>
 	    <relativePath/>
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.5.1</jeecgboot.version>
+		<jeecgboot.version>3.6.3</jeecgboot.version>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -39,46 +40,50 @@
 		<xxl-job-core.version>2.2.0</xxl-job-core.version>
         <fastjson.version>1.2.83</fastjson.version>
 		<pegdown.version>1.6.0</pegdown.version>
-		<knife4j-spring-boot-starter.version>3.0.3</knife4j-spring-boot-starter.version>
-		<knife4j-spring-ui.version>2.0.9</knife4j-spring-ui.version>
+		<knife4j-spring-boot-starter.version>4.4.0</knife4j-spring-boot-starter.version>
 		<!-- 数据库驱动 -->
 		<postgresql.version>42.2.25</postgresql.version>
 		<ojdbc6.version>11.2.0.3</ojdbc6.version>
 		<sqljdbc4.version>4.0</sqljdbc4.version>
 		<mysql-connector-java.version>8.0.27</mysql-connector-java.version>
-		<hutool.version>5.3.8</hutool.version>
+        <hutool.version>5.8.25</hutool.version>
+		<!-- 国产数据库驱动 -->
+		<dm8.version>8.1.1.49</dm8.version>
 
 		<!-- 持久层 -->
-		<mybatis-plus.version>3.5.1</mybatis-plus.version>
-		<dynamic-datasource-spring-boot-starter.version>3.2.0</dynamic-datasource-spring-boot-starter.version>
-		<druid.version>1.1.22</druid.version>
-		<minidao.version>1.9.0</minidao.version>
+		<mybatis-plus.version>3.5.3.1</mybatis-plus.version>
+		<dynamic-datasource-spring-boot-starter.version>4.1.3</dynamic-datasource-spring-boot-starter.version>
+		<druid.version>1.2.19</druid.version>
+		<minidao.version>1.9.6</minidao.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.5.6</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.7.3</jimureport-spring-boot-starter.version>
+		<commons-io.version>2.11.0</commons-io.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.11.2</aliyun.oss.version>
 		<!-- shiro -->
-		<shiro.version>1.10.0</shiro.version>
+		<shiro.version>1.12.0</shiro.version>
 		<java-jwt.version>3.11.0</java-jwt.version>
-		<shiro-redis.version>3.1.0</shiro-redis.version>
-		<codegenerate.version>1.4.3</codegenerate.version>
-		<autopoi-web.version>1.4.6</autopoi-web.version>
+		<shiro-redis.version>3.2.2</shiro-redis.version>
+		<codegenerate.version>1.4.7</codegenerate.version>
+		<autopoi-web.version>1.4.7</autopoi-web.version>
 		<minio.version>8.0.3</minio.version>
-		<justauth-spring-boot-starter.version>1.3.4</justauth-spring-boot-starter.version>
+		<justauth-spring-boot-starter.version>1.4.0</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<qiniu-java-sdk.version>7.4.0</qiniu-java-sdk.version>
 		<!-- Log4j2爆雷漏洞 -->
 		<log4j2.version>2.17.0</log4j2.version>
 		<logback.version>1.2.9</logback.version>
+		<!-- seata -->
+		<seata.version>1.5.2</seata.version>
 	</properties>
 
 	<modules>
         <module>jeecg-boot-base-core</module>
         <module>jeecg-module-demo</module>
         <module>jeecg-module-system</module>
-	</modules>
+    </modules>
 
 	<repositories>
 		<repository>
@@ -96,7 +101,7 @@
             <snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-        </repository>
+		</repository>
 		<repository>
 			<id>jeecg-snapshots</id>
 			<name>jeecg-snapshots Repository</name>
@@ -157,6 +162,11 @@
                 <version>${spring-cloud-alibaba.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>io.seata</groupId>
+				<artifactId>seata-spring-boot-starter</artifactId>
+				<version>${seata.version}</version>
 			</dependency>
 
 			<!-- system 模块-->
@@ -235,7 +245,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.4.4-beta</version>
+				<version>3.6.1-RC</version>
 			</dependency>
 
 			<!--mongon db-->
@@ -244,7 +254,24 @@
 				<artifactId>jeecg-boot-starter-mongon</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
-
+			<!--人大金仓驱动 版本号V008R006C005B0013 -->
+			<dependency>
+				<groupId>org.jeecgframework</groupId>
+				<artifactId>kingbase8</artifactId>
+				<version>9.0.0</version>
+				<scope>runtime</scope>
+			</dependency>
+			<!--达梦8数据库最新驱动 版本号1-3-26-2023.07.26-197096-20046-ENT -->
+			<dependency>
+				<groupId>com.dameng</groupId>
+				<artifactId>Dm8JdbcDriver18</artifactId>
+				<version>8.1.1.49</version>
+			</dependency>
+			<dependency>
+				<groupId>com.dameng</groupId>
+				<artifactId>DmDialect-for-hibernate5.0</artifactId>
+				<version>8.1.1.49</version>
+			</dependency>
 			<!-- 七牛云SDK -->
 			<dependency>
 				<groupId>com.qiniu</groupId>
@@ -267,7 +294,7 @@
 			<dependency>
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
-				<version>1.4</version>
+				<version>1.5</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>commons-io</artifactId>
@@ -297,6 +324,17 @@
 				<artifactId>okhttp</artifactId>
 				<version>4.4.1</version>
 			</dependency>
+			<!-- hutool工具类-->
+			<dependency>
+				<groupId>cn.hutool</groupId>
+				<artifactId>hutool-core</artifactId>
+				<version>${hutool.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.hutool</groupId>
+				<artifactId>hutool-crypto</artifactId>
+				<version>${hutool.version}</version>
+			</dependency>
 			<!--minio-->
 			<dependency>
 				<groupId>io.minio</groupId>
@@ -317,7 +355,7 @@
 			<dependency>
 				<groupId>org.jeecgframework</groupId>
 				<artifactId>jeewx-api</artifactId>
-				<version>1.5.1</version>
+				<version>1.5.2</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>commons-beanutils</artifactId>
@@ -327,7 +365,25 @@
 						<artifactId>commons-lang</artifactId>
 						<groupId>commons-lang</groupId>
 					</exclusion>
+					<exclusion>
+						<artifactId>commons-collections</artifactId>
+						<groupId>commons-collections</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>commons-logging</artifactId>
+						<groupId>commons-logging</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>commons-io</artifactId>
+						<groupId>commons-io</groupId>
+					</exclusion>
 				</exclusions>
+			</dependency>
+			<!-- minidao -->
+			<dependency>
+				<groupId>org.jeecgframework</groupId>
+				<artifactId>minidao-spring-boot-starter</artifactId>
+				<version>${minidao.version}</version>
 			</dependency>
 			<!-- 积木报表-->
 			<dependency>
@@ -344,7 +400,21 @@
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-nosql-starter</artifactId>
-				<version>${jimureport-spring-boot-starter.version}</version>
+				<version>1.6.0</version>
+			</dependency>
+			<!-- chatgpt -->
+			<dependency>
+				<groupId>org.jeecgframework.boot</groupId>
+				<artifactId>jeecg-boot-starter-chatgpt</artifactId>
+                <version>${jeecgboot.version}</version>
+			</dependency>
+
+			<!--flyway 支持 mysql5.7+、MariaDB10.3.16-->
+			<!--mysql5.6，需要把版本号改成5.2.1-->
+			<dependency>
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-core</artifactId>
+				<version>7.15.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -356,8 +426,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -435,18 +505,46 @@
             <properties>
                 <!--当前环境-->
                 <profile.name>dev</profile.name>
-				<!--Nacos服务地址-->
+                <!--Nacos服务地址-->
                 <config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
+				<!--Nacos配置中心命名空间,用于支持多环境.这里必须使用ID，不能使用名称,默认为空-->
+				<config.namespace></config.namespace>
+				<!--Nacos配置分组名称-->
+				<config.group>DEFAULT_GROUP</config.group>
+				<!--Nacos用户名-->
+				<config.username></config.username>
+				<!--Nacos密码-->
+				<config.password></config.password>
             </properties>
         </profile>
+		<!-- 测试Nacos开启鉴权、设置分组和命名空间
+		<profile>
+			<id>dev</id>
+			<properties>
+				<profile.name>dev</profile.name>
+				<config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
+				<config.namespace>ac14ab82-51f8-4f0c-aa5b-25fb8384bfb6</config.namespace>
+				<config.group>JEECGDEV_GROUP</config.group>
+				<config.username>nacos</config.username>
+				<config.password>nacos</config.password>
+			</properties>
+		</profile> -->
         <!-- 测试 -->
         <profile>
             <id>test</id>
             <properties>
                 <!--当前环境-->
                 <profile.name>test</profile.name>
-				<!--Nacos服务地址-->
+                <!--Nacos服务地址-->
                 <config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
+				<!--Nacos配置中心命名空间,用于支持多环境.这里必须使用ID，不能使用名称,默认为空-->
+				<config.namespace></config.namespace>
+				<!--Nacos配置分组名称-->
+				<config.group>DEFAULT_GROUP</config.group>
+				<!--Nacos用户名-->
+				<config.username></config.username>
+				<!--Nacos密码-->
+				<config.password></config.password>
             </properties>
         </profile>
         <!-- 生产 -->
@@ -455,15 +553,23 @@
             <properties>
                 <!--当前环境-->
                 <profile.name>prod</profile.name>
-				<!--Nacos服务地址-->
+                <!--Nacos服务地址-->
                 <config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
+				<!--Nacos配置中心命名空间,用于支持多环境.这里必须使用ID，不能使用名称,默认为空-->
+				<config.namespace></config.namespace>
+				<!--Nacos配置分组名称-->
+				<config.group>DEFAULT_GROUP</config.group>
+				<!--Nacos用户名-->
+				<config.username></config.username>
+				<!--Nacos密码-->
+				<config.password></config.password>
             </properties>
         </profile>
 		<!-- SpringCloud运行环境 -->
 		<profile>
 			<id>SpringCloud</id>
 			<modules>
-				<!-- 微服务模块-->
+				<!-- 微服务模块 -->
 				<module>jeecg-server-cloud</module>
 			</modules>
 		</profile>

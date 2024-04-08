@@ -41,6 +41,7 @@ public class SysDepartPermissionServiceImpl extends ServiceImpl<SysDepartPermiss
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveDepartPermission(String departId, String permissionIds, String lastPermissionIds) {
+        //1.对比要新增的权限
         List<String> add = getDiff(lastPermissionIds,permissionIds);
         if(add!=null && add.size()>0) {
             List<SysDepartPermission> list = new ArrayList<SysDepartPermission>();
@@ -52,15 +53,24 @@ public class SysDepartPermissionServiceImpl extends ServiceImpl<SysDepartPermiss
             }
             this.saveBatch(list);
         }
+        //2.对比要删除的权限
         List<String> delete = getDiff(permissionIds,lastPermissionIds);
         if(delete!=null && delete.size()>0) {
             for (String permissionId : delete) {
-                this.remove(new QueryWrapper<SysDepartPermission>().lambda().eq(SysDepartPermission::getDepartId, departId).eq(SysDepartPermission::getPermissionId, permissionId));
-                //删除部门权限时，删除部门角色中已授权的权限
+                //2.1 删除部门对应的权限
+                this.remove(new QueryWrapper<SysDepartPermission>().lambda()
+                        .eq(SysDepartPermission::getDepartId, departId)
+                        .eq(SysDepartPermission::getPermissionId, permissionId));
+                //2.2 删除部门权限时，删除部门角色中已授权的权限
                 List<SysDepartRole> sysDepartRoleList = sysDepartRoleMapper.selectList(new LambdaQueryWrapper<SysDepartRole>().eq(SysDepartRole::getDepartId,departId));
                 List<String> roleIds = sysDepartRoleList.stream().map(SysDepartRole::getId).collect(Collectors.toList());
                 if(roleIds != null && roleIds.size()>0){
-                    departRolePermissionMapper.delete(new LambdaQueryWrapper<SysDepartRolePermission>().eq(SysDepartRolePermission::getPermissionId,permissionId));
+                    departRolePermissionMapper.delete(new LambdaQueryWrapper<SysDepartRolePermission>()
+                            .eq(SysDepartRolePermission::getPermissionId,permissionId)
+                        //update-begin-author:liusq---date:2023-10-08--for: [issue/#5339]部门管理下部门赋权代码逻辑缺少判断条件
+                            .in(SysDepartRolePermission::getRoleId,roleIds)
+                        //update-end-author:liusq---date:2023-10-08--for: [issue/#5339]部门管理下部门赋权代码逻辑缺少判断条件
+                    );
                 }
             }
         }

@@ -6,6 +6,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Random;
 
@@ -96,7 +98,13 @@ public class RandImageUtil {
 //		graphics.setColor(getRandColor(100, 200)); // ---2
         graphics.drawRect(0, 0, WIDTH - 1, HEIGHT - 1);
 
-        final Random random = new Random();
+        // SHA1PRNG是-种常用的随机数生成算法,处理弱随机数问题
+        SecureRandom random;
+        try {
+            random = SecureRandom.getInstance("SHA1PRNG");
+        } catch (NoSuchAlgorithmException e) {
+            random = new SecureRandom();
+        }
         // 随机产生干扰线，使图象中的认证码不易被其它程序探测到
         for (int i = 0; i < COUNT; i++) {
             // ---3

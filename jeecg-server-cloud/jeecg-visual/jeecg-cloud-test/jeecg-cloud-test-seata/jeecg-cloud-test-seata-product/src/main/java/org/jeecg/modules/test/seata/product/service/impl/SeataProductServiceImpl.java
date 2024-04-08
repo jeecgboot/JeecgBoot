@@ -1,6 +1,7 @@
 package org.jeecg.modules.test.seata.product.service.impl;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import io.seata.core.context.RootContext;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -35,6 +36,7 @@ public class SeataProductServiceImpl implements SeataProductService {
     @Transactional(propagation = Propagation.REQUIRES_NEW,rollbackFor = Exception.class)
     @Override
     public BigDecimal reduceStock(Long productId, Integer count) {
+        log.info("xid:"+ RootContext.getXID());
         log.info("=============PRODUCT START=================");
         // 检查库存
         SeataProduct product = productMapper.selectById(productId);

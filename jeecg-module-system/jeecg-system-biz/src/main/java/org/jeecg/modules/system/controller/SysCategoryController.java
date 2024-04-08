@@ -15,7 +15,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.ImportExcelUtil;
-import org.jeecg.common.util.SqlInjectionUtil;
+import org.jeecg.common.util.ReflectHelper;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.SysCategory;
@@ -322,7 +322,7 @@ public class SysCategoryController {
  		Result<SysCategory> result = new Result<SysCategory>();
  		try {
 			//update-begin-author:taoyan date:2022-5-6 for: issues/3663 sql注入问题
-			boolean isClassField = SqlInjectionUtil.isClassField(field, SysCategory.class);
+			boolean isClassField = ReflectHelper.isClassField(field, SysCategory.class);
 			if (!isClassField) {
 				return Result.error("字段无效，请检查!");
 			}

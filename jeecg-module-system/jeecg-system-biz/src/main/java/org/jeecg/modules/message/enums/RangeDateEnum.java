@@ -1,5 +1,6 @@
 package org.jeecg.modules.message.enums;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.enums.MessageTypeEnum;
 import org.jeecg.common.system.annotation.EnumDict;
 import org.jeecg.common.system.vo.DictModel;
@@ -15,6 +16,7 @@ import java.util.List;
  * @Author taoYan
  * @Date 2022/8/19 20:41
  **/
+@Slf4j
 @EnumDict("rangeDate")
 public enum RangeDateEnum {
 
@@ -25,6 +27,7 @@ public enum RangeDateEnum {
     SZ("sz", "上周"),
     BY("by", "本月"),
     SY("sy", "上月"),
+    SEVENDAYS("7day", "7日"),
     ZDY("zdy", "自定义日期");
 
     String key;
@@ -101,6 +104,10 @@ public enum RangeDateEnum {
             //本月第一天减一天
             calendar2.set(Calendar.DAY_OF_MONTH, 1);
             calendar2.add(Calendar.DAY_OF_MONTH, -1);
+        } else if (SEVENDAYS.key.equals(key)){
+            //七日第一天
+            calendar1.setTime(new Date());
+            calendar1.add(Calendar.DATE, -7);
         }else{
             flag = true;
         }

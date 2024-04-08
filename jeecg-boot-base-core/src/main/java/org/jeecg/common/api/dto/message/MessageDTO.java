@@ -4,7 +4,7 @@ import lombok.Data;
 import org.jeecg.common.constant.CommonConstant;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 普通消息
@@ -43,14 +43,7 @@ public class MessageDTO implements Serializable {
      * 消息类型 1:消息  2:系统消息
      */
     protected String category;
-
-    //-----------------------------------------------------------------------
-    //update-begin---author:taoyan ---date:20220705  for：支持自定义推送类型，邮件、钉钉、企业微信、系统消息-----------
-
-    /**
-     * 模板消息对应的模板编码
-     */
-    protected String templateCode;
+    
     /**
      * 消息类型：org.jeecg.common.constant.enums.MessageTypeEnum
      *  XT("system",  "系统消息")
@@ -60,23 +53,38 @@ public class MessageDTO implements Serializable {
      */
     protected String type;
     
+
+    //---【推送模板相关参数】-------------------------------------------------------------
     /**
      * 是否发送Markdown格式的消息
      */
     protected boolean isMarkdown;
-
+    /**
+     * 模板消息对应的模板编码
+     */
+    protected String templateCode;
     /**
      * 解析模板内容 对应的数据
      */
     protected Map<String, Object> data;
-    //update-end---author:taoyan ---date::20220705  for：支持自定义推送类型，邮件、钉钉、企业微信、系统消息-----------
-    //-----------------------------------------------------------------------
+    //---【推送模板相关参数】-------------------------------------------------------------
 
-
+    //---【邮件相关参数】-------------------------------------------------------------
     /**
-     * 抄送人
+     * 邮件抄送人
      */
     private String copyToUser;
+
+    /**
+     * 邮件推送地址
+     */
+    protected Set<String> toEmailList;
+
+    /**
+     * 邮件抄送地址
+     */
+    protected Set<String> ccEmailList;
+    //---【邮件相关参数】-------------------------------------------------------------
     
     public MessageDTO(){
     }

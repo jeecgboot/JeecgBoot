@@ -133,7 +133,8 @@ public class SysUser implements Serializable {
      * 职务，关联职务表
      */
     @Excel(name = "职务", width = 15)
-    @Dict(dictTable ="sys_position",dicText = "name",dicCode = "code")
+    @Dict(dictTable ="sys_position",dicText = "name",dicCode = "id")
+    @TableField(exist = false)
     private String post;
 
     /**
@@ -206,4 +207,10 @@ public class SysUser implements Serializable {
      * 流程状态
      */
     private String bpmStatus;
+
+    /**
+     * 是否已经绑定第三方
+     */
+    @TableField(exist = false)
+    private boolean izBindThird;
 }

@@ -20,6 +20,29 @@ management:
         include: metrics,httptrace
 
 spring:
+  # flyway配置
+  flyway:
+    # 是否启用flyway
+    enabled: true
+    # 编码格式，默认UTF-8
+    encoding: UTF-8
+    # 迁移sql脚本文件存放路径，官方默认db/migration
+    locations: classpath:flyway/sql/mysql
+    # 迁移sql脚本文件名称的前缀，默认V
+    sql-migration-prefix: V
+    # 迁移sql脚本文件名称的分隔符，默认2个下划线__
+    sql-migration-separator: __
+    # 避免带${}sql执行失败
+    placeholder-prefix: '#('
+    placeholder-suffix: )
+    # 迁移sql脚本文件名称的后缀
+    sql-migration-suffixes: .sql
+    # 迁移时是否进行校验，默认true
+    validate-on-migrate: true
+    # 当迁移发现数据库非空且存在没有元数据的表时，自动执行基准迁移，新建schema_version表
+    baseline-on-migrate: true
+    # 是否关闭要清除已有库下的表功能,生产环境必须为true,否则会删库，非常重要！！！
+    clean-disabled: true
   servlet:
     multipart:
       max-file-size: 10MB
@@ -97,7 +120,9 @@ spring:
   resource:
     static-locations: classpath:/static/,classpath:/public/
   autoconfigure:
-    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+    exclude:
+      - com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+      - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
   datasource:
     druid:
       stat-view-servlet:
@@ -113,7 +138,7 @@ spring:
         # 初始化大小，最小，最大
         initial-size: 5
         min-idle: 5
-        maxActive: 20
+        maxActive: 1000
         # 配置获取连接等待超时的时间
         maxWait: 60000
         # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
@@ -129,8 +154,10 @@ spring:
         maxPoolPreparedStatementPerConnectionSize: 20
         # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
         filters: stat,wall,slf4j
-        # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
-        connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+        # 打开mergeSql功能；慢SQL记录
+        stat:
+          merge-sql: true
+          slow-sql-millis: 5000
       datasource:
         master:
           url: jdbc:mysql://127.0.0.1:3306/wia_app_3?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Europe/Paris
@@ -139,7 +166,7 @@ spring:
           driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
-          #url: jdbc:mysql://localhost:3306/jeecg-boot2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowPublicKeyRetrieval=true&serverTimezone=Europe/Paris
+          #url: jdbc:mysql://localhost:3306/jeecg-boot2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           #username: root
           #password: root
           #driver-class-name: com.mysql.cj.jdbc.Driver
@@ -147,15 +174,8 @@ spring:
   redis:
     database: 0
     host: 127.0.0.1
-    lettuce:
-      pool:
-        max-active: 8   #最大连接数据库连接数,设 0 为没有限制
-        max-idle: 8     #最大等待连接中的数量,设 0 为没有限制
-        max-wait: -1ms  #最大建立连接等待时间。如果超过此时间将接到异常。设为-1表示无限制。
-        min-idle: 0     #最小等待连接中的数量,设 0 为没有限制
-      shutdown-timeout: 100ms
-    password: ''
     port: 6379
+    password: ''
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:org/jeecg/modules/**/xml/*Mapper.xml
@@ -174,15 +194,19 @@ mybatis-plus:
     call-setters-on-nulls: true
 #jeecg专用配置
 minidao:
-  base-package: org.jeecg.modules.jmreport.*
+  base-package: org.jeecg.modules.jmreport.*,org.jeecg.modules.drag.*
 jeecg:
-  # 是否启用安全模式
-  safeMode: false
+  # 平台上线安全配置
+  firewall:
+    # 数据源安全 (开启后，Online报表和图表的数据源为必填)
+    dataSourceSafe: false
+    # 低代码模式（dev:开发模式，prod:发布模式——关闭所有在线开发配置能力）
+    lowCodeMode: dev
   # 签名密钥串(前后端要一致，正式发布请自行修改)
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
-  # 签名拦截接口
+  #签名拦截接口
   signUrls: /sys/dict/getDictItems/*,/sys/dict/loadDict/*,/sys/dict/loadDictOrderByValue/*,/sys/dict/loadDictItem/*,/sys/dict/loadTreeData,/sys/api/queryTableDictItemsByCode,/sys/api/queryFilterTableDictInfo,/sys/api/queryTableDictByKeys,/sys/api/translateDictFromTable,/sys/api/translateDictFromTableByKeys
-  #local、minio、alioss
+  # 本地：local、Minio：minio、阿里云：alioss
   uploadType: local
   # 前端访问地址
   domainUrl:
@@ -215,7 +239,7 @@ jeecg:
     #webapp文件路径
     webapp: /opt/webapp
   shiro:
-    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**
+    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/jmreport/bigscreen2/**
   #阿里云oss存储和大鱼短信秘钥配置
   oss:
     accessKey: ??
@@ -237,9 +261,14 @@ jeecg:
     bucketName: otatest
   #大屏报表参数设置
   jmreport:
-    mode: dev
-    #数据字典是否进行saas数据隔离，自己看自己的字典
-    saas: false
+    #多租户模式，默认值为空(created:按照创建人隔离、tenant:按照租户隔离) (v1.6.2+ 新增)
+    saasMode:
+    # 平台上线安全配置(v1.6.2+ 新增)
+    firewall:
+      # 数据源安全 (开启后，不允许使用平台数据源、SQL解析加签并且不允许查询数据库)
+      dataSourceSafe: false
+      # 低代码开发模式（dev:开发模式，prod:发布模式—关闭在线报表设计功能，分配角色admin、lowdeveloper可以放开限制）
+      lowCodeMode: dev
   #xxl-job配置
   xxljob:
     enabled: false
@@ -257,12 +286,27 @@ jeecg:
     password:
     type: STANDALONE
     enabled: true
+  # ai-chat
+  ai-chat:
+    # 是否开启；必须。
+    enabled: false
+    # openAi接口秘钥，填写自己的apiKey；必须。
+    apiKey: "？？？？"
+    # openAi域名，有代理就填代理的域名。默认：openAI官方apiHost
+    apiHost: "https://api.openai.com"
+    # 超时时间单位:s。默认 60s
+    timeout: 60
+    # 本地代理地址
+#    proxy:
+#      host: "http://127.0.0.1"
+#      port: "7890"
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas
 #Mybatis输出sql日志
 logging:
   level:
+    org.flywaydb: debug
     org.jeecg.modules.system.mapper: info
 #swagger
 knife4j:
@@ -274,3 +318,28 @@ knife4j:
     enable: false
     username: jeecg
     password: jeecg1314
+#第三方登录
+justauth:
+  enabled: true
+  type:
+    GITHUB:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/github/callback
+    WECHAT_ENTERPRISE:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_enterprise/callback
+      agent-id: ??
+    DINGTALK:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/dingtalk/callback
+    WECHAT_OPEN:
+      client-id: ??
+      client-secret: ??
+      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_open/callback
+  cache:
+    type: default
+    prefix: 'demo::'
+    timeout: 1h

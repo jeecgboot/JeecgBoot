@@ -17,6 +17,8 @@ public class DataLogDTO {
 
     private String type;
 
+    private String createName;
+
     public DataLogDTO(){
 
     }

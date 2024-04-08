@@ -1,6 +1,8 @@
 package org.jeecg.modules.test.seata.order.service.impl;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.dynamic.datasource.annotation.DS;
 
+import io.seata.core.context.RootContext;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.test.seata.order.dto.PlaceOrderRequest;
@@ -39,6 +41,7 @@ public class SeataOrderServiceImpl implements SeataOrderService {
     @Transactional(rollbackFor = Exception.class)
     @GlobalTransactional
     public void placeOrder(PlaceOrderRequest request) {
+        log.info("xid:"+RootContext.getXID());
         log.info("=============ORDER START=================");
         Long userId = request.getUserId();
         Long productId = request.getProductId();
@@ -58,7 +61,12 @@ public class SeataOrderServiceImpl implements SeataOrderService {
         // 扣减库存并计算总价
         BigDecimal amount = productClient.reduceStock(productId, count);
         // 扣减余额
-        accountClient.reduceBalance(userId, amount);
+        String str = accountClient.reduceBalance(userId, amount);
+        // feign响应被二次封装，判断使主事务回滚
+        JSONObject jsonObject = JSONObject.parseObject(str);
+        if (jsonObject.getInteger("code") != 200) {
+            throw new RuntimeException();
+        }
 
         order.setStatus(OrderStatus.SUCCESS);
         order.setTotalPrice(amount);

@@ -14,6 +14,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.constant.enums.DySmsEnum;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
@@ -37,6 +38,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author scott
@@ -60,12 +62,9 @@ public class LoginController {
 	@Autowired
     private ISysDepartService sysDepartService;
 	@Autowired
-	private ISysTenantService sysTenantService;
-	@Autowired
     private ISysDictService sysDictService;
 	@Resource
 	private BaseCommonService baseCommonService;
-
 	@Autowired
 	private JeecgBaseConfig jeecgBaseConfig;
 
@@ -73,53 +72,44 @@ public class LoginController {
 
 	@ApiOperation("登录接口")
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel){
+	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel, HttpServletRequest request){
 		Result<JSONObject> result = new Result<JSONObject>();
 		String username = sysLoginModel.getUsername();
 		String password = sysLoginModel.getPassword();
-		//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 		if(isLoginFailOvertimes(username)){
 			return result.error500("sys.login.loginFailOvertimes");
 		}
-		//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
-		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
-		//前端密码加密，后端进行密码解密
-		//password = AesEncryptUtil.desEncrypt(sysLoginModel.getPassword().replaceAll("%2B", "\\+")).trim();//密码解密
-		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
 
-		//update-end-author:taoyan date:20190828 for:校验验证码
+		// step.1 验证码check
 		
-		//1. 校验用户是否有效
-		//update-begin-author:wangshuai date:20200601 for: 登录代码验证用户是否注销bug，if条件永远为false
+		// step.2 校验用户是否存在且有效
 		LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
 		queryWrapper.eq(SysUser::getUsername,username);
 		SysUser sysUser = sysUserService.getOne(queryWrapper);
-		//update-end-author:wangshuai date:20200601 for: 登录代码验证用户是否注销bug，if条件永远为false
 		result = sysUserService.checkUserIsEffective(sysUser);
 		if(!result.isSuccess()) {
 			return result;
 		}
 
-		//2. 校验用户名或密码是否正确
+		// step.3 校验用户名或密码是否正确
 		String userpassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
 		String syspassword = sysUser.getPassword();
 		if (!syspassword.equals(userpassword)) {
-			//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 			addLoginFailOvertimes(username);
-			//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 			result.error500("sys.login.wrongCredentials");
 			return result;
 		}
-				
-		//用户登录信息
-		userInfo(sysUser, result);
-		//update-begin--Author:liusq  Date:20210126  for：登录成功，删除redis中的验证码
-		//update-begin--Author:liusq  Date:20210126  for：登录成功，删除redis中的验证码
+
+		// step.4  登录成功获取用户信息
+		userInfo(sysUser, result, request);
+
+		// step.5  登录成功删除验证码
 		redisUtil.del(CommonConstant.LOGIN_FAIL + username);
+
+		// step.6  记录用户登录日志
 		LoginUser loginUser = new LoginUser();
 		BeanUtils.copyProperties(sysUser, loginUser);
 		baseCommonService.addLog("用户名: " + username + ",登录成功！", CommonConstant.LOG_TYPE_1, null,loginUser);
-        //update-end--Author:wangshuai  Date:20200714  for：登录日志没有记录人员
 		return result;
 	}
 
@@ -129,18 +119,20 @@ public class LoginController {
 	 */
 	@GetMapping("/user/getUserInfo")
 	public Result<JSONObject> getUserInfo(HttpServletRequest request){
+		long start = System.currentTimeMillis();
 		Result<JSONObject> result = new Result<JSONObject>();
 		String  username = JwtUtil.getUserNameByToken(request);
 		if(oConvertUtils.isNotEmpty(username)) {
 			// 根据用户名查询用户信息
 			SysUser sysUser = sysUserService.getUserByName(username);
 			JSONObject obj=new JSONObject();
+			log.info("1 获取用户信息耗时（用户基础信息）" + (System.currentTimeMillis() - start) + "毫秒");
 
 			//update-begin---author:scott ---date:2022-06-20  for：vue3前端，支持自定义首页-----------
-			String version = request.getHeader(CommonConstant.VERSION);
+			String vue3Version = request.getHeader(CommonConstant.VERSION);
 			//update-begin---author:liusq ---date:2022-06-29  for：接口返回值修改，同步修改这里的判断逻辑-----------
-			SysRoleIndex roleIndex = sysUserService.getDynamicIndexByUserRole(username, version);
-			if (oConvertUtils.isNotEmpty(version) && roleIndex != null && oConvertUtils.isNotEmpty(roleIndex.getUrl())) {
+			SysRoleIndex roleIndex = sysUserService.getDynamicIndexByUserRole(username, vue3Version);
+			if (oConvertUtils.isNotEmpty(vue3Version) && roleIndex != null && oConvertUtils.isNotEmpty(roleIndex.getUrl())) {
 				String homePath = roleIndex.getUrl();
 				if (!homePath.startsWith(SymbolConstant.SINGLE_SLASH)) {
 					homePath = SymbolConstant.SINGLE_SLASH + homePath;
@@ -149,12 +141,16 @@ public class LoginController {
 			}
 			//update-begin---author:liusq ---date:2022-06-29  for：接口返回值修改，同步修改这里的判断逻辑-----------
 			//update-end---author:scott ---date::2022-06-20  for：vue3前端，支持自定义首页--------------
-			
+			log.info("2 获取用户信息耗时 (首页面配置)" + (System.currentTimeMillis() - start) + "毫秒");
+
 			obj.put("userInfo",sysUser);
 			obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
+			log.info("3 获取用户信息耗时 (字典数据)" + (System.currentTimeMillis() - start) + "毫秒");
+
 			result.setResult(obj);
 			result.success("");
 		}
+		log.info("end 获取用户信息耗时 " + (System.currentTimeMillis() - start) + "毫秒");
 		return result;
 
 	}
@@ -264,6 +260,7 @@ public class LoginController {
 		String orgCode= user.getOrgCode();
 		//获取登录租户
 		Integer tenantId = user.getLoginTenantId();
+		//设置用户登录部门和登录租户
 		this.sysUserService.updateUserDepart(username, orgCode,tenantId);
 		SysUser sysUser = sysUserService.getUserByName(username);
 		JSONObject obj = new JSONObject();
@@ -279,7 +276,7 @@ public class LoginController {
 	 * @param result
 	 * @return
 	 */
-	private Result<JSONObject> userInfo(SysUser sysUser, Result<JSONObject> result) {
+	private Result<JSONObject> userInfo(SysUser sysUser, Result<JSONObject> result, HttpServletRequest request) {
 		String username = sysUser.getUsername();
 		String syspassword = sysUser.getPassword();
 		// 获取用户部门信息
@@ -319,7 +316,15 @@ public class LoginController {
 			// update-end--Author:wangshuai Date:20200805 for：如果用戶为选择部门，数据库为存在上一次登录部门，则取一条存进去
 			obj.put("multi_depart", 2);
 		}
-		obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
+
+		//update-begin---author:scott ---date:2024-01-05  for：【QQYUN-7802】前端在登录时加载了两次数据字典，建议优化下，避免数据字典太多时可能产生的性能问题 #956---
+		// login接口，在vue3前端下不加载字典数据，vue2下加载字典
+		String vue3Version = request.getHeader(CommonConstant.VERSION);
+		if(oConvertUtils.isEmpty(vue3Version)){
+			obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
+		}
+		//end-begin---author:scott ---date:2024-01-05  for：【QQYUN-7802】前端在登录时加载了两次数据字典，建议优化下，避免数据字典太多时可能产生的性能问题 #956---
+
 		result.setResult(obj);
 		result.success("sys.login.loginSuccessTitle");
 		return result;
@@ -390,10 +395,12 @@ public class LoginController {
 		String orgCode = sysUser.getOrgCode();
 		if(oConvertUtils.isEmpty(orgCode)) {
 			//如果当前用户无选择部门 查看部门关联信息
+
 			List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());
 			//update-begin-author:taoyan date:20220117 for: JTC-1068【app】新建用户，没有设置部门及角色，点击登录提示暂未归属部，一直在登录页面 使用手机号登录 可正常
 			if (departs == null || departs.size() == 0) {
 				/*result.error500("用户暂未归属部门,不可登录!");
+
 				return result;*/
 			}else{
 				orgCode = departs.get(0).getOrgCode();
@@ -455,8 +462,8 @@ public class LoginController {
 		if(failTime!=null){
 			val = Integer.parseInt(failTime.toString());
 		}
-		// 1小时
-		redisUtil.set(key, ++val, 3600);
+		// 10分钟，一分钟为60s
+		redisUtil.set(key, ++val, 600);
 	}
 
 }

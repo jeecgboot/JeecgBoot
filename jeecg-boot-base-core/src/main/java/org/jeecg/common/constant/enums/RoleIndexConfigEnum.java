@@ -13,11 +13,15 @@ import java.util.List;
 public enum RoleIndexConfigEnum {
 
     /**首页自定义 admin*/
-    ADMIN("admin", "dashboard/Analysis"),
+//    ADMIN("admin", "dashboard/Analysis"),
     //TEST("test",  "dashboard/IndexChart"),
     /**首页自定义 hr*/
-    HR("hr", "dashboard/IndexBdc");
+//    HR("hr", "dashboard/IndexBdc");
+  
     //DM("dm", "dashboard/IndexTask"),
+
+    // 注：此值仅为防止报错，无任何实际意义
+    ROLE_INDEX_CONFIG_ENUM("RoleIndexConfigEnumDefault", "dashboard/Analysis");
 
     /**
      * 角色编码

@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
@@ -34,6 +35,7 @@ import org.jeecg.common.util.oConvertUtils;
  * @Date 2018-07-12 14:23
  * @Desc JWT工具类
  **/
+@Slf4j
 public class JwtUtil {
 
 	/**Token有效期为1小时（Token在reids中缓存时间为两倍）*/
@@ -163,15 +165,24 @@ public class JwtUtil {
 	 * @param user
 	 * @return
 	 */
-	public static String getUserSystemData(String key,SysUserCacheInfo user) {
+	public static String getUserSystemData(String key, SysUserCacheInfo user) {
+		//1.优先获取 SysUserCacheInfo
 		if(user==null) {
-			user = JeecgDataAutorUtils.loadUserInfo();
+			try {
+				user = JeecgDataAutorUtils.loadUserInfo();
+			} catch (Exception e) {
+				log.warn("获取用户信息异常：" + e.getMessage());
+			}
 		}
+		//2.通过shiro获取登录用户信息
+		LoginUser sysUser = null;
+		try {
+			sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		} catch (Exception e) {
+			log.warn("SecurityUtils.getSubject() 获取用户信息异常：" + e.getMessage());
+		}
+
 		//#{sys_user_code}%
-		
-		// 获取登录用户信息
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		
 		String moshi = "";
         String wellNumber = WELL_NUMBER;
 		if(key.indexOf(SymbolConstant.RIGHT_CURLY_BRACKET)!=-1){
@@ -184,6 +195,24 @@ public class JwtUtil {
 		} else {
 			key = key;
 		}
+		//替换为当前系统时间(年月日)
+		if (key.equals(DataBaseConstant.SYS_DATE)|| key.toLowerCase().equals(DataBaseConstant.SYS_DATE_TABLE)) {
+			returnValue = DateUtils.formatDate();
+		}
+		//替换为当前系统时间（年月日时分秒）
+		else if (key.equals(DataBaseConstant.SYS_TIME)|| key.toLowerCase().equals(DataBaseConstant.SYS_TIME_TABLE)) {
+			returnValue = DateUtils.now();
+		}
+		//流程状态默认值（默认未发起）
+		else if (key.equals(DataBaseConstant.BPM_STATUS)|| key.toLowerCase().equals(DataBaseConstant.BPM_STATUS_TABLE)) {
+			returnValue = "1";
+		}
+
+		//后台任务获取用户信息异常，导致程序中断
+		if(sysUser==null && user==null){
+			return null;
+		}
+		
 		//替换为系统登录用户帐号
 		if (key.equals(DataBaseConstant.SYS_USER_CODE)|| key.toLowerCase().equals(DataBaseConstant.SYS_USER_CODE_TABLE)) {
 			if(user==null) {
@@ -222,21 +251,13 @@ public class JwtUtil {
 				}
 			}
 		}
-		//替换为当前系统时间(年月日)
-		else if (key.equals(DataBaseConstant.SYS_DATE)|| key.toLowerCase().equals(DataBaseConstant.SYS_DATE_TABLE)) {
-			returnValue = DateUtils.formatDate();
-		}
-		//替换为当前系统时间（年月日时分秒）
-		else if (key.equals(DataBaseConstant.SYS_TIME)|| key.toLowerCase().equals(DataBaseConstant.SYS_TIME_TABLE)) {
-			returnValue = DateUtils.now();
-		}
-		//流程状态默认值（默认未发起）
-		else if (key.equals(DataBaseConstant.BPM_STATUS)|| key.toLowerCase().equals(DataBaseConstant.BPM_STATUS_TABLE)) {
-			returnValue = "1";
-		}
 		//update-begin-author:taoyan date:20210330 for:多租户ID作为系统变量
 		else if (key.equals(TenantConstant.TENANT_ID) || key.toLowerCase().equals(TenantConstant.TENANT_ID_TABLE)){
-			returnValue = SpringContextUtils.getHttpServletRequest().getHeader(CommonConstant.TENANT_ID);
+			try {
+				returnValue = SpringContextUtils.getHttpServletRequest().getHeader(CommonConstant.TENANT_ID);
+			} catch (Exception e) {
+				log.warn("获取系统租户异常：" + e.getMessage());
+			}
 		}
 		//update-end-author:taoyan date:20210330 for:多租户ID作为系统变量
 		if(returnValue!=null){returnValue = returnValue + moshi;}

@@ -5,6 +5,7 @@ import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
+import org.jeecg.modules.system.model.DuplicateCheckVo;
 import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecg.modules.system.vo.lowapp.SysDictVo;
 
@@ -20,6 +21,15 @@ import java.util.Map;
  * @since 2018-12-28
  */
 public interface ISysDictService extends IService<SysDict> {
+
+	/**
+	 *  校验数据是否可用，不存在重复数据
+	 *  
+	 * @param duplicateCheckVo
+	 * @return
+	 */
+	@Deprecated
+	public boolean duplicateCheckData(DuplicateCheckVo duplicateCheckVo);
 
     /**
      * 通过字典code获取字典数据
@@ -51,13 +61,13 @@ public interface ISysDictService extends IService<SysDict> {
 
     /**
      * 查通过查询指定table的 text code 获取字典
-     * @param table
+     * @param tableFilterSql
      * @param text
      * @param code
      * @return
      */
     @Deprecated
-    List<DictModel> queryTableDictItemsByCode(String table, String text, String code);
+    List<DictModel> queryTableDictItemsByCode(String tableFilterSql, String text, String code);
 
     /**
      * 通过查询指定table的 text code 获取字典（指定查询条件）
@@ -97,6 +107,7 @@ public interface ISysDictService extends IService<SysDict> {
     @Deprecated
 	String queryTableDictTextByKey(String table, String text, String code, String key);
 
+	//update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 	/**
 	 * 通过查询指定table的 text code key 获取字典值，可批量查询
 	 *
@@ -104,9 +115,11 @@ public interface ISysDictService extends IService<SysDict> {
 	 * @param text
 	 * @param code
 	 * @param keys
+	 * @param dataSource 数据源
 	 * @return
 	 */
-	List<DictModel> queryTableDictTextByKeys(String table, String text, String code, List<String> keys);
+	List<DictModel> queryTableDictTextByKeys(String table, String text, String code, List<String> keys, String dataSource);
+	//update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
     /**
      * 通过查询指定table的 text code key 获取字典值，包含value
@@ -225,7 +238,7 @@ public interface ISysDictService extends IService<SysDict> {
 	 * 查询被逻辑删除的数据
 	 * @return
 	 */
-	public List<SysDict> queryDeleteList();
+	public List<SysDict> queryDeleteList(String tenantId);
 
 	/**
 	 * 分页查询
@@ -267,7 +280,7 @@ public interface ISysDictService extends IService<SysDict> {
 	 * 创建字典
 	 * @param sysDictVo
 	 */
-	void addDictByLowAppId(SysDictVo sysDictVo);
+	String addDictByLowAppId(SysDictVo sysDictVo);
 
 	/**
 	 * 编辑字典

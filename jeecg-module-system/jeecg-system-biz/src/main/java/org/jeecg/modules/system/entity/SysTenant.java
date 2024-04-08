@@ -34,6 +34,7 @@ public class SysTenant implements Serializable {
     /**
      * 创建人
      */
+    @Dict(dictTable ="sys_user",dicText = "realname",dicCode = "username")
     private String createBy;
 
     /**

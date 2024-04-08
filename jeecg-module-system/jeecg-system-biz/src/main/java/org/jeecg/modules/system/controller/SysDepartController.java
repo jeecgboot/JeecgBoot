@@ -25,6 +25,8 @@ import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserDepartService;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.jeecg.modules.system.vo.SysDepartExportVo;
+import org.jeecg.modules.system.vo.lowapp.ExportDepartVo;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -137,6 +139,8 @@ public class SysDepartController {
 			result.setSuccess(true);
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
+			result.setSuccess(false);
+			result.setMessage("查询失败");
 		}
 		return result;
 	}
@@ -173,7 +177,7 @@ public class SysDepartController {
 	 * @param sysDepart
 	 * @return
 	 */
-    //@RequiresPermissions("system:depart:add")
+    @RequiresPermissions("system:depart:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> add(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
@@ -199,7 +203,7 @@ public class SysDepartController {
 	 * @param sysDepart
 	 * @return
 	 */
-    //@RequiresPermissions("system:depart:edit")
+    @RequiresPermissions("system:depart:edit")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> edit(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
@@ -227,7 +231,7 @@ public class SysDepartController {
     * @param id
     * @return
     */
-    //@RequiresPermissions("system:depart:delete")
+    @RequiresPermissions("system:depart:delete")
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
    public Result<SysDepart> delete(@RequestParam(name="id",required=true) String id) {
@@ -253,7 +257,7 @@ public class SysDepartController {
 	 * @param ids
 	 * @return
 	 */
-    //@RequiresPermissions("system:depart:deleteBatch")
+    @RequiresPermissions("system:depart:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
 	public Result<SysDepart> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
@@ -347,25 +351,35 @@ public class SysDepartController {
 		}
 		//------------------------------------------------------------------------------------------------
 		
-        // Step.1 组装查询条件
-        QueryWrapper<SysDepart> queryWrapper = QueryGenerator.initQueryWrapper(sysDepart, request.getParameterMap());
-        //Step.2 AutoPoi 导出Excel
-        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        List<SysDepart> pageList = sysDepartService.list(queryWrapper);
+		//update-begin---author:wangshuai---date:2023-10-19---for:【QQYUN-5482】系统的部门导入导出也可以改成敲敲云模式的部门路径---
+		//// Step.1 组装查询条件
+		//QueryWrapper<SysDepart> queryWrapper = QueryGenerator.initQueryWrapper(sysDepart, request.getParameterMap());
+		//Step.1 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        //List<SysDepart> pageList = sysDepartService.list(queryWrapper);
         //按字典排序
-        Collections.sort(pageList, new Comparator<SysDepart>() {
-            @Override
-			public int compare(SysDepart arg0, SysDepart arg1) {
-            	return arg0.getOrgCode().compareTo(arg1.getOrgCode());
-            }
-        });
+        //Collections.sort(pageList, new Comparator<SysDepart>() {
+            //@Override
+			//public int compare(SysDepart arg0, SysDepart arg1) {
+				//return arg0.getOrgCode().compareTo(arg1.getOrgCode());
+			//}
+		//});
+		//step.2 组装导出数据
+		Integer tenantId = sysDepart == null ? null : sysDepart.getTenantId();
+		List<SysDepartExportVo> sysDepartExportVos = sysDepartService.getExportDepart(tenantId);
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "部门列表");
-        mv.addObject(NormalExcelConstants.CLASS, SysDepart.class);
+        mv.addObject(NormalExcelConstants.CLASS, SysDepartExportVo.class);
         LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("部门列表数据", "导出人:"+user.getRealname(), "导出信息"));
-        mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
-        return mv;
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("导入规则：\n" +
+				"1、标题为第三行，部门路径和部门名称的标题不允许修改，否则会匹配失败；第四行为数据填写范围;\n" +
+				"2、部门路径用英文字符/分割，部门名称为部门路径的最后一位;\n" +
+				"3、部门从一级名称开始创建，如果有同级就需要多添加一行，如研发部/研发一部;研发部/研发二部;\n" +
+				"4、自定义的部门编码需要满足规则才能导入。如一级部门编码为A01,那么子部门为A01A01,同级子部门为A01A02,编码固定为三位，首字母为A-Z,后两位为数字0-99，依次递增;", "导出人:"+user.getRealname(), "导出信息"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, sysDepartExportVos);
+		//update-end---author:wangshuai---date:2023-10-19---for:【QQYUN-5482】系统的部门导入导出也可以改成敲敲云模式的部门路径---
+        
+		return mv;
     }
 
     /**
@@ -377,13 +391,14 @@ public class SysDepartController {
      * @param response
      * @return
      */
-    //@RequiresPermissions("system:depart:importExcel")
+    @RequiresPermissions("system:depart:importExcel")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
 	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 		List<String> errorMessageList = new ArrayList<>();
-		List<SysDepart> listSysDeparts = null;
+		//List<SysDepart> listSysDeparts = null;
+		List<SysDepartExportVo> listSysDeparts = null;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
         for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
             // 获取上传文件对象
@@ -393,49 +408,59 @@ public class SysDepartController {
             params.setHeadRows(1);
             params.setNeedSave(true);
             try {
-            	// orgCode编码长度
-            	int codeLength = YouBianCodeUtil.ZHANWEI_LENGTH;
-                listSysDeparts = ExcelImportUtil.importExcel(file.getInputStream(), SysDepart.class, params);
-                //按长度排序
-                Collections.sort(listSysDeparts, new Comparator<SysDepart>() {
-                    @Override
-					public int compare(SysDepart arg0, SysDepart arg1) {
-                    	return arg0.getOrgCode().length() - arg1.getOrgCode().length();
-                    }
-                });
-
-                int num = 0;
-                for (SysDepart sysDepart : listSysDeparts) {
-                	String orgCode = sysDepart.getOrgCode();
-                	if(orgCode.length() > codeLength) {
-                		String parentCode = orgCode.substring(0, orgCode.length()-codeLength);
-                		QueryWrapper<SysDepart> queryWrapper = new QueryWrapper<SysDepart>();
-                		queryWrapper.eq("org_code", parentCode);
-                		try {
-                		SysDepart parentDept = sysDepartService.getOne(queryWrapper);
-                		if(!parentDept.equals(null)) {
-							sysDepart.setParentId(parentDept.getId());
-						} else {
-							sysDepart.setParentId("");
-						}
-                		}catch (Exception e) {
-                			//没有查找到parentDept
-                		}
-                	}else{
-                		sysDepart.setParentId("");
-					}
-                    //update-begin---author:liusq   Date:20210223  for：批量导入部门以后，不能追加下一级部门 #2245------------
-					sysDepart.setOrgType(sysDepart.getOrgCode().length()/codeLength+"");
-                    //update-end---author:liusq   Date:20210223  for：批量导入部门以后，不能追加下一级部门 #2245------------
-					sysDepart.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
-                    //update-begin---author:wangshuai ---date:20220105  for：[JTC-363]部门导入 机构类别没有时导入失败，赋默认值------------
-					if(oConvertUtils.isEmpty(sysDepart.getOrgCategory())){
-					    sysDepart.setOrgCategory("1");
-                    }
-                    //update-end---author:wangshuai ---date:20220105  for：[JTC-363]部门导入 机构类别没有时导入失败，赋默认值------------
-					ImportExcelUtil.importDateSaveOne(sysDepart, ISysDepartService.class, errorMessageList, num, CommonConstant.SQL_INDEX_UNIQ_DEPART_ORG_CODE);
-					num++;
-                }
+				//update-begin---author:wangshuai---date:2023-10-20---for: 注释掉原来的导入部门的逻辑---
+//            	// orgCode编码长度
+//            	int codeLength = YouBianCodeUtil.ZHANWEI_LENGTH;
+//                listSysDeparts = ExcelImportUtil.importExcel(file.getInputStream(), SysDepart.class, params);
+//                //按长度排序
+//                Collections.sort(listSysDeparts, new Comparator<SysDepart>() {
+//                    @Override
+//					public int compare(SysDepart arg0, SysDepart arg1) {
+//                    	return arg0.getOrgCode().length() - arg1.getOrgCode().length();
+//                    }
+//                });
+//
+//                int num = 0;
+//                for (SysDepart sysDepart : listSysDeparts) {
+//                	String orgCode = sysDepart.getOrgCode();
+//                	if(orgCode.length() > codeLength) {
+//                		String parentCode = orgCode.substring(0, orgCode.length()-codeLength);
+//                		QueryWrapper<SysDepart> queryWrapper = new QueryWrapper<SysDepart>();
+//                		queryWrapper.eq("org_code", parentCode);
+//                		try {
+//                		SysDepart parentDept = sysDepartService.getOne(queryWrapper);
+//                		if(!parentDept.equals(null)) {
+//							sysDepart.setParentId(parentDept.getId());
+//							//更新父级部门不是叶子结点
+//							sysDepartService.updateIzLeaf(parentDept.getId(),CommonConstant.NOT_LEAF);
+//						} else {
+//							sysDepart.setParentId("");
+//						}
+//                		}catch (Exception e) {
+//                			//没有查找到parentDept
+//                		}
+//                	}else{
+//                		sysDepart.setParentId("");
+//					}
+//                    //update-begin---author:liusq   Date:20210223  for：批量导入部门以后，不能追加下一级部门 #2245------------
+//					sysDepart.setOrgType(sysDepart.getOrgCode().length()/codeLength+"");
+//                    //update-end---author:liusq   Date:20210223  for：批量导入部门以后，不能追加下一级部门 #2245------------
+//					sysDepart.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
+//                    //update-begin---author:wangshuai ---date:20220105  for：[JTC-363]部门导入 机构类别没有时导入失败，赋默认值------------
+//					if(oConvertUtils.isEmpty(sysDepart.getOrgCategory())){
+//					    sysDepart.setOrgCategory("1");
+//                    }
+//                    //update-end---author:wangshuai ---date:20220105  for：[JTC-363]部门导入 机构类别没有时导入失败，赋默认值------------
+//					ImportExcelUtil.importDateSaveOne(sysDepart, ISysDepartService.class, errorMessageList, num, CommonConstant.SQL_INDEX_UNIQ_DEPART_ORG_CODE);
+//					num++;
+//                }
+				//update-end---author:wangshuai---date:2023-10-20---for: 注释掉原来的导入部门的逻辑---
+				
+				//update-begin---author:wangshuai---date:2023-10-19---for:【QQYUN-5482】系统的部门导入导出也可以改成敲敲云模式的部门路径---
+				listSysDeparts = ExcelImportUtil.importExcel(file.getInputStream(), SysDepartExportVo.class, params);
+				sysDepartService.importSysDepart(listSysDeparts,errorMessageList);
+				//update-end---author:wangshuai---date:2023-10-19---for:【QQYUN-5482】系统的部门导入导出也可以改成敲敲云模式的部门路径---
+				
 				//清空部门缓存
 				Set keys3 = redisTemplate.keys(CacheConstant.SYS_DEPARTS_CACHE + "*");
 				Set keys4 = redisTemplate.keys(CacheConstant.SYS_DEPART_IDS_CACHE + "*");
@@ -539,7 +564,7 @@ public class SysDepartController {
 	 * @return
 	 */
 	@RequestMapping(value = "/queryByIds", method = RequestMethod.GET)
-	public Result<Collection<SysDepart>> queryByIds(@RequestParam String deptIds) {
+	public Result<Collection<SysDepart>> queryByIds(@RequestParam(name = "deptIds") String deptIds) {
 		Result<Collection<SysDepart>> result = new Result<>();
 		String[] ids = deptIds.split(",");
 		Collection<String> idList = Arrays.asList(ids);
@@ -574,4 +599,80 @@ public class SysDepartController {
 		}
 		return result;
 	}
+
+	/**
+	 * 通过部门id和租户id获取用户 【低代码应用: 用于选择部门负责人】
+	 * @param departId
+	 * @return
+	 */
+	@GetMapping("/getUsersByDepartTenantId")
+	public Result<List<SysUser>> getUsersByDepartTenantId(@RequestParam("departId") String departId){
+		int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
+		List<SysUser> sysUserList = sysUserDepartService.getUsersByDepartTenantId(departId,tenantId);
+		return Result.ok(sysUserList);
+	}
+
+	/**
+	 * 导出excel【低代码应用: 用于导出部门】
+	 *
+	 * @param request
+	 */
+	@RequestMapping(value = "/appExportXls")
+	public ModelAndView appExportXls(SysDepart sysDepart,HttpServletRequest request) {
+		// Step.1 组装查询条件
+		int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		List<ExportDepartVo> pageList = sysDepartService.getExcelDepart(tenantId);
+		//Step.2 AutoPoi 导出Excel
+		//导出文件名称
+		mv.addObject(NormalExcelConstants.FILE_NAME, "部门列表");
+		mv.addObject(NormalExcelConstants.CLASS, ExportDepartVo.class);
+		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("部门列表数据", "导出人:"+user.getRealname(), "导出信息"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
+		return mv;
+	}
+
+	/**
+	 * 导入excel【低代码应用: 用于导出部门】
+	 *
+	 * @param request
+	 */
+	@RequestMapping(value = "/appImportExcel", method = RequestMethod.POST)
+	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
+	public Result<?> appImportExcel(HttpServletRequest request, HttpServletResponse response) {
+		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+		List<String> errorMessageList = new ArrayList<>();
+		List<ExportDepartVo> listSysDeparts = null;
+		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+		for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+			// 获取上传文件对象
+			MultipartFile file = entity.getValue();
+			ImportParams params = new ImportParams();
+			params.setTitleRows(2);
+			params.setHeadRows(1);
+			params.setNeedSave(true);
+			try {
+				listSysDeparts = ExcelImportUtil.importExcel(file.getInputStream(), ExportDepartVo.class, params);
+				sysDepartService.importExcel(listSysDeparts,errorMessageList);
+				//清空部门缓存
+				Set keys3 = redisTemplate.keys(CacheConstant.SYS_DEPARTS_CACHE + "*");
+				Set keys4 = redisTemplate.keys(CacheConstant.SYS_DEPART_IDS_CACHE + "*");
+				redisTemplate.delete(keys3);
+				redisTemplate.delete(keys4);
+				return ImportExcelUtil.imporReturnRes(errorMessageList.size(), listSysDeparts.size() - errorMessageList.size(), errorMessageList);
+			} catch (Exception e) {
+				log.error(e.getMessage(),e);
+				return Result.error("文件导入失败:"+e.getMessage());
+			} finally {
+				try {
+					file.getInputStream().close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return Result.error("文件导入失败！");
+	}
+	
 }
