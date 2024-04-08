@@ -48,7 +48,7 @@ import java.util.*;
 @Slf4j
 @Configuration
 // 免认证注解 @IgnoreAuth 注解生效范围配置
-@ComponentScan(basePackages = {"org.jeecg"})
+@ComponentScan(basePackages = {"org.jeecg.**.controller"})
 public class ShiroConfig {
 
     @Resource
