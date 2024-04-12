@@ -225,6 +225,12 @@
 				<artifactId>jeecg-boot-starter-rabbitmq</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
+			<!--rocketmq-->
+			<dependency>
+				<groupId>org.jeecgframework.boot</groupId>
+				<artifactId>jeecg-boot-starter-rocketmq</artifactId>
+				<version>${jeecgboot.version}</version>
+			</dependency>
 			<!--分库分表shardingsphere-->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
