@@ -1339,6 +1339,11 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		}
 	}
 
+	@Override
+	public String queryCodeByDepartName(String departName) {
+		return departMapper.queryCodeByDepartName(departName);
+	}
+
 	/**
 	 * 寻找部门路径
 	 *

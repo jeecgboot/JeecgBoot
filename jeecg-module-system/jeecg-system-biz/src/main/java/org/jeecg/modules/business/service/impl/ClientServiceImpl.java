@@ -144,6 +144,11 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     }
 
     @Override
+    public Client getClientFromInvoice(String invoiceNumber) {
+        return clientMapper.getClientFromInvoice(invoiceNumber);
+    }
+
+    @Override
     public String getClientEntity(String id) {
         return clientMapper.getClientEntity(id);
     }

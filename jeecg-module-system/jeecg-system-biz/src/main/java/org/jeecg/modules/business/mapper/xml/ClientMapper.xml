@@ -64,4 +64,12 @@
             JOIN client_sku cs ON c.id = cs.client_id
         WHERE cs.sku_id = #{skuId};
     </select>
+    <select id="getClientFromInvoice" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT DISTINCT c.*
+        FROM client c
+            JOIN shop s ON s.owner_id = c.id
+            JOIN platform_order po ON po.shop_id = s.id
+        WHERE po.shipping_invoice_number = #{invoiceNumber} OR po.purchase_invoice_number = #{invoiceNumber};
+
+    </select>
 </mapper>

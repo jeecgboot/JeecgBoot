@@ -160,9 +160,9 @@ spring:
           slow-sql-millis: 5000
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:3306/wia_app_3?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Europe/Paris
+          url: jdbc:mysql://192.168.31.16:3306/wia_app?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Europe/Paris
           username: admin
-          password: admin
+          password: WIASourcing2023+
           driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
@@ -223,6 +223,7 @@ jeecg:
     purchaseTemplatePath: C://dev//templates//Purchase_Invoice_Template.xlsx
     # where to store generated file
     purchaseInvoiceDir: C://dev//invoices//purchase
+    purchaseInventoryDir: C://dev//invoices//inventory
 
     # purchase invoice template
     shippingTemplatePath_EU: C://dev//templates//Shipping_Invoice_Template_EU.xlsx
@@ -343,3 +344,9 @@ justauth:
     type: default
     prefix: 'demo::'
     timeout: 1h
+mabang:
+  api:
+    appkey: "87a1a0c46df86eb2683e74776894dae9"
+    devid: "200809"
+company:
+  orgName: "WIA"

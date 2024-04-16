@@ -176,4 +176,9 @@
         </choose>
         ORDER BY depart_order DESC
     </select>
+    <select id="queryCodeByDepartName" resultType="java.lang.String">
+        SELECT org_code
+        FROM sys_depart
+        WHERE depart_name = #{departName}
+    </select>
 </mapper>

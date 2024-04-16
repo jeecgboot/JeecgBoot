@@ -1,5 +1,5 @@
-CREATE database if NOT EXISTS `wia_app_3` default character set utf8mb4 collate utf8mb4_general_ci;
-USE `wia_app_3`;
+CREATE database if NOT EXISTS `wia_app` default character set utf8mb4 collate utf8mb4_general_ci;
+USE `wia_app`;
 /*
  Navicat Premium Data Transfer
 

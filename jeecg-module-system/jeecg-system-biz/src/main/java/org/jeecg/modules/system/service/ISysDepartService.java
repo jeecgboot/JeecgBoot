@@ -231,4 +231,6 @@ public interface ISysDepartService extends IService<SysDepart>{
      * @param errorMessageList
      */
     void importSysDepart(List<SysDepartExportVo> listSysDeparts, List<String> errorMessageList);
+
+    String queryCodeByDepartName(String departName);
 }

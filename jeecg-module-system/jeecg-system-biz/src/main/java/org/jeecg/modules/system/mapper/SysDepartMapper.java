@@ -170,4 +170,6 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 * @return
 	 */
     List<SysDepartExportVo> getSysDepartList(@Param("parentId") String parentId,@Param("tenantId") Integer tenantId);
+
+    String queryCodeByDepartName(@Param("departName") String departName);
 }
