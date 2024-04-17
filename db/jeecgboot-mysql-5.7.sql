@@ -8648,4 +8648,8 @@ INSERT INTO `tmp_report_data_income` VALUES ('中石油控股或有控股权', 3
 INSERT INTO `tmp_report_data_income` VALUES ('中石油参股', 72062.45, 0.00, 0.00, 0.00, 0.00, 0.00, 72062.75);
 INSERT INTO `tmp_report_data_income` VALUES ('非中石油', 1486526.90, 212070.72, 0.00, 0.00, 0.00, 226415.09, 1698597.62);
 
+-- 修复设置用户生日格式报错
+ALTER TABLE sys_user
+MODIFY COLUMN birthday date NULL DEFAULT NULL COMMENT '生日';
+
 SET FOREIGN_KEY_CHECKS = 1;
