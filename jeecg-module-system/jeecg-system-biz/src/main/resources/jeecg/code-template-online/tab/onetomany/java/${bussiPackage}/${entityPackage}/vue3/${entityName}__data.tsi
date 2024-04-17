@@ -776,7 +776,7 @@ export const superQuerySchema = {
     fields: {
       <#list sub.colums as subCol>
         <#-- update-begin---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
-        <#if subCol.isShowList =='Y' && subCol.fieldName !='id' && po.fieldName !='delFlag'>
+        <#if subCol.isShowList =='Y' && subCol.fieldName !='id' && subCol.fieldName !='delFlag'>
         <#-- update-end---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
         ${superQueryFieldListForVue3(subCol,subCol_index)},
         </#if>
