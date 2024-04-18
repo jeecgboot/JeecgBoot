@@ -160,7 +160,7 @@ spring:
           slow-sql-millis: 5000
       datasource:
         master:
-          url: jdbc:mysql://192.168.31.16:3306/wia_app?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Europe/Paris
+          url: jdbc:mysql://192.168.31.16:3306/wia_app?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&connectTimeout=5000&socketTimeout=60000
           username: admin
           password: WIASourcing2023+
           driver-class-name: com.mysql.cj.jdbc.Driver

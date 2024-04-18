@@ -586,8 +586,11 @@ public class PurchaseOrderController {
                     Map<String, Integer> skuQuantityMap = skuQuantities.stream()
                             .collect(Collectors.toMap(SkuQuantity::getErpCode, SkuQuantity::getQuantity));
                     skuQuantityMap.forEach((s, integer) -> log.info("SKU: {} Quantity: {}", s, integer));
+                    Map<String, Integer> skuQtyNotEmptyMap = skuQuantityMap.entrySet().stream()
+                            .filter(entry -> entry.getValue() > 0)
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
                     InvoiceMetaData metaData = purchaseOrderService.getMetaDataFromInvoiceNumbers(invoiceNumber);
-                    boolean success = providerMabangService.addPurchaseOrderToMabang(skuQuantityMap, metaData, providersHistory);
+                    boolean success = providerMabangService.addPurchaseOrderToMabang(skuQtyNotEmptyMap, metaData, providersHistory);
                     return success ? invoiceNumber : "failed";
                 },throttlingExecutorService))
                 .collect(Collectors.toList());

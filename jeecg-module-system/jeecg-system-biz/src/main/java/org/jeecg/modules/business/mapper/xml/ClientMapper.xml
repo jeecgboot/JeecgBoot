@@ -61,8 +61,8 @@
     <select id="getClientBySku" resultType="org.jeecg.modules.business.entity.Client">
         SELECT c.*
         FROM client c
-            JOIN client_sku cs ON c.id = cs.client_id
-        WHERE cs.sku_id = #{skuId};
+            JOIN client_sku ON c.id = client_sku.client_id
+        WHERE client_sku.sku_id = #{skuId};
     </select>
     <select id="getClientFromInvoice" resultType="org.jeecg.modules.business.entity.Client">
         SELECT DISTINCT c.*

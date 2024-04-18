@@ -704,7 +704,6 @@ public class InvoiceController {
     public byte[] downloadInventory(@RequestParam("invoiceCode") String invoiceCode, @RequestParam("internalCode") String internalCode, @RequestParam("invoiceEntity") String invoiceEntity) throws IOException {
         InvoiceMetaData metaData = new InvoiceMetaData("", invoiceCode, internalCode, invoiceEntity, "");
         List<SkuOrderPage> skuOrderPages = skuService.getInventoryByInvoiceNumber(metaData.getInvoiceCode());
-        System.out.println(skuOrderPages);
         return shippingInvoiceService.exportPurchaseInventoryToExcel(skuOrderPages, metaData);
     }
 
@@ -797,6 +796,7 @@ public class InvoiceController {
      * @param completeClientIds list of clients to invoice complete fees
      * @return list of invoice infos
      */
+    @Transactional
     @GetMapping(value = "/breakdown/makeInvoice")
     public Result<?> makeBreakdownInvoice(@RequestParam(value = "shipping[]", required = false) List<String> shippingClientIds,
                                           @RequestParam(value = "complete[]", required = false) List<String> completeClientIds) throws IOException {

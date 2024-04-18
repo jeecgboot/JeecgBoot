@@ -201,14 +201,14 @@
                s28.quantity                                                  as sales_four_weeks,
                s42.quantity                                                  as sales_six_weeks
         FROM sku s
-                 JOIN client_sku cs ON s.id = cs.sku_id
+                 JOIN client_sku ON s.id = client_sku.sku_id
                  JOIN product p ON s.product_id = p.id
                  LEFT JOIN sku_current_price sp ON s.id = sp.sku_id
                  LEFT JOIN sales_28 s28 ON s.id = s28.sku_id
                  LEFT JOIN sales_42 s42 ON s.id = s42.sku_id
                  LEFT JOIN sales_7 s7 ON s.id = s7.sku_id
                  LEFT JOIN qtyInOrdersNotShipped ON s.id = qtyInOrdersNotShipped.ID
-        WHERE cs.client_id = #{clientId}
+        WHERE client_sku.client_id = #{clientId};
     </select>
     <select id="getInventoryByInvoiceNumber" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
         WITH skusFromInvoice AS (
