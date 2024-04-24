@@ -1,11 +1,13 @@
 package org.jeecg.config.security;
 
+import cn.hutool.core.util.ClassUtil;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.AllArgsConstructor;
+import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.config.security.app.AppGrantAuthenticationConvert;
 import org.jeecg.config.security.app.AppGrantAuthenticationProvider;
 import org.jeecg.config.security.password.PasswordGrantAuthenticationConvert;
@@ -39,7 +41,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -47,6 +53,10 @@ import java.security.SecureRandom;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * spring authorization server核心配置
@@ -97,69 +107,78 @@ public class SecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
+
+
             throws Exception {
+        Set<String> ignoreUrls = findIgnoreAuthUrl();
         http
                 //设置所有请求都需要认证，未认证的请求都被重定向到login页面进行登录
-                .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/cas/client/validateLogin")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/randomImage/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/checkCaptcha")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/login")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/mLogin")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/logout")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/thirdLogin/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/getEncryptedString")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/sms")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/phoneLogin")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/user/checkOnlyUser")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/user/register")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/user/phoneVerification")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/user/passwordChange")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/2step-code")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/common/static/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/common/pdf/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/generic/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/getLoginQrcode/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/getQrcodeToken/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/checkAuth")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/doc.html")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.js")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.css")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.html")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.svg")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.pdf")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.jpg")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.png")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.gif")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.ico")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.ttf")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.woff")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.woff2")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/druid/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/swagger-ui.html")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/swagger**/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/webjars/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/v3/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/WW_verify*")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/annountCement/show/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/jmreport/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.js.map")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.css.map")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/view")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/page/queryById")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/onlDragDatasetHead/getAllChartData")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/onlDragDatasetHead/getTotalData")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/mock/json/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/test/bigScreen/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/bigscreen/template1/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/bigscreen/template1/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/websocket/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/newsWebsocket/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/vxeSocket/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/test/seata/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/error")).permitAll()
-                        .anyRequest().authenticated()
+                .authorizeHttpRequests((authorize) ->
+                        {
+                            ignoreUrls.stream().forEach(url -> authorize.requestMatchers(AntPathRequestMatcher.antMatcher(url)).permitAll());
+
+                            authorize
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/cas/client/validateLogin")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/randomImage/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/checkCaptcha")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/login")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/mLogin")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/logout")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/thirdLogin/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/getEncryptedString")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/sms")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/phoneLogin")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/user/checkOnlyUser")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/user/register")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/user/phoneVerification")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/user/passwordChange")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/2step-code")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/common/static/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/common/pdf/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/generic/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/getLoginQrcode/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/getQrcodeToken/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/checkAuth")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/doc.html")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.js")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.css")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.html")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.svg")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.pdf")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.jpg")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.png")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.gif")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.ico")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.ttf")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.woff")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.woff2")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/druid/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/swagger-ui.html")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/swagger**/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/webjars/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/v3/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/WW_verify*")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/annountCement/show/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/jmreport/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.js.map")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/**/*.css.map")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/view")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/page/queryById")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/onlDragDatasetHead/getAllChartData")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/onlDragDatasetHead/getTotalData")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/mock/json/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/test/bigScreen/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/bigscreen/template1/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/bigscreen/template1/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/websocket/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/newsWebsocket/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/vxeSocket/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/test/seata/**")).permitAll()
+                                    .requestMatchers(AntPathRequestMatcher.antMatcher("/error")).permitAll()
+                                    .anyRequest().authenticated();
+                        }
+
                 )
                 .cors(cors -> cors
                         .configurationSource(req -> {
@@ -254,4 +273,31 @@ public class SecurityConfig {
                 jwtGenerator, accessTokenGenerator, refreshTokenGenerator);
     }
 
+
+    private Set<String> findIgnoreAuthUrl(){
+        RequestMappingHandlerMapping mapping= SpringContextUtils.getBean("requestMappingHandlerMapping",RequestMappingHandlerMapping.class);
+        Set<String> ignoreUrls = new HashSet<>();
+        Set<Class<?>> ignoreAuthClass = findIgnoreAuthClass();
+
+
+        if(mapping!=null){
+            Map<RequestMappingInfo, HandlerMethod> map = mapping.getHandlerMethods();
+
+            for (Map.Entry<RequestMappingInfo, HandlerMethod> m : map.entrySet()) {
+                RequestMappingInfo info = m.getKey();
+                HandlerMethod method = m.getValue();
+                if(method.getMethodAnnotation(IgnoreAuth.class)!=null ||ignoreAuthClass.contains(method.getBeanType())){
+                    Set<String> patterns = info.getPatternValues();
+                    ignoreUrls.addAll(patterns);
+                }
+            }
+        }
+        return ignoreUrls;
+    }
+
+    private Set<Class<?>> findIgnoreAuthClass(){
+        return ClassUtil.scanPackageByAnnotation("org.jeecg",RestController.class)
+                .stream().filter(cls->cls.isAnnotationPresent(IgnoreAuth.class))
+                .collect(Collectors.toSet());
+    }
 }
