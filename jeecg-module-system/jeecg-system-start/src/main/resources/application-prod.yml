@@ -22,7 +22,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: metrics,httptrace
+        include: metrics,httpexchanges
 
 spring:
   # flyway配置
