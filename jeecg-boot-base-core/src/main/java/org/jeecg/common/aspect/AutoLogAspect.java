@@ -21,6 +21,7 @@ import org.jeecg.common.util.IpUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import org.springframework.core.StandardReflectionParameterNameDiscoverer;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -169,7 +170,7 @@ public class AutoLogAspect {
             // 请求的方法参数值
             Object[] args = joinPoint.getArgs();
             // 请求的方法参数名称
-            LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
+            StandardReflectionParameterNameDiscoverer u=new StandardReflectionParameterNameDiscoverer();
             String[] paramNames = u.getParameterNames(method);
             if (args != null && paramNames != null) {
                 for (int i = 0; i < args.length; i++) {
