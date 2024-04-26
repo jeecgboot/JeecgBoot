@@ -241,7 +241,12 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.6.1-beta</version>
+				<version>3.6.1-GA</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-runtime</artifactId>
+				<version>2.3.3</version>
 			</dependency>
 
 			<!--mongon db-->
