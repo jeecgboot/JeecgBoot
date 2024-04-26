@@ -20,7 +20,9 @@
   import JSelectDept from '/@/components/Form/src/jeecg/components/JSelectDept.vue';
 </#if>
 <#if need_dept_user>
-  import JSelectUserByDept from '/@/components/Form/src/jeecg/components/JSelectUserByDept.vue';
+<#-- update-begin---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
+  import JSelectUser from '/@/components/Form/src/jeecg/components/JSelectUser.vue';
+<#-- update-end---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
 </#if>
 <#if need_select_tree>
   import JTreeSelect from '/@/components/Form/src/jeecg/components/JTreeSelect.vue';

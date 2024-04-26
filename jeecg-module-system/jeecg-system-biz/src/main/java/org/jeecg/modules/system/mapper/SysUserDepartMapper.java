@@ -57,7 +57,7 @@ public interface SysUserDepartMapper extends BaseMapper<SysUserDepart>{
 	 * @param keyword
 	 * @return
 	 */
-	IPage<SysUser> getProcessUserList(Page<SysUser> page,  @Param("orgCode") String orgCode,  @Param("keyword") String keyword,  @Param("tenantId") Integer tenantId);
+	IPage<SysUser> getProcessUserList(Page<SysUser> page,  @Param("orgCode") String orgCode,  @Param("keyword") String keyword,  @Param("tenantId") Integer tenantId, @Param("excludeUserIdList") List<String> excludeUserIdList);
 
 	/**
 	 * 获取租户下的部门通过前台传过来的部门id

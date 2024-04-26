@@ -1,0 +1,2 @@
+org.springframework.boot.SpringApplicationRunListener=\
+org.jeecg.config.DruidWallConfigRegister

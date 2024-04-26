@@ -261,7 +261,7 @@
    * 批量删除事件
    */
   async function batchHandleDelete() {
-    const ids = selectedRowKeys.value.filter((item) => !item.includes('loading'));
+    const ids = selectedRowKeys.value.filter((item) => !item.includes('loadChild'));
     await batchDelete${entityName}({ id: ids }, success);
   }
   

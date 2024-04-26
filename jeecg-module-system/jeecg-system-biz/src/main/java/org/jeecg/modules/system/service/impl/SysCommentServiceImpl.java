@@ -12,14 +12,13 @@ import org.jeecg.common.constant.enums.FileTypeEnum;
 import org.jeecg.common.constant.enums.MessageTypeEnum;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.api.ISysBaseAPI;
+import org.jeecg.common.system.vo.SysFilesModel;
 import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysComment;
-import org.jeecg.modules.system.entity.SysFiles;
 import org.jeecg.modules.system.entity.SysFormFile;
 import org.jeecg.modules.system.mapper.SysCommentMapper;
-import org.jeecg.modules.system.mapper.SysFilesMapper;
 import org.jeecg.modules.system.mapper.SysFormFileMapper;
 import org.jeecg.modules.system.service.ISysCommentService;
 import org.jeecg.modules.system.vo.SysCommentFileVo;
@@ -55,8 +54,8 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
     @Autowired
     private SysFormFileMapper sysFormFileMapper;
 
-    @Autowired
-    private SysFilesMapper sysFilesMapper;
+//    @Autowired
+//    private IEasyOaBaseApi easyOaBseApi;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -158,7 +157,7 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
             FileTypeEnum fileType = FileTypeEnum.getByType(type);
 
             //保存至 SysFiles
-            SysFiles sysFiles = new SysFiles();
+            SysFilesModel sysFiles = new SysFilesModel();
             sysFiles.setFileName(orgName);
             sysFiles.setUrl(savePath);
             sysFiles.setFileType(fileType.getValue());
@@ -166,16 +165,13 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
             if (size > 0) {
                 sysFiles.setFileSize(Double.parseDouble(String.valueOf(size)));
             }
-            String defaultValue = "0";
-            sysFiles.setIzStar(defaultValue);
-            sysFiles.setIzFolder(defaultValue);
-            sysFiles.setIzRootFolder(defaultValue);
-            sysFiles.setDelFlag(defaultValue);
             String fileId = String.valueOf(IdWorker.getId());
             sysFiles.setId(fileId);
             String tenantId = oConvertUtils.getString(TenantContext.getTenant());
             sysFiles.setTenantId(tenantId);
-            sysFilesMapper.insert(sysFiles);
+//            //update-begin---author:wangshuai---date:2024-01-04---for:【QQYUN-7821】知识库后端迁移---
+//            easyOaBseApi.addSysFiles(sysFiles);
+//            //update-end---author:wangshuai---date:2024-01-04---for:【QQYUN-7821】知识库后端迁移---
 
             //保存至 SysFormFile
             String tableName = SYS_FORM_FILE_TABLE_NAME;
@@ -188,18 +184,20 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
             sysFormFileMapper.insert(sysFormFile);
 
         }else{
-            SysFiles sysFiles = sysFilesMapper.selectById(existFileId);
-            if(sysFiles!=null){
+//            //update-begin---author:wangshuai---date:2024-01-04---for:【QQYUN-7821】知识库后端迁移---
+//            SysFilesModel sysFiles = easyOaBseApi.getFileById(existFileId);
+//            //update-end---author:wangshuai---date:2024-01-04---for:【QQYUN-7821】知识库后端迁移---
+//            if(sysFiles!=null){
                 //保存至 SysFormFile
                 String tableName = SYS_FORM_FILE_TABLE_NAME;
                 String tableDataId = request.getParameter("commentId");
                 SysFormFile sysFormFile = new SysFormFile();
                 sysFormFile.setTableName(tableName);
-                sysFormFile.setFileType(sysFiles.getFileType());
+                sysFormFile.setFileType("");
                 sysFormFile.setTableDataId(tableDataId);
                 sysFormFile.setFileId(existFileId);
                 sysFormFileMapper.insert(sysFormFile);
-            }
+//            }
         }
         //update-end-author:taoyan date:2023-6-12 for: QQYUN-4310【文件】从文件库选择文件功能未做
     }
@@ -224,7 +222,7 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
         FileTypeEnum fileType = FileTypeEnum.getByType(type);
 
         //保存至 SysFiles
-        SysFiles sysFiles = new SysFiles();
+        SysFilesModel sysFiles = new SysFilesModel();
         sysFiles.setFileName(orgName);
         sysFiles.setUrl(savePath);
         sysFiles.setFileType(fileType.getValue());
@@ -233,16 +231,13 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
             sysFiles.setFileSize(Double.parseDouble(String.valueOf(size)));
         }
         String defaultValue = "0";
-        sysFiles.setIzStar(defaultValue);
-        sysFiles.setIzFolder(defaultValue);
-        sysFiles.setIzRootFolder(defaultValue);
-        sysFiles.setDelFlag(defaultValue);
         String fileId = String.valueOf(IdWorker.getId());
         sysFiles.setId(fileId);
         String tenantId = oConvertUtils.getString(TenantContext.getTenant());
         sysFiles.setTenantId(tenantId);
-        sysFilesMapper.insert(sysFiles);
-
+//        //update-begin---author:wangshuai---date:2024-01-04---for:【QQYUN-7821】知识库后端迁移---
+//        easyOaBseApi.addSysFiles(sysFiles);
+//        //update-end---author:wangshuai---date:2024-01-04---for:【QQYUN-7821】知识库后端迁移---
         //保存至 SysFormFile
         String tableName = SYS_FORM_FILE_TABLE_NAME;
         String tableDataId = request.getParameter("commentId");

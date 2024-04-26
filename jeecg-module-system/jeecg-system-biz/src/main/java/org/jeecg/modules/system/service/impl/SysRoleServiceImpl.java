@@ -1,9 +1,12 @@
 package org.jeecg.modules.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.modules.system.entity.SysRole;
 import org.jeecg.modules.system.mapper.SysRoleMapper;
@@ -101,5 +104,16 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Override
     public Long getRoleCountByTenantId(String id, Integer tenantId) {
         return sysRoleMapper.getRoleCountByTenantId(id,tenantId);
+    }
+
+    @Override
+    public void checkAdminRoleRejectDel(String ids) {
+        LambdaQueryWrapper<SysRole> query = new  LambdaQueryWrapper<>();
+        query.in(SysRole::getId,Arrays.asList(ids.split(SymbolConstant.COMMA)));
+        query.eq(SysRole::getRoleCode,"admin");
+        Long adminRoleCount = sysRoleMapper.selectCount(query);
+        if(adminRoleCount>0){
+            throw new JeecgBootException("admin角色，不允许删除！");
+        }
     }
 }

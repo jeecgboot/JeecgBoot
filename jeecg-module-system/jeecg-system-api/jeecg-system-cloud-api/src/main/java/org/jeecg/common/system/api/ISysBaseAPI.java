@@ -307,11 +307,11 @@ public interface ISysBaseAPI extends CommonAPI {
 
     /**
      * 31获取用户的权限集合
-     * @param username
+     * @param userId
      * @return
      */
     @GetMapping("/sys/api/getUserPermissionSet")
-    Set<String> getUserPermissionSet(@RequestParam("username") String username);
+    Set<String> getUserPermissionSet(@RequestParam("userId") String userId);
 
     /**
      * 32判断是否有online访问的权限
@@ -351,12 +351,12 @@ public interface ISysBaseAPI extends CommonAPI {
 
     /**
      * 36查询用户权限信息
-     * @param username
+     * @param userId
      * @return
      */
     @Override
     @GetMapping("/sys/api/queryUserAuths")
-    Set<String> queryUserAuths(@RequestParam("username")String username);
+    Set<String> queryUserAuths(@RequestParam("userId")String userId);
 
     /**
      * 37根据 id 查询数据库中存储的 DynamicDataSourceModel
@@ -610,20 +610,6 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     @PostMapping("/sys/api/saveDataLog")
     void saveDataLog(DataLogDTO dataLogDto);
-
-    /**
-     * 添加文件到知识库
-     * @param sysFilesModel
-     */
-    @PostMapping("/sys/api/addSysFiles")
-    void addSysFiles(SysFilesModel sysFilesModel);
-
-    /**
-     * 通过文件路径获取文件id
-     * @param fileId
-     */
-    @GetMapping("/sys/api/getFileUrl")
-    String getFileUrl(@RequestParam(name="fileId") String fileId);
 
     /**
      * 更新头像

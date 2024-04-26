@@ -7,13 +7,13 @@
 JEECG BOOT Low Code Development Platform
 ===============
 
-当前最新版本： 3.6.2（发布日期：2024-01-08） 
+当前最新版本： 3.6.3（发布日期：2024-03-11） 
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-guojusoft-orange.svg)](http://www.jeecg.com)
 [![](https://img.shields.io/badge/Blog-blog-blue.svg)](https://jeecg.blog.csdn.net)
-[![](https://img.shields.io/badge/version-3.6.2-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-3.6.3-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -76,7 +76,7 @@ Docker starts the project
 - [Docker starts the monomer background](https://help.jeecg.com/java/setup/docker/up.html)
 - [Docker starts the Vue3 front-end](http://help.jeecg.com/publish/docker.html)
 - [Docker starts the micro-service background](https://help.jeecg.com/java/springcloud/docker.html)
-
+- [ChatGPT AI Config](https://help.jeecg.com/java/chatgpt.html)
 
 
 
@@ -87,7 +87,7 @@ Technical documentation
 - Doc：  [http://help.jeecg.com](http://help.jeecg.com)
 - Newbie guide： [Quick start](http://www.jeecg.com/doc/quickstart)  |  [video](https://space.bilibili.com/454617261/channel/series) |   [Q&A ](http://www.jeecg.com/doc/qa)  |   [help](http://jeecg.com/doc/help) |  [1 minute experience](https://my.oschina.net/jeecg/blog/3083313)
 - Microservice Development：  [Monomer upgrade to microservice](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
-- QQ group ： ⑧825232878、⑦791696430、⑥730954414(full)、683903138(full)、⑤860162132(full)、④774126647(full)、③816531124(full)、②769925425(full)、①284271917(full)
+- QQ group ： ⑨808791225、⑧825232878、⑦791696430、⑥730954414(full)、683903138(full)、⑤860162132(full)、④774126647(full)、③816531124(full)、②769925425(full)、①284271917(full)
 - Demo ： [Vue3](http://boot3.jeecg.com) | [Vue2](http://boot.jeecg.com)  | [APP](http://jeecg.com/appIndex)
 > [please click obtain account password to obtain](http://jeecg.com/doc/demo) 
 
@@ -440,6 +440,10 @@ Technical Architecture:
 
 
 ### Effect of system
+
+##### ChatGPT AI Dialog
+> Go to the JeecgBoot background home page and click "AI Assistant" in the middle of the right side of the home page. The AI Assistant dialog screen is displayed.
+![](https://oscimg.oschina.net/oscnet/up-7c6405641a40f56638999d52da0cb5b4343.png)
 
 
 ##### PC
