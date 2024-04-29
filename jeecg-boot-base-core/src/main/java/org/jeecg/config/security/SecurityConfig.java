@@ -24,6 +24,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -37,6 +38,8 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.header.writers.frameoptions.RegExpAllowFromStrategy;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -47,6 +50,7 @@ import java.security.SecureRandom;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * spring authorization server核心配置
@@ -78,7 +82,7 @@ public class SecurityConfig {
                 .tokenEndpoint(tokenEndpoint -> tokenEndpoint.accessTokenRequestConverter(new SocialGrantAuthenticationConvert())
                         .authenticationProvider(new SocialGrantAuthenticationProvider(authorizationService, tokenGenerator())))
                 //开启OpenID Connect 1.0（其中oidc为OpenID Connect的缩写）。 访问 /.well-known/openid-configuration即可获取认证信息
-                .oidc(Customizer.withDefaults());	// Enable OpenID Connect 1.0
+                .oidc(Customizer.withDefaults());
         http
                 //将需要认证的请求，重定向到login页面行登录认证。
                 .exceptionHandling((exceptions) -> exceptions
@@ -161,6 +165,7 @@ public class SecurityConfig {
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/error")).permitAll()
                         .anyRequest().authenticated()
                 )
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .cors(cors -> cors
                         .configurationSource(req -> {
                             CorsConfiguration config = new CorsConfiguration();
