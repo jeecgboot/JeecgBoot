@@ -4,12 +4,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.vo.InvoiceKpi;
+import org.jeecg.modules.business.vo.ParcelInfos;
 import org.springframework.stereotype.Repository;
-
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Description: 物流发票
@@ -28,4 +26,6 @@ public interface ShippingInvoiceMapper extends BaseMapper<ShippingInvoice> {
     InvoiceKpi countShippingInvoices(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("showAllData") boolean showAllData, @Param("username") String username);
     void setPaid(@Param("invoiceNumbers") List<String> invoiceNumbers);
     Client getClientByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
+
+    List<ParcelInfos> getPackageStatusInPeriod(@Param("period") int period);
 }
