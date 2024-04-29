@@ -219,4 +219,6 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     OrderKpi countPlatformOrders(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("showAllData") boolean showAllData, @Param("username") String username);
 
     Map<String, String> fetchShippingPeriodAndType(@Param("invoiceNumber") String invoiceNumber);
+
+    void anonymizePersonalData(@Param("period") int indirectClientAnonymizationPeriod);
 }

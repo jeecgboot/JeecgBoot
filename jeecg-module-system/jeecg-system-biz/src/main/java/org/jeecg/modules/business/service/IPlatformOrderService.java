@@ -243,4 +243,6 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     Map<String, String> fetchShippingPeriodAndType(String invoiceNumber);
 
+
+    void anonymizePersonalData(int indirectClientAnonymizationPeriod);
 }

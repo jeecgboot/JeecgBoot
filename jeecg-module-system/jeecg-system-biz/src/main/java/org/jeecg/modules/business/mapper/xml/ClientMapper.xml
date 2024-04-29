@@ -72,4 +72,22 @@
         WHERE po.shipping_invoice_number = #{invoiceNumber} OR po.purchase_invoice_number = #{invoiceNumber};
 
     </select>
+    <update id="anonymizePersonalData">
+        UPDATE client
+        SET first_name = UUID_SHORT(),
+            surname = UUID_SHORT(),
+            email = CONCAT(UUID(), '@example.com'),
+            phone = NULL,
+            street_number = 0,
+            street_name = UUID_SHORT(),
+            additional_address = NULL,
+            city = UUID_SHORT(),
+            postcode = NULL,
+            company_id_value = UUID_SHORT(),
+            invoice_entity = UUID_SHORT(),
+            ioss_number = NULL,
+            internal_code = CONCAT(internal_code, UUID_SHORT())
+        WHERE active = 0
+        AND IF (update_time IS NOT NULL, update_time, create_time) &lt; DATE_SUB(NOW(), INTERVAL #{period} YEAR);
+    </update>
 </mapper>

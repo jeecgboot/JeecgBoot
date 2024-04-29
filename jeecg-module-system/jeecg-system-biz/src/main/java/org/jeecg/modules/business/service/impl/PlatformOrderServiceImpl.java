@@ -491,4 +491,9 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     public Map<String, String> fetchShippingPeriodAndType(String invoiceNumber) {
         return platformOrderMap.fetchShippingPeriodAndType(invoiceNumber);
     }
+
+    @Override
+    public void anonymizePersonalData(int indirectClientAnonymizationPeriod) {
+        platformOrderMap.anonymizePersonalData(indirectClientAnonymizationPeriod);
+    }
 }

@@ -879,4 +879,10 @@
         JOIN shipping_invoice s ON po.shipping_invoice_number = s.invoice_number
         WHERE shipping_invoice_number = #{invoiceNumber};
     </select>
+
+    <update id="anonymizePersonalData">
+        UPDATE platform_order_delete
+        SET recipient = UUID()
+        WHERE create_time &lt; DATE_SUB(NOW(), INTERVAL #{period} YEAR);
+    </update>
 </mapper>

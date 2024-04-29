@@ -58,4 +58,6 @@ public interface IClientService extends IService<Client> {
     Client getClientBySku(String skuId);
 
     Client getClientFromInvoice(String invoiceNumber);
+
+    void anonymizePersonalData(int directClientAnonymizationPeriod);
 }
