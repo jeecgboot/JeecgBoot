@@ -12,6 +12,12 @@ import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.jeecg.config.security.JeecgRedisOAuth2AuthorizationService;
+import org.springframework.data.redis.serializer.SerializationException;
+import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
+import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
+
+import java.util.Objects;
 
 /**
  * @Author scott
@@ -112,7 +118,7 @@ public class TokenUtils {
             throw new JeecgBoot401Exception("账号已被锁定,请联系管理员!");
         }
         // 校验token是否超时失效 & 或者账号密码是否错误
-        if (!jwtTokenRefresh(token, username, user.getPassword(), redisUtil)) {
+        if (!jwtTokenRefresh(token, username, user.getPassword())) {
             throw new JeecgBoot401Exception(CommonConstant.TOKEN_IS_INVALID_MSG);
         }
         return true;
@@ -136,6 +142,15 @@ public class TokenUtils {
                 redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, newAuthorization);
                 redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 2 / 1000);
             }
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean jwtTokenRefresh(String token, String userName, String passWord) {
+        JeecgRedisOAuth2AuthorizationService authRedis = SpringContextUtils.getBean(JeecgRedisOAuth2AuthorizationService.class);
+        OAuth2Authorization authorization = authRedis.findByToken(token, OAuth2TokenType.ACCESS_TOKEN);
+        if (Objects.nonNull(authorization) && JwtUtil.verify(token, userName, passWord)) {
             return true;
         }
         return false;

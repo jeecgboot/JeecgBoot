@@ -160,6 +160,9 @@ public class AutoLogAspect {
                     if(value!=null && value.toString().length()>length){
                         return false;
                     }
+                    if(value instanceof MultipartFile){
+                        return false;
+                    }
                     return true;
                 }
             };

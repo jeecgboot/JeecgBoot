@@ -3,6 +3,7 @@ package org.jeecg.config.security.password;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.CommonAPI;
+import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.exception.JeecgCaptchaException;
@@ -35,6 +36,7 @@ import org.springframework.security.oauth2.server.authorization.token.DefaultOAu
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.security.Principal;
 import java.util.*;
@@ -117,6 +119,10 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
 
         // 通过用户名获取用户信息
         LoginUser loginUser = commonAPI.getUserByName(username);
+        if (Objects.isNull(loginUser) || !StringUtils.hasText(loginUser.getSalt())) {
+            redisUtil.del(CacheConstant.SYS_USERS_CACHE+"::"+username);
+            loginUser = commonAPI.getUserByName(username);
+        }
         // 检查用户可行性
         checkUserIsEffective(loginUser);
 
