@@ -73,6 +73,7 @@
         DELETE
         FROM purchase_order
         WHERE invoice_number = #{invoiceNumber}
+            AND purchase_order.client_id = #{clientId}
     </delete>
     <delete id="deleteBatchInvoice">
         DELETE

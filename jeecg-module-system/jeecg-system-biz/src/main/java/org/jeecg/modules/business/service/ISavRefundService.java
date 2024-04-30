@@ -18,7 +18,7 @@ public interface ISavRefundService extends IService<SavRefund> {
      * Cancel Invoice
      * @param invoiceNumber
      */
-    void cancelInvoice(String invoiceNumber);
+    void cancelInvoice(String invoiceNumber, String clientId);
     /**
      * Cancel Batch Invoice
      * @param invoiceNumbers

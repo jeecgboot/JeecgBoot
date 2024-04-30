@@ -76,7 +76,7 @@ public interface PlatformOrderContentMapper extends BaseMapper<PlatformOrderCont
     List<PlatformOrderContent> findUninvoicedShippedOrderContents();
     List<PlatformOrderContent> fetchPlatformOrderContentsToArchive(@Param("orderIDs") List<String> orderIDs);
     void insertPlatformOrderContentsArchives(@Param("orderContents") List<PlatformOrderContent> platformOrderContents);
-    void cancelInvoice(@Param("invoiceNumber") String invoiceNumber);
+    void cancelInvoice(@Param("invoiceNumber") String invoiceNumber, @Param("clientId") String clientId);
     void cancelBatchInvoice(@Param("invoiceNumbers") List<String> invoiceNumbers);
     List<SkuPrice> searchSkuPrice(@Param("skuIds") List<String> skuIds);
 

@@ -726,18 +726,21 @@
     <update id="cancelInvoice">
         UPDATE platform_order po
         JOIN shipping_invoice si ON po.shipping_invoice_number = si.invoice_number
-        SET fret_fee                = NULL,
-            order_service_fee       = NULL,
-            shipping_invoice_number = NULL,
-            picking_fee = 0.0,
-            packaging_material_fee = 0.0,
-            erp_status =
+        JOIN shop s ON po.shop_id = s.id
+        JOIN client c ON s.owner_id = c.id
+        SET po.fret_fee                = NULL,
+            po.order_service_fee       = NULL,
+            po.shipping_invoice_number = NULL,
+            po.picking_fee = 0.0,
+            po.packaging_material_fee = 0.0,
+            po.erp_status =
                 CASE
                     WHEN erp_status = '4' THEN '3'
                     WHEN erp_status = '2' AND si.create_by = 'system' THEN '1'
                 ELSE erp_status
                 END
-        WHERE shipping_invoice_number = #{invoiceNumber};
+        WHERE shipping_invoice_number = #{invoiceNumber}
+        AND c.id = #{clientId};
     </update>
     <update id="cancelBatchInvoice">
         UPDATE platform_order
@@ -806,8 +809,11 @@
     </select>
     <update id="removePurchaseInvoiceNumber">
         UPDATE platform_order
+            JOIN shop s ON platform_order.shop_id = s.id
+            JOIN client c ON s.owner_id = c.id
         SET purchase_invoice_number = NULL
         WHERE purchase_invoice_number = #{invoiceNumber}
+            AND c.id = #{clientId};
     </update>
     <update id="removePurchaseInvoiceNumbers">
         UPDATE platform_order

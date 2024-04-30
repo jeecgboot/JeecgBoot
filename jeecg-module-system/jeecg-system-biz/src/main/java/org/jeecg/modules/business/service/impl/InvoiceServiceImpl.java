@@ -31,8 +31,6 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     @Autowired
     private IPlatformOrderService platformOrderService;
     @Autowired
-    private PurchaseOrderContentMapper purchaseOrderContentMapper;
-    @Autowired
     private IPurchaseOrderService purchaseOrderService;
     @Autowired
     private ISavRefundService savRefundService;
@@ -59,18 +57,19 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     public boolean cancelInvoice(String id, String invoiceNumber, String clientId) {
         String invoiceEntity = clientService.getById(clientId).getInvoiceEntity();
 
+        savRefundService.cancelInvoice(invoiceNumber, clientId);
         if(Invoice.getType(invoiceNumber).equalsIgnoreCase(PURCHASE.name())) {
             PurchaseOrder po = purchaseOrderService.getById(id);
             if (po.getInventoryDocumentString() != null && !po.getInventoryDocumentString().isEmpty())
                 shippingInvoiceService.deleteAttachmentFile(po.getInventoryDocumentString());
             if (po.getPaymentDocumentString() != null && !po.getPaymentDocumentString().isEmpty())
                 shippingInvoiceService.deleteAttachmentFile(po.getPaymentDocumentString());
-            platformOrderService.removePurchaseInvoiceNumber(invoiceNumber);
-            purchaseOrderService.deleteInvoice(invoiceNumber);
+            platformOrderService.removePurchaseInvoiceNumber(invoiceNumber, clientId);
+            purchaseOrderService.delMain(id);
         }
         if(Invoice.getType(invoiceNumber).equalsIgnoreCase(SHIPPING.name())) {
-            platformOrderContentService.cancelInvoice(invoiceNumber);
-            platformOrderService.cancelInvoice(invoiceNumber);
+            platformOrderContentService.cancelInvoice(invoiceNumber, clientId);
+            platformOrderService.cancelInvoice(invoiceNumber, clientId);
             shippingInvoiceService.delMain(id);
         }
         if(Invoice.getType(invoiceNumber).equalsIgnoreCase(COMPLETE.name())) {
@@ -79,13 +78,12 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
                 shippingInvoiceService.deleteAttachmentFile(purchase.getInventoryDocumentString());
             if(purchase.getPaymentDocumentString() != null && !purchase.getPaymentDocumentString().isEmpty())
                 shippingInvoiceService.deleteAttachmentFile(purchase.getPaymentDocumentString());
-            platformOrderContentService.cancelInvoice(invoiceNumber);
-            platformOrderService.removePurchaseInvoiceNumber(invoiceNumber);
-            platformOrderService.cancelInvoice(invoiceNumber);
-            purchaseOrderService.cancelInvoice(invoiceNumber);
+            platformOrderContentService.cancelInvoice(invoiceNumber, clientId);
+            platformOrderService.removePurchaseInvoiceNumber(invoiceNumber, clientId);
+            platformOrderService.cancelInvoice(invoiceNumber, clientId);
+            purchaseOrderService.delMain(purchase.getId());
             shippingInvoiceService.delMain(id);
         }
-        savRefundService.cancelInvoice(invoiceNumber);
 
         log.info("Updating balance ...");
         balanceService.deleteBalance(id, Balance.OperationType.Debit.name());
@@ -117,12 +115,10 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
                     shippingInvoiceService.deleteAttachmentFile(po.getPaymentDocumentString());
             }
             platformOrderService.removePurchaseInvoiceNumbers(purchaseInvoiceNumbers);
-            purchaseOrderService.cancelBatchInvoice(purchaseInvoiceNumbers);
-            purchaseOrderContentMapper.deleteFromPurchaseIds(ids);
+            purchaseOrderService.delBatchMain(ids);
             savRefundService.cancelBatchInvoice(purchaseInvoiceNumbers);
             log.info("Updating balances ...");
             balanceService.deleteBatchBalance(ids, Balance.OperationType.Debit.name());
-
         }
         if(!shippingInvoiceNumbers.isEmpty()) {
             List<String> ids = invoices.stream().filter(invoice -> Invoice.getType(invoice.getInvoiceNumber()).equalsIgnoreCase(SHIPPING.name())).map(Invoice::getId).collect(Collectors.toList());
@@ -132,7 +128,6 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             shippingInvoiceService.delBatchMain(ids);
             log.info("Updating balances ...");
             balanceService.deleteBatchBalance(ids, Balance.OperationType.Debit.name());
-
         }
         if(!completeInvoiceNumbers.isEmpty()) {
             List<Invoice> completeInvoices = invoices.stream().filter(invoice -> Invoice.getType(invoice.getInvoiceNumber()).equalsIgnoreCase(COMPLETE.name())).collect(Collectors.toList());
@@ -144,7 +139,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
 
             //purchase cancel
             List<PurchaseOrder> purchaseOrders = purchaseOrderService.getPurchasesByInvoices(completeInvoices);
-
+            List<String> purchaseIds = purchaseOrders.stream().map(PurchaseOrder::getId).collect(Collectors.toList());
             for(PurchaseOrder po : purchaseOrders) {
                 if(po.getInventoryDocumentString() != null && !po.getInventoryDocumentString().isEmpty())
                     shippingInvoiceService.deleteAttachmentFile(po.getInventoryDocumentString());
@@ -152,8 +147,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
                     shippingInvoiceService.deleteAttachmentFile(po.getPaymentDocumentString());
             }
             platformOrderService.removePurchaseInvoiceNumbers(completeInvoiceNumbers);
-            purchaseOrderService.cancelBatchInvoice(completeInvoiceNumbers);
-            purchaseOrderContentMapper.deleteFromPurchaseIds(ids);
+            purchaseOrderService.delBatchMain(purchaseIds);
 
             savRefundService.cancelBatchInvoice(completeInvoiceNumbers);
             log.info("Updating balances ...");

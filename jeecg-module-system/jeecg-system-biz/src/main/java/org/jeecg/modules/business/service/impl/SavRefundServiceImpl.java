@@ -33,8 +33,8 @@ public class SavRefundServiceImpl extends ServiceImpl<SavRefundMapper, SavRefund
         return savRefundMapper.fetchRefundAmount(invoiceNumber);
     }
     @Override
-    public void cancelInvoice(String invoiceNumber) {
-        savRefundMapper.cancelInvoice(invoiceNumber);
+    public void cancelInvoice(String invoiceNumber, String clientId) {
+        savRefundMapper.cancelInvoice(invoiceNumber, clientId);
     }
     @Override
     public void cancelBatchInvoice(List<String> invoiceNumbers) {

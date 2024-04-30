@@ -217,7 +217,7 @@ public class PurchaseOrderController {
         List<String> platformOrderIds = new ArrayList<>(Arrays.asList(purchaseOrderPage.getPlatformOrderId().split(",")));
         log.info("Editing purchase order and attributing it to orders : {}", platformOrderIds);
         log.info("Removing previous attribution to orders");
-        platformOrderService.removePurchaseInvoiceNumber(purchaseOrder.getInvoiceNumber());
+        platformOrderService.removePurchaseInvoiceNumber(purchaseOrder.getInvoiceNumber(), purchaseOrder.getClientId());
         List<PlatformOrder> platformOrders = platformOrderService.selectByPlatformOrderIds(platformOrderIds);
         log.info("Platform orders found for attribution : {}", platformOrders.stream().map(PlatformOrder::getPlatformOrderId).collect(Collectors.toList()));
         Map<String, List<String>> platformOrderIdUpdateMap = new HashMap<>();
@@ -242,7 +242,7 @@ public class PurchaseOrderController {
 
     /**
      * 通过id删除
-     *
+     * not used, use cancelInvoice instead
      * @param id
      * @return
      */
@@ -261,7 +261,7 @@ public class PurchaseOrderController {
 
     /**
      * 批量删除
-     *
+     * not used, use cancelBatchInvoice instead
      * @param ids
      * @return
      */
