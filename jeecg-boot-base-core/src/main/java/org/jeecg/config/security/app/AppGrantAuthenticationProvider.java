@@ -118,10 +118,12 @@ public class AppGrantAuthenticationProvider implements AuthenticationProvider {
 
         // 通过用户名获取用户信息
         LoginUser loginUser = commonAPI.getUserByName(username);
+        //update-begin---author:eightmonth ---date:2024-04-30  for：【6168】master分支切sas分支登录发生错误-----------
         if (Objects.isNull(loginUser) || !StringUtils.hasText(loginUser.getSalt())) {
             redisUtil.del(CacheConstant.SYS_USERS_CACHE+"::"+username);
             loginUser = commonAPI.getUserByName(username);
         }
+        //update-end---author:eightmonth ---date::2024-04-30  for：【6168】master分支切sas分支登录发生错误--------------
         // 检查用户可行性
         checkUserIsEffective(loginUser);
 
