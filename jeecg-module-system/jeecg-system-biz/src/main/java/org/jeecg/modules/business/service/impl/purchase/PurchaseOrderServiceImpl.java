@@ -138,23 +138,18 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     @Override
     @Transactional
     public void delMain(String id) {
-        String invoiceNumber = purchaseOrderMapper.getInvoiceNumber(id);
         purchaseOrderContentMapper.deleteByMainId(id);
         skuPromotionHistoryMapper.deleteByMainId(id);
         purchaseOrderMapper.deleteById(id);
-        platformOrderService.removePurchaseInvoiceNumber(invoiceNumber);
-
     }
 
     @Override
     @Transactional
     public void delBatchMain(Collection<? extends Serializable> idList) {
         for (Serializable id : idList) {
-            String invoiceNumber = purchaseOrderMapper.getInvoiceNumber(id.toString());
             purchaseOrderContentMapper.deleteByMainId(id.toString());
             skuPromotionHistoryMapper.deleteByMainId(id.toString());
             purchaseOrderMapper.deleteById(id);
-            platformOrderService.removePurchaseInvoiceNumber(invoiceNumber);
         }
     }
 
@@ -572,8 +567,8 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     }
 
     @Override
-    public void cancelInvoice(String invoiceNumber) {
-        purchaseOrderMapper.deleteInvoice(invoiceNumber);
+    public void cancelInvoice(String invoiceNumber, String clientId) {
+        purchaseOrderMapper.deleteInvoice(invoiceNumber, clientId);
     }
 
     @Override
@@ -626,11 +621,6 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     @Override
     public void setPaid(List<String> invoiceNumber) {
         purchaseOrderMapper.setPaid(invoiceNumber);
-    }
-
-    @Override
-    public void deleteInvoice(String invoiceNumber) {
-        purchaseOrderMapper.deleteInvoice(invoiceNumber);
     }
 
     @Override

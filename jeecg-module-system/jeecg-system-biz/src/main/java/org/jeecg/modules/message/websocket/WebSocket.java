@@ -40,7 +40,7 @@ public class WebSocket {
     public void onOpen(Session session, @PathParam(value = "userId") String userId) {
         try {
             sessionPool.put(userId, session);
-            log.info("【系统 WebSocket】有新的连接，总数为:" + sessionPool.size());
+            log.debug("【系统 WebSocket】有新的连接，总数为:" + sessionPool.size());
         } catch (Exception e) {
         }
     }
@@ -49,7 +49,7 @@ public class WebSocket {
     public void onClose(@PathParam("userId") String userId) {
         try {
             sessionPool.remove(userId);
-            log.info("【系统 WebSocket】连接断开，总数为:" + sessionPool.size());
+            log.debug("【系统 WebSocket】连接断开，总数为:" + sessionPool.size());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -70,7 +70,7 @@ public class WebSocket {
                 try {
                     //update-begin-author:taoyan date:20211012 for: websocket报错 https://gitee.com/jeecg/jeecg-boot/issues/I4C0MU
                     synchronized (session){
-                        log.info("【系统 WebSocket】推送单人消息:" + message);
+                        log.debug("【系统 WebSocket】推送单人消息:" + message);
                         session.getBasicRemote().sendText(message);
                     }
                     //update-end-author:taoyan date:20211012 for: websocket报错 https://gitee.com/jeecg/jeecg-boot/issues/I4C0MU
@@ -93,7 +93,7 @@ public class WebSocket {
                     log.error(e.getMessage(), e);
                 }
             }
-            log.info("【系统 WebSocket】群发消息:" + message);
+            log.debug("【系统 WebSocket】群发消息:" + message);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -106,7 +106,7 @@ public class WebSocket {
     @OnMessage
     public void onMessage(String message, @PathParam(value = "userId") String userId) {
         if(!"ping".equals(message) && !WebsocketConst.CMD_CHECK.equals(message)){
-            log.info("【系统 WebSocket】收到客户端消息:" + message);
+            log.debug("【系统 WebSocket】收到客户端消息:" + message);
         }else{
             log.debug("【系统 WebSocket】收到客户端消息:" + message);
         }
@@ -142,11 +142,11 @@ public class WebSocket {
      * @param message
      */
     public void sendMessage(String message) {
-        //log.info("【系统 WebSocket】广播消息:" + message);
+        //log.debug("【系统 WebSocket】广播消息:" + message);
         BaseMap baseMap = new BaseMap();
         baseMap.put("userId", "");
         baseMap.put("message", message);
-        jeecgRedisClient.sendMessage(REDIS_TOPIC_NAME, baseMap);
+        jeecgRedisClient.sendMessage(WebSocket.REDIS_TOPIC_NAME, baseMap);
     }
 
     /**
@@ -159,7 +159,7 @@ public class WebSocket {
         BaseMap baseMap = new BaseMap();
         baseMap.put("userId", userId);
         baseMap.put("message", message);
-        jeecgRedisClient.sendMessage(REDIS_TOPIC_NAME, baseMap);
+        jeecgRedisClient.sendMessage(WebSocket.REDIS_TOPIC_NAME, baseMap);
     }
 
     /**

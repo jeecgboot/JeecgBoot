@@ -177,7 +177,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * Cancel Invoice
      * @param invoiceNumber
      */
-    void cancelInvoice(String invoiceNumber);
+    void cancelInvoice(String invoiceNumber, String clientId);
     /**
      * Cancel Invoice
      * @param invoiceNumbers
@@ -229,7 +229,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     List<PlatformOrder> selectByPlatformOrderIds(List<String> platformOrderIds);
 
-    void removePurchaseInvoiceNumber(String purchaseInvoiceNumber);
+    void removePurchaseInvoiceNumber(String purchaseInvoiceNumber, String clientId);
     void removePurchaseInvoiceNumbers(List<String> invoiceNumbers);
 
     void updatePurchaseInvoiceNumber(List<String> orderIds, String invoiceCode);
@@ -243,4 +243,6 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     Map<String, String> fetchShippingPeriodAndType(String invoiceNumber);
 
+
+    void anonymizePersonalData(int indirectClientAnonymizationPeriod);
 }

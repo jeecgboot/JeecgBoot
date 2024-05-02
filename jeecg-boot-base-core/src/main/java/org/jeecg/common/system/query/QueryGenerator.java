@@ -19,11 +19,9 @@ import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.util.JeecgDataAutorUtils;
 import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.util.SqlConcatUtil;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
-import org.jeecg.common.util.CommonUtils;
-import org.jeecg.common.util.DateUtils;
-import org.jeecg.common.util.SqlInjectionUtil;
-import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.util.*;
 import org.springframework.util.NumberUtils;
 
 import com.alibaba.fastjson.JSON;
@@ -143,7 +141,7 @@ public class QueryGenerator {
 				}
 
 				Object value = PropertyUtils.getSimpleProperty(searchObj, name);
-				column = getTableFieldName(searchObj.getClass(), name);
+				column = ReflectHelper.getTableFieldName(searchObj.getClass(), name);
 				if(column==null){
 					//column为null只有一种情况 那就是 添加了注解@TableField(exist = false) 后续都不用处理了
 					continue;
@@ -283,15 +281,9 @@ public class QueryGenerator {
 			// 将现有排序 _ 前端传递排序条件{....,column: 'column1,column2',order: 'desc'} 翻译成sql "column1,column2 desc"
 			// 修改为 _ 前端传递排序条件{....,column: 'column1,column2',order: 'desc'} 翻译成sql "column1 desc,column2 desc"
 			if (order.toUpperCase().indexOf(ORDER_TYPE_ASC)>=0) {
-				//queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));
-				String columnStr = oConvertUtils.camelToUnderline(column);
-				String[] columnArray = columnStr.split(",");
-				queryWrapper.orderByAsc(Arrays.asList(columnArray));
+				queryWrapper.orderByAsc(SqlInjectionUtil.getSqlInjectSortFields(column.split(",")));
 			} else {
-				//queryWrapper.orderByDesc(oConvertUtils.camelToUnderline(column));
-				String columnStr = oConvertUtils.camelToUnderline(column);
-				String[] columnArray = columnStr.split(",");
-				queryWrapper.orderByDesc(Arrays.asList(columnArray));
+				queryWrapper.orderByDesc(SqlInjectionUtil.getSqlInjectSortFields(column.split(",")));
 			}
 			//update-end--Author:scott  Date:20210531 for：36 多条件排序无效问题修正-------
 		}
@@ -347,7 +339,7 @@ public class QueryGenerator {
 					return;
 				}
 				// update-end-author:sunjianlei date:20220119 for: 【JTC-573】 过滤空条件查询，防止 sql 拼接多余的 and
-                log.info("---高级查询参数-->" + filterConditions);
+                log.debug("---高级查询参数-->" + filterConditions);
 
                 queryWrapper.and(andWrapper -> {
                     for (int i = 0; i < filterConditions.size(); i++) {
@@ -641,11 +633,11 @@ public class QueryGenerator {
 	 * @param value        查询条件值
 	 */
 	public static void addEasyQuery(QueryWrapper<?> queryWrapper, String name, QueryRuleEnum rule, Object value) {
-		if (value == null || rule == null || oConvertUtils.isEmpty(value)) {
+		if (name==null || value == null || rule == null || oConvertUtils.isEmpty(value)) {
 			return;
 		}
 		name = oConvertUtils.camelToUnderline(name);
-		log.info("---查询过滤器，Query规则---field:{}, rule:{}, value:{}",name,rule.getValue(),value);
+		log.debug("---高级查询 Query规则---field:{} , rule:{} , value:{}",name,rule.getValue(),value);
 		switch (rule) {
 		case GT:
 			queryWrapper.gt(name, value);
@@ -713,7 +705,14 @@ public class QueryGenerator {
 	 */
 	public static Map<String, SysPermissionDataRuleModel> getRuleMap() {
 		Map<String, SysPermissionDataRuleModel> ruleMap = new HashMap<>(5);
-		List<SysPermissionDataRuleModel> list =JeecgDataAutorUtils.loadDataSearchConditon();
+		List<SysPermissionDataRuleModel> list = null;
+		//update-begin-author:taoyan date:2023-6-1 for:QQYUN-5441 【简流】获取多个用户/部门/角色 设置部门查询 报错
+		try {
+			list = JeecgDataAutorUtils.loadDataSearchConditon();
+		}catch (Exception e){
+			log.error("根据request对象获取权限数据失败，可能是定时任务中执行的。", e);
+		}
+		//update-end-author:taoyan date:2023-6-1 for:QQYUN-5441 【简流】获取多个用户/部门/角色 设置部门查询 报错
 		if(list != null&&list.size()>0){
 			if(list.get(0)==null){
 				return ruleMap;
@@ -821,223 +820,7 @@ public class QueryGenerator {
 	 * @return
 	 */
 	public static String getSingleQueryConditionSql(String field,String alias,Object value,boolean isString) {
-		return getSingleQueryConditionSql(field, alias, value, isString,null);
-	}
-
-	/**
-	 * 报表获取查询条件 支持多数据源
-	 * @param field
-	 * @param alias
-	 * @param value
-	 * @param isString
-	 * @param dataBaseType
-	 * @return
-	 */
-	public static String getSingleQueryConditionSql(String field,String alias,Object value,boolean isString, String dataBaseType) {
-		if (value == null) {
-			return "";
-		}
-		field =  alias+oConvertUtils.camelToUnderline(field);
-		QueryRuleEnum rule = QueryGenerator.convert2Rule(value);
-		return getSingleSqlByRule(rule, field, value, isString, dataBaseType);
-	}
-
-	/**
-	 * 获取单个查询条件的值
-	 * @param rule
-	 * @param field
-	 * @param value
-	 * @param isString
-	 * @param dataBaseType
-	 * @return
-	 */
-	private static String getSingleSqlByRule(QueryRuleEnum rule,String field,Object value,boolean isString, String dataBaseType) {
-		String res = "";
-		switch (rule) {
-		case GT:
-			res =field+rule.getValue()+getFieldConditionValue(value, isString, dataBaseType);
-			break;
-		case GE:
-			res = field+rule.getValue()+getFieldConditionValue(value, isString, dataBaseType);
-			break;
-		case LT:
-			res = field+rule.getValue()+getFieldConditionValue(value, isString, dataBaseType);
-			break;
-		case LE:
-			res = field+rule.getValue()+getFieldConditionValue(value, isString, dataBaseType);
-			break;
-		case EQ:
-			res = field+rule.getValue()+getFieldConditionValue(value, isString, dataBaseType);
-			break;
-		case EQ_WITH_ADD:
-			res = field+" = "+getFieldConditionValue(value, isString, dataBaseType);
-			break;
-		case NE:
-			res = field+" <> "+getFieldConditionValue(value, isString, dataBaseType);
-			break;
-		case IN:
-			res = field + " in "+getInConditionValue(value, isString);
-			break;
-		case LIKE:
-			res = field + " like "+getLikeConditionValue(value, QueryRuleEnum.LIKE);
-			break;
-		case LEFT_LIKE:
-			res = field + " like "+getLikeConditionValue(value, QueryRuleEnum.LEFT_LIKE);
-			break;
-		case RIGHT_LIKE:
-			res = field + " like "+getLikeConditionValue(value, QueryRuleEnum.RIGHT_LIKE);
-			break;
-		default:
-			res = field+" = "+getFieldConditionValue(value, isString, dataBaseType);
-			break;
-		}
-		return res;
-	}
-
-
-	/**
-	 * 获取单个查询条件的值
-	 * @param rule
-	 * @param field
-	 * @param value
-	 * @param isString
-	 * @return
-	 */
-	private static String getSingleSqlByRule(QueryRuleEnum rule,String field,Object value,boolean isString) {
-		return getSingleSqlByRule(rule, field, value, isString, null);
-	}
-
-	/**
-	 * 获取查询条件的值
-	 * @param value
-	 * @param isString
-	 * @param dataBaseType
-	 * @return
-	 */
-	private static String getFieldConditionValue(Object value,boolean isString, String dataBaseType) {
-		String str = value.toString().trim();
-		if(str.startsWith(SymbolConstant.EXCLAMATORY_MARK)) {
-			str = str.substring(1);
-		}else if(str.startsWith(QueryRuleEnum.GE.getValue())) {
-			str = str.substring(2);
-		}else if(str.startsWith(QueryRuleEnum.LE.getValue())) {
-			str = str.substring(2);
-		}else if(str.startsWith(QueryRuleEnum.GT.getValue())) {
-			str = str.substring(1);
-		}else if(str.startsWith(QueryRuleEnum.LT.getValue())) {
-			str = str.substring(1);
-		}else if(str.indexOf(QUERY_COMMA_ESCAPE)>0) {
-			str = str.replaceAll("\\+\\+", COMMA);
-		}
-		if(dataBaseType==null){
-			dataBaseType = getDbType();
-		}
-		if(isString) {
-			if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(dataBaseType)){
-				return " N'"+str+"' ";
-			}else{
-				return " '"+str+"' ";
-			}
-		}else {
-			// 如果不是字符串 有一种特殊情况 popup调用都走这个逻辑 参数传递的可能是“‘admin’”这种格式的
-			if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(dataBaseType) && str.endsWith(SymbolConstant.SINGLE_QUOTATION_MARK) && str.startsWith(SymbolConstant.SINGLE_QUOTATION_MARK)){
-				return " N"+str;
-			}
-			return value.toString();
-		}
-	}
-
-	private static String getInConditionValue(Object value,boolean isString) {
-		//update-begin-author:taoyan date:20210628 for: 查询条件如果输入,导致sql报错
-		String[] temp = value.toString().split(",");
-		if(temp.length==0){
-			return "('')";
-		}
-		if(isString) {
-			List<String> res = new ArrayList<>();
-			for (String string : temp) {
-				if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())){
-					res.add("N'"+string+"'");
-				}else{
-					res.add("'"+string+"'");
-				}
-			}
-			return "("+String.join("," ,res)+")";
-		}else {
-			return "("+value.toString()+")";
-		}
-		//update-end-author:taoyan date:20210628 for: 查询条件如果输入,导致sql报错
-	}
-
-	/**
-	 * 先根据值判断 走左模糊还是右模糊
-	 * 最后如果值不带任何标识(*或者%)，则再根据ruleEnum判断
-	 * @param value
-	 * @param ruleEnum
-	 * @return
-	 */
-	private static String getLikeConditionValue(Object value, QueryRuleEnum ruleEnum) {
-		String str = value.toString().trim();
-		if(str.startsWith(SymbolConstant.ASTERISK) && str.endsWith(SymbolConstant.ASTERISK)) {
-			if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())){
-				return "N'%"+str.substring(1,str.length()-1)+"%'";
-			}else{
-				return "'%"+str.substring(1,str.length()-1)+"%'";
-			}
-		}else if(str.startsWith(SymbolConstant.ASTERISK)) {
-			if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())){
-				return "N'%"+str.substring(1)+"'";
-			}else{
-				return "'%"+str.substring(1)+"'";
-			}
-		}else if(str.endsWith(SymbolConstant.ASTERISK)) {
-			if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())){
-				return "N'"+str.substring(0,str.length()-1)+"%'";
-			}else{
-				return "'"+str.substring(0,str.length()-1)+"%'";
-			}
-		}else {
-			if(str.indexOf(SymbolConstant.PERCENT_SIGN)>=0) {
-				if(DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())){
-					if(str.startsWith(SymbolConstant.SINGLE_QUOTATION_MARK) && str.endsWith(SymbolConstant.SINGLE_QUOTATION_MARK)){
-						return "N"+str;
-					}else{
-						return "N"+"'"+str+"'";
-					}
-				}else{
-					if(str.startsWith(SymbolConstant.SINGLE_QUOTATION_MARK) && str.endsWith(SymbolConstant.SINGLE_QUOTATION_MARK)){
-						return str;
-					}else{
-						return "'"+str+"'";
-					}
-				}
-			}else {
-
-				//update-begin-author:taoyan date:2022-6-30 for: issues/3810 数据权限规则问题
-				// 走到这里说明 value不带有任何模糊查询的标识(*或者%)
-				if (ruleEnum == QueryRuleEnum.LEFT_LIKE) {
-					if (DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())) {
-						return "N'%" + str + "'";
-					} else {
-						return "'%" + str + "'";
-					}
-				} else if (ruleEnum == QueryRuleEnum.RIGHT_LIKE) {
-					if (DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())) {
-						return "N'" + str + "%'";
-					} else {
-						return "'" + str + "%'";
-					}
-				} else {
-					if (DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())) {
-						return "N'%" + str + "%'";
-					} else {
-						return "'%" + str + "%'";
-					}
-				}
-				//update-end-author:taoyan date:2022-6-30 for: issues/3810 数据权限规则问题
-
-			}
-		}
+		return SqlConcatUtil.getSingleQueryConditionSql(field, alias, value, isString,null);
 	}
 	
 	/**
@@ -1064,7 +847,7 @@ public class QueryGenerator {
 				continue;
 			}
 			if(ruleMap.containsKey(name)) {
-				column = getTableFieldName(clazz, name);
+				column = ReflectHelper.getTableFieldName(clazz, name);
 				if(column==null){
 					continue;
 				}
@@ -1078,7 +861,7 @@ public class QueryGenerator {
 				}else {
 					value = NumberUtils.parseNumber(dataRule.getRuleValue(),propType);
 				}
-				String filedSql = getSingleSqlByRule(rule, oConvertUtils.camelToUnderline(column), value,isString);
+				String filedSql = SqlConcatUtil.getSingleSqlByRule(rule, oConvertUtils.camelToUnderline(column), value,isString);
 				sb.append(sqlAnd+filedSql);
 			}
 		}
@@ -1107,7 +890,7 @@ public class QueryGenerator {
 			if (judgedIsUselessField(name)) {
 				continue;
 			}
-			column = getTableFieldName(clazz, name);
+			column = ReflectHelper.getTableFieldName(clazz, name);
 			if(column==null){
 				continue;
 			}
@@ -1127,111 +910,10 @@ public class QueryGenerator {
 	}
 
 	/**
-	 * 获取所有配置的权限 返回sql字符串 不受字段限制 配置什么就拿到什么
-	 * @return
-	 */
-	public static String getAllConfigAuth() {
-		StringBuffer sb = new StringBuffer();
-		//权限查询
-		Map<String,SysPermissionDataRuleModel> ruleMap = getRuleMap();
-		String sqlAnd = " and ";
-		for (String c : ruleMap.keySet()) {
-			SysPermissionDataRuleModel dataRule = ruleMap.get(c);
-			String ruleValue = dataRule.getRuleValue();
-			if(oConvertUtils.isEmpty(ruleValue)){
-				continue;
-			}
-			if(oConvertUtils.isNotEmpty(c) && c.startsWith(SQL_RULES_COLUMN)){
-				sb.append(sqlAnd+getSqlRuleValue(ruleValue));
-			}else{
-				boolean isString  = false;
-				ruleValue = ruleValue.trim();
-				if(ruleValue.startsWith("'") && ruleValue.endsWith("'")){
-					isString = true;
-					ruleValue = ruleValue.substring(1,ruleValue.length()-1);
-				}
-				QueryRuleEnum rule = QueryRuleEnum.getByValue(dataRule.getRuleConditions());
-				String value = converRuleValue(ruleValue);
-				String filedSql = getSingleSqlByRule(rule, c, value,isString);
-				sb.append(sqlAnd+filedSql);
-			}
-		}
-		log.info("query auth sql is = "+sb.toString());
-		return sb.toString();
-	}
-
-
-
-	/**
 	 * 获取系统数据库类型
 	 */
 	private static String getDbType(){
 		return CommonUtils.getDatabaseType();
-	}
-
-
-	/**
-	 * 获取class的 包括父类的
-	 * @param clazz
-	 * @return
-	 */
-	private static List<Field> getClassFields(Class<?> clazz) {
-		List<Field> list = new ArrayList<Field>();
-		Field[] fields;
-		do{
-			fields = clazz.getDeclaredFields();
-			for(int i = 0;i<fields.length;i++){
-				list.add(fields[i]);
-			}
-			clazz = clazz.getSuperclass();
-		}while(clazz!= Object.class&&clazz!=null);
-		return list;
-	}
-
-	/**
-	 * 获取表字段名
-	 * @param clazz
-	 * @param name
-	 * @return
-	 */
-	private static String getTableFieldName(Class<?> clazz, String name) {
-		try {
-			//如果字段加注解了@TableField(exist = false),不走DB查询
-			Field field = null;
-			try {
-				field = clazz.getDeclaredField(name);
-			} catch (NoSuchFieldException e) {
-				//e.printStackTrace();
-			}
-
-			//如果为空，则去父类查找字段
-			if (field == null) {
-				List<Field> allFields = getClassFields(clazz);
-				List<Field> searchFields = allFields.stream().filter(a -> a.getName().equals(name)).collect(Collectors.toList());
-				if(searchFields!=null && searchFields.size()>0){
-					field = searchFields.get(0);
-				}
-			}
-
-			if (field != null) {
-				TableField tableField = field.getAnnotation(TableField.class);
-				if (tableField != null){
-					if(tableField.exist() == false){
-						//如果设置了TableField false 这个字段不需要处理
-						return null;
-					}else{
-						String column = tableField.value();
-						//如果设置了TableField value 这个字段是实体字段
-						if(!"".equals(column)){
-							return column;
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return name;
 	}
 
 	/**

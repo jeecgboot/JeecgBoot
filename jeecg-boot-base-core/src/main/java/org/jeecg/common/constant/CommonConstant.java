@@ -69,6 +69,8 @@ public interface CommonConstant {
 	
 	/** {@code 500 Server Error} (HTTP/1.0 - RFC 1945) */
     Integer SC_INTERNAL_SERVER_ERROR_500 = 500;
+    /** {@code 404 Not Found} (HTTP/1.0 - RFC 1945) */
+    Integer SC_INTERNAL_NOT_FOUND_404 = 404;
     /** {@code 200 OK} (HTTP/1.0 - RFC 1945) */
     Integer SC_OK_200 = 200;
     
@@ -112,8 +114,8 @@ public interface CommonConstant {
     String HAS_CANCLE  = "2";
     
     /**阅读状态（0未读，1已读）*/
-    String HAS_READ_FLAG  = "1";
-    String NO_READ_FLAG  = "0";
+    Integer HAS_READ_FLAG  = 1;
+    Integer NO_READ_FLAG  = 0;
     
     /**优先级（L低，M中，H高）*/
     String PRIORITY_L  = "L";
@@ -160,6 +162,8 @@ public interface CommonConstant {
     
     /**字典翻译文本后缀*/
     String DICT_TEXT_SUFFIX = "_dictText";
+    /**字典翻译颜色后缀*/
+    String DICT_COLOR_SUFFIX = "_dictColor";
 
     /**
      * 表单设计器主表类型
@@ -315,6 +319,8 @@ public interface CommonConstant {
     String X_TIMESTAMP = "X-TIMESTAMP";
     /** 租户请求头 更名为：X-Tenant-Id */
     String TENANT_ID = "X-Tenant-Id";
+    /** 简流接口请求头，用于排除不支持的控件字段  */
+    String X_MiniFlowExclusionFieldMode = "X-Miniflowexclusionfieldmode";
     /**===============================================================================================*/
 
     String TOKEN_IS_INVALID_MSG = "Token失效，请重新登录!";
@@ -371,6 +377,8 @@ public interface CommonConstant {
     /**前端vue3版本Header参数名*/
     String VERSION="X-Version";
 
+    String VERSION_V3 = "v3";
+
     /**存储在线程变量里的动态表名*/
     String DYNAMIC_TABLE_NAME="DYNAMIC_TABLE_NAME";
     /**
@@ -388,6 +396,7 @@ public interface CommonConstant {
     /** 部门表唯一key，orgCode */
     String DEPART_KEY_ORG_CODE = "orgCode";
 
+    /**======【消息推送相关】==============================================================================*/
     /**
      * 发消息 会传递一些信息到map
      */
@@ -397,6 +406,11 @@ public interface CommonConstant {
      * 发消息 会传递一个业务ID到map
      */
     String NOTICE_MSG_BUS_ID = "NOTICE_MSG_BUS_ID";
+
+   /**
+    * 发消息 消息业务类型
+    */
+   String NOTICE_MSG_BUS_TYPE = "NOTICE_MSG_BUS_TYPE";
 
     /**
      * 邮箱消息中地址登录时地址后携带的token,需要替换成真实的token值
@@ -420,6 +434,7 @@ public interface CommonConstant {
 
     /** 消息模板：markdown */
     String MSG_TEMPLATE_TYPE_MD = "5";
+    /**========【消息推送相关】==========================================================================*/
 
     /**
      * 短信验证码redis-key的前缀
@@ -482,6 +497,11 @@ public interface CommonConstant {
    String USER_TENANT_REFUSE = "4";
 
    /**
+    * 用户租户状态(邀请)
+    */
+   String USER_TENANT_INVITE = "5";
+   
+   /**
     * 不是叶子节点
     */
    Integer NOT_LEAF = 0;
@@ -490,4 +510,71 @@ public interface CommonConstant {
     * 是叶子节点
     */
    Integer IS_LEAF = 1;
+
+   /**
+    * 钉钉
+    */
+   String DINGTALK = "DINGTALK";
+
+   /**
+    * 企业微信
+    */
+   String WECHAT_ENTERPRISE = "WECHAT_ENTERPRISE";
+
+  /**
+   * 系统默认租户id 0
+   */
+  Integer TENANT_ID_DEFAULT_VALUE = 0;
+
+ /**
+  * 【low-app用】 应用级别的复制
+  */
+ String COPY_LEVEL_APP = "app";
+
+ /**
+  * 【low-app用】 菜单级别的复制
+  */
+ String COPY_LEVEL_MENU = "menu";
+
+
+ /**
+  * 【low-app用】 应用备份
+  */
+ String COPY_LEVEL_BAK = "backup";
+
+ /**
+  * 【low-app用】 从备份还原
+  */
+ String COPY_LEVEL_COVER = "cover";
+
+ /** 【QQYUN-6034】关联字段变更历史值，缓存半个小时 */
+ String CACHE_REL_FIELD_OLD_VAL = "sys:cache:desform:relFieldOldVal:";
+
+    /**
+     * 排序类型：升序
+     */
+    String ORDER_TYPE_ASC = "ASC";
+    /**
+     * 排序类型：降序
+     */
+    String ORDER_TYPE_DESC = "DESC";
+
+
+   //update-begin---author:scott ---date:2023-09-10  for：积木报表常量----
+   /**
+    * 报表允许设计开发的角色
+    */
+   public static String[] allowDevRoles = new String[]{"lowdeveloper", "admin"};
+   /**
+    * 【对应积木报表的常量】
+    * 数据隔离模式： 按照创建人隔离
+    */
+   public static final String SAAS_MODE_CREATED = "created";
+   /**
+    * 【对应积木报表的常量】
+    * 数据隔离模式： 按照租户隔离
+    */
+   public static final String SAAS_MODE_TENANT = "tenant";
+   //update-end---author:scott ---date::2023-09-10  for：积木报表常量----
+ 
 }

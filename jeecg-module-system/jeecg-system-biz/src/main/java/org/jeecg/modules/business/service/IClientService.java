@@ -56,4 +56,8 @@ public interface IClientService extends IService<Client> {
     List<String> getClientsFromPurchases(List<String> purchaseIds);
 
     Client getClientBySku(String skuId);
+
+    Client getClientFromInvoice(String invoiceNumber);
+
+    void anonymizePersonalData(int directClientAnonymizationPeriod);
 }

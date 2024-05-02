@@ -24,4 +24,9 @@ public class ImportFileServiceImpl implements ImportFileServiceI {
     public String doUpload(byte[] data) {
         return CommonUtils.uploadOnlineImage(data, upLoadPath, "import", uploadType);
     }
+
+    @Override
+    public String doUpload(byte[] data, String saveUrl) {
+        return CommonUtils.uploadOnlineImage(data, upLoadPath, "import", uploadType);
+    }
 }

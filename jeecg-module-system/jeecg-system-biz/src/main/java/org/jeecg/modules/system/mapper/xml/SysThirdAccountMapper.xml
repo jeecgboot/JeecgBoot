@@ -6,9 +6,22 @@
     <select id="selectThirdIdsByUsername" resultType="org.jeecg.modules.system.entity.SysThirdAccount">
         SELECT third_user_id FROM sys_third_account
         INNER JOIN sys_user ON sys_user.id = sys_third_account.sys_user_id
-        WHERE sys_third_account.third_type = #{thirdType} AND
+        WHERE sys_third_account.third_type = #{thirdType}
+        <if test="null != tenantId and tenantId != 0">
+           AND sys_third_account.tenant_id = #{tenantId}
+        </if>
+        AND
         <!-- TODO in 查询数据量大的时候可能会报错 -->
         <foreach collection="sysUsernameArr" item="item" open=" sys_user.username IN (" close=")" separator=",">#{item}</foreach>
+    </select>
+    
+    <!--查询被绑定的用户-->
+    <select id="getThirdUserBindByWechat" resultType="org.jeecg.modules.system.vo.thirdapp.JwUserDepartVo">
+        SELECT su.id userId, su.realname, su.avatar, sta.realname as wechatRealName, sta.third_user_id as wechatUserId, sta.id as thirdId
+        FROM sys_third_account sta 
+        LEFT JOIN sys_user su on sta.sys_user_id = su.id
+        WHERE sta.tenant_id = #{tenantId}
+        AND sta.third_type = #{thirdType} 
     </select>
 
 </mapper>

@@ -272,7 +272,7 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
             arialBold.setFontHeightInPoints((short) 14);
             arialBold.setBold(true);
 
-            // looping throw the total row, setting border styles and setting formula
+            // looping through the total row, setting border styles and setting formula
             for(int i = 0; i < 10; i++)
             {
                 Cell cell = totalRow.createCell(i);

@@ -6,7 +6,9 @@ import { render } from '/@/utils/common/renderUtils';
 //列表数据
 export const columns: BasicColumn[] = [
  <#list columns as po>
-   <#if po.isShowList =='Y' && po.fieldName !='id'>
+   <#-- update-begin---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+   <#if po.isShowList =='Y' && po.fieldName !='id' && po.fieldName !='delFlag'>
+   <#-- update-end---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
    {
     title: '${po.filedComment}',
     <#if po.fieldDbName == tableVo.extendParams.textField>
@@ -26,13 +28,10 @@ export const columns: BasicColumn[] = [
     dataIndex: '${po.fieldName}String'
     <#elseif po.classType=='umeditor'>
     dataIndex: '${po.fieldName}',
-    slots: { customRender: 'htmlSlot' },
     <#elseif po.classType=='pca'>
     dataIndex: '${po.fieldName}',
-    slots: { customRender: 'pcaSlot' },
    <#elseif po.classType=='file'>
     dataIndex: '${po.fieldName}',
-    slots: { customRender: 'fileSlot' },
    <#elseif po.classType=='image'>
     dataIndex: '${po.fieldName}',
     customRender:render.renderImage,
@@ -77,7 +76,9 @@ export const searchFormSchema: FormSchema[] = [
 <#if po.fieldDbName=='bpm_status'>
   <#assign bpm_flag=true>
 </#if>
-<#if po.isQuery=='Y'>
+<#-- update-begin---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+<#if po.isQuery=='Y' && po.fieldName !='delFlag'>
+<#-- update-end---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
 <#assign query_flag=true>
 	<#assign query_field_dictCode="">
 	<#if po.dictTable?default("")?trim?length gt 1>
@@ -95,7 +96,9 @@ export const searchFormSchema: FormSchema[] = [
          dict:"${po.dictTable},${po.dictText},${po.dictField}"
       },
 <#elseif po.classType=='sel_user'>
-      component: 'JSelectUserByDept',
+<#-- update-begin---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
+      component: 'JSelectUser',
+<#-- update-end---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
 <#elseif po.classType=='switch'>
       component: 'JSwitch',
       componentProps:{
@@ -160,7 +163,7 @@ export const searchFormSchema: FormSchema[] = [
 <#else>
       component: 'Input',
 </#if>
-      colProps: {span: 6},
+      //colProps: {span: 6},
      },
 <#else>
      {
@@ -187,7 +190,7 @@ export const searchFormSchema: FormSchema[] = [
 <#else>
       component: 'Input', //TODO 范围查询
 </#if>
-      colProps: {span: 6},
+      //colProps: {span: 6},
 	},
 </#if>
 </#if>
@@ -207,7 +210,9 @@ export const formSchema: FormSchema[] = [
 <#if po.fieldDbName == 'id'>
 	<#assign id_exists = true>
 </#if>
-<#if po.isShow =='Y'>
+<#-- update-begin---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+<#if po.isShow =='Y' && po.fieldName !='delFlag'>
+<#-- update-end---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
 <#assign form_field_dictCode="">
 	<#if po.dictTable?default("")?trim?length gt 1 && po.dictText?default("")?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
 		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
@@ -265,7 +270,9 @@ export const formSchema: FormSchema[] = [
      <#elseif po.classType =='password'>
     component: 'InputPassword',
      <#elseif po.classType =='sel_user'>
-    component: 'JSelectUserByDept',
+<#-- update-begin---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
+    component: 'JSelectUser',
+<#-- update-end---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
     componentProps:{
         labelKey:'realname',
      },
@@ -276,11 +283,18 @@ export const formSchema: FormSchema[] = [
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
-    <#elseif po.classType=='list_multi' || po.classType=='checkbox'>
+     <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
+    <#elseif po.classType=='list_multi'>
     component: 'JSelectMultiple',
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
+    <#elseif po.classType=='checkbox'>
+    component: 'JCheckbox',
+    componentProps:{
+        dictCode:"${form_field_dictCode}"
+     },
+     <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
     <#elseif po.classType=='sel_search'>
     component: 'JSearchSelect',
     componentProps:{
@@ -407,6 +421,19 @@ export const formSchema: FormSchema[] = [
 	},
 </#if>
 ];
+
+<#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+// 高级查询数据
+export const superQuerySchema = {
+  <#list columns as po>
+  <#-- update-begin---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+  <#if po.isShowList =='Y' && po.fieldName !='id' && po.fieldName !='delFlag'>
+  <#-- update-end---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+  ${superQueryFieldListForVue3(po,po_index)},
+  </#if>
+  </#list>
+};
+<#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
 
 
 /**

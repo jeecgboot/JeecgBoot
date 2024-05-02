@@ -410,8 +410,8 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         platformOrderMap.insertPlatformOrdersArchives(platformOrders);
     }
     @Override
-    public void cancelInvoice(String invoiceNumber) {
-        platformOrderMap.cancelInvoice(invoiceNumber);
+    public void cancelInvoice(String invoiceNumber, String clientId) {
+        platformOrderMap.cancelInvoice(invoiceNumber, clientId);
     }
     @Override
     public void cancelBatchInvoice(List<String> invoiceNumbers) {
@@ -463,8 +463,8 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
 
     @Override
-    public void removePurchaseInvoiceNumber(String purchaseInvoiceNumber) {
-        platformOrderMap.removePurchaseInvoiceNumber(purchaseInvoiceNumber);
+    public void removePurchaseInvoiceNumber(String purchaseInvoiceNumber, String clientId) {
+        platformOrderMap.removePurchaseInvoiceNumber(purchaseInvoiceNumber, clientId);
     }
 
     @Override
@@ -490,5 +490,10 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     @Override
     public Map<String, String> fetchShippingPeriodAndType(String invoiceNumber) {
         return platformOrderMap.fetchShippingPeriodAndType(invoiceNumber);
+    }
+
+    @Override
+    public void anonymizePersonalData(int indirectClientAnonymizationPeriod) {
+        platformOrderMap.anonymizePersonalData(indirectClientAnonymizationPeriod);
     }
 }

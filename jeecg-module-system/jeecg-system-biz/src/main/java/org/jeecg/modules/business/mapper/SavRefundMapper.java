@@ -17,6 +17,6 @@ import java.util.List;
 @Repository
 public interface SavRefundMapper extends BaseMapper<SavRefund> {
     List<BigDecimal> fetchRefundAmount(@Param("invoiceNumber") String invoiceNumber);
-    void cancelInvoice(@Param("invoiceNumber") String invoiceNumber);
+    void cancelInvoice(@Param("invoiceNumber") String invoiceNumber, @Param("clientId") String clientId);
     void cancelBatchInvoice(@Param("invoiceNumbers") List<String> invoiceNumbers);
 }

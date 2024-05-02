@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysTenantPackUser;
+import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.vo.tenant.TenantDepartAuthInfo;
 import org.jeecg.modules.system.vo.tenant.TenantPackModel;
 import org.jeecg.modules.system.vo.tenant.TenantPackUser;
@@ -117,15 +118,17 @@ public interface ISysTenantService extends IService<SysTenant> {
     /**
      * 变更租户拥有者
      * @param userId
+     * @param tenantId
      */
-    void changeOwenUserTenant(String userId);
+    void changeOwenUserTenant(String userId, String tenantId);
 
     /**
      * 邀请用户到租户。通过手机号匹配
      * @param phone
+     * @param departId
      * @return
      */
-    Result<String> invitationUser(String phone);
+    Result<String> invitationUser(String phone, String departId);
 
     /**
      * 进入应用组织页面 查询用户是否有 超级管理员的权限
@@ -200,4 +203,18 @@ public interface ISysTenantService extends IService<SysTenant> {
      * @return
      */
     IPage<TenantPackUser> queryTenantPackUserList(String tenantId, String packId, Integer status, Page<TenantPackUser> page);
+
+    /**
+     * 查看是否已经申请过了管理员
+     * @return
+     */
+    Long getApplySuperAdminCount();
+
+    /**
+     * 发送同意或者拒绝消息
+     * 
+     * @param user 
+     * @param content 
+     */
+    void sendMsgForAgreeAndRefuseJoin(SysUser user, String content);
 }

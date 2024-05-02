@@ -22,10 +22,10 @@ public interface CommonAPI {
 
     /**
      * 2查询用户权限信息
-     * @param username
+     * @param userId
      * @return
      */
-    Set<String> queryUserAuths(String username);
+    Set<String> queryUserAuths(String userId);
 
     /**
      * 3根据 id 查询数据库中存储的 DynamicDataSourceModel
@@ -102,12 +102,12 @@ public interface CommonAPI {
 
     /**
      * 13获取表数据字典
-     * @param table
+     * @param tableFilterSql
      * @param text
      * @param code
      * @return
      */
-    List<DictModel> queryTableDictItemsByCode(String table, String text, String code);
+    List<DictModel> queryTableDictItemsByCode(String tableFilterSql, String text, String code);
 
     /**
      * 14 普通字典的翻译，根据多个dictCode和多条数据，多个以逗号分割
@@ -117,14 +117,17 @@ public interface CommonAPI {
      */
     Map<String, List<DictModel>> translateManyDict(String dictCodes, String keys);
 
+    //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
     /**
      * 15 字典表的 翻译，可批量
      * @param table
      * @param text
      * @param code
      * @param keys 多个用逗号分割
+     * @param dataSource 数据源
      * @return
      */
-    List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys);
+    List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys, String dataSource);
+    //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
 }

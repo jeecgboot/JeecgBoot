@@ -51,6 +51,8 @@ import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
 public class PlatformOrderShippingInvoiceService {
 
     @Autowired
+    IClientService clientService;
+    @Autowired
     ICurrencyService currencyService;
     @Autowired
     ShippingInvoiceMapper shippingInvoiceMapper;
@@ -745,6 +747,13 @@ public class PlatformOrderShippingInvoiceService {
             log.info("Generating a new invoice file ...");
             if(filetype.equals("invoice"))
                 pathList = generateInvoiceExcel(invoiceNumber, filetype);
+            else if(filetype.equals("detail")){
+                Client client = clientService.getClientFromInvoice(invoiceNumber);
+                List<FactureDetail> details = getInvoiceDetail(invoiceNumber);
+                List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceNumber);
+                exportToExcel(details, refunds, invoiceNumber, client.getInvoiceEntity(), client.getInternalCode());
+                pathList = getPath(INVOICE_DETAIL_DIR, invoiceNumber);
+            }
             else {
                 return "ERROR";
             }

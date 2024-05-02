@@ -29,4 +29,8 @@ public interface ClientMapper extends BaseMapper<Client> {
     List<String> getClientsFromPurchases(@Param("purchaseIds") List<String> purchaseIds);
 
     Client getClientBySku(@Param("skuId") String skuId);
+
+    Client getClientFromInvoice(@Param("invoiceNumber") String invoiceNumber);
+
+    void anonymizePersonalData(@Param("period") int directClientAnonymizationPeriod);
 }

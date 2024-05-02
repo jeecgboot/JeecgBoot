@@ -4,6 +4,7 @@ import java.util.List;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserDepart;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -56,7 +57,7 @@ public interface SysUserDepartMapper extends BaseMapper<SysUserDepart>{
 	 * @param keyword
 	 * @return
 	 */
-	IPage<SysUser> getProcessUserList(Page<SysUser> page,  @Param("orgCode") String orgCode,  @Param("keyword") String keyword,  @Param("tenantId") Integer tenantId);
+	IPage<SysUser> getProcessUserList(Page<SysUser> page,  @Param("orgCode") String orgCode,  @Param("keyword") String keyword,  @Param("tenantId") Integer tenantId, @Param("excludeUserIdList") List<String> excludeUserIdList);
 
 	/**
 	 * 获取租户下的部门通过前台传过来的部门id
@@ -80,4 +81,21 @@ public interface SysUserDepartMapper extends BaseMapper<SysUserDepart>{
 	 * @param tenantId
 	 */
 	void deleteUserDepart(@Param("userId") String userId, @Param("tenantId") String tenantId);
+
+	/**
+	 * 通过部门id和租户id获取用户
+	 * @param departId
+	 * @param tenantId
+	 * @return
+	 */
+    List<SysUser> getUsersByDepartTenantId(@Param("departId") String departId, @Param("tenantId") Integer tenantId);
+
+	/**
+	 * 根据用户id和部门id获取数量,用于查看用户是否存在用户部门关系表中
+	 * @param userId
+	 * @param departId
+	 * @return
+	 */
+	@Select("SELECT COUNT(*) FROM sys_user_depart WHERE user_id = #{userId} AND dep_id = #{departId}")
+    Long getCountByDepartIdAndUserId(String userId, String departId);
 }

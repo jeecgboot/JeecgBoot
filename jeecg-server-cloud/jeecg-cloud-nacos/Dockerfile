@@ -1,4 +1,4 @@
-FROM anapsix/alpine-java:8_server-jre_unlimited
+FROM alibabadragonwell/dragonwell:17-anolis
 
 MAINTAINER jeecgos@163.com
 
@@ -10,6 +10,6 @@ WORKDIR /jeecg-cloud-nacos
 
 EXPOSE 8848
 
-ADD ./target/jeecg-cloud-nacos-3.5.0.jar ./
+ADD ./target/jeecg-cloud-nacos-3.6.3.jar ./
 
-CMD sleep 1;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-nacos-3.5.0.jar
+CMD sleep 1;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-nacos-3.6.3.jar

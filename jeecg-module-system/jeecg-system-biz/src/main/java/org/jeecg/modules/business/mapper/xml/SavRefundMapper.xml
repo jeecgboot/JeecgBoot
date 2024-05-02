@@ -8,10 +8,14 @@
     </select>
     <update id="cancelInvoice">
         UPDATE sav_refund
+            JOIN platform_order po ON sav_refund.platform_order_id = po.id
+            JOIN shop s ON po.shop_id = s.id
+            JOIN client c ON s.owner_id = c.id
         SET invoice_number      = NULL,
             refund_date         = NULL,
             total_refund_amount = 0.0
-        WHERE invoice_number = #{invoiceNumber};
+        WHERE invoice_number = #{invoiceNumber}
+            AND c.id = #{clientId};
     </update>
     <update id="cancelBatchInvoice">
         UPDATE sav_refund

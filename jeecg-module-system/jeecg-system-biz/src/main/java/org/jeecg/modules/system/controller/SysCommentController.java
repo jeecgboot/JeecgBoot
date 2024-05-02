@@ -102,6 +102,23 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
         }
     }
 
+    /**
+     * app端添加评论表
+     * @param request
+     * @return
+     */
+    @ApiOperation(value = "系统评论表-添加文件", notes = "系统评论表-添加文件")
+    @PostMapping(value = "/appAddFile")
+    public Result<String> appAddFile(HttpServletRequest request) {
+        try {
+            sysCommentService.appSaveOneFileComment(request);
+            return Result.OK("success");
+        } catch (Exception e) {
+            log.error("评论文件上传失败：{}", e.getMessage());
+            return Result.error("操作失败," + e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "系统评论回复表-通过id删除", notes = "系统评论回复表-通过id删除")
     @DeleteMapping(value = "/deleteOne")
     public Result<String> deleteOne(@RequestParam(name = "id", required = true) String id) {

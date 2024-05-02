@@ -1,9 +1,5 @@
 package org.jeecg.common.util;
 
-import org.jeecg.config.StaticConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
@@ -12,6 +8,10 @@ import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
+import org.jeecg.common.constant.enums.DySmsEnum;
+import org.jeecg.config.StaticConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on 17/6/7.
@@ -55,13 +55,15 @@ public class DySmsHelper {
     }
     
     
-    public static boolean sendSms(String phone,JSONObject templateParamJson,DySmsEnum dySmsEnum) throws ClientException {
+    public static boolean sendSms(String phone, JSONObject templateParamJson, DySmsEnum dySmsEnum) throws ClientException {
     	//可自助调整超时时间
         System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
         System.setProperty("sun.net.client.defaultReadTimeout", "10000");
 
         //update-begin-author：taoyan date:20200811 for:配置类数据获取
         StaticConfig staticConfig = SpringContextUtils.getBean(StaticConfig.class);
+        //logger.info("阿里大鱼短信秘钥 accessKeyId：" + staticConfig.getAccessKeyId());
+        //logger.info("阿里大鱼短信秘钥 accessKeySecret："+ staticConfig.getAccessKeySecret());
         setAccessKeyId(staticConfig.getAccessKeyId());
         setAccessKeySecret(staticConfig.getAccessKeySecret());
         //update-end-author：taoyan date:20200811 for:配置类数据获取

@@ -1,15 +1,13 @@
 package org.jeecg.common.system.vo;
 
-import java.util.Date;
-
-import org.jeecg.common.desensitization.annotation.SensitiveField;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecg.common.desensitization.annotation.SensitiveField;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 /**
  * <p>
@@ -51,6 +49,7 @@ public class LoginUser {
      /**
       * 当前登录部门code
       */
+	@SensitiveField
     private String orgCode;
 	/**
 	 * 头像
@@ -61,7 +60,6 @@ public class LoginUser {
 	/**
 	 * 生日
 	 */
-	@SensitiveField
 	@JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date birthday;
@@ -107,6 +105,7 @@ public class LoginUser {
 	/**
 	 * 管理部门ids
 	 */
+	@SensitiveField
 	private String departIds;
 
 	/**
@@ -122,6 +121,7 @@ public class LoginUser {
 	private String telephone;
 
 	/** 多租户ids临时用，不持久化数据库(数据库字段不存在) */
+	@SensitiveField
 	private String relTenantIds;
 
 	/**设备id uniapp推送用*/

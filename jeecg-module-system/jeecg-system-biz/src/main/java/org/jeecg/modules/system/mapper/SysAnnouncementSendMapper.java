@@ -17,13 +17,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
  */
 public interface SysAnnouncementSendMapper extends BaseMapper<SysAnnouncementSend> {
 
-    /**
-     * 通过用户id查询 用户通告阅读标记表
-     * @param userId 用户id
-     * @return
-     */
-	public List<String> queryByUserId(@Param("userId") String userId);
-
 	/**
 	 * 获取我的消息
 	 * @param announcementSendModel
@@ -44,4 +37,10 @@ public interface SysAnnouncementSendMapper extends BaseMapper<SysAnnouncementSen
 	 * 修改为已读消息
 	 */
 	void updateReaded(@Param("userId") String userId, @Param("annoceIdList") List<String> annoceIdList);
+
+	/**
+	 * 清除所有未读消息
+	 * @param userId
+	 */
+	void clearAllUnReadMessage(@Param("userId") String userId);
 }

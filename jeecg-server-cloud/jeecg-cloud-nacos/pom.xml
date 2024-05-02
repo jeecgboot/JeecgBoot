@@ -5,13 +5,12 @@
     <artifactId>jeecg-cloud-nacos</artifactId>
     <name>jeecg-cloud-nacos</name>
     <description>nacos启动模块</description>
-    <version>3.5.1</version>
+    <version>3.6.3</version>
 
-    <!-- Nacos2不支持springboot2.6.6  -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.5.RELEASE</version>
+        <version>2.7.18</version>
         <relativePath/>
     </parent>
 
@@ -50,22 +49,22 @@
         <dependency>
             <groupId>org.jeecgframework.nacos</groupId>
             <artifactId>nacos-naming</artifactId>
-            <version>2.0.4</version>
+            <version>2.2.3</version>
         </dependency>
         <dependency>
             <groupId>org.jeecgframework.nacos</groupId>
             <artifactId>nacos-istio</artifactId>
-            <version>2.0.4</version>
+            <version>2.2.3</version>
         </dependency>
         <dependency>
             <groupId>org.jeecgframework.nacos</groupId>
             <artifactId>nacos-config</artifactId>
-            <version>2.0.4</version>
+            <version>2.2.3</version>
         </dependency>
         <dependency>
             <groupId>org.jeecgframework.nacos</groupId>
             <artifactId>nacos-console</artifactId>
-            <version>2.0.4</version>
+            <version>2.2.3</version>
         </dependency>
     </dependencies>
 
