@@ -164,10 +164,13 @@ public class CommonUtils {
             // 获取文件名
             String orgName = mf.getOriginalFilename();
             orgName = CommonUtils.getFileName(orgName);
-            if(orgName.indexOf(SymbolConstant.SPOT)!=-1){
-                fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.lastIndexOf("."));
+            
+            int spotIndex = orgName.lastIndexOf(SymbolConstant.SPOT);
+            long currentTimeMillis = System.currentTimeMillis();
+            if(spotIndex != -1){
+                fileName = orgName.substring(0, spotIndex) + "_" + currentTimeMillis + orgName.substring(spotIndex);
             }else{
-                fileName = orgName+ "_" + System.currentTimeMillis();
+                fileName = orgName+ "_" + currentTimeMillis;
             }
             String savePath = file.getPath() + File.separator + fileName;
             File savefile = new File(savePath);
