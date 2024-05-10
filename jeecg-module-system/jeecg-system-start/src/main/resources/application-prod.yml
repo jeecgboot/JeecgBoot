@@ -2,6 +2,7 @@ server:
   port: 8080
   tomcat:
     max-swallow-size: -1
+    connection-timeout: 30000
   error:
     include-exception: true
     include-stacktrace: ALWAYS
@@ -328,3 +329,9 @@ justauth:
     type: default
     prefix: 'demo::'
     timeout: 1h
+mabang:
+  api:
+    appkey: "87a1a0c46df86eb2683e74776894dae9"
+    devid: "200809"
+company:
+  orgName: "WIA"
