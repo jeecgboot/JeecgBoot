@@ -49,6 +49,12 @@
             <artifactId>jeecg-cloud-test-rabbitmq</artifactId>
             <version>${jeecgboot.version}</version>
         </dependency>-->
+        <!-- rocketmq例子-->
+        <!--<dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>jeecg-cloud-test-rocketmq</artifactId>
+            <version>${jeecgboot.version}</version>
+        </dependency>-->
         <!-- 分布式事务例子
        <dependency>
            <groupId>org.jeecgframework.boot</groupId>
