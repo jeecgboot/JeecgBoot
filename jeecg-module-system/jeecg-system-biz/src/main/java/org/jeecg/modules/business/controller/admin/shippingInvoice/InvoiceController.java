@@ -121,6 +121,8 @@ public class InvoiceController {
     @Autowired
     private ISysDepartService sysDepartService;
     @Autowired
+    private IUserClientService userClientService;
+    @Autowired
     Environment env;
 
     @Value("${jeecg.path.shippingInvoiceDir}")
@@ -984,8 +986,10 @@ public class InvoiceController {
         customerFullName = client.fullName();
         String destEmail;
         if(!orgCode.equals(companyOrgCode)) {
-            System.out.println(email + " - " + client.getEmail());
-            if(!client.getEmail().equals(email)) {
+            log.info("User {} is trying to access invoice {} from client {}", sysUser.getUsername(), invoiceNumber, client.getInternalCode());
+            Client userClient = userClientService.getClientByUserId(sysUser.getId());
+
+            if(!client.getId().equals(userClient.getId())) {
                 return Result.error(403,"Not authorized to view this page.");
             }
             else {

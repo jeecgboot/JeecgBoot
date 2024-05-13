@@ -83,7 +83,7 @@ public class JeecgBootExceptionHandler {
 			return Result.error(errorInfoEnum.getError());
 		}
 		//update-end---author:zyf ---date:20220411  for：处理Sentinel限流自定义异常
-		return Result.error("操作失败，"+e.getMessage());
+		return Result.error("Error : "+e.getMessage());
 	}
 	
 	/**
